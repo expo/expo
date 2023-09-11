@@ -8,7 +8,7 @@ This package provides a partial polyfill of the W3C Crypto API for Expo. Namely,
 
 # Installation in Expo projects
 
-First follow the instructions for installing [`expo-random`](https://github.com/expo/expo/blob/main/packages/expo-random/README.md), which is required by this package. Then install this package.
+First follow the instructions for installing [`expo-crypto`](https://github.com/expo/expo/blob/main/packages/expo-crypto/README.md), which is required by this package. Then install this package.
 
 ### Add the package to your npm dependencies
 

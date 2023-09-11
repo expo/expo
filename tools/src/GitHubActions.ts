@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { EXPO_DIR } from './Constants';
+import { getPullRequestAsync } from './GitHub';
 import { execAll, filterAsync } from './Utils';
 
 const octokit = new Octokit({
@@ -106,22 +107,10 @@ export async function dispatchWorkflowEventAsync(
 }
 
 /**
- * Requests for the pull request object.
- */
-export async function getPullRequestAsync(pull_number: number) {
-  const { data } = await octokit.pulls.get({
-    owner,
-    repo,
-    pull_number,
-  });
-  return data;
-}
-
-/**
  * Returns an array of issue IDs that has been auto-closed by the pull request.
  */
 export async function getClosedIssuesAsync(pullRequestId: number): Promise<number[]> {
-  const pullRequest = await getPullRequestAsync(pullRequestId);
+  const pullRequest = await getPullRequestAsync(pullRequestId, true);
   const matches = execAll(
     /(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved) (#|https:\/\/github\.com\/expo\/expo\/issues\/)(\d+)/gi,
     pullRequest.body ?? '',

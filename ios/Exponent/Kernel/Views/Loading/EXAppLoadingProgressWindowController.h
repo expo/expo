@@ -1,5 +1,5 @@
 #import <UIKit/UIKit.h>
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXResourceLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN

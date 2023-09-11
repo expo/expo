@@ -10,7 +10,96 @@
 
 ### 💡 Others
 
+## 3.1.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Migrate to Expo CLI. ([#23806](https://github.com/expo/expo/pull/23806) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.0.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.7 — 2023-07-26
+
+### 🐛 Bug fixes
+
+- Fixed compatibility with the Reanimated 3.4.0 on iOS. ([#23726](https://github.com/expo/expo/pull/23726) by [@piaskowyk](https://github.com/piaskowyk))
+
+## 2.4.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.1 — 2023-06-23
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Bump `babel-plugin-module-resolver` dev dependency. ([#22871](https://github.com/expo/expo/pull/22871) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.3.0 — 2023-05-08
+
+### 💡 Others
+
+- Update e2e tests to use custom entry file system. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.1.4 — 2023-02-28
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.3 — 2023-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.2 — 2023-02-17
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.0.1 — 2022-11-21
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.0 — 2022-10-27
+
+### 💡 Others
+
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+- Get detox tests running locally. ([#19254](https://github.com/expo/expo/pull/19254) by [@esamelson](https://github.com/esamelson))
+
+## 1.3.1 — 2022-10-11
+
+_This version does not introduce any user-facing changes._
+
+## 1.3.0 — 2022-09-16
+
+### 🐛 Bug fixes
+
+- Remove default scheme from intent filters that specify `autoVerify=true`. ([#18963](https://github.com/expo/expo/pull/18963) by [@ajsmth](https://github.com/ajsmth))
+
+## 1.2.1 — 2022-08-16
+
+_This version does not introduce any user-facing changes._
 
 ## 1.2.0 — 2022-08-11
 

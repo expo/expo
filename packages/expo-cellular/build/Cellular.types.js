@@ -1,3 +1,4 @@
+export { PermissionStatus, } from 'expo-modules-core';
 // @needsAudit
 /**
  * Describes the current generation of the cellular connection. It is an enum with these possible

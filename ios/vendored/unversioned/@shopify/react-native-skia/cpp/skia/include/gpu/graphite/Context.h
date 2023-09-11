@@ -8,53 +8,36 @@
 #ifndef skgpu_graphite_Context_DEFINED
 #define skgpu_graphite_Context_DEFINED
 
-#include <vector>
-#include "include/core/SkBlendMode.h"
+#include "include/core/SkImage.h"
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkShader.h"
-#include "include/core/SkTileMode.h"
-#include "include/private/SkNoncopyable.h"
-
+#include "include/gpu/graphite/ContextOptions.h"
 #include "include/gpu/graphite/GraphiteTypes.h"
+#include "include/gpu/graphite/Recorder.h"
+#include "include/private/base/SingleOwner.h"
+
+#include <functional>
+#include <memory>
+
+class SkRuntimeEffect;
 
 namespace skgpu::graphite {
 
 class BackendTexture;
-class CommandBuffer;
+class Buffer;
+class ClientMappedBufferManager;
+class Context;
 class ContextPriv;
 class GlobalCache;
-class Gpu;
-struct MtlBackendContext;
-class Recorder;
+class PaintOptions;
+class PlotUploadTracker;
+class QueueManager;
 class Recording;
-class TextureInfo;
+class ResourceProvider;
+class SharedContext;
+class TextureProxy;
 
-struct ShaderCombo {
-    enum class ShaderType {
-        kNone, // does not modify color buffer, e.g. depth and/or stencil only
-        kSolidColor,
-        kLinearGradient,
-        kRadialGradient,
-        kSweepGradient,
-        kConicalGradient
-    };
-
-    ShaderCombo() {}
-    ShaderCombo(std::vector<ShaderType> types,
-                std::vector<SkTileMode> tileModes)
-            : fTypes(std::move(types))
-            , fTileModes(std::move(tileModes)) {
-    }
-    std::vector<ShaderType> fTypes;
-    std::vector<SkTileMode> fTileModes;
-};
-
-struct PaintCombo {
-    std::vector<ShaderCombo> fShaders;
-    std::vector<SkBlendMode> fBlendModes;
-};
-
-class Context final {
+class SK_API Context final {
 public:
     Context(const Context&) = delete;
     Context(Context&&) = delete;
@@ -63,39 +46,35 @@ public:
 
     ~Context();
 
-#ifdef SK_METAL
-    static std::unique_ptr<Context> MakeMetal(const skgpu::graphite::MtlBackendContext&);
-#endif
+    BackendApi backend() const;
 
-    BackendApi backend() const { return fBackend; }
+    std::unique_ptr<Recorder> makeRecorder(const RecorderOptions& = {});
 
-    std::unique_ptr<Recorder> makeRecorder();
+    bool insertRecording(const InsertRecordingInfo&);
+    bool submit(SyncToCpu = SyncToCpu::kNo);
 
-    void insertRecording(const InsertRecordingInfo&);
-    void submit(SyncToCpu = SyncToCpu::kNo);
+    void asyncReadPixels(const SkImage* image,
+                         const SkColorInfo& dstColorInfo,
+                         const SkIRect& srcRect,
+                         SkImage::ReadPixelsCallback callback,
+                         SkImage::ReadPixelsContext context);
+
+    void asyncReadPixels(const SkSurface* surface,
+                         const SkColorInfo& dstColorInfo,
+                         const SkIRect& srcRect,
+                         SkImage::ReadPixelsCallback callback,
+                         SkImage::ReadPixelsContext context);
 
     /**
      * Checks whether any asynchronous work is complete and if so calls related callbacks.
      */
     void checkAsyncWorkCompletion();
 
-    void preCompile(const PaintCombo&);
-
-    /**
-     * Creates a new backend gpu texture matching the dimensinos and TextureInfo. If an invalid
-     * TextureInfo or a TextureInfo Skia can't support is passed in, this will return an invalid
-     * BackendTexture. Thus the client should check isValid on the returned BackendTexture to know
-     * if it succeeded or not.
-     *
-     * If this does return a valid BackendTexture, the caller is required to use
-     * Context::deleteBackendTexture to delete that texture.
-     */
-    BackendTexture createBackendTexture(SkISize dimensions, const TextureInfo&);
-
     /**
      * Called to delete the passed in BackendTexture. This should only be called if the
-     * BackendTexture was created by calling Context::createBackendTexture. If the BackendTexture is
-     * not valid or does not match the BackendApi of the Context then nothing happens.
+     * BackendTexture was created by calling Recorder::createBackendTexture on a Recorder created
+     * from this Context. If the BackendTexture is not valid or does not match the BackendApi of the
+     * Context then nothing happens.
      *
      * Otherwise this will delete/release the backend object that is wrapped in the BackendTexture.
      * The BackendTexture will be reset to an invalid state and should not be used again.
@@ -106,17 +85,83 @@ public:
     ContextPriv priv();
     const ContextPriv priv() const;  // NOLINT(readability-const-return-type)
 
+    class ContextID {
+    public:
+        static Context::ContextID Next();
+
+        ContextID() : fID(SK_InvalidUniqueID) {}
+
+        bool operator==(const ContextID& that) const { return fID == that.fID; }
+        bool operator!=(const ContextID& that) const { return !(*this == that); }
+
+        void makeInvalid() { fID = SK_InvalidUniqueID; }
+        bool isValid() const { return fID != SK_InvalidUniqueID; }
+
+    private:
+        constexpr ContextID(uint32_t id) : fID(id) {}
+        uint32_t fID;
+    };
+
+    ContextID contextID() const { return fContextID; }
+
 protected:
-    Context(sk_sp<Gpu>, BackendApi);
+    Context(sk_sp<SharedContext>, std::unique_ptr<QueueManager>, const ContextOptions&);
 
 private:
     friend class ContextPriv;
+    friend class ContextCtorAccessor;
 
-    sk_sp<CommandBuffer> fCurrentCommandBuffer;
+    SingleOwner* singleOwner() const { return &fSingleOwner; }
 
-    sk_sp<Gpu> fGpu;
-    sk_sp<GlobalCache> fGlobalCache;
-    BackendApi fBackend;
+    // Must be called in Make() to handle one-time GPU setup operations that can possibly fail and
+    // require Context::Make() to return a nullptr.
+    bool finishInitialization();
+
+    void asyncReadPixels(const TextureProxy* textureProxy,
+                         const SkImageInfo& srcImageInfo,
+                         const SkColorInfo& dstColorInfo,
+                         const SkIRect& srcRect,
+                         SkImage::ReadPixelsCallback callback,
+                         SkImage::ReadPixelsContext context);
+
+    // Inserts a texture to buffer transfer task, used by asyncReadPixels methods
+    struct PixelTransferResult {
+        using ConversionFn = void(void* dst, const void* mappedBuffer);
+        // If null then the transfer could not be performed. Otherwise this buffer will contain
+        // the pixel data when the transfer is complete.
+        sk_sp<Buffer> fTransferBuffer;
+        // RowBytes for transfer buffer data
+        size_t fRowBytes;
+        // If this is null then the transfer buffer will contain the data in the requested
+        // color type. Otherwise, when the transfer is done this must be called to convert
+        // from the transfer buffer's color type to the requested color type.
+        std::function<ConversionFn> fPixelConverter;
+    };
+    PixelTransferResult transferPixels(const TextureProxy*,
+                                       const SkImageInfo& srcImageInfo,
+                                       const SkColorInfo& dstColorInfo,
+                                       const SkIRect& srcRect);
+
+    sk_sp<SharedContext> fSharedContext;
+    std::unique_ptr<ResourceProvider> fResourceProvider;
+    std::unique_ptr<QueueManager> fQueueManager;
+    std::unique_ptr<ClientMappedBufferManager> fMappedBufferManager;
+    std::unique_ptr<PlotUploadTracker> fPlotUploadTracker;
+
+    // In debug builds we guard against improper thread handling. This guard is passed to the
+    // ResourceCache for the Context.
+    mutable SingleOwner fSingleOwner;
+
+#if GRAPHITE_TEST_UTILS
+    // In test builds a Recorder may track the Context that was used to create it.
+    bool fStoreContextRefInRecorder = false;
+    // If this tracking is on, to allow the client to safely delete this Context or its Recorders
+    // in any order we must also track the Recorders created here.
+    std::vector<Recorder*> fTrackedRecorders;
+#endif
+
+    // Needed for MessageBox handling
+    const ContextID fContextID;
 };
 
 } // namespace skgpu::graphite

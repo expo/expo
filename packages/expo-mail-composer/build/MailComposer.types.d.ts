@@ -1,7 +1,7 @@
 /**
  * A map defining the data to fill the mail.
  */
-export declare type MailComposerOptions = {
+export type MailComposerOptions = {
     /**
      * An array of e-mail addresses of the recipients.
      */
@@ -32,7 +32,7 @@ export declare type MailComposerOptions = {
      */
     attachments?: string[];
 };
-export declare type MailComposerResult = {
+export type MailComposerResult = {
     status: MailComposerStatus;
 };
 export declare enum MailComposerStatus {

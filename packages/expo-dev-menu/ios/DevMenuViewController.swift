@@ -70,7 +70,7 @@ class DevMenuViewController: UIViewController {
       "menuPreferences": DevMenuPreferences.serialize(),
       "uuid": UUID.init().uuidString,
       "isDevice": !isSimulator,
-      "registeredCallbacks": manager.registeredCallbacks
+      "registeredCallbacks": manager.registeredCallbacks.map { $0.name }
     ]
   }
 

@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import HeadingText from '../HeadingText';
-import MonoTextWithCountdown from '../MonoTextWithCountdown';
 import ActionButton from './ActionButton';
 import Configurator from './Configurator';
 import Divider from './Divider';
@@ -20,6 +18,8 @@ import {
   PrimitiveParameter,
 } from './index.types';
 import { isCurrentPlatformSupported } from './utils';
+import HeadingText from '../HeadingText';
+import MonoTextWithCountdown from '../MonoTextWithCountdown';
 
 const STRING_TRIM_THRESHOLD = 300;
 
@@ -54,13 +54,13 @@ type Props = {
   /**
    * Rendering function to render some additional components based on the function's result.
    */
-  renderAdditionalResult?: (result: unknown) => JSX.Element | void;
+  renderAdditionalResult?: (result: any) => JSX.Element | void;
 };
 
 /**
  * Helper type for typing out the function description that is later passed to the `FunctionDemo` component.
  */
-export type FunctionDescription = Omit<Props, 'namespace' | 'renderAdditionalResult'>;
+export type FunctionDescription = Omit<Props, 'namespace'>;
 
 type Result =
   | {
@@ -241,7 +241,7 @@ function initialArgumentsFromParameters(parameters: FunctionParameter[]) {
  * Hook that handles function arguments' values.
  * Initial value is constructed based on the description of each parameter.
  */
-function useArguments(
+export function useArguments(
   parameters: FunctionParameter[]
 ): [FunctionArgument[], OnArgumentChangeCallback] {
   const [args, setArgs] = useState(initialArgumentsFromParameters(parameters));

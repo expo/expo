@@ -8,14 +8,17 @@ export default BottomTabNavigator;
 export const getNavigatorProps = (props: {
   theme: string;
 }): Partial<ComponentProps<typeof BottomTabNavigator.Navigator>> => ({
-  tabBarOptions: {
-    labelStyle: { fontFamily: 'Inter-SemiBold' },
-    keyboardHidesTabBar: false,
-    style: {
+  screenOptions: {
+    headerShown: false,
+    tabBarLabelStyle: { fontFamily: 'Inter-SemiBold' },
+    tabBarHideOnKeyboard: false,
+    tabBarStyle: {
       backgroundColor:
         props.theme === 'dark' ? darkTheme.background.default : lightTheme.background.default,
     },
-    activeTintColor: props.theme === 'dark' ? darkTheme.link.default : lightTheme.link.default,
-    inactiveTintColor: props.theme === 'dark' ? darkTheme.icon.default : lightTheme.icon.default,
+    tabBarActiveTintColor:
+      props.theme === 'dark' ? darkTheme.link.default : lightTheme.link.default,
+    tabBarInactiveTintColor:
+      props.theme === 'dark' ? darkTheme.icon.default : lightTheme.icon.default,
   },
 });

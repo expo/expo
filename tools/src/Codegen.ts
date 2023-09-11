@@ -16,7 +16,7 @@ export interface ReactNativeCodegenParameters {
   name: string;
 
   // library type
-  type: 'components' | 'modules';
+  type: 'components' | 'modules' | 'all';
 
   // platform for generated code
   platform: 'android' | 'ios';
@@ -27,8 +27,8 @@ export interface ReactNativeCodegenParameters {
   // keep the intermediate schema.json (default is false)
   keepIntermediateSchema?: boolean;
 
-  // the base dir name for output generated code (default is `name`)
-  outputDirBaseName?: string;
+  // java package name
+  javaPackageName?: string;
 }
 
 export async function runReactNativeCodegenAsync(params: ReactNativeCodegenParameters) {
@@ -42,30 +42,29 @@ export async function runReactNativeCodegenAsync(params: ReactNativeCodegenParam
   const genCodeScript = path.join(params.reactNativeRoot, 'scripts', 'generate-specs-cli.js');
 
   const schemaOutputPath = path.join(params.outputDir, 'schema.json');
-  const outputDirBaseName = params.outputDirBaseName ?? params.name;
-  const codegenOutputDir =
-    params.type === 'components'
-      ? path.join(params.outputDir, 'react', 'renderer', 'components', outputDirBaseName)
-      : path.join(params.outputDir, outputDirBaseName);
   await fs.ensureDir(params.outputDir);
 
   // generate schema.json from js & flow types
   await spawnAsync('node', [genSchemaScript, schemaOutputPath, params.jsSrcsDir]);
 
   // generate code from schema.json
-  await spawnAsync('node', [
+  const genCodeArgs = [
     genCodeScript,
     '--platform',
     params.platform,
     '--schemaPath',
     schemaOutputPath,
     '--outputDir',
-    codegenOutputDir,
+    params.outputDir,
     '--libraryName',
     params.name,
     '--libraryType',
     params.type,
-  ]);
+  ];
+  if (params.javaPackageName) {
+    genCodeArgs.push('--javaPackageName', params.javaPackageName);
+  }
+  await spawnAsync('node', genCodeArgs);
 
   const keepIntermediateSchema = params.keepIntermediateSchema ?? false;
   if (!keepIntermediateSchema) {

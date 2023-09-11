@@ -144,7 +144,7 @@ describe(getDynamicConfig, () => {
   // config is used instead of defaulting to a valid substitution.
   it(`throws a useful error for dynamic configs with a syntax error`, () => {
     const paths = getConfigFilePaths('syntax-error');
-    expect(() => getDynamicConfig(paths.dynamicConfigPath, mockConfigContext)).toThrowError(
+    expect(() => getDynamicConfig(paths.dynamicConfigPath!, mockConfigContext)).toThrowError(
       /Error .* \(5:7\)/
     );
   });
@@ -152,7 +152,7 @@ describe(getDynamicConfig, () => {
   // config is used instead of defaulting to a valid substitution.
   it(`throws a useful error for dynamic configs with a missing import`, () => {
     const paths = getConfigFilePaths('missing-import-error');
-    expect(() => getDynamicConfig(paths.dynamicConfigPath, mockConfigContext)).toThrowError(
+    expect(() => getDynamicConfig(paths.dynamicConfigPath!, mockConfigContext)).toThrowError(
       /Require stack/
     );
   });
@@ -195,6 +195,6 @@ describe(getStaticConfig, () => {
     const paths = getConfigFilePaths('static-override');
     expect(paths.staticConfigPath).toMatch(/app\.config\.json/);
 
-    expect(getStaticConfig(paths.staticConfigPath).name).toBe('app-config-json');
+    expect(getStaticConfig(paths.staticConfigPath!).name).toBe('app-config-json');
   });
 });

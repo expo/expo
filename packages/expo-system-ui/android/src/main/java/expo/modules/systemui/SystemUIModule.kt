@@ -1,75 +1,72 @@
 package expo.modules.systemui
 
-import android.app.Activity
 import android.content.Context
+import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
-import expo.modules.core.errors.CurrentActivityNotFoundException
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.ExpoMethod
+import androidx.appcompat.app.AppCompatDelegate
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
-class SystemUIModule(context: Context) : ExportedModule(context) {
+const val PREFERENCE_KEY = "expoRootBackgroundColor"
 
-  private lateinit var activityProvider: ActivityProvider
+class SystemUIModule : Module() {
+  private val currentActivity
+    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+  private val prefs: SharedPreferences
+    get() = context.getSharedPreferences("expo_ui_preferences", Context.MODE_PRIVATE)
+      ?: throw Exceptions.ReactContextLost()
 
-  override fun getName(): String {
-    return NAME
-  }
-
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    activityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
-      ?: throw IllegalStateException("Could not find implementation for ActivityProvider.")
-  }
-
-  // Ensure that rejections are passed up to JS rather than terminating the native client.
-  private fun safeRunOnUiThread(promise: Promise, block: (activity: Activity) -> Unit) {
-    val activity = activityProvider.currentActivity
-    if (activity == null) {
-      promise.reject(CurrentActivityNotFoundException())
-      return
-    }
-    activity.runOnUiThread {
-      block(activity)
-    }
-  }
-
-  @ExpoMethod
-  fun setBackgroundColorAsync(color: Int, promise: Promise) {
-    safeRunOnUiThread(promise) {
-      var rootView = it.window.decorView
-      var colorString = colorToHex(color)
-      try {
-        val color = Color.parseColor(colorString)
-        rootView.setBackgroundColor(color)
-        promise.resolve(null)
-      } catch (e: Throwable) {
-        Log.e(ERROR_TAG, e.toString())
-        rootView.setBackgroundColor(Color.WHITE)
-        promise.reject(ERROR_TAG, "Invalid color: \"$color\"")
+  private val systemBackgroundColor
+    get() = when (AppCompatDelegate.getDefaultNightMode()) {
+      AppCompatDelegate.MODE_NIGHT_YES -> Color.BLACK
+      AppCompatDelegate.MODE_NIGHT_NO -> Color.WHITE
+      AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> {
+        when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+          Configuration.UI_MODE_NIGHT_YES -> Color.BLACK
+          Configuration.UI_MODE_NIGHT_NO -> Color.WHITE
+          else -> Color.WHITE
+        }
       }
+      else -> Color.WHITE
     }
-  }
 
-  @ExpoMethod
-  fun getBackgroundColorAsync(promise: Promise) {
-    safeRunOnUiThread(promise) {
-      var mBackground = it.window.decorView.background
-      if (mBackground is ColorDrawable) {
-        promise.resolve(colorToHex((mBackground.mutate() as ColorDrawable).color))
+  override fun definition() = ModuleDefinition {
+    Name("ExpoSystemUI")
+
+    AsyncFunction("setBackgroundColorAsync") { color: Int? ->
+      color?.let {
+        prefs.edit()
+          .putInt(PREFERENCE_KEY, it)
+          .apply()
+      } ?: prefs.edit()
+        .remove(PREFERENCE_KEY)
+        .apply()
+      setBackgroundColor(color ?: systemBackgroundColor)
+    }.runOnQueue(Queues.MAIN)
+
+    AsyncFunction("getBackgroundColorAsync") {
+      val background = currentActivity.window.decorView.background
+      return@AsyncFunction if (background is ColorDrawable) {
+        colorToHex((background.mutate() as ColorDrawable).color)
       } else {
-        promise.resolve(null)
+        null
       }
     }
+  }
+
+  private fun setBackgroundColor(color: Int) {
+    val rootView = currentActivity.window?.decorView
+    val colorInt = Color.parseColor(colorToHex(color))
+    rootView?.setBackgroundColor(colorInt)
   }
 
   companion object {
-    private const val NAME = "ExpoSystemUI"
-    private const val ERROR_TAG = "ERR_SYSTEM_UI"
-
     fun colorToHex(color: Int): String {
       return String.format("#%02x%02x%02x", Color.red(color), Color.green(color), Color.blue(color))
     }

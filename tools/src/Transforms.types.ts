@@ -78,6 +78,11 @@ export type CopyFileOptions = {
    * An object with transform rules for file paths and contents.
    */
   transforms: FileTransforms;
+
+  /**
+   * Whether to keep original file mode (the mode for `chmod`), e.g. 755.
+   */
+  keepFileMode?: boolean;
 };
 
 /**
@@ -93,4 +98,8 @@ export type CopyFileResult = {
    * The final target path after transformations. Relative to provided `targetDirectory`.
    */
   targetFile: string;
+  /**
+   * A set of transforms that were used to transform the file.
+   */
+  transformsUsed: Set<FileTransform>;
 };

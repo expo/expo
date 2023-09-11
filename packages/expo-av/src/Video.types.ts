@@ -127,7 +127,7 @@ export type VideoProps = {
   // Callbacks
   /**
    * A function to be called regularly with the `AVPlaybackStatus` of the video. You will likely be using this a lot.
-   * See the [AV documentation](av.md) for further information on `onPlaybackStatusUpdate`, and the interval at which it is called.
+   * See the [AV documentation](./av) for further information on `onPlaybackStatusUpdate`, and the interval at which it is called.
    * @param status
    */
   onPlaybackStatusUpdate?: (status: AVPlaybackStatus) => void;
@@ -175,6 +175,13 @@ export type VideoProps = {
    * A boolean which, if set to `true`, will display an image (whose source is set via the prop `posterSource`) while the video is loading.
    */
   usePoster?: boolean;
+  /**
+   * A react-native `Image` like component to display the poster image.
+   */
+  PosterComponent?: React.ComponentType<{
+    style: ImageProps['style'];
+    source: ImageProps['source'];
+  }>;
 
   // Playback API
   /**

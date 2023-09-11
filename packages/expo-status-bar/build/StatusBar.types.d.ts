@@ -1,6 +1,6 @@
-export declare type StatusBarStyle = 'auto' | 'inverted' | 'light' | 'dark';
-export declare type StatusBarAnimation = 'none' | 'fade' | 'slide';
-export declare type StatusBarProps = {
+export type StatusBarStyle = 'auto' | 'inverted' | 'light' | 'dark';
+export type StatusBarAnimation = 'none' | 'fade' | 'slide';
+export type StatusBarProps = {
     /**
      * Sets the color of the status bar text. Default value is `"auto"` which
      * picks the appropriate value according to the active color scheme, eg:

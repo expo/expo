@@ -6,6 +6,7 @@
  */
 
 #import "RNDateTimePickerManager.h"
+#import "RNDateTimePickerShadowView.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
@@ -53,13 +54,33 @@ RCT_ENUM_CONVERTER(UIUserInterfaceStyle, (@{
 
 @end
 
-@implementation RNDateTimePickerManager
+@implementation RNDateTimePickerManager {
+  RNDateTimePicker* _picker;
+}
 
 RCT_EXPORT_MODULE()
+
+- (instancetype)init {
+  if (self = [super init]) {
+    _picker = [RNDateTimePicker new];
+  }
+  return self;
+}
+
++ (BOOL)requiresMainQueueSetup {
+  return true;
+}
 
 - (UIView *)view
 {
   return [RNDateTimePicker new];
+}
+
+- (RCTShadowView *)shadowView
+{
+  RNDateTimePickerShadowView* shadowView =  [RNDateTimePickerShadowView new];
+  shadowView.picker = _picker;
+  return shadowView;
 }
 
 + (NSString*) datepickerStyleToString: (UIDatePickerStyle) style  API_AVAILABLE(ios(13.4)){
@@ -79,28 +100,10 @@ RCT_EXPORT_MODULE()
     }
 }
 
-RCT_EXPORT_METHOD(getDefaultDisplayValue:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (@available(iOS 13.4, *)) {
-        UIDatePicker* view = [RNDateTimePicker new];
-        
-        view.preferredDatePickerStyle = UIDatePickerStyleAutomatic;
-        UIDatePickerMode renderedMode = [RCTConvert UIDatePickerMode:options[@"mode"]];
-        view.datePickerMode = renderedMode;
-        // NOTE afaict we do not need to measure the actual dimensions here, but if we do, just look at the original PR
-        
-        UIDatePickerStyle determinedDisplayValue = view.datePickerStyle;
-
-        resolve(@{
-                 @"determinedDisplayValue": [RNDateTimePickerManager datepickerStyleToString:determinedDisplayValue],
-                });
-      } else {
-        // never happens; the condition is just to avoid compiler warnings
-        reject(@"UNEXPECTED_CALL", @"unexpected getDefaultDisplayValue() call", nil);
-      }
-    });
-}
+RCT_EXPORT_SHADOW_PROPERTY(date, NSDate)
+RCT_EXPORT_SHADOW_PROPERTY(mode, UIDatePickerMode)
+RCT_EXPORT_SHADOW_PROPERTY(locale, NSLocale)
+RCT_EXPORT_SHADOW_PROPERTY(displayIOS, RNCUIDatePickerStyle)
 
 RCT_EXPORT_VIEW_PROPERTY(date, NSDate)
 RCT_EXPORT_VIEW_PROPERTY(locale, NSLocale)
@@ -109,6 +112,7 @@ RCT_EXPORT_VIEW_PROPERTY(maximumDate, NSDate)
 RCT_EXPORT_VIEW_PROPERTY(minuteInterval, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onPickerDismiss, RCTBubblingEventBlock)
 
 RCT_REMAP_VIEW_PROPERTY(mode, datePickerMode, UIDatePickerMode)
 RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)

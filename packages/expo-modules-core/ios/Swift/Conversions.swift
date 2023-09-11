@@ -148,6 +148,38 @@ internal final class Conversions {
     return String(number) + (number == 1 ? singular : (plural ?? singular + "s"))
   }
 
+  /**
+   Converts the function result to the type compatible with JavaScript.
+   */
+  static func convertFunctionResult<ValueType>(
+    _ value: ValueType?,
+    appContext: AppContext? = nil,
+    dynamicType: AnyDynamicType? = nil
+  ) -> Any {
+    if let value = value as? Record {
+      return value.toDictionary()
+    }
+    if let value = value as? [Record] {
+      return value.map { $0.toDictionary() }
+    }
+    if let appContext {
+      if let value = value as? JavaScriptObjectBuilder {
+        return try? value.build(appContext: appContext)
+      }
+
+      // If the returned value is a native shared object, create its JS representation and add the pair to the registry of shared objects.
+      if let value = value as? SharedObject, let dynamicType = dynamicType as? DynamicSharedObjectType {
+        guard let object = try? appContext.newObject(nativeClassId: dynamicType.typeIdentifier) else {
+          log.warn("Unable to create a JS object for \(dynamicType.description)")
+          return Optional<Any>.none
+        }
+        SharedObjectRegistry.add(native: value, javaScript: object)
+        return object
+      }
+    }
+    return value as Any
+  }
+
   // MARK: - Exceptions
 
   /**
@@ -163,7 +195,9 @@ internal final class Conversions {
    An exception that can be thrown by convertible types, when given value cannot be converted.
    */
   internal class ConvertingException<TargetType>: GenericException<Any?> {
-    var code: String = "ERR_CONVERTING_FAILED"
+    override var code: String {
+      "ERR_CONVERTING_FAILED"
+    }
     override var reason: String {
       "Cannot convert '\(String(describing: param))' to \(TargetType.self)"
     }
@@ -173,7 +207,9 @@ internal final class Conversions {
    An exception that is thrown when given value cannot be cast.
    */
   internal class CastingException<TargetType>: GenericException<Any> {
-    var code: String = "ERR_CASTING_FAILED"
+    override var code: String {
+      "ERR_CASTING_FAILED"
+    }
     override var reason: String {
       "Cannot cast '\(String(describing: param))' to \(TargetType.self)"
     }
@@ -184,7 +220,9 @@ internal final class Conversions {
    when the values in given dictionary cannot be cast to specific type.
    */
   internal class CastingValuesException<ValueType>: GenericException<[String]> {
-    var code: String = "ERR_CASTING_VALUES_FAILED"
+    override var code: String {
+      "ERR_CASTING_VALUES_FAILED"
+    }
     override var reason: String {
       "Cannot cast keys \(formatKeys(param)) to \(ValueType.self)"
     }

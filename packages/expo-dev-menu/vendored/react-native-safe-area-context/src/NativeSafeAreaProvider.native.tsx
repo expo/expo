@@ -1,6 +1,4 @@
-import { requireNativeComponent } from 'react-native';
+import { requireNativeViewManager } from 'expo-modules-core';
 import { NativeSafeAreaProviderProps } from './SafeArea.types';
 
-export default requireNativeComponent<NativeSafeAreaProviderProps>(
-  'RNCSafeAreaProvider',
-);
+export default requireNativeViewManager<NativeSafeAreaProviderProps>('RNCSafeAreaProvider')

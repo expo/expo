@@ -8,7 +8,7 @@
 #ifndef GrDawnTypes_DEFINED
 #define GrDawnTypes_DEFINED
 
-#include "include/gpu/GrTypes.h"
+#include "include/gpu/GpuTypes.h"
 
 #ifdef Always
 #undef Always
@@ -22,7 +22,7 @@ static constexpr int Success = 0;
 #undef None
 static constexpr int None = 0L;
 #endif
-#include "webgpu/webgpu_cpp.h"
+#include "webgpu/webgpu_cpp.h" // IWYU pragma: export
 
 struct GrDawnTextureInfo {
     wgpu::Texture       fTexture;
@@ -87,7 +87,7 @@ struct GrDawnRenderTargetInfo {
 struct GrDawnSurfaceInfo {
     uint32_t fSampleCount = 1;
     uint32_t fLevelCount = 0;
-    GrProtected fProtected = GrProtected::kNo;
+    skgpu::Protected fProtected = skgpu::Protected::kNo;
 
     wgpu::TextureFormat fFormat;
 };

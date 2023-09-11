@@ -1,4 +1,4 @@
-export declare type SharingOptions = {
+export type SharingOptions = {
     /**
      * Sets `mimeType` for `Intent`.
      * @platform android

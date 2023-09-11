@@ -17,7 +17,7 @@ internal class JSIPropertiesTest {
         .set { _: String -> }
     }
   ) {
-    val keys = evaluateScript("Object.keys(ExpoModules.TestModule)").getArray()
+    val keys = evaluateScript("Object.keys(expo.modules.TestModule)").getArray()
 
     Truth.assertThat(keys).hasLength(2)
 
@@ -36,8 +36,8 @@ internal class JSIPropertiesTest {
       Property("p2").get { return@get 321 }
     }
   ) {
-    val p1 = evaluateScript("ExpoModules.TestModule.p1").getDouble().toInt()
-    val p2 = evaluateScript("ExpoModules.TestModule.p2").getDouble().toInt()
+    val p1 = evaluateScript("expo.modules.TestModule.p1").getInt()
+    val p2 = evaluateScript("expo.modules.TestModule.p2").getInt()
 
     Truth.assertThat(p1).isEqualTo(123)
     Truth.assertThat(p2).isEqualTo(321)
@@ -54,10 +54,10 @@ internal class JSIPropertiesTest {
         .set { newValue: Int -> innerValue = newValue }
     }
   ) {
-    evaluateScript("ExpoModules.TestModule.p = 987")
-    val p1 = evaluateScript("ExpoModules.TestModule.p").getDouble().toInt()
-    evaluateScript("ExpoModules.TestModule.p = 123")
-    val p2 = evaluateScript("ExpoModules.TestModule.p").getDouble().toInt()
+    evaluateScript("expo.modules.TestModule.p = 987")
+    val p1 = evaluateScript("expo.modules.TestModule.p").getInt()
+    evaluateScript("expo.modules.TestModule.p = 123")
+    val p2 = evaluateScript("expo.modules.TestModule.p").getInt()
 
     Truth.assertThat(p1).isEqualTo(987)
     Truth.assertThat(p2).isEqualTo(123)
@@ -70,8 +70,8 @@ internal class JSIPropertiesTest {
       Property("p")
     }
   ) {
-    val p = evaluateScript("ExpoModules.TestModule.p")
-    val undefined = evaluateScript("ExpoModules.TestModule.undefined")
+    val p = evaluateScript("expo.modules.TestModule.p")
+    val undefined = evaluateScript("expo.modules.TestModule.undefined")
 
     Truth.assertThat(p.isUndefined()).isTrue()
     Truth.assertThat(undefined.isUndefined()).isTrue()

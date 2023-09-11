@@ -10,7 +10,6 @@ RCT_EXPORT_MODULE(RNCViewPager)
 RCT_EXPORT_VIEW_PROPERTY(initialPage, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(pageMargin, NSInteger)
 
-RCT_EXPORT_VIEW_PROPERTY(transitionStyle, UIPageViewControllerTransitionStyle)
 RCT_EXPORT_VIEW_PROPERTY(orientation, UIPageViewControllerNavigationOrientation)
 RCT_EXPORT_VIEW_PROPERTY(onPageSelected, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPageScroll, RCTDirectEventBlock)
@@ -79,9 +78,6 @@ RCT_CUSTOM_VIEW_PROPERTY(keyboardDismissMode, NSString, ReactNativePageView) {
     [view shouldDismissKeyboard:[RCTConvert NSString:json]];
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(showPageIndicator, BOOL, ReactNativePageView) {
-    [view shouldShowPageIndicator:[RCTConvert BOOL:json]];
-}
 
 - (UIView *)view {
     return [[ReactNativePageView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];

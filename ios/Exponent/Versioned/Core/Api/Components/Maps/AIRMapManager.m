@@ -28,8 +28,6 @@
 #import "AIRMapSnapshot.h"
 #import "RCTConvert+AirMap.h"
 #import "AIRMapOverlay.h"
-#import "AIRWeakTimerReference.h"
-#import "AIRWeakMapReference.h"
 #import <MapKit/MapKit.h>
 
 static NSString *const RCTMapViewKey = @"MapView";
@@ -278,31 +276,6 @@ RCT_EXPORT_METHOD(animateCamera:(nonnull NSNumber *)reactTag
     }];
 }
 
-
-RCT_EXPORT_METHOD(animateToNavigation:(nonnull NSNumber *)reactTag
-        withRegion:(MKCoordinateRegion)region
-        withBearing:(CGFloat)bearing
-        withAngle:(double)angle
-        withDuration:(CGFloat)duration)
-{
-    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        id view = viewRegistry[reactTag];
-        if (![view isKindOfClass:[AIRMap class]]) {
-            RCTLogError(@"Invalid view returned from registry, expecting AIRMap, got: %@", view);
-        } else {
-            AIRMap *mapView = (AIRMap *)view;
-            MKMapCamera *mapCamera = [[mapView camera] copy];
-             [mapCamera setPitch:angle];
-             [mapCamera setHeading:bearing];
-
-            [AIRMap animateWithDuration:duration/1000 animations:^{
-                [(AIRMap *)view setRegion:region animated:YES];
-                [mapView setCamera:mapCamera animated:YES];
-            }];
-        }
-    }];
-}
-
 RCT_EXPORT_METHOD(animateToRegion:(nonnull NSNumber *)reactTag
         withRegion:(MKCoordinateRegion)region
         withDuration:(CGFloat)duration)
@@ -317,68 +290,6 @@ RCT_EXPORT_METHOD(animateToRegion:(nonnull NSNumber *)reactTag
             }];
         }
     }];
-}
-
-RCT_EXPORT_METHOD(animateToCoordinate:(nonnull NSNumber *)reactTag
-        withRegion:(CLLocationCoordinate2D)latlng
-        withDuration:(CGFloat)duration)
-{
-    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        id view = viewRegistry[reactTag];
-        if (![view isKindOfClass:[AIRMap class]]) {
-            RCTLogError(@"Invalid view returned from registry, expecting AIRMap, got: %@", view);
-        } else {
-            AIRMap *mapView = (AIRMap *)view;
-            MKCoordinateRegion region;
-            region.span = mapView.region.span;
-            region.center = latlng;
-            [AIRMap animateWithDuration:duration/1000 animations:^{
-                [mapView setRegion:region animated:YES];
-            }];
-        }
-    }];
-}
-
-RCT_EXPORT_METHOD(animateToViewingAngle:(nonnull NSNumber *)reactTag
-                  withAngle:(double)angle
-                  withDuration:(CGFloat)duration)
-{
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-      id view = viewRegistry[reactTag];
-      if (![view isKindOfClass:[AIRMap class]]) {
-          RCTLogError(@"Invalid view returned from registry, expecting AIRMap, got: %@", view);
-      } else {
-          AIRMap *mapView = (AIRMap *)view;
-
-          MKMapCamera *mapCamera = [[mapView camera] copy];
-          [mapCamera setPitch:angle];
-
-          [AIRMap animateWithDuration:duration/1000 animations:^{
-              [mapView setCamera:mapCamera animated:YES];
-          }];
-      }
-  }];
-}
-
-RCT_EXPORT_METHOD(animateToBearing:(nonnull NSNumber *)reactTag
-                  withBearing:(CGFloat)bearing
-                  withDuration:(CGFloat)duration)
-{
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-      id view = viewRegistry[reactTag];
-      if (![view isKindOfClass:[AIRMap class]]) {
-          RCTLogError(@"Invalid view returned from registry, expecting AIRMap, got: %@", view);
-      } else {
-          AIRMap *mapView = (AIRMap *)view;
-
-          MKMapCamera *mapCamera = [[mapView camera] copy];
-          [mapCamera setHeading:bearing];
-
-          [AIRMap animateWithDuration:duration/1000 animations:^{
-              [mapView setCamera:mapCamera animated:YES];
-          }];
-      }
-  }];
 }
 
 RCT_EXPORT_METHOD(fitToElements:(nonnull NSNumber *)reactTag
@@ -677,24 +588,6 @@ RCT_EXPORT_METHOD(getAddressFromCoordinates:(nonnull NSNumber *)reactTag
                       else if ([result isEqualToString:@"base64"]) {
                           callback(@[[NSNull null], [data base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn]]);
                       }
-                      else if ([result isEqualToString:@"legacy"]) {
-
-                          // In the initial (iOS only) implementation of takeSnapshot,
-                          // both the uri and the base64 encoded string were returned.
-                          // Returning both is rarely useful and in fact causes a
-                          // performance penalty when only the file URI is desired.
-                          // In that case the base64 encoded string was always marshalled
-                          // over the JS-bridge (which is quite slow).
-                          // A new more flexible API was created to cover this.
-                          // This code should be removed in a future release when the
-                          // old API is fully deprecated.
-                          [data writeToFile:filePath atomically:YES];
-                          NSDictionary *snapshotData = @{
-                                                         @"uri": filePath,
-                                                         @"data": [data base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn]
-                                                         };
-                          callback(@[[NSNull null], snapshotData]);
-                      }
                   }
                   UIGraphicsEndImageContext();
               }];
@@ -778,12 +671,11 @@ RCT_EXPORT_METHOD(getAddressFromCoordinates:(nonnull NSNumber *)reactTag
     }
 
     if (nearestDistance <= maxMeters) {
-        AIRMapCoordinate *firstCoord = nearestPolyline.coordinates.firstObject;
         id event = @{
                    @"action": @"polyline-press",
                    @"coordinate": @{
-                       @"latitude": @(firstCoord.coordinate.latitude),
-                       @"longitude": @(firstCoord.coordinate.longitude)
+                       @"latitude": @(tapCoordinate.latitude),
+                       @"longitude": @(tapCoordinate.longitude)
                    }
                    };
         nearestPolyline.onPress(event);
@@ -1036,42 +928,19 @@ static int kDragCenterContext;
     }
     
     if (mapView.followUserLocation) {
-        MKCoordinateRegion region;
-        region.span.latitudeDelta = AIRMapDefaultSpan;
-        region.span.longitudeDelta = AIRMapDefaultSpan;
-        region.center = location.coordinate;
-        [mapView setRegion:region animated:YES];
-
-        // Move to user location only for the first time it loads up.
-        // mapView.followUserLocation = NO;
+        [mapView setCenterCoordinate:location.coordinate animated:YES];
     }
     
 }
 
-- (void)mapView:(AIRMap *)mapView regionWillChangeAnimated:(__unused BOOL)animated
+- (void)mapViewDidChangeVisibleRegion:(AIRMap *)mapView
 {
-    // Don't send region did change events until map has
-    // started rendering, as these won't represent the final location
-    if(mapView.hasStartedRendering){
-        [self _regionChanged:mapView];
-    }
-
-    AIRWeakTimerReference *weakTarget = [[AIRWeakTimerReference alloc] initWithTarget:self andSelector:@selector(_onTick:)];
-    
-    mapView.regionChangeObserveTimer = [NSTimer timerWithTimeInterval:AIRMapRegionChangeObserveInterval
-                                                               target:weakTarget
-                                                             selector:@selector(timerDidFire:)
-                                                             userInfo:@{ RCTMapViewKey: [[AIRWeakMapReference alloc] initWithMapView: mapView] }
-                                                              repeats:YES];
-
-    [[NSRunLoop mainRunLoop] addTimer:mapView.regionChangeObserveTimer forMode:NSRunLoopCommonModes];
+    [self _regionChanged:mapView];
 }
 
 - (void)mapView:(AIRMap *)mapView regionDidChangeAnimated:(__unused BOOL)animated
 {
     CGFloat zoomLevel = [self zoomLevel:mapView];
-    [mapView.regionChangeObserveTimer invalidate];
-    mapView.regionChangeObserveTimer = nil;
 
     // Don't send region did change events until map has
     // started rendering, as these won't represent the final location
@@ -1103,7 +972,6 @@ static int kDragCenterContext;
       mapView.hasStartedRendering = YES;
     }
     [mapView beginLoading];
-    [self _emitRegionChangeEvent:mapView continuous:NO];
 }
 
 - (void)mapViewDidFinishRenderingMap:(AIRMap *)mapView fullyRendered:(BOOL)fullyRendered
@@ -1112,12 +980,6 @@ static int kDragCenterContext;
 }
 
 #pragma mark Private
-
-- (void)_onTick:(NSTimer *)timer
-{
-    AIRWeakMapReference *weakRef = timer.userInfo[RCTMapViewKey];
-    [self _regionChanged:weakRef.mapView];
-}
 
 - (void)_regionChanged:(AIRMap *)mapView
 {

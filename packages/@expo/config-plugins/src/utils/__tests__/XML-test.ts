@@ -67,7 +67,6 @@ describe('read and write', () => {
   it(`can write the escaped name and then read it back in unescaped format`, async () => {
     const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
     const stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
-    console.log(stringsJSON);
     await writeXMLAsync({ path: stringsPath, xml: stringsJSON });
     expect(await fs.promises.readFile(stringsPath, 'utf-8')).toBe(example);
   });

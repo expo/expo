@@ -1,47 +1,17 @@
+import chalk from 'chalk';
+
+import * as Log from '../../log';
 import { isModuleSymlinked } from '../../utils/isModuleSymlinked';
-import {
-  hashForDependencyMap,
-  isPkgMainExpoAppEntry,
-  shouldDeleteMainField,
-  updatePkgDependencies,
-} from '../updatePackageJson';
+import { hashForDependencyMap, updatePkgDependencies } from '../updatePackageJson';
 
 jest.mock('../../utils/isModuleSymlinked');
+jest.mock('../../log');
 
 describe(hashForDependencyMap, () => {
   it(`dependencies in any order hash to the same value`, () => {
     expect(hashForDependencyMap({ a: '1.0.0', b: 2, c: '~3.0' })).toBe(
       hashForDependencyMap({ c: '~3.0', b: 2, a: '1.0.0' })
     );
-  });
-});
-
-describe(shouldDeleteMainField, () => {
-  it(`should delete non index field`, () => {
-    expect(shouldDeleteMainField(null)).toBe(false);
-    expect(shouldDeleteMainField()).toBe(false);
-    expect(shouldDeleteMainField('expo/AppEntry')).toBe(true);
-    // non-expo fields
-    expect(shouldDeleteMainField('.src/other.js')).toBe(false);
-    expect(shouldDeleteMainField('index.js')).toBe(false);
-    expect(shouldDeleteMainField('index.ios.js')).toBe(false);
-    expect(shouldDeleteMainField('index.ts')).toBe(false);
-    expect(shouldDeleteMainField('./index')).toBe(false);
-  });
-});
-
-describe(isPkgMainExpoAppEntry, () => {
-  it(`matches expo app entry`, () => {
-    expect(isPkgMainExpoAppEntry('./node_modules/expo/AppEntry.js')).toBe(true);
-    expect(isPkgMainExpoAppEntry('./node_modules/expo/AppEntry')).toBe(true);
-    expect(isPkgMainExpoAppEntry('expo/AppEntry.js')).toBe(true);
-    expect(isPkgMainExpoAppEntry('expo/AppEntry')).toBe(true);
-  });
-  it(`doesn't match expo app entry`, () => {
-    expect(isPkgMainExpoAppEntry()).toBe(false);
-    expect(isPkgMainExpoAppEntry(null)).toBe(false);
-    expect(isPkgMainExpoAppEntry('./expo/AppEntry')).toBe(false);
-    expect(isPkgMainExpoAppEntry('./expo/AppEntry.js')).toBe(false);
   });
 });
 
@@ -78,6 +48,7 @@ describe(updatePkgDependencies, () => {
     });
     expect(pkg.dependencies).toStrictEqual({
       ...requiredPackages,
+      'react-native': 'version-from-project', // add-only package, do not overwrite
       'optional-package': 'version-from-project-1',
       'optional-package-2': 'version-from-template-2',
       'optional-package-3': 'version-from-project-3',
@@ -139,9 +110,44 @@ describe(updatePkgDependencies, () => {
     });
     expect(pkg.dependencies).toStrictEqual({
       ...sdk44RequiredPackages,
+      'react-native': 'version-from-project', // add-only package, do not overwrite
       'optional-package': 'version-from-project-1',
       'optional-package-2': 'version-from-template-2',
       'optional-package-3': 'version-from-project-3',
     });
+  });
+  test('does not overwrite add-only packages when defined', () => {
+    const pkg = {
+      dependencies: {
+        expo: 'version-from-project',
+        'react-native': 'version-from-project',
+      },
+      devDependencies: {},
+    };
+    updatePkgDependencies('fake path', {
+      templatePkg: {
+        dependencies: {
+          ...requiredPackages,
+          expo: 'version-from-template',
+        },
+        devDependencies: {},
+      },
+      pkg,
+    });
+    expect(pkg.dependencies).toStrictEqual({
+      ...requiredPackages,
+      'react-native': 'version-from-project', // add-only package, do not overwrite
+      expo: 'version-from-project',
+    });
+    expect(Log.warn).toBeCalledWith(
+      expect.stringContaining(
+        `instead of recommended ${[
+          `expo@version-from-template`,
+          `react-native@version-from-template-required-1`,
+        ]
+          .map((dep) => chalk.bold(dep))
+          .join(', ')}`
+      )
+    );
   });
 });

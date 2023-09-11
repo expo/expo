@@ -1,3 +1,5 @@
+#pragma once
+
 #include <condition_variable>
 #include <cstdint>
 #include <cstdio>
@@ -15,7 +17,7 @@ class RNSkDispatchQueue {
   typedef std::function<void(void)> fp_t;
 
 public:
-  RNSkDispatchQueue(std::string name, size_t thread_cnt = 1);
+  explicit RNSkDispatchQueue(std::string name, size_t thread_cnt = 1);
 
   ~RNSkDispatchQueue();
 

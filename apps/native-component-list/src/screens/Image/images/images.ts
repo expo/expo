@@ -12,8 +12,8 @@ const images = {
     uri: `https://source.unsplash.com/random?${Math.floor(Math.random() * 1000)}`,
   },
   uri_png: { uri: 'https://docs.expo.dev/static/images/header-logo.png' },
-  uri_jpg: { uri: 'https://docs.expo.dev/static/images/flappy_00.jpg' },
-  uri_gif: { uri: 'https://docs.expo.dev/static/images/flappy_03.gif' },
+  uri_jpg: { uri: 'https://docs.expo.dev/static/images/notification-sound-ios.jpg' },
+  uri_gif: { uri: 'https://docs.expo.dev/static/images/blur-opacity-example.gif' },
   uri_ico: { uri: 'https://docs.expo.dev/static/images/favicon.ico' },
   uri_youtube_svg: {
     uri: 'https://www.youtube.com/about/static/svgs/icons/brand-resources/YouTube-logo-full_color_light.svg?cache=72a5d9c',

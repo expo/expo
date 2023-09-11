@@ -1,6 +1,20 @@
 import NativeModulesProxy from './NativeModulesProxy';
 
+type ExpoObject = {
+  modules:
+    | undefined
+    | {
+        [key: string]: any;
+      };
+};
+
 declare global {
+  // eslint-disable-next-line no-var
+  var expo: ExpoObject | undefined;
+
+  /**
+   * @deprecated `global.ExpoModules` is deprecated, use `global.expo.modules` instead.
+   */
   // eslint-disable-next-line no-var
   var ExpoModules:
     | undefined
@@ -19,11 +33,28 @@ declare global {
  * @throws Error when there is no native module with given name.
  */
 export function requireNativeModule<ModuleType = any>(moduleName: string): ModuleType {
-  const nativeModule: ModuleType =
-    global.ExpoModules?.[moduleName] ?? NativeModulesProxy[moduleName];
+  const nativeModule = requireOptionalNativeModule<ModuleType>(moduleName);
 
   if (!nativeModule) {
     throw new Error(`Cannot find native module '${moduleName}'`);
   }
   return nativeModule;
+}
+
+/**
+ * Imports the native module registered with the given name. The same as `requireNativeModule`,
+ * but returns `null` when the module cannot be found instead of throwing an error.
+ *
+ * @param moduleName Name of the requested native module.
+ * @returns Object representing the native module or `null` when it cannot be found.
+ */
+export function requireOptionalNativeModule<ModuleType = any>(
+  moduleName: string
+): ModuleType | null {
+  return (
+    globalThis.expo?.modules?.[moduleName] ??
+    globalThis.ExpoModules?.[moduleName] ??
+    NativeModulesProxy[moduleName] ??
+    null
+  );
 }

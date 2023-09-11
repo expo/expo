@@ -12,6 +12,7 @@
 #include "include/core/SkClipOp.h"
 #include "include/core/SkColor.h"
 #include "include/core/SkFontTypes.h"
+#include "include/core/SkImageFilter.h"
 #include "include/core/SkImageInfo.h"
 #include "include/core/SkM44.h"
 #include "include/core/SkMatrix.h"
@@ -26,48 +27,61 @@
 #include "include/core/SkString.h"
 #include "include/core/SkSurfaceProps.h"
 #include "include/core/SkTypes.h"
-#include "include/private/SkDeque.h"
-#include "include/private/SkMacros.h"
+#include "include/private/base/SkCPUTypes.h"
+#include "include/private/base/SkDeque.h"
 
+#include <cstdint>
 #include <cstring>
 #include <memory>
 #include <optional>
-#include <vector>
 
 #ifndef SK_SUPPORT_LEGACY_GETTOTALMATRIX
 #define SK_SUPPORT_LEGACY_GETTOTALMATRIX
 #endif
 
+namespace sktext {
+class GlyphRunBuilder;
+class GlyphRunList;
+}
+
 class AutoLayerForImageFilter;
-class GrBackendRenderTarget;
 class GrRecordingContext;
-class GrSlug;
+
 class SkBaseDevice;
 class SkBitmap;
+class SkBlender;
 class SkData;
 class SkDrawable;
-struct SkDrawShadowRec;
 class SkFont;
-class SkGlyphRunBuilder;
-class SkGlyphRunList;
 class SkImage;
-class SkImageFilter;
+class SkMesh;
 class SkPaintFilterCanvas;
 class SkPath;
 class SkPicture;
 class SkPixmap;
-class SkRegion;
 class SkRRect;
-struct SkRSXform;
-class SkMesh;
+class SkRegion;
+class SkShader;
 class SkSpecialImage;
 class SkSurface;
 class SkSurface_Base;
 class SkTextBlob;
 class SkVertices;
+struct SkDrawShadowRec;
+struct SkRSXform;
 
 namespace skgpu::graphite { class Recorder; }
+namespace sktext::gpu { class Slug; }
 namespace SkRecords { class Draw; }
+
+#if defined(SK_BUILD_FOR_ANDROID_FRAMEWORK) && defined(SK_GANESH)
+class GrBackendRenderTarget;
+#endif
+
+// TODO:
+// This is not ideal but Chrome is depending on a forward decl of GrSlug here.
+// It should be removed once Chrome has migrated to sktext::gpu::Slug.
+using GrSlug = sktext::gpu::Slug;
 
 /** \class SkCanvas
     SkCanvas provides an interface for drawing, and how the drawing is clipped and transformed.
@@ -255,9 +269,26 @@ public:
         @param props  storage for writable SkSurfaceProps
         @return       true if SkSurfaceProps was copied
 
+        DEPRECATED: Replace usage with getBaseProps() or getTopProps()
+
         example: https://fiddle.skia.org/c/@Canvas_getProps
     */
     bool getProps(SkSurfaceProps* props) const;
+
+    /** Returns the SkSurfaceProps associated with the canvas (i.e., at the base of the layer
+        stack).
+
+        @return  base SkSurfaceProps
+    */
+    SkSurfaceProps getBaseProps() const;
+
+    /** Returns the SkSurfaceProps associated with the canvas that are currently active (i.e., at
+        the top of the layer stack). This can differ from getBaseProps depending on the flags
+        passed to saveLayer (see SaveLayerFlagsSet).
+
+        @return  SkSurfaceProps active in the current/top layer
+    */
+    SkSurfaceProps getTopProps() const;
 
     /** Triggers the immediate execution of all pending draw operations.
         If SkCanvas is associated with GPU surface, resolves all pending GPU operations.
@@ -566,14 +597,14 @@ public:
     */
     int save();
 
-    /** Saves SkMatrix and clip, and allocates a SkBitmap for subsequent drawing.
-        Calling restore() discards changes to SkMatrix and clip, and draws the SkBitmap.
+    /** Saves SkMatrix and clip, and allocates a SkSurface for subsequent drawing.
+        Calling restore() discards changes to SkMatrix and clip, and draws the SkSurface.
 
         SkMatrix may be changed by translate(), scale(), rotate(), skew(), concat(),
         setMatrix(), and resetMatrix(). Clip may be changed by clipRect(), clipRRect(),
         clipPath(), clipRegion().
 
-        SkRect bounds suggests but does not define the SkBitmap size. To clip drawing to
+        SkRect bounds suggests but does not define the SkSurface size. To clip drawing to
         a specific rectangle, use clipRect().
 
         Optional SkPaint paint applies alpha, SkColorFilter, SkImageFilter, and
@@ -590,8 +621,8 @@ public:
     */
     int saveLayer(const SkRect* bounds, const SkPaint* paint);
 
-    /** Saves SkMatrix and clip, and allocates a SkBitmap for subsequent drawing.
-        Calling restore() discards changes to SkMatrix and clip, and draws the SkBitmap.
+    /** Saves SkMatrix and clip, and allocates a SkSurface for subsequent drawing.
+        Calling restore() discards changes to SkMatrix and clip, and draws the SkSurface.
 
         SkMatrix may be changed by translate(), scale(), rotate(), skew(), concat(),
         setMatrix(), and resetMatrix(). Clip may be changed by clipRect(), clipRRect(),
@@ -613,7 +644,7 @@ public:
         return this->saveLayer(&bounds, paint);
     }
 
-    /** Saves SkMatrix and clip, and allocates SkBitmap for subsequent drawing.
+    /** Saves SkMatrix and clip, and allocates SkSurface for subsequent drawing.
 
         Calling restore() discards changes to SkMatrix and clip,
         and blends layer with alpha opacity onto prior layer.
@@ -625,7 +656,7 @@ public:
         SkRect bounds suggests but does not define layer size. To clip drawing to
         a specific rectangle, use clipRect().
 
-        alpha of zero is fully transparent, 255 is fully opaque.
+        alpha of zero is fully transparent, 1.0f is fully opaque.
 
         Call restoreToCount() with returned value to restore this and subsequent saves.
 
@@ -635,7 +666,11 @@ public:
 
         example: https://fiddle.skia.org/c/@Canvas_saveLayerAlpha
     */
-    int saveLayerAlpha(const SkRect* bounds, U8CPU alpha);
+    int saveLayerAlphaf(const SkRect* bounds, float alpha);
+    // Helper that accepts an int between 0 and 255, and divides it by 255.0
+    int saveLayerAlpha(const SkRect* bounds, U8CPU alpha) {
+        return this->saveLayerAlphaf(bounds, alpha * (1.0f / 255));
+    }
 
     /** \enum SkCanvas::SaveLayerFlagsSet
         SaveLayerFlags provides options that may be used in any combination in SaveLayerRec,
@@ -721,10 +756,10 @@ public:
         SkScalar             fExperimentalBackdropScale = 1.f;
     };
 
-    /** Saves SkMatrix and clip, and allocates SkBitmap for subsequent drawing.
+    /** Saves SkMatrix and clip, and allocates SkSurface for subsequent drawing.
 
         Calling restore() discards changes to SkMatrix and clip,
-        and blends SkBitmap with alpha opacity onto the prior layer.
+        and blends SkSurface with alpha opacity onto the prior layer.
 
         SkMatrix may be changed by translate(), scale(), rotate(), skew(), concat(),
         setMatrix(), and resetMatrix(). Clip may be changed by clipRect(), clipRRect(),
@@ -1956,7 +1991,7 @@ public:
     */
     void drawVertices(const sk_sp<SkVertices>& vertices, SkBlendMode mode, const SkPaint& paint);
 
-#if defined(SK_ENABLE_EXPERIMENTAL_CUSTOM_MESH) && defined(SK_ENABLE_SKSL)
+#if defined(SK_ENABLE_SKSL)
     /**
         Experimental, under active development, and subject to change without notice.
 
@@ -2148,7 +2183,7 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////
 
-#if defined(SK_BUILD_FOR_ANDROID_FRAMEWORK) && SK_SUPPORT_GPU
+#if defined(SK_BUILD_FOR_ANDROID_FRAMEWORK) && defined(SK_GANESH)
     // These methods exist to support WebView in Android Framework.
     SkIRect topLayerBounds() const;
     GrBackendRenderTarget topLayerBackendRenderTarget() const;
@@ -2171,7 +2206,7 @@ protected:
     virtual bool onPeekPixels(SkPixmap* pixmap);
     virtual bool onAccessTopLayerPixels(SkPixmap* pixmap);
     virtual SkImageInfo onImageInfo() const;
-    virtual bool onGetProps(SkSurfaceProps* props) const;
+    virtual bool onGetProps(SkSurfaceProps* props, bool top) const;
     virtual void onFlush();
 
     // Subclass save/restore notifiers.
@@ -2198,11 +2233,6 @@ protected:
     virtual void didTranslate(SkScalar, SkScalar) {}
     virtual void didScale(SkScalar, SkScalar) {}
 
-#ifndef SK_ENABLE_EXPERIMENTAL_CUSTOM_MESH
-    // Define this in protected so we can still access internally for testing.
-    void drawMesh(const SkMesh& mesh, sk_sp<SkBlender> blender, const SkPaint& paint);
-#endif
-
     // NOTE: If you are adding a new onDraw virtual to SkCanvas, PLEASE add an override to
     // SkCanvasVirtualEnforcer (in SkCanvasVirtualEnforcer.h). This ensures that subclasses using
     // that mechanism  will be required to implement the new function.
@@ -2220,7 +2250,7 @@ protected:
     virtual void onDrawTextBlob(const SkTextBlob* blob, SkScalar x, SkScalar y,
                                 const SkPaint& paint);
 
-    virtual void onDrawGlyphRunList(const SkGlyphRunList& glyphRunList, const SkPaint& paint);
+    virtual void onDrawGlyphRunList(const sktext::GlyphRunList& glyphRunList, const SkPaint& paint);
 
     virtual void onDrawPatch(const SkPoint cubics[12], const SkColor colors[4],
                            const SkPoint texCoords[4], SkBlendMode mode, const SkPaint& paint);
@@ -2270,15 +2300,15 @@ protected:
 
     virtual void onDiscard();
 
-#if SK_SUPPORT_GPU
+#if (defined(SK_GANESH) || defined(SK_GRAPHITE))
     /** Experimental
      */
-    virtual sk_sp<GrSlug> onConvertGlyphRunListToSlug(
-            const SkGlyphRunList& glyphRunList, const SkPaint& paint);
+    virtual sk_sp<sktext::gpu::Slug> onConvertGlyphRunListToSlug(
+            const sktext::GlyphRunList& glyphRunList, const SkPaint& paint);
 
     /** Experimental
      */
-    virtual void onDrawSlug(const GrSlug* slug);
+    virtual void onDrawSlug(const sktext::gpu::Slug* slug);
 #endif
 
 private:
@@ -2332,6 +2362,13 @@ private:
 
     // Encapsulate state needed to restore from saveBehind()
     struct BackImage {
+        // Out of line to avoid including SkSpecialImage.h
+        BackImage(sk_sp<SkSpecialImage>, SkIPoint);
+        BackImage(const BackImage&);
+        BackImage(BackImage&&);
+        BackImage& operator=(const BackImage&);
+        ~BackImage();
+
         sk_sp<SkSpecialImage> fImage;
         SkIPoint              fLoc;
     };
@@ -2386,7 +2423,7 @@ private:
         fSurfaceBase = sb;
     }
     friend class SkSurface_Base;
-    friend class SkSurface_Gpu;
+    friend class SkSurface_Ganesh;
 
     SkIRect fClipRestrictionRect = SkIRect::MakeEmpty();
     int fClipRestrictionSaveCount = -1;
@@ -2413,24 +2450,25 @@ protected:
     SkCanvas(const SkIRect& bounds);
 private:
     SkCanvas(const SkBitmap&, std::unique_ptr<SkRasterHandleAllocator>,
-             SkRasterHandleAllocator::Handle);
+             SkRasterHandleAllocator::Handle, const SkSurfaceProps* props);
 
     SkCanvas(SkCanvas&&) = delete;
     SkCanvas(const SkCanvas&) = delete;
     SkCanvas& operator=(SkCanvas&&) = delete;
     SkCanvas& operator=(const SkCanvas&) = delete;
 
-#if SK_SUPPORT_GPU
-    friend class GrSlug;
+#if (defined(SK_GANESH) || defined(SK_GRAPHITE))
+    friend class sktext::gpu::Slug;
     /** Experimental
-     * Convert a SkTextBlob to a GrSlug using the current canvas state.
+     * Convert a SkTextBlob to a sktext::gpu::Slug using the current canvas state.
      */
-    sk_sp<GrSlug> convertBlobToSlug(const SkTextBlob& blob, SkPoint origin, const SkPaint& paint);
+    sk_sp<sktext::gpu::Slug> convertBlobToSlug(const SkTextBlob& blob, SkPoint origin,
+                                               const SkPaint& paint);
 
     /** Experimental
-     * Draw an GrSlug given the current canvas state.
+     * Draw an sktext::gpu::Slug given the current canvas state.
      */
-    void drawSlug(const GrSlug* slug);
+    void drawSlug(const sktext::gpu::Slug* slug);
 #endif
 
     /** Experimental
@@ -2534,7 +2572,7 @@ private:
     class AutoUpdateQRBounds;
     void validateClip() const;
 
-    std::unique_ptr<SkGlyphRunBuilder> fScratchGlyphRunBuilder;
+    std::unique_ptr<sktext::GlyphRunBuilder> fScratchGlyphRunBuilder;
 
     using INHERITED = SkRefCnt;
 };

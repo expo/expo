@@ -284,10 +284,16 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
     }
   };
 
-  _renderPoster = () =>
-    this.props.usePoster && this.state.showPoster ? (
-      <Image style={[_STYLES.poster, this.props.posterStyle]} source={this.props.posterSource!} />
+  _renderPoster = () => {
+    const PosterComponent = this.props.PosterComponent ?? Image;
+
+    return this.props.usePoster && this.state.showPoster ? (
+      <PosterComponent
+        style={[_STYLES.poster, this.props.posterStyle]}
+        source={this.props.posterSource!}
+      />
     ) : null;
+  };
 
   render() {
     const source = getNativeSourceFromSource(this.props.source) || undefined;
@@ -331,8 +337,8 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
         'posterStyle',
         ...Object.keys(status),
       ]),
-      style: StyleSheet.flatten([_STYLES.base, this.props.style]),
-      videoStyle: StyleSheet.flatten([_STYLES.video, this.props.videoStyle]),
+      style: [_STYLES.base, this.props.style],
+      videoStyle: [_STYLES.video, this.props.videoStyle],
       source,
       resizeMode: nativeResizeMode,
       status,

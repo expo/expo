@@ -1,9 +1,9 @@
 import { JSONObject, JSONValue } from '@expo/json-file';
 import xcode from 'xcode';
+import { ForwardedBaseModOptions } from './createBaseMod';
 import { ExportedConfig } from '../Plugin.types';
 import { Paths } from '../ios';
 import { InfoPlist } from '../ios/IosConfig.types';
-import { ForwardedBaseModOptions } from './createBaseMod';
 declare const defaultProviders: {
     dangerous: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     appDelegate: import("./createBaseMod").BaseModProviderMethods<Paths.AppDelegateProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
@@ -13,7 +13,7 @@ declare const defaultProviders: {
     entitlements: import("./createBaseMod").BaseModProviderMethods<JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     podfileProperties: import("./createBaseMod").BaseModProviderMethods<Record<string, JSONValue>, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
 };
-declare type IosDefaultProviders = typeof defaultProviders;
+type IosDefaultProviders = typeof defaultProviders;
 export declare function withIosBaseMods(config: ExportedConfig, { providers, ...props }?: ForwardedBaseModOptions & {
     providers?: Partial<IosDefaultProviders>;
 }): ExportedConfig;

@@ -9,7 +9,7 @@ declare const _default: {
         type: 'success' | 'failed';
         message: string;
     };
-    openAuthSessionAsync(url: string, redirectUrl?: string | undefined, openOptions?: WebBrowserOpenOptions | undefined): Promise<WebBrowserAuthSessionResult>;
+    openAuthSessionAsync(url: string, redirectUrl?: string, openOptions?: WebBrowserOpenOptions): Promise<WebBrowserAuthSessionResult>;
 };
 export default _default;
 export declare function featureObjectToString(features: Record<string, any>): string;

@@ -14,16 +14,12 @@ on:
       - tools/**
       - packages/**
       - yarn.lock
-      # Ignore Expo CLI for now...
-      - '!packages/@expo/cli/**'
   pull_request:
     paths:
       - .github/workflows/sdk.yml
       - tools/**
       - packages/**
       - yarn.lock
-      # Ignore Expo CLI for now...
-      - '!packages/@expo/cli/**'
   schedule:
     - cron: 0 14 * * *
 
@@ -33,7 +29,7 @@ concurrency:
 
 jobs:
   check-packages:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3

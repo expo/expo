@@ -4,7 +4,7 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXUserNotificationManager.h"
 #import "EXKernel.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXKernelUtil.h"
@@ -12,12 +12,20 @@
 #import "ExpoKit.h"
 #import "EXReactAppManager.h"
 #import "EXReactAppManager+Private.h"
-#import "EXVersionManager.h"
+#import "EXVersionManagerObjC.h"
 #import "EXVersions.h"
 #import "EXAppViewController.h"
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
+
+// When `use_frameworks!` is used, the generated Swift header is inside modules.
+// Otherwise, it's available only locally with double-quoted imports.
+#if __has_include(<EXManifests/EXManifests-Swift.h>)
+#import <EXManifests/EXManifests-Swift.h>
+#else
+#import "EXManifests-Swift.h"
+#endif
 
 #import <React/RCTBridge.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -47,6 +55,18 @@
 @property (nonatomic, copy) RCTSourceLoadBlock loadCallback;
 @property (nonatomic, strong) NSDictionary *initialProps;
 @property (nonatomic, strong) NSTimer *viewTestTimer;
+
+@end
+
+@protocol EXVersionManagerProtocol
+
++ (instancetype)alloc;
+
+- (instancetype)initWithParams:(nonnull NSDictionary *)params
+                      manifest:(nonnull EXManifestsManifest *)manifest
+                  fatalHandler:(void (^)(NSError *))fatalHandler
+                   logFunction:(RCTLogFunction)logFunction
+                  logThreshold:(NSInteger)threshold;
 
 @end
 
@@ -106,7 +126,7 @@
 
 
   if ([self isReadyToLoad]) {
-    Class versionManagerClass = [self versionedClassFromString:@"EXVersionManager"];
+    Class<EXVersionManagerProtocol> versionManagerClass = [self versionedClassFromString:@"EXVersionManager"];
     Class bridgeClass = [self versionedClassFromString:@"RCTBridge"];
     Class rootViewClass = [self versionedClassFromString:@"RCTRootView"];
 
@@ -115,6 +135,7 @@
                                                      fatalHandler:handleFatalReactError
                                                       logFunction:[self logFunction]
                                                      logThreshold:[self logLevel]];
+
     _reactBridge = [[bridgeClass alloc] initWithDelegate:self launchOptions:[self launchOptionsForBridge]];
 
     if (!_isHeadless) {
@@ -477,7 +498,7 @@
 - (void)reloadBridge
 {
   if ([self enablesDeveloperTools]) {
-    [self.reactBridge reload];
+    [(RCTBridge *) self.reactBridge reload];
   }
 }
 
@@ -509,6 +530,15 @@
   }
 }
 
+- (void)reconnectReactDevTools
+{
+  if ([self enablesDeveloperTools]) {
+    // Emit the `RCTDevMenuShown` for the app to reconnect react-devtools
+    // https://github.com/facebook/react-native/blob/22ba1e45c52edcc345552339c238c1f5ef6dfc65/Libraries/Core/setUpReactDevTools.js#L80
+    [self.reactBridge enqueueJSCall:@"RCTNativeAppEventEmitter.emit" args:@[@"RCTDevMenuShown"]];
+  }
+}
+
 - (void)toggleDevMenu
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {
@@ -520,7 +550,6 @@
 
 - (void)setupWebSocketControls
 {
-#if DEBUG || RCT_DEV
   if ([self enablesDeveloperTools]) {
     if ([_versionManager respondsToSelector:@selector(addWebSocketNotificationHandler:queue:forMethod:)]) {
       __weak __typeof(self) weakSelf = self;
@@ -544,6 +573,8 @@
               [weakSelf toggleElementInspector];
             } else if ([name isEqualToString:@"togglePerformanceMonitor"]) {
               [weakSelf togglePerformanceMonitor];
+            } else if ([name isEqualToString:@"reconnectReactDevTools"]) {
+              [weakSelf reconnectReactDevTools];
             }
           }
         }
@@ -568,7 +599,6 @@
                                              forMethod:@"devMenu"];
     }
   }
-#endif
 }
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItems

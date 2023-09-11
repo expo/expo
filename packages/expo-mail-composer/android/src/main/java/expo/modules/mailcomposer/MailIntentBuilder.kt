@@ -7,18 +7,12 @@ import android.net.Uri
 import android.text.Html
 import android.util.Log
 import androidx.core.content.FileProvider
-import expo.modules.core.arguments.ReadableArguments
 import java.io.File
 
 class MailIntentBuilder(
-  private val options: ReadableArguments
+  private val options: MailComposerOptions
 ) {
   private val mailIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
-
-  @Suppress("UNCHECKED_CAST")
-  private fun getStringArrayFrom(key: String): Array<String?> {
-    return (options.getList(key) as List<String?>).toTypedArray()
-  }
 
   private fun contentUriFromFile(file: File, application: Application): Uri = try {
     FileProvider.getUriForFile(
@@ -36,41 +30,55 @@ class MailIntentBuilder(
     mailIntent.component = ComponentName(pkg, cls)
   }
 
-  fun putExtraIfKeyExists(key: String, intentName: String) = apply {
-    if (options.containsKey(key)) {
-      if (options.getList(key) != null) {
-        mailIntent.putExtra(intentName, getStringArrayFrom(key))
-      } else {
-        mailIntent.putExtra(intentName, options.getString(key))
-      }
+  fun putRecipients(intentName: String) = apply {
+    options.recipients?.let {
+      mailIntent.putExtra(intentName, it.toTypedArray())
     }
   }
 
-  fun putExtraIfKeyExists(key: String, intentName: String, isBodyHtml: Boolean) = apply {
-    if (options.containsKey(key)) {
+  fun putCcRecipients(intentName: String) = apply {
+    options.ccRecipients?.let {
+      mailIntent.putExtra(intentName, it.toTypedArray())
+    }
+  }
+
+  fun putBccRecipients(intentName: String) = apply {
+    options.bccRecipients?.let {
+      mailIntent.putExtra(intentName, it.toTypedArray())
+    }
+  }
+
+  fun putSubject(intentName: String) = apply {
+    options.subject?.let {
+      mailIntent.putExtra(intentName, it)
+    }
+  }
+
+  fun putBody(intentName: String, isBodyHtml: Boolean) = apply {
+    options.body?.let {
       val body = if (isBodyHtml) {
-        Html.fromHtml(options.getString(key))
+        Html.fromHtml(options.body)
       } else {
-        options.getString(key)
+        options.body
       }
       mailIntent.putExtra(intentName, body)
     }
   }
 
-  fun putParcelableArrayListExtraIfKeyExists(
-    key: String,
+  fun putAttachments(
     intentName: String,
     application: Application,
   ) = apply {
     try {
-      if (options.containsKey(key)) {
-        val requestedAttachments = getStringArrayFrom(key)
-        val attachments = requestedAttachments.map { requestedAttachment ->
+      options.attachments?.let { requestedAttachments ->
+        val attachments = requestedAttachments.toTypedArray().map { requestedAttachment ->
           val path = Uri.parse(requestedAttachment).path
-          requireNotNull(path, { "Path to attachment can not be null" })
+          requireNotNull(path) { "Path to attachment can not be null" }
+
           val attachmentFile = File(path)
           contentUriFromFile(attachmentFile, application)
         }.toCollection(ArrayList())
+
         mailIntent.putParcelableArrayListExtra(intentName, attachments)
       }
     } catch (error: IllegalArgumentException) {

@@ -2,6 +2,7 @@ package expo.modules.imagemanipulator.actions
 
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import expo.modules.imagemanipulator.FlipType
 
 class FlipAction(private val flipType: FlipType) : Action {
   override fun run(bitmap: Bitmap): Bitmap {
@@ -18,15 +19,4 @@ class FlipAction(private val flipType: FlipType) : Action {
       }
       return m
     }
-
-  companion object {
-    fun fromObject(flipTypeString: String): FlipAction {
-      val flipType = when (flipTypeString) {
-        "horizontal" -> FlipType.HORIZONTAL
-        "vertical" -> FlipType.VERTICAL
-        else -> FlipType.HORIZONTAL
-      }
-      return FlipAction(flipType)
-    }
-  }
 }

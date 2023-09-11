@@ -5,12 +5,12 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import * as Log from '../log';
-import { hashForDependencyMap } from '../prebuild/updatePackageJson';
 import { ensureDirectoryAsync } from './dir';
 import { env } from './env';
 import { AbortCommandError } from './errors';
 import { logNewSection } from './ora';
+import * as Log from '../log';
+import { hashForDependencyMap } from '../prebuild/updatePackageJson';
 
 type PackageChecksums = {
   /** checksum for the `package.json` dependency object. */
@@ -77,7 +77,7 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
 
   const packageManager = new PackageManager.CocoaPodsPackageManager({
     cwd: path.join(projectRoot, 'ios'),
-    silent: !env.EXPO_DEBUG,
+    silent: !(env.EXPO_DEBUG || env.CI),
   });
 
   if (!(await packageManager.isCLIInstalledAsync())) {

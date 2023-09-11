@@ -1,20 +1,6 @@
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { ConfigPlugin } from '../Plugin.types';
-import { withAndroidManifest } from '../plugins/android-plugins';
-import {
-  ExpoConfigUpdates,
-  getExpoUpdatesPackageVersion,
-  getRuntimeVersionNullable,
-  getSDKVersion,
-  getUpdatesCheckOnLaunch,
-  getUpdatesCodeSigningCertificate,
-  getUpdatesCodeSigningMetadataStringified,
-  getUpdatesEnabled,
-  getUpdatesTimeout,
-  getUpdateUrl,
-} from '../utils/Updates';
 import {
   addMetaDataItemToMainApplication,
   AndroidManifest,
@@ -23,6 +9,24 @@ import {
   getMainApplicationOrThrow,
   removeMetaDataItemFromMainApplication,
 } from './Manifest';
+import { buildResourceItem, ResourceXML } from './Resources';
+import { removeStringItem, setStringItem } from './Strings';
+import { ConfigPlugin } from '../Plugin.types';
+import { createStringsXmlPlugin, withAndroidManifest } from '../plugins/android-plugins';
+import { withPlugins } from '../plugins/withPlugins';
+import {
+  ExpoConfigUpdates,
+  getExpoUpdatesPackageVersion,
+  getRuntimeVersionNullable,
+  getSDKVersion,
+  getUpdatesCheckOnLaunch,
+  getUpdatesCodeSigningCertificate,
+  getUpdatesCodeSigningMetadataStringified,
+  getUpdatesRequestHeadersStringified,
+  getUpdatesEnabled,
+  getUpdatesTimeout,
+  getUpdateUrl,
+} from '../utils/Updates';
 
 const CREATE_MANIFEST_ANDROID_PATH = 'expo-updates/scripts/create-manifest-android.gradle';
 
@@ -39,10 +43,14 @@ export enum Config {
   CODE_SIGNING_METADATA = 'expo.modules.updates.CODE_SIGNING_METADATA',
 }
 
-export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
-  config,
-  { expoUsername }
-) => {
+// when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
+// Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
+
+export const withUpdates: ConfigPlugin = (config) => {
+  return withPlugins(config, [withUpdatesManifest, withRuntimeVersionResource]);
+};
+
+const withUpdatesManifest: ConfigPlugin = (config) => {
   return withAndroidManifest(config, (config) => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = getExpoUpdatesPackageVersion(projectRoot);
@@ -50,18 +58,35 @@ export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
       projectRoot,
       config,
       config.modResults,
-      expoUsername,
       expoUpdatesPackageVersion
     );
     return config;
   });
 };
 
+const withRuntimeVersionResource = createStringsXmlPlugin(
+  applyRuntimeVersionFromConfig,
+  'withRuntimeVersionResource'
+);
+
+export function applyRuntimeVersionFromConfig(
+  config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>,
+  stringsJSON: ResourceXML
+): ResourceXML {
+  const runtimeVersion = getRuntimeVersionNullable(config, 'android');
+  if (runtimeVersion) {
+    return setStringItem(
+      [buildResourceItem({ name: 'expo_runtime_version', value: runtimeVersion })],
+      stringsJSON
+    );
+  }
+  return removeStringItem('expo_runtime_version', stringsJSON);
+}
+
 export function setUpdatesConfig(
   projectRoot: string,
   config: ExpoConfigUpdates,
   androidManifest: AndroidManifest,
-  username: string | null,
   expoUpdatesPackageVersion?: string | null
 ): AndroidManifest {
   const mainApplication = getMainApplicationOrThrow(androidManifest);
@@ -82,7 +107,7 @@ export function setUpdatesConfig(
     String(getUpdatesTimeout(config))
   );
 
-  const updateUrl = getUpdateUrl(config, username);
+  const updateUrl = getUpdateUrl(config);
   if (updateUrl) {
     addMetaDataItemToMainApplication(mainApplication, Config.UPDATE_URL, updateUrl);
   } else {
@@ -111,6 +136,20 @@ export function setUpdatesConfig(
     removeMetaDataItemFromMainApplication(mainApplication, Config.CODE_SIGNING_METADATA);
   }
 
+  const requestHeaders = getUpdatesRequestHeadersStringified(config);
+  if (requestHeaders) {
+    addMetaDataItemToMainApplication(
+      mainApplication,
+      Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY,
+      requestHeaders
+    );
+  } else {
+    removeMetaDataItemFromMainApplication(
+      mainApplication,
+      Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY
+    );
+  }
+
   return setVersionsConfig(config, androidManifest);
 }
 
@@ -129,7 +168,11 @@ export function setVersionsConfig(
   const sdkVersion = getSDKVersion(config);
   if (runtimeVersion) {
     removeMetaDataItemFromMainApplication(mainApplication, Config.SDK_VERSION);
-    addMetaDataItemToMainApplication(mainApplication, Config.RUNTIME_VERSION, runtimeVersion);
+    addMetaDataItemToMainApplication(
+      mainApplication,
+      Config.RUNTIME_VERSION,
+      '@string/expo_runtime_version'
+    );
   } else if (sdkVersion) {
     /**
      * runtime version maybe null in projects using classic updates. In that
@@ -211,12 +254,10 @@ export function isMainApplicationMetaDataSet(androidManifest: AndroidManifest): 
 export function isMainApplicationMetaDataSynced(
   projectRoot: string,
   config: ExpoConfigUpdates,
-  androidManifest: AndroidManifest,
-  username: string | null
+  androidManifest: AndroidManifest
 ): boolean {
   return (
-    getUpdateUrl(config, username) ===
-      getMainApplicationMetaDataValue(androidManifest, Config.UPDATE_URL) &&
+    getUpdateUrl(config) === getMainApplicationMetaDataValue(androidManifest, Config.UPDATE_URL) &&
     String(getUpdatesEnabled(config)) ===
       getMainApplicationMetaDataValue(androidManifest, Config.ENABLED) &&
     String(getUpdatesTimeout(config)) ===

@@ -8,23 +8,28 @@
 #ifndef SkPaint_DEFINED
 #define SkPaint_DEFINED
 
-#include "include/core/SkBlendMode.h"
 #include "include/core/SkColor.h"
 #include "include/core/SkRefCnt.h"
-#include "include/private/SkTo.h"
+#include "include/core/SkScalar.h"
+#include "include/core/SkTypes.h"
+#include "include/private/base/SkCPUTypes.h"
+#include "include/private/base/SkFloatingPoint.h"
+#include "include/private/base/SkTo.h"
+#include "include/private/base/SkTypeTraits.h"
 
+#include <cstdint>
 #include <optional>
+#include <type_traits>
 
 class SkBlender;
 class SkColorFilter;
 class SkColorSpace;
-struct SkRect;
 class SkImageFilter;
 class SkMaskFilter;
-class SkMatrix;
-class SkPath;
 class SkPathEffect;
 class SkShader;
+enum class SkBlendMode;
+struct SkRect;
 
 /** \class SkPaint
     SkPaint controls options applied when drawing. SkPaint collects all
@@ -251,12 +256,14 @@ public:
 
     /** Retrieves alpha from the color used when stroking and filling.
 
-        @return  alpha ranging from zero, fully transparent, to 255, fully opaque
+        @return  alpha ranging from zero, fully transparent, to one, fully opaque
     */
     float getAlphaf() const { return fColor4f.fA; }
 
     // Helper that scales the alpha by 255.
-    uint8_t getAlpha() const { return sk_float_round2int(this->getAlphaf() * 255); }
+    uint8_t getAlpha() const {
+        return static_cast<uint8_t>(sk_float_round2int(this->getAlphaf() * 255));
+    }
 
     /** Replaces alpha, leaving RGB
         unchanged. An out of range value triggers an assert in the debug
@@ -380,34 +387,6 @@ public:
         example: https://fiddle.skia.org/c/@Paint_setStrokeJoin
     */
     void setStrokeJoin(Join join);
-
-    /** Returns the filled equivalent of the stroked path.
-
-        @param src       SkPath read to create a filled version
-        @param dst       resulting SkPath; may be the same as src, but may not be nullptr
-        @param cullRect  optional limit passed to SkPathEffect
-        @param resScale  if > 1, increase precision, else if (0 < resScale < 1) reduce precision
-                         to favor speed and size
-        @return          true if the path represents style fill, or false if it represents hairline
-    */
-    bool getFillPath(const SkPath& src, SkPath* dst, const SkRect* cullRect,
-                     SkScalar resScale = 1) const;
-
-    bool getFillPath(const SkPath& src, SkPath* dst, const SkRect* cullRect,
-                     const SkMatrix& ctm) const;
-
-    /** Returns the filled equivalent of the stroked path.
-
-        Replaces dst with the src path modified by SkPathEffect and style stroke.
-        SkPathEffect, if any, is not culled. stroke width is created with default precision.
-
-        @param src  SkPath read to create a filled version
-        @param dst  resulting SkPath dst may be the same as src, but may not be nullptr
-        @return     true if the path represents style fill, or false if it represents hairline
-    */
-    bool getFillPath(const SkPath& src, SkPath* dst) const {
-        return this->getFillPath(src, dst, nullptr, 1);
-    }
 
     /** Returns optional colors used when filling a path, such as a gradient.
 
@@ -676,6 +655,8 @@ public:
     const SkRect& doComputeFastBounds(const SkRect& orig, SkRect* storage,
                                       Style style) const;
 
+    using sk_is_trivially_relocatable = std::true_type;
+
 private:
     sk_sp<SkPathEffect>   fPathEffect;
     sk_sp<SkShader>       fShader;
@@ -698,6 +679,15 @@ private:
         } fBitfields;
         uint32_t fBitfieldsUInt;
     };
+
+    static_assert(::sk_is_trivially_relocatable<decltype(fPathEffect)>::value);
+    static_assert(::sk_is_trivially_relocatable<decltype(fShader)>::value);
+    static_assert(::sk_is_trivially_relocatable<decltype(fMaskFilter)>::value);
+    static_assert(::sk_is_trivially_relocatable<decltype(fColorFilter)>::value);
+    static_assert(::sk_is_trivially_relocatable<decltype(fImageFilter)>::value);
+    static_assert(::sk_is_trivially_relocatable<decltype(fBlender)>::value);
+    static_assert(::sk_is_trivially_relocatable<decltype(fColor4f)>::value);
+    static_assert(::sk_is_trivially_relocatable<decltype(fBitfields)>::value);
 
     friend class SkPaintPriv;
 };

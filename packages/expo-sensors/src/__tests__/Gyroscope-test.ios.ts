@@ -1,4 +1,3 @@
-import ExponentGyroscope from '../ExponentGyroscope';
 import Gyroscope from '../Gyroscope';
 
 afterEach(() => {
@@ -6,7 +5,7 @@ afterEach(() => {
 });
 
 it(`adds an "gyroscopeDidUpdate" listener`, () => {
-  const NativeGyroscope = ExponentGyroscope;
+  const NativeGyroscope = Gyroscope._nativeModule;
 
   const mockListener = jest.fn();
   const subscription = Gyroscope.addListener(mockListener);

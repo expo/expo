@@ -1,22 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`getManagedExtensions creates extensions for iOS 1`] = `
-Array [
-  "ios.expo.ts",
-  "ios.expo.tsx",
-  "ios.expo.mjs",
-  "ios.expo.js",
-  "ios.expo.jsx",
-  "native.expo.ts",
-  "native.expo.tsx",
-  "native.expo.mjs",
-  "native.expo.js",
-  "native.expo.jsx",
-  "expo.ts",
-  "expo.tsx",
-  "expo.mjs",
-  "expo.js",
-  "expo.jsx",
+exports[`getBareExtensions creates extensions for iOS 1`] = `
+[
   "ios.ts",
   "ios.tsx",
   "ios.mjs",
@@ -36,18 +21,8 @@ Array [
 ]
 `;
 
-exports[`getManagedExtensions creates extensions for web 1`] = `
-Array [
-  "web.expo.ts",
-  "web.expo.tsx",
-  "web.expo.mjs",
-  "web.expo.js",
-  "web.expo.jsx",
-  "expo.ts",
-  "expo.tsx",
-  "expo.mjs",
-  "expo.js",
-  "expo.jsx",
+exports[`getBareExtensions creates extensions for web 1`] = `
+[
   "web.ts",
   "web.tsx",
   "web.mjs",

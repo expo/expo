@@ -10,21 +10,23 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '12.0'
+  s.platform       = :ios, '13.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'ReactCommon'
-  # 'React-runtimeexecutor' is added only for prebuilding purposes as this process cannot resolve transitive headers' paths at the time of writing.
-  # This dependency is transitively included via following chain: 'ReactCommon' -> 'ReactCommon/turbomodule' -> 'React-cxxreact' -> 'React-runtimeexecutor'.
-  # TODO: remove once prebuilding starts supporting resolution of transitive dependencies
-  s.dependency 'React-runtimeexecutor'
+  s.dependency 'ReactCommon/turbomodule/core'
+
+  # Swift/Objective-C compatibility
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+    'SWIFT_COMPILATION_MODE' => 'wholemodule'
+  }
 
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
     s.source_files = "#{s.name}/**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
-    s.source_files = "#{s.name}/**/*.{h,m,mm}"
+    s.source_files = "#{s.name}/**/*.{h,m,mm,swift}"
   end
 end

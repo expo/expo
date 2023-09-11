@@ -16,7 +16,7 @@ describe('devices info', () => {
 
   afterAll(() => {
     if (projectRoot) {
-      fs.rmdirSync(projectRoot);
+      fs.rmdirSync(projectRoot, { recursive: true });
     }
   });
 

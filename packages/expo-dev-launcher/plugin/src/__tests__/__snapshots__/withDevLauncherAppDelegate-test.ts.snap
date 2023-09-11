@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SDK 44 pre-#15881 modifies the AppDelegate file for dev-launcher 1`] = `
-"#import \\"AppDelegate.h\\"
+"#import "AppDelegate.h"
 
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
@@ -37,8 +37,8 @@ static void InitializeFlipper(UIApplication *application) {
 - (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
-  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@\\"RCTRootViewBackgroundColor\\"];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
+  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTRootViewBackgroundColor"];
   if (rootViewBackgroundColor != nil) {
     rootView.backgroundColor = [RCTConvert UIColor:rootViewBackgroundColor];
   } else {
@@ -84,10 +84,10 @@ static void InitializeFlipper(UIApplication *application) {
     #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif
  #else
-  return [[NSBundle mainBundle] URLForResource:@\\"main\\" withExtension:@\\"jsbundle\\"];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
 }
 
@@ -124,7 +124,7 @@ static void InitializeFlipper(UIApplication *application) {
 `;
 
 exports[`SDK 44 pre-#15881 modifies the AppDelegate file for dev-launcher with compatible updates 1`] = `
-"#import \\"AppDelegate.h\\"
+"#import "AppDelegate.h"
 
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
@@ -161,8 +161,8 @@ static void InitializeFlipper(UIApplication *application) {
 - (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
-  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@\\"RCTRootViewBackgroundColor\\"];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
+  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTRootViewBackgroundColor"];
   if (rootViewBackgroundColor != nil) {
     rootView.backgroundColor = [RCTConvert UIColor:rootViewBackgroundColor];
   } else {
@@ -209,10 +209,10 @@ static void InitializeFlipper(UIApplication *application) {
     #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif
  #else
-  return [[NSBundle mainBundle] URLForResource:@\\"main\\" withExtension:@\\"jsbundle\\"];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
 }
 
@@ -249,7 +249,7 @@ static void InitializeFlipper(UIApplication *application) {
 `;
 
 exports[`SDK 44 pre-#15881 modifies the AppDelegate file for dev-launcher with incompatible updates 1`] = `
-"#import \\"AppDelegate.h\\"
+"#import "AppDelegate.h"
 
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
@@ -285,8 +285,8 @@ static void InitializeFlipper(UIApplication *application) {
 - (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
-  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@\\"RCTRootViewBackgroundColor\\"];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
+  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTRootViewBackgroundColor"];
   if (rootViewBackgroundColor != nil) {
     rootView.backgroundColor = [RCTConvert UIColor:rootViewBackgroundColor];
   } else {
@@ -332,10 +332,10 @@ static void InitializeFlipper(UIApplication *application) {
     #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif
  #else
-  return [[NSBundle mainBundle] URLForResource:@\\"main\\" withExtension:@\\"jsbundle\\"];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
 }
 
@@ -377,7 +377,7 @@ exports[`legacy modifyLegacyAppDelegate modifies the AppDelegate file for dev-la
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
 #endif
-#import \\"AppDelegate.h\\"
+#import "AppDelegate.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -454,7 +454,7 @@ static void InitializeFlipper(UIApplication *application) {
   #endif
   
     RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
   UIViewController *rootViewController = [UIViewController new];
@@ -477,7 +477,7 @@ static void InitializeFlipper(UIApplication *application) {
     #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif
  #else
   return [[EXUpdatesAppController sharedInstance] launchAssetUrl];
@@ -532,7 +532,7 @@ exports[`legacy modifyLegacyAppDelegate modifies the AppDelegate file for dev-la
 #include <EXDevLauncher/EXDevLauncherController.h>
 #import <EXUpdates/EXUpdatesDevLauncherController.h>
 #endif
-#import \\"AppDelegate.h\\"
+#import "AppDelegate.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -610,7 +610,7 @@ static void InitializeFlipper(UIApplication *application) {
   #endif
   
     RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
   UIViewController *rootViewController = [UIViewController new];
@@ -633,7 +633,7 @@ static void InitializeFlipper(UIApplication *application) {
     #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif
  #else
   return [[EXUpdatesAppController sharedInstance] launchAssetUrl];
@@ -687,7 +687,7 @@ exports[`legacy modifyLegacyAppDelegate modifies the AppDelegate file for dev-la
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
 #endif
-#import \\"AppDelegate.h\\"
+#import "AppDelegate.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -764,7 +764,7 @@ static void InitializeFlipper(UIApplication *application) {
   #endif
   
     RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
   UIViewController *rootViewController = [UIViewController new];
@@ -787,7 +787,7 @@ static void InitializeFlipper(UIApplication *application) {
     #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif
  #else
   return [[EXUpdatesAppController sharedInstance] launchAssetUrl];
@@ -836,7 +836,7 @@ static void InitializeFlipper(UIApplication *application) {
 `;
 
 exports[`modifyAppDelegate expo-screen-orientation compatibility modifies the AppDelegate file for dev-launcher 1`] = `
-"#import \\"AppDelegate.h\\"
+"#import "AppDelegate.h"
 
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
@@ -873,8 +873,8 @@ static void InitializeFlipper(UIApplication *application) {
 - (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
-  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@\\"RCTRootViewBackgroundColor\\"];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
+  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTRootViewBackgroundColor"];
   if (rootViewBackgroundColor != nil) {
     rootView.backgroundColor = [RCTConvert UIColor:rootViewBackgroundColor];
   } else {
@@ -920,10 +920,10 @@ static void InitializeFlipper(UIApplication *application) {
     #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif
  #else
-  return [[NSBundle mainBundle] URLForResource:@\\"main\\" withExtension:@\\"jsbundle\\"];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
 }
 
@@ -960,7 +960,7 @@ static void InitializeFlipper(UIApplication *application) {
 `;
 
 exports[`modifyAppDelegate expo-screen-orientation compatibility modifies the AppDelegate file for dev-launcher with compatible updates 1`] = `
-"#import \\"AppDelegate.h\\"
+"#import "AppDelegate.h"
 
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
@@ -998,8 +998,8 @@ static void InitializeFlipper(UIApplication *application) {
 - (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
-  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@\\"RCTRootViewBackgroundColor\\"];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
+  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTRootViewBackgroundColor"];
   if (rootViewBackgroundColor != nil) {
     rootView.backgroundColor = [RCTConvert UIColor:rootViewBackgroundColor];
   } else {
@@ -1046,10 +1046,10 @@ static void InitializeFlipper(UIApplication *application) {
     #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif
  #else
-  return [[NSBundle mainBundle] URLForResource:@\\"main\\" withExtension:@\\"jsbundle\\"];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
 }
 
@@ -1086,7 +1086,7 @@ static void InitializeFlipper(UIApplication *application) {
 `;
 
 exports[`modifyAppDelegate expo-screen-orientation compatibility modifies the AppDelegate file for dev-launcher with incompatible updates 1`] = `
-"#import \\"AppDelegate.h\\"
+"#import "AppDelegate.h"
 
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
@@ -1123,8 +1123,8 @@ static void InitializeFlipper(UIApplication *application) {
 - (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
-  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@\\"RCTRootViewBackgroundColor\\"];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
+  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTRootViewBackgroundColor"];
   if (rootViewBackgroundColor != nil) {
     rootView.backgroundColor = [RCTConvert UIColor:rootViewBackgroundColor];
   } else {
@@ -1170,10 +1170,10 @@ static void InitializeFlipper(UIApplication *application) {
     #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif
  #else
-  return [[NSBundle mainBundle] URLForResource:@\\"main\\" withExtension:@\\"jsbundle\\"];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
 }
 
@@ -1210,7 +1210,7 @@ static void InitializeFlipper(UIApplication *application) {
 `;
 
 exports[`modifyAppDelegate modifies the AppDelegate file for dev-launcher 1`] = `
-"#import \\"AppDelegate.h\\"
+"#import "AppDelegate.h"
 
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
@@ -1246,7 +1246,7 @@ static void InitializeFlipper(UIApplication *application) {
 - (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
+  RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"main" initialProperties:nil];
   rootView.backgroundColor = [UIColor whiteColor];
   UIViewController *rootViewController = [self.reactDelegate createRootViewController];
   rootViewController.view = rootView;
@@ -1287,10 +1287,10 @@ static void InitializeFlipper(UIApplication *application) {
     #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif
  #else
-  return [[NSBundle mainBundle] URLForResource:@\\"main\\" withExtension:@\\"jsbundle\\"];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
 }
 
@@ -1327,7 +1327,7 @@ static void InitializeFlipper(UIApplication *application) {
 `;
 
 exports[`modifyAppDelegate modifies the AppDelegate file for dev-launcher with compatible updates 1`] = `
-"#import \\"AppDelegate.h\\"
+"#import "AppDelegate.h"
 
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
@@ -1364,7 +1364,7 @@ static void InitializeFlipper(UIApplication *application) {
 - (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
+  RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"main" initialProperties:nil];
   rootView.backgroundColor = [UIColor whiteColor];
   UIViewController *rootViewController = [self.reactDelegate createRootViewController];
   rootViewController.view = rootView;
@@ -1406,10 +1406,10 @@ static void InitializeFlipper(UIApplication *application) {
     #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif
  #else
-  return [[NSBundle mainBundle] URLForResource:@\\"main\\" withExtension:@\\"jsbundle\\"];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
 }
 
@@ -1446,7 +1446,7 @@ static void InitializeFlipper(UIApplication *application) {
 `;
 
 exports[`modifyAppDelegate modifies the AppDelegate file for dev-launcher with incompatible updates 1`] = `
-"#import \\"AppDelegate.h\\"
+"#import "AppDelegate.h"
 
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
@@ -1482,7 +1482,7 @@ static void InitializeFlipper(UIApplication *application) {
 - (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@\\"main\\" initialProperties:nil];
+  RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"main" initialProperties:nil];
   rootView.backgroundColor = [UIColor whiteColor];
   UIViewController *rootViewController = [self.reactDelegate createRootViewController];
   rootViewController.view = rootView;
@@ -1523,10 +1523,10 @@ static void InitializeFlipper(UIApplication *application) {
     #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif
  #else
-  return [[NSBundle mainBundle] URLForResource:@\\"main\\" withExtension:@\\"jsbundle\\"];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
 }
 

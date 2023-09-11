@@ -1,7 +1,7 @@
-export declare type AudioMode = {
+export type AudioMode = {
     /**
      * A boolean selecting if recording is enabled on iOS.
-     * > When this flag is set to `true`, playback may be routed to the phone receiver instead of to the speaker.
+     * > When this flag is set to `true`, playback may be routed to the phone earpiece instead of to the speaker. Set it back to `false` after stopping recording to reenable playback through the speaker.
      * @default false
      */
     allowsRecordingIOS: boolean;

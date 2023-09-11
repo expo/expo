@@ -11,6 +11,7 @@
 #include "include/core/SkFontTypes.h"
 #include "include/core/SkScalar.h"
 #include "include/core/SkTypeface.h"
+#include "include/private/base/SkTemplates.h"
 
 #include <vector>
 
@@ -498,6 +499,8 @@ public:
      */
     void dump() const;
 
+    using sk_is_trivially_relocatable = std::true_type;
+
 private:
     enum PrivFlags {
         kForceAutoHinting_PrivFlag      = 1 << 0,
@@ -522,6 +525,8 @@ private:
     uint8_t     fFlags;
     uint8_t     fEdging;
     uint8_t     fHinting;
+
+    static_assert(::sk_is_trivially_relocatable<decltype(fTypeface)>::value);
 
     SkScalar setupForAsPaths(SkPaint*);
     bool hasSomeAntiAliasing() const;

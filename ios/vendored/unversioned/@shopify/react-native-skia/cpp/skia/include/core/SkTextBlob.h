@@ -12,13 +12,17 @@
 #include "include/core/SkPaint.h"
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkString.h"
-#include "include/private/SkTemplates.h"
+#include "include/private/base/SkTemplates.h"
 
 #include <atomic>
 
 struct SkRSXform;
 struct SkSerialProcs;
 struct SkDeserialProcs;
+
+namespace sktext {
+class GlyphRunList;
+}
 
 /** \class SkTextBlob
     SkTextBlob combines multiple text runs into an immutable container. Each text
@@ -250,8 +254,7 @@ private:
         fCacheID.store(cacheID);
     }
 
-    friend class SkGlyphRunList;
-    friend class GrTextBlobCache;
+    friend class sktext::GlyphRunList;
     friend class SkTextBlobBuilder;
     friend class SkTextBlobPriv;
     friend class SkTextBlobRunIterator;
@@ -488,7 +491,7 @@ private:
     friend class SkTextBlobPriv;
     friend class SkTextBlobBuilderPriv;
 
-    SkAutoTMalloc<uint8_t> fStorage;
+    skia_private::AutoTMalloc<uint8_t> fStorage;
     size_t                 fStorageSize;
     size_t                 fStorageUsed;
 

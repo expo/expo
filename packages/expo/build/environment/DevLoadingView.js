@@ -1,4 +1,5 @@
-import { EventEmitter } from 'expo-modules-core';
+// Prevent pulling in all of expo-modules-core on web
+import { EventEmitter } from 'expo-modules-core/build/EventEmitter';
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Animated, StyleSheet, Text, Platform, View } from 'react-native';
 import DevLoadingViewNativeModule from './DevLoadingViewNativeModule';
@@ -55,7 +56,7 @@ export default function DevLoadingView() {
     if (!isDevLoading && !isAnimating) {
         return null;
     }
-    return (React.createElement(Animated.View, { style: [styles.animatedContainer, { transform: [{ translateY }] }], pointerEvents: "none" },
+    return (React.createElement(Animated.View, { style: [styles.animatedContainer, { transform: [{ translateY }] }] },
         React.createElement(View, { style: styles.banner },
             React.createElement(View, { style: styles.contentContainer },
                 React.createElement(View, { style: { flexDirection: 'row' } },
@@ -65,7 +66,12 @@ export default function DevLoadingView() {
 }
 const styles = StyleSheet.create({
     animatedContainer: {
-        position: 'absolute',
+        // @ts-expect-error: fixed is not a valid value for position in Yoga but it is on web.
+        position: Platform.select({
+            web: 'fixed',
+            default: 'absolute',
+        }),
+        pointerEvents: 'none',
         bottom: 0,
         left: 0,
         right: 0,

@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { Parcel, TaskArgs } from '../types';
-import { resolveReleaseTypeAndVersion } from './resolveReleaseTypeAndVersion';
+import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 const { green, gray } = chalk;
 
@@ -14,7 +14,7 @@ const { green, gray } = chalk;
 export const cutOffChangelogs = new Task<TaskArgs>(
   {
     name: 'cutOffChangelogs',
-    dependsOn: [resolveReleaseTypeAndVersion],
+    dependsOn: [selectPackagesToPublish],
     filesToStage: ['packages/**/CHANGELOG.md'],
   },
   async (parcels: Parcel[]) => {

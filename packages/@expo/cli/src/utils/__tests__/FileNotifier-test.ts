@@ -52,7 +52,7 @@ it('observes the first existing file', () => {
     ],
     { additionalWarning: ' foobar' }
   );
-  expect(fileNotifier.startObserving()).toBe('babel.config.js');
+  expect(fileNotifier.startObserving()).toBe('/babel.config.js');
 
   // We mock out the callback firing and test that a warning was logged.
   expect(Log.log).toBeCalledTimes(1);

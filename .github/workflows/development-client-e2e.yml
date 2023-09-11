@@ -18,10 +18,10 @@ concurrency:
 
 jobs:
   detox_e2e:
-    runs-on: macos-11
+    runs-on: macos-13
     strategy:
       matrix:
-        api-level: [31]
+        api-level: [33]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -36,15 +36,20 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+          ruby-version: 3.2.2
       - name: 💎 Install cocoapods
         run: sudo gem install cocoapods
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
+          gradle: 'true'
           yarn-workspace: 'true'
-          avd: 'true'
+      - name: 🤖 Set up android emulator
+        uses: ./.github/actions/use-android-emulator
+        with:
           avd-api: ${{ matrix.api-level }}
+          avd-name: avd-${{ matrix.api-level }}
       - name: 🧶 Install `expo-test-runner`
         run: |
           yarn global add expo-test-runner@$(cat package.json | grep '"expo-test-runner": "[0-9]*\.[0-9]*\.[0-9]*' | head -n 1 | awk '{print $2}' | sed 's/"//g; s/,//g')

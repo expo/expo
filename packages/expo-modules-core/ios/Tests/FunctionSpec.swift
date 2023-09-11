@@ -80,7 +80,7 @@ class FunctionSpec: ExpoSpec {
         .callSync(function: functionName, args: [array])
       }
 
-      describe("converting dicts to records") {
+      describe("converting records") {
         struct TestRecord: Record {
           @Field var property: String = "expo"
           @Field var optionalProperty: Int?
@@ -126,11 +126,24 @@ class FunctionSpec: ExpoSpec {
           }
         }
 
-        it("returns the record back") {
+        it("returns the record back (sync)") {
+          let result = try Function(functionName) { (record: TestRecord) in record }
+            .call(by: nil, withArguments: [dict], appContext: appContext) as? TestRecord
+
+          guard let result = Conversions.convertFunctionResult(result, appContext: appContext) as? TestRecord.Dict else {
+            return fail()
+          }
+
+          expect(result).notTo(beNil())
+          expect(result["property"] as? String).to(equal(dict["property"]))
+          expect(result["propertyWithCustomKey"] as? String).to(equal(dict["propertyWithCustomKey"]))
+        }
+
+        it("returns the record back (async)") {
           waitUntil { done in
             mockModuleHolder(appContext) {
               AsyncFunction(functionName) { (a: TestRecord) in
-                return a.toDictionary()
+                return a
               }
             }
             .call(function: functionName, args: [dict]) { result in
@@ -170,6 +183,37 @@ class FunctionSpec: ExpoSpec {
         }
       }
 
+      it("allows to skip trailing optional arguments") {
+        let returnedValue = "something"
+        let fn = Function(functionName) { (a: String, b: Int?, c: Bool?) in
+          expect(c).to(beNil())
+          return returnedValue
+        }
+
+        expect({ try fn.call(by: nil, withArguments: ["test"], appContext: appContext) })
+          .notTo(throwError())
+          .to(be(returnedValue))
+
+        expect({ try fn.call(by: nil, withArguments: ["test", 3], appContext: appContext) })
+          .notTo(throwError())
+          .to(be(returnedValue))
+      }
+
+      it("throws when called without required arguments") {
+        let fn = Function(functionName) { (requiredArgument: String, optionalArgument: Int?) in
+          return "something"
+        }
+
+        expect({ try fn.call(by: nil, withArguments: [], appContext: appContext) })
+          .to(throwError(errorType: FunctionCallException.self) { error in
+            expect(error.rootCause).to(beAKindOf(InvalidArgsNumberException.self))
+            let exception = error.rootCause as! InvalidArgsNumberException
+            expect(exception.param.received) == 0
+            expect(exception.param.required) == 1
+            expect(exception.param.expected) == 2
+          })
+      }
+
       it("throws when called with arguments of incompatible types") {
         waitUntil { done in
           mockModuleHolder(appContext) {
@@ -182,7 +226,8 @@ class FunctionSpec: ExpoSpec {
             switch result {
             case .failure(let error):
               expect(error).notTo(beNil())
-              expect(error).to(beAKindOf(ArgumentCastException.self))
+              expect(error).to(beAKindOf(FunctionCallException.self))
+              expect(error.isCausedBy(ArgumentCastException.self)) == true
               expect(error.isCausedBy(Conversions.CastingException<String>.self)) == true
             case .success(_):
               fail()
@@ -192,34 +237,69 @@ class FunctionSpec: ExpoSpec {
         }
       }
     }
-    
+
     context("JavaScript") {
-      let runtime = appContext.runtime
-      
+      let runtime = try! appContext.runtime
+
       beforeSuite {
         appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
           Name("TestModule")
 
           Function("returnPi") { Double.pi }
-          
+
           Function("returnNull") { () -> Double? in
             return nil
           }
-          
+
           Function("isArgNull") { (arg: Double?) -> Bool in
             return arg == nil
           }
+
+          Function("returnObjectDefinition") { (initial: Int) -> ObjectDefinition in
+            var foo = initial
+
+            return Object {
+              Function("increment") { () -> Int in
+                foo += 1
+                return foo
+              }
+            }
+          }
+
+          Function("withFunction") { (fn: JavaScriptFunction<String>) -> String in
+            return try fn.call("foo", "bar")
+          }
         })
       }
-      
+
       it("returns values") {
-        expect(try runtime?.eval("ExpoModules.TestModule.returnPi()").asDouble()) == Double.pi
-        expect(try runtime?.eval("ExpoModules.TestModule.returnNull()").isNull()) == true
+        expect(try runtime.eval("expo.modules.TestModule.returnPi()").asDouble()) == Double.pi
+        expect(try runtime.eval("expo.modules.TestModule.returnNull()").isNull()) == true
       }
-      
+
       it("accepts optional arguments") {
-        expect(try runtime?.eval("ExpoModules.TestModule.isArgNull(3.14)").asBool()) == false
-        expect(try runtime?.eval("ExpoModules.TestModule.isArgNull(null)").asBool()) == true
+        expect(try runtime.eval("expo.modules.TestModule.isArgNull(3.14)").asBool()) == false
+        expect(try runtime.eval("expo.modules.TestModule.isArgNull(null)").asBool()) == true
+      }
+
+      it("returns object made from definition") {
+        let initialValue = Int.random(in: 1..<100)
+        let object = try runtime.eval("object = expo.modules.TestModule.returnObjectDefinition(\(initialValue))")
+
+        expect(object.kind) == .object
+        expect(object.getObject().hasProperty("increment")) == true
+
+        let result = try runtime.eval("object.increment()")
+
+        expect(result.kind) == .number
+        expect(result.getInt()) == initialValue + 1
+      }
+
+      it("takes JavaScriptFunction argument") {
+        let value = try runtime.eval("expo.modules.TestModule.withFunction((a, b) => a + b)")
+
+        expect(value.kind) == .string
+        expect(value.getString()) == "foobar"
       }
     }
   }

@@ -1,10 +1,12 @@
-import { NativeModulesProxy, UnavailabilityError, requireNativeViewManager, CodedError, } from 'expo-modules-core';
+import { NativeModulesProxy, UnavailabilityError, requireNativeModule, requireNativeViewManager, CodedError, } from 'expo-modules-core';
 import * as React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
 import { configureLogging } from './GLUtils';
-import { createWorkletContextProvider } from './GLWorkletContextProvider';
-const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
+import { createWorkletContextManager } from './GLWorkletContextManager';
+const ExponentGLObjectManager = requireNativeModule('ExponentGLObjectManager');
+const { ExponentGLViewManager } = NativeModulesProxy;
 const NativeView = requireNativeViewManager('ExponentGLView');
+const workletContextManager = createWorkletContextManager();
 // @needsAudit
 /**
  * A View that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created.
@@ -14,6 +16,7 @@ export class GLView extends React.Component {
     static NativeView;
     static defaultProps = {
         msaaSamples: 4,
+        enableExperimentalWorkletSupport: false,
     };
     /**
      * Imperative API that creates headless context which is devoid of underlying view.
@@ -34,6 +37,7 @@ export class GLView extends React.Component {
      */
     static async destroyContextAsync(exgl) {
         const exglCtxId = getContextId(exgl);
+        unregisterGLContext(exglCtxId);
         return ExponentGLObjectManager.destroyContextAsync(exglCtxId);
     }
     /**
@@ -46,12 +50,12 @@ export class GLView extends React.Component {
         const exglCtxId = getContextId(exgl);
         return ExponentGLObjectManager.takeSnapshotAsync(exglCtxId, options);
     }
-    static getWorkletContext = createWorkletContextProvider();
+    static getWorkletContext = workletContextManager.getContext;
     nativeRef = null;
     exglCtxId;
     render() {
         const { onContextCreate, // eslint-disable-line no-unused-vars
-        msaaSamples, ...viewProps } = this.props;
+        msaaSamples, enableExperimentalWorkletSupport, ...viewProps } = this.props;
         return (React.createElement(View, { ...viewProps },
             React.createElement(NativeView, { ref: this._setNativeRef, style: {
                     flex: 1,
@@ -60,7 +64,7 @@ export class GLView extends React.Component {
                             backgroundColor: 'transparent',
                         }
                         : {}),
-                }, onSurfaceCreate: this._onSurfaceCreate, msaaSamples: Platform.OS === 'ios' ? msaaSamples : undefined })));
+                }, onSurfaceCreate: this._onSurfaceCreate, enableExperimentalWorkletSupport: enableExperimentalWorkletSupport, msaaSamples: Platform.OS === 'ios' ? msaaSamples : undefined })));
     }
     _setNativeRef = (nativeRef) => {
         if (this.props.nativeRef_EXPERIMENTAL) {
@@ -75,6 +79,16 @@ export class GLView extends React.Component {
             this.props.onContextCreate(gl);
         }
     };
+    componentWillUnmount() {
+        if (this.exglCtxId) {
+            unregisterGLContext(this.exglCtxId);
+        }
+    }
+    componentDidUpdate(prevProps) {
+        if (this.props.enableExperimentalWorkletSupport !== prevProps.enableExperimentalWorkletSupport) {
+            console.warn('Updating prop enableExperimentalWorkletSupport is not supported');
+        }
+    }
     // @docsMissing
     async startARSessionAsync() {
         if (!ExponentGLViewManager.startARSessionAsync) {
@@ -116,6 +130,12 @@ export class GLView extends React.Component {
     }
 }
 GLView.NativeView = NativeView;
+function unregisterGLContext(exglCtxId) {
+    if (global.__EXGLContexts) {
+        delete global.__EXGLContexts[String(exglCtxId)];
+    }
+    workletContextManager.unregister?.(exglCtxId);
+}
 // Get the GL interface from an EXGLContextId
 const getGl = (exglCtxId) => {
     if (!global.__EXGLContexts) {

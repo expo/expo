@@ -33,7 +33,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     return parsedSubscribers.reduce(false) { result, subscriber in
-      return subscriber.application!(application, willFinishLaunchingWithOptions: launchOptions) || result
+      return subscriber.application?(application, willFinishLaunchingWithOptions: launchOptions) ?? false || result
     }
   }
 
@@ -92,8 +92,12 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
-    subs.forEach {
-      $0.application?(application, handleEventsForBackgroundURLSession: identifier, completionHandler: handler)
+    if subs.isEmpty {
+      completionHandler()
+    } else {
+      subs.forEach {
+        $0.application?(application, handleEventsForBackgroundURLSession: identifier, completionHandler: handler)
+      }
     }
   }
 
@@ -115,27 +119,38 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     let selector = #selector(application(_:didReceiveRemoteNotification:fetchCompletionHandler:))
     let subs = subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
-    var fetchResult: UIBackgroundFetchResult = .noData
     let dispatchQueue = DispatchQueue(label: "expo.application.remoteNotification", qos: .userInteractive)
+    var failedCount = 0
+    var newDataCount = 0
 
     let handler = { (result: UIBackgroundFetchResult) in
       dispatchQueue.sync {
         if result == .failed {
-          fetchResult = .failed
-        } else if fetchResult != .failed && result == .newData {
-          fetchResult = .newData
+          failedCount += 1
+        } else if result == .newData {
+          newDataCount += 1
         }
 
         subscribersLeft -= 1
 
         if subscribersLeft == 0 {
-          completionHandler(fetchResult)
+          if newDataCount > 0 {
+            completionHandler(.newData)
+          } else if failedCount > 0 {
+            completionHandler(.failed)
+          } else {
+            completionHandler(.noData)
+          }
         }
       }
     }
 
-    subs.forEach { subscriber in
-      subscriber.application?(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: handler)
+    if subs.isEmpty {
+      completionHandler(.noData)
+    } else {
+      subs.forEach { subscriber in
+        subscriber.application?(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: handler)
+      }
     }
   }
 
@@ -187,6 +202,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     }
   }
 
+#if !os(tvOS)
   open func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
     let selector = #selector(application(_:performActionFor:completionHandler:))
     let subs = subscribers.filter { $0.responds(to: selector) }
@@ -205,10 +221,15 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
-    subs.forEach { subscriber in
-      subscriber.application?(application, performActionFor: shortcutItem, completionHandler: handler)
+    if subs.isEmpty {
+      completionHandler(result)
+    } else {
+      subs.forEach { subscriber in
+        subscriber.application?(application, performActionFor: shortcutItem, completionHandler: handler)
+      }
     }
   }
+#endif
 
   // MARK: - Background Fetch
 
@@ -216,27 +237,38 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     let selector = #selector(application(_:performFetchWithCompletionHandler:))
     let subs = subscribers.filter { $0.responds(to: selector) }
     var subscribersLeft = subs.count
-    var fetchResult: UIBackgroundFetchResult = .noData
     let dispatchQueue = DispatchQueue(label: "expo.application.performFetch", qos: .userInteractive)
+    var failedCount = 0
+    var newDataCount = 0
 
     let handler = { (result: UIBackgroundFetchResult) in
       dispatchQueue.sync {
         if result == .failed {
-          fetchResult = .failed
-        } else if fetchResult != .failed && result == .newData {
-          fetchResult = .newData
+          failedCount += 1
+        } else if result == .newData {
+          newDataCount += 1
         }
 
         subscribersLeft -= 1
 
         if subscribersLeft == 0 {
-          completionHandler(fetchResult)
+          if newDataCount > 0 {
+            completionHandler(.newData)
+          } else if failedCount > 0 {
+            completionHandler(.failed)
+          } else {
+            completionHandler(.noData)
+          }
         }
       }
     }
 
-    subs.forEach { subscriber in
-      subscriber.application?(application, performFetchWithCompletionHandler: handler)
+    if subs.isEmpty {
+      completionHandler(.noData)
+    } else {
+      subs.forEach { subscriber in
+        subscriber.application?(application, performFetchWithCompletionHandler: handler)
+      }
     }
   }
 
@@ -258,7 +290,32 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
 
   // TODO: - Handling CloudKit Invitations
 
-  // TODO: - Managing Interface Geometry
+  // MARK: - Managing Interface Geometry
+
+  /**
+   * Sets allowed orientations for the application. It will use the values from `Info.plist`as the orientation mask unless a subscriber requested
+   * a different orientation.
+   */
+#if !os(tvOS)
+  public func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+    let deviceOrientationMask = allowedOrientations(for: UIDevice.current.userInterfaceIdiom)
+    let universalOrientationMask = allowedOrientations(for: .unspecified)
+    let infoPlistOrientations = deviceOrientationMask.isEmpty ? universalOrientationMask : deviceOrientationMask
+
+    let parsedSubscribers = subscribers.filter {
+      $0.responds(to: #selector(application(_:supportedInterfaceOrientationsFor:)))
+    }
+
+    // We want to create an intersection of all orientations set by subscribers.
+    let subscribersMask: UIInterfaceOrientationMask = parsedSubscribers.reduce(.all) { result, subscriber in
+      guard let requestedOrientation = subscriber.application?(application, supportedInterfaceOrientationsFor: window) else {
+        return result
+      }
+      return requestedOrientation.intersection(result)
+    }
+    return parsedSubscribers.isEmpty ? infoPlistOrientations : subscribersMask
+  }
+#endif
 
   // MARK: - Statics
 
@@ -293,3 +350,29 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       }
   }
 }
+#if !os(tvOS)
+private func allowedOrientations(for userInterfaceIdiom: UIUserInterfaceIdiom) -> UIInterfaceOrientationMask {
+  // For now only iPad-specific orientations are supported
+  let deviceString = userInterfaceIdiom == .pad ? "~pad" : ""
+  var mask: UIInterfaceOrientationMask = []
+  guard let orientations = Bundle.main.infoDictionary?["UISupportedInterfaceOrientations\(deviceString)"] as? [String] else {
+    return mask
+  }
+
+  for orientation in orientations {
+    switch orientation {
+    case "UIInterfaceOrientationPortrait":
+      mask.insert(.portrait)
+    case "UIInterfaceOrientationLandscapeLeft":
+      mask.insert(.landscapeLeft)
+    case "UIInterfaceOrientationLandscapeRight":
+      mask.insert(.landscapeRight)
+    case "UIInterfaceOrientationPortraitUpsideDown":
+      mask.insert(.portraitUpsideDown)
+    default:
+      break
+    }
+  }
+  return mask
+}
+#endif

@@ -7,7 +7,7 @@ export default function TextInputScreen() {
   const [singleLineValue, updateSingle] = React.useState('');
   const [secureTextValue, updateSecure] = React.useState('');
 
-  const textInputStyle = {
+  const textInputStyle: React.ComponentProps<typeof TextInput>['style'] = {
     width: '80%',
     borderRadius: 2,
     borderWidth: 1,

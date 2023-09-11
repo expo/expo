@@ -9,22 +9,22 @@ const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const module_1 = require("module");
 const path_1 = __importDefault(require("path"));
-const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
+const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 // Names of the config files. From lowest to highest priority.
 const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
 /**
  * Searches for modules to link based on given config.
  */
 async function findModulesAsync(providedOptions) {
-    var _a;
     const options = await (0, mergeLinkingOptions_1.mergeLinkingOptionsAsync)(providedOptions);
     const results = new Map();
     const nativeModuleNames = new Set();
     // custom native modules should be resolved first so that they can override other modules
-    const searchPaths = options.nativeModulesDir && fs_extra_1.default.existsSync(options.nativeModulesDir)
+    const searchPaths = new Set(options.nativeModulesDir && fs_extra_1.default.existsSync(options.nativeModulesDir)
         ? [options.nativeModulesDir, ...options.searchPaths]
-        : options.searchPaths;
+        : options.searchPaths);
+    // `searchPaths` can be mutated to discover all "isolated modules groups", when using isolated modules
     for (const searchPath of searchPaths) {
         const isNativeModulesDir = searchPath === options.nativeModulesDir;
         const packageConfigPaths = await findPackagesConfigPathsAsync(searchPath);
@@ -34,8 +34,22 @@ async function findModulesAsync(providedOptions) {
             const { name, version } = resolvePackageNameAndVersion(packagePath, {
                 fallbackToDirName: isNativeModulesDir,
             });
+            // Check if the project is using isolated modules, by checking
+            // if the parent dir of `packagePath` is a `node_modules` folder.
+            // Isolated modules installs dependencies in small groups such as:
+            //   - /.pnpm/expo@50.x.x(...)/node_modules/@expo/cli
+            //   - /.pnpm/expo@50.x.x(...)/node_modules/expo
+            //   - /.pnpm/expo@50.x.x(...)/node_modules/expo-application
+            // When isolated modules are detected, expand the `searchPaths`
+            // to include possible nested dependencies.
+            const maybeIsolatedModulesPath = path_1.default.join(packagePath, name.startsWith('@') && name.includes('/') ? '../..' : '..' // scoped packages are nested deeper
+            );
+            const isIsolatedModulesPath = path_1.default.basename(maybeIsolatedModulesPath) === 'node_modules';
+            if (isIsolatedModulesPath && !searchPaths.has(maybeIsolatedModulesPath)) {
+                searchPaths.add(maybeIsolatedModulesPath);
+            }
             // we ignore the `exclude` option for custom native modules
-            if ((!isNativeModulesDir && ((_a = options.exclude) === null || _a === void 0 ? void 0 : _a.includes(name))) ||
+            if ((!isNativeModulesDir && options.exclude?.includes(name)) ||
                 !expoModuleConfig.supportsPlatform(options.platform)) {
                 continue;
             }
@@ -82,7 +96,6 @@ function configPriority(fullpath) {
  * @param revision resolved package revision
  */
 function addRevisionToResults(results, name, revision) {
-    var _a, _b, _c, _d, _e;
     if (!results.has(name)) {
         // The revision that was found first will be the main one.
         // An array of duplicates and the config are needed only here.
@@ -91,10 +104,10 @@ function addRevisionToResults(results, name, revision) {
             duplicates: [],
         });
     }
-    else if (((_a = results.get(name)) === null || _a === void 0 ? void 0 : _a.path) !== revision.path &&
-        ((_c = (_b = results.get(name)) === null || _b === void 0 ? void 0 : _b.duplicates) === null || _c === void 0 ? void 0 : _c.every(({ path }) => path !== revision.path))) {
+    else if (results.get(name)?.path !== revision.path &&
+        results.get(name)?.duplicates?.every(({ path }) => path !== revision.path)) {
         const { config, duplicates, ...duplicateEntry } = revision;
-        (_e = (_d = results.get(name)) === null || _d === void 0 ? void 0 : _d.duplicates) === null || _e === void 0 ? void 0 : _e.push(duplicateEntry);
+        results.get(name)?.duplicates?.push(duplicateEntry);
     }
 }
 /**
@@ -151,12 +164,11 @@ function resolvePackageNameAndVersion(packagePath, { fallbackToDirName } = {}) {
  * Filters out packages that are not the dependencies of the project.
  */
 function filterToProjectDependencies(results, options = {}) {
-    var _a;
     const filteredResults = {};
     const visitedPackages = new Set();
     // iterate through always included package names and add them to the visited packages
     // if the results contains them
-    for (const name of (_a = options.alwaysIncludedPackagesNames) !== null && _a !== void 0 ? _a : []) {
+    for (const name of options.alwaysIncludedPackagesNames ?? []) {
         if (results[name] && !visitedPackages.has(name)) {
             filteredResults[name] = results[name];
             visitedPackages.add(name);

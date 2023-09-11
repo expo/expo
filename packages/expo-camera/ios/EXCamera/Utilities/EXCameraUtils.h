@@ -8,12 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
-#import <EXCamera/EXCameraManager.h>
+#import <CoreMotion/CoreMotion.h>
+#import <EXCamera/EXCamera.h>
 
 @interface EXCameraUtils : NSObject
 
 // Camera utilities
 + (AVCaptureDevice *)deviceWithMediaType:(NSString *)mediaType preferringPosition:(AVCaptureDevicePosition)position;
++ (UIDeviceOrientation)deviceOrientationForAccelerometerData:(CMAccelerometerData*)accelerometerData defaultOrientation:(UIDeviceOrientation)orientation;
 
 // Enum conversions
 + (float)temperatureForWhiteBalance:(EXCameraWhiteBalance)whiteBalance;
@@ -24,9 +26,9 @@
 + (AVVideoCodecType)videoCodecForType:(EXCameraVideoCodec)videoCodecType;
 
 // Image utilities
-+ (UIImage *)generatePhotoOfSize:(CGSize)size;
++ (nonnull UIImage *)generatePhotoOfSize:(CGSize)size;
 + (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect;
-+ (NSString *)writeImage:(NSData *)image toPath:(NSString *)path;
++ (nonnull NSString *)writeImage:(NSData *)image toPath:(NSString *)path;
 + (NSMutableDictionary *)updateExifMetadata:(NSDictionary *)metadata withAdditionalData:(NSDictionary *)additionalData;
 + (NSData *)dataFromImage:(UIImage *)image withMetadata:(NSDictionary *)exif imageQuality:(float)quality;
 

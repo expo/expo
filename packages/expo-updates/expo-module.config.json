@@ -2,7 +2,17 @@
   "name": "expo-updates",
   "platforms": ["ios", "android"],
   "ios": {
+    "modules": ["UpdatesModule"],
     "appDelegateSubscribers": ["ExpoUpdatesAppDelegateSubscriber"],
     "reactDelegateHandlers": ["ExpoUpdatesReactDelegateHandler"]
+  },
+  "android": {
+    "gradlePlugins": [
+      {
+        "id": "expo-updates-gradle-plugin",
+        "group": "expo.modules",
+        "sourceDir": "expo-updates-gradle-plugin"
+      }
+    ]
   }
 }

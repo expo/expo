@@ -1,0 +1,41 @@
+{
+  "cli": {
+    "version": ">= 2.7.1"
+  },
+  "build": {
+    "development": {
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "buildConfiguration": "Debug"
+      }
+    },
+    "updates_testing": {
+      "env": {
+        "EX_UPDATES_NATIVE_DEBUG": "1",
+        "NO_FLIPPER": "1"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+        "withoutCredentials": true,
+        "resourceClass": "large"
+      },
+      "ios": {
+        "simulator": true,
+        "resourceClass": "m-medium",
+        "buildConfiguration": "Debug",
+        "cache": {
+          "cacheDefaultPaths": false
+        }
+      },
+      "distribution": "internal",
+      "buildArtifactPaths": ["logs/*.log"]
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
+}

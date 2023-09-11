@@ -2,7 +2,7 @@
 
 #import "EXApiUtil.h"
 #import "EXAppFetcher+Private.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXJavaScriptResource.h"
@@ -11,11 +11,13 @@
 
 #import <React/RCTUtils.h>
 
+@import EXManifests;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXAppFetcher
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader
+- (instancetype)initWithAppLoader:(EXAbstractLoader *)appLoader
 {
   if (self = [super init]) {
     _appLoader = appLoader;

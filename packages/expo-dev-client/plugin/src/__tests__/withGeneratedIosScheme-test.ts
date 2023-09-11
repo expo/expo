@@ -4,10 +4,10 @@ it(`adds a scheme generated from slug`, () => {
   const config = { slug: 'cello' };
   const infoPlist = {};
   expect(setGeneratedIosScheme(config, infoPlist)).toMatchInlineSnapshot(`
-    Object {
-      "CFBundleURLTypes": Array [
-        Object {
-          "CFBundleURLSchemes": Array [
+    {
+      "CFBundleURLTypes": [
+        {
+          "CFBundleURLSchemes": [
             "exp+cello",
           ],
         },
@@ -20,18 +20,20 @@ it(`prevents adding a duplicate scheme`, () => {
   let infoPlist = {};
   const config = { slug: 'cello' };
 
-  for (let i = 0; i < 2; i++) {
-    infoPlist = setGeneratedIosScheme(config, infoPlist);
-    expect(infoPlist).toMatchInlineSnapshot(`
-      Object {
-        "CFBundleURLTypes": Array [
-          Object {
-            "CFBundleURLSchemes": Array [
-              "exp+cello",
-            ],
-          },
-        ],
-      }
-    `);
-  }
+  infoPlist = setGeneratedIosScheme(config, infoPlist);
+  expect(infoPlist).toMatchInlineSnapshot(`
+    {
+      "CFBundleURLTypes": [
+        {
+          "CFBundleURLSchemes": [
+            "exp+cello",
+          ],
+        },
+      ],
+    }
+  `);
+
+  // ensure idempotent
+  const infoPlist2 = setGeneratedIosScheme(config, infoPlist);
+  expect(infoPlist2).toEqual(infoPlist);
 });

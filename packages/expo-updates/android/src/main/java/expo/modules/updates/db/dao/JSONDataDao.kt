@@ -7,6 +7,9 @@ import androidx.room.Transaction
 import expo.modules.updates.db.entity.JSONDataEntity
 import java.util.*
 
+/**
+ * Utility class for accessing and modifying data in the `json_data` SQLite table.
+ */
 @Dao
 abstract class JSONDataDao {
   /**
@@ -47,5 +50,12 @@ abstract class JSONDataDao {
       _deleteJSONDataForKey(entry.key, scopeKey)
       _insertJSONData(JSONDataEntity(entry.key, entry.value, Date(), scopeKey))
     }
+  }
+
+  @Transaction
+  open fun updateJSONStringForKey(key: String, scopeKey: String, updater: (previousValue: String?) -> String) {
+    val previousValue = loadJSONStringForKey(key, scopeKey)
+    _deleteJSONDataForKey(key, scopeKey)
+    _insertJSONData(JSONDataEntity(key, updater(previousValue), Date(), scopeKey))
   }
 }

@@ -1,25 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`serializeAndEvaluate serializes item 1`] = `
-Object {
-  "alpha": Object {
-    "beta": Array [
+{
+  "alpha": {
+    "beta": [
       "val",
     ],
   },
   "boo": true,
   "foo": "bar",
   "inn": 200,
-  "last": Object {
+  "last": {
     "bar": "foo",
-    "charlie": Array [
+    "charlie": [
       2,
       "delta",
     ],
   },
-  "then": Array [
+  "then": [
     true,
-    Object {
+    {
       "foo": "bar",
     },
   ],

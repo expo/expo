@@ -1,11 +1,16 @@
 import { UnavailabilityError, Platform } from 'expo-modules-core';
 import PushTokenManager from './PushTokenManager';
 let nativeTokenPromise = null;
+/**
+ * Returns a native FCM, APNs token or a [`PushSubscription` data](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
+ * that can be used with another push notification service.
+ * @header fetch
+ */
 export default async function getDevicePushTokenAsync() {
     if (!PushTokenManager.getDevicePushTokenAsync) {
         throw new UnavailabilityError('ExpoNotifications', 'getDevicePushTokenAsync');
     }
-    let devicePushToken = null;
+    let devicePushToken;
     if (nativeTokenPromise) {
         // Reuse existing Promise
         devicePushToken = await nativeTokenPromise;

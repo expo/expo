@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXDevLauncherManifestParser.h"
-#import "EXDevLauncherController.h"
+#import <EXDevLauncher/EXDevLauncherManifestParser.h>
+#import <EXDevLauncher/EXDevLauncherController.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
@@ -10,7 +10,7 @@
 #import <EXDevLauncher-Swift.h>
 #endif
 
-#import <EXManifests/EXManifestsManifestFactory.h>
+@import EXManifests;
 
 typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
 
@@ -99,6 +99,7 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.url];
   [request setHTTPMethod:method];
   [request setValue:@"ios" forHTTPHeaderField:@"expo-platform"];
+  [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"accept"];
   if (self.installationID) {
     [request setValue:self.installationID forHTTPHeaderField:@"Expo-Dev-Client-ID"];
   }

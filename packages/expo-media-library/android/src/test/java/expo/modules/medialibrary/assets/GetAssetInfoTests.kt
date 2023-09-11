@@ -2,6 +2,7 @@ package expo.modules.medialibrary.assets
 
 import android.os.Bundle
 import android.provider.MediaStore
+import expo.modules.medialibrary.AssetQueryException
 import expo.modules.medialibrary.ERROR_IO_EXCEPTION
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MediaLibraryUtils
@@ -10,6 +11,9 @@ import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockContentResolverForResult
 import expo.modules.medialibrary.throwableContentResolver
+import expo.modules.test.core.PromiseMock
+import expo.modules.test.core.assertRejectedWithCode
+import expo.modules.test.core.promiseResolvedWithType
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.just
@@ -18,15 +22,12 @@ import io.mockk.runs
 import io.mockk.slot
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertListsEqual
-import org.unimodules.test.core.assertRejected
-import org.unimodules.test.core.assertRejectedWithCode
-import org.unimodules.test.core.promiseResolvedWithType
 import java.io.IOException
 
 @RunWith(RobolectricTestRunner::class)
@@ -68,7 +69,7 @@ internal class GetAssetInfoTests {
     val assetId = "testAssetId"
 
     // act
-    GetAssetInfo(context, assetId, promise).doInBackground()
+    GetAssetInfo(context, assetId, promise).execute()
 
     // assert
     assertEquals(expectedSelection, selectionSlot.captured)
@@ -108,10 +109,10 @@ internal class GetAssetInfoTests {
     val context = mockContext with mockContentResolver(null)
 
     // act
-    queryAssetInfo(context, "", emptyArray(), false, promise)
-
     // assert
-    assertRejected(promise)
+    assertThrows(AssetQueryException::class.java) {
+      queryAssetInfo(context, "", emptyArray(), false, promise)
+    }
   }
 
   @Test
@@ -121,7 +122,6 @@ internal class GetAssetInfoTests {
 
     // act
     queryAssetInfo(context, "", emptyArray(), false, promise)
-
     // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
   }

@@ -68,7 +68,6 @@ export type ExpoGoConfig = {
   // https://github.com/facebook/flipper/blob/9ca8bee208b7bfe2b8c0dab8eb4b79688a0c84bc/desktop/app/src/dispatcher/metroDevice.tsx#L37
   __flipperHack: 'React Native packager is running';
   debuggerHost: string;
-  logUrl: string;
   developer: {
     tool: string | null;
     projectRoot?: string;
@@ -86,27 +85,6 @@ export type ClientScopingConfig = {
   scopeKey?: string;
 };
 
-export type ExpoClientConfig = ExpoConfig & {
-  id?: string;
-  releaseId?: string;
-  revisionId?: string;
-  bundleUrl?: string;
-  hostUri?: string;
-  publishedTime?: string;
-};
-
-export type ExpoAppManifest = ExpoClientConfig &
-  EASConfig &
-  Partial<ExpoGoConfig> & {
-    sdkVersion: string;
-    bundledAssets?: string[];
-    isKernel?: boolean;
-    kernel?: { androidManifestPath?: string; iosManifestPath?: string };
-    assetUrlOverride?: string;
-    commitTime?: string;
-    env?: Record<string, any>;
-  };
-
 export interface ExpoUpdatesManifestAsset {
   url: string;
   key: string;
@@ -122,7 +100,12 @@ export interface ExpoUpdatesManifest {
   assets: ExpoUpdatesManifestAsset[];
   metadata: { [key: string]: string };
   extra: ClientScopingConfig & {
-    expoClient?: ExpoClientConfig;
+    expoClient?: ExpoConfig & {
+      /**
+       * Only present during development using @expo/cli.
+       */
+      hostUri?: string;
+    };
     expoGo?: ExpoGoConfig;
     eas?: EASConfig;
   };
@@ -140,7 +123,6 @@ export enum ProjectPrivacy {
   UNLISTED = 'unlisted',
 }
 
-export type ExpRc = { [key: string]: any };
 export type Platform = 'android' | 'ios' | 'web';
 export type ProjectTarget = 'managed' | 'bare';
 
@@ -149,6 +131,7 @@ export type ConfigErrorCode =
   | 'NOT_OBJECT'
   | 'NO_EXPO'
   | 'MODULE_NOT_FOUND'
+  | 'DEPRECATED'
   | 'INVALID_MODE'
   | 'INVALID_FORMAT'
   | 'INVALID_PLUGIN'

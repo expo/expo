@@ -1,5 +1,3 @@
-/* eslint-disable */
-// tslint:disable max-classes-per-file
 import React from 'react';
 import * as Svg from 'react-native-svg';
 
@@ -29,15 +27,15 @@ class PressExample extends React.Component {
   }
 }
 
-class HoverExample extends React.Component {
+class HoverExample extends React.Component<object, { hover: boolean }> {
   static title = 'Hover the svg path';
 
-  state: { hover: boolean } = {
+  state = {
     hover: false,
   };
 
   toggle = () => {
-    this.setState({ hover: !this.state.hover });
+    this.setState((prevState) => ({ hover: !prevState.hover }));
   };
 
   render() {
@@ -107,7 +105,6 @@ const icon = (
       strokeWidth="1"
       strokeLinecap="round"
       strokeLinejoin="round"
-      // tslint:disable max-line-length
       d={`
 M6.2,9.4
 c0,0,0-0.1,0-0.2c0-0.2,0.1-0.3,0.1-0.4c0.2-0.4,0.5-0.7,1-0.7c0.3,0,0.5,0,0.6,0h0.1v0.7V10 M8.1,8.8c0,0,0-0.1,0-0.2
@@ -116,7 +113,6 @@ c0.2-0.4,0.5-0.6,0.9-0.7c0.4,0,0.7,0.2,0.9,0.7C12,5,12,5.2,12,5.4c0,0.1,0,0.1,0,
 c-1.7,1.5-2.9,3.7-3.4,6.4l-5.8,0c-0.2-0.6-0.5-1.4-0.7-2.5c-0.3-1-0.5-2.5-0.6-4.5l0-0.8c0-0.1,0-0.1,0-0.2c0-0.2,0.1-0.3,0.1-0.4
 c0.2-0.4,0.5-0.7,1-0.7c0.3,0,0.5,0,0.6,0l0.1,0v0.5c0,0,0,0,0,0l0,1.1l0,0.2 M6.2,10.9l0-0.4
       `}
-      // tslint:enable max-line-length
     />
   </Svg.Svg>
 );

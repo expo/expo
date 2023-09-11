@@ -86,7 +86,7 @@ class AppContextActivityResultRegistry(
   private val pendingResults = Bundle/*<String, ActivityResult>*/()
 
   private val activity: AppCompatActivity
-    get() = requireNotNull(currentActivityProvider.currentActivity) { "Current Activity is not available at the moment" }
+    get() = requireNotNull(currentActivityProvider.currentActivity as? AppCompatActivity) { "Current Activity is not available at the moment" }
 
   /**
    * This method body is adapted mainly from [ComponentActivity.mActivityResultRegistry]

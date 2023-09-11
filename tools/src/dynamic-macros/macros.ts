@@ -1,61 +1,108 @@
 import JsonFile from '@expo/json-file';
+import {
+  isMultipartPartWithName,
+  parseMultipartMixedResponseAsync,
+} from '@expo/multipart-body-parser';
 import spawnAsync from '@expo/spawn-async';
-import { ExponentTools, Project, UrlUtils } from '@expo/xdl';
+import { Project, UrlUtils } from '@expo/xdl';
 import chalk from 'chalk';
+import crypto from 'crypto';
 import ip from 'ip';
-import fetch from 'node-fetch';
+import fetch, { Response } from 'node-fetch';
 import os from 'os';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
 import { getExpoRepositoryRootDir } from '../Directories';
 import { getHomeSDKVersionAsync } from '../ProjectVersions';
 
 interface Manifest {
   id: string;
-  name: string;
+  createdAt: string;
+  runtimeVersion: string;
+  metadata: { [key: string]: string };
+  extra: {
+    eas: {
+      projectId: string;
+    };
+    expoClient?: {
+      name: string;
+    };
+  };
 }
 
 // some files are absent on turtle builders and we don't want log errors there
 const isTurtle = !!process.env.TURTLE_WORKING_DIR_PATH;
 
-const dogfoodingHomeUrl = 'exp://exp.host/@expo-dogfooding/home';
-
 const EXPO_DIR = getExpoRepositoryRootDir();
+
+type AssetRequestHeaders = { authorization: string };
+
+async function getManifestBodyAsync(response: Response): Promise<{
+  manifest: Manifest;
+  assetRequestHeaders: {
+    [assetKey: string]: AssetRequestHeaders;
+  };
+}> {
+  const contentType = response.headers.get('content-type');
+  if (!contentType) {
+    throw new Error('The multipart manifest response is missing the content-type header');
+  }
+
+  if (contentType === 'application/expo+json' || contentType === 'application/json') {
+    const text = await response.text();
+    return { manifest: JSON.parse(text), assetRequestHeaders: {} };
+  }
+
+  const bodyBuffer = await response.arrayBuffer();
+  const multipartParts = await parseMultipartMixedResponseAsync(
+    contentType,
+    Buffer.from(bodyBuffer)
+  );
+
+  const manifestPart = multipartParts.find((part) => isMultipartPartWithName(part, 'manifest'));
+  if (!manifestPart) {
+    throw new Error('The multipart manifest response is missing the manifest part');
+  }
+
+  const extensionsPart = multipartParts.find((part) => isMultipartPartWithName(part, 'extensions'));
+  const assetRequestHeaders = extensionsPart
+    ? JSON.parse(extensionsPart.body).assetRequestHeaders
+    : {};
+
+  return { manifest: JSON.parse(manifestPart.body), assetRequestHeaders };
+}
 
 async function getManifestAsync(
   url: string,
-  platform: string,
-  sdkVersion: string | null
-): Promise<Manifest> {
-  const headers = {
-    'Exponent-Platform': platform,
-    Accept: 'application/expo+json,application/json',
+  platform: string
+): Promise<{
+  manifest: Manifest;
+  assetRequestHeaders: {
+    [assetKey: string]: AssetRequestHeaders;
   };
-  if (sdkVersion) {
-    headers['Exponent-SDK-Version'] = sdkVersion;
-  }
-  return await ExponentTools.getManifestAsync(url, headers, {
-    logger: {
-      log: () => {},
-      error: () => {},
-      info: () => {},
+}> {
+  const response = await fetch(url.replace('exp://', 'http://').replace('exps://', 'https://'), {
+    method: 'GET',
+    headers: {
+      accept: 'multipart/mixed,application/expo+json,application/json',
+      'expo-platform': platform,
     },
   });
+  return await getManifestBodyAsync(response);
 }
 
-async function getSavedDevHomeUrlAsync(): Promise<string> {
+async function getSavedDevHomeEASUpdateUrlAsync(): Promise<string> {
   const devHomeConfig = await new JsonFile(path.join(EXPO_DIR, 'dev-home-config.json')).readAsync();
   return devHomeConfig.url as string;
 }
 
-function kernelManifestObjectToJson(manifest) {
-  if (!manifest.id) {
-    // hack for now because unsigned manifest won't have an id
-    manifest.id = '@exponent/home';
-  }
-  manifest.sdkVersion = 'UNVERSIONED';
-  return JSON.stringify(manifest);
+function kernelManifestAndAssetRequestHeadersObjectToJson(obj: {
+  manifest: Manifest;
+  assetRequestHeaders: {
+    [assetKey: string]: AssetRequestHeaders;
+  };
+}) {
+  return JSON.stringify(obj);
 }
 
 export default {
@@ -102,7 +149,7 @@ export default {
   },
 
   async TEST_RUN_ID() {
-    return process.env.UNIVERSE_BUILD_ID || uuidv4();
+    return process.env.UNIVERSE_BUILD_ID || crypto.randomUUID();
   },
 
   async BUILD_MACHINE_LOCAL_HOSTNAME() {
@@ -122,33 +169,23 @@ export default {
   },
 
   async DEV_PUBLISHED_KERNEL_MANIFEST(platform) {
-    let manifest, savedDevHomeUrl;
+    let manifestAndAssetRequestHeaders: {
+      manifest: Manifest;
+      assetRequestHeaders: {
+        [assetKey: string]: AssetRequestHeaders;
+      };
+    };
+    let savedDevHomeUrl: string | undefined;
     try {
-      savedDevHomeUrl = await getSavedDevHomeUrlAsync();
-      const sdkVersion = await this.TEMPORARY_SDK_VERSION();
-
-      manifest = await getManifestAsync(savedDevHomeUrl, platform, sdkVersion);
+      savedDevHomeUrl = await getSavedDevHomeEASUpdateUrlAsync();
+      manifestAndAssetRequestHeaders = await getManifestAsync(savedDevHomeUrl, platform);
     } catch (e) {
-      const msg = `Unable to download manifest from ${savedDevHomeUrl}: ${e.message}`;
+      const msg = `Unable to download manifest from ${savedDevHomeUrl ?? '(error)'}: ${e.message}`;
       console[isTurtle ? 'debug' : 'error'](msg);
       return '';
     }
 
-    return kernelManifestObjectToJson(manifest);
-  },
-
-  async DOGFOODING_PUBLISHED_KERNEL_MANIFEST(platform) {
-    let manifest: Manifest;
-    try {
-      const sdkVersion = await this.TEMPORARY_SDK_VERSION();
-      manifest = await getManifestAsync(dogfoodingHomeUrl, platform, sdkVersion);
-    } catch (e) {
-      const msg = `Unable to download manifest from ${dogfoodingHomeUrl}: ${e.message}`;
-      console[isTurtle ? 'debug' : 'error'](msg);
-      return '';
-    }
-
-    return kernelManifestObjectToJson(manifest);
+    return kernelManifestAndAssetRequestHeadersObjectToJson(manifestAndAssetRequestHeaders);
   },
 
   async BUILD_MACHINE_KERNEL_MANIFEST(platform) {
@@ -156,19 +193,24 @@ export default {
       return '';
     }
 
+    if (process.env.CI) {
+      console.log('Skip fetching local manifest on CI.');
+      return '';
+    }
+
     const pathToHome = 'home';
     const url = await UrlUtils.constructManifestUrlAsync(path.join(EXPO_DIR, pathToHome));
 
     try {
-      const manifest = await getManifestAsync(url, platform, null);
+      const manifestAndAssetRequestHeaders = await getManifestAsync(url, platform);
 
-      if (manifest.name !== 'expo-home') {
+      if (manifestAndAssetRequestHeaders.manifest.extra?.expoClient?.name !== 'expo-home') {
         console.log(
           `Manifest at ${url} is not expo-home; using published kernel manifest instead...`
         );
         return '';
       }
-      return kernelManifestObjectToJson(manifest);
+      return kernelManifestAndAssetRequestHeadersObjectToJson(manifestAndAssetRequestHeaders);
     } catch {
       console.error(
         chalk.red(

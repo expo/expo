@@ -1,0 +1,1 @@
+{"version":3,"file":"index.native.js","sourceRoot":"","sources":["../../../../src/error-overlay/modules/NativeLogBox/index.native.ts"],"names":[],"mappings":";;;;;AAAA,2GAAmF;AAEnF,kBAAe,sBAAY,CAAC","sourcesContent":["import NativeLogBox from 'react-native/Libraries/NativeModules/specs/NativeLogBox';\n\nexport default NativeLogBox;\n"]}

@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -32,7 +32,10 @@ jobs:
         run: yarn install --ignore-scripts --frozen-lockfile
         working-directory: tools
       - name: 🛠 Compile TypeScript sources
-        run: yarn tsc
+        run: yarn build
+        working-directory: tools
+      - name: 🛠 Typecheck sources
+        run: yarn tsc --noEmit
         working-directory: tools
       - name: 🚨 Lint TypeScript sources
         run: yarn lint --max-warnings 0

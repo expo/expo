@@ -3,36 +3,61 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Linking } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { CommonAppDataFragment } from '../graphql/types';
 import { HomeStackRoutes } from '../navigation/Navigation.types';
 import { AppIcon } from '../screens/HomeScreen/AppIcon';
+import * as UrlUtils from '../utils/UrlUtils';
 import { useSDKExpired } from '../utils/useSDKExpired';
+
+type UpdateBranches = CommonAppDataFragment['updateBranches'];
+type UpdateBranch = UpdateBranches[number];
 
 type Props = {
   imageURL?: string;
   name: string;
+  fullName: string;
   subtitle?: string;
   sdkVersion?: string;
   id: string;
   first: boolean;
   last: boolean;
+  updateBranches: UpdateBranches;
 };
+
+function hasEASUpdates(updateBranches: UpdateBranches): boolean {
+  return updateBranches.some((branch: UpdateBranch) => branch.updates.length > 0);
+}
 
 /**
  * This component is used to render a list item for the projects section on the homescreen and on
  * the projects list page for an account.
  */
 
-export function ProjectsListItem({ imageURL, name, subtitle, sdkVersion, id, first, last }: Props) {
+export function ProjectsListItem({
+  imageURL,
+  name,
+  subtitle,
+  sdkVersion,
+  id,
+  first,
+  last,
+  updateBranches,
+  fullName,
+}: Props) {
   const theme = useExpoTheme();
   const [isExpired, sdkVersionNumber] = useSDKExpired(sdkVersion);
 
   const navigation = useNavigation<StackNavigationProp<HomeStackRoutes>>();
 
   function onPress() {
-    navigation.push('ProjectDetails', { id });
+    if (hasEASUpdates(updateBranches)) {
+      navigation.push('ProjectDetails', { id });
+    } else {
+      Linking.openURL(UrlUtils.normalizeUrl(fullName));
+    }
   }
 
   const showSubtitle = subtitle && name.toLowerCase() !== subtitle.toLowerCase();

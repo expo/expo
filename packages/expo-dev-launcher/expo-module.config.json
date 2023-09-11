@@ -4,8 +4,18 @@
   "ios": {
     "podspecPath": "expo-dev-launcher.podspec",
     "swiftModuleName": "EXDevLauncher",
+    "modules": ["DevLauncherInternal", "DevLauncherAuth", "RNCSafeAreaProviderManager"],
     "appDelegateSubscribers": ["ExpoDevLauncherAppDelegateSubscriber"],
     "reactDelegateHandlers": ["ExpoDevLauncherReactDelegateHandler"],
     "debugOnly": true
+  },
+  "android": {
+    "gradlePlugins": [
+      {
+        "id": "expo-dev-launcher-gradle-plugin",
+        "group": "expo.modules",
+        "sourceDir": "expo-dev-launcher-gradle-plugin"
+      }
+    ]
   }
 }

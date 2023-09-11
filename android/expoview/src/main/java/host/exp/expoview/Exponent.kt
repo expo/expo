@@ -13,6 +13,8 @@ import android.os.StrictMode.ThreadPolicy
 import android.os.UserManager
 import com.facebook.common.internal.ByteStreams
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory
+import com.facebook.imagepipeline.producers.HttpUrlConnectionNetworkFetcher
 import com.raizlabs.android.dbflow.config.DatabaseConfig
 import com.raizlabs.android.dbflow.config.FlowConfig
 import com.raizlabs.android.dbflow.config.FlowManager
@@ -20,11 +22,12 @@ import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
-import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExponentUrls
+import host.exp.exponent.kernel.ExponentUrls.addHeadersFromJSONObject
 import host.exp.exponent.kernel.KernelConstants
+import host.exp.exponent.kernel.KernelNetworkInterceptor
 import host.exp.exponent.network.ExpoResponse
 import host.exp.exponent.network.ExponentHttpClient.SafeCallback
 import host.exp.exponent.network.ExponentNetwork
@@ -37,10 +40,12 @@ import org.apache.commons.io.IOUtils
 import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.commons.io.output.TeeOutputStream
 import org.json.JSONArray
+import org.json.JSONObject
 import versioned.host.exp.exponent.ExponentPackageDelegate
 import java.io.*
 import java.net.URLEncoder
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class Exponent private constructor(val context: Context, val application: Application) {
@@ -113,6 +118,7 @@ class Exponent private constructor(val context: Context, val application: Applic
   fun loadJSBundle(
     manifest: Manifest?,
     urlString: String,
+    requestHeaders: JSONObject,
     id: String,
     abiVersion: String,
     bundleListener: BundleListener,
@@ -120,9 +126,6 @@ class Exponent private constructor(val context: Context, val application: Applic
     shouldForceCache: Boolean = false
   ): Boolean {
     var shouldForceNetwork = shouldForceNetworkArg
-    if (id != KernelConstants.KERNEL_BUNDLE_ID) {
-      Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_BUNDLE)
-    }
     val isDeveloping = manifest?.isDevelopmentMode() ?: false
     if (isDeveloping) {
       // This is important for running locally with no-dev
@@ -147,9 +150,9 @@ class Exponent private constructor(val context: Context, val application: Applic
     try {
       val requestBuilder = if (KernelConstants.KERNEL_BUNDLE_ID == id) {
         // TODO(eric): remove once home bundle is loaded normally
-        ExponentUrls.addExponentHeadersToUrl(urlString)
+        ExponentUrls.addExponentHeadersToUrl(urlString).addHeadersFromJSONObject(requestHeaders)
       } else {
-        Request.Builder().url(urlString)
+        Request.Builder().url(urlString).addHeadersFromJSONObject(requestHeaders)
       }
       if (shouldForceNetwork) {
         requestBuilder.cacheControl(CacheControl.FORCE_NETWORK)
@@ -179,15 +182,7 @@ class Exponent private constructor(val context: Context, val application: Applic
             return
           }
 
-          if (id != KernelConstants.KERNEL_BUNDLE_ID) {
-            Analytics.markEvent(Analytics.TimedEvent.FINISHED_FETCHING_BUNDLE)
-          }
-
           try {
-            if (id != KernelConstants.KERNEL_BUNDLE_ID) {
-              Analytics.markEvent(Analytics.TimedEvent.STARTED_WRITING_BUNDLE)
-            }
-
             val sourceFile = File(directory, fileName)
 
             var hasCachedSourceFile = false
@@ -225,10 +220,6 @@ class Exponent private constructor(val context: Context, val application: Applic
                 IOUtils.closeQuietly(byteArrayOutputStream)
                 IOUtils.closeQuietly(inputStream)
               }
-            }
-
-            if (id != KernelConstants.KERNEL_BUNDLE_ID) {
-              Analytics.markEvent(Analytics.TimedEvent.FINISHED_WRITING_BUNDLE)
             }
 
             if (Constants.WRITE_BUNDLE_TO_LOG) {
@@ -423,13 +414,18 @@ class Exponent private constructor(val context: Context, val application: Applic
     }
 
     try {
-      Fresco.initialize(context)
+      val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(HttpUrlConnectionNetworkFetcher.HTTP_DEFAULT_TIMEOUT.toLong(), TimeUnit.MILLISECONDS)
+        .readTimeout(0, TimeUnit.MILLISECONDS)
+        .writeTimeout(0, TimeUnit.MILLISECONDS)
+        .addInterceptor(KernelNetworkInterceptor.okhttpAppInterceptorProxy)
+        .addNetworkInterceptor(KernelNetworkInterceptor.okhttpNetworkInterceptorProxy)
+        .build()
+      val imagePipelineConfig = OkHttpImagePipelineConfigFactory.newBuilder(context, okHttpClient).build()
+      Fresco.initialize(context, imagePipelineConfig)
     } catch (e: RuntimeException) {
       EXL.testError(e)
     }
-
-    // Amplitude
-    Analytics.initializeAmplitude(context, application)
 
     // TODO: profile this
     FlowManager.init(

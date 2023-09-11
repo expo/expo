@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+## 2.2.2 — 2023-09-04
+
+### 💡 Others
+
+- Reorder imports in the AppEntry template to match the latest eslint-config-universe settings ([#23544](https://github.com/expo/expo/pull/23544) by [@ide](https://github.com/ide))
+
+## 2.2.1 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
+## 2.2.0 — 2023-05-08
+
+### 🎉 New features
+
+- Add support for passing options to `expo/metro-config` -- enables CSS support. ([#22325](https://github.com/expo/expo/pull/22325) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.1.0 — 2023-02-03
+
+### 💡 Others
+
+- Bump `@expo/metro-config`, `@expo/webpack-config`. ([#20720](https://github.com/expo/expo/pull/20720) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.0.4 — 2022-10-25
+
+_This version does not introduce any user-facing changes._
+
 ## 2.0.2 — 2022-07-25
 
 _This version does not introduce any user-facing changes._

@@ -1,16 +1,16 @@
 import { iconSize, OpenInternalIcon } from '@expo/styleguide-native';
-import { View, Text, Spacer, Row, useExpoTheme } from 'expo-dev-client-components';
+import { View, Text, Row, useExpoTheme } from 'expo-dev-client-components';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
 import { Linking, Platform } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import semver from 'semver';
 
+import { WarningBox } from './WarningBox';
 import { SectionHeader } from '../../components/SectionHeader';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import Environment from '../../utils/Environment';
 import * as UrlUtils from '../../utils/UrlUtils';
-import { WarningBox } from './WarningBox';
 
 type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
 
@@ -35,8 +35,7 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
   if (doesLatestLegacyPublishHaveRuntimeVersion) {
     warning = (
       <WarningBox
-        title="Incompatible update"
-        message="The latest update uses a runtime version that is not compatible with Expo Go. To continue, create a custom dev client."
+        message="The latest classic update on the 'default' release channel uses a runtime version that is not compatible with Expo Go. To continue, create a development build."
         showLearnMore
         onLearnMorePress={() => {
           WebBrowser.openBrowserAsync('https://docs.expo.dev/clients/getting-started/');
@@ -46,8 +45,7 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
   } else if (isLatestLegacyPublishDeprecated) {
     warning = (
       <WarningBox
-        title="Unsupported SDK version"
-        message={`This project's SDK version (${legacyUpdatesSDKMajorVersion}) is no longer supported.`}
+        message={`The latest classic update on the 'default' release channel uses SDK (${legacyUpdatesSDKMajorVersion}), which is no longer supported.`}
       />
     );
   }
@@ -55,31 +53,28 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
   const theme = useExpoTheme();
 
   return (
-    <>
+    <View>
+      <SectionHeader header="Classic release channels" style={{ paddingTop: 0 }} />
       {warning ?? (
-        <View>
-          <SectionHeader header="Classic Release Channels" style={{ paddingTop: 0 }} />
-          <View bg="default" overflow="hidden" rounded="large" border="default">
-            <TouchableOpacity
-              onPress={() => {
-                Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
-              }}>
-              <Row padding="medium" justify="between" align="center" bg="default">
-                <Text size="medium" type="InterRegular">
-                  default
-                </Text>
-                <OpenInternalIcon color={theme.icon.default} size={iconSize.tiny} />
-              </Row>
-            </TouchableOpacity>
-          </View>
-          <View padding="medium">
-            <Text size="small" color="secondary" type="InterRegular">
-              {moreLegacyBranchesText}
-            </Text>
-          </View>
+        <View bg="default" overflow="hidden" rounded="large" border="default">
+          <TouchableOpacity
+            onPress={() => {
+              Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
+            }}>
+            <Row padding="medium" justify="between" align="center" bg="default">
+              <Text size="medium" type="InterRegular">
+                default
+              </Text>
+              <OpenInternalIcon color={theme.icon.default} size={iconSize.tiny} />
+            </Row>
+          </TouchableOpacity>
         </View>
       )}
-      <Spacer.Vertical size="medium" />
-    </>
+      <View padding="medium">
+        <Text size="small" color="secondary" type="InterRegular">
+          {moreLegacyBranchesText}
+        </Text>
+      </View>
+    </View>
   );
 }

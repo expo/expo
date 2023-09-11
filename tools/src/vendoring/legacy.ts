@@ -77,6 +77,20 @@ const SvgModifier: ModuleModifier = async function (
   await addHeaderImport();
 };
 
+const MapsModifier: ModuleModifier = async function (
+  moduleConfig: VendoredModuleConfig,
+  clonedProjectPath: string
+): Promise<void> {
+  const fixGoogleMapsImports = async () => {
+    const targetPath = path.join(clonedProjectPath, 'ios', 'AirGoogleMaps', 'AIRGoogleMap.m');
+    let content = await fs.readFile(targetPath, 'utf8');
+    content = content.replace(/^#import "(GMU.+?\.h)"$/gm, '#import <Google-Maps-iOS-Utils/$1>');
+    await fs.writeFile(targetPath, content, 'utf8');
+  };
+
+  await fixGoogleMapsImports();
+};
+
 const ReanimatedModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
   clonedProjectPath: string
@@ -86,30 +100,6 @@ const ReanimatedModifier: ModuleModifier = async function (
   const androidMainPathExpoview = path.join(ANDROID_DIR, 'expoview', 'src', 'main');
   const JNIOldPackagePrefix = firstStep.sourceAndroidPackage!.split('.').join('/');
   const JNINewPackagePrefix = firstStep.targetAndroidPackage!.split('.').join('/');
-
-  const replaceHermesByJSC = async () => {
-    const nativeProxyPath = path.join(
-      clonedProjectPath,
-      'android',
-      'src',
-      'main',
-      'cpp',
-      'NativeProxy.cpp'
-    );
-    const runtimeCreatingLineJSC = 'jsc::makeJSCRuntime();';
-    const jscImportingLine = '#include <jsi/JSCRuntime.h>';
-    const runtimeCreatingLineHermes = 'facebook::hermes::makeHermesRuntime();';
-    const hermesImportingLine = '#include <hermes/hermes.h>';
-
-    const content = await fs.readFile(nativeProxyPath, 'utf8');
-    let transformedContent = content.replace(runtimeCreatingLineHermes, runtimeCreatingLineJSC);
-    transformedContent = transformedContent.replace(
-      new RegExp(hermesImportingLine, 'g'),
-      jscImportingLine
-    );
-
-    await fs.writeFile(nativeProxyPath, transformedContent, 'utf8');
-  };
 
   const replaceJNIPackages = async () => {
     const cppPattern = path.join(androidMainPathReanimated, 'cpp', '**', '*.@(h|cpp)');
@@ -195,7 +185,6 @@ const ReanimatedModifier: ModuleModifier = async function (
   };
 
   await applyRNVersionPatches();
-  await replaceHermesByJSC();
   await replaceJNIPackages();
   await copyCPP();
   await prepareIOSNativeFiles();
@@ -573,6 +562,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-maps': {
     repoUrl: 'https://github.com/react-native-community/react-native-maps.git',
     installableInManagedApps: true,
+    moduleModifier: MapsModifier,
     steps: [
       {
         sourceIosPath: 'ios/AirGoogleMaps',
@@ -582,9 +572,9 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         recursive: true,
         sourceIosPath: 'ios/AirMaps',
         targetIosPath: 'Api/Components/Maps',
-        sourceAndroidPath: 'android/src/main/java/com/airbnb/android/react/maps',
+        sourceAndroidPath: 'android/src/main/java/com/rnmaps/maps',
         targetAndroidPath: 'modules/api/components/maps',
-        sourceAndroidPackage: 'com.airbnb.android.react.maps',
+        sourceAndroidPackage: 'com.rnmaps.maps',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maps',
       },
     ],
@@ -614,6 +604,24 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/webview',
         sourceAndroidPackage: 'com.reactnativecommunity.webview',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.webview',
+      },
+      {
+        sourceAndroidPath: 'android/src/oldarch/com/reactnativecommunity/webview',
+        cleanupTargetPath: false,
+        targetAndroidPath: 'modules/api/components/webview',
+        sourceAndroidPackage: 'com.reactnativecommunity.webview',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.webview',
+        onDidVendorAndroidFile: async (file: string) => {
+          const fileName = path.basename(file);
+          if (fileName === 'RNCWebViewPackage.java') {
+            let content = await fs.readFile(file, 'utf8');
+            content = content.replace(
+              /^(package .+)$/gm,
+              '$1\nimport host.exp.expoview.BuildConfig;'
+            );
+            await fs.writeFile(file, content, 'utf8');
+          }
+        },
       },
     ],
   },
@@ -672,6 +680,13 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
       },
+      {
+        sourceAndroidPath: 'android/src/paper/java/com/reactcommunity/rndatetimepicker',
+        targetAndroidPath: 'modules/api/components/datetimepicker',
+        sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
+        cleanupTargetPath: false,
+      },
     ],
     warnings: [
       `NOTE: In Expo, native Android styles are prefixed with ${chalk.magenta(
@@ -692,34 +707,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/maskedview',
         sourceAndroidPackage: 'org.reactnative.maskedview',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maskedview',
-      },
-    ],
-  },
-  'react-native-pager-view': {
-    repoUrl: 'https://github.com/callstack/react-native-pager-view',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/PagerView',
-        sourceAndroidPath: 'android/src/main/java/com/reactnativepagerview/',
-        targetAndroidPath: 'modules/api/components/pagerview',
-        sourceAndroidPackage: 'com.reactnativepagerview',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.pagerview',
-      },
-    ],
-  },
-  'react-native-shared-element': {
-    repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/SharedElement',
-        sourceAndroidPath: 'android/src/main/java/com/ijzerenhein/sharedelement',
-        targetAndroidPath: 'modules/api/components/sharedelement',
-        sourceAndroidPackage: 'com.ijzerenhein.sharedelement',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.sharedelement',
       },
     ],
   },
@@ -745,21 +732,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/picker',
         sourceAndroidPackage: 'com.reactnativecommunity.picker',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.picker',
-      },
-    ],
-  },
-  '@react-native-community/slider': {
-    repoUrl: 'https://github.com/react-native-community/react-native-slider',
-    installableInManagedApps: true,
-    packageJsonPath: 'src',
-    steps: [
-      {
-        sourceIosPath: 'src/ios',
-        targetIosPath: 'Api/Components/Slider',
-        sourceAndroidPath: 'src/android/src/main/java/com/reactnativecommunity/slider',
-        targetAndroidPath: 'modules/api/components/slider',
-        sourceAndroidPackage: 'com.reactnativecommunity.slider',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.slider',
       },
     ],
   },

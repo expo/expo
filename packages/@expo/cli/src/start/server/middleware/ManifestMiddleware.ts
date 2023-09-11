@@ -1,17 +1,126 @@
 import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
+import findWorkspaceRoot from 'find-yarn-workspace-root';
+import path from 'path';
+import resolveFrom from 'resolve-from';
 import { resolve } from 'url';
 
+import { ExpoMiddleware } from './ExpoMiddleware';
+import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
+import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
+import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
+import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
-import { ExpoMiddleware } from './ExpoMiddleware';
-import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
-import { resolveEntryPoint } from './resolveEntryPoint';
-import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
-import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
+
+const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
+
+/** Wraps `findWorkspaceRoot` and guards against having an empty `package.json` file in an upper directory. */
+export function getWorkspaceRoot(projectRoot: string): string | null {
+  try {
+    return findWorkspaceRoot(projectRoot);
+  } catch (error: any) {
+    if (error.message.includes('Unexpected end of JSON input')) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+export function getEntryWithServerRoot(
+  projectRoot: string,
+  projectConfig: ProjectConfig,
+  platform: string
+) {
+  return path.relative(
+    getMetroServerRoot(projectRoot),
+    resolveAbsoluteEntryPoint(projectRoot, platform, projectConfig)
+  );
+}
+
+export function getMetroServerRoot(projectRoot: string) {
+  if (env.EXPO_USE_METRO_WORKSPACE_ROOT) {
+    return getWorkspaceRoot(projectRoot) ?? projectRoot;
+  }
+
+  return projectRoot;
+}
+
+/** Get the main entry module ID (file) relative to the project root. */
+export function resolveMainModuleName(
+  projectRoot: string,
+  projectConfig: ProjectConfig,
+  platform: string
+): string {
+  const entryPoint = getEntryWithServerRoot(projectRoot, projectConfig, platform);
+
+  debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
+
+  return stripExtension(entryPoint, 'js');
+}
+
+export function shouldEnableAsyncImports(projectRoot: string): boolean {
+  if (env.EXPO_NO_METRO_LAZY) {
+    return false;
+  }
+
+  // `@expo/metro-runtime` includes support for the fetch + eval runtime code required
+  // to support async imports. If it's not installed, we can't support async imports.
+  // If it is installed, the user MUST import it somewhere in their project.
+  // Expo Router automatically pulls this in, so we can check for it.
+  return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
+}
+
+export function createBundleUrlPath({
+  platform,
+  mainModuleName,
+  mode,
+  minify = mode === 'production',
+  environment,
+  serializerOutput,
+  serializerIncludeMaps,
+  lazy,
+}: {
+  platform: string;
+  mainModuleName: string;
+  mode: string;
+  minify?: boolean;
+  environment?: string;
+  serializerOutput?: 'static';
+  serializerIncludeMaps?: boolean;
+  lazy?: boolean;
+}): string {
+  const queryParams = new URLSearchParams({
+    platform: encodeURIComponent(platform),
+    dev: String(mode !== 'production'),
+    // TODO: Is this still needed?
+    hot: String(false),
+  });
+
+  if (lazy) {
+    queryParams.append('lazy', String(lazy));
+  }
+
+  if (minify) {
+    queryParams.append('minify', String(minify));
+  }
+  if (environment) {
+    queryParams.append('resolver.environment', environment);
+    queryParams.append('transform.environment', environment);
+  }
+  if (serializerOutput) {
+    queryParams.append('serializer.output', serializerOutput);
+  }
+  if (serializerIncludeMaps) {
+    queryParams.append('serializer.map', String(serializerIncludeMaps));
+  }
+
+  return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
+}
 
 /** Info about the computer hosting the dev server. */
 export interface HostInfo {
@@ -25,8 +134,6 @@ export interface HostInfo {
 
 /** Parsed values from the supported request headers. */
 export interface ManifestRequestInfo {
-  /** Should return the signed manifest. */
-  acceptSignature: boolean;
   /** Platform to serve. */
   platform: RuntimePlatform;
   /** Requested host name. */
@@ -55,11 +162,14 @@ export type ManifestMiddlewareOptions = {
 
 /** Base middleware creator for serving the Expo manifest (like the index.html but for native runtimes). */
 export abstract class ManifestMiddleware<
-  TManifestRequestInfo extends ManifestRequestInfo
+  TManifestRequestInfo extends ManifestRequestInfo,
 > extends ExpoMiddleware {
   private initialProjectConfig: ProjectConfig;
 
-  constructor(protected projectRoot: string, protected options: ManifestMiddlewareOptions) {
+  constructor(
+    protected projectRoot: string,
+    protected options: ManifestMiddlewareOptions
+  ) {
     super(
       projectRoot,
       /**
@@ -108,7 +218,10 @@ export abstract class ManifestMiddleware<
 
   /** Get the main entry module ID (file) relative to the project root. */
   private resolveMainModuleName(projectConfig: ProjectConfig, platform: string): string {
-    let entryPoint = resolveEntryPoint(this.projectRoot, platform, projectConfig);
+    let entryPoint = getEntryWithServerRoot(this.projectRoot, projectConfig, platform);
+
+    debug(`Resolved entry point: ${entryPoint} (project root: ${this.projectRoot})`);
+
     // NOTE(Bacon): Webpack is currently hardcoded to index.bundle on native
     // in the future (TODO) we should move this logic into a Webpack plugin and use
     // a generated file name like we do on web.
@@ -145,7 +258,13 @@ export abstract class ManifestMiddleware<
     hostname?: string | null;
     mainModuleName: string;
   }): string {
-    const path = this._getBundleUrlPath({ platform, mainModuleName });
+    const path = createBundleUrlPath({
+      mode: this.options.mode ?? 'development',
+      minify: this.options.minify,
+      platform,
+      mainModuleName,
+      lazy: shouldEnableAsyncImports(this.projectRoot),
+    });
 
     return (
       this.options.constructUrl({
@@ -169,6 +288,9 @@ export abstract class ManifestMiddleware<
       // TODO: Is this still needed?
       hot: String(false),
     });
+    if (shouldEnableAsyncImports(this.projectRoot)) {
+      queryParams.append('lazy', String(true));
+    }
 
     if (this.options.minify) {
       queryParams.append('minify', String(this.options.minify));
@@ -195,11 +317,8 @@ export abstract class ManifestMiddleware<
     hostname?: string | null;
   }): ExpoGoConfig {
     return {
-      // localhost:19000
+      // localhost:8081
       debuggerHost: this.options.constructUrl({ scheme: '', hostname }),
-      // http://localhost:19000/logs -- used to send logs to the CLI for displaying in the terminal.
-      // This is deprecated in favor of the WebSocket connection setup in Metro.
-      logUrl: this.options.constructUrl({ scheme: 'http', hostname }) + '/logs',
       // Required for Expo Go to function.
       developer: {
         tool: DEVELOPER_TOOL,
@@ -213,8 +332,8 @@ export abstract class ManifestMiddleware<
       mainModuleName,
       // Add this string to make Flipper register React Native / Metro as "running".
       // Can be tested by running:
-      // `METRO_SERVER_PORT=19000 open -a flipper.app`
-      // Where 19000 is the port where the Expo project is being hosted.
+      // `METRO_SERVER_PORT=8081 open -a flipper.app`
+      // Where 8081 is the port where the Expo project is being hosted.
       __flipperHack: 'React Native packager is running',
     };
   }
@@ -236,6 +355,16 @@ export abstract class ManifestMiddleware<
     await resolveGoogleServicesFile(this.projectRoot, manifest);
   }
 
+  public getWebBundleUrl() {
+    const platform = 'web';
+    // Read from headers
+    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
+    return this._getBundleUrlPath({
+      platform,
+      mainModuleName,
+    });
+  }
+
   /**
    * Web platforms should create an index.html response using the same script resolution as native.
    *
@@ -243,13 +372,8 @@ export abstract class ManifestMiddleware<
    * to an `index.html`, this enables the web platform to load JavaScript from the server.
    */
   private async handleWebRequestAsync(req: ServerRequest, res: ServerResponse) {
-    const platform = 'web';
     // Read from headers
-    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
-    const bundleUrl = this._getBundleUrlPath({
-      platform,
-      mainModuleName,
-    });
+    const bundleUrl = this.getWebBundleUrl();
 
     res.setHeader('Content-Type', 'text/html');
 
@@ -262,7 +386,7 @@ export abstract class ManifestMiddleware<
   }
 
   /** Exposed for testing. */
-  async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse) {
+  async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse, next: ServerNext) {
     // Read the config
     const bundlers = getPlatformBundlers(this.initialProjectConfig.exp);
     if (bundlers.web === 'metro') {
@@ -272,8 +396,14 @@ export abstract class ManifestMiddleware<
       const platform = parsePlatformHeader(req);
       // On web, serve the public folder
       if (!platform || platform === 'web') {
-        await this.handleWebRequestAsync(req, res);
-        return true;
+        if (this.initialProjectConfig.exp.web?.output === 'static') {
+          // Skip the spa-styled index.html when static generation is enabled.
+          next();
+          return true;
+        } else {
+          await this.handleWebRequestAsync(req, res);
+          return true;
+        }
       }
     }
     return false;
@@ -285,7 +415,7 @@ export abstract class ManifestMiddleware<
     next: ServerNext
   ): Promise<void> {
     // First check for standard JavaScript runtimes (aka legacy browsers like Chrome).
-    if (await this.checkBrowserRequestAsync(req, res)) {
+    if (await this.checkBrowserRequestAsync(req, res, next)) {
       return;
     }
 

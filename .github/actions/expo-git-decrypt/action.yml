@@ -21,7 +21,7 @@ runs:
       run: brew install git-crypt
     - name: 🔓 Decrypt secrets if possible
       env:
-        GIT_CRYPT_KEY_BASE64: ${{ inputs.GIT_CRYPT_KEY_BASE64 }}
+        GIT_CRYPT_KEY_BASE64: ${{ inputs.key }}
       shell: bash
       run: |
         if [[ ${GIT_CRYPT_KEY_BASE64:-unset} = unset ]]; then

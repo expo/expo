@@ -15,6 +15,11 @@ export async function getDocumentAsync({ type = '*/*', copyToCacheDirectory = tr
     if (typeof type === 'string') {
         type = [type];
     }
-    return await ExpoDocumentPicker.getDocumentAsync({ type, copyToCacheDirectory, multiple });
+    return await ExpoDocumentPicker.getDocumentAsync({
+        type,
+        copyToCacheDirectory,
+        multiple,
+    });
 }
+export * from './types';
 //# sourceMappingURL=index.js.map

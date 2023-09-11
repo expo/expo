@@ -17,6 +17,7 @@ class EXDevMenuDevSettings: NSObject {
     devSettings["isElementInspectorAvailable"] = false;
     devSettings["isHotLoadingAvailable"] = false;
     devSettings["isPerfMonitorAvailable"] = false;
+    devSettings["isJSInspectorAvailable"] = false
     
     let manager = DevMenuManager.shared
     
@@ -34,6 +35,7 @@ class EXDevMenuDevSettings: NSObject {
       devSettings["isRemoteDebuggingAvailable"] = bridgeSettings.isRemoteDebuggingAvailable
       devSettings["isHotLoadingAvailable"] = bridgeSettings.isHotLoadingAvailable
       devSettings["isPerfMonitorAvailable"] = isPerfMonitorAvailable
+      devSettings["isJSInspectorAvailable"] = bridge.batched.isInspectable
        
       let isElementInspectorAvailable = manager.currentManifest?.isDevelopmentMode()
       devSettings["isElementInspectorAvailable"] = isElementInspectorAvailable

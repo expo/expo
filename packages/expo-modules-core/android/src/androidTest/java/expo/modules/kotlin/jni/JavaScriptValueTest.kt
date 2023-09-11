@@ -3,7 +3,6 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
-import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
@@ -13,7 +12,7 @@ class JavaScriptValueTest {
 
   @Before
   fun before() {
-    jsiInterop = JSIInteropModuleRegistry(mockk()).apply {
+    jsiInterop = JSIInteropModuleRegistry(defaultAppContextMock()).apply {
       installJSIForTests()
     }
   }
@@ -58,7 +57,7 @@ class JavaScriptValueTest {
     val p1 = jsObject.getProperty("p1")
     Truth.assertThat(p1.kind()).isEqualTo("number")
     Truth.assertThat(p1.isNumber()).isEqualTo(true)
-    Truth.assertThat(p1.getDouble().toInt()).isEqualTo(123)
+    Truth.assertThat(p1.getInt()).isEqualTo(123)
 
     val properties = jsObject.getPropertyNames()
     Truth.assertThat(properties).hasLength(1)
@@ -81,13 +80,13 @@ class JavaScriptValueTest {
       val result = evaluateScript(
         """
         const x = {};
-        ExpoModules.TestModule.f(x);
+        expo.modules.TestModule.f(x);
         x
         """.trimIndent()
       ).getObject()
 
-      Truth.assertThat(result.getProperty("expo").getDouble().toInt()).isEqualTo(123)
-      Truth.assertThat(receivedObject!!.getProperty("expo").getDouble().toInt()).isEqualTo(123)
+      Truth.assertThat(result.getProperty("expo").getInt()).isEqualTo(123)
+      Truth.assertThat(receivedObject!!.getProperty("expo").getInt()).isEqualTo(123)
     }
   }
 }

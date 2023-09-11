@@ -1,25 +1,23 @@
 import { Platform } from 'expo-modules-core';
 
-import ExponentMagnetometer from '../ExponentMagnetometer';
-import ExponentMagnetometerUncalibrated from '../ExponentMagnetometerUncalibrated';
 import Magnetometer from '../Magnetometer';
 import MagnetometerUncalibrated from '../MagnetometerUncalibrated';
 
 describe(
   'Magnetometer',
-  declareMagnetometerSpecs(Magnetometer, ExponentMagnetometer, {
+  declareMagnetometerSpecs(Magnetometer, {
     magnetometerDidUpdate: 'magnetometerDidUpdate',
   })
 );
 
 describe(
   'MagnetometerUncalibrated',
-  declareMagnetometerSpecs(MagnetometerUncalibrated, ExponentMagnetometerUncalibrated, {
+  declareMagnetometerSpecs(MagnetometerUncalibrated, {
     magnetometerDidUpdate: 'magnetometerUncalibratedDidUpdate',
   })
 );
 
-function declareMagnetometerSpecs(Magnetometer, NativeMagnetometer, eventNames) {
+function declareMagnetometerSpecs(Magnetometer, eventNames) {
   return () => {
     afterEach(() => {
       Magnetometer.removeAllListeners();
@@ -29,6 +27,7 @@ function declareMagnetometerSpecs(Magnetometer, NativeMagnetometer, eventNames) 
       it(`adds an magnetometer update listener`, () => {
         const mockListener = jest.fn();
         const subscription = Magnetometer.addListener(mockListener);
+        const NativeMagnetometer = Magnetometer._nativeModule;
 
         expect(NativeMagnetometer.addListener).toHaveBeenCalledTimes(1);
         expect(NativeMagnetometer.addListener).toHaveBeenCalledWith(
@@ -52,6 +51,7 @@ function declareMagnetometerSpecs(Magnetometer, NativeMagnetometer, eventNames) 
 
     it(`sets the update interval`, async () => {
       await Magnetometer.setUpdateInterval(1234);
+      const NativeMagnetometer = Magnetometer._nativeModule;
       expect(NativeMagnetometer.setUpdateInterval).toHaveBeenCalledTimes(1);
       expect(NativeMagnetometer.setUpdateInterval).toHaveBeenCalledWith(1234);
     });

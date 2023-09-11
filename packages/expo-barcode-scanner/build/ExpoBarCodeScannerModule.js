@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoBarCodeScannerModule;
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoBarCodeScanner');
 //# sourceMappingURL=ExpoBarCodeScannerModule.js.map

@@ -33,44 +33,32 @@ Object.defineProperty(exports, "loaders", {
     return _createMultiRuleTransformer().loaders;
   }
 });
-
 function _createExoticTransformer() {
   const data = require("./createExoticTransformer");
-
   _createExoticTransformer = function () {
     return data;
   };
-
   return data;
 }
-
 function _getCacheKey() {
   const data = require("./getCacheKey");
-
   _getCacheKey = function () {
     return data;
   };
-
   return data;
 }
-
 function _createMultiRuleTransformer() {
   const data = require("./createMultiRuleTransformer");
-
   _createMultiRuleTransformer = function () {
     return data;
   };
-
   return data;
 }
-
 function _createMatcher() {
   const data = require("./createMatcher");
-
   _createMatcher = function () {
     return data;
   };
-
   return data;
 }
 //# sourceMappingURL=index.js.map

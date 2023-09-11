@@ -1,6 +1,4 @@
-import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import React, { FC, useMemo } from 'react';
 
 import { ApiVersionSelect } from './ApiVersionSelect';
@@ -18,11 +16,11 @@ export type NavigationProps = {
 
 export function Navigation({ routes }: NavigationProps) {
   const router = useRouter();
-  const activeRoutes = useMemo(() => findActiveRoute(routes, router.pathname), [router.pathname]);
+  const activeRoutes = useMemo(() => findActiveRoute(routes, router?.pathname), [router?.pathname]);
   const persistScroll = usePersistScroll('navigation');
 
   return (
-    <nav css={navigationStyle}>
+    <nav className="w-[280px] h-full bg-subtle dark:bg-default">
       <LayoutScroll {...persistScroll}>
         <ApiVersionSelect />
         {routes.map(route => navigationRenderer(route, activeRoutes))}
@@ -30,15 +28,6 @@ export function Navigation({ routes }: NavigationProps) {
     </nav>
   );
 }
-
-const navigationStyle = css({
-  width: 280,
-  height: '100%',
-  backgroundColor: theme.background.secondary,
-  '[data-expo-theme="dark"] &': {
-    backgroundColor: theme.background.default,
-  },
-});
 
 const renderers: Record<NavigationType, FC<React.PropsWithChildren<NavigationRenderProps>>> = {
   section: SectionList,
@@ -69,12 +58,16 @@ function navigationRenderer(
  *   - Group -> if the group contains an active page
  *   - Section -> if the section contains an active group or page
  */
-export function findActiveRoute(routes: NavigationNode[], pathname: string) {
+export function findActiveRoute(routes: NavigationNode[], pathname?: string) {
   const activeRoutes: Record<NavigationType, NavigationNode | null> = {
     page: null,
     group: null,
     section: null,
   };
+
+  if (!pathname) {
+    return activeRoutes;
+  }
 
   for (const route of routes) {
     // Try to exit early on hidden routes
@@ -91,7 +84,7 @@ export function findActiveRoute(routes: NavigationNode[], pathname: string) {
       case 'group':
         {
           const nestedActiveRoutes = findActiveRoute(route.children, pathname);
-          if (nestedActiveRoutes.page) {
+          if (nestedActiveRoutes?.page) {
             activeRoutes.page = nestedActiveRoutes.page;
             activeRoutes.group = route;
             break;
@@ -102,7 +95,7 @@ export function findActiveRoute(routes: NavigationNode[], pathname: string) {
       case 'section':
         {
           const nestedActiveRoutes = findActiveRoute(route.children, pathname);
-          if (nestedActiveRoutes.group || nestedActiveRoutes.page) {
+          if (nestedActiveRoutes?.group || nestedActiveRoutes?.page) {
             activeRoutes.page = nestedActiveRoutes.page;
             activeRoutes.group = nestedActiveRoutes.group;
             activeRoutes.section = route;

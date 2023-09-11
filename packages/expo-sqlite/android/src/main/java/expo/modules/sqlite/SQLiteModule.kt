@@ -3,77 +3,84 @@ package expo.modules.sqlite
 
 import android.content.Context
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
-import expo.modules.core.ExportedModule
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
+import io.requery.android.database.sqlite.SQLiteDatabase
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 import java.io.File
 import java.io.IOException
 import java.util.*
 
-private val TAG = SQLiteModule::class.java.simpleName
-private val EMPTY_ROWS = arrayOf<Array<Any?>>()
-private val EMPTY_COLUMNS = arrayOf<String?>()
+private val EMPTY_ROWS = emptyArray<Array<Any?>>()
+private val EMPTY_COLUMNS = emptyArray<String?>()
 private val EMPTY_RESULT = SQLiteModule.SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, null)
 private val DATABASES: MutableMap<String, SQLiteDatabase?> = HashMap()
 
-class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
-  override fun getName(): String {
-    return "ExponentSQLite"
+class SQLiteModule : Module() {
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+  override fun definition() = ModuleDefinition {
+    Name("ExpoSQLite")
+
+    AsyncFunction("exec") { dbName: String, queries: List<Query>, readOnly: Boolean ->
+      return@AsyncFunction execute(dbName, queries, readOnly)
+    }
+
+    AsyncFunction("execRawQuery") { dbName: String, queries: List<Query>, readOnly: Boolean ->
+      return@AsyncFunction execute(dbName, queries, readOnly, raw = true)
+    }
+
+    AsyncFunction("close") { dbName: String ->
+      DATABASES
+        .remove(dbName)
+        ?.close()
+    }
+
+    Function("closeSync") { dbName: String ->
+      DATABASES
+        .remove(dbName)
+        ?.close()
+    }
+
+    AsyncFunction("deleteAsync") { dbName: String ->
+      if (DATABASES.containsKey(dbName)) {
+        throw OpenDatabaseException(dbName)
+      }
+      val dbFile = File(pathForDatabaseName(dbName))
+      if (!dbFile.exists()) {
+        throw DatabaseNotFoundException(dbName)
+      }
+      if (!dbFile.delete()) {
+        throw DeleteDatabaseException(dbName)
+      }
+    }
   }
 
-  @ExpoMethod
-  fun exec(dbName: String, queries: ArrayList<ArrayList<Any>>, readOnly: Boolean, promise: Promise) {
-    try {
-      val db = getDatabase(dbName)
-      val results = queries.map { sqlQuery ->
-        val sql = sqlQuery[0] as String
-        val bindArgs = convertParamsToStringArray(sqlQuery[1] as ArrayList<Any?>)
-        try {
-          if (isSelect(sql)) {
-            doSelectInBackgroundAndPossiblyThrow(sql, bindArgs, db)
-          } else { // update/insert/delete
-            if (readOnly) {
-              SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, ReadOnlyException())
+  private fun execute(dbName: String, queries: List<Query>, readOnly: Boolean, raw: Boolean = false): List<Any> {
+    val db = getDatabase(dbName)
+    val results = queries.map { sqlQuery ->
+      val sql = sqlQuery.sql
+      val bindArgs = convertParamsToStringArray(sqlQuery.args)
+      try {
+        if (isSelect(sql)) {
+          doSelectInBackgroundAndPossiblyThrow(sql, bindArgs, db)
+        } else { // update/insert/delete
+          if (readOnly) {
+            SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, ReadOnlyException())
+          } else {
+            if (raw) {
+              doRawUpdate(sql, bindArgs, db)
             } else {
               doUpdateInBackgroundAndPossiblyThrow(sql, bindArgs, db)
             }
           }
-        } catch (e: Throwable) {
-          SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, e)
         }
+      } catch (e: Throwable) {
+        SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, e)
       }
-      val data = pluginResultsToPrimitiveData(results)
-      promise.resolve(data)
-    } catch (e: Exception) {
-      promise.reject("SQLiteError", e)
     }
-  }
-
-  @ExpoMethod
-  fun close(dbName: String, promise: Promise) {
-    DATABASES
-      .remove(dbName)
-      ?.close()
-    promise.resolve(null)
-  }
-
-  @ExpoMethod
-  fun deleteAsync(dbName: String, promise: Promise) {
-    val errorCode = "SQLiteError"
-    if (DATABASES.containsKey(dbName)) {
-      promise.reject(errorCode, "Unable to delete database '$dbName' that is currently open. Close it prior to deletion.")
-    }
-    val dbFile = File(pathForDatabaseName(dbName))
-    if (!dbFile.exists()) {
-      promise.reject(errorCode, "Database '$dbName' not found")
-      return
-    }
-    if (!dbFile.delete()) {
-      promise.reject(errorCode, "Unable to delete the database file for '$dbName' database")
-      return
-    }
-    promise.resolve(null)
+    return pluginResultsToPrimitiveData(results)
   }
 
   // do a update/delete/insert operation
@@ -85,10 +92,11 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
     return db.compileStatement(sql).use { statement ->
       if (bindArgs != null) {
         for (i in bindArgs.size downTo 1) {
-          if (bindArgs[i - 1] == null) {
-            statement.bindNull(i)
+          val args = bindArgs[i - 1]
+          if (args != null) {
+            statement.bindString(i, args)
           } else {
-            statement.bindString(i, bindArgs[i - 1])
+            statement.bindNull(i)
           }
         }
       }
@@ -106,6 +114,78 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
         EMPTY_RESULT
       }
     }
+  }
+
+  private fun doRawUpdate(
+    sql: String,
+    bindArgs: Array<String?>,
+    db: SQLiteDatabase
+  ): SQLitePluginResult {
+    return db.rawQuery(sql, bindArgs).use { cursor ->
+      val numRows = cursor.count
+      if (numRows == 0) {
+        return EMPTY_RESULT
+      }
+
+      val numColumns = cursor.columnCount
+      val columnNames = cursor.columnNames
+      val rows: Array<Array<Any?>> = Array(numRows) { arrayOfNulls(numColumns) }
+      var i = 0
+      while (cursor.moveToNext()) {
+        val row = rows[i]
+        for (j in 0 until numColumns) {
+          row[j] = getValueFromCursor(cursor, j, cursor.getType(j))
+        }
+        rows[i] = row
+        i++
+      }
+
+      if (isInsert(sql)) {
+        val rowsAffected = getRowsAffected(db).let {
+          it.first.close()
+          it.second
+        }
+        val insertId = getInsertId(db).let {
+          it.first.close()
+          it.second
+        }
+        SQLitePluginResult(rows, columnNames, rowsAffected, insertId, null)
+      } else if (isDelete(sql) || isUpdate(sql)) {
+        val rowsAffected = getRowsAffected(db).let {
+          it.first.close()
+          it.second
+        }
+        SQLitePluginResult(rows, columnNames, rowsAffected, 0, null)
+      } else {
+        EMPTY_RESULT
+      }
+    }
+  }
+
+  private fun getRowsAffected(
+    db: SQLiteDatabase,
+  ): Pair<Cursor, Int> {
+    val cursor = db.rawQuery("SELECT changes() AS numRowsAffected", null)
+    val rowsAffected = if (cursor.moveToFirst()) {
+      val index = cursor.getColumnIndex("numRowsAffected")
+      cursor.getInt(index)
+    } else {
+      -1
+    }
+    return Pair(cursor, rowsAffected)
+  }
+
+  private fun getInsertId(
+    db: SQLiteDatabase,
+  ): Pair<Cursor, Long> {
+    val cursor = db.rawQuery("SELECT last_insert_rowid() AS insertId", null)
+    val insertId = if (cursor.moveToFirst()) {
+      val index = cursor.getColumnIndex("insertId")
+      cursor.getLong(index)
+    } else {
+      -1
+    }
+    return Pair(cursor, insertId)
   }
 
   // do a select operation
@@ -143,6 +223,7 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
         // convert byte[] to binary string; it's good enough, because
         // WebSQL doesn't support blobs anyway
         String(cursor.getBlob(index))
+
       Cursor.FIELD_TYPE_STRING -> cursor.getString(index)
       else -> null
     }
@@ -150,7 +231,7 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
 
   @Throws(IOException::class)
   private fun pathForDatabaseName(name: String): String {
-    val directory = File("${mContext.filesDir}${File.separator}SQLite")
+    val directory = File("${context.filesDir}${File.separator}SQLite")
     ensureDirExists(directory)
     return "$directory${File.separator}$name"
   }

@@ -1,0 +1,9 @@
+{
+  "extends": "../../../tsconfig.node",
+  "compilerOptions": {
+    "allowJs": true,
+    "outDir": "./build"
+  },
+  "include": ["./src", "e2e/__tests__/bare-test.ts"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+}

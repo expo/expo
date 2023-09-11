@@ -7,13 +7,15 @@
 #import "EXAppViewController.h"
 #import "EXHomeAppManager.h"
 #import "EXKernel.h"
-#import "EXAppLoader.h"
+#import "EXHomeLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXRootViewController.h"
 #import "EXDevMenuManager.h"
+
+@import ExpoScreenOrientation;
 
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
@@ -23,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXRootViewController () <EXAppBrowserController>
 
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
+@property (nonatomic, weak) UIViewController *transitioningToViewController;
 
 @end
 
@@ -51,11 +54,18 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
+  // During app transition we want to return the orientation of the screen that will be shown. This makes sure
+  // that the rotation animation starts as the new view controller is being shown.
+  if (_isAnimatingAppTransition && _transitioningToViewController != nil) {
+    return [_transitioningToViewController supportedInterfaceOrientations];
+  }
+
   const UIInterfaceOrientationMask visibleAppSupportedInterfaceOrientations =
     [EXKernel sharedInstance]
       .visibleApp
       .viewController
       .supportedInterfaceOrientations;
+
   return visibleAppSupportedInterfaceOrientations;
 }
 
@@ -64,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createRootAppAndMakeVisible
 {
   EXHomeAppManager *homeAppManager = [[EXHomeAppManager alloc] init];
-  EXAppLoader *homeAppLoader = [[EXAppLoader alloc] initWithLocalManifest:[EXHomeAppManager bundledHomeManifest]];
+  EXHomeLoader *homeAppLoader = [[EXHomeLoader alloc] initWithManifestAndAssetRequestHeaders:[EXHomeAppManager bundledHomeManifestAndAssetRequestHeaders]];
   EXKernelAppRecord *homeAppRecord = [[EXKernelAppRecord alloc] initWithAppLoader:homeAppLoader appManager:homeAppManager];
   [[EXKernel sharedInstance].appRegistry registerHomeAppRecord:homeAppRecord];
   [self moveAppToVisible:homeAppRecord];
@@ -113,7 +123,6 @@ NS_ASSUME_NONNULL_BEGIN
   [[EXDevMenuManager sharedInstance] close];
 
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
-  [[EXKernel sharedInstance] logAnalyticsEvent:@"RELOAD_EXPERIENCE" forAppRecord:visibleApp];
   NSURL *urlToRefresh = visibleApp.appLoader.manifestUrl;
 
   // Unregister visible app record so all modules get destroyed.
@@ -152,6 +161,9 @@ NS_ASSUME_NONNULL_BEGIN
       && appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord) {
     [[EXDevMenuManager sharedInstance] open];
   }
+
+  // Re-apply the default orientation after the app has been loaded (eq. after a reload)
+  [self _applySupportedInterfaceOrientations];
 }
 
 #pragma mark - internal
@@ -164,8 +176,9 @@ NS_ASSUME_NONNULL_BEGIN
   }
   
   EXAppViewController *viewControllerToShow = appRecord.viewController;
+  _transitioningToViewController = viewControllerToShow;
   
-  // Tried to foregroung the very same view controller
+  // Tried to foreground the very same view controller
   if (viewControllerToShow == self.contentViewController) {
     return;
   }
@@ -178,6 +191,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:viewControllerToShow.view];
     [self addChildViewController:viewControllerToShow];
   }
+
+  // Try transitioning to the interface orientation of the app before it is shown for smoother transitions
+  [self _applySupportedInterfaceOrientations];
 
   EX_WEAKIFY(self)
   void (^finalizeTransition)(void) = ^{
@@ -198,9 +214,11 @@ NS_ASSUME_NONNULL_BEGIN
     
     [self.view setNeedsLayout];
     self.isAnimatingAppTransition = NO;
+    self.transitioningToViewController = nil;
     if (self.delegate) {
       [self.delegate viewController:self didNavigateAppToVisible:appRecord];
     }
+    [self _applySupportedInterfaceOrientations];
   };
 
   BOOL animated = (viewControllerToHide && viewControllerToShow);
@@ -243,6 +261,18 @@ NS_ASSUME_NONNULL_BEGIN
   if (disableNuxDefaultsValue) {
     [self setIsNuxFinished:YES];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXHomeDisableNuxDefaultsKey];
+  }
+}
+
+- (void)_applySupportedInterfaceOrientations
+{
+  if (@available(iOS 16, *)) {
+    [self setNeedsUpdateOfSupportedInterfaceOrientations];
+  } else {
+    // On iOS < 16 we need to try to rotate to the desired orientation, which also
+    // makes the view controller to update the supported orientations
+    UIInterfaceOrientationMask orientationMask = [self supportedInterfaceOrientations];
+    [ScreenOrientationRegistry.shared enforceDesiredDeviceOrientationWithOrientationMask:orientationMask];
   }
 }
 

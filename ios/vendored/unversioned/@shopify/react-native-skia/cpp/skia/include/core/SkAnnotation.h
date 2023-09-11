@@ -19,6 +19,8 @@ class SkCanvas;
  *  Annotate the canvas by associating the specified URL with the
  *  specified rectangle (in local coordinates, just like drawRect).
  *
+ *  The URL is expected to be escaped and be valid 7-bit ASCII.
+ *
  *  If the backend of this canvas does not support annotations, this call is
  *  safely ignored.
  *

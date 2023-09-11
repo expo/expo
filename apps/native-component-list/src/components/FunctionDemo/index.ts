@@ -1,5 +1,5 @@
-import FunctionDemo, { FunctionDescription } from './FunctionDemo';
+import FunctionDemo, { FunctionDescription, useArguments } from './FunctionDemo';
 export default FunctionDemo;
 
-export { FunctionDescription };
+export { FunctionDescription, useArguments };
 export { FunctionParameter } from './index.types';

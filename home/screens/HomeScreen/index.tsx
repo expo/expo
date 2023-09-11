@@ -1,8 +1,9 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { useCurrentTheme, useExpoTheme } from 'expo-dev-client-components';
+import { View, useCurrentTheme, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { HomeScreenView } from './HomeScreenView';
 import { HomeScreenDataQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import { useDispatch, useSelector } from '../../redux/Hooks';
@@ -10,7 +11,6 @@ import { HistoryList } from '../../types';
 import { useAccountName } from '../../utils/AccountNameContext';
 import { useInitialData } from '../../utils/InitialDataContext';
 import hasSessionSecret from '../../utils/hasSessionSecret';
-import { HomeScreenView } from './HomeScreenView';
 
 type NavigationProps = StackScreenProps<HomeStackRoutes, 'Home'> & {
   homeScreenData?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
@@ -49,9 +49,10 @@ export function HomeScreen(props: NavigationProps) {
   const themeType = useCurrentTheme();
   const { accountName } = useAccountName();
   const { homeScreenData } = useInitialData();
+  const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.default }} edges={['top']}>
+    <View style={{ flex: 1, backgroundColor: theme.background.default, paddingTop: insets.top }}>
       <HomeScreenView
         theme={themeType}
         {...props}
@@ -63,6 +64,6 @@ export function HomeScreen(props: NavigationProps) {
         isAuthenticated={isAuthenticated}
         initialData={homeScreenData}
       />
-    </SafeAreaView>
+    </View>
   );
 }

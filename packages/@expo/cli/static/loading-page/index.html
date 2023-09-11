@@ -185,10 +185,27 @@
       color: var(--secondary-text-color);
     }
 
+    #alert {
+      background-color: #fff;
+      color: var(--secondary-text-color);
+
+      padding-top: 20px;
+      padding-bottom: 20px;
+      padding-left: 10px;
+      padding-right: 10px;
+
+      text-align: center;
+      font-size: 16px;
+      letter-spacing: -0.0001em;
+      line-height: 150%;
+
+      display: none;
+    }
   </style>
   <title>Expo Start | Loading Page</title>
 </head>
 <body>
+  <div id="alert"></div>
   <div class="logo-box">
     <div class="logo-background-box">
 
@@ -216,8 +233,8 @@
       <div class="info-box-details">
         <p class="info-box-app-name">{{ AppName }}</p>
         <div class="info-box-details-record">
-          <p>Runtime version</p>
-          <p>{{ RuntimeVersion }}</p>
+          <p>{{ ProjectVersionType }}</p>
+          <p>{{ ProjectVersion }}</p>
         </div>
         <!-- <div class="info-box-details-record">
           <p>Branch</p>
@@ -239,11 +256,29 @@
     <p class="bottom-bar-header">
       How would you like to open this project?
     </p>
-    <a id="expo-dev-client-link" href="/_expo/link?choice=expo-dev-client" class="bottom-bar-button bottom-bar-button-dark">Development App</a>
+    <a id="expo-dev-client-link" href="/_expo/link?choice=expo-dev-client" class="bottom-bar-button bottom-bar-button-dark">Development Build</a>
     <a id="expo-go-link" href="/_expo/link?choice=expo-go" class="bottom-bar-button bottom-bar-button-grey">Expo Go</a>
   </div>
   
   <script>
+  const alertElement = document.getElementById("alert");
+
+  const showAlert = (isExpoGo) => {
+    if (isExpoGo) {
+      alertElement.innerHTML = 'Unable to open in Expo Go. Please install <b>Expo Go</b> to continue.' +
+      '<br><a href="https://expo.dev/client">Learn more.</a>';
+    } else {
+      alertElement.innerHTML = 'Unable to open in Development Build with the <b>{{ Scheme }}</b> scheme. Please build and install a compatible <b>Development Build</b> to continue.' +
+      '<br><a href="https://docs.expo.dev/development/build/">Learn more.</a>';
+    }
+
+    alertElement.style.display = "block";
+  }
+
+  const hideAlert = () => {
+    alertElement.style.display = "none";
+  }
+
   function findGetParameter(parameterName) {
     let result = null;
 
@@ -257,11 +292,69 @@
     return result;
   }
 
+  function tryToDetectDeepLinkFailure(isExpoGo) {
+    const waitForRedirect = 800;
+    let didHide = false;
+    let didLoseFocuse = false;
+
+    const onVisibilitychange = (e) => { 
+      if (e.target.visibilityState === 'hidden') {
+        didHide = true;
+        hideAlert();
+      }
+    };
+
+    const clearOnFocus = () => {
+      hideAlert();
+      window.removeEventListener('focus', clearOnFocus);
+    };
+
+    const showErrorOnFocus = () => {
+      window.removeEventListener('focus', showErrorOnFocus);
+
+      setTimeout(() => {
+        window.addEventListener('focus', clearOnFocus);
+
+        if (!didHide) {
+          showAlert(isExpoGo);
+        }
+      }, waitForRedirect);
+    }
+
+    const onBlur = () => {
+      didLoseFocuse = true;
+      window.removeEventListener('blur', onBlur);
+      window.addEventListener('focus', showErrorOnFocus);
+    };
+
+    window.addEventListener('blur', onBlur);
+    document.addEventListener("visibilitychange", onVisibilitychange);
+    setTimeout(() => {
+      // A modal was shown. So we need to wait for a user input.
+      if (didLoseFocuse) {
+        return;
+      }
+
+      window.addEventListener('focus', clearOnFocus);
+      document.removeEventListener("visibilitychange", onVisibilitychange);
+
+      // deeplink seems to be working
+      if (didHide) {
+        return;
+      }
+
+      showAlert(isExpoGo);
+    }, waitForRedirect);
+  }
+
+  const devClientLink = document.getElementById("expo-dev-client-link");
+  const goLink = document.getElementById("expo-go-link");
+
+  devClientLink.onclick = () => tryToDetectDeepLinkFailure(false);
+  goLink.onclick = () => tryToDetectDeepLinkFailure(true);
+
   const platform = findGetParameter("platform");
   if (platform) {
-    const devClientLink = document.getElementById("expo-dev-client-link");
-    const goLink = document.getElementById("expo-go-link");
-
     devClientLink.href += "&platform=" + encodeURIComponent(platform);
     goLink.href += "&platform=" + encodeURIComponent(platform);
   }

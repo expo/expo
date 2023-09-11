@@ -8,7 +8,7 @@ export type CameraPermissionResponse = PermissionResponse;
 
 // @needsAudit
 /**
- * Extends `PermissionResponse` type exported by `expo-modules-core` and contains additional iOS-specific field.
+ * Extends `PermissionResponse` type exported by `expo-modules-core`, containing additional iOS-specific field.
  */
 export type MediaLibraryPermissionResponse = PermissionResponse & {
   /**
@@ -172,42 +172,49 @@ export enum UIImagePickerPresentationStyle {
    * @platform ios 13+
    */
   AUTOMATIC = 'automatic',
-  /**
-   * @deprecated Use `UIImagePickerPresentationStyle.FULL_SCREEN` instead.
-   */
-  FullScreen = 'fullScreen',
-  /**
-   * @deprecated Use `UIImagePickerPresentationStyle.PAGE_SHEET` instead.
-   */
-  PageSheet = 'pageSheet',
-  /**
-   * @deprecated Use `UIImagePickerPresentationStyle.FORM_SHEET` instead.
-   */
-  FormSheet = 'formSheet',
-  /**
-   * @deprecated Use `UIImagePickerPresentationStyle.CURRENT_CONTEXT` instead.
-   */
-  CurrentContext = 'currentContext',
-  /**
-   * @deprecated Use `UIImagePickerPresentationStyle.OVER_FULL_SCREEN` instead.
-   */
-  OverFullScreen = 'overFullScreen',
-  /**
-   * @deprecated Use `UIImagePickerPresentationStyle.OVER_CURRENT_CONTEXT` instead.
-   */
-  OverCurrentContext = 'overCurrentContext',
-  /**
-   * @deprecated Use `UIImagePickerPresentationStyle.POPOVER` instead.
-   */
-  Popover = 'popover',
-  /**
-   * @deprecated Use `UIImagePickerPresentationStyle.AUTOMATIC` instead.
-   */
-  Automatic = 'automatic',
 }
 
-// @needsAudit
-export type ImageInfo = {
+/**
+ * Picker preferred asset representation mode. Its values are directly mapped to the [`PHPickerConfigurationAssetRepresentationMode`](https://developer.apple.com/documentation/photokit/phpickerconfigurationassetrepresentationmode).
+ *
+ * @platform ios
+ */
+export enum UIImagePickerPreferredAssetRepresentationMode {
+  /**
+   * A mode that indicates that the system chooses the appropriate asset representation.
+   */
+  Automatic = 'automatic',
+  /**
+   * A mode that uses the most compatible asset representation.
+   */
+  Compatible = 'compatible',
+  /**
+   * A mode that uses the current representation to avoid transcoding, if possible.
+   */
+  Current = 'current',
+}
+
+export enum CameraType {
+  /**
+   * Back/rear camera.
+   */
+  back = 'back',
+  /**
+   * Front camera
+   */
+  front = 'front',
+}
+
+/**
+ * @hidden
+ * @deprecated Use `ImagePickerAsset` instead
+ */
+export type ImageInfo = ImagePickerAsset;
+
+/**
+ * Represents an asset (image or video) returned by the image picker or camera.
+ */
+export type ImagePickerAsset = {
   /**
    * URI to the local image or video file (usable as the source of an `Image` element, in the case of
    * an image) and `width` and `height` specify the dimensions of the media.
@@ -254,28 +261,23 @@ export type ImageInfo = {
    * image's EXIF data. The names of this object's properties are EXIF tags and the values are the
    * respective EXIF values for those tags.
    */
-  exif?: Record<string, any>;
+  exif?: Record<string, any> | null;
   /**
-   * Included if the `base64` option is truthy, and is a Base64-encoded string of the selected
-   * image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI,
+   * When the `base64` option is truthy, it is a Base64-encoded string of the selected image's JPEG data, otherwise `null`.
+   * If you prepend this with `'data:image/jpeg;base64,'` to create a data URI,
    * you can use it as the source of an `Image` element; for example:
    * ```ts
    * <Image
-   *   source={{ uri: 'data:image/jpeg;base64,' + launchCameraResult.base64 }}
+   *   source={{ uri: 'data:image/jpeg;base64,' + asset.base64 }}
    *   style={{ width: 200, height: 200 }}
    * />
    * ```
    */
-  base64?: string;
+  base64?: string | null;
   /**
-   * Length of the video in milliseconds.
+   * Length of the video in milliseconds or `null` if the asset is not a video.
    */
-  duration?: number;
-  /**
-   * Boolean flag which shows if request was cancelled. If asset data have been returned this should
-   * always be `false`.
-   */
-  cancelled: boolean;
+  duration?: number | null;
 };
 
 // @needsAudit
@@ -296,17 +298,49 @@ export type ImagePickerErrorResult = {
 
 // @needsAudit
 /**
- * An object returned when the pick action has been cancelled by the user.
+ * Type representing successful and canceled pick result.
  */
-export type ImagePickerCancelledResult = { cancelled: true };
+export type ImagePickerResult = ImagePickerSuccessResult | ImagePickerCanceledResult;
 
-// @needsAudit
-export type ImagePickerResult = ImagePickerCancelledResult | ImageInfo;
+/**
+ * Type representing successful pick result.
+ */
+export type ImagePickerSuccessResult = {
+  /**
+   * Boolean flag set to `false` showing that the request was successful.
+   */
+  canceled: false;
+  /**
+   * An array of picked assets.
+   */
+  assets: ImagePickerAsset[];
+};
 
-// @needsAudit @docsMissing
-export type ImagePickerMultipleResult =
-  | ImagePickerCancelledResult
-  | { cancelled: false; selected: ImageInfo[] };
+/**
+ * Type representing canceled pick result.
+ */
+export type ImagePickerCanceledResult = {
+  /**
+   * Boolean flag set to `true` showing that the request was canceled.
+   */
+  canceled: true;
+  /**
+   * `null` signifying that the request was canceled.
+   */
+  assets: null;
+};
+
+/**
+ * @hidden
+ * @deprecated Use `ImagePickerResult` instead.
+ */
+export type ImagePickerCancelledResult = ImagePickerCanceledResult;
+
+/**
+ * @hidden
+ * @deprecated `ImagePickerMultipleResult` has been deprecated in favor of `ImagePickerResult`.
+ */
+export type ImagePickerMultipleResult = ImagePickerResult;
 
 // @needsAudit
 export type ImagePickerOptions = {
@@ -314,8 +348,9 @@ export type ImagePickerOptions = {
    * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
    * rotate the image and on iOS simply crop it.
    *
-   * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
-   * > On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+   * > - Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
+   * > - On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+   * > - On iOS cropping a `.bmp` image will convert it to `.png`.
    *
    * @default false
    * @platform ios
@@ -386,6 +421,7 @@ export type ImagePickerOptions = {
    * Setting the value to `0` sets the selection limit to the maximum that the system supports.
    *
    * @platform ios 14+
+   * @platform android
    * @default 0
    */
   selectionLimit?: number;
@@ -416,6 +452,22 @@ export type ImagePickerOptions = {
    * @platform ios
    */
   presentationStyle?: UIImagePickerPresentationStyle;
+  /**
+   * Selects the camera-facing type. The `CameraType` enum provides two options:
+   * `front` for the front-facing camera and `back` for the back-facing camera.
+   * - **On Android**, the behavior of this option may vary based on the camera app installed on the device.
+   * @default CameraType.back
+   * @platform ios
+   * @platform android
+   */
+  cameraType?: CameraType;
+  /**
+   * Choose [preferred asset representation mode](https://developer.apple.com/documentation/photokit/phpickerconfigurationassetrepresentationmode)
+   * to use when loading assets.
+   * @default ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Automatic
+   * @platform ios 14+
+   */
+  preferredAssetRepresentationMode?: UIImagePickerPreferredAssetRepresentationMode;
 };
 
 // @needsAudit
@@ -438,10 +490,13 @@ export type OpenFileBrowserOptions = {
   base64: boolean;
 };
 
-// @needsAudit @docsMissing
+/**
+ * @hidden
+ * @deprecated Use `ImagePickerResult` or `OpenFileBrowserOptions` instead.
+ */
 export type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> =
   T extends {
     allowsMultipleSelection: true;
   }
-    ? ImagePickerMultipleResult
+    ? ImagePickerResult
     : ImagePickerResult;

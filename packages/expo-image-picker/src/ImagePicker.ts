@@ -14,16 +14,7 @@ import {
   MediaLibraryPermissionResponse,
   ImagePickerResult,
   ImagePickerErrorResult,
-  MediaTypeOptions,
   ImagePickerOptions,
-  VideoExportPreset,
-  ExpandImagePickerResult,
-  ImageInfo,
-  ImagePickerMultipleResult,
-  ImagePickerCancelledResult,
-  OpenFileBrowserOptions,
-  UIImagePickerControllerQualityType,
-  UIImagePickerPresentationStyle,
 } from './ImagePicker.types';
 
 function validateOptions(options: ImagePickerOptions) {
@@ -168,10 +159,9 @@ export async function getPendingResultAsync(): Promise<
  * intended. The `cancelled` event will not be returned in the browser due to platform restrictions
  * and inconsistencies across browsers.
  * @param options An `ImagePickerOptions` object.
- * @return If the user cancelled the action, the method returns `{ cancelled: true }`. Otherwise,
- * this method returns information about the selected media item. When the chosen item is an image,
- * this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`;
- * when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
+ * @return A promise that resolves to an object with `canceled` and `assets` fields.
+ * When the user canceled the action the `assets` is always `null`, otherwise it's an array of
+ * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
 export async function launchCameraAsync(
   options: ImagePickerOptions = {}
@@ -188,23 +178,24 @@ export async function launchCameraAsync(
  * Requires `Permissions.MEDIA_LIBRARY` on iOS 10 only. On mobile web, this must be     called
  * immediately in a user interaction like a button press, otherwise the browser will block the
  * request without a warning.
- * **Animated GIFs support** If the selected image is an animated GIF, the result image will be an
- * animated GIF too if and only if `quality` is set to `undefined` and `allowsEditing` is set to `false`.
+ *
+ * **Animated GIFs support:** On Android, if the selected image is an animated GIF, the result image will be an
+ * animated GIF too if and only if `quality` is explicitly set to `1.0` and `allowsEditing` is set to `false`.
  * Otherwise compression and/or cropper will pick the first frame of the GIF and return it as the
- * result (on Android the result will be a PNG, on iOS — GIF).
+ * result (on Android the result will be a PNG). On iOS, both quality and cropping are supported.
+ *
  * > **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press).
  * Therefore, calling `launchImageLibraryAsync` in `componentDidMount`, for example, will **not**
  * work as intended. The `cancelled` event will not be returned in the browser due to platform
  * restrictions and inconsistencies across browsers.
  * @param options An object extended by [`ImagePickerOptions`](#imagepickeroptions).
- * @return If the user cancelled the action, the method returns `{ cancelled: true }`. Otherwise,
- * this method returns information about the selected media item. When the chosen item is an image,
- * this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`;
- * when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
+ * @return A promise that resolves to an object with `canceled` and `assets` fields.
+ * When the user canceled the action the `assets` is always `null`, otherwise it's an array of
+ * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
-export async function launchImageLibraryAsync<T extends ImagePickerOptions>(
-  options?: T
-): Promise<ExpandImagePickerResult<T>> {
+export async function launchImageLibraryAsync(
+  options?: ImagePickerOptions
+): Promise<ImagePickerResult> {
   if (!ExponentImagePicker.launchImageLibraryAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
   }
@@ -218,23 +209,6 @@ export async function launchImageLibraryAsync<T extends ImagePickerOptions>(
   return await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
 }
 
-export {
-  MediaTypeOptions,
-  ImagePickerOptions,
-  ImagePickerResult,
-  ImagePickerErrorResult,
-  VideoExportPreset,
-  CameraPermissionResponse,
-  MediaLibraryPermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
-  PermissionResponse,
-  ImageInfo,
-  ImagePickerMultipleResult,
-  ImagePickerCancelledResult,
-  OpenFileBrowserOptions,
-  ExpandImagePickerResult,
-  UIImagePickerControllerQualityType,
-  UIImagePickerPresentationStyle,
-};
+export * from './ImagePicker.types';
+
+export { PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse };

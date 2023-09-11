@@ -17,12 +17,24 @@ function formatJavaType(value) {
   throw new Error(`Unsupported literal value: ${value}`);
 }
 
+function chunkString(s: string, len: number) {
+  const size = Math.ceil(s.length / len);
+  const r = Array(size);
+  let offset = 0;
+
+  for (let i = 0; i < size; i++) {
+    r[i] = s.substr(offset, len);
+    offset += len;
+  }
+
+  return r;
+}
+
 function formatJavaLiteral(value) {
   if (value == null) {
     return 'null';
   } else if (typeof value === 'string') {
-    value = value.replace(/"/g, '\\"');
-    return `"${value}"`;
+    return `"${value.replace(/"/g, '\\"')}"`;
   } else if (typeof value === 'number') {
     return value;
   }
@@ -44,28 +56,40 @@ export async function generateAndroidBuildConstantsFromMacrosAsync(macros) {
     !macros.BUILD_MACHINE_KERNEL_MANIFEST || macros.BUILD_MACHINE_KERNEL_MANIFEST === '';
 
   let versionUsed = 'local';
-  if (process.env.USE_DOGFOODING_PUBLISHED_KERNEL_MANIFEST) {
-    macros.BUILD_MACHINE_KERNEL_MANIFEST = macros.DOGFOODING_PUBLISHED_KERNEL_MANIFEST;
-    versionUsed = 'doogfooding';
-  } else if (isLocalManifestEmpty) {
+  if (isLocalManifestEmpty) {
     macros.BUILD_MACHINE_KERNEL_MANIFEST = macros.DEV_PUBLISHED_KERNEL_MANIFEST;
     versionUsed = 'published dev';
   }
   console.log(`Using ${chalk.yellow(versionUsed)} version of Expo Home.`);
 
   delete macros['DEV_PUBLISHED_KERNEL_MANIFEST'];
-  delete macros['DOGFOODING_PUBLISHED_KERNEL_MANIFEST'];
+
+  const BUILD_MACHINE_KERNEL_MANIFEST = macros.BUILD_MACHINE_KERNEL_MANIFEST;
+
+  delete macros['BUILD_MACHINE_KERNEL_MANIFEST'];
 
   const definitions = Object.entries(macros).map(
     ([name, value]) =>
       `  public static final ${formatJavaType(value)} ${name} = ${formatJavaLiteral(value)};`
   );
 
+  const functions = BUILD_MACHINE_KERNEL_MANIFEST
+    ? `
+  public static String getBuildMachineKernelManifestAndAssetRequestHeaders() {
+    return new StringBuilder()${chunkString(BUILD_MACHINE_KERNEL_MANIFEST, 1000)
+      .map((s) => `\n.append("${s.replace(/"/g, '\\"')}")`)
+      .join('')}.toString();
+  }
+  `
+    : null;
+
   const source = `
 package host.exp.exponent.generated;
 
 public class ExponentBuildConstants {
 ${definitions.join('\n')}
+
+${functions}
 }`;
 
   return (

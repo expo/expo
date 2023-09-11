@@ -39,7 +39,9 @@ export default function getStackConfig({
       headerTitleStyle: styles.headerTitle,
       headerPressColorAndroid: Colors.tintColor,
       headerRight: () => (
-        <TouchableOpacity onPress={() => navigation.navigate('search')} style={{ marginRight: 16 }}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('searchNavigator')}
+          style={{ marginRight: 16 }}>
           <Ionicons
             name="md-search"
             size={Platform.OS === 'ios' ? 22 : 25}

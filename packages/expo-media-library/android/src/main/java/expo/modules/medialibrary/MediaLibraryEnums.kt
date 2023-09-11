@@ -11,7 +11,7 @@ enum class MediaType(val apiName: String, val mediaColumn: Int?) {
 
   companion object {
     // all constants have keys equal to the values
-    fun getConstants() = values().map { Pair(it.apiName, it.apiName) }.toMap()
+    fun getConstants() = values().associate { Pair(it.apiName, it.apiName) }
 
     fun fromApiName(constantName: String) = values().find { it.apiName == constantName }
   }
@@ -28,7 +28,7 @@ enum class SortBy(val keyName: String, val mediaColumnName: String) {
 
   companion object {
     // all constants have keys equal to the values
-    fun getConstants() = values().map { Pair(it.keyName, it.keyName) }.toMap()
+    fun getConstants() = values().associate { Pair(it.keyName, it.keyName) }
 
     fun fromKeyName(keyName: String) = values().find { it.keyName == keyName }
   }

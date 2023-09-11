@@ -1,2 +1,5 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExponentPrint;
+import { requireNativeModule } from 'expo-modules-core';
+
+const printModule = requireNativeModule('ExpoPrint');
+
+export default printModule;

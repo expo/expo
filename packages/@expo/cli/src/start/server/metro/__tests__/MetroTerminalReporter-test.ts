@@ -38,6 +38,28 @@ describe('_getBundleStatusMessage', () => {
       )
     ).toMatchInlineSnapshot(`"iOS ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.0% ( 50/100)"`);
   });
+  it(`should format standard progress for a server invocation`, () => {
+    expect(
+      stripAnsi(
+        reporter._getBundleStatusMessage(
+          {
+            bundleDetails: asBundleDetails({
+              entryFile: './index.js',
+              platform: 'ios',
+              buildID,
+              customTransformOptions: {
+                environment: 'node',
+              },
+            }),
+            ratio: 0.5,
+            totalFileCount: 100,
+            transformedFileCount: 50,
+          },
+          'in_progress'
+        )
+      )
+    ).toMatchInlineSnapshot(`"Server ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.0% ( 50/100)"`);
+  });
 
   it(`should format standard progress at 0%`, () => {
     expect(
@@ -120,7 +142,7 @@ describe(stripMetroInfo, () => {
     expect(stripAnsi(stripMetroInfo(input))).toMatchInlineSnapshot(`
       "  77 | }
         78 |
-      > 79 | import \\"path\\";
+      > 79 | import "path";
            |         ^
         80 |"
     `);
@@ -148,7 +170,7 @@ describe(formatUsingNodeStandardLibraryError, () => {
       targetModuleName: 'path',
     } as any);
     expect(stripAnsi(format)).toMatchInlineSnapshot(`
-      "You attempted attempted to import the Node standard library module \\"path\\" from \\"App.js\\".
+      "You attempted attempted to import the Node standard library module "path" from "App.js".
       It failed because the native React runtime does not include the Node standard library.
       Learn more: https://docs.expo.dev/workflow/using-libraries/#using-third-party-libraries"
     `);

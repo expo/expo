@@ -1,11 +1,9 @@
-/* eslint-disable */
-// tslint:disable max-classes-per-file
 import React from 'react';
 import * as Svg from 'react-native-svg';
 
 import Example from './Example';
 
-const { LinearGradient, Stop, Defs, Path, G, TSpan, TextPath } = Svg;
+const { LinearGradient, Stop, Defs, Path, G, TSpan } = Svg;
 
 class TextExample extends React.Component {
   static title = 'Text';

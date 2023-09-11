@@ -4,49 +4,41 @@ import android.net.Uri
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import expo.modules.manifests.core.NewManifest
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.db.entity.UpdateEntity
-import expo.modules.updates.manifest.ManifestHeaderData
+import expo.modules.updates.UpdatesUtils
+import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.manifest.NewUpdateManifest
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.Date
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class SelectionPolicyFilterAwareTest {
-  private lateinit var manifestFilters: JSONObject
-  private lateinit var selectionPolicy: SelectionPolicy
-  private lateinit var updateDefault1: UpdateEntity
-  private lateinit var updateDefault2: UpdateEntity
-  private lateinit var updateRollout0: UpdateEntity
-  private lateinit var updateRollout1: UpdateEntity
-  private lateinit var updateRollout2: UpdateEntity
-  private lateinit var updateMultipleFilters: UpdateEntity
-  private lateinit var updateNoMetadata: UpdateEntity
-
-  @Before
-  @Throws(JSONException::class)
-  fun setup() {
-    manifestFilters = JSONObject("{\"branchname\": \"rollout\"}")
-    selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy("1.0")
-    val configMap = mapOf<String, Any>("updateUrl" to Uri.parse("https://exp.host/@test/test"))
-    val config = UpdatesConfiguration(null, configMap)
-    val manifestJsonRollout0 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e71\",\"createdAt\":\"2021-01-10T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"rollout\"}}"))
-    updateRollout0 = NewUpdateManifest.fromNewManifest(manifestJsonRollout0, ManifestHeaderData(), null, config).updateEntity
-    val manifestJsonDefault1 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"default\"}}"))
-    updateDefault1 = NewUpdateManifest.fromNewManifest(manifestJsonDefault1, ManifestHeaderData(), null, config).updateEntity
-    val manifestJsonRollout1 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e73\",\"createdAt\":\"2021-01-12T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"rollout\"}}"))
-    updateRollout1 = NewUpdateManifest.fromNewManifest(manifestJsonRollout1, ManifestHeaderData(), null, config).updateEntity
-    val manifestJsonDefault2 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e74\",\"createdAt\":\"2021-01-13T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"default\"}}"))
-    updateDefault2 = NewUpdateManifest.fromNewManifest(manifestJsonDefault2, ManifestHeaderData(), null, config).updateEntity
-    val manifestJsonRollout2 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e75\",\"createdAt\":\"2021-01-14T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"rollout\"}}"))
-    updateRollout2 = NewUpdateManifest.fromNewManifest(manifestJsonRollout2, ManifestHeaderData(), null, config).updateEntity
-    val manifestJsonMultipleFilters = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"firstKey\": \"value1\", \"secondKey\": \"value2\"}}"))
-    updateMultipleFilters = NewUpdateManifest.fromNewManifest(manifestJsonMultipleFilters, ManifestHeaderData(), null, config).updateEntity
-    val manifestJsonNoMetadata = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}]}"))
-    updateNoMetadata = NewUpdateManifest.fromNewManifest(manifestJsonNoMetadata, ManifestHeaderData(), null, config).updateEntity
+  private val config = UpdatesConfiguration(null, mapOf<String, Any>("updateUrl" to Uri.parse("https://exp.host/@test/test")))
+  private val manifestFilters = JSONObject("{\"branchname\": \"rollout\"}")
+  private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy("1.0")
+  private val updateRollout0 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e71\",\"createdAt\":\"2021-01-10T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"rollout\"}}")).let {
+    NewUpdateManifest.fromNewManifest(it, null, config).updateEntity
+  }
+  private val updateDefault1 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"default\"}}")).let {
+    NewUpdateManifest.fromNewManifest(it, null, config).updateEntity
+  }
+  private val updateRollout1 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e73\",\"createdAt\":\"2021-01-12T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"rollout\"}}")).let {
+    NewUpdateManifest.fromNewManifest(it, null, config).updateEntity
+  }
+  private val updateDefault2 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e74\",\"createdAt\":\"2021-01-13T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"default\"}}")).let {
+    NewUpdateManifest.fromNewManifest(it, null, config).updateEntity
+  }
+  private val updateRollout2 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e75\",\"createdAt\":\"2021-01-14T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"rollout\"}}")).let {
+    NewUpdateManifest.fromNewManifest(it, null, config).updateEntity
+  }
+  private val updateMultipleFilters = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"firstKey\": \"value1\", \"secondKey\": \"value2\"}}")).let {
+    NewUpdateManifest.fromNewManifest(it, null, config).updateEntity
+  }
+  private val updateNoMetadata = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}]}")).let {
+    NewUpdateManifest.fromNewManifest(it, null, config).updateEntity
   }
 
   @Test
@@ -115,6 +107,65 @@ class SelectionPolicyFilterAwareTest {
   fun testShouldLoadNewUpdate_DoesntMatch() {
     // should never choose to load an update that doesn't match its own filters
     val actual = selectionPolicy.shouldLoadNewUpdate(updateDefault2, null, manifestFilters)
+    Assert.assertFalse(actual)
+  }
+
+  @Test
+  fun testShouldLoadRollBackToEmbeddedDirective_EmbeddedDoesNotMatchFilters() {
+    val actual = selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+      UpdateDirective.RollBackToEmbeddedUpdateDirective(Date(), null),
+      updateDefault1,
+      null,
+      manifestFilters
+    )
+    Assert.assertFalse(actual)
+  }
+
+  @Test
+  fun testShouldLoadRollBackToEmbeddedDirective_NoLaunchedUpdate() {
+    val actual = selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+      UpdateDirective.RollBackToEmbeddedUpdateDirective(Date(), null),
+      updateRollout0,
+      null,
+      manifestFilters
+    )
+    Assert.assertTrue(actual)
+  }
+
+  @Test
+  fun testShouldLoadRollBackToEmbeddedDirective_LaunchedUpdateDoesNotMatchFilters() {
+    val actual = selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+      UpdateDirective.RollBackToEmbeddedUpdateDirective(Date(), null),
+      updateRollout0,
+      updateDefault1,
+      manifestFilters
+    )
+    Assert.assertTrue(actual)
+  }
+
+  @Test
+  fun testShouldLoadRollBackToEmbeddedDirective_CommitTimeOfLaunchedUpdateBeforeRollBack() {
+    // updateRollout1 has commitTime = 2021-01-12T19:39:22.480Z
+    // roll back is 1 year later
+    val actual = selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+      UpdateDirective.RollBackToEmbeddedUpdateDirective(UpdatesUtils.parseDateString("2022-01-12T19:39:22.480Z"), null),
+      updateRollout0,
+      updateRollout1,
+      manifestFilters
+    )
+    Assert.assertTrue(actual)
+  }
+
+  @Test
+  fun testShouldLoadRollBackToEmbeddedDirective_CommitTimeOfLaunchedUpdateAfterRollBack() {
+    // updateRollout1 has commitTime = 2021-01-12T19:39:22.480Z
+    // roll back is 1 year earlier
+    val actual = selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+      UpdateDirective.RollBackToEmbeddedUpdateDirective(UpdatesUtils.parseDateString("2020-01-12T19:39:22.480Z"), null),
+      updateRollout0,
+      updateRollout1,
+      manifestFilters
+    )
     Assert.assertFalse(actual)
   }
 

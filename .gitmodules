@@ -1,15 +1,5 @@
-[submodule "docs/react-native-website"]
-  path = docs/react-native-website
-  url = git@github.com:facebook/react-native-website.git
-  branch = main
-  update = checkout
 [submodule "react-native-lab/react-native"]
   path = react-native-lab/react-native
   url = git@github.com:expo/react-native.git
   branch = exp-latest
-  update = checkout
-[submodule "apps/fabric-tester"]
-  path = apps/fabric-tester
-  url = git@github.com:expo/fabric-tester.git
-  branch = main
   update = checkout

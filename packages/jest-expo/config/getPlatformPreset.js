@@ -1,25 +1,24 @@
 'use strict';
-const { getManagedExtensions } = require('@expo/config/paths');
+const { getBareExtensions } = require('@expo/config/paths');
 
-const expoPreset = require('../jest-preset');
 const { withWatchPlugins } = require('./withWatchPlugins');
+const expoPreset = require('../jest-preset');
 
 function getPlatformPreset(displayOptions, extensions) {
-  const moduleFileExtensions = getManagedExtensions(extensions, {
+  const moduleFileExtensions = getBareExtensions(extensions, {
     isTS: true,
     isReact: true,
     isModern: false,
   });
-  const testMatch = ['', ...extensions].reduce((arr, cur) => {
-    const platformExtension = cur ? `.${cur}` : '';
+  const testMatch = ['', ...extensions].flatMap((extension) => {
+    const platformExtension = extension ? `.${extension}` : '';
     const sourceExtension = `.[jt]s?(x)`;
     return [
-      ...arr,
       `**/__tests__/**/*spec${platformExtension}${sourceExtension}`,
       `**/__tests__/**/*test${platformExtension}${sourceExtension}`,
       `**/?(*.)+(spec|test)${platformExtension}${sourceExtension}`,
     ];
-  }, []);
+  });
 
   return withWatchPlugins({
     displayName: displayOptions,

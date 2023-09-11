@@ -7,7 +7,7 @@ exports[`renders static 1`] = `
 >
   <canvas
     style={
-      Object {
+      {
         "bottom": "0px",
         "left": "0px",
         "position": "absolute",

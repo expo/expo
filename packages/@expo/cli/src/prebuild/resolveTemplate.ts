@@ -1,11 +1,11 @@
 import { ExpoConfig } from '@expo/config-types';
 import chalk from 'chalk';
 import fs from 'fs';
-import fetch from 'node-fetch';
 import { Ora } from 'ora';
 import path from 'path';
 import semver from 'semver';
 
+import { fetchAsync } from '../api/rest/client';
 import * as Log from '../log';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import {
@@ -63,7 +63,7 @@ async function getRepoInfo(url: any, examplePath?: string): Promise<RepoInfo | u
   // Support repos whose entire purpose is to be an example, e.g.
   // https://github.com/:username/:my-cool-example-repo-name.
   if (t === undefined) {
-    const infoResponse = await fetch(`https://api.github.com/repos/${username}/${name}`);
+    const infoResponse = await fetchAsync(`https://api.github.com/repos/${username}/${name}`);
     if (infoResponse.status !== 200) {
       return;
     }
@@ -128,6 +128,12 @@ export async function resolveTemplateArgAsync(
         oraInstance.fail(error);
         throw error;
       }
+    }
+
+    // On Windows, we can actually create a URL from a local path
+    // Double-check if the created URL is not a path to avoid mixing up URLs and paths
+    if (process.platform === 'win32' && repoUrl && path.isAbsolute(repoUrl.toString())) {
+      repoUrl = undefined;
     }
 
     if (!repoUrl) {

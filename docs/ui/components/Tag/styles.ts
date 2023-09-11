@@ -1,16 +1,16 @@
 import { css } from '@emotion/react';
-import { borderRadius, spacing, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
 
 export const tagStyle = css({
   display: 'inline-flex',
-  backgroundColor: theme.background.tertiary,
+  backgroundColor: theme.background.element,
   color: theme.text.default,
   fontSize: '90%',
-  fontWeight: 700,
   padding: `${spacing[1]}px ${spacing[2]}px`,
   marginBottom: spacing[3],
   marginRight: spacing[2],
-  borderRadius: borderRadius.small,
+  borderRadius: borderRadius.sm,
   border: `1px solid ${theme.border.default}`,
   alignItems: 'center',
   gap: spacing[1],
@@ -24,15 +24,15 @@ export const tagStyle = css({
   'nav &': {
     whiteSpace: 'pre',
   },
-});
 
-export const tagFirstStyle = css({
-  marginBottom: 0,
-  marginTop: spacing[4],
+  'h3 &': {
+    fontSize: '80%',
+  },
 });
 
 export const labelStyle = css({
   lineHeight: `${spacing[4]}px`,
+  fontWeight: 'normal',
 });
 
 export const tagToCStyle = css({
@@ -40,5 +40,5 @@ export const tagToCStyle = css({
   marginBottom: 0,
   marginRight: 0,
   marginLeft: spacing[1],
-  padding: `0px ${spacing[1.5]}px`,
+  padding: `0 ${spacing[1.5]}px`,
 });

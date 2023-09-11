@@ -7,6 +7,7 @@ import {
   GetStringOptions,
   SetStringOptions,
 } from './Clipboard.types';
+import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard from './ExpoClipboard';
 
 const emitter = new EventEmitter(ExpoClipboard);
@@ -104,6 +105,10 @@ export async function getUrlAsync(): Promise<string | null> {
 
 /**
  * Sets a URL in the user's clipboard.
+ *
+ * This function behaves the same as [`setStringAsync()`](#setstringasynctext-options), except that
+ * it sets the clipboard content type to be a URL. It lets your app or other apps know that the
+ * clipboard contains a URL and behave accordingly.
  *
  * @param url The URL to save to the clipboard.
  * @platform ios
@@ -240,4 +245,15 @@ export function removeClipboardListener(subscription: Subscription) {
   emitter.removeSubscription(subscription);
 }
 
+/**
+ * Property that determines if the `ClipboardPasteButton` is available.
+ *
+ * This requires the users device to be using at least iOS 16.
+ *
+ * `true` if the component is available, and `false` otherwise.
+ */
+export const isPasteButtonAvailable: boolean =
+  Platform.OS === 'ios' ? ExpoClipboard.isPasteButtonAvailable : false;
+
 export * from './Clipboard.types';
+export { ClipboardPasteButton };

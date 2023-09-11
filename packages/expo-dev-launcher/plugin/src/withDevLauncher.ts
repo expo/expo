@@ -1,3 +1,4 @@
+import { ExpoConfig } from 'expo/config';
 import {
   ConfigPlugin,
   createRunOncePlugin,
@@ -5,8 +6,7 @@ import {
   WarningAggregator,
   withDangerousMod,
   withMainActivity,
-} from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+} from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
@@ -232,7 +232,7 @@ const withDevLauncherPodfile: ConfigPlugin = (config) => {
     async (config) => {
       await editPodfile(config, (podfile) => {
         // replace all iOS versions below 12
-        podfile = podfile.replace(/platform :ios, '((\d\.0)|(1[0-1].0))'/, "platform :ios, '12.0'");
+        podfile = podfile.replace(/platform :ios, '((\d\.0)|(1[0-1].0))'/, "platform :ios, '13.0'");
         // Match both variations of Ruby config:
         // unknown: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug
         // Rubocop: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', configurations: :debug

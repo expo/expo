@@ -2,9 +2,9 @@ import { Asset } from 'expo-asset';
 import * as MediaLibrary from 'expo-media-library';
 import { Platform } from 'react-native';
 
+import { waitFor } from './helpers';
 import * as TestUtils from '../TestUtils';
 import { isDeviceFarm } from '../utils/Environment';
-import { waitFor } from './helpers';
 
 export const name = 'MediaLibrary';
 
@@ -336,6 +336,29 @@ export async function test(t) {
             t.expect(asset.width).not.toEqual(0);
             t.expect(asset.height).not.toEqual(0);
           });
+        });
+
+        t.it('supports sorting in ascending order', async () => {
+          // Get some assets with the largest height.
+          const { assets } = await MediaLibrary.getAssetsAsync({
+            sortBy: [[MediaLibrary.SortBy.height, false]],
+          });
+
+          // Set the first and last items in the list
+          const first = assets[0].height;
+          const last = assets[assets.length - 1].height;
+
+          // Repeat assets request but reverse the order.
+          const { assets: ascendingAssets } = await MediaLibrary.getAssetsAsync({
+            sortBy: [[MediaLibrary.SortBy.height, true]],
+          });
+
+          // Set the first and last items in the new list
+          const ascFirst = ascendingAssets[0].height;
+          const ascLast = ascendingAssets[assets.length - 1].height;
+
+          t.expect(ascFirst).toBe(last);
+          t.expect(ascLast).toBe(first);
         });
 
         t.it('supports getting assets from specified time range', async () => {

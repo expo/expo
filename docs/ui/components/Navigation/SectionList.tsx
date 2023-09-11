@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
-import { iconSize, spacing, typography, ChevronDownIcon } from '@expo/styleguide';
-import React, { PropsWithChildren } from 'react';
+import { spacing } from '@expo/styleguide-base';
+import { ChevronDownIcon } from '@expo/styleguide-icons';
+import type { PropsWithChildren } from 'react';
 
 import { NavigationRenderProps } from '.';
 
@@ -21,7 +22,7 @@ export function SectionList({ route, isActive, children }: SectionListProps) {
       open={isActive || route.expanded}
       summary={
         <div css={summaryStyle}>
-          <ChevronDownIcon css={iconStyle} size={iconSize.small} />
+          <ChevronDownIcon className="icon-sm text-icon-default" css={iconStyle} />
           <CALLOUT css={textStyle} tag="span">
             {route.name}
           </CALLOUT>
@@ -55,6 +56,6 @@ const iconStyle = css({
 });
 
 const textStyle = css({
-  ...typography.utility.weight.medium,
+  fontWeight: 500,
   padding: spacing[1.5],
 });

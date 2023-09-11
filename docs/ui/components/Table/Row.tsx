@@ -12,10 +12,10 @@ export const Row = ({ children, subtle }: RowProps) => (
 
 const tableRowStyle = css({
   '&:nth-of-type(2n)': {
-    backgroundColor: theme.background.secondary,
+    backgroundColor: theme.background.subtle,
 
-    'blockquote, summary': {
-      backgroundColor: theme.background.tertiary,
+    summary: {
+      backgroundColor: theme.background.element,
     },
   },
 });

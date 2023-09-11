@@ -1,16 +1,16 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXAppLoader+Updates.h"
+#import "EXAbstractLoader+Updates.h"
 #import "EXKernel.h"
 #import "EXKernelAppRecord.h"
 #import "EXReactAppManager.h"
 #import "EXUpdatesDatabaseManager.h"
 #import "EXUpdatesManager.h"
 
-#import <EXUpdates/EXUpdatesFileDownloader.h>
-#import <EXUpdates/EXUpdatesRemoteAppLoader.h>
-
 #import <React/RCTBridge.h>
+
+@import EXManifests;
+@import EXUpdates;
 
 NSString * const EXUpdatesEventName = @"Expo.nativeUpdatesEvent";
 NSString * const EXUpdatesErrorEventType = @"error";
@@ -50,7 +50,7 @@ ofDownloadWithManifest:(EXManifestsManifest * _Nullable)manifest
 
 # pragma mark - internal
 
-- (EXAppLoader *)_appLoaderWithScopeKey:(NSString *)scopeKey
+- (EXAbstractLoader *)_appLoaderWithScopeKey:(NSString *)scopeKey
 {
   EXKernelAppRecord *appRecord = [[EXKernel sharedInstance].appRegistry newestRecordWithScopeKey:scopeKey];
   return appRecord.appLoader;
@@ -58,17 +58,17 @@ ofDownloadWithManifest:(EXManifestsManifest * _Nullable)manifest
 
 # pragma mark - EXUpdatesBindingDelegate
 
-- (EXUpdatesConfig *)configForScopeKey:(NSString *)scopeKey
+- (nullable EXUpdatesConfig *)configForScopeKey:(NSString *)scopeKey
 {
   return [self _appLoaderWithScopeKey:scopeKey].config;
 }
 
-- (EXUpdatesSelectionPolicy *)selectionPolicyForScopeKey:(NSString *)scopeKey
+- (nullable EXUpdatesSelectionPolicy *)selectionPolicyForScopeKey:(NSString *)scopeKey
 {
   return [self _appLoaderWithScopeKey:scopeKey].selectionPolicy;
 }
 
-- (nullable EXUpdatesUpdate *)launchedUpdateForScopeKey:(NSString *)scopeKey
+- (nullable nullable EXUpdatesUpdate *)launchedUpdateForScopeKey:(NSString *)scopeKey
 {
   return [self _appLoaderWithScopeKey:scopeKey].appLauncher.launchedUpdate;
 }

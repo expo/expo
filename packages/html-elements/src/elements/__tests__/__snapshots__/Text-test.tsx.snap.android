@@ -3,7 +3,7 @@
 exports[`renders B 1`] = `
 <Text
   style={
-    Object {
+    {
       "fontWeight": "bold",
     }
   }
@@ -15,7 +15,7 @@ exports[`renders B 1`] = `
 exports[`renders BR 1`] = `
 <Text
   style={
-    Object {
+    {
       "height": 16,
       "width": 0,
     }
@@ -26,7 +26,7 @@ exports[`renders BR 1`] = `
 exports[`renders BlockQuote 1`] = `
 <View
   style={
-    Object {
+    {
       "marginVertical": 32,
     }
   }
@@ -36,7 +36,7 @@ exports[`renders BlockQuote 1`] = `
 exports[`renders Code 1`] = `
 <Text
   style={
-    Object {
+    {
       "fontFamily": "monospace",
       "fontWeight": "500",
     }
@@ -47,7 +47,7 @@ exports[`renders Code 1`] = `
 exports[`renders Del 1`] = `
 <Text
   style={
-    Object {
+    {
       "textDecorationLine": "line-through",
       "textDecorationStyle": "solid",
     }
@@ -60,7 +60,7 @@ exports[`renders Del 1`] = `
 exports[`renders EM 1`] = `
 <Text
   style={
-    Object {
+    {
       "fontStyle": "italic",
     }
   }
@@ -72,7 +72,7 @@ exports[`renders EM 1`] = `
 exports[`renders I 1`] = `
 <Text
   style={
-    Object {
+    {
       "fontStyle": "italic",
     }
   }
@@ -84,7 +84,7 @@ exports[`renders I 1`] = `
 exports[`renders Mark 1`] = `
 <Text
   style={
-    Object {
+    {
       "backgroundColor": "yellow",
       "color": "black",
     }
@@ -95,7 +95,7 @@ exports[`renders Mark 1`] = `
 exports[`renders P 1`] = `
 <Text
   style={
-    Object {
+    {
       "marginVertical": 32,
     }
   }
@@ -107,7 +107,7 @@ exports[`renders P 1`] = `
 exports[`renders Pre 1`] = `
 <Text
   style={
-    Object {
+    {
       "fontFamily": "monospace",
       "fontWeight": "500",
       "marginVertical": 32,
@@ -125,7 +125,7 @@ exports[`renders Pre 1`] = `
 exports[`renders Q 1`] = `
 <Text
   style={
-    Object {
+    {
       "fontStyle": "italic",
     }
   }
@@ -139,7 +139,7 @@ exports[`renders Q 1`] = `
 exports[`renders S 1`] = `
 <Text
   style={
-    Object {
+    {
       "textDecorationLine": "line-through",
       "textDecorationStyle": "solid",
     }
@@ -149,10 +149,16 @@ exports[`renders S 1`] = `
 </Text>
 `;
 
+exports[`renders Span 1`] = `
+<Text>
+  demo
+</Text>
+`;
+
 exports[`renders Strong 1`] = `
 <Text
   style={
-    Object {
+    {
       "fontWeight": "bold",
     }
   }

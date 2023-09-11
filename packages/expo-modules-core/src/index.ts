@@ -5,13 +5,12 @@ import NativeModulesProxy from './NativeModulesProxy';
 import { ProxyNativeModule } from './NativeModulesProxy.types';
 import { requireNativeViewManager } from './NativeViewManagerAdapter';
 import Platform from './Platform';
-import SyntheticPlatformEmitter from './SyntheticPlatformEmitter';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 
 import './sweet/setUpErrorManager.fx';
 
-export { default as deprecate } from './deprecate';
+export { uuidv4, uuidv5 } from './uuid';
 
 export {
   DeviceEventEmitter,
@@ -20,7 +19,6 @@ export {
   ProxyNativeModule,
   Platform,
   Subscription,
-  SyntheticPlatformEmitter,
   requireNativeViewManager,
   // Errors
   CodedError,
@@ -28,11 +26,12 @@ export {
 };
 
 export * from './requireNativeModule';
+export * from './TypedArrays.types';
 
 /**
  * @deprecated renamed to `DeviceEventEmitter`
  */
-export const RCTDeviceEventEmitter = DeviceEventEmitter;
+export const SyntheticPlatformEmitter = DeviceEventEmitter;
 
 export * from './PermissionsInterface';
 export * from './PermissionsHook';

@@ -1,12 +1,12 @@
-export declare type SearchResults = {
+export type SearchResults = {
     [moduleName: string]: object;
 };
-export declare type SearchOptions = {
+export type SearchOptions = {
     searchPaths: string[];
     platform: 'ios' | 'android' | 'web';
     silent?: boolean;
 };
-export declare type AutolinkingModule = {
+export type AutolinkingModule = {
     resolveSearchPathsAsync(searchPaths: string[] | null, cwd: string): Promise<string[]>;
     findModulesAsync(providedOptions: SearchOptions): Promise<SearchResults>;
 };

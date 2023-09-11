@@ -21,8 +21,7 @@ namespace expo {
 class JSReferencesCache {
 public:
   enum class JSKeys {
-    PROMISE,
-    CODED_ERROR
+    PROMISE
   };
 
   JSReferencesCache() = delete;

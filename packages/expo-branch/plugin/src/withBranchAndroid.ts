@@ -1,5 +1,5 @@
-import { AndroidConfig, ConfigPlugin, withAndroidManifest } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
+import { AndroidConfig, ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
 
 const {
   addMetaDataItemToMainApplication,

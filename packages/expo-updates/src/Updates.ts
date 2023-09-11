@@ -1,28 +1,20 @@
-import {
-  RCTDeviceEventEmitter,
-  CodedError,
-  NativeModulesProxy,
-  UnavailabilityError,
-} from 'expo-modules-core';
-import { EventEmitter, EventSubscription } from 'fbemitter';
+import { CodedError, NativeModulesProxy, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoUpdates from './ExpoUpdates';
 import {
   LocalAssets,
   Manifest,
   UpdateCheckResult,
-  UpdateEvent,
   UpdateFetchResult,
+  UpdatesCheckAutomaticallyValue,
   UpdatesLogEntry,
+  UpdatesNativeStateMachineContext,
 } from './Updates.types';
 
-export * from './Updates.types';
-
 /**
- * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
+ * The UUID that uniquely identifies the currently running update. The
  * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. In development mode, or any other environment in which
- * `expo-updates` is disabled, this value is `null`.
+ * will always use lowercase letters. This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
  */
 export const updateId: string | null =
   ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
@@ -36,7 +28,9 @@ export const updateId: string | null =
 export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
 
 /**
- * The channel name of the current build, if configured for use with EAS Update. Null otherwise.
+ * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
+ *
+ * Expo Go and development builds are not set to a specific channel and can run any updates compatible with their native runtime. Therefore, this value will always be `null` when running an update on Expo Go or a development build.
  */
 export const channel: string | null = ExpoUpdates.channel ?? null;
 
@@ -44,6 +38,19 @@ export const channel: string | null = ExpoUpdates.channel ?? null;
  * The runtime version of the current build.
  */
 export const runtimeVersion: string | null = ExpoUpdates.runtimeVersion ?? null;
+
+const _checkAutomaticallyMapNativeToJS = {
+  ALWAYS: 'ON_LOAD',
+  ERROR_RECOVERY_ONLY: 'ON_ERROR_RECOVERY',
+  NEVER: 'NEVER',
+  WIFI_ONLY: 'WIFI_ONLY',
+};
+
+/**
+ * Determines if and when expo-updates checks for and downloads updates automatically on startup.
+ */
+export const checkAutomatically: UpdatesCheckAutomaticallyValue | null =
+  _checkAutomaticallyMapNativeToJS[ExpoUpdates.checkAutomatically] ?? null;
 
 // @docsMissing
 /**
@@ -62,6 +69,12 @@ export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
  */
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
 
+/**
+ * This will be true if the currently running update is the one embedded in the build,
+ * and not one downloaded from the updates server.
+ */
+export const isEmbeddedLaunch: boolean = ExpoUpdates.isEmbeddedLaunch || false;
+
 // @docsMissing
 /**
  * @hidden
@@ -70,8 +83,9 @@ export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets 
 
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/guides/how-expo-works#expo-development-server) object for the update that's currently
- * running.
+ * [manifest](/versions/latest/sdk/constants/#manifest) (or
+ * [classic manifest](/versions/latest/sdk/constants/#appmanifest))
+ * object for the update that's currently running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
@@ -126,7 +140,7 @@ export async function reloadAsync(): Promise<void> {
   if (!ExpoUpdates.reload) {
     throw new UnavailabilityError('Updates', 'reloadAsync');
   }
-  if (__DEV__ && !isUsingExpoDevelopmentClient) {
+  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingExpoDevelopmentClient)) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot use the Updates module in development mode in a production app. ${manualUpdatesInstructions}`
@@ -154,7 +168,7 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   if (!ExpoUpdates.checkForUpdateAsync) {
     throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
   }
-  if (__DEV__ || isUsingDeveloperTool) {
+  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot check for updates in development mode. ${manualUpdatesInstructions}`
@@ -168,6 +182,33 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   }
 
   return result;
+}
+
+/**
+ * Retrieves the current extra params.
+ */
+export async function getExtraParamsAsync(): Promise<{ [key: string]: string }> {
+  if (!ExpoUpdates.getExtraParamsAsync) {
+    throw new UnavailabilityError('Updates', 'getExtraParamsAsync');
+  }
+
+  return await ExpoUpdates.getExtraParamsAsync();
+}
+
+/**
+ * Sets an extra param if value is non-null, otherwise unsets the param.
+ * Extra params are sent as an [Expo Structured Field Value Dictionary](https://docs.expo.dev/technical-specs/expo-sfv-0/)
+ * in the `Expo-Extra-Params` header of update requests. A compliant update server may use these params when selecting an update to serve.
+ */
+export async function setExtraParamAsync(
+  key: string,
+  value: string | null | undefined
+): Promise<void> {
+  if (!ExpoUpdates.setExtraParamAsync) {
+    throw new UnavailabilityError('Updates', 'setExtraParamAsync');
+  }
+
+  return await ExpoUpdates.setExtraParamAsync(key, value ?? null);
 }
 
 /**
@@ -209,6 +250,10 @@ export async function clearLogEntriesAsync(): Promise<void> {
  * storage. This method cannot be used in development mode, and the returned promise will be
  * rejected if you try to do so.
  *
+ > **Note:** [`reloadAsync()`](#updatesreloadasync) can be called after promise resolution to
+ * reload the app using the most recently downloaded version. Otherwise, the update will be applied
+ * on the next app cold start.
+ *
  * @return A promise that fulfills with an [`UpdateFetchResult`](#updatefetchresult) object.
  *
  * The promise rejects if the app is in development mode, or if there is an unexpected error or
@@ -218,7 +263,7 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
   if (!ExpoUpdates.fetchUpdateAsync) {
     throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
   }
-  if (__DEV__ || isUsingDeveloperTool) {
+  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot fetch updates in development mode. ${manualUpdatesInstructions}`
@@ -243,42 +288,38 @@ export function clearUpdateCacheExperimentalAsync(_sdkVersion?: string) {
   );
 }
 
-let _emitter: EventEmitter | null;
-
-function _getEmitter(): EventEmitter {
-  if (!_emitter) {
-    _emitter = new EventEmitter();
-    RCTDeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
+/**
+ * @hidden
+ */
+export function transformNativeStateMachineContext(originalNativeContext: any) {
+  const nativeContext = { ...originalNativeContext };
+  if (nativeContext.latestManifestString) {
+    nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
+    delete nativeContext.latestManifestString;
   }
-  return _emitter;
-}
-
-function _emitEvent(params): void {
-  let newParams = params;
-  if (typeof params === 'string') {
-    newParams = JSON.parse(params);
+  if (nativeContext.downloadedManifestString) {
+    nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
+    delete nativeContext.downloadedManifestString;
   }
-  if (newParams.manifestString) {
-    newParams.manifest = JSON.parse(newParams.manifestString);
-    delete newParams.manifestString;
+  if (nativeContext.lastCheckForUpdateTimeString) {
+    nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
+    delete nativeContext.lastCheckForUpdateTimeString;
   }
-
-  if (!_emitter) {
-    throw new Error(`EventEmitter must be initialized to use from its listener`);
+  if (nativeContext.rollbackString) {
+    nativeContext.rollback = JSON.parse(nativeContext.rollbackString);
+    delete nativeContext.rollbackString;
   }
-  _emitter.emit('Expo.updatesEvent', newParams);
+  return nativeContext;
 }
 
 /**
- * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time.
- *
- * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
- * and should not return any value.
- * @return An `EventSubscription` object on which you can call `remove()` to unsubscribe the
- * listener.
+ * @hidden
  */
-export function addListener(listener: (event: UpdateEvent) => void): EventSubscription {
-  const emitter = _getEmitter();
-  return emitter.addListener('Expo.updatesEvent', listener);
+export async function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext> {
+  // Return the current state machine context
+  if (!ExpoUpdates.getNativeStateMachineContextAsync) {
+    throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
+  }
+  const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+  return transformNativeStateMachineContext(nativeContext);
 }

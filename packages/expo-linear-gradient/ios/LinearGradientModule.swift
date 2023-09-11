@@ -7,11 +7,7 @@ public class LinearGradientModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoLinearGradient")
 
-    ViewManager {
-      View {
-        LinearGradientView()
-      }
-
+    View(LinearGradientView.self) {
       Prop("colors") { (view: LinearGradientView, colors: [CGColor]) in
         view.gradientLayer.setColors(colors)
       }

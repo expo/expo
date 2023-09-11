@@ -1,9 +1,9 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 
+import { ProjectList } from './ProjectList';
 import { useHome_AccountAppsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
-import { ProjectList } from './ProjectList';
 
 function useProjectsForAccountQuery({ accountName }: { accountName: string }) {
   const { data, fetchMore, loading, error, refetch } = useHome_AccountAppsQuery({
@@ -22,23 +22,6 @@ function useProjectsForAccountQuery({ accountName }: { accountName: string }) {
     return fetchMore({
       variables: {
         offset: apps?.length || 0,
-      },
-      updateQuery(previousData, { fetchMoreResult }) {
-        if (!fetchMoreResult?.account?.byName) {
-          return previousData;
-        }
-
-        return {
-          account: {
-            ...previousData.account,
-            ...fetchMoreResult.account,
-            byName: {
-              ...previousData.account.byName,
-              ...fetchMoreResult.account.byName,
-              apps: [...previousData.account.byName.apps, ...fetchMoreResult.account.byName.apps],
-            },
-          },
-        };
       },
     });
   }, [fetchMore, apps]);

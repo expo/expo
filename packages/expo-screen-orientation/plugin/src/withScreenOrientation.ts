@@ -1,6 +1,6 @@
-import { ConfigPlugin, createRunOncePlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
 import assert from 'assert';
+import { ExpoConfig } from 'expo/config';
+import { ConfigPlugin, createRunOncePlugin, InfoPlist, withInfoPlist } from 'expo/config-plugins';
 
 const pkg = require('expo-screen-orientation/package.json');
 
@@ -29,7 +29,7 @@ const withScreenOrientationViewController: ConfigPlugin<
   {
     initialOrientation?: keyof typeof OrientationLock;
   } | void
-> = (config, { initialOrientation = 'DEFAULT' } = {}) => {
+> = (config, { initialOrientation } = {}) => {
   config = withInfoPlist(config, (config) => {
     const extendedConfig = {
       ...config,
@@ -41,17 +41,16 @@ const withScreenOrientationViewController: ConfigPlugin<
   return config;
 };
 
-export function getInitialOrientation(
-  config: Pick<ExpoConfigWithInitialOrientation, 'initialOrientation'>
-): OrientationMasks {
-  return config.initialOrientation ?? 'DEFAULT';
-}
-
 export function setInitialOrientation(
   config: Pick<ExpoConfigWithInitialOrientation, 'initialOrientation'>,
   infoPlist: InfoPlist
 ): InfoPlist {
-  const initialOrientation = getInitialOrientation(config);
+  const initialOrientation = config.initialOrientation;
+
+  if (!initialOrientation) {
+    delete infoPlist[INITIAL_ORIENTATION_KEY];
+    return infoPlist;
+  }
 
   assert(
     initialOrientation in OrientationLock,
@@ -60,11 +59,8 @@ export function setInitialOrientation(
     ).join(', ')}`
   );
 
-  if (initialOrientation === 'DEFAULT') {
-    delete infoPlist[INITIAL_ORIENTATION_KEY];
-  } else {
-    infoPlist[INITIAL_ORIENTATION_KEY] = OrientationLock[initialOrientation];
-  }
+  infoPlist[INITIAL_ORIENTATION_KEY] = OrientationLock[initialOrientation];
+
   return infoPlist;
 }
 

@@ -4,14 +4,14 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
-import { runExpoCliAsync } from '../ExpoCLI';
+import { runExpoCliAsync, runCreateExpoAppAsync } from '../ExpoCLI';
 import { GitDirectory } from '../Git';
 
 export type GenerateBareAppOptions = {
   name?: string;
   template?: string;
   clean?: boolean;
-  localTemplate?: boolean;
+  useLocalTemplate?: boolean;
   outDir?: string;
   rnVersion?: string;
 };
@@ -22,7 +22,7 @@ export async function action(
     name: appName = 'my-generated-bare-app',
     outDir = 'bare-apps',
     template = 'expo-template-bare-minimum',
-    localTemplate = false,
+    useLocalTemplate = false,
     clean = false,
     rnVersion,
   }: GenerateBareAppOptions
@@ -36,12 +36,12 @@ export async function action(
   const packagesToSymlink = await getPackagesToSymlink({ packageNames, workspaceDir });
 
   await cleanIfNeeded({ clean, projectDir, workspaceDir });
-  await createProjectDirectory({ workspaceDir, appName, template, localTemplate });
+  await createProjectDirectory({ workspaceDir, appName, template, useLocalTemplate });
   await modifyPackageJson({ packagesToSymlink, projectDir });
   await modifyAppJson({ projectDir, appName });
   await yarnInstall({ projectDir });
   await symlinkPackages({ packagesToSymlink, projectDir });
-  await runExpoPrebuild({ projectDir });
+  await runExpoPrebuild({ projectDir, useLocalTemplate });
   if (rnVersion != null) {
     await updateRNVersion({ rnVersion, projectDir });
   }
@@ -82,20 +82,27 @@ async function createProjectDirectory({
   workspaceDir,
   appName,
   template,
-  localTemplate,
+  useLocalTemplate,
 }: {
   workspaceDir: string;
   appName: string;
   template: string;
-  localTemplate: boolean;
+  useLocalTemplate: boolean;
 }) {
-  if (localTemplate) {
-    const pathToBareTemplate = path.resolve(EXPO_DIR, 'templates', 'expo-template-bare-minimum');
-    const pathToWorkspace = path.resolve(workspaceDir, appName);
-    return fs.copy(pathToBareTemplate, pathToWorkspace, { recursive: true });
+  if (useLocalTemplate) {
+    // If useLocalTemplate is selected, find the path to the local copy of the template and use that
+    const pathToLocalTemplate = path.resolve(EXPO_DIR, 'templates', template);
+    return await runCreateExpoAppAsync(
+      appName,
+      ['--no-install', '--template', pathToLocalTemplate],
+      {
+        cwd: workspaceDir,
+        stdio: 'inherit',
+      }
+    );
   }
 
-  return await runExpoCliAsync('init', [appName, '--no-install', '--template', template], {
+  return await runCreateExpoAppAsync(appName, ['--no-install', '--template', template], {
     cwd: workspaceDir,
     stdio: 'ignore',
   });
@@ -116,7 +123,6 @@ function getDefaultPackagesToSymlink({ workspaceDir }: { workspaceDir: string })
       'expo-file-system',
       'expo-font',
       'expo-keep-awake',
-      'expo-error-recovery',
       'expo-splash-screen',
       'expo-updates',
       'expo-manifests',
@@ -241,8 +247,30 @@ function getLocalReactNativeVersion() {
   return mainPkg.resolutions?.['react-native'];
 }
 
-async function runExpoPrebuild({ projectDir }: { projectDir: string }) {
+async function runExpoPrebuild({
+  projectDir,
+  useLocalTemplate,
+}: {
+  projectDir: string;
+  useLocalTemplate: boolean;
+}) {
   console.log('Applying config plugins');
+  if (useLocalTemplate) {
+    const pathToBareTemplate = path.resolve(EXPO_DIR, 'templates', 'expo-template-bare-minimum');
+    const templateVersion = require(path.join(pathToBareTemplate, 'package.json')).version;
+    await spawnAsync('npm', ['pack', '--pack-destination', projectDir], {
+      cwd: pathToBareTemplate,
+      stdio: 'ignore',
+    });
+    const tarFilePath = path.resolve(
+      projectDir,
+      `expo-template-bare-minimum-${templateVersion}.tgz`
+    );
+    await runExpoCliAsync('prebuild', ['--no-install', '--template', tarFilePath], {
+      cwd: projectDir,
+    });
+    return await fs.rm(tarFilePath);
+  }
   return await runExpoCliAsync('prebuild', ['--no-install'], { cwd: projectDir });
 }
 
@@ -329,10 +357,14 @@ export default (program: Command) => {
     .option('-c, --clean', 'Rebuilds the project from scratch')
     .option('--rnVersion <string>', 'Version of react-native to include')
     .option('-o, --outDir <string>', 'Specifies the directory to build the project in')
-    .option('-t, --template <string>', 'Specify the expo template to use as the project starter')
     .option(
-      '--localTemplate',
-      'Copy the localTemplate expo-template-bare-minimum from the expo repo',
+      '-t, --template <string>',
+      'Specify the expo template to use as the project starter',
+      'expo-template-bare-minimum'
+    )
+    .option(
+      '--useLocalTemplate',
+      'If true, use the local copy of the template instead of the published template in NPM',
       false
     )
     .description(`Generates a bare app with the specified packages symlinked`)

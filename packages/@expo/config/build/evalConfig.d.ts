@@ -1,6 +1,6 @@
 import { AppJSONConfig, ConfigContext, ExpoConfig } from './Config.types';
-declare type RawDynamicConfig = AppJSONConfig | Partial<ExpoConfig> | null;
-export declare type DynamicConfigResults = {
+type RawDynamicConfig = AppJSONConfig | Partial<ExpoConfig> | null;
+export type DynamicConfigResults = {
     config: RawDynamicConfig;
     exportedObjectType: string;
 };

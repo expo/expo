@@ -37,4 +37,4 @@ void REAIOSErrorHandler::setError(std::string message)
   }
 }
 
-}
+} // namespace reanimated

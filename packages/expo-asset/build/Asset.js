@@ -1,5 +1,5 @@
 import { Platform } from 'expo-modules-core';
-import { getAssetByID } from './AssetRegistry';
+import { getAssetByID } from 'react-native/Libraries/Image/AssetRegistry';
 import { selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as ImageAssets from './ImageAssets';
@@ -37,7 +37,9 @@ export class Asset {
      * A URI that points to the asset's data on the remote server. When running the published version
      * of your app, this refers to the location on Expo's asset server where Expo has stored your
      * asset. When running the app from Expo CLI during development, this URI points to Expo CLI's
-     * server running on your computer and the asset is served directly from your computer.
+     * server running on your computer and the asset is served directly from your computer. If you
+     * are not using Classic Updates (legacy), this field should be ignored as we ensure your assets
+     * are on device before before running your application logic.
      */
     uri;
     /**

@@ -5,7 +5,6 @@ import { getExpotoolsDir } from '../../Directories';
 
 export const JniLibNames = [
   'libfb',
-  'libfolly_json',
   'libglog_init',
   'glog',
   'reactnativejni',
@@ -14,10 +13,7 @@ export const JniLibNames = [
   'yoga',
   'fbgloginit',
   'yogajni',
-  'jschelpers',
-  'packagerconnectionjnifb',
   'privatedata',
-  'yogafastmath',
   'fabricjscjni',
   'jscexecutor',
   'libjscexecutor',
@@ -28,13 +24,10 @@ export const JniLibNames = [
   'reactnativeblob',
   'jsijniprofiler',
   'hermes',
-  'hermes-executor-common',
-  'hermes-executor-release',
-  'hermes-executor-common-release',
-  'hermes-executor-debug',
-  'hermes-executor-common-debug',
+  'hermes_executor',
+  'hermes_executor_common',
+  'hermes_inspector',
   'reanimated',
-  'hermes-inspector',
   'folly_futures',
   'folly_runtime',
   'react_codegen_rncore',
@@ -42,10 +35,13 @@ export const JniLibNames = [
   'reactnativeutilsjni',
   'reactperfloggerjni',
   'butter',
+  'cxxcomponents',
   'jsi',
+  'jsireact',
   'logger',
   'mapbufferjni',
   'react_debug',
+  'react_newarchdefaults',
   'react_render_animations',
   'react_render_attributedstring',
   'react_render_componentregistry',
@@ -65,6 +61,7 @@ export const JniLibNames = [
   'react_utils',
   'react_config',
   'rrc_image',
+  'rrc_legacyviewmanagerinterop',
   'rrc_modal',
   'rrc_progressbar',
   'rrc_root',
@@ -76,12 +73,6 @@ export const JniLibNames = [
   'rrc_unimplementedview',
   'rrc_view',
   'runtimeexecutor',
-
-  // TODO: considering versioning prebuilt fbjni by patchelf after RN 0.65 which has newer fbjni version.
-  // or simply upgrade old SDK to use latest fbjni.
-  //
-  // 'fbjni',
-  // 'libfbjni',
 ];
 
 // this list is used in the shell scripts as well as directly by expotools

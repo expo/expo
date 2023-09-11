@@ -1,5 +1,5 @@
-import { ConfigPlugin } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
+import { ConfigPlugin } from 'expo/config-plugins';
 export declare const withAndroidRootViewBackgroundColor: ConfigPlugin;
 export declare const withRootViewBackgroundColorColors: ConfigPlugin;
 export declare const withRootViewBackgroundColorStyles: ConfigPlugin;

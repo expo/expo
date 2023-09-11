@@ -1,7 +1,6 @@
-import { ViewStyle } from '@expo/html-elements/build/primitives/View';
 import Slider from '@react-native-community/slider';
 import React, { memo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, ViewStyle, StyleSheet } from 'react-native';
 
 interface Props {
   title: string;

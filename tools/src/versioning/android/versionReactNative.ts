@@ -2,6 +2,8 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { runReactNativeCodegenAsync } from '../../Codegen';
+import { REACT_NATIVE_SUBMODULE_DIR, REACT_NATIVE_SUBMODULE_MONOREPO_ROOT } from '../../Constants';
 import { copyFileWithTransformsAsync, transformFileAsync } from '../../Transforms';
 import { searchFilesAsync } from '../../Utils';
 import {
@@ -11,71 +13,85 @@ import {
 } from './reactNativeTransforms';
 
 export async function updateVersionedReactNativeAsync(
-  reactNativeSubmoduleRoot: string,
   androidDir: string,
   sdkVersion: string
 ): Promise<void> {
   const abiVersion = `abi${sdkVersion.replace(/\./g, '_')}`;
-  const versionedReactNativeDir = path.join(androidDir, 'versioned-react-native');
-  await Promise.all([
-    fs.remove(path.join(versionedReactNativeDir, 'ReactAndroid')),
-    fs.remove(path.join(versionedReactNativeDir, 'ReactCommon')),
-    fs.remove(path.join(versionedReactNativeDir, 'codegen')),
-    fs.remove(path.join(versionedReactNativeDir, 'sdks')),
-  ]);
+  const versionedReactNativeMonorepoRoot = path.join(androidDir, 'versioned-react-native');
+  const versionedReactNativeRoot = path.join(
+    versionedReactNativeMonorepoRoot,
+    'packages/react-native'
+  );
+  await Promise.all([fs.remove(path.join(versionedReactNativeMonorepoRoot, 'packages'))]);
 
-  await fs.mkdirp(path.join(versionedReactNativeDir, 'sdks'));
+  await fs.mkdirp(path.join(versionedReactNativeRoot, 'sdks'));
   await fs.copy(
-    path.join(androidDir, 'sdks/.hermesversion'),
-    path.join(versionedReactNativeDir, 'sdks/.hermesversion')
+    path.join(REACT_NATIVE_SUBMODULE_DIR, 'sdks/.hermesversion'),
+    path.join(versionedReactNativeRoot, 'sdks/.hermesversion')
   );
 
   // Run and version codegen
-  const codegenOutputRoot = path.join(versionedReactNativeDir, 'codegen');
-  const tmpCodegenOutputRoot = path.join(versionedReactNativeDir, 'codegen-tmp');
+  const codegenOutputRoot = path.join(versionedReactNativeRoot, 'codegen');
+  const tmpCodegenOutputRoot = path.join(versionedReactNativeMonorepoRoot, 'codegen-tmp');
   try {
-    await runReactNativeCodegenAndroidAsync(reactNativeSubmoduleRoot, tmpCodegenOutputRoot);
+    await runReactNativeCodegenAsync({
+      reactNativeRoot: REACT_NATIVE_SUBMODULE_DIR,
+      codegenPkgRoot: path.join(
+        REACT_NATIVE_SUBMODULE_MONOREPO_ROOT,
+        'packages',
+        'react-native-codegen'
+      ),
+      outputDir: tmpCodegenOutputRoot,
+      name: 'rncore',
+      platform: 'android',
+      type: 'all',
+      jsSrcsDir: path.join(REACT_NATIVE_SUBMODULE_DIR, 'Libraries'),
+      javaPackageName: 'com.facebook.fbreact.specs',
+    });
     await versionCodegenDirectoryAsync(tmpCodegenOutputRoot, codegenOutputRoot, abiVersion);
   } finally {
     await fs.remove(tmpCodegenOutputRoot);
   }
 
   // Copy and version ReactAndroid and ReactCommon
-  await versionReactNativeAsync(androidDir, versionedReactNativeDir, abiVersion);
+  await versionReactNativeAsync(versionedReactNativeRoot, abiVersion);
 
-  await versionHermesAsync(versionedReactNativeDir, abiVersion);
+  await versionHermesAsync(versionedReactNativeMonorepoRoot, abiVersion);
 }
 
-async function versionHermesAsync(versionedReactNativeDir: string, abiVersion: string) {
-  await spawnAsync('./gradlew', [':ReactAndroid:hermes-engine:unzipHermes'], {
+async function versionHermesAsync(versionedReactNativeMonorepoRoot: string, abiVersion: string) {
+  await spawnAsync('./gradlew', [':packages:react-native:ReactAndroid:hermes-engine:unzipHermes'], {
     shell: true,
-    cwd: versionedReactNativeDir,
+    cwd: versionedReactNativeMonorepoRoot,
     stdio: 'inherit',
   });
   await transformFileAsync(
-    path.join(versionedReactNativeDir, 'sdks/hermes/API/hermes/CMakeLists.txt'),
+    path.join(
+      versionedReactNativeMonorepoRoot,
+      'packages/react-native',
+      'sdks/hermes/API/hermes/CMakeLists.txt'
+    ),
     hermesTransforms(abiVersion)
   );
 }
 
-async function versionReactNativeAsync(
-  androidDir: string,
-  versionedReactNativeDir: string,
-  abiVersion: string
-) {
-  const files = await searchFilesAsync(androidDir, ['./ReactAndroid/**', './ReactCommon/**']);
+async function versionReactNativeAsync(versionedReactNativeRoot: string, abiVersion: string) {
+  const files = await searchFilesAsync(REACT_NATIVE_SUBMODULE_DIR, [
+    './ReactAndroid/**',
+    './ReactCommon/**',
+  ]);
   for (const file of files) {
     if ((file.match(/\/build\//) && !file.match(/src.*\/build\//)) || file.match(/\/\.cxx\//)) {
       files.delete(file);
     }
   }
 
-  const transforms = reactNativeTransforms(versionedReactNativeDir, abiVersion);
+  const transforms = reactNativeTransforms(versionedReactNativeRoot, abiVersion);
   for (const sourceFile of files) {
     await copyFileWithTransformsAsync({
       sourceFile,
-      targetDirectory: versionedReactNativeDir,
-      sourceDirectory: androidDir,
+      targetDirectory: versionedReactNativeRoot,
+      sourceDirectory: REACT_NATIVE_SUBMODULE_DIR,
       transforms,
     });
   }
@@ -96,144 +112,4 @@ async function versionCodegenDirectoryAsync(
       transforms,
     });
   }
-}
-
-async function runReactNativeCodegenAndroidAsync(
-  reactNativeSubmoduleRoot: string,
-  tmpCodegenOutputRoot: string
-) {
-  await fs.remove(tmpCodegenOutputRoot);
-  await fs.ensureDir(tmpCodegenOutputRoot);
-
-  // generate schema.json from js & flow types
-  const genSchemaScript = path.join(
-    reactNativeSubmoduleRoot,
-    'packages',
-    'react-native-codegen',
-    'lib',
-    'cli',
-    'combine',
-    'combine-js-to-schema-cli.js'
-  );
-  const schemaOutputPath = path.join(tmpCodegenOutputRoot, 'schema.json');
-  const jsSourceRoot = path.join(reactNativeSubmoduleRoot, 'Libraries');
-  await spawnAsync('yarn', ['node', genSchemaScript, schemaOutputPath, jsSourceRoot]);
-
-  // generate code from schema.json
-  const genCodeScript = path.join(reactNativeSubmoduleRoot, 'scripts', 'generate-specs-cli.js');
-  await spawnAsync('yarn', [
-    'node',
-    genCodeScript,
-    '--platform',
-    'android',
-    '--schemaPath',
-    schemaOutputPath,
-    '--outputDir',
-    tmpCodegenOutputRoot,
-    '--libraryName',
-    'rncore',
-    '--javaPackageName',
-    'com.facebook.fbreact.specs',
-  ]);
-}
-
-export async function renameHermesEngine(versionedReactAndroidPath: string, version: string) {
-  const abiVersion = version.replace(/\./g, '_');
-  const abiName = `abi${abiVersion}`;
-  const prebuiltHermesMkPath = path.join(
-    versionedReactAndroidPath,
-    'src',
-    'main',
-    'jni',
-    'first-party',
-    'hermes',
-    'Android.mk'
-  );
-  const versionedHermesLibName = `libhermes_${abiName}.so`;
-  await transformFileAsync(prebuiltHermesMkPath, [
-    {
-      find: /^(LOCAL_SRC_FILES\s+:=\s+jni\/\$\(TARGET_ARCH_ABI\))\/libhermes.so$/gm,
-      replaceWith: `$1/${versionedHermesLibName}`,
-    },
-  ]);
-
-  const buildGradlePath = path.join(versionedReactAndroidPath, 'build.gradle');
-  // patch prepareHermes task to rename copied library and update soname
-  // the diff is something like that:
-  //
-  // ```diff
-  // --- android/versioned-react-native/ReactAndroid/build.gradle.orig       2021-08-14 00:40:18.000000000 +0800
-  // +++ android/versioned-react-native/ReactAndroid/build.gradle    2021-08-14 00:40:58.000000000 +0800
-  // @@ -114,7 +114,7 @@
-  //      into("$thirdPartyNdkDir/folly")
-  //  }
-  //
-  // -task prepareHermes(dependsOn: createNativeDepsDirectories, type: Copy) {
-  // +task prepareHermes(dependsOn: createNativeDepsDirectories) {
-  //      def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
-  //      if (!hermesPackagePath) {
-  //          throw new GradleScriptException("Could not find the hermes-engine npm package", null)
-  // @@ -126,12 +126,29 @@
-  //      }
-  //
-  //      def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
-  // -
-  // +    copy {
-  // +
-  //      from soFiles
-  //      from "src/main/jni/first-party/hermes/Android.mk"
-  //      into "$thirdPartyNdkDir/hermes"
-  // +
-  // +        rename '(.+).so', '$1_abi43_0_0.so'
-  // +    }
-  // +    exec {
-  // +        commandLine("patchelf", "--set-soname", "libhermes_abi43_0_0.so", "$thirdPartyNdkDir/hermes/jni/arm64-v8a/libhermes_abi43_0_0.so")
-  // +    }
-  // +    exec {
-  // +        commandLine("patchelf", "--set-soname", "libhermes_abi43_0_0.so", "$thirdPartyNdkDir/hermes/jni/armeabi-v7a/libhermes_abi43_0_0.so")
-  // +    }
-  // +    exec {
-  // +        commandLine("patchelf", "--set-soname", "libhermes_abi43_0_0.so", "$thirdPartyNdkDir/hermes/jni/x86/libhermes_abi43_0_0.so")
-  // +    }
-  // +    exec {
-  // +        commandLine("patchelf", "--set-soname", "libhermes_abi43_0_0.so", "$thirdPartyNdkDir/hermes/jni/x86_64/libhermes_abi43_0_0.so")
-  // +    }
-  //  }
-  //
-  // +
-  //  task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
-  //      src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
-  //      onlyIfNewer(true)
-  // ```
-  await transformFileAsync(buildGradlePath, [
-    {
-      // reset `prepareHermes` task from Copy type to generic type then we can do both copy and exec.
-      find: /^(task prepareHermes\(dependsOn: .+), type: Copy(\).+$)/m,
-      replaceWith: '$1$2',
-    },
-    {
-      // wrap copy task and append exec tasks
-      find: /(^\s*def soFiles = zipTree\(hermesAAR\).+)\n([\s\S]+?)^\}/gm,
-      replaceWith: `\
-$1
-    copy {
-        $2
-        rename '(.+).so', '$$1_abi${abiVersion}.so'
-    }
-    exec {
-        commandLine("patchelf", "--set-soname", "${versionedHermesLibName}", "$thirdPartyNdkDir/hermes/jni/arm64-v8a/${versionedHermesLibName}")
-    }
-    exec {
-        commandLine("patchelf", "--set-soname", "${versionedHermesLibName}", "$thirdPartyNdkDir/hermes/jni/armeabi-v7a/${versionedHermesLibName}")
-    }
-    exec {
-        commandLine("patchelf", "--set-soname", "${versionedHermesLibName}", "$thirdPartyNdkDir/hermes/jni/x86/${versionedHermesLibName}")
-    }
-    exec {
-        commandLine("patchelf", "--set-soname", "${versionedHermesLibName}", "$thirdPartyNdkDir/hermes/jni/x86_64/${versionedHermesLibName}")
-    }
-}
-`,
-    },
-  ]);
 }

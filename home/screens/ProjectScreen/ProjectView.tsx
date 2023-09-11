@@ -5,15 +5,15 @@ import { Divider, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-compo
 import * as React from 'react';
 import { ActivityIndicator } from 'react-native';
 
+import { EASUpdateLaunchSection } from './EASUpdateLaunchSection';
+import { EmptySection } from './EmptySection';
+import { LegacyLaunchSection } from './LegacyLaunchSection';
+import { ProjectHeader } from './ProjectHeader';
 import { ConstantItem } from '../../components/ConstantItem';
 import ScrollView from '../../components/NavigationScrollView';
 import ShareProjectButton from '../../components/ShareProjectButton';
 import { WebContainerProjectPage_Query } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
-import { EASUpdateLaunchSection } from './EASUpdateLaunchSection';
-import { EmptySection } from './EmptySection';
-import { LegacyLaunchSection } from './LegacyLaunchSection';
-import { ProjectHeader } from './ProjectHeader';
 
 const ERROR_TEXT = dedent`
   An unexpected error has occurred.
@@ -55,10 +55,24 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
       <ScrollView style={{ flex: 1 }}>
         <ProjectHeader app={app} />
         <View padding="medium">
-          {appHasLegacyUpdate(app) && <LegacyLaunchSection app={app} />}
-          {appHasEASUpdates(app) && <EASUpdateLaunchSection app={app} />}
-          {!appHasLegacyUpdate(app) && !appHasEASUpdates(app) && <EmptySection />}
-          <Spacer.Vertical size="xl" />
+          {appHasEASUpdates(app) && (
+            <>
+              <EASUpdateLaunchSection app={app} />
+              <Spacer.Vertical size="xl" />
+            </>
+          )}
+          {appHasLegacyUpdate(app) && (
+            <>
+              <LegacyLaunchSection app={app} />
+              <Spacer.Vertical size="xl" />
+            </>
+          )}
+          {!appHasLegacyUpdate(app) && !appHasEASUpdates(app) && (
+            <>
+              <EmptySection />
+              <Spacer.Vertical size="xl" />
+            </>
+          )}
           <View bg="default" border="default" overflow="hidden" rounded="large">
             <ConstantItem title="Owner" value={app.username} />
             {app.sdkVersion !== '0.0.0' && (

@@ -1,5 +1,3 @@
-// tslint:disable max-classes-per-file
-
 class DOMNode {
   nodeName: string;
 

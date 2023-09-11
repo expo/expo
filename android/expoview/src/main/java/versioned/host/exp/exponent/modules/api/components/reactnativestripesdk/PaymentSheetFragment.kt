@@ -1,16 +1,19 @@
 package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
 
+import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
@@ -18,10 +21,11 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
-import com.stripe.android.paymentsheet.PaymentOptionCallback
-import com.stripe.android.paymentsheet.PaymentSheet
-import com.stripe.android.paymentsheet.PaymentSheetResult
-import com.stripe.android.paymentsheet.PaymentSheetResultCallback
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.addresssheet.AddressSheetView
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.*
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.createError
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.createResult
+import com.stripe.android.paymentsheet.*
 import java.io.ByteArrayOutputStream
 
 class PaymentSheetFragment(
@@ -35,6 +39,7 @@ class PaymentSheetFragment(
   private lateinit var paymentSheetConfiguration: PaymentSheet.Configuration
   private var confirmPromise: Promise? = null
   private var presentPromise: Promise? = null
+  private var paymentSheetTimedOut = false
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -49,59 +54,80 @@ class PaymentSheetFragment(
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     val merchantDisplayName = arguments?.getString("merchantDisplayName").orEmpty()
+    if (merchantDisplayName.isEmpty()) {
+      initPromise.resolve(createError(ErrorType.Failed.toString(), "merchantDisplayName cannot be empty or null."))
+      return
+    }
+    val primaryButtonLabel = arguments?.getString("primaryButtonLabel")
     val customerId = arguments?.getString("customerId").orEmpty()
     val customerEphemeralKeySecret = arguments?.getString("customerEphemeralKeySecret").orEmpty()
-    val countryCode = arguments?.getString("merchantCountryCode").orEmpty()
-    val currencyCode = arguments?.getString("currencyCode").orEmpty()
-    val googlePayEnabled = arguments?.getBoolean("googlePay")
-    val testEnv = arguments?.getBoolean("testEnv")
+    val googlePayConfig = buildGooglePayConfig(arguments?.getBundle("googlePay"))
     val allowsDelayedPaymentMethods = arguments?.getBoolean("allowsDelayedPaymentMethods")
     val billingDetailsBundle = arguments?.getBundle("defaultBillingDetails")
+    val billingConfigParams = arguments?.getBundle("billingDetailsCollectionConfiguration")
     paymentIntentClientSecret = arguments?.getString("paymentIntentClientSecret").orEmpty()
     setupIntentClientSecret = arguments?.getString("setupIntentClientSecret").orEmpty()
     val appearance = try {
-      buildPaymentSheetAppearance(arguments?.getBundle("appearance"))
+      buildPaymentSheetAppearance(arguments?.getBundle("appearance"), context)
     } catch (error: PaymentSheetAppearanceException) {
       initPromise.resolve(createError(ErrorType.Failed.toString(), error))
       return
     }
 
+    val shippingDetails = arguments?.getBundle("defaultShippingDetails")?.let {
+      AddressSheetView.buildAddressDetails(it)
+    }
+
     val paymentOptionCallback = PaymentOptionCallback { paymentOption ->
-      if (paymentOption != null) {
-        val bitmap = getBitmapFromVectorDrawable(context, paymentOption.drawableResourceId)
+      val result = paymentOption?.let {
+        val bitmap = getBitmapFromVectorDrawable(context, it.drawableResourceId)
         val imageString = getBase64FromBitmap(bitmap)
         val option: WritableMap = WritableNativeMap()
-        option.putString("label", paymentOption.label)
+        option.putString("label", it.label)
         option.putString("image", imageString)
-        presentPromise?.resolve(createResult("paymentOption", option))
-      } else {
-        presentPromise?.resolve(createError(PaymentSheetErrorType.Canceled.toString(), "The payment option selection flow has been canceled"))
+        createResult("paymentOption", option)
+      } ?: run {
+        if (paymentSheetTimedOut) {
+          paymentSheetTimedOut = false
+          createError(PaymentSheetErrorType.Timeout.toString(), "The payment has timed out")
+        } else {
+          createError(PaymentSheetErrorType.Canceled.toString(), "The payment option selection flow has been canceled")
+        }
       }
+      presentPromise?.resolve(result)
     }
 
     val paymentResultCallback = PaymentSheetResultCallback { paymentResult ->
-      when (paymentResult) {
-        is PaymentSheetResult.Canceled -> {
-          val message = "The payment flow has been canceled"
-          confirmPromise?.resolve(createError(PaymentSheetErrorType.Canceled.toString(), message))
-            ?: run {
-              presentPromise?.resolve(createError(PaymentSheetErrorType.Canceled.toString(), message))
-            }
-        }
-        is PaymentSheetResult.Failed -> {
-          confirmPromise?.resolve(createError(PaymentSheetErrorType.Failed.toString(), paymentResult.error))
-            ?: run {
-              presentPromise?.resolve(createError(PaymentSheetErrorType.Failed.toString(), paymentResult.error))
-            }
-        }
-        is PaymentSheetResult.Completed -> {
-          confirmPromise?.resolve(WritableNativeMap()) ?: run {
-            presentPromise?.resolve(WritableNativeMap())
+      if (paymentSheetTimedOut) {
+        paymentSheetTimedOut = false
+        resolvePaymentResult(createError(PaymentSheetErrorType.Timeout.toString(), "The payment has timed out"))
+      } else {
+        when (paymentResult) {
+          is PaymentSheetResult.Canceled -> {
+            resolvePaymentResult(createError(PaymentSheetErrorType.Canceled.toString(), "The payment flow has been canceled"))
+          }
+          is PaymentSheetResult.Failed -> {
+            resolvePaymentResult(createError(PaymentSheetErrorType.Failed.toString(), paymentResult.error))
+          }
+          is PaymentSheetResult.Completed -> {
+            resolvePaymentResult(WritableNativeMap())
+            // Remove the fragment now, we can be sure it won't be needed again if an intent is successful
+            removeFragment(context)
+            paymentSheet = null
+            flowController = null
           }
         }
       }
-      (context.currentActivity as? AppCompatActivity)?.supportFragmentManager?.beginTransaction()?.remove(this)?.commitAllowingStateLoss()
     }
+
+    val billingDetailsConfig = PaymentSheet.BillingDetailsCollectionConfiguration(
+      name = mapToCollectionMode(billingConfigParams?.getString("name")),
+      phone = mapToCollectionMode(billingConfigParams?.getString("phone")),
+      email = mapToCollectionMode(billingConfigParams?.getString("email")),
+      address = mapToAddressCollectionMode(billingConfigParams?.getString("address")),
+      attachDefaultsToPaymentMethod = billingConfigParams?.getBoolean("attachDefaultsToPaymentMethod")
+        ?: false
+    )
 
     var defaultBillingDetails: PaymentSheet.BillingDetails? = null
     if (billingDetailsBundle != null) {
@@ -128,12 +154,11 @@ class PaymentSheetFragment(
         id = customerId,
         ephemeralKeySecret = customerEphemeralKeySecret
       ) else null,
-      googlePay = if (googlePayEnabled == true) PaymentSheet.GooglePayConfiguration(
-        environment = if (testEnv == true) PaymentSheet.GooglePayConfiguration.Environment.Test else PaymentSheet.GooglePayConfiguration.Environment.Production,
-        countryCode = countryCode,
-        currencyCode = currencyCode
-      ) else null,
-      appearance = appearance
+      googlePay = googlePayConfig,
+      appearance = appearance,
+      shippingDetails = shippingDetails,
+      primaryButtonLabel = primaryButtonLabel,
+      billingDetailsCollectionConfiguration = billingDetailsConfig
     )
 
     if (arguments?.getBoolean("customFlow") == true) {
@@ -155,7 +180,45 @@ class PaymentSheetFragment(
       }
     } else if(flowController != null) {
       flowController?.presentPaymentOptions()
+    } else {
+      promise.resolve(createMissingInitError())
     }
+  }
+
+  fun presentWithTimeout(timeout: Long, promise: Promise) {
+    var paymentSheetActivity: Activity? = null
+
+    val activityLifecycleCallbacks = object : Application.ActivityLifecycleCallbacks {
+      override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+        paymentSheetActivity = activity
+      }
+
+      override fun onActivityStarted(activity: Activity) {}
+
+      override fun onActivityResumed(activity: Activity) {}
+
+      override fun onActivityPaused(activity: Activity) {}
+
+      override fun onActivityStopped(activity: Activity) {}
+
+      override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+
+      override fun onActivityDestroyed(activity: Activity) {
+        paymentSheetActivity = null
+        context.currentActivity?.application?.unregisterActivityLifecycleCallbacks(this)
+      }
+    }
+
+    Handler(Looper.getMainLooper()).postDelayed({
+      paymentSheetActivity?.let {
+        it.finish()
+        paymentSheetTimedOut = true
+      }
+    }, timeout)
+
+    context.currentActivity?.application?.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
+
+    this.present(promise)
   }
 
   fun confirmPayment(promise: Promise) {
@@ -192,6 +255,39 @@ class PaymentSheetFragment(
       )
     }
   }
+
+  private fun resolvePaymentResult(map: WritableMap) {
+    confirmPromise?.let {
+      it.resolve(map)
+      confirmPromise = null
+    } ?: run {
+      presentPromise?.resolve(map)
+    }
+  }
+
+  companion object {
+    internal const val TAG = "payment_sheet_launch_fragment"
+
+    internal fun createMissingInitError(): WritableMap {
+      return createError(PaymentSheetErrorType.Failed.toString(), "No payment sheet has been initialized yet. You must call `initPaymentSheet` before `presentPaymentSheet`.")
+    }
+
+    internal fun buildGooglePayConfig(params: Bundle?): PaymentSheet.GooglePayConfiguration? {
+      if (params == null) {
+        return null
+      }
+
+      val countryCode = params.getString("merchantCountryCode").orEmpty()
+      val currencyCode = params.getString("currencyCode").orEmpty()
+      val testEnv = params.getBoolean("testEnv")
+
+      return PaymentSheet.GooglePayConfiguration(
+        environment = if (testEnv) PaymentSheet.GooglePayConfiguration.Environment.Test else PaymentSheet.GooglePayConfiguration.Environment.Production,
+        countryCode = countryCode,
+        currencyCode = currencyCode
+      )
+    }
+  }
 }
 
 fun getBitmapFromVectorDrawable(context: Context?, drawableId: Int): Bitmap? {
@@ -214,4 +310,22 @@ fun getBase64FromBitmap(bitmap: Bitmap?): String? {
   bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
   val imageBytes: ByteArray = stream.toByteArray()
   return Base64.encodeToString(imageBytes, Base64.DEFAULT)
+}
+
+fun mapToCollectionMode(str: String?): PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode {
+  return when (str) {
+    "automatic" -> PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic
+    "never" -> PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Never
+    "always" -> PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Always
+    else -> PaymentSheet.BillingDetailsCollectionConfiguration.CollectionMode.Automatic
+  }
+}
+
+fun mapToAddressCollectionMode(str: String?): PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode {
+  return when (str) {
+    "automatic" -> PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode.Automatic
+    "never" -> PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode.Never
+    "full" -> PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode.Full
+    else -> PaymentSheet.BillingDetailsCollectionConfiguration.AddressCollectionMode.Automatic
+  }
 }

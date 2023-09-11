@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const withAndroidRootViewBackgroundColor_1 = require("./withAndroidRootViewBackgroundColor");
 const withAndroidUserInterfaceStyle_1 = require("./withAndroidUserInterfaceStyle");
 const withIosRootViewBackgroundColor_1 = require("./withIosRootViewBackgroundColor");

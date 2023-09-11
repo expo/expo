@@ -1,11 +1,11 @@
 #import "RNSScreenContainer.h"
 #import "RNSScreen.h"
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTConversions.h>
+#import <React/RCTFabricComponentsPlugins.h>
 #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
 #import <react/renderer/components/rnscreens/Props.h>
-#import "RCTFabricComponentsPlugins.h"
 #endif
 
 @implementation RNScreensViewController
@@ -58,7 +58,7 @@
 - (instancetype)init
 {
   if (self = [super init]) {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
     static const auto defaultProps = std::make_shared<const facebook::react::RNSScreenContainerProps>();
     _props = defaultProps;
 #endif
@@ -234,7 +234,7 @@
   [super layoutSubviews];
   _controller.view.frame = self.bounds;
   for (RNSScreenView *subview in _reactSubviews) {
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
     facebook::react::LayoutMetrics screenLayoutMetrics = subview.newLayoutMetrics;
     screenLayoutMetrics.frame = RCTRectFromCGRect(CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height));
     [subview updateLayoutMetrics:screenLayoutMetrics oldLayoutMetrics:subview.oldLayoutMetrics];
@@ -246,7 +246,7 @@
 }
 
 #pragma mark-- Fabric specific
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
@@ -321,7 +321,7 @@
 
 @end
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 Class<RCTComponentViewProtocol> RNSScreenContainerCls(void)
 {
   return RNSScreenContainerView.class;

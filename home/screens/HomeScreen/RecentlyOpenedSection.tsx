@@ -2,8 +2,8 @@ import { Divider, View } from 'expo-dev-client-components';
 import React, { Fragment } from 'react';
 import { Linking } from 'react-native';
 
-import { HistoryList } from '../../types';
 import { RecentlyOpenedListItem } from './RecentlyOpenedListItem';
+import { HistoryList } from '../../types';
 
 type Props = {
   recentHistory: HistoryList;
@@ -15,29 +15,23 @@ export function RecentlyOpenedSection({ recentHistory }: Props) {
       {recentHistory.map((project, i) => {
         if (!project) return null;
 
+        // EAS Update app names are under the extra.expoClient.name key
+        const title =
+          (project.manifest && 'extra' in project.manifest
+            ? project.manifest.extra?.expoClient?.name
+            : undefined) ??
+          (project.manifest && 'name' in project.manifest
+            ? String(project.manifest.name)
+            : undefined);
+
         return (
           <Fragment key={project.manifestUrl}>
             <RecentlyOpenedListItem
               url={project.manifestUrl}
-              image={
-                // TODO(wschurman): audit for new manifests
-                project.manifest && 'iconUrl' in project.manifest
-                  ? project.manifest.iconUrl
-                  : undefined
-              }
-              title={
-                // EAS Update app names are under the extra.expoClient.name key
-                project.manifest?.extra?.expoClient?.name ??
-                (project.manifest && 'name' in project.manifest ? project.manifest.name : undefined)
-              }
+              title={title}
               onPress={() => {
                 Linking.openURL(project.url);
               }}
-              releaseChannel={
-                project.manifest && 'releaseChannel' in project.manifest
-                  ? project.manifest.releaseChannel
-                  : undefined
-              }
             />
             {i < recentHistory.count() - 1 && <Divider style={{ height: 1 }} />}
           </Fragment>

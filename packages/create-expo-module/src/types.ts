@@ -9,6 +9,7 @@ export type CommandOptions = {
   withReadme: boolean;
   withChangelog: boolean;
   example: boolean;
+  local: boolean;
 };
 
 /**
@@ -21,10 +22,24 @@ export type SubstitutionData = {
     version: string;
     description: string;
     package: string;
+    moduleName: string;
+    viewName: string;
   };
   author: string;
   license: string;
   repo: string;
+  type: 'remote';
+};
+
+export type LocalSubstitutionData = {
+  project: {
+    slug: string;
+    name: string;
+    package: string;
+    moduleName: string;
+    viewName: string;
+  };
+  type: 'local';
 };
 
 export type CustomPromptObject = PromptObject & {

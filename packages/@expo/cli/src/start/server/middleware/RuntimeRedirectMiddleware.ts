@@ -1,14 +1,15 @@
 import { parse } from 'url';
 
-import * as Log from '../../../log';
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
 import {
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
   parsePlatformHeader,
+  resolvePlatformFromUserAgentHeader,
   RuntimePlatform,
 } from './resolvePlatform';
 import { ServerRequest, ServerResponse } from './server.types';
+import * as Log from '../../../log';
 
 const debug = require('debug')(
   'expo:start:server:middleware:runtimeRedirect'
@@ -17,14 +18,16 @@ const debug = require('debug')(
 /** Runtime to target: expo = Expo Go, custom = Dev Client. */
 type RuntimeTarget = 'expo' | 'custom';
 
+export type DeepLinkHandler = (props: {
+  runtime: RuntimeTarget;
+  platform: RuntimePlatform;
+}) => void | Promise<void>;
+
 export class RuntimeRedirectMiddleware extends ExpoMiddleware {
   constructor(
     protected projectRoot: string,
     protected options: {
-      onDeepLink: (props: {
-        runtime: RuntimeTarget;
-        platform: RuntimePlatform;
-      }) => void | Promise<void>;
+      onDeepLink: DeepLinkHandler;
       getLocation: (props: { runtime: RuntimeTarget }) => string | null | undefined;
     }
   ) {
@@ -34,7 +37,7 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
   async handleRequestAsync(req: ServerRequest, res: ServerResponse): Promise<void> {
     const { query } = parse(req.url!, true);
     const isDevClient = query['choice'] === 'expo-dev-client';
-    const platform = parsePlatformHeader(req);
+    const platform = parsePlatformHeader(req) ?? resolvePlatformFromUserAgentHeader(req);
     assertMissingRuntimePlatform(platform);
     assertRuntimePlatform(platform);
     const runtime = isDevClient ? 'custom' : 'expo';

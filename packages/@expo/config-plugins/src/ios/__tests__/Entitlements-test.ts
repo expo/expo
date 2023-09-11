@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import {
   ensureApplicationTargetEntitlementsFileConfigured,
   getEntitlementsPath,
@@ -29,24 +30,15 @@ describe(ensureApplicationTargetEntitlementsFileConfigured, () => {
   });
 
   it('creates a new entitlements file when none exists', async () => {
-    vol.fromJSON(
-      {
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
-        'ios/testproject/AppDelegate.m': '',
-      },
-      projectRoot
-    );
+    vol.fromJSON(rnFixture, projectRoot);
     const entitlementsPathBefore = getEntitlementsPath(projectRoot);
     ensureApplicationTargetEntitlementsFileConfigured(projectRoot);
     const entitlementsPath = getEntitlementsPath(projectRoot);
     expect(entitlementsPathBefore).toBeNull();
-    expect(entitlementsPath).toBe('/app/ios/testproject/testproject.entitlements');
+    expect(entitlementsPath).toBe('/app/ios/HelloWorld/HelloWorld.entitlements');
 
     // New file has the contents of the old entitlements file
-    const data = plist.parse(await fs.promises.readFile(entitlementsPath, 'utf8'));
+    const data = plist.parse(await fs.promises.readFile(entitlementsPath!, 'utf8'));
     expect(data).toStrictEqual({
       // No entitlements enabled by default
     });
@@ -107,10 +99,8 @@ describe(getEntitlementsPath, () => {
   it('returns null if CODE_SIGN_ENTITLEMENTS is not specified', async () => {
     vol.fromJSON(
       {
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/testproject/AppDelegate.m': '',
       },
       projectRoot

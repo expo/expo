@@ -82,6 +82,7 @@ it('runs `npx expo prebuild --help`', async () => {
         --clean                                  Delete the native folders and regenerate them before applying changes
         --npm                                    Use npm to install dependencies. Default when package-lock.json exists
         --yarn                                   Use Yarn to install dependencies. Default when yarn.lock exists
+        --bun                                    Use bun to install dependencies. Default when bun.lockb exists
         --pnpm                                   Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
         --template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo
         -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
@@ -132,11 +133,8 @@ it(
 
     const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
-    // Deleted
-    expect(pkg.main).not.toBeDefined();
-
     // Added new packages
-    expect(Object.keys(pkg.dependencies).sort()).toStrictEqual([
+    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
       'expo',
       'expo-splash-screen',
       'expo-status-bar',
@@ -148,17 +146,14 @@ it(
     expect(pkg.scripts).toStrictEqual({
       android: 'expo run:android',
       ios: 'expo run:ios',
-      start: 'expo start --dev-client',
     });
 
     // If this changes then everything else probably changed as well.
     expect(files).toMatchInlineSnapshot(`
-      Array [
+      [
         "App.js",
         "android/.gitignore",
-        "android/app/BUCK",
         "android/app/build.gradle",
-        "android/app/build_defs.bzl",
         "android/app/debug.keystore",
         "android/app/proguard-rules.pro",
         "android/app/src/debug/AndroidManifest.xml",
@@ -166,17 +161,6 @@ it(
         "android/app/src/main/AndroidManifest.xml",
         "android/app/src/main/java/com/example/minimal/MainActivity.java",
         "android/app/src/main/java/com/example/minimal/MainApplication.java",
-        "android/app/src/main/java/com/example/minimal/newarchitecture/MainApplicationReactNativeHost.java",
-        "android/app/src/main/java/com/example/minimal/newarchitecture/components/MainComponentsRegistry.java",
-        "android/app/src/main/java/com/example/minimal/newarchitecture/modules/MainApplicationTurboModuleManagerDelegate.java",
-        "android/app/src/main/jni/Android.mk",
-        "android/app/src/main/jni/MainApplicationModuleProvider.cpp",
-        "android/app/src/main/jni/MainApplicationModuleProvider.h",
-        "android/app/src/main/jni/MainApplicationTurboModuleManagerDelegate.cpp",
-        "android/app/src/main/jni/MainApplicationTurboModuleManagerDelegate.h",
-        "android/app/src/main/jni/MainComponentsRegistry.cpp",
-        "android/app/src/main/jni/MainComponentsRegistry.h",
-        "android/app/src/main/jni/OnLoad.cpp",
         "android/app/src/main/res/drawable/rn_edit_text_material.xml",
         "android/app/src/main/res/drawable/splashscreen.xml",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
@@ -193,6 +177,7 @@ it(
         "android/app/src/main/res/values/strings.xml",
         "android/app/src/main/res/values/styles.xml",
         "android/app/src/main/res/values-night/colors.xml",
+        "android/app/src/release/java/com/example/minimal/ReactNativeFlipper.java",
         "android/build.gradle",
         "android/gradle/wrapper/gradle-wrapper.jar",
         "android/gradle/wrapper/gradle-wrapper.properties",
@@ -201,7 +186,6 @@ it(
         "android/gradlew.bat",
         "android/settings.gradle",
         "app.json",
-        "index.js",
         "ios/.gitignore",
         "ios/.xcode.env",
         "ios/Podfile",
@@ -215,6 +199,7 @@ it(
         "ios/basicprebuild/Info.plist",
         "ios/basicprebuild/SplashScreen.storyboard",
         "ios/basicprebuild/Supporting/Expo.plist",
+        "ios/basicprebuild/basicprebuild-Bridging-Header.h",
         "ios/basicprebuild/basicprebuild.entitlements",
         "ios/basicprebuild/main.m",
         "ios/basicprebuild/noop-file.swift",
@@ -222,7 +207,6 @@ it(
         "ios/basicprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
         "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
         "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
-        "metro.config.js",
         "package.json",
         "yarn.lock",
       ]

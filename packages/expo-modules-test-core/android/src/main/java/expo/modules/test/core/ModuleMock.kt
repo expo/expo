@@ -127,7 +127,7 @@ private fun prepareMockAppContext(customAppContext: AppContext?): AppContext {
   // we need to override it to return actual strong reference (held by mockk internals)
   val appContextSpy = convertToSpy(appContext)
   every { appContextSpy getProperty "reactContext" } returns reactContext
-
+  every { appContextSpy getProperty "hasActiveReactInstance" } returns true
   return appContextSpy
 }
 

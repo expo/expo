@@ -10,20 +10,29 @@
 
 #include "include/core/SkMatrix.h"
 #include "include/core/SkPathTypes.h"
+#include "include/core/SkPoint.h"
+#include "include/core/SkRect.h"
 #include "include/core/SkRefCnt.h"
-#include "include/private/SkTo.h"
+#include "include/core/SkScalar.h"
+#include "include/core/SkTypes.h"
+#include "include/private/base/SkDebug.h"
+#include "include/private/base/SkTo.h"
+#include "include/private/base/SkTypeTraits.h"
 
+#include <atomic>
+#include <cstddef>
+#include <cstdint>
 #include <initializer_list>
 #include <tuple>
+#include <type_traits>
 
-class SkAutoPathBoundsUpdate;
 class SkData;
 class SkPathRef;
 class SkRRect;
 class SkWStream;
-
 enum class SkPathConvexity;
 enum class SkPathFirstDirection;
+struct SkPathVerbAnalysis;
 
 // WIP -- define this locally, and fix call-sites to use SkPathBuilder (skbug.com/9000)
 //#define SK_HIDE_PATH_EDIT_METHODS
@@ -1756,6 +1765,8 @@ public:
     */
     bool isValid() const;
 
+    using sk_is_trivially_relocatable = std::true_type;
+
 private:
     SkPath(sk_sp<SkPathRef>, SkPathFillType, bool isVolatile, SkPathConvexity,
            SkPathFirstDirection firstDirection);
@@ -1766,6 +1777,8 @@ private:
     mutable std::atomic<uint8_t>   fFirstDirection; // SkPathFirstDirection
     uint8_t                        fFillType    : 2;
     uint8_t                        fIsVolatile  : 1;
+
+    static_assert(::sk_is_trivially_relocatable<decltype(fPathRef)>::value);
 
     /** Resets all fields other than fPathRef to their initial 'empty' values.
      *  Assumes the caller has already emptied fPathRef.
@@ -1861,6 +1874,16 @@ private:
      *        this path should be discarded after calling shrinkToFit().
      */
     void shrinkToFit();
+
+    // Creates a new Path after the supplied arguments have been validated by
+    // sk_path_analyze_verbs().
+    static SkPath MakeInternal(const SkPathVerbAnalysis& analsis,
+                               const SkPoint points[],
+                               const uint8_t verbs[],
+                               int verbCount,
+                               const SkScalar conics[],
+                               SkPathFillType fillType,
+                               bool isVolatile);
 
     friend class SkAutoPathBoundsUpdate;
     friend class SkAutoDisableOvalCheck;

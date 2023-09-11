@@ -14,9 +14,9 @@
 @property (nonatomic, strong) GMSCircle *circle;
 @property (nonatomic, assign) double radius;
 @property (nonatomic, assign) CLLocationCoordinate2D centerCoordinate;
-@property (nonatomic, assign) UIColor *strokeColor;
+@property (nonatomic, strong) UIColor *strokeColor;
 @property (nonatomic, assign) double strokeWidth;
-@property (nonatomic, assign) UIColor *fillColor;
+@property (nonatomic, strong) UIColor *fillColor;
 @property (nonatomic, assign) int zIndex;
 
 @end

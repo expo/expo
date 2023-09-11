@@ -7,11 +7,11 @@
 #ifndef SkPathOps_DEFINED
 #define SkPathOps_DEFINED
 
+#include "include/core/SkPath.h"
 #include "include/core/SkTypes.h"
-#include "include/private/SkTArray.h"
-#include "include/private/SkTDArray.h"
+#include "include/private/base/SkTArray.h"
+#include "include/private/base/SkTDArray.h"
 
-class SkPath;
 struct SkRect;
 
 
@@ -102,7 +102,7 @@ public:
     bool resolve(SkPath* result);
 
 private:
-    SkTArray<SkPath> fPathRefs;
+    skia_private::TArray<SkPath> fPathRefs;
     SkTDArray<SkPathOp> fOps;
 
     static bool FixWinding(SkPath* path);

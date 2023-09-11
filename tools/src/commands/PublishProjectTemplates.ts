@@ -82,7 +82,7 @@ async function action(options) {
 
   const tagOptions = new Map<string, string[]>();
   tagOptions.set(`${sdkTag} and latest`, [sdkTag, 'latest']);
-  tagOptions.set(`${sdkTag} and beta`, [sdkTag, 'beta']);
+  tagOptions.set(`${sdkTag} and beta and next`, [sdkTag, 'beta', 'next']);
   tagOptions.set(sdkTag, [sdkTag]);
 
   const { tagChoice } = await inquirer.prompt<{ tagChoice: string }>([
@@ -178,22 +178,25 @@ async function action(options) {
     const publishCommandArgs: string[] = ['publish', '--access', 'public', ...moreArgs];
     npmCommandParams.push({ path: template.path, args: publishCommandArgs });
 
-    if (tags && tags.length === 2 && !choseNextTag) {
+    if (tags && tags.length > 1 && !choseNextTag) {
       // If 'next', do not add 'latest' or 'beta'
       // Additional tag (latest, beta) is added here
-      console.log(
-        `Queuing command to assign ${chalk.blue(`${tags[1]}`)} tag to ${chalk.green(
-          template.name
-        )}@${chalk.red(newVersion)}...`
-      );
+      const [, ...additionalTags] = tags;
+      additionalTags.forEach((tag) => {
+        console.log(
+          `Queuing command to assign ${chalk.blue(`${tag}`)} tag to ${chalk.green(
+            template.name
+          )}@${chalk.red(newVersion)}...`
+        );
 
-      const tagCommandArgs: string[] = [
-        'dist-tag',
-        'add',
-        `${template.name}@${newVersion}`,
-        `${tags[1]}`,
-      ];
-      npmCommandParams.push({ path: template.path, args: tagCommandArgs });
+        const tagCommandArgs: string[] = [
+          'dist-tag',
+          'add',
+          `${template.name}@${newVersion}`,
+          `${tag}`,
+        ];
+        npmCommandParams.push({ path: template.path, args: tagCommandArgs });
+      });
     }
     console.log();
   }

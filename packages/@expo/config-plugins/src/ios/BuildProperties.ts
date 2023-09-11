@@ -50,7 +50,7 @@ export const withJsEnginePodfileProps = createBuildPodfilePropsConfigPlugin<Expo
   [
     {
       propName: 'expo.jsEngine',
-      propValueGetter: (config) => config.ios?.jsEngine ?? config.jsEngine ?? 'jsc',
+      propValueGetter: (config) => config.ios?.jsEngine ?? config.jsEngine ?? 'hermes',
     },
   ],
   'withJsEnginePodfileProps'

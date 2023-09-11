@@ -7,6 +7,8 @@ jest.mock('../../start/server/DevServerManager', () => ({
   DevServerManager: jest.fn(() => ({
     startAsync: jest.fn(),
     getDefaultDevServer: jest.fn(),
+    bootstrapTypeScriptAsync: jest.fn(),
+    watchEnvironmentVariables: jest.fn(),
   })),
 }));
 

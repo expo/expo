@@ -11,15 +11,16 @@
 #include "include/core/SkData.h"
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkScalar.h"
-#include "include/private/SkTo.h"
+#include "include/core/SkTypes.h"
+#include "include/private/base/SkCPUTypes.h"
+#include "include/private/base/SkTo.h"
 
-#include <memory.h>
-
-class SkStream;
-class SkStreamRewindable;
-class SkStreamSeekable;
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <memory>
+#include <utility>
 class SkStreamAsset;
-class SkStreamMemory;
 
 /**
  *  SkStream -- abstraction for a source of bytes. Subclasses can be backed by
@@ -122,7 +123,7 @@ public:
     }
 
 //SkStreamSeekable
-    /** Returns true if this stream can report it's current position. */
+    /** Returns true if this stream can report its current position. */
     virtual bool hasPosition() const { return false; }
     /** Returns the current position in the stream. If this cannot be done, returns 0. */
     virtual size_t getPosition() const { return 0; }
@@ -140,7 +141,7 @@ public:
     virtual bool move(long /*offset*/) { return false; }
 
 //SkStreamAsset
-    /** Returns true if this stream can report it's total length. */
+    /** Returns true if this stream can report its total length. */
     virtual bool hasLength() const { return false; }
     /** Returns the total length of the stream. If this cannot be done, returns 0. */
     virtual size_t getLength() const { return 0; }
@@ -255,10 +256,10 @@ public:
 
     bool writeText(const char text[]) {
         SkASSERT(text);
-        return this->write(text, strlen(text));
+        return this->write(text, std::strlen(text));
     }
 
-    bool newline() { return this->write("\n", strlen("\n")); }
+    bool newline() { return this->write("\n", std::strlen("\n")); }
 
     bool writeDecAsText(int32_t);
     bool writeBigDecAsText(int64_t, int minDigits = 0);
@@ -295,8 +296,6 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////
-
-#include <stdio.h>
 
 /** A stream that wraps a C FILE* file stream. */
 class SK_API SkFILEStream : public SkStreamAsset {

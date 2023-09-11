@@ -16,7 +16,9 @@ export default {
         return null;
     },
     async getCellularGenerationAsync() {
-        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection || null;
+        const connection = 
+        // @ts-expect-error
+        navigator.connection || navigator.mozConnection || navigator.webkitConnection || null;
         if (connection !== null) {
             switch (connection.effectiveType) {
                 case 'slow-2g':

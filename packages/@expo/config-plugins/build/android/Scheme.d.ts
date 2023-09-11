@@ -1,6 +1,6 @@
 import { ExpoConfig } from '@expo/config-types';
 import { AndroidManifest } from './Manifest';
-export declare type IntentFilterProps = {
+export type IntentFilterProps = {
     actions: string[];
     categories: string[];
     data: {
@@ -8,7 +8,7 @@ export declare type IntentFilterProps = {
         host?: string;
     }[];
 };
-export declare const withScheme: import("..").ConfigPlugin<void>;
+export declare const withScheme: import("..").ConfigPlugin;
 export declare function getScheme(config: {
     scheme?: string | string[];
 }): string[];

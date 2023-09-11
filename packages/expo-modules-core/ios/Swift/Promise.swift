@@ -34,7 +34,7 @@ public struct Promise: AnyArgument {
   }
 
   public func reject(_ code: String, _ description: String) {
-    rejecter(Exception(name: code, description: description))
+    rejecter(Exception(name: code, description: description, code: code))
   }
 
   public func settle<ValueType, ExceptionType: Exception>(with result: Result<ValueType, ExceptionType>) {

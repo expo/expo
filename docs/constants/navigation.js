@@ -1,32 +1,34 @@
-// @preval
+import frontmatter from 'front-matter';
+import fs from 'fs';
+import path from 'path';
+import { u as make } from 'unist-builder';
+import { URL, fileURLToPath } from 'url';
 
-const frontmatter = require('front-matter');
-const fs = require('fs');
-const path = require('path');
-const make = require('unist-builder');
-const { URL } = require('url');
+import { VERSIONS } from './versions.js';
 
-const { LATEST_VERSION, VERSIONS } = require('./versions');
-const PAGES_DIR = path.resolve(__dirname, '../pages');
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const PAGES_DIR = path.resolve(dirname, '../pages');
 
 // TODO(cedric): refactor docs to get rid of the directory lists
 
-/** Manual list of directories to pull in to the getting started tutorial */
-const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
-/** Manual list of directories to categorize as "EAS content" */
-const easDirectories = [
-  'eas',
-  'build',
-  'app-signing',
-  'build-reference',
-  'submit',
-  'eas-update',
-  'eas-metadata',
+/** Manual list of directories to categorize as "Home" */
+const homeDirectories = [
+  'get-started',
+  'develop',
+  'config-plugins',
+  'debugging',
+  'deploy',
+  'routing',
 ];
-/** Manual list of directories to categorize as "Archive content" */
+/** Manual list of directories to categorize as "Learn" */
+const learnDirectories = ['tutorial', 'ui-programming', 'additional-resources'];
+/** Manual list of directories to categorize as "Archive" */
 const archiveDirectories = ['archive'];
+/** Manual list of directories to categorize as "Reference" */
+const referenceDirectories = ['versions', 'technical-specs', 'more'];
 /** Private preview section which isn't linked in the documentation */
-const previewDirectories = ['preview'];
+const previewDirectories = ['feature-preview', 'preview'];
+
 /** All other unlisted directories */
 const generalDirectories = fs
   .readdirSync(PAGES_DIR, { withFileTypes: true })
@@ -37,372 +39,498 @@ const generalDirectories = fs
       name !== 'api' &&
       name !== 'versions' &&
       ![
-        ...startingDirectories,
-        ...previewDirectories,
-        ...easDirectories,
+        ...homeDirectories,
         ...archiveDirectories,
+        ...referenceDirectories,
+        ...learnDirectories,
+        ...previewDirectories,
       ].includes(name)
   );
 
 // --- Navigation ---
 
-const starting = [
-  makeSection(
-    'Get Started',
-    [
-      makePage('get-started/installation.md'),
-      makePage('get-started/create-a-new-app.md'),
-      makePage('get-started/errors.md'),
-    ],
-    { expanded: true }
-  ),
-  makeSection(
-    'Tutorial',
-    [
-      makePage('tutorial/planning.md'),
-      makePage('tutorial/text.md'),
-      makePage('tutorial/image.md'),
-      makePage('tutorial/button.md'),
-      makePage('tutorial/image-picker.md'),
-      makePage('tutorial/sharing.md'),
-      // makePage('tutorial/platform-differences.md'),
-      makePage('tutorial/configuration.md'),
-      makePage('tutorial/follow-up.md'),
-    ],
-    { expanded: true }
-  ),
-  makeSection(
-    'Conceptual Overview',
-    [
-      makePage('introduction/managed-vs-bare.md'),
-      // makePage('introduction/walkthrough.md'),
-      makePage('introduction/why-not-expo.md'),
-      makePage('introduction/faq.md'),
-    ],
-    { expanded: true }
-  ),
-  makeSection(
-    'Next Steps',
-    [
-      makePage('next-steps/using-the-documentation.md'),
-      makePage('next-steps/community.md'),
-      makePage('next-steps/additional-resources.md'),
-    ],
-    { expanded: true }
-  ),
+const home = [
+  makeSection('', [makePage('overview.mdx')]),
+  makeSection('Get started', [
+    makePage('get-started/installation.mdx'),
+    makePage('get-started/expo-go.mdx'),
+    makePage('get-started/create-a-project.mdx'),
+  ]),
+  makeSection('Develop', [
+    makePage('develop/project-structure.mdx'),
+    makeGroup(
+      'User interface',
+      [
+        makePage('develop/user-interface/splash-screen.mdx'),
+        makePage('develop/user-interface/app-icons.mdx'),
+        makePage('develop/user-interface/safe-areas.mdx'),
+        makePage('develop/user-interface/fonts.mdx'),
+        makePage('develop/user-interface/color-themes.mdx'),
+        makePage('develop/user-interface/animation.mdx'),
+        makePage('develop/user-interface/store-data.mdx'),
+        makePage('develop/user-interface/next-steps.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Routing',
+      [
+        makePage('routing/introduction.mdx'),
+        makePage('routing/installation.mdx'),
+        makePage('routing/create-pages.mdx'),
+        makePage('routing/navigating-pages.mdx'),
+        makePage('routing/layouts.mdx'),
+        makePage('routing/appearance.mdx'),
+        makePage('routing/error-handling.mdx'),
+        makePage('routing/next-steps.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Development builds',
+      [
+        makePage('develop/development-builds/introduction.mdx'),
+        makePage('develop/development-builds/installation.mdx'),
+        makePage('develop/development-builds/create-a-build.mdx'),
+        makePage('develop/development-builds/use-development-builds.mdx'),
+        makePage('develop/development-builds/share-with-your-team.mdx'),
+        makePage('develop/development-builds/development-workflows.mdx'),
+        makePage('develop/development-builds/next-steps.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Config plugins',
+      [
+        makePage('config-plugins/introduction.mdx'),
+        makePage('config-plugins/plugins-and-mods.mdx'),
+        makePage('config-plugins/development-and-debugging.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Debugging',
+      [
+        makePage('debugging/errors-and-warnings.mdx'),
+        makePage('debugging/runtime-issues.mdx'),
+        makePage('debugging/tools.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makePage('develop/authentication.mdx'),
+    makePage('develop/unit-testing.mdx'),
+  ]),
+  makeSection('Deploy', [
+    makePage('deploy/build-project.mdx'),
+    makePage('deploy/submit-to-app-stores.mdx'),
+    makePage('deploy/app-stores-metadata.mdx'),
+    makePage('deploy/instant-updates.mdx'),
+  ]),
+  makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx')]),
 ];
 
 const general = [
-  makeSection('Fundamentals', [
-    makePage('workflow/expo-cli.md'),
-    makePage('workflow/using-libraries.md'),
-    makePage('workflow/logging.md'),
-    makePage('workflow/development-mode.md'),
-    makePage('workflow/ios-simulator.md'),
-    makePage('workflow/android-studio-emulator.md'),
-    makePage('workflow/debugging.md'),
-    makePage('workflow/configuration.md'),
-    makePage('workflow/upgrading-expo-sdk-walkthrough.md'),
-    makePage('workflow/web.md'),
-    makePage('workflow/snack.md'),
-    makePage('workflow/customizing.md'),
-    makePage('workflow/glossary-of-terms.md'),
-    makePage('workflow/already-used-react-native.md'),
-    makePage('workflow/common-development-errors.md'),
+  makeSection('', [makePage('guides/overview.mdx')]),
+  makeSection('Development process', [
+    makePage('workflow/configuration.mdx'),
+    makePage('workflow/using-libraries.mdx'),
+    makePage('guides/permissions.mdx'),
+    makePage('guides/environment-variables.mdx'),
+    makePage('guides/linking.mdx'),
+    makePage('guides/deep-linking.mdx'),
+    makeGroup(
+      'Custom native code',
+      [
+        makePage('workflow/continuous-native-generation.mdx'),
+        makePage('workflow/customizing.mdx'),
+        makePage('workflow/prebuild.mdx'),
+        makePage('guides/adopting-prebuild.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Web',
+      [
+        makePage('workflow/web.mdx'),
+        makePage('guides/progressive-web-apps.mdx'),
+        makePage('distribution/publishing-websites.mdx'),
+        makePage('guides/customizing-metro.mdx'),
+        makePage('guides/customizing-webpack.mdx'),
+        makePage('guides/web-performance.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Reference',
+      [
+        makePage('guides/monorepos.mdx'),
+        makePage('workflow/logging.mdx'),
+        makePage('workflow/development-mode.mdx'),
+        makePage('workflow/common-development-errors.mdx'),
+        makePage('workflow/android-studio-emulator.mdx'),
+        makePage('workflow/ios-simulator.mdx'),
+      ],
+      { expanded: false }
+    ),
   ]),
-  makeSection('Distributing Your App', [
-    makePage('distribution/introduction.md'),
-    makePage('distribution/app-stores.md'),
-    makePage('distribution/runtime-versions.md'),
-    makePage('distribution/custom-updates-server.md'),
-    makePage('distribution/uploading-apps.md'),
-    makePage('distribution/app-transfers.md'),
-    makePage('distribution/security.md'),
-    makePage('distribution/publishing-websites.md'),
-  ]),
-  makeSection('Development Builds', [
-    makePage('development/introduction.md'),
-    makePage('development/getting-started.md'),
-    makePage('development/build.md'),
-    makePage('development/installation.md'),
-    makePage('development/development-workflows.md'),
-    makePage('development/extensions.md'),
-    makePage('development/compatibility.md'),
-    makePage('development/upgrading.md'),
-    makePage('development/troubleshooting.md'),
-  ]),
-  makeSection('Integrations', [
-    makePage('guides/using-firebase.md'),
-    makePage('guides/setup-native-firebase.md'),
-    makePage('guides/using-sentry.md'),
-    makePage('guides/using-bugsnag.md'),
-    makePage('guides/using-clojurescript.md'),
-    makePage('guides/using-graphql.md'),
-    makePage('guides/using-styled-components.md'),
-    makePage('guides/using-electron.md'),
-    makePage('guides/using-nextjs.md'),
-    makePage('guides/using-preact.md'),
-  ]),
-  makeSection('Assorted Guides', [
-    makePage('guides/assets.md'),
-    makePage('guides/using-custom-fonts.md'),
-    makePage('guides/icons.md'),
-    makePage('guides/routing-and-navigation.md'),
-    makePage('guides/permissions.md'),
-    makePage('guides/app-icons.md'),
-    makePage('guides/splash-screens.md'),
-    makePage('guides/configuring-statusbar.md'),
-    makePage('guides/color-schemes.md'),
-    makePage('guides/typescript.md'),
-    makePage('guides/authentication.md'),
-    makePage('guides/userinterface.md'),
-    makePage('guides/environment-variables.md'),
-    makePage('guides/customizing-metro.md'),
-    makePage('guides/customizing-webpack.md'),
-    makePage('guides/progressive-web-apps.md'),
-    makePage('guides/web-performance.md'),
-    makePage('guides/delaying-code.md'),
-    makePage('guides/errors.md'),
-    makePage('guides/testing-with-jest.md'),
-    makePage('guides/education.md'),
-    makePage('guides/how-expo-works.md'),
-    makePage('guides/linking.md'),
-    makePage('guides/running-in-the-browser.md'),
-    makePage('guides/setting-up-continuous-integration.md'),
-    makePage('guides/testing-on-devices.md'),
-    makePage('guides/troubleshooting-proxies.md'),
-    makePage('guides/config-plugins.md'),
-    makePage('guides/monorepos.md'),
-    makePage('guides/sharing-preview-releases.md'),
-    makePage('guides/using-hermes.md'),
-  ]),
-  makeSection('Expo Module API (Alpha)', [
-    makePage('modules/overview.md'),
-    makePage('modules/module-api.md'),
-    makePage('modules/android-lifecycle-listeners.md'),
-    makePage('modules/appdelegate-subscribers.md'),
-    makePage('modules/module-config.md'),
-  ]),
-  makeSection('Expo Accounts', [
-    makePage('accounts/account-types.md'),
-    makePage('accounts/two-factor.md'),
-    makePage('accounts/programmatic-access.md'),
-    makePage('accounts/working-together.md'),
-  ]),
-  makeSection('Bare Workflow', [
-    makePage('bare/exploring-bare-workflow.md'),
-    makePage('bare/hello-world.md'),
-    makePage('bare/using-libraries.md'),
-    makePage('bare/existing-apps.md'),
-    makePage('bare/installing-expo-modules.md'),
-    makePage('bare/installing-unimodules.md'),
-    makePage('bare/installing-updates.md'),
-    makePage('bare/unimodules-full-list.md'),
-    makePage('bare/using-expo-client.md'),
-    makePage('bare/using-web.md'),
-    makePage('bare/migrating-from-expokit.md'),
-    makePage('bare/updating-your-app.md'),
-    makePage('bare/error-recovery.md'),
-  ]),
-  makeSection('Push Notifications', [
-    makePage('push-notifications/overview.md'),
-    makePage('push-notifications/push-notifications-setup.md'),
-    makePage('push-notifications/sending-notifications.md'),
-    makePage('push-notifications/sending-notifications-custom.md'),
-    makePage('push-notifications/receiving-notifications.md'),
-    makePage('push-notifications/using-fcm.md'),
-    makePage('push-notifications/faq.md'),
-  ]),
-  makeSection('UI Programming', [
-    makePage('ui-programming/image-background.md'),
-    makePage('ui-programming/implementing-a-checkbox.md'),
-    makePage('ui-programming/z-index.md'),
-    makePage('ui-programming/using-svgs.md'),
-    makePage('ui-programming/react-native-toast.md'),
-    makePage('ui-programming/react-native-styling-buttons.md'),
-  ]),
-  makeSection('Regulatory Compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')), {}),
-  makeSection('Technical Specs', [
-    makePage('technical-specs/expo-updates-0.md'),
-    makePage('technical-specs/expo-sfv-0.md'),
-  ]),
-  makeSection('Deprecated', [
-    makeGroup('ExpoKit', [
-      makePage('expokit/overview.md'),
-      makePage('expokit/eject.md'),
-      makePage('expokit/expokit.md'),
-      makePage('expokit/advanced-expokit-topics.md'),
-      makePage('expokit/universal-modules-and-expokit.md'),
+  makeSection('Expo Router', [
+    makeGroup('Advanced', [
+      makePage('router/advanced/root-layout.mdx'),
+      makePage('router/advanced/stack.mdx'),
+      makePage('router/advanced/tabs.mdx'),
+      makePage('router/advanced/drawer.mdx'),
+      makePage('router/advanced/nesting-navigators.mdx'),
+      makePage('router/advanced/modals.mdx'),
+      makePage('router/advanced/platform-specific-modules.mdx'),
+      makePage('router/advanced/shared-routes.mdx'),
+      makePage('router/advanced/router-settings.mdx'),
+      makePage('router/advanced/apple-handoff.mdx'),
     ]),
-    makeGroup('Archived', sortAlphabetical(pagesFromDir('archived'))),
+    makeGroup('Reference', [
+      makePage('router/reference/hooks.mdx'),
+      makePage('router/reference/search-parameters.mdx'),
+      makePage('router/reference/redirects.mdx'),
+      makePage('router/reference/static-rendering.mdx'),
+      makePage('router/reference/async-routes.mdx'),
+      makePage('router/reference/sitemap.mdx'),
+      makePage('router/reference/typed-routes.mdx'),
+      makePage('router/reference/authentication.mdx'),
+      makePage('router/reference/screen-tracking.mdx'),
+      makePage('router/reference/src-directory.mdx'),
+      makePage('router/reference/testing.mdx'),
+      makePage('router/reference/troubleshooting.mdx'),
+      makePage('router/reference/faq.mdx'),
+    ]),
+    makeGroup('Migration', [makePage('router/migrate/from-react-navigation.mdx')]),
+  ]),
+  makeSection(
+    'Expo Modules API',
+    [
+      makePage('modules/overview.mdx'),
+      makePage('modules/get-started.mdx'),
+      makeSection('Tutorials', [
+        makePage('modules/native-module-tutorial.mdx'),
+        makePage('modules/native-view-tutorial.mdx'),
+        makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
+        makePage('modules/use-standalone-expo-module-in-your-project.mdx'),
+        makePage('modules/third-party-library.mdx'),
+        makePage('modules/existing-library.mdx'),
+      ]),
+      makeSection('Reference', [
+        makePage('modules/module-api.mdx'),
+        makePage('modules/android-lifecycle-listeners.mdx'),
+        makePage('modules/appdelegate-subscribers.mdx'),
+        makePage('modules/autolinking.mdx'),
+        makePage('modules/module-config.mdx'),
+      ]),
+    ],
+    { expanded: false }
+  ),
+  makeSection('EAS', [makePage('eas/index.mdx')]),
+  makeSection('EAS Build', [
+    makePage('build/introduction.mdx'),
+    makePage('build/setup.mdx'),
+    makePage('build/eas-json.mdx'),
+    makePage('build/internal-distribution.mdx'),
+    makePage('build/automate-submissions.mdx'),
+    makePage('build/updates.mdx'),
+    makePage('build/building-on-ci.mdx'),
+    makePage('build/building-from-github.mdx'),
+    makeGroup(
+      'App Signing',
+      [
+        makePage('app-signing/app-credentials.mdx'),
+        makePage('app-signing/managed-credentials.mdx'),
+        makePage('app-signing/local-credentials.mdx'),
+        makePage('app-signing/existing-credentials.mdx'),
+        makePage('app-signing/syncing-credentials.mdx'),
+        makePage('app-signing/security.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Custom builds',
+      [
+        makePage('custom-builds/get-started.mdx'),
+        makePage('custom-builds/schema.mdx'),
+        makePage('custom-builds/functions.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Reference',
+      [
+        makePage('build-reference/eas-json.mdx'),
+        makePage('build-reference/migrating.mdx'),
+        makePage('build-reference/npm-hooks.mdx'),
+        makePage('build-reference/private-npm-packages.mdx'),
+        makePage('build-reference/git-submodules.mdx'),
+        makePage('build-reference/npm-cache-with-yarn.mdx'),
+        makePage('build-reference/build-with-monorepos.mdx'),
+        makePage('build-reference/variables.mdx'),
+        makePage('build-reference/apk.mdx'),
+        makePage('build-reference/simulators.mdx'),
+        makePage('build-reference/app-versions.mdx'),
+        makePage('build-reference/troubleshooting.mdx'),
+        makePage('build-reference/variants.mdx'),
+        makePage('build-reference/ios-capabilities.mdx'),
+        makePage('build-reference/local-builds.mdx'),
+        makePage('build-reference/caching.mdx'),
+        makePage('build-reference/android-builds.mdx'),
+        makePage('build-reference/ios-builds.mdx'),
+        makePage('build-reference/build-configuration.mdx'),
+        makePage('build-reference/infrastructure.mdx'),
+        makePage('build-reference/app-extensions.mdx'),
+        makePage('build-reference/e2e-tests.mdx'),
+        makePage('build-reference/limitations.mdx'),
+      ],
+      { expanded: false }
+    ),
+  ]),
+  makeSection('EAS Submit', [
+    makePage('submit/introduction.mdx'),
+    makePage('submit/eas-json.mdx'),
+    makePage('submit/android.mdx'),
+    makePage('submit/ios.mdx'),
+  ]),
+  makeSection('EAS Update', [
+    makePage('eas-update/introduction.mdx'),
+    makePage('eas-update/getting-started.mdx'),
+    makePage('eas-update/github-actions.mdx'),
+    makePage('eas-update/eas-cli.mdx'),
+    makePage('eas-update/develop-faster.mdx'),
+    makeGroup('Concepts', [
+      makePage('eas-update/how-it-works.mdx'),
+      makePage('eas-update/runtime-versions.mdx'),
+      makePage('eas-update/deployment-patterns.mdx'),
+    ]),
+    makeGroup('Troubleshoot', [
+      makePage('eas-update/debug.mdx'),
+      makePage('eas-update/debug-advanced.mdx'),
+      makePage('eas-update/expo-dev-client.mdx'),
+      makePage('eas-update/build-locally.mdx'),
+    ]),
+    makeGroup('Advanced', [
+      makePage('eas-update/optimize-assets.mdx'),
+      makePage('eas-update/environment-variables.mdx'),
+      makePage('eas-update/code-signing.mdx'),
+      makePage('eas-update/rollouts.mdx'),
+    ]),
+    makeGroup('Reference', [
+      makePage('eas-update/migrate-from-classic-updates.mdx'),
+      makePage('eas-update/codepush.mdx'),
+      makePage('eas-update/updating-your-app.mdx'),
+      makePage('eas-update/faq.mdx'),
+      makePage('eas-update/known-issues.mdx'),
+    ]),
+  ]),
+  makeSection('EAS Metadata', [
+    makePage('eas/metadata/index.mdx'),
+    makePage('eas/metadata/getting-started.mdx'),
+    makeGroup(
+      'Reference',
+      [
+        makePage('eas/metadata/config.mdx'),
+        makePage('eas/metadata/schema.mdx'),
+        makePage('eas/metadata/faq.mdx'),
+      ],
+      { expanded: false }
+    ),
+  ]),
+  makeSection('EAS Insights', [makePage('eas-insights/introduction.mdx')]),
+  makeSection('Push notifications', [
+    makePage('push-notifications/overview.mdx'),
+    makePage('push-notifications/push-notifications-setup.mdx'),
+    makePage('push-notifications/sending-notifications.mdx'),
+    makePage('push-notifications/receiving-notifications.mdx'),
+    makeGroup(
+      'Reference',
+      [
+        makePage('push-notifications/sending-notifications-custom.mdx'),
+        makePage('push-notifications/faq.mdx'),
+      ],
+      { expanded: false }
+    ),
+  ]),
+  makeSection('Distribution', [
+    makePage('distribution/introduction.mdx'),
+    makePage('distribution/app-stores.mdx'),
+    makePage('distribution/runtime-versions.mdx'),
+    makePage('distribution/custom-updates-server.mdx'),
+    makePage('distribution/app-transfers.mdx'),
+  ]),
+  makeSection(
+    'More',
+    [
+      makePage('workflow/upgrading-expo-sdk-walkthrough.mdx'),
+      makePage('eas/webhooks.mdx'),
+      makeSection('Assorted', [
+        makePage('guides/authentication.mdx'),
+        makePage('guides/troubleshooting-proxies.mdx'),
+        makePage('guides/sharing-preview-releases.mdx'),
+        makePage('guides/using-hermes.mdx'),
+        makePage('guides/ios-developer-mode.mdx'),
+        makePage('guides/icons.mdx'),
+        makePage('guides/localization.mdx'),
+        makePage('guides/configuring-js-engines.mdx'),
+      ]),
+      makeSection('Integrations', [
+        makePage('guides/using-analytics.mdx'),
+        makePage('guides/facebook-authentication.mdx'),
+        makePage('guides/using-firebase.mdx'),
+        makePage('guides/using-flipper.mdx'),
+        makePage('guides/google-authentication.mdx'),
+        makePage('guides/using-eslint.mdx'),
+        makePage('guides/using-nextjs.mdx'),
+        makePage('guides/using-sentry.mdx'),
+        makePage('guides/typescript.mdx'),
+      ]),
+      makeSection('Expo accounts', [
+        makePage('accounts/account-types.mdx'),
+        makePage('accounts/two-factor.mdx'),
+        makePage('accounts/programmatic-access.mdx'),
+        makePage('accounts/working-together.mdx'),
+        makePage('accounts/sso.mdx'),
+      ]),
+      makeSection('Bare React Native', [
+        makePage('bare/overview.mdx'),
+        makePage('bare/installing-expo-modules.mdx'),
+        makePage('bare/using-expo-cli.mdx'),
+        makePage('bare/installing-updates.mdx'),
+        makePage('bare/using-expo-client.mdx'),
+        makePage('bare/install-dev-builds-in-bare.mdx'),
+        makePage('bare/error-recovery.mdx'),
+      ]),
+    ],
+    { expanded: true }
+  ),
+  makeSection('Regulatory compliance', [
+    makePage('regulatory-compliance/data-and-privacy-protection.mdx'),
+    makePage('regulatory-compliance/gdpr.mdx'),
+    makePage('regulatory-compliance/hipaa.mdx'),
+    makePage('regulatory-compliance/privacy-shield.mdx'),
   ]),
 ];
 
-const eas = [
-  makeSection('EAS', [makePage('eas/index.md'), makePage('eas/webhooks.md')], { expanded: true }),
+const learn = [
   makeSection(
-    'EAS Build',
+    'Get started',
     [
-      makeGroup(
-        'Start Building',
-        [
-          makePage('build/introduction.md'),
-          makePage('build/setup.md'),
-          makePage('build/eas-json.md'),
-          makePage('build/internal-distribution.md'),
-          makePage('build/automating-submissions.md'),
-          makePage('build/updates.md'),
-          makePage('build/building-on-ci.md'),
-        ],
-        './pages/build/'
-      ),
-      makeGroup('App Signing', [
-        makePage('app-signing/app-credentials.md'),
-        makePage('app-signing/managed-credentials.md'),
-        makePage('app-signing/local-credentials.md'),
-        makePage('app-signing/existing-credentials.md'),
-        makePage('app-signing/syncing-credentials.md'),
-      ]),
-      makeGroup('Reference', [
-        makePage('build-reference/eas-json.md'),
-        makePage('build-reference/migrating.md'),
-        makePage('build-reference/npm-hooks.md'),
-        makePage('build-reference/how-tos.md'),
-        makePage('build-reference/private-npm-packages.md'),
-        makePage('build-reference/variables.md'),
-        makePage('build-reference/apk.md'),
-        makePage('build-reference/simulators.md'),
-        makePage('build-reference/troubleshooting.md'),
-        makePage('build-reference/local-builds.md'),
-        makePage('build-reference/variants.md'),
-        makePage('build-reference/caching.md'),
-        makePage('build-reference/android-builds.md'),
-        makePage('build-reference/ios-builds.md'),
-        makePage('build-reference/limitations.md'),
-        makePage('build-reference/build-configuration.md'),
-        makePage('build-reference/infrastructure.md'),
-        makePage('build-reference/ios-capabilities.md'),
-        makePage('build-reference/app-extensions.md'),
-        makePage('build-reference/app-versions.md'),
-      ]),
+      makePage('tutorial/introduction.mdx'),
+      makePage('tutorial/create-your-first-app.mdx'),
+      makePage('tutorial/build-a-screen.mdx'),
+      makePage('tutorial/image-picker.mdx'),
+      makePage('tutorial/create-a-modal.mdx'),
+      makePage('tutorial/gestures.mdx'),
+      makePage('tutorial/screenshot.mdx'),
+      makePage('tutorial/platform-differences.mdx'),
+      makePage('tutorial/configuration.mdx'),
+      makePage('tutorial/follow-up.mdx'),
     ],
     { expanded: true }
   ),
   makeSection(
-    'EAS Submit',
+    'UI programming',
     [
-      makePage('submit/introduction.md'),
-      makePage('submit/eas-json.md'),
-      makePage('submit/android.md'),
-      makePage('submit/ios.md'),
-      makePage('submit/classic-builds.md'),
+      makePage('ui-programming/image-background.mdx'),
+      makePage('ui-programming/implementing-a-checkbox.mdx'),
+      makePage('ui-programming/z-index.mdx'),
+      makePage('ui-programming/using-svgs.mdx'),
+      makePage('ui-programming/react-native-toast.mdx'),
+      makePage('ui-programming/react-native-styling-buttons.mdx'),
+      makePage('ui-programming/user-interface-libraries.mdx'),
     ],
     { expanded: true }
   ),
-  makeSection(
-    'EAS Update',
-    [
-      makeGroup('EAS Update', [
-        makePage('eas-update/introduction.md'),
-        makePage('eas-update/getting-started.md'),
-        makePage('eas-update/github-actions.md'),
-        makePage('eas-update/developing-with-eas-update.md'),
-        makePage('eas-update/how-eas-update-works.md'),
-        makePage('eas-update/deployment-patterns.md'),
-        makePage('eas-update/debug-updates.md'),
-        makePage('eas-update/eas-update-and-eas-cli.md'),
-        makePage('eas-update/optimize-assets.md'),
-        makePage('eas-update/migrate-to-eas-update.md'),
-        makePage('eas-update/runtime-versions.md'),
-        makePage('eas-update/environment-variables.md'),
-        makePage('eas-update/expo-dev-client.md'),
-        makePage('eas-update/known-issues.md'),
-        makePage('eas-update/faq.md'),
-      ]),
-    ],
-    { expanded: true }
-  ),
+  makeSection('More', [makePage('additional-resources/index.mdx')]),
 ];
 
 const preview = [
   makeSection('Preview', [
-    makePage('preview/introduction.md'),
-    makePage('preview/support.md'),
+    makePage('preview/introduction.mdx'),
+    makePage('preview/support.mdx'),
     { expanded: true },
   ]),
 ];
 
 const archive = [
-  makeSection('Archive', [makeGroup('Archive', [makePage('archive/index.md')])], {
-    expanded: true,
-  }),
-  makeSection(
-    'Classic Updates',
-    [
-      makeGroup('Classic Updates', [makePage('archive/classic-updates/introduction.md')]),
-      makeGroup('Guides', [
-        makePage('archive/classic-updates/configuring-updates.md'),
-        makePage('archive/classic-updates/preloading-and-caching-assets.md'),
-      ]),
-      makeGroup('Distribution', [
-        makePage('archive/classic-updates/release-channels.md'),
-        makePage('archive/classic-updates/advanced-release-channels.md'),
-        makePage('archive/classic-updates/hosting-your-app.md'),
-        makePage('archive/classic-updates/offline-support.md'),
-        makePage('archive/classic-updates/optimizing-updates.md'),
-      ]),
-      makeGroup('Workflow', [makePage('archive/classic-updates/publishing.md')]),
-      makeGroup('Bare Workflow', [makePage('archive/classic-updates/updating-your-app.md')]),
-      makeGroup('Classic Services', [
-        makePage('archive/classic-updates/building-standalone-apps.md'),
-        makePage('archive/classic-updates/turtle-cli.md'),
-      ]),
-    ],
-    {
-      expanded: true,
-    }
-  ),
-  makeSection(
-    'EAS Metadata',
-    [
-      makePage('eas-metadata/introduction.md'),
-      makePage('eas-metadata/getting-started.md'),
-      // makePage('eas-metadata/store-json.md'), Disabled due to missing config overview
-    ],
-    { expanded: true }
-  ),
+  makeSection('Classic Builds', [
+    makePage('archive/classic-updates/building-standalone-apps.mdx'),
+    makePage('archive/classic-updates/turtle-cli.mdx'),
+  ]),
+  makeSection('Classic Updates', [
+    makePage('archive/classic-updates/introduction.mdx'),
+    makeSection('Guides', [
+      makePage('archive/classic-updates/configuring-updates.mdx'),
+      makePage('archive/classic-updates/preloading-and-caching-assets.mdx'),
+    ]),
+    makeSection('Distribution', [
+      makePage('archive/classic-updates/release-channels.mdx'),
+      makePage('archive/classic-updates/advanced-release-channels.mdx'),
+      makePage('archive/classic-updates/hosting-your-app.mdx'),
+      makePage('archive/classic-updates/offline-support.mdx'),
+      makePage('archive/classic-updates/optimizing-updates.mdx'),
+    ]),
+    makeSection('Workflow', [makePage('archive/classic-updates/publishing.mdx')]),
+    makeSection('Bare Workflow', [makePage('archive/classic-updates/updating-your-app.mdx')]),
+  ]),
+  makeSection('Technical Specs', [makePage('archive/technical-specs/expo-updates-0.mdx')]),
+  makeSection('More', [
+    makePage('archive/expo-cli.mdx'),
+    makePage('archive/managed-vs-bare.mdx'),
+    makePage('archive/notification-channels.mdx'),
+    makePage('archive/glossary.mdx'),
+  ]),
 ];
 
 const featurePreview = [];
 
-const reference = VERSIONS.reduce(
+const versionsReference = VERSIONS.reduce(
   (all, version) => ({
     ...all,
     [version]: [
-      makeSection('Configuration Files', pagesFromDir(`versions/${version}/config`)),
-      makeSection('Expo SDK', pagesFromDir(`versions/${version}/sdk`)),
+      makeSection('Configuration files', pagesFromDir(`versions/${version}/config`), {
+        expanded: true,
+      }),
+      makeSection('Expo SDK', pagesFromDir(`versions/${version}/sdk`), { expanded: true }),
+      makeSection('Technical specs', [
+        makePage('technical-specs/expo-updates-1.mdx'),
+        makePage('technical-specs/expo-sfv-0.mdx'),
+      ]),
+      makeSection('More', [makePage('more/expo-cli.mdx'), makePage('more/glossary-of-terms.mdx')], {
+        expanded: true,
+      }),
       makeSection(
         'React Native',
-        sortLegacyReactNative(pagesFromDir(`versions/${version}/react-native`))
+        [
+          make('page', {
+            href: 'https://reactnative.dev/docs/components-and-apis',
+            sidebarTitle: 'Visit documentation',
+          }),
+        ],
+        { expanded: true }
       ),
     ],
   }),
   {}
 );
 
-module.exports = {
-  starting,
+const reference = { ...versionsReference, latest: versionsReference['latest'] };
+
+export default {
+  home,
   general,
-  eas,
+  learn,
   preview,
   archive,
   featurePreview,
-  /** @type {any} */
-  reference: { ...reference, latest: reference[LATEST_VERSION] },
+  reference,
   generalDirectories,
-  startingDirectories,
   previewDirectories,
-  easDirectories,
+  referenceDirectories,
+  archiveDirectories,
+  homeDirectories,
+  learnDirectories,
 };
 
 // --- MDX methods ---
@@ -476,126 +604,4 @@ function pageUrl(file) {
   return pathname
     .replace(filePath.base, filePath.name === 'index' ? '' : filePath.name)
     .replace(/\/$/, '');
-}
-
-/**
- * Sort the list of pages alphabetically by either the sidebarTitle or title.
- */
-function sortAlphabetical(pages) {
-  return pages.sort((a, b) => {
-    const aTitle = a.sidebarTitle || a.name;
-    const bTitle = b.sidebarTitle || b.name;
-    return aTitle.localeCompare(bTitle);
-  });
-}
-
-/**
- * Sort the list of React Native pages by legacy custom sorting.
- */
-function sortLegacyReactNative(pages) {
-  const order = [
-    'Learn the Basics',
-    'Props',
-    'State',
-    'Style',
-    'Height and Width',
-    'Layout with Flexbox',
-    'Handling Text Input',
-    'Handling Touches',
-    'Using a ScrollView',
-    'Using List Views',
-    'Networking',
-    'Platform Specific Code',
-    'Navigating Between Screens',
-    'Images',
-    'Animations',
-    'Accessibility',
-    'Timers',
-    'Performance',
-    'Gesture Responder System',
-    'JavaScript Environment',
-    'Direct Manipulation',
-    'Color Reference',
-    'ActivityIndicator',
-    'Button',
-    'DatePickerIOS',
-    'DrawerLayoutAndroid',
-    'FlatList',
-    'Image',
-    'InputAccessoryView',
-    'KeyboardAvoidingView',
-    'ListView',
-    'MaskedViewIOS',
-    'Modal',
-    'NavigatorIOS',
-    'Picker',
-    'PickerIOS',
-    'ProgressBarAndroid',
-    'ProgressViewIOS',
-    'RefreshControl',
-    'SafeAreaView',
-    'ScrollView',
-    'SectionList',
-    'SegmentedControl',
-    'SegmentedControlIOS',
-    'Slider',
-    'SnapshotViewIOS',
-    'StatusBar',
-    'Switch',
-    'TabBarIOS.Item',
-    'TabBarIOS',
-    'Text',
-    'TextInput',
-    'ToolbarAndroid',
-    'TouchableHighlight',
-    'TouchableNativeFeedback',
-    'TouchableOpacity',
-    'TouchableWithoutFeedback',
-    'View',
-    'ViewPagerAndroid',
-    'VirtualizedList',
-    'WebView',
-    'AccessibilityInfo',
-    'ActionSheetIOS',
-    'Alert',
-    'AlertIOS',
-    'Animated',
-    'AppState',
-    'AsyncStorage',
-    'BackAndroid',
-    'BackHandler',
-    'Clipboard',
-    'DatePickerAndroid',
-    'Dimensions',
-    'Easing',
-    'Image Style Props',
-    'ImageStore',
-    'InteractionManager',
-    'Keyboard',
-    'Layout Props',
-    'LayoutAnimation',
-    'ListViewDataSource',
-    'NetInfo',
-    'PanResponder',
-    'PixelRatio',
-    'Settings',
-    'Shadow Props',
-    'Share',
-    'StatusBarIOS',
-    'StyleSheet',
-    'Systrace',
-    'Text Style Props',
-    'TimePickerAndroid',
-    'ToastAndroid',
-    'Transforms',
-    'Vibration',
-    'VibrationIOS',
-    'View Style Props',
-  ];
-
-  return pages.sort((a, b) => {
-    const aIndex = order.indexOf(a.name);
-    const bIndex = order.indexOf(b.name);
-    return aIndex < 0 || bIndex < 0 ? bIndex - aIndex : aIndex - bIndex;
-  });
 }

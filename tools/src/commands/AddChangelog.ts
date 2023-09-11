@@ -10,7 +10,7 @@ import { formatChangelogEntry } from '../Formatter';
 import logger from '../Logger';
 
 type ActionOptions = {
-  package: string;
+  packageNames: string[];
   // true means that the user didn't use --pull-request or --no-pull-request
   // unfortunately, we can't change this value
   pullRequest: number[] | true;
@@ -28,12 +28,15 @@ async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptio
   };
 
   const questions: QuestionCollection[] = [];
-  if (!options.package) {
+  if (options.packageNames.length === 0) {
     questions.push({
       type: 'input',
       name: 'package',
-      message: 'What is the package that you want to add?',
+      message: 'What are the packages that you want to add a changelog entry?',
       ...stringValidator,
+      transformer(input) {
+        return input.split(/\s+/g);
+      },
     });
   }
 
@@ -106,20 +109,18 @@ function toChangeType(type: string): Changelogs.ChangeType | null {
   return null;
 }
 
-async function action(options: ActionOptions) {
+async function action(packageNames: string[], options: ActionOptions) {
+  options.packageNames = packageNames;
+
   if (!process.env.CI) {
     options = await checkOrAskForOptions(options);
   }
-
-  if (
-    !options.author.length ||
-    !options.entry ||
-    !options.package ||
-    !options.type ||
-    options.pullRequest === true
-  ) {
+  if (options.packageNames.length === 0) {
+    throw new Error('No packages provided');
+  }
+  if (!options.author.length || !options.entry || !options.type || options.pullRequest === true) {
     throw new Error(
-      `Must run with --package <string> --entry <string> --author <string> --pull-request <number> --type <string>`
+      `Must run with --entry <string> --author <string> --pull-request <number> --type <string>`
     );
   }
 
@@ -128,49 +129,43 @@ async function action(options: ActionOptions) {
     throw new Error(`Invalid type: ${chalk.cyan(options.type)}`);
   }
 
-  const packagePath = path.join(Directories.getPackagesDir(), options.package, 'CHANGELOG.md');
-  if (!(await fs.pathExists(packagePath))) {
-    throw new Error(`Package ${chalk.green(options.package)} doesn't have changelog file.`);
-  }
+  for (const packageName of options.packageNames) {
+    const packagePath = path.join(Directories.getPackagesDir(), packageName, 'CHANGELOG.md');
+    if (!(await fs.pathExists(packagePath))) {
+      throw new Error(`Package ${chalk.green(packageName)} doesn't have changelog file.`);
+    }
 
-  const changelog = Changelogs.loadFrom(packagePath);
+    const changelog = Changelogs.loadFrom(packagePath);
 
-  const message = options.entry.slice(-1) === '.' ? options.entry : `${options.entry}.`;
-  const insertedEntries = await changelog.insertEntriesAsync(options.version, type, null, [
-    {
-      message,
-      pullRequests: options.pullRequest,
-      authors: options.author,
-    },
-  ]);
+    const message = options.entry.slice(-1) === '.' ? options.entry : `${options.entry}.`;
+    const insertedEntries = await changelog.insertEntriesAsync(options.version, type, null, [
+      {
+        message,
+        pullRequests: options.pullRequest,
+        authors: options.author,
+      },
+    ]);
 
-  if (insertedEntries.length > 0) {
-    logger.info(
-      `\n➕ Inserted ${chalk.magenta(options.type)} entry to ${chalk.green(options.package)}:`
-    );
-    insertedEntries.forEach((entry) => {
-      logger.log('  ', formatChangelogEntry(Changelogs.getChangeEntryLabel(entry)));
-    });
+    if (insertedEntries.length > 0) {
+      await changelog.saveAsync();
 
-    logger.info('\n💾 Saving changelog file...');
-
-    await changelog.saveAsync();
-
-    logger.success('\n✅ Successfully inserted new entry.');
-  } else {
-    logger.success('\n✅ Specified entry is already there.');
+      logger.info(
+        `\n➕ Inserted ${chalk.magenta(options.type)} entry to ${chalk.green(packageName)}:`
+      );
+      insertedEntries.forEach((entry) => {
+        logger.log('  ', formatChangelogEntry(Changelogs.getChangeEntryLabel(entry)));
+      });
+    } else {
+      logger.info(`\n👌 Specified entry is already added to ${chalk.green(packageName)} changelog`);
+    }
   }
 }
 
 export default (program: Command) => {
   program
-    .command('add-changelog')
+    .command('add-changelog [packageNames...]')
     .alias('ac')
     .description('Adds changelog entry to the package.')
-    .option(
-      '-p, --package <string>',
-      'Package name. For example `expo-image-picker` or `unimodules-file-system-interface.'
-    )
     .option('-e, --entry <string>', 'Change note to put into the changelog.')
     .option(
       '-a, --author <string>',
@@ -179,7 +174,7 @@ export default (program: Command) => {
       []
     )
     .option(
-      '-r, --pull-request <number>',
+      '-p, --pull-request <number>',
       'Pull request number. Can be passed multiple times.',
       (value, previous) => {
         if (typeof previous === 'boolean') {

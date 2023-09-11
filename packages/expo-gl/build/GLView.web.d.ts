@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { WebGLObject } from './GLView';
 import { GLViewProps, GLSnapshot, SnapshotOptions, ComponentOrHandle } from './GLView.types';
-export declare type GLViewWebProps = GLViewProps & {
+export type GLViewWebProps = GLViewProps & {
     onContextCreate: (gl: WebGLRenderingContext) => void;
     onContextRestored?: (gl?: WebGLRenderingContext) => void;
     onContextLost?: () => void;

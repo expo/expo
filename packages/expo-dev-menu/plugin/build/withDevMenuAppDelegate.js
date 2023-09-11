@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withDevMenuAppDelegate = exports.modifyAppDelegate = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const constants_1 = require("./constants");
 const DEV_MENU_IOS_IMPORT = `
 #if defined(EX_DEV_MENU_ENABLED)

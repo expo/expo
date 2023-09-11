@@ -5,11 +5,20 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
+
+import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import expo.modules.core.interfaces.ActivityEventListener;
 import expo.modules.core.interfaces.ActivityProvider;
@@ -17,12 +26,6 @@ import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.JavaScriptContextProvider;
 import expo.modules.core.interfaces.LifecycleEventListener;
 import expo.modules.core.interfaces.services.UIManager;
-
-import java.lang.ref.WeakReference;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 public class UIManagerModuleWrapper implements
     ActivityProvider,
@@ -96,6 +99,16 @@ public class UIManagerModuleWrapper implements
         });
       }
     });
+  }
+
+  @Nullable
+  @Override
+  public View resolveView(int viewTag) {
+    final com.facebook.react.bridge.UIManager uiManager = UIManagerHelper.getUIManagerForReactTag(getContext(), viewTag);
+    if (uiManager == null) {
+      return null;
+    }
+    return uiManager.resolveView(viewTag);
   }
 
   @Override

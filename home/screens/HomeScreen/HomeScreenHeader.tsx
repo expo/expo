@@ -1,5 +1,5 @@
 import { borderRadius, iconSize, spacing, UsersIcon } from '@expo/styleguide-native';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Button, View, Row, Image, Text } from 'expo-dev-client-components';
 import * as Haptics from 'expo-haptics';
 import * as React from 'react';
@@ -7,15 +7,16 @@ import { StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { HomeScreenDataQuery } from '../../graphql/types';
+import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import { useTheme } from '../../utils/useTheme';
 
 type Props = {
-  currentUser?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
+  currentAccount?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
 };
 
-export function HomeScreenHeader({ currentUser }: Props) {
+export function HomeScreenHeader({ currentAccount }: Props) {
   const { theme, themeType } = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<HomeStackRoutes>>();
 
   async function onAccountButtonPress() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -24,12 +25,16 @@ export function HomeScreenHeader({ currentUser }: Props) {
 
   let rightContent: React.ReactNode | null = null;
 
-  if (currentUser) {
+  if (currentAccount) {
     rightContent = (
       <Button.Container onPress={onAccountButtonPress}>
         {/* Show profile picture for personal accounts / accounts with members */}
-        {currentUser?.owner?.profilePhoto ? (
-          <Image size="xl" rounded="full" source={{ uri: currentUser.owner.profilePhoto }} />
+        {currentAccount?.ownerUserActor?.profilePhoto ? (
+          <Image
+            size="xl"
+            rounded="full"
+            source={{ uri: currentAccount.ownerUserActor.profilePhoto }}
+          />
         ) : (
           <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
             <UsersIcon color={theme.icon.default} size={iconSize.small} />

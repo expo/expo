@@ -46,11 +46,6 @@ open class ReactNativeHostWrapperBase(
       .firstOrNull() ?: invokeDelegateMethod("getJavaScriptExecutorFactory")
   }
 
-  @Suppress("DEPRECATION")
-  override fun getUIImplementationProvider(): com.facebook.react.uimanager.UIImplementationProvider {
-    return invokeDelegateMethod("getUIImplementationProvider")
-  }
-
   override fun getJSIModulePackage(): JSIModulePackage? {
     val userJSIModulePackage = invokeDelegateMethod<JSIModulePackage?>("getJSIModulePackage")
     return JSIModuleContainerPackage(userJSIModulePackage)

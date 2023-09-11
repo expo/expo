@@ -2,7 +2,6 @@ import { spacing } from '@expo/styleguide-native';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { FlatList, ActivityIndicator, View as RNView } from 'react-native';
-import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import { SnacksListItem } from '../../components/SnacksListItem';
 import { CommonSnackDataFragment } from '../../graphql/types';
@@ -49,14 +48,12 @@ export function SnackListView(props: Props) {
 const extractKey = (item: CommonSnackDataFragment) => item.id;
 
 function SnackList({ data, loadMoreAsync }: Props) {
-  const [isLoadingMore, setLoadingMore] = React.useState(false);
   const isLoading = React.useRef<null | boolean>(false);
   const theme = useExpoTheme();
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
     isLoading.current = true;
-    setLoadingMore(true);
 
     try {
       await loadMoreAsync();
@@ -64,19 +61,6 @@ function SnackList({ data, loadMoreAsync }: Props) {
       console.error(e);
     } finally {
       isLoading.current = false;
-      setLoadingMore(false);
-    }
-  };
-
-  const canLoadMore = () => {
-    // TODO: replace the code below this comment with the following line
-    // once we have implemented snackCount
-    // return this.props.data.snacks.length < this.props.data.snackCount;
-
-    if (isLoadingMore) {
-      return false;
-    } else {
-      return true;
     }
   };
 
@@ -107,13 +91,10 @@ function SnackList({ data, loadMoreAsync }: Props) {
         data={data}
         keyExtractor={extractKey}
         renderItem={renderItem}
-        // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
-        renderLoadingIndicator={() => <RNView />}
-        renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
         contentContainerStyle={{ padding: spacing[4] }}
         ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
-        canLoadMore={canLoadMore()}
-        onLoadMoreAsync={handleLoadMoreAsync}
+        onEndReachedThreshold={0.2}
+        onEndReached={handleLoadMoreAsync}
       />
     </View>
   );

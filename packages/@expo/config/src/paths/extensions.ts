@@ -51,18 +51,6 @@ export function getLanguageExtensionsInOrder({
   return extensions;
 }
 
-export function getManagedExtensions(
-  platforms: string[],
-  languageOptions: LanguageOptions = { isTS: true, isModern: true, isReact: true }
-): string[] {
-  const fileExtensions = getExtensions(platforms, getLanguageExtensionsInOrder(languageOptions), [
-    'expo',
-  ]);
-  // Always add these last
-  _addMiscellaneousExtensions(platforms, fileExtensions);
-  return fileExtensions;
-}
-
 export function getBareExtensions(
   platforms: string[],
   languageOptions: LanguageOptions = { isTS: true, isModern: true, isReact: true }

@@ -12,7 +12,7 @@
 #include "include/core/SkScalar.h"
 #include "include/core/SkString.h"
 #include "include/core/SkTime.h"
-#include "include/private/SkNoncopyable.h"
+#include "include/private/base/SkNoncopyable.h"
 
 #define SKPDF_STRING(X) SKPDF_STRING_IMPL(X)
 #define SKPDF_STRING_IMPL(X) #X
@@ -35,14 +35,9 @@ public:
     void appendInt(const char* owner, const char* name, int value);
     void appendFloat(const char* owner, const char* name, float value);
     void appendName(const char* owner, const char* attrName, const char* value);
-    void appendString(const char* owner, const char* attrName, const char* value);
     void appendFloatArray(const char* owner,
                           const char* name,
                           const std::vector<float>& value);
-    // Deprecated.
-    void appendStringArray(const char* owner,
-                           const char* attrName,
-                           const std::vector<SkString>& values);
     void appendNodeIdArray(const char* owner,
                            const char* attrName,
                            const std::vector<int>& nodeIds);
@@ -147,6 +142,17 @@ struct Metadata {
         Experimental.
     */
     SkExecutor* fExecutor = nullptr;
+
+    /** PDF streams may be compressed to save space.
+        Use this to specify the desired compression vs time tradeoff.
+    */
+    enum class CompressionLevel : int {
+        Default = -1,
+        None = 0,
+        LowButFast = 1,
+        Average = 6,
+        HighButSlow = 9,
+    } fCompressionLevel = CompressionLevel::Default;
 
     /** Preferred Subsetter. Only respected if both are compiled in.
 

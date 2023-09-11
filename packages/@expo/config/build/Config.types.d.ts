@@ -1,7 +1,7 @@
 import { ModConfig } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 export { ExpoConfig };
-export declare type PackageJSONConfig = {
+export type PackageJSONConfig = {
     dependencies?: Record<string, string>;
     [key: string]: any;
 };
@@ -42,15 +42,15 @@ export interface ProjectConfig {
      */
     dynamicConfigObjectType: string | null;
 }
-export declare type AppJSONConfig = {
+export type AppJSONConfig = {
     expo: ExpoConfig;
     [key: string]: any;
 };
-export declare type BareAppConfig = {
+export type BareAppConfig = {
     name: string;
     [key: string]: any;
 };
-export declare type HookArguments = {
+export type HookArguments = {
     config: any;
     url: any;
     exp: ExpoConfig;
@@ -65,11 +65,10 @@ export declare type HookArguments = {
     projectRoot: string;
     log: (msg: any) => void;
 };
-export declare type ExpoGoConfig = {
+export type ExpoGoConfig = {
     mainModuleName: string;
     __flipperHack: 'React Native packager is running';
     debuggerHost: string;
-    logUrl: string;
     developer: {
         tool: string | null;
         projectRoot?: string;
@@ -78,31 +77,11 @@ export declare type ExpoGoConfig = {
         [key: string]: any;
     };
 };
-export declare type EASConfig = {
+export type EASConfig = {
     projectId?: string;
 };
-export declare type ClientScopingConfig = {
+export type ClientScopingConfig = {
     scopeKey?: string;
-};
-export declare type ExpoClientConfig = ExpoConfig & {
-    id?: string;
-    releaseId?: string;
-    revisionId?: string;
-    bundleUrl?: string;
-    hostUri?: string;
-    publishedTime?: string;
-};
-export declare type ExpoAppManifest = ExpoClientConfig & EASConfig & Partial<ExpoGoConfig> & {
-    sdkVersion: string;
-    bundledAssets?: string[];
-    isKernel?: boolean;
-    kernel?: {
-        androidManifestPath?: string;
-        iosManifestPath?: string;
-    };
-    assetUrlOverride?: string;
-    commitTime?: string;
-    env?: Record<string, any>;
 };
 export interface ExpoUpdatesManifestAsset {
     url: string;
@@ -120,27 +99,29 @@ export interface ExpoUpdatesManifest {
         [key: string]: string;
     };
     extra: ClientScopingConfig & {
-        expoClient?: ExpoClientConfig;
+        expoClient?: ExpoConfig & {
+            /**
+             * Only present during development using @expo/cli.
+             */
+            hostUri?: string;
+        };
         expoGo?: ExpoGoConfig;
         eas?: EASConfig;
     };
 }
-export declare type Hook = {
+export type Hook = {
     file: string;
     config: any;
 };
-export declare type HookType = 'postPublish' | 'postExport';
+export type HookType = 'postPublish' | 'postExport';
 export declare enum ProjectPrivacy {
     PUBLIC = "public",
     UNLISTED = "unlisted"
 }
-export declare type ExpRc = {
-    [key: string]: any;
-};
-export declare type Platform = 'android' | 'ios' | 'web';
-export declare type ProjectTarget = 'managed' | 'bare';
-export declare type ConfigErrorCode = 'NO_APP_JSON' | 'NOT_OBJECT' | 'NO_EXPO' | 'MODULE_NOT_FOUND' | 'INVALID_MODE' | 'INVALID_FORMAT' | 'INVALID_PLUGIN' | 'INVALID_CONFIG';
-export declare type ConfigContext = {
+export type Platform = 'android' | 'ios' | 'web';
+export type ProjectTarget = 'managed' | 'bare';
+export type ConfigErrorCode = 'NO_APP_JSON' | 'NOT_OBJECT' | 'NO_EXPO' | 'MODULE_NOT_FOUND' | 'DEPRECATED' | 'INVALID_MODE' | 'INVALID_FORMAT' | 'INVALID_PLUGIN' | 'INVALID_CONFIG';
+export type ConfigContext = {
     projectRoot: string;
     /**
      * The static config path either app.json, app.config.json, or a custom user-defined config.
@@ -149,7 +130,7 @@ export declare type ConfigContext = {
     packageJsonPath: string | null;
     config: Partial<ExpoConfig>;
 };
-export declare type GetConfigOptions = {
+export type GetConfigOptions = {
     isPublicConfig?: boolean;
     /**
      * Should the config `mods` be preserved in the config? Used for compiling mods in the eject command.
@@ -164,10 +145,10 @@ export declare type GetConfigOptions = {
     skipPlugins?: boolean;
     strict?: boolean;
 };
-export declare type WriteConfigOptions = {
+export type WriteConfigOptions = {
     dryRun?: boolean;
 };
-export declare type ConfigFilePaths = {
+export type ConfigFilePaths = {
     staticConfigPath: string | null;
     dynamicConfigPath: string | null;
 };

@@ -14,6 +14,9 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class UpdateManifestMetadataTest {
@@ -44,13 +47,11 @@ class UpdateManifestMetadataTest {
   @Test
   @Throws(JSONException::class)
   fun testManifestFilters_OverwriteAllFields() {
-    val headers1 = ManifestHeaderData(manifestFilters = "branch-name=\"rollout-1\",test=\"value\"")
-    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers1, null, config)
-    ManifestMetadata.saveMetadata(updateManifest1, db, config)
+    val headers1 = ResponseHeaderData(manifestFiltersRaw = "branch-name=\"rollout-1\",test=\"value\"")
+    ManifestMetadata.saveMetadata(headers1, db, config)
 
-    val headers2 = ManifestHeaderData(manifestFilters = "branch-name=\"rollout-2\"")
-    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers2, null, config)
-    ManifestMetadata.saveMetadata(updateManifest2, db, config)
+    val headers2 = ResponseHeaderData(manifestFiltersRaw = "branch-name=\"rollout-2\"")
+    ManifestMetadata.saveMetadata(headers2, db, config)
 
     val actual = ManifestMetadata.getManifestFilters(db, config)
     Assert.assertNotNull(actual)
@@ -61,13 +62,11 @@ class UpdateManifestMetadataTest {
   @Test
   @Throws(JSONException::class)
   fun testManifestFilters_OverwriteEmpty() {
-    val headers1 = ManifestHeaderData(manifestFilters = "branch-name=\"rollout-1\"")
-    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers1, null, config)
-    ManifestMetadata.saveMetadata(updateManifest1, db, config)
+    val headers1 = ResponseHeaderData(manifestFiltersRaw = "branch-name=\"rollout-1\"")
+    ManifestMetadata.saveMetadata(headers1, db, config)
 
-    val headers2 = ManifestHeaderData(manifestFilters = "")
-    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers2, null, config)
-    ManifestMetadata.saveMetadata(updateManifest2, db, config)
+    val headers2 = ResponseHeaderData(manifestFiltersRaw = "")
+    ManifestMetadata.saveMetadata(headers2, db, config)
 
     val actual = ManifestMetadata.getManifestFilters(db, config)
     Assert.assertNotNull(actual)
@@ -77,18 +76,42 @@ class UpdateManifestMetadataTest {
   @Test
   @Throws(JSONException::class)
   fun testManifestFilters_OverwriteNull() {
-    val headers1 = ManifestHeaderData(manifestFilters = "branch-name=\"rollout-1\"")
-    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers1, null, config)
-    ManifestMetadata.saveMetadata(updateManifest1, db, config)
+    val headers1 = ResponseHeaderData(manifestFiltersRaw = "branch-name=\"rollout-1\"")
+    ManifestMetadata.saveMetadata(headers1, db, config)
 
-    val headers2 = ManifestHeaderData()
-    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers2, null, config)
-    ManifestMetadata.saveMetadata(updateManifest2, db, config)
+    val headers2 = ResponseHeaderData()
+    ManifestMetadata.saveMetadata(headers2, db, config)
 
     val actual = ManifestMetadata.getManifestFilters(db, config)
     Assert.assertNotNull(actual)
     Assert.assertEquals(1, actual!!.length().toLong())
     Assert.assertEquals("rollout-1", actual.getString("branch-name"))
+  }
+
+  @Test
+  fun testExtraClientParams() {
+    val beforeSave = ManifestMetadata.getExtraParams(db, config)
+    assertNull(beforeSave)
+
+    ManifestMetadata.setExtraParam(db, config, "wat", "hello")
+
+    val afterSave = ManifestMetadata.getExtraParams(db, config)
+    assertEquals(mapOf("wat" to "hello"), afterSave)
+
+    ManifestMetadata.setExtraParam(db, config, "wat", null)
+
+    val afterRemove = ManifestMetadata.getExtraParams(db, config)
+    assertEquals(mapOf(), afterRemove)
+  }
+
+  @Test
+  fun testExtraClientParamsValidation() {
+    assertFailsWith(
+      exceptionClass = IllegalArgumentException::class,
+      block = {
+        ManifestMetadata.setExtraParam(db, config, "Hello", "World")
+      }
+    )
   }
 
   private fun createConfig(): UpdatesConfiguration {

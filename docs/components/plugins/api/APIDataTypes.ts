@@ -14,14 +14,18 @@ export type GeneratedData = EnumDefinitionData &
 // Shared data types
 
 export type CommentData = {
-  text?: string;
-  shortText?: string;
+  summary: CommentContentData[];
   returns?: string;
-  tags?: CommentTagData[];
+  blockTags?: CommentTagData[];
 };
 
 export type CommentTagData = {
   tag: string;
+  content: CommentContentData[];
+};
+
+export type CommentContentData = {
+  kind: string;
   text: string;
 };
 
@@ -49,7 +53,7 @@ export type TypeDefinitionData = {
     declaration?: TypeDeclarationContentData;
   };
   declaration?: TypeDeclarationContentData;
-  value?: string | boolean | null;
+  value?: string | number | boolean | null;
   operator?: string;
   objectType?: {
     name: string;
@@ -59,6 +63,7 @@ export type TypeDefinitionData = {
     type: string;
     value: string;
   };
+  qualifiedName?: string;
 };
 
 export type MethodParamData = {
@@ -101,6 +106,7 @@ export type EnumValueData = {
   comment?: CommentData;
   kind: TypeDocKind;
   defaultValue?: string;
+  type: TypeDefinitionData;
 };
 
 // Interfaces section
@@ -118,6 +124,7 @@ export type InterfaceDefinitionData = {
 
 export type ClassDefinitionData = InterfaceDefinitionData & {
   type?: TypeDefinitionData;
+  isSensor: boolean;
 };
 
 // Methods section
@@ -125,6 +132,14 @@ export type ClassDefinitionData = InterfaceDefinitionData & {
 export type MethodDefinitionData = {
   name: string;
   signatures: MethodSignatureData[];
+  getSignature?: MethodSignatureData[];
+  setSignatures?: MethodSignatureData[];
+  kind: TypeDocKind;
+};
+
+export type AccessorDefinitionData = {
+  name: string;
+  getSignature?: MethodSignatureData[];
   kind: TypeDocKind;
 };
 
@@ -139,9 +154,11 @@ export type MethodSignatureData = {
 
 export type PropsDefinitionData = {
   name: string;
-  type: TypeDefinitionData;
+  type?: TypeDefinitionData;
   kind: TypeDocKind;
   comment?: CommentData;
+  children?: PropData[];
+  extendedTypes?: TypeDefinitionData[];
 };
 
 export type PropData = {
@@ -180,6 +197,7 @@ export type TypeDeclarationContentData = {
   signatures?: TypeSignaturesData[];
   parameters?: PropData[];
   children?: PropData[];
+  comment?: CommentData;
 };
 
 export type TypeSignaturesData = {

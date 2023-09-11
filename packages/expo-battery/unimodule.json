@@ -1,4 +1,0 @@
-{
-  "name": "expo-battery",
-  "platforms": ["ios", "android", "web"]
-}

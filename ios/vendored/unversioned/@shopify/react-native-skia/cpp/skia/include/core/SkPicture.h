@@ -240,12 +240,12 @@ private:
     friend class SkBigPicture;
     friend class SkEmptyPicture;
     friend class SkPicturePriv;
-    template <typename> friend class SkMiniPicture;
 
     void serialize(SkWStream*, const SkSerialProcs*, class SkRefCntSet* typefaces,
         bool textBlobsOnly=false) const;
-    static sk_sp<SkPicture> MakeFromStream(SkStream*, const SkDeserialProcs*,
-                                           class SkTypefacePlayback*);
+    static sk_sp<SkPicture> MakeFromStreamPriv(SkStream*, const SkDeserialProcs*,
+                                               class SkTypefacePlayback*,
+                                               int recursionLimit);
     friend class SkPictureData;
 
     /** Return true if the SkStream/Buffer represents a serialized picture, and
@@ -262,8 +262,6 @@ private:
 
     // Returns NULL if this is not an SkBigPicture.
     virtual const class SkBigPicture* asSkBigPicture() const { return nullptr; }
-
-    friend struct SkPathCounter;
 
     static bool IsValidPictInfo(const struct SkPictInfo& info);
     static sk_sp<SkPicture> Forwardport(const struct SkPictInfo&,

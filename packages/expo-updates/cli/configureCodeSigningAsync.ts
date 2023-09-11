@@ -10,11 +10,11 @@ import path from 'path';
 import { log } from './utils/log';
 import { attemptModification } from './utils/modifyConfigAsync';
 
-type Options = { certificateInput: string; keyInput: string };
+type Options = { certificateInput: string; keyInput: string; keyid: string | undefined };
 
 export async function configureCodeSigningAsync(
   projectRoot: string,
-  { certificateInput, keyInput }: Options
+  { certificateInput, keyInput, keyid }: Options
 ) {
   const certificateInputDir = path.resolve(projectRoot, certificateInput);
   const keyInputDir = path.resolve(projectRoot, keyInput);
@@ -34,7 +34,7 @@ export async function configureCodeSigningAsync(
   const fields: ExpoConfig['updates'] = {
     codeSigningCertificate: `./${path.relative(projectRoot, certificateInputDir)}/certificate.pem`,
     codeSigningMetadata: {
-      keyid: 'main',
+      keyid: keyid ?? 'main',
       alg: 'rsa-v1_5-sha256',
     },
   };

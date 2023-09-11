@@ -1,11 +1,23 @@
 import { vol } from 'memfs';
 
+import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 import { asMock } from '../../__tests__/asMock';
 import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
-import { APISettings } from '../../api/settings';
+import { getUserAsync } from '../../api/user/user';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
-import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 
+jest.mock('../../api/user/user');
+jest.mock('../../api/graphql/queries/AppQuery', () => ({
+  AppQuery: {
+    byIdAsync: jest.fn(async () => ({
+      id: 'blah',
+      scopeKey: 'scope-key',
+      ownerAccount: {
+        id: 'blah-account',
+      },
+    })),
+  },
+}));
 jest.mock('../../log');
 jest.mock('@expo/code-signing-certificates', () => ({
   ...(jest.requireActual(
@@ -31,38 +43,45 @@ jest.mock('../../api/getExpoGoIntermediateCertificate', () => ({
   ),
 }));
 
-// Mock the CLI global to prevent side-effects in other tests.
-jest.mock('../../api/settings', () => ({
-  APISettings: {
-    isOffline: true,
-  },
-}));
-
 beforeEach(() => {
   vol.reset();
+
+  asMock(getUserAsync).mockImplementation(async () => ({
+    __typename: 'User',
+    id: 'userwat',
+    username: 'wat',
+    primaryAccount: { id: 'blah-account' },
+    accounts: [],
+  }));
 });
 
 describe(getCodeSigningInfoAsync, () => {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
   it('returns null when no expo-expect-signature header is requested', async () => {
-    await expect(getCodeSigningInfoAsync({} as any, null, null)).resolves.toBeNull();
+    await expect(getCodeSigningInfoAsync({} as any, null, undefined)).resolves.toBeNull();
   });
 
   it('throws when expo-expect-signature header has invalid format', async () => {
-    await expect(getCodeSigningInfoAsync({} as any, 'hello', null)).rejects.toThrowError(
+    await expect(getCodeSigningInfoAsync({} as any, 'hello', undefined)).rejects.toThrowError(
       'keyid not present in expo-expect-signature header'
     );
-    await expect(getCodeSigningInfoAsync({} as any, 'keyid=1', null)).rejects.toThrowError(
+    await expect(getCodeSigningInfoAsync({} as any, 'keyid=1', undefined)).rejects.toThrowError(
       'Invalid value for keyid in expo-expect-signature header: 1'
     );
     await expect(
-      getCodeSigningInfoAsync({} as any, 'keyid="hello", alg=1', null)
+      getCodeSigningInfoAsync({} as any, 'keyid="hello", alg=1', undefined)
     ).rejects.toThrowError('Invalid value for alg in expo-expect-signature header');
   });
 
   describe('expo-root keyid requested', () => {
     describe('online', () => {
       beforeEach(() => {
-        APISettings.isOffline = false;
+        delete process.env.EXPO_OFFLINE;
+      });
+      afterAll(() => {
+        delete process.env.EXPO_OFFLINE;
       });
 
       it('normal case gets a development certificate', async () => {
@@ -126,14 +145,13 @@ describe(getCodeSigningInfoAsync, () => {
           'keyid="expo-root", alg="rsa-v1_5-sha256"',
           undefined
         );
-        APISettings.isOffline = true;
+        process.env.EXPO_OFFLINE = '1';
         const result2 = await getCodeSigningInfoAsync(
           { extra: { eas: { projectId: 'testprojectid' } } } as any,
           'keyid="expo-root", alg="rsa-v1_5-sha256"',
           undefined
         );
         expect(result2).toEqual(result);
-        APISettings.isOffline = false;
       });
     });
   });
@@ -141,7 +159,7 @@ describe(getCodeSigningInfoAsync, () => {
   describe('expo-go keyid requested', () => {
     it('throws', async () => {
       await expect(
-        getCodeSigningInfoAsync({} as any, 'keyid="expo-go"', null)
+        getCodeSigningInfoAsync({} as any, 'keyid="expo-go"', undefined)
       ).rejects.toThrowError(
         'Invalid certificate requested: cannot sign with embedded keyid=expo-go key'
       );
@@ -242,21 +260,28 @@ describe(getCodeSigningInfoAsync, () => {
 });
 
 describe(signManifestString, () => {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
   it('generates signature', () => {
     expect(
       signManifestString('hello', {
+        keyId: 'test',
         certificateChainForResponse: [],
         certificateForPrivateKey: mockSelfSigned.certificate,
         privateKey: mockSelfSigned.privateKey,
+        scopeKey: null,
       })
     ).toMatchSnapshot();
   });
   it('validates generated signature against certificate', () => {
     expect(() =>
       signManifestString('hello', {
+        keyId: 'test',
         certificateChainForResponse: [],
         certificateForPrivateKey: '',
         privateKey: mockSelfSigned.privateKey,
+        scopeKey: null,
       })
     ).toThrowError('Invalid PEM formatted message.');
   });

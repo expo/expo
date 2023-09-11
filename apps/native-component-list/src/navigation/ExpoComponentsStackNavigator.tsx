@@ -2,11 +2,12 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 
+import getStackConfig from './StackConfig';
+import { optionalRequire } from './routeBuilder';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
-import getStackConfig from './StackConfig';
-import { optionalRequire } from './routeBuilder';
+import { ImageScreens } from '../screens/Image/ImageScreen';
 
 const Stack = createStackNavigator();
 
@@ -71,18 +72,6 @@ export const Screens = [
       return optionalRequire(() => require('../screens/TouchablesScreen'));
     },
     name: 'Touchables',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/ProgressViewIOSScreen'));
-    },
-    name: 'ProgressViewIOS',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/ProgressBarAndroidScreen'));
-    },
-    name: 'ProgressBarAndroid',
   },
   {
     getComponent() {
@@ -290,6 +279,14 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/GL/GLViewOnBusyThread'));
+    },
+    name: 'GLViewOnBusyThread',
+    options: { title: 'Creating GLView when a thread is busy' },
+    route: 'gl/busythread',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/GestureHandlerPinchScreen'));
     },
     name: 'GestureHandlerPinch',
@@ -320,18 +317,6 @@ export const Screens = [
       return optionalRequire(() => require('../screens/Image/ImageScreen'));
     },
     name: 'Image',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/Image/ImageTestsScreen'));
-    },
-    name: 'ImageTests',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/Image/ImageTestScreen'));
-    },
-    name: 'ImageTest',
   },
   {
     getComponent() {
@@ -389,6 +374,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ExpoMaps/ExpoMapsScreen'));
+    },
+    name: 'ExpoMaps',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/AV/VideoScreen'));
     },
     name: 'Video',
@@ -414,16 +405,17 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/SharedElementScreen'));
-    },
-    name: 'SharedElement',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/FlashListScreen'));
     },
     name: 'FlashList',
   },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/ClipboardPasteButtonScreen'));
+    },
+    name: 'ClipboardPasteButton',
+  },
+  ...ImageScreens,
 ];
 
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {

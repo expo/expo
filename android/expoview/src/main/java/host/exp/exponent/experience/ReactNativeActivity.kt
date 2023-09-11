@@ -28,7 +28,6 @@ import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.RNObject
-import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.BaseExperienceActivity.ExperienceContentLoaded
@@ -249,7 +248,7 @@ abstract class ReactNativeActivity :
     if (reactRootViewRNClass != null) {
       return reactRootViewRNClass as Class<out ViewGroup>
     }
-    var sdkVersion = manifest.getSDKVersion()
+    var sdkVersion = manifest.getExpoGoSDKVersion()
     if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION == this.sdkVersion) {
       sdkVersion = RNObject.UNVERSIONED
     }
@@ -288,6 +287,7 @@ abstract class ReactNativeActivity :
   override fun onPause() {
     super.onPause()
     if (reactInstanceManager.isNotNull && !isCrashed) {
+      KernelNetworkInterceptor.onPause()
       reactInstanceManager.onHostPause()
       // TODO: use onHostPause(activity)
     }
@@ -297,6 +297,7 @@ abstract class ReactNativeActivity :
     super.onResume()
     if (reactInstanceManager.isNotNull && !isCrashed) {
       reactInstanceManager.onHostResume(this, this)
+      KernelNetworkInterceptor.onResume(reactInstanceManager.get())
     }
   }
 
@@ -465,13 +466,16 @@ abstract class ReactNativeActivity :
       return RNObject("com.facebook.react.ReactInstanceManager")
     }
 
-    Analytics.markEvent(Analytics.TimedEvent.STARTED_LOADING_REACT_NATIVE)
     val mReactInstanceManager = builder.callRecursive("build")!!
     val devSettings =
       mReactInstanceManager.callRecursive("getDevSupportManager")!!.callRecursive("getDevSettings")
     if (devSettings != null) {
       devSettings.setField("exponentActivityId", activityId)
       if (devSettings.call("isRemoteJSDebugEnabled") as Boolean) {
+        if (manifest?.jsEngine == "hermes") {
+          // Disable remote debugging when running on Hermes
+          devSettings.call("setRemoteJSDebugEnabled", false)
+        }
         waitForReactAndFinishLoading()
       }
     }
@@ -484,6 +488,8 @@ abstract class ReactNativeActivity :
       appKey ?: KernelConstants.DEFAULT_APPLICATION_KEY,
       initialProps(bundle)
     )
+
+    KernelNetworkInterceptor.start(manifest!!, mReactInstanceManager.get())
 
     // Requesting layout to make sure {@link ReactRootView} attached to {@link ReactInstanceManager}
     // Otherwise, {@link ReactRootView} will hang in {@link waitForReactRootViewToHaveChildrenAndRunCallback}.
@@ -501,29 +507,21 @@ abstract class ReactNativeActivity :
       // This is the same on iOS.
       return true
     }
-    val errorRecoveryManager = ErrorRecoveryManager.getInstance(experienceKey!!)
-    errorRecoveryManager.markErrored()
 
-    if (!errorRecoveryManager.shouldReloadOnError()) {
+    val errorRecoveryManager = experienceKey?.let { ErrorRecoveryManager.getInstance(it) }
+    errorRecoveryManager?.markErrored()
+    if (errorRecoveryManager?.shouldReloadOnError() != true) {
       return true
     }
 
-    if (!KernelProvider.instance.reloadVisibleExperience(manifestUrl!!)) {
+    manifestUrl?.let {
       // Kernel couldn't reload, show error screen
-      return true
+      if (!KernelProvider.instance.reloadVisibleExperience(it)) {
+        return true
+      }
     }
 
     errorQueue.clear()
-    try {
-      val eventProperties = JSONObject().apply {
-        put(Analytics.USER_ERROR_MESSAGE, errorMessage.userErrorMessage())
-        put(Analytics.DEVELOPER_ERROR_MESSAGE, errorMessage.developerErrorMessage())
-        put(Analytics.MANIFEST_URL, manifestUrl)
-      }
-      Analytics.logEvent(Analytics.AnalyticsEvent.ERROR_RELOADED, eventProperties)
-    } catch (e: Exception) {
-      EXL.e(TAG, e.message)
-    }
 
     return false
   }
@@ -553,6 +551,22 @@ abstract class ReactNativeActivity :
           existingEmitter.call("emit", eventName, eventPayload)
         }
       }
+    } catch (e: Throwable) {
+      EXL.e(TAG, e)
+    }
+  }
+
+  /**
+   * Emits events to `RCTNativeAppEventEmitter`
+   */
+  fun emitRCTNativeAppEvent(eventName: String, eventArgs: Map<String, String>?) {
+    try {
+      val nativeAppEventEmitter =
+        RNObject("com.facebook.react.modules.core.RCTNativeAppEventEmitter")
+      nativeAppEventEmitter.loadVersion(detachSdkVersion!!)
+      val emitter = reactInstanceManager.callRecursive("getCurrentReactContext")!!
+        .callRecursive("getJSModule", nativeAppEventEmitter.rnClass())
+      emitter?.call("emit", eventName, eventArgs)
     } catch (e: Throwable) {
       EXL.e(TAG, e)
     }
@@ -613,6 +627,9 @@ abstract class ReactNativeActivity :
 
   val devSupportManager: RNObject?
     get() = reactInstanceManager.takeIf { it.isNotNull }?.callRecursive("getDevSupportManager")
+
+  val jsExecutorName: String?
+    get() = reactInstanceManager.takeIf { it.isNotNull }?.callRecursive("getJsExecutorName")?.get() as? String
 
   // deprecated in favor of Expo.Linking.makeUrl
   // TODO: remove this

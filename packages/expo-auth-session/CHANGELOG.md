@@ -10,6 +10,73 @@
 
 ### 💡 Others
 
+## 5.2.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Fix for breaking change in expo-constants to only support new manifests. ([#24267](https://github.com/expo/expo/pull/24267) by [@wschurman](https://github.com/wschurman))
+
+## 5.1.2 — 2023-09-04
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.2 — 2023-06-28
+
+### 💡 Others
+
+- Remove references to `startAsync` from js doc. ([#23150](https://github.com/expo/expo/pull/23150) by [@alanhughes](https://github.com/alanjhughes))
+- Remove unnecessary test. ([#23154](https://github.com/expo/expo/pull/23154) by [@alanhughes](https://github.com/alanjhughes))
+
+## 5.0.1 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0 — 2023-06-21
+
+### 💡 Others
+
+- Remove all auth proxy APIs. ([#22834](https://github.com/expo/expo/pull/22834) by [@alanhughes](https://github.com/alanjhughes))
+
+## 4.1.0 — 2023-05-08
+
+### 💡 Others
+
+- Added deprecation warning to `promptAsync` when the `useProxy` option is used. ([#21367](https://github.com/expo/expo/pull/21367) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Warn on use of Constants.manifest. ([#22247](https://github.com/expo/expo/pull/22247) by [@wschurman](https://github.com/wschurman))
+
+## 4.0.3 - 2023-02-23
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.2 - 2023-02-21
+
+### 💡 Others
+
+- Deprecated `useProxy` option. ([#21313](https://github.com/expo/expo/pull/21313) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Replaced references of `makeRedirectUriAsync` with `makeRedirectUri`. ([#21314](https://github.com/expo/expo/pull/21314) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.0.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2023-02-03
+
+### 💡 Others
+
+- Removed usage of the deprecated `expo-random` package. ([#21063](https://github.com/expo/expo/pull/21063) by [@lukmccall](https://github.com/lukmccall))
+
+## 3.7.2 — 2022-10-25
+
+### 💡 Others
+
 - Update docs to remove mentions of `expo start:web`. ([#18419](https://github.com/expo/expo/pull/18419) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.7.1 — 2022-07-16

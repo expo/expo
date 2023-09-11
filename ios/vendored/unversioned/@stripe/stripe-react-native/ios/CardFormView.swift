@@ -10,7 +10,7 @@ class CardFormView: UIView, STPCardFormViewDelegate {
     @objc var dangerouslyGetFullCardDetails: Bool = false
     @objc var onFormComplete: RCTDirectEventBlock?
     @objc var autofocus: Bool = false
-    @objc var isUserInteractionEnabledValue: Bool = true
+    @objc var disabled: Bool = false
     
     override func didSetProps(_ changedProps: [String]!) {
         if let cardForm = self.cardForm {
@@ -20,7 +20,7 @@ class CardFormView: UIView, STPCardFormViewDelegate {
         let style = self.cardStyle["type"] as? String == "borderless" ? STPCardFormViewStyle.borderless : STPCardFormViewStyle.standard
         let _cardForm = STPCardFormView(style: style)
         _cardForm.delegate = self
-        // _cardForm.isUserInteractionEnabled = isUserInteractionEnabledValue
+        _cardForm.isUserInteractionEnabled = !disabled
         
         if autofocus == true {
             let _ = _cardForm.becomeFirstResponder()
@@ -33,10 +33,10 @@ class CardFormView: UIView, STPCardFormViewDelegate {
     
     @objc var cardStyle: NSDictionary = NSDictionary() {
         didSet {
-           setStyles()
+            setStyles()
         }
     }
-
+    
     func cardFormView(_ form: STPCardFormView, didChangeToStateComplete complete: Bool) {
         if onFormComplete != nil {
             let brand = STPCardValidator.brand(forNumber: cardForm?.cardParams?.card?.number ?? "")
@@ -49,7 +49,7 @@ class CardFormView: UIView, STPCardFormViewDelegate {
                 "postalCode": cardForm?.cardParams?.billingDetails?.address?.postalCode ?? "",
                 "country": cardForm?.cardParams?.billingDetails?.address?.country
             ]
-
+            
             if (dangerouslyGetFullCardDetails) {
                 cardData["number"] = cardForm?.cardParams?.card?.number ?? ""
                 cardData["cvc"] = cardForm?.cardParams?.card?.cvc ?? ""
@@ -74,6 +74,26 @@ class CardFormView: UIView, STPCardFormViewDelegate {
     func setStyles() {
         if let backgroundColor = cardStyle["backgroundColor"] as? String {
             cardForm?.backgroundColor = UIColor(hexString: backgroundColor)
+        }
+        /**
+         The following reveals a bug in STPCardFormView where there's a extra space in the layer,
+         and thus must remain commented out for now.
+         
+         if let borderWidth = cardStyle["borderWidth"] as? Int {
+         cardForm?.layer.borderWidth = CGFloat(borderWidth)
+         } else {
+         cardForm?.layer.borderWidth = CGFloat(0)
+         }
+         
+         */
+        if let borderColor = cardStyle["borderColor"] as? String {
+            cardForm?.layer.borderColor = UIColor(hexString: borderColor).cgColor
+        }
+        if let borderRadius = cardStyle["borderRadius"] as? Int {
+            cardForm?.layer.cornerRadius = CGFloat(borderRadius)
+        }
+        if let cursorColor = cardStyle["cursorColor"] as? String {
+            cardForm?.tintColor = UIColor(hexString: cursorColor)
         }
         // if let disabledBackgroundColor = cardStyle["disabledBackgroundColor"] as? String {
         //     cardForm?.disabledBackgroundColor = UIColor(hexString: disabledBackgroundColor)

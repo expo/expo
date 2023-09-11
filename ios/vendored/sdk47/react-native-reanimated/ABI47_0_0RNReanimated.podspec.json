@@ -1,0 +1,66 @@
+{
+  "name": "ABI47_0_0RNReanimated",
+  "version": "2.12.0",
+  "summary": "More powerful alternative to Animated library for ABI47_0_0React Native.",
+  "description": "ABI47_0_0RNReanimated",
+  "homepage": "https://github.com/software-mansion/react-native-reanimated",
+  "license": "MIT",
+  "authors": {
+    "author": "author@domain.cn"
+  },
+  "platforms": {
+    "ios": "9.0",
+    "tvos": "9.0"
+  },
+  "source": {
+    "git": "https://github.com/software-mansion/react-native-reanimated.git",
+    "tag": "2.12.0"
+  },
+  "source_files": [
+    "ios/**/*.{mm,h,m}",
+    "Common/cpp/**/*.{cpp,h}"
+  ],
+  "preserve_paths": [
+    "Common/cpp/hidden_headers/**"
+  ],
+  "pod_target_xcconfig": {
+    "USE_HEADERMAP": "YES",
+    "CLANG_CXX_LANGUAGE_STANDARD": "c++17",
+    "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ABI47_0_0ReactCommon\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Headers/Private/ABI47_0_0React-Core\" ",
+    "FRAMEWORK_SEARCH_PATHS": "\"${PODS_CONFIGURATION_BUILD_DIR}/ABI47_0_0React-hermes\""
+  },
+  "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -DREACT_NATIVE_MINOR_VERSION=70 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation",
+  "xcconfig": {
+    "HEADER_SEARCH_PATHS": "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/glog\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/RCT-Folly\" \"${PODS_ROOT}/Headers/Public/ABI47_0_0React-hermes\" \"${PODS_ROOT}/Headers/Public/ABI47_0_0hermes-engine\" \"$(PODS_ROOT)/../../../../../../../../..${PODS_ROOT}/../../react-native-lab/react-native/ABI47_0_0ReactCommon\"",
+    "OTHER_CFLAGS": "$(inherited) -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -DREACT_NATIVE_MINOR_VERSION=70"
+  },
+  "requires_arc": true,
+  "dependencies": {
+    "ABI47_0_0React-Core": [],
+    "RCT-Folly": [],
+    "ABI47_0_0RCTRequired": [],
+    "ABI47_0_0RCTTypeSafety": [],
+    "ABI47_0_0ReactCommon/turbomodule/core": [],
+    "FBLazyVector": [],
+    "FBReactNativeSpec": [],
+    "ABI47_0_0React-CoreModules": [],
+    "ABI47_0_0React-Core/DevSupport": [],
+    "ABI47_0_0React-RCTActionSheet": [],
+    "ABI47_0_0React-RCTNetwork": [],
+    "ABI47_0_0React-RCTAnimation": [],
+    "ABI47_0_0React-RCTLinking": [],
+    "ABI47_0_0React-RCTBlob": [],
+    "ABI47_0_0React-RCTSettings": [],
+    "ABI47_0_0React-RCTText": [],
+    "ABI47_0_0React-RCTImage": [],
+    "ABI47_0_0React-Core/RCTWebSocket": [],
+    "ABI47_0_0React-cxxreact": [],
+    "ABI47_0_0React-jsi": [],
+    "ABI47_0_0React-jsiexecutor": [],
+    "ABI47_0_0React-jsinspector": [],
+    "Yoga": [],
+    "DoubleConversion": [],
+    "glog": [],
+    "ABI47_0_0React-callinvoker": []
+  }
+}

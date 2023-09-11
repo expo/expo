@@ -1,4 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
+import * as React from 'react';
 
 import { BranchesScreen } from './BranchesScreen';
 import { ExtensionsScreen } from './ExtensionsScreen';
@@ -16,7 +17,9 @@ const Extensions = createStackNavigator<ExtensionsStackParamList>();
 
 export function ExtensionsStack() {
   return (
-    <Extensions.Navigator headerMode="float">
+    <Extensions.Navigator
+      screenOptions={{ headerMode: 'float', gestureEnabled: false }}
+      detachInactiveScreens={false}>
       <Extensions.Screen
         name="Extensions"
         component={ExtensionsScreen}

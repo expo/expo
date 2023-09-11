@@ -1,5 +1,5 @@
-import { ClipboardIcon } from '@expo/styleguide';
-import React, { useState } from 'react';
+import { ClipboardIcon } from '@expo/styleguide-icons';
+import { useState } from 'react';
 
 import { SnippetAction, SnippetActionProps } from '../SnippetAction';
 
@@ -16,7 +16,11 @@ export const CopyAction = ({ text, ...rest }: CopyActionProps) => {
   };
 
   return (
-    <SnippetAction icon={<ClipboardIcon />} onClick={onCopyClick} disabled={copyDone} {...rest}>
+    <SnippetAction
+      leftSlot={<ClipboardIcon className="icon-sm text-icon-default" />}
+      onClick={onCopyClick}
+      disabled={copyDone}
+      {...rest}>
       {copyDone ? 'Copied!' : 'Copy'}
     </SnippetAction>
   );

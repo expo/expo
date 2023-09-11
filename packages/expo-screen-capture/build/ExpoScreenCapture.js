@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoScreenCapture;
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoScreenCapture');
 //# sourceMappingURL=ExpoScreenCapture.js.map

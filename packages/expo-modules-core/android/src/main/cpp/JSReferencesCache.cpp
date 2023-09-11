@@ -8,16 +8,6 @@ JSReferencesCache::JSReferencesCache(jsi::Runtime &runtime) {
       runtime.global().getPropertyAsFunction(runtime, "Promise")
     )
   );
-
-  if (runtime.global().hasProperty(runtime, "ExpoModulesCore_CodedError")) {
-    auto jsCodedError = runtime.global()
-      .getPropertyAsFunction(runtime, "ExpoModulesCore_CodedError");
-
-    jsObjectRegistry.emplace(
-      JSKeys::CODED_ERROR,
-      std::make_unique<jsi::Object>(std::move(jsCodedError))
-    );
-  }
 }
 
 jsi::PropNameID &JSReferencesCache::getPropNameID(

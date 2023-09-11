@@ -4,17 +4,32 @@ import validateNpmPackage from 'validate-npm-package-name';
 
 import { findGitHubEmail, findGitHubProfileUrl, findMyName, guessRepoUrl } from './utils';
 
-export function getSlugPrompt(customTargetPath?: string | null): PromptObject<string> {
+function getInitialName(customTargetPath?: string | null): string {
   const targetBasename = customTargetPath && path.basename(customTargetPath);
-  const initial =
-    targetBasename && validateNpmPackage(targetBasename).validForNewPackages
-      ? targetBasename
-      : 'my-module';
+  return targetBasename && validateNpmPackage(targetBasename).validForNewPackages
+    ? targetBasename
+    : 'my-module';
+}
 
+export function getSlugPrompt(customTargetPath?: string | null): PromptObject<string> {
+  const initial = getInitialName(customTargetPath);
   return {
     type: 'text',
     name: 'slug',
     message: 'What is the name of the npm package?',
+    initial,
+    validate: (input) =>
+      validateNpmPackage(input).validForNewPackages || 'Must be a valid npm package name',
+  };
+}
+
+export function getLocalFolderNamePrompt(customTargetPath?: string | null): PromptObject<string> {
+  const initial = getInitialName(customTargetPath);
+
+  return {
+    type: 'text',
+    name: 'slug',
+    message: 'What is the name of the local module?',
     initial,
     validate: (input) =>
       validateNpmPackage(input).validForNewPackages || 'Must be a valid npm package name',
@@ -81,6 +96,38 @@ export async function getSubstitutionDataPrompts(slug: string): Promise<PromptOb
       message: 'What is the URL for the repository?',
       initial: async (_, answers: Answers<string>) => await guessRepoUrl(answers.authorUrl, slug),
       validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
+    },
+  ];
+}
+
+export async function getLocalSubstitutionDataPrompts(
+  slug: string
+): Promise<PromptObject<string>[]> {
+  return [
+    {
+      type: 'text',
+      name: 'name',
+      message: 'What is the native module name?',
+      initial: () => {
+        return slug
+          .replace(/^@/, '')
+          .replace(/^./, (match) => match.toUpperCase())
+          .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
+      },
+      validate: (input) => !!input || 'The native module name cannot be empty',
+    },
+    {
+      type: 'text',
+      name: 'package',
+      message: 'What is the Android package name?',
+      initial: () => {
+        const namespace = slug
+          .replace(/\W/g, '')
+          .replace(/^(expo|reactnative)/, '')
+          .toLowerCase();
+        return `expo.modules.${namespace}`;
+      },
+      validate: (input) => !!input || 'The Android package name cannot be empty',
     },
   ];
 }

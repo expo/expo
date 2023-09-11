@@ -1,10 +1,13 @@
-import { resolve } from 'path';
-
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
+import * as XML from '../../utils/XML';
 import { getIntentFilters, setAndroidIntentFilters } from '../IntentFilters';
-import { getMainActivity, readAndroidManifestAsync } from '../Manifest';
+import { AndroidManifest, getMainActivity } from '../Manifest';
 
-const fixturesPath = resolve(__dirname, 'fixtures');
-const sampleManifestPath = resolve(fixturesPath, 'react-native-AndroidManifest.xml');
+async function getFixtureManifestAsync() {
+  return (await XML.parseXMLAsync(
+    rnFixture['android/app/src/main/AndroidManifest.xml']
+  )) as AndroidManifest;
+}
 
 describe('Android intent filters', () => {
   it(`returns empty array if no intent filters are provided`, () => {
@@ -12,7 +15,7 @@ describe('Android intent filters', () => {
   });
 
   it(`writes intent filter to android manifest`, async () => {
-    let androidManifestJson = await readAndroidManifestAsync(sampleManifestPath);
+    let androidManifestJson = await getFixtureManifestAsync();
     androidManifestJson = setAndroidIntentFilters(
       {
         android: {
@@ -41,7 +44,7 @@ describe('Android intent filters', () => {
       androidManifestJson
     );
 
-    expect(getMainActivity(androidManifestJson)['intent-filter']).toHaveLength(3);
+    expect(getMainActivity(androidManifestJson)!['intent-filter']).toHaveLength(3);
 
     // Test removing generated intent filters.
     androidManifestJson = setAndroidIntentFilters(
@@ -51,11 +54,11 @@ describe('Android intent filters', () => {
       androidManifestJson
     );
 
-    expect(getMainActivity(androidManifestJson)['intent-filter']).toHaveLength(1);
+    expect(getMainActivity(androidManifestJson)!['intent-filter']).toHaveLength(1);
   });
 
   xit(`does not duplicate android intent filters`, async () => {
-    let androidManifestJson = await readAndroidManifestAsync(sampleManifestPath);
+    let androidManifestJson = await getFixtureManifestAsync();
     androidManifestJson = setAndroidIntentFilters(
       {
         android: {
@@ -92,7 +95,7 @@ describe('Android intent filters', () => {
       androidManifestJson
     );
 
-    const mainActivity = getMainActivity(androidManifestJson);
+    const mainActivity = getMainActivity(androidManifestJson)!;
 
     expect(mainActivity['intent-filter']).toHaveLength(2);
   });

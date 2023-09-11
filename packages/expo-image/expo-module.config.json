@@ -1,0 +1,9 @@
+{
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["ImageModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.image.ExpoImageModule"]
+  }
+}

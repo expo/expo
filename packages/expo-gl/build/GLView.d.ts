@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ComponentOrHandle, SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps } from './GLView.types';
-export declare type WebGLObject = {
+export type WebGLObject = {
     id: number;
 };
 /**
@@ -11,6 +11,7 @@ export declare class GLView extends React.Component<GLViewProps> {
     static NativeView: any;
     static defaultProps: {
         msaaSamples: number;
+        enableExperimentalWorkletSupport: boolean;
     };
     /**
      * Imperative API that creates headless context which is devoid of underlying view.
@@ -40,6 +41,8 @@ export declare class GLView extends React.Component<GLViewProps> {
     render(): JSX.Element;
     _setNativeRef: (nativeRef: ComponentOrHandle) => void;
     _onSurfaceCreate: ({ nativeEvent: { exglCtxId } }: SurfaceCreateEvent) => void;
+    componentWillUnmount(): void;
+    componentDidUpdate(prevProps: GLViewProps): void;
     startARSessionAsync(): Promise<any>;
     createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture>;
     destroyObjectAsync(glObject: WebGLObject): Promise<boolean>;

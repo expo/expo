@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 import os from 'os';
 
+import { ADBServer } from './ADBServer';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { learnMore } from '../../../utils/link';
-import { ADBServer } from './ADBServer';
 
 const debug = require('debug')('expo:start:platforms:android:adb') as typeof console.log;
 
@@ -104,8 +104,6 @@ export async function launchActivityAsync(
       'shell',
       'am',
       'start',
-      '-a',
-      'android.intent.action.RUN',
       // FLAG_ACTIVITY_SINGLE_TOP -- If set, the activity will not be launched if it is already running at the top of the history stack.
       '-f',
       '0x20000000',
@@ -155,7 +153,17 @@ export async function openUrlAsync(
   }
 ) {
   return openAsync(
-    adbArgs(device.pid, 'shell', 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', url)
+    adbArgs(
+      device.pid,
+      'shell',
+      'am',
+      'start',
+      '-a',
+      'android.intent.action.VIEW',
+      '-d',
+      // ADB requires ampersands to be escaped.
+      url.replace(/&/g, String.raw`\&`)
+    )
   );
 }
 

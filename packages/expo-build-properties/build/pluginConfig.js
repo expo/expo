@@ -7,7 +7,7 @@ exports.validateConfig = void 0;
 const ajv_1 = __importDefault(require("ajv"));
 const semver_1 = __importDefault(require("semver"));
 /**
- * The minimal supported versions. These values should align to SDK
+ * The minimal supported versions. These values should align to SDK.
  * @ignore
  */
 const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
@@ -18,7 +18,7 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
         kotlinVersion: '1.6.10',
     },
     ios: {
-        deploymentTarget: '12.0',
+        deploymentTarget: '13.0',
     },
 };
 const schema = {
@@ -27,13 +27,19 @@ const schema = {
         android: {
             type: 'object',
             properties: {
+                newArchEnabled: { type: 'boolean', nullable: true },
                 minSdkVersion: { type: 'integer', nullable: true },
                 compileSdkVersion: { type: 'integer', nullable: true },
                 targetSdkVersion: { type: 'integer', nullable: true },
                 buildToolsVersion: { type: 'string', nullable: true },
                 kotlinVersion: { type: 'string', nullable: true },
                 enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
+                enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
                 extraProguardRules: { type: 'string', nullable: true },
+                flipper: {
+                    type: 'string',
+                    nullable: true,
+                },
                 packagingOptions: {
                     type: 'object',
                     properties: {
@@ -44,53 +50,83 @@ const schema = {
                     },
                     nullable: true,
                 },
+                networkInspector: { type: 'boolean', nullable: true },
+                extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
+                usesCleartextTraffic: { type: 'boolean', nullable: true },
             },
             nullable: true,
         },
         ios: {
             type: 'object',
             properties: {
+                newArchEnabled: { type: 'boolean', nullable: true },
                 deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
                 useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
+                flipper: {
+                    type: ['boolean', 'string'],
+                    nullable: true,
+                },
+                networkInspector: { type: 'boolean', nullable: true },
+                extraPods: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        required: ['name'],
+                        properties: {
+                            name: { type: 'string' },
+                            version: { type: 'string', nullable: true },
+                            configurations: { type: 'array', items: { type: 'string' }, nullable: true },
+                            modular_headers: { type: 'boolean', nullable: true },
+                            source: { type: 'string', nullable: true },
+                            path: { type: 'string', nullable: true },
+                            podspec: { type: 'string', nullable: true },
+                            testspecs: { type: 'array', items: { type: 'string' }, nullable: true },
+                            git: { type: 'string', nullable: true },
+                            branch: { type: 'string', nullable: true },
+                            tag: { type: 'string', nullable: true },
+                            commit: { type: 'string', nullable: true },
+                        },
+                    },
+                    nullable: true,
+                },
             },
             nullable: true,
         },
     },
 };
+// note(Kudo): For the implementation, we check items one by one because Ajv does not well support custom error message.
 /**
- * Check versions to meet expo minimal supported versions.
+ * Checks if specified versions meets Expo minimal supported versions.
  * Will throw error message whenever there are invalid versions.
- * For the implementation, we check items one by one because ajv does not well support custom error message.
  *
- * @param config the validated config passed from ajv
+ * @param config The validated config passed from Ajv.
  * @ignore
  */
 function maybeThrowInvalidVersions(config) {
-    var _a, _b, _c, _d, _e, _f, _g;
     const checkItems = [
         {
             name: 'android.minSdkVersion',
-            configVersion: (_a = config.android) === null || _a === void 0 ? void 0 : _a.minSdkVersion,
+            configVersion: config.android?.minSdkVersion,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.minSdkVersion,
         },
         {
             name: 'android.compileSdkVersion',
-            configVersion: (_b = config.android) === null || _b === void 0 ? void 0 : _b.compileSdkVersion,
+            configVersion: config.android?.compileSdkVersion,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.compileSdkVersion,
         },
         {
             name: 'android.targetSdkVersion',
-            configVersion: (_c = config.android) === null || _c === void 0 ? void 0 : _c.targetSdkVersion,
+            configVersion: config.android?.targetSdkVersion,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.targetSdkVersion,
         },
         {
             name: 'android.kotlinVersion',
-            configVersion: (_d = config.android) === null || _d === void 0 ? void 0 : _d.kotlinVersion,
+            configVersion: config.android?.kotlinVersion,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.kotlinVersion,
         },
         {
             name: 'ios.deploymentTarget',
-            configVersion: (_e = config.ios) === null || _e === void 0 ? void 0 : _e.deploymentTarget,
+            configVersion: config.ios?.deploymentTarget,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.ios.deploymentTarget,
         },
     ];
@@ -102,7 +138,7 @@ function maybeThrowInvalidVersions(config) {
         }
         if (typeof configVersion === 'string' &&
             typeof minimalVersion === 'string' &&
-            semver_1.default.lt((_f = semver_1.default.coerce(configVersion)) !== null && _f !== void 0 ? _f : '0.0.0', (_g = semver_1.default.coerce(minimalVersion)) !== null && _g !== void 0 ? _g : '0.0.0')) {
+            semver_1.default.lt(semver_1.default.coerce(configVersion) ?? '0.0.0', semver_1.default.coerce(minimalVersion) ?? '0.0.0')) {
             throw new Error(`\`${name}\` needs to be at least version ${minimalVersion}.`);
         }
     }
@@ -111,11 +147,20 @@ function maybeThrowInvalidVersions(config) {
  * @ignore
  */
 function validateConfig(config) {
-    const validate = new ajv_1.default().compile(schema);
+    const validate = new ajv_1.default({ allowUnionTypes: true }).compile(schema);
     if (!validate(config)) {
         throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
     }
     maybeThrowInvalidVersions(config);
+    // explicitly block using use_frameworks and Flipper in iOS
+    // https://github.com/facebook/flipper/issues/2414
+    if (Boolean(config.ios?.flipper) && config.ios?.useFrameworks !== undefined) {
+        throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
+    }
+    if (config.android?.enableShrinkResourcesInReleaseBuilds === true &&
+        config.android?.enableProguardInReleaseBuilds !== true) {
+        throw new Error('`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableProguardInReleaseBuilds` to be enabled.');
+    }
     return config;
 }
 exports.validateConfig = validateConfig;

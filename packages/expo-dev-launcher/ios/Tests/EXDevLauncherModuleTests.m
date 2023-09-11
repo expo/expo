@@ -5,8 +5,8 @@
 #import <objc/runtime.h>
 #import <EXDevLauncher/EXDevLauncher.h>
 #import <EXDevLauncher/EXDevLauncherController.h>
-#import <EXManifests/EXManifestsManifest.h>
-#import <EXManifests/EXManifestsManifestFactory.h>
+
+@import EXManifests;
 
 @interface EXDevLauncherController (EXDevLauncherModuleTests)
 

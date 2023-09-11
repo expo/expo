@@ -1,4 +1,4 @@
-export declare type PowerState = {
+export type PowerState = {
     /**
      * A number between `0` and `1`, inclusive, or `-1` if the battery level is unknown.
      */
@@ -30,19 +30,19 @@ export declare enum BatteryState {
      */
     FULL = 3
 }
-export declare type BatteryLevelEvent = {
+export type BatteryLevelEvent = {
     /**
      * A number between `0` and `1`, inclusive, or `-1` if the battery level is unknown.
      */
     batteryLevel: number;
 };
-export declare type BatteryStateEvent = {
+export type BatteryStateEvent = {
     /**
      * An enum value representing the battery state.
      */
     batteryState: BatteryState;
 };
-export declare type PowerModeEvent = {
+export type PowerModeEvent = {
     /**
      * A boolean value, `true` if lowPowerMode is on, `false` if lowPowerMode is off
      */

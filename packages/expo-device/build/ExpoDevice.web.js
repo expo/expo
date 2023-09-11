@@ -9,6 +9,22 @@ if (Platform.isDOMAvailable) {
 function convertGiBtoBytes(gib) {
     return Math.round(gib * 1024 ** 3);
 }
+function getDeviceType() {
+    switch (result?.device?.type) {
+        case 'mobile':
+            return DeviceType.PHONE;
+        case 'tablet':
+            return DeviceType.TABLET;
+        case 'smarttv':
+            return DeviceType.TV;
+        case 'console':
+        case 'embedded':
+        case 'wearable':
+            return DeviceType.UNKNOWN;
+        default:
+            return DeviceType.DESKTOP;
+    }
+}
 export default {
     get isDevice() {
         return true;
@@ -24,6 +40,9 @@ export default {
     },
     get deviceYearClass() {
         return null;
+    },
+    get deviceType() {
+        return getDeviceType();
     },
     get totalMemory() {
         if (Platform.isDOMAvailable && 'deviceMemory' in navigator) {
@@ -51,20 +70,7 @@ export default {
         return null;
     },
     async getDeviceTypeAsync() {
-        switch (result.device.type) {
-            case 'mobile':
-                return DeviceType.PHONE;
-            case 'tablet':
-                return DeviceType.TABLET;
-            case 'smarttv':
-                return DeviceType.TV;
-            case 'console':
-            case 'embedded':
-            case 'wearable':
-                return DeviceType.UNKNOWN;
-            default:
-                return DeviceType.DESKTOP;
-        }
+        return getDeviceType();
     },
     async isRootedExperimentalAsync() {
         return false;

@@ -16,8 +16,7 @@ async function generatePackageListAsync(modules, targetPath, namespace) {
 }
 exports.generatePackageListAsync = generatePackageListAsync;
 async function findGradleFilesAsync(revision) {
-    var _a;
-    const configGradlePaths = (_a = revision.config) === null || _a === void 0 ? void 0 : _a.androidGradlePaths();
+    const configGradlePaths = revision.config?.androidGradlePaths();
     if (configGradlePaths && configGradlePaths.length) {
         return configGradlePaths;
     }
@@ -29,7 +28,6 @@ async function findGradleFilesAsync(revision) {
 }
 async function resolveModuleAsync(packageName, revision) {
     // TODO: Relative source dir should be configurable through the module config.
-    var _a, _b;
     // Don't link itself... :D
     if (packageName === '@unimodules/react-native-adapter') {
         return null;
@@ -46,10 +44,16 @@ async function resolveModuleAsync(packageName, revision) {
             sourceDir: path_1.default.dirname(gradleFilePath),
         };
     });
+    const plugins = (revision.config?.androidGradlePlugins() ?? []).map(({ id, group, sourceDir }) => ({
+        id,
+        group,
+        sourceDir: path_1.default.join(revision.path, sourceDir),
+    }));
     return {
         packageName,
         projects,
-        modules: (_b = (_a = revision.config) === null || _a === void 0 ? void 0 : _a.androidModules()) !== null && _b !== void 0 ? _b : [],
+        ...(plugins.length > 0 ? { plugins } : {}),
+        modules: revision.config?.androidModules() ?? [],
     };
 }
 exports.resolveModuleAsync = resolveModuleAsync;

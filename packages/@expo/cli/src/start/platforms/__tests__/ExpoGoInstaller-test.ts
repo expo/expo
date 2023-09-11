@@ -121,6 +121,9 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
       uninstallAppAsync: jest.fn(async () => null),
     } as any;
   }
+  beforeEach(() => {
+    asMock(confirmAsync).mockReset();
+  });
   it(`returns true when the user uninstalls the outdated app`, async () => {
     asMock(confirmAsync).mockResolvedValueOnce(true);
     const installer = createInstaller('android');
@@ -176,9 +179,22 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
     expect(confirmAsync).not.toBeCalled();
     expect(deviceManager.uninstallAppAsync).not.toBeCalled();
   });
+
+  it(`returns false when the project is unversioned`, async () => {
+    const installer = new ExpoGoInstaller('android', 'host.fake.expo', 'UNVERSIONED');
+    installer.isClientOutdatedAsync = jest.fn(async () => true);
+    const deviceManager = createDeviceManager();
+
+    await expect(installer.uninstallExpoGoIfOutdatedAsync(deviceManager)).resolves.toBe(false);
+    expect(confirmAsync).not.toBeCalled();
+    expect(deviceManager.uninstallAppAsync).not.toBeCalled();
+  });
 });
 
 describe('ensureAsync', () => {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
   function createDeviceManager(isAppInstalled: boolean) {
     return {
       name: 'Pixel 3',
@@ -234,5 +250,41 @@ describe('ensureAsync', () => {
     // No expensive actions.
     expect(downloadExpoGoAsync).not.toBeCalled();
     expect(deviceManager.installAppAsync).not.toBeCalled();
+  });
+
+  it(`returns false when installed and running in offline mode`, async () => {
+    process.env.EXPO_OFFLINE = '1';
+
+    // Reload the Expo Go installer to use the mocked settings
+    const { ExpoGoInstaller } = require('../ExpoGoInstaller');
+
+    const deviceManager = createDeviceManager(true);
+    const installer = new ExpoGoInstaller('android', 'host.fake.expo', '44.0.0');
+
+    // Return false and allow the test to validate this is not called
+    installer.uninstallExpoGoIfOutdatedAsync = jest.fn(async () => false);
+
+    await expect(installer.ensureAsync(deviceManager)).resolves.toBe(false);
+
+    // Ensure it avoids making any API requests
+    expect(installer.uninstallExpoGoIfOutdatedAsync).not.toBeCalled();
+    expect(downloadExpoGoAsync).not.toBeCalled();
+  });
+
+  it(`throws when not installed and running in offline mode`, async () => {
+    process.env.EXPO_OFFLINE = '1';
+
+    // Reload the Expo Go installer to use the mocked settings
+    const { ExpoGoInstaller } = require('../ExpoGoInstaller');
+
+    const deviceManager = createDeviceManager(false);
+    const installer = new ExpoGoInstaller('android', 'host.fake.expo', '44.0.0');
+
+    // Return false and allow the test to validate this is not called
+    installer.uninstallExpoGoIfOutdatedAsync = jest.fn(async () => false);
+
+    await expect(installer.ensureAsync(deviceManager)).rejects.toThrowError(
+      'Expo Go is not installed'
+    );
   });
 });

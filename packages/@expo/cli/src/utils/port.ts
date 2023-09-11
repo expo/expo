@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 import freeportAsync from 'freeport-async';
 
-import * as Log from '../log';
 import { env } from './env';
 import { CommandError } from './errors';
+import * as Log from '../log';
 
 /** Get a free port or assert a CLI command error. */
 export async function getFreePortAsync(rangeStart: number): Promise<number> {
@@ -13,6 +13,55 @@ export async function getFreePortAsync(rangeStart: number): Promise<number> {
   }
 
   return port;
+}
+
+/** @return `true` if the port can still be used to start the dev server, `false` if the dev server should be skipped, and asserts if the port is now taken. */
+export async function ensurePortAvailabilityAsync(
+  projectRoot: string,
+  { port }: { port: number }
+): Promise<boolean> {
+  const freePort = await freeportAsync(port, { hostnames: [null] });
+  // Check if port has become busy during the build.
+  if (freePort === port) {
+    return true;
+  }
+
+  const isBusy = await isBusyPortRunningSameProcessAsync(projectRoot, { port });
+  if (!isBusy) {
+    throw new CommandError(
+      `Port "${port}" became busy running another process while the app was compiling. Re-run command to use a new port.`
+    );
+  }
+
+  // Log that the dev server will not be started and that the logs will appear in another window.
+  Log.log(
+    '› The dev server for this app is already running in another window. Logs will appear there.'
+  );
+  return false;
+}
+
+function isRestrictedPort(port: number) {
+  if (process.platform !== 'win32' && port < 1024) {
+    const isRoot = process.getuid && process.getuid() === 0;
+    return !isRoot;
+  }
+  return false;
+}
+
+async function isBusyPortRunningSameProcessAsync(projectRoot: string, { port }: { port: number }) {
+  const { getRunningProcess } =
+    require('./getRunningProcess') as typeof import('./getRunningProcess');
+
+  const runningProcess = isRestrictedPort(port) ? null : getRunningProcess(port);
+  if (runningProcess) {
+    if (runningProcess.directory === projectRoot) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  return null;
 }
 
 // TODO(Bacon): Revisit after all start and run code is merged.
@@ -28,25 +77,20 @@ export async function choosePortAsync(
     reuseExistingPort?: boolean;
   }
 ): Promise<number | null> {
-  const [{ getRunningProcess }, { confirmAsync }, isRoot, Log] = await Promise.all([
-    import('./getRunningProcess'),
-    import('./prompts'),
-    import('is-root'),
-    import('../log'),
-  ]);
-
   try {
     const port = await freeportAsync(defaultPort, { hostnames: [host ?? null] });
     if (port === defaultPort) {
       return port;
     }
 
-    const isRestricted = process.platform !== 'win32' && defaultPort < 1024 && !isRoot.default();
+    const isRestricted = isRestrictedPort(port);
 
     let message = isRestricted
       ? `Admin permissions are required to run a server on a port below 1024`
       : `Port ${chalk.bold(defaultPort)} is`;
 
+    const { getRunningProcess } =
+      require('./getRunningProcess') as typeof import('./getRunningProcess');
     const runningProcess = isRestricted ? null : getRunningProcess(defaultPort);
 
     if (runningProcess) {
@@ -60,9 +104,12 @@ export async function choosePortAsync(
         message += ` running ${chalk.cyan(runningProcess.command)} in another window`;
       }
       message += '\n' + chalk.gray(`  ${runningProcess.directory} ${pidTag}`);
+    } else {
+      message += ' being used by another process';
     }
 
     Log.log(`\u203A ${message}`);
+    const { confirmAsync } = require('./prompts') as typeof import('./prompts');
     const change = await confirmAsync({
       message: `Use port ${port} instead?`,
       initial: true,

@@ -1,4 +1,5 @@
 /* eslint-env jest */
+import { ExecaError } from 'execa';
 import fs from 'fs/promises';
 
 import { execute, getLoadedModulesAsync, projectRoot } from './utils';
@@ -50,6 +51,7 @@ it('throws on invalid project root', async () => {
   try {
     await execute('very---invalid', 'logout');
   } catch (e) {
-    expect(e.stderr).toMatch(/Invalid project root: \//);
+    const error = e as ExecaError;
+    expect(error.stderr).toMatch(/Invalid project root: \//);
   }
 });

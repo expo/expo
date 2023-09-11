@@ -3,7 +3,7 @@
 set -euo pipefail
 
 scriptdir=$(dirname "${BASH_SOURCE[0]}")
-bucket="docs.expo.dev"
+bucket="$AWS_BUCKET"
 target="${1-$scriptdir/out}"
 
 if [ ! -d "$target" ]; then
@@ -65,7 +65,7 @@ echo "::endgroup::"
 declare -A redirects # associative array variable
 
 # usage:
-# redicts[requests/for/this/path]=are/redirected/to/this/one
+# redirects[requests/for/this/path]=are/redirected/to/this/one
 
 # Temporarily create a redirect for a page that Home links to
 redirects[versions/latest/introduction/installation.html]=versions/latest/introduction/installation/
@@ -85,8 +85,8 @@ redirects[versions/latest/sdk/introduction/index.html]=versions/latest/sdk/overv
 # project-lifecycle is now covered by managed-vs-bare
 redirects[versions/latest/introduction/project-lifecycle/]=versions/latest/introduction/managed-vs-bare/
 # exp-cli is now expo-cli
-redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
-redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
+# redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
+# redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
 # Migrated FAQ pages
 redirects[faq/image-background]=ui-programming/image-background/
 redirects[faq/react-native-styling-buttons]=ui-programming/react-native-styling-buttons/
@@ -103,7 +103,8 @@ redirects[guides/adhoc-builds]=archived/adhoc-builds/
 # clients is now development
 redirects[clients/distribution-for-ios]=development/build/
 redirects[clients/distribution-for-android]=development/build/
-redirects[clients/compatibility]=development/compatibility/
+redirects[clients/compatibility]=development/introduction/
+redirects[development/compatibility]=development/introduction/
 redirects[clients/development-workflows]=development/development-workflows/
 redirects[clients/eas-build]=development/eas-build/
 redirects[clients/extending-the-dev-menu]=development/extending-the-dev-menu/
@@ -117,12 +118,28 @@ redirects[modules]=modules/overview/
 redirects[module-api]=modules/module-api/
 redirects[module-config]=modules/module-config/
 # EAS Metadata
-redirects[eas-metadata]=eas-metadata/introduction/
+redirects[eas-metadata]=eas/metadata/
+redirects[eas-metadata/introduction]=eas/metadata/
+redirects[eas-metadata/getting-started]=eas/metadata/getting-started/
 
-redirects[introduction/walkthrough]=tutorial/planning/
+# Development builds
+redirects[development/build]=development/create-development-builds/
+redirects[development/getting-started]=development/create-development-builds/
+redirects[development/troubleshooting]=development/introduction/
+redirects[development/upgrading]=development/introduction/
+redirects[development/extensions]=development/development-workflows/
+redirects[development/develop-your-project]=development/use-development-builds/
 
 # Guides that have been deleted
-redirects[guides/using-gatsby]=guides/
+redirects[guides/using-gatsby]=/
+redirects[guides/testing-on-devices]=workflow/run-on-device
+redirects[distribution/uploading-apps]=submit/introduction
+redirects[guides/setup-native-firebase/]=guides/using-firebase
+redirects[guides/using-clojurescript/]=/
+redirects[distribution/hosting-your-app/]=distribution/publishing-websites/
+
+# We should change this redirect to a more general EAS guide later
+redirects[guides/setting-up-continuous-integration]=build/building-on-ci
 
 # Moved classic updates
 redirects[distribution/release-channels]=archive/classic-updates/release-channels
@@ -136,6 +153,44 @@ redirects[eas-update/bare-react-native]=bare/updating-your-app
 redirects[worfkflow/publishing]=archive/classic-updates/publishing
 redirects[classic/building-standalone-apps/]=archive/classic-updates/building-standalone-apps/
 redirects[classic/turtle-cli/]=archive/classic-updates/turtle-cli/
+redirects[archive/classic-updates/getting-started/]=eas-update/getting-started/
+redirects[archived/]=archive/
+
+# Old tutorial pages
+redirects[introduction/walkthrough]=tutorial/introduction/
+redirects[tutorial/planning]=tutorial/introduction/
+redirects[tutorial/sharing]=tutorial/introduction/
+redirects[tutorial/text]=tutorial/introduction/
+
+# Push notifications
+redirects[push-notifications/using-fcm/]=push-notifications/push-notifications-setup/
+
+# EAS Update
+redirects[technical-specs/expo-updates-0/]=archive/technical-specs/expo-updates-0/
+redirects[eas-update/developing-with-eas-update/]=eas-update/develop-faster/
+redirects[eas-update/eas-update-with-local-build/]=eas-update/build-locally/
+redirects[eas-update/eas-update-and-eas-cli/]=eas-update/eas-cli/
+redirects[eas-update/debug-updates/]=eas-update/debug/
+redirects[eas-update/how-eas-update-works/]=eas-update/how-it-works/
+redirects[eas-update/migrate-to-eas-update/]=eas-update/migrate-from-classic-updates/
+
+# Removed API reference docs
+redirects[versions/latest/sdk/facebook]=guides/authentication/
+redirects[versions/latest/sdk/taskmanager]=versions/latest/sdk/task-manager/
+redirects[versions/latest/sdk/videothumbnails]=versions/latest/sdk/video-thumbnails/
+redirects[versions/latest/sdk/appearance]=versions/latest/react-native/appearance/
+redirects[versions/latest/sdk/app-loading]=versions/latest/sdk/splash-screen/
+redirects[versions/latest/sdk/app-auth]=guides/authentication/
+redirects[versions/latest/sdk/firebase-core]=guides/using-firebase/
+redirects[versions/latest/sdk/firebase-analytics]=guides/using-firebase/
+redirects[versions/latest/sdk/firebase-recaptcha]=guides/using-firebase/
+redirects[versions/latest/sdk/google-sign-in]=guides/authentication/
+redirects[versions/latest/sdk/google]=guides/authentication/
+redirects[versions/latest/sdk/amplitude/]=guides/using-analytics/
+redirects[versions/latest/sdk/util/]=versions/latest/
+
+# Redirects based on Sentry reports
+redirects[push-notifications]=push-notifications/overview/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
@@ -161,6 +216,8 @@ done
 echo "::endgroup::"
 
 
-echo "::group::[6/6] Notify Google of sitemap changes"
-curl -m 15 "https://www.google.com/ping\?sitemap\=https%3A%2F%2F${bucket}%2Fsitemap.xml"
-echo "\n::endgroup::"
+if [ "$bucket" = "docs.expo.dev" ]; then
+  echo "::group::[6/6] Notify Google of sitemap changes"
+  curl -m 15 "https://www.google.com/ping\?sitemap\=https%3A%2F%2F${bucket}%2Fsitemap.xml"
+  echo "\n::endgroup::"
+fi

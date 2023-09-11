@@ -1,5 +1,4 @@
-import { CodedError } from 'expo-modules-core';
-import { v4 as uuidv4 } from 'uuid';
+import { CodedError, uuidv4 } from 'expo-modules-core';
 
 import { ServerRegistrationModule } from './ServerRegistrationModule.types';
 
@@ -29,9 +28,15 @@ export default {
     return installationId;
   },
   getRegistrationInfoAsync: async () => {
+    if (typeof localStorage === 'undefined') {
+      return null;
+    }
     return localStorage.getItem(REGISTRATION_INFO_KEY);
   },
   setRegistrationInfoAsync: async (registrationInfo: string | null) => {
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
     try {
       if (registrationInfo) {
         localStorage.setItem(REGISTRATION_INFO_KEY, registrationInfo);

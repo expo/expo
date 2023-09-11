@@ -5,6 +5,7 @@
 #import <React/RCTUtils.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/EXJSIUtils.h>
+#import <ExpoModulesCore/JSIUtils.h>
 
 namespace expo {
 
@@ -64,8 +65,7 @@ void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<CallInvoke
       return;
     }
 
-    NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-    strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, jsError]() {
+    strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, code, message]() {
       auto strongResolveWrapper2 = weakResolveWrapper.lock();
       auto strongRejectWrapper2 = weakRejectWrapper.lock();
       if (!strongResolveWrapper2 || !strongRejectWrapper2) {
@@ -73,8 +73,9 @@ void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<CallInvoke
       }
 
       jsi::Runtime &rt = strongRejectWrapper2->runtime();
-      jsi::Value arg = convertNSDictionaryToJSIObject(rt, jsError);
-      strongRejectWrapper2->callback().call(rt, arg);
+      jsi::Value jsError = makeCodedError(rt, code, message);
+
+      strongRejectWrapper2->callback().call(rt, jsError);
 
       strongResolveWrapper2->destroy();
       strongRejectWrapper2->destroy();
@@ -110,9 +111,29 @@ std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *na
       return jsi::Value::undefined();
     });
 
-  defineProperty(runtime, &prototype, nativeConstructorKey.c_str(), jsi::Value(runtime, nativeConstructor));
+  jsi::Object descriptor(runtime);
+  descriptor.setProperty(runtime, "value", jsi::Value(runtime, nativeConstructor));
+
+  common::definePropertyOnJSIObject(runtime, &prototype, nativeConstructorKey.c_str(), std::move(descriptor));
 
   return std::make_shared<jsi::Function>(klass.asFunction(runtime));
+}
+
+std::shared_ptr<jsi::Object> createObjectWithPrototype(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> prototype) {
+  // Get the "Object" class.
+  jsi::Object objectClass = runtime
+    .global()
+    .getPropertyAsObject(runtime, "Object");
+
+  // Call "Object.create(prototype)" to create an object with the given prototype without calling the constructor.
+  jsi::Object object = objectClass
+    .getPropertyAsFunction(runtime, "create")
+    .callWithThis(runtime, objectClass, {
+      jsi::Value(runtime, *prototype)
+    })
+    .asObject(runtime);
+
+  return std::make_shared<jsi::Object>(std::move(object));
 }
 
 #pragma mark - Weak objects
@@ -144,30 +165,21 @@ std::shared_ptr<jsi::Object> derefWeakRef(jsi::Runtime &runtime, std::shared_ptr
   return std::make_shared<jsi::Object>(ref.asObject(runtime));
 }
 
-#pragma mark - Define property
+#pragma mark - Errors
 
-void defineProperty(jsi::Runtime &runtime, const jsi::Object *object, const char *name, jsi::Value value) {
-  jsi::Object global = runtime.global();
-  jsi::Object objectClass = global.getPropertyAsObject(runtime, "Object");
-  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(runtime, "defineProperty");
+jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *message) {
+  jsi::String jsCode = convertNSStringToJSIString(runtime, code);
+  jsi::String jsMessage = convertNSStringToJSIString(runtime, message);
 
-  jsi::Object descriptor(runtime);
-  descriptor.setProperty(runtime, "value", value);
-
-  definePropertyFunction.callWithThis(runtime, objectClass, {
-    jsi::Value(runtime, *object),
-    jsi::String::createFromUtf8(runtime, name),
-    std::move(descriptor),
-  });
-}
-
-#pragma mark - Deallocator
-
-void setDeallocator(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object, ObjectDeallocatorBlock deallocatorBlock) {
-  std::shared_ptr<expo::ObjectDeallocator> hostObjectPtr = std::make_shared<ObjectDeallocator>(deallocatorBlock);
-  jsi::Object jsObject = jsi::Object::createFromHostObject(runtime, hostObjectPtr);
-
-  object->setProperty(runtime, "__expo_object_deallocator__", jsi::Value(runtime, jsObject));
+  return runtime
+    .global()
+    .getProperty(runtime, "ExpoModulesCore_CodedError")
+    .asObject(runtime)
+    .asFunction(runtime)
+    .callAsConstructor(runtime, {
+      jsi::Value(runtime, jsCode),
+      jsi::Value(runtime, jsMessage)
+    });
 }
 
 } // namespace expo

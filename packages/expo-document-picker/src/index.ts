@@ -1,6 +1,5 @@
 import ExpoDocumentPicker from './ExpoDocumentPicker';
-import { DocumentPickerOptions, DocumentResult } from './types';
-export { DocumentPickerOptions, DocumentResult };
+import { DocumentPickerOptions, DocumentPickerResult } from './types';
 
 // @needsAudit
 /**
@@ -18,9 +17,15 @@ export async function getDocumentAsync({
   type = '*/*',
   copyToCacheDirectory = true,
   multiple = false,
-}: DocumentPickerOptions = {}): Promise<DocumentResult> {
+}: DocumentPickerOptions = {}): Promise<DocumentPickerResult> {
   if (typeof type === 'string') {
     type = [type] as string[];
   }
-  return await ExpoDocumentPicker.getDocumentAsync({ type, copyToCacheDirectory, multiple });
+  return await ExpoDocumentPicker.getDocumentAsync({
+    type,
+    copyToCacheDirectory,
+    multiple,
+  });
 }
+
+export * from './types';

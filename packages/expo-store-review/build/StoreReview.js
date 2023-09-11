@@ -7,7 +7,7 @@ import StoreReview from './ExpoStoreReview';
  * Determines if the platform has the capabilities to use `StoreReview.requestReview()`.
  * @return
  * This returns a promise fulfills with `boolean`, depending on the platform:
- * - On iOS, it will resolve to `true` if the device is running iOS 10.3+.
+ * - On iOS, it will always resolve to `true`.
  * - On Android, it will resolve to `true` if the device is running Android 5.0+.
  * - On Web, it will resolve to `false`.
  */
@@ -18,8 +18,7 @@ export async function isAvailableAsync() {
 /**
  * In ideal circumstances this will open a native modal and allow the user to select a star rating
  * that will then be applied to the App Store, without leaving the app. If the device is running
- * a version of iOS lower than 10.3, or a version of Android lower than 5.0, this will attempt
- * to get the store URL and link the user to it.
+ * a version of Android lower than 5.0, this will attempt to get the store URL and link the user to it.
  */
 export async function requestReview() {
     if (StoreReview?.requestReview) {
@@ -44,24 +43,18 @@ export async function requestReview() {
 }
 // @needsAudit
 /**
- * This uses the `Constants` API to get the `Constants.manifest.ios.appStoreUrl` on iOS, or the
- * `Constants.manifest.android.playStoreUrl` on Android.
+ * This uses the `Constants` API to get the `Constants.expoConfig.ios.appStoreUrl` on iOS, or the
+ * `Constants.expoConfig.android.playStoreUrl` on Android.
  *
  * On Web this will return `null`.
  */
 export function storeUrl() {
-    const { manifest, manifest2 } = Constants;
-    if (Platform.OS === 'ios' && manifest?.ios) {
-        return manifest.ios.appStoreUrl ?? null;
+    const expoConfig = Constants.expoConfig;
+    if (Platform.OS === 'ios' && expoConfig?.ios) {
+        return expoConfig.ios.appStoreUrl ?? null;
     }
-    else if (Platform.OS === 'ios' && manifest2?.extra?.expoClient?.ios) {
-        return manifest2.extra.expoClient.ios.appStoreUrl ?? null;
-    }
-    else if (Platform.OS === 'android' && manifest?.android) {
-        return manifest.android.playStoreUrl ?? null;
-    }
-    else if (Platform.OS === 'android' && manifest2?.extra?.expoClient?.android) {
-        return manifest2.extra.expoClient.android.playStoreUrl ?? null;
+    else if (Platform.OS === 'android' && expoConfig?.android) {
+        return expoConfig.android.playStoreUrl ?? null;
     }
     return null;
 }

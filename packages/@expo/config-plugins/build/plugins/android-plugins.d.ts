@@ -1,8 +1,8 @@
 import { ExpoConfig } from '@expo/config-types';
 import { ConfigPlugin, Mod } from '../Plugin.types';
 import { Manifest, Paths, Properties, Resources } from '../android';
-declare type OptionalPromise<T> = T | Promise<T>;
-declare type MutateDataAction<T> = (expo: ExpoConfig, data: T) => OptionalPromise<T>;
+type OptionalPromise<T> = T | Promise<T>;
+type MutateDataAction<T> = (expo: ExpoConfig, data: T) => OptionalPromise<T>;
 /**
  * Helper method for creating mods from existing config functions.
  *

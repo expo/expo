@@ -1,5 +1,5 @@
 import { createRunOncePlugin } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
 // @ts-expect-error missing types
 import withDevLauncher from 'expo-dev-launcher/app.plugin';
 // @ts-expect-error missing types

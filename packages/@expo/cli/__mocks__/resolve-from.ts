@@ -1,11 +1,11 @@
 const resolveFrom = require(require.resolve('resolve-from'));
 
-const silent = (fromDirectory, request) => {
+const silent = (fromDirectory: string, request: string) => {
   const fs = require('fs');
   const path = require('path');
   try {
     fromDirectory = fs.realpathSync(fromDirectory);
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'ENOENT') {
       fromDirectory = path.resolve(fromDirectory);
     } else {

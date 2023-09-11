@@ -2,7 +2,6 @@ import assert from 'assert';
 import { URL } from 'url';
 
 import * as Log from '../../log';
-import { env } from '../../utils/env';
 import { getIpAddress } from '../../utils/ip';
 
 const debug = require('debug')('expo:start:server:urlCreator') as typeof console.log;
@@ -23,16 +22,25 @@ interface UrlComponents {
 }
 export class UrlCreator {
   constructor(
-    private defaults: CreateURLOptions | undefined,
+    public defaults: CreateURLOptions | undefined,
     private bundlerInfo: { port: number; getTunnelUrl?: () => string | null }
   ) {}
 
   /**
-   * @returns URL like `http://localhost:19000/_expo/loading?platform=ios`
+   * Return a URL for the "loading" interstitial page that is used to disambiguate which
+   * native runtime to open the dev server with.
+   *
+   * @param options options for creating the URL
+   * @param platform when opening the URL from the CLI to a connected device we can specify the platform as a query parameter, otherwise it will be inferred from the unsafe user agent sniffing.
+   *
+   * @returns URL like `http://localhost:8081/_expo/loading?platform=ios`
+   * @returns URL like `http://localhost:8081/_expo/loading` when no platform is provided.
    */
-  public constructLoadingUrl(options: CreateURLOptions, platform: string): string {
+  public constructLoadingUrl(options: CreateURLOptions, platform: string | null): string {
     const url = new URL('_expo/loading', this.constructUrl({ scheme: 'http', ...options }));
-    url.search = new URLSearchParams({ platform }).toString();
+    if (platform) {
+      url.search = new URLSearchParams({ platform }).toString();
+    }
     const loadingUrl = url.toString();
     debug(`Loading URL: ${loadingUrl}`);
     return loadingUrl;
@@ -45,7 +53,9 @@ export class UrlCreator {
     if (
       !protocol ||
       // Prohibit the use of http(s) in dev client URIs since they'll never be valid.
-      ['http', 'https'].includes(protocol.toLowerCase())
+      ['http', 'https'].includes(protocol.toLowerCase()) ||
+      // Prohibit the use of `_` characters in the protocol, Node will throw an error when parsing these URLs
+      protocol.includes('_')
     ) {
       return null;
     }
@@ -145,17 +155,12 @@ function getDefaultHostname(options: Pick<CreateURLOptions, 'hostname'>) {
 
 function joinUrlComponents({ protocol, hostname, port }: Partial<UrlComponents>): string {
   assert(hostname, 'hostname cannot be inferred.');
-  // Android HMR breaks without this port 80.
-  // This is because Android React Native WebSocket implementation is not spec compliant and fails without a port:
-  // `E unknown:ReactNative: java.lang.IllegalArgumentException: Invalid URL port: "-1"`
-  // Invoked first in `metro-runtime/src/modules/HMRClient.js`
-  const validPort = env.EXPO_NO_DEFAULT_PORT ? port : port || '80';
   const validProtocol = protocol ? `${protocol}://` : '';
 
-  let url = `${validProtocol}${hostname}`;
+  const url = `${validProtocol}${hostname}`;
 
-  if (validPort) {
-    url += `:${validPort}`;
+  if (port) {
+    return url + `:${port}`;
   }
 
   return url;

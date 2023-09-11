@@ -55,8 +55,8 @@ async function generateBuildConstantsFromMacrosAsync(
       config.API_SERVER_ENDPOINT = 'https://exp.host/--/api/v2/';
     }
     if (keys) {
-      const { AMPLITUDE_KEY, AMPLITUDE_DEV_KEY, GOOGLE_MAPS_IOS_API_KEY } = keys;
-      config.DEFAULT_API_KEYS = { AMPLITUDE_KEY, AMPLITUDE_DEV_KEY, GOOGLE_MAPS_IOS_API_KEY };
+      const { GOOGLE_MAPS_IOS_API_KEY } = keys;
+      config.DEFAULT_API_KEYS = { GOOGLE_MAPS_IOS_API_KEY };
     }
     return validateBuildConstants(config, buildConfiguration);
   });
@@ -93,13 +93,6 @@ function validateBuildConstants(config, buildConfiguration) {
 
     if (DEV_KERNEL_SOURCE === 'PUBLISHED' && !config.DEV_PUBLISHED_KERNEL_MANIFEST) {
       throw new Error(`Error downloading DEV published kernel manifest.\n`);
-    }
-
-    if (process.env.USE_DOGFOODING_PUBLISHED_KERNEL_MANIFEST) {
-      if (!config.DOGFOODING_PUBLISHED_KERNEL_MANIFEST) {
-        throw new Error(`Error downloading DOGFOODING published kernel manifest.\n`);
-      }
-      DEV_KERNEL_SOURCE = 'DOGFOODING';
     }
   }
 

@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const { SitemapStream } = require('sitemap');
+import fs from 'fs';
+import path from 'path';
+import { SitemapStream } from 'sitemap';
 
 const IGNORED_PAGES = [
   '/404', // We don't want to add the 404 error page as sitemap entry
@@ -11,7 +11,7 @@ const IGNORED_PAGES = [
  * Create a sitemap for crawlers like Algolia Docsearch.
  * This allows crawlers to index _all_ pages, without a full page-link-chain.
  */
-module.exports = function createSitemap({
+export default function createSitemap({
   pathMap,
   domain,
   output,
@@ -50,7 +50,7 @@ module.exports = function createSitemap({
   sitemap.end();
 
   return urls;
-};
+}
 
 function pathWithTrailingSlash(url) {
   return !path.extname(url) && !url.endsWith('/') ? `${url}/` : url;

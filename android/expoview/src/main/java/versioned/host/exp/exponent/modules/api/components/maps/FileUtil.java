@@ -18,10 +18,6 @@ import java.nio.channels.ReadableByteChannel;
 
 public class FileUtil extends AsyncTask<String, Void, InputStream> {
 
-  private final String NAME = "FileUtil";
-  private final String TEMP_FILE_SUFFIX = "temp";
-
-  private Exception exception;
   private Context context;
 
   public FileUtil(Context context) {
@@ -39,7 +35,6 @@ public class FileUtil extends AsyncTask<String, Void, InputStream> {
       }
       return context.getContentResolver().openInputStream(fileContentUri);
     } catch (Exception e) {
-      this.exception = e;
       FLog.e(
           ReactConstants.TAG,
           "Could not retrieve file for contentUri " + urls[0],
@@ -51,6 +46,8 @@ public class FileUtil extends AsyncTask<String, Void, InputStream> {
   private InputStream getDownloadFileInputStream(Context context, Uri uri)
       throws IOException {
     final File outputDir = context.getApplicationContext().getCacheDir();
+    String NAME = "FileUtil";
+    String TEMP_FILE_SUFFIX = "temp";
     final File file = File.createTempFile(NAME, TEMP_FILE_SUFFIX, outputDir);
     file.deleteOnExit();
 

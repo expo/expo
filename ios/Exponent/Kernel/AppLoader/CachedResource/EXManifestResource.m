@@ -1,17 +1,17 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXManifestResource.h"
-#import "EXAnalytics.h"
 #import "EXApiUtil.h"
 #import "EXEnvironment.h"
 #import "EXFileDownloader.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelUtil.h"
 #import "EXVersions.h"
-#import <EXManifests/EXManifestsManifestFactory.h>
 
 #import <React/RCTConvert.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
+
+@import EXManifests;
+@import EXUpdates;
 
 NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
@@ -57,7 +57,7 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
     for (id providedManifestJSON in jsonManifestObjArray) {
       if ([providedManifestJSON isKindOfClass:[NSDictionary class]]) {
         EXManifestsManifest *providedManifest = [EXManifestsManifestFactory manifestForManifestJSON:providedManifestJSON];
-        NSString *sdkVersion = providedManifest.sdkVersion;
+        NSString *sdkVersion = providedManifest.expoGoSDKVersion;
         if (sdkVersion && [[EXVersions sharedInstance] supportsVersion:sdkVersion]) {
           return providedManifestJSON;
         }
@@ -72,103 +72,6 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
     }]];
   }
   return nil;
-}
-
-- (void)loadResourceWithBehavior:(EXCachedResourceBehavior)behavior
-                   progressBlock:(EXCachedResourceProgressBlock)progressBlock
-                    successBlock:(EXCachedResourceSuccessBlock)successBlock
-                      errorBlock:(EXCachedResourceErrorBlock)errorBlock
-{
-  [super loadResourceWithBehavior:behavior progressBlock:progressBlock successBlock:^(NSData * _Nonnull data) {
-    self->_data = data;
-    if (self->_canBeWrittenToCache) {
-      [self writeToCache];
-    }
-    
-    __block NSError *jsonError;
-    id manifestJSONObjOrJSONObjArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
-    if (jsonError) {
-      errorBlock(jsonError);
-      return;
-    }
-    
-    id manifestObj;
-    // Check if server sent an array of manifests (multi-manifests)
-    if ([manifestJSONObjOrJSONObjArray isKindOfClass:[NSArray class]]) {
-      NSArray *manifestArray = (NSArray *)manifestJSONObjOrJSONObjArray;
-      __block NSError *manifestError;
-      manifestObj = [self _chooseJSONManifest:(NSArray *)manifestArray error:&manifestError];
-      if (!manifestObj) {
-        errorBlock(manifestError);
-        return;
-      }
-    } else {
-      manifestObj = manifestJSONObjOrJSONObjArray;
-    }
-    
-    NSString *innerManifestString = (NSString *)manifestObj[@"manifestString"];
-    NSString *manifestSignature = (NSString *)manifestObj[@"signature"];
-    
-    NSMutableDictionary *innerManifestObj;
-    if (!innerManifestString) {
-      // this manifest is not signed
-      innerManifestObj = [manifestObj mutableCopy];
-    } else {
-      @try {
-        innerManifestObj = [NSJSONSerialization JSONObjectWithData:[innerManifestString dataUsingEncoding:NSUTF8StringEncoding]
-                                                           options:NSJSONReadingMutableContainers
-                                                             error:&jsonError];
-      } @catch (NSException *exception) {
-        errorBlock([NSError errorWithDomain:EXNetworkErrorDomain code:-1 userInfo:@{ NSLocalizedDescriptionKey: exception.reason }]);
-      }
-      if (jsonError) {
-        errorBlock(jsonError);
-        return;
-      }
-    }
-
-    EXManifestsManifest *manifest = [EXManifestsManifestFactory manifestForManifestJSON:innerManifestObj];
-
-    NSError *sdkVersionError = [self verifyManifestSdkVersion:manifest];
-    if (sdkVersionError) {
-      errorBlock(sdkVersionError);
-      return;
-    }
-    
-    EXVerifySignatureSuccessBlock signatureSuccess = ^(BOOL isValid) {
-      [innerManifestObj setObject:@(isValid) forKey:@"isVerified"];
-      successBlock([NSJSONSerialization dataWithJSONObject:innerManifestObj options:0 error:&jsonError]);
-    };
-    
-    if ([self _isManifestVerificationBypassed:manifestObj]) {
-      if ([self _isThirdPartyHosted] && ![EXEnvironment sharedEnvironment].isDetached){
-        // the manifest id determines the namespace/experience id an app is sandboxed with
-        // if manifest is hosted by third parties, we sandbox it with the hostname to avoid clobbering exp.host namespaces
-        // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
-        // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
-        NSString * securityPrefix = [self.remoteUrl.scheme isEqualToString:@"https"] ? @"" : @"UNVERIFIED-";
-        NSString * slugSuffix = innerManifestObj[@"slug"] ? [@"-" stringByAppendingString:innerManifestObj[@"slug"]]: @"";
-        innerManifestObj[@"id"] = [NSString stringWithFormat:@"%@%@%@%@", securityPrefix, self.remoteUrl.host, self.remoteUrl.path?:@"", slugSuffix];
-      }
-      signatureSuccess(YES);
-    } else {
-      NSURL *publicKeyUrl = [NSURL URLWithString:kEXPublicKeyUrl];
-      [EXApiUtil verifySignatureWithPublicKeyUrl:publicKeyUrl
-                                            data:innerManifestString
-                                       signature:manifestSignature
-                                    successBlock:signatureSuccess
-                                      errorBlock:^(NSError *error) {
-        // ignore network errors in manifest validation,
-        // otherwise we can break offline loading for standalone apps when they have a valid manifest cache but no key.
-        if (error.domain == NSURLErrorDomain || error.domain == EXNetworkErrorDomain) {
-          DDLogWarn(@"EXManifestResource: Ignoring network error when validating manifest");
-          signatureSuccess(YES);
-        } else {
-          errorBlock(error);
-        }
-      }];
-    }
-  } errorBlock:errorBlock];
 }
 
 - (void)writeToCache
@@ -309,34 +212,13 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
   !((NSString *)manifestObj[@"signature"]) && shouldBypassVerification;
 }
 
-- (NSError *)_validateResponseData:(NSData *)data response:(NSURLResponse *)response
-{
-  if (response && [response isKindOfClass:[NSHTTPURLResponse class]]) {
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-    NSDictionary *headers = httpResponse.allHeaderFields;
-    
-    // pass the Exponent-Server header to Amplitude if it exists.
-    // this is generated only from XDE and exp while serving local bundles.
-    NSString *serverHeaderJson = headers[@"Exponent-Server"];
-    if (serverHeaderJson) {
-      NSError *jsonError;
-      NSDictionary *serverHeader = [NSJSONSerialization JSONObjectWithData:[serverHeaderJson dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&jsonError];
-      if (serverHeader && !jsonError) {
-        [[EXAnalytics sharedInstance] logEvent:@"LOAD_DEVELOPER_MANIFEST" manifestUrl:response.URL eventProperties:serverHeader];
-      }
-    }
-  }
-  // indicate that the response is valid
-  return nil;
-}
-
 - (NSError *)verifyManifestSdkVersion:(EXManifestsManifest *)maybeManifest
 {
   NSString *errorCode;
   NSDictionary *metadata;
-  if (maybeManifest && maybeManifest.sdkVersion) {
-    if (![maybeManifest.sdkVersion isEqualToString:@"UNVERSIONED"]) {
-      NSInteger manifestSdkVersion = [maybeManifest.sdkVersion integerValue];
+  if (maybeManifest && maybeManifest.expoGoSDKVersion) {
+    if (![maybeManifest.expoGoSDKVersion isEqualToString:@"UNVERSIONED"]) {
+      NSInteger manifestSdkVersion = [maybeManifest.expoGoSDKVersion integerValue];
       if (manifestSdkVersion) {
         NSInteger oldestSdkVersion = [[self _earliestSdkVersionSupported] integerValue];
         NSInteger newestSdkVersion = [[self _latestSdkVersionSupported] integerValue];
@@ -344,7 +226,7 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
           errorCode = @"EXPERIENCE_SDK_VERSION_OUTDATED";
           // since we are spoofing this error, we put the SDK version of the project as the
           // "available" SDK version -- it's the only one available from the server
-          metadata = @{@"availableSDKVersions": @[maybeManifest.sdkVersion]};
+          metadata = @{@"availableSDKVersions": @[maybeManifest.expoGoSDKVersion]};
         }
         if (manifestSdkVersion > newestSdkVersion) {
           errorCode = @"EXPERIENCE_SDK_VERSION_TOO_NEW";
@@ -423,7 +305,7 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
     formattedMessage = [NSString stringWithFormat:@"This project uses SDK %@, but this version of Expo Go only supports the following SDKs: %@. To load the project, it must be updated to a supported SDK version or an older version of Expo Go must be used.", sdkVersionRequired, supportedSDKVersions];
   } else if ([errorCode isEqualToString:@"NO_SDK_VERSION_SPECIFIED"]) {
     NSString *supportedSDKVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@", "];
-    formattedMessage = [NSString stringWithFormat:@"Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDKs (runtimes): %@. A custom development build must be used to load other runtimes.", supportedSDKVersions];
+    formattedMessage = [NSString stringWithFormat:@"Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDKs (runtimes): %@. A development build must be used to load other runtimes.", supportedSDKVersions];
   } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
     formattedMessage = @"The project you requested requires a newer version of Expo Go. Please download the latest version from the App Store.";
   } else if ([errorCode isEqualToString:@"NO_COMPATIBLE_EXPERIENCE_FOUND"]){

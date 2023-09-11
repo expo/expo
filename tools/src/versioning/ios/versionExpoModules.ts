@@ -4,18 +4,26 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
+import { Podspec } from '../../CocoaPods';
 import logger from '../../Logger';
 import { Package } from '../../Packages';
-import { copyFileWithTransformsAsync } from '../../Transforms';
-import { searchFilesAsync } from '../../Utils';
-import { expoModulesTransforms } from './transforms/expoModulesTransforms';
+import { FileTransforms, copyFileWithTransformsAsync } from '../../Transforms';
+import { arrayize, searchFilesAsync } from '../../Utils';
+import {
+  getCommonExpoModulesTransforms,
+  getVersioningExpoModuleConfig,
+} from './transforms/expoModulesTransforms';
+import { VersioningModuleConfig } from './types';
 import { getVersionPrefix, getVersionedDirectory } from './utils';
 
 // Label of the console's timer used during versioning
 const TIMER_LABEL = 'Versioning expo modules finished in';
 
 // The pattern that matches the dependency pods that need to be renamed in `*.podspec.json`.
-const PODSPEC_DEPS_TO_RENAME_PATTERN = /^(Expo|EX(?!GL_CPP)|UM|EAS|React|RCT|Yoga)/;
+const PODSPEC_DEPS_TO_RENAME_PATTERN = /^(Expo|EX|UM|EAS|React|RCT|Yoga)(?!-Folly)/;
+
+// The pattern that matches the file that need to be renamed in `*.podspec.json`.
+const PODSPEC_FILES_TO_RENAME_PATTERN = /^(Expo|EX|UM|EAS|React|RCT|Yoga|hermes-engine)(?!-Folly)/;
 
 /**
  * Function that versions expo modules.
@@ -25,28 +33,50 @@ export async function versionExpoModulesAsync(
   packages: Package[]
 ): Promise<void> {
   const prefix = getVersionPrefix(sdkNumber);
-  const transforms = expoModulesTransforms(prefix);
+  const commonTransforms = getCommonExpoModulesTransforms(prefix);
   const versionedDirectory = getVersionedDirectory(sdkNumber);
   const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);
 
   // Prepare versioning task (for single package).
-  const versionPackageTask = taskQueue.wrap(async (pkg) => {
+  const versionPackageTask = taskQueue.wrap(async (pkg: Package) => {
     logger.log(`- ${chalk.green(pkg.podspecName!)}`);
-    const sourceDirectory = path.join(pkg.path, pkg.iosSubdirectory);
-    const targetDirectory = path.join(versionedDirectory, pkg.podspecName!);
 
-    // Find all iOS files within the package, except the podspec.
-    // Podspecs depend on the corresponding `package.json`,
-    // that we don't want to copy (no need to version JS files, workspace project names duplication).
-    // Instead, we generate the static podspec in JSON format (see `generateVersionedPodspecAsync`).
-    const files = await searchFilesAsync(sourceDirectory, '**', {
-      ignore: [`${pkg.podspecName}.podspec`],
-    });
+    if (!pkg.podspecPath || !pkg.podspecName) {
+      throw new Error(`Podspec for package ${pkg.packageName} not found`);
+    }
+
+    const sourceDirectory = path.join(pkg.path, path.dirname(pkg.podspecPath));
+    const targetDirectory = path.join(versionedDirectory, pkg.podspecName);
 
     // Ensure the target directory is empty
     if (await fs.pathExists(targetDirectory)) {
       await fs.remove(targetDirectory);
     }
+
+    const moduleConfig = getVersioningExpoModuleConfig(prefix, pkg.packageName);
+
+    // Create a podspec in JSON format so we don't have to keep `package.json`s
+    const podspec = await generateVersionedPodspecAsync(
+      pkg,
+      prefix,
+      targetDirectory,
+      moduleConfig.mutatePodspec
+    );
+
+    // Find files within the package based on source_files in the podspec, except the podspec itself.
+    // Podspecs depend on the corresponding `package.json`,
+    // that we don't want to copy (no need to version JS files, workspace project names duplication).
+    // Instead, we generate the static podspec in JSON format (see `generateVersionedPodspecAsync`).
+    // Be aware that it doesn't include source files for subspecs!
+    const files = await searchFilesAsync(sourceDirectory, podspec.source_files, {
+      ignore: [`${pkg.podspecName}.podspec`],
+    });
+
+    // Merge common transforms with the module-specific transforms.
+    const transforms: FileTransforms = {
+      path: [...(commonTransforms.path ?? []), ...(moduleConfig.transforms?.path ?? [])],
+      content: [...(commonTransforms.content ?? []), ...(moduleConfig.transforms?.content ?? [])],
+    };
 
     // Copy files to the new directory with applied transforms
     for (const sourceFile of files) {
@@ -57,9 +87,6 @@ export async function versionExpoModulesAsync(
         transforms,
       });
     }
-
-    // Create a podspec in JSON format so we don't have to keep `package.json`s
-    await generateVersionedPodspecAsync(pkg, prefix, targetDirectory);
   });
 
   logger.info('📂 Versioning expo modules');
@@ -77,8 +104,9 @@ export async function versionExpoModulesAsync(
 async function generateVersionedPodspecAsync(
   pkg: Package,
   prefix: string,
-  targetDirectory: string
-) {
+  targetDirectory: string,
+  mutator?: VersioningModuleConfig['mutatePodspec']
+): Promise<Podspec> {
   const podspec = await pkg.getPodspecAsync();
 
   if (!podspec) {
@@ -99,12 +127,20 @@ async function generateVersionedPodspecAsync(
         delete podspec.dependencies[key];
       });
   }
-
-  if (['expo-updates', 'expo-constants'].includes(pkg.packageName)) {
-    // For expo-updates and expo-constants in Expo Go, we don't need app.config and app.manifest in versioned code.
-    delete podspec['script_phases'];
-    delete podspec['resource_bundles'];
+  if (podspec.public_header_files) {
+    podspec.public_header_files = transformVersionedFiles(podspec.public_header_files, prefix);
   }
+  if (podspec.pod_target_xcconfig?.HEADER_SEARCH_PATHS) {
+    // using ' ' to split HEADER_SEARCH_PATHS is not 100% correct but good enough for expo-modules' podspec
+    const headerSearchPaths = transformVersionedFiles(
+      podspec.pod_target_xcconfig.HEADER_SEARCH_PATHS.split(' '),
+      prefix
+    );
+    podspec.pod_target_xcconfig.HEADER_SEARCH_PATHS = headerSearchPaths.join(' ');
+  }
+
+  // Apply module-specific mutations.
+  mutator?.(podspec);
 
   const targetPath = path.join(targetDirectory, `${prefix}${pkg.podspecName}.podspec.json`);
 
@@ -112,4 +148,22 @@ async function generateVersionedPodspecAsync(
   await fs.outputJson(targetPath, podspec, {
     spaces: 2,
   });
+
+  return podspec;
+}
+
+/**
+ * Transform files into versioned file names.
+ * For versioning `source_files` or `HEADER_SEARCH_PATHS` in podspec
+ */
+function transformVersionedFiles(files: string | string[], prefix: string): string[] {
+  const result = arrayize(files).map((item) => {
+    const dirname = path.dirname(item);
+    const basename = path.basename(item);
+    const versionedBasename = PODSPEC_FILES_TO_RENAME_PATTERN.test(basename)
+      ? `${prefix}${basename}`
+      : basename;
+    return path.join(dirname, versionedBasename);
+  });
+  return result;
 }

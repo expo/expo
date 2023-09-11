@@ -1,8 +1,7 @@
 import { getConfig, Platform, ProjectTarget } from '@expo/config';
 
-import * as Log from '../log';
-import { resolveEntryPoint } from '../start/server/middleware/resolveEntryPoint';
 import { bundleAsync, BundleOutput } from './fork-bundleAsync';
+import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 
 export type PublishOptions = {
   releaseChannel?: string;
@@ -15,9 +14,13 @@ export type PublishOptions = {
 export async function createBundlesAsync(
   projectRoot: string,
   publishOptions: PublishOptions = {},
-  bundleOptions: { platforms: Platform[]; dev?: boolean; useDevServer: boolean }
+  bundleOptions: { platforms: Platform[]; dev?: boolean; minify?: boolean }
 ): Promise<Partial<Record<Platform, BundleOutput>>> {
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  if (!bundleOptions.platforms.length) {
+    return {};
+  }
+  const projectConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const { exp } = projectConfig;
 
   const bundles = await bundleAsync(
     projectRoot,
@@ -26,19 +29,12 @@ export async function createBundlesAsync(
       // If not legacy, ignore the target option to prevent warnings from being thrown.
       resetCache: publishOptions.resetCache,
       maxWorkers: publishOptions.maxWorkers,
-      logger: {
-        info(tag: unknown, message: string) {
-          Log.log(message);
-        },
-        error(tag: unknown, message: string) {
-          Log.error(message);
-        },
-      } as any,
       quiet: false,
     },
     bundleOptions.platforms.map((platform: Platform) => ({
       platform,
-      entryPoint: resolveEntryPoint(projectRoot, platform),
+      entryPoint: getEntryWithServerRoot(projectRoot, projectConfig, platform),
+      minify: bundleOptions.minify,
       dev: bundleOptions.dev,
     }))
   );

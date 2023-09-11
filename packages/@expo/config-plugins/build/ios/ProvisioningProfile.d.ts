@@ -1,4 +1,4 @@
-declare type ProvisioningProfileSettings = {
+type ProvisioningProfileSettings = {
     targetName?: string;
     appleTeamId: string;
     profileName: string;

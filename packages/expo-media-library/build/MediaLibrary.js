@@ -1,6 +1,6 @@
 import { PermissionStatus, createPermissionHook, EventEmitter, UnavailabilityError, } from 'expo-modules-core';
 import { Platform } from 'react-native';
-import MediaLibrary from './ExponentMediaLibrary';
+import MediaLibrary from './ExpoMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
 export { PermissionStatus, };
 function arrayize(item) {
@@ -45,6 +45,12 @@ function checkSortByKey(sortBy) {
     if (Object.values(SortBy).indexOf(sortBy) === -1) {
         throw new Error(`Invalid sortBy key: ${sortBy}`);
     }
+}
+function sortByOptionToString(sortBy) {
+    if (Array.isArray(sortBy)) {
+        return `${sortBy[0]} ${sortBy[1] ? 'ASC' : 'DESC'}`;
+    }
+    return `${sortBy} DESC`;
 }
 function dateToNumber(value) {
     return value instanceof Date ? value.getTime() : value;
@@ -99,7 +105,7 @@ export async function getPermissionsAsync(writeOnly = false) {
  *
  * @example
  * ```ts
- * const [status, requestPermission] = MediaLibrary.usePermissions();
+ * const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
  * ```
  */
 export const usePermissions = createPermissionHook({
@@ -236,7 +242,7 @@ export async function deleteAssetsAsync(assets) {
  * Provides more information about an asset, including GPS location, local URI and EXIF metadata.
  * @param asset An [Asset](#asset) or its ID.
  * @param options
- * @return [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
+ * @return An [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
  */
 export async function getAssetInfoAsync(asset, options = { shouldDownloadFromNetwork: true }) {
     if (!MediaLibrary.getAssetInfoAsync) {
@@ -371,6 +377,7 @@ export async function getAssetsAsync(assetsOptions = {}) {
     }
     options.sortBy.forEach(checkSortBy);
     options.mediaType.forEach(checkMediaType);
+    options.sortBy = options.sortBy.map(sortByOptionToString);
     return await MediaLibrary.getAssetsAsync(options);
 }
 // @needsAudit

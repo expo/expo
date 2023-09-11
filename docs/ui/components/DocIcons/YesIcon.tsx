@@ -1,8 +1,7 @@
-import { StatusSuccessIcon, theme } from '@expo/styleguide';
-import * as React from 'react';
+import { StatusSuccessIcon } from '@expo/styleguide-icons';
 
 import { IconBase, DocIconProps } from './IconBase';
 
 export const YesIcon = ({ small }: DocIconProps) => (
-  <IconBase Icon={StatusSuccessIcon} color={theme.status.success} small={small} />
+  <IconBase Icon={StatusSuccessIcon} className="text-icon-success" small={small} />
 );

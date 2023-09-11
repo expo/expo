@@ -49,7 +49,7 @@ public class ImageReader {
             imageReference = dataSource.getResult();
             if (imageReference != null) {
               CloseableImage image = imageReference.get();
-              if (image != null && image instanceof CloseableStaticBitmap) {
+              if (image instanceof CloseableStaticBitmap) {
                 CloseableStaticBitmap closeableStaticBitmap = (CloseableStaticBitmap) image;
                 Bitmap bitmap = closeableStaticBitmap.getUnderlyingBitmap();
                 if (bitmap != null) {
@@ -104,11 +104,9 @@ public class ImageReader {
       logoHolder.setController(controller);
     } else {
       BitmapDescriptor iconBitmapDescriptor = getBitmapDescriptorByName(uri);
-      if (iconBitmapDescriptor != null) {
-        imp.setIconBitmapDescriptor(iconBitmapDescriptor);
-        imp.setIconBitmap(BitmapFactory.decodeResource(this.resources, getDrawableResourceByName
-            (uri)));
-      }
+      imp.setIconBitmapDescriptor(iconBitmapDescriptor);
+      imp.setIconBitmap(BitmapFactory.decodeResource(this.resources, getDrawableResourceByName
+          (uri)));
       imp.update();
     }
 

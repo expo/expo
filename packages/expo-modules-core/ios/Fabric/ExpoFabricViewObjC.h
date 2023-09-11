@@ -31,7 +31,13 @@
 
 @property (nonatomic, strong, nullable) UIView *contentView;
 
-- (void)updateProp:(nonnull NSString *)propName withValue:(nonnull id)value;
+- (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
+
+- (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props;
+
+- (void)viewDidUpdateProps;
+
+- (BOOL)supportsPropWithName:(nonnull NSString *)name;
 
 - (void)prepareForRecycle;
 

@@ -1,12 +1,11 @@
-import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform } from 'react-native';
 
+import { BranchDetailsView } from './BranchDetailsView';
 import { AppPlatform, useBranchDetailsQuery } from '../../graphql/types';
 import * as Kernel from '../../kernel/Kernel';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
-import { BranchDetailsView } from './BranchDetailsView';
 
 export function BranchDetailsContainer(
   props: { appId: string; branchName: string } & StackScreenProps<HomeStackRoutes, 'BranchDetails'>
@@ -18,9 +17,7 @@ export function BranchDetailsContainer(
       appId: props.appId,
       name: props.branchName,
       platform: Platform.OS === 'ios' ? AppPlatform.Ios : AppPlatform.Android,
-      runtimeVersions: Kernel.sdkVersions
-        .split(',')
-        .map((kernelSDKVersion) => getRuntimeVersionForSDKVersion(kernelSDKVersion)),
+      sdkVersions: Kernel.sdkVersions.split(','),
     },
   });
 

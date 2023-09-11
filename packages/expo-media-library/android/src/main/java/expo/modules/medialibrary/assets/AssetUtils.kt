@@ -12,11 +12,11 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.exifinterface.media.ExifInterface
-import expo.modules.core.Promise
+import expo.modules.kotlin.Promise
 import expo.modules.medialibrary.ASSET_PROJECTION
+import expo.modules.medialibrary.AssetQueryException
 import expo.modules.medialibrary.ERROR_IO_EXCEPTION
 import expo.modules.medialibrary.ERROR_NO_PERMISSIONS
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import expo.modules.medialibrary.EXIF_TAGS
@@ -49,7 +49,7 @@ fun queryAssetInfo(
       null
     ).use { assetCursor ->
       if (assetCursor == null) {
-        promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get asset. Query returns null.")
+        throw AssetQueryException()
       } else {
         if (assetCursor.count == 1) {
           assetCursor.moveToFirst()
@@ -73,7 +73,7 @@ fun queryAssetInfo(
     promise.reject(ERROR_IO_EXCEPTION, "Could not read file", e)
   } catch (e: UnsupportedOperationException) {
     e.printStackTrace()
-    promise.reject(ERROR_NO_PERMISSIONS, e.message)
+    promise.reject(ERROR_NO_PERMISSIONS, e.message, e)
   }
 }
 

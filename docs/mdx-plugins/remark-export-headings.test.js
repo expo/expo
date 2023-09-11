@@ -1,6 +1,6 @@
-import u from 'unist-builder';
+import { u } from 'unist-builder';
 
-import exportHeadings from './remark-export-headings';
+import exportHeadings from './remark-export-headings.js';
 
 describe('exports constant', () => {
   it('when no headers are found', () => {
@@ -25,40 +25,40 @@ describe('exports constant', () => {
 describe('header object', () => {
   it('has title from text child', () => {
     const { data } = transform(u('root', [u('heading', [u('text', 'header title')])]));
-    expect(data[0]).toHaveProperty('title', 'header title');
+    expect(getNodeByKey(data, 'title')).toHaveProperty('value', 'header title');
   });
 
   it('has title from multiple text children', () => {
     const { data } = transform(
       u('root', [u('heading', [u('text', 'header'), u('text', 'title')])])
     );
-    expect(data[0]).toHaveProperty('title', 'header title');
+    expect(getNodeByKey(data, 'title')).toHaveProperty('value', 'header title');
   });
 
   it('has depth from heading', () => {
     const { data } = transform(u('root', [u('heading', { depth: 3 }, [u('text', 'title')])]));
-    expect(data[0]).toHaveProperty('depth', 3);
+    expect(getNodeByKey(data, 'depth')).toHaveProperty('value', 3);
   });
 
   it('has id when defined as data', () => {
     const { data } = transform(
       u('root', [u('heading', { data: { id: 'title' } }, [u('text', 'title')])])
     );
-    expect(data[0]).toHaveProperty('id', 'title');
+    expect(getNodeByKey(data, 'id')).toHaveProperty('value', 'title');
   });
 
   it('has text type from text children', () => {
     const { data } = transform(
       u('root', [u('heading', [u('text', 'hello there'), u('text', 'general kenobi')])])
     );
-    expect(data[0]).toHaveProperty('type', 'text');
+    expect(getNodeByKey(data, 'type')).toHaveProperty('value', 'text');
   });
 
   it('has inlineCode type from mixed children', () => {
     const { data } = transform(
       u('root', [u('heading', [u('text', 'hello there'), u('inlineCode', 'general kenobi')])])
     );
-    expect(data[0]).toHaveProperty('type', 'inlineCode');
+    expect(getNodeByKey(data, 'type')).toHaveProperty('value', 'inlineCode');
   });
 });
 
@@ -67,18 +67,16 @@ describe('header object', () => {
  *
  * @param {import('mdast').Root} tree
  * @param {object} [options]
- * @param {string} [options.exportName]
  */
 function transform(tree, options = {}) {
   exportHeadings(options)(tree);
 
-  const value = `export const ${options.exportName || 'headings'} = `;
-  const node = tree.children
-    .reverse()
-    .find(node => node.type === 'export' && node.value.startsWith(value));
+  const data = tree.children.find(node => node.type === 'mdxjsEsm').data.estree.body[0].declaration
+    .declarations[0].init.elements;
 
-  const json = node ? node.value.replace(value, '').replace(/;$/, '') : null;
-  const data = json ? JSON.parse(json) : null;
+  return { data };
+}
 
-  return { node, json, data };
+function getNodeByKey(data, content) {
+  return data[0].properties.find(property => property?.key?.value?.includes(content))?.value;
 }

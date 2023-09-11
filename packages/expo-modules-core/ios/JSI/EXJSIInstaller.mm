@@ -3,14 +3,20 @@
 #import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
+#import <ExpoModulesCore/LazyObject.h>
 #import <ExpoModulesCore/Swift.h>
 
 namespace jsi = facebook::jsi;
 
 /**
- This name will be used as a property of the JS global object to which the host object is added.
+ Property name used to define the modules host object in the main object of the Expo JS runtime.
  */
-static NSString *expoModulesHostObjectPropertyName = @"ExpoModules";
+static NSString *modulesHostObjectPropertyName = @"modules";
+
+/**
+ Property name used to define the modules host object in the global object of the Expo JS runtime (legacy).
+ */
+static NSString *modulesHostObjectLegacyPropertyName = @"ExpoModules";
 
 @interface RCTBridge (ExpoBridgeWithRuntime)
 
@@ -21,15 +27,15 @@ static NSString *expoModulesHostObjectPropertyName = @"ExpoModules";
 
 @implementation EXJavaScriptRuntimeManager
 
-+ (nullable EXJavaScriptRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
++ (nullable EXRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
 {
   jsi::Runtime *jsiRuntime = [bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<jsi::Runtime *>(bridge.runtime) : nullptr;
-  return jsiRuntime ? [[EXJavaScriptRuntime alloc] initWithRuntime:jsiRuntime callInvoker:bridge.jsCallInvoker] : nil;
+  return jsiRuntime ? [[EXRuntime alloc] initWithRuntime:jsiRuntime callInvoker:bridge.jsCallInvoker] : nil;
 }
 
 + (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext
 {
-  EXJavaScriptRuntime *runtime = [appContext runtime];
+  EXRuntime *runtime = [appContext _runtime];
 
   // The runtime may be unavailable, e.g. remote debugger is enabled or it hasn't been set yet.
   if (!runtime) {
@@ -37,17 +43,23 @@ static NSString *expoModulesHostObjectPropertyName = @"ExpoModules";
   }
 
   EXJavaScriptObject *global = [runtime global];
+  EXJavaScriptObject *coreObject = [runtime coreObject];
 
-  if ([global hasProperty:expoModulesHostObjectPropertyName]) {
+  if ([coreObject hasProperty:modulesHostObjectPropertyName]) {
     return false;
   }
 
-  std::shared_ptr<expo::ExpoModulesHostObject> hostObjectPtr = std::make_shared<expo::ExpoModulesHostObject>(appContext);
-  EXJavaScriptObject *hostObject = [runtime createHostObject:hostObjectPtr];
+  std::shared_ptr<expo::ExpoModulesHostObject> modulesHostObjectPtr = std::make_shared<expo::ExpoModulesHostObject>(appContext);
+  EXJavaScriptObject *modulesHostObject = [runtime createHostObject:modulesHostObjectPtr];
 
-  // Define the ExpoModules object as a non-configurable, read-only and enumerable property.
-  [global defineProperty:expoModulesHostObjectPropertyName
-                   value:hostObject
+  // Define the `global.expo.modules` object as a non-configurable, read-only and enumerable property.
+  [coreObject defineProperty:modulesHostObjectPropertyName
+                       value:modulesHostObject
+                     options:EXJavaScriptObjectPropertyDescriptorEnumerable];
+
+  // Also define `global.ExpoModules` for backwards compatibility (used before SDK47, can be removed in SDK48).
+  [global defineProperty:modulesHostObjectLegacyPropertyName
+                   value:modulesHostObject
                  options:EXJavaScriptObjectPropertyDescriptorEnumerable];
   return true;
 }

@@ -1,8 +1,8 @@
-import { AppIdResolver } from '../AppIdResolver';
-import { BaseOpenInCustomProps, PlatformManager } from '../PlatformManager';
 import { AppleAppIdResolver } from './AppleAppIdResolver';
 import { AppleDeviceManager } from './AppleDeviceManager';
 import { Device } from './simctl';
+import { AppIdResolver } from '../AppIdResolver';
+import { BaseOpenInCustomProps, PlatformManager } from '../PlatformManager';
 
 /** Manages launching apps on Apple simulators. */
 export class ApplePlatformManager extends PlatformManager<Device> {
@@ -12,8 +12,10 @@ export class ApplePlatformManager extends PlatformManager<Device> {
     options: {
       /** Get the base URL for the dev server hosting this platform manager. */
       getDevServerUrl: () => string | null;
-      /** Expo Go URL */
-      getExpoGoUrl: () => string | null;
+      /** Expo Go URL. */
+      getExpoGoUrl: () => string;
+      /** Get redirect URL for native disambiguation. */
+      getRedirectUrl: () => string | null;
       /** Dev Client */
       getCustomRuntimeUrl: (props?: { scheme?: string }) => string | null;
     }

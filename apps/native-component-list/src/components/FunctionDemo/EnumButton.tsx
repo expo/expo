@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 
-import Colors from '../../constants/Colors';
 import { PrimitiveArgument } from './index.types';
+import Colors from '../../constants/Colors';
 
 // Exclude boolean as this type should not be handled by this component.
 type Value = Exclude<PrimitiveArgument, boolean>;

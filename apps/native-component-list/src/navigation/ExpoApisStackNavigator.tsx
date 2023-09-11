@@ -2,10 +2,10 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 
-import TabIcon from '../components/TabIcon';
-import ExpoApis from '../screens/ExpoApisScreen';
 import getStackConfig from './StackConfig';
 import { optionalRequire } from './routeBuilder';
+import TabIcon from '../components/TabIcon';
+import ExpoApis from '../screens/ExpoApisScreen';
 
 const Stack = createStackNavigator();
 
@@ -142,12 +142,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/FirebaseRecaptchaScreen'));
-    },
-    name: 'FirebaseRecaptcha',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/FontScreen'));
     },
     name: 'Font',
@@ -269,6 +263,12 @@ export const Screens = [
       return optionalRequire(() => require('../screens/NetworkScreen'));
     },
     name: 'Network',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/CryptoScreen'));
+    },
+    name: 'Crypto',
   },
   {
     getComponent() {

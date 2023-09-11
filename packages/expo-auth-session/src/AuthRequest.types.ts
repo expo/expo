@@ -1,4 +1,3 @@
-import { CreateURLOptions } from 'expo-linking';
 import { WebBrowserOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
 
 // @needsAudit
@@ -80,19 +79,6 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
    */
   url?: string;
   /**
-   * Should the authentication request use the Expo proxy service `auth.expo.io`.
-   * @default false
-   */
-  useProxy?: boolean;
-  /**
-   * Project name to use for the \`auth.expo.io\` proxy when `useProxy` is true.
-   */
-  projectNameForProxy?: string;
-  /**
-   * URL options to be used when creating the redirect URL for the auth proxy.
-   */
-  proxyOptions?: Omit<CreateURLOptions, 'queryParams'> & { path?: string };
-  /**
    * Features to use with `window.open()`.
    * @platform web
    */
@@ -124,7 +110,7 @@ export interface AuthRequestConfig {
   clientId: string;
   /**
    * After completing an interaction with a resource owner the
-   * server will redirect to this URI. Learn more about [linking in Expo](https://docs.expo.dev/versions/latest/workflow/linking/).
+   * server will redirect to this URI. Learn more about [linking in Expo](/guides/linking/).
    *
    * [Section 3.1.2](https://tools.ietf.org/html/rfc6749#section-3.1.2)
    */

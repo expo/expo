@@ -1,4 +1,6 @@
 /* global Image:true */
+import { Platform } from 'expo-modules-core';
+
 import * as ImageAssets from '../ImageAssets';
 
 describe('isImageType', () => {
@@ -17,16 +19,20 @@ describe('isImageType', () => {
 });
 
 describe('getImageInfoAsync', () => {
+  // Skip in Node.js
+  if (!Platform.isDOMAvailable) {
+    return;
+  }
   let originalImage: any;
 
   beforeAll(() => {
     // @ts-ignore
     originalImage = global.Image;
-    Image = jest.fn();
+    globalThis.Image = jest.fn();
   });
 
   afterAll(() => {
-    Image = originalImage;
+    globalThis.Image = originalImage;
   });
 
   it(`fetches images by setting the "src" property`, () => {

@@ -5,10 +5,12 @@ import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.RegistryLifecycleListener
+import expo.modules.font.FontLoaderModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.utils.ScopedContext
 import host.exp.exponent.kernel.ExperienceKey
+import versioned.host.exp.exponent.core.modules.ExpoGoModule
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsCategoriesSerializer
 import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider
@@ -43,20 +45,11 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     // Overriding expo-file-system FilePermissionModule
     moduleRegistry.registerInternalModule(ScopedFilePermissionModule(scopedContext))
 
-    // Overriding expo-file-system FileSystemModule
-    moduleRegistry.registerExportedModule(ScopedFileSystemModule(scopedContext))
-
-    // Overriding expo-error-recovery ErrorRecoveryModule
-    moduleRegistry.registerExportedModule(ScopedErrorRecoveryModule(scopedContext, manifest, experienceKey))
-
     // Overriding expo-permissions ScopedPermissionsService
     moduleRegistry.registerInternalModule(ScopedPermissionsService(scopedContext, experienceKey))
 
     // Overriding expo-updates UpdatesService
     moduleRegistry.registerInternalModule(UpdatesBinding(scopedContext, experienceProperties))
-
-    // Overriding expo-firebase-core
-    moduleRegistry.registerInternalModule(ScopedFirebaseCoreService(scopedContext, manifest, experienceKey))
 
     // Overriding expo-notifications classes
     moduleRegistry.registerExportedModule(ScopedNotificationsEmitter(scopedContext, experienceKey))
@@ -67,9 +60,6 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     moduleRegistry.registerExportedModule(ScopedServerRegistrationModule(scopedContext))
     moduleRegistry.registerInternalModule(ScopedNotificationsChannelsProvider(scopedContext, experienceKey))
     moduleRegistry.registerInternalModule(ScopedNotificationsCategoriesSerializer())
-
-    // Overriding expo-secure-stoore
-    moduleRegistry.registerExportedModule(ScopedSecureStoreModule(scopedContext))
 
     // ReactAdapterPackage requires ReactContext
     val reactContext = scopedContext.context as ReactApplicationContext
@@ -87,7 +77,23 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
         moduleRegistry.registerExtraListener(otherModule as RegistryLifecycleListener)
       }
     }
-    return getNativeModulesFromModuleRegistry(reactContext, moduleRegistry)
+    return getNativeModulesFromModuleRegistry(
+      reactContext,
+      moduleRegistry
+    ) { appContext ->
+      appContext.registry.register(
+        ExpoGoModule(manifest)
+      )
+      appContext.registry.register(
+        ScopedSecureStoreModule(scopedContext)
+      )
+      appContext.registry.register(
+        object : FontLoaderModule() {
+          override val prefix: String
+            get() = "ExpoFont-"
+        }
+      )
+    }
   }
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {

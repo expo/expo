@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 
-import { ConfigPlugin, XcodeProject } from '../Plugin.types';
-import { withXcodeProject } from '../plugins/ios-plugins';
 import { getAppDelegate, getSourceRoot } from './Paths';
 import { withBuildSourceFile } from './XcodeProjectFile';
 import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
+import { ConfigPlugin, XcodeProject } from '../Plugin.types';
+import { withXcodeProject } from '../plugins/ios-plugins';
 
 const templateBridgingHeader = `//
 //  Use this file to import your target's public headers that you would like to expose to Swift.
@@ -65,7 +65,7 @@ function shouldCreateSwiftBridgingHeader({
   project: XcodeProject;
 }): boolean {
   // Only create a bridging header if the project is using in Objective C (AppDelegate is written in Objc).
-  const isObjc = getAppDelegate(projectRoot).language === 'objc';
+  const isObjc = getAppDelegate(projectRoot).language !== 'swift';
   return isObjc && !getDesignatedSwiftBridgingHeaderFileReference({ project });
 }
 

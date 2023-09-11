@@ -9,6 +9,7 @@ import expo.modules.updates.UpdatesInterface
 import expo.modules.updates.UpdatesService
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.entity.AssetEntity
@@ -18,6 +19,10 @@ import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.KernelConstants
 import java.io.File
 
+/**
+ * Scoped internal module which overrides [UpdatesService] at runtime in Expo Go, and gives
+ * [UpdatesModule] access to the correct instance of [ExpoUpdatesAppLoader].
+ */
 class UpdatesBinding(context: Context, experienceProperties: Map<String, Any?>) :
   UpdatesService(context), UpdatesInterface {
 
@@ -55,6 +60,8 @@ class UpdatesBinding(context: Context, experienceProperties: Map<String, Any?>) 
   override fun canRelaunch(): Boolean {
     return true
   }
+  override val stateMachine: UpdatesStateMachine?
+    get() = null
 
   override val embeddedUpdate: UpdateEntity? = null
 

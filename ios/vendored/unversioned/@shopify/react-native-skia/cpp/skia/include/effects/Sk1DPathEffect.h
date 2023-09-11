@@ -8,7 +8,12 @@
 #ifndef Sk1DPathEffect_DEFINED
 #define Sk1DPathEffect_DEFINED
 
-#include "include/core/SkPathEffect.h"
+#include "include/core/SkRefCnt.h"
+#include "include/core/SkScalar.h"
+#include "include/core/SkTypes.h"
+
+class SkPath;
+class SkPathEffect;
 
 class SK_API SkPath1DPathEffect {
 public:

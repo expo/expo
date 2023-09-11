@@ -1,10 +1,8 @@
-.expo
 .next
+.swc
 dangerfile.js
 /global-styles/nprogress.ts
 out
 node_modules
 pages/versions/latest
 public/static
-react-native-website
-scripts/schemas

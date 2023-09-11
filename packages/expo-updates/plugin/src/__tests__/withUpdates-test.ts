@@ -1,33 +1,28 @@
-import { getAccountUsername } from '@expo/config';
-import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
+import { AndroidConfig, IOSConfig } from 'expo/config-plugins';
 
 import withUpdates from '../withUpdates';
 
 jest.mock('@expo/config');
 
 describe('Updates plugin', () => {
-  it('passes in expo username, resolved by getAccountUsername', () => {
-    jest.spyOn(AndroidConfig.Updates, 'withUpdates');
-    jest.spyOn(IOSConfig.Updates, 'withUpdates');
+  beforeAll(() => {
+    const config = getConfig();
+    jest.spyOn(AndroidConfig.Updates, 'withUpdates').mockReturnValue(config);
+    jest.spyOn(IOSConfig.Updates, 'withUpdates').mockReturnValue(config);
+  });
 
-    const expoUsername = 'some-username';
-    // @ts-ignore: return the username so we can validate it is passed to the ios/android plugins
-    getAccountUsername.mockReturnValue(expoUsername);
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
 
+  it('calls platforms', () => {
     withUpdates(getConfig());
 
     // @ts-ignore: this is an expect extension and is not defined on the type
     const _ = expect.literallyAnything();
-    expect(AndroidConfig.Updates.withUpdates).toHaveBeenCalledWith(_, { expoUsername });
-    expect(IOSConfig.Updates.withUpdates).toHaveBeenCalledWith(_, { expoUsername });
-  });
-
-  it('passes the config object to getAccountUsername', () => {
-    withUpdates(getConfig({ owner: 'real-owner' }));
-    expect(getAccountUsername).toHaveBeenCalledWith(
-      expect.objectContaining({ owner: 'real-owner' })
-    );
+    expect(AndroidConfig.Updates.withUpdates).toHaveBeenCalledWith(_);
+    expect(IOSConfig.Updates.withUpdates).toHaveBeenCalledWith(_);
   });
 });
 

@@ -3,7 +3,7 @@
  * - yarn run remove-version 38 -> removes all the pages and files related to the SDK 38
  */
 
-const fs = require('fs-extra');
+import fs from 'fs-extra';
 
 const version = process.argv[2];
 
@@ -25,7 +25,7 @@ const run = () => {
       fs.rmSync(examplesPath, { recursive: true });
     }
 
-    const schemaPath = `scripts/schemas/v${version}.0.0`;
+    const schemaPath = `public/static/schemas/v${version}.0.0`;
     if (fs.pathExistsSync(schemaPath)) {
       fs.rmSync(schemaPath, { recursive: true });
     }

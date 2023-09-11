@@ -4,23 +4,23 @@
  * - `dark` makes buttons **darker** to adjust for a mostly light nav bar.
  * - `light` makes buttons **lighter** to adjust for a mostly dark nav bar.
  */
-export declare type NavigationBarButtonStyle = 'light' | 'dark';
+export type NavigationBarButtonStyle = 'light' | 'dark';
 /**
  * Visibility of the navigation bar.
  */
-export declare type NavigationBarVisibility = 'visible' | 'hidden';
+export type NavigationBarVisibility = 'visible' | 'hidden';
 /**
  * Interaction behavior for the system navigation bar.
  */
-export declare type NavigationBarBehavior = 'overlay-swipe' | 'inset-swipe' | 'inset-touch';
+export type NavigationBarBehavior = 'overlay-swipe' | 'inset-swipe' | 'inset-touch';
 /**
  * Navigation bar positional mode.
  */
-export declare type NavigationBarPosition = 'relative' | 'absolute';
+export type NavigationBarPosition = 'relative' | 'absolute';
 /**
  * Current system UI visibility state. Due to platform constraints, this will return when the status bar visibility changes as well as the navigation bar.
  */
-export declare type NavigationBarVisibilityEvent = {
+export type NavigationBarVisibilityEvent = {
     /**
      * Current navigation bar visibility.
      */

@@ -6,7 +6,7 @@ import { vol } from 'memfs';
 import * as path from 'path';
 
 import projectFixtures from '../../../__tests__/fixtures/react-native-project';
-import { getDirFromFS } from '../../../icons/__tests__/utils/getDirFromFS';
+import { getDirFromFS } from '../../../__tests__/getDirFromFS';
 import { withIosSplashScreen } from '../withIosSplashScreen';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
@@ -78,19 +78,17 @@ describe(withIosSplashScreen, () => {
 
     expect(config).toBeDefined();
 
-    const infoPlist = await readPlistAsync('/app/ios/ReactNativeProject/Info.plist');
+    const infoPlist = await readPlistAsync('/app/ios/HelloWorld/Info.plist');
     expect(infoPlist.UILaunchStoryboardName).toBe('SplashScreen');
 
     const after = getDirFromFS(vol.toJSON(), path.join(projectRoot, 'ios'));
 
     // Image is not defined
-    expect(
-      after['ReactNativeProject/Images.xcassets/SplashScreen.imageset/image.png']
-    ).not.toBeDefined();
+    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/image.png']).not.toBeDefined();
     // Ensure colors are created
 
     expect(
-      after['ReactNativeProject/Images.xcassets/SplashScreenBackground.imageset/image.png']
+      after['HelloWorld/Images.xcassets/SplashScreenBackground.imageset/image.png']
     ).toBeDefined();
   });
 
@@ -126,49 +124,39 @@ describe(withIosSplashScreen, () => {
 
     expect(config).toBeDefined();
 
-    const infoPlist = await readPlistAsync('/app/ios/ReactNativeProject/Info.plist');
+    const infoPlist = await readPlistAsync('/app/ios/HelloWorld/Info.plist');
     expect(infoPlist.UILaunchStoryboardName).toBe('SplashScreen');
 
     const after = getDirFromFS(vol.toJSON(), path.join(projectRoot, 'ios'));
 
     // Image is defined
-    expect(
-      after['ReactNativeProject/Images.xcassets/SplashScreen.imageset/image.png']
-    ).toBeDefined();
+    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/image.png']).toBeDefined();
 
     // Ensure colors are created
-    expect(
-      after['ReactNativeProject/Images.xcassets/SplashScreenBackground.imageset/image.png']
-    ).toMatch(/PNG/);
-
-    expect(
-      after['ReactNativeProject/Images.xcassets/SplashScreenBackground.imageset/dark_image.png']
-    ).toMatch(/PNG/);
-
-    // Image JSON
-    expect(
-      after['ReactNativeProject/Images.xcassets/SplashScreenBackground.imageset/Contents.json']
-    ).toBeDefined();
-
-    // Ensure images are created
-    expect(after['ReactNativeProject/Images.xcassets/SplashScreen.imageset/image.png']).toMatch(
+    expect(after['HelloWorld/Images.xcassets/SplashScreenBackground.imageset/image.png']).toMatch(
       /PNG/
     );
 
     expect(
-      after['ReactNativeProject/Images.xcassets/SplashScreen.imageset/dark_image.png']
+      after['HelloWorld/Images.xcassets/SplashScreenBackground.imageset/dark_image.png']
     ).toMatch(/PNG/);
 
     // Image JSON
     expect(
-      after['ReactNativeProject/Images.xcassets/SplashScreen.imageset/Contents.json']
+      after['HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json']
     ).toBeDefined();
 
+    // Ensure images are created
+    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/image.png']).toMatch(/PNG/);
+
+    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/dark_image.png']).toMatch(/PNG/);
+
+    // Image JSON
+    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json']).toBeDefined();
+
     // Test the splash screen XML
-    expect(after['ReactNativeProject/SplashScreen.storyboard']).toMatch(
-      /contentMode="scaleAspectFit"/
-    );
-    expect(after['ReactNativeProject/SplashScreen.storyboard']).toMatch(/id="EXPO-SplashScreen"/);
+    expect(after['HelloWorld/SplashScreen.storyboard']).toMatch(/contentMode="scaleAspectFit"/);
+    expect(after['HelloWorld/SplashScreen.storyboard']).toMatch(/id="EXPO-SplashScreen"/);
   });
 });
 

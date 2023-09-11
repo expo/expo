@@ -1,10 +1,10 @@
 import { vol } from 'memfs';
 
-import { getWebOutputPath, readConfigJson } from '../Config';
+import { getConfig, getWebOutputPath } from '../Config';
 
 jest.mock('fs');
 
-describe('getWebOutputPath', () => {
+describe(getWebOutputPath, () => {
   beforeAll(() => {
     const packageJson = JSON.stringify(
       {
@@ -35,13 +35,13 @@ describe('getWebOutputPath', () => {
   afterAll(() => vol.reset());
 
   it('uses the default output build path for web', () => {
-    const { exp } = readConfigJson('/standard');
+    const { exp } = getConfig('/standard');
     const outputPath = getWebOutputPath(exp);
     expect(outputPath).toBe('web-build');
   });
 
   it('uses a custom output build path from the config', () => {
-    const { exp } = readConfigJson('/custom');
+    const { exp } = getConfig('/custom');
     const outputPath = getWebOutputPath(exp);
     expect(outputPath).toBe('defined-in-config');
   });
@@ -53,7 +53,7 @@ describe('getWebOutputPath', () => {
     process.env.WEBPACK_BUILD_OUTPUT_PATH = 'custom-env-path';
 
     for (const project of ['/custom', '/standard']) {
-      const { exp } = readConfigJson(project);
+      const { exp } = getConfig(project);
       const outputPath = getWebOutputPath(exp);
       expect(outputPath).toBe('custom-env-path');
     }

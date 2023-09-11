@@ -4,7 +4,8 @@
 #import <Foundation/Foundation.h>
 #import <EXFacebook/EXFacebook.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
-#import <EXManifests/EXManifestsManifest.h>
+
+@class EXManifestsManifest;
 
 @interface EXScopedFacebook : EXFacebook <EXAppLifecycleListener>
 

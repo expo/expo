@@ -4,6 +4,7 @@ import com.facebook.react.bridge.JavaOnlyArray
 import com.google.common.truth.Truth
 import expo.modules.PromiseMock
 import expo.modules.PromiseState
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.types.AnyType
@@ -18,7 +19,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import org.junit.Before
 import org.junit.Test
-import java.lang.ref.WeakReference
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SuspendFunctionComponentTest {
@@ -28,10 +28,14 @@ class SuspendFunctionComponentTest {
   @Before
   fun setUp() {
     testScope = TestScope()
+    val mockedAppContext = mockk<AppContext>().apply {
+      every { mainQueue } returns testScope
+      every { modulesQueue } returns testScope
+    }
     moduleHolderMock = mockk<ModuleHolder>().apply {
       every { name } returns "AsyncSuspendFunctionTestModule"
       every { module } returns mockk<Module>().apply {
-        every { coroutineScopeDelegate } returns lazy { testScope }
+        every { appContext } returns mockedAppContext
       }
     }
   }
@@ -43,7 +47,7 @@ class SuspendFunctionComponentTest {
     }
     val promiseMock = PromiseMock()
 
-    suspendMethod.call(JavaOnlyArray(), promiseMock)
+    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock)
     testScope.testScheduler.advanceTimeBy(3000)
 
     Truth.assertThat(promiseMock.state).isEqualTo(PromiseState.RESOLVED)
@@ -57,7 +61,7 @@ class SuspendFunctionComponentTest {
     }
     val promiseMock = PromiseMock()
 
-    suspendMethod.call(JavaOnlyArray(), promiseMock)
+    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock)
     testScope.testScheduler.advanceTimeBy(3000)
 
     Truth.assertThat(promiseMock.state).isEqualTo(PromiseState.REJECTED)
@@ -70,7 +74,7 @@ class SuspendFunctionComponentTest {
     }
     val promiseMock = PromiseMock()
 
-    suspendMethod.call(JavaOnlyArray(), promiseMock)
+    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock)
     testScope.testScheduler.advanceTimeBy(1000)
     testScope.cancel()
     Truth.assertThat(promiseMock.state).isEqualTo(PromiseState.NONE)
@@ -95,7 +99,7 @@ class SuspendFunctionComponentTest {
     }
     val promiseMock = PromiseMock()
 
-    suspendMethod.call(JavaOnlyArray(), promiseMock)
+    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock)
     testScope.testScheduler.advanceTimeBy(3500)
 
     Truth.assertThat(promiseMock.state).isEqualTo(PromiseState.RESOLVED)
@@ -122,7 +126,7 @@ class SuspendFunctionComponentTest {
     }
     val promiseMock = PromiseMock()
 
-    suspendMethod.call(JavaOnlyArray(), promiseMock)
+    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock)
     testScope.testScheduler.advanceTimeBy(500)
     testScope.cancel()
     Truth.assertThat(promiseMock.state).isEqualTo(PromiseState.NONE)
@@ -138,8 +142,8 @@ class SuspendFunctionComponentTest {
     val promiseMock1 = PromiseMock()
     val promiseMock2 = PromiseMock()
 
-    suspendMethod.call(JavaOnlyArray(), promiseMock1)
-    suspendMethod.call(JavaOnlyArray(), promiseMock2)
+    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock1)
+    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock2)
 
     testScope.testScheduler.advanceTimeBy(2500)
 
@@ -149,10 +153,10 @@ class SuspendFunctionComponentTest {
 
   @Test
   fun `should not cancel siblings `() {
-    val suspendMethod1 = SuspendFunctionComponent("test1", emptyArray(), WeakReference(moduleHolderMock)) {
+    val suspendMethod1 = SuspendFunctionComponent("test1", emptyArray()) {
       delay(2000)
     }
-    val suspendMethod2 = SuspendFunctionComponent("test2", emptyArray(), WeakReference(moduleHolderMock)) {
+    val suspendMethod2 = SuspendFunctionComponent("test2", emptyArray()) {
       delay(1000)
       throw IllegalStateException()
     }
@@ -160,8 +164,8 @@ class SuspendFunctionComponentTest {
     val promiseMock1 = PromiseMock()
     val promiseMock2 = PromiseMock()
 
-    suspendMethod1.call(JavaOnlyArray(), promiseMock1)
-    suspendMethod2.call(JavaOnlyArray(), promiseMock2)
+    suspendMethod1.call(moduleHolderMock, JavaOnlyArray(), promiseMock1)
+    suspendMethod2.call(moduleHolderMock, JavaOnlyArray(), promiseMock2)
 
     testScope.testScheduler.advanceTimeBy(2500)
 
@@ -173,5 +177,5 @@ class SuspendFunctionComponentTest {
     name: String,
     args: Array<AnyType>,
     block: suspend CoroutineScope.(args: Array<out Any?>) -> Any?
-  ) = SuspendFunctionComponent(name, args, WeakReference(moduleHolderMock), block)
+  ) = SuspendFunctionComponent(name, args, block)
 }

@@ -13,31 +13,41 @@ import com.facebook.react.ReactRootView
 import com.facebook.soloader.SoLoader
 import com.squareup.leakcanary.LeakCanary
 import de.greenrobot.event.EventBus
+import expo.modules.barcodescanner.BarCodeScannerModule
 import expo.modules.barcodescanner.BarCodeScannerPackage
-import expo.modules.camera.CameraPackage
+import expo.modules.blur.BlurModule
+import expo.modules.camera.CameraViewModule
+import expo.modules.clipboard.ClipboardModule
+import expo.modules.constants.ConstantsModule
 import expo.modules.constants.ConstantsPackage
 import expo.modules.core.interfaces.Package
-import expo.modules.device.DevicePackage
+import expo.modules.device.DeviceModule
+import expo.modules.easclient.EASClientModule
 import expo.modules.facedetector.FaceDetectorPackage
+import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
-import expo.modules.font.FontLoaderPackage
-import expo.modules.haptics.HapticsPackage
+import expo.modules.haptics.HapticsModule
+import expo.modules.keepawake.KeepAwakeModule
 import expo.modules.keepawake.KeepAwakePackage
-import expo.modules.medialibrary.MediaLibraryPackage
+import expo.modules.kotlin.ModulesProvider
+import expo.modules.kotlin.modules.Module
+import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.permissions.PermissionsPackage
 import expo.modules.splashscreen.SplashScreenImageResizeMode
+import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.splashscreen.singletons.SplashScreen
 import expo.modules.taskManager.TaskManagerPackage
+import expo.modules.webbrowser.WebBrowserModule
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.RNObject
-import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.utils.ExperienceActivityUtils
+import host.exp.exponent.utils.ExperienceRTLManager
 import host.exp.expoview.BuildConfig
 import org.json.JSONException
 import javax.inject.Inject
@@ -52,7 +62,7 @@ open class HomeActivity : BaseExperienceActivity() {
     NativeModuleDepsProvider.instance.inject(HomeActivity::class.java, this)
 
     sdkVersion = RNObject.UNVERSIONED
-    manifest = exponentManifest.getKernelManifest()
+    manifest = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
     experienceKey = try {
       ExperienceKey.fromManifest(manifest!!)
     } catch (e: JSONException) {
@@ -64,10 +74,12 @@ open class HomeActivity : BaseExperienceActivity() {
     // is disabled in Home as of end of 2020, to fix some issues with dev menu, see:
     // https://github.com/expo/expo/blob/eb9bd274472e646a730fd535a4bcf360039cbd49/android/expoview/src/main/java/versioned/host/exp/exponent/ExponentPackage.java#L200-L207
     // ExperienceActivityUtils.overrideUiMode(mExponentManifest.getKernelManifest(), this);
-    ExperienceActivityUtils.configureStatusBar(exponentManifest.getKernelManifest(), this)
+    ExperienceActivityUtils.configureStatusBar(exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest, this)
 
     EventBus.getDefault().registerSticky(this)
     kernel.startJSKernel(this)
+
+    ExperienceRTLManager.setSupportsRTL(this, false)
 
     SplashScreen.show(this, SplashScreenImageResizeMode.NATIVE, ReactRootView::class.java, true)
 
@@ -84,7 +96,6 @@ open class HomeActivity : BaseExperienceActivity() {
   override fun onResume() {
     super.onResume()
     SoLoader.init(this, false)
-    Analytics.logEvent(Analytics.AnalyticsEvent.HOME_APPEARED)
   }
   //endregion Activity Lifecycle
   /**
@@ -139,23 +150,36 @@ open class HomeActivity : BaseExperienceActivity() {
     kernel.setHasError()
   }
 
-  companion object {
+  companion object : ModulesProvider {
     fun homeExpoPackages(): List<Package> {
       return listOf(
         ConstantsPackage(),
         PermissionsPackage(),
         FileSystemPackage(),
-        FontLoaderPackage(),
         BarCodeScannerPackage(),
         KeepAwakePackage(),
-        CameraPackage(),
         FaceDetectorPackage(),
-        MediaLibraryPackage(),
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
-        DevicePackage(),
-        SplashScreenPackage(),
-        HapticsPackage()
+        SplashScreenPackage()
+      )
+    }
+
+    override fun getModulesList(): List<Class<out Module>> {
+      return listOf(
+        BarCodeScannerModule::class.java,
+        BlurModule::class.java,
+        CameraViewModule::class.java,
+        ClipboardModule::class.java,
+        ConstantsModule::class.java,
+        DeviceModule::class.java,
+        EASClientModule::class.java,
+        FileSystemModule::class.java,
+        HapticsModule::class.java,
+        KeepAwakeModule::class.java,
+        LinearGradientModule::class.java,
+        SplashScreenModule::class.java,
+        WebBrowserModule::class.java,
       )
     }
   }

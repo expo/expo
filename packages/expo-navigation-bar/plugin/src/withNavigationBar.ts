@@ -1,3 +1,8 @@
+// @ts-ignore: uses flow
+import normalizeColor from '@react-native/normalize-color';
+// @ts-ignore
+import Debug from 'debug';
+import { ExpoConfig } from 'expo/config';
 import {
   ConfigPlugin,
   createRunOncePlugin,
@@ -6,12 +11,7 @@ import {
   WarningAggregator,
   withAndroidColors,
   withAndroidStyles,
-} from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
-// @ts-ignore: uses flow
-import normalizeColor from '@react-native/normalize-color';
-// @ts-ignore
-import Debug from 'debug';
+} from 'expo/config-plugins';
 import {
   NavigationBarVisibility,
   NavigationBarBehavior,

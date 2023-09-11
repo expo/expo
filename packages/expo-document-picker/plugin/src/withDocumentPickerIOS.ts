@@ -1,5 +1,5 @@
-import { ConfigPlugin, withEntitlementsPlist } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
+import { ConfigPlugin, withEntitlementsPlist } from 'expo/config-plugins';
 
 export type IosProps = {
   /**

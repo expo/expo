@@ -1,5 +1,6 @@
 import {
   parsePlatformHeader,
+  resolvePlatformFromUserAgentHeader,
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
 } from '../resolvePlatform';
@@ -20,7 +21,7 @@ describe(parsePlatformHeader, () => {
     ).toBe(null);
   });
   it(`parses from 'platform' query parameter`, () => {
-    expect(parsePlatformHeader(asRequest({ url: 'http://localhost:19000/?platform=ios' }))).toBe(
+    expect(parsePlatformHeader(asRequest({ url: 'http://localhost:8081/?platform=ios' }))).toBe(
       'ios'
     );
     // Handles arrays
@@ -52,7 +53,7 @@ describe(parsePlatformHeader, () => {
     expect(
       parsePlatformHeader(
         asRequest({
-          url: 'http://localhost:19000/?platform=ios',
+          url: 'http://localhost:8081/?platform=ios',
           headers: { 'expo-platform': 'android' },
         })
       )
@@ -62,7 +63,7 @@ describe(parsePlatformHeader, () => {
     expect(
       parsePlatformHeader(
         asRequest({
-          url: 'http://localhost:19000/',
+          url: 'http://localhost:8081/',
           headers: {
             'expo-platform': 'android',
             'exponent-platform': 'ios',
@@ -70,6 +71,56 @@ describe(parsePlatformHeader, () => {
         })
       )
     ).toBe('android');
+  });
+});
+
+/**
+ * To update the user-agent values in these tests, turn on EXPO_DEBUG and make a
+ * request to load an interstitial page without the `platform` query param or
+ * 'expo-platform' header
+ */
+describe(resolvePlatformFromUserAgentHeader, () => {
+  it(`resolves ios from user-agent string`, () => {
+    expect(
+      resolvePlatformFromUserAgentHeader(
+        asRequest({
+          url: 'http://localhost:3000',
+          headers: {
+            'user-agent':
+              // user-agent value from iPhone 15.2 simulator
+              'Mozilla/5.0 (iPhone; CPU iPhone OS 15_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.2 Mobile/15E148 Safari/604.1',
+          },
+        })
+      )
+    );
+  });
+  it(`resolves android from user-agent string`, () => {
+    expect(
+      resolvePlatformFromUserAgentHeader(
+        asRequest({
+          url: 'http://localhost:3000',
+          headers: {
+            'user-agent':
+              // user-agent value from a Google Pixel 2
+              'Mozilla/5.0 (Linux; Android 11; Pixel 2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Mobile Safari/537.36',
+          },
+        })
+      )
+    );
+  });
+  it(`returns null from a non-matching user-agent string`, () => {
+    expect(
+      resolvePlatformFromUserAgentHeader(
+        asRequest({
+          url: 'http://localhost:3000',
+          headers: {
+            'user-agent':
+              // user-agent value from Firefox on macOS
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:104.0) Gecko/20100101 Firefox/104.0',
+          },
+        })
+      )
+    );
   });
 });
 
@@ -95,6 +146,6 @@ describe(assertRuntimePlatform, () => {
     }).not.toThrow();
     expect(() => {
       assertRuntimePlatform('not-supported');
-    }).toThrowError('platform must be "android" or "ios". Received: "not-supported"');
+    }).toThrowError('platform must be "android", "ios", or "web". Received: "not-supported"');
   });
 });

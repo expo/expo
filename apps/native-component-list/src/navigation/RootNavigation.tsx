@@ -1,17 +1,18 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Linking from 'expo-linking';
 import * as React from 'react';
 import { Text } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import RedirectScreen from '../screens/RedirectScreen';
-import SearchScreen from '../screens/SearchScreen';
 import MainNavigators from './MainNavigators';
 import MainTabNavigator from './MainTabNavigator';
+import RedirectScreen from '../screens/RedirectScreen';
+import SearchScreen from '../screens/SearchScreen';
 
 const Switch = createStackNavigator();
 
-export const linking = {
+export const linking: LinkingOptions<object> = {
   prefixes: [Linking.createURL('/')],
   config: {
     screens: {
@@ -33,16 +34,18 @@ export const linking = {
 
 export default function RootNavigation() {
   return (
-    <NavigationContainer linking={linking} fallback={<Text>Loading…</Text>}>
-      <Switch.Navigator mode="modal" headerMode="none">
-        <Switch.Screen name="main" component={MainTabNavigator} />
-        <Switch.Screen name="redirect" component={RedirectScreen} />
-        <Switch.Screen
-          name="search"
-          component={SearchScreen}
-          options={{ cardStyle: { backgroundColor: 'transparent' } }}
-        />
-      </Switch.Navigator>
-    </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer linking={linking} fallback={<Text>Loading…</Text>}>
+        <Switch.Navigator screenOptions={{ presentation: 'modal', headerShown: false }}>
+          <Switch.Screen name="main" component={MainTabNavigator} />
+          <Switch.Screen name="redirect" component={RedirectScreen} />
+          <Switch.Screen
+            name="searchNavigator"
+            component={SearchScreen}
+            options={{ cardStyle: { backgroundColor: 'transparent' } }}
+          />
+        </Switch.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }

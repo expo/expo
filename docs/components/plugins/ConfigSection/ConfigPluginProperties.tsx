@@ -1,10 +1,10 @@
-import React, { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
+import ReactMarkdown from 'react-markdown';
 
-import { InlineCode } from '~/components/base/code';
-import { P } from '~/components/base/paragraph';
-import { H3 } from '~/components/plugins/Headings';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { mdComponents } from '~/components/plugins/api/APISectionUtils';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { P, CODE, H3 } from '~/ui/components/Text';
 
 type Props = PropsWithChildren<{
   properties: PluginProperty[];
@@ -26,17 +26,19 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
         {properties.map(property => (
           <Row key={property.name}>
             <Cell fitContent>
-              <InlineCode>{property.name}</InlineCode>
+              <CODE>{property.name}</CODE>
             </Cell>
-            <Cell>{!property.default ? '-' : <InlineCode>{property.default}</InlineCode>}</Cell>
+            <Cell>{!property.default ? '-' : <CODE>{property.default}</CODE>}</Cell>
             <Cell>
               {!!property.platform && (
                 <APISectionPlatformTags
                   prefix="Only for:"
-                  platforms={[{ text: property.platform, tag: 'platform' }]}
+                  platforms={[
+                    { content: [{ kind: 'text', text: property.platform }], tag: 'platform' },
+                  ]}
                 />
               )}
-              {property.description}
+              <ReactMarkdown components={mdComponents}>{property.description}</ReactMarkdown>
             </Cell>
           </Row>
         ))}

@@ -13,14 +13,17 @@ export function resolvePackageManagerOptions(args: any) {
     npm: args['--npm'],
     yarn: args['--yarn'],
     pnpm: args['--pnpm'],
+    bun: args['--bun'],
   };
 
   if (
-    [managers.npm, managers.pnpm, managers.yarn, !!args['--no-install']].filter(Boolean).length > 1
+    [managers.npm, managers.pnpm, managers.yarn, managers.bun, !!args['--no-install']].filter(
+      Boolean
+    ).length > 1
   ) {
     throw new CommandError(
       'BAD_ARGS',
-      'Specify at most one of: --no-install, --npm, --pnpm, --yarn'
+      'Specify at most one of: --no-install, --npm, --pnpm, --yarn, --bun'
     );
   }
 
@@ -61,12 +64,9 @@ export function resolvePlatformOption(
     case 'android':
       return ['android'];
     case 'all':
-      if (loose || process.platform !== 'win32') {
-        return ['android', 'ios'];
-      }
-      return ['android'];
+      return loose || process.platform !== 'win32' ? ['android', 'ios'] : ['android'];
     default:
-      throw new CommandError(`Unsupported platform "${platform}". Options are: ios, android, all`);
+      return [platform as ModPlatform];
   }
 }
 

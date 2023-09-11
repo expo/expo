@@ -4,6 +4,16 @@
 
 #import "EXUpdatesBinding.h"
 
+#import <objc/runtime.h>
+
+#import "ExpoModulesCore-Swift.h"
+#if __has_include(<EXUpdatesInterface/EXUpdatesInterface-Swift.h>)
+#import <EXUpdatesInterface/EXUpdatesInterface-Swift.h>
+#else
+#import "EXUpdatesInterface-Swift.h"
+#endif
+#import "EXUpdates-Swift.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesBinding ()
@@ -14,6 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+/**
+ * Scoped internal module which overrides EXUpdatesService at runtime in Expo Go, and gives
+ * EXUpdatesModule access to properties from the correct instance of EXAppLoaderExpoUpdates (through
+ * EXUpdatesKernelService) as well as the global database object (through
+ * EXUpdatesDatabaseKernelService).
+ */
 @implementation EXUpdatesBinding : EXUpdatesService
 
 - (instancetype)initWithScopeKey:(NSString *)scopeKey updatesKernelService:(id<EXUpdatesBindingDelegate>)updatesKernelService databaseKernelService:(id<EXUpdatesDatabaseBindingDelegate>)databaseKernelService
@@ -26,9 +42,12 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
-- (EXUpdatesConfig *)config
+- (nullable EXUpdatesConfig *)config
 {
-  return [_updatesKernelService configForScopeKey:_scopeKey];
+  EXUpdatesConfig *config = [_updatesKernelService configForScopeKey:_scopeKey];
+  // Ensures the universal UpdatesConfig can cast to versioned UpdatesConfig without exception in Swift
+  object_setClass(config, [EXUpdatesConfig class]);
+  return config;
 }
 
 - (EXUpdatesDatabase *)database
@@ -36,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
   return _databaseKernelService.database;
 }
 
-- (EXUpdatesSelectionPolicy *)selectionPolicy
+- (nullable EXUpdatesSelectionPolicy *)selectionPolicy
 {
   return [_updatesKernelService selectionPolicyForScopeKey:_scopeKey];
 }
@@ -53,7 +72,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable EXUpdatesUpdate *)launchedUpdate
 {
-  return [_updatesKernelService launchedUpdateForScopeKey:_scopeKey];
+  EXUpdatesUpdate *update = [_updatesKernelService launchedUpdateForScopeKey:_scopeKey];
+  // Ensures the universal UpdatesUpdate can cast to versioned UpdatesUpdate without exception in Swift
+  object_setClass(update, [EXUpdatesUpdate class]);
+  return update;
 }
 
 - (nullable NSDictionary *)assetFilesMap
@@ -81,6 +103,12 @@ NS_ASSUME_NONNULL_BEGIN
   return YES;
 }
 
+- (BOOL)canCheckForUpdateAndFetchUpdate
+{
+  // not allowed in managed
+  return NO;
+}
+
 - (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
 {
   return [_updatesKernelService requestRelaunchForScopeKey:_scopeKey withCompletion:completion];
@@ -89,6 +117,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resetSelectionPolicy
 {
   // no-op in managed
+}
+
++ (const NSArray<Protocol *> *)exportedInterfaces {
+  return @[@protocol(EXUpdatesModuleInterface)];
 }
 
 @end

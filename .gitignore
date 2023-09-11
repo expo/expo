@@ -58,12 +58,11 @@ xcuserdata
 /android/**/local.properties
 /android/captures
 /android/expoview/libs/ReactAndroid-temp
+/android/versioned-react-native/packages
 /android/versioned-react-native/ReactAndroid
-/android/versioned-react-native/ReactCommon
-/android/versioned-react-native/codegen
-/android/versioned-react-native/sdks
 ReactAndroid-temp.aar
-/android/ReactAndroid/prebuiltHermes
+/android/prebuiltHermes
+/android/versioned-abis/**/*.aar
 
 # Tools
 jarjar-rules.txt
@@ -82,7 +81,6 @@ jarjar-rules.txt
 # Template files
 /android/app/src/main/AndroidManifest.xml
 /android/app/google-services.json
-/android/expoview/src/main/java/host/exp/exponent/generated/ExponentKeys.java
 /apps/bare-expo/android/app/google-services.json
 /apps/bare-expo/ios/BareExpo/GoogleService-Info.plist
 /ios/Exponent/Generated/EXKeys.h
@@ -95,6 +93,7 @@ templates/**/android/app/build
 templates/**/Pods/**
 templates/**/Podfile.lock
 templates/**/yarn.lock
+templates/**/*.tgz
 
 # EYW template
 /packages/expo-yarn-workspaces/workspace-template/yarn.lock
@@ -132,6 +131,9 @@ shellAppWorkspaces
 .env.production.local
 apps/bare-expo/deploy-url.txt
 
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
+
 # Expo Doc merging
 docs/pages/versions/*/react-native/ADDED_*.md
 docs/pages/versions/*/react-native/REMOVED_*.md
@@ -144,8 +146,10 @@ docs/pages/versions/*/react-native/*.diff
 /packages/**/*.xcframework
 /packages/**/*.spec.json
 /packages/**/Info-generated.plist
+!crsqlite.xcframework
 
 # iOS
 /ios/Pods
 /ios/build
 **/ios/.xcode.env.local
+/ios/versioned-react-native/*/ReactNative/sdks/hermes-engine/destroot

@@ -1,20 +1,20 @@
 import { getExpoHomeDirectory, getUserStatePath } from '@expo/config/build/getUserState';
 import JsonFile from '@expo/json-file';
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 
 type SessionData = {
   sessionSecret: string;
   // These fields are potentially used by Expo CLI.
   userId: string;
   username: string;
-  currentConnection: 'Username-Password-Authentication';
+  currentConnection: 'Username-Password-Authentication' | 'Browser-Flow-Authentication';
 };
 
 export type UserSettingsData = {
   auth?: SessionData | null;
   ignoreBundledBinaries?: string[];
   PATH?: string;
-  /** Last development code signing ID used for `expo run:ios`. */
+  /** Last development code signing ID used for `npx expo run:ios`. */
   developmentCodeSigningId?: string;
   /** Unique user ID which is generated anonymously and can be cleared locally. */
   uuid?: string;
@@ -65,7 +65,7 @@ async function getAnonymousIdentifierAsync(): Promise<string> {
   let id = await settings.getAsync('uuid', null);
 
   if (!id) {
-    id = uuidv4();
+    id = crypto.randomUUID();
     await settings.setAsync('uuid', id);
   }
 

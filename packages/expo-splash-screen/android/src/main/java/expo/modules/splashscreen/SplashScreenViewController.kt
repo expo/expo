@@ -2,6 +2,7 @@ package expo.modules.splashscreen
 
 import android.app.Activity
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import expo.modules.splashscreen.exceptions.NoContentViewException
@@ -17,7 +18,7 @@ open class SplashScreenViewController(
   private val weakActivity = WeakReference(activity)
   private val contentView: ViewGroup = activity.findViewById(android.R.id.content)
     ?: throw NoContentViewException()
-  private val handler = Handler()
+  private val handler = Handler(Looper.getMainLooper())
 
   private var autoHideEnabled = true
   private var splashScreenShown = false
@@ -62,7 +63,7 @@ open class SplashScreenViewController(
       return failureCallback("Cannot hide native splash screen on activity that is already destroyed (application is already closed).")
     }
 
-    activity.runOnUiThread {
+    Handler(activity.mainLooper).post {
       contentView.removeView(splashScreenView)
       autoHideEnabled = true
       splashScreenShown = false

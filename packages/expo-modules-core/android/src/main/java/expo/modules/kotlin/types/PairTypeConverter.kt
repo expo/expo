@@ -5,6 +5,8 @@ import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
+import expo.modules.kotlin.jni.SingleType
 import expo.modules.kotlin.recycle
 import kotlin.reflect.KType
 
@@ -55,5 +57,9 @@ class PairTypeConverter(
     }
   }
 
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_ARRAY)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(
+    SingleType(CppType.READABLE_ARRAY)
+  )
+
+  override fun isTrivial() = false
 }

@@ -1,14 +1,7 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import * as Log from '../log';
-import getDevClientProperties from '../utils/analytics/getDevClientProperties';
-import { logEventAsync } from '../utils/analytics/rudderstackClient';
-import { installExitHooks } from '../utils/exit';
-import { isInteractive } from '../utils/interactive';
-import { profile } from '../utils/profile';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
-import { TypeScriptProjectPrerequisite } from './doctor/typescript/TypeScriptProjectPrerequisite';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
 import { startInterfaceAsync } from './interface/startInterface';
 import { Options, resolvePortsAsync } from './resolveOptions';
@@ -16,17 +9,23 @@ import { BundlerStartOptions } from './server/BundlerDevServer';
 import { DevServerManager, MultiBundlerStartOptions } from './server/DevServerManager';
 import { openPlatformsAsync } from './server/openPlatforms';
 import { getPlatformBundlers, PlatformBundlers } from './server/platformBundlers';
+import * as Log from '../log';
+import getDevClientProperties from '../utils/analytics/getDevClientProperties';
+import { logEventAsync } from '../utils/analytics/rudderstackClient';
+import { installExitHooks } from '../utils/exit';
+import { isInteractive } from '../utils/interactive';
+import { setNodeEnv } from '../utils/nodeEnv';
+import { profile } from '../utils/profile';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
-  { forceManifestType, ...options }: Options,
+  options: Options,
   settings: { webOnly?: boolean },
   platformBundlers: PlatformBundlers
 ): Promise<[BundlerStartOptions, MultiBundlerStartOptions]> {
   const commonOptions: BundlerStartOptions = {
     mode: options.dev ? 'development' : 'production',
     devClient: options.devClient,
-    forceManifestType,
     privateKeyPath: options.privateKeyPath ?? undefined,
     https: options.https,
     maxWorkers: options.maxWorkers,
@@ -69,15 +68,11 @@ export async function startAsync(
 ) {
   Log.log(chalk.gray(`Starting project at ${projectRoot}`));
 
+  setNodeEnv(options.dev ? 'development' : 'production');
+  require('@expo/env').load(projectRoot);
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
   const platformBundlers = getPlatformBundlers(exp);
-
-  if (!options.forceManifestType) {
-    const easUpdatesUrlRegex = /^https:\/\/(staging-)?u\.expo\.dev/;
-    const isEasUpdatesUrl = exp.updates?.url ? easUpdatesUrlRegex.test(exp.updates.url) : false;
-    options.forceManifestType = isEasUpdatesUrl ? 'expo-updates' : 'classic';
-  }
 
   const [defaultOptions, startOptions] = await getMultiBundlerStartOptions(
     projectRoot,
@@ -94,7 +89,15 @@ export async function startAsync(
     await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisite);
   }
 
-  await devServerManager.ensureProjectPrerequisiteAsync(TypeScriptProjectPrerequisite);
+  // Start the server as soon as possible.
+  await profile(devServerManager.startAsync.bind(devServerManager))(startOptions);
+
+  if (!settings.webOnly) {
+    await devServerManager.watchEnvironmentVariables();
+
+    // After the server starts, we can start attempting to bootstrap TypeScript.
+    await devServerManager.bootstrapTypeScriptAsync();
+  }
 
   if (!settings.webOnly && !options.devClient) {
     await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
@@ -105,8 +108,6 @@ export async function startAsync(
   if (options.devClient) {
     await trackAsync(projectRoot, exp);
   }
-
-  await profile(devServerManager.startAsync.bind(devServerManager))(startOptions);
 
   // Open project on devices.
   await profile(openPlatformsAsync)(devServerManager, options);

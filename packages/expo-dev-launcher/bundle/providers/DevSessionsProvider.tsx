@@ -38,8 +38,7 @@ export function useDevSessions() {
   const [isPolling, setIsPolling] = React.useState(false);
 
   const isMounted = useIsMounted();
-  const { userData } = useUser();
-  const isAuthenticated = userData != null;
+  const { isAuthenticated } = useUser();
 
   async function fetchDevSessionsAsync() {
     setIsFetching(true);
@@ -62,7 +61,7 @@ export function useDevSessions() {
         setIsPolling(false);
       }
     },
-    []
+    [isAuthenticated]
   );
 
   return {

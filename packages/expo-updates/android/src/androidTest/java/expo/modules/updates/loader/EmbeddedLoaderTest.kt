@@ -62,7 +62,7 @@ class EmbeddedLoaderTest {
     every { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) } answers { callOriginal() } // test for exception cases
 
     mockCallback = mockk(relaxUnitFun = true)
-    every { mockCallback.onUpdateManifestLoaded(any()) } returns true
+    every { mockCallback.onUpdateResponseLoaded(any()) } returns Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
   }
 
   @Test
@@ -240,7 +240,8 @@ class EmbeddedLoaderTest {
       manifest.updateEntity!!.id,
       manifest.updateEntity!!.commitTime,
       manifest.updateEntity!!.runtimeVersion,
-      manifest.updateEntity!!.scopeKey
+      manifest.updateEntity!!.scopeKey,
+      manifest.updateEntity!!.manifest
     )
     update.status = UpdateStatus.READY
     db.updateDao().insertUpdate(update)
@@ -263,7 +264,8 @@ class EmbeddedLoaderTest {
       manifest.updateEntity!!.id,
       manifest.updateEntity!!.commitTime,
       manifest.updateEntity!!.runtimeVersion,
-      manifest.updateEntity!!.scopeKey
+      manifest.updateEntity!!.scopeKey,
+      manifest.updateEntity!!.manifest
     )
     update.status = UpdateStatus.PENDING
     db.updateDao().insertUpdate(update)

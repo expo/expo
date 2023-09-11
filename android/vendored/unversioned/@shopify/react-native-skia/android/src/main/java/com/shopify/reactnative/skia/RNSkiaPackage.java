@@ -3,7 +3,6 @@
 package com.shopify.reactnative.skia;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import com.facebook.react.ReactPackage;
@@ -19,6 +18,7 @@ public class RNSkiaPackage implements ReactPackage {
 
     @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-        return Arrays.<ViewManager>asList(new RNSkiaViewManager());
+        return Arrays.<ViewManager>asList(new SkiaDrawViewManager(),
+                new SkiaPictureViewManager(), new SkiaDomViewManager());
     }
 }

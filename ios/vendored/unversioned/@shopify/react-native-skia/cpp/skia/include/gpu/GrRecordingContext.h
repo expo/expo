@@ -9,7 +9,8 @@
 #define GrRecordingContext_DEFINED
 
 #include "include/core/SkRefCnt.h"
-#include "include/private/SkTArray.h"
+#include "include/core/SkTypes.h"
+#include "include/private/base/SkTArray.h"
 #include "include/private/gpu/ganesh/GrImageContext.h"
 
 #if GR_GPU_STATS && GR_TEST_UTILS
@@ -27,13 +28,14 @@ class GrProgramInfo;
 class GrProxyProvider;
 class GrRecordingContextPriv;
 class GrSurfaceProxy;
-class GrTextBlobRedrawCoordinator;
 class GrThreadSafeCache;
 class SkArenaAlloc;
+class SkCapabilities;
 class SkJSONWriter;
 
 namespace sktext::gpu {
 class SubRunAllocator;
+class TextBlobRedrawCoordinator;
 }
 
 #if GR_TEST_UTILS
@@ -96,6 +98,8 @@ public:
     SK_API int maxSurfaceSampleCountForColorType(SkColorType colorType) const {
         return INHERITED::maxSurfaceSampleCountForColorType(colorType);
     }
+
+    SK_API sk_sp<const SkCapabilities> skCapabilities() const;
 
     // Provides access to functions that aren't part of the public API.
     GrRecordingContextPriv priv();
@@ -187,10 +191,10 @@ protected:
     // of the programInfos matches the intended use. For example, in DDL-record mode it
     // is known that all the programInfos will have been allocated in an arena with the
     // same lifetime at the DDL itself.
-    virtual void detachProgramData(SkTArray<ProgramData>*) {}
+    virtual void detachProgramData(skia_private::TArray<ProgramData>*) {}
 
-    GrTextBlobRedrawCoordinator* getTextBlobRedrawCoordinator();
-    const GrTextBlobRedrawCoordinator* getTextBlobRedrawCoordinator() const;
+    sktext::gpu::TextBlobRedrawCoordinator* getTextBlobRedrawCoordinator();
+    const sktext::gpu::TextBlobRedrawCoordinator* getTextBlobRedrawCoordinator() const;
 
     GrThreadSafeCache* threadSafeCache();
     const GrThreadSafeCache* threadSafeCache() const;
@@ -220,7 +224,8 @@ protected:
 
 #if GR_TEST_UTILS
         void dump(SkString* out) const;
-        void dumpKeyValuePairs(SkTArray<SkString>* keys, SkTArray<double>* values) const;
+        void dumpKeyValuePairs(skia_private::TArray<SkString>* keys,
+                               skia_private::TArray<double>* values) const;
 #endif
 
     private:
@@ -233,14 +238,16 @@ protected:
 
 #if GR_TEST_UTILS
         void dump(SkString*) const {}
-        void dumpKeyValuePairs(SkTArray<SkString>* keys, SkTArray<double>* values) const {}
+        void dumpKeyValuePairs(skia_private::TArray<SkString>* keys,
+                               skia_private::TArray<double>* values) const {}
 #endif
 #endif // GR_GPU_STATS
     } fStats;
 
 #if GR_GPU_STATS && GR_TEST_UTILS
     struct DMSAAStats {
-        void dumpKeyValuePairs(SkTArray<SkString>* keys, SkTArray<double>* values) const;
+        void dumpKeyValuePairs(skia_private::TArray<SkString>* keys,
+                               skia_private::TArray<double>* values) const;
         void dump() const;
         void merge(const DMSAAStats&);
         int fNumRenderPasses = 0;

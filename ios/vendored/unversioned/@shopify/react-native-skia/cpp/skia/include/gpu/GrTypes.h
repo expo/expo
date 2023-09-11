@@ -8,13 +8,18 @@
 #ifndef GrTypes_DEFINED
 #define GrTypes_DEFINED
 
-#include "include/core/SkMath.h"
 #include "include/core/SkTypes.h"
-#include "include/gpu/GrConfig.h"
+#include "include/private/base/SkTo.h" // IWYU pragma: keep
 
+#include <cstddef>
+#include <cstdint>
 class GrBackendSemaphore;
-class SkImage;
-class SkSurface;
+
+namespace skgpu {
+enum class Mipmapped : bool;
+enum class Protected : bool;
+enum class Renderable : bool;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -36,37 +41,37 @@ private:
  * basic bitfield.
  */
 #define GR_MAKE_BITFIELD_CLASS_OPS(X) \
-    SK_MAYBE_UNUSED constexpr GrTFlagsMask<X> operator~(X a) { \
+    [[maybe_unused]] constexpr GrTFlagsMask<X> operator~(X a) { \
         return GrTFlagsMask<X>(~static_cast<int>(a)); \
     } \
-    SK_MAYBE_UNUSED constexpr X operator|(X a, X b) { \
+    [[maybe_unused]] constexpr X operator|(X a, X b) { \
         return static_cast<X>(static_cast<int>(a) | static_cast<int>(b)); \
     } \
-    SK_MAYBE_UNUSED inline X& operator|=(X& a, X b) { \
+    [[maybe_unused]] inline X& operator|=(X& a, X b) { \
         return (a = a | b); \
     } \
-    SK_MAYBE_UNUSED constexpr bool operator&(X a, X b) { \
+    [[maybe_unused]] constexpr bool operator&(X a, X b) { \
         return SkToBool(static_cast<int>(a) & static_cast<int>(b)); \
     } \
-    SK_MAYBE_UNUSED constexpr GrTFlagsMask<X> operator|(GrTFlagsMask<X> a, GrTFlagsMask<X> b) { \
+    [[maybe_unused]] constexpr GrTFlagsMask<X> operator|(GrTFlagsMask<X> a, GrTFlagsMask<X> b) { \
         return GrTFlagsMask<X>(a.value() | b.value()); \
     } \
-    SK_MAYBE_UNUSED constexpr GrTFlagsMask<X> operator|(GrTFlagsMask<X> a, X b) { \
+    [[maybe_unused]] constexpr GrTFlagsMask<X> operator|(GrTFlagsMask<X> a, X b) { \
         return GrTFlagsMask<X>(a.value() | static_cast<int>(b)); \
     } \
-    SK_MAYBE_UNUSED constexpr GrTFlagsMask<X> operator|(X a, GrTFlagsMask<X> b) { \
+    [[maybe_unused]] constexpr GrTFlagsMask<X> operator|(X a, GrTFlagsMask<X> b) { \
         return GrTFlagsMask<X>(static_cast<int>(a) | b.value()); \
     } \
-    SK_MAYBE_UNUSED constexpr X operator&(GrTFlagsMask<X> a, GrTFlagsMask<X> b) { \
+    [[maybe_unused]] constexpr X operator&(GrTFlagsMask<X> a, GrTFlagsMask<X> b) { \
         return static_cast<X>(a.value() & b.value()); \
     } \
-    SK_MAYBE_UNUSED constexpr X operator&(GrTFlagsMask<X> a, X b) { \
+    [[maybe_unused]] constexpr X operator&(GrTFlagsMask<X> a, X b) { \
         return static_cast<X>(a.value() & static_cast<int>(b)); \
     } \
-    SK_MAYBE_UNUSED constexpr X operator&(X a, GrTFlagsMask<X> b) { \
+    [[maybe_unused]] constexpr X operator&(X a, GrTFlagsMask<X> b) { \
         return static_cast<X>(static_cast<int>(a) & b.value()); \
     } \
-    SK_MAYBE_UNUSED inline X& operator&=(X& a, GrTFlagsMask<X> b) { \
+    [[maybe_unused]] inline X& operator&=(X& a, GrTFlagsMask<X> b) { \
         return (a = a & b); \
     } \
 
@@ -122,28 +127,20 @@ static constexpr GrBackendApi kMock_GrBackend = GrBackendApi::kMock;
 /**
  * Used to say whether a texture has mip levels allocated or not.
  */
-enum class GrMipmapped : bool {
-    kNo = false,
-    kYes = true
-};
-/** Deprecated legacy alias of GrMipmapped. */
-using GrMipMapped = GrMipmapped;
+/** Deprecated legacy alias of skgpu::Mipmapped. */
+using GrMipmapped = skgpu::Mipmapped;
+/** Deprecated legacy alias of skgpu::Mipmapped. */
+using GrMipMapped = skgpu::Mipmapped;
 
 /*
  * Can a GrBackendObject be rendered to?
  */
-enum class GrRenderable : bool {
-    kNo = false,
-    kYes = true
-};
+using GrRenderable = skgpu::Renderable;
 
 /*
  * Used to say whether texture is backed by protected memory.
  */
-enum class GrProtected : bool {
-    kNo = false,
-    kYes = true
-};
+using GrProtected = skgpu::Protected;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -187,6 +184,9 @@ typedef void (*GrGpuFinishedProc)(GrGpuFinishedContext finishedContext);
 
 typedef void* GrGpuSubmittedContext;
 typedef void (*GrGpuSubmittedProc)(GrGpuSubmittedContext submittedContext, bool success);
+
+typedef void* GrDirectContextDestroyedContext;
+typedef void (*GrDirectContextDestroyedProc)(GrDirectContextDestroyedContext destroyedContext);
 
 /**
  * Struct to supply options to flush calls.

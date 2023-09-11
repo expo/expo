@@ -173,8 +173,7 @@ export default function GeofencingScreen() {
           <Text style={styles.headingText}>
             {state.isGeofencing
               ? 'You will be receiving notifications when the device enters or exits from selected regions.'
-              : // tslint:disable-next-line: max-line-length
-                'Click `Start geofencing` to start getting geofencing notifications. Tap on the map to select geofencing regions.'}
+              : 'Click `Start geofencing` to start getting geofencing notifications. Tap on the map to select geofencing regions.'}
           </Text>
         </BlurView>
       </View>
@@ -215,7 +214,6 @@ async function getSavedRegions(): Promise<GeofencingRegion[]> {
 TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }: { data: any }) => {
   const stateString = Location.GeofencingRegionState[region.state].toLowerCase();
 
-  // tslint:disable-next-line no-console
   console.log(`${stateString} region ${region.identifier}`);
 
   await Notifications.scheduleNotificationAsync({

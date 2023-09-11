@@ -1,4 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
+import assert from 'assert';
 import chalk from 'chalk';
 import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
@@ -8,9 +9,17 @@ import path from 'path';
 import semver from 'semver';
 
 import { runReactNativeCodegenAsync } from '../../Codegen';
-import { EXPO_DIR, IOS_DIR, VERSIONED_RN_IOS_DIR } from '../../Constants';
+import {
+  EXPO_DIR,
+  IOS_DIR,
+  REACT_NATIVE_SUBMODULE_DIR,
+  REACT_NATIVE_SUBMODULE_MONOREPO_ROOT,
+  VERSIONED_RN_IOS_DIR,
+} from '../../Constants';
 import logger from '../../Logger';
 import { getListOfPackagesAsync, Package } from '../../Packages';
+import { copyFileWithTransformsAsync } from '../../Transforms';
+import type { FileTransforms, StringTransform } from '../../Transforms.types';
 import { renderExpoKitPodspecAsync } from '../../dynamic-macros/IosMacrosGenerator';
 import { runTransformPipelineAsync } from './transforms';
 import { injectMacros } from './transforms/injectMacros';
@@ -23,6 +32,7 @@ import {
   MODULES_PROVIDER_POD_NAME,
   versionExpoModulesProviderAsync,
 } from './versionExpoModulesProvider';
+import { createVersionedHermesTarball } from './versionHermes';
 import {
   versionVendoredModulesAsync,
   removeVersionedVendoredModulesAsync,
@@ -31,10 +41,9 @@ import {
 export { versionVendoredModulesAsync, versionExpoModulesAsync };
 
 const UNVERSIONED_PLACEHOLDER = '__UNVERSIONED__';
-const RELATIVE_RN_PATH = './react-native-lab/react-native';
+const RELATIVE_RN_PATH = path.relative(EXPO_DIR, REACT_NATIVE_SUBMODULE_DIR);
 
 const EXTERNAL_REACT_ABI_DEPENDENCIES = [
-  'Amplitude',
   'Analytics',
   'AppAuth',
   'FBAudienceNetwork',
@@ -87,7 +96,10 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
     // rename file
     const dirname = path.dirname(filename);
     const basename = path.basename(filename);
-    const targetPath = path.join(dirname, `${versionPrefix}${basename}`);
+    const versionedBasename = !basename.startsWith(versionPrefix)
+      ? `${versionPrefix}${basename}`
+      : basename;
+    const targetPath = path.join(dirname, versionedBasename);
 
     // filter transformRules to patterns which apply to this dirname
     const filteredTransformRules =
@@ -100,7 +112,9 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
     }
 
     // Rename file to be prefixed.
-    await fs.move(filename, targetPath);
+    if (filename !== targetPath) {
+      await fs.move(filename, targetPath);
+    }
 
     // perform transforms that sed can't express
     await _transformFileContentsAsync(targetPath, async (fileString) => {
@@ -109,6 +123,24 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
         /#(include|import)\s+"((?:[^"\/]+\/)?)([^"]+\.h)"/g,
         (match, p1, p2, p3) => {
           return p3.startsWith(versionPrefix) ? match : `#${p1} "${p2}${versionPrefix}${p3}"`;
+        }
+      );
+
+      // [hermes] the transform above will replace
+      // #include "hermes/inspector/detail/Thread.h" -> #include "hermes/ABIX_0_0inspector/detail/Thread.h"
+      // that is not correct.
+      // because hermes podspec doesn't use header_dir, we only use the header basename for versioning.
+      // this transform would replace
+      // #include "hermes/ABIX_0_0inspector/detail/Thread.h" -> #include "hermes/inspector/detail/ABIX_0_0Thread.h"
+      // note that the rule should be placed after the "rename misc imports" transform.
+      fileString = fileString.replace(
+        new RegExp(`^(#import|#include\\s+["<])(${versionPrefix}hermes\\/.+\\.h)([">])$`, 'gm'),
+        (match, prefix, header, suffix) => {
+          const headers = header.split('/').map((part) => part.replace(versionPrefix, ''));
+          assert(headers.length > 1);
+          const lastPart = headers[headers.length - 1];
+          headers[headers.length - 1] = `${versionPrefix}${lastPart}`;
+          return `${prefix}${headers.join('/')}${suffix}`;
         }
       );
 
@@ -190,7 +222,9 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
     'React-Core.podspec',
     'ReactCommon/ReactCommon.podspec',
     'ReactCommon/React-Fabric.podspec',
-    'ReactCommon/React-bridging.podspec',
+    'ReactCommon/React-rncore.podspec',
+    'ReactCommon/hermes/React-hermes.podspec',
+    'sdks/hermes-engine/hermes-engine.podspec',
     'package.json',
   ];
 
@@ -213,15 +247,28 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
   console.log('Running react-native-codegen');
   await runReactNativeCodegenAsync({
     reactNativeRoot: path.join(EXPO_DIR, RELATIVE_RN_PATH),
-    codegenPkgRoot: path.join(EXPO_DIR, RELATIVE_RN_PATH, 'packages', 'react-native-codegen'),
+    codegenPkgRoot: path.join(
+      REACT_NATIVE_SUBMODULE_MONOREPO_ROOT,
+      'packages',
+      'react-native-codegen'
+    ),
     outputDir: path.join(versionedReactNativePath, 'codegen', 'ios'),
-    outputDirBaseName: `${versionName}FBReactNativeSpec`,
-    name: 'FBReactNativeSpec',
+    name: `${versionName}FBReactNativeSpec`,
     type: 'modules',
     platform: 'ios',
     jsSrcsDir: path.join(EXPO_DIR, RELATIVE_RN_PATH, 'Libraries'),
     keepIntermediateSchema: true,
   });
+  console.log(`Removing unused generated FBReactNativeSpecJSI files for 0.72`);
+  await Promise.all(
+    [
+      `${versionName}FBReactNativeSpecJSI.h`,
+      `${versionName}FBReactNativeSpecJSI-generated.cpp`,
+    ].map((file) => {
+      const filePath = path.join(versionedReactNativePath, 'codegen', 'ios', file);
+      return fs.remove(filePath);
+    })
+  );
 
   console.log(
     `Copying cpp libraries from ${chalk.magenta(path.join(RELATIVE_RN_PATH, 'ReactCommon'))} ...`
@@ -236,6 +283,12 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
       path.join(versionedReactNativePath, 'ReactCommon', library.libName)
     );
   }
+  // remove hermes test files in ReactCommon/hermes copied above
+  const hermesTestFiles = await glob('**/{cli,tests,tools}', {
+    cwd: path.join(versionedReactNativePath, 'ReactCommon', 'hermes'),
+    absolute: true,
+  });
+  await Promise.all(hermesTestFiles.map((file) => fs.remove(file)));
 
   await generateReactNativePodScriptAsync(versionedReactNativePath, versionName);
   await generateReactNativePodspecsAsync(versionedReactNativePath, versionName);
@@ -285,25 +338,6 @@ async function generateReactNativePodScriptAsync(
   versionedReactNativePath: string,
   versionName: string
 ): Promise<void> {
-  await fs.copy(
-    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'scripts'),
-    path.join(versionedReactNativePath, 'scripts')
-  );
-
-  const targetAutolinkPath = path.join(versionedReactNativePath, 'scripts', 'react_native_pods.rb');
-  let targetSource = (await fs.readFile(targetAutolinkPath, 'utf8'))
-    .replace('def use_react_native!', `def use_react_native_${versionName}!`)
-    .replace('def use_react_native_codegen!', `def use_react_native_codegen_${versionName}!`)
-    .replace(/(\bpod\s+([^\n]+)\/third-party-podspecs\/([^\n]+))/g, '# $1')
-    .replace(/\bpod\s+'([^\']+)'/g, `pod '${versionName}$1'`)
-    .replace(/(:path => "[^"]+")/g, `$1, :project_name => '${versionName}'`)
-    // Removes duplicated constants
-    .replace("DEFAULT_OTHER_CPLUSPLUSFLAGS = '$(inherited)'", '')
-    .replace(
-      "NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'",
-      ''
-    );
-  // Since `React-Codegen.podspec` is generated during `pod install`, versioning should be done in the pod script.
   const reactCodegenDependencies = [
     'FBReactNativeSpec',
     'React-jsiexecutor',
@@ -311,25 +345,144 @@ async function generateReactNativePodScriptAsync(
     'RCTTypeSafety',
     'React-Core',
     'React-jsi',
+    'React-NativeModulesApple',
     'ReactCommon/turbomodule/core',
+    'ReactCommon/turbomodule/bridging',
     'React-graphics',
     'React-rncore',
+    'hermes-engine',
+    'React-jsc',
   ];
-  const reactCodegenDependenciesRegExp = new RegExp(
-    `["'](${reactCodegenDependencies.join('|')})["']:(\\s*\\[version\\],?)`,
-    'g'
-  );
-  targetSource = targetSource
-    .replace(
-      "$CODEGEN_OUTPUT_DIR = 'build/generated/ios'",
-      `$CODEGEN_OUTPUT_DIR = '${path.relative(IOS_DIR, versionedReactNativePath)}/codegen/ios'`
-    )
-    .replace(/\$(CODEGEN_OUTPUT_DIR)\b/g, `$${versionName}$1`)
-    .replace(/\b(React-Codegen)\b/g, `${versionName}$1`)
-    .replace(/(\$\(PODS_ROOT\)\/Headers\/Private\/)React-/g, `$1${versionName}React-`)
-    .replace(reactCodegenDependenciesRegExp, `"${versionName}$1":$2`);
 
-  await fs.writeFile(targetAutolinkPath, targetSource);
+  const reactNativePodScriptTransforms: StringTransform[] = [
+    {
+      find: /\b(def (use_react_native|use_react_native_codegen|setup_jsc))!/g,
+      replaceWith: `$1_${versionName}!`,
+    },
+    {
+      find: /(\bpod\s+([^\n]+)\/third-party-podspecs\/([^\n]+))/g,
+      replaceWith: '# $1',
+    },
+    {
+      find: /\bpod\s+'([^\']+)'/g,
+      replaceWith: `pod '${versionName}$1'`,
+    },
+    {
+      find: /(:path => "[^"]+")/g,
+      replaceWith: `$1, :project_name => '${versionName}'`,
+    },
+
+    // Removes duplicated constants
+    {
+      find: "DEFAULT_OTHER_CPLUSPLUSFLAGS = '$(inherited)'",
+      replaceWith: '',
+    },
+    {
+      find: "NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'",
+      replaceWith: '',
+    },
+
+    // Since `React-Codegen.podspec` is generated during `pod install`, versioning should be done in the pod script.
+    {
+      find: "$CODEGEN_OUTPUT_DIR = 'build/generated/ios'",
+      replaceWith: `$CODEGEN_OUTPUT_DIR = '${path.relative(
+        IOS_DIR,
+        versionedReactNativePath
+      )}/codegen/ios'`,
+    },
+    {
+      find: /\$(CODEGEN_OUTPUT_DIR)\b/g,
+      replaceWith: `$${versionName}$1`,
+    },
+    { find: /\b(React-Codegen)\b/g, replaceWith: `${versionName}$1` },
+    { find: /(\$\(PODS_ROOT\)\/Headers\/Private\/)React-/g, replaceWith: `$1${versionName}React-` },
+    {
+      find: /^\s+CodegenUtils\.clean_up_build_folder\(.+$/gm,
+      replaceWith: '',
+    },
+    {
+      find: /^\s+build_codegen!\(.+$/gm,
+      replaceWith: '',
+    },
+  ];
+
+  const hermesVersion = await fs.readFile(
+    path.join(REACT_NATIVE_SUBMODULE_DIR, 'sdks', '.hermesversion'),
+    'utf8'
+  );
+  const hermesTransforms: StringTransform[] = [
+    { find: /^\s+prepare_hermes[.\s\S]*abort unless prep_status == 0\n$/gm, replaceWith: '' },
+    {
+      find: new RegExp(
+        `^\\s*pod '${versionName}hermes-engine', :podspec => "#\\{react_native_path\\}\\/sdks\\/hermes-engine\\/hermes-engine.podspec", :tag => hermestag`,
+        'gm'
+      ),
+      replaceWith: `
+    if File.exist?("#{react_native_path}/sdks/hermes-engine/destroot")
+      pod '${versionName}hermes-engine', :path => "#{react_native_path}/sdks/hermes-engine", :project_name => '${versionName}', :tag => '${hermesVersion}'
+    else
+      pod '${versionName}hermes-engine', :podspec => "#{react_native_path}/sdks/hermes-engine/${versionName}hermes-engine.podspec", :project_name => '${versionName}', :tag => '${hermesVersion}'
+    end`,
+    },
+    { find: new RegExp(`\\b${versionName}(libevent)\\b`, 'g'), replaceWith: '$1' },
+  ];
+
+  const commonMethodTransforms = [
+    'get_script_phases_with_codegen_discovery',
+    'get_script_phases_no_codegen_discovery',
+    'get_script_template',
+    'setup_jsc',
+    'setup_hermes',
+    'run_codegen',
+  ];
+
+  const transforms: FileTransforms = {
+    content: [
+      ...reactNativePodScriptTransforms.map((stringTransform) => ({
+        path: 'react_native_pods.rb',
+        ...stringTransform,
+      })),
+      ...hermesTransforms.map((stringTransform) => ({
+        paths: 'jsengine.rb',
+        ...stringTransform,
+      })),
+      {
+        paths: 'codegen_utils.rb',
+        find: new RegExp(`["'](${reactCodegenDependencies.join('|')})["']:(\\s*\\[\\],?)`, 'g'),
+        replaceWith: `"${versionName}$1":$2`,
+      },
+      {
+        paths: [
+          'react_native_pods.rb',
+          'script_phases.rb',
+          'jsengine.rb',
+          'codegen.rb',
+          'codegen_utils.rb',
+        ],
+        find: new RegExp(`\\b(${commonMethodTransforms.join('|')})\\b`, 'g'),
+        replaceWith: `$1_${versionName}`,
+      },
+    ],
+  };
+
+  const reactNativeScriptsDir = path.join(EXPO_DIR, RELATIVE_RN_PATH, 'scripts');
+  const scriptFiles = await glob('**/*', { cwd: reactNativeScriptsDir, nodir: true, dot: true });
+  await Promise.all(
+    scriptFiles.map(async (file) => {
+      await copyFileWithTransformsAsync({
+        sourceFile: file,
+        sourceDirectory: reactNativeScriptsDir,
+        targetDirectory: path.join(versionedReactNativePath, 'scripts'),
+        transforms,
+        keepFileMode: true,
+      });
+    })
+  );
+
+  await fs.copy(
+    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'sdks', 'hermes-engine', 'hermes-utils.rb'),
+    path.join(versionedReactNativePath, 'sdks', 'hermes-engine', 'hermes-utils.rb')
+  );
 }
 
 async function generateReactNativePodspecsAsync(
@@ -457,6 +610,7 @@ async function generateExpoKitPodspecAsync(
     ss.dependency         "${versionedReactPodName}Common"
     ss.dependency         "${versionName}RCTRequired"
     ss.dependency         "${versionName}RCTTypeSafety"
+    ss.dependency         "${versionName}React-hermes"
     ${universalModulesDependencies}
     ${externalDependencies}
     ss.dependency         "${versionName}${MODULES_PROVIDER_POD_NAME}"
@@ -475,27 +629,28 @@ async function generateExpoKitPodspecAsync(
     fileString = fileString.replace(/(?<=s.version = ").*?(?=")/g, versionNumber);
 
     // add Reanimated V2 RCT-Folly dependency
-    fileString = fileString
-      .replace(
-        /(?=Pod::Spec.new do \|s\|)/,
-        `
-folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
-folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
-boost_compiler_flags = '-Wno-documentation'\n\n`
-      )
-      .replace(
-        /(?=  s.subspec "Expo" do \|ss\|)/g,
-        `
+    fileString = fileString.replace(
+      /(?=  s.subspec "Expo" do \|ss\|)/g,
+      `
+  header_search_paths = [
+    '"$(PODS_ROOT)/boost"',
+    '"$(PODS_ROOT)/glog"',
+    '"$(PODS_ROOT)/DoubleConversion"',
+    '"$(PODS_ROOT)/RCT-Folly"',
+    '"$(PODS_ROOT)/Headers/Private/${versionName}React-Core"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}ExpoModulesCore/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}EXManifests/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}EXUpdatesInterface/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}EXUpdates/Swift Compatibility Header"',
+  ]
   s.pod_target_xcconfig    = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
     "USE_HEADERMAP"       => "YES",
-    "HEADER_SEARCH_PATHS" => "\\"$(PODS_TARGET_SRCROOT)/ReactCommon\\" \\"$(PODS_TARGET_SRCROOT)\\" \\"$(PODS_ROOT)/RCT-Folly\\" \\"$(PODS_ROOT)/boost\\" \\"$(PODS_ROOT)/DoubleConversion\\" \\"$(PODS_ROOT)/Headers/Private/React-Core\\" "
+    "DEFINES_MODULE"      => "YES",
+    "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
   }
-  s.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.xcconfig               = {
-    "HEADER_SEARCH_PATHS" => "\\"$(PODS_ROOT)/boost\\" \\"$(PODS_ROOT)/glog\\" \\"$(PODS_ROOT)/RCT-Folly\\" \\"$(PODS_ROOT)/Headers/Private/${versionName}React-Core\\"",
-    "OTHER_CFLAGS"        => "$(inherited)" + " " + folly_flags
-  }\n\n`
-      );
+  \n\n`
+    );
 
     return fileString;
   });
@@ -607,7 +762,15 @@ async function generatePodfileSubscriptsAsync(
 
 require './${relativeReactNativePath}/scripts/react_native_pods.rb'
 
-use_react_native_${versionName}! path: './${relativeReactNativePath}'
+use_react_native_${versionName}!(
+  :path => './${relativeReactNativePath}',
+  :hermes_enabled => true,
+  :fabric_enabled => false,
+)
+setup_jsc_${versionName}!(
+  :react_native_path => './${relativeReactNativePath}',
+  :fabric_enabled => false,
+)
 
 pod '${getVersionedExpoKitPodName(versionName)}',
   :path => './${relativeExpoKitPath}',
@@ -662,10 +825,15 @@ if pod_name.start_with?('${versionedPodNames.React}') || pod_name == '${versione
   target_installation_result.native_target.build_configurations.each do |config|
     config.build_settings['OTHER_CFLAGS'] = %w[
       ${configValues.join(`\n${indent}`)}
+      -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}React-Core/${versionName}React/${versionName}React-Core.modulemap"
+      -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}ExpoModulesCore/${versionName}ExpoModulesCore.modulemap"
+      -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}EXUpdates/${versionName}EXUpdates.modulemap"
+      -fmodule-map-file="\${PODS_ROOT}/Headers/Public/${versionName}EXUpdatesInterface/${versionName}EXUpdatesInterface.modulemap"
     ]
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_DEV=1'
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_ENABLE_INSPECTOR=0'
+    config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_REMOTE_PROFILE=0'
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION=0'
     # Enable Google Maps support
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}HAVE_GOOGLE_MAPS=1'
@@ -857,6 +1025,15 @@ function getCppLibrariesToVersion() {
     {
       libName: 'logger',
     },
+    {
+      libName: 'hermes',
+    },
+    {
+      libName: 'jsc',
+    },
+    {
+      libName: 'butter',
+    },
   ];
 }
 
@@ -946,7 +1123,34 @@ export async function addVersionAsync(versionNumber: string, packages: Package[]
     );
   }
 
+  logger.info('\n💿 Starting to build versioned Hermes tarball');
+  const versionedReactNativeRoot = getVersionedReactNativePath(versionName);
+  const hermesTarball = await createVersionedHermesTarball(versionedReactNativeRoot, versionName, {
+    verbose: true,
+  });
+  await spawnAsync('tar', ['xfz', hermesTarball], {
+    cwd: path.join(versionedReactNativeRoot, 'sdks', 'hermes-engine'),
+  });
+
   console.log('Finished creating new version.');
+
+  console.log(
+    '\n' +
+      chalk.yellow(
+        '################################################################################################################'
+      ) +
+      `\nIf you want to commit the versioned code to git, please also upload the versioned Hermes tarball at ${chalk.cyan(
+        hermesTarball
+      )} to:\n` +
+      chalk.cyan(
+        `https://github.com/expo/react-native/releases/download/sdk-${sdkNumber}.0.0/${versionName}hermes.tar.gz`
+      ) +
+      '\n' +
+      chalk.yellow(
+        '################################################################################################################'
+      ) +
+      '\n'
+  );
 }
 
 async function askToReinstallPodsAsync(): Promise<boolean> {
@@ -1148,12 +1352,17 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       // It must be applied before versioning `namespace facebook` so
       // `using namespace facebook::` don't get versioned twice.
       flags: '-Ei',
-      pattern: `s/(facebook|JS)::/${versionPrefix}\\1::/g`,
+      pattern: `s/(facebook|JS|hermes)::/${versionPrefix}\\1::/g`,
     },
     {
       // Prefixes facebook namespace.
       flags: '-Ei',
-      pattern: `s/namespace (facebook|JS)/namespace ${versionPrefix}\\1/g`,
+      pattern: `s/namespace (facebook|JS|hermes)/namespace ${versionPrefix}\\1/g`,
+    },
+    {
+      // Prefixes for `namespace h = ::facebook::hermes;`
+      flags: '-Ei',
+      pattern: `s/namespace (.+::)(hermes)/namespace \\1${versionPrefix}\\2/g`,
     },
     {
       // For UMReactNativeAdapter
@@ -1185,10 +1394,6 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       pattern: `s/@"${versionPrefix}RCT"/@"RCT"/g`,
     },
     {
-      // Unversion EXGL_CPP imports: `<ABI37_0_0EXGL_CPP/` => `<EXGL_CPP/`
-      pattern: `s/<${versionPrefix}EXGL_CPP\\//<EXGL_CPP\\//g`,
-    },
-    {
       // Unprefix everything that got prefixed twice or more times.
       flags: '-Ei',
       pattern: `s/(${versionPrefix}){2,}/\\1/g`,
@@ -1196,6 +1401,12 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
     {
       flags: '-Ei',
       pattern: `s/(#import |__has_include\\()<(Expo|RNReanimated)/\\1<${versionPrefix}\\2/g`,
+    },
+    {
+      // Unprefix jsc dirname in JSCExecutorFactory.mm
+      paths: 'CxxBridge',
+      flags: '-Ei',
+      pattern: `s/(#import )<${versionPrefix}jsc\\/${versionPrefix}JSCRuntime\.h>/\\1<jsc\\/${versionPrefix}JSCRuntime.h>/g`,
     },
   ];
 }

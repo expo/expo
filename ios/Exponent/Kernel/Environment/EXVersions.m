@@ -4,6 +4,8 @@
 #import "EXVersions.h"
 #import "EXKernelUtil.h"
 
+@import EXManifests;
+
 @interface EXVersions ()
 
 - (void)_loadVersions;
@@ -89,8 +91,8 @@
 
 - (NSString *)_versionForManifest:(EXManifestsManifest * _Nullable)manifest
 {
-  if (manifest && manifest.sdkVersion) {
-    NSString *sdkVersion = manifest.sdkVersion;
+  if (manifest && manifest.expoGoSDKVersion) {
+    NSString *sdkVersion = manifest.expoGoSDKVersion;
     NSArray *sdkVersions = _versions[@"sdkVersions"];
     if (sdkVersion && sdkVersions) {
       for (NSString *availableVersion in sdkVersions) {

@@ -4,6 +4,7 @@ import util from 'util';
 
 import * as Log from '../log';
 import { CommandError } from '../utils/errors';
+import { setNodeEnv } from '../utils/nodeEnv';
 import { profile } from '../utils/profile';
 
 type Options = {
@@ -31,6 +32,21 @@ export function logConfig(config: ExpoConfig | ProjectConfig) {
 }
 
 export async function configAsync(projectRoot: string, options: Options) {
+  const loggingFunctions = {
+    log: console.log,
+    warn: console.warn,
+    error: console.error,
+  };
+  // Disable logging for this command if the user wants to get JSON output.
+  // This will ensure that only the JSON is printed to stdout.
+  if (options.json) {
+    console.log = function () {};
+    console.warn = function () {};
+    console.error = function () {};
+  }
+  setNodeEnv('development');
+  require('@expo/env').load(projectRoot);
+
   if (options.type) {
     assert.match(options.type, /^(public|prebuild|introspect)$/);
   }
@@ -83,6 +99,11 @@ export async function configAsync(projectRoot: string, options: Options) {
     logConfig(configOutput);
     Log.log();
   } else {
-    Log.log(JSON.stringify(configOutput));
+    process.stdout.write(JSON.stringify(configOutput));
+
+    // Re-enable logging functions for testing.
+    console.log = loggingFunctions.log;
+    console.warn = loggingFunctions.warn;
+    console.error = loggingFunctions.error;
   }
 }

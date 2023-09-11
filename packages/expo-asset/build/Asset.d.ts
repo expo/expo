@@ -1,5 +1,5 @@
 import { AssetMetadata } from './AssetSources';
-export declare type AssetDescriptor = {
+export type AssetDescriptor = {
     name: string;
     type: string;
     hash?: string | null;
@@ -7,7 +7,7 @@ export declare type AssetDescriptor = {
     width?: number | null;
     height?: number | null;
 };
-declare type DownloadPromiseCallbacks = {
+type DownloadPromiseCallbacks = {
     resolve: () => void;
     reject: (error: Error) => void;
 };
@@ -42,7 +42,9 @@ export declare class Asset {
      * A URI that points to the asset's data on the remote server. When running the published version
      * of your app, this refers to the location on Expo's asset server where Expo has stored your
      * asset. When running the app from Expo CLI during development, this URI points to Expo CLI's
-     * server running on your computer and the asset is served directly from your computer.
+     * server running on your computer and the asset is served directly from your computer. If you
+     * are not using Classic Updates (legacy), this field should be ignored as we ensure your assets
+     * are on device before before running your application logic.
      */
     uri: string;
     /**

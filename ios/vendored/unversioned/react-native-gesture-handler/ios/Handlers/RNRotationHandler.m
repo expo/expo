@@ -11,7 +11,7 @@
 #if !TARGET_OS_TV
 @interface RNBetterRotationRecognizer : UIRotationGestureRecognizer
 
-- (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 
 @end
 
@@ -34,7 +34,6 @@
   }
   [_gestureHandler handleGesture:recognizer];
 }
-
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
@@ -73,24 +72,22 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-    if ((self = [super initWithTag:tag])) {
-        #if !TARGET_OS_TV
-        _recognizer = [[RNBetterRotationRecognizer alloc] initWithGestureHandler:self];
-        #endif
-    }
-    return self;
+  if ((self = [super initWithTag:tag])) {
+#if !TARGET_OS_TV
+    _recognizer = [[RNBetterRotationRecognizer alloc] initWithGestureHandler:self];
+#endif
+  }
+  return self;
 }
 
 #if !TARGET_OS_TV
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIRotationGestureRecognizer *)recognizer
 {
-    return [RNGestureHandlerEventExtraData
-            forRotation:recognizer.rotation
-            withAnchorPoint:[recognizer locationInView:recognizer.view]
-            withVelocity:recognizer.velocity
-            withNumberOfTouches:recognizer.numberOfTouches];
+  return [RNGestureHandlerEventExtraData forRotation:recognizer.rotation
+                                     withAnchorPoint:[recognizer locationInView:recognizer.view]
+                                        withVelocity:recognizer.velocity
+                                 withNumberOfTouches:recognizer.numberOfTouches];
 }
 #endif
 
 @end
-

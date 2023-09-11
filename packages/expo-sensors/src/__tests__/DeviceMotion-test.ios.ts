@@ -1,12 +1,11 @@
 import DeviceMotion from '../DeviceMotion';
-import ExponentDeviceMotion from '../ExponentDeviceMotion';
 
 afterEach(() => {
   DeviceMotion.removeAllListeners();
 });
 
 it(`adds an "deviceMotionDidUpdate" listener`, () => {
-  const NativeDeviceMotion = ExponentDeviceMotion;
+  const NativeDeviceMotion = DeviceMotion._nativeModule;
 
   const mockListener = jest.fn();
   const subscription = DeviceMotion.addListener(mockListener);

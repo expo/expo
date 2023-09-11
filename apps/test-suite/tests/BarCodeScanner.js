@@ -5,8 +5,8 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import React from 'react';
 import { Platform } from 'react-native';
 
-import * as TestUtils from '../TestUtils';
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
+import * as TestUtils from '../TestUtils';
 
 export const name = 'BarCodeScanner';
 const style = { width: 200, height: 200 };
@@ -95,8 +95,8 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
               height: 210,
             },
           },
-          1,
-          1
+          2,
+          2
         );
         t.expect(result[0].cornerPoints).toBeDefined();
         t.expect(result[0].cornerPoints.length).toEqual(4);
@@ -168,8 +168,8 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
                 height: 141,
               },
             },
-            1,
-            1
+            2,
+            2
           );
           t.expect(result[0].cornerPoints).toBeDefined();
           t.expect(result[0].cornerPoints.length).toEqual(4);

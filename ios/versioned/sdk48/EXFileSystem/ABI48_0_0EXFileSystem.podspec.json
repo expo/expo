@@ -1,0 +1,20 @@
+{
+  "name": "ABI48_0_0EXFileSystem",
+  "version": "15.2.2",
+  "summary": "Provides access to the local file system on the device.",
+  "description": "Provides access to the local file system on the device.",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/filesystem/",
+  "platforms": {
+    "ios": "13.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "static_framework": true,
+  "dependencies": {
+    "ABI48_0_0ExpoModulesCore": []
+  },
+  "source_files": "EXFileSystem/**/*.{h,m}"
+}

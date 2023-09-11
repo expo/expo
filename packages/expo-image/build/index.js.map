@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,SAAS,CAAC;AAC5B,cAAc,eAAe,CAAC;AAC9B,eAAe,KAAK,CAAC","sourcesContent":["import Image from './Image';\nexport * from './Image.types';\nexport default Image;\n"]}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,cAAc,SAAS,CAAC;AACxB,cAAc,eAAe,CAAC;AAC9B,cAAc,mBAAmB,CAAC","sourcesContent":["export * from './Image';\nexport * from './Image.types';\nexport * from './ImageBackground';\n"]}

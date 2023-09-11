@@ -3,18 +3,19 @@
 #if __has_include(<EXUpdates/EXUpdatesService.h>)
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXInternalModule.h>
-#import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesService.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
+
+@class EXUpdatesConfig;
+@class EXUpdatesUpdate;
+@class EXUpdatesSelectionPolicy;
+@class EXUpdatesDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXUpdatesBindingDelegate
 
-- (EXUpdatesConfig *)configForScopeKey:(NSString *)scopeKey;
-- (EXUpdatesSelectionPolicy *)selectionPolicyForScopeKey:(NSString *)scopeKey;
+- (nullable EXUpdatesConfig *)configForScopeKey:(NSString *)scopeKey;
+- (nullable EXUpdatesSelectionPolicy *)selectionPolicyForScopeKey:(NSString *)scopeKey;
 - (nullable EXUpdatesUpdate *)launchedUpdateForScopeKey:(NSString *)scopeKey;
 - (nullable NSDictionary *)assetFilesMapForScopeKey:(NSString *)scopeKey;
 - (BOOL)isUsingEmbeddedAssetsForScopeKey:(NSString *)scopeKey;

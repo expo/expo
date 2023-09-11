@@ -1,5 +1,4 @@
-import { Platform } from 'expo-modules-core';
-import { v4 as uuidv4 } from 'uuid';
+import { Platform, uuidv4 } from 'expo-modules-core';
 
 import {
   ExecutionEnvironment,
@@ -81,7 +80,7 @@ export default {
     return true;
   },
   get expoVersion(): string | null {
-    return this.manifest!.sdkVersion || null;
+    return (this.manifest as any)!.sdkVersion || null;
   },
   get linkingUri(): string {
     if (Platform.isDOMAvailable) {

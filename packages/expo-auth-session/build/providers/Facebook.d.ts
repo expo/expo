@@ -1,11 +1,26 @@
+import { ProviderAuthRequestConfig } from './Provider.types';
 import { AuthRequestConfig } from '../AuthRequest.types';
 import { AuthRequest, AuthRequestPromptOptions, AuthSessionRedirectUriOptions, AuthSessionResult, DiscoveryDocument } from '../AuthSession';
-import { ProviderAuthRequestConfig } from './Provider.types';
 export declare const discovery: DiscoveryDocument;
+/**
+ * @deprecated See [Facebook authentication](/guides/facebook-authentication/).
+ */
 export interface FacebookAuthRequestConfig extends ProviderAuthRequestConfig {
+    /**
+     * Expo web client ID for use in the browser.
+     */
     webClientId?: string;
+    /**
+     * iOS native client ID for use in development builds and bare workflow.
+     */
     iosClientId?: string;
+    /**
+     * Android native client ID for use in development builds and bare workflow.
+     */
     androidClientId?: string;
+    /**
+     * Proxy client ID for use when testing with Expo Go on Android and iOS.
+     */
     expoClientId?: string;
 }
 /**

@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoErrorRecovery.js","sourceRoot":"","sources":["../src/ExpoErrorRecovery.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AACvD,eAAe,kBAAkB,CAAC,iBAAiB,IAAI,EAAE,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\nexport default NativeModulesProxy.ExpoErrorRecovery || {};\n"]}

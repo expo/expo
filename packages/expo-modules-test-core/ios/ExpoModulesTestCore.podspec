@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '12.0'
+  s.platform       = :ios, '13.0'
   s.swift_version  = '5.4'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -21,4 +21,12 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
   s.dependency 'Quick', '~> 5.0.0'
   s.dependency 'Nimble', '~> 9.2.0'
+
+  # react_native_pods.rb will add the ENV['USE_HERMES'],
+  # we could use this to check current js runtime.
+  if ENV['USE_HERMES'] == '0'
+    s.dependency 'React-jsc'
+  else
+    s.dependency 'React-hermes'
+  end
 end

@@ -6,13 +6,103 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Maintain hierarchical order when linking isolated modules ([#24351](https://github.com/expo/expo/pull/24351) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+## 1.5.2 — 2023-09-04
+
+### 🐛 Bug fixes
+
+- Add support for pnpm isolated modules ([#23867](https://github.com/expo/expo/pull/23867) by [@byCedric](https://github.com/byCedric))
+- Resolve cli for isolated modules before running node scripts. ([#23926](https://github.com/expo/expo/pull/23926) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- [Android] Made `generateExpoModulesPackageList` task cacheable. ([#23847](https://github.com/expo/expo/pull/23847) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.5.1 - 2023-08-22
+
+### 🐛 Bug fixes
+
+- Fixed `expo_patch_react_imports!` missing some lines with spaces before or after the imports. ([#23923](https://github.com/expo/expo/pull/23923) by [@liamjones](https://github.com/liamjones))
+
+## 1.5.0 — 2023-06-21
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- Added extra CocoaPods dependencies and Maven repositories from `expo-build-properties`. ([#22785](https://github.com/expo/expo/pull/22785) by [@kudo](https://github.com/kudo))
+
+## 1.4.0 — 2023-06-13
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
+## 1.3.0 — 2023-05-08
+
+### 🎉 New features
+
+- Generating `ExpoModulesProvider.swift` in the build phase script instead of only `pod install`. ([#21108](https://github.com/expo/expo/pull/21108) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.2.0 - 2023-04-13
+
+### 🎉 New features
+
+- Added Gradle plugin autolinking support for Android. ([#21377](https://github.com/expo/expo/pull/21377) by [@kudo](https://github.com/kudo))
+
+## 1.1.2 — 2023-02-14
+
+### 💡 Others
+
+- Suppress node warnings about deprecated exports mapping in 3rd-party dependencies. ([#21222](https://github.com/expo/expo/pull/21222) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.0 — 2023-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.2 — 2023-01-10
+
+### 🐛 Bug fixes
+
+- Replace deprecated `File.exists?` with `File.exist?` to fix usage with `ruby@3.2`. ([#20470](https://github.com/expo/expo/pull/20757) by [@KiwiKilian](https://github.com/kiwikilian))
+
+## 1.0.1 — 2022-12-30
+
+### 🐛 Bug fixes
+
+- Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
+
+## 1.0.0 — 2022-11-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.0 — 2022-10-25
+
+### 🎉 New features
+
+- Automatically use modular headers for pod dependencies when the package has Swift modules to link. ([#19443](https://github.com/expo/expo/pull/19443) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- Bump `@tsconfig/node` to match other Expo Modules packages development setup. ([#19671](https://github.com/expo/expo/pull/19671) by [@Simek](https://github.com/Simek))
+
+## 0.11.0 — 2022-10-06
+
+### 🎉 New features
+
 - Added `includeTests` option to `use_expo_modules!` to include test specs from autolinked modules. ([#18496](https://github.com/expo/expo/pull/18496) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 - Fixed node executable resolution errors on iOS when `pod install` is executed from package.json `scripts`. ([#18580](https://github.com/expo/expo/pull/18580) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 0.10.1 — 2022-07-25
 

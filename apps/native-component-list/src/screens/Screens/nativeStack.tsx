@@ -46,7 +46,6 @@ export class Stack extends Component<StackProps, StackState> {
         key={key}
         stackAnimation="fade"
         stackPresentation="push"
-        active={1}
         onDismissed={() => this.removeByKey(key)}>
         {this.props.renderScreen(key)}
       </Screen>

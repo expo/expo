@@ -27,6 +27,10 @@
   <string name="perm_fine_location">fine location</string>
   <string name="perm_coarse_location">coarse location</string>
   <string name="perm_background_location">background location</string>
+  <string name="perm_read_phone_state">reading phone state</string>
+  <string name="perm_read_media_images">reading images from external storage</string>
+  <string name="perm_read_media_videos">reading videos from external storage</string>
+  <string name="perm_read_media_audio">reading audio files from external storage</string>
   <string name="perm_system_brightness">system brightness</string>
   <string name="default_notification_channel_group">Default</string>
   <string name="persistent_notification_channel_group">Expo</string>
@@ -37,6 +41,7 @@
   <string name="devmenu_element_inspector_unavailable">Element Inspector Unavailable</string>
   <string name="devmenu_stop_remote_debugging">Stop Remote Debugging</string>
   <string name="devmenu_start_remote_debugging">Debug Remote JS</string>
+  <string name="devmenu_open_js_debugger">Open JS Debugger</string>
   <string name="devmenu_remote_debugger_unavailable">Remote Debugger Unavailable</string>
   <string name="devmenu_disable_fast_refresh">Disable Fast Refresh</string>
   <string name="devmenu_enable_fast_refresh">Enable Fast Refresh</string>
@@ -45,6 +50,7 @@
   <string name="devmenu_hide_performance_monitor">Hide Performance Monitor</string>
   <string name="devmenu_show_performance_monitor">Show Performance Monitor</string>
   <string name="devmenu_performance_monitor_unavailable">Performance Monitor Unavailable</string>
+  <string name="ExpoLocalization_supportsRTL" translatable="false">unset</string>
 
   <string-array name="currency_array">
       <item>Currency (optional)</item>

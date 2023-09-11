@@ -1,47 +1,108 @@
 package expo.modules.kotlin.functions
 
 import com.facebook.react.bridge.ReadableArray
+import expo.modules.BuildConfig
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.KPromiseWrapper
+import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.exception.exceptionDecorator
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.types.AnyType
 import kotlinx.coroutines.launch
 
 /**
- * Base class of all function components that require a promise to be called.
+ * Base class of async function components that require a promise to be called.
  */
 abstract class AsyncFunction(
   name: String,
   desiredArgsTypes: Array<AnyType>
-) : AnyFunction(name, desiredArgsTypes) {
-  @Throws(CodedException::class)
-  abstract fun call(args: ReadableArray, promise: Promise)
+) : BaseAsyncFunctionComponent(name, desiredArgsTypes) {
 
-  abstract fun call(args: Array<Any?>, promise: Promise)
+  override fun call(holder: ModuleHolder, args: ReadableArray, promise: Promise) {
+    val queue = when (queue) {
+      Queues.MAIN -> holder.module.appContext.mainQueue
+      Queues.DEFAULT -> null
+    }
 
-  override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
-    jsObject.registerAsyncFunction(
-      name,
-      argsCount,
-      desiredArgsTypes.map { it.getCppRequiredTypes() }.toIntArray()
-    ) { args, bridgePromise ->
-      val kotlinPromise = KPromiseWrapper(bridgePromise as com.facebook.react.bridge.Promise)
-      appContext.modulesQueue.launch {
+    if (queue == null) {
+      callUserImplementation(args, promise)
+    } else {
+      queue.launch {
         try {
           exceptionDecorator({
-            FunctionCallException(jsObject.name, name, it)
+            FunctionCallException(name, holder.name, it)
           }) {
-            call(args, kotlinPromise)
+            callUserImplementation(args, promise)
           }
         } catch (e: CodedException) {
-          kotlinPromise.reject(e)
+          promise.reject(e)
         } catch (e: Throwable) {
-          kotlinPromise.reject(UnexpectedException(e))
+          promise.reject(UnexpectedException(e))
+        }
+      }
+    }
+  }
+
+  @Throws(CodedException::class)
+  internal abstract fun callUserImplementation(args: ReadableArray, promise: Promise)
+
+  internal abstract fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext)
+
+  override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
+    val appContextHolder = appContext.jsiInterop.appContextHolder
+    val moduleName = jsObject.name
+    jsObject.registerAsyncFunction(
+      name,
+      takesOwner,
+      argsCount,
+      desiredArgsTypes.map { it.getCppRequiredTypes() }.toTypedArray()
+    ) { args, promiseImpl ->
+      if (BuildConfig.DEBUG) {
+        promiseImpl.decorateWithDebugInformation(
+          appContextHolder,
+          moduleName,
+          name
+        )
+      }
+
+      val functionBody = {
+        try {
+          exceptionDecorator({
+            FunctionCallException(name, moduleName, it)
+          }) {
+            callUserImplementation(args, promiseImpl, appContext)
+          }
+        } catch (e: Throwable) {
+          // The promise was resolved, so we should rethrow the error.
+          if (promiseImpl.wasSettled) {
+            throw e
+          }
+          promiseImpl.reject(e.toCodedException())
+        }
+      }
+
+      if (queue == Queues.MAIN) {
+        if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+          // On certain occasions, invoking a function on a view could lead to an error
+          // because of the asynchronous communication between the JavaScript and native components.
+          // In such cases, the native view may not have been mounted yet,
+          // but the JavaScript code has already received the future tag of the view.
+          // To avoid this issue, we have decided to temporarily utilize
+          // the UIManagerModule for dispatching functions on the main thread.
+          appContext.dispatchOnMainUsingUIManager(functionBody)
+          return@registerAsyncFunction
+        }
+
+        appContext.mainQueue.launch {
+          functionBody()
+        }
+      } else {
+        appContext.modulesQueue.launch {
+          functionBody()
         }
       }
     }

@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide';
-import React, { useMemo } from 'react';
+import { spacing } from '@expo/styleguide-base';
+import { useMemo } from 'react';
 
 import { HeadingEntry, useHeadingsObserver } from './useHeadingObserver';
 

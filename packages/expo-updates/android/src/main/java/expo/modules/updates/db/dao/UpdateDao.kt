@@ -6,6 +6,9 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import java.util.*
 
+/**
+ * Utility class for accessing and modifying data in SQLite relating to updates.
+ */
 @Dao
 abstract class UpdateDao {
   /**
@@ -30,9 +33,6 @@ abstract class UpdateDao {
 
   @Query("UPDATE updates SET status = :status WHERE id = :id;")
   abstract fun _markUpdateWithStatus(status: UpdateStatus, id: UUID)
-
-  @Update
-  abstract fun _updateUpdate(update: UpdateEntity)
 
   @Query(
     "UPDATE updates SET status = :status WHERE id IN (" +
@@ -75,8 +75,19 @@ abstract class UpdateDao {
 
   fun setUpdateScopeKey(update: UpdateEntity, newScopeKey: String) {
     update.scopeKey = newScopeKey
-    _updateUpdate(update)
+    _setUpdateScopeKeyInternal(update.id, newScopeKey)
   }
+
+  @Query("UPDATE updates SET scope_key = :newScopeKey WHERE id = :id;")
+  abstract fun _setUpdateScopeKeyInternal(id: UUID, newScopeKey: String)
+
+  fun setUpdateCommitTime(update: UpdateEntity, commitTime: Date) {
+    update.commitTime = commitTime
+    _setUpdateCommitTime(update.id, commitTime)
+  }
+
+  @Query("UPDATE updates SET commit_time = :commitTime WHERE id = :id;")
+  abstract fun _setUpdateCommitTime(id: UUID, commitTime: Date)
 
   @Transaction
   open fun markUpdateFinished(update: UpdateEntity, hasSkippedEmbeddedAssets: Boolean) {
@@ -95,19 +106,29 @@ abstract class UpdateDao {
   }
 
   fun markUpdateAccessed(update: UpdateEntity) {
-    update.lastAccessed = Date()
-    _updateUpdate(update)
+    val newLastAccessed = Date()
+    update.lastAccessed = newLastAccessed
+    _markUpdateAccessed(update.id, newLastAccessed)
   }
+
+  @Query("UPDATE updates SET last_accessed = :lastAccessed WHERE id = :id;")
+  abstract fun _markUpdateAccessed(id: UUID, lastAccessed: Date)
 
   fun incrementSuccessfulLaunchCount(update: UpdateEntity) {
     update.successfulLaunchCount++
-    _updateUpdate(update)
+    _incrementSuccessfulLaunchCount(update.id)
   }
+
+  @Query("UPDATE updates SET successful_launch_count = successful_launch_count + 1 WHERE id = :id;")
+  abstract fun _incrementSuccessfulLaunchCount(id: UUID)
 
   fun incrementFailedLaunchCount(update: UpdateEntity) {
     update.failedLaunchCount++
-    _updateUpdate(update)
+    _incrementFailedLaunchCount(update.id)
   }
+
+  @Query("UPDATE updates SET failed_launch_count = failed_launch_count + 1 WHERE id = :id;")
+  abstract fun _incrementFailedLaunchCount(id: UUID)
 
   fun markUpdatesWithMissingAssets(missingAssets: List<AssetEntity>) {
     val missingAssetIds = mutableListOf<Long>()

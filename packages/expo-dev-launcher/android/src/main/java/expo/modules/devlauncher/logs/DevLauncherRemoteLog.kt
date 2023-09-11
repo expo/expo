@@ -1,39 +1,27 @@
 package expo.modules.devlauncher.logs
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.Expose
 
-internal interface DevLauncherRemoteLogBody {
-  val message: String
-  val stack: String?
-
-  override fun toString(): String
-}
-
-internal class DevLauncherSimpleRemoteLogBody(override val message: String) : DevLauncherRemoteLogBody {
-  override val stack: String? = null
-
-  override fun toString(): String = message
-}
-
-internal class DevLauncherExceptionRemoteLogBody(exception: Throwable) : DevLauncherRemoteLogBody {
-  override val message: String = exception.toString()
-  override val stack: String = exception.stackTraceToRemoteLogString()
-
-  override fun toString(): String = Gson().toJson(this)
-}
-
+/**
+ * object format comes from
+ * https://github.com/facebook/react-native/blob/0.69-stable/Libraries/Utilities/HMRClient.js#L119-L134
+ */
 @Suppress("UNUSED")
 internal data class DevLauncherRemoteLog(
-  val logBody: DevLauncherRemoteLogBody,
-  @Expose val level: String = "error"
+  val messages: List<String>,
+  @Expose val level: String = "error",
+  @Expose val mode: String = "BRIDGE"
 ) {
+  /**
+   * `data` is an array whose members are simply concatenated with a space before printing to the
+   * console, so we join messages with a newline and send an array consisting of just a single item.
+   */
   @Expose
-  val includesStack = logBody.stack !== null
+  private val data = arrayOf(messages.joinToString("\n"))
 
   @Expose
-  private val body = logBody.toString()
+  private val type = "log"
 
   fun toJson(): String {
     return GsonBuilder()
@@ -41,16 +29,4 @@ internal data class DevLauncherRemoteLog(
       .create()
       .toJson(this)
   }
-}
-
-internal fun Throwable.stackTraceToRemoteLogString(): String {
-  val baseTrace = stackTrace.joinToString(separator = "\n") {
-    it.toString()
-  }
-
-  cause?.let {
-    return baseTrace + "\nCaused By ${it.stackTraceToRemoteLogString()}"
-  }
-
-  return baseTrace
 }

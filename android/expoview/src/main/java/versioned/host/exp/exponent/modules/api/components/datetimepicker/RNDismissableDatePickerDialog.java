@@ -106,5 +106,9 @@ public class RNDismissableDatePickerDialog extends DatePickerDialog {
         throw new RuntimeException(e);
       }
     }
+    if (display == RNDatePickerDisplay.SPINNER){
+      if(this.getDatePicker() != null)
+        this.getDatePicker().setCalendarViewShown(false);
+    }
   }
 }

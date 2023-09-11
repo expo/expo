@@ -18,12 +18,6 @@ export function reactNativeTransforms(
   return {
     path: [],
     content: [
-      // Update codegen folder to our customized folder
-      {
-        paths: './ReactAndroid/build.gradle',
-        find: /"REACT_GENERATED_SRC_DIR=.+?",/,
-        replaceWith: `"REACT_GENERATED_SRC_DIR=${versionedReactNativeRoot}",`,
-      },
       // Add generated java to sourceSets
       {
         paths: './ReactAndroid/build.gradle',
@@ -43,8 +37,13 @@ export function reactNativeTransforms(
       },
       {
         paths: './ReactAndroid/build.gradle',
-        find: /(\bpreBuild\.dependsOn\("generateCodegenArtifactsFromSchema"\))/,
+        find: /(\b(preBuild\.)?dependsOn\("generateCodegenArtifactsFromSchema"\))/g,
         replaceWith: '// $1',
+      },
+      {
+        paths: './ReactAndroid/build.gradle',
+        find: 'new File(buildDir, "generated/source/codegen/jni/").absolutePath',
+        replaceWith: '"../codegen/jni/"',
       },
       {
         paths: './ReactAndroid/build.gradle',
@@ -62,8 +61,27 @@ export function reactNativeTransforms(
             p3,
           ].join(''),
       },
+      {
+        paths: './ReactAndroid/build.gradle',
+        find: /(    prefab\s*\{)([\s\S]*?)(^    \}\s)/gm,
+        replaceWith: (_, p1, p2, p3) =>
+          [
+            p1,
+            transformString(
+              p2,
+              JniLibNames.map((lib: string) => ({
+                find: new RegExp(`\\b${escapeRegExp(lib)}\\s+?\\{`, 'g'),
+                replaceWith: `${lib}_${abiVersion} {`,
+              }))
+            ),
+            p3,
+          ].join(''),
+      },
       ...packagesToRename.map((pkg: string) => ({
-        paths: ['./ReactCommon/**/*.{java,h,cpp}', './ReactAndroid/src/main/**/*.{java,h,cpp}'],
+        paths: [
+          './ReactCommon/**/*.{java,kt,h,cpp}',
+          './ReactAndroid/src/main/**/*.{java,kt,h,cpp}',
+        ],
         find: new RegExp(`${escapeRegExp(pathFromPkg(pkg))}`, 'g'),
         replaceWith: `${abiVersion}/${pathFromPkg(pkg)}`,
       })),
@@ -84,10 +102,46 @@ export function reactNativeTransforms(
         replaceWith: `targets "libhermes_${abiVersion}"`,
       },
       ...[...JniLibNames, 'fb', 'fbjni'].map((libName) => ({
-        paths: '*.java',
+        paths: '*.{java,kt}',
         find: new RegExp(`SoLoader.loadLibrary\\\("${escapeRegExp(libName)}"\\\)`),
         replaceWith: `SoLoader.loadLibrary("${libName}_${abiVersion}")`,
       })),
+      // add HERMES_ENABLE_DEBUGGER for libhermes-executor-release.so
+      {
+        paths: './ReactAndroid/hermes-engine/build.gradle',
+        find: /-DHERMES_ENABLE_DEBUGGER=False/,
+        replaceWith: '-DHERMES_ENABLE_DEBUGGER=True',
+      },
+      {
+        paths: './ReactAndroid/hermes-engine/build.gradle',
+        find: /\b((configureBuildForHermes|prepareHeadersForPrefab)\.dependsOn\(unzipHermes\))/g,
+        replaceWith: '// $1',
+      },
+      {
+        paths: './ReactCommon/hermes/executor/CMakeLists.txt',
+        find: /\bdebug (hermes-inspector_)/g,
+        replaceWith: '$1',
+      },
+      {
+        paths: [
+          './ReactCommon/hermes/executor/CMakeLists.txt',
+          './ReactCommon/hermes/inspector/CMakeLists.txt',
+        ],
+        find: /if\(\${CMAKE_BUILD_TYPE} MATCHES Debug\)(\n\s*target_compile_options)/g,
+        replaceWith: 'if(true)$1',
+      },
+      {
+        paths: './ReactAndroid/src/main/jni/react/hermes/reactexecutor/CMakeLists.txt',
+        find: '$<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>',
+        replaceWith: '-DHERMES_ENABLE_DEBUGGER=1',
+      },
+      {
+        // workaround build dependency issue to explicitly link hermes_executor_common to hermes_executor
+        // originally, it's hermes_inspector -> hermes_executor_common -> hermes_executor
+        paths: './ReactAndroid/src/main/jni/react/hermes/reactexecutor/CMakeLists.txt',
+        find: /^(\s+hermes_executor_common.*)$/m,
+        replaceWith: `$1\n        hermes_inspector_${abiVersion}`,
+      },
     ],
   };
 }
@@ -97,7 +151,7 @@ export function codegenTransforms(abiVersion: string): FileTransforms {
     path: [],
     content: [
       ...packagesToRename.map((pkg: string) => ({
-        paths: ['**/*.{java,h,cpp}'],
+        paths: ['**/*.{java,kt,h,cpp}'],
         find: new RegExp(`${escapeRegExp(pathFromPkg(pkg))}`, 'g'),
         replaceWith: `${abiVersion}/${pathFromPkg(pkg)}`,
       })),
@@ -120,7 +174,7 @@ function reactNativeCmakeTransforms(abiVersion: string): FileTransform[] {
     })),
     {
       paths: 'CMakeLists.txt',
-      find: 'add_react_android_subdir(build/generated/source/codegen/jni)',
+      find: 'add_react_build_subdir(generated/source/codegen/jni)',
       replaceWith: 'add_react_android_subdir(../codegen/jni)',
     },
     {

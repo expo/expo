@@ -9,12 +9,10 @@ var _exportNames = {
 Object.defineProperty(exports, "getAccountUsername", {
   enumerable: true,
   get: function () {
-    return _getFullName().getAccountUsername;
+    return _getAccountUsername().getAccountUsername;
   }
 });
-
 var _Config = require("./Config");
-
 Object.keys(_Config).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
@@ -26,9 +24,7 @@ Object.keys(_Config).forEach(function (key) {
     }
   });
 });
-
 var _Config2 = require("./Config.types");
-
 Object.keys(_Config2).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
@@ -40,23 +36,19 @@ Object.keys(_Config2).forEach(function (key) {
     }
   });
 });
-
-var _Project = require("./Project");
-
-Object.keys(_Project).forEach(function (key) {
+var _getExpoSDKVersion = require("./getExpoSDKVersion");
+Object.keys(_getExpoSDKVersion).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
-  if (key in exports && exports[key] === _Project[key]) return;
+  if (key in exports && exports[key] === _getExpoSDKVersion[key]) return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function () {
-      return _Project[key];
+      return _getExpoSDKVersion[key];
     }
   });
 });
-
 var _Errors = require("./Errors");
-
 Object.keys(_Errors).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
@@ -68,14 +60,11 @@ Object.keys(_Errors).forEach(function (key) {
     }
   });
 });
-
-function _getFullName() {
-  const data = require("./getFullName");
-
-  _getFullName = function () {
+function _getAccountUsername() {
+  const data = require("./getAccountUsername");
+  _getAccountUsername = function () {
     return data;
   };
-
   return data;
 }
 //# sourceMappingURL=index.js.map

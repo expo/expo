@@ -2,7 +2,9 @@
 
 # iOS
 
-EXPO_BUNDLE_APP=1 npx react-native bundle \
+export NODE_ENV=production
+
+EXPO_BUNDLE_APP=1 npx expo export:embed \
     --platform ios \
     --dev false \
     --entry-file index.js \
@@ -15,13 +17,10 @@ rm ios/assets/__node_modules/css-tree/package.json
 
 # Android
 
-EXPO_BUNDLE_APP=1 npx react-native bundle \
+EXPO_BUNDLE_APP=1 npx expo export:embed \
     --platform android \
     --dev false \
     --entry-file index.js \
     --bundle-output android/src/debug/assets/expo_dev_launcher_android.bundle \
     --assets-dest android/src/debug/res \
     --reset-cache
-
-
-

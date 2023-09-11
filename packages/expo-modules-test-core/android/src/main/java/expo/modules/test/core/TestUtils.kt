@@ -1,5 +1,6 @@
 package expo.modules.test.core
 
+import android.os.Bundle
 import expo.modules.kotlin.exception.CodedException
 import org.junit.Assert
 import java.lang.reflect.UndeclaredThrowableException
@@ -44,4 +45,35 @@ inline fun assertCodedException(exception: Throwable?, block: (exception: CodedE
   }
   assertCodedException(exception)
   block(exception)
+}
+
+fun assertResolved(promise: PromiseMock) {
+  Assert.assertEquals(PromiseState.RESOLVED, promise.state)
+}
+
+fun assertRejected(promise: PromiseMock) {
+  Assert.assertEquals(PromiseState.REJECTED, promise.state)
+}
+
+fun promiseResolved(promise: PromiseMock, with: (Bundle) -> Unit) {
+  assertResolved(promise)
+  with(promise.resolveValue as Bundle)
+}
+
+inline fun <reified T> promiseResolvedWithType(promise: PromiseMock, with: (T) -> Unit) {
+  assertResolved(promise)
+  Assert.assertTrue("Promise resolved with incorrect type", promise.resolveValue is T)
+  with(promise.resolveValue as T)
+}
+
+fun promiseRejected(promise: PromiseMock, with: (PromiseMock) -> Unit) {
+  assertRejected(promise)
+  with(promise)
+}
+
+fun assertRejectedWithCode(promise: PromiseMock, rejectCode: String) {
+  promiseRejected(promise) {
+    Assert.assertTrue("Promise has no rejection code", it.rejectCodeSet)
+    Assert.assertEquals(it.rejectCode, rejectCode)
+  }
 }

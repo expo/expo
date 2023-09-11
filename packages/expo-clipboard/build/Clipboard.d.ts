@@ -1,6 +1,7 @@
 import { Subscription } from 'expo-modules-core';
 import { ClipboardImage, ContentType, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
-declare type ClipboardEvent = {
+import { ClipboardPasteButton } from './ClipboardPasteButton';
+type ClipboardEvent = {
     /**
      * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
      */
@@ -53,6 +54,10 @@ export declare function hasStringAsync(): Promise<boolean>;
 export declare function getUrlAsync(): Promise<string | null>;
 /**
  * Sets a URL in the user's clipboard.
+ *
+ * This function behaves the same as [`setStringAsync()`](#setstringasynctext-options), except that
+ * it sets the clipboard content type to be a URL. It lets your app or other apps know that the
+ * clipboard contains a URL and behave accordingly.
  *
  * @param url The URL to save to the clipboard.
  * @platform ios
@@ -140,5 +145,14 @@ export declare function addClipboardListener(listener: (event: ClipboardEvent) =
  * ```
  */
 export declare function removeClipboardListener(subscription: Subscription): void;
+/**
+ * Property that determines if the `ClipboardPasteButton` is available.
+ *
+ * This requires the users device to be using at least iOS 16.
+ *
+ * `true` if the component is available, and `false` otherwise.
+ */
+export declare const isPasteButtonAvailable: boolean;
 export * from './Clipboard.types';
+export { ClipboardPasteButton };
 //# sourceMappingURL=Clipboard.d.ts.map

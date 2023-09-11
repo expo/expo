@@ -23,6 +23,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.api.viewshot.ViewShot.Formats;
@@ -34,6 +36,8 @@ public class RNViewShotModule extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
     private final ScopedContext mScopedContext;
+
+    private final Executor executor = Executors.newCachedThreadPool();
 
     public RNViewShotModule(ReactApplicationContext reactContext, ScopedContext scopedContext) {
         super(reactContext);
@@ -84,11 +88,12 @@ public class RNViewShotModule extends ReactContextBaseJavaModule {
                 : Formats.PNG;
 
         final double quality = options.getDouble("quality");
-        final Integer scaleWidth = options.hasKey("width") ? (int) (dm.density * options.getDouble("width")) : null;
-        final Integer scaleHeight = options.hasKey("height") ? (int) (dm.density * options.getDouble("height")) : null;
+        final Integer scaleWidth = options.hasKey("width") ? options.getInt("width") : null;
+        final Integer scaleHeight = options.hasKey("height") ? options.getInt("height") : null;
         final String resultStreamFormat = options.getString("result");
         final String fileName = options.hasKey("fileName") ? options.getString("fileName") : null;
         final Boolean snapshotContentContainer = options.getBoolean("snapshotContentContainer");
+        final boolean handleGLSurfaceView = options.hasKey("handleGLSurfaceViewOnAndroid") && options.getBoolean("handleGLSurfaceViewOnAndroid");
 
         try {
             File outputFile = null;
@@ -102,7 +107,7 @@ public class RNViewShotModule extends ReactContextBaseJavaModule {
             uiManager.addUIBlock(new ViewShot(
                     tag, extension, imageFormat, quality,
                     scaleWidth, scaleHeight, outputFile, resultStreamFormat,
-                    snapshotContentContainer, reactContext, activity, promise)
+                    snapshotContentContainer, reactContext, activity, handleGLSurfaceView, promise, executor)
             );
         } catch (final Throwable ex) {
             Log.e(RNVIEW_SHOT, "Failed to snapshot view tag " + tag, ex);

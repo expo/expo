@@ -42,15 +42,17 @@ describe('iOS Updates config', () => {
               alg: 'rsa-v1_5-sha256',
               keyid: 'test',
             },
+            requestHeaders: {
+              'expo-channel-name': 'test',
+              testheader: 'test',
+            },
           },
         },
         {} as any,
-        'user',
         '0.11.0'
       )
     ).toMatchObject({
       EXUpdatesEnabled: false,
-      EXUpdatesURL: 'https://exp.host/@owner/my-app',
       EXUpdatesCheckOnLaunch: 'ERROR_RECOVERY_ONLY',
       EXUpdatesLaunchWaitMs: 2000,
       EXUpdatesSDKVersion: '37.0.0',
@@ -59,6 +61,7 @@ describe('iOS Updates config', () => {
         'utf-8'
       ),
       EXUpdatesCodeSigningMetadata: { alg: 'rsa-v1_5-sha256', keyid: 'test' },
+      EXUpdatesRequestHeaders: { 'expo-channel-name': 'test', testheader: 'test' },
     });
   });
 

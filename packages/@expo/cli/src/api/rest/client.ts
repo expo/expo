@@ -3,17 +3,22 @@ import { JSONValue } from '@expo/json-file';
 import fetchInstance from 'node-fetch';
 import path from 'path';
 
-import { env } from '../../utils/env';
-import { getExpoApiBaseUrl } from '../endpoint';
-import UserSettings from '../user/UserSettings';
 import { FileSystemCache } from './cache/FileSystemCache';
 import { wrapFetchWithCache } from './cache/wrapFetchWithCache';
 import { FetchLike } from './client.types';
 import { wrapFetchWithBaseUrl } from './wrapFetchWithBaseUrl';
 import { wrapFetchWithOffline } from './wrapFetchWithOffline';
+import { wrapFetchWithProgress } from './wrapFetchWithProgress';
+import { wrapFetchWithProxy } from './wrapFetchWithProxy';
+import { env } from '../../utils/env';
+import { CommandError } from '../../utils/errors';
+import { getExpoApiBaseUrl } from '../endpoint';
+import { disableNetwork } from '../settings';
+import UserSettings from '../user/UserSettings';
 
 export class ApiV2Error extends Error {
   readonly name = 'ApiV2Error';
+  readonly code: string;
   readonly expoApiV2ErrorCode: string;
   readonly expoApiV2ErrorDetails?: JSONValue;
   readonly expoApiV2ErrorServerStack?: string;
@@ -27,6 +32,7 @@ export class ApiV2Error extends Error {
     metadata?: object;
   }) {
     super(response.message);
+    this.code = response.code;
     this.expoApiV2ErrorCode = response.code;
     this.expoApiV2ErrorDetails = response.details;
     this.expoApiV2ErrorServerStack = response.stack;
@@ -63,27 +69,41 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
       }
     }
 
-    const results = await fetchFunction(url, {
-      ...options,
-      headers: resolvedHeaders,
-    });
+    try {
+      const results = await fetchFunction(url, {
+        ...options,
+        headers: resolvedHeaders,
+      });
 
-    if (results.status >= 400 && results.status < 500) {
-      const body = await results.text();
-      try {
-        const data = JSON.parse(body);
-        if (data?.errors?.length) {
-          throw new ApiV2Error(data.errors[0]);
+      if (results.status >= 400 && results.status < 500) {
+        const body = await results.text();
+        try {
+          const data = JSON.parse(body);
+          if (data?.errors?.length) {
+            throw new ApiV2Error(data.errors[0]);
+          }
+        } catch (error: any) {
+          // Server returned non-json response.
+          if (error.message.includes('in JSON at position')) {
+            throw new UnexpectedServerError(body);
+          }
+          throw error;
         }
-      } catch (error: any) {
-        // Server returned non-json response.
-        if (error.message.includes('in JSON at position')) {
-          throw new UnexpectedServerError(body);
-        }
-        throw error;
       }
+      return results;
+    } catch (error: any) {
+      // Specifically, when running `npx expo start` and the wifi is connected but not really (public wifi, airplanes, etc).
+      if ('code' in error && error.code === 'ENOTFOUND') {
+        disableNetwork();
+
+        throw new CommandError(
+          'OFFLINE',
+          'Network connection is unreliable. Try again with the environment variable `EXPO_OFFLINE=1` to skip network requests.'
+        );
+      }
+
+      throw error;
     }
-    return results;
   };
 }
 
@@ -91,14 +111,16 @@ const fetchWithOffline = wrapFetchWithOffline(fetchInstance);
 
 const fetchWithBaseUrl = wrapFetchWithBaseUrl(fetchWithOffline, getExpoApiBaseUrl() + '/v2/');
 
-const fetchWithCredentials = wrapFetchWithCredentials(fetchWithBaseUrl);
+const fetchWithProxy = wrapFetchWithProxy(fetchWithBaseUrl);
+
+const fetchWithCredentials = wrapFetchWithProgress(wrapFetchWithCredentials(fetchWithProxy));
 
 /**
  * Create an instance of the fully qualified fetch command (auto authentication and api) but with caching in the '~/.expo' directory.
  * Caching is disabled automatically if the EXPO_NO_CACHE or EXPO_BETA environment variables are enabled.
  */
 export function createCachedFetch({
-  fetch,
+  fetch = fetchWithCredentials,
   cacheDirectory,
   ttl,
   skipCache,
@@ -110,11 +132,11 @@ export function createCachedFetch({
 }): FetchLike {
   // Disable all caching in EXPO_BETA.
   if (skipCache || env.EXPO_BETA || env.EXPO_NO_CACHE) {
-    return fetch ?? fetchWithCredentials;
+    return fetch;
   }
 
   return wrapFetchWithCache(
-    fetch ?? fetchWithCredentials,
+    fetch,
     new FileSystemCache({
       cacheDirectory: path.join(getExpoHomeDirectory(), cacheDirectory),
       ttl,
@@ -123,4 +145,4 @@ export function createCachedFetch({
 }
 
 /** Instance of fetch with automatic base URL pointing to the Expo API, user credential injection, and API error handling. Caching not included.  */
-export const fetchAsync = wrapFetchWithCredentials(fetchWithBaseUrl);
+export const fetchAsync = wrapFetchWithProgress(wrapFetchWithCredentials(fetchWithProxy));

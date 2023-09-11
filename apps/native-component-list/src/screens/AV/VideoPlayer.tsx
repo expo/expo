@@ -5,9 +5,9 @@ import { AVPlaybackStatus, ResizeMode, Video, VideoFullscreenUpdateEvent } from 
 import React from 'react';
 import { Platform, StyleProp, Text, View, ViewStyle } from 'react-native';
 
-import { Colors } from '../../constants';
 import { AndroidImplementationSelector } from './AndroidImplementationSelector';
 import Player from './Player';
+import { Colors } from '../../constants';
 
 type VideoPlayerSource =
   | number
@@ -86,7 +86,9 @@ export default function VideoPlayer(props: {
     <View>
       <AndroidImplementationSelector
         onToggle={toggleAndroidImplementation}
-        title={`Use ${isMediaPlayerImplementation() ? 'SimpleExoPlayer' : 'MediaPlayer'}`}
+        title={`Current player: ${
+          isMediaPlayerImplementation() ? 'MediaPlayer' : 'SimpleExoPlayer'
+        }`}
         toggled={isMediaPlayerImplementation()}
       />
 

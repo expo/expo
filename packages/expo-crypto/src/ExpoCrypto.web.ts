@@ -1,6 +1,8 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError, TypedArray } from 'expo-modules-core';
 
 import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions } from './Crypto.types';
+
+const getCrypto = (): Crypto => window.crypto ?? (window as any).msCrypto;
 
 export default {
   get name(): string {
@@ -26,6 +28,23 @@ export default {
       return btoa(String.fromCharCode(...new Uint8Array(hashedData)));
     }
     throw new CodedError('ERR_CRYPTO_DIGEST', 'Invalid encoding type provided.');
+  },
+  getRandomBytes(length: number): Uint8Array {
+    const array = new Uint8Array(length);
+    return getCrypto().getRandomValues(array);
+  },
+  async getRandomBytesAsync(length: number): Promise<Uint8Array> {
+    const array = new Uint8Array(length);
+    return getCrypto().getRandomValues(array);
+  },
+  getRandomValues(typedArray: TypedArray) {
+    return getCrypto().getRandomValues(typedArray);
+  },
+  randomUUID() {
+    return getCrypto().randomUUID();
+  },
+  digestAsync(algorithm: AlgorithmIdentifier, data: ArrayBuffer): Promise<ArrayBuffer> {
+    return getCrypto().subtle.digest(algorithm, data);
   },
 };
 

@@ -1,4 +1,5 @@
 /* eslint-env jest */
+import { ExecaError } from 'execa';
 import fs from 'fs/promises';
 
 import { execute, getLoadedModulesAsync, projectRoot } from './utils';
@@ -55,7 +56,8 @@ it('throws on invalid project root', async () => {
   try {
     await execute('very---invalid', 'login');
   } catch (e) {
-    expect(e.stderr).toMatch(/Invalid project root: \//);
+    const error = e as ExecaError;
+    expect(error.stderr).toMatch(/Invalid project root: \//);
   }
 });
 
@@ -64,8 +66,9 @@ it('runs `npx expo login` and throws due to CI', async () => {
   try {
     console.log(await execute('login'));
   } catch (e) {
-    expect(e.stderr).toMatch(/Input is required/);
-    expect(e.stderr).toMatch(/Use the EXPO_TOKEN environment variable to authenticate in CI/);
+    const error = e as ExecaError;
+    expect(error.stderr).toMatch(/Input is required/);
+    expect(error.stderr).toMatch(/Use the EXPO_TOKEN environment variable to authenticate in CI/);
   }
 });
 
@@ -74,6 +77,7 @@ it('runs `npx expo login` and throws due to invalid credentials', async () => {
   try {
     console.log(await execute('login', '--username', 'bacon', '--password', 'invalid'));
   } catch (e) {
-    expect(e.stderr).toMatch(/Your username, email, or password was incorrect/);
+    const error = e as ExecaError;
+    expect(error.stderr).toMatch(/Your username, email, or password was incorrect/);
   }
 });

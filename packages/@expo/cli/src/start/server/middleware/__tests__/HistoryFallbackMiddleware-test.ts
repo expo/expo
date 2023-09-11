@@ -10,7 +10,7 @@ it(`redirects to provided middleware on web with query parameter`, () => {
   const next = jest.fn();
   middleware(
     asRequest({
-      url: 'https://localhost:19000/foobar?platform=web',
+      url: 'https://localhost:8081/foobar?platform=web',
       headers: {},
     }),
     {} as any,
@@ -20,7 +20,7 @@ it(`redirects to provided middleware on web with query parameter`, () => {
   expect(indexMiddleware).toBeCalledTimes(1);
   expect(indexMiddleware).toBeCalledWith(
     expect.objectContaining({
-      url: 'https://localhost:19000/foobar?platform=web',
+      url: 'https://localhost:8081/foobar?platform=web',
     }),
     {},
     expect.anything()
@@ -38,7 +38,7 @@ it(`redirects to provided middleware on web with no indication of a custom platf
   const next = jest.fn();
   middleware(
     asRequest({
-      url: 'https://localhost:19000/foobar',
+      url: 'https://localhost:8081/foobar',
       headers: {},
     }),
     {} as any,
@@ -48,7 +48,7 @@ it(`redirects to provided middleware on web with no indication of a custom platf
   expect(indexMiddleware).toBeCalledTimes(1);
   expect(indexMiddleware).toBeCalledWith(
     expect.objectContaining({
-      url: 'https://localhost:19000/foobar',
+      url: 'https://localhost:8081/foobar',
     }),
     {},
     expect.anything()
@@ -65,7 +65,7 @@ it(`does not redirect on native`, () => {
   const next = jest.fn();
   middleware(
     asRequest({
-      url: 'https://localhost:19000/foobar',
+      url: 'https://localhost:8081/foobar',
       headers: { 'expo-platform': 'android' },
     }),
     {} as any,

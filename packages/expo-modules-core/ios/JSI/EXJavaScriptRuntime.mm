@@ -4,8 +4,12 @@
 
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
-#elif __has_include(<hermes/hermes.h>)
-#import <hermes/hermes.h>
+#elif __has_include(<React-jsc/JSCRuntime.h>)
+// react-native@>=0.71 has a specific React-jsc pod
+#import <React-jsc/JSCRuntime.h>
+// use_frameworks! transforms the dash to underscore
+#elif __has_include(<React_jsc/JSCRuntime.h>)
+#import <React_jsc/JSCRuntime.h>
 #else
 #import <jsi/JSCRuntime.h>
 #endif
@@ -15,8 +19,6 @@
 #import <ExpoModulesCore/EXJSIUtils.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/Swift.h>
-
-using namespace facebook;
 
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
@@ -31,8 +33,8 @@ using namespace facebook;
 - (nonnull instancetype)init
 {
   if (self = [super init]) {
-#if __has_include(<reacthermes/HermesExecutorFactory.h>) || __has_include(<hermes/hermes.h>)
-    _runtime = hermes::makeHermesRuntime();
+#if __has_include(<reacthermes/HermesExecutorFactory.h>)
+    _runtime = facebook::hermes::makeHermesRuntime();
 #else
     _runtime = jsc::makeJSCRuntime();
 #endif
@@ -144,6 +146,12 @@ using namespace facebook;
   return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
 }
 
+- (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype
+{
+  std::shared_ptr<jsi::Object> object = expo::createObjectWithPrototype(*_runtime, [prototype getShared]);
+  return object ? [[EXJavaScriptObject alloc] initWith:object runtime:self] : nil;
+}
+
 #pragma mark - Script evaluation
 
 - (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource
@@ -163,7 +171,7 @@ using namespace facebook;
     }];
   } catch (jsi::JSIException &error) {
     NSString *reason = [NSString stringWithUTF8String:error.what()];
-    
+
     @throw [NSException exceptionWithName:@"ScriptEvaluationException" reason:reason userInfo:@{
       @"message": reason
     }];

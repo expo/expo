@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useEffect } from 'react';
 
-import { H3 } from '~/components/plugins/Headings';
+import { H3 } from '~/ui/components/Text';
 
 type Props = PropsWithChildren<object>;
 

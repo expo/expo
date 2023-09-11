@@ -1,78 +1,90 @@
 #pragma once
 
-#include <map>
 #include <memory>
-#include <thread>
 #include <string>
 
 #include <fbjni/fbjni.h>
 #include <jni.h>
 #include <jsi/jsi.h>
-#include <thread>
 
-#include <RNSkDrawView.h>
+#include <JniSkiaBaseView.h>
 #include <JniSkiaManager.h>
-#include <JniSkiaDrawView.h>
+#include <RNSkAndroidView.h>
+#include <RNSkJsView.h>
 
-#include <RNSkDrawViewImpl.h>
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
+#include <fbjni/detail/Hybrid.h>
 
-#include <SkSurface.h>
-#include <SkRefCnt.h>
-#include <gpu/GrBackendSurface.h>
-#include <gpu/GrDirectContext.h>
+namespace RNSkia {
+namespace jsi = facebook::jsi;
+namespace jni = facebook::jni;
 
-class SkPicture;
-class ANativeWindow;
+class JniSkiaDrawView : public jni::HybridClass<JniSkiaDrawView>,
+                        public JniSkiaBaseView {
+public:
+  static auto constexpr kJavaDescriptor =
+      "Lcom/shopify/reactnative/skia/SkiaDrawView;";
 
-namespace RNSkia
-{
-    using namespace facebook;
+  static jni::local_ref<jhybriddata>
+  initHybrid(jni::alias_ref<jhybridobject> jThis,
+             jni::alias_ref<JniSkiaManager::javaobject> skiaManager) {
+    return makeCxxInstance(jThis, skiaManager);
+  }
 
-    using JavaSkiaManager = jni::alias_ref<JniSkiaManager::javaobject>;
+  static void registerNatives() {
+    registerHybrid(
+        {makeNativeMethod("initHybrid", JniSkiaDrawView::initHybrid),
+         makeNativeMethod("surfaceAvailable",
+                          JniSkiaDrawView::surfaceAvailable),
+         makeNativeMethod("surfaceDestroyed",
+                          JniSkiaDrawView::surfaceDestroyed),
+         makeNativeMethod("surfaceSizeChanged",
+                          JniSkiaDrawView::surfaceSizeChanged),
+         makeNativeMethod("setMode", JniSkiaDrawView::setMode),
+         makeNativeMethod("setDebugMode", JniSkiaDrawView::setDebugMode),
+         makeNativeMethod("updateTouchPoints",
+                          JniSkiaDrawView::updateTouchPoints),
+         makeNativeMethod("registerView", JniSkiaDrawView::registerView),
+         makeNativeMethod("unregisterView", JniSkiaDrawView::unregisterView)});
+  }
 
-    class JniSkiaDrawView : public jni::HybridClass<JniSkiaDrawView>
-    {
-    public:
-        static auto constexpr kJavaDescriptor = "Lcom/shopify/reactnative/skia/SkiaDrawView;";
-        static auto constexpr TAG = "ReactNativeSkia";
+protected:
+  void updateTouchPoints(jni::JArrayDouble touches) override {
+    JniSkiaBaseView::updateTouchPoints(touches);
+  }
 
-        static jni::local_ref<jhybriddata> initHybrid(
-                jni::alias_ref<jhybridobject>,
-                JavaSkiaManager);
+  void surfaceAvailable(jobject surface, int width, int height) override {
+    JniSkiaBaseView::surfaceAvailable(surface, width, height);
+  }
 
-        static void registerNatives();
+  void surfaceSizeChanged(int width, int height) override {
+    JniSkiaBaseView::surfaceSizeChanged(width, height);
+  }
 
-        void surfaceAvailable(jobject, int, int);
-        void surfaceDestroyed();
-        void surfaceSizeChanged(int, int);
+  void surfaceDestroyed() override { JniSkiaBaseView::surfaceDestroyed(); }
 
-        void updateTouchPoints(jni::JArrayDouble touches);
+  void setMode(std::string mode) override { JniSkiaBaseView::setMode(mode); }
 
-        ~JniSkiaDrawView();
+  void setDebugMode(bool show) override { JniSkiaBaseView::setDebugMode(show); }
 
-        std::shared_ptr<RNSkDrawView> getDrawViewImpl() { return _drawView; }
+  void registerView(int nativeId) override {
+    JniSkiaBaseView::registerView(nativeId);
+  }
 
-        void releaseSurface();
+  void unregisterView() override { JniSkiaBaseView::unregisterView(); }
 
-    protected:
-        void setMode(std::string mode);
-        void setDebugMode(bool show);
+private:
+  friend HybridBase;
 
-    private:
-        friend HybridBase;
+  explicit JniSkiaDrawView(
+      jni::alias_ref<jhybridobject> jThis,
+      jni::alias_ref<JniSkiaManager::javaobject> skiaManager)
+      : JniSkiaBaseView(skiaManager,
+                        std::make_shared<RNSkAndroidView<RNSkia::RNSkJsView>>(
+                            skiaManager->cthis()->getPlatformContext())) {}
 
-        std::shared_ptr<RNSkDrawViewImpl> _drawView;
-
-        jni::global_ref<JniSkiaDrawView::javaobject> javaPart_;
-
-        explicit JniSkiaDrawView(
-                jni::alias_ref<JniSkiaDrawView::jhybridobject> jThis,
-                JavaSkiaManager skiaManager)
-                : javaPart_(jni::make_global(jThis)),
-                  _drawView(std::make_shared<RNSkDrawViewImpl>(skiaManager->cthis()->getPlatformContext(), [this]() {
-                      releaseSurface();
-                  })) {
-        }
-    };
+  jni::global_ref<javaobject> javaPart_;
+};
 
 } // namespace RNSkia

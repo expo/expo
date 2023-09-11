@@ -104,31 +104,31 @@ export default class AudioPlayer extends React.Component<Props, State> {
   };
 
   _playAsync = async () => {
-    this._sound!.playAsync();
+    this._sound?.playAsync();
   };
 
   _pauseAsync = async () => {
     this._clearJsiAudioSampleCallback();
-    this._sound!.pauseAsync();
+    this._sound?.pauseAsync();
   };
 
-  _replayAsync = async () => this._sound!.replayAsync();
+  _replayAsync = async () => this._sound?.replayAsync();
 
-  _setPositionAsync = async (position: number) => this._sound!.setPositionAsync(position);
+  _setPositionAsync = async (position: number) => this._sound?.setPositionAsync(position);
 
-  _setIsLoopingAsync = async (isLooping: boolean) => this._sound!.setIsLoopingAsync(isLooping);
+  _setIsLoopingAsync = async (isLooping: boolean) => this._sound?.setIsLoopingAsync(isLooping);
 
-  _setIsMutedAsync = async (isMuted: boolean) => this._sound!.setIsMutedAsync(isMuted);
+  _setIsMutedAsync = async (isMuted: boolean) => this._sound?.setIsMutedAsync(isMuted);
 
   _setVolumeAsync = async (volume: number, audioPan?: number) =>
-    this._sound!.setVolumeAsync(volume, audioPan);
+    this._sound?.setVolumeAsync(volume, audioPan);
 
   _setRateAsync = async (
     rate: number,
     shouldCorrectPitch: boolean,
     pitchCorrectionQuality = Audio.PitchCorrectionQuality.Low
   ) => {
-    await this._sound!.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
+    await this._sound?.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
   };
 
   _clearJsiAudioSampleCallback = () => {
@@ -159,7 +159,9 @@ export default class AudioPlayer extends React.Component<Props, State> {
       <View>
         <AndroidImplementationSelector
           onToggle={this._toggleAndroidImplementation}
-          title={`Use ${this._isMediaPlayerImplementation() ? 'SimpleExoPlayer' : 'MediaPlayer'}`}
+          title={`Current player: ${
+            this._isMediaPlayerImplementation() ? 'MediaPlayer' : 'SimpleExoPlayer'
+          }`}
           toggled={this._isMediaPlayerImplementation()}
         />
 
@@ -174,7 +176,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
           setRateAsync={this._setRateAsync}
           setIsMutedAsync={this._setIsMutedAsync}
           setVolume={this._setVolumeAsync}
-          extraIndicator={<JsiAudioBar isPlaying={this.state.isPlaying} sound={this._sound!} />}
+          extraIndicator={<JsiAudioBar isPlaying={this.state.isPlaying} sound={this._sound} />}
         />
       </View>
     );

@@ -78,6 +78,28 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `$1/$2/${versionName}`,
       },
       {
+        // Files inside fabric directory used to have nested import paths and we transformed it wrong.
+        // This rules are here to fix it.
+        // e.g. `#include <react/debug/react_native_assert.h>`
+        //   -> `#include <ABI49_0_0React/ABI49_0_0debug/ABI49_0_0React_native_assert.h>`
+        //   -> `#include <ABI49_0_0React/debug/ABI49_0_0React_native_assert.h>`
+        paths: ['ReactCommon/react/', 'React/'],
+        replace: new RegExp(
+          `(^(#include|#import) <${versionName}React)/${versionName}([^/\\n]+?)/(${versionName})?([^/\\n]+?\\.h>$)`,
+          'gm'
+        ),
+        with: `$1/$3/${versionName}$5`,
+      },
+      {
+        // Same as above but for difference nested level.
+        paths: ['Libraries/AppDelegate/', 'ReactCommon/react/', 'React/'],
+        replace: new RegExp(
+          `(^(#include|#import) <${versionName}React)/${versionName}([^/\\n]+?)\\/([^/\\n]+?)\\/(${versionName})?([^/\\n]+?\\.h>$)`,
+          'gm'
+        ),
+        with: `$1/$3/$4/${versionName}$6`,
+      },
+      {
         // Codegen adds methods to `RCTCxxConvert` that start with `JS_`, which refer to `JS::`
         // C++ namespace that we prefix, so these methods must be prefixed as well.
         paths: ['FBReactNativeSpec.h', 'FBReactNativeSpec-generated.mm'],
@@ -123,6 +145,11 @@ export function postTransforms(versionName: string): TransformPipeline {
         replace: /@"(ExpoModulesProvider)"/,
         with: `@"${versionName}$1"`,
       },
+      {
+        paths: `${versionName}EXVersionManager.mm`,
+        replace: `#import <${versionName}Reacthermes/HermesExecutorFactory.h>`,
+        with: `#import <${versionName}reacthermes/${versionName}HermesExecutorFactory.h>`,
+      },
 
       // react-native-maps
       {
@@ -135,49 +162,10 @@ export function postTransforms(versionName: string): TransformPipeline {
         replace: /\b(WMSTileOverlay)\b/g,
         with: `${versionName}$1`,
       },
-
-      // react-native-svg
       {
-        paths: 'RNSVGRenderable.m',
-        replace: /\b(saturate)\(/g,
-        with: `${versionName}$1(`,
-      },
-      {
-        paths: 'RNSVGPainter.m',
-        replace: /\b(PatternFunction)\b/g,
-        with: `${versionName}$1`,
-      },
-      {
-        paths: 'RNSVGFontData.m',
-        replace: /\b(AbsoluteFontWeight|bolder|lighter|nearestFontWeight)\(/gi,
-        with: `${versionName}$1(`,
-      },
-      {
-        paths: 'RNSVGTSpan.m',
-        replace: new RegExp(`\\b(${versionName}RNSVGTopAlignedLabel\\s*\\*\\s*label)\\b`, 'gi'),
-        with: 'static $1',
-      },
-      {
-        paths: 'RNSVGMarker.m',
-        replace: /\b(deg2rad)\b/g,
-        with: `${versionName}$1`,
-      },
-      {
-        paths: 'RNSVGMarkerPosition.m',
-        replace:
-          /\b(PathIsDone|rad2deg|SlopeAngleRadians|CurrentAngle|subtract|ExtractPathElementFeatures|UpdateFromPathElement)\b/g,
-        with: `${versionName}$1`,
-      },
-      {
-        paths: 'RNSVGMarkerPosition.m',
-        replace:
-          /\b(positions_|element_index_|origin_|subpath_start_|in_slope_|out_slope_|auto_start_reverse_)\b/g,
-        with: `${versionName}$1`,
-      },
-      {
-        paths: 'RNSVGPathMeasure.m',
-        replace: /\b(distance|subdivideBezierAtT)\b/g,
-        with: `${versionName}$1`,
+        paths: 'AIRGoogleMap',
+        replace: new RegExp(`^#import "${versionName}(GMU.+?\\.h)"`, 'gm'),
+        with: `#import <Google-Maps-iOS-Utils/$1>`,
       },
 
       // react-native-webview

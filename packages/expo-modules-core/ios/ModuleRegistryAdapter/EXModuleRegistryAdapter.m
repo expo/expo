@@ -1,27 +1,23 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
-#import <ExpoModulesCore/EXViewManagerAdapter.h>
 #import <ExpoModulesCore/EXModuleRegistryAdapter.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
-#import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
 #import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 
 @interface EXModuleRegistryAdapter ()
 
 @property (nonatomic, strong) EXModuleRegistryProvider *moduleRegistryProvider;
-@property (nonatomic, strong) EXViewManagerAdapterClassesRegistry *viewManagersClassesRegistry;
 
 @end
 
 @implementation EXModuleRegistryAdapter
 
-- (instancetype)initWithModuleRegistryProvider:(EXModuleRegistryProvider *)moduleRegistryProvider
+- (nonnull instancetype)initWithModuleRegistryProvider:(EXModuleRegistryProvider *)moduleRegistryProvider
 {
   if (self = [super init]) {
     _moduleRegistryProvider = moduleRegistryProvider;
-    _viewManagersClassesRegistry = [[EXViewManagerAdapterClassesRegistry alloc] init];
   }
   return self;
 }
@@ -42,18 +38,6 @@
   // It will be added to the bridge later in this method, as it conforms to `RCTBridgeModule`.
   EXReactNativeEventEmitter *eventEmitter = [EXReactNativeEventEmitter new];
   [moduleRegistry registerInternalModule:eventEmitter];
-
-  for (EXViewManager *viewManager in [moduleRegistry getAllViewManagers]) {
-    Class viewManagerAdapterClass = [EXViewManagerAdapterClassesRegistry createViewManagerAdapterClassForViewManager:viewManager];
-    [extraModules addObject:[[viewManagerAdapterClass alloc] init]];
-  }
-
-  // Silence React Native warning `Base module "%s" does not exist`
-  // occurring when view manager class is subclassing another class
-  // that is not RCTViewManager (in our case all the view manager adapters
-  // subclass EXViewManagerAdapter, so RN expects to find EXViewManagerAdapter
-  // exported.
-  [extraModules addObject:[[EXViewManagerAdapter alloc] init]];
 
   // It is possible that among internal modules there are some RCTBridgeModules --
   // let's add them to extraModules here.

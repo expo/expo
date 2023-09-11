@@ -3,6 +3,7 @@ package expo.modules.clipboard
 import android.graphics.Bitmap
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
 
 internal class GetImageOptions : Record {
   @Field(key = "format")
@@ -22,7 +23,7 @@ internal class SetStringOptions : Record {
   var inputFormat: StringFormat = StringFormat.PLAIN
 }
 
-internal enum class ImageFormat(val jsName: String) {
+internal enum class ImageFormat(val jsName: String) : Enumerable {
   JPG("jpeg"), PNG("png");
 
   val compressFormat: Bitmap.CompressFormat
@@ -38,7 +39,7 @@ internal enum class ImageFormat(val jsName: String) {
     }
 }
 
-internal enum class StringFormat(val jsValue: String) {
+internal enum class StringFormat(val jsValue: String) : Enumerable {
   PLAIN("plainText"),
   HTML("html")
 }

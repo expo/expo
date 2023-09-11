@@ -1,0 +1,193 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
+[
+  {
+    "filePath": "node_modules/expo/android",
+    "reasons": [
+      "expoAutolinkingAndroid",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-application/android",
+    "reasons": [
+      "expoAutolinkingAndroid",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-constants/android",
+    "reasons": [
+      "expoAutolinkingAndroid",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-error-recovery/android",
+    "reasons": [
+      "expoAutolinkingAndroid",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-file-system/android",
+    "reasons": [
+      "expoAutolinkingAndroid",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-font/android",
+    "reasons": [
+      "expoAutolinkingAndroid",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-keep-awake/android",
+    "reasons": [
+      "expoAutolinkingAndroid",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-modules-core/android",
+    "reasons": [
+      "expoAutolinkingAndroid",
+    ],
+    "type": "dir",
+  },
+  {
+    "contents": "{"modules":[{"packageName":"expo","packageVersion":"47.0.8","projects":[{"name":"expo","sourceDir":"node_modules/expo/android"}],"modules":[]},{"packageName":"expo-application","packageVersion":"5.0.1","projects":[{"name":"expo-application","sourceDir":"node_modules/expo-application/android"}],"modules":[]},{"packageName":"expo-constants","packageVersion":"14.0.2","projects":[{"name":"expo-constants","sourceDir":"node_modules/expo-constants/android"}],"modules":[]},{"packageName":"expo-error-recovery","packageVersion":"4.0.1","projects":[{"name":"expo-error-recovery","sourceDir":"node_modules/expo-error-recovery/android"}],"modules":[]},{"packageName":"expo-file-system","packageVersion":"15.1.1","projects":[{"name":"expo-file-system","sourceDir":"node_modules/expo-file-system/android"}],"modules":[]},{"packageName":"expo-font","packageVersion":"11.0.1","projects":[{"name":"expo-font","sourceDir":"node_modules/expo-font/android"}],"modules":[]},{"packageName":"expo-keep-awake","packageVersion":"11.0.1","projects":[{"name":"expo-keep-awake","sourceDir":"node_modules/expo-keep-awake/android"}],"modules":[]},{"packageName":"expo-modules-core","packageVersion":"1.0.3","projects":[{"name":"expo-modules-core","sourceDir":"node_modules/expo-modules-core/android"}],"modules":[]}]}",
+    "id": "expoAutolinkingConfig:android",
+    "reasons": [
+      "expoAutolinkingAndroid",
+    ],
+    "type": "contents",
+  },
+  {
+    "filePath": "node_modules/expo",
+    "reasons": [
+      "expoAutolinkingIos",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-application/ios",
+    "reasons": [
+      "expoAutolinkingIos",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-constants/ios",
+    "reasons": [
+      "expoAutolinkingIos",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-error-recovery/ios",
+    "reasons": [
+      "expoAutolinkingIos",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-file-system/ios",
+    "reasons": [
+      "expoAutolinkingIos",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-font/ios",
+    "reasons": [
+      "expoAutolinkingIos",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-keep-awake/ios",
+    "reasons": [
+      "expoAutolinkingIos",
+    ],
+    "type": "dir",
+  },
+  {
+    "filePath": "node_modules/expo-modules-core",
+    "reasons": [
+      "expoAutolinkingIos",
+    ],
+    "type": "dir",
+  },
+  {
+    "contents": "{"modules":[{"packageName":"expo","packageVersion":"47.0.8","pods":[{"podName":"Expo","podspecDir":"node_modules/expo"}],"swiftModuleNames":["Expo"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false},{"packageName":"expo-application","packageVersion":"5.0.1","pods":[{"podName":"EXApplication","podspecDir":"node_modules/expo-application/ios"}],"swiftModuleNames":["EXApplication"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false},{"packageName":"expo-constants","packageVersion":"14.0.2","pods":[{"podName":"EXConstants","podspecDir":"node_modules/expo-constants/ios"}],"swiftModuleNames":["EXConstants"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false},{"packageName":"expo-error-recovery","packageVersion":"4.0.1","pods":[{"podName":"EXErrorRecovery","podspecDir":"node_modules/expo-error-recovery/ios"}],"swiftModuleNames":["EXErrorRecovery"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false},{"packageName":"expo-file-system","packageVersion":"15.1.1","pods":[{"podName":"EXFileSystem","podspecDir":"node_modules/expo-file-system/ios"}],"swiftModuleNames":["EXFileSystem"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false},{"packageName":"expo-font","packageVersion":"11.0.1","pods":[{"podName":"EXFont","podspecDir":"node_modules/expo-font/ios"}],"swiftModuleNames":["EXFont"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false},{"packageName":"expo-keep-awake","packageVersion":"11.0.1","pods":[{"podName":"ExpoKeepAwake","podspecDir":"node_modules/expo-keep-awake/ios"}],"swiftModuleNames":["ExpoKeepAwake"],"modules":["KeepAwakeModule"],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false},{"packageName":"expo-modules-core","packageVersion":"1.0.3","pods":[{"podName":"ExpoModulesCore","podspecDir":"node_modules/expo-modules-core"}],"swiftModuleNames":["ExpoModulesCore"],"modules":[],"appDelegateSubscribers":[],"reactDelegateHandlers":[],"debugOnly":false}]}",
+    "id": "expoAutolinkingConfig:ios",
+    "reasons": [
+      "expoAutolinkingIos",
+    ],
+    "type": "contents",
+  },
+  {
+    "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"fingerprint-e2e-managed","orientation":"portrait","platforms":["android","ios"],"sdkVersion":"47.0.0","slug":"fingerprint-e2e-managed","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+    "id": "expoConfig",
+    "reasons": [
+      "expoConfig",
+    ],
+    "type": "contents",
+  },
+  {
+    "filePath": "./assets/icon.png",
+    "reasons": [
+      "expoConfigExternalFile",
+    ],
+    "type": "file",
+  },
+  {
+    "filePath": "./assets/adaptive-icon.png",
+    "reasons": [
+      "expoConfigExternalFile",
+    ],
+    "type": "file",
+  },
+  {
+    "filePath": "./assets/splash.png",
+    "reasons": [
+      "expoConfigExternalFile",
+    ],
+    "type": "file",
+  },
+  {
+    "filePath": ".gitignore",
+    "reasons": [
+      "bareGitIgnore",
+    ],
+    "type": "file",
+  },
+  {
+    "contents": "{"start":"expo start","android":"expo start --android","ios":"expo start --ios","web":"expo start --web"}",
+    "id": "packageJson:scripts",
+    "reasons": [
+      "packageJson:scripts",
+    ],
+    "type": "contents",
+  },
+  {
+    "filePath": "node_modules/expo",
+    "reasons": [
+      "bareRncliAutolinking",
+    ],
+    "type": "dir",
+  },
+  {
+    "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"androidMkPath":"node_modules/expo/android/build/generated/source/codegen/jni/Android.mk","cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt"}}}}",
+    "id": "rncliAutolinkingConfig",
+    "reasons": [
+      "bareRncliAutolinking",
+    ],
+    "type": "contents",
+  },
+]
+`;

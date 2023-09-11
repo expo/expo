@@ -3,7 +3,6 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
-import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
@@ -17,7 +16,7 @@ class JavaScriptObjectTest {
 
   @Before
   fun before() {
-    jsiInterop = JSIInteropModuleRegistry(mockk()).apply {
+    jsiInterop = JSIInteropModuleRegistry(defaultAppContextMock()).apply {
       installJSIForTests()
     }
   }
@@ -173,13 +172,13 @@ class JavaScriptObjectTest {
       val result = evaluateScript(
         """
         const x = {};
-        ExpoModules.TestModule.f(x);
+        expo.modules.TestModule.f(x);
         x
         """.trimIndent()
       ).getObject()
 
-      Truth.assertThat(result.getProperty("expo").getDouble().toInt()).isEqualTo(123)
-      Truth.assertThat(receivedObject!!.getProperty("expo").getDouble().toInt()).isEqualTo(123)
+      Truth.assertThat(result.getProperty("expo").getInt()).isEqualTo(123)
+      Truth.assertThat(receivedObject!!.getProperty("expo").getInt()).isEqualTo(123)
     }
   }
 }

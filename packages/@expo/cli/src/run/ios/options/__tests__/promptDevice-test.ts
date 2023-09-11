@@ -2,16 +2,30 @@ import { stripAnsi } from '../../../../utils/ansi';
 import { formatDeviceChoice } from '../promptDevice';
 
 describe(formatDeviceChoice, () => {
-  it(`formats connected device`, () => {
+  it(`formats USB connected device`, () => {
     const option = formatDeviceChoice({
       name: "Evan's phone",
       model: 'iPhone13,4',
       osVersion: '15.4.1',
       deviceType: 'device',
+      connectionType: 'USB',
       udid: '00008101-001964A22629003A',
     });
 
     expect(stripAnsi(option.title)).toEqual(`🔌 Evan's phone (15.4.1)`);
+    expect(stripAnsi(option.value)).toEqual('00008101-001964A22629003A');
+  });
+  it(`formats network connected device`, () => {
+    const option = formatDeviceChoice({
+      name: "Evan's phone",
+      model: 'iPhone13,4',
+      osVersion: '15.4.1',
+      deviceType: 'device',
+      connectionType: 'Network',
+      udid: '00008101-001964A22629003A',
+    });
+
+    expect(stripAnsi(option.title)).toEqual(`🌐 Evan's phone (15.4.1)`);
     expect(stripAnsi(option.value)).toEqual('00008101-001964A22629003A');
   });
   it(`formats active simulator`, () => {

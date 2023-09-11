@@ -1,9 +1,10 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesDatabase.h>
 #import <Foundation/Foundation.h>
 
 #import "EXUpdatesBinding.h"
+
+@class EXUpdatesDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 

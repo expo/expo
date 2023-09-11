@@ -6,6 +6,7 @@ function createView(nativeProps = {}) {
         return React.createElement(View, { ...nativeProps, ...props, ref: ref });
     });
 }
+export const Div = createView();
 export const Nav = createView(Platform.select({
     web: {
         accessibilityRole: 'navigation',

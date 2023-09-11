@@ -1,8 +1,60 @@
 /* eslint-env browser */
-import { Platform } from 'expo-modules-core';
+import { Platform, Subscription } from 'expo-modules-core';
 import * as rtlDetect from 'rtl-detect';
 
-import { Localization } from './Localization.types';
+import { Localization, Calendar, Locale, CalendarIdentifier } from './Localization.types';
+
+const getNavigatorLocales = () => {
+  return Platform.isDOMAvailable ? navigator.languages || [navigator.language] : [];
+};
+
+type ExtendedLocale = Intl.Locale &
+  // typescript definitions for navigator language don't include some modern Intl properties
+  Partial<{
+    textInfo: { direction: 'ltr' | 'rtl' };
+    timeZones: string[];
+    weekInfo: { firstDay: number };
+    hourCycles: string[];
+    timeZone: string;
+    calendars: string[];
+  }>;
+
+const WEB_LANGUAGE_CHANGE_EVENT = 'languagechange';
+// https://wisevoter.com/country-rankings/countries-that-use-fahrenheit/
+const USES_FAHRENHEIT = [
+  'AG',
+  'BZ',
+  'VG',
+  'FM',
+  'MH',
+  'MS',
+  'KN',
+  'BS',
+  'CY',
+  'TC',
+  'US',
+  'LR',
+  'PW',
+  'KY',
+];
+
+export function addLocaleListener(listener: (event) => void): Subscription {
+  addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
+  return {
+    remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
+  };
+}
+
+export function addCalendarListener(listener: (event) => void): Subscription {
+  addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
+  return {
+    remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
+  };
+}
+
+export function removeSubscription(subscription: Subscription) {
+  subscription.remove();
+}
 
 export default {
   get currency(): string | null {
@@ -71,7 +123,54 @@ export default {
     }
     return null;
   },
-  async getLocalizationAsync(): Promise<Localization> {
+
+  getLocales(): Locale[] {
+    const locales = getNavigatorLocales();
+    return locales?.map((languageTag) => {
+      // TextInfo is an experimental API that is not available in all browsers.
+      // We might want to consider using a locale lookup table instead.
+      const locale =
+        typeof Intl !== 'undefined'
+          ? (new Intl.Locale(languageTag) as unknown as ExtendedLocale)
+          : { region: null, textInfo: null, language: null };
+      const { region, textInfo, language } = locale;
+
+      // Properties added only for compatibility with native, use `toLocaleString` instead.
+      const digitGroupingSeparator =
+        Array.from((10000).toLocaleString(languageTag)).filter((c) => c > '9' || c < '0')[0] ||
+        null; // using 1e5 instead of 1e4 since for some locales (like pl-PL) 1e4 does not use digit grouping
+      const decimalSeparator = (1.1).toLocaleString(languageTag).substring(1, 2);
+      const temperatureUnit = region ? regionToTemperatureUnit(region) : null;
+
+      return {
+        languageTag,
+        languageCode: language || languageTag.split('-')[0] || 'en',
+        textDirection: (textInfo?.direction as 'ltr' | 'rtl') || null,
+        digitGroupingSeparator,
+        decimalSeparator,
+        measurementSystem: null,
+        currencyCode: null,
+        currencySymbol: null,
+        regionCode: region || null,
+        temperatureUnit,
+      };
+    });
+  },
+  getCalendars(): Calendar[] {
+    const locale = ((typeof Intl !== 'undefined'
+      ? Intl.DateTimeFormat().resolvedOptions()
+      : null) ?? null) as unknown as null | ExtendedLocale;
+    return [
+      {
+        calendar: ((locale?.calendar || locale?.calendars?.[0]) as CalendarIdentifier) || null,
+        timeZone: locale?.timeZone || locale?.timeZones?.[0] || null,
+        uses24hourClock: (locale?.hourCycle || locale?.hourCycles?.[0])?.startsWith('h2') ?? null, //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/hourCycle
+        firstWeekday: locale?.weekInfo?.firstDay || null,
+      },
+    ];
+  },
+
+  async getLocalizationAsync(): Promise<Omit<Localization, 'getCalendars' | 'getLocales'>> {
     const {
       currency,
       decimalSeparator,
@@ -98,3 +197,7 @@ export default {
     };
   },
 };
+
+function regionToTemperatureUnit(region: string) {
+  return USES_FAHRENHEIT.includes(region) ? 'fahrenheit' : 'celsius';
+}

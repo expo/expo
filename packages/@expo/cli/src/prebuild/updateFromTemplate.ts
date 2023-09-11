@@ -2,14 +2,14 @@ import { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
+import { copyTemplateFilesAsync, createCopyFilesSuccessMessage } from './copyTemplateFiles';
+import { cloneTemplateAsync } from './resolveTemplate';
+import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
+import { validateTemplatePlatforms } from './validateTemplatePlatforms';
 import * as Log from '../log';
 import { AbortCommandError, SilentError } from '../utils/errors';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
-import { copyTemplateFilesAsync, createCopyFilesSuccessMessage } from './copyTemplateFiles';
-import { cloneTemplateAsync } from './resolveTemplate';
-import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
-import { writeMetroConfig } from './writeMetroConfig';
 
 /**
  * Creates local native files from an input template file path.
@@ -57,11 +57,8 @@ export async function updateFromTemplateAsync(
     template,
     templateDirectory,
     exp,
-    pkg,
     platforms,
   });
-
-  profile(writeMetroConfig)(projectRoot, { pkg, templateDirectory });
 
   const depsResults = await profile(updatePackageJSONAsync)(projectRoot, {
     templateDirectory,
@@ -90,25 +87,33 @@ async function cloneTemplateAndCopyToProjectAsync({
   templateDirectory,
   template,
   exp,
-  pkg,
-  platforms,
+  platforms: unknownPlatforms,
 }: {
   projectRoot: string;
   templateDirectory: string;
   template?: string;
   exp: Pick<ExpoConfig, 'name' | 'sdkVersion'>;
-  pkg: PackageJSONConfig;
   platforms: ModPlatform[];
 }): Promise<string[]> {
+  const platformDirectories = unknownPlatforms
+    .map((platform) => `./${platform}`)
+    .reverse()
+    .join(' and ');
+
+  const pluralized = unknownPlatforms.length > 1 ? 'directories' : 'directory';
   const ora = logNewSection(
-    'Creating native project directories (./ios and ./android) and updating .gitignore'
+    `Creating native project ${pluralized} (${platformDirectories}) and updating .gitignore`
   );
 
   try {
     await cloneTemplateAsync({ templateDirectory, template, exp, ora });
 
+    const platforms = await validateTemplatePlatforms({
+      templateDirectory,
+      platforms: unknownPlatforms,
+    });
+
     const results = await copyTemplateFilesAsync(projectRoot, {
-      pkg,
       templateDirectory,
       platforms,
     });

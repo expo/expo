@@ -58,9 +58,18 @@ export async function resolveModuleAsync(
     };
   });
 
+  const plugins = (revision.config?.androidGradlePlugins() ?? []).map(
+    ({ id, group, sourceDir }) => ({
+      id,
+      group,
+      sourceDir: path.join(revision.path, sourceDir),
+    })
+  );
+
   return {
     packageName,
     projects,
+    ...(plugins.length > 0 ? { plugins } : {}),
     modules: revision.config?.androidModules() ?? [],
   };
 }

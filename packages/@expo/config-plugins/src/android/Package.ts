@@ -4,20 +4,14 @@ import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
+import { getAppBuildGradleFilePath, getProjectFilePath } from './Paths';
 import { ConfigPlugin } from '../Plugin.types';
-import { createAndroidManifestPlugin, withAppBuildGradle } from '../plugins/android-plugins';
+import { withAppBuildGradle } from '../plugins/android-plugins';
 import { withDangerousMod } from '../plugins/withDangerousMod';
 import { directoryExistsAsync } from '../utils/modules';
 import { addWarningAndroid } from '../utils/warnings';
-import { AndroidManifest } from './Manifest';
-import { getAppBuildGradleFilePath, getProjectFilePath } from './Paths';
 
 const debug = Debug('expo:config-plugins:android:package');
-
-export const withPackageManifest = createAndroidManifestPlugin(
-  setPackageInAndroidManifest,
-  'withPackageManifest'
-);
 
 export const withPackageGradle: ConfigPlugin = (config) => {
   return withAppBuildGradle(config, (config) => {
@@ -101,7 +95,7 @@ export async function renamePackageOnDisk(
     return;
   }
 
-  for (const type of ['main', 'debug']) {
+  for (const type of ['debug', 'main', 'release']) {
     await renameJniOnDiskForType({ projectRoot, type, packageName: newPackageName });
     await renamePackageOnDiskForType({ projectRoot, type, packageName: newPackageName });
   }
@@ -204,6 +198,7 @@ export async function renamePackageOnDiskForType({
   const filesToUpdate = [...globSync('**/*', { cwd: newPackagePath, absolute: true })];
   // Only update the BUCK file to match the main package name
   if (type === 'main') {
+    // NOTE(EvanBacon): We dropped this file in SDK 48 but other templates may still use it.
     filesToUpdate.push(path.join(projectRoot, 'android', 'app', 'BUCK'));
   }
   // Replace all occurrences of the path in the project
@@ -237,23 +232,8 @@ export function setPackageInBuildGradle(config: Pick<ExpoConfig, 'android'>, bui
     return buildGradle;
   }
 
-  const pattern = new RegExp(`applicationId ['"].*['"]`);
-  return buildGradle.replace(pattern, `applicationId '${packageName}'`);
-}
-
-export function setPackageInAndroidManifest(
-  config: Pick<ExpoConfig, 'android'>,
-  androidManifest: AndroidManifest
-) {
-  const packageName = getPackage(config);
-
-  if (packageName) {
-    androidManifest.manifest.$.package = packageName;
-  } else {
-    delete androidManifest.manifest.$.package;
-  }
-
-  return androidManifest;
+  const pattern = new RegExp(`(applicationId|namespace) ['"].*['"]`, 'g');
+  return buildGradle.replace(pattern, `$1 '${packageName}'`);
 }
 
 export async function getApplicationIdAsync(projectRoot: string): Promise<string | null> {

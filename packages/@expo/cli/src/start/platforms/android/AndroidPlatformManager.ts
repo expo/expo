@@ -1,9 +1,9 @@
-import { AppIdResolver } from '../AppIdResolver';
-import { BaseOpenInCustomProps, BaseResolveDeviceProps, PlatformManager } from '../PlatformManager';
 import { AndroidAppIdResolver } from './AndroidAppIdResolver';
 import { AndroidDeviceManager } from './AndroidDeviceManager';
 import { Device } from './adb';
 import { startAdbReverseAsync } from './adbReverse';
+import { AppIdResolver } from '../AppIdResolver';
+import { BaseOpenInCustomProps, BaseResolveDeviceProps, PlatformManager } from '../PlatformManager';
 
 interface AndroidOpenInCustomProps extends BaseOpenInCustomProps {
   launchActivity?: string;
@@ -16,8 +16,10 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
     options: {
       /** Get the base URL for the dev server hosting this platform manager. */
       getDevServerUrl: () => string | null;
-      /** Expo Go URL. */
-      getExpoGoUrl: () => string | null;
+      /** Expo Go URL */
+      getExpoGoUrl: () => string;
+      /** Get redirect URL for native disambiguation. */
+      getRedirectUrl: () => string | null;
       /** Dev Client URL. */
       getCustomRuntimeUrl: (props?: { scheme?: string }) => string | null;
     }

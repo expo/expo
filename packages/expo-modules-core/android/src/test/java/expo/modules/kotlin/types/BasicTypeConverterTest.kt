@@ -19,6 +19,6 @@ class BasicTypeConverterTest {
     val converted = convert<FloatArray>(dynamic)
 
     Truth.assertThat(converted).isInstanceOf(FloatArray::class.java)
-    Truth.assertThat(converted as FloatArray).usingExactEquality().containsExactly(1f, 2f, 3f)
+    Truth.assertThat(converted).usingExactEquality().containsExactly(1f, 2f, 3f)
   }
 }

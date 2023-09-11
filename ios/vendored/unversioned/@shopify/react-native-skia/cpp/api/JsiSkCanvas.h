@@ -10,31 +10,31 @@
 #include "JsiSkMatrix.h"
 #include "JsiSkPaint.h"
 #include "JsiSkPath.h"
+#include "JsiSkPicture.h"
 #include "JsiSkPoint.h"
 #include "JsiSkRRect.h"
 #include "JsiSkSVG.h"
-#include "JsiSkVertices.h"
 #include "JsiSkTextBlob.h"
-#include "JsiSkPicture.h"
+#include "JsiSkVertices.h"
 
 #include <jsi/jsi.h>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkCanvas.h>
-#include <SkFont.h>
-#include <SkPaint.h>
-#include <SkPath.h>
-#include <SkRegion.h>
-#include <SkSurface.h>
-#include <SkTypeface.h>
-#include <SkPicture.h>
+#include "SkCanvas.h"
+#include "SkFont.h"
+#include "SkPaint.h"
+#include "SkPath.h"
+#include "SkPicture.h"
+#include "SkRegion.h"
+#include "SkSurface.h"
+#include "SkTypeface.h"
 
 #pragma clang diagnostic pop
 
 namespace RNSkia {
-using namespace facebook;
+namespace jsi = facebook::jsi;
 
 class JsiSkCanvas : public JsiSkHostObject {
 public:
@@ -97,7 +97,7 @@ public:
         paint = JsiSkPaint::fromValue(runtime, arguments[5]);
       }
     }
-    _canvas->drawImage(image, x, y, SkSamplingOptions({ B, C }), paint.get());
+    _canvas->drawImage(image, x, y, SkSamplingOptions({B, C}), paint.get());
     return jsi::Value::undefined();
   }
 
@@ -128,7 +128,8 @@ public:
         paint = JsiSkPaint::fromValue(runtime, arguments[4]);
       }
     }
-    _canvas->drawImageNine(image.get(), center->round(), *dest, fm, paint.get());
+    _canvas->drawImageNine(image.get(), center->round(), *dest, fm,
+                           paint.get());
     return jsi::Value::undefined();
   }
 
@@ -144,8 +145,10 @@ public:
         paint = JsiSkPaint::fromValue(runtime, arguments[5]);
       }
     }
-    auto constraint = SkCanvas::kStrict_SrcRectConstraint;  // TODO: get from caller
-    _canvas->drawImageRect(image.get(), *src, *dest, SkSamplingOptions({ B, C }), paint.get(), constraint);
+    auto constraint =
+        SkCanvas::kStrict_SrcRectConstraint; // TODO: get from caller
+    _canvas->drawImageRect(image.get(), *src, *dest, SkSamplingOptions({B, C}),
+                           paint.get(), constraint);
     return jsi::Value::undefined();
   }
 
@@ -162,7 +165,8 @@ public:
       }
     }
     auto constraint = SkCanvas::kStrict_SrcRectConstraint;
-    _canvas->drawImageRect(image.get(), *src, *dest, {filter, mipmap}, paint.get(), constraint);
+    _canvas->drawImageRect(image.get(), *src, *dest, {filter, mipmap},
+                           paint.get(), constraint);
     return jsi::Value::undefined();
   }
 
@@ -250,7 +254,6 @@ public:
     return jsi::Value::undefined();
   }
 
-
   JSI_HOST_FUNCTION(drawVertices) {
     auto vertices = JsiSkVertices::fromValue(runtime, arguments[0]);
     auto blendMode = (SkBlendMode)arguments[1].getNumber();
@@ -278,7 +281,8 @@ public:
       auto colorsSize = jsiColors.size(runtime);
       colors.reserve(colorsSize);
       for (int i = 0; i < colorsSize; i++) {
-        SkColor color = JsiSkColor::fromValue(runtime, jsiColors.getValueAtIndex(runtime, i));
+        SkColor color = JsiSkColor::fromValue(
+            runtime, jsiColors.getValueAtIndex(runtime, i));
         colors.push_back(color);
       }
     }
@@ -289,14 +293,16 @@ public:
       texs.reserve(texsSize);
       for (int i = 0; i < texsSize; i++) {
         auto point = JsiSkPoint::fromValue(
-                runtime, jsiTexs.getValueAtIndex(runtime, i).asObject(runtime));
+            runtime, jsiTexs.getValueAtIndex(runtime, i).asObject(runtime));
         texs.push_back(*point.get());
       }
     }
 
-    auto paint = count >= 4 ? JsiSkPaint::fromValue(runtime, arguments[4]) : nullptr;
+    auto paint =
+        count >= 4 ? JsiSkPaint::fromValue(runtime, arguments[4]) : nullptr;
     auto blendMode = static_cast<SkBlendMode>(arguments[3].asNumber());
-    _canvas->drawPatch(cubics.data(), colors.data(), texs.data(), blendMode, *paint);
+    _canvas->drawPatch(cubics.data(), colors.data(), texs.data(), blendMode,
+                       *paint);
     return jsi::Value::undefined();
   }
 
@@ -347,7 +353,7 @@ public:
     positions.reserve(pointsSize);
     for (int i = 0; i < pointsSize; i++) {
       std::shared_ptr<SkPoint> point = JsiSkPoint::fromValue(
-              runtime, jsiPositions.getValueAtIndex(runtime, i).asObject(runtime));
+          runtime, jsiPositions.getValueAtIndex(runtime, i).asObject(runtime));
       positions.push_back(*point.get());
     }
 
@@ -358,14 +364,8 @@ public:
       glyphs.push_back(jsiGlyphs.getValueAtIndex(runtime, i).asNumber());
     }
 
-    _canvas->drawGlyphs(
-            glyphsSize,
-            glyphs.data(),
-            positions.data(),
-            origin,
-            *font,
-            *paint
-    );
+    _canvas->drawGlyphs(glyphsSize, glyphs.data(), positions.data(), origin,
+                        *font, *paint);
 
     return jsi::Value::undefined();
   }
@@ -412,10 +412,17 @@ public:
   JSI_HOST_FUNCTION(save) { return jsi::Value(_canvas->save()); }
 
   JSI_HOST_FUNCTION(saveLayer) {
-    SkPaint *paint = (count >= 1 && !arguments[0].isUndefined()) ?
-                         JsiSkPaint::fromValue(runtime, arguments[0]).get() : nullptr;
-    SkRect *bounds = count >= 2 && !arguments[1].isNull() && arguments[1].isUndefined() ? JsiSkRect::fromValue(runtime, arguments[1]).get() : nullptr;
-    SkImageFilter *backdrop = count >= 3 && !arguments[2].isNull() && !arguments[2].isUndefined() ? JsiSkImageFilter::fromValue(runtime, arguments[2]).get() : nullptr;
+    SkPaint *paint = (count >= 1 && !arguments[0].isUndefined())
+                         ? JsiSkPaint::fromValue(runtime, arguments[0]).get()
+                         : nullptr;
+    SkRect *bounds =
+        count >= 2 && !arguments[1].isNull() && !arguments[1].isUndefined()
+            ? JsiSkRect::fromValue(runtime, arguments[1]).get()
+            : nullptr;
+    SkImageFilter *backdrop =
+        count >= 3 && !arguments[2].isNull() && !arguments[2].isUndefined()
+            ? JsiSkImageFilter::fromValue(runtime, arguments[2]).get()
+            : nullptr;
     SkCanvas::SaveLayerFlags flags = count >= 4 ? arguments[3].asNumber() : 0;
     return jsi::Value(_canvas->saveLayer(
         SkCanvas::SaveLayerRec(bounds, paint, backdrop, flags)));
@@ -477,7 +484,7 @@ public:
     _canvas->concat(*matrix.get());
     return jsi::Value::undefined();
   }
-  
+
   JSI_HOST_FUNCTION(drawPicture) {
     auto picture = JsiSkPicture::fromValue(runtime, arguments[0]);
     _canvas->drawPicture(picture);
@@ -524,10 +531,11 @@ public:
                        JSI_EXPORT_FUNC(JsiSkCanvas, concat),
                        JSI_EXPORT_FUNC(JsiSkCanvas, drawPicture))
 
-  JsiSkCanvas(std::shared_ptr<RNSkPlatformContext> context)
+  explicit JsiSkCanvas(std::shared_ptr<RNSkPlatformContext> context)
       : JsiSkHostObject(std::move(context)) {}
 
-  JsiSkCanvas(std::shared_ptr<RNSkPlatformContext> context, SkCanvas* canvas): JsiSkCanvas(std::move(context)) {
+  JsiSkCanvas(std::shared_ptr<RNSkPlatformContext> context, SkCanvas *canvas)
+      : JsiSkCanvas(std::move(context)) {
     setCanvas(canvas);
   }
 

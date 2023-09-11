@@ -1,12 +1,11 @@
-import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform } from 'react-native';
 
+import { ProjectView } from './ProjectView';
 import { AppPlatform, useWebContainerProjectPage_Query } from '../../graphql/types';
 import * as Kernel from '../../kernel/Kernel';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
-import { ProjectView } from './ProjectView';
 
 export function ProjectContainer(
   props: { appId: string } & StackScreenProps<HomeStackRoutes, 'ProjectDetails'>
@@ -16,9 +15,7 @@ export function ProjectContainer(
     variables: {
       appId: props.appId,
       platform: Platform.OS === 'ios' ? AppPlatform.Ios : AppPlatform.Android,
-      runtimeVersions: Kernel.sdkVersions
-        .split(',')
-        .map((kernelSDKVersion) => getRuntimeVersionForSDKVersion(kernelSDKVersion)),
+      sdkVersions: Kernel.sdkVersions.split(','),
     },
   });
   return <ProjectView {...props} {...query} />;

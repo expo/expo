@@ -1,5 +1,6 @@
-import type { BundleOutput } from '@expo/dev-server';
 import path from 'path';
+
+import { BundleOutput } from './fork-bundleAsync';
 
 export type BundlePlatform = 'android' | 'ios';
 
@@ -34,12 +35,13 @@ export function createMetadataJson({
           bundle: path.join('bundles', fileNames[platform]!),
           // Collect all of the assets and convert them to the serial format.
           assets: bundle.assets
-            .map((asset) =>
-              // Each asset has multiple hashes which we convert and then flatten.
-              asset.fileHashes?.map((hash) => ({
-                path: path.join('assets', hash),
-                ext: asset.type,
-              }))
+            .map(
+              (asset) =>
+                // Each asset has multiple hashes which we convert and then flatten.
+                asset.fileHashes?.map((hash) => ({
+                  path: path.join('assets', hash),
+                  ext: asset.type,
+                }))
             )
             .filter(Boolean)
             .flat(),

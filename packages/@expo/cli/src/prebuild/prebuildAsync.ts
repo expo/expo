@@ -1,16 +1,17 @@
 import { ExpoConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 
-import { installAsync } from '../install/installAsync';
-import { env } from '../utils/env';
-import { clearNodeModulesAsync } from '../utils/nodeModules';
-import { logNewSection } from '../utils/ora';
-import { profile } from '../utils/profile';
 import { clearNativeFolder, promptToClearMalformedNativeProjectsAsync } from './clearNativeFolder';
 import { configureProjectAsync } from './configureProjectAsync';
 import { ensureConfigAsync } from './ensureConfigAsync';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
 import { updateFromTemplateAsync } from './updateFromTemplate';
+import { installAsync } from '../install/installAsync';
+import { env } from '../utils/env';
+import { setNodeEnv } from '../utils/nodeEnv';
+import { clearNodeModulesAsync } from '../utils/nodeModules';
+import { logNewSection } from '../utils/ora';
+import { profile } from '../utils/profile';
 
 const debug = require('debug')('expo:prebuild') as typeof console.log;
 
@@ -52,11 +53,15 @@ export async function prebuildAsync(
       npm?: boolean;
       yarn?: boolean;
       pnpm?: boolean;
+      bun?: boolean;
     };
     /** List of node modules to skip updating. */
     skipDependencyUpdate?: string[];
   }
 ): Promise<PrebuildResults | null> {
+  setNodeEnv('development');
+  require('@expo/env').load(projectRoot);
+
   if (options.clean) {
     const { maybeBailOnGitStatusAsync } = await import('../utils/git');
     // Clean the project folders...
@@ -97,8 +102,11 @@ export async function prebuildAsync(
     }
 
     await installAsync([], {
-      ...options.packageManager,
-      silent: !env.EXPO_DEBUG,
+      npm: !!options.packageManager?.npm,
+      yarn: !!options.packageManager?.yarn,
+      pnpm: !!options.packageManager?.pnpm,
+      bun: !!options.packageManager?.bun,
+      silent: !(env.EXPO_DEBUG || env.CI),
     });
   }
 

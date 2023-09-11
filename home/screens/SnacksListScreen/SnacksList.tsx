@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { useHome_AccountSnacksQuery } from '../../graphql/types';
 import { SnackListView } from './SnackList';
+import { useHome_AccountSnacksQuery } from '../../graphql/types';
 
 function useSnacksQuery({ accountName }: { accountName: string }) {
   const { data, fetchMore } = useHome_AccountSnacksQuery({
@@ -19,25 +19,6 @@ function useSnacksQuery({ accountName }: { accountName: string }) {
     return fetchMore({
       variables: {
         offset: snacks?.length || 0,
-      },
-      updateQuery: (previousData, { fetchMoreResult }) => {
-        if (!fetchMoreResult?.account?.byName) {
-          return previousData;
-        }
-        return {
-          account: {
-            ...previousData.account,
-            ...fetchMoreResult.account,
-            byName: {
-              ...previousData.account.byName,
-              ...fetchMoreResult.account.byName,
-              snacks: [
-                ...previousData.account.byName.snacks,
-                ...fetchMoreResult.account.byName.snacks,
-              ],
-            },
-          },
-        };
       },
     });
   }, [fetchMore, snacks]);

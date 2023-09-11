@@ -11,7 +11,9 @@ export function DevServerExplainerModal() {
       <Spacer.Vertical size="small" />
 
       <View bg="secondary" border="default" rounded="medium" padding="medium">
-        <Text type="mono" size="small">expo start --dev-client</Text>
+        <Text type="mono" size="small">
+          npx expo start --dev-client
+        </Text>
       </View>
 
       <Spacer.Vertical size="large" />

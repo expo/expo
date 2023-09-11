@@ -1,15 +1,22 @@
-# expo-barcode-scanner
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/bar-code-scanner/">
+    <img
+      src="../../.github/resources/expo-barcode-scanner.svg"
+      alt="expo-barcode-scanner"
+      height="64" />
+  </a>
+</p>
 
 Allows scanning variety of supported barcodes both as standalone module and as extension for expo-camera. It also allows scanning barcodes from existing images.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/bar-code-scanner.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/bar-code-scanner.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/bar-code-scanner/)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/bar-code-scanner/).
+For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/bar-code-scanner/).
 
 # Installation in bare React Native projects
 
@@ -18,7 +25,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-barcode-scanner
+npx expo install expo-barcode-scanner
 ```
 
 ### Configure for iOS

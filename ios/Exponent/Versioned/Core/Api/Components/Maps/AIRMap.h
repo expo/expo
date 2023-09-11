@@ -17,7 +17,6 @@
 
 @class AIRMapMarker;
 
-extern const CLLocationDegrees AIRMapDefaultSpan;
 extern const NSTimeInterval AIRMapRegionChangeObserveInterval;
 extern const CGFloat AIRMapZoomBoundBuffer;
 extern const NSInteger AIRMapMaxZoomLevel;
@@ -40,7 +39,6 @@ extern const NSInteger AIRMapMaxZoomLevel;
 @property (nonatomic, assign) CGFloat minDelta;
 @property (nonatomic, assign) CGFloat maxDelta;
 @property (nonatomic, assign) UIEdgeInsets legalLabelInsets;
-@property (nonatomic, strong) NSTimer *regionChangeObserveTimer;
 @property (nonatomic, assign) MKCoordinateRegion initialRegion;
 @property (nonatomic, assign) MKMapCamera *initialCamera;
 @property (nonatomic, assign) CGFloat minZoomLevel;

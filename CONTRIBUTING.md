@@ -37,7 +37,7 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 
 ### Set up documentation
 
-If you plan to contribute to the documentation, run  `npm run setup:docs`. 
+If you plan to contribute to the documentation, run `npm run setup:docs`.
 
 ### Set up Android
 
@@ -62,7 +62,7 @@ If you will be working with the iOS project, ensure **ruby 2.7** is installed on
    - Web: `yarn web`
    - iOS: `yarn ios`
    - Android: `yarn android`
-   - If you are working on Linux, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="Konsole"`)
+   - If you are working on Linux, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="konsole"`)
 
 3. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
 
@@ -130,14 +130,14 @@ Thanks again for helping to make sure that Expo is stable for everyone!
 
 ## 📚 Updating Documentation
 
-Our docs are made with [Next.js](https://github.com/zeit/next.js). They're located in the `docs/` directory. For more information look at the [`docs/readme.md`](/docs/README.md).
+Our docs are made with [Next.js](https://github.com/vercel/next.js). They're located in the **docs/** directory. For more information look at the [`docs/README.md`](/docs/README.md).
 
 **TL;DR:**
 
-1. Navigate to the `docs/` directory and run `yarn`.
-2. Start the project with `yarn dev` (make sure you don't have another server running on port `3000`).
-3. Navigate to the docs you want to edit: `cd docs/pages/versions/unversioned/`
-4. If you update an older version, ensure the relevant changes are copied into `unversioned/`
+1. Navigate to the **docs/** directory and run `yarn`.
+2. Start the project with `yarn dev` (make sure you don't have another server running on port `3002`).
+3. Navigate to the docs you want to edit: `cd docs/pages/`.
+4. If you update an older version, ensure the relevant changes are copied into `docs/pages/versions/unversioned/` for API docs.
 
 ## 📝 Writing a Commit Message
 

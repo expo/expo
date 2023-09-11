@@ -23,9 +23,11 @@ import versioned.host.exp.exponent.modules.api.netinfo.types.ConnectionType;
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
@@ -48,13 +50,18 @@ public abstract class ConnectivityReceiver {
 
     private static String getSubnet(InetAddress inetAddress) throws SocketException {
         NetworkInterface netAddress = NetworkInterface.getByInetAddress(inetAddress);
-        int mask =
-                0xffffffff
-                        << (32
-                        - netAddress
-                        .getInterfaceAddresses()
-                        .get(1)
-                        .getNetworkPrefixLength());
+        List<InterfaceAddress> addresses = netAddress.getInterfaceAddresses();
+
+        short networkPrefixLength = 0;
+        for (InterfaceAddress address : addresses) {
+            boolean isIpV4 = address.getAddress().getAddress().length == 4;
+            if (isIpV4) {
+                networkPrefixLength = address.getNetworkPrefixLength();
+                break;
+            }
+        }
+
+        int mask = 0xffffffff << (32 - networkPrefixLength);
         return String.format(
                 Locale.US,
                 "%d.%d.%d.%d",
@@ -135,7 +142,10 @@ public abstract class ConnectivityReceiver {
 
         // Add if WiFi is ON or OFF
         if (NetInfoUtils.isAccessWifiStatePermissionGranted(getReactContext())) {
-            boolean isEnabled = mWifiManager.isWifiEnabled();
+            boolean isEnabled = false;
+            if (mWifiManager != null) {
+              isEnabled = mWifiManager.isWifiEnabled();
+            }
             event.putBoolean("isWifiEnabled", isEnabled);
         }
 
@@ -145,7 +155,7 @@ public abstract class ConnectivityReceiver {
         // Add the connection state information
         boolean isConnected =
                 !mConnectionType.equals(ConnectionType.NONE)
-                        && !mConnectionType.equals(ConnectionType.UNKNOWN);
+                && !mConnectionType.equals(ConnectionType.UNKNOWN);
         event.putBoolean("isConnected", isConnected);
 
         // Add the internet reachable information
@@ -201,7 +211,7 @@ public abstract class ConnectivityReceiver {
                 }
                 break;
             case "wifi":
-                if (NetInfoUtils.isAccessWifiStatePermissionGranted(getReactContext())) {
+                if (NetInfoUtils.isAccessWifiStatePermissionGranted(getReactContext()) && mWifiManager != null) {
                     WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
                     if (wifiInfo != null) {
                         // Get the SSID

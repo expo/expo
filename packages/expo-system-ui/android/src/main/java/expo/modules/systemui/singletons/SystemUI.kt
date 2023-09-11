@@ -1,4 +1,4 @@
-package expo.modules.systemui
+package expo.modules.systemui.singletons
 
 import android.os.Build
 import android.util.Log
@@ -7,14 +7,14 @@ import androidx.appcompat.app.AppCompatDelegate
 object SystemUI {
   private const val TAG = "SystemUI"
 
-  fun setUserInterfaceStyle(
-    style: String,
+  private fun setUserInterfaceStyle(
+    style: String?,
     successCallback: () -> Unit,
     failureCallback: (reason: String) -> Unit
   ) {
 
     val mode = if (style == null) {
-      AppCompatDelegate.MODE_NIGHT_NO
+      AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
     } else when (style) {
       "automatic" -> {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {

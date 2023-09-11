@@ -5,23 +5,23 @@ import * as FontLoader from '../FontLoader';
 
 describe('loadSingleFontAsync', () => {
   it(`only excepts FontResource`, async () => {
-    await expect(FontLoader.loadSingleFontAsync('foo', 10 as any)).rejects.toThrow(
+    expect(() => FontLoader.loadSingleFontAsync('foo', 10 as any)).toThrow(
       'Expected font asset of type'
     );
-    await expect(FontLoader.loadSingleFontAsync('foo', { uri: 10 as any })).rejects.toThrow(
+    expect(() => FontLoader.loadSingleFontAsync('foo', { uri: 10 as any })).toThrow(
       'Expected font asset of type'
     );
-    await expect(FontLoader.loadSingleFontAsync('foo', Asset.fromURI('foo'))).rejects.toThrow(
+    expect(() => FontLoader.loadSingleFontAsync('foo', Asset.fromURI('foo'))).toThrow(
       'Expected font asset of type'
     );
   });
   it(`rejects expo-asset`, async () => {
-    await expect(FontLoader.loadSingleFontAsync('foo', Asset.fromURI('foo'))).rejects.toThrow(
+    expect(() => FontLoader.loadSingleFontAsync('foo', Asset.fromURI('foo'))).toThrow(
       'Expected font asset of type'
     );
-    await expect(
+    expect(() =>
       FontLoader.loadSingleFontAsync('foo', { uri: Asset.fromURI('foo') } as any)
-    ).rejects.toThrow('Expected font asset of type');
+    ).toThrow('Expected font asset of type');
   });
 });
 
@@ -52,14 +52,9 @@ describe('getAssetForSource', () => {
     expect(
       (FontLoader.getAssetForSource({ uri: 'foo', display: Font.FontDisplay.SWAP }) as any).display
     ).toBe(Font.FontDisplay.SWAP);
-  });
-  it(`doesn't support numeric assets on web`, () => {
-    expect(() => FontLoader.getAssetForSource(10)).toThrow('number is not supported on web');
-    expect(() =>
-      FontLoader.getAssetForSource({ name: 'foo', display: Font.FontDisplay.FALLBACK, uri: 10 })
-    ).toThrow('number is not supported on web');
-    expect(() => FontLoader.getAssetForSource({ name: 'foo', localUri: 10 } as any)).toThrow(
-      'number is not supported on web'
-    );
+    expect(
+      (FontLoader.getAssetForSource({ default: 'foo', display: Font.FontDisplay.SWAP }) as any)
+        .display
+    ).toBe(Font.FontDisplay.SWAP);
   });
 });

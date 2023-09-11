@@ -1,4 +1,5 @@
 import { getConfig } from '@expo/config';
+import { vol } from 'memfs';
 
 import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
@@ -22,6 +23,9 @@ jest.mock('../resolveAssets', () => ({
 }));
 jest.mock('../resolveEntryPoint', () => ({
   resolveEntryPoint: jest.fn(() => './index.js'),
+  resolveAbsoluteEntryPoint: jest.fn((projectRoot: string) =>
+    require('path').join(projectRoot, './index.js')
+  ),
 }));
 jest.mock('@expo/config', () => ({
   getNameFromConfig: jest.fn(jest.requireActual('@expo/config').getNameFromConfig),
@@ -90,7 +94,7 @@ describe('checkBrowserRequestAsync', () => {
         // NOTE(EvanBacon): Browsers won't pass the `expo-platform` header so we need to
         // provide the `platform=web` query parameter in order for the multi-platform dev server
         // to return the correct bundle.
-        '/./index.bundle?platform=web&dev=true&hot=false',
+        '/index.bundle?platform=web&dev=true&hot=false',
       ],
     });
     expect(res.setHeader).toBeCalledWith('Content-Type', 'text/html');
@@ -124,6 +128,14 @@ describe('checkBrowserRequestAsync', () => {
 });
 
 describe('_getBundleUrl', () => {
+  beforeEach(() => {
+    vol.reset();
+  });
+
+  afterAll(() => {
+    vol.reset();
+  });
+
   const createConstructUrl = () =>
     jest.fn(({ scheme, hostname }) => `${scheme}://${hostname ?? 'localhost'}:8080`);
   it('returns the bundle url with the hostname', () => {
@@ -157,6 +169,31 @@ describe('_getBundleUrl', () => {
 
     expect(constructUrl).toHaveBeenCalledWith({ hostname: undefined, scheme: 'http' });
   });
+
+  it('returns the bundle url in production with lazy enabled', () => {
+    vol.fromJSON(
+      {
+        'node_modules/@expo/metro-runtime/package.json': '',
+      },
+      '/'
+    );
+    const constructUrl = createConstructUrl();
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl,
+      mode: 'production',
+      minify: true,
+    });
+    expect(
+      middleware._getBundleUrl({
+        mainModuleName: 'node_modules/expo/AppEntry',
+        platform: 'ios',
+      })
+    ).toEqual(
+      'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&lazy=true&minify=true'
+    );
+
+    expect(constructUrl).toHaveBeenCalledWith({ hostname: undefined, scheme: 'http' });
+  });
 });
 
 describe('_resolveProjectSettingsAsync', () => {
@@ -181,8 +218,7 @@ describe('_resolveProjectSettingsAsync', () => {
         __flipperHack: 'React Native packager is running',
         debuggerHost: 'http://fake.mock',
         developer: { projectRoot: '/', tool: 'expo-cli' },
-        logUrl: 'http://fake.mock/logs',
-        mainModuleName: './index',
+        mainModuleName: 'index',
         packagerOpts: { dev: true },
       },
       hostUri: 'http://fake.mock',
@@ -213,7 +249,6 @@ describe('_resolveProjectSettingsAsync', () => {
         __flipperHack: 'React Native packager is running',
         debuggerHost: 'http://fake.mock',
         developer: { projectRoot: '/', tool: 'expo-cli' },
-        logUrl: 'http://fake.mock/logs',
         mainModuleName: 'index',
         packagerOpts: { dev: false },
       },

@@ -57,7 +57,7 @@ export async function setMinimumIntervalAsync(minimumInterval: number): Promise<
  *     const receivedNewData = // do your background fetch here
  *     return receivedNewData ? BackgroundFetch.BackgroundFetchResult.NewData : BackgroundFetch.BackgroundFetchResult.NoData;
  *   } catch (error) {
- *     return BackgroundFetch.Result.Failed;
+ *     return BackgroundFetch.BackgroundFetchResult.Failed;
  *   }
  * });
  * ```

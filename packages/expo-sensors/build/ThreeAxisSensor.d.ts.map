@@ -1,1 +1,0 @@
-{"version":3,"file":"ThreeAxisSensor.d.ts","sourceRoot":"","sources":["../src/ThreeAxisSensor.ts"],"names":[],"mappings":"AAAA,OAAO,YAAY,MAAM,gBAAgB,CAAC;AAE1C,MAAM,WAAW,oBAAoB;IACnC,CAAC,EAAE,MAAM,CAAC;IACV,CAAC,EAAE,MAAM,CAAC;IACV,CAAC,EAAE,MAAM,CAAC;CACX;AAED;;GAEG;AACH,MAAM,CAAC,OAAO,OAAO,eAAgB,SAAQ,YAAY,CAAC,oBAAoB,CAAC;CAAG"}

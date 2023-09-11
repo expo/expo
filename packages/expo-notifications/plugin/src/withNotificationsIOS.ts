@@ -4,7 +4,7 @@ import {
   IOSConfig,
   withXcodeProject,
   XcodeProject,
-} from '@expo/config-plugins';
+} from 'expo/config-plugins';
 import { copyFileSync } from 'fs';
 import { basename, resolve } from 'path';
 

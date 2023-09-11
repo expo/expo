@@ -1,5 +1,15 @@
-export declare type SpeechEventCallback = (this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any;
-export declare type SpeechOptions = {
+export type SpeechEventCallback = (this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any;
+export type NativeBoundaryEvent = {
+    charIndex: number;
+    charLength: number;
+};
+/**
+ * Native-only callback with parameters related to the word about to be uttered.
+ * @platform ios
+ * @platform android
+ */
+export type NativeBoundaryEventCallback = (ev: NativeBoundaryEvent) => void;
+export type SpeechOptions = {
     /**
      * The code of a language that should be used to read the `text`, refer to IETF BCP 47 to see
      * valid codes.
@@ -29,6 +39,7 @@ export declare type SpeechOptions = {
      * A callback that is invoked when an error occurred while speaking.
      * @param error
      * @platform android
+     * @platform ios
      */
     onError?: (error: Error) => void | SpeechEventCallback;
     /**
@@ -43,7 +54,10 @@ export declare type SpeechOptions = {
      */
     voice?: string;
     _voiceIndex?: number;
-    onBoundary?: SpeechEventCallback | null;
+    /**
+     * A callback that is invoked when the spoken utterance reaches a word.
+     */
+    onBoundary?: NativeBoundaryEventCallback | SpeechEventCallback | null;
     onMark?: SpeechEventCallback | null;
     onPause?: SpeechEventCallback | null;
     onResume?: SpeechEventCallback | null;
@@ -58,7 +72,7 @@ export declare enum VoiceQuality {
 /**
  * Object describing the available voices on the device.
  */
-export declare type Voice = {
+export type Voice = {
     /**
      * Voice unique identifier.
      */
@@ -76,7 +90,7 @@ export declare type Voice = {
      */
     language: string;
 };
-export declare type WebVoice = Voice & {
+export type WebVoice = Voice & {
     isDefault: boolean;
     localService: boolean;
     name: string;

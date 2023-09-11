@@ -37,7 +37,7 @@ function processAttachments(
  * - If the status of the SMS message cannot be determined: `{ result: 'unknown' }`.
  *
  * Android does not provide information about the status of the SMS message, so on Android devices
- * the Promise will always resolve with { result: 'unknown' }.
+ * the Promise will always resolve with `{ result: 'unknown' }`.
  *
  * > Note: The only feedback collected by this module is whether any message has been sent. That
  * means we do not check actual content of message nor recipients list.

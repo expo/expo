@@ -4,9 +4,21 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
+import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.updates.codesigning.CodeSigningConfiguration
 
-class UpdatesConfiguration private constructor (
+/**
+ * Holds global, immutable configuration values for updates, as well as doing some rudimentary
+ * validation.
+ *
+ * In most apps, these configuration values are baked into the build, and this class functions as a
+ * utility for reading and memoizing the values.
+ *
+ * In development clients (including Expo Go) where this configuration is intended to be dynamic at
+ * runtime and updates from multiple scopes can potentially be opened, multiple instances of this
+ * class may be created over the lifetime of the app, but only one should be active at a time.
+ */
+data class UpdatesConfiguration(
   val isEnabled: Boolean,
   val expectsSignedManifest: Boolean,
   val scopeKey: String?,
@@ -21,10 +33,25 @@ class UpdatesConfiguration private constructor (
   val codeSigningCertificate: String?,
   val codeSigningMetadata: Map<String, String>?,
   val codeSigningIncludeManifestResponseCertificateChain: Boolean,
-  val codeSigningAllowUnsignedManifests: Boolean,
+  private val codeSigningAllowUnsignedManifests: Boolean,
+  val enableExpoUpdatesProtocolV0CompatibilityMode: Boolean, // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
 ) {
   enum class CheckAutomaticallyConfiguration {
-    NEVER, ERROR_RECOVERY_ONLY, WIFI_ONLY, ALWAYS
+    NEVER {
+      override fun toJSString() = "NEVER"
+    },
+    ERROR_RECOVERY_ONLY {
+      override fun toJSString() = "ERROR_RECOVERY_ONLY"
+    },
+    WIFI_ONLY {
+      override fun toJSString() = "WIFI_ONLY"
+    },
+    ALWAYS {
+      override fun toJSString() = "ALWAYS"
+    };
+    open fun toJSString(): String {
+      throw InvalidArgumentException("Unsupported CheckAutomaticallyConfiguration value")
+    }
   }
 
   constructor(context: Context?, overrideMap: Map<String, Any>?) : this(
@@ -70,6 +97,7 @@ class UpdatesConfiguration private constructor (
     codeSigningAllowUnsignedManifests = overrideMap?.readValueCheckingType<Boolean>(
       UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS
     ) ?: context?.getMetadataValue("expo.modules.updates.CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS") ?: false,
+    enableExpoUpdatesProtocolV0CompatibilityMode = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE) ?: context?.getMetadataValue("expo.modules.updates.ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE") ?: false,
   )
 
   val isMissingRuntimeVersion: Boolean
@@ -96,6 +124,7 @@ class UpdatesConfiguration private constructor (
     const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY = "launchWaitMs"
     const val UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY = "hasEmbeddedUpdate"
     const val UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST = "expectsSignedManifest"
+    const val UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE = "enableExpoUpdatesProtocolCompatibilityMode"
 
     const val UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE = "codeSigningCertificate"
     const val UPDATES_CONFIGURATION_CODE_SIGNING_METADATA = "codeSigningMetadata"

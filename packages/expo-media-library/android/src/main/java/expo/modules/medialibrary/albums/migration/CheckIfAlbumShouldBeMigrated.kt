@@ -1,12 +1,11 @@
 package expo.modules.medialibrary.albums.migration
 
 import android.content.Context
-import android.os.AsyncTask
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
-import expo.modules.core.Promise
-import expo.modules.medialibrary.ERROR_NO_ALBUM
+import expo.modules.kotlin.Promise
+import expo.modules.medialibrary.AlbumNotFound
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import java.io.File
 
@@ -15,21 +14,21 @@ class CheckIfAlbumShouldBeMigrated(
   private val context: Context,
   private val albumId: String,
   private val promise: Promise
-) : AsyncTask<Void?, Void?, Void?>() {
-  public override fun doInBackground(vararg voids: Void?): Void? {
+) {
+  fun execute() {
     val albumDir = getAlbumDirectory(context, albumId)
     if (albumDir == null) {
-      promise.reject(ERROR_NO_ALBUM, "Couldn't find album")
+      throw AlbumNotFound()
     } else {
       promise.resolve(!albumDir.canWrite())
     }
-    return null
   }
 }
 
 /**
  * Returns directory for given Album ID (`BUCKET_ID` column) or `null` if album not found.
  */
+@RequiresApi(Build.VERSION_CODES.R)
 private fun getAlbumDirectory(context: Context, albumId: String): File? {
   val selection =
     "${MediaStore.Files.FileColumns.MEDIA_TYPE} != ${MediaStore.Files.FileColumns.MEDIA_TYPE_NONE}" +

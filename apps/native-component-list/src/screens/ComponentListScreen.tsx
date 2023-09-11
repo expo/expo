@@ -14,9 +14,9 @@ import {
   Pressable,
   useWindowDimensions,
 } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-interface ListElement {
+export interface ListElement {
   name: string;
   route?: string;
   isAvailable?: boolean;
@@ -25,6 +25,7 @@ interface ListElement {
 interface Props {
   apis: ListElement[];
   renderItemRight?: (props: ListElement) => React.ReactNode;
+  sort?: boolean;
 }
 
 function LinkButton({
@@ -77,7 +78,7 @@ export default function ComponentListScreen(props: Props) {
   const isMobile = width <= 640;
 
   // adjust the right padding for safe area -- we don't need the left because that's where the drawer is.
-  const { bottom, right } = useSafeArea();
+  const { bottom, right } = useSafeAreaInsets();
 
   const renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
     const { route, name: exampleName, isAvailable } = item;
@@ -99,6 +100,9 @@ export default function ComponentListScreen(props: Props) {
   const keyExtractor = React.useCallback((item: ListElement) => item.name, []);
 
   const sortedApis = React.useMemo(() => {
+    if (props.sort === false) {
+      return props.apis;
+    }
     return props.apis.sort((a, b) => {
       if (a.isAvailable !== b.isAvailable) {
         if (a.isAvailable) {

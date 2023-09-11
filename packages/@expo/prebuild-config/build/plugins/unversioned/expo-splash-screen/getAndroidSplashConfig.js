@@ -6,15 +6,12 @@ Object.defineProperty(exports, "__esModule", {
 exports.getAndroidDarkSplashConfig = getAndroidDarkSplashConfig;
 exports.getAndroidSplashConfig = getAndroidSplashConfig;
 const defaultResizeMode = 'contain';
-
 function getAndroidSplashConfig(config) {
   var _config$android;
-
   // Respect the splash screen object, don't mix and match across different splash screen objects
   // in case the user wants the top level splash to apply to every platform except android.
   if ((_config$android = config.android) !== null && _config$android !== void 0 && _config$android.splash) {
     var _config$android2, _ref, _splash$xxxhdpi, _ref2, _splash$xxhdpi, _ref3, _splash$xhdpi, _ref4, _splash$hdpi, _ref5, _splash$mdpi, _splash$backgroundCol, _splash$resizeMode;
-
     const splash = (_config$android2 = config.android) === null || _config$android2 === void 0 ? void 0 : _config$android2.splash;
     return {
       xxxhdpi: (_ref = (_splash$xxxhdpi = splash.xxxhdpi) !== null && _splash$xxxhdpi !== void 0 ? _splash$xxxhdpi : splash.image) !== null && _ref !== void 0 ? _ref : null,
@@ -26,10 +23,8 @@ function getAndroidSplashConfig(config) {
       resizeMode: (_splash$resizeMode = splash.resizeMode) !== null && _splash$resizeMode !== void 0 ? _splash$resizeMode : defaultResizeMode
     };
   }
-
   if (config.splash) {
     var _splash$image, _splash$image2, _splash$image3, _splash$image4, _splash$image5, _splash$backgroundCol2, _splash$resizeMode2;
-
     const splash = config.splash;
     return {
       xxxhdpi: (_splash$image = splash.image) !== null && _splash$image !== void 0 ? _splash$image : null,
@@ -41,19 +36,14 @@ function getAndroidSplashConfig(config) {
       resizeMode: (_splash$resizeMode2 = splash.resizeMode) !== null && _splash$resizeMode2 !== void 0 ? _splash$resizeMode2 : defaultResizeMode
     };
   }
-
   return null;
-} // TODO: dark isn't supported in the Expo config spec yet.
-
-
+}
 function getAndroidDarkSplashConfig(config) {
   var _config$android3, _config$android3$spla;
-
   // Respect the splash screen object, don't mix and match across different splash screen objects
   // in case the user wants the top level splash to apply to every platform except android.
   if ((_config$android3 = config.android) !== null && _config$android3 !== void 0 && (_config$android3$spla = _config$android3.splash) !== null && _config$android3$spla !== void 0 && _config$android3$spla.dark) {
     var _config$android4, _config$android4$spla, _ref6, _splash$xxxhdpi2, _ref7, _splash$xxhdpi2, _ref8, _splash$xhdpi2, _ref9, _splash$hdpi2, _ref10, _splash$mdpi2, _splash$backgroundCol3, _lightTheme$resizeMod;
-
     const splash = (_config$android4 = config.android) === null || _config$android4 === void 0 ? void 0 : (_config$android4$spla = _config$android4.splash) === null || _config$android4$spla === void 0 ? void 0 : _config$android4$spla.dark;
     const lightTheme = getAndroidSplashConfig(config);
     return {
@@ -67,7 +57,6 @@ function getAndroidDarkSplashConfig(config) {
       resizeMode: (_lightTheme$resizeMod = lightTheme === null || lightTheme === void 0 ? void 0 : lightTheme.resizeMode) !== null && _lightTheme$resizeMod !== void 0 ? _lightTheme$resizeMod : defaultResizeMode
     };
   }
-
   return null;
 }
 //# sourceMappingURL=getAndroidSplashConfig.js.map

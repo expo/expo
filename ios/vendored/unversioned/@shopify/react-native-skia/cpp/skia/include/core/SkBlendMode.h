@@ -73,6 +73,8 @@ enum class SkBlendMode {
     kLastMode          = kLuminosity, //!< last valid value
 };
 
+static constexpr int kSkBlendModeCount = static_cast<int>(SkBlendMode::kLastMode) + 1;
+
 /**
  * For Porter-Duff SkBlendModes (those <= kLastCoeffMode), these coefficients describe the blend
  * equation used. Coefficient-based blend modes specify an equation:

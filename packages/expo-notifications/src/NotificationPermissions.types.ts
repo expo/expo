@@ -22,6 +22,7 @@ export enum IosAuthorizationStatus {
 
 export { PermissionHookOptions };
 
+// @docsMissing
 export interface NotificationPermissionsStatus extends PermissionResponse {
   android?: {
     importance: number;
@@ -43,24 +44,59 @@ export interface NotificationPermissionsStatus extends PermissionResponse {
   };
 }
 
+/**
+ * Available configuration for permission request on iOS platform.
+ * See Apple documentation for [`UNAuthorizationOptions`](https://developer.apple.com/documentation/usernotifications/unauthorizationoptions) to learn more.
+ */
 export interface IosNotificationPermissionsRequest {
+  /**
+   * The ability to display alerts.
+   */
   allowAlert?: boolean;
+  /**
+   * The ability to update the app’s badge.
+   */
   allowBadge?: boolean;
+  /**
+   * The ability to play sounds.
+   */
   allowSound?: boolean;
+  /**
+   * The ability to display notifications in a CarPlay environment.
+   */
   allowDisplayInCarPlay?: boolean;
+  /**
+   * The ability to play sounds for critical alerts.
+   */
   allowCriticalAlerts?: boolean;
+  /**
+   * An option indicating the system should display a button for in-app notification settings.
+   */
   provideAppNotificationSettings?: boolean;
+  /**
+   * The ability to post noninterrupting notifications provisionally to the Notification Center.
+   */
   allowProvisional?: boolean;
+  /**
+   * The ability for Siri to automatically read out messages over AirPods.
+   * @deprecated
+   */
   allowAnnouncements?: boolean;
 }
 
-export interface AndroidNotificationPermissionRequest {}
+export type NativeNotificationPermissionsRequest = IosNotificationPermissionsRequest | object;
 
-export type NativeNotificationPermissionsRequest =
-  | IosNotificationPermissionsRequest
-  | AndroidNotificationPermissionRequest;
-
+/**
+ * An interface representing the permissions request scope configuration.
+ * Each option corresponds to a different native platform authorization option.
+ */
 export interface NotificationPermissionsRequest {
+  /**
+   * Available configuration for permission request on iOS platform.
+   */
   ios?: IosNotificationPermissionsRequest;
-  android?: AndroidNotificationPermissionRequest;
+  /**
+   * On Android, all available permissions are granted by default, and if a user declines any permission, an app cannot prompt the user to change.
+   */
+  android?: object;
 }

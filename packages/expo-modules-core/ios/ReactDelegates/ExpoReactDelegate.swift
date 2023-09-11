@@ -3,7 +3,7 @@
 /**
  An extensible react instance creation delegate. This class will loop through each `ExpoReactDelegateHandler` to determine the winner to create the instance.
  */
-@objc
+@objc(EXReactDelegate)
 public class ExpoReactDelegate: NSObject {
   private let handlers: [ExpoReactDelegateHandler]
 
@@ -22,10 +22,15 @@ public class ExpoReactDelegate: NSObject {
   }
 
   @objc
-  public func createRootView(bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable: Any]?) -> UIView {
+  public func createRootView(
+    bridge: RCTBridge,
+    moduleName: String,
+    initialProperties: [AnyHashable: Any]?,
+    fabricEnabled: Bool = EXAppDefines.APP_NEW_ARCH_ENABLED
+  ) -> UIView {
     return self.handlers.lazy
       .compactMap { $0.createRootView(reactDelegate: self, bridge: bridge, moduleName: moduleName, initialProperties: initialProperties) }
-      .first(where: { _ in true }) ?? EXAppSetupDefaultRootView(bridge, moduleName, initialProperties)
+      .first(where: { _ in true }) ?? EXAppSetupDefaultRootView(bridge, moduleName, initialProperties, fabricEnabled)
   }
 
   @objc

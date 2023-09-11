@@ -6,6 +6,7 @@
  */
 
 #pragma once
+#ifdef __cplusplus
 
 #include <cassert>
 #include <string>
@@ -149,3 +150,5 @@ class CallbackWrapper : public LongLivedObject {
 };
 
 }
+
+#endif // __cplusplus

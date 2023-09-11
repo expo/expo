@@ -1,7 +1,7 @@
-import * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import { UnexpectedError } from '../../utils/errors';
 import * as WarningAggregator from '../../utils/warnings';
 import {
@@ -10,8 +10,6 @@ import {
   getAppDelegate,
   getXcodeProjectPath,
 } from '../Paths';
-
-const fsReal = jest.requireActual('fs') as typeof fs;
 
 jest.mock('fs');
 jest.mock('../../utils/warnings');
@@ -43,10 +41,8 @@ describe(getXcodeProjectPath, () => {
   it(`returns project path`, () => {
     vol.fromJSON(
       {
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/Podfile': 'content',
         'ios/TestPod.podspec': 'noop',
         'ios/testproject/AppDelegate.m': '',
@@ -63,14 +59,10 @@ describe(getXcodeProjectPath, () => {
   it(`warns when multiple paths are found`, () => {
     vol.fromJSON(
       {
-        'ios/otherproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
+        'ios/otherproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/testproject/AppDelegate.m': '',
       },
       '/app'
@@ -86,22 +78,14 @@ describe(getXcodeProjectPath, () => {
   it(`selects xcodeproj based on alphabetical order, but picks direct children of ios directory first`, () => {
     vol.fromJSON(
       {
-        'ios/otherproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
-        'ios/aa/otherproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
-        'ios/botherproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
+        'ios/otherproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
+        'ios/aa/otherproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
+        'ios/botherproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/testproject/AppDelegate.m': '',
       },
       '/app'
@@ -117,14 +101,10 @@ describe(getXcodeProjectPath, () => {
   it(`warns when multiple paths are found`, () => {
     vol.fromJSON(
       {
-        'ios/otherproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
+        'ios/otherproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/testproject/AppDelegate.m': '',
       },
       '/app'
@@ -139,10 +119,8 @@ describe(getXcodeProjectPath, () => {
   it(`ignores xcodeproj outside of the ios directory`, () => {
     vol.fromJSON(
       {
-        'lib/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
+        'lib/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
       },
       '/app'
     );
@@ -161,10 +139,8 @@ describe(getAppDelegate, () => {
   it(`returns objc path`, () => {
     vol.fromJSON(
       {
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ) as string,
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/Podfile': 'content',
         'ios/TestPod.podspec': 'noop',
         'ios/testproject/AppDelegate.m': '',
@@ -181,23 +157,11 @@ describe(getAppDelegate, () => {
   });
 
   it(`returns C++ (objcpp) path`, () => {
-    vol.fromJSON(
-      {
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ) as string,
-        'ios/Podfile': 'content',
-        'ios/TestPod.podspec': 'noop',
-        'ios/testproject/AppDelegate.mm': '',
-        'ios/testproject/AppDelegate.h': '',
-      },
-      '/'
-    );
+    vol.fromJSON(rnFixture, '/');
 
     expect(getAppDelegate('/')).toStrictEqual({
-      contents: '',
-      path: '/ios/testproject/AppDelegate.mm',
+      contents: expect.any(String),
+      path: '/ios/HelloWorld/AppDelegate.mm',
       language: 'objcpp',
     });
   });
@@ -205,10 +169,8 @@ describe(getAppDelegate, () => {
   it(`returns swift path`, () => {
     vol.fromJSON(
       {
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ) as string,
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/Podfile': 'content',
         'ios/TestPod.podspec': 'noop',
         'ios/testproject/AppDelegate.swift': '',
@@ -226,10 +188,8 @@ describe(getAppDelegate, () => {
   it(`throws on invalid project`, () => {
     vol.fromJSON(
       {
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ) as string,
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/Podfile': 'content',
         'ios/TestPod.podspec': 'noop',
       },
@@ -243,10 +203,8 @@ describe(getAppDelegate, () => {
   it(`warns when multiple paths are found`, () => {
     vol.fromJSON(
       {
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ) as string,
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/Podfile': 'content',
         'ios/TestPod.podspec': 'noop',
         'ios/testproject/AppDelegate.swift': '',

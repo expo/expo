@@ -1,4 +1,4 @@
-import { ConfigPlugin, WarningAggregator, withAppDelegate } from '@expo/config-plugins';
+import { ConfigPlugin, WarningAggregator, withAppDelegate } from 'expo/config-plugins';
 
 import { InstallationPage } from './constants';
 

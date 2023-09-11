@@ -1,0 +1,47 @@
+buildscript {
+  repositories {
+    mavenCentral()
+    google()
+  }
+
+  dependencies {
+    classpath 'com.android.tools.build:gradle:3.2.1'
+  }
+}
+
+def getExtOrDefault(name) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['ReactNativeSlider_' + name]
+}
+
+def getExtOrIntegerDefault(name) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties['ReactNativeSlider_' + name]).toInteger()
+}
+
+apply plugin: 'com.android.library'
+
+android {
+  compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
+  buildToolsVersion getExtOrDefault('buildToolsVersion')
+
+  defaultConfig {
+    minSdkVersion getExtOrIntegerDefault('minSdkVersion')
+    targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
+  }
+}
+
+repositories {
+  google()
+  mavenCentral()
+}
+
+dependencies {
+  //noinspection GradleDynamicVersion
+  implementation 'host.exp:reactandroid-abi47_0_0:1.0.0'
+    compileOnly 'com.facebook.fbjni:fbjni:+'
+    compileOnly 'com.facebook.yoga:proguard-annotations:+'
+    compileOnly 'com.facebook.soloader:soloader:+'
+    compileOnly 'androidx.annotation:annotation:+'
+    compileOnly 'com.google.code.findbugs:jsr305:+'
+    compileOnly 'androidx.appcompat:appcompat:+'
+
+}

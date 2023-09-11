@@ -86,6 +86,9 @@ class DevLauncherController private constructor() :
 
   private var appIsLoading = false
 
+  @Suppress("unused")
+  private val networkInterceptor = DevLauncherNetworkInterceptor(this)
+
   private fun isEASUpdateURL(url: Uri): Boolean {
     return url.host.equals("u.expo.dev") || url.host.equals("staging-u.expo.dev")
   }

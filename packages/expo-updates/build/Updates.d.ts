@@ -1,11 +1,8 @@
-import { EventSubscription } from 'fbemitter';
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult, UpdatesLogEntry } from './Updates.types';
-export * from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry, UpdatesNativeStateMachineContext } from './Updates.types';
 /**
- * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
+ * The UUID that uniquely identifies the currently running update. The
  * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. In development mode, or any other environment in which
- * `expo-updates` is disabled, this value is `null`.
+ * will always use lowercase letters. This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
  */
 export declare const updateId: string | null;
 /**
@@ -14,13 +11,19 @@ export declare const updateId: string | null;
  */
 export declare const releaseChannel: string;
 /**
- * The channel name of the current build, if configured for use with EAS Update. Null otherwise.
+ * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
+ *
+ * Expo Go and development builds are not set to a specific channel and can run any updates compatible with their native runtime. Therefore, this value will always be `null` when running an update on Expo Go or a development build.
  */
 export declare const channel: string | null;
 /**
  * The runtime version of the current build.
  */
 export declare const runtimeVersion: string | null;
+/**
+ * Determines if and when expo-updates checks for and downloads updates automatically on startup.
+ */
+export declare const checkAutomatically: UpdatesCheckAutomaticallyValue | null;
 /**
  * @hidden
  */
@@ -36,13 +39,19 @@ export declare const localAssets: LocalAssets;
  */
 export declare const isEmergencyLaunch: boolean;
 /**
+ * This will be true if the currently running update is the one embedded in the build,
+ * and not one downloaded from the updates server.
+ */
+export declare const isEmbeddedLaunch: boolean;
+/**
  * @hidden
  */
 export declare const isUsingEmbeddedAssets: boolean;
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/guides/how-expo-works#expo-development-server) object for the update that's currently
- * running.
+ * [manifest](/versions/latest/sdk/constants/#manifest) (or
+ * [classic manifest](/versions/latest/sdk/constants/#appmanifest))
+ * object for the update that's currently running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
@@ -97,6 +106,18 @@ export declare function reloadAsync(): Promise<void>;
  */
 export declare function checkForUpdateAsync(): Promise<UpdateCheckResult>;
 /**
+ * Retrieves the current extra params.
+ */
+export declare function getExtraParamsAsync(): Promise<{
+    [key: string]: string;
+}>;
+/**
+ * Sets an extra param if value is non-null, otherwise unsets the param.
+ * Extra params are sent as an [Expo Structured Field Value Dictionary](https://docs.expo.dev/technical-specs/expo-sfv-0/)
+ * in the `Expo-Extra-Params` header of update requests. A compliant update server may use these params when selecting an update to serve.
+ */
+export declare function setExtraParamAsync(key: string, value: string | null | undefined): Promise<void>;
+/**
  * Retrieves the most recent expo-updates log entries.
  *
  * @param maxAge Sets the max age of retrieved log entries in milliseconds. Default to 3600000 ms (1 hour).
@@ -123,6 +144,10 @@ export declare function clearLogEntriesAsync(): Promise<void>;
  * storage. This method cannot be used in development mode, and the returned promise will be
  * rejected if you try to do so.
  *
+ > **Note:** [`reloadAsync()`](#updatesreloadasync) can be called after promise resolution to
+ * reload the app using the most recently downloaded version. Otherwise, the update will be applied
+ * on the next app cold start.
+ *
  * @return A promise that fulfills with an [`UpdateFetchResult`](#updatefetchresult) object.
  *
  * The promise rejects if the app is in development mode, or if there is an unexpected error or
@@ -134,13 +159,11 @@ export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
  */
 export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string): void;
 /**
- * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time.
- *
- * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
- * and should not return any value.
- * @return An `EventSubscription` object on which you can call `remove()` to unsubscribe the
- * listener.
+ * @hidden
  */
-export declare function addListener(listener: (event: UpdateEvent) => void): EventSubscription;
+export declare function transformNativeStateMachineContext(originalNativeContext: any): any;
+/**
+ * @hidden
+ */
+export declare function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext>;
 //# sourceMappingURL=Updates.d.ts.map

@@ -1,7 +1,6 @@
 import { ExpoConfig, getAccountUsername, getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import * as Log from '../log';
 import { learnMore } from './link';
 import { attemptModification } from './modifyConfigAsync';
 import prompt, { confirmAsync } from './prompts';
@@ -12,7 +11,9 @@ import {
   getPackageNameWarningAsync,
   validateBundleId,
   validatePackage,
+  validatePackageWithWarning,
 } from './validateApplicationId';
+import * as Log from '../log';
 
 function getUsernameAsync(exp: ExpoConfig) {
   // TODO: Use XDL's UserManager
@@ -164,7 +165,7 @@ async function promptForPackageAsync(projectRoot: string, exp: ExpoConfig): Prom
       name: 'packageName',
       initial: (await getRecommendedPackageNameAsync(exp)) ?? undefined,
       message: `What would you like your Android package name to be?`,
-      validate: validatePackage,
+      validate: validatePackageWithWarning,
     },
     {
       nonInteractiveHelp: NO_PACKAGE_MESSAGE,

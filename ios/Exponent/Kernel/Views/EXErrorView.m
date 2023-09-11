@@ -1,11 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXErrorView.h"
 #import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelAppRecord.h"
 #import "EXUtil.h"
+
+@import EXManifests;
 
 @interface EXErrorView ()
 

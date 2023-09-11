@@ -22,19 +22,8 @@ export function getExpoUpdatesPackageVersion(projectRoot: string): string | null
   return packageJson.version;
 }
 
-export function getUpdateUrl(
-  config: Pick<ExpoConfigUpdates, 'owner' | 'slug' | 'updates'>,
-  username: string | null
-): string | null {
-  if (config.updates?.url) {
-    return config.updates?.url;
-  }
-
-  const user = typeof config.owner === 'string' ? config.owner : username;
-  if (!user) {
-    return null;
-  }
-  return `https://exp.host/@${user}/${config.slug}`;
+export function getUpdateUrl(config: Pick<ExpoConfigUpdates, 'updates'>): string | null {
+  return config.updates?.url ?? null;
 }
 
 export function getAppVersion(config: Pick<ExpoConfig, 'version'>): string {
@@ -143,7 +132,12 @@ export function getSDKVersion(config: Pick<ExpoConfigUpdates, 'sdkVersion'>): st
 }
 
 export function getUpdatesEnabled(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
-  return config.updates?.enabled !== false;
+  // allow override of enabled property
+  if (config.updates?.enabled !== undefined) {
+    return config.updates.enabled;
+  }
+
+  return getUpdateUrl(config) !== null;
 }
 
 export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number {
@@ -153,7 +147,7 @@ export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): n
 export function getUpdatesCheckOnLaunch(
   config: Pick<ExpoConfigUpdates, 'updates'>,
   expoUpdatesPackageVersion?: string | null
-): 'NEVER' | 'ERROR_RECOVERY_ONLY' | 'ALWAYS' {
+): 'NEVER' | 'ERROR_RECOVERY_ONLY' | 'ALWAYS' | 'WIFI_ONLY' {
   if (config.updates?.checkAutomatically === 'ON_ERROR_RECOVERY') {
     // native 'ERROR_RECOVERY_ONLY' option was only introduced in 0.11.x
     if (expoUpdatesPackageVersion && semver.gte(expoUpdatesPackageVersion, '0.11.0')) {
@@ -162,6 +156,10 @@ export function getUpdatesCheckOnLaunch(
     return 'NEVER';
   } else if (config.updates?.checkAutomatically === 'ON_LOAD') {
     return 'ALWAYS';
+  } else if (config.updates?.checkAutomatically === 'WIFI_ONLY') {
+    return 'WIFI_ONLY';
+  } else if (config.updates?.checkAutomatically === 'NEVER') {
+    return 'NEVER';
   }
   return 'ALWAYS';
 }
@@ -193,6 +191,23 @@ export function getUpdatesCodeSigningMetadataStringified(
   config: Pick<ExpoConfigUpdates, 'updates'>
 ): string | undefined {
   const metadata = getUpdatesCodeSigningMetadata(config);
+  if (!metadata) {
+    return undefined;
+  }
+
+  return JSON.stringify(metadata);
+}
+
+export function getUpdatesRequestHeaders(
+  config: Pick<ExpoConfigUpdates, 'updates'>
+): NonNullable<ExpoConfigUpdates['updates']>['requestHeaders'] {
+  return config.updates?.requestHeaders;
+}
+
+export function getUpdatesRequestHeadersStringified(
+  config: Pick<ExpoConfigUpdates, 'updates'>
+): string | undefined {
+  const metadata = getUpdatesRequestHeaders(config);
   if (!metadata) {
     return undefined;
   }

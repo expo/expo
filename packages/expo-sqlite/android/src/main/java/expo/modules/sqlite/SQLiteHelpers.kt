@@ -2,7 +2,6 @@ package expo.modules.sqlite
 
 import java.io.File
 import java.io.IOException
-import java.util.ArrayList
 
 @Throws(IOException::class)
 internal fun ensureDirExists(dir: File): File {
@@ -53,12 +52,16 @@ private fun isPragma(str: String): Boolean {
   return startsWithCaseInsensitive(str, "pragma")
 }
 
+private fun isSelectCTE(str: String): Boolean {
+  return startsWithCaseInsensitive(str, "with") && containsCaseInsensitive(str, "select")
+}
+
 private fun isPragmaReadOnly(str: String): Boolean {
   return isPragma(str) && !str.contains('=')
 }
 
 internal fun isSelect(str: String): Boolean {
-  return startsWithCaseInsensitive(str, "select") || isPragmaReadOnly(str)
+  return startsWithCaseInsensitive(str, "select") || isSelectCTE(str) || isPragmaReadOnly(str)
 }
 
 internal fun isInsert(str: String): Boolean {
@@ -77,7 +80,11 @@ private fun startsWithCaseInsensitive(str: String, substr: String): Boolean {
   return str.trimStart().startsWith(substr, true)
 }
 
-internal fun convertParamsToStringArray(paramArrayArg: ArrayList<Any?>): Array<String?> {
+private fun containsCaseInsensitive(str: String, substr: String): Boolean {
+  return str.trimStart().contains(substr, true)
+}
+
+internal fun convertParamsToStringArray(paramArrayArg: List<Any?>): Array<String?> {
   return paramArrayArg.map { param ->
     when (param) {
       is String -> unescapeBlob(param)

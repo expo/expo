@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { vol } from 'memfs';
 import path from 'path';
 
@@ -50,7 +51,7 @@ describe(writeBundlesAsync, () => {
       ios: expect.any(String),
       android: expect.any(String),
     });
-    expect(vol.readFileSync(path.join(projectRoot, results.fileNames.ios), 'utf8')).toBe(contents);
+    expect(vol.readFileSync(path.join(projectRoot, results.fileNames.ios!), 'utf8')).toBe(contents);
   });
   it(`writes hbc bundles to disk`, async () => {
     const projectRoot = '/';
@@ -66,11 +67,11 @@ describe(writeBundlesAsync, () => {
       },
     });
 
-    expect(results.fileNames.ios).toBe('ios-5289df737df57326fcdd22597afb1fac.js');
+    expect(results.fileNames.ios).toBe('ios-5289df737df57326fcdd22597afb1fac.hbc');
     expect(results.hashes).toStrictEqual({
       ios: expect.any(String),
     });
-    expect(vol.readFileSync(path.join(projectRoot, results.fileNames.ios))).toBeDefined();
+    expect(vol.readFileSync(path.join(projectRoot, results.fileNames.ios!))).toBeDefined();
   });
 });
 
@@ -135,6 +136,7 @@ describe(writeSourceMapsAsync, () => {
     });
 
     for (const item of results) {
+      assert(item);
       expect(vol.readFileSync(path.join(projectRoot, item.fileName), 'utf8')).toBe(item.map);
       expect(
         vol.readFileSync(path.join(projectRoot, `${item.platform}-${item.hash}.js`), 'utf8')
@@ -144,5 +146,39 @@ describe(writeSourceMapsAsync, () => {
       //   vol.readFileSync(path.join(projectRoot, `${item.platform}-${item.hash}.js`), 'utf8')
       // ).not.toMatch(/invalid-source-map-comment/);
     }
+  });
+
+  it(`skips writing when the map is not defined`, async () => {
+    const projectRoot = '/';
+
+    // User wrote this
+    const contents = `var foo = true;\ninvalid-source-map-comment`;
+
+    // Metro made this
+    const bundles = {
+      ios: {
+        code: contents,
+      },
+      android: {
+        code: contents,
+        map: 'android_map',
+      },
+    };
+
+    // Expo persists the code and returns info
+    const jsResults = await writeBundlesAsync({
+      outputDir: projectRoot,
+      bundles,
+    });
+
+    // Expo also modifies the source maps and persists
+    const results = await writeSourceMapsAsync({
+      outputDir: projectRoot,
+      hashes: jsResults.hashes,
+      fileNames: jsResults.fileNames,
+      bundles,
+    });
+
+    expect(results).toHaveLength(1);
   });
 });

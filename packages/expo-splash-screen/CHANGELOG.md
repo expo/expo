@@ -6,9 +6,114 @@
 
 ### 🎉 New features
 
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Delete deprecated `hide` and `preventAutoHide` methods. ([#24296](https://github.com/expo/expo/pull/24296) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.22.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Removed 'No native splash screen registered' warning on iOS when opening and reloading the app. ([#24210](https://github.com/expo/expo/pull/24210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.21.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.21.0 — 2023-07-28
+
+### 🐛 Bug fixes
+
+- [Android] Fixed splash screen is missing when using the `getDelayLoadAppHandler()` from expo-updates. ([#23747](https://github.com/expo/expo/pull/23747) by [@kudo](https://github.com/kudo))
+
+## 0.20.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.1 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.0 — 2023-06-21
+
+### 🛠 Breaking changes
+
+- Deprecated `@expo/configure-splash-screen` in favor of the splash screen config plugin. ([#21464](https://github.com/expo/expo/pull/21464) by [@byCedric](https://github.com/byCedric))
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- Migrated Android codebase to use Expo modules API. ([#22827](https://github.com/expo/expo/pull/22827) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+## 0.19.0 — 2023-05-08
+
+### 💡 Others
+
+- Android: Switch from deprecated `toLowerCase` to `lowercase` function ([#22225](https://github.com/expo/expo/pull/22225) by [@hbiede](https://github.com/hbiede))
+
+## 0.18.2 — 2023-04-26
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- Fixed `No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.` warning being displayed on iOS when app is started in background. ([#20064](https://github.com/expo/expo/pull/20064) by [@grigorigoldman](https://github.com/grigorigoldman))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.17.4 - 2022-11-08
+
+### 🐛 Bug fixes
+
+- Fixed Android `NullPointerException` in `FrameLayout.onMeasure()` when running on new architecture mode with expo-dev-client. ([#19931](https://github.com/expo/expo/pull/19931) by [@kudo](https://github.com/kudo))
+
+## 0.17.3 — 2022-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.2 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.16.2 - 2022-08-22
+
+### 🐛 Bug fixes
+
+- Fixed `'SplashScreen.show' has already been called for given view controller.` warning being displayed when using `expo-dev-client` on iOS. ([#18682](https://github.com/expo/expo/pull/18682) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.16.1 — 2022-07-16
 

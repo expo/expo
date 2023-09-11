@@ -8,18 +8,16 @@ import ExpoModulesCore
 /**
  Class that implements logging for expo-updates in its own os.log category
  */
-@objc(EXUpdatesLogger)
-public class UpdatesLogger: NSObject {
-  public static let EXPO_UPDATES_LOG_CATEGORY = "expo-updates"
+internal final class UpdatesLogger {
+  static let EXPO_UPDATES_LOG_CATEGORY = "expo-updates"
 
-  private let logger = ExpoModulesCore.Logger(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
+  private let logger = Logger(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY, options: [.logToOS, .logToFile])
 
   // MARK: - Public logging functions
 
-  @objc(trace:code:updateId:assetId:)
-  public func trace(
+  func trace(
     message: String,
-    code: UpdatesErrorCode = .None,
+    code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
@@ -27,18 +25,20 @@ public class UpdatesLogger: NSObject {
     logger.trace(entry)
   }
 
-  @objc(trace:code:)
-  public func trace(
+  func trace(
     message: String,
-    code: UpdatesErrorCode = .None
+    code: UpdatesErrorCode = .none
   ) {
     trace(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  @objc(debug:code:updateId:assetId:)
-  public func debug(
+  func trace(message: String) {
+    trace(message: message, code: .none)
+  }
+
+  func debug(
     message: String,
-    code: UpdatesErrorCode = .None,
+    code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
@@ -46,18 +46,20 @@ public class UpdatesLogger: NSObject {
     logger.debug(entry)
   }
 
-  @objc(debug:code:)
-  public func debug(
+  func debug(
     message: String,
-    code: UpdatesErrorCode = .None
+    code: UpdatesErrorCode = .none
   ) {
     debug(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  @objc(info:code:updateId:assetId:)
-  public func info(
+  func debug(message: String) {
+    debug(message: message, code: .none)
+  }
+
+  func info(
     message: String,
-    code: UpdatesErrorCode = .None,
+    code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
@@ -65,18 +67,20 @@ public class UpdatesLogger: NSObject {
     logger.info(entry)
   }
 
-  @objc(info:code:)
-  public func info(
+  func info(
     message: String,
-    code: UpdatesErrorCode = .None
+    code: UpdatesErrorCode = .none
   ) {
     info(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  @objc(warn:code:updateId:assetId:)
-  public func warn(
+  func info(message: String) {
+    info(message: message, code: .none)
+  }
+
+  func warn(
     message: String,
-    code: UpdatesErrorCode = .None,
+    code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
@@ -84,18 +88,20 @@ public class UpdatesLogger: NSObject {
     logger.warn(entry)
   }
 
-  @objc(warn:code:)
-  public func warn(
+  func warn(
     message: String,
-    code: UpdatesErrorCode = .None
+    code: UpdatesErrorCode = .none
   ) {
     warn(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  @objc(error:code:updateId:assetId:)
-  public func error(
+  func warn(message: String) {
+    warn(message: message, code: .none)
+  }
+
+  func error(
     message: String,
-    code: UpdatesErrorCode = .None,
+    code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
@@ -103,18 +109,16 @@ public class UpdatesLogger: NSObject {
     logger.error(entry)
   }
 
-  @objc(error:code:)
-  public func error(
+  func error(
     message: String,
-    code: UpdatesErrorCode = .None
+    code: UpdatesErrorCode = .none
   ) {
     error(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  @objc(fatal:code:updateId:assetId:)
-  public func fatal(
+  func fatal(
     message: String,
-    code: UpdatesErrorCode = .None,
+    code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
@@ -122,20 +126,17 @@ public class UpdatesLogger: NSObject {
     logger.fatal(entry)
   }
 
-  @objc(fatal:code:)
-  public func fatal(
+  func fatal(
     message: String,
-    code: UpdatesErrorCode = .None
+    code: UpdatesErrorCode = .none
   ) {
     fatal(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  // MARK: - Private methods
-
   func logEntryString(
     message: String,
-    code: UpdatesErrorCode = .None,
-    level: ExpoModulesCore.LogType = .trace,
+    code: UpdatesErrorCode = .none,
+    level: LogType = .trace,
     updateId: String?,
     assetId: String?
   ) -> String {

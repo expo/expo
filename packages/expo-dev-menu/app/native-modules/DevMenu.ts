@@ -1,6 +1,7 @@
-import { DeviceEventEmitter, NativeModules, EventSubscription, Platform } from 'react-native';
+import { requireNativeModule } from 'expo-modules-core';
+import { DeviceEventEmitter, EventSubscription } from 'react-native';
 
-export type JSEngine = 'Hermes' | 'JSC';
+export type JSEngine = 'Hermes' | 'JSC' | 'V8';
 
 export type AppInfo = {
   appIcon?: string;
@@ -28,7 +29,7 @@ export type MenuPreferences = {
   isOnboardingFinished?: boolean;
 };
 
-const DevMenu = NativeModules.ExpoDevMenuInternal;
+const DevMenu = requireNativeModule('ExpoDevMenuInternal');
 
 export async function dispatchCallableAsync(
   callableId: string,
@@ -39,6 +40,10 @@ export async function dispatchCallableAsync(
 
 export function hideMenu(): void {
   DevMenu.hideMenu();
+}
+
+export function closeMenu(): void {
+  DevMenu.closeMenu();
 }
 
 export function subscribeToCloseEvents(listener: () => void): EventSubscription {
@@ -74,9 +79,6 @@ export async function toggleFastRefreshAsync() {
 }
 
 export async function openJSInspector() {
-  if (Platform.OS !== 'android') {
-    return;
-  }
   return await dispatchCallableAsync('js-inspector');
 }
 

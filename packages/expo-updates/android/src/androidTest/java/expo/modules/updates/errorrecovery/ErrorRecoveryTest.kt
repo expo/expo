@@ -2,8 +2,10 @@ package expo.modules.updates.errorrecovery
 
 import android.os.Message
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.launcher.Launcher
+import expo.modules.updates.logging.UpdatesLogger
 import io.mockk.*
 import org.junit.Before
 import org.junit.Test
@@ -12,14 +14,15 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4ClassRunner::class)
 class ErrorRecoveryTest {
   private var mockDelegate: ErrorRecoveryDelegate = mockk()
-  private var errorRecovery: ErrorRecovery = ErrorRecovery()
+  private val context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
+  private var errorRecovery: ErrorRecovery = ErrorRecovery(context)
 
   @Before
   fun setup() {
     mockDelegate = mockk(relaxed = true)
-    errorRecovery = ErrorRecovery()
+    errorRecovery = ErrorRecovery(context)
     errorRecovery.initialize(mockDelegate)
-    errorRecovery.handler = spyk(ErrorRecoveryHandler(errorRecovery.handlerThread.looper, mockDelegate))
+    errorRecovery.handler = spyk(ErrorRecoveryHandler(errorRecovery.handlerThread.looper, mockDelegate, UpdatesLogger(context)))
     // make handler run synchronously
     val messageSlot = slot<Message>()
     every { errorRecovery.handler.sendMessageAtTime(capture(messageSlot), any()) } answers {

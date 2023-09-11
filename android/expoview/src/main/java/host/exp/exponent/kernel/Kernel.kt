@@ -16,21 +16,25 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.JavaScriptContextHolder
-import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.LifecycleState
+import com.facebook.react.jscexecutor.JSCExecutorFactory
 import com.facebook.react.modules.network.ReactCookieJarContainer
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
+import expo.modules.jsonutils.require
 import expo.modules.notifications.service.NotificationsService.Companion.getNotificationResponseFromOpenIntent
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.manifests.core.Manifest
+import expo.modules.manifests.core.NewManifest
 import host.exp.exponent.*
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
@@ -67,7 +71,6 @@ import org.json.JSONObject
 import versioned.host.exp.exponent.ExpoTurboPackage
 import versioned.host.exp.exponent.ExponentPackage
 import versioned.host.exp.exponent.ReactUnthemedRootView
-import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -174,7 +177,7 @@ class Kernel : KernelInterface() {
       try {
         // Make sure we can get the manifest successfully. This can fail in dev mode
         // if the kernel packager is not running.
-        exponentManifest.getKernelManifest()
+        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
       } catch (e: Throwable) {
         Exponent.instance
           .runOnUiThread { // Hack to make this show up for a while. Can't use an Alert because LauncherActivity has a transparent theme. This should only be seen by internal developers.
@@ -206,6 +209,7 @@ class Kernel : KernelInterface() {
           Exponent.instance.loadJSBundle(
             null,
             bundleUrlToLoad,
+            bundleAssetRequestHeaders,
             KernelConstants.KERNEL_BUNDLE_ID,
             RNObject.UNVERSIONED,
             object : BundleListener {
@@ -238,6 +242,7 @@ class Kernel : KernelInterface() {
       Exponent.instance.loadJSBundle(
         null,
         bundleUrlToLoad,
+        bundleAssetRequestHeaders,
         KernelConstants.KERNEL_BUNDLE_ID,
         RNObject.UNVERSIONED,
         kernelBundleListener(),
@@ -261,28 +266,24 @@ class Kernel : KernelInterface() {
             .setApplication(applicationContext)
             .setCurrentActivity(activityContext)
             .setJSBundleFile(localBundlePath)
+            .setJavaScriptExecutorFactory(jsExecutorFactory)
             .addPackage(MainReactPackage())
             .addPackage(
               ExponentPackage.kernelExponentPackage(
                 context,
-                exponentManifest.getKernelManifest(),
+                exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest,
                 HomeActivity.homeExpoPackages(),
+                HomeActivity.Companion,
                 initialURL
               )
             )
             .addPackage(
               ExpoTurboPackage.kernelExpoTurboPackage(
-                exponentManifest.getKernelManifest(), initialURL
+                exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest, initialURL
               )
             )
-            .setJSIModulesPackage { reactApplicationContext: ReactApplicationContext?, jsContext: JavaScriptContextHolder? ->
-              ReanimatedJSIModulePackage().getJSIModules(
-                reactApplicationContext,
-                jsContext
-              )
-            }
             .setInitialLifecycleState(LifecycleState.RESUMED)
-          if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && exponentManifest.getKernelManifest().isDevelopmentMode()) {
+          if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()) {
             Exponent.enableDeveloperSupport(
               kernelDebuggerHost, kernelMainModuleName,
               RNObject.wrap(builder)
@@ -316,22 +317,39 @@ class Kernel : KernelInterface() {
   }
 
   private val kernelDebuggerHost: String
-    get() = exponentManifest.getKernelManifest().getDebuggerHost()
+    get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getDebuggerHost()
   private val kernelMainModuleName: String
-    get() = exponentManifest.getKernelManifest().getMainModuleName()
+    get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
   private val bundleUrl: String?
     get() {
       return try {
-        exponentManifest.getKernelManifest().getBundleURL()
+        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getBundleURL()
       } catch (e: JSONException) {
         KernelProvider.instance.handleError(e)
         null
       }
     }
+  private val bundleAssetRequestHeaders: JSONObject
+    get() {
+      return try {
+        val manifestAndAssetRequestHeaders = exponentManifest.getKernelManifestAndAssetRequestHeaders()
+        val manifest = manifestAndAssetRequestHeaders.manifest
+        if (manifest is NewManifest) {
+          val bundleKey = manifest.getLaunchAsset().getString("key")
+          val map: Map<String, JSONObject> = manifestAndAssetRequestHeaders.assetRequestHeaders.let { it.keys().asSequence().associateWith { key -> it.require(key) } } ?: mapOf()
+          map[bundleKey] ?: JSONObject()
+        } else {
+          JSONObject()
+        }
+      } catch (e: JSONException) {
+        KernelProvider.instance.handleError(e)
+        JSONObject()
+      }
+    }
   private val kernelRevisionId: String?
     get() {
       return try {
-        exponentManifest.getKernelManifest().getRevisionId()
+        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getRevisionId()
       } catch (e: JSONException) {
         KernelProvider.instance.handleError(e)
         null
@@ -343,7 +361,7 @@ class Kernel : KernelInterface() {
 
   val reactRootView: ReactRootView
     get() {
-      val reactRootView: ReactRootView = ReactUnthemedRootView(context)
+      val reactRootView: ReactRootView = ReactUnthemedRootView(activityContext)
       reactRootView.startReactApplication(
         reactInstanceManager,
         KernelConstants.HOME_MODULE_NAME,
@@ -369,6 +387,18 @@ class Kernel : KernelInterface() {
         throw Error("JSONObject failed to be converted to Bundle", e)
       }
       return bundle
+    }
+  private val jsExecutorFactory: JavaScriptExecutorFactory
+    get() {
+      val manifest = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
+      val appName = manifest.getName() ?: ""
+      val deviceName = AndroidInfoHelpers.getFriendlyDeviceName()
+
+      val jsEngineFromManifest = manifest.jsEngine
+      return if (jsEngineFromManifest == "hermes") HermesExecutorFactory() else JSCExecutorFactory(
+        appName,
+        deviceName
+      )
     }
 
   fun hasOptionsForManifestUrl(manifestUrl: String?): Boolean {

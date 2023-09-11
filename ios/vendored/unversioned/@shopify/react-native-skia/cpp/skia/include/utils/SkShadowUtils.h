@@ -13,6 +13,8 @@
 #include "include/core/SkTypes.h"
 #include "include/private/SkShadowFlags.h"
 
+#include <cstdint>
+
 class SkCanvas;
 class SkMatrix;
 class SkPath;

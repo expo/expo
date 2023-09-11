@@ -1,7 +1,7 @@
 import { ExpoConfig } from '@expo/config-types';
 
-import { createInfoPlistPluginWithPropertyGuard } from '../plugins/ios-plugins';
 import { InfoPlist, URLScheme } from './IosConfig.types';
+import { createInfoPlistPluginWithPropertyGuard } from '../plugins/ios-plugins';
 
 export const withScheme = createInfoPlistPluginWithPropertyGuard(
   setScheme,
@@ -53,7 +53,7 @@ export function appendScheme(scheme: string | null, infoPlist: InfoPlist): InfoP
   }
 
   const existingSchemes = infoPlist.CFBundleURLTypes ?? [];
-  if (existingSchemes.some(({ CFBundleURLSchemes }) => CFBundleURLSchemes.includes(scheme))) {
+  if (existingSchemes?.some(({ CFBundleURLSchemes }) => CFBundleURLSchemes.includes(scheme))) {
     return infoPlist;
   }
 
@@ -97,7 +97,7 @@ export function hasScheme(scheme: string, infoPlist: InfoPlist): boolean {
 
   if (!Array.isArray(existingSchemes)) return false;
 
-  return existingSchemes.some(({ CFBundleURLSchemes: schemes }: any) =>
+  return existingSchemes?.some(({ CFBundleURLSchemes: schemes }: any) =>
     Array.isArray(schemes) ? schemes.includes(scheme) : false
   );
 }
