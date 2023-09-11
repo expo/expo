@@ -35,30 +35,8 @@ const react_native_safe_area_context_1 = require("react-native-safe-area-context
 const NavigationContainer_1 = __importDefault(require("./fork/NavigationContainer"));
 const router_store_1 = require("./global-state/router-store");
 const Splash_1 = require("./views/Splash");
-function getGestureHandlerRootView() {
-    try {
-        const { GestureHandlerRootView } = require('react-native-gesture-handler');
-        if (!GestureHandlerRootView) {
-            return react_1.default.Fragment;
-        }
-        // eslint-disable-next-line no-inner-declarations
-        function GestureHandler(props) {
-            return react_1.default.createElement(GestureHandlerRootView, { style: styles.gesture, ...props });
-        }
-        if (process.env.NODE_ENV === 'development') {
-            // @ts-expect-error
-            GestureHandler.displayName = 'GestureHandlerRootView';
-        }
-        return GestureHandler;
-    }
-    catch {
-        return react_1.default.Fragment;
-    }
-}
-const GestureHandlerRootView = getGestureHandlerRootView();
-const isSSR = react_native_1.Platform.OS === 'web' && typeof window === 'undefined';
 const isTestEnv = process.env.NODE_ENV === 'test';
-const INITIAL_METRICS = isSSR || isTestEnv
+const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
     ? {
         frame: { x: 0, y: 0, width: 0, height: 0 },
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
@@ -69,19 +47,18 @@ const hasViewControllerBasedStatusBarAppearance = react_native_1.Platform.OS ===
 function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
     /*
      * Due to static rendering we need to wrap these top level views in second wrapper
-     * View's like <GestureHandlerRootView /> generate a <div> so if the parent wrapper
+     * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
      * is a HTML document, we need to ensure its inside the <body>
      */
     const wrapper = ({ children }) => {
         return (react_1.default.createElement(ParentWrapper, null,
-            react_1.default.createElement(GestureHandlerRootView, null,
-                react_1.default.createElement(react_native_safe_area_context_1.SafeAreaProvider
+            react_1.default.createElement(react_native_safe_area_context_1.SafeAreaProvider
+            // SSR support
+            , { 
                 // SSR support
-                , { 
-                    // SSR support
-                    initialMetrics: INITIAL_METRICS },
-                    children,
-                    !hasViewControllerBasedStatusBarAppearance && react_1.default.createElement(expo_status_bar_1.StatusBar, { style: "auto" })))));
+                initialMetrics: INITIAL_METRICS },
+                children,
+                !hasViewControllerBasedStatusBarAppearance && react_1.default.createElement(expo_status_bar_1.StatusBar, { style: "auto" }))));
     };
     return react_1.default.createElement(ContextNavigator, { ...props, wrapper: wrapper });
 }
@@ -110,7 +87,4 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         react_1.default.createElement(WrapperComponent, null,
             react_1.default.createElement(Component, null))));
 }
-const styles = react_native_1.StyleSheet.create({
-    gesture: { flex: 1 },
-});
 //# sourceMappingURL=ExpoRoot.js.map
