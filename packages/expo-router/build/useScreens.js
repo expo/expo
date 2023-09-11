@@ -112,9 +112,9 @@ function getQualifiedRouteComponent(value) {
                 segment: value.route })));
     }
     else {
+        const res = value.loadRoute();
+        const Component = fromImport(res).default;
         const SyncComponent = react_1.default.forwardRef((props, ref) => {
-            const res = value.loadRoute();
-            const Component = fromImport(res).default;
             return react_1.default.createElement(Component, { ...props, ref: ref });
         });
         getLoadable = (props, ref) => (react_1.default.createElement(SyncComponent, { ...props,

@@ -184,9 +184,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       </React.Suspense>
     );
   } else {
+    const res = value.loadRoute();
+    const Component = fromImport(res).default;
     const SyncComponent = React.forwardRef((props, ref) => {
-      const res = value.loadRoute();
-      const Component = fromImport(res).default;
       return <Component {...props} ref={ref} />;
     });
 
