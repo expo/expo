@@ -100,7 +100,7 @@ dependencies {
   kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
   api 'com.caverock:androidsvg-aar:1.4'
 
-  implementation "com.github.penfeizhou.android.animation:glide-plugin:2.24.0"
+  implementation "com.github.penfeizhou.android.animation:glide-plugin:2.28.0"
   implementation "com.github.bumptech.glide:avif-integration:${GLIDE_VERSION}"
 
   api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
