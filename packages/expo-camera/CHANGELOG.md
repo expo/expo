@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Remove @koale/useworker. ([#23967](https://github.com/expo/expo/pull/23967) by [@marklawlor](https://github.com/marklawlor))
-
 ### 💡 Others
+
+## 13.4.4 — 2023-09-11
+
+### 🐛 Bug fixes
+
+- Remove @koale/useworker. ([#23967](https://github.com/expo/expo/pull/23967) by [@marklawlor](https://github.com/marklawlor))
 
 ## 13.4.3 — 2023-08-29
 
