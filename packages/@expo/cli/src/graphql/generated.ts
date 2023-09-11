@@ -48,17 +48,11 @@ export type AccountNotificationSubscriptionInput = {
 };
 
 export type AccountSsoConfigurationData = {
-  authEndpoint?: InputMaybe<Scalars['String']>;
   authProtocol: AuthProtocolType;
   authProviderIdentifier: Scalars['String'];
   clientIdentifier: Scalars['String'];
   clientSecret: Scalars['String'];
-  endSessionEndpoint?: InputMaybe<Scalars['String']>;
   issuer: Scalars['String'];
-  jwksEndpoint?: InputMaybe<Scalars['String']>;
-  revokeEndpoint?: InputMaybe<Scalars['String']>;
-  tokenEndpoint?: InputMaybe<Scalars['String']>;
-  userInfoEndpoint?: InputMaybe<Scalars['String']>;
 };
 
 export enum ActivityTimelineProjectActivityType {
@@ -104,6 +98,7 @@ export type AndroidBuilderEnvironmentInput = {
   image?: InputMaybe<Scalars['String']>;
   ndk?: InputMaybe<Scalars['String']>;
   node?: InputMaybe<Scalars['String']>;
+  pnpm?: InputMaybe<Scalars['String']>;
   yarn?: InputMaybe<Scalars['String']>;
 };
 
@@ -436,6 +431,7 @@ export type BuildMetadataInput = {
   cliVersion?: InputMaybe<Scalars['String']>;
   credentialsSource?: InputMaybe<BuildCredentialsSource>;
   customWorkflowName?: InputMaybe<Scalars['String']>;
+  developmentClient?: InputMaybe<Scalars['Boolean']>;
   distribution?: InputMaybe<DistributionType>;
   gitCommitHash?: InputMaybe<Scalars['String']>;
   gitCommitMessage?: InputMaybe<Scalars['String']>;
@@ -598,6 +594,11 @@ export type CustomBuildConfigInput = {
   path: Scalars['String'];
 };
 
+export type DeploymentFilterInput = {
+  channel?: InputMaybe<Scalars['String']>;
+  runtimeVersion?: InputMaybe<Scalars['String']>;
+};
+
 export enum DistributionType {
   Internal = 'INTERNAL',
   Simulator = 'SIMULATOR',
@@ -738,6 +739,7 @@ export type IosBuilderEnvironmentInput = {
   fastlane?: InputMaybe<Scalars['String']>;
   image?: InputMaybe<Scalars['String']>;
   node?: InputMaybe<Scalars['String']>;
+  pnpm?: InputMaybe<Scalars['String']>;
   yarn?: InputMaybe<Scalars['String']>;
 };
 
@@ -1015,7 +1017,9 @@ export enum StatuspageIncidentStatus {
 export enum StatuspageServiceName {
   EasBuild = 'EAS_BUILD',
   EasSubmit = 'EAS_SUBMIT',
-  EasUpdate = 'EAS_UPDATE'
+  EasUpdate = 'EAS_UPDATE',
+  GithubApiRequests = 'GITHUB_API_REQUESTS',
+  GithubWebhooks = 'GITHUB_WEBHOOKS'
 }
 
 /** Possible statuses for a service. */
@@ -1148,6 +1152,11 @@ export type UserDataInput = {
   lastName?: InputMaybe<Scalars['String']>;
   profilePhoto?: InputMaybe<Scalars['String']>;
   username?: InputMaybe<Scalars['String']>;
+};
+
+export type WebNotificationUpdateReadStateInput = {
+  id: Scalars['ID'];
+  isRead: Scalars['Boolean'];
 };
 
 export type WebhookFilter = {
