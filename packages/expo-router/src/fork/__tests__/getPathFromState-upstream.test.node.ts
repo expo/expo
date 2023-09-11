@@ -234,6 +234,39 @@ it('appends basePath', () => {
   expect(getPathFromState<object>(state, config)).toBe(path);
 });
 
+it('appends multi-level basePath', () => {
+  Constants.expoConfig = {
+    experiments: {
+      basePath: '/expo/prefix/',
+    },
+  };
+  const path = '/expo/prefix/bar';
+  const config = {
+    screens: {
+      Foo: {
+        path: '',
+        screens: {
+          Foe: 'foe',
+        },
+      },
+      Bar: 'bar',
+    },
+  };
+
+  const state = {
+    routes: [
+      {
+        name: 'Foo',
+        state: {
+          routes: [{ name: 'Bar' }],
+        },
+      },
+    ],
+  };
+
+  expect(getPathFromState<object>(state, config)).toBe(path);
+});
+
 it(`does not mutate incomplete state during invocation`, () => {
   const inputState = {
     stale: false,
