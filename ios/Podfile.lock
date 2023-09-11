@@ -4966,10 +4966,16 @@ SPEC CHECKSUMS:
   EXTaskManager: aae3b3c8144af1e0bfdbe8a3cc19fb116a01368d
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   EXUpdates: f9a40063a208e21682ee174272b8d56defae6327
   EXUpdatesInterface: 98f69982f4b429eb62a1d99259bc980038240f27
 ||||||| parent of c70391aaee ([ios][updates] bump sqlite version)
   EXUpdates: 2a2b560639dbc2424bc13f4010b7212c82a2b63f
+||||||| parent of c6a37a4322 ([ios][updates] remove unneeded dep)
+  EXUpdates: 79bd417be2d521e99771df018258f9e76e030fd9
+=======
+  EXUpdates: e00261ce6e9f030735a23712591dba9d94b77f0d
+>>>>>>> c6a37a4322 ([ios][updates] remove unneeded dep)
   EXUpdatesInterface: 376edcf7e762dcf8f55552804944dac004fa3349
 =======
 <<<<<<< HEAD
