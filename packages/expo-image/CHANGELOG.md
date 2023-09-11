@@ -10,6 +10,7 @@
 
 - Fixed placeholders aren't always replaced by full-size images on Android. ([#23705](https://github.com/expo/expo/pull/23705) by [@lukmccall](https://github.com/lukmccall))
 - Fix the image components rendering incorrect assets when the Proguard is enabled on Android. ([#23704](https://github.com/expo/expo/pull/23704) by [@lukmccall](https://github.com/lukmccall))
+- Fixed gif and awebp memory leak on Android. ([#24259](https://github.com/expo/expo/pull/24259) by [@jingpeng](https://github.com/jingpeng))
 
 ### 💡 Others
 
