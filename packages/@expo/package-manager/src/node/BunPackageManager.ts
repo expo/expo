@@ -29,9 +29,7 @@ export class BunPackageManager extends BasePackageManager {
       return this.installAsync();
     }
 
-    const res = this.runAsync(['add', ...namesOrFlags]);
-    console.log(res);
-    return res;
+    return this.runAsync(['add', ...namesOrFlags]);
   }
 
   addDevAsync(namesOrFlags: string[] = []) {
