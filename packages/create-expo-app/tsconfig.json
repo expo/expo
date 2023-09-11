@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base",
+  "include": ["src/**/*.ts"],
+  "compilerOptions": {
+    "outDir": "build",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "declaration": false,
+    "composite": false,
+  },
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+}
