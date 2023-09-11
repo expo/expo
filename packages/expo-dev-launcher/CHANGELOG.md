@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update dev sessions default ports to check.
+
 ## 3.1.0 — 2023-09-04
 
 ### 🎉 New features
