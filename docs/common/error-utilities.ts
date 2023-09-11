@@ -161,6 +161,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/glossary-of-terms/': '/more/glossary-of-terms/',
   '/development/installation/': '/develop/development-builds/installation/',
   '/get-started/errors/': '/debugging/errors-and-warnings/',
+  '/develop/development-builds/parallel-installation': '/build-reference/variants/',
 
   // Redirects after organizing docs in Guides
   '/bare/hello-world/': '/bare/overview/',
