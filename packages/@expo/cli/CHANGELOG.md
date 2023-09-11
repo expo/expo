@@ -2,8 +2,6 @@
 
 ## Unpublished
 
-- Warn when dynamic config doesn't use static config present in project. ([#24308](https://github.com/expo/expo/pull/24308) by [@keith-kurak](https://github.com/keith-kurak))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features

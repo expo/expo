@@ -1,6 +1,5 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import chalk from 'chalk';
-import path from 'path';
 
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
@@ -15,7 +14,6 @@ import getDevClientProperties from '../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../utils/analytics/rudderstackClient';
 import { installExitHooks } from '../utils/exit';
 import { isInteractive } from '../utils/interactive';
-import { learnMore } from '../utils/link';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { profile } from '../utils/profile';
 
@@ -72,20 +70,7 @@ export async function startAsync(
 
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
-  const { exp, pkg, hasUnusedStaticConfig, dynamicConfigPath, staticConfigPath } =
-    profile(getConfig)(projectRoot);
-
-  if (hasUnusedStaticConfig) {
-    Log.warn(
-      `You have an ${path.basename(
-        staticConfigPath!
-      )} file in your project, but your ${path.basename(
-        dynamicConfigPath!
-      )} is not using the values from it: ${learnMore(
-        'https://docs.expo.dev/workflow/configuration'
-      )}`
-    );
-  }
+  const { exp, pkg } = profile(getConfig)(projectRoot);
 
   const platformBundlers = getPlatformBundlers(exp);
 
