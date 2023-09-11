@@ -56,14 +56,10 @@ function getGestureHandlerRootView() {
     }
 }
 const GestureHandlerRootView = getGestureHandlerRootView();
-const isSSR = react_native_1.Platform.OS === 'web' && typeof window === 'undefined';
-const isTestEnv = process.env.NODE_ENV === 'test';
-const INITIAL_METRICS = isSSR || isTestEnv
-    ? {
-        frame: { x: 0, y: 0, width: 0, height: 0 },
-        insets: { top: 0, left: 0, right: 0, bottom: 0 },
-    }
-    : undefined;
+const INITIAL_METRICS = {
+    frame: { x: 0, y: 0, width: 0, height: 0 },
+    insets: { top: 0, left: 0, right: 0, bottom: 0 },
+};
 const hasViewControllerBasedStatusBarAppearance = react_native_1.Platform.OS === 'ios' &&
     !!expo_constants_1.default.expoConfig?.ios?.infoPlist?.UIViewControllerBasedStatusBarAppearance;
 function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
@@ -75,11 +71,7 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
     const wrapper = ({ children }) => {
         return (react_1.default.createElement(ParentWrapper, null,
             react_1.default.createElement(GestureHandlerRootView, null,
-                react_1.default.createElement(react_native_safe_area_context_1.SafeAreaProvider
-                // SSR support
-                , { 
-                    // SSR support
-                    initialMetrics: INITIAL_METRICS },
+                react_1.default.createElement(react_native_safe_area_context_1.SafeAreaProvider, { initialMetrics: INITIAL_METRICS },
                     children,
                     !hasViewControllerBasedStatusBarAppearance && react_1.default.createElement(expo_status_bar_1.StatusBar, { style: "auto" })))));
     };
