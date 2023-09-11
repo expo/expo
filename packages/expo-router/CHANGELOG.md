@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Revert "Fix drawer layout initial position".
+- Revert "Fix drawer layout initial position". ([#24362](https://github.com/expo/expo/pull/24362) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
