@@ -1468,23 +1468,6 @@
     "@expo/spawn-async" "^1.5.0"
     exec-async "^2.2.0"
 
-"@expo/package-manager@~1.0.0":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@expo/package-manager/-/package-manager-1.0.3.tgz#25abcc5e90171e4b9a9551f7c98938b7d823f623"
-  integrity sha512-NpdwcRar22gJDDug3GEb62Ka6vy+Yi//3zTdYhdkzwekY6qzg7+vZCeEKayFJjvbCjjOPNSrauNR4zD+WJmRIQ==
-  dependencies:
-    "@expo/json-file" "^8.2.37"
-    "@expo/spawn-async" "^1.5.0"
-    ansi-regex "^5.0.0"
-    chalk "^4.0.0"
-    find-up "^5.0.0"
-    find-yarn-workspace-root "~2.0.0"
-    js-yaml "^3.13.1"
-    micromatch "^4.0.2"
-    npm-package-arg "^7.0.0"
-    split "^1.0.1"
-    sudo-prompt "9.1.1"
-
 "@expo/plist@^0.0.20":
   version "0.0.20"
   resolved "https://registry.yarnpkg.com/@expo/plist/-/plist-0.0.20.tgz#a6b3124438031c02b762bad5a47b70584d3c0072"
