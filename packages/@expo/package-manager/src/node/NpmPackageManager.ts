@@ -129,9 +129,8 @@ export class NpmPackageManager extends BasePackageManager {
     }
 
     const pkgPath = path.join(this.options.cwd?.toString() || '.', 'package.json');
-    const pkg = await JsonFile.readAsync<Record<typeof packageType, { [pkgName: string]: string }>>(
-      pkgPath
-    );
+    const pkg =
+      await JsonFile.readAsync<Record<typeof packageType, { [pkgName: string]: string }>>(pkgPath);
 
     packageSpecs.forEach((spec) => {
       pkg[packageType] = pkg[packageType] || {};
