@@ -16,7 +16,8 @@
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "profile": "node --inspect-brk -r ts-node/register benchmark/profile.ts"
+    "profile": "node --inspect-brk -r ts-node/register benchmark/profile.ts",
+    "benchmark": "yarn ts-node benchmark/index.ts"
   },
   "repository": {
     "type": "git",
