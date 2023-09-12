@@ -9,9 +9,7 @@ import semver from 'semver';
 import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
-import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importCliServerApiFromProject, importExpoMetroConfig } from './resolveFromProject';
-import { getRouterDirectory } from './router';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
@@ -28,6 +26,8 @@ import { remoteDevtoolsSecurityHeadersMiddleware } from '../middleware/remoteDev
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
+import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { getRouterDirectoryModuleIdWithManifest } from './router';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -95,7 +95,7 @@ export async function loadMetroConfigAsync(
   const platformBundlers = getPlatformBundlers(exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
-    routerDirectory: exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot),
+    routerDirectory: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     config,
     platformBundlers,
     isTsconfigPathsEnabled: !!exp.experiments?.tsconfigPaths,

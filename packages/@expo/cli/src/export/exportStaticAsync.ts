@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -11,16 +12,20 @@ import path from 'path';
 import prettyBytes from 'pretty-bytes';
 import { inspect } from 'util';
 
-import { getVirtualFaviconAssetsAsync } from './favicon';
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
+import {
+  getApiRoutesForDirectory,
+  getRouterDirectoryWithManifest,
+} from '../start/server/metro/router';
+import { getVirtualFaviconAssetsAsync } from './favicon';
 import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
-type Options = { outputDir: string; minify: boolean; includeMaps: boolean };
+type Options = { outputDir: string; minify: boolean; exportServer: boolean; includeMaps: boolean };
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
@@ -91,8 +96,11 @@ export async function getFilesToExportFromServerAsync(
 export async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, minify, includeMaps }: Options
+  { outputDir, minify, exportServer, includeMaps }: Options
 ): Promise<void> {
+  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const appDir = getRouterDirectoryWithManifest(projectRoot, exp);
+
   const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, outputDir);
 
   const devServer = devServerManager.getDefaultDevServer();
@@ -132,6 +140,17 @@ export async function exportFromServerAsync(
       modifyBundlesWithSourceMaps(resource.filename, resource.source, includeMaps)
     );
   });
+
+  if (exportServer) {
+    const apiRoutes = await exportApiRoutesAsync({ outputDir, server: devServer, appDir });
+
+    // Add the api routes to the files to export.
+    for (const [route, contents] of apiRoutes) {
+      files.set(route, contents);
+    }
+  } else {
+    warnPossibleInvalidExportType(appDir);
+  }
 
   fs.mkdirSync(path.join(outputDir), { recursive: true });
 
@@ -254,4 +273,53 @@ export function getPathVariations(routePath: string): string[] {
   generateVariations(segments, 0);
 
   return Array.from(variations);
+}
+
+async function exportApiRoutesAsync({
+  outputDir,
+  server,
+  appDir,
+}: {
+  outputDir: string;
+  server: MetroBundlerDevServer;
+  appDir: string;
+}): Promise<Map<string, string>> {
+  const funcDir = path.join(outputDir, '_expo/functions');
+  fs.mkdirSync(path.join(funcDir), { recursive: true });
+
+  const [manifest, files] = await Promise.all([
+    server.getExpoRouterRoutesManifestAsync({
+      appDir,
+    }),
+    server
+      .exportExpoRouterApiRoutesAsync({
+        mode: 'production',
+        appDir,
+      })
+      .then((routes) => {
+        const files = new Map<string, string>();
+        for (const [route, contents] of routes) {
+          files.set(path.join('_expo/functions', route), contents);
+        }
+        return files;
+      }),
+  ]);
+
+  Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
+
+  files.set('_expo/routes.json', JSON.stringify(manifest, null, 2));
+
+  return files;
+}
+
+function warnPossibleInvalidExportType(appDir: string) {
+  const apiRoutes = getApiRoutesForDirectory(appDir);
+  if (apiRoutes.length) {
+    // TODO: Allow API Routes for native-only.
+    Log.warn(
+      chalk.yellow`Skipping export for API routes because \`web.output\` is not "server". You may want to remove the routes: ${apiRoutes
+        .map((v) => path.relative(appDir, v))
+        .join(', ')}`
+    );
+  }
 }

@@ -54,7 +54,7 @@ export async function exportAppAsync(
 
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
-  const useWebSSG = exp.web?.output === 'static';
+  const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
 
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
@@ -75,7 +75,9 @@ export async function exportAppAsync(
       platforms,
       minify,
       // TODO: Breaks asset exports
-      // platforms: useWebSSG ? platforms.filter((platform) => platform !== 'web') : platforms,
+      // platforms: useServerRendering
+      //   ? platforms.filter((platform) => platform !== 'web')
+      //   : platforms,
       dev,
       // TODO: Disable source map generation if we aren't outputting them.
     }
@@ -107,18 +109,20 @@ export async function exportAppAsync(
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
   const { hashes, fileNames } = await writeBundlesAsync({
     bundles,
-    useWebSSG,
+    useServerRendering,
     outputDir: bundlesPath,
   });
 
   Log.log('Finished saving JS Bundles');
 
   if (platforms.includes('web')) {
-    if (useWebSSG) {
+    if (useServerRendering) {
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
         // TODO: Expose
         minify,
+        // @ts-expect-error: output server is not on the type yet.
+        exportServer: exp.web?.output === 'server',
         includeMaps: dumpSourcemap,
       });
       Log.log('Finished saving static files');

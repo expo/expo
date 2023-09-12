@@ -3,13 +3,13 @@ import fs from 'fs/promises';
 import { Server } from 'metro';
 import path from 'path';
 
+import { removeFromGitIgnore, upsertGitIgnoreContents } from '../../../utils/mergeGitIgnorePaths';
+import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
+import { ServerLike } from '../BundlerDevServer';
+import { getRouterDirectoryWithManifest } from '../metro/router';
 import { removeExpoEnvDTS, writeExpoEnvDTS } from './expo-env';
 import { setupTypedRoutes } from './routes';
 import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
-import { upsertGitIgnoreContents, removeFromGitIgnore } from '../../../utils/mergeGitIgnorePaths';
-import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
-import { ServerLike } from '../BundlerDevServer';
-import { getRouterDirectory } from '../metro/router';
 
 export interface TypeScriptTypeGenerationOptions {
   server?: ServerLike;
@@ -56,7 +56,7 @@ export async function startTypescriptTypeGenerationAsync({
         server,
         typesDirectory,
         projectRoot,
-        routerDirectory: exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot),
+        routerDirectory: getRouterDirectoryWithManifest(projectRoot, exp),
       }),
     ]);
   }

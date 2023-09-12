@@ -11,10 +11,6 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
 
-import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
-import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
@@ -37,12 +33,19 @@ import {
   DeepLinkHandler,
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
-import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
-import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
+import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
+import { fetchManifest } from './fetchRouterManifest';
+import { eagerBundleApiRoutes, rebundleApiRoute } from './fetchServerRoutes';
+import { instantiateMetroAsync } from './instantiateMetro';
+import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
+import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
+import { getRouterDirectoryWithManifest, isApiRouteConvention } from './router';
+import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
-class ForwardHtmlError extends CommandError {
+export class ForwardHtmlError extends CommandError {
   constructor(
     message: string,
     public html: string,
@@ -79,6 +82,37 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           await getFreePortAsync(EXPO_GO_METRO_PORT));
 
     return port;
+  }
+
+  async getExpoRouterRoutesManifestAsync({ appDir }: { appDir: string }) {
+    const manifest = await fetchManifest(this.projectRoot, {
+      asJson: true,
+      appDir,
+    });
+
+    if (!manifest) {
+      throw new CommandError(
+        'EXPO_ROUTER_SERVER_MANIFEST',
+        'Unexpected error: server manifest could not be fetched.'
+      );
+    }
+
+    return manifest;
+  }
+
+  async exportExpoRouterApiRoutesAsync({
+    mode,
+    appDir,
+  }: {
+    mode: 'development' | 'production';
+    appDir: string;
+  }) {
+    return eagerBundleApiRoutes(this.projectRoot, {
+      mode,
+      appDir,
+      port: this.getInstance()?.location.port,
+      shouldThrow: true,
+    });
   }
 
   async composeResourcesWithHtml({
@@ -124,7 +158,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
     return {
       // Get routes from Expo Router.
-      manifest: await getManifest({ fetchData: true }),
+      manifest: await getManifest({ fetchData: true, preserveApiRoutes: false }),
       // Get route generating function
       async renderAsync(path: string) {
         return await getStaticContent(new URL(path, url));
@@ -367,7 +401,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
       const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
-      const useWebSSG = exp.web?.output === 'static';
+      const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
 
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
@@ -375,53 +409,45 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
       middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
 
-      if (useWebSSG) {
-        middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-          if (!req?.url) {
-            return next();
-          }
+      const appDir = getRouterDirectoryWithManifest(this.projectRoot, exp);
 
-          // TODO: Formal manifest for allowed paths
-          if (req.url.endsWith('.ico')) {
-            return next();
-          }
-          if (req.url.includes('serializer.output=static')) {
-            return next();
-          }
+      middleware.use(
+        createRouteHandlerMiddleware(this.projectRoot, {
+          ...options,
+          appDir,
+          getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
+        })
+      );
 
-          try {
-            const { content } = await this.getStaticPageAsync(req.url, {
-              mode: options.mode ?? 'development',
-            });
+      // @ts-expect-error: TODO
+      if (exp.web?.output === 'server') {
+        // Cache observation for API Routes...
+        observeApiRouteChanges(
+          this.projectRoot,
+          {
+            metro,
+            server,
+          },
+          async (filepath, op) => {
+            if (isApiRouteConvention(filepath)) {
+              debug(`[expo-cli] ${op} ${filepath}`);
+              if (op === 'change' || op === 'add') {
+                rebundleApiRoute(this.projectRoot, filepath, {
+                  ...options,
+                  appDir,
+                });
+              }
 
-            res.setHeader('Content-Type', 'text/html');
-            res.end(content);
-          } catch (error: any) {
-            res.setHeader('Content-Type', 'text/html');
-            // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
-            if (error instanceof ForwardHtmlError) {
-              res.statusCode = error.statusCode;
-              res.end(error.html);
-              return;
-            }
-            try {
-              res.end(await this.renderStaticErrorAsync(error));
-            } catch (staticError: any) {
-              // Fallback error for when Expo Router is misconfigured in the project.
-              res.end(
-                '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
-                  error.message +
-                  '<br/><br/>' +
-                  staticError.message +
-                  '</span>'
-              );
+              if (op === 'delete') {
+                // TODO: Cancel the bundling of the deleted route.
+              }
             }
           }
-        });
+        );
       }
 
       // This MUST run last since it's the fallback.
-      if (!useWebSSG) {
+      if (!useServerRendering) {
         middleware.use(
           new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
         );
