@@ -1,0 +1,1 @@
+{"version":3,"file":"worker.js","sourceRoot":"","sources":["../../../src/web/serviceWorker/worker.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,GAAG,CAAC,MAAM,CAAC,CAAC","sourcesContent":["console.log('test');\n"]}

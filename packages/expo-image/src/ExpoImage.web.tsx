@@ -6,8 +6,10 @@ import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
 import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
+import loadServiceWorker from './web/serviceWorker/loadServiceWorker';
 
 loadStyle();
+loadServiceWorker();
 
 export const ExpoImageModule = {
   prefetch(urls: string | string[]): void {
