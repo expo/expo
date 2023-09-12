@@ -182,16 +182,6 @@ const styles = StyleSheet.create({
 
 ## Enable Emulator Location
 
-### iOS Simulator
-
-With Simulator open, go to **Features** > **Location** and choose any option besides **None**.
-
-<ImageSpotlight
-  alt="Location settings in iOS simulator."
-  src="/static/images/sdk/location/ios-simulator-location.png"
-  style={{ maxWidth: 480 }}
-/>
-
 ### Android Emulator
 
 Open Android Studio, and launch the Android Emulator. Inside it, go to **Settings** > **Location** and enable **Use location**.
@@ -205,6 +195,16 @@ Open Android Studio, and launch the Android Emulator. Inside it, go to **Setting
 If you don't receive the locations in the emulator, you may have to turn off the **Improve Location Accuracy** setting. This will turn off Wi-Fi location and only use GPS. Then you can manipulate the location with GPS data through the emulator.
 
 For Android 12 and higher, go to **Settings** > **Location** > **Location Services** > **Google Location Accuracy**, and turn off **Improve Location Accuracy**. For Android 11 and lower, go to **Settings** > **Location** > **Advanced** > **Google Location Accuracy**, and turn off **Google Location Accuracy**.
+
+### iOS Simulator
+
+With Simulator open, go to **Features** > **Location** and choose any option besides **None**.
+
+<ImageSpotlight
+  alt="Location settings in iOS simulator."
+  src="/static/images/sdk/location/ios-simulator-location.png"
+  style={{ maxWidth: 480 }}
+/>
 
 ## API
 
