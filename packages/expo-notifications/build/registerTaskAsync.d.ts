@@ -4,7 +4,7 @@
  * Make sure you define it in the global scope.
  *
  * The callback function you define with `TaskManager.defineTask` will receive an object with the following fields:
- * - `data`: The remote payload delivered by either FCM (Android) or APNs (iOS). See []`PushNotificationTrigger`](#pushnotificationtrigger) for details.
+ * - `data`: The remote payload delivered by either FCM (Android) or APNs (iOS). See [`PushNotificationTrigger`](#pushnotificationtrigger) for details.
  * - `error`: The error (if any) that occurred during execution of the task.
  * - `executionInfo`: JSON object of additional info related to the task, including the `taskName`.
  * @param taskName The string you passed to `TaskManager.defineTask` as the `taskName` parameter.
