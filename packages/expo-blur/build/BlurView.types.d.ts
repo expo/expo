@@ -25,5 +25,5 @@ export type BlurViewProps = {
      */
     blurReductionFactor?: number;
 } & ViewProps;
-export type BlurTint = 'light' | 'dark' | 'default';
+export type BlurTint = 'light' | 'dark' | 'default' | 'extraLight' | 'regular' | 'prominent' | 'systemUltraThinMaterial' | 'systemThinMaterial' | 'systemMaterial' | 'systemThickMaterial' | 'systemChromeMaterial' | 'systemUltraThinMaterialLight' | 'systemThinMaterialLight' | 'systemMaterialLight' | 'systemThickMaterialLight' | 'systemChromeMaterialLight' | 'systemUltraThinMaterialDark' | 'systemThinMaterialDark' | 'systemMaterialDark' | 'systemThickMaterialDark' | 'systemChromeMaterialDark';
 //# sourceMappingURL=BlurView.types.d.ts.map

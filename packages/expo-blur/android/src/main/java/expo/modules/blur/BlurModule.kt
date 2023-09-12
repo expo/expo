@@ -12,7 +12,7 @@ class BlurModule : Module() {
         view.setBlurRadius(intensity)
       }
 
-      Prop("tint") { view: ExpoBlurView, tint: String ->
+      Prop("tint") { view: ExpoBlurView, tint: TintStyle ->
         view.tint = tint
       }
 
