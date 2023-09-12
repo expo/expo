@@ -1,4 +1,4 @@
-import { getServerManifest } from '../getMatchableManifest';
+import { getServerManifest } from '../getServerManifest';
 import { getExactRoutes } from '../getRoutes';
 import { RequireContext } from '../types';
 

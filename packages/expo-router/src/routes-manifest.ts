@@ -1,6 +1,6 @@
 // This file runs in Node.js environments.
 // no relative imports
-import { getServerManifest } from './getMatchableManifest';
+import { getServerManifest } from './getServerManifest';
 import { getRoutes } from './getRoutes';
 import { RequireContext } from './types';
 
