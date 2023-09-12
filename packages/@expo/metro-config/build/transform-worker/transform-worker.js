@@ -4,6 +4,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.transform = transform;
+function _metroSwcTransformer() {
+  const data = _interopRequireDefault(require("@expo/metro-swc-transformer"));
+  _metroSwcTransformer = function () {
+    return data;
+  };
+  return data;
+}
 function _metroTransformWorker() {
   const data = _interopRequireDefault(require("metro-transform-worker"));
   _metroTransformWorker = function () {
@@ -59,6 +66,15 @@ async function transform(config, projectRoot, filename, data, options) {
       // Use a string so this notice is visible in the bundle if the user is
       // looking for it.
       '"> The server-only +html file was removed from the client JS bundle by Expo CLI."') : Buffer.from(''), options);
+    }
+    if (options.type === 'module' && !filename.endsWith('.json')) {
+      const src = data.toString('utf8');
+      const unsupported = !!(src.includes(`require.context`) ||
+      // (src.includes('import(')) ||
+      src.includes(`worklet`) || src.match(/@(no)?flow/));
+      if (!unsupported) {
+        return _metroSwcTransformer().default.transform(config, projectRoot, filename, src, options);
+      }
     }
     return _metroTransformWorker().default.transform(config, projectRoot, filename, data, options);
   }

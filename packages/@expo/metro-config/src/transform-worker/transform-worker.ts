@@ -65,6 +65,22 @@ export async function transform(
       );
     }
 
+    if (options.type === 'module' && !filename.endsWith('.json')) {
+      const src = data.toString('utf8');
+      const unsupported = !!(
+        src.includes(`require.context`) ||
+        // (src.includes('import(')) ||
+        src.includes(`worklet`) ||
+        src.match(/@(no)?flow/)
+      );
+      if (!unsupported) {
+        const swcTransformer =
+          require('@expo/metro-swc-transformer') as typeof import('@expo/metro-swc-transformer');
+
+        return swcTransformer.transform(config, projectRoot, filename, src, options);
+      }
+    }
+
     return worker.transform(config, projectRoot, filename, data, options);
   }
 
