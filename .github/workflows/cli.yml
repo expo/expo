@@ -60,6 +60,9 @@ jobs:
       - name: E2E Test @expo/fingerprint
         run: yarn test:e2e
         working-directory: packages/@expo/fingerprint
+      - name: 🛠 Build create-expo
+        run: yarn prepare
+        working-directory: packages/create-expo
       - name: E2E Test create-expo
         run: yarn test:e2e
         working-directory: packages/create-expo
