@@ -33,7 +33,7 @@ def getRNVersion() {
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
-version = '50.0.0-alpha.1'
+version = '50.0.0-alpha.2'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -124,7 +124,7 @@ android {
   namespace "expo.core"
   defaultConfig {
     versionCode 1
-    versionName "50.0.0-alpha.1"
+    versionName "50.0.0-alpha.2"
     consumerProguardFiles("proguard-rules.pro")
   }
   testOptions {

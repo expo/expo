@@ -1,5 +1,5 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'react-native';
 
 const LINKING_GUIDE_URL = `https://docs.expo.dev/guides/linking/`;
 
@@ -67,7 +67,6 @@ export function collectManifestSchemes(): string[] {
     (Platform.select<any>({
       ios: Constants.expoConfig?.ios,
       android: Constants.expoConfig?.android,
-      web: {},
     }) as SchemeConfig) ?? {};
 
   return getSchemes(Constants.expoConfig).concat(getSchemes(platformManifest));
@@ -125,7 +124,7 @@ export function resolveScheme(options: { scheme?: string; isSilent?: boolean }):
   if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
     if (options.scheme) {
       // This enables users to use the fb or google redirects on iOS in the Expo client.
-      if (EXPO_CLIENT_SCHEMES.includes(options.scheme)) {
+      if (EXPO_CLIENT_SCHEMES?.includes(options.scheme)) {
         return options.scheme;
       }
       // Silently ignore to make bare workflow development easier.

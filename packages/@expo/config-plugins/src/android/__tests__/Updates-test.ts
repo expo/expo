@@ -59,7 +59,12 @@ describe('Android Updates config', () => {
         },
       },
     };
-    androidManifestJson = Updates.setUpdatesConfig('/app', config, androidManifestJson, '0.11.0');
+    androidManifestJson = await Updates.setUpdatesConfigAsync(
+      '/app',
+      config,
+      androidManifestJson,
+      '0.11.0'
+    );
     const mainApplication = getMainApplication(androidManifestJson)!;
 
     if (!mainApplication['meta-data']) {
@@ -207,7 +212,12 @@ describe('Android Updates config', () => {
           policy: 'appVersion',
         },
       };
-      androidManifestJson = Updates.setUpdatesConfig('/app', config, androidManifestJson, '0.11.0');
+      androidManifestJson = await Updates.setUpdatesConfigAsync(
+        '/app',
+        config,
+        androidManifestJson,
+        '0.11.0'
+      );
       const mainApplication = getMainApplication(androidManifestJson);
 
       const runtimeVersion = mainApplication!['meta-data']?.filter(
@@ -224,16 +234,22 @@ describe('Android Updates config', () => {
       const stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
       const config = {
         runtimeVersion: '1.10',
+        modRequest: {
+          projectRoot: '/',
+        },
       };
-      Updates.applyRuntimeVersionFromConfig(config, stringsJSON);
+      await Updates.applyRuntimeVersionFromConfigAsync(config, stringsJSON);
       expect(format(stringsJSON)).toEqual(
         '<resources>\n  <string name="expo_runtime_version">1.10</string>\n</resources>'
       );
 
       const config2 = {
         sdkVersion: '1.10',
+        modRequest: {
+          projectRoot: '/',
+        },
       };
-      Updates.applyRuntimeVersionFromConfig(config2, stringsJSON);
+      await Updates.applyRuntimeVersionFromConfigAsync(config2, stringsJSON);
       expect(format(stringsJSON)).toEqual('<resources/>');
     });
 

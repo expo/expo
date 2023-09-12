@@ -6,7 +6,7 @@ apply plugin: 'maven-publish'
 apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '13.5.1'
+version = '13.6.0'
 
 def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
 def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
@@ -123,7 +123,7 @@ android {
   namespace "expo.modules.av"
   defaultConfig {
     versionCode 24
-    versionName "13.5.1"
+    versionName "13.6.0"
 
     externalNativeBuild {
       cmake {

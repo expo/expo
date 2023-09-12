@@ -19,6 +19,12 @@
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
 
+#if defined(EX_DETACHED)
+#import "ExpoKit-Swift.h"
+#else
+#import "Expo_Go-Swift.h"
+#endif // defined(EX_DETACHED)
+
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 @import EXManifests;
@@ -37,7 +43,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
     @"constants": @{
         @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
         @"linkingUri": @"exp://",
-        @"experienceUrl": [@"exp://" stringByAppendingString:self.appRecord.appLoader.manifest.hostUri],
+        @"experienceUrl": [@"exp://" stringByAppendingString:(self.appRecord.appLoader.manifest.hostUri ?: @"")],
         @"manifest": self.appRecord.appLoader.manifest.rawManifestJSON,
         @"executionEnvironment": EXConstantsExecutionEnvironmentStoreClient,
         @"appOwnership": @"expo",
@@ -164,38 +170,44 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   return initialHomeUrl;
 }
 
-+ (EXManifestsManifest * _Nullable)bundledHomeManifest
++ (EXManifestAndAssetRequestHeaders * _Nullable)bundledHomeManifestAndAssetRequestHeaders
 {
-  NSString *manifestJson = nil;
+  NSString *manifestAndAssetRequestHeadersJson = nil;
   BOOL usesNSBundleManifest = NO;
 
   // if developing, use development manifest from EXBuildConstants
   if ([EXBuildConstants sharedInstance].isDevKernel) {
-    manifestJson = [EXBuildConstants sharedInstance].kernelManifestJsonString;
+    manifestAndAssetRequestHeadersJson = [EXBuildConstants sharedInstance].kernelManifestAndAssetRequestHeadersJsonString;
   }
 
   // otherwise use published manifest
-  if (!manifestJson) {
+  if (!manifestAndAssetRequestHeadersJson) {
     NSString *manifestPath = [[NSBundle mainBundle] pathForResource:kEXHomeManifestResourceName ofType:@"json"];
     if (manifestPath) {
       NSError *error;
       usesNSBundleManifest = YES;
-      manifestJson = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:&error];
-      if (error) {
-        manifestJson = nil;
+      NSString *manifestJson = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:&error];
+      if (!error) {
+        manifestAndAssetRequestHeadersJson = [NSString stringWithFormat:@"{\"manifest\": %@, \"assetRequestHeaders\":{}}", manifestJson];
       }
     }
   }
 
-  if (manifestJson) {
-    id manifest = RCTJSONParse(manifestJson, nil);
-    if ([manifest isKindOfClass:[NSDictionary class]]) {
-      if (usesNSBundleManifest && !([manifest[@"id"] isEqualToString:@"@exponent/home"])) {
-        DDLogError(@"Bundled kernel manifest was published with an id other than @exponent/home");
+  if (manifestAndAssetRequestHeadersJson) {
+    id manifestAndAssetRequestHeaders = RCTJSONParse(manifestAndAssetRequestHeadersJson, nil);
+    if ([manifestAndAssetRequestHeaders isKindOfClass:[NSDictionary class]]) {
+      id manifest = manifestAndAssetRequestHeaders[@"manifest"];
+      id assetRequestHeaders = manifestAndAssetRequestHeaders[@"assetRequestHeaders"];
+      if ([manifest isKindOfClass:[NSDictionary class]]) {
+        if (usesNSBundleManifest && !([manifest[@"id"] isEqualToString:@"@exponent/home"])) {
+          DDLogError(@"Bundled kernel manifest was published with an id other than @exponent/home");
+        }
+        return [[EXManifestAndAssetRequestHeaders alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:manifest]
+                                                      assetRequestHeaders:assetRequestHeaders];
       }
-      return [EXManifestsManifestFactory manifestForManifestJSON:manifest];
     }
   }
+
   return nil;
 }
 
