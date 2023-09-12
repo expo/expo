@@ -13,7 +13,7 @@ import { promisify } from 'util';
 import { Log } from '../../../log';
 import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
 import { fetchManifest } from './fetchRouterManifest';
-import { bundleApiRoute } from './fetchServerRoutes';
+import { bundleApiRoute } from './bundleApiRoutes';
 import { getErrorOverlayHtmlAsync, logMetroError, logMetroErrorAsync } from './metroErrorInterface';
 import { ForwardHtmlError } from './MetroBundlerDevServer';
 

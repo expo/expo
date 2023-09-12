@@ -4,11 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import path from 'node:path';
 
 import { requireFileContentsWithMetro } from '../getStaticRenderFunctions';
 import { logMetroErrorAsync } from './metroErrorInterface';
+import { getApiRoutesForDirectory } from './router';
 
-const debug = require('debug')('expo:api-routes') as typeof console.log;
+const debug = require('debug')('expo:server-routes') as typeof console.log;
 
 const pendingRouteOperations = new Map<string, Promise<string | null>>();
 
@@ -59,4 +61,26 @@ export async function bundleApiRoute(
 
   pendingRouteOperations.set(filepath, route);
   return route;
+}
+
+export async function rebundleApiRoute(
+  projectRoot: string,
+  filepath: string,
+  options: ApiRouteOptions
+) {
+  pendingRouteOperations.delete(filepath);
+  return bundleApiRoute(projectRoot, filepath, options);
+}
+
+export async function exportAllApiRoutesAsync(projectRoot: string, options: ApiRouteOptions) {
+  const files: Map<string, string> = new Map();
+
+  await Promise.all(
+    getApiRoutesForDirectory(options.appDir).map(async (filepath) => {
+      const contents = await bundleApiRoute(projectRoot, filepath, options);
+      files.set(path.relative(options.appDir, filepath.replace(/\.[tj]sx?$/, '.js')), contents!);
+    })
+  );
+
+  return files;
 }

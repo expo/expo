@@ -38,7 +38,7 @@ import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { fetchManifest } from './fetchRouterManifest';
-import { eagerBundleApiRoutes, rebundleApiRoute } from './fetchServerRoutes';
+import { exportAllApiRoutesAsync, rebundleApiRoute } from './bundleApiRoutes';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
@@ -107,7 +107,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     mode: 'development' | 'production';
     appDir: string;
   }) {
-    return eagerBundleApiRoutes(this.projectRoot, {
+    return exportAllApiRoutesAsync(this.projectRoot, {
       mode,
       appDir,
       port: this.getInstance()?.location.port,
