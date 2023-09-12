@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Replace `metroTarget: 'client' | 'node'` with `isServer: boolean` in the Babel caller.
+- Replace `metroTarget: 'client' | 'node'` with `isServer: boolean` in the Babel caller. ([#24410](https://github.com/expo/expo/pull/24410) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
