@@ -15,6 +15,7 @@
 
 ### 💡 Others
 
+- Refactor e2e tests. ([#24385](https://github.com/expo/expo/pull/24385) by [@EvanBacon](https://github.com/EvanBacon))
 - Forward the project root path to `getRuntimeVersionAsync` and `getRuntimeVersionNullableAsync`. ([#24126](https://github.com/expo/expo/pull/24126) by [@mccraveiro](https://github.com/mccraveiro))
 
 ## 0.10.12 — 2023-09-11

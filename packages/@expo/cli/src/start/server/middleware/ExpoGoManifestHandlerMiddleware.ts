@@ -99,9 +99,8 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     version: string;
     headers: ServerHeaders;
   }> {
-    const { exp, hostUri, expoGoConfig, bundleUrl } = await this._resolveProjectSettingsAsync(
-      requestOptions
-    );
+    const { exp, hostUri, expoGoConfig, bundleUrl } =
+      await this._resolveProjectSettingsAsync(requestOptions);
 
     const runtimeVersion = await Updates.getRuntimeVersionAsync(
       this.projectRoot,

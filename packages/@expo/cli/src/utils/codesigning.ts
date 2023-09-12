@@ -192,9 +192,8 @@ async function getExpoRootDevelopmentCodeSigningInfoAsync(
     return null;
   }
 
-  const developmentCodeSigningInfoFromFile = await DevelopmentCodeSigningInfoFile.readAsync(
-    easProjectId
-  );
+  const developmentCodeSigningInfoFromFile =
+    await DevelopmentCodeSigningInfoFile.readAsync(easProjectId);
   const validatedCodeSigningInfo = validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
     developmentCodeSigningInfoFromFile,
     easProjectId

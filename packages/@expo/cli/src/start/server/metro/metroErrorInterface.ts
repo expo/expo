@@ -37,10 +37,9 @@ export async function logMetroErrorWithStack(
     error: Error;
   }
 ) {
-  const { getStackFormattedLocation } = require(resolveFrom(
-    projectRoot,
-    '@expo/metro-runtime/symbolicate'
-  ));
+  const { getStackFormattedLocation } = require(
+    resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
+  );
 
   Log.log();
   Log.log(chalk.red('Metro error: ') + error.message);
@@ -78,10 +77,9 @@ export async function logMetroErrorWithStack(
 }
 
 export async function logMetroError(projectRoot: string, { error }: { error: Error }) {
-  const { LogBoxLog, parseErrorStack } = require(resolveFrom(
-    projectRoot,
-    '@expo/metro-runtime/symbolicate'
-  ));
+  const { LogBoxLog, parseErrorStack } = require(
+    resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
+  );
 
   const stack = parseErrorStack(error.stack);
 
@@ -112,10 +110,9 @@ export function logFromError({ error, projectRoot }: { error: Error; projectRoot
   symbolicate: (type: string, callback: () => void) => void;
   codeFrame: CodeFrame;
 } {
-  const { LogBoxLog, parseErrorStack } = require(resolveFrom(
-    projectRoot,
-    '@expo/metro-runtime/symbolicate'
-  ));
+  const { LogBoxLog, parseErrorStack } = require(
+    resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
+  );
 
   const stack = parseErrorStack(error.stack);
 
