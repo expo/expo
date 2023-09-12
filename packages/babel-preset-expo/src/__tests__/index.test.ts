@@ -1,12 +1,17 @@
-const babel = require('@babel/core');
-const fs = require('fs');
-const path = require('path');
+import * as babel from '@babel/core';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
-const preset = require('..');
-// Used to distinguish webpack from metro
-const WEBPACK_CALLER = { name: 'babel-loader' };
+import preset from '..';
 
-describe.each([['metro'], ['webpack', WEBPACK_CALLER]])('%s', (_name, caller) => {
+function getCaller(props: Record<string, string>): babel.TransformCaller {
+  return props as unknown as babel.TransformCaller;
+}
+
+describe.each([
+  ['metro', getCaller({ name: 'metro' })],
+  ['webpack', getCaller({ name: 'babel-loader' })],
+])('%s', (_name, caller) => {
   const isMetro = _name === 'metro';
   it(`compiles sample files`, () => {
     const options = {
@@ -153,7 +158,7 @@ import { Text, View } from 'react-native';
 export default function App() {
   return (<View><Text>Hello World</Text></View>);
 }`;
-    const { code } = babel.transform(sourceCode, options);
+    const { code } = babel.transform(sourceCode, options)!;
 
     expect(code).not.toMatch(/"react\/jsx-runtime"/);
 
@@ -177,7 +182,7 @@ require('react-native-vector-icons');
 imposter.require('react-native-vector-icons');
 imposter.import('react-native-vector-icons');
 `;
-    const { code } = babel.transform(sourceCode, options);
+    const { code } = babel.transform(sourceCode, options)!;
 
     expect(code).toMatch(/"@expo\/vector-icons"/);
     expect(code).toMatchSnapshot();
@@ -205,7 +210,7 @@ imposter.import('react-native-vector-icons');
 import 'rn';
 import 'react-native-vector-icons';
 `;
-    const { code } = babel.transform(sourceCode, options);
+    const { code } = babel.transform(sourceCode, options)!;
 
     expect(code).toMatch(/"react-native"/);
     expect(code).toMatch(/"@expo\/vector-icons"/);
@@ -220,13 +225,13 @@ describe('"lazyImports" option', () => {
       babelrc: false,
       presets: [preset],
     };
-    const { codeDefault } = babel.transformFileSync(testFilename, optionsDefault);
+    const { code: codeDefault } = babel.transformFileSync(testFilename, optionsDefault);
 
     const optionsNull = {
       babelrc: false,
       presets: [[preset, { lazyImports: null }]],
     };
-    const { codeNull } = babel.transformFileSync(testFilename, optionsNull);
+    const { code: codeNull } = babel.transformFileSync(testFilename, optionsNull);
 
     expect(codeDefault).toEqual(codeNull);
   });
