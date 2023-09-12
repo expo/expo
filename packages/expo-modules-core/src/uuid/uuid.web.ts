@@ -2,15 +2,15 @@ import sha1 from './lib/sha1';
 import v35 from './lib/v35';
 import { UUID } from './uuid.types';
 
-// In some cases (for us only tests) it is necessary to explicitly import the crypto module
-const cryptoObject =
-  typeof crypto === 'undefined' || typeof crypto.randomUUID === 'undefined'
-    ? require('crypto')
-    : crypto;
-
-const randomUuid = cryptoObject?.randomUUID && cryptoObject.randomUUID?.bind(cryptoObject);
-
 function uuidv4(): string {
+  // Crypto needs to be required when run in Node.js environment.
+  const cryptoObject =
+    typeof crypto === 'undefined' || typeof crypto.randomUUID === 'undefined'
+      ? require('crypto')
+      : crypto;
+
+  const randomUuid = cryptoObject?.randomUUID && cryptoObject.randomUUID?.bind(cryptoObject);
+
   if (!randomUuid) {
     throw Error("The browser doesn't support `crypto.randomUUID` function");
   }
