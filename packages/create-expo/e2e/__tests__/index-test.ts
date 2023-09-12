@@ -1,18 +1,16 @@
-/* eslint-env jest */
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
 const cli = require.resolve('../../build/index.js');
-
 const projectRoot = getTemporaryPath();
 
 function getTemporaryPath() {
   return path.join(os.tmpdir(), Math.random().toString(36).substring(2));
 }
 
-function execute(args, env) {
+function execute(args: string[], env: Record<string, string> = {}) {
   return spawnAsync('node', [cli, ...args], {
     cwd: projectRoot,
     env: {
@@ -22,17 +20,17 @@ function execute(args, env) {
   });
 }
 
-async function executePassingAsync(args, env) {
+async function executePassingAsync(args: string[], env?: Record<string, string>) {
   const results = await execute(args, env);
-  expect(results.exitCode).toBe(0);
+  expect(results.status).toBe(0);
   return results;
 }
 
-function fileExists(projectName, filePath) {
+function fileExists(projectName: string, filePath: string) {
   return fs.existsSync(path.join(projectRoot, projectName, filePath));
 }
 
-function getRoot(...args) {
+function getRoot(...args: string[]) {
   return path.join(projectRoot, ...args);
 }
 
@@ -55,8 +53,8 @@ it('prevents overwriting directories with projects', async () => {
   expect.assertions(1);
   try {
     await execute([projectName]);
-  } catch (e) {
-    expect(e.stdout).toMatch(/has files that might be overwritten/);
+  } catch (error: any) {
+    expect(error.stdout).toMatch(/has files that might be overwritten/);
   }
 });
 
@@ -218,7 +216,7 @@ describe('yes', () => {
         cwd: projectRoot,
       }
     );
-    expect(results.exitCode).toBe(0);
+    expect(results.status).toBe(0);
 
     expect(fileExists(projectName, 'package.json')).toBeTruthy();
     expect(fileExists(projectName, 'App.js')).toBeTruthy();
@@ -236,12 +234,12 @@ xdescribe('templates', () => {
     // Create a fake package.json -- this is a terminal file that cannot be overwritten.
     fs.writeFileSync(path.join(projectRoot, 'LICENSE'), 'hello world');
 
-    await executePassingAsync(
+    await executePassingAsync([
       projectName,
       '--template',
       'https://github.com/expo/examples/tree/master/blank',
-      '--no-install'
-    );
+      '--no-install',
+    ]);
     expect(fileExists(projectName, 'package.json')).toBeTruthy();
     expect(fileExists(projectName, 'App.js')).toBeTruthy();
     expect(fileExists(projectName, '.gitignore')).toBeTruthy();
@@ -257,8 +255,8 @@ xdescribe('templates', () => {
         '--template',
         'fake template path that is too obviously long to be real',
       ]);
-    } catch (e) {
-      expect(e.stderr).toMatch(/Could not locate the template/i);
+    } catch (error: any) {
+      expect(error.stderr).toMatch(/Could not locate the template/i);
     }
     expect(fs.existsSync(getRoot(projectName, 'package.json'))).toBeFalsy();
   });
