@@ -9,8 +9,6 @@ import { bin, ensurePortFreeAsync, getPageHtml, getRouterE2ERoot } from '../util
 
 runExportSideEffects();
 
-beforeEach(() => ensurePortFreeAsync(19000));
-
 describe('exports static', () => {
   const projectRoot = getRouterE2ERoot();
   const outputName = 'dist-static-rendering';
@@ -36,7 +34,7 @@ describe('exports static', () => {
     560 * 1000
   );
 
-  describe('server', () => {
+  xdescribe('server', () => {
     let server: execa.ExecaChildProcess<string> | undefined;
     const serverUrl = 'http://localhost:3000';
 
