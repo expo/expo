@@ -24,12 +24,16 @@ export class BunPackageManager extends BasePackageManager {
     return this.runAsync(['install', ...namesOrFlags]);
   }
 
+  getAddCommandOptions(namesOrFlags: string[]) {
+    return ['add', ...namesOrFlags];
+  }
+
   addAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
-    return this.runAsync(['add', ...namesOrFlags]);
+    return this.runAsync(this.getAddCommandOptions(namesOrFlags));
   }
 
   addDevAsync(namesOrFlags: string[] = []) {
