@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+### 🐛 Bug fixes
+
+- Update dev sessions default ports to check. ([#24380](https://github.com/expo/expo/pull/24380) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 2.4.10 — 2023-08-22
 
 ### 💡 Others
