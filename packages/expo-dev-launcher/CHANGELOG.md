@@ -6,13 +6,13 @@
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
-
 ### 💡 Others
 
+- Update dev sessions default ports to check. ([#24380](https://github.com/expo/expo/pull/24380) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
-- Update dev sessions default ports to check. ([#24380](https://github.com/expo/expo/pull/24380) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fetch dev sessions whenever navigating to the launcher home screen. ([#24378](https://github.com/expo/expo/pull/24378) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 2.4.10 — 2023-08-22
 
