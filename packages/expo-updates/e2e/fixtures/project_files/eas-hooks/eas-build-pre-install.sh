@@ -39,5 +39,6 @@ if [[ "$EAS_BUILD_RUNNER" == "eas-build" && "$EAS_BUILD_PROFILE" == "updates_tes
   else
     brew tap wix/brew
     brew install applesimutils
+    # xcodebuild -downloadPlatform tvOS
   fi
 fi
