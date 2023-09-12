@@ -29,7 +29,7 @@
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "test:e2e": "E2E=1 expo-module test",
+    "test:e2e": "expo-module test --config e2e/jest.config.js",
     "watch": "yarn run build -w",
     "prepublishOnly": "expo-module prepublishOnly"
   },
