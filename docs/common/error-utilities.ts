@@ -148,7 +148,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/splash-screens/': '/develop/user-interface/splash-screen/',
   '/guides/app-icons/': '/develop/user-interface/app-icons/',
   '/guides/color-schemes/': '/develop/user-interface/color-themes/',
-  '/guides/using-custom-fonts/': '/develop/user-interface/fonts/',
   '/development/introduction/': '/develop/development-builds/introduction/',
   '/development/create-development-builds/': '/develop/development-builds/create-a-build/',
   '/development/use-development-builds/': '/develop/development-builds/use-development-builds/',
@@ -170,7 +169,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/using-styled-components/': '/guides/overview/',
   '/guides/using-bugsnag/': '/guides/overview/',
   '/build/automating-submissions/': '/build/automate-submissions/',
-  '/guides/routing-and-navigation/': '/routing/introduction/',
   '/workflow/run-on-device/': '/build/internal-distribution/',
 
   // Old redirects
@@ -237,7 +235,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/next-steps/installation/': '/get-started/installation/',
   '/guides/release-channels/': '/archive/classic-updates/release-channels/',
   '/guides/push-notifications/': '/push-notifications/overview/',
-  '/guides/using-fcm/': '/push-notifications/using-fcm/',
   '/push-notifications/': '/push-notifications/overview/',
   '/distribution/hosting-your-app/': '/distribution/publishing-websites/',
   '/build-reference/how-tos/': '/build-reference/private-npm-packages/',
@@ -307,7 +304,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/distribution/uploading-apps/': '/submit/introduction/',
 
   // Deleted or removed guides
-  '/guides/setup-native-firebase/': '/guides/using-firebase/',
   '/guides/using-clojurescript/': '/guides/',
 
   // Redirects from old to new tutorial
@@ -341,7 +337,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/amplitude/': '/guides/using-analytics/',
   '/versions/latest/sdk/util/': '/versions/latest/',
   // Push notifications
-  '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup',
   '/config/app/': '/workflow/configuration/',
   '/versions/latest/sdk/settings/': '/versions/latest/',
   '/archive/expokit/eject/': '/archive/glossary/#eject',

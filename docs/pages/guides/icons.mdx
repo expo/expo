@@ -42,11 +42,11 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-> As with [any custom font](using-custom-fonts.mdx#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. Read more about [pre-loading and caching assets](preloading-and-caching-assets#pre-loading-and-caching-assets).
+> As with [any custom font](/develop/user-interface/fonts/#use-a-custom-font) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. Read more about [pre-loading and caching assets](preloading-and-caching-assets#pre-loading-and-caching-assets).
 
 ## Custom Icon Fonts
 
-To use a custom icon font, you have to make sure you import them into your project. Only after a font has loaded, you can create an Icon set. [Learn more about loading custom fonts](using-custom-fonts.mdx).
+To use a custom icon font, you have to make sure you import them into your project. Only after a font has loaded, you can create an Icon set. [Learn more about loading custom fonts](/develop/user-interface/fonts/#use-a-custom-font).
 
 `@expo/vector-icons` exposes three methods to help you create an icon set:
 
@@ -54,7 +54,7 @@ To use a custom icon font, you have to make sure you import them into your proje
 
 This method returns your own custom font based on the `glyphMap` where the key is the icon name and the value is either a UTF-8 character or it's character code.
 
-In the example below, the `glyphMap` object is defined which is then passed as the first argument to the `createIconSet` method. The second argument,`fontFamily`, is the name of the font (not the filename). Optionally, you can pass the third argument for Android support, which is the custom font file name.
+In the example below, the `glyphMap` object is defined which is then passed as the first argument to the `createIconSet` method. The second argument `fontFamily` is the name of the font (not the filename). Optionally, you can pass the third argument for Android support, which is the custom font file name.
 
 ```jsx
 import * as React from 'react';
