@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
+import GithubSlugger from 'github-slugger';
 import mockRouter from 'next-router-mock';
 import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
 import { u as node } from 'unist-builder';
@@ -7,6 +8,15 @@ import { visit } from 'unist-util-visit';
 
 import { findActiveRoute, Navigation } from './Navigation';
 import { NavigationNode } from './types';
+
+import { HeadingManager } from '~/common/headingManager';
+import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
+
+const prepareHeadingManager = () => {
+  const headingManager = new HeadingManager(new GithubSlugger(), { headings: [] });
+
+  return headingManager;
+};
 
 jest.mock('next/router', () => mockRouter);
 
@@ -64,10 +74,14 @@ describe(Navigation, () => {
   });
 
   it('renders pages inside groups inside sections', () => {
+    const headingManager = prepareHeadingManager();
     render(
-      <MemoryRouterProvider>
-        <Navigation routes={nodes} />
-      </MemoryRouterProvider>
+      // Need context due to withHeadingManager in Collapsible, which enables anchor links
+      <HeadingsContext.Provider value={headingManager}>
+        <MemoryRouterProvider>
+          <Navigation routes={nodes} />
+        </MemoryRouterProvider>
+      </HeadingsContext.Provider>
     );
     // Get started ->
     expect(screen.getByText('Introduction')).toBeInTheDocument();
