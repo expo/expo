@@ -14,8 +14,6 @@
 		0799CFDA21839B520039E97C /* EXSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799CFD921839B520039E97C /* EXSession.m */; };
 		07C6733224D220A5003F3F5C /* EXUpdatesBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733024D220A4003F3F5C /* EXUpdatesBinding.m */; };
 		07C6733524D2310C003F3F5C /* EXAppLoaderExpoUpdates.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */; };
-		0CC6F95E225F5B1B00322635 /* EXStandaloneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6F95D225F5B1B00322635 /* EXStandaloneAppDelegate.m */; };
-		0CC6F961225F5C7700322635 /* ExpoKitAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6F960225F5C7700322635 /* ExpoKitAppDelegate.m */; };
 		142BF7101AA740B69473EA27 /* AIRMapUrlTileCachedOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A35BDC646C64B7988CCD0CA /* AIRMapUrlTileCachedOverlay.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		19382BA91EC2EACC001ED4A1 /* EXScopedBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXScopedBranchManager.m */; };
 		19762DC50FD4D897EDAF61A5 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522580D8EA8D0267870DC600 /* ExpoModulesProvider.swift */; };
@@ -117,8 +115,6 @@
 		81D07608E77CB3673562F893 /* libPods-Expo Go-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A225B4CA9DCFAB2BCB10AA7B /* libPods-Expo Go-Tests.a */; };
 		8215F58228F08D1900D66BE5 /* RNDateTimePickerShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 76E808C4949F497592E26673 /* RNDateTimePickerShadowView.m */; };
 		827A699919CED163689E655D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E446843BA3BF044F621CBE /* ExpoModulesProvider.swift */; };
-		8353B820277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8353B81E277A17FB00AFCBDA /* EXStandaloneViewController.m */; };
-		8353B821277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8353B81E277A17FB00AFCBDA /* EXStandaloneViewController.m */; };
 		837259A9280671D200E204C1 /* AIRMapUrlTileCachedOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A35BDC646C64B7988CCD0CA /* AIRMapUrlTileCachedOverlay.m */; };
 		837A38252A20D7090046BD8E /* EXVersionedNetworkInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 837A38242A20D7090046BD8E /* EXVersionedNetworkInterceptor.m */; };
 		837A38262A20D7090046BD8E /* EXVersionedNetworkInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 837A38242A20D7090046BD8E /* EXVersionedNetworkInterceptor.m */; };
@@ -186,9 +182,6 @@
 		B5A72C2020A0D13E00974CCE /* EXManifestResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C1D20A0D13E00974CCE /* EXManifestResource.m */; };
 		B5A72C2120A0D13E00974CCE /* EXCachedResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C1E20A0D13E00974CCE /* EXCachedResource.m */; };
 		B5A72C2220A0D13E00974CCE /* EXJavaScriptResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C1F20A0D13E00974CCE /* EXJavaScriptResource.m */; };
-		B5A72C2D20A0D1BF00974CCE /* EXAppFetcherCacheOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2420A0D1BF00974CCE /* EXAppFetcherCacheOnly.m */; };
-		B5A72C2E20A0D1BF00974CCE /* EXAppFetcherWithTimeout.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2520A0D1BF00974CCE /* EXAppFetcherWithTimeout.m */; };
-		B5A72C2F20A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2720A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.m */; };
 		B5A72C3020A0D1BF00974CCE /* EXAppFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2B20A0D1BF00974CCE /* EXAppFetcher.m */; };
 		B5A72C3420A0D42D00974CCE /* EXAbstractLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C3120A0D42C00974CCE /* EXAbstractLoader.m */; };
 		B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC398E1E95A90B00540AA7 /* EXKernel.m */; };
@@ -244,8 +237,6 @@
 		F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */; };
 		F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698D2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m */; };
 		F116A3C02445EBBB008FA957 /* EXDevMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F116A3BF2445EBBB008FA957 /* EXDevMenuWindow.m */; };
-		F11E531121601059007ACF56 /* EXHeadlessAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */; };
-		F11E531221601059007ACF56 /* EXHeadlessAppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */; };
 		F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */; };
 		F138E0D32A5F1AE9002E15BC /* EXVersionUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = F11AEFE52A5EE20C00D49170 /* EXVersionUtils.mm */; };
 		F138E0D62A5F2090002E15BC /* ExpoGoModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F138E0D52A5F2090002E15BC /* ExpoGoModule.swift */; };
@@ -264,7 +255,6 @@
 		F14217F4262CB68600BB97E6 /* AIRMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99F72285B52C00F19090 /* AIRMap.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14217F5262CB68600BB97E6 /* AIRGoogleMapURLTileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99BC2285B50E00F19090 /* AIRGoogleMapURLTileManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14217F7262CB68600BB97E6 /* EXStatusBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74191FF6DADB001C764B /* EXStatusBarManager.m */; };
-		F14217F8262CB68600BB97E6 /* EXHeadlessAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */; };
 		F14217F9262CB68600BB97E6 /* EXKernelLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */; };
 		F14217FA262CB68600BB97E6 /* EXAppState.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB740C1FF6DADB001C764B /* EXAppState.m */; };
 		F14217FE262CB68600BB97E6 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
@@ -283,14 +273,11 @@
 		F1421813262CB68600BB97E6 /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		F1421815262CB68600BB97E6 /* EXCachedResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */; };
 		F1421817262CB68600BB97E6 /* AIRMapOverlayManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99F62285B52B00F19090 /* AIRMapOverlayManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		F1421818262CB68600BB97E6 /* EXHeadlessAppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */; };
 		F1421819262CB68600BB97E6 /* EXDevSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74001FF6DADB001C764B /* EXDevSettings.m */; };
 		F142181A262CB68600BB97E6 /* EXScopedNotificationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */; };
 		F142181B262CB68600BB97E6 /* NSData+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D8252D2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m */; };
 		F142181C262CB68600BB97E6 /* EXAbstractLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C3120A0D42C00974CCE /* EXAbstractLoader.m */; };
-		F142181F262CB68600BB97E6 /* EXAppFetcherWithTimeout.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2520A0D1BF00974CCE /* EXAppFetcherWithTimeout.m */; };
 		F1421820262CB68600BB97E6 /* EXDevMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F116A3BF2445EBBB008FA957 /* EXDevMenuWindow.m */; };
-		F1421821262CB68600BB97E6 /* EXAppFetcherCacheOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2420A0D1BF00974CCE /* EXAppFetcherCacheOnly.m */; };
 		F1421822262CB68600BB97E6 /* EXRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B56C65C1204768F2002B2424 /* EXRootViewController.m */; };
 		F1421823262CB68600BB97E6 /* EXScopedLocalAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 31571B2C2265DD5800358D65 /* EXScopedLocalAuthentication.m */; };
 		F1421824262CB68600BB97E6 /* AIRGoogleMapManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99CE2285B51000F19090 /* AIRGoogleMapManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -350,7 +337,6 @@
 		F142187F262CB68600BB97E6 /* EXAppLoadingCancelView.m in Sources */ = {isa = PBXBuildFile; fileRef = B54D2912205307380019411A /* EXAppLoadingCancelView.m */; };
 		F1421882262CB68600BB97E6 /* EXScopedReactNativeAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 317168F9213DA0E000766458 /* EXScopedReactNativeAdapter.m */; };
 		F1421883262CB68600BB97E6 /* EXApiV2Client+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */; };
-		F1421884262CB68600BB97E6 /* ExpoKitAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6F960225F5C7700322635 /* ExpoKitAppDelegate.m */; };
 		F1421885262CB68600BB97E6 /* AIRGoogleMapCalloutSubviewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99D72285B51100F19090 /* AIRGoogleMapCalloutSubviewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F1421887262CB68600BB97E6 /* EXSensorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47D20B8451B0082B09F /* EXSensorManager.m */; };
 		F1421888262CB68600BB97E6 /* EXUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A11FF6DADB001C764B /* EXUtil.m */; };
@@ -372,7 +358,6 @@
 		F142189D262CB68600BB97E6 /* AIRMapPolylineManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A092285B52D00F19090 /* AIRMapPolylineManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F142189E262CB68600BB97E6 /* EXScopedFileSystemModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2596F06A22201A9400DEEFF9 /* EXScopedFileSystemModule.m */; };
 		F142189F262CB68600BB97E6 /* EXScopedBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXScopedBranchManager.m */; };
-		F14218A0262CB68600BB97E6 /* EXStandaloneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6F95D225F5B1B00322635 /* EXStandaloneAppDelegate.m */; };
 		F14218A2262CB68600BB97E6 /* AIRMapOverlayRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A1C2285B52F00F19090 /* AIRMapOverlayRenderer.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14218A3262CB68600BB97E6 /* AIRGoogleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99D42285B51000F19090 /* AIRGoogleMap.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14218A6262CB68600BB97E6 /* AIRMapMarkerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A132285B52E00F19090 /* AIRMapMarkerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -393,7 +378,6 @@
 		F14218BF262CB68600BB97E6 /* EXEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = B58F125B20B73455003E13F1 /* EXEnvironment.m */; };
 		F14218C0262CB68600BB97E6 /* EXScopedFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = 312D2ED1234DF2DC002F4049 /* EXScopedFacebook.m */; };
 		F14218C1262CB68600BB97E6 /* EXVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39A11E95A90B00540AA7 /* EXVersions.m */; };
-		F14218C2262CB68600BB97E6 /* EXAppFetcherDevelopmentMode.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2720A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.m */; };
 		F14218C4262CB68600BB97E6 /* AIRGoogleMapUrlTile.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99BE2285B50E00F19090 /* AIRGoogleMapUrlTile.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14218C6262CB68600BB97E6 /* EXHomeAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B56C65C4204768F2002B2424 /* EXHomeAppManager.m */; };
 		F14218C7262CB68600BB97E6 /* AIRMapCoordinate.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A0A2285B52D00F19090 /* AIRMapCoordinate.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -531,10 +515,6 @@
 		07C6733124D220A5003F3F5C /* EXUpdatesBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUpdatesBinding.h; sourceTree = "<group>"; };
 		07C6733324D230FB003F3F5C /* EXAppLoaderExpoUpdates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoaderExpoUpdates.h; sourceTree = "<group>"; };
 		07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderExpoUpdates.m; sourceTree = "<group>"; };
-		0CC6F95C225F5B1B00322635 /* EXStandaloneAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXStandaloneAppDelegate.h; sourceTree = "<group>"; };
-		0CC6F95D225F5B1B00322635 /* EXStandaloneAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXStandaloneAppDelegate.m; sourceTree = "<group>"; };
-		0CC6F95F225F5C7700322635 /* ExpoKitAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoKitAppDelegate.h; sourceTree = "<group>"; };
-		0CC6F960225F5C7700322635 /* ExpoKitAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExpoKitAppDelegate.m; sourceTree = "<group>"; };
 		10B9AA823F57466698858869 /* RNDateTimePicker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePicker.h; sourceTree = "<group>"; };
 		12869A47946248B094FFB1C0 /* RNDateTimePickerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePickerManager.h; sourceTree = "<group>"; };
 		19382BA71EC2EACC001ED4A1 /* EXScopedBranchManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedBranchManager.h; sourceTree = "<group>"; };
@@ -733,8 +713,6 @@
 		78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "EXApiV2Client+EXRemoteNotifications.m"; sourceTree = "<group>"; };
 		78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCMaskedViewManager.m; sourceTree = "<group>"; };
 		79E446843BA3BF044F621CBE /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Expo Go (unversioned)/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		8353B81E277A17FB00AFCBDA /* EXStandaloneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXStandaloneViewController.m; sourceTree = "<group>"; };
-		8353B81F277A17FC00AFCBDA /* EXStandaloneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXStandaloneViewController.h; sourceTree = "<group>"; };
 		837A38232A20D6730046BD8E /* EXVersionedNetworkInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXVersionedNetworkInterceptor.h; sourceTree = "<group>"; };
 		837A38242A20D7090046BD8E /* EXVersionedNetworkInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXVersionedNetworkInterceptor.m; sourceTree = "<group>"; };
 		84713BFA28584A0100E86B56 /* EXErrorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EXErrorView.xib; sourceTree = "<group>"; };
@@ -831,13 +809,7 @@
 		B5A72C1D20A0D13E00974CCE /* EXManifestResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXManifestResource.m; sourceTree = "<group>"; };
 		B5A72C1E20A0D13E00974CCE /* EXCachedResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCachedResource.m; sourceTree = "<group>"; };
 		B5A72C1F20A0D13E00974CCE /* EXJavaScriptResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXJavaScriptResource.m; sourceTree = "<group>"; };
-		B5A72C2420A0D1BF00974CCE /* EXAppFetcherCacheOnly.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppFetcherCacheOnly.m; sourceTree = "<group>"; };
-		B5A72C2520A0D1BF00974CCE /* EXAppFetcherWithTimeout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppFetcherWithTimeout.m; sourceTree = "<group>"; };
 		B5A72C2620A0D1BF00974CCE /* EXAppFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppFetcher.h; sourceTree = "<group>"; };
-		B5A72C2720A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppFetcherDevelopmentMode.m; sourceTree = "<group>"; };
-		B5A72C2820A0D1BF00974CCE /* EXAppFetcherWithTimeout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppFetcherWithTimeout.h; sourceTree = "<group>"; };
-		B5A72C2920A0D1BF00974CCE /* EXAppFetcherCacheOnly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppFetcherCacheOnly.h; sourceTree = "<group>"; };
-		B5A72C2A20A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppFetcherDevelopmentMode.h; sourceTree = "<group>"; };
 		B5A72C2B20A0D1BF00974CCE /* EXAppFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppFetcher.m; sourceTree = "<group>"; };
 		B5A72C2C20A0D1BF00974CCE /* EXAppFetcher+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EXAppFetcher+Private.h"; sourceTree = "<group>"; };
 		B5A72C3120A0D42C00974CCE /* EXAbstractLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAbstractLoader.m; sourceTree = "<group>"; };
@@ -950,10 +922,6 @@
 		F116A3BF2445EBBB008FA957 /* EXDevMenuWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuWindow.m; sourceTree = "<group>"; };
 		F11AEFE52A5EE20C00D49170 /* EXVersionUtils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EXVersionUtils.mm; sourceTree = "<group>"; };
 		F11AEFE82A5EE37300D49170 /* EXVersionUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXVersionUtils.h; sourceTree = "<group>"; };
-		F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHeadlessAppRecord.m; sourceTree = "<group>"; };
-		F11E530E21601058007ACF56 /* EXHeadlessAppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHeadlessAppLoader.h; sourceTree = "<group>"; };
-		F11E530F21601059007ACF56 /* EXHeadlessAppRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHeadlessAppRecord.h; sourceTree = "<group>"; };
-		F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHeadlessAppLoader.m; sourceTree = "<group>"; };
 		F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "generate-dynamic-macros.sh"; sourceTree = "<group>"; };
 		F138E0D52A5F2090002E15BC /* ExpoGoModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpoGoModule.swift; sourceTree = "<group>"; };
 		F1421923262CB68600BB97E6 /* Expo Go.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Expo Go.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1361,12 +1329,6 @@
 			children = (
 				B526B5041E6A543500606CAB /* ExpoKit.h */,
 				B526B5051E6A543500606CAB /* ExpoKit.m */,
-				0CC6F95C225F5B1B00322635 /* EXStandaloneAppDelegate.h */,
-				0CC6F95D225F5B1B00322635 /* EXStandaloneAppDelegate.m */,
-				8353B81F277A17FC00AFCBDA /* EXStandaloneViewController.h */,
-				8353B81E277A17FB00AFCBDA /* EXStandaloneViewController.m */,
-				0CC6F95F225F5C7700322635 /* ExpoKitAppDelegate.h */,
-				0CC6F960225F5C7700322635 /* ExpoKitAppDelegate.m */,
 				B5D0D65A204F152D00DDFC99 /* EXViewController.h */,
 				B5D0D65B204F152D00DDFC99 /* EXViewController.m */,
 			);
@@ -1496,12 +1458,6 @@
 				B5A72C2620A0D1BF00974CCE /* EXAppFetcher.h */,
 				B5A72C2B20A0D1BF00974CCE /* EXAppFetcher.m */,
 				B5A72C2C20A0D1BF00974CCE /* EXAppFetcher+Private.h */,
-				B5A72C2920A0D1BF00974CCE /* EXAppFetcherCacheOnly.h */,
-				B5A72C2420A0D1BF00974CCE /* EXAppFetcherCacheOnly.m */,
-				B5A72C2A20A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.h */,
-				B5A72C2720A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.m */,
-				B5A72C2820A0D1BF00974CCE /* EXAppFetcherWithTimeout.h */,
-				B5A72C2520A0D1BF00974CCE /* EXAppFetcherWithTimeout.m */,
 			);
 			path = AppFetcher;
 			sourceTree = "<group>";
@@ -1514,7 +1470,6 @@
 				B5AC398C1E95A90B00540AA7 /* Core */,
 				B5AC39941E95A90B00540AA7 /* DevSupport */,
 				B5AC399B1E95A90B00540AA7 /* Environment */,
-				F11E530C2160101B007ACF56 /* HeadlessApp */,
 				B5D0D66D204F4C0400DDFC99 /* ReactAppManager */,
 				B5AC39A21E95A90B00540AA7 /* Services */,
 				B5A473D3204A66F60035C61C /* Views */,
@@ -1923,17 +1878,6 @@
 				5C849D84FFC04012BBF6DFFD /* ExpoModulesProvider.swift */,
 			);
 			name = ExponentIntegrationTests;
-			sourceTree = "<group>";
-		};
-		F11E530C2160101B007ACF56 /* HeadlessApp */ = {
-			isa = PBXGroup;
-			children = (
-				F11E530E21601058007ACF56 /* EXHeadlessAppLoader.h */,
-				F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */,
-				F11E530F21601059007ACF56 /* EXHeadlessAppRecord.h */,
-				F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */,
-			);
-			path = HeadlessApp;
 			sourceTree = "<group>";
 		};
 		F12A1AB722ABD461008542C6 /* Build-Phases */ = {
@@ -2684,7 +2628,6 @@
 				31AD9A342285B53100F19090 /* AIRMap.m in Sources */,
 				31AD99E02285B51100F19090 /* AIRGoogleMapURLTileManager.m in Sources */,
 				B5FB74EB1FF6DADC001C764B /* EXStatusBarManager.m in Sources */,
-				F11E531121601059007ACF56 /* EXHeadlessAppRecord.m in Sources */,
 				B5C2740C1EC24AE1003355CE /* EXKernelLinkingManager.m in Sources */,
 				B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */,
 				0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */,
@@ -2704,14 +2647,11 @@
 				31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */,
 				19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */,
 				31AD9A332285B53100F19090 /* AIRMapOverlayManager.m in Sources */,
-				F11E531221601059007ACF56 /* EXHeadlessAppLoader.m in Sources */,
 				B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */,
 				B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */,
 				78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */,
 				B5A72C3420A0D42D00974CCE /* EXAbstractLoader.m in Sources */,
-				B5A72C2E20A0D1BF00974CCE /* EXAppFetcherWithTimeout.m in Sources */,
 				F116A3C02445EBBB008FA957 /* EXDevMenuWindow.m in Sources */,
-				B5A72C2D20A0D1BF00974CCE /* EXAppFetcherCacheOnly.m in Sources */,
 				B56C65C6204768F3002B2424 /* EXRootViewController.m in Sources */,
 				31571B2D2265DD5800358D65 /* EXScopedLocalAuthentication.m in Sources */,
 				31AD99ED2285B51100F19090 /* AIRGoogleMapManager.m in Sources */,
@@ -2774,7 +2714,6 @@
 				B54D2913205307380019411A /* EXAppLoadingCancelView.m in Sources */,
 				317168FA213DA0E000766458 /* EXScopedReactNativeAdapter.m in Sources */,
 				78D825312051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m in Sources */,
-				0CC6F961225F5C7700322635 /* ExpoKitAppDelegate.m in Sources */,
 				31AD99F22285B51100F19090 /* AIRGoogleMapCalloutSubviewManager.m in Sources */,
 				31E6D47E20B8451B0082B09F /* EXSensorManager.m in Sources */,
 				B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */,
@@ -2796,7 +2735,6 @@
 				31AD9A3D2285B53100F19090 /* AIRMapPolylineManager.m in Sources */,
 				2596F06B22201A9500DEEFF9 /* EXScopedFileSystemModule.m in Sources */,
 				19382BA91EC2EACC001ED4A1 /* EXScopedBranchManager.m in Sources */,
-				0CC6F95E225F5B1B00322635 /* EXStandaloneAppDelegate.m in Sources */,
 				31AD9A432285B53100F19090 /* AIRMapOverlayRenderer.m in Sources */,
 				31AD99F02285B51100F19090 /* AIRGoogleMap.m in Sources */,
 				31AD9A412285B53100F19090 /* AIRMapMarkerManager.m in Sources */,
@@ -2819,7 +2757,6 @@
 				B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */,
 				312D2ED2234DF2DC002F4049 /* EXScopedFacebook.m in Sources */,
 				B5AC39AF1E95A90B00540AA7 /* EXVersions.m in Sources */,
-				B5A72C2F20A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.m in Sources */,
 				31AD99E12285B51100F19090 /* AIRGoogleMapUrlTile.m in Sources */,
 				B56C65C8204768F3002B2424 /* EXHomeAppManager.m in Sources */,
 				31AD9A3E2285B53100F19090 /* AIRMapCoordinate.m in Sources */,
@@ -2860,7 +2797,6 @@
 				B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */,
 				B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */,
 				28F885A428FEC26000CFD75C /* EXTextDirectionController.swift in Sources */,
-				8353B820277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */,
 				827A699919CED163689E655D /* ExpoModulesProvider.swift in Sources */,
 				2E2E55ADAE3243799CC2CDFE /* RNCPicker.m in Sources */,
 				C3C2D83067C44A679721209C /* RNCPickerLabel.m in Sources */,
@@ -2920,7 +2856,6 @@
 				F14217F4262CB68600BB97E6 /* AIRMap.m in Sources */,
 				F14217F5262CB68600BB97E6 /* AIRGoogleMapURLTileManager.m in Sources */,
 				F14217F7262CB68600BB97E6 /* EXStatusBarManager.m in Sources */,
-				F14217F8262CB68600BB97E6 /* EXHeadlessAppRecord.m in Sources */,
 				F14217F9262CB68600BB97E6 /* EXKernelLinkingManager.m in Sources */,
 				83D00C72292CABD400CCEFAB /* EXTextDirectionController.swift in Sources */,
 				F14217FA262CB68600BB97E6 /* EXAppState.m in Sources */,
@@ -2941,14 +2876,11 @@
 				F1421813262CB68600BB97E6 /* EXSensorsManagerBinding.m in Sources */,
 				F1421815262CB68600BB97E6 /* EXCachedResourceManager.m in Sources */,
 				F1421817262CB68600BB97E6 /* AIRMapOverlayManager.m in Sources */,
-				F1421818262CB68600BB97E6 /* EXHeadlessAppLoader.m in Sources */,
 				F1421819262CB68600BB97E6 /* EXDevSettings.m in Sources */,
 				F142181A262CB68600BB97E6 /* EXScopedNotificationBuilder.m in Sources */,
 				F142181B262CB68600BB97E6 /* NSData+EXRemoteNotifications.m in Sources */,
 				F142181C262CB68600BB97E6 /* EXAbstractLoader.m in Sources */,
-				F142181F262CB68600BB97E6 /* EXAppFetcherWithTimeout.m in Sources */,
 				F1421820262CB68600BB97E6 /* EXDevMenuWindow.m in Sources */,
-				F1421821262CB68600BB97E6 /* EXAppFetcherCacheOnly.m in Sources */,
 				F1421822262CB68600BB97E6 /* EXRootViewController.m in Sources */,
 				F1421823262CB68600BB97E6 /* EXScopedLocalAuthentication.m in Sources */,
 				F1421824262CB68600BB97E6 /* AIRGoogleMapManager.m in Sources */,
@@ -2975,7 +2907,6 @@
 				F1421848262CB68600BB97E6 /* EXLog.m in Sources */,
 				F142184A262CB68600BB97E6 /* EXFileDownloader.m in Sources */,
 				F142184C262CB68600BB97E6 /* EXScopedPermissions.m in Sources */,
-				8353B821277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */,
 				F1421850262CB68600BB97E6 /* EXConstantsBinding.m in Sources */,
 				F1421851262CB68600BB97E6 /* ExpoKit.m in Sources */,
 				F1421852262CB68600BB97E6 /* AIRGoogleMapOverlay.m in Sources */,
@@ -3014,7 +2945,6 @@
 				F142187F262CB68600BB97E6 /* EXAppLoadingCancelView.m in Sources */,
 				F1421882262CB68600BB97E6 /* EXScopedReactNativeAdapter.m in Sources */,
 				F1421883262CB68600BB97E6 /* EXApiV2Client+EXRemoteNotifications.m in Sources */,
-				F1421884262CB68600BB97E6 /* ExpoKitAppDelegate.m in Sources */,
 				F1421885262CB68600BB97E6 /* AIRGoogleMapCalloutSubviewManager.m in Sources */,
 				F1421887262CB68600BB97E6 /* EXSensorManager.m in Sources */,
 				F1421888262CB68600BB97E6 /* EXUtil.m in Sources */,
@@ -3036,7 +2966,6 @@
 				F142189D262CB68600BB97E6 /* AIRMapPolylineManager.m in Sources */,
 				F142189E262CB68600BB97E6 /* EXScopedFileSystemModule.m in Sources */,
 				F142189F262CB68600BB97E6 /* EXScopedBranchManager.m in Sources */,
-				F14218A0262CB68600BB97E6 /* EXStandaloneAppDelegate.m in Sources */,
 				F14218A2262CB68600BB97E6 /* AIRMapOverlayRenderer.m in Sources */,
 				F14218A3262CB68600BB97E6 /* AIRGoogleMap.m in Sources */,
 				F14218A6262CB68600BB97E6 /* AIRMapMarkerManager.m in Sources */,
@@ -3062,7 +2991,6 @@
 				F14218C0262CB68600BB97E6 /* EXScopedFacebook.m in Sources */,
 				F14218C1262CB68600BB97E6 /* EXVersions.m in Sources */,
 				B2E2CCD12AA7DF9C00E2260C /* HomeAppLoaderTask.swift in Sources */,
-				F14218C2262CB68600BB97E6 /* EXAppFetcherDevelopmentMode.m in Sources */,
 				F14218C4262CB68600BB97E6 /* AIRGoogleMapUrlTile.m in Sources */,
 				F14218C6262CB68600BB97E6 /* EXHomeAppManager.m in Sources */,
 				F14218C7262CB68600BB97E6 /* AIRMapCoordinate.m in Sources */,
