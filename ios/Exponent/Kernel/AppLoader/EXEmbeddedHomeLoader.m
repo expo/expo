@@ -29,16 +29,13 @@ typedef NS_ENUM(NSInteger, EXEmbeddedHomeLoaderErrorCode) {
 
 @implementation EXEmbeddedHomeLoader
 
+- (nonnull instancetype)init {
+  return self = [super init];
+}
+
 @synthesize manifest = _manifest;
 @synthesize bundle = _bundle;
 @synthesize isUpToDate = _isUpToDate;
-
-- (instancetype)init {
-  if (self = [super init]) {
-
-  }
-  return self;
-}
 
 #pragma mark - getters and lifecycle
 

@@ -13,7 +13,6 @@ import android.net.Uri
 import android.nfc.NfcAdapter
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
