@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
+import GithubSlugger from 'github-slugger';
 import mockRouter from 'next-router-mock';
 import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
 import { u as node } from 'unist-builder';
@@ -8,7 +9,20 @@ import { visit } from 'unist-util-visit';
 import { findActiveRoute, Navigation } from './Navigation';
 import { NavigationNode } from './types';
 
+import { HeadingManager, HeadingType } from '~/common/headingManager';
 import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
+
+const prepareHeadingManager = () => {
+  const headingManager = new HeadingManager(new GithubSlugger(), { headings: [] });
+  headingManager.addHeading('Base level heading', undefined, {});
+  headingManager.addHeading('Level 3 subheading', 3, {});
+  headingManager.addHeading('Code heading depth 1', 0, {
+    sidebarDepth: 1,
+    sidebarType: HeadingType.InlineCode,
+  });
+
+  return headingManager;
+};
 
 jest.mock('next/router', () => mockRouter);
 
@@ -66,10 +80,10 @@ describe(Navigation, () => {
   });
 
   it('renders pages inside groups inside sections', () => {
+    const headingManager = prepareHeadingManager();
     render(
       // Need context due to withHeadingManager in Collapsible, which enables anchor links
-      // @ts-ignore
-      <HeadingsContext.Provider value={{ addHeading: () => ({ slug: 'blah' }) }}>
+      <HeadingsContext.Provider value={headingManager}>
         <MemoryRouterProvider>
           <Navigation routes={nodes} />
         </MemoryRouterProvider>

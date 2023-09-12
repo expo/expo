@@ -1,17 +1,27 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import GithubSlugger from 'github-slugger';
 import { PropsWithChildren } from 'react';
 
 import { Collapsible } from '.';
 
+import { HeadingManager, HeadingType } from '~/common/headingManager';
 import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
 
+const prepareHeadingManager = () => {
+  const headingManager = new HeadingManager(new GithubSlugger(), { headings: [] });
+  headingManager.addHeading('Base level heading', undefined, {});
+  headingManager.addHeading('Level 3 subheading', 3, {});
+  headingManager.addHeading('Code heading depth 1', 0, {
+    sidebarDepth: 1,
+    sidebarType: HeadingType.InlineCode,
+  });
+
+  return headingManager;
+};
+
 const WrapWithContext = ({ children }: PropsWithChildren) => {
-  return (
-    // @ts-ignore
-    <HeadingsContext.Provider value={{ addHeading: () => ({ slug: 'blah' }) }}>
-      {children}
-    </HeadingsContext.Provider>
-  );
+  const headingManager = prepareHeadingManager();
+  return <HeadingsContext.Provider value={headingManager}>{children}</HeadingsContext.Provider>;
 };
 
 describe('Collapsible', () => {
