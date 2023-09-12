@@ -175,8 +175,8 @@ try {
     // This means the mock functions will not throw validation errors the way they would in an app.
 
     // Mock the `uuid` object with the implementation for web.
-    ExpoModulesCore.uuid.v4 = uuid.v4;
-    ExpoModulesCore.uuid.v5 = uuid.v5;
+    ExpoModulesCore.uuid.v4 = uuid.default.v4;
+    ExpoModulesCore.uuid.v5 = uuid.default.v5;
 
     for (const moduleName of Object.keys(NativeModulesProxy)) {
       const nativeModule = NativeModulesProxy[moduleName];
