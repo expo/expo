@@ -50,7 +50,9 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
       setOpen(!open);
     };
 
-    // will keep incrementing the number on any matching tags if this isn't a ref
+    // HeadingManager is used to generate a slug that corresponds to the collapsible summary.
+    // These are normally generated for MD (#) headings, but Collapsible doesn't have those.
+    // This is a ref because identical tags will keep incrementing the number if it is not.
     const heading = React.useRef(props.headingManager.addHeading(summary, 1, undefined));
 
     return (
