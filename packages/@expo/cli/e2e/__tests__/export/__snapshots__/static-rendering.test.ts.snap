@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`static-rendering supports usePathname in +html files 1`] = `
+exports[`exports static supports usePathname in +html files 1`] = `
 "<!DOCTYPE html><html  lang="en"><head><title data-rh="true"></title><meta data-rh="true" name="expo-nested-layout" content="TEST_VALUE"/><meta data-rh="true" name="expo-e2e-public-env-var-client" content="foobar"/><meta data-rh="true" name="expo-e2e-private-env-var-client" content="not-public-value"/><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="custom-value" content="value"/><meta name="expo-e2e-pathname" content="/"/><meta name="expo-e2e-public-env-var" content="foobar"/><meta name="expo-e2e-private-env-var" content="not-public-value"/><meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover"/><style id="expo-reset">#root,body{display:flex}#root,body,html{width:100%;-webkit-overflow-scrolling:touch;margin:0;padding:0;min-height:100%}#root{flex-shrink:0;flex-basis:auto;flex-grow:1;flex:1}html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;height:calc(100% + env(safe-area-inset-top))}body{overflow-y:auto;overscroll-behavior-y:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;-ms-overflow-style:scrollbar}</style><style id="react-native-stylesheet">[stylesheet-group="0"]{}
 body{margin:0;}
 button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0;}
