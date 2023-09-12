@@ -112,11 +112,20 @@ android {
   }
 }
 
+task clenupAssets(type: Delete) {
+  // In the past, assets were placed in the `main` directory.
+  // However, this is no longer the case. To ensure a smooth transition,
+  // we’re also removing assets from the old location.
+  delete files("src/main/assets")
+}
+
 task copyAssets(type: Copy) {
+  dependsOn(clenupAssets)
+
   from('../assets') {
     exclude "*.ios.*"
   }
-  into 'src/main/assets'
+  into 'src/debug/assets'
 }
 
 project.afterEvaluate {
