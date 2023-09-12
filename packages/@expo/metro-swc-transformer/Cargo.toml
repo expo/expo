@@ -1,0 +1,32 @@
+[package]
+name = "metro-swc-transformer"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+path = "lib/lib.rs"
+
+[dependencies]
+napi = "2.10.15"
+napi-derive = "2.10.1"
+serde = "1.0.147"
+serde_json = "1.0.89"
+string_cache = "0.8.4"
+# swc v1.3.38
+swc = "0.250.5"
+swc_core = { version = "0.64.5", features = [
+  "ecma_ast",
+  "ecma_visit_path",
+] }
+swc_common = { version = "0.29.33", features = ["tty-emitter", "sourcemap"] }
+swc_ecma_transforms_base = "0.120.1"
+swc_ecma_transforms_react = "0.164.1"
+swc_ecma_utils = "0.111.1"
+swc_ecma_visit = "0.84.0"
+swc_config = "0.1.4"
+swc_ecma_parser = "0.128.1"
+swc_ecma_transforms_module = "0.162.1"
+
+[build-dependencies]
+napi-build = "2.0.1"

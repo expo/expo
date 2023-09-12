@@ -1,0 +1,22 @@
+{
+  "name": "@expo/metro-swc-transformer",
+  "version": "0.76.0",
+  "description": "🚇 Base SWC transformer for Metro.",
+  "main": "src/index.js",
+
+  "scripts": {
+    "prepare-release": "test -d build && rm -rf src.real && mv src src.real && mv build src",
+    "cleanup-release": "test ! -e build && mv src build && mv src.real src",
+    "cargo-build": "rm metro-swc-transformer-addon.node || : && cargo build --release && cp target/release/libmetro_swc_transformer.dylib metro-swc-transformer-addon.node",
+    "cargo-clean": "rm metro-swc-transformer-addon.node || : && cargo clean"
+  },
+  "keywords": [
+    "transformer",
+    "metro",
+    "swc"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  }
+}
