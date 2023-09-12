@@ -17,7 +17,7 @@ export type ExpoRouterServerManifestV1Route<TRegex = string> = {
 
 export type ExpoRouterServerManifestV1<TRegex = string> = {
   apiRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
-  staticRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
+  htmlRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
   notFoundRoutes: ExpoRouterServerManifestV1Route<TRegex>[];
 };
 
@@ -40,7 +40,7 @@ export async function fetchManifest<TRegex = string>(
     return null;
   }
 
-  if (!jsonManifest.staticRoutes || !jsonManifest.apiRoutes) {
+  if (!jsonManifest.htmlRoutes || !jsonManifest.apiRoutes) {
     throw new Error('Routes manifest is malformed: ' + JSON.stringify(jsonManifest, null, 2));
   }
 
@@ -58,7 +58,7 @@ export function inflateManifest(
 ): ExpoRouterServerManifestV1<RegExp> {
   return {
     ...json,
-    staticRoutes: json.staticRoutes?.map((value) => {
+    htmlRoutes: json.htmlRoutes?.map((value) => {
       return {
         ...value,
         namedRegex: new RegExp(value.namedRegex),

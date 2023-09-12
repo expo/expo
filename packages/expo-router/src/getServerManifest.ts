@@ -57,7 +57,7 @@ export function getServerManifest(route: RouteNode) {
     apiRoutes: getMatchableManifestForPaths(
       apiRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])
     ),
-    staticRoutes: getMatchableManifestForPaths(
+    htmlRoutes: getMatchableManifestForPaths(
       standardRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])
     ),
     notFoundRoutes: getMatchableManifestForPaths(

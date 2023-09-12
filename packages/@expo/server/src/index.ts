@@ -29,7 +29,7 @@ function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
         namedRegex: new RegExp(value.namedRegex),
       };
     }),
-    staticRoutes: routesManifest.staticRoutes.map((value: any) => {
+    htmlRoutes: routesManifest.htmlRoutes.map((value: any) => {
       return {
         ...value,
         namedRegex: new RegExp(value.namedRegex),
@@ -134,7 +134,7 @@ export function createRequestHandler(
 
     if (request.method === 'GET' || request.method === 'HEAD') {
       // First test static routes
-      for (const route of routesManifest.staticRoutes) {
+      for (const route of routesManifest.htmlRoutes) {
         if (!route.namedRegex.test(sanitizedPathname)) {
           continue;
         }

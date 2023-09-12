@@ -28,7 +28,7 @@ export declare function getServerManifest(route: RouteNode): {
             [named: string]: string;
         };
     }[];
-    staticRoutes: {
+    htmlRoutes: {
         generated: boolean | undefined;
         page: string;
         namedRegex: string;

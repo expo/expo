@@ -12,7 +12,7 @@ export type RouteInfo<TRegex = string> = {
 
 export type ExpoRoutesManifestV1<TRegex = string> = {
   apiRoutes: RouteInfo<TRegex>[];
-  staticRoutes: RouteInfo<TRegex>[];
+  htmlRoutes: RouteInfo<TRegex>[];
   notFoundRoutes: RouteInfo<TRegex>[];
 };
 

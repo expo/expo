@@ -29,7 +29,7 @@ it(`converts a server manifest`, () => {
         routeKeys: { post: 'post' },
       },
     ],
-    staticRoutes: [{ namedRegex: '^/home(?:/)?$', routeKeys: {} }],
+    htmlRoutes: [{ namedRegex: '^/home(?:/)?$', routeKeys: {} }],
   });
 });
 
