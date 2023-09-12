@@ -4,13 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.transform = transform;
-function _metroSwcTransformer() {
-  const data = _interopRequireDefault(require("@expo/metro-swc-transformer"));
-  _metroSwcTransformer = function () {
-    return data;
-  };
-  return data;
-}
 function _metroTransformWorker() {
   const data = _interopRequireDefault(require("metro-transform-worker"));
   _metroTransformWorker = function () {
@@ -73,7 +66,8 @@ async function transform(config, projectRoot, filename, data, options) {
       // (src.includes('import(')) ||
       src.includes(`worklet`) || src.match(/@(no)?flow/));
       if (!unsupported) {
-        return _metroSwcTransformer().default.transform(config, projectRoot, filename, src, options);
+        const swcTransformer = require('@expo/metro-swc-transformer');
+        return swcTransformer.transform(config, projectRoot, filename, src, options);
       }
     }
     return _metroTransformWorker().default.transform(config, projectRoot, filename, data, options);
