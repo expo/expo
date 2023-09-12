@@ -220,6 +220,7 @@ const transform: BabelTransformer['transform'] = ({
         // Metro automatically updates the cache to account for the custom transform options.
         // client | node | undefined
         metroTarget: options.customTransformOptions?.environment,
+        isServer: options.customTransformOptions?.environment === 'node',
       },
       ast: true,
 

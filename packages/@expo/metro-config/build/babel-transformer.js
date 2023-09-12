@@ -231,7 +231,7 @@ const transform = ({
   // Ensure the default babel preset is Expo.
   options.extendsBabelConfigPath = (_getBabelPresetExpo = getBabelPresetExpo(options.projectRoot)) !== null && _getBabelPresetExpo !== void 0 ? _getBabelPresetExpo : undefined;
   try {
-    var _options$customTransf;
+    var _options$customTransf, _options$customTransf2;
     const babelConfig = {
       // ES modules require sourceType='module' but OSS may not always want that
       sourceType: 'unambiguous',
@@ -244,7 +244,8 @@ const transform = ({
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
         // client | node | undefined
-        metroTarget: (_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment
+        metroTarget: (_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment,
+        isServer: ((_options$customTransf2 = options.customTransformOptions) === null || _options$customTransf2 === void 0 ? void 0 : _options$customTransf2.environment) === 'node'
       },
       ast: true,
       // NOTE(EvanBacon): We split the parse/transform steps up to accommodate
