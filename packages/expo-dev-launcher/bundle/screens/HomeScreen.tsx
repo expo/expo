@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/core';
 import {
   Heading,
   Text,
@@ -37,18 +38,12 @@ import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { DevSession } from '../types';
 
 export type HomeScreenProps = {
-  fetchOnMount?: boolean;
   pollInterval?: number;
   pollAmount?: number;
   navigation?: any;
 };
 
-export function HomeScreen({
-  fetchOnMount = false,
-  pollInterval = 1000,
-  pollAmount = 5,
-  navigation,
-}: HomeScreenProps) {
+export function HomeScreen({ pollInterval = 1000, pollAmount = 5, navigation }: HomeScreenProps) {
   const modalStack = useModalStack();
   const [inputValue, setInputValue] = React.useState('');
   const [loadingUrl, setLoadingUrl] = React.useState('');
@@ -59,13 +54,14 @@ export function HomeScreen({
 
   const crashReport = useCrashReport();
 
-  const initialDevSessionData = React.useRef(devSessions);
-
-  React.useEffect(() => {
-    if (initialDevSessionData.current.length === 0 && fetchOnMount) {
-      pollAsync({ pollAmount, pollInterval });
-    }
-  }, [fetchOnMount, pollInterval, pollAmount, pollAsync]);
+  const hasDevSessions = devSessions?.length > 0;
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!hasDevSessions) {
+        pollAsync({ pollAmount, pollInterval });
+      }
+    }, [hasDevSessions, pollAmount, pollInterval])
+  );
 
   const onLoadUrl = async (url: string) => {
     setLoadingUrl(url);
@@ -141,7 +137,7 @@ export function HomeScreen({
 
                 <Spacer.Horizontal />
 
-                {devSessions.length > 0 && (
+                {devSessions?.length > 0 && (
                   <Button.FadeOnPressContainer
                     bg="ghost"
                     rounded="full"
@@ -157,7 +153,7 @@ export function HomeScreen({
 
               <View px="medium">
                 <View>
-                  {devSessions.length === 0 && (
+                  {devSessions?.length === 0 && (
                     <>
                       <View padding="medium" bg="default" roundedTop="large">
                         <Text>Start a local development server with:</Text>

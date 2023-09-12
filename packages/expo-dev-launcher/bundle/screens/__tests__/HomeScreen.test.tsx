@@ -39,7 +39,7 @@ describe('<HomeScreen />', () => {
   });
 
   test('displays instructions on starting DevSession when none are found', async () => {
-    const { getByText } = renderHomeScreen({ initialDevSessions: [], fetchOnMount: false });
+    const { getByText } = renderHomeScreen({ initialDevSessions: [] });
     await waitFor(() => getByText(devSessionInstructionsRegex));
   });
 
@@ -52,7 +52,6 @@ describe('<HomeScreen />', () => {
     mockGetDevSessionsAsync.mockResolvedValue(fakeDevSessions);
 
     const { getByText, queryByText } = renderHomeScreen({
-      fetchOnMount: true,
       initialDevSessions: [],
     });
 
@@ -64,7 +63,6 @@ describe('<HomeScreen />', () => {
 
   test('refetching local DevSessions on button press', async () => {
     const { getByText, refetch } = renderHomeScreen({
-      fetchOnMount: false,
       initialDevSessions: [],
     });
 
@@ -84,27 +82,22 @@ describe('<HomeScreen />', () => {
     const testPollAmount = 8;
 
     const { getByText } = renderHomeScreen({
-      fetchOnMount: false,
       pollInterval: 1,
       pollAmount: testPollAmount,
       initialDevSessions: [],
     });
 
-    mockGetDevSessionsAsync.mockClear();
-
     await act(async () => {
       await waitFor(() => getByText(refetchDevSessionsRegex));
+      expect(getDevSessionsAsync).toHaveBeenCalledTimes(testPollAmount);
       fireEvent.press(getByText(refetchDevSessionsRegex));
-      expect(getDevSessionsAsync).toHaveBeenCalledTimes(1);
     });
 
     // ensure button is disabled when fetching
     await act(async () => {
       fireEvent.press(getByText(fetchingDevSessionsRegex));
       await waitFor(() => getByText(refetchDevSessionsRegex));
-      expect(getDevSessionsAsync).toHaveBeenCalledTimes(testPollAmount);
-      fireEvent.press(getByText(refetchDevSessionsRegex));
-      expect(getDevSessionsAsync).toHaveBeenCalledTimes(testPollAmount + 1);
+      expect(getDevSessionsAsync).toHaveBeenCalledTimes(testPollAmount * 2);
     });
   });
 
@@ -190,7 +183,6 @@ describe('<HomeScreen />', () => {
     mockGetDevSessionsAsync.mockResolvedValueOnce([fakeDevSession, fakeDevSession2]);
 
     const { getByText, queryByText } = renderHomeScreen({
-      fetchOnMount: true,
       pollAmount: 1,
       initialDevSessions: [],
       initialUserData: {
@@ -268,7 +260,6 @@ function renderHomeScreen(options: RenderHomeScreenOptions = {}) {
   const {
     initialDevSessions = fakeDevSessions,
     initialUserData = undefined,
-    fetchOnMount = false,
     pollInterval = 0,
     pollAmount = 5,
     ...props
@@ -276,7 +267,6 @@ function renderHomeScreen(options: RenderHomeScreenOptions = {}) {
 
   const { getByText, ...fns } = render(
     <HomeScreen
-      fetchOnMount={fetchOnMount}
       pollAmount={pollAmount}
       pollInterval={pollInterval}
       navigation={fakeNavigation}
