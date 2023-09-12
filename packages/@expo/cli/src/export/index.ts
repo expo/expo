@@ -42,7 +42,7 @@ export const expoExport: Command = async (argv) => {
       chalk`npx expo export {dim <dir>}`,
       [
         chalk`<dir>                      Directory of the Expo project. {dim Default: Current working directory}`,
-        `--dev                      Configure static files for developing locally using a non-https server`,
+        `--dev                      Generates a development bundle`,
         chalk`--output-dir <dir>         The directory to export the static files to. {dim Default: dist}`,
         `--max-workers <number>     Maximum number of tasks to allow the bundler to spawn`,
         `--dump-assetmap            Dump the asset map for further processing`,
