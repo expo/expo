@@ -46,7 +46,7 @@ public final class FileSystemModule: Module {
     }
 
     AsyncFunction("readAsStringAsync") { (url: URL, options: ReadingOptions) -> String in
-      try ensurePathPermission(path: url.path, flag: .read)
+      try ensurePathPermission(appContext, path: url.path, flag: .read)
 
       if options.encoding == .base64 {
         return try readFileAsBase64(path: url.path, options: options)
@@ -59,7 +59,7 @@ public final class FileSystemModule: Module {
     }
 
     AsyncFunction("writeAsStringAsync") { (url: URL, string: String, options: WritingOptions) in
-      try ensurePathPermission(path: url.path, flag: .write)
+      try ensurePathPermission(appContext, path: url.path, flag: .write)
 
       if options.encoding == .base64 {
         try writeFileAsBase64(path: url.path, string: string)
@@ -90,8 +90,8 @@ public final class FileSystemModule: Module {
         throw InvalidFileUrlException(toUrl)
       }
 
-      try ensurePathPermission(path: fromUrl.appendingPathComponent("..").path, flag: .write)
-      try ensurePathPermission(path: toUrl.path, flag: .write)
+      try ensurePathPermission(appContext, path: fromUrl.appendingPathComponent("..").path, flag: .write)
+      try ensurePathPermission(appContext, path: toUrl.path, flag: .write)
       try removeFile(path: toUrl.path, idempotent: true)
       try FileManager.default.moveItem(atPath: fromUrl.path, toPath: toUrl.path)
     }
@@ -99,8 +99,8 @@ public final class FileSystemModule: Module {
     AsyncFunction("copyAsync") { (options: RelocatingOptions, promise: Promise) in
       let (fromUrl, toUrl) = try options.asTuple()
 
-      try ensurePathPermission(path: fromUrl.path, flag: .read)
-      try ensurePathPermission(path: toUrl.path, flag: .write)
+      try ensurePathPermission(appContext, path: fromUrl.path, flag: .read)
+      try ensurePathPermission(appContext, path: toUrl.path, flag: .write)
 
       if fromUrl.scheme == "file" {
         EXFileSystemLocalFileHandler.copy(from: fromUrl, to: toUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
@@ -116,7 +116,7 @@ public final class FileSystemModule: Module {
         throw InvalidFileUrlException(url)
       }
 
-      try ensurePathPermission(path: url.path, flag: .write)
+      try ensurePathPermission(appContext, path: url.path, flag: .write)
       try FileManager.default.createDirectory(at: url, withIntermediateDirectories: options.intermediates, attributes: nil)
     }
 
@@ -124,14 +124,14 @@ public final class FileSystemModule: Module {
       guard url.isFileURL else {
         throw InvalidFileUrlException(url)
       }
-      try ensurePathPermission(path: url.path, flag: .read)
+      try ensurePathPermission(appContext, path: url.path, flag: .read)
 
       return try FileManager.default.contentsOfDirectory(atPath: url.path)
     }
 
     AsyncFunction("downloadAsync") { (sourceUrl: URL, localUrl: URL, options: DownloadOptions, promise: Promise) in
       try ensureFileDirectoryExists(localUrl)
-      try ensurePathPermission(path: localUrl.path, flag: .write)
+      try ensurePathPermission(appContext, path: localUrl.path, flag: .write)
 
       let session = options.sessionType == .background ? backgroundSession : foregroundSession
       let request = createUrlRequest(url: sourceUrl, headers: options.headers)
@@ -190,7 +190,7 @@ public final class FileSystemModule: Module {
     // swiftlint:disable:next line_length closure_body_length
     AsyncFunction("downloadResumableStartAsync") { (sourceUrl: URL, localUrl: URL, uuid: String, options: DownloadOptions, resumeDataString: String?, promise: Promise) in
       try ensureFileDirectoryExists(localUrl)
-      try ensurePathPermission(path: localUrl.path, flag: .write)
+      try ensurePathPermission(appContext, path: localUrl.path, flag: .write)
 
       let session = options.sessionType == .background ? backgroundSession : foregroundSession
       let resumeData = resumeDataString != nil ? Data(base64Encoded: resumeDataString ?? "") : nil
@@ -259,68 +259,5 @@ public final class FileSystemModule: Module {
       }
       return totalCapacity
     }
-  }
-
-  private func ensurePathPermission(path: String, flag: EXFileSystemPermissionFlags) throws {
-    guard let permissionsManager: EXFilePermissionModuleInterface = appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self) else {
-      throw Exceptions.FileSystemModuleNotFound()
-    }
-    guard permissionsManager.getPathPermissions(path).contains(flag) else {
-      throw flag == .read ? FileNotReadableException(path) : FileNotWritableException(path)
-    }
-  }
-}
-
-func ensureFileDirectoryExists(_ fileUrl: URL) throws {
-  let directoryPath = fileUrl.deletingLastPathComponent()
-
-  if !FileManager.default.fileExists(atPath: directoryPath.path) {
-    throw DirectoryNotExistsException(directoryPath.path)
-  }
-}
-
-func readFileAsBase64(path: String, options: ReadingOptions) throws -> String {
-  let file = FileHandle(forReadingAtPath: path)
-
-  guard let file else {
-    throw FileNotExistsException(path)
-  }
-  if let position = options.position, position != 0 {
-    // TODO: Handle these errors?
-    try? file.seek(toOffset: UInt64(position))
-  }
-  if let length = options.length {
-    return file.readData(ofLength: length).base64EncodedString(options: .endLineWithLineFeed)
-  }
-  return file.readDataToEndOfFile().base64EncodedString(options: .endLineWithLineFeed)
-}
-
-func writeFileAsBase64(path: String, string: String) throws {
-  let data = Data(base64Encoded: string, options: .ignoreUnknownCharacters)
-
-  if !FileManager.default.createFile(atPath: path, contents: data) {
-    throw FileWriteFailedException(path)
-  }
-}
-
-func removeFile(path: String, idempotent: Bool = false) throws {
-  if FileManager.default.fileExists(atPath: path) {
-    do {
-      try FileManager.default.removeItem(atPath: path)
-    } catch {
-      throw FileCannotDeleteException(path)
-        .causedBy(error)
-    }
-  } else if !idempotent {
-    throw FileCannotDeleteException(path)
-      .causedBy(FileNotExistsException(path))
-  }
-}
-
-func getResourceValues(from directory: URL?, forKeys: Set<URLResourceKey>) throws -> URLResourceValues? {
-  do {
-    return try directory?.resourceValues(forKeys: forKeys)
-  } catch {
-    throw CannotDetermineDiskCapacity().causedBy(error)
   }
 }
