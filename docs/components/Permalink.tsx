@@ -82,6 +82,8 @@ const PermalinkCopyIcon = ({ slug }: { slug: string }) => {
   React.useEffect(() => {
     tippyFunc('#docs-anchor-permalink-' + slug, {
       content: 'Click to copy anchor link',
+      arrow: roundArrow,
+      offset: [0, 0],
     });
   }, []);
 
