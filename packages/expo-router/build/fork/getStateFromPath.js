@@ -1,11 +1,40 @@
-import escape from 'escape-string-regexp';
-import * as queryString from 'query-string';
-import URL from 'url-parse';
-import { findFocusedRoute } from './findFocusedRoute';
-import validatePathConfig from './validatePathConfig';
-import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
-export function getUrlWithReactNavigationConcessions(path) {
-    const parsed = new URL(path, 'https://acme.com');
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMatchableRouteConfigs = exports.getUrlWithReactNavigationConcessions = void 0;
+const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
+const queryString = __importStar(require("query-string"));
+const url_parse_1 = __importDefault(require("url-parse"));
+const findFocusedRoute_1 = require("./findFocusedRoute");
+const validatePathConfig_1 = __importDefault(require("./validatePathConfig"));
+const matchers_1 = require("../matchers");
+function getUrlWithReactNavigationConcessions(path) {
+    const parsed = new url_parse_1.default(path, 'https://acme.com');
     const pathname = parsed.pathname;
     // Make sure there is a trailing slash
     return {
@@ -15,6 +44,7 @@ export function getUrlWithReactNavigationConcessions(path) {
         inputPathnameWithoutHash: path.replace(/#.*$/, ''),
     };
 }
+exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessions;
 /**
  * Utility to parse a path string to initial state object accepted by the container.
  * This is useful for deep linking when we need to handle the incoming URL.
@@ -36,13 +66,14 @@ export function getUrlWithReactNavigationConcessions(path) {
  * @param path Path string to parse and convert, e.g. /foo/bar?count=42.
  * @param options Extra options to fine-tune how to parse the path.
  */
-export default function getStateFromPath(path, options) {
+function getStateFromPath(path, options) {
     const { initialRoutes, configs } = getMatchableRouteConfigs(options);
     return getStateFromPathWithConfigs(path, configs, initialRoutes);
 }
-export function getMatchableRouteConfigs(options) {
+exports.default = getStateFromPath;
+function getMatchableRouteConfigs(options) {
     if (options) {
-        validatePathConfig(options);
+        (0, validatePathConfig_1.default)(options);
     }
     const screens = options?.screens;
     // Expo Router disallows usage without a linking config.
@@ -74,6 +105,7 @@ export function getMatchableRouteConfigs(options) {
     assertConfigDuplicates(configs);
     return { configs, initialRoutes };
 }
+exports.getMatchableRouteConfigs = getMatchableRouteConfigs;
 function assertConfigDuplicates(configs) {
     // Check for duplicate patterns in the config
     configs.reduce((acc, config) => {
@@ -129,11 +161,11 @@ function sortConfigs(a, b) {
     const aParts = a.pattern
         .split('/')
         // Strip out group names to ensure they don't affect the priority.
-        .filter((part) => matchGroupName(part) == null);
+        .filter((part) => (0, matchers_1.matchGroupName)(part) == null);
     if (a.screen === 'index') {
         aParts.push('index');
     }
-    const bParts = b.pattern.split('/').filter((part) => matchGroupName(part) == null);
+    const bParts = b.pattern.split('/').filter((part) => (0, matchers_1.matchGroupName)(part) == null);
     if (b.screen === 'index') {
         bParts.push('index');
     }
@@ -196,7 +228,7 @@ function getStateFromEmptyPathWithConfigs(path, configs, initialRoutes) {
             ...value,
             // Collapse all levels of group segments before testing.
             // This enables `app/(one)/(two)/index.js` to be matched.
-            path: stripGroupSegmentsFromPath(value.path),
+            path: (0, matchers_1.stripGroupSegmentsFromPath)(value.path),
         };
     });
     const match = leafNodes.find((config) => 
@@ -385,13 +417,13 @@ function formatRegexPattern(it) {
         return `((.*\\/)${it.endsWith('?') ? '?' : ''})`;
     }
     // Strip groups from the matcher
-    if (matchGroupName(it) != null) {
+    if ((0, matchers_1.matchGroupName)(it) != null) {
         // Groups are optional segments
         // this enables us to match `/bar` and `/(foo)/bar` for the same route
         // NOTE(EvanBacon): Ignore this match in the regex to avoid capturing the group
-        return `(?:${escape(it)}\\/)?`;
+        return `(?:${(0, escape_string_regexp_1.default)(it)}\\/)?`;
     }
-    return escape(it) + `\\/`;
+    return (0, escape_string_regexp_1.default)(it) + `\\/`;
 }
 const createConfigItem = (screen, routeNames, pattern, path, hasChildren, parse, _route) => {
     // Normalize pattern to remove any leading, trailing slashes, duplicate slashes etc.
@@ -473,9 +505,9 @@ const createNestedStateObject = (path, routes, routeConfigs, initialRoutes) => {
             parentScreens.push(route.name);
         }
     }
-    route = findFocusedRoute(state);
+    route = (0, findFocusedRoute_1.findFocusedRoute)(state);
     // Remove groups from the path while preserving a trailing slash.
-    route.path = stripGroupSegmentsFromPath(path);
+    route.path = (0, matchers_1.stripGroupSegmentsFromPath)(path);
     const params = parseQueryParams(route.path, findParseConfigForRoute(route.name, routeConfigs));
     if (params) {
         const resolvedParams = { ...route.params, ...params };
