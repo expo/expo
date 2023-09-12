@@ -1,5 +1,5 @@
 {
-  "name": "create-expo-app",
+  "name": "create-expo",
   "version": "2.1.1",
   "bin": "./build/index.js",
   "main": "build",
@@ -14,7 +14,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/create-expo-app"
+    "directory": "packages/create-expo"
   },
   "author": "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)",
   "files": [
