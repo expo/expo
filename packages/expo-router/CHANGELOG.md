@@ -15,6 +15,7 @@
 
 ### 💡 Others
 
+- Ignore root HTML automatically in the context module.
 - Compile to cjs to support running directly in Node.js. ([#24349](https://github.com/expo/expo/pull/24349) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix build. ([#24309](https://github.com/expo/expo/pull/24309) by [@EvanBacon](https://github.com/EvanBacon))
 
