@@ -121,7 +121,7 @@ const LOW_QUALITY = {
         bitRate: 128000,
     },
     ios: {
-        extension: '.caf',
+        extension: '.m4a',
         audioQuality: IOSAudioQuality.MIN,
         outputFormat: IOSOutputFormat.MPEG4AAC,
         sampleRate: 44100,
