@@ -54,7 +54,7 @@ export function getServerManifest(route: RouteNode) {
   const notFoundRoutes = otherRoutes.filter(([, route]) => isNotFoundRoute(route));
 
   return {
-    dynamicRoutes: getMatchableManifestForPaths(
+    apiRoutes: getMatchableManifestForPaths(
       apiRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])
     ),
     staticRoutes: getMatchableManifestForPaths(

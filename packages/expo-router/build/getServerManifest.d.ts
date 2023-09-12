@@ -20,7 +20,7 @@ export interface RouteRegex {
     re: RegExp;
 }
 export declare function getServerManifest(route: RouteNode): {
-    dynamicRoutes: {
+    apiRoutes: {
         generated: boolean | undefined;
         page: string;
         namedRegex: string;

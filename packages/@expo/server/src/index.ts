@@ -23,7 +23,7 @@ function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
         namedRegex: new RegExp(value.namedRegex),
       };
     }),
-    dynamicRoutes: routesManifest.dynamicRoutes.map((value: any) => {
+    apiRoutes: routesManifest.apiRoutes.map((value: any) => {
       return {
         ...value,
         namedRegex: new RegExp(value.namedRegex),
@@ -167,7 +167,7 @@ export function createRequestHandler(
     }
 
     // Next, test API routes
-    for (const route of routesManifest.dynamicRoutes) {
+    for (const route of routesManifest.apiRoutes) {
       if (!route.namedRegex.test(sanitizedPathname)) {
         continue;
       }

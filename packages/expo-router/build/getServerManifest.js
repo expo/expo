@@ -29,7 +29,7 @@ function getServerManifest(route) {
     const standardRoutes = otherRoutes.filter(([, route]) => !isNotFoundRoute(route));
     const notFoundRoutes = otherRoutes.filter(([, route]) => isNotFoundRoute(route));
     return {
-        dynamicRoutes: getMatchableManifestForPaths(apiRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])),
+        apiRoutes: getMatchableManifestForPaths(apiRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])),
         staticRoutes: getMatchableManifestForPaths(standardRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])),
         notFoundRoutes: getMatchableManifestForPaths(notFoundRoutes.map(([normalizedRoutePath, node]) => [normalizedRoutePath, node])),
     };

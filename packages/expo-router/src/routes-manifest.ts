@@ -11,7 +11,7 @@ export type RouteInfo<TRegex = string> = {
 };
 
 export type ExpoRoutesManifestV1<TRegex = string> = {
-  dynamicRoutes: RouteInfo<TRegex>[];
+  apiRoutes: RouteInfo<TRegex>[];
   staticRoutes: RouteInfo<TRegex>[];
   notFoundRoutes: RouteInfo<TRegex>[];
 };
