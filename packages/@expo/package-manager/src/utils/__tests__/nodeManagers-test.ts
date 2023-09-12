@@ -147,6 +147,7 @@ describe(resolvePackageManager, () => {
     expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'yarn')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();
   });
 
   it(`resolves pnpm from monorepo workspace`, () => {
@@ -168,6 +169,7 @@ describe(resolvePackageManager, () => {
     expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'npm')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'yarn')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();
   });
 
   it(`resolves yarn from monorepo workspace`, () => {
@@ -189,5 +191,27 @@ describe(resolvePackageManager, () => {
     expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'npm')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();
+  });
+
+  it(`resolves bun from monorepo workspace`, () => {
+    vol.fromJSON(
+      {
+        'packages/test/package.json': JSON.stringify({ name: 'project' }),
+        'package.json': JSON.stringify({
+          private: true,
+          name: 'monorepo',
+          workspaces: ['packages/*'],
+        }),
+        [BUN_LOCK_FILE]: '',
+      },
+      workspaceRoot
+    );
+
+    expect(resolvePackageManager(projectRoot)).toBe('bun');
+    expect(resolvePackageManager(projectRoot, 'bun')).toBe('bun');
+    expect(resolvePackageManager(projectRoot, 'npm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'yarn')).toBeNull();
   });
 });

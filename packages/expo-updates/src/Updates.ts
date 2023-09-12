@@ -250,6 +250,10 @@ export async function clearLogEntriesAsync(): Promise<void> {
  * storage. This method cannot be used in development mode, and the returned promise will be
  * rejected if you try to do so.
  *
+ > **Note:** [`reloadAsync()`](#updatesreloadasync) can be called after promise resolution to
+ * reload the app using the most recently downloaded version. Otherwise, the update will be applied
+ * on the next app cold start.
+ *
  * @return A promise that fulfills with an [`UpdateFetchResult`](#updatefetchresult) object.
  *
  * The promise rejects if the app is in development mode, or if there is an unexpected error or
@@ -287,12 +291,8 @@ export function clearUpdateCacheExperimentalAsync(_sdkVersion?: string) {
 /**
  * @hidden
  */
-export async function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext> {
-  // Return the current state machine context
-  if (!ExpoUpdates.getNativeStateMachineContextAsync) {
-    throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
-  }
-  const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+export function transformNativeStateMachineContext(originalNativeContext: any) {
+  const nativeContext = { ...originalNativeContext };
   if (nativeContext.latestManifestString) {
     nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
     delete nativeContext.latestManifestString;
@@ -305,5 +305,21 @@ export async function getNativeStateMachineContextAsync(): Promise<UpdatesNative
     nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
     delete nativeContext.lastCheckForUpdateTimeString;
   }
+  if (nativeContext.rollbackString) {
+    nativeContext.rollback = JSON.parse(nativeContext.rollbackString);
+    delete nativeContext.rollbackString;
+  }
   return nativeContext;
+}
+
+/**
+ * @hidden
+ */
+export async function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext> {
+  // Return the current state machine context
+  if (!ExpoUpdates.getNativeStateMachineContextAsync) {
+    throw new UnavailabilityError('Updates', 'getNativeStateMachineContextAsync');
+  }
+  const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
+  return transformNativeStateMachineContext(nativeContext);
 }

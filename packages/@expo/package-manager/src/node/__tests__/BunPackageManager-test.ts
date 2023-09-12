@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 import path from 'path';
 
-import { STUB_SPAWN_CHILD, mockSpawnPromise, mockedSpawnAsync } from '../../__tests__/spawn-utils';
+import { mockSpawnPromise, mockedSpawnAsync } from '../../__tests__/spawn-utils';
 import { BunPackageManager } from '../BunPackageManager';
 
 jest.mock('@expo/spawn-async');
@@ -22,7 +22,7 @@ describe('BunPackageManager', () => {
   });
 
   describe('getDefaultEnvironment', () => {
-    it('runs bun with ADBLOCK=1 and DISABLE_OPENCOLLECTIVE=1', async () => {
+    it('runs npm with ADBLOCK=1 and DISABLE_OPENCOLLECTIVE=1', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.installAsync();
 
@@ -53,13 +53,13 @@ describe('BunPackageManager', () => {
     it('logs executed command', async () => {
       const log = jest.fn();
       const bun = new BunPackageManager({ cwd: projectRoot, log });
-      await bun.runAsync(['add', '--some-flag']);
-      expect(log).toHaveBeenCalledWith('> bun add --some-flag');
+      await bun.runAsync(['install', '--some-flag']);
+      expect(log).toHaveBeenCalledWith('> bun install --some-flag');
     });
 
     it('inherits stdio output without silent', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.runAsync(['add']);
+      await bun.runAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -70,7 +70,7 @@ describe('BunPackageManager', () => {
 
     it('does not inherit stdio with silent', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot, silent: true });
-      await bun.runAsync(['add']);
+      await bun.runAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -79,32 +79,24 @@ describe('BunPackageManager', () => {
       );
     });
 
-    it('returns spawn promise with child', () => {
-      const bun = new BunPackageManager({ cwd: projectRoot });
-      expect(bun.runAsync(['add'])).toHaveProperty(
-        'child',
-        expect.objectContaining(STUB_SPAWN_CHILD)
-      );
-    });
-
     it('adds a single package with custom parameters', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.runAsync(['add', '--optional', '@babel/core']);
+      await bun.runAsync(['add', '--peer', '@babel/core']);
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['add', '--optional', '@babel/core'],
+        ['add', '--peer', '@babel/core'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
 
     it('adds multiple packages with custom parameters', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.runAsync(['add', '--optional', '@babel/core', '@babel/runtime']);
+      await bun.runAsync(['add', '--peer', '@babel/core', '@babel/runtime']);
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['add', '--optional', '@babel/core', '@babel/runtime'],
+        ['add', '--peer', '@babel/core', '@babel/runtime'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -113,12 +105,12 @@ describe('BunPackageManager', () => {
   describe('versionAsync', () => {
     it('returns version from bun', async () => {
       mockedSpawnAsync.mockImplementation(() =>
-        mockSpawnPromise(Promise.resolve({ stdout: '7.0.0\n' }))
+        mockSpawnPromise(Promise.resolve({ stdout: '4.2.0\n' }))
       );
 
       const bun = new BunPackageManager({ cwd: projectRoot });
 
-      expect(await bun.versionAsync()).toBe('7.0.0');
+      expect(await bun.versionAsync()).toBe('4.2.0');
       expect(spawnAsync).toBeCalledWith('bun', ['--version'], expect.anything());
     });
   });
@@ -150,11 +142,11 @@ describe('BunPackageManager', () => {
 
     it('runs installation with flags', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.installAsync(['--production']);
+      await bun.installAsync(['--ignore-scripts']);
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['install', '--production'],
+        ['install', '--ignore-scripts'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -205,32 +197,24 @@ describe('BunPackageManager', () => {
       );
     });
 
-    it('returns pending spawn promise with child', async () => {
+    it('adds a single package to dependencies', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
-      const pending = bun.addAsync(['expo']);
-
-      expect(pending).toHaveProperty('child', expect.any(Object));
-      expect(pending.child).toMatchObject(STUB_SPAWN_CHILD);
-    });
-
-    it('adds a single unversioned package to dependencies', async () => {
-      const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.addAsync(['expo']);
+      await bun.addAsync(['@react-navigation/native']);
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['add', 'expo'],
+        ['add', '@react-navigation/native'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
 
-    it('adds a multiple unversioned package to dependencies', async () => {
+    it('adds multiple packages to dependencies', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.addAsync(['expo', 'react-native']);
+      await bun.addAsync(['@react-navigation/native', '@react-navigation/drawer']);
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['add', 'expo', 'react-native'],
+        ['add', '@react-navigation/native', '@react-navigation/drawer'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -248,32 +232,24 @@ describe('BunPackageManager', () => {
       );
     });
 
-    it('returns pending spawn object with child', async () => {
+    it('adds a single package to dev dependencies', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
-      const pending = bun.addDevAsync(['expo']);
-
-      expect(pending).toHaveProperty('child', expect.any(Object));
-      expect(pending.child).toMatchObject(STUB_SPAWN_CHILD);
-    });
-
-    it('adds a single unversioned package to dependencies', async () => {
-      const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.addDevAsync(['expo']);
+      await bun.addDevAsync(['eslint']);
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['add', '--dev', 'expo'],
+        ['add', '--dev', 'eslint'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
 
-    it('adds a multiple unversioned package to dependencies', async () => {
+    it('adds multiple packages to dev dependencies', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.addDevAsync(['expo', 'react-native']);
+      await bun.addDevAsync(['eslint', 'prettier']);
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['add', '--dev', 'expo', 'react-native'],
+        ['add', '--dev', 'eslint', 'prettier'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -345,7 +321,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['remove', '--dev', 'metro'],
+        ['remove', 'metro'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -356,7 +332,7 @@ describe('BunPackageManager', () => {
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
-        ['remove', '--dev', 'metro', 'jest-haste-map'],
+        ['remove', 'metro', 'jest-haste-map'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -420,4 +396,8 @@ describe('BunPackageManager', () => {
       expect(root).not.toBe(bun);
     });
   });
+
+  // describe('offline support', () => {
+  //   // TODO
+  // });
 });

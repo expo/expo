@@ -33,7 +33,7 @@ buildscript {
 }
 
 group = 'host.exp.exponent'
-version = '4.3.0'
+version = '4.4.0'
 
 afterEvaluate {
   publishing {
@@ -53,13 +53,16 @@ afterEvaluate {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_11
-    targetCompatibility JavaVersion.VERSION_11
-  }
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_11
+      targetCompatibility JavaVersion.VERSION_11
+    }
 
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
+    kotlinOptions {
+      jvmTarget = JavaVersion.VERSION_11.majorVersion
+    }
   }
 
   namespace "expo.modules.imageloader"
@@ -67,7 +70,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 8
-    versionName "4.3.0"
+    versionName "4.4.0"
   }
   lintOptions {
     abortOnError false
@@ -83,7 +86,7 @@ repositories {
   mavenCentral()
 }
 
-def glideVersion = safeExtGet('glideVersion', '4.13.2')
+def glideVersion = safeExtGet('glideVersion', '4.16.0')
 
 dependencies {
   implementation project(':expo-modules-core')

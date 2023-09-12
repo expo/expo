@@ -47,6 +47,8 @@ function formatRunCommand(manager, cmd) {
             return `pnpm run ${cmd}`;
         case 'yarn':
             return `yarn ${cmd}`;
+        case 'bun':
+            return `bun run ${cmd}`;
         case 'npm':
         default:
             return `npm run ${cmd}`;

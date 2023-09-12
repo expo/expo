@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 13.2.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Migrated `GLObjectManagerModule` to use Expo Modules API. ([#24017](https://github.com/expo/expo/pull/24017) by [@lukmccall](https://github.com/lukmccall))
+
 ## 13.1.0 — 2023-07-28
 
 _This version does not introduce any user-facing changes._

@@ -114,9 +114,6 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 - (void)onAppContentDidAppear:(UIViewController *)viewController
 {
-  if ([self isAppActive] && ![self.splashScreenControllers objectForKey:viewController]) {
-    EXLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
-  }
   BOOL needsHide = [[self.splashScreenControllers objectForKey:viewController] needsHideOnAppContentDidAppear];
   if (needsHide) {
     [self hideSplashScreenFor:viewController
@@ -128,9 +125,6 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 - (void)onAppContentWillReload:(UIViewController *)viewController
 {
-  if ([self isAppActive] && ![self.splashScreenControllers objectForKey:viewController]) {
-    EXLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
-  }
   BOOL needsShow = [[self.splashScreenControllers objectForKey:viewController] needsShowOnAppContentWillReload];
   if (needsShow) {
     // For reloading apps, specify `EXSplashScreenForceShow` to show splash screen again

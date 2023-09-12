@@ -27,7 +27,6 @@ import expo.modules.updates.manifest.UpdateManifest
 
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
-import expo.modules.updates.UpdatesConfiguration
 
 /* ktlint-enable no-unused-imports */
 
@@ -137,7 +136,7 @@ class UpdatesModule(
     }
   }
 
-  // Used internally by @expo/use-updates useUpdates() to get its initial state
+  // Used internally by useUpdates() to get its initial state
   @ExpoMethod
   fun getNativeStateMachineContextAsync(promise: Promise) {
     try {
@@ -199,13 +198,23 @@ class UpdatesModule(
               if (updateDirective != null) {
                 if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
                   if (!updatesServiceLocal.configuration.hasEmbeddedUpdate) {
-                    promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.NoUpdateAvailable(), updatesServiceLocal)
+                    promise.resolveWithCheckForUpdateAsyncResult(
+                      CheckForUpdateAsyncResult.NoUpdateAvailable(
+                        LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
+                      ),
+                      updatesServiceLocal
+                    )
                     return
                   }
 
                   val embeddedUpdate = EmbeddedManifest.get(context, updatesServiceLocal.configuration)!!.updateEntity
                   if (embeddedUpdate == null) {
-                    promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.NoUpdateAvailable(), updatesServiceLocal)
+                    promise.resolveWithCheckForUpdateAsyncResult(
+                      CheckForUpdateAsyncResult.NoUpdateAvailable(
+                        LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
+                      ),
+                      updatesServiceLocal
+                    )
                     return
                   }
 
@@ -216,17 +225,27 @@ class UpdatesModule(
                       updateResponse.responseHeaderData?.manifestFilters
                     )
                   ) {
-                    promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.NoUpdateAvailable(), updatesServiceLocal)
+                    promise.resolveWithCheckForUpdateAsyncResult(
+                      CheckForUpdateAsyncResult.NoUpdateAvailable(
+                        LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_REJECTED_BY_SELECTION_POLICY
+                      ),
+                      updatesServiceLocal
+                    )
                     return
                   }
 
-                  promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.RollBackToEmbedded(), updatesServiceLocal)
+                  promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.RollBackToEmbedded(updateDirective.commitTime), updatesServiceLocal)
                   return
                 }
               }
 
               if (updateManifest == null) {
-                promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.NoUpdateAvailable(), updatesServiceLocal)
+                promise.resolveWithCheckForUpdateAsyncResult(
+                  CheckForUpdateAsyncResult.NoUpdateAvailable(
+                    LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER
+                  ),
+                  updatesServiceLocal
+                )
                 return
               }
 
@@ -237,15 +256,43 @@ class UpdatesModule(
                 return
               }
 
+              var shouldLaunch = false
+              var failedPreviously = false
               if (updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
                   updateManifest.updateEntity,
                   launchedUpdate,
                   updateResponse.responseHeaderData?.manifestFilters
                 )
               ) {
+                // If "update" has failed to launch previously, then
+                // "launchedUpdate" will be an earlier update, and the test above
+                // will return true (incorrectly).
+                // We check to see if the new update is already in the DB, and if so,
+                // only allow the update if it has had no launch failures.
+                shouldLaunch = true
+                updateManifest.updateEntity?.let { updateEntity ->
+                  val storedUpdateEntity = updatesServiceLocal.databaseHolder.database.updateDao().loadUpdateWithId(
+                    updateEntity.id
+                  )
+                  updatesServiceLocal.databaseHolder.releaseDatabase()
+                  storedUpdateEntity?.let { storedUpdateEntity ->
+                    shouldLaunch = storedUpdateEntity.failedLaunchCount == 0
+                    logger.info("Stored update found: ID = ${updateEntity.id}, failureCount = ${storedUpdateEntity.failedLaunchCount}")
+                    failedPreviously = !shouldLaunch
+                  }
+                }
+              }
+              if (shouldLaunch) {
                 promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.UpdateAvailable(updateManifest), updatesServiceLocal)
               } else {
-                promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.NoUpdateAvailable(), updatesServiceLocal)
+                val reason = when (failedPreviously) {
+                  true -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_PREVIOUSLY_FAILED
+                  else -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_REJECTED_BY_SELECTION_POLICY
+                }
+                promise.resolveWithCheckForUpdateAsyncResult(
+                  CheckForUpdateAsyncResult.NoUpdateAvailable(reason),
+                  updatesServiceLocal
+                )
               }
             }
           }
@@ -266,9 +313,9 @@ class UpdatesModule(
       ROLL_BACK_TO_EMBEDDED
     }
 
-    class NoUpdateAvailable : CheckForUpdateAsyncResult(Status.NO_UPDATE_AVAILABLE)
+    class NoUpdateAvailable(val reason: LoaderTask.RemoteCheckResultNotAvailableReason) : CheckForUpdateAsyncResult(Status.NO_UPDATE_AVAILABLE)
     class UpdateAvailable(val updateManifest: UpdateManifest) : CheckForUpdateAsyncResult(Status.UPDATE_AVAILABLE)
-    class RollBackToEmbedded : CheckForUpdateAsyncResult(Status.ROLL_BACK_TO_EMBEDDED)
+    class RollBackToEmbedded(val commitTime: Date) : CheckForUpdateAsyncResult(Status.ROLL_BACK_TO_EMBEDDED)
   }
 
   private fun Promise.resolveWithCheckForUpdateAsyncResult(checkForUpdateAsyncResult: CheckForUpdateAsyncResult, updatesServiceLocal: UpdatesInterface) {
@@ -278,6 +325,7 @@ class UpdatesModule(
           is CheckForUpdateAsyncResult.NoUpdateAvailable -> {
             putBoolean("isRollBackToEmbedded", false)
             putBoolean("isAvailable", false)
+            putString("reason", checkForUpdateAsyncResult.reason.value)
           }
 
           is CheckForUpdateAsyncResult.RollBackToEmbedded -> {
@@ -296,7 +344,7 @@ class UpdatesModule(
     updatesServiceLocal.stateMachine?.processEvent(
       when (checkForUpdateAsyncResult) {
         is CheckForUpdateAsyncResult.NoUpdateAvailable -> UpdatesStateEvent.CheckCompleteUnavailable()
-        is CheckForUpdateAsyncResult.RollBackToEmbedded -> UpdatesStateEvent.CheckCompleteWithRollback()
+        is CheckForUpdateAsyncResult.RollBackToEmbedded -> UpdatesStateEvent.CheckCompleteWithRollback(checkForUpdateAsyncResult.commitTime)
         is CheckForUpdateAsyncResult.UpdateAvailable -> UpdatesStateEvent.CheckCompleteWithUpdate(
           checkForUpdateAsyncResult.updateManifest.manifest.getRawJson()
         )

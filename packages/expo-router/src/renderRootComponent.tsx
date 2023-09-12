@@ -57,7 +57,13 @@ export function renderRootComponent(Component: React.ComponentType<any>) {
       _internal_preventAutoHideAsync();
     });
 
-    registerRootComponent(Component);
+    if (process.env.NODE_ENV !== 'production') {
+      const { withErrorOverlay } =
+        require('@expo/metro-runtime/error-overlay') as typeof import('@expo/metro-runtime/error-overlay');
+      registerRootComponent(withErrorOverlay(Component));
+    } else {
+      registerRootComponent(Component);
+    }
   } catch (e) {
     // Hide the splash screen if there was an error so the user can see it.
     SplashScreen.hideAsync();

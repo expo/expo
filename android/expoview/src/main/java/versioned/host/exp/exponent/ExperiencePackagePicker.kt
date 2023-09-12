@@ -1,15 +1,16 @@
 package versioned.host.exp.exponent
 
 import expo.modules.application.ApplicationPackage
+import expo.modules.av.AVModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
-import expo.modules.backgroundfetch.BackgroundFetchPackage
+import expo.modules.backgroundfetch.BackgroundFetchModule
 import expo.modules.barcodescanner.BarCodeScannerModule
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.battery.BatteryModule
 import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
-import expo.modules.calendar.CalendarPackage
+import expo.modules.calendar.CalendarModule
 import expo.modules.camera.CameraViewModule
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
@@ -21,12 +22,10 @@ import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
-import expo.modules.print.PrintModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
-import expo.modules.font.FontLoaderPackage
-import expo.modules.gl.GLPackage
+import expo.modules.gl.GLObjectManagerModule
 import expo.modules.gl.GLViewModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
@@ -34,11 +33,12 @@ import expo.modules.imageloader.ImageLoaderPackage
 import expo.modules.imagemanipulator.ImageManipulatorModule
 import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherModule
+import expo.modules.keepawake.KeepAwakeModule
 import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
-import expo.modules.localauthentication.LocalAuthenticationPackage
+import expo.modules.localauthentication.LocalAuthenticationModule
 import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationPackage
 import expo.modules.mailcomposer.MailComposerModule
@@ -48,10 +48,10 @@ import expo.modules.navigationbar.NavigationBarPackage
 import expo.modules.network.NetworkModule
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.permissions.PermissionsPackage
+import expo.modules.print.PrintModule
 import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
-import expo.modules.securestore.SecureStorePackage
 import expo.modules.sensors.SensorsPackage
 import expo.modules.sensors.modules.AccelerometerModule
 import expo.modules.sensors.modules.BarometerModule
@@ -79,23 +79,17 @@ object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
     ApplicationPackage(),
-    BackgroundFetchPackage(),
     BarCodeScannerPackage(),
-    CalendarPackage(),
     ConstantsPackage(),
     ContactsPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
-    FontLoaderPackage(),
-    GLPackage(),
     ImageLoaderPackage(),
     KeepAwakePackage(),
-    LocalAuthenticationPackage(),
     LocationPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
-    SecureStorePackage(),
     SensorsPackage(),
     SplashScreenPackage(),
     SystemUIPackage(),
@@ -119,6 +113,7 @@ object ExperiencePackagePicker : ModulesProvider {
   }
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
+    AVModule::class.java,
     // Sensors
     AccelerometerModule::class.java,
     BarometerModule::class.java,
@@ -130,8 +125,10 @@ object ExperiencePackagePicker : ModulesProvider {
     PedometerModule::class.java,
     // End of Sensors
     BatteryModule::class.java,
+    BackgroundFetchModule::class.java,
     BarCodeScannerModule::class.java,
     BlurModule::class.java,
+    CalendarModule::class.java,
     CameraViewModule::class.java,
     CellularModule::class.java,
     ClipboardModule::class.java,
@@ -143,12 +140,15 @@ object ExperiencePackagePicker : ModulesProvider {
     FileSystemModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,
+    GLObjectManagerModule::class.java,
     HapticsModule::class.java,
     ImagePickerModule::class.java,
     ImageManipulatorModule::class.java,
     ExpoImageModule::class.java,
     IntentLauncherModule::class.java,
+    KeepAwakeModule::class.java,
     LinearGradientModule::class.java,
+    LocalAuthenticationModule::class.java,
     LocalizationModule::class.java,
     MailComposerModule::class.java,
     MediaLibraryModule::class.java,
@@ -156,6 +156,8 @@ object ExperiencePackagePicker : ModulesProvider {
     RandomModule::class.java,
     ScreenCaptureModule::class.java,
     ScreenOrientationModule::class.java,
+    // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
+    // because it needs access to scopedContext for Expo Go support
     SMSModule::class.java,
     SharingModule::class.java,
     SpeechModule::class.java,

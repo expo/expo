@@ -48,6 +48,7 @@ function resolvePackageManager(projectRoot, preferredManager) {
         npm: nodeWorkspaces_1.NPM_LOCK_FILE,
         pnpm: nodeWorkspaces_1.PNPM_LOCK_FILE,
         yarn: nodeWorkspaces_1.YARN_LOCK_FILE,
+        bun: nodeWorkspaces_1.BUN_LOCK_FILE,
     };
     if (preferredManager) {
         if (fs_1.default.existsSync(path_1.default.join(root, lockFiles[preferredManager]))) {
@@ -90,6 +91,8 @@ function createForProject(projectRoot, options = {}) {
             return new PnpmPackageManager_1.PnpmPackageManager({ cwd: projectRoot, ...options });
         case 'yarn':
             return new YarnPackageManager_1.YarnPackageManager({ cwd: projectRoot, ...options });
+        case 'bun':
+            return new BunPackageManager_1.BunPackageManager({ cwd: projectRoot, ...options });
         default:
             return new NpmPackageManager_1.NpmPackageManager({ cwd: projectRoot, ...options });
     }

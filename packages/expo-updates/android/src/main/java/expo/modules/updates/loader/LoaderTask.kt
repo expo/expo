@@ -21,6 +21,7 @@ import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import org.json.JSONObject
 import java.io.File
+import java.util.Date
 
 /**
  * Controlling class that handles the complex logic that needs to happen each time the app is cold
@@ -53,6 +54,32 @@ class LoaderTask(
     ERROR, NO_UPDATE_AVAILABLE, UPDATE_AVAILABLE
   }
 
+  enum class RemoteCheckResultNotAvailableReason(val value: String) {
+    /**
+     * No update manifest or rollback directive received from the update server.
+     */
+    NO_UPDATE_AVAILABLE_ON_SERVER("noUpdateAvailableOnServer"),
+    /**
+     * An update manifest was received from the update server, but the update is not launchable,
+     * or does not pass the configured selection policy.
+     */
+    UPDATE_REJECTED_BY_SELECTION_POLICY("updateRejectedBySelectionPolicy"),
+    /**
+     * An update manifest was received from the update server, but the update has been previously
+     * launched on this device and never successfully launched.
+     */
+    UPDATE_PREVIOUSLY_FAILED("updatePreviouslyFailed"),
+    /**
+     * A rollback directive was received from the update server, but the directive does not pass
+     * the configured selection policy.
+     */
+    ROLLBACK_REJECTED_BY_SELECTION_POLICY("rollbackRejectedBySelectionPolicy"),
+    /**
+     * A rollback directive was received from the update server, but this app has no embedded update.
+     */
+    ROLLBACK_NO_EMBEDDED("rollbackNoEmbeddedConfiguration"),
+  }
+
   sealed class RemoteCheckResult(private val status: Status) {
     private enum class Status {
       NO_UPDATE_AVAILABLE,
@@ -60,9 +87,9 @@ class LoaderTask(
       ROLL_BACK_TO_EMBEDDED
     }
 
-    class NoUpdateAvailable : RemoteCheckResult(Status.NO_UPDATE_AVAILABLE)
+    class NoUpdateAvailable(val reason: RemoteCheckResultNotAvailableReason) : RemoteCheckResult(Status.NO_UPDATE_AVAILABLE)
     class UpdateAvailable(val manifest: JSONObject) : RemoteCheckResult(Status.UPDATE_AVAILABLE)
-    class RollBackToEmbedded : RemoteCheckResult(Status.ROLL_BACK_TO_EMBEDDED)
+    class RollBackToEmbedded(val commitTime: Date) : RemoteCheckResult(Status.ROLL_BACK_TO_EMBEDDED)
   }
 
   interface LoaderTaskCallback {
@@ -335,12 +362,12 @@ class LoaderTask(
               return when (updateDirective) {
                 is UpdateDirective.RollBackToEmbeddedUpdateDirective -> {
                   isUpToDate = true
-                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.RollBackToEmbedded())
+                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.RollBackToEmbedded(updateDirective.commitTime))
                   Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
                 }
                 is UpdateDirective.NoUpdateAvailableUpdateDirective -> {
                   isUpToDate = true
-                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable())
+                  callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable(RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER))
                   Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
                 }
               }
@@ -349,7 +376,7 @@ class LoaderTask(
             val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
             if (updateManifest == null) {
               isUpToDate = true
-              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable())
+              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable(RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER))
               return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
             }
 
@@ -366,7 +393,11 @@ class LoaderTask(
               Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
             } else {
               isUpToDate = true
-              callback.onRemoteCheckForUpdateFinished(RemoteCheckResult.NoUpdateAvailable())
+              callback.onRemoteCheckForUpdateFinished(
+                RemoteCheckResult.NoUpdateAvailable(
+                  RemoteCheckResultNotAvailableReason.UPDATE_REJECTED_BY_SELECTION_POLICY
+                )
+              )
               Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
             }
           }

@@ -114,7 +114,7 @@ export async function removeAllChildrenFromGroupWithNameAsync(groupName: string)
 
     const { data: contacts } = await Contacts.getContactsAsync({ groupId });
     await Promise.all(
-      contacts.map((contact) => Contacts.removeContactFromGroupAsync(contact.id, groupId!))
+      contacts.map((contact) => Contacts.removeContactFromGroupAsync(contact.id!, groupId!))
     );
   } catch ({ message }) {
     console.error(message);
@@ -125,7 +125,7 @@ export async function debugAddFirstContactToGroupAsync() {
   const groupId = await ensureGroupAsync('Expo Contacts');
   const { data: contacts } = await Contacts.getContactsAsync({ pageSize: 1 });
   const contact = contacts[0];
-  await Contacts.addExistingContactToGroupAsync(contact.id, groupId!);
+  await Contacts.addExistingContactToGroupAsync(contact.id!, groupId!);
 }
 
 export function presentNewContactFormAsync({

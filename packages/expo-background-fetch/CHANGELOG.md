@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 11.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Migrated Android codebase to use Expo modules API. ([#23903](https://github.com/expo/expo/pull/23903) by [@lukmccall](https://github.com/lukmccall))
+
 ## 11.4.0 — 2023-08-02
 
 _This version does not introduce any user-facing changes._

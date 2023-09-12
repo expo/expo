@@ -16,7 +16,19 @@ class MetroImportError extends Error {
   }
 }
 
-function resolveFromProject(projectRoot: string, moduleId: string) {
+export function importCliServerApiFromProject(
+  projectRoot: string
+): typeof import('@react-native-community/cli-server-api') {
+  return importFromProject(projectRoot, '@react-native-community/cli-server-api');
+}
+
+export function importMetroSourceMapComposeSourceMapsFromProject(
+  projectRoot: string
+): typeof import('metro-source-map').composeSourceMaps {
+  return importFromProject(projectRoot, 'metro-source-map/src/composeSourceMaps');
+}
+
+export function resolveFromProject(projectRoot: string, moduleId: string) {
   const resolvedPath = resolveFrom.silent(projectRoot, moduleId);
   if (!resolvedPath) {
     throw new MetroImportError(projectRoot, moduleId);
@@ -31,6 +43,9 @@ function importFromProject(projectRoot: string, moduleId: string) {
 /** Import `metro` from the project. */
 export function importMetroFromProject(projectRoot: string): typeof import('metro') {
   return importFromProject(projectRoot, 'metro');
+}
+export function importMetroServerFromProject(projectRoot: string): typeof import('metro').Server {
+  return importFromProject(projectRoot, 'metro/src/Server');
 }
 export function importMetroCreateWebsocketServerFromProject(
   projectRoot: string
@@ -99,15 +114,6 @@ export function importCliSaveAssetsFromProject(
     projectRoot,
     '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets'
   ).default;
-}
-
-export function importCliBuildBundleWithConfigFromProject(
-  projectRoot: string
-): typeof import('@react-native-community/cli-plugin-metro/build/commands/bundle/buildBundle').buildBundleWithConfig {
-  return importFromProject(
-    projectRoot,
-    '@react-native-community/cli-plugin-metro/build/commands/bundle/buildBundle'
-  ).buildBundleWithConfig;
 }
 
 /** Resolve the installed Metro version from project */

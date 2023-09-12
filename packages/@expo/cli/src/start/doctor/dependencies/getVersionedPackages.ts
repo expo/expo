@@ -49,8 +49,10 @@ export async function getCombinedKnownVersionsAsync({
     : {};
   const versionsForSdk = await getRemoteVersionsForSdkAsync({ sdkVersion, skipCache });
   return {
-    ...versionsForSdk,
     ...bundledNativeModules,
+    // Prefer the remote versions over the bundled versions, this enables us to push
+    // emergency fixes that users can access without having to update the `expo` package.
+    ...versionsForSdk,
   };
 }
 

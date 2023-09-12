@@ -31,12 +31,12 @@ export default function App() {
 function UpdatesStatusView(props: { index: number }) {
   const [updateMessage, setUpdateMessage] = React.useState('');
   const [isRollback, setIsRollback] = React.useState(false);
+  const [noUpdateReason, setNoUpdateReason] = React.useState('');
 
   // Displays a message showing whether or not the app is running
   // a downloaded update
   const runTypeMessage =
-    `isEmbeddedLaunch = ${Updates.isEmbeddedLaunch}\n` +
-    `isUsingEmbeddedAssets = ${Updates.isUsingEmbeddedAssets}`;
+    `isEmbeddedLaunch = ${Updates.isEmbeddedLaunch}\n` + `noUpdateReason = ${noUpdateReason}`;
 
   const checkAutomaticallyMessage = `Automatic check setting = ${Updates.checkAutomatically}`;
 
@@ -53,8 +53,7 @@ function UpdatesStatusView(props: { index: number }) {
 
   useEffect(() => {
     const handleAsync = async () => {
-      const state = await Updates.getNativeStateMachineContextAsync();
-      setIsRollback(state.isRollback);
+      setIsRollback(availableUpdate?.type === Updates.UpdateInfoType.ROLLBACK);
     };
     if (isUpdateAvailable) {
       handleAsync();
@@ -66,14 +65,16 @@ function UpdatesStatusView(props: { index: number }) {
     const downloadingMessage = isDownloading ? 'Downloading...\n' : '';
     const availableMessage = isUpdateAvailable
       ? isRollback
-        ? 'Rollback directive found\n'
+        ? `Rollback directive found, created at ${
+            availableUpdate?.createdAt.toLocaleString() ?? ''
+          }\n`
         : `Found a new update: manifest = \n${manifestToString(availableUpdate?.manifest)}...` +
           '\n'
       : 'No new update available\n';
     const checkErrorMessage = checkError ? `Error in check: ${checkError.message}\n` : '';
     const downloadErrorMessage = downloadError ? `Error in check: ${downloadError.message}\n` : '';
     const lastCheckTimeMessage = lastCheckForUpdateTimeSinceRestart
-      ? `Last check: ${lastCheckForUpdateTimeSinceRestart.toLocaleString()}\n`
+      ? `Last check: ${lastCheckForUpdateTimeSinceRestart.toLocaleString() ?? ''}\n`
       : '';
     setUpdateMessage(
       checkingMessage +
@@ -109,7 +110,11 @@ function UpdatesStatusView(props: { index: number }) {
   }, [isUpdatePending]);
 
   const handleCheckButtonPress = () => {
-    Updates.checkForUpdateAsync();
+    Updates.checkForUpdateAsync().then((result) => {
+      if (result.isAvailable === false) {
+        setNoUpdateReason(result.reason ?? '');
+      }
+    });
   };
 
   const handleDownloadButtonPress = () => {

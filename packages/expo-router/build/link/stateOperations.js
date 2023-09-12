@@ -1,19 +1,30 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getEarliestMismatchedRoute = exports.getQualifiedStateForTopOfTargetState = exports.isMovingToSiblingRoute = exports.findTopRouteForTarget = void 0;
 // Get the last state for a given target state (generated from a path).
 function findTopStateForTarget(state) {
     let current = state;
+    let previous = state;
     while (current?.routes?.[current?.routes?.length - 1].state != null) {
+        previous = current;
         current = current?.routes[current?.routes.length - 1].state;
+    }
+    // If the last route in the target state is an index route, return the previous state (parent).
+    // NOTE: This may need to be updated to support initial route name being a non-standard value.
+    if (previous && current?.routes?.[current.routes.length - 1].name === 'index') {
+        return previous;
     }
     return current;
 }
 /** Return the absolute last route to move to. */
-export function findTopRouteForTarget(state) {
+function findTopRouteForTarget(state) {
     const nextState = findTopStateForTarget(state);
     // Ensure we get the last route to prevent returning the initial route.
     return nextState.routes?.[nextState.routes.length - 1];
 }
+exports.findTopRouteForTarget = findTopRouteForTarget;
 /** @returns true if moving to a sibling inside the same navigator. */
-export function isMovingToSiblingRoute(currentState, targetState) {
+function isMovingToSiblingRoute(currentState, targetState) {
     if (!currentState || !targetState) {
         return false;
     }
@@ -35,10 +46,11 @@ export function isMovingToSiblingRoute(currentState, targetState) {
     }
     return isMovingToSiblingRoute(locatedState.state, targetRoute.state);
 }
+exports.isMovingToSiblingRoute = isMovingToSiblingRoute;
 // Given the root state and a target state from `getStateFromPath`,
 // return the root state containing the highest target route matching the root state.
 // This can be used to determine what type of navigator action should be used.
-export function getQualifiedStateForTopOfTargetState(rootState, targetState) {
+function getQualifiedStateForTopOfTargetState(rootState, targetState) {
     let current = targetState;
     let currentRoot = rootState;
     while (current?.routes?.[current?.routes?.length - 1].state != null) {
@@ -57,10 +69,11 @@ export function getQualifiedStateForTopOfTargetState(rootState, targetState) {
     }
     return currentRoot;
 }
+exports.getQualifiedStateForTopOfTargetState = getQualifiedStateForTopOfTargetState;
 // Given the root state and a target state from `getStateFromPath`,
 // return the root state containing the highest target route matching the root state.
 // This can be used to determine what type of navigator action should be used.
-export function getEarliestMismatchedRoute(rootState, actionParams) {
+function getEarliestMismatchedRoute(rootState, actionParams) {
     const actionName = actionParams.name ?? actionParams.screen;
     if (!rootState?.routes || rootState.index == null) {
         // This should never happen where there's more action than state.
@@ -88,4 +101,5 @@ export function getEarliestMismatchedRoute(rootState, actionParams) {
         type: rootState.type,
     };
 }
+exports.getEarliestMismatchedRoute = getEarliestMismatchedRoute;
 //# sourceMappingURL=stateOperations.js.map

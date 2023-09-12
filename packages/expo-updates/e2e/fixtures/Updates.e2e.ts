@@ -620,12 +620,14 @@ describe('JS API tests', () => {
     const latestManifestId4 = await testElementValueAsync('state.latestManifest.id');
     const downloadedManifestId4 = await testElementValueAsync('state.downloadedManifest.id');
     const isRollback4 = await testElementValueAsync('state.isRollback');
+    const rollbackCommitTime4 = await testElementValueAsync('state.rollbackCommitTime');
 
     console.warn(`isUpdatePending4 = ${isUpdatePending4}`);
     console.warn(`isUpdateAvailable4 = ${isUpdateAvailable4}`);
     console.warn(`isRollback4 = ${isRollback4}`);
     console.warn(`latestManifestId4 = ${latestManifestId4}`);
     console.warn(`downloadedManifestId4 = ${downloadedManifestId4}`);
+    console.warn(`rollbackCommitTime4 = ${rollbackCommitTime4}`);
 
     const updatesExpoClientUpdateString = await testElementValueAsync('updates.expoClient');
     const constantsExpoConfigUpdateString = await testElementValueAsync('constants.expoConfig');
@@ -644,12 +646,14 @@ describe('JS API tests', () => {
     const latestManifestId5 = await testElementValueAsync('state.latestManifest.id');
     const downloadedManifestId5 = await testElementValueAsync('state.downloadedManifest.id');
     const isRollback5 = await testElementValueAsync('state.isRollback');
+    const rollbackCommitTime5 = await testElementValueAsync('state.rollbackCommitTime');
 
     console.warn(`isUpdatePending5 = ${isUpdatePending5}`);
     console.warn(`isUpdateAvailable5 = ${isUpdateAvailable5}`);
     console.warn(`isRollback5 = ${isRollback5}`);
     console.warn(`latestManifestId5 = ${latestManifestId5}`);
     console.warn(`downloadedManifestId5 = ${downloadedManifestId5}`);
+    console.warn(`rollbackCommitTime5 = ${rollbackCommitTime5}`);
 
     // Terminate and relaunch app, we should be running the original bundle again, and back to the default state
     await device.terminateApp();
@@ -661,12 +665,14 @@ describe('JS API tests', () => {
     const latestManifestId6 = await testElementValueAsync('state.latestManifest.id');
     const downloadedManifestId6 = await testElementValueAsync('state.downloadedManifest.id');
     const isRollback6 = await testElementValueAsync('state.isRollback');
+    const rollbackCommitTime6 = await testElementValueAsync('state.rollbackCommitTime');
 
     console.warn(`isUpdatePending6 = ${isUpdatePending6}`);
     console.warn(`isUpdateAvailable6 = ${isUpdateAvailable6}`);
     console.warn(`isRollback6 = ${isRollback6}`);
     console.warn(`latestManifestId6 = ${latestManifestId6}`);
     console.warn(`downloadedManifestId6 = ${downloadedManifestId6}`);
+    console.warn(`rollbackCommitTime6 = ${rollbackCommitTime6}`);
 
     const updatesExpoConfigRollbackString = await testElementValueAsync('updates.expoClient');
     const constantsExpoConfigRollbackString = await testElementValueAsync('constants.expoConfig');
@@ -700,19 +706,20 @@ describe('JS API tests', () => {
     jestExpect(nativeStateContext.latestManifest?.id).toEqual(manifest.id);
     jestExpect(nativeStateContext.isUpdateAvailable).toBe(true);
     jestExpect(nativeStateContext.isUpdatePending).toBe(true);
-    jestExpect(nativeStateContext.isRollback).toBe(false);
     // After restarting
     jestExpect(isUpdateAvailable4).toEqual('false');
     jestExpect(isUpdatePending4).toEqual('false');
     jestExpect(isRollback4).toEqual('false');
     jestExpect(latestManifestId4).toEqual('');
     jestExpect(downloadedManifestId4).toEqual('');
+    jestExpect(rollbackCommitTime4).toEqual('');
     // After check for update and getting a rollback
     jestExpect(isUpdateAvailable5).toEqual('true');
     jestExpect(isUpdatePending5).toEqual('false');
     jestExpect(isRollback5).toEqual('true');
     jestExpect(latestManifestId5).toEqual('');
     jestExpect(downloadedManifestId5).toEqual('');
+    jestExpect(rollbackCommitTime5).not.toEqual('');
   });
 
   it('Receives expected events when update available on start', async () => {

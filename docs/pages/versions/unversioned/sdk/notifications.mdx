@@ -149,7 +149,9 @@ async function registerForPushNotificationsAsync() {
       alert('Failed to get push token for push notification!');
       return;
     }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
+    // Learn more about projectId:
+    // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
+    token = (await Notifications.getExpoPushTokenAsync({ projectId: 'your-project-id' })).data;
     console.log(token);
   } else {
     alert('Must use physical device for Push Notifications');
@@ -430,9 +432,8 @@ In the table above, whenever `NotificationResponseReceivedListener` is triggered
 
 > **warning** Background event listeners are not supported in Expo Go.
 
-To handle notifications while the app is backgrounded on iOS, you _must_ add `remote-notification` to the `ios.infoPlist.UIBackgroundModes` key in your **app.json**,
-and add `"content-available": 1` to your push notification payload. Under normal circumstances, the "content-available" flag should launch your app if it isn't running
-and wasn't killed by the user, however, this is ultimately decided by the OS, so it might not always happen.
+To handle notifications while the app is in the background on iOS, add `remote-notification` as a value to the array under `ios.infoPlist.UIBackgroundModes` key in your [app config](/versions/latest/config/app/), and add `"content-available": 1` to your push notification payload. Under normal circumstances, the "content-available" flag should launch your app if it isn't running
+and wasn't killed by the user. However, this is ultimately decided by the OS, so it might not always happen.
 
 ## Additional information
 

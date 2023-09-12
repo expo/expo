@@ -58,74 +58,161 @@ afterAll(() => {
 
 beforeEach(() => ensurePortFreeAsync(19000));
 
+describe('static-rendering-without-maps', () => {
+  const projectRoot = ensureTesterReady('url-polyfill');
+  const outputDir = path.join(projectRoot, 'dist-static-rendering-no-map');
+
+  beforeAll(
+    async () => {
+      await execa(
+        'node',
+        [bin, 'export', '-p', 'web', '--output-dir', 'dist-static-rendering-no-map'],
+        {
+          cwd: projectRoot,
+          env: {
+            NODE_ENV: 'production',
+            EXPO_USE_STATIC: '1',
+            E2E_ROUTER_SRC: 'url-polyfill',
+            E2E_ROUTER_ASYNC: 'development',
+          },
+        }
+      );
+    },
+    // Could take 45s depending on how fast the bundler resolves
+    560 * 1000
+  );
+
+  it('has no reference to source maps', async () => {
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
+
+    // No map files should exist
+    expect(files.some((file) => file?.endsWith('.map'))).toBe(false);
+
+    const jsFiles = files.filter((file) => file?.endsWith('.js'));
+
+    for (const file of jsFiles) {
+      // Ensure the bundle does not contain a source map reference
+      const jsBundle = fs.readFileSync(path.join(outputDir, file!), 'utf8');
+      expect(jsBundle).not.toMatch('//# sourceMappingURL');
+      expect(jsBundle).not.toMatch('//# sourceURL');
+    }
+  });
+});
+
 describe('static-rendering', () => {
   const projectRoot = ensureTesterReady('static-rendering');
   const outputDir = path.join(projectRoot, 'dist-static-rendering');
 
   beforeAll(
     async () => {
-      await execa('node', [bin, 'export', '-p', 'web', '--output-dir', 'dist-static-rendering'], {
-        cwd: projectRoot,
-        env: {
-          NODE_ENV: 'production',
-          EXPO_USE_STATIC: '1',
-          E2E_ROUTER_SRC: 'static-rendering',
-          E2E_ROUTER_ASYNC: 'development',
-        },
-      });
+      await execa(
+        'node',
+        [bin, 'export', '-p', 'web', '--output-dir', 'dist-static-rendering', '--dump-sourcemap'],
+        {
+          cwd: projectRoot,
+          env: {
+            NODE_ENV: 'production',
+            EXPO_USE_STATIC: '1',
+            E2E_ROUTER_SRC: 'static-rendering',
+            E2E_ROUTER_ASYNC: 'development',
+          },
+        }
+      );
     },
     // Could take 45s depending on how fast the bundler resolves
     560 * 1000
   );
 
-  it(
-    'has expected files',
-    async () => {
-      // List output files with sizes for snapshotting.
-      // This is to make sure that any changes to the output are intentional.
-      // Posix path formatting is used to make paths the same across OSes.
-      const files = klawSync(outputDir)
-        .map((entry) => {
-          if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-            return null;
-          }
-          return path.posix.relative(outputDir, entry.path);
-        })
-        .filter(Boolean);
+  it('has expected files', async () => {
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
 
-      const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
+    // The wrapper should not be included as a route.
+    expect(files).not.toContain('+html.html');
+    expect(files).not.toContain('_layout.html');
 
-      expect(metadata).toEqual({
-        bundler: 'metro',
-        fileMetadata: {
-          web: {
-            assets: expect.anything(),
-            bundle: expect.stringMatching(/bundles\/web-.*\.js/),
-          },
-        },
-        version: 0,
-      });
+    // Injected by framework
+    expect(files).toContain('_sitemap.html');
+    expect(files).toContain('[...404].html');
 
-      // The wrapper should not be included as a route.
-      expect(files).not.toContain('+html.html');
-      expect(files).not.toContain('_layout.html');
+    // Normal routes
+    expect(files).toContain('about.html');
+    expect(files).toContain('index.html');
+    expect(files).toContain('styled.html');
 
-      // Injected by framework
-      expect(files).toContain('_sitemap.html');
-      expect(files).toContain('[...404].html');
+    // generateStaticParams values
+    expect(files).toContain('[post].html');
+    expect(files).toContain('welcome-to-the-universe.html');
+    expect(files).toContain('other.html');
+  });
 
-      // Normal routes
-      expect(files).toContain('about.html');
-      expect(files).toContain('index.html');
-      expect(files).toContain('styled.html');
+  it('has source maps', async () => {
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
 
-      // generateStaticParams values
-      expect(files).toContain('[post].html');
-      expect(files).toContain('welcome-to-the-universe.html');
-      expect(files).toContain('other.html');
-    },
-    5 * 1000
-  );
+    const mapFiles = files.filter((file) => file?.endsWith('.map'));
+    expect(mapFiles).toEqual([expect.stringMatching(/_expo\/static\/js\/web\/index-.*\.map/)]);
+
+    for (const file of mapFiles) {
+      // Ensure the bundle does not contain a source map reference
+      const sourceMap = JSON.parse(fs.readFileSync(path.join(outputDir, file!), 'utf8'));
+      expect(sourceMap.version).toBe(3);
+      expect(sourceMap.sources).toEqual(
+        expect.arrayContaining([
+          '__prelude__',
+          // NOTE: No `/Users/evanbacon/`...
+          '/node_modules/metro-runtime/src/polyfills/require.js',
+
+          // NOTE: relative to the server root for optimal source map support
+          '/apps/router-e2e/__e2e__/static-rendering/app/[post].tsx',
+        ])
+      );
+    }
+
+    const jsFiles = files.filter((file) => file?.endsWith('.js'));
+
+    for (const file of jsFiles) {
+      // Ensure the bundle does not contain a source map reference
+      const jsBundle = fs.readFileSync(path.join(outputDir, file!), 'utf8');
+      expect(jsBundle).toMatch(
+        /^\/\/\# sourceMappingURL=\/_expo\/static\/js\/web\/index-.*\.map$/gm
+      );
+      expect(jsBundle).toMatch(/^\/\/\# sourceURL=\/_expo\/static\/js\/web\/index-.*\.js$/gm);
+      const mapFile = jsBundle.match(
+        /^\/\/\# sourceMappingURL=(\/_expo\/static\/js\/web\/index-.*\.map)$/m
+      )?.[1];
+
+      expect(fs.existsSync(path.join(outputDir, mapFile!))).toBe(true);
+    }
+  });
 
   it(
     'can use environment variables',
@@ -163,7 +250,7 @@ describe('static-rendering', () => {
       const indexHtml = await getPageHtml(outputDir, 'index.html');
       expect(indexHtml.querySelectorAll('html > head > style')?.length).toBe(
         // React Native and Expo resets
-        2
+        3
       );
       // The Expo style reset
       expect(indexHtml.querySelector('html > head > style#expo-reset')?.innerHTML).toEqual(
@@ -183,9 +270,12 @@ describe('static-rendering', () => {
       // Unfortunately, the CSS is injected in every page for now since we don't have bundle splitting.
       const indexHtml = await getPageHtml(outputDir, 'index.html');
 
-      const links = indexHtml.querySelectorAll('html > head > link');
+      const links = indexHtml.querySelectorAll('html > head > link').filter((link) => {
+        // Fonts are tested elsewhere
+        return link.attributes.as !== 'font';
+      });
       expect(links.length).toBe(
-        // Global CSS and CSS Module
+        // Global CSS, CSS Module
         4
       );
 
@@ -223,6 +313,48 @@ describe('static-rendering', () => {
       expect(
         styledHtml.querySelector('html > body div[data-testid="styled-text"]')?.attributes.class
       ).toMatch('HPV33q_text');
+    },
+    5 * 1000
+  );
+
+  it(
+    'statically extracts fonts',
+    async () => {
+      // <style id="expo-generated-fonts" type="text/css">@font-face{font-family:sweet;src:url(/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07);font-display:auto}</style><link rel="preload" href="/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07" as="font" crossorigin="" />
+      // Unfortunately, the CSS is injected in every page for now since we don't have bundle splitting.
+      const indexHtml = await getPageHtml(outputDir, 'index.html');
+
+      const links = indexHtml.querySelectorAll('html > head > link[as="font"]');
+      expect(links.length).toBe(1);
+      expect(links[0].attributes.href).toBe(
+        '/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07'
+      );
+
+      expect(links[0].toString()).toMatch(
+        /<link rel="preload" href="\/assets\/__e2e__\/static-rendering\/sweet\.ttf\?platform=web&hash=[\d\w]+" as="font" crossorigin="" >/
+      );
+
+      expect(
+        fs.readFileSync(
+          path.join(outputDir, links[0].attributes.href.replace(/\?.*$/, '')),
+          'utf-8'
+        )
+      ).toBeDefined();
+
+      // Ensure the font is used
+      expect(indexHtml.querySelector('div[data-testid="index-text"]')?.attributes.style).toMatch(
+        'font-family:sweet'
+      );
+
+      // Fonts have proper splitting due to how they're loaded during static rendering, we should test
+      // that certain fonts only show on the about page.
+      const aboutHtml = await getPageHtml(outputDir, 'about.html');
+
+      const aboutLinks = aboutHtml.querySelectorAll('html > head > link[as="font"]');
+      expect(aboutLinks.length).toBe(2);
+      expect(aboutLinks[1].attributes.href).toMatch(
+        /react-native-vector-icons\/Fonts\/EvilIcons\.ttf/
+      );
     },
     5 * 1000
   );
@@ -341,19 +473,6 @@ describe('single-page', () => {
           return path.posix.relative(outputDir, entry.path);
         })
         .filter(Boolean);
-
-      const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
-
-      expect(metadata).toEqual({
-        bundler: 'metro',
-        fileMetadata: {
-          web: {
-            assets: expect.anything(),
-            bundle: expect.stringMatching(/bundles\/web-.*\.js/),
-          },
-        },
-        version: 0,
-      });
 
       // The wrapper should not be included as a route.
       expect(files).not.toContain('+html.html');

@@ -113,7 +113,18 @@ public final class UpdatesModule: Module {
           ])
           return
         }
-        promise.resolve(["isAvailable": false, "isRollBackToEmbedded": false])
+        if result["reason"] != nil {
+          promise.resolve([
+            "isAvailable": false,
+            "isRollBackToEmbedded": false,
+            "reason": result["reason"]
+          ])
+          return
+        }
+        promise.resolve([
+          "isAvailable": false,
+          "isRollBackToEmbedded": false
+        ])
       }
     }
 
@@ -197,7 +208,7 @@ public final class UpdatesModule: Module {
       }
     }
 
-    // Getter used internally by @expo/use-updates useUpdates()
+    // Getter used internally by useUpdates()
     // to initialize its state
     AsyncFunction("getNativeStateMachineContextAsync") { (promise: Promise) in
       let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true

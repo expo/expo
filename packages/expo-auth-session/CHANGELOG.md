@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 5.2.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Fix for breaking change in expo-constants to only support new manifests. ([#24267](https://github.com/expo/expo/pull/24267) by [@wschurman](https://github.com/wschurman))
+
+## 5.1.2 — 2023-09-04
+
+_This version does not introduce any user-facing changes._
+
 ## 5.1.1 — 2023-08-02
 
 _This version does not introduce any user-facing changes._

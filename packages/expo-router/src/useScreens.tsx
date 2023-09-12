@@ -1,3 +1,10 @@
+import type {
+  EventMapBase,
+  NavigationState,
+  ParamListBase,
+  RouteProp,
+  ScreenListeners,
+} from '@react-navigation/native';
 import React from 'react';
 
 import {
@@ -14,7 +21,11 @@ import { EmptyRoute } from './views/EmptyRoute';
 import { SuspenseFallback } from './views/SuspenseFallback';
 import { Try } from './views/Try';
 
-export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>> = {
+export type ScreenProps<
+  TOptions extends Record<string, any> = Record<string, any>,
+  State extends NavigationState = NavigationState,
+  EventMap extends EventMapBase = EventMapBase,
+> = {
   /** Name is required when used inside a Layout component. */
   name?: string;
   /**
@@ -25,8 +36,12 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
   initialParams?: { [key: string]: any };
   options?: TOptions;
 
-  // TODO: types
-  listeners?: any;
+  listeners?:
+    | ScreenListeners<State, EventMap>
+    | ((prop: {
+        route: RouteProp<ParamListBase, string>;
+        navigation: any;
+      }) => ScreenListeners<State, EventMap>);
 
   getId?: ({ params }: { params?: Record<string, any> | undefined }) => string | undefined;
 };
@@ -169,9 +184,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       </React.Suspense>
     );
   } else {
+    const res = value.loadRoute();
+    const Component = fromImport(res).default;
     const SyncComponent = React.forwardRef((props, ref) => {
-      const res = value.loadRoute();
-      const Component = fromImport(res).default;
       return <Component {...props} ref={ref} />;
     });
 

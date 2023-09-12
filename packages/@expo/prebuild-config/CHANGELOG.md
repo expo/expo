@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 6.4.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Remove classic updates. ([#24066](https://github.com/expo/expo/pull/24066) by [@wschurman](https://github.com/wschurman))
+
 ## 6.3.0 — 2023-07-28
 
 _This version does not introduce any user-facing changes._

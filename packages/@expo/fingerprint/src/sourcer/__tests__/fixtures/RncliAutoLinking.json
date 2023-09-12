@@ -1,24 +1,24 @@
 {
-  "root": "/app",
-  "reactNativePath": "/app/node_modules/react-native",
+  "root": "/root/apps/demo",
+  "reactNativePath": "/root/node_modules/react-native",
   "dependencies": {
     "react-native-reanimated": {
-      "root": "/app/node_modules/react-native-reanimated",
+      "root": "/root/node_modules/react-native-reanimated",
       "name": "react-native-reanimated",
       "platforms": {
         "ios": {
-          "podspecPath": "/app/node_modules/react-native-reanimated/RNReanimated.podspec",
+          "podspecPath": "/root/node_modules/react-native-reanimated/RNReanimated.podspec",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/app/node_modules/react-native-reanimated/android",
+          "sourceDir": "/root/node_modules/react-native-reanimated/android",
           "packageImportPath": "import com.swmansion.reanimated.ReanimatedPackage;",
           "packageInstance": "new ReanimatedPackage()",
           "buildTypes": [],
           "componentDescriptors": [],
-          "androidMkPath": "/app/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/Android.mk",
-          "cmakeListsPath": "/app/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt"
+          "androidMkPath": "/root/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/Android.mk",
+          "cmakeListsPath": "/root/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt"
         }
       }
     }
@@ -150,14 +150,14 @@
   },
   "project": {
     "ios": {
-      "sourceDir": "/app/ios",
+      "sourceDir": "/root/apps/demo/ios",
       "xcodeProject": {
         "name": "RN070.xcworkspace",
         "isWorkspace": true
       }
     },
     "android": {
-      "sourceDir": "/app/android",
+      "sourceDir": "/root/apps/demo/android",
       "appName": "app",
       "packageName": "com.rn070"
     }

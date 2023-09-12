@@ -59,11 +59,10 @@ describe('Android Updates config', () => {
         },
       },
     };
-    androidManifestJson = Updates.setUpdatesConfig(
+    androidManifestJson = await Updates.setUpdatesConfigAsync(
       '/app',
       config,
       androidManifestJson,
-      'user',
       '0.11.0'
     );
     const mainApplication = getMainApplication(androidManifestJson)!;
@@ -131,53 +130,6 @@ describe('Android Updates config', () => {
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'
     );
     expect(runtimeVersion).toHaveLength(0);
-  });
-
-  it('set correct values in AndroidManifest.xml for useClassicUpdates', async () => {
-    vol.fromJSON({
-      '/app/hello': fsReal.readFileSync(sampleCodeSigningCertificatePath, 'utf-8'),
-    });
-
-    let androidManifestJson = await getFixtureManifestAsync();
-    const config: ExpoConfig = {
-      name: 'foo',
-      sdkVersion: '37.0.0',
-      slug: 'my-app',
-      owner: 'owner',
-      updates: {
-        useClassicUpdates: true,
-      },
-    };
-    androidManifestJson = Updates.setUpdatesConfig(
-      '/app',
-      config,
-      androidManifestJson,
-      'user',
-      '0.11.0'
-    );
-    const mainApplication = getMainApplication(androidManifestJson)!;
-
-    if (!mainApplication['meta-data']) {
-      throw new Error('No meta-data found in AndroidManifest.xml');
-    }
-
-    const updateUrl = mainApplication['meta-data'].filter(
-      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATE_URL'
-    );
-    expect(updateUrl).toHaveLength(1);
-    expect(updateUrl[0].$['android:value']).toMatch('https://exp.host/@owner/my-app');
-
-    const sdkVersion = mainApplication['meta-data'].filter(
-      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_SDK_VERSION'
-    );
-    expect(sdkVersion).toHaveLength(1);
-    expect(sdkVersion[0].$['android:value']).toMatch('37.0.0');
-
-    const enabled = mainApplication['meta-data'].filter(
-      (e) => e.$['android:name'] === 'expo.modules.updates.ENABLED'
-    );
-    expect(enabled).toHaveLength(1);
-    expect(enabled[0].$['android:value']).toMatch('true');
   });
 
   describe(Updates.ensureBuildGradleContainsConfigurationScript, () => {
@@ -260,11 +212,10 @@ describe('Android Updates config', () => {
           policy: 'appVersion',
         },
       };
-      androidManifestJson = Updates.setUpdatesConfig(
+      androidManifestJson = await Updates.setUpdatesConfigAsync(
         '/app',
         config,
         androidManifestJson,
-        'user',
         '0.11.0'
       );
       const mainApplication = getMainApplication(androidManifestJson);
@@ -283,16 +234,22 @@ describe('Android Updates config', () => {
       const stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
       const config = {
         runtimeVersion: '1.10',
+        modRequest: {
+          projectRoot: '/',
+        },
       };
-      Updates.applyRuntimeVersionFromConfig(config, stringsJSON);
+      await Updates.applyRuntimeVersionFromConfigAsync(config, stringsJSON);
       expect(format(stringsJSON)).toEqual(
         '<resources>\n  <string name="expo_runtime_version">1.10</string>\n</resources>'
       );
 
       const config2 = {
         sdkVersion: '1.10',
+        modRequest: {
+          projectRoot: '/',
+        },
       };
-      Updates.applyRuntimeVersionFromConfig(config2, stringsJSON);
+      await Updates.applyRuntimeVersionFromConfigAsync(config2, stringsJSON);
       expect(format(stringsJSON)).toEqual('<resources/>');
     });
 

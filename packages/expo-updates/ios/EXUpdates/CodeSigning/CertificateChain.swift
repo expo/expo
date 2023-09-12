@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
-import ASN1Decoder
 
 internal typealias Certificate = (SecCertificate, X509Certificate)
 

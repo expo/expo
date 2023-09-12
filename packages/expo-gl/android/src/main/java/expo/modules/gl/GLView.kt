@@ -20,8 +20,8 @@ class GLView(context: Context, appContext: AppContext) : TextureView(context), S
   private var onSurfaceTextureWasCalledWithZeroSize = false
   private var glContext = GLContext(
     appContext
-      .legacyModuleRegistry
-      .getExportedModuleOfClass(GLObjectManagerModule::class.java) as GLObjectManagerModule
+      .registry
+      .getModule<GLObjectManagerModule>()
   )
 
   private val exglContextId: Int

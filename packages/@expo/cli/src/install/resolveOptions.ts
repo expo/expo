@@ -16,8 +16,8 @@ function resolveOptions(options: Options): Options {
   if (options.fix && options.check) {
     throw new CommandError('BAD_ARGS', 'Specify at most one of: --check, --fix');
   }
-  if ([options.npm, options.pnpm, options.yarn].filter(Boolean).length > 1) {
-    throw new CommandError('BAD_ARGS', 'Specify at most one of: --bun, --npm, --pnpm, --yarn');
+  if ([options.npm, options.pnpm, options.yarn, options.bun].filter(Boolean).length > 1) {
+    throw new CommandError('BAD_ARGS', 'Specify at most one of: --npm, --pnpm, --yarn, --bun');
   }
   return {
     ...options,
@@ -30,7 +30,7 @@ export async function resolveArgsAsync(
   const { variadic, extras, flags } = parseVariadicArguments(argv);
 
   assertUnexpectedVariadicFlags(
-    ['--bun', '--check', '--fix', '--npm', '--pnpm', '--yarn'],
+    ['--check', '--fix', '--npm', '--pnpm', '--yarn', '--bun'],
     { variadic, extras, flags },
     'npx expo install'
   );

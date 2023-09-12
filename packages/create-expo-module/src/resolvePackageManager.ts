@@ -45,6 +45,8 @@ export function formatRunCommand(manager: PackageManagerName, cmd: string) {
       return `pnpm run ${cmd}`;
     case 'yarn':
       return `yarn ${cmd}`;
+    case 'bun':
+      return `bun run ${cmd}`;
     case 'npm':
     default:
       return `npm run ${cmd}`;

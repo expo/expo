@@ -1,0 +1,7 @@
+{
+  "name": "expo-background-fetch",
+  "platforms": ["ios", "android"],
+  "android": {
+    "modules": ["expo.modules.backgroundfetch.BackgroundFetchModule"]
+  }
+}

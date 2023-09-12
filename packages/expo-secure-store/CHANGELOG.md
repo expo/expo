@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 12.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- [Android] Migrated to Expo Modules API. ([#23804](https://github.com/expo/expo/pull/23804) by [@behenate](https://github.com/behenate))
+- [Android] It is now possible to store values that require authentication and ones that don't under the same `keychainService`. ([#23804](https://github.com/expo/expo/pull/23804) by [@behenate](https://github.com/behenate))
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
 ## 12.4.1 — 2023-08-02
 
 _This version does not introduce any user-facing changes._

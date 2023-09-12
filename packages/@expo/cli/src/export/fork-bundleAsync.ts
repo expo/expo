@@ -1,23 +1,25 @@
 import { ExpoConfig, getConfigFilePaths, Platform } from '@expo/config';
+import type { LoadOptions } from '@expo/metro-config';
+import chalk from 'chalk';
+import Metro, { AssetData } from 'metro';
+import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
+import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
+import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
+import { ConfigT } from 'metro-config';
+
 import {
   buildHermesBundleAsync,
   isEnableHermesManaged,
   maybeThrowFromInconsistentEngineAsync,
-} from '@expo/dev-server/build/HermesBundler';
+} from './exportHermes';
+import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
+import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import {
   importMetroFromProject,
   importMetroServerFromProject,
-} from '@expo/dev-server/build/metro/importMetroFromProject';
-import type { LoadOptions } from '@expo/metro-config';
-import chalk from 'chalk';
-import Metro from 'metro';
-import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
-
-import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
-import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
+} from '../start/server/metro/resolveFromProject';
 
 export type MetroDevServerOptions = LoadOptions & {
-  logger: import('@expo/bunyan');
   quiet?: boolean;
 };
 export type BundleOptions = {
@@ -40,8 +42,6 @@ export type BundleOutput = {
 };
 
 let nextBuildID = 0;
-
-// Fork of @expo/dev-server bundleAsync to add Metro logging back.
 
 async function assertEngineMismatchAsync(projectRoot: string, exp: ExpoConfig, platform: Platform) {
   const isHermesManaged = isEnableHermesManaged(exp, platform);
@@ -73,6 +73,7 @@ export async function bundleAsync(
 
   const { config, reporter } = await loadMetroConfigAsync(projectRoot, options, {
     exp: expoConfig,
+    isExporting: true,
   });
 
   const metroServer = await metro.runMetro(config, {
@@ -115,7 +116,8 @@ export async function bundleAsync(
     try {
       const { code, map } = await metroServer.build(bundleOptions);
       const [assets, css] = await Promise.all([
-        metroServer.getAssets(bundleOptions),
+        getAssets(metroServer, bundleOptions),
+        // metroServer.getAssets(bundleOptions),
         getCssModulesFromBundler(config, metroServer.getBundler(), bundleOptions),
       ]);
 
@@ -175,4 +177,32 @@ export async function bundleAsync(
   } finally {
     metroServer.end();
   }
+}
+
+// Forked out of Metro because the `this._getServerRootDir()` doesn't match the development
+// behavior.
+export async function getAssets(
+  metro: Metro.Server,
+  options: MetroBundleOptions
+): Promise<readonly AssetData[]> {
+  const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions(options);
+
+  // @ts-expect-error: _bundler isn't exposed on the type.
+  const dependencies = await metro._bundler.getDependencies(
+    [entryFile],
+    transformOptions,
+    resolverOptions,
+    { onProgress, shallow: false, lazy: false }
+  );
+
+  // @ts-expect-error
+  const _config = metro._config as ConfigT;
+
+  return await getMetroAssets(dependencies, {
+    processModuleFilter: _config.serializer.processModuleFilter,
+    assetPlugins: _config.transformer.assetPlugins,
+    platform: transformOptions.platform!,
+    projectRoot: _config.projectRoot, // this._getServerRootDir(),
+    publicPath: _config.transformer.publicPath,
+  });
 }

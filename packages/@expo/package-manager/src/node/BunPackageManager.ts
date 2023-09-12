@@ -1,5 +1,4 @@
 import { BasePackageManager } from './BasePackageManager';
-import env from '../utils/env';
 import { findYarnOrNpmWorkspaceRoot, BUN_LOCK_FILE } from '../utils/nodeWorkspaces';
 
 export class BunPackageManager extends BasePackageManager {
@@ -22,11 +21,6 @@ export class BunPackageManager extends BasePackageManager {
   }
 
   installAsync(namesOrFlags: string[] = []) {
-    if (env.CI && !namesOrFlags.join(' ').includes('frozen-lockfile')) {
-      // Remove --frozen-lockfile if it's already set
-      namesOrFlags = namesOrFlags.filter((flag) => flag !== '--frozen-lockfile');
-    }
-
     return this.runAsync(['install', ...namesOrFlags]);
   }
 
@@ -59,7 +53,7 @@ export class BunPackageManager extends BasePackageManager {
   }
 
   removeDevAsync(namesOrFlags: string[]) {
-    return this.runAsync(['remove', '--dev', ...namesOrFlags]);
+    return this.runAsync(['remove', ...namesOrFlags]);
   }
 
   removeGlobalAsync(namesOrFlags: string[]) {

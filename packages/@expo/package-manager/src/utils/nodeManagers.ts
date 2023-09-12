@@ -8,6 +8,7 @@ import {
   NPM_LOCK_FILE,
   PNPM_LOCK_FILE,
   YARN_LOCK_FILE,
+  BUN_LOCK_FILE,
 } from './nodeWorkspaces';
 import { PackageManagerOptions } from '../PackageManager';
 import { BunPackageManager } from '../node/BunPackageManager';
@@ -71,6 +72,7 @@ export function resolvePackageManager(
     npm: NPM_LOCK_FILE,
     pnpm: PNPM_LOCK_FILE,
     yarn: YARN_LOCK_FILE,
+    bun: BUN_LOCK_FILE,
   };
 
   if (preferredManager) {
@@ -118,6 +120,8 @@ export function createForProject(
       return new PnpmPackageManager({ cwd: projectRoot, ...options });
     case 'yarn':
       return new YarnPackageManager({ cwd: projectRoot, ...options });
+    case 'bun':
+      return new BunPackageManager({ cwd: projectRoot, ...options });
     default:
       return new NpmPackageManager({ cwd: projectRoot, ...options });
   }

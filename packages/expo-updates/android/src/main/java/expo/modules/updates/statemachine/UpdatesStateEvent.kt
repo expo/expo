@@ -1,6 +1,7 @@
 package expo.modules.updates.statemachine
 
 import org.json.JSONObject
+import java.util.Date
 
 /**
 Structure representing an event that can be sent to the machine.
@@ -20,9 +21,9 @@ sealed class UpdatesStateEvent(val type: UpdatesStateEventType) {
         return UpdatesStateError(errorMessage)
       }
   }
-  class CheckCompleteUnavailable : UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable)
+  class CheckCompleteUnavailable() : UpdatesStateEvent(UpdatesStateEventType.CheckCompleteUnavailable)
   class CheckCompleteWithUpdate(val manifest: JSONObject) : UpdatesStateEvent(UpdatesStateEventType.CheckCompleteAvailable)
-  class CheckCompleteWithRollback : UpdatesStateEvent(UpdatesStateEventType.CheckCompleteAvailable)
+  class CheckCompleteWithRollback(val commitTime: Date) : UpdatesStateEvent(UpdatesStateEventType.CheckCompleteAvailable)
   class DownloadComplete : UpdatesStateEvent(UpdatesStateEventType.DownloadComplete)
   class DownloadCompleteWithUpdate(val manifest: JSONObject) : UpdatesStateEvent(UpdatesStateEventType.DownloadComplete)
   class DownloadCompleteWithRollback : UpdatesStateEvent(UpdatesStateEventType.DownloadComplete)

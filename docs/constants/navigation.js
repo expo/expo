@@ -82,6 +82,7 @@ const home = [
         makePage('routing/layouts.mdx'),
         makePage('routing/appearance.mdx'),
         makePage('routing/error-handling.mdx'),
+        makePage('routing/next-steps.mdx'),
       ],
       { expanded: false }
     ),
@@ -93,7 +94,6 @@ const home = [
         makePage('develop/development-builds/create-a-build.mdx'),
         makePage('develop/development-builds/use-development-builds.mdx'),
         makePage('develop/development-builds/share-with-your-team.mdx'),
-        makePage('develop/development-builds/parallel-installation.mdx'),
         makePage('develop/development-builds/development-workflows.mdx'),
         makePage('develop/development-builds/next-steps.mdx'),
       ],
@@ -197,6 +197,7 @@ const general = [
       makePage('router/reference/authentication.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
       makePage('router/reference/src-directory.mdx'),
+      makePage('router/reference/testing.mdx'),
       makePage('router/reference/troubleshooting.mdx'),
       makePage('router/reference/faq.mdx'),
     ]),
