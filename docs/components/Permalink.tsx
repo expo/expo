@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { LinkBase } from '@expo/styleguide';
 import * as React from 'react';
-import tippy from 'tippy.js';
+import tippy, { roundArrow } from 'tippy.js';
 
 import { AdditionalProps } from '~/common/headingManager';
 import PermalinkIcon from '~/components/icons/Permalink';
