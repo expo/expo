@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed task ':expo-dev-menu:packageReleaseAssets' uses this output of task ':expo-dev-menu:copyAssets' without declaring an explicit or implicit dependency on Android.
+
 ### 💡 Others
 
 ## 4.1.0 — 2023-09-04
