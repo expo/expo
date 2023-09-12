@@ -4,17 +4,11 @@ import { PropsWithChildren } from 'react';
 
 import { Collapsible } from '.';
 
-import { HeadingManager, HeadingType } from '~/common/headingManager';
+import { HeadingManager } from '~/common/headingManager';
 import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
 
 const prepareHeadingManager = () => {
   const headingManager = new HeadingManager(new GithubSlugger(), { headings: [] });
-  headingManager.addHeading('Base level heading', undefined, {});
-  headingManager.addHeading('Level 3 subheading', 3, {});
-  headingManager.addHeading('Code heading depth 1', 0, {
-    sidebarDepth: 1,
-    sidebarType: HeadingType.InlineCode,
-  });
 
   return headingManager;
 };
