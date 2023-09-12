@@ -69,8 +69,10 @@ describe('exports static', () => {
     );
 
     afterAll(async () => {
-      server?.kill();
-      server?.unref();
+      if (server) {
+        server.kill();
+        await server;
+      }
     });
 
     it(`can serve up index html`, async () => {
