@@ -3,7 +3,7 @@ package expo.modules.blur
 import expo.modules.kotlin.types.Enumerable
 
 enum class TintStyle(val value: String) : Enumerable {
-  SYSTEM_DEFAULT("default"),
+  DEFAULT("default"),
   EXTRA_LIGHT("extraLight"),
   LIGHT("light"),
   DARK("dark"),
@@ -34,9 +34,9 @@ enum class TintStyle(val value: String) : Enumerable {
       SYSTEM_THICK_MATERIAL_LIGHT -> LIGHT.toColorInt(blurRadius)
 
       PROMINENT,
-      SYSTEM_DEFAULT,
+      DEFAULT,
       SYSTEM_MATERIAL,
-      -> SYSTEM_DEFAULT.toColorInt(blurRadius)
+      -> DEFAULT.toColorInt(blurRadius)
 
       DARK,
       SYSTEM_MATERIAL_DARK -> DARK.toColorInt(blurRadius)

@@ -1,7 +1,7 @@
 import ExpoModulesCore
 
 public enum TintStyle: String, Enumerable {
-  case systemDefault = "default"
+  case `default`
   case extraLight
   case light
   case dark
@@ -25,8 +25,8 @@ public enum TintStyle: String, Enumerable {
 
   func toBlurEffect() -> UIBlurEffect.Style {
     switch self {
-    case .systemDefault:
-      return .light
+    case .default:
+      return .regular
     case .extraLight:
       return .extraLight
     case .light:

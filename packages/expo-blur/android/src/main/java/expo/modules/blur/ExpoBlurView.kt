@@ -15,7 +15,7 @@ import expo.modules.kotlin.views.ExpoView
 class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   private var blurReduction = 4f
   private var blurRadius = 50f
-  internal var tint: TintStyle = TintStyle.SYSTEM_DEFAULT
+  internal var tint: TintStyle = TintStyle.DEFAULT
 
   private val blurView = BlurView(context).also {
     it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)

@@ -20,7 +20,7 @@ final class BlurEffectView: UIVisualEffectView {
     }
   }
 
-  private var visualEffect: UIVisualEffect = UIBlurEffect(style: .light) {
+  private var visualEffect: UIVisualEffect = UIBlurEffect(style: TintStyle.default.toBlurEffect()) {
     didSet {
       setNeedsDisplay()
     }
