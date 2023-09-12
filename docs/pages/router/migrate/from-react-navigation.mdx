@@ -304,7 +304,7 @@ Migrate the following `<NavigationContainer />` props:
 
 #### `initialState`
 
-In Expo Router, you can rehydrate your application state from a route string (for example, `/user/evanbacon`). Use [redirects](/docs/features/linking#redirect) to handle initial states. See [shared routes](/router/advanced/shared-routes/) for advanced redirects.
+In Expo Router, you can rehydrate your application state from a route string (for example, `/user/evanbacon`). Use [redirects](/router/reference/redirects/) to handle initial states. See [shared routes](/router/advanced/shared-routes/) for advanced redirects.
 
 Avoid using this pattern in favor of deep linking (for example, a user opens your app to `/profile` rather than from the home screen) as it is most analogous to the web. If an app crashes due to a particular screen, it's best to avoid automatically navigating back to that exact screen when the app starts as it may require reinstalling the app to fix.
 
@@ -332,7 +332,7 @@ The [`linking`](https://reactnavigation.org/docs/navigation-container/#linking) 
 
 #### `fallback`
 
-The [`fallback`](https://reactnavigation.org/docs/navigation-container/#fallback) prop is automatically handled by Expo Router. Learn more in the [Splash Screen guide](/docs/features/splash.md).
+The [`fallback`](https://reactnavigation.org/docs/navigation-container/#fallback) prop is automatically handled by Expo Router. Learn more in the [Splash Screen](/routing/appearance/#splash-screen) guide.
 
 #### `theme`
 

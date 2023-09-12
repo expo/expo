@@ -162,9 +162,6 @@ redirects[tutorial/planning]=tutorial/introduction/
 redirects[tutorial/sharing]=tutorial/introduction/
 redirects[tutorial/text]=tutorial/introduction/
 
-# Push notifications
-redirects[push-notifications/using-fcm/]=push-notifications/push-notifications-setup/
-
 # EAS Update
 redirects[technical-specs/expo-updates-0/]=archive/technical-specs/expo-updates-0/
 redirects[eas-update/developing-with-eas-update/]=eas-update/develop-faster/
