@@ -2,7 +2,7 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
   void apply(Project project) {
     // For compatibility reasons the plugin needs to declare that it provides common build.gradle
     // options for the modules
-    project.rootProject.ext.providesDefaultConfig = {
+    project.rootProject.ext.expoProvidesDefaultConfig = {
       true
     }
 
