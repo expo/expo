@@ -152,6 +152,7 @@ async function benchmarkFiles(benchmarkOptions: BenchmarkOptions): Promise<void>
     console.log(`Testing against ${numLines(benchmarkOptions)} LOC`);
   }
 
+  process.env.BABEL_ENV = 'development';
   process.env.NODE_ENV = 'development';
 
   await runBenchmark(
