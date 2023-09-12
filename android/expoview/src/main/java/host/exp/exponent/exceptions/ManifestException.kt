@@ -3,6 +3,7 @@ package host.exp.exponent.exceptions
 
 import host.exp.exponent.Constants
 import host.exp.expoview.ExpoViewBuildConfig
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.lang.Exception
@@ -16,6 +17,7 @@ class ManifestException : ExponentException {
         when (it.getString("errorCode")) {
           "EXPERIENCE_SDK_VERSION_OUTDATED" -> "Project is incompatible with this version of Expo Go"
           "EXPERIENCE_SDK_VERSION_TOO_NEW" -> "Project is incompatible with this version of Expo Go"
+          "SNACK_NOT_FOUND_FOR_SDK_VERSION" -> "This Snack is incompatible with this version of Expo Go"
           else -> null
         }
       } catch (e: JSONException) {
@@ -90,9 +92,27 @@ class ManifestException : ExponentException {
               "SNACK_RUNTIME_NOT_RELEASED" ->
                 formattedMessage =
                   rawMessage // From server: `The Snack runtime for corresponding sdk version of this Snack ("${sdkVersions[0]}") is not released.`,
-              "SNACK_NOT_FOUND_FOR_SDK_VERSION" ->
-                formattedMessage =
-                  rawMessage // From server: `The snack "${fullName}" was found, but wasn't released for platform "${platform}" and sdk version "${sdkVersions[0]}".`
+              "SNACK_NOT_FOUND_FOR_SDK_VERSION" -> run closure@{
+                val metadata = errorJSON!!.getJSONObject("metadata")
+                val fullName = metadata["fullName"] ?: ""
+                val snackSdkVersion = (metadata["sdkVersions"] as? JSONArray)?.get(0) as? String ?: "unknown"
+
+                if (snackSdkVersion == "unknown") {
+                  formattedMessage = rawMessage
+                  return@closure
+                }
+                val snackSdkVersionValue = Integer.parseInt(snackSdkVersion.substring(0, snackSdkVersion.indexOf(".")))
+                val supportedSdks = Constants.SDK_VERSIONS_LIST.map {
+                  it.substring(0, it.indexOf('.')).toInt()
+                }.sorted()
+                formattedMessage = "The snack \"${fullName}\" was found, but it is not compatible with your version of Expo Go. It was released for SDK $snackSdkVersionValue, but your Expo Go supports only SDKs ${supportedSdks.joinToString(", ")}."
+                formattedMessage += if (supportedSdks.last() < snackSdkVersionValue) {
+                  "<br><br>You need to update your Expo Go app in order to run this Snack."
+                } else {
+                  "<br><br>Snack needs to be upgraded to a current SDK version. To do it, open the project at <a href='https://snack.expo.dev'>Expo Snack website</a>. It will be automatically upgraded to a supported SDK version."
+                }
+                formattedMessage += "<br><br><a href='https://docs.expo.dev/get-started/expo-go/#sdk-versions'>Learn more about SDK versions and Expo Go</a>."
+              }
             }
           } catch (e: JSONException) {
             return formattedMessage
