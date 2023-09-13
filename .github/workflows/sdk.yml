@@ -51,7 +51,9 @@ jobs:
 
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: bun install --yarn # bun bug: frozen lockfile seems to change on every install with bun
+        # bun bug: frozen lockfile seems to change on every install with bun
+        # bun bug: scripts seems to get into an infinite loop somehow
+        run: bun install --yarn --ignore-scripts
 
       - name: 🧐 Check packages
         run: |
