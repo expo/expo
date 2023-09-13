@@ -10670,7 +10670,7 @@ expo-constants@~14.5.0:
     "@expo/config" "~8.2.0"
     uuid "^3.3.2"
 
-expo-constants@~15.0.0:
+expo-constants@*, expo-constants@~15.0.0:
   version "15.0.0"
   resolved "https://registry.npmjs.org/expo-constants/-/expo-constants-15.0.0.tgz"
   integrity sha512-HDg5irjqv3GWDmVtaVV+tjhEKgYuiN8V2tb6l1R22SfVvka3rb1qMA+/mqO5unaBOVaWZ3kRCrA5qn9buUoeJw==
@@ -10678,7 +10678,7 @@ expo-constants@~15.0.0:
     "@expo/config" "~8.3.0"
     uuid "^3.3.2"
 
-expo-constants@*, "expo-constants@packages/expo-constants":
+"expo-constants@packages/expo-constants":
   version "workspace:packages/expo-constants"
   resolved "workspace:packages/expo-constants"
   devDependencies:
@@ -11067,7 +11067,7 @@ expo-linear-gradient@~12.5.0:
     "@testing-library/react-native" "^11.3.0"
     expo-module-scripts "^3.0.0"
 
-expo-linking@~6.0.0:
+expo-linking@*, expo-linking@~6.0.0:
   version "6.0.0"
   resolved "https://registry.npmjs.org/expo-linking/-/expo-linking-6.0.0.tgz"
   integrity sha512-BVj+9yfMfQg1r23uQOES3Y47XdigKV0Qg0jJ5zP+3SO/mZ98s3r5wASOGLhujvO9/SqOh/BdotcTsO9sasxCag==
@@ -11078,7 +11078,7 @@ expo-linking@~6.0.0:
     qs "^6.11.0"
     url-parse "^1.5.9"
 
-expo-linking@*, "expo-linking@packages/expo-linking":
+"expo-linking@packages/expo-linking":
   version "workspace:packages/expo-linking"
   resolved "workspace:packages/expo-linking"
   devDependencies:

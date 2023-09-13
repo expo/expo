@@ -51,7 +51,7 @@ jobs:
 
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: bun install --yarn --frozen-lockfile
+        run: bun install --yarn # bun bug: frozen lockfile seems to change on every install with bun
 
       - name: 🔎 Type Check CLI
         run: bun run typecheck
