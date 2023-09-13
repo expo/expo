@@ -22,21 +22,29 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
+
+      - name: ⬢ Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: 1.x
+
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-tools: 'true'
+
       - name: 🧶 Install modules in tools dir
         if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
-        run: yarn install --ignore-scripts --frozen-lockfile
+        run: bun install --yarn --ignore-scripts --frozen-lockfile
         working-directory: tools
+
       - name: 🛠 Compile TypeScript sources
-        run: yarn build
+        run: bun run build
         working-directory: tools
+
       - name: 🛠 Typecheck sources
-        run: yarn tsc --noEmit
+        run: bun tsc --noEmit
         working-directory: tools
+
       - name: 🚨 Lint TypeScript sources
-        run: yarn lint --max-warnings 0
+        run: bun run lint --max-warnings 0
         working-directory: tools
