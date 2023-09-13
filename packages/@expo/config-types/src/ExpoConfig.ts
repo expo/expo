@@ -257,6 +257,10 @@ export interface ExpoConfig {
      */
     basePath?: string;
     /**
+     * If true, indicates that this project does not support tablets or handsets, and only supports Apple TV and Android TV
+     */
+    supportsTVOnly?: boolean;
+    /**
      * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
      */
     tsconfigPaths?: boolean;
