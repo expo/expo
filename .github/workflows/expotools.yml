@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 100
 
       - name: ⬢ Setup Bun
         uses: oven-sh/setup-bun@v1
