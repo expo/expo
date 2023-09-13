@@ -48,12 +48,10 @@ jobs:
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-workspace: 'true'
 
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: bun install --yarn # bun bug: frozen lockfile seems to change on every install with bun
 
       - name: 🧐 Check packages
         run: |
