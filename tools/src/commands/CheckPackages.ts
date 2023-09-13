@@ -18,10 +18,10 @@ export default (program: Command) => {
       'main'
     )
     .option('-a, --all', 'Whether to check all packages and ignore `--since` option.', false)
-    .option('--no-build', 'Whether to skip `yarn build` check.', false)
-    .option('--no-test', 'Whether to skip `yarn test` check.', false)
-    .option('--no-lint', 'Whether to skip `yarn lint` check.', false)
-    .option('--fix-lint', 'Whether to run `yarn lint --fix` instead of `yarn lint`.', false)
+    .option('--no-build', 'Whether to skip `bun run build` check.', false)
+    .option('--no-test', 'Whether to skip `bun run test` check.', false)
+    .option('--no-lint', 'Whether to skip `bun run lint` check.', false)
+    .option('--fix-lint', 'Whether to run `bun run lint --fix` instead of `bun run lint`.', false)
     .option(
       '--no-uniformity-check',
       'Whether to check the uniformity of committed and generated build files.',
