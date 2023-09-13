@@ -1,10 +1,10 @@
 import fs from 'fs-extra';
 import path from 'path';
 
+import { getVersionedDirectory, getVersionPrefix } from './utils';
 import { IOS_DIR } from '../../Constants';
 import { copyFileWithTransformsAsync } from '../../Transforms';
 import { execAll } from '../../Utils';
-import { getVersionedDirectory, getVersionPrefix } from './utils';
 
 // Name of the pod containing versioned modules provider.
 export const MODULES_PROVIDER_POD_NAME = 'ExpoModulesProvider';

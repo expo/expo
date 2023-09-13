@@ -8,19 +8,6 @@ import inquirer from 'inquirer';
 import path from 'path';
 import semver from 'semver';
 
-import { runReactNativeCodegenAsync } from '../../Codegen';
-import {
-  EXPO_DIR,
-  IOS_DIR,
-  REACT_NATIVE_SUBMODULE_DIR,
-  REACT_NATIVE_SUBMODULE_MONOREPO_ROOT,
-  VERSIONED_RN_IOS_DIR,
-} from '../../Constants';
-import logger from '../../Logger';
-import { getListOfPackagesAsync, Package } from '../../Packages';
-import { copyFileWithTransformsAsync } from '../../Transforms';
-import type { FileTransforms, StringTransform } from '../../Transforms.types';
-import { renderExpoKitPodspecAsync } from '../../dynamic-macros/IosMacrosGenerator';
 import { runTransformPipelineAsync } from './transforms';
 import { injectMacros } from './transforms/injectMacros';
 import { kernelFilesTransforms } from './transforms/kernelFilesTransforms';
@@ -37,6 +24,19 @@ import {
   versionVendoredModulesAsync,
   removeVersionedVendoredModulesAsync,
 } from './versionVendoredModules';
+import { runReactNativeCodegenAsync } from '../../Codegen';
+import {
+  EXPO_DIR,
+  IOS_DIR,
+  REACT_NATIVE_SUBMODULE_DIR,
+  REACT_NATIVE_SUBMODULE_MONOREPO_ROOT,
+  VERSIONED_RN_IOS_DIR,
+} from '../../Constants';
+import logger from '../../Logger';
+import { getListOfPackagesAsync, Package } from '../../Packages';
+import { copyFileWithTransformsAsync } from '../../Transforms';
+import type { FileTransforms, StringTransform } from '../../Transforms.types';
+import { renderExpoKitPodspecAsync } from '../../dynamic-macros/IosMacrosGenerator';
 
 export { versionVendoredModulesAsync, versionExpoModulesAsync };
 

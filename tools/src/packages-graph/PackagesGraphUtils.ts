@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 import { EOL } from 'os';
 
-import { DefaultDependencyKind, DependencyKind } from '../Packages';
 import PackagesGraph from './PackagesGraph';
 import PackagesGraphEdge from './PackagesGraphEdge';
 import PackagesGraphNode from './PackagesGraphNode';
+import { DefaultDependencyKind, DependencyKind } from '../Packages';
 
 type NodeVisitingData = {
   visited: Record<string, boolean>;

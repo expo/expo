@@ -2,8 +2,8 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { findFiles } from '../utils';
 import { TransformFilesContent } from './TransformFilesContent';
+import { findFiles } from '../utils';
 
 export class TransformFilesName extends TransformFilesContent {
   async execute() {

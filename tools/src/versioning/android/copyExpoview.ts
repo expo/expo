@@ -1,9 +1,9 @@
 import fs from 'fs-extra';
 import path from 'path';
 
+import { expoviewTransforms } from './transforms/expoviewTransforms';
 import { copyFileWithTransformsAsync } from '../../Transforms';
 import { searchFilesAsync } from '../../Utils';
-import { expoviewTransforms } from './transforms/expoviewTransforms';
 
 export async function copyExpoviewAsync(sdkVersion: string, androidDir: string): Promise<void> {
   const abiVersion = `abi${sdkVersion.replace(/\./g, '_')}`;

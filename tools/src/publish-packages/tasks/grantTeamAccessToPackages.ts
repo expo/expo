@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 
+import { loadRequestedParcels } from './loadRequestedParcels';
 import logger from '../../Logger';
 import * as Npm from '../../Npm';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { loadRequestedParcels } from './loadRequestedParcels';
 
 const { green } = chalk;
 
