@@ -17,6 +17,7 @@ def use_expo_modules!(options = {})
   @current_target_definition.autolinking_manager = Expo::AutolinkingManager.new(self, @current_target_definition, options).use_expo_modules!
 
   maybe_generate_xcode_env_file!()
+  generate_or_remove_xcode_env_updates_file!()
 end
 
 def use_expo_modules_tests!(options = {})

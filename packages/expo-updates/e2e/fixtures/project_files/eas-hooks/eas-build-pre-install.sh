@@ -2,9 +2,6 @@
 
 set -eox pipefail
 
-# Use custom local Xcode env file
-cp xcode.env.local ios/.xcode.env.local
-
 if [[ "$LOCAL_TESTING" == "1" ]]; then
   exit 0
 fi

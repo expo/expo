@@ -125,7 +125,6 @@ async function copyCommonFixturesToProject(projectRoot, appJsFileName, repoRoot)
       'eas-hooks',
       'e2e',
       'scripts',
-      'xcode.env.local',
     ],
     {
       cwd: projectFilesSourcePath,
