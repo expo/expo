@@ -1,10 +1,9 @@
-/* eslint-env jest */
 import execa from 'execa';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
+import { bin, ensurePortFreeAsync, getRouterE2ERoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
-import { bin, getRouterE2ERoot, getPageHtml, ensurePortFreeAsync } from '../utils';
 
 runExportSideEffects();
 
@@ -23,7 +22,13 @@ describe('server-output', () => {
           E2E_ROUTER_ASYNC: 'development',
         },
       });
+    },
+    // Could take 45s depending on how fast the bundler resolves
+    560 * 1000
+  );
 
+  describe('requests', () => {
+    beforeAll(async () => {
       await ensurePortFreeAsync(3000);
       // Start a server instance that we can test against then kill it.
       server = execa('node', [nodeScript], {
@@ -46,44 +51,138 @@ describe('server-output', () => {
           }
         });
       });
-    },
-    // Could take 45s depending on how fast the bundler resolves
-    560 * 1000
-  );
+    }, 10 * 1000);
+    const nodeScript = path.join(projectRoot, '__e2e__/server/express.js');
+    let server: execa.ExecaChildProcess<string> | undefined;
 
-  const nodeScript = path.join(projectRoot, '__e2e__/server/express.js');
-  let server: execa.ExecaChildProcess<string> | undefined;
+    afterAll(async () => {
+      if (server) {
+        server.kill();
+        await server;
+      }
+    });
 
-  afterAll(() => {
-    server?.kill();
-  });
-
-  ['POST', 'GET', 'PUT', 'DELETE'].map(async (method) => {
-    it(`can make requests to ${method} routes`, async () => {
-      // Request missing route
-      expect(
-        await fetch('http://localhost:3000/methods', {
-          method: method,
-        }).then((res) => res.json())
-      ).toEqual({
-        method: method.toLowerCase(),
+    ['POST', 'GET', 'PUT', 'DELETE'].map(async (method) => {
+      it(`can make requests to ${method} routes`, async () => {
+        // Request missing route
+        expect(
+          await fetch('http://localhost:3000/methods', {
+            method: method,
+          }).then((res) => res.json())
+        ).toEqual({
+          method: method.toLowerCase(),
+        });
       });
     });
-  });
 
-  it(`can serve up index html`, async () => {
-    expect(await fetch('http://localhost:3000').then((res) => res.text())).toMatch(
-      /<div id="root">/
+    it(`can serve up index html`, async () => {
+      expect(await fetch('http://localhost:3000').then((res) => res.text())).toMatch(
+        /<div id="root">/
+      );
+    });
+    it(`can serve up dynamic html routes`, async () => {
+      expect(await fetch('http://localhost:3000/blog/123').then((res) => res.text())).toMatch(
+        /\[post\]/
+      );
+    });
+    it(`can hit the 404 route`, async () => {
+      expect(
+        await fetch('http://localhost:3000/clearly-missing').then((res) => res.text())
+      ).toMatch(/<div id="root">/);
+    });
+
+    it(
+      'can use environment variables',
+      async () => {
+        expect(await fetch('http://localhost:3000/api/env-vars').then((res) => res.json())).toEqual(
+          {
+            // This is defined when we start the production server in `beforeAll`.
+            var: 'test-secret-key',
+          }
+        );
+      },
+      5 * 1000
     );
-  });
-  it(`can serve up dynamic html routes`, async () => {
-    expect(await fetch('http://localhost:3000/blog/123').then((res) => res.text())).toMatch(
-      /\[post\]/
+    it(
+      'serves the empty route as 405',
+      async () => {
+        await expect(fetch('http://localhost:3000/api/empty').then((r) => r.status)).resolves.toBe(
+          405
+        );
+      },
+      5 * 1000
     );
-  });
-  it(`can hit the 404 route`, async () => {
-    expect(await fetch('http://localhost:3000/clearly-missing').then((res) => res.text())).toMatch(
-      /<div id="root">/
+    it(
+      'serves not-found routes as 404',
+      async () => {
+        await expect(fetch('http://localhost:3000/missing').then((r) => r.status)).resolves.toBe(
+          404
+        );
+      },
+      5 * 1000
+    );
+    it(
+      'automatically handles JS errors thrown inside of route handlers as 500',
+      async () => {
+        const res = await fetch('http://localhost:3000/api/problematic');
+        expect(res.status).toBe(500);
+        expect(res.statusText).toBe('Internal Server Error');
+      },
+      5 * 1000
+    );
+    it(
+      'can POST json to a route',
+      async () => {
+        const res = await fetch('http://localhost:3000/api/json', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ hello: 'world' }),
+        }).then((r) => r.json());
+        expect(res).toEqual({ hello: 'world' });
+      },
+      5 * 1000
+    );
+    it(
+      'handles pinging routes with unsupported methods with 405 "Method Not Allowed"',
+      async () => {
+        const res = await fetch('http://localhost:3000/api/env-vars', { method: 'POST' });
+        expect(res.status).toBe(405);
+        expect(res.statusText).toBe('Method Not Allowed');
+      },
+      5 * 1000
+    );
+    it(
+      'supports accessing dynamic parameters using same convention as client-side Expo Router',
+      async () => {
+        await expect(fetch('http://localhost:3000/api/abc').then((r) => r.json())).resolves.toEqual(
+          {
+            hello: 'abc',
+          }
+        );
+      },
+      5 * 1000
+    );
+    it(
+      'supports accessing deep dynamic parameters using different convention to client-side Expo Router',
+      async () => {
+        await expect(
+          fetch('http://localhost:3000/api/a/1/2/3').then((r) => r.json())
+        ).resolves.toEqual({
+          results: '1/2/3',
+        });
+      },
+      5 * 1000
+    );
+    it(
+      'supports using Node.js externals to read local files',
+      async () => {
+        await expect(
+          fetch('http://localhost:3000/api/externals').then((r) => r.text())
+        ).resolves.toEqual('a/b/c');
+      },
+      5 * 1000
     );
   });
 
@@ -126,93 +225,6 @@ describe('server-output', () => {
       // Normal routes
       expect(files).toContain('index.html');
       expect(files).toContain('blog/[post].html');
-    },
-    5 * 1000
-  );
-  it(
-    'can use environment variables',
-    async () => {
-      expect(await fetch('http://localhost:3000/api/env-vars').then((res) => res.json())).toEqual({
-        // This is defined when we start the production server in `beforeAll`.
-        var: 'test-secret-key',
-      });
-    },
-    5 * 1000
-  );
-  it(
-    'serves the empty route as 405',
-    async () => {
-      await expect(fetch('http://localhost:3000/api/empty').then((r) => r.status)).resolves.toBe(
-        405
-      );
-    },
-    5 * 1000
-  );
-  it(
-    'serves not-found routes as 404',
-    async () => {
-      await expect(fetch('http://localhost:3000/missing').then((r) => r.status)).resolves.toBe(404);
-    },
-    5 * 1000
-  );
-  it(
-    'automatically handles JS errors thrown inside of route handlers as 500',
-    async () => {
-      const res = await fetch('http://localhost:3000/api/problematic');
-      expect(res.status).toBe(500);
-      expect(res.statusText).toBe('Internal Server Error');
-    },
-    5 * 1000
-  );
-  it(
-    'can POST json to a route',
-    async () => {
-      const res = await fetch('http://localhost:3000/api/json', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ hello: 'world' }),
-      }).then((r) => r.json());
-      expect(res).toEqual({ hello: 'world' });
-    },
-    5 * 1000
-  );
-  it(
-    'handles pinging routes with unsupported methods with 405 "Method Not Allowed"',
-    async () => {
-      const res = await fetch('http://localhost:3000/api/env-vars', { method: 'POST' });
-      expect(res.status).toBe(405);
-      expect(res.statusText).toBe('Method Not Allowed');
-    },
-    5 * 1000
-  );
-  it(
-    'supports accessing dynamic parameters using same convention as client-side Expo Router',
-    async () => {
-      await expect(fetch('http://localhost:3000/api/abc').then((r) => r.json())).resolves.toEqual({
-        hello: 'abc',
-      });
-    },
-    5 * 1000
-  );
-  it(
-    'supports accessing deep dynamic parameters using different convention to client-side Expo Router',
-    async () => {
-      await expect(
-        fetch('http://localhost:3000/api/a/1/2/3').then((r) => r.json())
-      ).resolves.toEqual({
-        results: '1/2/3',
-      });
-    },
-    5 * 1000
-  );
-  it(
-    'supports using Node.js externals to read local files',
-    async () => {
-      await expect(
-        fetch('http://localhost:3000/api/externals').then((r) => r.text())
-      ).resolves.toEqual('a/b/c');
     },
     5 * 1000
   );
