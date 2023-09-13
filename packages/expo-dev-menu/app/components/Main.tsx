@@ -143,7 +143,10 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
                     <Text type="mono" numberOfLines={2} size="small">
                       {appInfo.hostUrl}
                     </Text>
-                    <Button.FadeOnPressContainer bg="default" onPress={onCopyUrlPress}>
+                    <Button.FadeOnPressContainer
+                      bg="default"
+                      onPress={onCopyUrlPress}
+                      testID="main.copyUrlButton">
                       <ClipboardIcon />
                     </Button.FadeOnPressContainer>
                   </Row>
