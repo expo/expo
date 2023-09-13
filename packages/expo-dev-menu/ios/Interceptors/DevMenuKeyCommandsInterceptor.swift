@@ -25,7 +25,8 @@ class DevMenuKeyCommandsInterceptor {
   }
 
   static let globalKeyCommands: [UIKeyCommand] = [
-    UIKeyCommand(input: "d", modifierFlags: .command, action: #selector(UIResponder.EXDevMenu_toggleDevMenu(_:)))
+    UIKeyCommand(input: "d", modifierFlags: .command, action: #selector(UIResponder.EXDevMenu_toggleDevMenu(_:))),
+    UIKeyCommand(input: "d", modifierFlags: .control, action: #selector(UIResponder.EXDevMenu_toggleDevMenu(_:)))
   ]
 }
 
