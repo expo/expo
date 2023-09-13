@@ -23,12 +23,12 @@ import * as React from 'react';
 import { Platform, ScrollView, Switch } from 'react-native';
 import semver from 'semver';
 
+import { Onboarding } from './Onboarding';
 import { useAppInfo } from '../hooks/useAppInfo';
 import { useClipboard } from '../hooks/useClipboard';
 import { useDevSettings } from '../hooks/useDevSettings';
 import { isDevLauncherInstalled } from '../native-modules/DevLauncher';
 import { hideMenu, fireCallbackAsync } from '../native-modules/DevMenu';
-import { Onboarding } from './Onboarding';
 
 type MainProps = {
   registeredCallbacks?: string[];
@@ -139,11 +139,14 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
                 <Row align="center">
                   <StatusIndicator style={{ width: 10, height: 10 }} status="success" />
                   <Spacer.Horizontal size="small" />
-                  <View flex="1">
+                  <Row flex="1" justify="between">
                     <Text type="mono" numberOfLines={2} size="small">
                       {appInfo.hostUrl}
                     </Text>
-                  </View>
+                    <Button.FadeOnPressContainer bg="default" onPress={onCopyUrlPress}>
+                      <ClipboardIcon />
+                    </Button.FadeOnPressContainer>
+                  </Row>
                   <Spacer.Horizontal size="small" />
                 </Row>
               </View>
@@ -151,30 +154,6 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
               <Divider />
             </>
           )}
-
-          <Row padding="small">
-            {isDevLauncherInstalled && (
-              <View flex="1">
-                <ActionButton
-                  icon={<HomeFilledIcon />}
-                  label="Go home"
-                  onPress={actions.navigateToLauncher}
-                />
-              </View>
-            )}
-
-            <Spacer.Horizontal size="medium" />
-
-            <View flex="1">
-              <ActionButton icon={<ClipboardIcon />} label="Copy link" onPress={onCopyUrlPress} />
-            </View>
-
-            <Spacer.Horizontal size="medium" />
-
-            <View flex="1">
-              <ActionButton icon={<RefreshIcon />} label="Reload" onPress={actions.reload} />
-            </View>
-          </Row>
 
           {registeredCallbacks.length > 0 && (
             <View>
@@ -210,7 +189,23 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
             </View>
           )}
 
+          <View rounded="large" bg="default" margin="small">
+            <SettingsRowButton label="Reload" icon={<RefreshIcon />} onPress={actions.reload} />
+          </View>
+
           <View mx="small">
+            {isDevLauncherInstalled && (
+              <>
+                <View roundedTop="large" bg="default">
+                  <SettingsRowButton
+                    label="Go home"
+                    icon={<HomeFilledIcon />}
+                    onPress={actions.navigateToLauncher}
+                  />
+                </View>
+                <Divider />
+              </>
+            )}
             <View roundedTop="large" bg="default">
               <SettingsRowButton
                 disabled={!devSettings.isPerfMonitorAvailable}
@@ -364,28 +359,6 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
         <Onboarding isDevice={isDevice} />
       </View>
     </View>
-  );
-}
-
-type ActionButtonProps = {
-  icon: React.ReactElement<any>;
-  label: string;
-  onPress: () => void;
-};
-
-function ActionButton({ icon, label, onPress }: ActionButtonProps) {
-  return (
-    <Button.FadeOnPressContainer bg="default" onPress={onPress}>
-      <View padding="small" rounded="large" bg="default">
-        <View align="centered">{icon}</View>
-
-        <Spacer.Vertical size="tiny" />
-
-        <Text size="small" align="center">
-          {label}
-        </Text>
-      </View>
-    </Button.FadeOnPressContainer>
   );
 }
 
