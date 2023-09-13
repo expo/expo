@@ -24,7 +24,7 @@ async function setupExpoModuleScripts(unimoduleDirectory) {
 
   console.log(`Installing ${chalk.bold.green('expo-module-scripts')}...`);
 
-  await spawnAsync('yarn', ['add', '--dev', `expo-module-scripts@^${moduleScriptsVersion}`], {
+  await spawnAsync('bun', ['add', '--dev', `expo-module-scripts@^${moduleScriptsVersion}`], {
     cwd: unimoduleDirectory,
   });
 

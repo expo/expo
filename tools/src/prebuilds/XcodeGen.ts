@@ -37,7 +37,7 @@ export async function generateXcodeProjectAsync(dir: string, spec: ProjectSpec):
   });
 
   // Generate `.xcodeproj` from given spec. The binary is provided by `@expo/xcodegen` package.
-  await spawnAsync('yarn', ['--silent', 'run', 'xcodegen', '--quiet', '--spec', specPath], {
+  await spawnAsync('bun', ['--silent', 'run', 'xcodegen', '--quiet', '--spec', specPath], {
     cwd: EXPOTOOLS_DIR,
     stdio: 'inherit',
   });

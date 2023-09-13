@@ -4,6 +4,7 @@ import path from 'path';
 import { EXPO_DIR } from './Constants';
 import { Package } from './Packages';
 import { spawnAsync, spawnJSONCommandAsync } from './Utils';
+import logger from './Logger';
 
 const NATIVE_APPS_PATHS = [EXPO_DIR, path.join(EXPO_DIR, 'apps/bare-expo')];
 
@@ -37,7 +38,9 @@ export async function getInfoAsync(): Promise<WorkspacesInfo> {
  * Runs yarn in the root workspace directory.
  */
 export async function installAsync(): Promise<void> {
-  await spawnAsync('yarn');
+  logger.info('🌭 Bunning...');
+  // TODO(cedric): figure out why Bun gets into a script-loop when running without `--ignore-scripts`
+  await spawnAsync('bun', ['install', '--yarn', '--ignore-scripts']);
 }
 
 /**

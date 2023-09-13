@@ -202,8 +202,9 @@ async function modifyPackageJson({
 }
 
 async function yarnInstall({ projectDir }: { projectDir: string }) {
-  console.log('Yarning');
-  return await spawnAsync('yarn', [], { cwd: projectDir, stdio: 'ignore' });
+  console.log('🌭 Bunning...');
+  // TODO(cedric): figure out why Bun gets into a script-loop when running without `--ignore-scripts`
+  return await spawnAsync('bun', ['install', '--yarn', '--ignore-scripts'], { cwd: projectDir, stdio: 'ignore' });
 }
 
 export async function symlinkPackages({

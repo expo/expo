@@ -38,7 +38,6 @@ async function main() {
   };
   await addPinnedPackagesAsync(pinnedPackages);
 
-  logger.info('Yarning...');
   await workspaceInstallAsync();
 
   await updateReactNativePackageAsync();
@@ -83,7 +82,7 @@ async function addBareExpoOptionalPackagesAsync() {
     logger.log('  ', pkg);
   }
 
-  await spawnAsync('yarn', ['add', ...installPackages], { cwd: bareExpoRoot });
+  await spawnAsync('bun', ['add', ...installPackages], { cwd: bareExpoRoot });
 }
 
 async function addPinnedPackagesAsync(packages: Record<string, string>) {

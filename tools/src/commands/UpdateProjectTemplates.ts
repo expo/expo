@@ -98,7 +98,7 @@ async function updateTemplateAsync(
  * @param templatePath Root path of the template.
  */
 async function yarnTemplateAsync(templatePath: string): Promise<void> {
-  console.log(chalk.yellow('>'), 'Yarning...');
+  console.log(chalk.yellow('>'), '🌭 Bunning...');
 
   const yarnLockPath = path.join(templatePath, 'yarn.lock');
 
@@ -107,7 +107,7 @@ async function yarnTemplateAsync(templatePath: string): Promise<void> {
     // so let's remove yarn.lock before updating re-yarning dependencies.
     await fs.remove(yarnLockPath);
   }
-  await spawnAsync('yarn', [], {
+  await spawnAsync('bun', ['install', '--yarn'], {
     stdio: 'ignore',
     cwd: templatePath,
     env: process.env,
