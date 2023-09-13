@@ -2,9 +2,9 @@ import JsonFile from '@expo/json-file';
 import path from 'path';
 
 import { EXPO_DIR } from './Constants';
+import logger from './Logger';
 import { Package } from './Packages';
 import { spawnAsync, spawnJSONCommandAsync } from './Utils';
-import logger from './Logger';
 
 const NATIVE_APPS_PATHS = [EXPO_DIR, path.join(EXPO_DIR, 'apps/bare-expo')];
 
