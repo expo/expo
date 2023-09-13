@@ -3,7 +3,7 @@
 
 // This script is just a wrapper around expotools that ensures node modules are installed
 // and TypeScript files are compiled. To make it work even when node_modules are empty,
-// we shouldn't eagerly require any dependency - we have to run yarn first.
+// we shouldn't eagerly require any dependency - we have to run bun first.
 
 const child_process = require('child_process');
 const fs = require('fs');
@@ -48,8 +48,8 @@ async function maybeRebuildAndRun() {
 
   // If `yarn.lock` checksum changed, reinstall expotools dependencies.
   if (!state.dependenciesChecksum || state.dependenciesChecksum !== dependenciesChecksum) {
-    console.log(' 🧶 Yarning...');
-    await spawnAsync('yarn', ['install']);
+    console.log(' 🌭 Bunning...');
+    await spawnAsync('bun', ['install', '--yarn']);
   }
 
   // If checksum of source files changed, rebuild TypeScript files.
@@ -58,7 +58,7 @@ async function maybeRebuildAndRun() {
 
     try {
       // Compile TypeScript files into build folder.
-      await spawnAsync('yarn', ['run', 'build']);
+      await spawnAsync('bun', ['run', 'build']);
       state.schema = await getCommandsSchemaAsync();
     } catch (error) {
       console.error(LogModifiers.error(` 💥 Rebuilding failed: ${error.stack}`));
@@ -98,6 +98,7 @@ async function calculateDependenciesChecksumAsync() {
       exclude: ['*'],
     },
     files: {
+      // Note, we use `bun install`, but also export a `yarn.lock` file.
       include: ['yarn.lock', 'package.json'],
     },
   });
