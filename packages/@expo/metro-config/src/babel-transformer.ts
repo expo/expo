@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 // A fork of the upstream babel-transformer that uses Expo-specific babel defaults
-// and adds support for web and Node.js environments via `metroTarget` on the Babel caller.
+// and adds support for web and Node.js environments via `isServer` on the Babel caller.
 
 // @ts-expect-error
 import inlineRequiresPlugin from 'babel-preset-fbjs/plugins/inline-requires';
@@ -218,8 +218,7 @@ const transform: BabelTransformer['transform'] = ({
         platform: options.platform,
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
-        // client | node | undefined
-        metroTarget: options.customTransformOptions?.environment,
+        isServer: options.customTransformOptions?.environment === 'node',
       },
       ast: true,
 

@@ -21,7 +21,7 @@ afterEach(() => {
   vol.reset();
 });
 
-it(`passes the environment as metroTarget to the babel preset`, () => {
+it(`passes the environment as isServer to the babel preset`, () => {
   vol.fromJSON({}, '/');
 
   const fixture = `import { Platform } from 'react-native';
@@ -36,22 +36,20 @@ it(`passes the environment as metroTarget to the babel preset`, () => {
       enableBabelRuntime: true,
       enableBabelRCLookup: true,
       dev: true,
-      globalPrefix: 'test',
       projectRoot: '/',
       hot: true,
       inlineRequires: false,
       minify: false,
       platform: 'ios',
       publicPath: '/',
-      customTransformOptions: {
+      customTransformOptions: Object.create({
         environment: 'node',
-      },
+      }),
     },
     src: fixture,
     plugins: [],
   });
 
-  // @ts-expect-error
   expect(generate(results.ast).code).toMatchInlineSnapshot(`
     "Object.defineProperty(exports, "__esModule", {
       value: true
@@ -76,7 +74,7 @@ it(`passes the environment as metroTarget to the babel preset`, () => {
       babelrc: true,
       caller: {
         // HERE IS THE MAGIC
-        metroTarget: 'node',
+        isServer: true,
         bundler: 'metro',
         name: 'metro',
         platform: 'ios',
