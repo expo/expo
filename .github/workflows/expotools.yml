@@ -42,7 +42,7 @@ jobs:
         working-directory: tools
 
       - name: 🛠 Typecheck sources
-        run: bun tsc --noEmit
+        run: bun run typecheck
         working-directory: tools
 
       - name: 🚨 Lint TypeScript sources
