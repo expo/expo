@@ -107,6 +107,27 @@ describe(resolvePackageManager, () => {
 
   afterEach(() => vol.reset());
 
+  it(`resolves bun from monorepo workspace`, () => {
+    vol.fromJSON(
+      {
+        'packages/test/package.json': JSON.stringify({ name: 'project' }),
+        'package.json': JSON.stringify({
+          private: true,
+          name: 'monorepo',
+          workspaces: ['packages/*'],
+        }),
+        [BUN_LOCK_FILE]: '',
+      },
+      workspaceRoot
+    );
+
+    expect(resolvePackageManager(projectRoot)).toBe('bun');
+    expect(resolvePackageManager(projectRoot, 'bun')).toBe('bun');
+    expect(resolvePackageManager(projectRoot, 'npm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'yarn')).toBeNull();
+  });
+
   it(`resolves npm from monorepo workspace`, () => {
     vol.fromJSON(
       {
@@ -123,6 +144,7 @@ describe(resolvePackageManager, () => {
 
     expect(resolvePackageManager(projectRoot)).toBe('npm');
     expect(resolvePackageManager(projectRoot, 'npm')).toBe('npm');
+    expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'yarn')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();
@@ -144,6 +166,7 @@ describe(resolvePackageManager, () => {
 
     expect(resolvePackageManager(projectRoot)).toBe('pnpm');
     expect(resolvePackageManager(projectRoot, 'pnpm')).toBe('pnpm');
+    expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'npm')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'yarn')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();
@@ -165,6 +188,7 @@ describe(resolvePackageManager, () => {
 
     expect(resolvePackageManager(projectRoot)).toBe('yarn');
     expect(resolvePackageManager(projectRoot, 'yarn')).toBe('yarn');
+    expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'npm')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
     expect(resolvePackageManager(projectRoot, 'bun')).toBeNull();

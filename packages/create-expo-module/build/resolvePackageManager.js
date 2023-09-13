@@ -4,7 +4,7 @@ exports.formatRunCommand = exports.resolvePackageManager = void 0;
 const child_process_1 = require("child_process");
 /** Determine which package manager to use for installing dependencies based on how the process was started. */
 function resolvePackageManager() {
-    // Attempt to detect if the user started the command using `yarn` or `pnpm`
+    // Attempt to detect if the user started the command using `yarn` or `pnpm` or `bun`
     const userAgent = process.env.npm_config_user_agent;
     if (userAgent?.startsWith('yarn')) {
         return 'yarn';
@@ -41,6 +41,8 @@ function isPackageManagerAvailable(manager) {
 }
 function formatRunCommand(manager, cmd) {
     switch (manager) {
+        case 'bun':
+            return `bun run ${cmd}`;
         case 'pnpm':
             return `pnpm run ${cmd}`;
         case 'yarn':

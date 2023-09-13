@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import {
+  BUN_LOCK_FILE,
   findPnpmWorkspaceRoot,
   findYarnOrNpmWorkspaceRoot,
   NPM_LOCK_FILE,
@@ -16,10 +17,10 @@ import { PnpmPackageManager } from '../node/PnpmPackageManager';
 import { YarnPackageManager } from '../node/YarnPackageManager';
 
 export type NodePackageManager =
+  | BunPackageManager
   | NpmPackageManager
   | PnpmPackageManager
-  | YarnPackageManager
-  | BunPackageManager;
+  | YarnPackageManager;
 
 export type NodePackageManagerForProject = PackageManagerOptions &
   Partial<Record<NodePackageManager['name'], boolean>>;
@@ -67,6 +68,7 @@ export function resolvePackageManager(
 ): NodePackageManager['name'] | null {
   const root = findWorkspaceRoot(projectRoot, preferredManager) ?? projectRoot;
   const lockFiles: Record<NodePackageManager['name'], string> = {
+    bun: BUN_LOCK_FILE,
     npm: NPM_LOCK_FILE,
     pnpm: PNPM_LOCK_FILE,
     yarn: YARN_LOCK_FILE,
@@ -110,6 +112,8 @@ export function createForProject(
   }
 
   switch (resolvePackageManager(projectRoot)) {
+    case 'bun':
+      return new BunPackageManager({ cwd: projectRoot, ...options });
     case 'npm':
       return new NpmPackageManager({ cwd: projectRoot, ...options });
     case 'pnpm':

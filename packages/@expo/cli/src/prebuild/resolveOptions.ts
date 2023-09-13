@@ -17,13 +17,13 @@ export function resolvePackageManagerOptions(args: any) {
   };
 
   if (
-    [managers.npm, managers.pnpm, managers.yarn, managers.bun, !!args['--no-install']].filter(
+    [managers.bun, managers.npm, managers.pnpm, managers.yarn, !!args['--no-install']].filter(
       Boolean
     ).length > 1
   ) {
     throw new CommandError(
       'BAD_ARGS',
-      'Specify at most one of: --no-install, --npm, --pnpm, --yarn, --bun'
+      'Specify at most one of: --no-install, --bun, --npm, --pnpm, --yarn'
     );
   }
 

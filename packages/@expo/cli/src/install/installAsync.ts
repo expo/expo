@@ -33,6 +33,7 @@ export async function installAsync(
     yarn: options.yarn,
     bun: options.bun,
     pnpm: options.pnpm,
+    bun: options.bun,
     silent: options.silent,
     log: Log.log,
   });

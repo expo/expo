@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- add `bun` as package manager. ([#24008](https://github.com/expo/expo/pull/24008) by [@ImBIOS](https://github.com/ImBIOS))
+
 - Add support for [Bun](https://bun.sh) package manager by [@colinhacks][https://github.com/colinhacks] ([#24168](https://github.com/expo/expo/pull/24168) by [@colinhacks](https://github.com/colinhacks))
 
 ### 🐛 Bug fixes

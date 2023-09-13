@@ -84,6 +84,7 @@ it('runs `npx expo prebuild --help`', async () => {
         --yarn                                   Use Yarn to install dependencies. Default when yarn.lock exists
         --bun                                    Use bun to install dependencies. Default when bun.lockb exists
         --pnpm                                   Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
+        --bun                                    Use bun to install dependencies. Default when bun.lockb exists
         --template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo
         -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
         --skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)

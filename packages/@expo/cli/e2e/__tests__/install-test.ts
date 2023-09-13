@@ -58,6 +58,7 @@ it('runs `npx install install --help`', async () => {
         --yarn      Use Yarn to install dependencies. Default when yarn.lock exists
         --bun       Use bun to install dependencies. Default when bun.lockb exists
         --pnpm      Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
+        --bun      Use bun to install dependencies. Default when bun.lockb exists
         -h, --help  Usage info
 
       Additional options can be passed to the underlying install command by using --

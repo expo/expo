@@ -44,6 +44,7 @@ exports.findWorkspaceRoot = findWorkspaceRoot;
 function resolvePackageManager(projectRoot, preferredManager) {
     const root = findWorkspaceRoot(projectRoot, preferredManager) ?? projectRoot;
     const lockFiles = {
+        bun: nodeWorkspaces_1.BUN_LOCK_FILE,
         npm: nodeWorkspaces_1.NPM_LOCK_FILE,
         pnpm: nodeWorkspaces_1.PNPM_LOCK_FILE,
         yarn: nodeWorkspaces_1.YARN_LOCK_FILE,
@@ -82,6 +83,8 @@ function createForProject(projectRoot, options = {}) {
         return new BunPackageManager_1.BunPackageManager({ cwd: projectRoot, ...options });
     }
     switch (resolvePackageManager(projectRoot)) {
+        case 'bun':
+            return new BunPackageManager_1.BunPackageManager({ cwd: projectRoot, ...options });
         case 'npm':
             return new NpmPackageManager_1.NpmPackageManager({ cwd: projectRoot, ...options });
         case 'pnpm':

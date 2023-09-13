@@ -1,7 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BunPackageManager = void 0;
 const BasePackageManager_1 = require("./BasePackageManager");
+const env_1 = __importDefault(require("../utils/env"));
 const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
 class BunPackageManager extends BasePackageManager_1.BasePackageManager {
     constructor() {
@@ -23,6 +27,10 @@ class BunPackageManager extends BasePackageManager_1.BasePackageManager {
         return null;
     }
     installAsync(namesOrFlags = []) {
+        if (env_1.default.CI && !namesOrFlags.join(' ').includes('frozen-lockfile')) {
+            // Remove --frozen-lockfile if it's already set
+            namesOrFlags = namesOrFlags.filter((flag) => flag !== '--frozen-lockfile');
+        }
         return this.runAsync(['install', ...namesOrFlags]);
     }
     addAsync(namesOrFlags = []) {
@@ -47,7 +55,7 @@ class BunPackageManager extends BasePackageManager_1.BasePackageManager {
         return this.runAsync(['remove', ...namesOrFlags]);
     }
     removeDevAsync(namesOrFlags) {
-        return this.runAsync(['remove', ...namesOrFlags]);
+        return this.runAsync(['remove', '--dev', ...namesOrFlags]);
     }
     removeGlobalAsync(namesOrFlags) {
         return this.runAsync(['remove', '--global', ...namesOrFlags]);

@@ -13,6 +13,7 @@ const path_1 = __importDefault(require("path"));
 exports.NPM_LOCK_FILE = 'package-lock.json';
 exports.YARN_LOCK_FILE = 'yarn.lock';
 exports.PNPM_LOCK_FILE = 'pnpm-lock.yaml';
+exports.BUN_LOCK_FILE = 'bun.lockb';
 exports.PNPM_WORKSPACE_FILE = 'pnpm-workspace.yaml';
 exports.BUN_LOCK_FILE = 'bun.lockb';
 /** Wraps `find-yarn-workspace-root` and guards against having an empty `package.json` file in an upper directory. */

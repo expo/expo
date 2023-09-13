@@ -9,6 +9,7 @@ export const expoPrebuild: Command = async (argv) => {
     {
       // Types
       '--help': Boolean,
+      '--bun': Boolean,
       '--clean': Boolean,
       '--npm': Boolean,
       '--pnpm': Boolean,
@@ -38,6 +39,7 @@ export const expoPrebuild: Command = async (argv) => {
         chalk`--yarn                                   Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
         chalk`--bun                                    Use bun to install dependencies. {dim Default when bun.lockb exists}`,
         chalk`--pnpm                                   Use pnpm to install dependencies. {dim Default when pnpm-lock.yaml exists}`,
+        chalk`--bun                                   Use bun to install dependencies. {dim Default when bun.lockb exists}`,
         `--template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo`,
         chalk`-p, --platform <all|android|ios>         Platforms to sync: ios, android, all. {dim Default: all}`,
         `--skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)`,

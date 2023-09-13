@@ -6,10 +6,10 @@ describe(resolveArgsAsync, () => {
   });
   it(`prevents bad combos`, async () => {
     await expect(resolveArgsAsync(['--npm', '--yarn'])).rejects.toThrow(
-      /Specify at most one of: --npm, --pnpm, --yarn/
+      /Specify at most one of: --bun, --npm, --pnpm, --yarn/
     );
     await expect(resolveArgsAsync(['--npm', '--pnpm', '--yarn'])).rejects.toThrow(
-      /Specify at most one of: --npm, --pnpm, --yarn/
+      /Specify at most one of: --bun, --npm, --pnpm, --yarn/
     );
   });
   it(`allows known values`, async () => {
