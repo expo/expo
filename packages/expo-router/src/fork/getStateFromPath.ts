@@ -741,10 +741,11 @@ const parseQueryParams = (path: string, parseConfig?: Record<string, (value: str
   return Object.keys(params).length ? params : undefined;
 };
 
-function stripBasePath(path: string, assetPrefix?: string) {
+export function stripBasePath(path: string, basePath?: string) {
   if (process.env.NODE_ENV !== 'development') {
-    if (assetPrefix) {
-      return path.replace(/^\/+/g, '').replace(new RegExp(`^${escape(assetPrefix)}/`, 'g'), '');
+    if (basePath) {
+      const reg = new RegExp(`^\\/?${escape(basePath)}`, 'g');
+      return path.replace(/^\/+/g, '/').replace(reg, '');
     }
   }
   return path;

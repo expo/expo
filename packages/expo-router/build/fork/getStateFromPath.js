@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMatchableRouteConfigs = exports.getUrlWithReactNavigationConcessions = void 0;
+exports.stripBasePath = exports.getMatchableRouteConfigs = exports.getUrlWithReactNavigationConcessions = void 0;
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const queryString = __importStar(require("query-string"));
@@ -533,12 +533,14 @@ const parseQueryParams = (path, parseConfig) => {
     }
     return Object.keys(params).length ? params : undefined;
 };
-function stripBasePath(path, assetPrefix) {
+function stripBasePath(path, basePath) {
     if (process.env.NODE_ENV !== 'development') {
-        if (assetPrefix) {
-            return path.replace(/^\/+/g, '').replace(new RegExp(`^${(0, escape_string_regexp_1.default)(assetPrefix)}/`, 'g'), '');
+        if (basePath) {
+            const reg = new RegExp(`^\\/?${(0, escape_string_regexp_1.default)(basePath)}`, 'g');
+            return path.replace(/^\/+/g, '/').replace(reg, '');
         }
     }
     return path;
 }
+exports.stripBasePath = stripBasePath;
 //# sourceMappingURL=getStateFromPath.js.map

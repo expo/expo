@@ -202,6 +202,7 @@ type State = PartialState<NavigationState>;
 });
 
 it('appends basePath', () => {
+  // @ts-expect-error
   Constants.expoConfig = {
     experiments: {
       basePath: '/expo-prefix/',
@@ -235,6 +236,7 @@ it('appends basePath', () => {
 });
 
 it('appends multi-level basePath', () => {
+  // @ts-expect-error
   Constants.expoConfig = {
     experiments: {
       basePath: '/expo/prefix/',

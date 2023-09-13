@@ -1,32 +1,28 @@
 /* eslint-env jest */
-import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, getPageHtml } from '../utils';
+import { bin, getPageHtml, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
-function ensureTesterReady(fixtureName: string): string {
-  const root = path.join(__dirname, '../../../../../../apps/router-e2e');
-  return root;
-}
-
-describe('static-rendering with asset prefix', () => {
-  const projectRoot = ensureTesterReady('static-rendering');
+describe('static-rendering with a custom base path', () => {
+  const projectRoot = getRouterE2ERoot();
   const outputName = 'dist-static-rendering-asset-prefix';
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(
     async () => {
-      await execa('node', [bin, 'export', '-p', 'web', '--output-dir', outputName], {
+      const basePath = '/one/two';
+      process.env.EXPO_E2E_BASE_PATH = basePath;
+      await execa('node', [bin, 'export', '-p', 'web', '--clear', '--output-dir', outputName], {
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
-          EXPO_E2E_BASE_PATH: '/one/two',
+          EXPO_E2E_BASE_PATH: basePath,
           EXPO_USE_STATIC: '1',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: 'development',

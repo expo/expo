@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
@@ -55,7 +56,20 @@ export async function exportAppAsync(
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
   const useWebSSG = exp.web?.output === 'static';
-  const basePath = exp.experiments?.basePath?.replace(/\/+$/, '') ?? '';
+  const basePath = (exp.experiments?.basePath?.replace(/\/+$/, '') ?? '').trim();
+
+  // Print out logs
+  if (basePath) {
+    Log.log();
+    Log.log(chalk.gray`Using (experimental) base path: ${basePath}`);
+    // Warn if not using an absolute path.
+    if (!basePath.startsWith('/')) {
+      Log.log(
+        chalk.yellow`  Base path does not start with a slash. Requests will not be absolute.`
+      );
+    }
+  }
+
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
   const outputPath = path.resolve(projectRoot, outputDir);
