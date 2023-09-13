@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deepEqual = exports.getPathDataFromState = void 0;
+exports.appendBasePath = exports.deepEqual = exports.getPathDataFromState = void 0;
 const core_1 = require("@react-navigation/core");
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const queryString = __importStar(require("query-string"));
@@ -458,4 +458,5 @@ function appendBasePath(path, assetPrefix = expo_constants_1.default.expoConfig?
     }
     return path;
 }
+exports.appendBasePath = appendBasePath;
 //# sourceMappingURL=getPathFromState.js.map

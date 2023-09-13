@@ -533,10 +533,19 @@ const parseQueryParams = (path, parseConfig) => {
     }
     return Object.keys(params).length ? params : undefined;
 };
-function stripBasePath(path, basePath) {
+const basePathCache = new Map();
+function getBasePathRegex(basePath) {
+    if (basePathCache.has(basePath)) {
+        return basePathCache.get(basePath);
+    }
+    const regex = new RegExp(`^\\/?${(0, escape_string_regexp_1.default)(basePath)}`, 'g');
+    basePathCache.set(basePath, regex);
+    return regex;
+}
+function stripBasePath(path, basePath = expo_constants_1.default.expoConfig?.experiments?.basePath) {
     if (process.env.NODE_ENV !== 'development') {
         if (basePath) {
-            const reg = new RegExp(`^\\/?${(0, escape_string_regexp_1.default)(basePath)}`, 'g');
+            const reg = getBasePathRegex(basePath);
             return path.replace(/^\/+/g, '/').replace(reg, '');
         }
     }

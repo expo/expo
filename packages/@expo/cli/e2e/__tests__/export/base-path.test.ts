@@ -64,6 +64,7 @@ describe('static-rendering with a custom base path', () => {
       expect(files).toContain('about.html');
       expect(files).toContain('index.html');
       expect(files).toContain('styled.html');
+      expect(files).toContain('links.html');
 
       // generateStaticParams values
       expect(files).toContain('[post].html');
@@ -146,6 +147,18 @@ describe('static-rendering with a custom base path', () => {
           'html > head > meta[name="expo-e2e-pathname"]'
         )?.attributes.content
       ).toBe('/welcome-to-the-universe');
+    },
+    5 * 1000
+  );
+
+  it(
+    'supports basePath in Links',
+    async () => {
+      expect(
+        (await getPageHtml(outputDir, 'links.html')).querySelector(
+          'body > a[data-testid="links-one"]'
+        )?.attributes.href
+      ).toBe('/one/two/about');
     },
     5 * 1000
   );

@@ -54,6 +54,6 @@ export declare function getMatchableRouteConfigs<ParamList extends object>(optio
     }[];
     initialRoutes: InitialRouteConfig[];
 };
-export declare function stripBasePath(path: string, basePath?: string): string;
+export declare function stripBasePath(path: string, basePath?: string | undefined): string;
 export {};
 //# sourceMappingURL=getStateFromPath.d.ts.map

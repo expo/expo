@@ -741,10 +741,24 @@ const parseQueryParams = (path: string, parseConfig?: Record<string, (value: str
   return Object.keys(params).length ? params : undefined;
 };
 
-export function stripBasePath(path: string, basePath?: string) {
+const basePathCache = new Map<string, RegExp>();
+
+function getBasePathRegex(basePath: string) {
+  if (basePathCache.has(basePath)) {
+    return basePathCache.get(basePath)!;
+  }
+  const regex = new RegExp(`^\\/?${escape(basePath)}`, 'g');
+  basePathCache.set(basePath, regex);
+  return regex;
+}
+
+export function stripBasePath(
+  path: string,
+  basePath: string | undefined = Constants.expoConfig?.experiments?.basePath
+) {
   if (process.env.NODE_ENV !== 'development') {
     if (basePath) {
-      const reg = new RegExp(`^\\/?${escape(basePath)}`, 'g');
+      const reg = getBasePathRegex(basePath);
       return path.replace(/^\/+/g, '/').replace(reg, '');
     }
   }

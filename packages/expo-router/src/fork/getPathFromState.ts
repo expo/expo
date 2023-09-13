@@ -611,7 +611,7 @@ const createNormalizedConfigs = (
     Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)])
   );
 
-function appendBasePath(
+export function appendBasePath(
   path: string,
   assetPrefix: string | undefined = Constants.expoConfig?.experiments?.basePath
 ) {
