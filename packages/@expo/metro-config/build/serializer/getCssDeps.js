@@ -100,7 +100,9 @@ function fileNameFromContents({
   filepath,
   src
 }) {
-  return getFileName(filepath) + '-' + (0, _hash().hashString)(filepath + src);
+  // Decode if the path is encoded from the Metro dev server, then normalize paths for Windows support.
+  const decoded = decodeURIComponent(filepath).replace(/\\/g, '/');
+  return getFileName(decoded) + '-' + (0, _hash().hashString)(decoded + src);
 }
 function getFileName(module) {
   return _path().default.basename(module).replace(/\.[^.]+$/, '');

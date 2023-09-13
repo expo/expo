@@ -44,15 +44,17 @@ The following resources are useful for learning about Expo tooling and services.
 
 ## Navigation
 
-- [Routing and Navigation](/guides/routing-and-navigation/)
+- [Expo Router](/routing/introduction/)
+- [React Navigation](https://reactnavigation.org/)
 
 ## Talks
-
 
 <CellContainer>
   {chunkArray(TALKS, 4).map(talks => (
     <Row>
-      {talks.map(talk => <TalkGridCell {...talk} />)}
+      {talks.map(talk => (
+        <TalkGridCell {...talk} />
+      ))}
     </Row>
   ))}
 </CellContainer>

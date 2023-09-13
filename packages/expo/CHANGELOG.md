@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [iOS] Disable packager and bundle JS when EX_UPDATES_NATIVE_DEBUG set. ([#24366](https://github.com/expo/expo/pull/24366) by [@douglowder](https://github.com/douglowder))
+
 ## 49.0.10 — 2023-09-11
 
 _This version does not introduce any user-facing changes._
