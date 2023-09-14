@@ -192,23 +192,26 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
             </View>
           )}
 
-          <View rounded="large" bg="default" margin="small">
+          <View
+            {...(isDevLauncherInstalled ? { roundedTop: 'large' } : { rounded: 'large' })}
+            bg="default"
+            margin="small">
             <SettingsRowButton label="Reload" icon={<RefreshIcon />} onPress={actions.reload} />
-          </View>
-
-          <View mx="small">
             {isDevLauncherInstalled && (
               <>
-                <View roundedTop="large" bg="default">
+                <Divider />
+                <View roundedBottom="large" bg="default">
                   <SettingsRowButton
                     label="Go home"
                     icon={<HomeFilledIcon />}
                     onPress={actions.navigateToLauncher}
                   />
                 </View>
-                <Divider />
               </>
             )}
+          </View>
+
+          <View mx="small">
             <View bg="default">
               <SettingsRowButton
                 disabled={!devSettings.isPerfMonitorAvailable}
