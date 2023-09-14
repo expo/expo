@@ -21,6 +21,7 @@ export type ApiRouteOptions = {
   shouldThrow?: boolean;
 };
 
+// Bundle the API Route with Metro and return the string contents to be evaluated in the server.
 export async function bundleApiRoute(
   projectRoot: string,
   filepath: string,
