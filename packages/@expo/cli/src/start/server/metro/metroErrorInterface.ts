@@ -50,6 +50,9 @@ export async function logMetroErrorWithStack(
     error: Error;
   }
 ) {
+  // process.stdout.write('\u001b[0m'); // Reset attributes
+  // process.stdout.write('\u001bc'); // Reset the terminal
+
   const { getStackFormattedLocation } = require(resolveFrom(
     projectRoot,
     '@expo/metro-runtime/symbolicate'
@@ -60,7 +63,7 @@ export async function logMetroErrorWithStack(
   Log.log();
 
   if (codeFrame) {
-    const maxWarningLineLength = 200;
+    const maxWarningLineLength = Math.max(200, process.stdout.columns);
 
     const lineText = codeFrame.content;
     const isPreviewTooLong = lineText.length > maxWarningLineLength;
@@ -80,7 +83,9 @@ export async function logMetroErrorWithStack(
       // `...transition:'fade'},k._updatePropsStack=function(){clearImmediate(k._updateImmediate),k._updateImmediate...`
       // If there is no text preview or column number, we can't do anything.
       if (lineText && column != null) {
-        const rangeWindow = Math.round(Math.max(codeFrame.fileName?.length ?? 0, 80) / 2);
+        const rangeWindow = Math.round(
+          Math.max(codeFrame.fileName?.length ?? 0, Math.max(80, process.stdout.columns)) / 2
+        );
         let minBounds = Math.max(0, column - rangeWindow);
         const maxBounds = Math.min(minBounds + rangeWindow * 2, lineText.length);
         previewLine = lineText.slice(minBounds, maxBounds);
