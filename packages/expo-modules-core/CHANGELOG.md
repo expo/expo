@@ -42,6 +42,7 @@
 
 ### 💡 Others
 
+- Use native UUIDv4 generation on `Android` and `iOS`. ([#24199](https://github.com/expo/expo/pull/24199) by [@behenate](https://github.com/behenate))
 - [Android] Add type converter for the `ReadableArguments` class to allow backward compatibility with older modules. ([#24137](https://github.com/expo/expo/pull/24137) by [@lukmccall](https://github.com/lukmccall))
 - [Android] `SharedObjectTypeConverter` now can work with the `Dynamic` class. ([#24207](https://github.com/expo/expo/pull/24207) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Expose a conversion between id and shared objects. ([#24220](https://github.com/expo/expo/pull/24220) by [@lukmccall](https://github.com/lukmccall))

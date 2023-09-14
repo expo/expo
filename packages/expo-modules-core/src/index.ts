@@ -10,7 +10,7 @@ import { UnavailabilityError } from './errors/UnavailabilityError';
 
 import './sweet/setUpErrorManager.fx';
 
-export { uuidv4, uuidv5 } from './uuid';
+export { default as uuid } from './uuid';
 
 export {
   DeviceEventEmitter,

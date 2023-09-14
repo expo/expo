@@ -2,6 +2,7 @@ type ExpoObject = {
     modules: undefined | {
         [key: string]: any;
     };
+    uuidv4: () => string;
 };
 declare global {
     var expo: ExpoObject | undefined;
