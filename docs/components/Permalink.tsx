@@ -149,7 +149,6 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(
           <span css={STYLES_PERMALINK_ICON}>
             <Link01SolidIcon className="icon-sm text-icon-default" />
           </span>
-          <PermalinkCopyIcon slug={heading.slug} />
         </LinkBase>
       </PermalinkBase>
     );

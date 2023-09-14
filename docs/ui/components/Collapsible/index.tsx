@@ -73,7 +73,6 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
             <span css={STYLES_PERMALINK_ICON}>
               <Link01SolidIcon onClick={onClickIcon} className="icon-sm text-icon-default" />
             </span>
-            <PermalinkCopyIcon slug={heading.current.slug} onClick={onClickIcon} />
           </LinkBase>
         </summary>
         <div css={contentStyle}>{children}</div>
