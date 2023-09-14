@@ -48,8 +48,8 @@ async function maybeRebuildAndRun() {
 
   // If `yarn.lock` checksum changed, reinstall expotools dependencies.
   if (!state.dependenciesChecksum || state.dependenciesChecksum !== dependenciesChecksum) {
-    console.log(' 🧶 Yarning...');
-    await spawnAsync('yarn', ['install']);
+    console.log(' 🌭 Bunning...');
+    await spawnAsync('bun', ['install', '--yarn']);
   }
 
   // If checksum of source files changed, rebuild TypeScript files.
@@ -58,7 +58,7 @@ async function maybeRebuildAndRun() {
 
     try {
       // Compile TypeScript files into build folder.
-      await spawnAsync('yarn', ['run', 'build']);
+      await spawnAsync('bun', ['run', 'build']);
       state.schema = await getCommandsSchemaAsync();
     } catch (error) {
       console.error(LogModifiers.error(` 💥 Rebuilding failed: ${error.stack}`));
