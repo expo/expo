@@ -75,7 +75,7 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
   }
 
   private func shouldTriggerAction(_ key: UIKeyCommand) -> Bool {
-    return UIResponder.lastKeyCommand !== key || CACurrentMediaTime() - UIResponder.lastKeyCommandExecutionTime > 0.5
+    return UIResponder.lastKeyCommand !== key || CACurrentMediaTime() - UIResponder.lastKeyCommandExecutionTime > 0.1
   }
 
   private func tryHandleKeyCommand(_ key: UIKeyCommand, handler: () -> Void ) {
