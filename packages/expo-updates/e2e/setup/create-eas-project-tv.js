@@ -26,5 +26,5 @@ const runtimeVersion = '1.0.0';
 
   await initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin, isTV: true });
 
-  await setupE2EAppAsync(projectRoot, localCliBin, repoRoot, true);
+  await setupE2EAppAsync(projectRoot, { localCliBin, repoRoot, isTV: true });
 })();

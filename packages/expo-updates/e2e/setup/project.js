@@ -100,7 +100,7 @@ async function packExpoDependency(repoRoot, projectRoot, destPath, dependencyNam
   };
 }
 
-async function copyCommonFixturesToProject(projectRoot, appJsFileName, repoRoot, isTV = false) {
+async function copyCommonFixturesToProject(projectRoot, { appJsFileName, repoRoot, isTV = false }) {
   // copy App.tsx from test fixtures
   const appJsSourcePath = path.resolve(dirName, '..', 'fixtures', appJsFileName);
   const appJsDestinationPath = path.resolve(projectRoot, 'App.tsx');
@@ -365,7 +365,6 @@ function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
       name: projectName,
       owner: 'expo-ci',
       runtimeVersion,
-      // jsEngine: 'jsc',
       plugins: ['expo-updates', '@config-plugins/detox'],
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
@@ -555,8 +554,8 @@ async function initAsync(
   return projectRoot;
 }
 
-async function setupE2EAppAsync(projectRoot, localCliBin, repoRoot, isTV = false) {
-  await copyCommonFixturesToProject(projectRoot, 'App.tsx', repoRoot, isTV);
+async function setupE2EAppAsync(projectRoot, { localCliBin, repoRoot, isTV = false }) {
+  await copyCommonFixturesToProject(projectRoot, { appJsFileName: 'App.tsx', repoRoot, isTV });
 
   // copy png assets and install extra package
   await fs.copyFile(
