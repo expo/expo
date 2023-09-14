@@ -1,11 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXFileSystem/EXSessionTaskDelegate.h>
+#import <ExpoFileSystem/EXSessionTaskDelegate.h>
 
 @implementation EXSessionTaskDelegate
 
-- (instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
-                         reject:(EXPromiseRejectBlock)reject
+- (nonnull instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
+                                 reject:(EXPromiseRejectBlock)reject
 {
   if (self = [super init]) {
     _resolve = resolve;

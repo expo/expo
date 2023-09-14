@@ -2,25 +2,25 @@
 
 #import <ExpoModulesCore/EXModuleRegistry.h>
 
-#import <EXFileSystem/EXFileSystem.h>
+#import <ExpoFileSystem/EXFileSystem.h>
 
 #import <CommonCrypto/CommonDigest.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
-#import <EXFileSystem/EXFileSystemLocalFileHandler.h>
-#import <EXFileSystem/EXFileSystemAssetLibraryHandler.h>
+#import <ExpoFileSystem/EXFileSystemLocalFileHandler.h>
+#import <ExpoFileSystem/EXFileSystemAssetLibraryHandler.h>
 
 #import <ExpoModulesCore/EXFileSystemInterface.h>
 #import <ExpoModulesCore/EXFilePermissionModuleInterface.h>
 
 #import <ExpoModulesCore/EXEventEmitterService.h>
 
-#import <EXFileSystem/EXTaskHandlersManager.h>
-#import <EXFileSystem/EXSessionTaskDispatcher.h>
-#import <EXFileSystem/EXSessionDownloadTaskDelegate.h>
-#import <EXFileSystem/EXSessionResumableDownloadTaskDelegate.h>
-#import <EXFileSystem/EXSessionUploadTaskDelegate.h>
-#import <EXFileSystem/EXSessionCancelableUploadTaskDelegate.h>
+#import <ExpoFileSystem/EXTaskHandlersManager.h>
+#import <ExpoFileSystem/EXSessionTaskDispatcher.h>
+#import <ExpoFileSystem/EXSessionDownloadTaskDelegate.h>
+#import <ExpoFileSystem/EXSessionResumableDownloadTaskDelegate.h>
+#import <ExpoFileSystem/EXSessionUploadTaskDelegate.h>
+#import <ExpoFileSystem/EXSessionCancelableUploadTaskDelegate.h>
 
 NSString * const EXDownloadProgressEventName = @"expo-file-system.downloadProgress";
 NSString * const EXUploadProgressEventName = @"expo-file-system.uploadProgress";

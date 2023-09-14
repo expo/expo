@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXFileSystem/EXSessionCancelableUploadTaskDelegate.h>
+#import <ExpoFileSystem/EXSessionCancelableUploadTaskDelegate.h>
 
 @interface EXSessionCancelableUploadTaskDelegate ()
 
@@ -12,11 +12,11 @@
 
 @implementation EXSessionCancelableUploadTaskDelegate
 
-- (instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
-                         reject:(EXPromiseRejectBlock)reject
-                 onSendCallback:(EXUploadDelegateOnSendCallback)onSendCallback
-                resumableManager:(EXTaskHandlersManager *)manager
-                           uuid:(NSString *)uuid;
+- (nonnull instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
+                                 reject:(EXPromiseRejectBlock)reject
+                         onSendCallback:(EXUploadDelegateOnSendCallback)onSendCallback
+                       resumableManager:(EXTaskHandlersManager *)manager
+                                   uuid:(NSString *)uuid;
 {
   if (self = [super initWithResolve:resolve
                              reject:reject]) {

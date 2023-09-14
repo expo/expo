@@ -339,6 +339,10 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
     return subscribers.first { String(describing: $0) == name }
   }
 
+  public static func getSubscriberOfType<Subscriber>(_ type: Subscriber.Type) -> Subscriber? {
+    return subscribers.first { $0 is Subscriber } as? Subscriber
+  }
+
   @objc
   public static func registerReactDelegateHandlersFrom(modulesProvider: ModulesProvider) {
     modulesProvider.getReactDelegateHandlers()

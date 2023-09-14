@@ -1,19 +1,19 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXFileSystem/EXSessionTaskDispatcher.h>
-#import <EXFileSystem/EXSessionResumableDownloadTaskDelegate.h>
+#import <ExpoFileSystem/EXSessionTaskDispatcher.h>
+#import <ExpoFileSystem/EXSessionResumableDownloadTaskDelegate.h>
 
 @interface EXSessionTaskDispatcher ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSURLSessionTask *, EXSessionTaskDelegate *> *tasks;
 @property (nonatomic) BOOL isActive;
-@property (nonatomic, weak) id<EXSessionHandler> sessionHandler;
+@property (nonatomic, weak, nullable) id<EXSessionHandler> sessionHandler;
 
 @end
 
 @implementation EXSessionTaskDispatcher
 
-- (instancetype)initWithSessionHandler:(id<EXSessionHandler>)sessionHandler;
+- (instancetype)initWithSessionHandler:(nullable id<EXSessionHandler>)sessionHandler;
 {
   if (self = [super init]) {
     _tasks = [NSMutableDictionary dictionary];

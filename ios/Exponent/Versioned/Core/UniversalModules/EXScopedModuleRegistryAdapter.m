@@ -64,7 +64,7 @@
   }
 #endif
 
-#if __has_include(<EXFileSystem/EXFileSystem.h>)
+#if __has_include(<ExpoFileSystem/EXFileSystem.h>)
   EXScopedFileSystemModule *fileSystemModule;
   if (params[@"fileSystemDirectories"]) {
     NSString *documentDirectory = params[@"fileSystemDirectories"][@"documentDirectory"];
@@ -95,7 +95,7 @@
   EXExpoUserNotificationCenterProxy *userNotificationCenter = [[EXExpoUserNotificationCenterProxy alloc] initWithUserNotificationCenter:kernelServices[EX_UNVERSIONED(@"EXUserNotificationCenter")]];
   [moduleRegistry registerInternalModule:userNotificationCenter];
 
-#if __has_include(<EXFileSystem/EXFilePermissionModule.h>)
+#if __has_include(<ExpoFileSystem/EXFilePermissionModule.h>)
   EXScopedFilePermissionModule *filePermissionModule = [[EXScopedFilePermissionModule alloc] init];
   [moduleRegistry registerInternalModule:filePermissionModule];
 #endif
