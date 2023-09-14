@@ -35,9 +35,9 @@ The tradeoff when migrating from `expo build` is that you need to be careful whe
 
 If you use environment variables in your **app.config.js** or in your app source code (for example, with `babel-plugin-inline-dotenv`), you need to define these variables for your build profiles or in secrets, as described in [Environment variables and secrets](/build-reference/variables).
 
-### Custom `"main"` entry point in package.json is not supported
+### Custom `"main"` entry point in package.json is not supported for SDK 48 and below
 
-If your app depends on a custom `"main"` entry point, remove it from **package.json**. Then, create **index.js** at the root of your project and use [`registerRootComponent`](/versions/latest/sdk/register-root-component) to register your root component.
+If your app uses SDK 48 or below and depends on a custom `"main"` entry point, remove it from **package.json**. Then, create **index.js** at the root of your project and use [`registerRootComponent`](/versions/latest/sdk/register-root-component) to register your root component.
 
 For example, if your app's root component lives in **src/App.tsx**, the **index.js** should look like the following:
 
@@ -47,6 +47,8 @@ import App from './src/App';
 
 registerRootComponent(App);
 ```
+
+> **Note:** For SDK 49 and above, see [how to rename the main app file](/versions/latest/sdk/register-root-component/#what-if-i-want-to-name-my-main-app-file-something-other-than-appjs).
 
 ### The `--config` flag is not supported
 

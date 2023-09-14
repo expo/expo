@@ -162,7 +162,7 @@ export function formatUsingNodeStandardLibraryError(
       ].join('\n');
     } else {
       return [
-        `You attempted attempted to import the Node standard library module "${chalk.bold(
+        `You attempted to import the Node standard library module "${chalk.bold(
           targetModuleName
         )}" from "${chalk.bold(relativePath)}".`,
         `It failed because the native React runtime does not include the Node standard library.`,
