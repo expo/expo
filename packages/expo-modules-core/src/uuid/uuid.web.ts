@@ -9,12 +9,10 @@ function uuidv4(): string {
       ? require('crypto')
       : crypto;
 
-  const randomUuid = cryptoObject?.randomUUID && cryptoObject.randomUUID?.bind(cryptoObject);
-
-  if (!randomUuid) {
+  if (!cryptoObject?.randomUUID) {
     throw Error("The browser doesn't support `crypto.randomUUID` function");
   }
-  return randomUuid();
+  return cryptoObject.randomUUID();
 }
 
 const uuid: UUID = {
