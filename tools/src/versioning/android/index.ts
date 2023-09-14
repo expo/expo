@@ -6,10 +6,6 @@ import minimatch from 'minimatch';
 import path from 'path';
 import semver from 'semver';
 
-import * as Directories from '../../Directories';
-import { getListOfPackagesAsync } from '../../Packages';
-import { copyFileWithTransformsAsync } from '../../Transforms';
-import { searchFilesAsync } from '../../Utils';
 import { copyExpoviewAsync } from './copyExpoview';
 import { expoModulesTransforms } from './expoModulesTransforms';
 import { buildManifestMergerJarAsync } from './jarFiles';
@@ -17,6 +13,10 @@ import { packagesToKeep } from './packagesConfig';
 import { versionCxxExpoModulesAsync } from './versionCxx';
 import { updateVersionedReactNativeAsync } from './versionReactNative';
 import { removeVersionedVendoredModulesAsync } from './versionVendoredModules';
+import * as Directories from '../../Directories';
+import { getListOfPackagesAsync } from '../../Packages';
+import { copyFileWithTransformsAsync } from '../../Transforms';
+import { searchFilesAsync } from '../../Utils';
 
 export { versionVendoredModulesAsync } from './versionVendoredModules';
 

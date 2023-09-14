@@ -1,11 +1,11 @@
 import escapeRegExp from 'lodash/escapeRegExp';
 import path from 'path';
 
-import { transformString } from '../../Transforms';
-import { FileTransform, FileTransforms, StringTransform } from '../../Transforms.types';
 import { baseCmakeTransforms } from './cmakeTransforms';
 import { JniLibNames } from './libraries';
 import { packagesToRename } from './packagesConfig';
+import { transformString } from '../../Transforms';
+import { FileTransform, FileTransforms, StringTransform } from '../../Transforms.types';
 
 function pathFromPkg(pkg: string): string {
   return pkg.replace(/\./g, '/');

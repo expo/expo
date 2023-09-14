@@ -2,15 +2,15 @@ import fs from 'fs-extra';
 import path from 'path';
 import semver from 'semver';
 
-import { Podspec } from '../CocoaPods';
-import { EXPOTOOLS_DIR, IOS_DIR } from '../Constants';
-import { arrayize, spawnAsync } from '../Utils';
 import {
   ProjectSpec,
   ProjectSpecDependency,
   ProjectSpecPlatform,
   XcodeConfig,
 } from './XcodeGen.types';
+import { Podspec } from '../CocoaPods';
+import { EXPOTOOLS_DIR, IOS_DIR } from '../Constants';
+import { arrayize, spawnAsync } from '../Utils';
 
 const PODS_DIR = path.join(IOS_DIR, 'Pods');
 const PODS_PUBLIC_HEADERS_DIR = path.join(PODS_DIR, 'Headers', 'Public');

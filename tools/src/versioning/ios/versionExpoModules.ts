@@ -4,17 +4,17 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
-import { Podspec } from '../../CocoaPods';
-import logger from '../../Logger';
-import { Package } from '../../Packages';
-import { FileTransforms, copyFileWithTransformsAsync } from '../../Transforms';
-import { arrayize, searchFilesAsync } from '../../Utils';
 import {
   getCommonExpoModulesTransforms,
   getVersioningExpoModuleConfig,
 } from './transforms/expoModulesTransforms';
 import { VersioningModuleConfig } from './types';
 import { getVersionPrefix, getVersionedDirectory } from './utils';
+import { Podspec } from '../../CocoaPods';
+import logger from '../../Logger';
+import { Package } from '../../Packages';
+import { FileTransforms, copyFileWithTransformsAsync } from '../../Transforms';
+import { arrayize, searchFilesAsync } from '../../Utils';
 
 // Label of the console's timer used during versioning
 const TIMER_LABEL = 'Versioning expo modules finished in';

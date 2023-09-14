@@ -2,11 +2,11 @@ import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import path from 'path';
 
+import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { Parcel, TaskArgs } from '../types';
-import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 const { magenta, green, gray, cyan } = chalk;
 

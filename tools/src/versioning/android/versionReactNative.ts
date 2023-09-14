@@ -2,15 +2,15 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { runReactNativeCodegenAsync } from '../../Codegen';
-import { REACT_NATIVE_SUBMODULE_DIR, REACT_NATIVE_SUBMODULE_MONOREPO_ROOT } from '../../Constants';
-import { copyFileWithTransformsAsync, transformFileAsync } from '../../Transforms';
-import { searchFilesAsync } from '../../Utils';
 import {
   codegenTransforms,
   hermesTransforms,
   reactNativeTransforms,
 } from './reactNativeTransforms';
+import { runReactNativeCodegenAsync } from '../../Codegen';
+import { REACT_NATIVE_SUBMODULE_DIR, REACT_NATIVE_SUBMODULE_MONOREPO_ROOT } from '../../Constants';
+import { copyFileWithTransformsAsync, transformFileAsync } from '../../Transforms';
+import { searchFilesAsync } from '../../Utils';
 
 export async function updateVersionedReactNativeAsync(
   androidDir: string,

@@ -1,9 +1,9 @@
 import escapeRegExp from 'lodash/escapeRegExp';
 
-import type { Package } from '../../Packages';
-import { FileTransforms } from '../../Transforms.types';
 import { packagesToKeep, packagesToRename } from './packagesConfig';
 import { deleteLinesBetweenTags } from './utils';
+import type { Package } from '../../Packages';
+import { FileTransforms } from '../../Transforms.types';
 
 function expoModulesBaseTransforms(pkg: Package, abiVersion: string): FileTransforms {
   return {

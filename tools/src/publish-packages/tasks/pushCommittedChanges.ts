@@ -1,8 +1,8 @@
+import { commitStagedChanges } from './commitStagedChanges';
 import Git from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { commitStagedChanges } from './commitStagedChanges';
 
 /**
  * Pushes committed changes to remote repo.

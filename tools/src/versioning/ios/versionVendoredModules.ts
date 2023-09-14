@@ -4,12 +4,12 @@ import fs from 'fs-extra';
 import glob from 'glob-promise';
 import path from 'path';
 
+import vendoredModulesTransforms from './transforms/vendoredModulesTransforms';
 import { IOS_VENDORED_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { copyFileWithTransformsAsync } from '../../Transforms';
 import { FileTransforms } from '../../Transforms.types';
 import { searchFilesAsync } from '../../Utils';
-import vendoredModulesTransforms from './transforms/vendoredModulesTransforms';
 
 /**
  * Versions iOS vendored modules.

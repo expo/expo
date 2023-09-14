@@ -5,15 +5,15 @@ import fs from 'fs-extra';
 import glob from 'glob-promise';
 import path from 'path';
 
+import {
+  exponentPackageTransforms,
+  vendoredModulesTransforms,
+} from './transforms/vendoredModulesTransforms';
 import { ANDROID_DIR, ANDROID_VENDORED_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { copyFileWithTransformsAsync, transformFilesAsync } from '../../Transforms';
 import { FileTransforms } from '../../Transforms.types';
 import { searchFilesAsync } from '../../Utils';
-import {
-  exponentPackageTransforms,
-  vendoredModulesTransforms,
-} from './transforms/vendoredModulesTransforms';
 
 /**
  * Versions Android vendored modules.

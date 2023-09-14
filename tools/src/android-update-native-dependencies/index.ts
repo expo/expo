@@ -1,12 +1,12 @@
 import chalk from 'chalk';
 
-import logger from '../Logger';
 import { getAndroidProjectReports, Revision } from './androidProjectReports';
 import { promptForNativeDependenciesUpdates, promptForAndroidProjectsSelection } from './prompts';
 import { AndroidProjectReport, GradleDependency } from './types';
 import { addChangelogEntries } from './updateChangelogFiles';
 import { updateGradleDependencies } from './updateGradleFiles';
 import { addColorBasedOnSemverDiff, calculateSemverDiff, getChangelogLink } from './utils';
+import logger from '../Logger';
 
 async function printAvailableUpdates(reports: AndroidProjectReport[]) {
   const printDependency = (dependency: GradleDependency) => {
