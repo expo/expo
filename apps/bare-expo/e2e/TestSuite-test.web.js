@@ -19,13 +19,13 @@ const TESTS = [
   'Crypto',
   'Blur',
   'LinearGradient',
-  'KeepAwake',
   'HTML',
   // Overridding permissions doesn't work in headless mode
   // see https://github.com/puppeteer/puppeteer/issues/3279
   !config.launch.headless && 'expo-notifications',
   //   'Haptics',
   //   'SecureStore',
+  // 'KeepAwake' <-- Bundled chromium doesn't allow setting `wakeLock` even when granted all permissions with `overridePermissions`
 ].filter((t) => t);
 
 // This is how long we allocate for the actual tests to be run after the test screen has mounted.
