@@ -135,23 +135,23 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
                 <Text color="secondary">Connected to:</Text>
 
                 <Spacer.Vertical size="small" />
+                <Button.FadeOnPressContainer
+                  bg="default"
+                  onPress={onCopyUrlPress}
+                  testID="main.copyUrlButton">
+                  <Row align="center">
+                    <StatusIndicator style={{ width: 10, height: 10 }} status="success" />
+                    <Spacer.Horizontal size="small" />
+                    <Row flex="1" justify="between">
+                      <Text type="mono" numberOfLines={2} size="small">
+                        {appInfo.hostUrl}
+                      </Text>
 
-                <Row align="center">
-                  <StatusIndicator style={{ width: 10, height: 10 }} status="success" />
-                  <Spacer.Horizontal size="small" />
-                  <Row flex="1" justify="between">
-                    <Text type="mono" numberOfLines={2} size="small">
-                      {appInfo.hostUrl}
-                    </Text>
-                    <Button.FadeOnPressContainer
-                      bg="default"
-                      onPress={onCopyUrlPress}
-                      testID="main.copyUrlButton">
                       <ClipboardIcon />
-                    </Button.FadeOnPressContainer>
+                    </Row>
+                    <Spacer.Horizontal size="small" />
                   </Row>
-                  <Spacer.Horizontal size="small" />
-                </Row>
+                </Button.FadeOnPressContainer>
               </View>
 
               <Divider />
