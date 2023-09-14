@@ -47,6 +47,8 @@ const CGFloat kEXAutoReloadDebounceSeconds = 0.1;
 // and we want to make sure not to cover the error with a loading view or other chrome.
 const CGFloat kEXDevelopmentErrorCoolDownSeconds = 0.1;
 
+NSString *kEXLastFatalErrorDateDefaultsKey = @"EXKernelLastFatalErrorDateDefaultsKey";
+
 // copy of RNScreens protocol
 @protocol EXKernelRNSScreenWindowTraits
 
@@ -725,12 +727,19 @@ NS_ASSUME_NONNULL_BEGIN
   return [[[UIApplication sharedApplication].windows firstObject].windowScene interfaceOrientation];
 }
 
+- (void)_storeLastFatalErrorDate:(NSDate *)date
+{
+  [[NSUserDefaults standardUserDefaults] setObject:date forKey:kEXLastFatalErrorDateDefaultsKey];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
 #pragma mark - Internal
 
 - (void)_showErrorWithType:(EXFatalErrorType)type error:(nullable NSError *)error
 {
   EXAssertMainThread();
   _dtmLastFatalErrorShown = [NSDate date];
+  [self _storeLastFatalErrorDate:_dtmLastFatalErrorShown];
   if (_errorView && _contentView == _errorView) {
     // already showing, just update
     _errorView.type = type;

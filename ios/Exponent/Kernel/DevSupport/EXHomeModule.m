@@ -322,4 +322,16 @@ RCT_REMAP_METHOD(onEventFailure,
   }
 }
 
+RCT_EXPORT_METHOD(getLastCrashDate:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSDate *retrievedTimestamp = [[NSUserDefaults standardUserDefaults] objectForKey:@"EXKernelLastFatalErrorDateDefaultsKey"];
+  if(!retrievedTimestamp) {
+    resolve(nil);
+    return;
+  }
+
+  resolve(@([retrievedTimestamp timeIntervalSince1970] * 1000));
+}
+
 @end

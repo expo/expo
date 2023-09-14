@@ -9,5 +9,6 @@
 - (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXManifestsManifest *)manifest;
 - (void)getHistoryUrlForScopeKey:(NSString *)scopeKey completion:(void (^)(NSString *))completion;
 - (void)showQRReader;
+- (void)dispatchForegroundHomeEvent;
 
 @end
