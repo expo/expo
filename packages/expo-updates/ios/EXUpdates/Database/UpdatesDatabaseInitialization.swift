@@ -195,7 +195,7 @@ internal final class UpdatesDatabaseInitialization {
     }
 
     var db: OpaquePointer?
-    if sqlite3_open(String(latestURL.absoluteString.utf8), &db) != SQLITE_OK {
+    if sqlite3_open(latestURL.path, &db) != SQLITE_OK {
       NSLog("Error opening migrated SQLite db: %@", [UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db!).message])
       sqlite3_close(db)
       return false
