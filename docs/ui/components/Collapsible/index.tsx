@@ -50,8 +50,8 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
       setOpen(!open);
     };
 
-    const onClickIcon = (event: React.MouseEvent<HTMLElement>) => {
-      event.stopPropagation();
+    const onClickIcon = (event: { stopPropagation?: () => void }) => {
+      event.stopPropagation && event.stopPropagation();
       if (!open) {
         setOpen(true);
       }

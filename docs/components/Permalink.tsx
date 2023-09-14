@@ -82,7 +82,10 @@ const PermalinkCopyIcon = ({
   onClick,
 }: {
   slug: string;
-  onClick?: (event: React.MouseEvent<HTMLElement>) => void | undefined;
+  onClick?: (event: {
+    preventDefault?: () => void;
+    stopPropagation?: () => void;
+  }) => void | undefined;
 }) => {
   const tippyFunc = testTippy || tippy;
 
@@ -101,7 +104,7 @@ const PermalinkCopyIcon = ({
   }, []);
 
   const myOnClick = React.useCallback(
-    (event: React.MouseEvent<HTMLElement>) => {
+    (event: { preventDefault: () => void; stopPropagation?: () => void }) => {
       event.preventDefault();
       const url = window.location.href.replace(/#.*/, '') + '#' + slug;
       navigator.clipboard?.writeText(url);
