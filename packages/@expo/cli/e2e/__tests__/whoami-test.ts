@@ -35,13 +35,14 @@ it('runs `npx expo whoami --help`', async () => {
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
-        Show the currently authenticated username
+        Show the currently authenticated user information
 
       Usage
         $ npx expo whoami
 
       Options
         -h, --help    Usage info
+        --username    Print only the username of the authenticated user
     "
   `);
 });
@@ -57,7 +58,7 @@ it('throws on invalid project root', async () => {
 });
 
 it('runs `npx expo whoami`', async () => {
-  const results = await execute('whoami').catch((e) => e);
+  const results = await execute('whoami', '--username').catch((e) => e);
 
   // Test logged in or logged out.
   if (results.stderr) {
