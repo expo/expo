@@ -38,13 +38,13 @@ function _hash() {
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 // s = static
 const STATIC_EXPORT_DIRECTORY = '_expo/static/css';
-function filterJsModules(dependencies, {
+function filterJsModules(dependencies, type, {
   processModuleFilter,
   projectRoot
 }) {
   const assets = [];
   for (const module of dependencies.values()) {
-    if ((0, _js().isJsModule)(module) && processModuleFilter(module) && (0, _js().getJsOutput)(module).type === 'js/module' && _path().default.relative(projectRoot, module.path) !== 'package.json') {
+    if ((0, _js().isJsModule)(module) && processModuleFilter(module) && (0, _js().getJsOutput)(module).type === type && _path().default.relative(projectRoot, module.path) !== 'package.json') {
       assets.push(module);
     }
   }
@@ -55,7 +55,7 @@ function getCssSerialAssets(dependencies, {
   projectRoot
 }) {
   const assets = [];
-  for (const module of filterJsModules(dependencies, {
+  for (const module of filterJsModules(dependencies, 'js/module', {
     processModuleFilter,
     projectRoot
   })) {

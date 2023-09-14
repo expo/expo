@@ -46,6 +46,7 @@ const getLinkingConfig_1 = require("../getLinkingConfig");
 const getRoutes_1 = require("../getRoutes");
 const head_1 = require("../head");
 const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");
+const debug = require('debug')('expo:router:renderStaticContent');
 react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options) {
@@ -93,8 +94,11 @@ function getStaticContent(location) {
     const css = server_1.default.renderToStaticMarkup(getStyleElement());
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
     output = output.replace('</head>', `${css}</head>`);
+    const fonts = Font.getServerResources();
+    debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
+    // debug('Push static fonts:', fonts)
     // Inject static fonts loaded with expo-font
-    output = output.replace('</head>', `${Font.getServerResources().join('')}</head>`);
+    output = output.replace('</head>', `${fonts.join('')}</head>`);
     return '<!DOCTYPE html>' + output;
 }
 exports.getStaticContent = getStaticContent;

@@ -41,6 +41,7 @@ export type JSModule = Module<{
 
 export function filterJsModules(
   dependencies: ReadOnlyDependencies,
+  type: 'js/script' | 'js/module' | 'js/module/asset',
   { processModuleFilter, projectRoot }: Pick<Options, 'projectRoot' | 'processModuleFilter'>
 ) {
   const assets: JSModule[] = [];
@@ -49,7 +50,7 @@ export function filterJsModules(
     if (
       isJsModule(module) &&
       processModuleFilter(module) &&
-      getJsOutput(module).type === 'js/module' &&
+      getJsOutput(module).type === type &&
       path.relative(projectRoot, module.path) !== 'package.json'
     ) {
       assets.push(module as JSModule);
@@ -64,7 +65,10 @@ export function getCssSerialAssets<T extends any>(
 ): SerialAsset[] {
   const assets: SerialAsset[] = [];
 
-  for (const module of filterJsModules(dependencies, { processModuleFilter, projectRoot })) {
+  for (const module of filterJsModules(dependencies, 'js/module', {
+    processModuleFilter,
+    projectRoot,
+  })) {
     const cssMetadata = getCssMetadata(module);
     if (cssMetadata) {
       const contents = cssMetadata.code;

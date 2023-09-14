@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Updated types for server functions. ([#23911](https://github.com/expo/expo/pull/23911) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 11.6.0 — 2023-09-04
 
 ### 🎉 New features

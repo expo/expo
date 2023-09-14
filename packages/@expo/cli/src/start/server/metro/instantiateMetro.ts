@@ -81,14 +81,21 @@ export async function loadMetroConfigAsync(
     !exp.sdkVersion ||
     gteSdkVersion(exp, '50.0.0')
   ) {
-    // TODO: Handle asset prefix.
     if (isExporting) {
       // This token will be used in the asset plugin to ensure the path is correct for writing locally.
       // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = '/assets?export_path=/assets';
+      config.transformer.publicPath = `/assets?export_path=${
+        (exp.experiments?.basePath ?? '') + '/assets'
+      }`;
     } else {
       // @ts-expect-error: typed as readonly
       config.transformer.publicPath = '/assets/?unstable_path=.';
+    }
+  } else {
+    if (isExporting && exp.experiments?.basePath) {
+      // This token will be used in the asset plugin to ensure the path is correct for writing locally.
+      // @ts-expect-error: typed as readonly.
+      config.transformer.publicPath = exp.experiments?.basePath;
     }
   }
 

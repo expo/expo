@@ -1,6 +1,7 @@
 import { PathConfigMap } from '@react-navigation/core';
 import type { InitialState, NavigationState, PartialState } from '@react-navigation/routers';
 import escape from 'escape-string-regexp';
+import Constants from 'expo-constants';
 import * as queryString from 'query-string';
 import URL from 'url-parse';
 
@@ -44,16 +45,21 @@ type ParsedRoute = {
   params?: Record<string, any> | undefined;
 };
 
-export function getUrlWithReactNavigationConcessions(path: string) {
+export function getUrlWithReactNavigationConcessions(
+  path: string,
+  basePath: string | undefined = Constants.expoConfig?.experiments?.basePath
+) {
   const parsed = new URL(path, 'https://acme.com');
   const pathname = parsed.pathname;
 
   // Make sure there is a trailing slash
   return {
     // The slashes are at the end, not the beginning
-    nonstandardPathname: pathname.replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
+    nonstandardPathname:
+      stripBasePath(pathname, basePath).replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
+
     // React Navigation doesn't support hashes, so here
-    inputPathnameWithoutHash: path.replace(/#.*$/, ''),
+    inputPathnameWithoutHash: stripBasePath(path, basePath).replace(/#.*$/, ''),
   };
 }
 
@@ -734,3 +740,27 @@ const parseQueryParams = (path: string, parseConfig?: Record<string, (value: str
 
   return Object.keys(params).length ? params : undefined;
 };
+
+const basePathCache = new Map<string, RegExp>();
+
+function getBasePathRegex(basePath: string) {
+  if (basePathCache.has(basePath)) {
+    return basePathCache.get(basePath)!;
+  }
+  const regex = new RegExp(`^\\/?${escape(basePath)}`, 'g');
+  basePathCache.set(basePath, regex);
+  return regex;
+}
+
+export function stripBasePath(
+  path: string,
+  basePath: string | undefined = Constants.expoConfig?.experiments?.basePath
+) {
+  if (process.env.NODE_ENV !== 'development') {
+    if (basePath) {
+      const reg = getBasePathRegex(basePath);
+      return path.replace(/^\/+/g, '/').replace(reg, '');
+    }
+  }
+  return path;
+}

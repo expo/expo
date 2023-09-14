@@ -217,12 +217,9 @@ describe('server', () => {
         expect.stringMatching(/bundles\/web-[\w\d]+\.js/),
         expect.stringMatching(/bundles\/web-[\w\d]+\.map/),
         'debug.html',
-        'drawable-mdpi/assets_icon.png',
-        'drawable-xhdpi/assets_icon.png',
         'favicon.ico',
         'index.html',
         'metadata.json',
-        'raw/assets_font.ttf',
       ]);
     },
     // Could take 45s depending on how fast npm installs

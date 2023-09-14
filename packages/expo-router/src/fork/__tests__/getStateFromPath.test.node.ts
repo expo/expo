@@ -1,5 +1,82 @@
+import Constants from 'expo-constants';
+
 import { configFromFs } from '../../utils/mockState';
-import getStateFromPath, { getUrlWithReactNavigationConcessions } from '../getStateFromPath';
+import getPathFromState from '../getPathFromState';
+import getStateFromPath, {
+  stripBasePath,
+  getUrlWithReactNavigationConcessions,
+} from '../getStateFromPath';
+
+jest.mock('expo-constants', () => ({
+  __esModule: true,
+  default: {
+    expoConfig: {},
+  },
+}));
+
+afterEach(() => {
+  Constants.expoConfig!.experiments = undefined;
+});
+
+describe(stripBasePath, () => {
+  [
+    [
+      // Input
+      '/',
+      // Base Path
+      '',
+      // Result
+      '/',
+    ],
+    ['/one/two', '/one', '/two'],
+    ['/one/two', '/one/two', ''],
+    ['/one/two/', '/one/two', '/'],
+    ['///one/', '/one', '/'],
+    ['one/', '/one', 'one/'],
+    ['/a/b', '/one', '/a/b'],
+  ].forEach(([path, basePath, result]) => {
+    it(`strips basePath "${path}"`, () => {
+      expect(stripBasePath(path, basePath)).toBe(result);
+    });
+  });
+});
+
+describe('basePath', () => {
+  it('accounts for basePath', () => {
+    // @ts-expect-error
+    Constants.expoConfig = {
+      experiments: {
+        basePath: '/expo/prefix',
+      },
+    };
+    const path = '/expo/prefix/bar';
+    const config = configFromFs(['_layout.tsx', 'bar.tsx', 'index.tsx']);
+
+    expect(getStateFromPath<object>(path, config)).toEqual({
+      routes: [{ name: '', state: { routes: [{ name: 'bar', path: '/bar' }] } }],
+    });
+
+    expect(getPathFromState(getStateFromPath<object>(path, config), config)).toBe(
+      '/expo/prefix/bar'
+    );
+  });
+
+  it('has basePath and state that does not match', () => {
+    // @ts-expect-error
+    Constants.expoConfig = {
+      experiments: {
+        basePath: '/expo',
+      },
+    };
+    const path = '/bar';
+    const config = configFromFs(['_layout.tsx', 'bar.tsx', 'index.tsx']);
+
+    expect(getStateFromPath<object>(path, config)).toEqual({
+      routes: [{ name: '', state: { routes: [{ name: 'bar', path: '/bar' }] } }],
+    });
+    expect(getPathFromState(getStateFromPath<object>(path, config), config)).toBe('/expo/bar');
+  });
+});
 
 describe(getUrlWithReactNavigationConcessions, () => {
   ['/', 'foo/', 'foo/bar/', 'foo/bar/baz/'].forEach((path) => {
@@ -17,6 +94,19 @@ describe(getUrlWithReactNavigationConcessions, () => {
       expect(getUrlWithReactNavigationConcessions(url).nonstandardPathname).toBe(expected);
     });
   });
+
+  [
+    ['/gh-pages/', '/'],
+    ['https://acme.com/gh-pages/hello/world?foo=bar#123', 'hello/world/'],
+    ['https://acme.com/gh-pages/hello/world/?foo=bar#123', 'hello/world/'],
+  ].forEach(([url, expected]) => {
+    it(`returns the pathname for ${url}`, () => {
+      expect(getUrlWithReactNavigationConcessions(url, 'gh-pages').nonstandardPathname).toBe(
+        expected
+      );
+    });
+  });
+
   [
     ['', ''],
     ['https://acme.com/hello/world/?foo=bar#123', 'https://acme.com/hello/world/?foo=bar'],
