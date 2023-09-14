@@ -56,13 +56,16 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: 1.x
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           gradle: 'true'
           yarn-workspace: 'true'
-          yarn-tools: 'true'
           hermes-engine-aar: 'true'
           react-native-gradle-downloads: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
