@@ -209,7 +209,7 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
                 <Divider />
               </>
             )}
-            <View roundedTop="large" bg="default">
+            <View bg="default">
               <SettingsRowButton
                 disabled={!devSettings.isPerfMonitorAvailable}
                 label="Toggle performance monitor"
