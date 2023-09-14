@@ -1,10 +1,10 @@
 import { css } from '@emotion/react';
 import { LinkBase } from '@expo/styleguide';
-import { ClipboardIcon, Link01SolidIcon } from '@expo/styleguide-icons';
 import * as React from 'react';
 import tippy, { roundArrow } from 'tippy.js';
 
 import { AdditionalProps } from '~/common/headingManager';
+import PermalinkIcon from '~/components/icons/Permalink';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
@@ -77,43 +77,26 @@ const PermalinkBase = ({ component, children, className, ...rest }: BaseProps) =
 // @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
 const { default: testTippy } = tippy;
 
-const PermalinkCopyIcon = ({
-  slug,
-  onClick,
-}: {
-  slug: string;
-  onClick?: (event: React.MouseEvent<HTMLElement>) => void | undefined;
-}) => {
+const PermalinkCopyIcon = ({ slug }: { slug: string }) => {
   const tippyFunc = testTippy || tippy;
-
-  const [tooltipInstance, setTooltipInstance] = React.useState<
-    { setContent: (content: string) => void } | undefined
-  >(undefined);
-
   React.useEffect(() => {
-    const tippyInstance = tippyFunc('#docs-anchor-permalink-copy-' + slug, {
-      content: 'Copy anchor link',
+    tippyFunc('#docs-anchor-permalink-' + slug, {
+      content: 'Click to copy anchor link',
       arrow: roundArrow,
       offset: [0, 0],
-      hideOnClick: false,
     });
-    setTooltipInstance(tippyInstance[0]);
   }, []);
 
-  const myOnClick = React.useCallback(
-    (event: React.MouseEvent<HTMLElement>) => {
-      event.preventDefault();
-      const url = window.location.href.replace(/#.*/, '') + '#' + slug;
-      navigator.clipboard?.writeText(url);
-      tooltipInstance?.setContent('Copied!');
-      onClick && onClick(event);
-    },
-    [tooltipInstance, onClick]
-  );
-
   return (
-    <span id={'docs-anchor-permalink-copy-' + slug} onClick={myOnClick} css={STYLES_PERMALINK_ICON}>
-      <ClipboardIcon className="icon-sm text-icon-default" />
+    <span
+      id={'docs-anchor-permalink-' + slug}
+      onClick={event => {
+        event.preventDefault();
+        const url = window.location.href.replace(/#.*/, '') + '#' + slug;
+        navigator.clipboard?.writeText(url);
+      }}
+      css={STYLES_PERMALINK_ICON}>
+      <PermalinkIcon />
     </span>
   );
 };
@@ -143,9 +126,6 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(
         <LinkBase css={STYLES_PERMALINK_LINK} href={'#' + heading.slug} ref={heading.ref}>
           <span css={STYLES_PERMALINK_TARGET} id={heading.slug} />
           <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
-          <span css={STYLES_PERMALINK_ICON}>
-            <Link01SolidIcon className="icon-sm text-icon-default" />
-          </span>
           <PermalinkCopyIcon slug={heading.slug} />
         </LinkBase>
       </PermalinkBase>
