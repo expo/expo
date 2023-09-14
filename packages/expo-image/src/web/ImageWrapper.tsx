@@ -1,13 +1,13 @@
-import React, { useEffect, Ref, useMemo } from 'react';
+import React, { useEffect, Ref, useMemo, useState } from 'react';
 
 import ColorTintFilter, { getTintColorStyle } from './ColorTintFilter';
-import { ImageWrapperProps } from './ImageWrapper.types';
+import { ImageWrapperProps, OnErrorEvent } from './ImageWrapper.types';
 import { getImageWrapperEventHandler } from './getImageWrapperEventHandler';
 import { absoluteFilledPosition, getObjectPositionFromContentPositionObject } from './positioning';
 import { SrcSetSource } from './useSourceSelection';
 import { ImageNativeProps, ImageSource } from '../Image.types';
 import { useBlurhash } from '../utils/blurhash/useBlurhash';
-import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
+import { isThumbhashString } from '../utils/resolveSources';
 import { thumbHashStringToDataURL } from '../utils/thumbhash/thumbhash';
 
 function getFetchPriorityFromImagePriority(priority: ImageNativeProps['priority'] = 'normal') {
@@ -24,6 +24,73 @@ function getImgPropsFromSource(source: ImageSource | SrcSetSource | null | undef
   return {};
 }
 
+function useThumbhash(source: ImageSource | null | undefined) {
+  const isThumbhash = isThumbhashString(source?.uri || '');
+  const strippedThumbhashString = source?.uri?.replace(/thumbhash:\//, '') ?? '';
+  const thumbhashSource = useMemo(
+    () => (isThumbhash ? { uri: thumbHashStringToDataURL(strippedThumbhashString) } : null),
+    [strippedThumbhashString, isThumbhash]
+  );
+  return thumbhashSource;
+}
+
+function useImageHashes(source: ImageSource | null | undefined) {
+  const thumbhash = useThumbhash(source);
+  const blurhash = useBlurhash(source);
+  return useMemo(
+    () => ({
+      resolvedSource: blurhash ?? thumbhash ?? source,
+      isImageHash: !!blurhash || !!thumbhash,
+    }),
+    [blurhash, thumbhash]
+  );
+}
+
+function useHeaders(
+  source: ImageSource | null | undefined,
+  cachePolicy: ImageNativeProps['cachePolicy'],
+  onError?: OnErrorEvent[]
+): ImageSource | null | undefined {
+  const [objectURL, setObjectURL] = useState<string | null>(null);
+  useEffect(() => {
+    (async () => {
+      if (!source?.headers || !source.uri) {
+        return;
+      }
+      try {
+        const result = await fetch(source.uri, {
+          headers: source.headers,
+          cache: cachePolicy === 'none' ? 'no-cache' : 'default',
+          redirect: 'follow',
+        });
+        if (!result.ok) {
+          throw new Error(`Failed to fetch image: ${result.status} ${result.statusText}`);
+        }
+        const blob = await result.blob();
+        setObjectURL(URL.createObjectURL(blob));
+      } catch (error) {
+        console.error(error);
+        onError?.forEach((e) => e?.({ source }));
+      }
+    })();
+  }, [source]);
+  useEffect(() => {
+    return () => {
+      if (objectURL) {
+        URL.revokeObjectURL(objectURL);
+      }
+    };
+  }, [objectURL]);
+  if (!source?.headers) {
+    return source;
+  }
+  if (!objectURL) {
+    // Avoid fetching a URL without headers if we have headers
+    return null;
+  }
+  return { ...source, uri: objectURL };
+}
+
 const ImageWrapper = React.forwardRef(
   (
     {
@@ -37,6 +104,7 @@ const ImageWrapper = React.forwardRef(
       tintColor,
       className,
       accessibilityLabel,
+      cachePolicy,
       ...props
     }: ImageWrapperProps,
     ref: Ref<HTMLImageElement>
@@ -45,28 +113,17 @@ const ImageWrapper = React.forwardRef(
       events?.onMount?.forEach((e) => e?.());
     }, []);
 
-    const isBlurhash = isBlurhashString(source?.uri || '');
-    const isThumbhash = isThumbhashString(source?.uri || '');
-    const isHash = isBlurhash || isThumbhash;
-
     // Thumbhash uri always has to start with 'thumbhash:/'
-    const thumbhash = source?.uri?.replace(/thumbhash:\//, '');
-    const thumbhashUri = useMemo(
-      () => (isThumbhash ? thumbHashStringToDataURL(thumbhash ?? '') : null),
-      [thumbhash]
-    );
-
-    const blurhashUri = useBlurhash(isBlurhash ? source?.uri : null, source?.width, source?.height);
-    if (!source) {
-      return null;
-    }
+    const { resolvedSource, isImageHash } = useImageHashes(source);
 
     const objectPosition = getObjectPositionFromContentPositionObject(
-      isHash ? hashPlaceholderContentPosition : contentPosition
+      isImageHash ? hashPlaceholderContentPosition : contentPosition
     );
 
-    const uri = isHash ? blurhashUri ?? thumbhashUri : source?.uri;
-
+    const sourceWithHeaders = useHeaders(resolvedSource, cachePolicy, events?.onError);
+    if (!sourceWithHeaders) {
+      return null;
+    }
     return (
       <>
         <ColorTintFilter tintColor={tintColor} />
@@ -74,19 +131,20 @@ const ImageWrapper = React.forwardRef(
           ref={ref}
           alt={accessibilityLabel}
           className={className}
-          src={uri || undefined}
+          src={sourceWithHeaders?.uri || undefined}
           key={source?.uri}
           style={{
             objectPosition,
             ...absoluteFilledPosition,
             ...getTintColorStyle(tintColor),
-            ...(isHash ? hashPlaceholderStyle : {}),
+            ...(isImageHash ? hashPlaceholderStyle : {}),
             ...style,
+            backgroundColor: 'red',
           }}
           // @ts-ignore
           // eslint-disable-next-line react/no-unknown-property
           fetchpriority={getFetchPriorityFromImagePriority(priority || 'normal')}
-          {...getImageWrapperEventHandler(events, source)}
+          {...getImageWrapperEventHandler(events, sourceWithHeaders)}
           {...getImgPropsFromSource(source)}
           {...props}
         />
