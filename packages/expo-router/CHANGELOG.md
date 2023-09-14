@@ -9,7 +9,7 @@
 
 ### 🎉 New features
 
-- Add server manifest.
+- Add server manifest. ([#24429](https://github.com/expo/expo/pull/24429) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

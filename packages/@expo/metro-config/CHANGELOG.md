@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Shim server files in client environments.
+- Shim server files in client environments. ([#24429](https://github.com/expo/expo/pull/24429) by [@EvanBacon](https://github.com/EvanBacon))
 - Replace `metroTarget: 'client' | 'node'` with `isServer: boolean` in the Babel caller. ([#24410](https://github.com/expo/expo/pull/24410) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes

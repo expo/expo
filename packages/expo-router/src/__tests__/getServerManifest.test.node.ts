@@ -39,7 +39,7 @@ xit(`converts single basic`, () => {
   ]);
 });
 
-it(`sorts`, () => {
+it(`sorts deep paths before shallow paths`, () => {
   const a = getServerManifest(getRoutesFor(['./b/c.tsx', './a.tsx']));
   expect(a).toEqual(getServerManifest(getRoutesFor(['./a.tsx', './b/c.tsx'])));
   expect(a.map((r) => r.namedRegex)).toEqual(['^/b/c(?:/)?$', '^/a(?:/)?$']);
