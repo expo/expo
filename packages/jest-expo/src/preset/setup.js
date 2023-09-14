@@ -162,6 +162,8 @@ jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
 try {
   jest.mock('expo-modules-core', () => {
     const ExpoModulesCore = jest.requireActual('expo-modules-core');
+    const uuid = jest.requireActual('expo-modules-core/build/uuid/uuid.web');
+
     const { NativeModulesProxy } = ExpoModulesCore;
 
     // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
@@ -171,6 +173,11 @@ try {
     //
     // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
     // This means the mock functions will not throw validation errors the way they would in an app.
+
+    // Mock the `uuid` object with the implementation for web.
+    ExpoModulesCore.uuid.v4 = uuid.default.v4;
+    ExpoModulesCore.uuid.v5 = uuid.default.v5;
+
     for (const moduleName of Object.keys(NativeModulesProxy)) {
       const nativeModule = NativeModulesProxy[moduleName];
       for (const propertyName of Object.keys(nativeModule)) {

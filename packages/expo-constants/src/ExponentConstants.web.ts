@@ -1,4 +1,4 @@
-import { Platform, uuidv4 } from 'expo-modules-core';
+import { Platform, uuid } from 'expo-modules-core';
 
 import {
   ExecutionEnvironment,
@@ -15,7 +15,7 @@ declare let navigator: Navigator;
 declare let location: Location;
 declare let localStorage: Storage;
 
-const _sessionId = uuidv4();
+const _sessionId = uuid.v4();
 
 function getBrowserName(): string | undefined {
   if (Platform.isDOMAvailable) {
@@ -55,7 +55,7 @@ export default {
     try {
       installationId = localStorage.getItem(ID_KEY);
       if (installationId == null || typeof installationId !== 'string') {
-        installationId = uuidv4();
+        installationId = uuid.v4();
         localStorage.setItem(ID_KEY, installationId as string);
       }
     } catch {
