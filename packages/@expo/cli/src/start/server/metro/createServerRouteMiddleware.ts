@@ -11,7 +11,6 @@ import resolve from 'resolve';
 import { promisify } from 'util';
 
 import { Log } from '../../../log';
-import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
 import { fetchManifest } from './fetchRouterManifest';
 import { bundleApiRoute } from './bundleApiRoutes';
 import { getErrorOverlayHtmlAsync, logMetroError, logMetroErrorAsync } from './metroErrorInterface';
@@ -26,7 +25,13 @@ const resolveAsync = promisify(resolve) as any as (
 
 export function createRouteHandlerMiddleware(
   projectRoot: string,
-  options: { mode?: string; appDir: string; port?: number; getWebBundleUrl: () => string }
+  options: {
+    mode?: string;
+    appDir: string;
+    port?: number;
+    getWebBundleUrl: () => string;
+    getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
+  }
 ) {
   const devServerUrl = `http://localhost:${options.port}`;
 
@@ -42,25 +47,7 @@ export function createRouteHandlerMiddleware(
       },
       async getHtml(request, route) {
         try {
-          const { getStaticContent } = await getStaticRenderFunctions(projectRoot, devServerUrl, {
-            minify: options.mode === 'production',
-            dev: options.mode !== 'production',
-            // Ensure the API Routes are included
-            environment: 'node',
-          });
-
-          let content = await getStaticContent(request.expoUrl);
-
-          //TODO: Not this -- disable injection some other way
-          if (options.mode !== 'production') {
-            // Add scripts for rehydration
-            // TODO: bundle split
-            content = content.replace(
-              '</body>',
-              [`<script src="${options.getWebBundleUrl()}" defer></script>`].join('\n') + '</body>'
-            );
-          }
-
+          const { content } = await options.getStaticPageAsync(request.url);
           return content;
         } catch (error: any) {
           // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.

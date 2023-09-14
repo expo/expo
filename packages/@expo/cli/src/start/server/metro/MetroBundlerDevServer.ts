@@ -40,7 +40,6 @@ import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { fetchManifest } from './fetchRouterManifest';
 import { exportAllApiRoutesAsync, rebundleApiRoute } from './bundleApiRoutes';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { getRouterDirectoryWithManifest, isApiRouteConvention } from './router';
 import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
@@ -250,13 +249,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
   }
 
-  private async renderStaticErrorAsync(error: Error) {
-    return getErrorOverlayHtmlAsync({
-      error,
-      projectRoot: this.projectRoot,
-    });
-  }
-
   async getStaticPageAsync(
     pathname: string,
     {
@@ -423,6 +415,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ...options,
           appDir,
           getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
+          getStaticPageAsync: (pathname) => {
+            return this.getStaticPageAsync(pathname, {
+              mode: options.mode ?? 'development',
+              minify: options.minify,
+              // No base path in development
+              basePath: '',
+            });
+          },
         })
       );
 
