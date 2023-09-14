@@ -338,22 +338,6 @@ export function withExtendedResolver(
 
       result ??= doResolve(moduleName);
 
-      if (
-        // No results
-        !result &&
-        // Not server runtime
-        !isNode &&
-        // is web
-        platform === 'web' &&
-        // Is Node.js external
-        isNodeExternal(moduleName)
-      ) {
-        // In this case, mock the file to use an empty module.
-        return {
-          type: 'empty',
-        };
-      }
-
       if (result) {
         // Replace the web resolver with the original one.
         // This is basically an alias for web-only.
