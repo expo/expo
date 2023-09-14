@@ -23,17 +23,3 @@
 - (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension;
 
 @end
-
-@protocol EXFileSystemHandler
-
-+ (void)getInfoForFile:(NSURL *)fileUri
-           withOptions:(NSDictionary *)optionxs
-              resolver:(EXPromiseResolveBlock)resolve
-              rejecter:(EXPromiseRejectBlock)reject;
-
-+ (void)copyFrom:(NSURL *)from
-              to:(NSURL *)to
-        resolver:(EXPromiseResolveBlock)resolve
-        rejecter:(EXPromiseRejectBlock)reject;
-
-@end
