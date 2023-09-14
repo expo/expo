@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { LinkBase } from '@expo/styleguide';
 import { ClipboardIcon, Link01SolidIcon } from '@expo/styleguide-icons';
 import * as React from 'react';
-import tippy, { roundArrow } from 'tippy.js';
+import tippy from 'tippy.js';
 
 import { AdditionalProps } from '~/common/headingManager';
 import withHeadingManager, {
@@ -93,7 +93,7 @@ const PermalinkCopyIcon = ({
   React.useEffect(() => {
     const tippyInstance = tippyFunc('#docs-anchor-permalink-copy-' + slug, {
       content: 'Copy anchor link',
-      arrow: roundArrow,
+      arrow: null,
       offset: [0, 0],
       hideOnClick: false,
     });
