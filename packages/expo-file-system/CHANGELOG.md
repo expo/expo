@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Migrated to Swift and Expo Modules API on iOS. ([#23943](https://github.com/expo/expo/pull/23943) by [@tsapeta](https://github.com/tsapeta))
+
 ## 15.6.0 — 2023-09-04
 
 ### 🎉 New features

@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXFileSystem/EXSessionHandler.h>
+#import <ExpoFileSystem/EXSessionHandler.h>
 
 #import <ExpoModulesCore/EXDefines.h>
 
