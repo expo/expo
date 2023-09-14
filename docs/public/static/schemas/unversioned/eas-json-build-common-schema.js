@@ -99,6 +99,11 @@ export default [
     description: ['Version of Yarn.'],
   },
   {
+    name: 'pnpm',
+    type: 'string',
+    description: ['Version of pnpm.'],
+  },
+  {
     name: 'expoCli',
     type: 'string',
     description: [
