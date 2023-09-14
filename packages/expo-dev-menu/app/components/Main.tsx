@@ -192,11 +192,12 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
             </View>
           )}
 
-          <View
-            {...(isDevLauncherInstalled ? { roundedTop: 'large' } : { rounded: 'large' })}
-            bg="default"
-            margin="small">
-            <SettingsRowButton label="Reload" icon={<RefreshIcon />} onPress={actions.reload} />
+          <View margin="small">
+            <View
+              {...(isDevLauncherInstalled ? { roundedTop: 'large' } : { rounded: 'large' })}
+              bg="default">
+              <SettingsRowButton label="Reload" icon={<RefreshIcon />} onPress={actions.reload} />
+            </View>
             {isDevLauncherInstalled && (
               <>
                 <Divider />
@@ -212,7 +213,7 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
           </View>
 
           <View mx="small">
-            <View bg="default">
+            <View bg="default" roundedTop="large">
               <SettingsRowButton
                 disabled={!devSettings.isPerfMonitorAvailable}
                 label="Toggle performance monitor"
