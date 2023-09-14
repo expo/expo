@@ -12,7 +12,7 @@ const deviceMessage = Platform.select({
 const simulatorMessage = Platform.select({
   ios: (
     <Text size="medium">
-      You can open it at any time with the <Text weight="bold">{'\u2318 + d '}</Text> keyboard
+      You can open it at any time with the <Text weight="bold">{'\u2303 + d '}</Text> keyboard
       shortcut{' '}
       <Text color="secondary" size="medium">
         ("Connect Hardware Keyboard" must be enabled on your simulator to use this shortcut, you can
