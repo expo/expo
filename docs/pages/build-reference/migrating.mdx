@@ -48,6 +48,8 @@ import App from './src/App';
 registerRootComponent(App);
 ```
 
+> **Note:** For SDK 49 and above, see [how to rename the main app file](/versions/latest/sdk/register-root-component/#what-if-i-want-to-name-my-main-app-file-something-other-than-appjs).
+
 ### The `--config` flag is not supported
 
 If you are using `expo build:[ios|android] --config app.production.json` to switch app configuration files used by your project, you'll have to migrate to an alternative since this is not supported in EAS Build. For more information, see [Migrating away from the `--config` flag in Expo CLI](https://expo.fyi/config-flag-migration).
