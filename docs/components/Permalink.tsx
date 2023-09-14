@@ -1,8 +1,7 @@
 import { css } from '@emotion/react';
 import { LinkBase } from '@expo/styleguide';
-import { ClipboardIcon, Link01SolidIcon } from '@expo/styleguide-icons';
+import { Link01SolidIcon } from '@expo/styleguide-icons';
 import * as React from 'react';
-import tippy from 'tippy.js';
 
 import { AdditionalProps } from '~/common/headingManager';
 import withHeadingManager, {
@@ -73,55 +72,6 @@ const PermalinkBase = ({ component, children, className, ...rest }: BaseProps) =
     },
     children
   );
-
-// @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
-const { default: testTippy } = tippy;
-
-const PermalinkCopyIcon = ({
-  slug,
-  onClick,
-}: {
-  slug: string;
-  onClick?: (event: {
-    preventDefault?: () => void;
-    stopPropagation?: () => void;
-  }) => void | undefined;
-}) => {
-  const tippyFunc = testTippy || tippy;
-
-  const [tooltipInstance, setTooltipInstance] = React.useState<
-    { setContent: (content: string) => void } | undefined
-  >(undefined);
-
-  React.useEffect(() => {
-    const tippyInstance = tippyFunc('#docs-anchor-permalink-copy-' + slug, {
-      content: 'Copy anchor link',
-      arrow: null,
-      offset: [0, 0],
-      hideOnClick: false,
-    });
-    setTooltipInstance(tippyInstance[0]);
-  }, []);
-
-  const myOnClick = React.useCallback(
-    (event: { preventDefault: () => void; stopPropagation?: () => void }) => {
-      event.preventDefault();
-      const url = window.location.href.replace(/#.*/, '') + '#' + slug;
-      navigator.clipboard?.writeText(url);
-      tooltipInstance?.setContent('Copied!');
-      onClick && onClick(event);
-    },
-    [tooltipInstance, onClick]
-  );
-
-  return (
-    <span id={'docs-anchor-permalink-copy-' + slug} onClick={myOnClick} css={STYLES_PERMALINK_ICON}>
-      <ClipboardIcon className="icon-sm text-icon-default" />
-    </span>
-  );
-};
-
-export { PermalinkCopyIcon };
 
 const Permalink: React.FC<EnhancedProps> = withHeadingManager(
   (props: EnhancedProps & HeadingManagerProps) => {
