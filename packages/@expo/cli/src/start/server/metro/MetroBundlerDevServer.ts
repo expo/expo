@@ -86,10 +86,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     resources,
     template,
     devBundleUrl,
+    basePath,
   }: {
     mode: 'development' | 'production';
     resources: SerialAsset[];
     template: string;
+    /** asset prefix used for deploying to non-standard origins like GitHub pages. */
+    basePath: string;
     devBundleUrl?: string;
   }): Promise<string> {
     if (!resources) {
@@ -99,6 +102,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return htmlFromSerialAssets(resources, {
       dev: isDev,
       template,
+      basePath,
       bundleUrl: isDev ? devBundleUrl : undefined,
     });
   }
@@ -224,9 +228,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     {
       mode,
       minify = mode !== 'development',
+      basePath,
     }: {
       mode: 'development' | 'production';
       minify?: boolean;
+      basePath: string;
     }
   ) {
     const devBundleUrlPathname = createBundleUrlPath({
@@ -262,6 +268,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       resources,
       template: staticHtml,
       devBundleUrl: devBundleUrlPathname,
+      basePath,
     });
     return {
       content,
@@ -392,6 +399,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           try {
             const { content } = await this.getStaticPageAsync(req.url, {
               mode: options.mode ?? 'development',
+              // Asset prefix is not supported in development.
+              basePath: '',
             });
 
             res.setHeader('Content-Type', 'text/html');
@@ -528,7 +537,18 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
 
 function htmlFromSerialAssets(
   assets: SerialAsset[],
-  { dev, template, bundleUrl }: { dev: boolean; template: string; bundleUrl?: string }
+  {
+    dev,
+    template,
+    basePath,
+    bundleUrl,
+  }: {
+    dev: boolean;
+    template: string;
+    basePath: string;
+    /** This is dev-only. */
+    bundleUrl?: string;
+  }
 ) {
   // Combine the CSS modules into tags that have hot refresh data attributes.
   const styleString = assets
@@ -538,8 +558,8 @@ function htmlFromSerialAssets(
         return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
       } else {
         return [
-          `<link rel="preload" href="/${filename}" as="style">`,
-          `<link rel="stylesheet" href="/${filename}">`,
+          `<link rel="preload" href="${basePath}/${filename}" as="style">`,
+          `<link rel="stylesheet" href="${basePath}/${filename}">`,
         ].join('');
       }
     })
@@ -551,7 +571,7 @@ function htmlFromSerialAssets(
     ? `<script src="${bundleUrl}" defer></script>`
     : jsAssets
         .map(({ filename }) => {
-          return `<script src="/${filename}" defer></script>`;
+          return `<script src="${basePath}/${filename}" defer></script>`;
         })
         .join('');
 

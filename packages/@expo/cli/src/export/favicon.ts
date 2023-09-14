@@ -14,7 +14,7 @@ export function getUserDefinedFaviconFile(projectRoot: string): string | null {
 
 export async function getVirtualFaviconAssetsAsync(
   projectRoot: string,
-  outputDir: string
+  { basePath, outputDir }: { outputDir: string; basePath: string }
 ): Promise<((html: string) => string) | null> {
   const existing = getUserDefinedFaviconFile(projectRoot);
   if (existing) {
@@ -36,14 +36,17 @@ export async function getVirtualFaviconAssetsAsync(
     })
   );
 
-  return injectFaviconTag;
-}
-
-function injectFaviconTag(html: string): string {
-  if (!html.includes('</head>')) {
-    return html;
+  function injectFaviconTag(html: string): string {
+    if (!html.includes('</head>')) {
+      return html;
+    }
+    return html.replace(
+      '</head>',
+      `<link rel="shortcut icon" href="${basePath}/favicon.ico" /></head>`
+    );
   }
-  return html.replace('</head>', `<link rel="shortcut icon" href="/favicon.ico" /></head>`);
+
+  return injectFaviconTag;
 }
 
 export async function getFaviconFromExpoConfigAsync(projectRoot: string) {

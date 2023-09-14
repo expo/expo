@@ -27,6 +27,8 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     }
   );
 
+  // NOTE(EvanBacon): This may need to be adjusted in the future if want to support basePath on native
+  // platforms when doing production embeds (unlikely).
   const saveAssets = importCliSaveAssetsFromProject(projectRoot);
 
   let sourceMapUrl = options.sourcemapOutput;
