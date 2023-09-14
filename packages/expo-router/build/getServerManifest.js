@@ -103,7 +103,7 @@ function getNamedParametrizedRoute(route) {
                 if (cleanedKey.length === 0 || cleanedKey.length > 30) {
                     invalidKey = true;
                 }
-                if (!isNaN(parseInt(cleanedKey.slice(0, 1)))) {
+                if (!isNaN(parseInt(cleanedKey.slice(0, 1), 10))) {
                     invalidKey = true;
                 }
                 // Prevent duplicates after sanitizing the key
