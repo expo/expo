@@ -25,8 +25,8 @@ const authMiddlewareLink = setContext((_request, previousContext): any => {
     return {
       ...previousContext,
       headers: {
-        ...previousContext.headers,
         'expo-session': sessionSecret,
+        ...previousContext.headers,
       },
     };
   }
