@@ -8,8 +8,8 @@
 @property (nonatomic, strong, readonly) EXPromiseResolveBlock resolve;
 @property (nonatomic, strong, readonly) EXPromiseRejectBlock reject;
 
-- (instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
-                         reject:(EXPromiseRejectBlock)reject;
+- (nonnull instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
+                                 reject:(EXPromiseRejectBlock)reject;
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location;
 

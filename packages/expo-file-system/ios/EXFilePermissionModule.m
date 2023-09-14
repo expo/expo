@@ -1,5 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
-#import <EXFileSystem/EXFilePermissionModule.h>
+#import <ExpoFileSystem/EXFilePermissionModule.h>
 #import <ExpoModulesCore/EXFileSystemInterface.h>
 
 @interface EXFilePermissionModule ()
