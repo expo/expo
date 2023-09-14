@@ -156,7 +156,7 @@ describe('static-rendering with a custom base path', () => {
     async () => {
       expect(
         (await getPageHtml(outputDir, 'links.html')).querySelector(
-          'body > a[data-testid="links-one"]'
+          'body > #root a[data-testid="links-one"]'
         )?.attributes.href
       ).toBe('/one/two/about');
     },
