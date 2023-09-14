@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { LinkBase, shadows, theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
-import { TriangleDownIcon, Link01SolidIcon } from '@expo/styleguide-icons';
+import { TriangleDownIcon } from '@expo/styleguide-icons';
 import { useRouter } from 'next/compat/router';
 import type { PropsWithChildren, ReactNode } from 'react';
 import React from 'react';
@@ -50,30 +50,25 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
       setOpen(!open);
     };
 
-    const onClickIcon = (event: React.MouseEvent<HTMLElement>) => {
-      event.stopPropagation();
-      if (!open) {
-        setOpen(true);
-      }
-    };
-
     // HeadingManager is used to generate a slug that corresponds to the collapsible summary.
     // These are normally generated for MD (#) headings, but Collapsible doesn't have those.
     // This is a ref because identical tags will keep incrementing the number if it is not.
     const heading = React.useRef(props.headingManager.addHeading(summary, 1, undefined));
 
     return (
-      <details id={heading.current.slug} css={detailsStyle} open={open} data-testid={testID}>
-        <summary css={summaryStyle} onClick={onToggle}>
+      <details
+        id={heading.current.slug}
+        onClick={onToggle}
+        css={detailsStyle}
+        open={open}
+        data-testid={testID}>
+        <summary css={summaryStyle}>
           <div css={markerWrapperStyle}>
             <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
           </div>
           <LinkBase href={'#' + heading.current.slug} ref={heading.current.ref}>
             <DEMI>{summary}</DEMI>
-            <span css={STYLES_PERMALINK_ICON}>
-              <Link01SolidIcon onClick={onClickIcon} className="icon-sm text-icon-default" />
-            </span>
-            <PermalinkCopyIcon slug={heading.current.slug} onClick={onClickIcon} />
+            <PermalinkCopyIcon slug={heading.current.slug} />
           </LinkBase>
         </summary>
         <div css={contentStyle}>{children}</div>
@@ -162,23 +157,3 @@ const contentStyle = css({
     marginTop: 0,
   },
 });
-
-const STYLES_PERMALINK_ICON = css`
-  cursor: pointer;
-  vertical-align: middle;
-  display: inline-block;
-  width: 1.2em;
-  height: 1em;
-  padding: 0 0.2em;
-  visibility: hidden;
-
-  a:hover &,
-  a:focus-visible & {
-    visibility: visible;
-  }
-
-  svg {
-    width: 100%;
-    height: auto;
-  }
-`;
