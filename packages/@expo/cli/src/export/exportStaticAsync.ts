@@ -12,6 +12,7 @@ import path from 'path';
 import prettyBytes from 'pretty-bytes';
 import { inspect } from 'util';
 
+import { getVirtualFaviconAssetsAsync } from './favicon';
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
@@ -20,7 +21,6 @@ import {
   getApiRoutesForDirectory,
   getRouterDirectoryWithManifest,
 } from '../start/server/metro/router';
-import { getVirtualFaviconAssetsAsync } from './favicon';
 import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;

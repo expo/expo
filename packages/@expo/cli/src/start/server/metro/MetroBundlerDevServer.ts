@@ -11,6 +11,13 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
 
+import { exportAllApiRoutesAsync, rebundleApiRoute } from './bundleApiRoutes';
+import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
+import { fetchManifest } from './fetchRouterManifest';
+import { instantiateMetroAsync } from './instantiateMetro';
+import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
+import { getRouterDirectoryWithManifest, isApiRouteConvention } from './router';
+import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
@@ -33,16 +40,9 @@ import {
   DeepLinkHandler,
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
-import { prependMiddleware } from '../middleware/mutations';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
+import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
-import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
-import { fetchManifest } from './fetchRouterManifest';
-import { exportAllApiRoutesAsync, rebundleApiRoute } from './bundleApiRoutes';
-import { instantiateMetroAsync } from './instantiateMetro';
-import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import { getRouterDirectoryWithManifest, isApiRouteConvention } from './router';
-import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 export class ForwardHtmlError extends CommandError {
   constructor(

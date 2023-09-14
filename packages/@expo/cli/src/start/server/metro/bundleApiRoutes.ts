@@ -6,9 +6,9 @@
  */
 import path from 'node:path';
 
-import { requireFileContentsWithMetro } from '../getStaticRenderFunctions';
 import { logMetroErrorAsync } from './metroErrorInterface';
 import { getApiRoutesForDirectory } from './router';
+import { requireFileContentsWithMetro } from '../getStaticRenderFunctions';
 
 const debug = require('debug')('expo:server-routes') as typeof console.log;
 

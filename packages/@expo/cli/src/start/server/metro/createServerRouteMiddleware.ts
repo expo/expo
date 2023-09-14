@@ -10,11 +10,11 @@ import requireString from 'require-from-string';
 import resolve from 'resolve';
 import { promisify } from 'util';
 
-import { Log } from '../../../log';
-import { fetchManifest } from './fetchRouterManifest';
-import { bundleApiRoute } from './bundleApiRoutes';
-import { getErrorOverlayHtmlAsync, logMetroError, logMetroErrorAsync } from './metroErrorInterface';
 import { ForwardHtmlError } from './MetroBundlerDevServer';
+import { bundleApiRoute } from './bundleApiRoutes';
+import { fetchManifest } from './fetchRouterManifest';
+import { getErrorOverlayHtmlAsync, logMetroError, logMetroErrorAsync } from './metroErrorInterface';
+import { Log } from '../../../log';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
