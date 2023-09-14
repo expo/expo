@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription, UnavailabilityError, uuidv4 } from 'expo-modules-core';
+import { EventEmitter, Subscription, UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExponentFileSystem from './ExponentFileSystem';
@@ -346,7 +346,7 @@ export function createUploadTask(
 export abstract class FileSystemCancellableNetworkTask<
   T extends DownloadProgressData | UploadProgressData,
 > {
-  private _uuid = uuidv4();
+  private _uuid = uuid.v4();
   protected taskWasCanceled = false;
   private emitter = new EventEmitter(ExponentFileSystem);
   private subscription?: Subscription | null;

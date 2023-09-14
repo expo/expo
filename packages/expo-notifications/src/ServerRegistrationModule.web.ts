@@ -1,4 +1,4 @@
-import { CodedError, uuidv4 } from 'expo-modules-core';
+import { CodedError, uuid } from 'expo-modules-core';
 
 import { ServerRegistrationModule } from './ServerRegistrationModule.types';
 
@@ -7,7 +7,7 @@ const REGISTRATION_INFO_KEY = 'EXPO_NOTIFICATIONS_REGISTRATION_INFO';
 
 // Lazy fallback installationId per session initializer
 let getFallbackInstallationId = () => {
-  const sessionInstallationId = uuidv4();
+  const sessionInstallationId = uuid.v4();
   getFallbackInstallationId = () => sessionInstallationId;
 };
 
@@ -18,7 +18,7 @@ export default {
     try {
       installationId = localStorage.getItem(INSTALLATION_ID_KEY);
       if (!installationId || typeof installationId !== 'string') {
-        installationId = uuidv4();
+        installationId = uuid.v4();
         localStorage.setItem(INSTALLATION_ID_KEY, installationId);
       }
     } catch {

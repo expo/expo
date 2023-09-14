@@ -1,4 +1,4 @@
-import { uuidv4 } from 'expo-modules-core';
+import { uuid } from 'expo-modules-core';
 import gql from 'graphql-tag';
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -34,7 +34,7 @@ describe('User Authentication Flow', () => {
   });
 
   it(`logs in and stores session tokens correctly`, async () => {
-    const { sessionSecret } = { sessionSecret: uuidv4() };
+    const { sessionSecret } = { sessionSecret: uuid.v4() };
 
     // store session token
     await Store.dispatch(SessionActions.setSession({ sessionSecret }));
@@ -52,7 +52,7 @@ describe('User Authentication Flow', () => {
     const ApolloClient = require('../ApolloClient').default;
     const apolloLinkRequest = jest.spyOn(ApolloClient.link, 'request');
 
-    const { sessionSecret } = { sessionSecret: uuidv4() };
+    const { sessionSecret } = { sessionSecret: uuid.v4() };
 
     // store session token
     await Store.dispatch(SessionActions.setSession({ sessionSecret }));
