@@ -61,3 +61,4 @@ class ExpoRequest extends node_1.Request {
     }
 }
 exports.ExpoRequest = ExpoRequest;
+//# sourceMappingURL=environment.js.map

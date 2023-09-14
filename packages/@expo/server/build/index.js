@@ -206,3 +206,4 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     };
 }
 exports.createRequestHandler = createRequestHandler;
+//# sourceMappingURL=index.js.map
