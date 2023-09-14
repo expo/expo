@@ -33,8 +33,6 @@ export function createRouteHandlerMiddleware(
     getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
   }
 ) {
-  const devServerUrl = `http://localhost:${options.port}`;
-
   return createRequestHandler(
     { build: '' },
     {
@@ -45,7 +43,7 @@ export function createRouteHandlerMiddleware(
         // TODO: Redirect to 404 page
         return manifest;
       },
-      async getHtml(request, route) {
+      async getHtml(request) {
         try {
           const { content } = await options.getStaticPageAsync(request.url);
           return content;
