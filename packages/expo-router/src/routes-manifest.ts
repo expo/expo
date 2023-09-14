@@ -1,7 +1,7 @@
 // This file runs in Node.js environments.
 // no relative imports
-import { getServerManifest } from './getServerManifest';
 import { getRoutes } from './getRoutes';
+import { getServerManifest } from './getServerManifest';
 import { RequireContext } from './types';
 
 export type RouteInfo<TRegex = string> = {

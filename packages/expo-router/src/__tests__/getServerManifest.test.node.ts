@@ -1,5 +1,5 @@
-import { getServerManifest } from '../getServerManifest';
 import { getExactRoutes } from '../getRoutes';
+import { getServerManifest } from '../getServerManifest';
 import { RequireContext } from '../types';
 
 function createMockContextModule(map: Record<string, Record<string, any>> = {}) {

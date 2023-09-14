@@ -23,13 +23,13 @@ function getProcessedManifest(path) {
                 namedRegex: new RegExp(value.namedRegex),
             };
         }),
-        dynamicRoutes: routesManifest.dynamicRoutes.map((value) => {
+        apiRoutes: routesManifest.apiRoutes.map((value) => {
             return {
                 ...value,
                 namedRegex: new RegExp(value.namedRegex),
             };
         }),
-        staticRoutes: routesManifest.staticRoutes.map((value) => {
+        htmlRoutes: routesManifest.htmlRoutes.map((value) => {
             return {
                 ...value,
                 namedRegex: new RegExp(value.namedRegex),
@@ -103,7 +103,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
         debug('Request', sanitizedPathname);
         if (request.method === 'GET' || request.method === 'HEAD') {
             // First test static routes
-            for (const route of routesManifest.staticRoutes) {
+            for (const route of routesManifest.htmlRoutes) {
                 if (!route.namedRegex.test(sanitizedPathname)) {
                     continue;
                 }
@@ -132,7 +132,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
             }
         }
         // Next, test API routes
-        for (const route of routesManifest.dynamicRoutes) {
+        for (const route of routesManifest.apiRoutes) {
             if (!route.namedRegex.test(sanitizedPathname)) {
                 continue;
             }

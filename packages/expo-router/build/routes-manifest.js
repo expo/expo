@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRoutesManifest = void 0;
 // This file runs in Node.js environments.
 // no relative imports
-const getServerManifest_1 = require("./getServerManifest");
 const getRoutes_1 = require("./getRoutes");
+const getServerManifest_1 = require("./getServerManifest");
 function createMockContextModule(map = []) {
     const contextModule = (key) => ({ default() { } });
     Object.defineProperty(contextModule, 'keys', {
