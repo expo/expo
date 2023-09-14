@@ -2207,11 +2207,6 @@ PODS:
     - ExpoModulesCore
   - EXContacts (12.4.0):
     - ExpoModulesCore
-  - EXFileSystem (15.6.0):
-    - ExpoModulesCore
-  - EXFileSystem/Tests (15.6.0):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
   - EXFont (11.6.0):
     - ExpoModulesCore
   - EXImageLoader (4.4.0):
@@ -2259,6 +2254,11 @@ PODS:
     - ExpoModulesCore
   - ExpoDocumentPicker (11.7.0):
     - ExpoModulesCore
+  - ExpoFileSystem (15.6.0):
+    - ExpoModulesCore
+  - ExpoFileSystem/Tests (15.6.0):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoGL (13.2.0):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
@@ -3456,8 +3456,6 @@ DEPENDENCIES:
   - EXCamera (from `../packages/expo-camera/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
-  - EXFileSystem (from `../packages/expo-file-system/ios`)
-  - EXFileSystem/Tests (from `../packages/expo-file-system/ios`)
   - EXFont (from `../packages/expo-font/ios`)
   - EXImageLoader (from `../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../packages/expo-json-utils/ios`)
@@ -3480,6 +3478,8 @@ DEPENDENCIES:
   - ExpoCrypto (from `../packages/expo-crypto/ios`)
   - ExpoDevice (from `../packages/expo-device/ios`)
   - ExpoDocumentPicker (from `../packages/expo-document-picker/ios`)
+  - ExpoFileSystem (from `../packages/expo-file-system/ios`)
+  - ExpoFileSystem/Tests (from `../packages/expo-file-system/ios`)
   - ExpoGL (from `../packages/expo-gl`)
   - ExpoHaptics (from `../packages/expo-haptics/ios`)
   - ExpoHead (from `../packages/expo-router/ios`)
@@ -4331,8 +4331,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-constants/ios"
   EXContacts:
     :path: "../packages/expo-contacts/ios"
-  EXFileSystem:
-    :path: "../packages/expo-file-system/ios"
   EXFont:
     :path: "../packages/expo-font/ios"
   EXImageLoader:
@@ -4371,6 +4369,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-device/ios"
   ExpoDocumentPicker:
     :path: "../packages/expo-document-picker/ios"
+  ExpoFileSystem:
+    :path: "../packages/expo-file-system/ios"
   ExpoGL:
     :path: "../packages/expo-gl"
   ExpoHaptics:
@@ -4912,7 +4912,6 @@ SPEC CHECKSUMS:
   EXCamera: 2dc2bd2828bca4e283018a0b5a84aec6639ff0b4
   EXConstants: f7ac442bf810dd8605f7eff9a44b2ff0d8a45b40
   EXContacts: afd38f7adacef9a76d6d0bc479f30051736f068f
-  EXFileSystem: f601bc6950ff42ec66d89aab5601750f9c5b07bb
   EXFont: 184302793457ce7c6a8260b729c408beb659c2cc
   EXImageLoader: 03063370bc06ea1825713d3f55fe0455f7c88d04
   EXJSONUtils: adddef895cae6148f1083c8a2a4b7300701ecc6b
@@ -4932,6 +4931,7 @@ SPEC CHECKSUMS:
   ExpoCrypto: 42485127a5968dda6f67ac5f2b42d3c0af31d7db
   ExpoDevice: 4b9825263a3f996fd5a89ec26426e22e6cbc32d6
   ExpoDocumentPicker: d3b6b0ed2dbbc2f05158e0294dd3f4673f386e5f
+  ExpoFileSystem: 50dfe9a70f6b6c0b7d1fca502a7ee0d8caf69883
   ExpoGL: d41d4054d14289fb9f537b1203f23a845525c2dd
   ExpoHaptics: 604aca02e942d1d43c139cae7cf397b26f85476f
   ExpoHead: f77f5adeb4d1a76e912ad7303d96ca07e20ec506
