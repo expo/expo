@@ -1,0 +1,27 @@
+name: Setup Expo Tools
+description: Install and prepare basic tools for the Expo monorepo
+
+inputs:
+  node-version:
+    description: Version of Node.js to use
+    default: 18.x
+
+  bun-version:
+    description: Version of Bun to use
+    default: 1.x
+
+runs:
+  using: composite
+  steps:
+    - name: ⬢ Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: 🏗️ Setup Bun
+      uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: ${{ inputs.bun-version }}
+
+    - name: ➕ Add `bin` to GITHUB_PATH
+      run: echo "$(pwd)/bin" >> $GITHUB_PATH

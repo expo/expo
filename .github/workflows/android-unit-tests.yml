@@ -34,18 +34,14 @@ jobs:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=1024m
     steps:
-      - name: ⬢ Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: 1.x
       - name: 👀 Check out repository
         uses: actions/checkout@v3
         with:
           submodules: true
+      - name: 🏗️ Setup Expo Tools
+        uses: ./.github/actions/setup-expo-tools
+        with:
+          node-version: 16
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🔨 Use JDK 11
@@ -60,8 +56,6 @@ jobs:
           yarn-workspace: 'true'
           hermes-engine-aar: 'true'
           react-native-gradle-downloads: 'true'
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile

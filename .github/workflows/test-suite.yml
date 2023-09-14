@@ -150,21 +150,15 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: ⬢ Setup Node
-        uses: actions/setup-node@v3
+      - name: 🏗️ Setup Expo Tools
+        uses: ./.github/actions/setup-expo-tools
         with:
           node-version: 16
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: 1.x
       - name: 🔨 Use JDK 11
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches

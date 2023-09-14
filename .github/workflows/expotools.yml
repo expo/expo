@@ -22,10 +22,8 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: 1.x
+      - name: 🏗️ Setup Expo Tools
+        uses: ./.github/actions/setup-expo-tools
       - name: 📦 Install modules in tools dir
         run: bun install --yarn --ignore-scripts --frozen-lockfile
         working-directory: tools

@@ -43,18 +43,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: 1.x
+      - name: 🏗️ Setup Expo Tools
+        uses: ./.github/actions/setup-expo-tools
       - name: 🔨 Switch to Xcode 14.3
         run: sudo xcode-select --switch /Applications/Xcode_14.3.app
       - name: 🔓 Decrypt secrets if possible
         uses: ./.github/actions/expo-git-decrypt
         with:
           key: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
