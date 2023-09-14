@@ -31,7 +31,7 @@ it(`sets up typed routes`, async () => {
   expect(setupTypedRoutes).toBeCalledWith({
     metro,
     projectRoot: '/',
-    routerDirectory: 'app',
+    routerDirectory: '/app',
     server,
     typesDirectory: '/.expo/types',
   });
@@ -73,7 +73,7 @@ it(`sets up typed routes and removes`, async () => {
   expect(setupTypedRoutes).toBeCalledWith({
     metro,
     projectRoot: '/',
-    routerDirectory: 'app',
+    routerDirectory: '/app',
     server,
     typesDirectory: '/.expo/types',
   });
