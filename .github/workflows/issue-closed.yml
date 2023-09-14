@@ -11,13 +11,12 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: 1.x
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-tools: 'true'
       - name: 🔎 Close Linear issue
         run: expotools close-linear-issue-from-github --issue "${{ github.event.issue.number }}"
         env:

@@ -96,13 +96,12 @@ jobs:
             `})
       - name: 👀 Checkout
         uses: actions/checkout@v3
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: 1.x
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-tools: 'true'
       - name: 🔎 Import issue to Linear
         run: expotools import-github-issue-to-linear --issue "${{ github.event.issue.number }}" --importer "${{ github.triggering_actor }}"
         env:

@@ -29,6 +29,10 @@ jobs:
         uses: ./.github/actions/expo-git-decrypt
         with:
           key: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: 1.x
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
@@ -41,7 +45,6 @@ jobs:
         id: expo-caches
         with:
           yarn-workspace: 'true'
-          yarn-tools: 'true'
           ios-pods: 'true'
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'

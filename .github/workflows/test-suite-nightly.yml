@@ -109,6 +109,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: 1.x
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
@@ -116,7 +120,6 @@ jobs:
         id: expo-caches
         with:
           gradle: 'true'
-          yarn-tools: 'true'
       - name: ⚙️ Setup react-native nightly
         run: et setup-react-native-nightly
       - name: ⚛️ Display React Native config
