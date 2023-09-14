@@ -134,9 +134,10 @@ export async function exportAppAsync(
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
         minify,
-        exportServer: exp.web?.output === 'server',
         basePath,
         includeMaps: dumpSourcemap,
+        // @ts-expect-error: server not on type yet
+        exportServer: exp.web?.output === 'server',
       });
       Log.log('Finished saving static files');
     } else {
