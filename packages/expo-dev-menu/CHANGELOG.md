@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `control+d` as a hotkey to open the menu.
+- Add `control+d` as a hotkey to open the menu. ([#24434](https://github.com/expo/expo/pull/24434) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
