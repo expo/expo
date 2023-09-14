@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Support mocking Node.js externals for client-side bundles. ([#24453](https://github.com/expo/expo/pull/24453) by [@EvanBacon](https://github.com/EvanBacon))
 - Add additional port check after build to ensure port is still available. ([#24315](https://github.com/expo/expo/pull/24315) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for bun as a package manager. ([#24344](https://github.com/expo/expo/pull/24344) by [@EvanBacon](https://github.com/EvanBacon))
 

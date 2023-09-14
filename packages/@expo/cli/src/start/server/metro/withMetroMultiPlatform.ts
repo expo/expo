@@ -316,6 +316,26 @@ export function withExtendedResolver(
         );
       }
 
+      if (
+        // is web
+        platform === 'web' &&
+        // Not server runtime
+        !isNode &&
+        // Is Node.js built-in
+        isNodeExternal(moduleName)
+      ) {
+        // Perform optional resolve first. If the module doesn't exist (no module in the node_modules)
+        // then we can mock the file to use an empty module.
+        result ??= optionalResolve(moduleName);
+
+        if (!result) {
+          // In this case, mock the file to use an empty module.
+          return {
+            type: 'empty',
+          };
+        }
+      }
+
       result ??= doResolve(moduleName);
 
       if (result) {

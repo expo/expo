@@ -170,7 +170,7 @@ describe(formatUsingNodeStandardLibraryError, () => {
       targetModuleName: 'path',
     } as any);
     expect(stripAnsi(format)).toMatchInlineSnapshot(`
-      "You attempted attempted to import the Node standard library module "path" from "App.js".
+      "You attempted to import the Node standard library module "path" from "App.js".
       It failed because the native React runtime does not include the Node standard library.
       Learn more: https://docs.expo.dev/workflow/using-libraries/#using-third-party-libraries"
     `);
