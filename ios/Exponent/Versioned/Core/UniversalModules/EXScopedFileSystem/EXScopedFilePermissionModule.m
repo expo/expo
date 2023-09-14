@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#if __has_include(<EXFileSystem/EXFilePermissionModule.h>)
+#if __has_include(<ExpoFileSystem/EXFilePermissionModule.h>)
 #import "EXScopedFilePermissionModule.h"
 #import <ExpoModulesCore/EXFileSystemInterface.h>
 

@@ -1,7 +1,7 @@
 import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
-@testable import EXFileSystem
+@testable import ExpoFileSystem
 
 class EXFileSystemSpec: ExpoSpec {
   override func spec() {

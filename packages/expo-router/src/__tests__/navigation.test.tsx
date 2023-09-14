@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import React, { Text } from 'react-native';
 
 import {
@@ -7,6 +8,7 @@ import {
   useLocalSearchParams,
   Redirect,
   Slot,
+  usePathname,
 } from '../exports';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
@@ -376,4 +378,38 @@ it('can pop back from a nested modal to a nested sibling', async () => {
 
   act(() => router.back());
   expect(screen).toHavePathname('/slot');
+});
+
+jest.mock('expo-constants', () => ({
+  __esModule: true,
+  ExecutionEnvironment: jest.requireActual('expo-constants').ExecutionEnvironment,
+  default: {
+    expoConfig: {},
+  },
+}));
+
+afterEach(() => {
+  Constants.expoConfig!.experiments = undefined;
+});
+
+it('respects basePath', async () => {
+  // @ts-expect-error
+  Constants.expoConfig = {
+    experiments: {
+      basePath: '/one/two',
+    },
+  };
+
+  renderRouter({
+    index: function Index() {
+      const pathname = usePathname();
+      return <Text testID="rendered-path">{pathname}</Text>;
+    },
+  });
+
+  expect(screen).toHavePathname('/');
+
+  const text = await screen.findByTestId('rendered-path');
+
+  expect(text).toHaveTextContent('/');
 });

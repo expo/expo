@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_native_1 = require("react-native");
+const getPathFromState_1 = require("../fork/getPathFromState");
 const router_store_1 = require("../global-state/router-store");
 const matchers_1 = require("../matchers");
 function eventShouldPreventDefault(e) {
@@ -38,8 +39,8 @@ function useLinkToPathProps(props) {
         }
     };
     return {
-        // Ensure there's always a value for href
-        href: (0, matchers_1.stripGroupSegmentsFromPath)(props.href) || '/',
+        // Ensure there's always a value for href. Manually append the basePath to the href prop that shows in the static HTML.
+        href: (0, getPathFromState_1.appendBasePath)((0, matchers_1.stripGroupSegmentsFromPath)(props.href) || '/'),
         role: 'link',
         onPress,
     };
