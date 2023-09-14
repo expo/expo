@@ -25,11 +25,11 @@ Beginning with iOS 13, any app that includes third-party authentication options 
 
 This guide assumes [auto capability sync](../../../build-reference/ios-capabilities) is enabled (Default). Otherwise you'll need to manually enable the capabilities for your bundle identifier through the Apple Developer Console.
 
-#### Managed Workflow
+#### Managed workflow
 
 1. Build with `eas build -p ios`. EAS Build and the config plugin will automatically configure this service with Apple.
 
-#### Bare Workflow
+#### Bare workflow
 
 1. Ensure you've added enabled the Apple Sign In capability, either through the Xcode:
 
@@ -90,7 +90,7 @@ function YourComponent() {
 }
 ```
 
-## Development and Testing
+## Development and testing
 
 You can test this library in development in Expo Go on iOS without following any of the instructions above; however, you'll need to do this setup to use Apple Authentication in your standalone app. When you sign into Expo Go, the identifiers and values you receive will likely be different than what you'll receive in standalone apps.
 
@@ -108,7 +108,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 
 <APISection packageName="expo-apple-authentication" apiName="AppleAuthentication" />
 
-## Error Codes
+## Error codes
 
 | Code                                    | Description                                                                                            |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------ |
