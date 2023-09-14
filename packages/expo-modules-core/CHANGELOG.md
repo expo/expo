@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed random `NullPointerExceptions` when calling `Updates.reloadAsync` on Android. ([#24442](https://github.com/expo/expo/pull/24442) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 1.5.12 — 2023-11-17
