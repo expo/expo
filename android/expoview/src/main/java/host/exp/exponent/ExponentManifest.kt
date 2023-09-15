@@ -161,7 +161,7 @@ class ExponentManifest @Inject constructor(
     throw RuntimeException("Can't get local manifest: $e")
   }
 
-  private fun getRemoteKernelManifest(): Manifest? = try {
+  private fun getEmbeddedKernelManifest(): Manifest? = try {
     val inputStream = context.assets.open(EMBEDDED_KERNEL_MANIFEST_ASSET)
     val jsonString = IOUtils.toString(inputStream)
     val manifest = JSONObject(jsonString)
@@ -175,9 +175,9 @@ class ExponentManifest @Inject constructor(
   fun getKernelManifestAndAssetRequestHeaders(): ManifestAndAssetRequestHeaders {
     val manifestAndAssetRequestHeaders: ManifestAndAssetRequestHeaders
     val log: String
-    if (exponentSharedPreferences.shouldUseInternetKernel()) {
-      log = "Using remote Expo kernel manifest"
-      manifestAndAssetRequestHeaders = ManifestAndAssetRequestHeaders(getRemoteKernelManifest()!!, JSONObject())
+    if (exponentSharedPreferences.shouldUseEmbeddedKernel()) {
+      log = "Using embedded Expo kernel manifest"
+      manifestAndAssetRequestHeaders = ManifestAndAssetRequestHeaders(getEmbeddedKernelManifest()!!, JSONObject())
     } else {
       log = "Using local Expo kernel manifest"
       manifestAndAssetRequestHeaders = getLocalKernelManifestAndAssetRequestHeaders()
