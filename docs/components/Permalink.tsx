@@ -1,7 +1,6 @@
 import { css } from '@emotion/react';
 import { LinkBase } from '@expo/styleguide';
 import * as React from 'react';
-import tippy, { roundArrow } from 'tippy.js';
 
 import { AdditionalProps } from '~/common/headingManager';
 import PermalinkIcon from '~/components/icons/Permalink';
@@ -74,35 +73,6 @@ const PermalinkBase = ({ component, children, className, ...rest }: BaseProps) =
     children
   );
 
-// @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
-const { default: testTippy } = tippy;
-
-const PermalinkCopyIcon = ({ slug }: { slug: string }) => {
-  const tippyFunc = testTippy || tippy;
-  React.useEffect(() => {
-    tippyFunc('#docs-anchor-permalink-' + slug, {
-      content: 'Click to copy anchor link',
-      arrow: roundArrow,
-      offset: [0, 0],
-    });
-  }, []);
-
-  return (
-    <span
-      id={'docs-anchor-permalink-' + slug}
-      onClick={event => {
-        event.preventDefault();
-        const url = window.location.href.replace(/#.*/, '') + '#' + slug;
-        navigator.clipboard?.writeText(url);
-      }}
-      css={STYLES_PERMALINK_ICON}>
-      <PermalinkIcon />
-    </span>
-  );
-};
-
-export { PermalinkCopyIcon };
-
 const Permalink: React.FC<EnhancedProps> = withHeadingManager(
   (props: EnhancedProps & HeadingManagerProps) => {
     // NOTE(jim): Not the greatest way to generate permalinks.
@@ -126,7 +96,9 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(
         <LinkBase css={STYLES_PERMALINK_LINK} href={'#' + heading.slug} ref={heading.ref}>
           <span css={STYLES_PERMALINK_TARGET} id={heading.slug} />
           <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
-          <PermalinkCopyIcon slug={heading.slug} />
+          <span css={STYLES_PERMALINK_ICON}>
+            <PermalinkIcon />
+          </span>
         </LinkBase>
       </PermalinkBase>
     );
