@@ -1,4 +1,8 @@
-import type { NavigationAction, NavigationState } from '@react-navigation/native';
+import {
+  CommonActions,
+  type NavigationAction,
+  type NavigationState,
+} from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 
 import type { RouterStore } from './router-store';
@@ -88,23 +92,12 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
     console.error('Could not generate a valid navigation state for the given path: ' + href);
     return;
   }
-  if (!event) {
-    const { screen, params } = rewriteNavigationStateToParams(state);
-    // TODO: Not sure how to type screen/params here
-    return (navigationRef as any).navigate(screen, params);
-  } else if (event === 'REPLACE') {
-    const dispatch = getNavigateRefDispatchReplaceParams(state, navigationRef.getRootState());
 
-    if (!dispatch) {
-      // This shouldn't occur, as the the root navigator is a stack
-      throw new Error(
-        'No rendered navigators support replace navigation. Please use a <Stack /> or a <Tabs /> navigator.'
-      );
-    }
-
-    navigationRef.dispatch(dispatch);
-  } else {
-    throw new Error('Unknown navigation event type: ' + event);
+  switch (event) {
+    case 'REPLACE':
+      return navigationRef.dispatch(getNavigateReplaceAction(state, navigationRef.getRootState()));
+    default:
+      return navigationRef.dispatch(getNavigatePushAction(state));
   }
 }
 
@@ -129,40 +122,49 @@ function rewriteNavigationStateToParams(
   return params;
 }
 
-function getNavigateRefDispatchReplaceParams(
+function getNavigatePushAction(state: ResultState) {
+  const { screen, params } = rewriteNavigationStateToParams(state);
+  return {
+    type: 'NAVIGATE',
+    payload: {
+      name: screen,
+      params,
+    },
+  };
+}
+
+function getNavigateReplaceAction(
   previousState: ResultState,
   parentState: NavigationState,
-  lastReplaceableNavigator: NavigationState | undefined = undefined
-): NavigationAction | null {
+  lastNavigatorSupportingReplace: NavigationState = parentState
+): NavigationAction {
   const state = previousState.routes.at(-1)!;
 
+  // Only these navigators support replace
   if (parentState.type === 'stack' || parentState.type === 'tab') {
-    lastReplaceableNavigator = parentState;
+    lastNavigatorSupportingReplace = parentState;
   }
 
-  const loadedNavigator = parentState.routes.find((route: any) => route.name === state.name);
+  const currentRoute = parentState.routes.find((route) => route.name === state.name);
+  const routesDiverged = parentState.routes[parentState.index] !== currentRoute;
 
-  const isNavigatingToDifferentNavigator =
-    parentState.routes[parentState.index] !== loadedNavigator;
-
-  if (isNavigatingToDifferentNavigator || !loadedNavigator?.state || !state.state) {
-    if (!lastReplaceableNavigator) return null;
-
-    const { screen: name, params } = rewriteNavigationStateToParams(previousState);
-
+  // The routes has diverged or we reached the bottom route, so
+  // we should navigate from the lastNavigatorSupportingReplace
+  if (routesDiverged || !state.state) {
+    const { screen, params } = rewriteNavigationStateToParams(previousState);
     return {
-      type: lastReplaceableNavigator.type === 'stack' ? 'REPLACE' : 'JUMP_TO',
+      type: lastNavigatorSupportingReplace.type === 'stack' ? 'REPLACE' : 'JUMP_TO',
       payload: {
-        name,
+        name: screen,
         params,
-        source: lastReplaceableNavigator?.key,
+        source: lastNavigatorSupportingReplace?.key,
       },
     };
   }
 
-  return getNavigateRefDispatchReplaceParams(
+  return getNavigateReplaceAction(
     state.state,
-    loadedNavigator.state as any,
-    lastReplaceableNavigator
+    currentRoute.state as any,
+    lastNavigatorSupportingReplace
   );
 }
