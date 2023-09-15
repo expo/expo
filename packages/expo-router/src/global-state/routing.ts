@@ -140,7 +140,7 @@ function getNavigateReplaceAction(
   parentState: NavigationState,
   lastNavigatorSupportingReplace: NavigationState = parentState
 ): NavigationAction {
-  // We Should always have at least one route in the state
+  // We should always have at least one route in the state
   const state = previousState.routes.at(-1)!;
 
   // Only these navigators support replace
@@ -160,7 +160,7 @@ function getNavigateReplaceAction(
     );
   }
 
-  // Either we reached the bottom or the state or the point where the routes diverged
+  // Either we reached the bottom of the state or the point where the routes diverged
   const { screen, params } = rewriteNavigationStateToParams(previousState);
   return {
     type: lastNavigatorSupportingReplace.type === 'stack' ? 'REPLACE' : 'JUMP_TO',
