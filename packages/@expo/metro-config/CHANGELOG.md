@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Shim server files in client environments. ([#24429](https://github.com/expo/expo/pull/24429) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.13.1 — 2023-09-15
+
+### 🎉 New features
+
+- Shim server files in client environments. ([#24429](https://github.com/expo/expo/pull/24429) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.13.0 — 2023-09-15
 
