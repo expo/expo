@@ -57,8 +57,8 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.13.0",
-    "@expo/config": "8.3.0",
+    "@expo/cli": "0.13.1",
+    "@expo/config": "8.3.1",
     "@expo/config-plugins": "7.5.0",
     "@expo/vector-icons": "^13.0.0",
     "babel-preset-expo": "~9.7.0",
