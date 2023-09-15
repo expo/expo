@@ -7,12 +7,9 @@
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelService.h"
-#import "EXRemoteNotificationManager.h"
 #import "EXSensorManager.h"
 #import "EXUpdatesDatabaseManager.h"
 #import "EXUpdatesManager.h"
-#import "EXUserNotificationManager.h"
-#import "EXUserNotificationCenter.h"
 #import "EXDeviceInstallationUUIDService.h"
 
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
@@ -23,12 +20,9 @@
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
 @property (nonatomic, strong) EXHomeModuleManager *homeModuleManager;
 @property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
-@property (nonatomic, strong) EXRemoteNotificationManager *remoteNotificationManager;
 @property (nonatomic, strong) EXSensorManager *sensorManager;
 @property (nonatomic, strong) EXUpdatesDatabaseManager *updatesDatabaseManager;
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
-@property (nonatomic, strong) EXUserNotificationManager *notificationsManager;
-@property (nonatomic, strong) EXUserNotificationCenter *notificationCenter;
 @property (nonatomic, strong) EXDeviceInstallationUUIDService *deviceInstallationUUIDService;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
@@ -42,14 +36,11 @@
     // TODO: init these in some clean way
     [self cachedResourceManager];
     [self errorRecoveryManager];
-    [self remoteNotificationManager];
     [self linkingManager];
     [self homeModuleManager];
     [self sensorManager];
     [self updatesDatabaseManager];
     [self updatesManager];
-    [self notificationsManager];
-    [self notificationCenter];
     [self deviceInstallationUUIDService];
   }
   return self;
@@ -69,14 +60,6 @@
     _cachedResourceManager = [[EXCachedResourceManager alloc] init];
   }
   return _cachedResourceManager;
-}
-
-- (EXRemoteNotificationManager *)remoteNotificationManager
-{
-  if (!_remoteNotificationManager) {
-    _remoteNotificationManager = [[EXRemoteNotificationManager alloc] initWithUserNotificationCenter:[self notificationCenter]];
-  }
-  return _remoteNotificationManager;
 }
 
 - (EXErrorRecoveryManager *)errorRecoveryManager
@@ -127,22 +110,6 @@
   return _updatesManager;
 }
 
-- (EXUserNotificationManager *)notificationsManager
-{
-  if (!_notificationsManager) {
-    _notificationsManager = [[EXUserNotificationManager alloc] init];
-  }
-  return _notificationsManager;
-}
-
-- (EXUserNotificationCenter *)notificationCenter
-{
-  if (!_notificationCenter) {
-    _notificationCenter = [[EXUserNotificationCenter alloc] init];
-  }
-  return _notificationCenter;
-}
-
 - (NSDictionary *)allServices
 {
   if (!_allServices) {
@@ -158,12 +125,9 @@
                                   self.errorRecoveryManager,
                                   self.homeModuleManager,
                                   self.linkingManager,
-                                  self.remoteNotificationManager,
                                   self.sensorManager,
                                   self.updatesDatabaseManager,
                                   self.updatesManager,
-                                  self.notificationsManager,
-                                  self.notificationCenter,
                                   self.deviceInstallationUUIDService
                                   ];
     NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[EXModuleRegistryProvider singletonModules] allObjects]];

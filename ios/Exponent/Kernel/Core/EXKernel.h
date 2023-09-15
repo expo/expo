@@ -7,7 +7,6 @@
 #import "EXKernelServiceRegistry.h"
 #import "EXKernelUtil.h"
 #import "EXViewController.h"
-#import "EXPendingNotification.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,12 +30,6 @@ typedef NS_ENUM(NSInteger, EXKernelErrorCode) {
 - (void)reloadAppWithScopeKey:(NSString *)scopeKey; // called by Updates.reload
 - (void)reloadAppFromCacheWithScopeKey:(NSString *)scopeKey; // called by Updates.reloadFromCache
 - (void)reloadVisibleApp; // called in development whenever the app is reloaded
-
-/**
- *  Send a given notification.
- *  Returns whether the notification has been successfully sent to a running experience.
- */
-- (BOOL)sendNotification:(EXPendingNotification *)notification;
 
 /**
  *  Initial props to pass to an app based on LaunchOptions from UIApplicationDelegate.

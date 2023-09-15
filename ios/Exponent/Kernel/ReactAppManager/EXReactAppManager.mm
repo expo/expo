@@ -2,7 +2,6 @@
 #import "EXBuildConstants.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
-#import "EXUserNotificationManager.h"
 #import "EXKernel.h"
 #import "EXAbstractLoader.h"
 #import "EXKernelLinkingManager.h"
@@ -686,10 +685,6 @@
   expProps[@"appOwnership"] = [self _appOwnership];
   if (_initialProps) {
     [expProps addEntriesFromDictionary:_initialProps];
-  }
-  EXPendingNotification *initialNotification = [[EXKernel sharedInstance].serviceRegistry.notificationsManager initialNotification];
-  if (initialNotification) {
-    expProps[@"notification"] = initialNotification.properties;
   }
 
   NSString *manifestString = nil;
