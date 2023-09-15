@@ -44,12 +44,13 @@ export async function transform(
     const environment = options.customTransformOptions?.environment;
 
     if (
-      environment === 'client' &&
+      environment !== 'node' &&
       // TODO: Ensure this works with windows.
-      // TODO: Add +api files.
-      filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`))
+      (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
+        // Strip +api files.
+        filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))
     ) {
-      // Remove the server-only +html file from the bundle when bundling for a client environment.
+      // Remove the server-only +html file and API Routes from the bundle when bundling for a client environment.
       return worker.transform(
         config,
         projectRoot,
@@ -58,11 +59,21 @@ export async function transform(
           ? Buffer.from(
               // Use a string so this notice is visible in the bundle if the user is
               // looking for it.
-              '"> The server-only +html file was removed from the client JS bundle by Expo CLI."'
+              '"> The server-only file was removed from the client JS bundle by Expo CLI."'
             )
           : Buffer.from(''),
         options
       );
+    }
+
+    if (
+      environment !== 'node' &&
+      !filename.match(/\/node_modules\//) &&
+      filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/)
+    ) {
+      // Clear the contents of +api files when bundling for the client.
+      // This ensures that the client doesn't accidentally use the server-only +api files.
+      return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
     }
 
     return worker.transform(config, projectRoot, filename, data, options);

@@ -113,7 +113,7 @@ it(
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
-          EXPO_USE_STATIC: '1',
+          EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: 'development',
         },

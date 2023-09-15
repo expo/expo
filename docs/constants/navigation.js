@@ -191,6 +191,7 @@ const general = [
       makePage('router/reference/search-parameters.mdx'),
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
+      makePage('router/reference/api-routes.mdx'),
       makePage('router/reference/async-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typed-routes.mdx'),

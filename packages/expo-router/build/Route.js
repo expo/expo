@@ -26,6 +26,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sortRoutes = exports.sortRoutesWithInitial = exports.Route = exports.useContextKey = exports.useRouteNode = void 0;
 const react_1 = __importStar(require("react"));
 const matchers_1 = require("./matchers");
+const sortRoutes_1 = require("./sortRoutes");
+Object.defineProperty(exports, "sortRoutesWithInitial", { enumerable: true, get: function () { return sortRoutes_1.sortRoutesWithInitial; } });
+Object.defineProperty(exports, "sortRoutes", { enumerable: true, get: function () { return sortRoutes_1.sortRoutes; } });
 const CurrentRouteContext = react_1.default.createContext(null);
 if (process.env.NODE_ENV !== 'production') {
     CurrentRouteContext.displayName = 'RouteNode';
@@ -48,52 +51,4 @@ function Route({ children, node }) {
     return react_1.default.createElement(CurrentRouteContext.Provider, { value: node }, children);
 }
 exports.Route = Route;
-function sortRoutesWithInitial(initialRouteName) {
-    return (a, b) => {
-        if (initialRouteName) {
-            if (a.route === initialRouteName) {
-                return -1;
-            }
-            if (b.route === initialRouteName) {
-                return 1;
-            }
-        }
-        return sortRoutes(a, b);
-    };
-}
-exports.sortRoutesWithInitial = sortRoutesWithInitial;
-function sortRoutes(a, b) {
-    if (a.dynamic && !b.dynamic) {
-        return 1;
-    }
-    if (!a.dynamic && b.dynamic) {
-        return -1;
-    }
-    if (a.dynamic && b.dynamic) {
-        if (a.dynamic.length !== b.dynamic.length) {
-            return b.dynamic.length - a.dynamic.length;
-        }
-        for (let i = 0; i < a.dynamic.length; i++) {
-            const aDynamic = a.dynamic[i];
-            const bDynamic = b.dynamic[i];
-            if (aDynamic.deep && !bDynamic.deep) {
-                return 1;
-            }
-            if (!aDynamic.deep && bDynamic.deep) {
-                return -1;
-            }
-        }
-        return 0;
-    }
-    const aIndex = a.route === 'index' || (0, matchers_1.matchGroupName)(a.route) != null;
-    const bIndex = b.route === 'index' || (0, matchers_1.matchGroupName)(b.route) != null;
-    if (aIndex && !bIndex) {
-        return -1;
-    }
-    if (!aIndex && bIndex) {
-        return 1;
-    }
-    return a.route.length - b.route.length;
-}
-exports.sortRoutes = sortRoutes;
 //# sourceMappingURL=Route.js.map

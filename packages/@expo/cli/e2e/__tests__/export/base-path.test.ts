@@ -23,7 +23,7 @@ describe('static-rendering with a custom base path', () => {
         env: {
           NODE_ENV: 'production',
           EXPO_E2E_BASE_PATH: basePath,
-          EXPO_USE_STATIC: '1',
+          EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: 'development',
         },

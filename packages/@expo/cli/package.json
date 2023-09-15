@@ -39,6 +39,7 @@
   "dependencies": {
     "@babel/runtime": "^7.20.0",
     "@expo/code-signing-certificates": "0.0.5",
+    "@expo/server": "^1.0.0",
     "@expo/config": "~8.3.0",
     "@expo/config-plugins": "~7.5.0",
     "@expo/devcert": "^1.0.0",
@@ -87,6 +88,7 @@
     "qrcode-terminal": "0.11.0",
     "require-from-string": "^2.0.2",
     "requireg": "^0.2.2",
+    "resolve": "^1.22.2",
     "resolve-from": "^5.0.0",
     "semver": "^7.5.3",
     "send": "^0.18.0",
@@ -134,6 +136,7 @@
     "@types/npm-package-arg": "^6.1.0",
     "@types/progress": "^2.0.5",
     "@types/prompts": "^2.0.6",
+    "@types/resolve": "^1.20.2",
     "@types/send": "^0.17.1",
     "@types/tar": "^6.1.1",
     "@types/text-table": "^0.2.1",
@@ -145,6 +148,7 @@
     "devtools-protocol": "^0.0.1113120",
     "expo-module-scripts": "^3.0.0",
     "find-process": "^1.4.7",
+    "jest-runner-tsd": "^6.0.0",
     "klaw-sync": "^6.0.0",
     "memfs": "^3.2.0",
     "nock": "~13.2.2",
@@ -153,7 +157,6 @@
     "structured-headers": "^0.4.1",
     "taskr": "1.1.0",
     "tree-kill": "^1.2.2",
-    "jest-runner-tsd": "^6.0.0",
     "tsd": "^0.28.1"
   }
 }

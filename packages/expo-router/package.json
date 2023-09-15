@@ -29,6 +29,8 @@
     "index.d.ts",
     "stack.js",
     "stack.d.ts",
+    "server.js",
+    "server.d.ts",
     "tabs.js",
     "tabs.d.ts",
     "testing-library.js",
@@ -95,6 +97,7 @@
     "tsd": "^0.28.1"
   },
   "dependencies": {
+    "@expo/server": "^1.0.0",
     "@expo/metro-runtime": "3.0.2",
     "@radix-ui/react-slot": "1.0.1",
     "@react-navigation/bottom-tabs": "~6.5.7",

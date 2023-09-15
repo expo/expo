@@ -153,7 +153,8 @@ export async function requireFileContentsWithMetro(
 
   return wrapBundle(content);
 }
-export async function requireWithMetro<T>(
+
+export async function requireWithMetro<T extends Record<string, (...args: any[]) => Promise<any>>>(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
@@ -165,7 +166,7 @@ export async function requireWithMetro<T>(
     absoluteFilePath,
     options
   );
-  return evalMetro(content);
+  return evalMetroAndWrapFunctions<T>(projectRoot, content);
 }
 
 export async function getStaticRenderFunctions(
@@ -179,7 +180,14 @@ export async function getStaticRenderFunctions(
     options
   );
 
-  const contents = evalMetro(scriptContents);
+  return evalMetroAndWrapFunctions(projectRoot, scriptContents);
+}
+
+export function evalMetroAndWrapFunctions<T = Record<string, (...args: any[]) => Promise<any>>>(
+  projectRoot: string,
+  script: string
+): Promise<T> {
+  const contents = evalMetro(script);
 
   // wrap each function with a try/catch that uses Metro's error formatter
   return Object.keys(contents).reduce((acc, key) => {
