@@ -15,6 +15,7 @@
 
 ### 💡 Others
 
+- Move `process.env` polyfill strip to `expo/metro-config`. ([#24455](https://github.com/expo/expo/pull/24455) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix build. ([#24309](https://github.com/expo/expo/pull/24309) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.12.0 — 2023-09-04

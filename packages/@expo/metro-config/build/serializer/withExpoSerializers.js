@@ -87,6 +87,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function withExpoSerializers(config) {
   const processors = [];
+  processors.push(_environmentVariableSerializerPlugin().serverPreludeSerializerPlugin);
   if (!_env().env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(_environmentVariableSerializerPlugin().environmentVariableSerializerPlugin);
   }
