@@ -100,7 +100,7 @@ async function packExpoDependency(repoRoot, projectRoot, destPath, dependencyNam
   };
 }
 
-async function copyCommonFixturesToProject(projectRoot, appJsFileName, repoRoot) {
+async function copyCommonFixturesToProject(projectRoot, { appJsFileName, repoRoot, isTV = false }) {
   // copy App.tsx from test fixtures
   const appJsSourcePath = path.resolve(dirName, '..', 'fixtures', appJsFileName);
   const appJsDestinationPath = path.resolve(projectRoot, 'App.tsx');
@@ -143,6 +143,35 @@ async function copyCommonFixturesToProject(projectRoot, appJsFileName, repoRoot)
 
   // copy .prettierrc
   await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
+
+  // Modify specific files for TV
+  if (isTV) {
+    // Modify .detoxrc.json for TV
+    const detoxRCPath = path.resolve(projectRoot, '.detoxrc.json');
+    let detoxRCText = await fs.readFile(detoxRCPath, { encoding: 'utf-8' });
+    detoxRCText = detoxRCText.replace(/iphonesim/g, 'appletvsim').replace('iPhone 14', 'Apple TV');
+    await fs.rm(detoxRCPath);
+    await fs.writeFile(detoxRCPath, detoxRCText, { encoding: 'utf-8' });
+
+    // Add TV environment variable to EAS build config
+    const easJsonPath = path.resolve(projectRoot, 'eas.json');
+    let easJson = require(easJsonPath);
+    easJson = {
+      ...easJson,
+      build: {
+        ...easJson.build,
+        updates_testing: {
+          ...easJson.build.updates_testing,
+          env: {
+            ...easJson.build.updates_testing.env,
+            TEST_TV_BUILD: '1',
+          },
+        },
+      },
+    };
+    await fs.rm(easJsonPath);
+    await fs.writeFile(easJsonPath, JSON.stringify(easJson, null, 2), { encoding: 'utf-8' });
+  }
 }
 
 /**
@@ -336,7 +365,6 @@ function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
       name: projectName,
       owner: 'expo-ci',
       runtimeVersion,
-      jsEngine: 'jsc',
       plugins: ['expo-updates', '@config-plugins/detox'],
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
@@ -395,6 +423,7 @@ async function initAsync(
     localCliBin,
     configureE2E = true,
     transformAppJson = transformAppJsonForE2E,
+    isTV = false,
   }
 ) {
   console.log('Creating expo app');
@@ -402,15 +431,14 @@ async function initAsync(
   const projectName = path.basename(projectRoot);
 
   // pack typescript template
-  const localTSTemplatePath = path.join(repoRoot, 'templates', 'expo-template-blank-typescript');
+  const templateName = isTV ? 'expo-template-tv' : 'expo-template-blank-typescript';
+  const localTSTemplatePath = path.join(repoRoot, 'templates', templateName);
   await spawnAsync('npm', ['pack', '--pack-destination', repoRoot], {
     cwd: localTSTemplatePath,
     stdio: 'ignore',
   });
 
-  const localTSTemplatePathName = glob.sync(
-    path.join(repoRoot, 'expo-template-blank-typescript-*.tgz')
-  )[0];
+  const localTSTemplatePathName = glob.sync(path.join(repoRoot, `${templateName}-*.tgz`))[0];
 
   if (!localTSTemplatePathName) {
     throw new Error(`Failed to locate packed template in ${repoRoot}`);
@@ -460,14 +488,16 @@ async function initAsync(
   }
 
   // pack local template and prebuild, but do not reinstall NPM
-  const localTemplatePath = path.join(repoRoot, 'templates', 'expo-template-bare-minimum');
+  const prebuildTemplateName = isTV ? 'expo-template-tv' : 'expo-template-bare-minimum';
+
+  const localTemplatePath = path.join(repoRoot, 'templates', prebuildTemplateName);
   await spawnAsync('npm', ['pack', '--pack-destination', projectRoot], {
     cwd: localTemplatePath,
     stdio: 'ignore',
   });
 
   const localTemplatePathName = glob.sync(
-    path.join(projectRoot, 'expo-template-bare-minimum-*.tgz')
+    path.join(projectRoot, `${prebuildTemplateName}-*.tgz`)
   )[0];
 
   if (!localTemplatePathName) {
@@ -524,8 +554,8 @@ async function initAsync(
   return projectRoot;
 }
 
-async function setupE2EAppAsync(projectRoot, localCliBin, repoRoot) {
-  await copyCommonFixturesToProject(projectRoot, 'App.tsx', repoRoot);
+async function setupE2EAppAsync(projectRoot, { localCliBin, repoRoot, isTV = false }) {
+  await copyCommonFixturesToProject(projectRoot, { appJsFileName: 'App.tsx', repoRoot, isTV });
 
   // copy png assets and install extra package
   await fs.copyFile(

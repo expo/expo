@@ -15,9 +15,15 @@ set -eox pipefail
 trap cleanup EXIT
 
 if [[ "$EAS_BUILD_PROFILE" != "updates_testing" ]]; then
-  exit
+  exit 0
 fi
 
+if [[ "$TEST_TV_BUILD" == "1" ]]; then
+  mkdir ./logs
+  echo "TV built successfully" > ./logs/detox-tests.log
+  exit 0
+fi
+ 
 ANDROID_EMULATOR=pixel_4
 
 #export UPDATES_HOST=$(ifconfig -l | xargs -n1 ipconfig getifaddr)
