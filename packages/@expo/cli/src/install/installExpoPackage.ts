@@ -71,7 +71,4 @@ export async function installExpoPackageAsync(
     detached: true,
     shell: true,
   });
-
-  // exit immediately so we're not leaving the command running while updating
-  Log.exit('', 0);
 }

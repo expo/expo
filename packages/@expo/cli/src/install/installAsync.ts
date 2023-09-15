@@ -136,7 +136,7 @@ export async function installPackagesAsync(
   if (packages.find((pkg) => pkg === 'expo')) {
     const packagesMinusExpo = packages.filter((pkg) => pkg !== 'expo');
 
-    installExpoPackageAsync(projectRoot, {
+    await installExpoPackageAsync(projectRoot, {
       packageManager,
       packageManagerArguments,
       expoPackageToInstall: versioning.packages.find((pkg) => pkg.startsWith('expo@'))!,
@@ -144,6 +144,9 @@ export async function installPackagesAsync(
         ? `npx expo install ${packagesMinusExpo.join(' ')}`
         : undefined,
     });
+
+    // follow-up commands will be spawned in a detached process, so return immediately
+    return;
   }
 
   await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);

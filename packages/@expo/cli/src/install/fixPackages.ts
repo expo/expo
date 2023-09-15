@@ -61,6 +61,8 @@ export async function fixPackagesAsync(
       expoPackageToInstall: `expo@${expoDep.expectedVersionOrRange}`,
       followUpCommand: `npx expo install --fix`,
     });
+    // follow-up commands will be spawned in a detached process, so return immediately
+    return;
   }
 
   if (dependencies.length) {
