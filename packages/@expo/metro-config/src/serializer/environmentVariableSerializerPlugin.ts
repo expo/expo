@@ -50,6 +50,28 @@ function getAllExpoPublicEnvVars() {
   return env;
 }
 
+/** Strips the process.env polyfill in server environments to allow for accessing environment variables off the global. */
+export function serverPreludeSerializerPlugin(
+  entryPoint: string,
+  preModules: readonly Module<MixedOutput>[],
+  graph: ReadOnlyGraph,
+  options: SerializerOptions
+): SerializerParameters {
+  if (options.sourceUrl && getTransformEnvironment(options.sourceUrl) === 'node') {
+    const prelude = preModules.find((module) => module.path === '__prelude__');
+    if (prelude) {
+      debug('Stripping environment variable polyfill in server environment.');
+      prelude.output[0].data.code = prelude.output[0].data.code
+        .replace(/process=this\.process\|\|{},/, '')
+        .replace(
+          /process\.env=process\.env\|\|{};process\.env\.NODE_ENV=process\.env\.NODE_ENV\|\|"\w+";/,
+          ''
+        );
+    }
+  }
+  return [entryPoint, preModules, graph, options];
+}
+
 export function environmentVariableSerializerPlugin(
   entryPoint: string,
   preModules: readonly Module<MixedOutput>[],

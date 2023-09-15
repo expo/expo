@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.environmentVariableSerializerPlugin = environmentVariableSerializerPlugin;
 exports.getTransformEnvironment = getTransformEnvironment;
 exports.replaceEnvironmentVariables = replaceEnvironmentVariables;
+exports.serverPreludeSerializerPlugin = serverPreludeSerializerPlugin;
 function _CountingSet() {
   const data = _interopRequireDefault(require("metro/src/lib/CountingSet"));
   _CountingSet = function () {
@@ -59,6 +60,18 @@ function getAllExpoPublicEnvVars() {
     }
   }
   return env;
+}
+
+/** Strips the process.env polyfill in server environments to allow for accessing environment variables off the global. */
+function serverPreludeSerializerPlugin(entryPoint, preModules, graph, options) {
+  if (options.sourceUrl && getTransformEnvironment(options.sourceUrl) === 'node') {
+    const prelude = preModules.find(module => module.path === '__prelude__');
+    if (prelude) {
+      debug('Stripping environment variable polyfill in server environment.');
+      prelude.output[0].data.code = prelude.output[0].data.code.replace(/process=this\.process\|\|{},/, '').replace(/process\.env=process\.env\|\|{};process\.env\.NODE_ENV=process\.env\.NODE_ENV\|\|"\w+";/, '');
+    }
+  }
+  return [entryPoint, preModules, graph, options];
 }
 function environmentVariableSerializerPlugin(entryPoint, preModules, graph, options) {
   // Skip replacement in Node.js environments.

@@ -13,7 +13,10 @@ import bundleToString from 'metro/src/lib/bundleToString';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
 
-import { environmentVariableSerializerPlugin } from './environmentVariableSerializerPlugin';
+import {
+  serverPreludeSerializerPlugin,
+  environmentVariableSerializerPlugin,
+} from './environmentVariableSerializerPlugin';
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
@@ -28,6 +31,7 @@ export type SerializerPlugin = (...props: SerializerParameters) => SerializerPar
 
 export function withExpoSerializers(config: InputConfigT): InputConfigT {
   const processors: SerializerPlugin[] = [];
+  processors.push(serverPreludeSerializerPlugin);
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(environmentVariableSerializerPlugin);
   }
