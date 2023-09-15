@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 0.18.13 — 2023-09-15
+
+### 🐛 Bug fixes
+
+- [iOS] remove force unwrap in download handler. ([#24299](https://github.com/expo/expo/pull/24299) by [@douglowder](https://github.com/douglowder))
+- Fix updates enabled defaulting on iOS. ([#24327](https://github.com/expo/expo/pull/24327) by [@wschurman](https://github.com/wschurman))
+- [Android] Make scopekey only required when getting database entity. ([#24466](https://github.com/expo/expo/pull/24466) by [@wschurman](https://github.com/wschurman))
+
 ## 0.21.0 — 2023-09-15
 
 ### 🎉 New features
