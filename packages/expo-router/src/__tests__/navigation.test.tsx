@@ -413,3 +413,34 @@ it('respects basePath', async () => {
 
   expect(text).toHaveTextContent('/');
 });
+
+it('can replace across groups', async () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="one" />
+        <Tabs.Screen name="two" />
+      </Tabs>
+    ),
+    index: () => <Stack />,
+    'one/_layout': () => <Stack />,
+    'one/screen': () => <Text testID="one/screen" />,
+    'two/_layout': () => <Stack />,
+    'two/screen': () => <Text testID="two/screen" />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/two/screen'));
+  expect(screen).toHavePathname('/two/screen');
+  expect(screen.getByTestId('two/screen')).toBeTruthy();
+
+  act(() => router.push('/one/screen'));
+  expect(screen).toHavePathname('/one/screen');
+  expect(screen.getByTestId('one/screen')).toBeTruthy();
+
+  // Should replace at the top Tabs
+  act(() => router.replace('/two/screen'));
+  expect(screen).toHavePathname('/two/screen');
+  expect(screen.getByTestId('two/screen')).toBeTruthy();
+});
