@@ -73,7 +73,7 @@ Because the current implementation of the Expo updates service relies heavily on
 
 ### Statically hosted updates
 
-Since headers sent in requests by `expo-updates` do not affect statically hosted updates (such as update packages created by `expo export`), you must host incompatible updates at different static URLs in order to control compatibility.
+Since headers sent in requests by `expo-updates` do not affect statically hosted updates (such as update packages created by `expo export`), you must host incompatible updates at different static URLs to control compatibility.
 
 ## Embedding assets
 
@@ -95,7 +95,7 @@ If you use `expo-asset` in your project (included by default if you have the `ex
 
 Assets with paths matching the given patterns will be pre-downloaded by clients before the update that uses them will launch. If you have an asset that should be lazily downloaded at runtime rather than before your JavaScript is evaluated, you can use `assetBundlePatterns` to exclude it while still importing it in your JavaScript source.
 
-Note that in order to use `expo-asset` successfully, you must use the `--assetPlugins` option to provide the Metro bundler with the `node_modules/expo-asset/tools/hashAssetFiles` plugin when you create your JavaScript bundle. If you use `expo export` or `expo publish` to create your update, this will be done automatically for you.
+Note that to use `expo-asset` successfully, you must use the `--assetPlugins` option to provide the Metro bundler with the `node_modules/expo-asset/tools/hashAssetFiles` plugin when you create your JavaScript bundle. If you use `expo export` or `expo publish` to create your update, this will be done automatically for you.
 
 ## Configuration options
 
