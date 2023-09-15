@@ -2,12 +2,7 @@
 
 @class EXManifestAndAssetRequestHeaders;
 
-FOUNDATION_EXPORT NSString *kEXHomeBundleResourceName;
-FOUNDATION_EXPORT NSString *kEXHomeManifestResourceName;
-
 @interface EXHomeAppManager : EXReactAppManager
-
-+ (EXManifestAndAssetRequestHeaders *)bundledHomeManifestAndAssetRequestHeaders;
 
 #pragma mark - interfacing with home JS
 

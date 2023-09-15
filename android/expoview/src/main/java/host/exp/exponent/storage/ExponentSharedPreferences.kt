@@ -59,8 +59,8 @@ class ExponentSharedPreferences constructor(val context: Context) {
     sharedPreferences.edit().remove(key.preferenceKey).apply()
   }
 
-  fun shouldUseInternetKernel(): Boolean {
-    return getBoolean(ExponentSharedPreferencesKey.USE_INTERNET_KERNEL_KEY)
+  fun shouldUseEmbeddedKernel(): Boolean {
+    return getBoolean(ExponentSharedPreferencesKey.USE_EMBEDDED_KERNEL_KEY)
   }
 
   fun getUUID(): String? {
@@ -128,8 +128,7 @@ class ExponentSharedPreferences constructor(val context: Context) {
     const val EXPERIENCE_METADATA_NOTIFICATION_CHANNELS = "notificationChannels"
 
     private val DEFAULT_VALUES = mutableMapOf(
-      ExponentSharedPreferencesKey.USE_INTERNET_KERNEL_KEY to ExpoViewBuildConfig.USE_INTERNET_KERNEL,
-      ExponentSharedPreferencesKey.IS_FIRST_KERNEL_RUN_KEY to true,
+      ExponentSharedPreferencesKey.USE_EMBEDDED_KERNEL_KEY to ExpoViewBuildConfig.USE_EMBEDDED_KERNEL,
       ExponentSharedPreferencesKey.IS_ONBOARDING_FINISHED_KEY to false,
       ExponentSharedPreferencesKey.NUX_HAS_FINISHED_FIRST_RUN_KEY to false,
       ExponentSharedPreferencesKey.SHOULD_NOT_USE_KERNEL_CACHE to false
@@ -146,10 +145,9 @@ class ExponentSharedPreferences constructor(val context: Context) {
 
   enum class ExponentSharedPreferencesKey(val preferenceKey: String) {
     // Dev options
-    USE_INTERNET_KERNEL_KEY("use_internet_kernel"),
+    USE_EMBEDDED_KERNEL_KEY("use_embedded_kernel"),
 
     // Other
-    IS_FIRST_KERNEL_RUN_KEY("is_first_kernel_run"),
     FCM_TOKEN_KEY("fcm_token"),
     REFERRER_KEY("referrer"),
     NUX_HAS_FINISHED_FIRST_RUN_KEY("nux_has_finished_first_run"),
