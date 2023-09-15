@@ -11,6 +11,7 @@ import nullthrows from 'nullthrows';
 import os from 'os';
 import path from 'path';
 
+import { ANDROID_DIR, IOS_DIR } from '../Constants';
 import { deepCloneObject } from '../Utils';
 import { Directories, EASUpdate } from '../expotools';
 import AppConfig from '../typings/AppConfig';
@@ -23,10 +24,24 @@ type ExpoCliStateObject = {
 
 const EXPO_HOME_PATH = Directories.getExpoHomeJSDir();
 
-const iosPublishBundlePath = '../ios/Exponent/Supporting/kernel.ios.bundle';
-const androidPublishBundlePath = '../android/app/src/main/assets/kernel.android.bundle';
-const iosManifestPath = '../ios/Exponent/Supporting/kernel-manifest.json';
-const androidManifestPath = '../android/app/src/main/assets/kernel-manifest.json';
+const iosPublishBundlePath = path.join(IOS_DIR, 'Exponent', 'Supporting', 'kernel.ios.bundle');
+const androidPublishBundlePath = path.join(
+  ANDROID_DIR,
+  'app',
+  'src',
+  'main',
+  'assets',
+  'kernel.android.bundle'
+);
+const iosManifestPath = path.join(IOS_DIR, 'Exponent', 'Supporting', 'kernel-manifest.json');
+const androidManifestPath = path.join(
+  ANDROID_DIR,
+  'app',
+  'src',
+  'main',
+  'assets',
+  'kernel-manifest.json'
+);
 
 /**
  * Returns path to production's expo-cli state file.
@@ -110,7 +125,6 @@ async function getManifestAndExtensionsAsync(response: Response): Promise<{
 }
 
 async function fetchManifestAndBundleAsync(
-  projectRoot: string,
   projectId: string,
   groupId: string,
   platform: 'ios' | 'android'
@@ -138,10 +152,10 @@ async function fetchManifestAndBundleAsync(
   });
 
   const manifestPath = platform === 'ios' ? iosManifestPath : androidManifestPath;
-  await fs.writeFile(path.resolve(projectRoot, manifestPath), JSON.stringify(manifest));
+  await fs.writeFile(path.resolve(manifestPath), JSON.stringify(manifest));
 
   const bundlePath = platform === 'ios' ? iosPublishBundlePath : androidPublishBundlePath;
-  await fs.writeFile(path.resolve(projectRoot, bundlePath), await bundleResponse.buffer());
+  await fs.writeFile(path.resolve(bundlePath), await bundleResponse.buffer());
 }
 
 /**
@@ -202,8 +216,8 @@ async function action(): Promise<void> {
 
   console.log(`Downloading published manifests and bundles...`);
   await Promise.all([
-    fetchManifestAndBundleAsync(EXPO_HOME_PATH, easProjectId, createdUpdateGroupId, 'ios'),
-    fetchManifestAndBundleAsync(EXPO_HOME_PATH, easProjectId, createdUpdateGroupId, 'android'),
+    fetchManifestAndBundleAsync(easProjectId, createdUpdateGroupId, 'ios'),
+    fetchManifestAndBundleAsync(easProjectId, createdUpdateGroupId, 'android'),
   ]);
 
   console.log(
@@ -217,6 +231,6 @@ export default (program: Command) => {
   program
     .command('publish-prod-home')
     .alias('pph')
-    .description(`Publishes home app for production on EAS Update.`)
+    .description('Publishes home app for production on EAS Update.')
     .asyncAction(action);
 };
