@@ -1,6 +1,6 @@
 {
   "include": ["./src"],
-  "extends": "@tsconfig/node14/tsconfig.json",
+  "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
     "outDir": "./build",
     "module": "commonjs",

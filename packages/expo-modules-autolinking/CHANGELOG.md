@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Transpile for Node 18 (LTS).
+
 ## 1.6.0 — 2023-09-15
 
 ### 🐛 Bug fixes
