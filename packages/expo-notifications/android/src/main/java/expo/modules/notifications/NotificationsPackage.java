@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import expo.modules.notifications.badge.BadgeModule;
-import expo.modules.notifications.badge.ExpoBadgeManager;
 import expo.modules.notifications.serverregistration.ServerRegistrationModule;
 import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.background.ExpoBackgroundNotificationTasksModule;
