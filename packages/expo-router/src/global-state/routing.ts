@@ -1,8 +1,4 @@
-import {
-  CommonActions,
-  type NavigationAction,
-  type NavigationState,
-} from '@react-navigation/native';
+import { type NavigationAction, type NavigationState } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 
 import type { RouterStore } from './router-store';
