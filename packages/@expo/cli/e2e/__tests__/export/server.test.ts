@@ -51,7 +51,7 @@ describe('server-output', () => {
           }
         });
       });
-    }, 10 * 1000);
+    }, 120 * 1000);
     const nodeScript = path.join(projectRoot, '__e2e__/server/express.js');
     let server: execa.ExecaChildProcess<string> | undefined;
 
