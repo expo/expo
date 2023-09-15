@@ -111,8 +111,10 @@ function rewriteNavigationStateToParams(
   params: NavigationParams = {}
 ) {
   if (!state) return params;
+  // We Should always have at least one route in the state
   const lastRoute = state.routes.at(-1)!;
   params.screen = lastRoute.name;
+  // Weirdly, this always needs to be an object. If it's undefined, it won't work.
   params.params = lastRoute.params ?? {};
 
   if (lastRoute.state) {
@@ -138,6 +140,7 @@ function getNavigateReplaceAction(
   parentState: NavigationState,
   lastNavigatorSupportingReplace: NavigationState = parentState
 ): NavigationAction {
+  // We Should always have at least one route in the state
   const state = previousState.routes.at(-1)!;
 
   // Only these navigators support replace
@@ -146,25 +149,26 @@ function getNavigateReplaceAction(
   }
 
   const currentRoute = parentState.routes.find((route) => route.name === state.name);
-  const routesDiverged = parentState.routes[parentState.index] !== currentRoute;
+  const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
 
-  // The routes has diverged or we reached the bottom route, so
-  // we should navigate from the lastNavigatorSupportingReplace
-  if (routesDiverged || !state.state) {
-    const { screen, params } = rewriteNavigationStateToParams(previousState);
-    return {
-      type: lastNavigatorSupportingReplace.type === 'stack' ? 'REPLACE' : 'JUMP_TO',
-      payload: {
-        name: screen,
-        params,
-        source: lastNavigatorSupportingReplace?.key,
-      },
-    };
+  // If there is nested state and the routes are equal, we should keep going down the tree
+  if (state.state && routesAreEqual) {
+    return getNavigateReplaceAction(
+      state.state,
+      currentRoute.state as any,
+      lastNavigatorSupportingReplace
+    );
   }
 
-  return getNavigateReplaceAction(
-    state.state,
-    currentRoute.state as any,
-    lastNavigatorSupportingReplace
-  );
+  // Either we reached the bottom or the state or the point where the routes diverged
+  const { screen, params } = rewriteNavigationStateToParams(previousState);
+  return {
+    type: lastNavigatorSupportingReplace.type === 'stack' ? 'REPLACE' : 'JUMP_TO',
+    payload: {
+      name: screen,
+      params,
+      // Ensure that the last navigator supporting replace is the one that handles the action
+      source: lastNavigatorSupportingReplace?.key,
+    },
+  };
 }
