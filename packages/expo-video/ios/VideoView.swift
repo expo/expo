@@ -17,7 +17,6 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   public override var bounds: CGRect {
     didSet {
       playerViewController.view.frame = self.bounds
-      print("bounds didSet:", self.bounds)
     }
   }
 
@@ -27,7 +26,6 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     clipsToBounds = true
     playerViewController.delegate = self
     playerViewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    playerViewController.view.translatesAutoresizingMaskIntoConstraints = false
     playerViewController.view.backgroundColor = .clear
 
     addSubview(playerViewController.view)
@@ -63,7 +61,6 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     _ playerViewController: AVPlayerViewController,
     willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator
   ) {
-    log.debug("will begin fullscreen")
     isFullscreen = true
   }
 
