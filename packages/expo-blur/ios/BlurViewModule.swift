@@ -7,7 +7,7 @@ public final class BlurViewModule: Module {
     Name("ExpoBlurView")
 
     View(BlurView.self) {
-      Prop("tint") { (view, tint: String) in
+      Prop("tint") { (view, tint: TintStyle) in
         view.setTint(tint)
       }
 

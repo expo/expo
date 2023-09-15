@@ -4,11 +4,16 @@
 
 ### 🛠 Breaking changes
 
+- Remove experimental native Webpack support. ([#24328](https://github.com/expo/expo/pull/24328) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Drop warning for invalid property `useTransformReactJsxExperimental`. ([#24328](https://github.com/expo/expo/pull/24328) by [@EvanBacon](https://github.com/EvanBacon))
+- Re-write in TypeScript. ([#24328](https://github.com/expo/expo/pull/24328) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.6.2 — 2023-09-04
 

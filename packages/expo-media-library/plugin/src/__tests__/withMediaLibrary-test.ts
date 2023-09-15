@@ -8,9 +8,8 @@ const sampleManifestPath = resolve(fixturesPath, 'react-native-AndroidManifest.x
 
 describe(modifyAndroidManifest, () => {
   it(`modifies the AndroidManifest`, async () => {
-    let androidManifestJson = await AndroidConfig.Manifest.readAndroidManifestAsync(
-      sampleManifestPath
-    );
+    let androidManifestJson =
+      await AndroidConfig.Manifest.readAndroidManifestAsync(sampleManifestPath);
     androidManifestJson = modifyAndroidManifest(androidManifestJson);
 
     const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifestJson);
