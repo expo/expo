@@ -12,6 +12,10 @@
 
 - Transpile for Node 18 (LTS).
 
+## 0.13.1 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
 ## 0.13.0 — 2023-09-15
 
 ### 🛠 Breaking changes

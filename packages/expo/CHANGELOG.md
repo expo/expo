@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 50.0.0-alpha.4 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.11 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
 ## 50.0.0-alpha.3 — 2023-09-15
 
 ### 🎉 New features
