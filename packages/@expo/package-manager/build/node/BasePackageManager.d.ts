@@ -1,4 +1,4 @@
-import spawnAsync, { SpawnPromise, SpawnResult } from '@expo/spawn-async';
+import { SpawnPromise, SpawnResult } from '@expo/spawn-async';
 import { PackageManager, PackageManagerOptions } from '../PackageManager';
 import { PendingSpawnPromise } from '../utils/spawn';
 export declare abstract class BasePackageManager implements PackageManager {
@@ -14,6 +14,7 @@ export declare abstract class BasePackageManager implements PackageManager {
     abstract readonly lockFile: string;
     /** Get the default environment variables used when running the package manager. */
     protected getDefaultEnvironment(): Record<string, string>;
+    abstract getAddCommandOptions(namesOrFlags: string[]): string[];
     abstract addAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
     abstract addDevAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
     abstract addGlobalAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
@@ -23,7 +24,12 @@ export declare abstract class BasePackageManager implements PackageManager {
     abstract workspaceRoot(): PackageManager | null;
     /** Ensure the CWD is set to a non-empty string */
     protected ensureCwdDefined(method?: string): string;
-    runAsync(command: string[]): spawnAsync.SpawnPromise<spawnAsync.SpawnResult>;
+    runAsync(command: string[]): SpawnPromise<SpawnResult>;
+    getRunSpawnParams(command: string[]): {
+        bin: string;
+        command: string[];
+        options: PackageManagerOptions;
+    };
     versionAsync(): Promise<string>;
     getConfigAsync(key: string): Promise<string>;
     removeLockfileAsync(): Promise<void>;
