@@ -136,7 +136,7 @@ function getNavigateReplaceAction(previousState, parentState, lastNavigatorSuppo
     const currentRoute = parentState.routes.find((route) => route.name === state.name);
     const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
     // If there is nested state and the routes are equal, we should keep going down the tree
-    if (state.state && routesAreEqual) {
+    if (state.state && routesAreEqual && currentRoute.state) {
         return getNavigateReplaceAction(state.state, currentRoute.state, lastNavigatorSupportingReplace);
     }
     // Either we reached the bottom of the state or the point where the routes diverged

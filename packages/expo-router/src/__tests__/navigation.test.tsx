@@ -420,16 +420,17 @@ it('can redirect within a group layout', () => {
       const pathname = usePathname();
 
       if (pathname === '/') {
-        return <Redirect href="/should-work" />;
+        return <Redirect href="/page" />;
       }
 
       return <Stack />;
     },
-    '(group)/index': () => <Text />,
-    '(group)/should-work': () => <Text />,
+    '(group)/index': () => <Text testID="index" />,
+    '(group)/page': () => <Text testID="page" />,
   });
 
-  expect(screen).toHavePathname('/should-work');
+  expect(screen).toHavePathname('/page');
+  expect(screen.getByTestId('page')).toBeOnTheScreen();
 });
 
 it('can replace across groups', async () => {
