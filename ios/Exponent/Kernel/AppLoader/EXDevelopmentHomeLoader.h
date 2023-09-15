@@ -2,18 +2,16 @@
 
 #import "EXAbstractLoader.h"
 
-@class EXManifestAndAssetRequestHeaders;
-
 @protocol EXHomeAppLoaderTaskDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- Subclass of EXAbstractLoader, specifically for loading the home app.
+ Subclass of EXAbstractLoader, specifically for loading the home app in development (published dev home or locally running home bundler).
  */
-@interface EXHomeLoader : EXAbstractLoader <EXHomeAppLoaderTaskDelegate>
+@interface EXDevelopmentHomeLoader : EXAbstractLoader <EXHomeAppLoaderTaskDelegate>
 
-- (instancetype)initWithManifestAndAssetRequestHeaders:(EXManifestAndAssetRequestHeaders *)manifestAndAssetRequestHeaders;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithManifestUrl:(NSURL *)url NS_UNAVAILABLE;
 - (instancetype)initWithLocalManifest:(EXManifestsManifest *)manifest NS_UNAVAILABLE;
 

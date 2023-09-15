@@ -1,7 +1,7 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
 #import "EXAppFetcher.h"
-#import "EXHomeLoader.h"
+#import "EXDevelopmentHomeLoader.h"
 #import "EXClientReleaseType.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
@@ -12,6 +12,7 @@
 #import "EXSession.h"
 #import "EXUpdatesDatabaseManager.h"
 #import "EXVersions.h"
+#import "EXBuildConstants.h"
 
 #if defined(EX_DETACHED)
 #import "ExpoKit-Swift.h"
@@ -27,7 +28,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXHomeLoader ()
+@interface EXDevelopmentHomeLoader ()
 
 @property (nonatomic, strong, nullable) EXManifestAndAssetRequestHeaders *manifestAndAssetRequestHeaders;
 
@@ -49,14 +50,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@implementation EXHomeLoader
+@implementation EXDevelopmentHomeLoader
 
 @synthesize bundle = _bundle;
 @synthesize isUpToDate = _isUpToDate;
 
-- (instancetype)initWithManifestAndAssetRequestHeaders:(EXManifestAndAssetRequestHeaders *)manifestAndAssetRequestHeaders {
+- (instancetype)init {
   if (self = [super init]) {
-    _manifestAndAssetRequestHeaders = manifestAndAssetRequestHeaders;
+    _manifestAndAssetRequestHeaders = [EXDevelopmentHomeLoader bundledDevelopmentHomeManifestAndAssetRequestHeaders];
     _appLoaderQueue = dispatch_queue_create("host.exp.exponent.LoaderQueue", DISPATCH_QUEUE_SERIAL);
   }
   return self;
@@ -340,6 +341,26 @@ NS_ASSUME_NONNULL_BEGIN
   } else {
     return [EXVersions sharedInstance].temporarySdkVersion;
   }
+}
+
++ (EXManifestAndAssetRequestHeaders * _Nullable)bundledDevelopmentHomeManifestAndAssetRequestHeaders
+{
+  NSString *manifestAndAssetRequestHeadersJson = [EXBuildConstants sharedInstance].kernelManifestAndAssetRequestHeadersJsonString;
+  if (!manifestAndAssetRequestHeadersJson) {
+    return nil;
+  }
+
+  id manifestAndAssetRequestHeaders = RCTJSONParse(manifestAndAssetRequestHeadersJson, nil);
+  if ([manifestAndAssetRequestHeaders isKindOfClass:[NSDictionary class]]) {
+    id manifest = manifestAndAssetRequestHeaders[@"manifest"];
+    id assetRequestHeaders = manifestAndAssetRequestHeaders[@"assetRequestHeaders"];
+    if ([manifest isKindOfClass:[NSDictionary class]]) {
+      return [[EXManifestAndAssetRequestHeaders alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:manifest]
+                                                    assetRequestHeaders:assetRequestHeaders];
+    }
+  }
+
+  return nil;
 }
 
 @end

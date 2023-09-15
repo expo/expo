@@ -28,7 +28,6 @@ object KernelConstants {
   const val OPEN_EXPERIENCE_ACTIVITY_KEY = "openExperienceActivity"
   const val LOAD_BUNDLE_FOR_EXPERIENCE_ACTIVITY_KEY = "loadBundleForExperienceActivity"
   const val EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY = "experienceIdSetForActivity"
-  const val DELAY_TO_PRELOAD_KERNEL_JS: Long = 5000
   const val HTTP_NOT_MODIFIED = 304
   const val OVERLAY_PERMISSION_REQUEST_CODE = 123
   const val DEFAULT_APPLICATION_KEY = "main"
