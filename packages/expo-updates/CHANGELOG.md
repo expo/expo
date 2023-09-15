@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix updates enabled defaulting on iOS. ([#24327](https://github.com/expo/expo/pull/24327) by [@wschurman](https://github.com/wschurman))
+- [Android] Make scopekey only required when getting database entity. ([#24466](https://github.com/expo/expo/pull/24466) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 

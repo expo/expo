@@ -22,13 +22,13 @@ import java.util.*
 class BareUpdateManifest private constructor(
   override val manifest: BareManifest,
   private val mId: UUID,
-  private val mScopeKey: String,
+  private val mScopeKey: String?,
   private val mCommitTime: Date,
   private val mRuntimeVersion: String,
   private val mAssets: JSONArray?
 ) : UpdateManifest {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@BareUpdateManifest.manifest.getRawJson()).apply {
+    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey!!, this@BareUpdateManifest.manifest.getRawJson()).apply {
       status = UpdateStatus.EMBEDDED
     }
   }
@@ -94,7 +94,7 @@ class BareUpdateManifest private constructor(
       return BareUpdateManifest(
         manifest,
         id,
-        configuration.scopeKey!!,
+        configuration.scopeKey,
         commitTime,
         runtimeVersion,
         assets
