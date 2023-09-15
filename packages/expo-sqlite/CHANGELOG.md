@@ -10,12 +10,18 @@
 
 ### 💡 Others
 
+<<<<<<< HEAD
 ## 11.7.0 — 2023-09-15
 
 ### 🐛 Bug fixes
 
 - [iOS] Fixed an issue with CRSQLite missing a minimum OS version on iOS, causing rejections on AppStore Connect submission. ([#24347](https://github.com/expo/expo/pull/24347) by [@derekstavis](https://github.com/derekstavis))
 
+||||||| parent of 44fc8dd96a ([ios][updates] loosen podspec constraint. Make call sites consistent)
+=======
+- [iOS] Bump `SQLite`version to latest. ([#24375](https://github.com/expo/expo/pull/24375) by [@alanjhughes](https://github.com/alanjhughes))
+
+>>>>>>> 44fc8dd96a ([ios][updates] loosen podspec constraint. Make call sites consistent)
 ## 11.3.3 — 2023-09-08
 
 ### 🎉 New features

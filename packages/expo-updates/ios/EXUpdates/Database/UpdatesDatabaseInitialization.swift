@@ -113,7 +113,7 @@ internal final class UpdatesDatabaseInitialization {
     }
 
     var dbInit: OpaquePointer?
-    let resultCode = sqlite3_open(String(dbUrl.path.utf8), &dbInit)
+    let resultCode = sqlite3_open(dbUrl.path, &dbInit)
 
     guard var db = dbInit else {
       throw UpdatesDatabaseInitializationError.openDatabaseFalure
@@ -134,7 +134,7 @@ internal final class UpdatesDatabaseInitialization {
 
         NSLog("Moved corrupt SQLite db to %@", archivedDbFilename)
         var dbInit2: OpaquePointer?
-        guard sqlite3_open(String(dbUrl.absoluteString.utf8), &dbInit2) == SQLITE_OK else {
+        guard sqlite3_open(dbUrl.path, &dbInit2) == SQLITE_OK else {
           throw UpdatesDatabaseInitializationError.openAfterMovingCorruptedDatabaseFailure
         }
 

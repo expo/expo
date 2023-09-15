@@ -2327,7 +2327,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSQLite (11.7.0):
     - ExpoModulesCore
-    - sqlite3 (= 3.42.0)
+    - sqlite3 (~> 3.42.0)
   - ExpoStoreReview (6.6.0):
     - ExpoModulesCore
   - ExpoSystemUI (2.6.0):
@@ -4967,6 +4967,7 @@ SPEC CHECKSUMS:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   EXUpdates: f9a40063a208e21682ee174272b8d56defae6327
   EXUpdatesInterface: 98f69982f4b429eb62a1d99259bc980038240f27
 ||||||| parent of c70391aaee ([ios][updates] bump sqlite version)
@@ -4976,6 +4977,11 @@ SPEC CHECKSUMS:
 =======
   EXUpdates: e00261ce6e9f030735a23712591dba9d94b77f0d
 >>>>>>> c6a37a4322 ([ios][updates] remove unneeded dep)
+||||||| parent of 44fc8dd96a ([ios][updates] loosen podspec constraint. Make call sites consistent)
+  EXUpdates: e00261ce6e9f030735a23712591dba9d94b77f0d
+=======
+  EXUpdates: 2ca83f3a1c21cf6bd22c7b71e157a7ece19c40aa
+>>>>>>> 44fc8dd96a ([ios][updates] loosen podspec constraint. Make call sites consistent)
   EXUpdatesInterface: 376edcf7e762dcf8f55552804944dac004fa3349
 =======
 <<<<<<< HEAD
