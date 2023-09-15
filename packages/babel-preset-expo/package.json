@@ -1,13 +1,12 @@
 {
   "name": "babel-preset-expo",
-  "version": "9.6.2",
+  "version": "9.7.0",
   "description": "The Babel preset for Expo projects",
   "main": "build/index.js",
   "files": [
     "build",
     "lazy-imports-blacklist.js"
   ],
-  
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

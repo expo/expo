@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Remove experimental native Webpack support. ([#24328](https://github.com/expo/expo/pull/24328) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 9.7.0 — 2023-09-15
+
+### 🛠 Breaking changes
+
+- Remove experimental native Webpack support. ([#24328](https://github.com/expo/expo/pull/24328) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
