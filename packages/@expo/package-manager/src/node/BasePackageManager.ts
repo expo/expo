@@ -9,11 +9,20 @@ import { PendingSpawnPromise } from '../utils/spawn';
 export abstract class BasePackageManager implements PackageManager {
   readonly silent: boolean;
   readonly log?: (...args: any) => void;
+  simulate?: boolean;
   readonly options: PackageManagerOptions;
+  lastCommand: string | null = null;
 
-  constructor({ silent, log, env = process.env, ...options }: PackageManagerOptions = {}) {
+  constructor({
+    silent,
+    log,
+    simulate,
+    env = process.env,
+    ...options
+  }: PackageManagerOptions = {}) {
     this.silent = !!silent;
     this.log = log ?? (!silent ? console.log : undefined);
+    this.simulate = !!simulate;
     this.options = {
       stdio: silent ? undefined : 'inherit',
       ...options,
@@ -36,7 +45,6 @@ export abstract class BasePackageManager implements PackageManager {
     };
   }
 
-  abstract getAddCommandOptions(namesOrFlags: string[]): string[];
   abstract addAsync(
     namesOrFlags: string[]
   ): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
@@ -69,9 +77,13 @@ export abstract class BasePackageManager implements PackageManager {
   }
 
   runAsync(command: string[]) {
-    this.log?.(`> ${this.name} ${command.join(' ')}`);
-    const runSpawnParams = this.getRunSpawnParams(command);
-    return spawnAsync(runSpawnParams.bin, runSpawnParams.command, runSpawnParams.options);
+    this.lastCommand = `${this.name} ${command.join(' ')}`;
+    this.log?.(`> ${this.lastCommand}`);
+    if (this.simulate) {
+      // no-op
+      return spawnAsync('echo', [''], { ...this.options, stdio: undefined });
+    }
+    return spawnAsync(this.bin, command, this.options);
   }
 
   getRunSpawnParams(command: string[]) {

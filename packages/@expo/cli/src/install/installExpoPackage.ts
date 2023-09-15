@@ -52,17 +52,21 @@ export async function installExpoPackageAsync(
     }
   }
 
-  const expoInstallCommand = `${packageManager.bin} ${packageManager
-    .getAddCommandOptions([...packageManagerArguments, expoPackageToInstall])
-    .join(' ')}`;
-  Log.log(`> ${expoInstallCommand}`);
+  // prevents the package manager from actually installing the package
+  // we will grab the command it intended to run and run it with the follow up command
+  packageManager.simulate = true;
+
+  await packageManager.addAsync([...packageManagerArguments, expoPackageToInstall]);
+
+  const expoInstallCommand = packageManager.lastCommand;
+
   followUpCommand && Log.log(`> ${followUpCommand}`);
 
   const detachedCommandToRun = followUpCommand
     ? `${expoInstallCommand} && ${followUpCommand}`
     : expoInstallCommand;
 
-  spawn(detachedCommandToRun, {
+  spawn(detachedCommandToRun!, {
     ...packageManager.options,
     detached: true,
     shell: true,

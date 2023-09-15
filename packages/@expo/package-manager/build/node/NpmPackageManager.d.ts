@@ -4,7 +4,6 @@ export declare class NpmPackageManager extends BasePackageManager {
     readonly bin = "npm";
     readonly lockFile = "package-lock.json";
     workspaceRoot(): NpmPackageManager | null;
-    getAddCommandOptions(namesOrFlags: string[]): string[];
     addAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult> | import("../utils/spawn").PendingSpawnPromise<import("@expo/spawn-async").SpawnResult>;
     addDevAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult> | import("../utils/spawn").PendingSpawnPromise<import("@expo/spawn-async").SpawnResult>;
     addGlobalAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult> | import("../utils/spawn").PendingSpawnPromise<import("@expo/spawn-async").SpawnResult>;

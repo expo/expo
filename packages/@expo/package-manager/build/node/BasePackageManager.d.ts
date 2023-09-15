@@ -4,8 +4,10 @@ import { PendingSpawnPromise } from '../utils/spawn';
 export declare abstract class BasePackageManager implements PackageManager {
     readonly silent: boolean;
     readonly log?: (...args: any) => void;
+    simulate?: boolean;
     readonly options: PackageManagerOptions;
-    constructor({ silent, log, env, ...options }?: PackageManagerOptions);
+    lastCommand: string | null;
+    constructor({ silent, log, simulate, env, ...options }?: PackageManagerOptions);
     /** Get the name of the package manager */
     abstract readonly name: string;
     /** Get the executable binary of the package manager */
@@ -14,7 +16,6 @@ export declare abstract class BasePackageManager implements PackageManager {
     abstract readonly lockFile: string;
     /** Get the default environment variables used when running the package manager. */
     protected getDefaultEnvironment(): Record<string, string>;
-    abstract getAddCommandOptions(namesOrFlags: string[]): string[];
     abstract addAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
     abstract addDevAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
     abstract addGlobalAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;

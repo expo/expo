@@ -29,16 +29,12 @@ export class PnpmPackageManager extends BasePackageManager {
     return this.runAsync(['install', ...namesOrFlags]);
   }
 
-  getAddCommandOptions(namesOrFlags: string[]) {
-    return ['add', ...namesOrFlags];
-  }
-
   addAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
-    return this.runAsync(this.getAddCommandOptions(namesOrFlags));
+    return this.runAsync(['add', ...namesOrFlags]);
   }
 
   addDevAsync(namesOrFlags: string[] = []) {

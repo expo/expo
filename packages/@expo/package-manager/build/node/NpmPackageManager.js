@@ -29,18 +29,14 @@ class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
         }
         return null;
     }
-    getAddCommandOptions(namesOrFlags) {
-        const { flags, unversioned } = this.parsePackageSpecs(namesOrFlags);
-        return !unversioned.length
-            ? ['install', ...flags]
-            : ['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)];
-    }
     addAsync(namesOrFlags = []) {
         if (!namesOrFlags.length) {
             return this.installAsync();
         }
-        const { versioned } = this.parsePackageSpecs(namesOrFlags);
-        return (0, spawn_1.createPendingSpawnAsync)(() => this.updatePackageFileAsync(versioned, 'dependencies'), () => this.runAsync(this.getAddCommandOptions(namesOrFlags)));
+        const { flags, versioned, unversioned } = this.parsePackageSpecs(namesOrFlags);
+        return (0, spawn_1.createPendingSpawnAsync)(() => this.updatePackageFileAsync(versioned, 'dependencies'), () => !unversioned.length
+            ? this.runAsync(['install', ...flags])
+            : this.runAsync(['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)]));
     }
     addDevAsync(namesOrFlags = []) {
         if (!namesOrFlags.length) {

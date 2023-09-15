@@ -9,9 +9,11 @@ const assert_1 = __importDefault(require("assert"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 class BasePackageManager {
-    constructor({ silent, log, env = process.env, ...options } = {}) {
+    constructor({ silent, log, simulate, env = process.env, ...options } = {}) {
+        this.lastCommand = null;
         this.silent = !!silent;
         this.log = log ?? (!silent ? console.log : undefined);
+        this.simulate = !!simulate;
         this.options = {
             stdio: silent ? undefined : 'inherit',
             ...options,
@@ -34,9 +36,13 @@ class BasePackageManager {
         return cwd;
     }
     runAsync(command) {
-        this.log?.(`> ${this.name} ${command.join(' ')}`);
-        const runSpawnParams = this.getRunSpawnParams(command);
-        return (0, spawn_async_1.default)(runSpawnParams.bin, runSpawnParams.command, runSpawnParams.options);
+        this.lastCommand = `${this.name} ${command.join(' ')}`;
+        this.log?.(`> ${this.lastCommand}`);
+        if (this.simulate) {
+            // no-op
+            return (0, spawn_async_1.default)('echo', [''], { ...this.options, stdio: undefined });
+        }
+        return (0, spawn_async_1.default)(this.bin, command, this.options);
     }
     getRunSpawnParams(command) {
         return { bin: this.bin, command, options: this.options };

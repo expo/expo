@@ -5,7 +5,6 @@ export declare class BunPackageManager extends BasePackageManager {
     readonly lockFile = "bun.lockb";
     workspaceRoot(): BunPackageManager | null;
     installAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult>;
-    getAddCommandOptions(namesOrFlags: string[]): string[];
     addAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult>;
     addDevAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult>;
     addGlobalAsync(namesOrFlags?: string[]): import("@expo/spawn-async").SpawnPromise<import("@expo/spawn-async").SpawnResult>;

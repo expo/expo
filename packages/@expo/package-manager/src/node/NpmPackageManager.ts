@@ -25,23 +25,19 @@ export class NpmPackageManager extends BasePackageManager {
     return null;
   }
 
-  getAddCommandOptions(namesOrFlags: string[]) {
-    const { flags, unversioned } = this.parsePackageSpecs(namesOrFlags);
-    return !unversioned.length
-      ? ['install', ...flags]
-      : ['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)];
-  }
-
   addAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
-    const { versioned } = this.parsePackageSpecs(namesOrFlags);
+    const { flags, versioned, unversioned } = this.parsePackageSpecs(namesOrFlags);
 
     return createPendingSpawnAsync(
       () => this.updatePackageFileAsync(versioned, 'dependencies'),
-      () => this.runAsync(this.getAddCommandOptions(namesOrFlags))
+      () =>
+        !unversioned.length
+          ? this.runAsync(['install', ...flags])
+          : this.runAsync(['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)])
     );
   }
 
@@ -133,8 +129,9 @@ export class NpmPackageManager extends BasePackageManager {
     }
 
     const pkgPath = path.join(this.options.cwd?.toString() || '.', 'package.json');
-    const pkg =
-      await JsonFile.readAsync<Record<typeof packageType, { [pkgName: string]: string }>>(pkgPath);
+    const pkg = await JsonFile.readAsync<Record<typeof packageType, { [pkgName: string]: string }>>(
+      pkgPath
+    );
 
     packageSpecs.forEach((spec) => {
       pkg[packageType] = pkg[packageType] || {};

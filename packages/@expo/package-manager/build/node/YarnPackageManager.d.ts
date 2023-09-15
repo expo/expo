@@ -7,7 +7,6 @@ export declare class YarnPackageManager extends BasePackageManager {
     private withOfflineFlagAsync;
     workspaceRoot(): YarnPackageManager | null;
     installAsync(flags?: string[]): import("../utils/spawn").PendingSpawnPromise<import("@expo/spawn-async").SpawnResult>;
-    getAddCommandOptions(namesOrFlags: string[]): string[];
     addAsync(namesOrFlags?: string[]): import("../utils/spawn").PendingSpawnPromise<import("@expo/spawn-async").SpawnResult>;
     addDevAsync(namesOrFlags?: string[]): import("../utils/spawn").PendingSpawnPromise<import("@expo/spawn-async").SpawnResult>;
     addGlobalAsync(namesOrFlags?: string[]): import("../utils/spawn").PendingSpawnPromise<import("@expo/spawn-async").SpawnResult>;

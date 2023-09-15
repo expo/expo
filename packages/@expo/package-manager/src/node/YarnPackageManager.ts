@@ -34,17 +34,13 @@ export class YarnPackageManager extends BasePackageManager {
     );
   }
 
-  getAddCommandOptions(namesOrFlags: string[]) {
-    return ['add', ...namesOrFlags];
-  }
-
   addAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
     return createPendingSpawnAsync(
-      () => this.withOfflineFlagAsync(this.getAddCommandOptions(namesOrFlags)),
+      () => this.withOfflineFlagAsync(['add', ...namesOrFlags]),
       (args) => this.runAsync(args)
     );
   }

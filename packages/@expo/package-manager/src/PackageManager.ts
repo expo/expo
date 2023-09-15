@@ -11,6 +11,12 @@ export interface PackageManagerOptions extends SpawnOptions {
   silent?: boolean;
 
   /**
+   * If true, the package manager should only log the command which is executed, and not actually execute it.
+   * Used to retrieve commands for later execution in a different process (e.g., when upgrading the Expo package itself)
+   */
+  simulate?: boolean;
+
+  /**
    * The logging method used to communicate the command which is executed.
    * Without `silent`, this defaults to `console.log`.
    * When `silent` is set to `true`, this defaults to a no-op.
@@ -21,6 +27,8 @@ export interface PackageManagerOptions extends SpawnOptions {
 export interface PackageManager {
   /** The options for this package manager */
   readonly options: PackageManagerOptions;
+
+  lastCommand: string | null;
 
   /** Run any command using the package manager */
   runAsync(command: string[]): SpawnPromise<SpawnResult>;
@@ -41,11 +49,6 @@ export interface PackageManager {
     | PendingSpawnPromise<SpawnResult>;
   /** Uninstall all current dependencies by removing the folder containing the packages */
   uninstallAsync(): Promise<void>;
-
-  /** Get all options to add to the base "add" command, so it can be triggered by a spawn outside of the manager
-   * and get chained with other commands (such as when updating expo and then the rest of the dependencies)
-   */
-  getAddCommandOptions(namesOrFlags: string[]): string[];
 
   /** Add a normal dependency to the project */
   addAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
