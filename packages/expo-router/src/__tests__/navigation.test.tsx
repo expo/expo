@@ -38,8 +38,8 @@ describe('hooks only', () => {
       fireEvent.press(text);
     });
 
-    expect(screen).toHavePathname('/profile/test-name');
     expect(await screen.findByText('test-name')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/profile/test-name');
   });
 });
 
