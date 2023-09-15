@@ -135,23 +135,6 @@ describe('server', () => {
             ],
             bundle: expect.stringMatching(/bundles\/ios-.*\.hbc/),
           },
-          web: {
-            assets: [
-              {
-                ext: 'png',
-                path: 'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
-              },
-              {
-                ext: 'png',
-                path: 'assets/9ce7db807e4147e00df372d053c154c2',
-              },
-              {
-                ext: 'ttf',
-                path: 'assets/3858f62230ac3c915f300c664312c63f',
-              },
-            ],
-            bundle: expect.stringMatching(/bundles\/web-.*\.js/),
-          },
         },
         version: 0,
       });

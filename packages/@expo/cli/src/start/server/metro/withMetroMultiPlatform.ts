@@ -415,7 +415,7 @@ export async function withMetroMultiPlatformAsync(
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
-    webOutput?: 'single' | 'static';
+    webOutput?: 'single' | 'static' | 'server';
     routerDirectory: string;
   }
 ) {
@@ -425,7 +425,7 @@ export async function withMetroMultiPlatformAsync(
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 
-  if (webOutput === 'static') {
+  if (['static', 'server'].includes(webOutput ?? '')) {
     // Enable static rendering in runtime space.
     process.env.EXPO_PUBLIC_USE_STATIC = '1';
   }
