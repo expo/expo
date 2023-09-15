@@ -10,13 +10,14 @@ type Options = {
     username: string;
     password: string;
   };
+  branch: string;
   message: string;
 };
 
 /**
  * Uses the installed version of `eas-cli` to publish a project.
  */
-export async function publishProjectWithEasCliAsync(
+export async function setAuthAndPublishProjectWithEasCliAsync(
   projectRoot: string,
   options: Options
 ): Promise<{ createdUpdateGroupId: string }> {
@@ -37,10 +38,20 @@ export async function publishProjectWithEasCliAsync(
     }
   }
 
+  return await publishProjectWithEasCliAsync(projectRoot, options);
+}
+
+export async function publishProjectWithEasCliAsync(
+  projectRoot: string,
+  options: {
+    branch: string;
+    message: string;
+  }
+): Promise<{ createdUpdateGroupId: string }> {
   Log.collapsed('Publishing...');
   const publishedUpdatesJSONString = await EASCLI.runEASCliAsync(
     'update',
-    ['--non-interactive', '--json', '--branch', 'development', '--message', options.message],
+    ['--non-interactive', '--json', '--branch', options.branch, '--message', options.message],
     {
       cwd: projectRoot,
     }
