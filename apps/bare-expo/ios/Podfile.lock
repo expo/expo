@@ -20,7 +20,7 @@ PODS:
     - ZXingObjC/PDF417
   - EXCalendar (11.3.0):
     - ExpoModulesCore
-  - EXCamera (13.4.3):
+  - EXCamera (13.4.4):
     - ExpoModulesCore
   - EXConstants (14.4.2):
     - ExpoModulesCore
@@ -61,7 +61,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.2.1):
     - ExpoModulesCore
-  - Expo (49.0.9):
+  - Expo (49.0.10):
     - ExpoModulesCore
   - expo-dev-client (2.4.8):
     - EXManifests
@@ -1368,7 +1368,7 @@ SPEC CHECKSUMS:
   EXBackgroundFetch: a4a45a5924d9ac6dd480d5d745aabe91bb17bb36
   EXBarCodeScanner: 44783bf0be375ab18a838dcfef29dd648397000a
   EXCalendar: 6756a5cf09a5ad90d3abf40e2bbdfb5993ae0911
-  EXCamera: d2cc9da6383f9a91d5ba7ca5747e359cce516158
+  EXCamera: 6e6e79bf01a2b8190268d93297d8e79a843d5ede
   EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
   EXContacts: 9e8626eefc90c428af3d61a9e2869ac413d2569b
   EXFaceDetector: aaa275f19e8a00c78d48ad1c1a5e4f5d4616568f
@@ -1382,7 +1382,7 @@ SPEC CHECKSUMS:
   EXMediaLibrary: 8ac14ce76f266026b10cac2ab049debe032d7ae7
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 4f80cf527001aa408a22eddf076e61465ea71d5a
-  Expo: 1a9df000f727ec52651a51548c12ad66bca4b5dc
+  Expo: 0ff83f0415a0e7a9368ce38bf25cad539b18a08c
   expo-dev-client: d2f9caff2df2512889068bc0df2856e1001856af
   expo-dev-launcher: 89ab677e6ebe586ab41725aea0255b9d2aac8256
   expo-dev-menu: 3b7e413a52fca62d4a54a2f5da7ecb22c1e6268e
