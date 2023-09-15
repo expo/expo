@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.8.0 — 2023-09-15
+
+### 💡 Others
+
 - Reduce web bundle size. ([#24297](https://github.com/expo/expo/pull/24297) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 1.7.1 — 2023-08-02

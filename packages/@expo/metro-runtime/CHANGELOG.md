@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.0.2 — 2023-09-15
+
+### 🎉 New features
+
 - Enable async code loading in production for web. ([#24291](https://github.com/expo/expo/pull/24291) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes

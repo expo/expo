@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [ios] Fixed the `LOW_QUALITY` preset producing large audio files. ([#24323](https://github.com/expo/expo/pull/24323) by [@behenate](https://github.com/behenate))
-
 ### 💡 Others
+
+## 13.7.0 — 2023-09-15
+
+### 🐛 Bug fixes
+
+- [ios] Fixed the `LOW_QUALITY` preset producing large audio files. ([#24323](https://github.com/expo/expo/pull/24323) by [@behenate](https://github.com/behenate))
 
 ## 13.6.0 — 2023-09-04
 

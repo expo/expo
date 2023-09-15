@@ -6,14 +6,20 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 4.2.0 — 2023-09-15
+
+### 🎉 New features
+
 - Add `control+d` as a hotkey to open the menu. ([#24434](https://github.com/expo/expo/pull/24434) by [@alanjhughes](https://github.com/alanjhughes))
 - Separate `refresh` button from the rest ([#24426](https://github.com/expo/expo/pull/24426) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🐛 Bug fixes
 
 - Fixed task ':expo-dev-menu:packageReleaseAssets' uses this output of task ':expo-dev-menu:copyAssets' without declaring an explicit or implicit dependency on Android. ([#24393](https://github.com/expo/expo/pull/24393) by [@lukmccall](https://github.com/lukmccall))
-
-### 💡 Others
 
 ## 4.1.0 — 2023-09-04
 

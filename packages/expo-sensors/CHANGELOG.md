@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.6.0 — 2023-09-15
+
+### 💡 Others
+
 - Migrated to Swift and Expo Modules API on iOS. ([#24133](https://github.com/expo/expo/pull/24133) by [@tsapeta](https://github.com/tsapeta))
 
 ## 12.5.0 — 2023-09-04
