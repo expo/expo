@@ -56,10 +56,7 @@ describe('server-output', () => {
     let server: execa.ExecaChildProcess<string> | undefined;
 
     afterAll(async () => {
-      if (server) {
-        server.kill();
-        await server;
-      }
+      server?.kill();
     });
 
     ['POST', 'GET', 'PUT', 'DELETE'].map(async (method) => {
