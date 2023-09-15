@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
 import { LinkBase, shadows, theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
-import { TriangleDownIcon, Link01SolidIcon } from '@expo/styleguide-icons';
+import { TriangleDownIcon } from '@expo/styleguide-icons';
 import { useRouter } from 'next/compat/router';
 import type { PropsWithChildren, ReactNode } from 'react';
 import React from 'react';
 
-import { PermalinkCopyIcon } from '~/components/Permalink';
+import PermalinkIcon from '~/components/icons/Permalink';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
@@ -71,7 +71,7 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
           <LinkBase href={'#' + heading.current.slug} ref={heading.current.ref}>
             <DEMI>{summary}</DEMI>
             <span css={STYLES_PERMALINK_ICON}>
-              <Link01SolidIcon onClick={onClickIcon} className="icon-sm text-icon-default" />
+              <PermalinkIcon onClick={onClickIcon} />
             </span>
           </LinkBase>
         </summary>

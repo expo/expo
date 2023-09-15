@@ -1,9 +1,9 @@
 import { css } from '@emotion/react';
 import { LinkBase } from '@expo/styleguide';
-import { Link01SolidIcon } from '@expo/styleguide-icons';
 import * as React from 'react';
 
 import { AdditionalProps } from '~/common/headingManager';
+import PermalinkIcon from '~/components/icons/Permalink';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
@@ -97,7 +97,7 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(
           <span css={STYLES_PERMALINK_TARGET} id={heading.slug} />
           <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
           <span css={STYLES_PERMALINK_ICON}>
-            <Link01SolidIcon className="icon-sm text-icon-default" />
+            <PermalinkIcon />
           </span>
         </LinkBase>
       </PermalinkBase>
