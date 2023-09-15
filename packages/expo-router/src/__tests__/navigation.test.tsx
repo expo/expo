@@ -441,7 +441,6 @@ it('can replace across groups', async () => {
         <Tabs.Screen name="two" />
       </Tabs>
     ),
-    index: () => <Stack />,
     'one/_layout': () => <Stack />,
     'one/screen': () => <Text testID="one/screen" />,
     'two/_layout': () => <Stack />,
@@ -452,14 +451,14 @@ it('can replace across groups', async () => {
 
   act(() => router.push('/two/screen'));
   expect(screen).toHavePathname('/two/screen');
-  expect(screen.getByTestId('two/screen')).toBeTruthy();
+  expect(screen.getByTestId('two/screen')).toBeOnTheScreen();
 
   act(() => router.push('/one/screen'));
   expect(screen).toHavePathname('/one/screen');
-  expect(screen.getByTestId('one/screen')).toBeTruthy();
+  expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
 
   // Should replace at the top Tabs
   act(() => router.replace('/two/screen'));
   expect(screen).toHavePathname('/two/screen');
-  expect(screen.getByTestId('two/screen')).toBeTruthy();
+  expect(screen.getByTestId('two/screen')).toBeOnTheScreen();
 });
