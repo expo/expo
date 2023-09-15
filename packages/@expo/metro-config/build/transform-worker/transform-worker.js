@@ -50,15 +50,21 @@ async function transform(config, projectRoot, filename, data, options) {
   if (!isCss) {
     var _options$customTransf;
     const environment = (_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment;
-    if (environment === 'client' &&
+    if (environment !== 'node' && (
     // TODO: Ensure this works with windows.
-    // TODO: Add +api files.
-    filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`))) {
-      // Remove the server-only +html file from the bundle when bundling for a client environment.
+    filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
+    // Strip +api files.
+    filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))) {
+      // Remove the server-only +html file and API Routes from the bundle when bundling for a client environment.
       return _metroTransformWorker().default.transform(config, projectRoot, filename, !options.minify ? Buffer.from(
       // Use a string so this notice is visible in the bundle if the user is
       // looking for it.
-      '"> The server-only +html file was removed from the client JS bundle by Expo CLI."') : Buffer.from(''), options);
+      '"> The server-only file was removed from the client JS bundle by Expo CLI."') : Buffer.from(''), options);
+    }
+    if (environment !== 'node' && !filename.match(/\/node_modules\//) && filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/)) {
+      // Clear the contents of +api files when bundling for the client.
+      // This ensures that the client doesn't accidentally use the server-only +api files.
+      return _metroTransformWorker().default.transform(config, projectRoot, filename, Buffer.from(''), options);
     }
     return _metroTransformWorker().default.transform(config, projectRoot, filename, data, options);
   }

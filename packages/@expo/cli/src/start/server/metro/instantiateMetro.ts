@@ -11,7 +11,7 @@ import { URL } from 'url';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importCliServerApiFromProject, importExpoMetroConfig } from './resolveFromProject';
-import { getRouterDirectory } from './router';
+import { getRouterDirectoryModuleIdWithManifest } from './router';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
@@ -102,7 +102,7 @@ export async function loadMetroConfigAsync(
   const platformBundlers = getPlatformBundlers(exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
-    routerDirectory: exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot),
+    routerDirectory: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     config,
     platformBundlers,
     isTsconfigPathsEnabled: !!exp.experiments?.tsconfigPaths,

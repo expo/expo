@@ -25,6 +25,19 @@ type CodeFrame = {
 
 type MetroStackFrame = StackFrame & { collapse?: boolean };
 
+function fill(width: number): string {
+  return Array(width).join(' ');
+}
+
+function formatPaths(config: { filePath: string | null; line?: number; col?: number }) {
+  const filePath = chalk.reset(config.filePath);
+  return (
+    chalk.dim('(') +
+    filePath +
+    chalk.dim(`:${[config.line, config.col].filter(Boolean).join(':')})`)
+  );
+}
+
 export async function logMetroErrorWithStack(
   projectRoot: string,
   {
@@ -37,6 +50,9 @@ export async function logMetroErrorWithStack(
     error: Error;
   }
 ) {
+  // process.stdout.write('\u001b[0m'); // Reset attributes
+  // process.stdout.write('\u001bc'); // Reset the terminal
+
   const { getStackFormattedLocation } = require(
     resolveFrom(projectRoot, '@expo/metro-runtime/symbolicate')
   );
@@ -46,7 +62,54 @@ export async function logMetroErrorWithStack(
   Log.log();
 
   if (codeFrame) {
-    Log.log(codeFrame.content);
+    const maxWarningLineLength = Math.max(200, process.stdout.columns);
+
+    const lineText = codeFrame.content;
+    const isPreviewTooLong = lineText.length > maxWarningLineLength;
+    const column = codeFrame.location?.column;
+    // When the preview is too long, we skip reading the file and attempting to apply
+    // code coloring, this is because it can get very slow.
+    if (isPreviewTooLong) {
+      let previewLine = '';
+      let cursorLine = '';
+
+      const formattedPath = formatPaths({
+        filePath: codeFrame.fileName,
+        line: codeFrame.location?.row,
+        col: codeFrame.location?.column,
+      });
+      // Create a curtailed preview line like:
+      // `...transition:'fade'},k._updatePropsStack=function(){clearImmediate(k._updateImmediate),k._updateImmediate...`
+      // If there is no text preview or column number, we can't do anything.
+      if (lineText && column != null) {
+        const rangeWindow = Math.round(
+          Math.max(codeFrame.fileName?.length ?? 0, Math.max(80, process.stdout.columns)) / 2
+        );
+        let minBounds = Math.max(0, column - rangeWindow);
+        const maxBounds = Math.min(minBounds + rangeWindow * 2, lineText.length);
+        previewLine = lineText.slice(minBounds, maxBounds);
+
+        // If we splice content off the start, then we should append `...`.
+        // This is unlikely to happen since we limit the activation size.
+        if (minBounds > 0) {
+          // Adjust the min bounds so the cursor is aligned after we add the "..."
+          minBounds -= 3;
+          previewLine = chalk.dim('...') + previewLine;
+        }
+        if (maxBounds < lineText.length) {
+          previewLine += chalk.dim('...');
+        }
+
+        // If the column property could be found, then use that to fix the cursor location which is often broken in regex.
+        cursorLine = (column == null ? '' : fill(column) + chalk.reset('^')).slice(minBounds);
+
+        Log.log(
+          [formattedPath, '', previewLine, cursorLine, chalk.dim('(error truncated)')].join('\n')
+        );
+      }
+    } else {
+      Log.log(codeFrame.content);
+    }
   }
 
   if (stack?.length) {

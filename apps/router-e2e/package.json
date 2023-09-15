@@ -12,7 +12,9 @@
     "react-native": "0.72.4"
   },
   "devDependencies": {
-    "expo-yarn-workspaces": "^2.0.0"
+    "expo-yarn-workspaces": "^2.0.0",
+    "morgan": "^1.10.0",
+    "tiny": "^0.0.10"
   },
   "private": true
 }

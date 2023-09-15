@@ -96,16 +96,16 @@ describe(assertDuplicateRoutes, () => {
   });
 });
 
-describe(getRecursiveTree, () => {
-  function getTreeForKeys(keys: string[]) {
-    const routes = keys.map((normalizedName) =>
-      asFileNode({
-        normalizedName,
-      })
-    );
-    return getRecursiveTree(routes).children;
-  }
+export function getTreeForKeys(keys: string[]) {
+  const routes = keys.map((normalizedName) =>
+    asFileNode({
+      normalizedName,
+    })
+  );
+  return getRecursiveTree(routes).children;
+}
 
+describe(getRecursiveTree, () => {
   it(`should assert using deprecated layout route format`, () => {
     expect(() => getTreeForKeys(['(app)', '(app)/index'])).toThrowError(
       /Using deprecated Layout Route format/

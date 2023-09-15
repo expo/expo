@@ -31,7 +31,7 @@ export function getContextKey(name: string): string {
 
 /** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
 export function removeSupportedExtensions(name: string): string {
-  return name.replace(/\.[jt]sx?$/g, '');
+  return name.replace(/(\+api)?\.[jt]sx?$/g, '');
 }
 
 // Remove any amount of `./` and `../` from the start of the string
