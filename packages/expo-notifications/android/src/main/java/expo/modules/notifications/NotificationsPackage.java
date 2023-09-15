@@ -51,8 +51,7 @@ public class NotificationsPackage extends BasePackage {
   public List<SingletonModule> createSingletonModules(Context context) {
     return Arrays.asList(
       new PushTokenManager(),
-      new NotificationManager(),
-      new ExpoBadgeManager(context)
+      new NotificationManager()
     );
   }
 
