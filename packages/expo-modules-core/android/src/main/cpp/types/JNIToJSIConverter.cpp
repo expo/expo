@@ -81,6 +81,20 @@ jsi::Value convert(
 
     return jsi::Value(rt, *jsiObject);
   }
+  if (env->IsInstanceOf(
+    unpackedValue,
+    JavaReferencesCache::instance()->getJClass(
+      "expo/modules/kotlin/sharedobjects/SharedObject").clazz
+  )) {
+    auto jsObject = std::make_shared<jsi::Object>(jsi::Object(rt));
+    auto jsObjectRef = JavaScriptObject::newInstance(
+      moduleRegistry,
+      moduleRegistry->runtimeHolder,
+      jsObject
+    );
+    moduleRegistry->registerSharedObject(jni::make_local(unpackedValue), jsObjectRef);
+    return jsi::Value(rt, *jsObject);
+  }
 
   return jsi::Value::undefined();
 }
