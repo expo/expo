@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 3.2.0 — 2023-09-15
+
+### 🎉 New features
+
+- Add `control+d` as a hotkey to open the menu. ([#24434](https://github.com/expo/expo/pull/24434) by [@alanjhughes](https://github.com/alanjhughes))
+- Separate `refresh` button from the rest ([#24426](https://github.com/expo/expo/pull/24426) by [@kadikraman](https://github.com/kadikraman))
+
 ## 4.2.0 — 2023-09-15
 
 ### 🎉 New features
