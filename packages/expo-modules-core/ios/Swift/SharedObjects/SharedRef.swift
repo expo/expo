@@ -5,7 +5,7 @@
 open class SharedRef<PointerType>: SharedObject {
   public let pointer: PointerType
 
-  init(_ pointer: PointerType) {
+  public init(_ pointer: PointerType) {
     self.pointer = pointer
     super.init()
   }
