@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix DeviceFamily.ts to work for Apple TV. ([#24411](https://github.com/expo/expo/pull/24411) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 7.4.0 — 2023-09-04
