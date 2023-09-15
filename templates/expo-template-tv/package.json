@@ -10,10 +10,10 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~50.0.0-alpha.2",
-    "expo-status-bar": "~1.7.1",
+    "expo": "~50.0.0-alpha.3",
+    "expo-status-bar": "~1.8.0",
     "react": "18.2.0",
-    "react-native": "npm:react-native-tvos@0.72.4-0"
+    "react-native": "0.72.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -22,7 +22,9 @@
   },
   "expo": {
     "install": {
-      "exclude": ["react-native"]
+      "exclude": [
+        "react-native"
+      ]
     }
   }
 }
