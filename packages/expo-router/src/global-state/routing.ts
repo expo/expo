@@ -148,7 +148,7 @@ function getNavigateReplaceAction(
   const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
 
   // If there is nested state and the routes are equal, we should keep going down the tree
-  if (state.state && routesAreEqual) {
+  if (state.state && routesAreEqual && currentRoute.state) {
     return getNavigateReplaceAction(
       state.state,
       currentRoute.state as any,

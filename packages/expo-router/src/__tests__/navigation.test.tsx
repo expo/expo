@@ -414,6 +414,24 @@ it('respects basePath', async () => {
   expect(text).toHaveTextContent('/');
 });
 
+it('can redirect within a group layout', () => {
+  renderRouter({
+    '(group)/_layout': function Component() {
+      const pathname = usePathname();
+
+      if (pathname === '/') {
+        return <Redirect href="/should-work" />;
+      }
+
+      return <Stack />;
+    },
+    '(group)/index': () => <Text />,
+    '(group)/should-work': () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/should-work');
+});
+
 it('can replace across groups', async () => {
   renderRouter({
     _layout: () => (
