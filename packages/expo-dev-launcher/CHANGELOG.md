@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Revert [dev-launcher] Fetch dev sessions whenever navigating to Home screen (#24378))
+
 ## 2.4.11 — 2023-09-15
 
 ### 💡 Others
