@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix SPA web mode in Expo Router.
+- Fix SPA web mode in Expo Router. ([#24472](https://github.com/expo/expo/pull/24472) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
