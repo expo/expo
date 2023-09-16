@@ -8,7 +8,7 @@
 // swiftlint:disable force_unwrapping
 
 import Foundation
-import SQLite3
+import sqlite3
 
 internal struct UpdatesDatabaseUtilsErrorInfo {
   let code: Int
