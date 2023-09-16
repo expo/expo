@@ -6,7 +6,7 @@
 // swiftlint:disable force_unwrapping
 
 import Foundation
-import SQLite3
+import sqlite3
 
 enum UpdatesDatabaseInitializationError: Error {
   case migrateAndRemoveOldDatabaseFailure
@@ -113,7 +113,7 @@ internal final class UpdatesDatabaseInitialization {
     }
 
     var dbInit: OpaquePointer?
-    let resultCode = sqlite3_open(String(dbUrl.path.utf8), &dbInit)
+    let resultCode = sqlite3_open(dbUrl.path, &dbInit)
 
     guard var db = dbInit else {
       throw UpdatesDatabaseInitializationError.openDatabaseFalure
@@ -134,7 +134,7 @@ internal final class UpdatesDatabaseInitialization {
 
         NSLog("Moved corrupt SQLite db to %@", archivedDbFilename)
         var dbInit2: OpaquePointer?
-        guard sqlite3_open(String(dbUrl.absoluteString.utf8), &dbInit2) == SQLITE_OK else {
+        guard sqlite3_open(dbUrl.path, &dbInit2) == SQLITE_OK else {
           throw UpdatesDatabaseInitializationError.openAfterMovingCorruptedDatabaseFailure
         }
 
@@ -195,7 +195,7 @@ internal final class UpdatesDatabaseInitialization {
     }
 
     var db: OpaquePointer?
-    if sqlite3_open(String(latestURL.absoluteString.utf8), &db) != SQLITE_OK {
+    if sqlite3_open(latestURL.path, &db) != SQLITE_OK {
       NSLog("Error opening migrated SQLite db: %@", [UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db!).message])
       sqlite3_close(db)
       return false

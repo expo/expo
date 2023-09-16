@@ -1,7 +1,7 @@
 //  Copyright (c) 2020 650 Industries, Inc. All rights reserved.
 
 import ExpoModulesTestCore
-import SQLite3
+import sqlite3
 
 @testable import EXUpdates
 
