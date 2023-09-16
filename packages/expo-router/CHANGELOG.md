@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Include `_ctx-html` file in public release.
+
 ### 💡 Others
 
 ## 3.1.1 — 2023-09-15

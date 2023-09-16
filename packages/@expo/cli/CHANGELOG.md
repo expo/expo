@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix SPA web mode in Expo Router.
+
 ### 💡 Others
 
 ## 0.13.1 — 2023-09-15
