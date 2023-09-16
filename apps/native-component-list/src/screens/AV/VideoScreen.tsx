@@ -26,7 +26,7 @@ export default function VideoScreen() {
   );
 }
 VideoScreen.navigationOptions = {
-  title: 'Video',
+  title: 'Video (expo-av)',
 };
 
 const styles = StyleSheet.create({

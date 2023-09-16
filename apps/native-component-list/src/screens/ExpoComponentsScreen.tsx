@@ -42,7 +42,8 @@ const screens = [
   'TextInput',
   'TouchableBounce',
   'Touchables',
-  'Video',
+  'Video (expo-av)',
+  'Video (expo-video)',
   'PagerView',
   'WebView',
 ];
