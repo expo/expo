@@ -7,6 +7,7 @@ import semver from 'semver';
 
 import { fetchAsync } from '../api/rest/client';
 import * as Log from '../log';
+import { env } from '../utils/env';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import {
   downloadAndExtractNpmModuleAsync,
@@ -38,7 +39,7 @@ export async function cloneTemplateAsync({
   if (template) {
     await resolveTemplateArgAsync(templateDirectory, ora, exp.name, template);
   } else {
-    const templatePackageName = await getTemplateNpmPackageName(exp.sdkVersion);
+    const templatePackageName = getTemplateNpmPackageName(exp.sdkVersion);
     await downloadAndExtractNpmModuleAsync(templatePackageName, {
       cwd: templateDirectory,
       name: exp.name,
@@ -48,12 +49,14 @@ export async function cloneTemplateAsync({
 
 /** Given an `sdkVersion` like `44.0.0` return a fully qualified NPM package name like: `expo-template-bare-minimum@sdk-44` */
 function getTemplateNpmPackageName(sdkVersion?: string): string {
+  // If TV env is set, use the TV template, otherwise use bare-minimum.
+  const basePackageName = env.EXPO_TV ? 'expo-template-tv' : 'expo-template-bare-minimum';
   // When undefined or UNVERSIONED, we use the latest version.
   if (!sdkVersion || sdkVersion === 'UNVERSIONED') {
     Log.log('Using an unspecified Expo SDK version. The latest template will be used.');
-    return `expo-template-bare-minimum@latest`;
+    return `${basePackageName}@latest`;
   }
-  return `expo-template-bare-minimum@sdk-${semver.major(sdkVersion)}`;
+  return `${basePackageName}@sdk-${semver.major(sdkVersion)}`;
 }
 
 async function getRepoInfo(url: any, examplePath?: string): Promise<RepoInfo | undefined> {

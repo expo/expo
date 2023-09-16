@@ -2,7 +2,11 @@ import chalk from 'chalk';
 
 import * as Log from '../../log';
 import { isModuleSymlinked } from '../../utils/isModuleSymlinked';
-import { hashForDependencyMap, updatePkgDependencies } from '../updatePackageJson';
+import {
+  hashForDependencyMap,
+  updatePkgDependencies,
+  needsReactNativeDependencyChangedForTV,
+} from '../updatePackageJson';
 
 jest.mock('../../utils/isModuleSymlinked');
 jest.mock('../../log');
@@ -149,5 +153,19 @@ describe(updatePkgDependencies, () => {
           .join(', ')}`
       )
     );
+  });
+  test('needsReactNativeDependencyChangedForTV', () => {
+    // If no react-native dependency, should always return true (the RN dependency should be added)
+    const depsWithoutRN = {};
+    expect(needsReactNativeDependencyChangedForTV(depsWithoutRN, { isTV: false })).toBe(true);
+    expect(needsReactNativeDependencyChangedForTV(depsWithoutRN, { isTV: true })).toBe(true);
+    // If core react-native dependency and isTV is true, return true
+    const depsWithRNCore = { 'react-native': '0.72' };
+    expect(needsReactNativeDependencyChangedForTV(depsWithRNCore, { isTV: false })).toBe(false);
+    expect(needsReactNativeDependencyChangedForTV(depsWithRNCore, { isTV: true })).toBe(true);
+    // If TV react-native dependency and isTV is false, return true
+    const depsWithRNTV = { 'react-native': 'npm:react-native-tvos@0.72' };
+    expect(needsReactNativeDependencyChangedForTV(depsWithRNTV, { isTV: false })).toBe(true);
+    expect(needsReactNativeDependencyChangedForTV(depsWithRNTV, { isTV: true })).toBe(false);
   });
 });

@@ -35,6 +35,11 @@ class Env {
     return boolish('EXPO_LOCAL', false);
   }
 
+  /** Enable prebuild with TV template */
+  get EXPO_TV() {
+    return boolish('EXPO_TV', false);
+  }
+
   /** Is running in non-interactive CI mode */
   get CI() {
     return boolish('CI', false);

@@ -6,6 +6,7 @@ import path from 'path';
 import { intersects as semverIntersects, Range as SemverRange } from 'semver';
 
 import * as Log from '../log';
+import { env } from '../utils/env';
 import { isModuleSymlinked } from '../utils/isModuleSymlinked';
 import { logNewSection } from '../utils/ora';
 
@@ -121,6 +122,18 @@ export function updatePkgDependencies(
   if (!pkg.devDependencies) {
     pkg.devDependencies = {};
   }
+  if (!pkg.dependencies) {
+    pkg.dependencies = {};
+  }
+
+  // Remove react-native dependency from package if this is a conversion to or from a TV project
+  if (needsReactNativeDependencyChangedForTV(pkg.dependencies, { isTV: env.EXPO_TV })) {
+    Log.warn(
+      `Existing react-native version ${pkg.dependencies['react-native']} cannot be used with EXPO_TV=${env.EXPO_TV}, it will be replaced.`
+    );
+    delete pkg.dependencies['react-native'];
+  }
+
   const { dependencies, devDependencies } = templatePkg;
   const defaultDependencies = createDependenciesMap(dependencies);
   const defaultDevDependencies = createDependenciesMap(devDependencies);
@@ -278,4 +291,23 @@ function versionRangesIntersect(rangeA: string | SemverRange, rangeB: string | S
   } catch {
     return false;
   }
+}
+
+/**
+ * Determine if the react-native dependency in the project needs to be replaced
+ * when prebuilding and the value of the EXPO_TV environment setting has changed.
+ */
+export function needsReactNativeDependencyChangedForTV(
+  dependencies: any,
+  params: { isTV: boolean }
+) {
+  const rnVersion: string | undefined = dependencies['react-native'];
+  // If the package currently has no react-native dependency, prebuild should add
+  // the template version
+  if (rnVersion === undefined) {
+    return true;
+  }
+  const rnVersionIsTV = (rnVersion?.indexOf('npm:react-native-tvos') ?? -1) === 0;
+  // Return true if the existing version is not TV, and the template is TV, or vice versa
+  return params.isTV !== rnVersionIsTV;
 }
