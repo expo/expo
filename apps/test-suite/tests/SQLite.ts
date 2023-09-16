@@ -6,7 +6,7 @@ import * as SQLite from 'expo-sqlite';
 export const name = 'SQLite';
 
 // The version here needs to be the same as both the podspec and build.gradle for expo-sqlite
-const VERSION = '3.39.2';
+const VERSION = '3.42.0';
 
 // TODO: Only tests successful cases, needs to test error cases like bad database name etc.
 export function test(t) {

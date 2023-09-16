@@ -85,7 +85,7 @@ android {
 dependencies {
   implementation project(':expo-modules-core')
 
-  implementation 'com.github.requery:sqlite-android:3.39.2'
+  implementation 'com.github.alanjhughes:sqlite-android:0.0.3'
   implementation "androidx.sqlite:sqlite-ktx:2.3.1"
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }
