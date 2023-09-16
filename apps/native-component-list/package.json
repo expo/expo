@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^3.8.0",
+    "@expo/video": "~0.1.0",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-community/datetimepicker": "7.2.0",
     "@react-native-community/netinfo": "9.3.10",
