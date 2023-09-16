@@ -63,7 +63,7 @@
     "@expo/vector-icons": "^13.0.0",
     "babel-preset-expo": "~9.7.0",
     "expo-application": "~5.5.0",
-    "expo-asset": "~8.12.0",
+    "expo-asset": "~8.12.1",
     "expo-file-system": "~15.7.0",
     "expo-font": "~11.7.0",
     "expo-keep-awake": "~12.6.0",
