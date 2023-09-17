@@ -1,12 +1,15 @@
 import { css } from '@emotion/react';
-import { Button, theme, typography } from '@expo/styleguide';
+import { Button, DocsLogo, mergeClasses, theme, typography } from '@expo/styleguide';
 import { spacing, breakpoints, borderRadius } from '@expo/styleguide-base';
 import {
   ArrowUpRightIcon,
   ArrowRightIcon,
+  CameraPlusDuotoneIcon,
   DiscordIcon,
   DiscourseIcon,
   GithubIcon,
+  Map01DuotoneIcon,
+  NotificationMessageDuotoneIcon,
   RedditIcon,
   TwitterIcon,
 } from '@expo/styleguide-icons';
@@ -25,10 +28,6 @@ import {
   TalkGridCell,
 } from '~/ui/components/Home';
 import {
-  APICameraIcon,
-  APIListIcon,
-  APIMapsIcon,
-  APINotificationsIcon,
   DevicesImage,
   DevicesImageMasks,
   OfficeHoursImage,
@@ -211,18 +210,26 @@ const Home = () => {
         </Description>
         <CellContainer>
           <Row>
-            <APIGridCell title="Maps" link="/versions/latest/sdk/map-view" icon={<APIMapsIcon />} />
+            <APIGridCell
+              title="Maps"
+              link="/versions/latest/sdk/map-view"
+              icon={<Map01DuotoneIcon className={mergeClasses('h-16 w-16')} />}
+            />
             <APIGridCell
               title="Camera"
               link="/versions/latest/sdk/camera"
-              icon={<APICameraIcon />}
+              icon={<CameraPlusDuotoneIcon className={mergeClasses('h-16 w-16')} />}
             />
             <APIGridCell
               title="Notifications"
               link="/versions/latest/sdk/notifications"
-              icon={<APINotificationsIcon />}
+              icon={<NotificationMessageDuotoneIcon className={mergeClasses('h-16 w-16')} />}
             />
-            <APIGridCell title="View all APIs" link="/versions/latest/" icon={<APIListIcon />} />
+            <APIGridCell
+              title="View all APIs"
+              link="/versions/latest/"
+              icon={<DocsLogo className={mergeClasses('h-16 w-16')} />}
+            />
           </Row>
         </CellContainer>
         <div className="flex items-center gap-2">
