@@ -58,8 +58,13 @@ class IntentLauncherModule : Module() {
       params.flags?.let { intent.addFlags(it) }
       params.category?.let { intent.addCategory(it) }
 
-      pendingPromise = promise
-      currentActivity.startActivityForResult(intent, REQUEST_CODE)
+      try {
+        currentActivity.startActivityForResult(intent, REQUEST_CODE)
+        pendingPromise = promise
+      }
+      catch (e: Throwable) {
+        promise.reject(e.toCodedException())
+      }
     }
 
     OnActivityResult { _, payload ->
