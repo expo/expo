@@ -9,6 +9,7 @@ import {
   GithubIcon,
   RedditIcon,
   TwitterIcon,
+  Mail01DuotoneIcon,
 } from '@expo/styleguide-icons';
 import type { PropsWithChildren } from 'react';
 import { Row, ScreenClassProvider } from 'react-grid-system';
@@ -296,6 +297,12 @@ export function JoinTheCommunity() {
             link="https://www.reddit.com/r/expo"
             icon={<RedditIcon className="icon-lg text-palette-white" />}
             iconBackground="#FC471E"
+          />
+          <CommunityGridCell
+            title="Newsletter"
+            description="Get the latest updates from monthly Expo newsletter."
+            link="http://eepurl.com/hk1tCn"
+            icon={<Mail01DuotoneIcon className="icon-lg text-palette-white" />}
           />
         </Row>
       </CellContainer>
