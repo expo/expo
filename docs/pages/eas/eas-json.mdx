@@ -1,0 +1,255 @@
+---
+title: eas.json
+description: Learn about properties available for EAS Build and EAS Submit to configure and override their default behavior from within your project.
+maxHeadingDepth: 4
+---
+
+import { EasJsonPropertiesTable } from '~/components/plugins/EasJsonPropertiesTable';
+import { Collapsible } from '~/ui/components/Collapsible';
+
+import commonSchema from '~/public/static/schemas/unversioned/eas-json-build-common-schema.js';
+import androidSchema from '~/public/static/schemas/unversioned/eas-json-build-android-schema.js';
+import iosSchema from '~/public/static/schemas/unversioned/eas-json-build-ios-schema.js';
+import submitAndroidSchema from '~/public/static/schemas/unversioned/eas-json-submit-android-schema.js';
+import submitIosSchema from '~/public/static/schemas/unversioned/eas-json-submit-ios-schema.js';
+
+**eas.json** is the configuration file for EAS CLI and services. It is located at the root of a project next to the **package.json**. This is a reference of all available schema properties for the [EAS Build](/build/introduction) (`build`) and [EAS Submit](/submit/introduction) (`submit`).
+
+## Example schema
+
+### Build
+
+{/* prettier-ignore */}
+```json eas.json
+{
+  "cli": {
+    "version": /* @info Required EAS CLI version range. */"SEMVER_RANGE"/* @end */,
+    "requireCommit": /* @info If true, ensure that all changes are committed before a build. Defaults to false. */boolean/* @end */,
+    "appVersionSource": /* @info If set to remote, values stored on EAS servers will take precedence over local values. Defaults to local. */string/* @end */,
+    "promptToConfigurePushNotifications": /* @info If set to false, skips Push Notifications credentials setup for EAS Build. Defaults to true. */boolean/* @end */,
+  },
+  "build": {
+    /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_1"/* @end */: {
+      /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */,
+      "android": {
+        /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */,
+        /* @info Options specific for Android and common to both platforms*/...ANDROID_OPTIONS/* @end */
+      },
+      "ios": {
+        /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */,
+        /* @info Options specific for iOS and common to both platforms*/...IOS_OPTIONS/* @end */
+      }
+    },
+    /* @info Any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_2"/* @end */: {},
+	...
+  }
+}
+```
+
+<Collapsible summary="A managed project with several profiles">
+
+```json eas.json
+{
+  "build": {
+    "base": {
+      "node": "12.13.0",
+      "yarn": "1.22.5",
+      "env": {
+        "EXAMPLE_ENV": "example value"
+      },
+      "android": {
+        "image": "default",
+        "env": {
+          "PLATFORM": "android"
+        }
+      },
+      "ios": {
+        "image": "latest",
+        "env": {
+          "PLATFORM": "ios"
+        }
+      }
+    },
+    "development": {
+      "extends": "base",
+      "developmentClient": true,
+      "env": {
+        "ENVIRONMENT": "development"
+      },
+      "android": {
+        "distribution": "internal",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "simulator": true
+      }
+    },
+    "staging": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "staging"
+      },
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "production"
+      }
+    }
+  }
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="A bare project with several profiles">
+
+```json eas.json
+{
+  "build": {
+    "base": {
+      "env": {
+        "EXAMPLE_ENV": "example value"
+      },
+      "android": {
+        "image": "ubuntu-18.04-android-30-ndk-r19c",
+        "ndk": "21.4.7075529"
+      },
+      "ios": {
+        "image": "latest",
+        "node": "12.13.0",
+        "yarn": "1.22.5"
+      }
+    },
+    "development": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "staging"
+      },
+      "android": {
+        "distribution": "internal",
+        "withoutCredentials": true,
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "simulator": true,
+        "buildConfiguration": "Debug"
+      }
+    },
+    "staging": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "staging"
+      },
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "production": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "production"
+      }
+    }
+  }
+}
+```
+
+</Collapsible>
+
+> You can specify common (global) options both in the platform-specific configuration object or at the profile's root. The platform-specific options take precedence over the common options.
+
+### Submit
+
+An example **eas.json** is shown below:
+
+```json eas.json
+{
+  "cli": {
+    "version": ">= 0.34.0"
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "../path/to/api-xxx-yyy-zzz.json",
+        "track": "internal"
+      },
+      "ios": {
+        "appleId": "john@turtle.com",
+        "ascAppId": "1234567890",
+        "appleTeamId": "AB12XYZ34S"
+      }
+    }
+  }
+}
+```
+
+Running `eas submit` without specifying a profile name will use the `production` profile if it is already defined in **eas.json** to configure the submission.
+
+The JSON object under `submit` can contain multiple submit profiles. Each profile under `submit` can have an arbitrary name as shown in the example below:
+
+{/* prettier-ignore */}
+```json eas.json
+{
+  "cli": {
+    "version": /* @info Required EAS CLI version range. */"SEMVER_RANGE"/* @end */,
+    "requireCommit": /* @info If true, ensure that all changes are committed before a build. Defaults to false. */boolean/* @end */
+  },
+  "build": {
+    // EAS Build configuration
+    /* @hide ... */ /* @end */
+  }
+  "submit": {
+    /* @info any arbitrary name - used as an identifier */"SUBMIT_PROFILE_NAME_1"/* @end */: {
+      "android": {
+        /* @info Android-specific configuration */...ANDROID_OPTIONS/* @end */
+      },
+      "ios": {
+        /* @info iOS-specific configuration */...IOS_OPTIONS/* @end */
+      }
+    },
+    /* @info any arbitrary name - used as an identifier */"SUBMIT_PROFILE_NAME_2"/* @end */: {
+      "extends": "SUBMIT_PROFILE_NAME_1",
+      "android": {
+        /* @info Android-specific configuration */...ANDROID_OPTIONS/* @end */
+      }
+    },
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+You can use EAS CLI to pick up another `submit` profile by specifying it with a parameter. For example, `eas submit --platform iOS --profile submit-profile-name`.
+
+#### Share configuration between `submit` profiles
+
+A `submit` profile can extend another profile using the `extends` key. For example, in the `preview` profile you may have `"extends": "production"`. This makes the `preview` profile inherit the configuration of the `production` profile.
+
+## EAS Build
+
+### Common options for native platforms
+
+<EasJsonPropertiesTable schema={commonSchema} />
+
+### Android-specific options
+
+<EasJsonPropertiesTable schema={androidSchema} />
+
+### iOS-specific options
+
+<EasJsonPropertiesTable schema={iosSchema} />
+
+## EAS Submit
+
+### Android-specific options
+
+<EasJsonPropertiesTable schema={submitAndroidSchema} />
+
+### iOS-specific options
+
+<EasJsonPropertiesTable schema={submitIosSchema} />

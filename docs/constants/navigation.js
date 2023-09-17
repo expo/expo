@@ -227,7 +227,7 @@ const general = [
     ],
     { expanded: false }
   ),
-  makeSection('EAS', [makePage('eas/index.mdx')]),
+  makeSection('EAS', [makePage('eas/index.mdx'), makePage('eas/eas-json.mdx')]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
     makePage('build/setup.mdx'),
