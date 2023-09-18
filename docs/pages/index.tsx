@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { Button, DocsLogo, mergeClasses, theme, typography } from '@expo/styleguide';
+import { Button, DocsLogo, theme, typography } from '@expo/styleguide';
 import { spacing, breakpoints, borderRadius } from '@expo/styleguide-base';
 import {
   ArrowUpRightIcon,
