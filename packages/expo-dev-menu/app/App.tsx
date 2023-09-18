@@ -4,7 +4,6 @@ import { View } from 'react-native';
 import { AppProviders } from './components/AppProviders';
 import { LoadInitialData } from './components/LoadInitialData';
 import { Main } from './components/Main';
-import { Onboarding } from './components/Onboarding';
 import { Splash } from './components/Splash';
 import { AppInfo, DevSettings, MenuPreferences } from './native-modules/DevMenu';
 

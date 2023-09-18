@@ -43,12 +43,13 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
   const appInfoClipboard = useClipboard();
 
   function onCopyUrlPress() {
-    const { hostUrl } = appInfo;
-    urlClipboard.onCopyPress(hostUrl);
+    if (appInfo?.hostUrl) {
+      urlClipboard.onCopyPress(appInfo.hostUrl);
+    }
   }
 
   function onCopyAppInfoPress() {
-    const { runtimeVersion, sdkVersion, appName, appVersion } = appInfo;
+    const { runtimeVersion, sdkVersion, appName, appVersion } = appInfo || {};
     appInfoClipboard.onCopyPress({ runtimeVersion, sdkVersion, appName, appVersion });
   }
 
@@ -76,9 +77,9 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
           <Row align="center" shrink="1">
             <View>
               <View height="xl" width="xl" overflow="hidden" bg="secondary" rounded="medium">
-                {Boolean(appInfo.appIcon) && (
+                {Boolean(appInfo?.appIcon) && (
                   <Image
-                    source={{ uri: appInfo.appIcon }}
+                    source={{ uri: appInfo?.appIcon }}
                     style={{ flex: 1, resizeMode: 'contain' }}
                   />
                 )}
@@ -90,22 +91,22 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
             <View shrink="1">
               <Row style={{ flexWrap: 'wrap' }}>
                 <Heading weight="bold" numberOfLines={1}>
-                  {appInfo.appName}
+                  {appInfo?.appName}
                 </Heading>
               </Row>
 
-              {Boolean(appInfo.runtimeVersion) && (
+              {Boolean(appInfo?.runtimeVersion) && (
                 <>
                   <Text size="small" color="secondary">
-                    {`Runtime version: ${appInfo.runtimeVersion}`}
+                    {`Runtime version: ${appInfo?.runtimeVersion}`}
                   </Text>
                 </>
               )}
 
-              {Boolean(appInfo.sdkVersion) && !appInfo.runtimeVersion && (
+              {Boolean(appInfo?.sdkVersion) && !appInfo?.runtimeVersion && (
                 <>
                   <Text size="small" color="secondary">
-                    {`SDK version: ${appInfo.sdkVersion}`}
+                    {`SDK version: ${appInfo?.sdkVersion}`}
                   </Text>
                 </>
               )}
@@ -129,7 +130,7 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
       <Divider />
       <View style={{ flex: 1 }}>
         <ScrollView nestedScrollEnabled>
-          {Boolean(appInfo.hostUrl) && (
+          {Boolean(appInfo?.hostUrl) && (
             <>
               <View bg="default" padding="medium">
                 <Text color="secondary">Connected to:</Text>
@@ -144,7 +145,7 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
                     <Spacer.Horizontal size="small" />
                     <Row flex="1" justify="between">
                       <Text type="mono" numberOfLines={2} size="small">
-                        {appInfo.hostUrl}
+                        {appInfo?.hostUrl}
                       </Text>
 
                       <ClipboardIcon />
@@ -276,7 +277,7 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
             </View>
           </View>
 
-          {appInfo.engine === 'Hermes' && (
+          {appInfo?.engine === 'Hermes' && (
             <>
               <Spacer.Vertical size="large" />
 
@@ -316,18 +317,18 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
           <Spacer.Vertical size="large" />
 
           <View mx="small" rounded="large" overflow="hidden">
-            <AppInfoRow title="Version" value={appInfo.appVersion} />
+            <AppInfoRow title="Version" value={appInfo?.appVersion || 'Unknown'} />
             <Divider />
-            {Boolean(appInfo.runtimeVersion) && (
+            {Boolean(appInfo?.runtimeVersion) && (
               <>
-                <AppInfoRow title="Runtime version" value={appInfo.runtimeVersion} />
+                <AppInfoRow title="Runtime version" value={appInfo?.runtimeVersion || 'Unknown'} />
                 <Divider />
               </>
             )}
 
-            {Boolean(appInfo.sdkVersion) && !appInfo.runtimeVersion && (
+            {Boolean(appInfo?.sdkVersion) && !appInfo?.runtimeVersion && (
               <>
-                <AppInfoRow title="SDK Version" value={appInfo.sdkVersion} />
+                <AppInfoRow title="SDK Version" value={appInfo?.sdkVersion || 'Unknown'} />
                 <Divider />
               </>
             )}
@@ -370,7 +371,7 @@ export function Main({ registeredCallbacks = [], isDevice }: MainProps) {
 }
 
 type SettingsRowButtonProps = {
-  icon: React.ReactElement<any>;
+  icon: React.ReactElement<any> | null;
   label: string;
   description?: string;
   onPress: () => void;
