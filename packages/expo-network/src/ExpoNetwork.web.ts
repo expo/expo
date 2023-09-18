@@ -11,16 +11,11 @@ export default {
     }
   },
   async getNetworkStateAsync(): Promise<NetworkState> {
-    const type = navigator.onLine ? NetworkStateType.UNKNOWN : NetworkStateType.NONE;
-    const isConnected = navigator.onLine;
-    const isInternetReachable = isConnected;
+    const isOnline = typeof navigator !== 'undefined' && navigator.onLine;
     return {
-      type,
-      isConnected,
-      isInternetReachable,
+      type: isOnline ? NetworkStateType.UNKNOWN : NetworkStateType.NONE,
+      isConnected: isOnline,
+      isInternetReachable: isOnline,
     };
-  },
-  async getMacAddressAsync(): Promise<null> {
-    return null;
   },
 };
