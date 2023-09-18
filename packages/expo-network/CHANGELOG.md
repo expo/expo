@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- Add Node.js support.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Remove deprecated `getMacAddressAsync` method.
 
 ## 5.6.0 — 2023-09-04
 
