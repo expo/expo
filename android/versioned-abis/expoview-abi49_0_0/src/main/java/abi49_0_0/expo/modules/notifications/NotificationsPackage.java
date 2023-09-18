@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import abi49_0_0.expo.modules.notifications.badge.BadgeModule;
-import abi49_0_0.expo.modules.notifications.badge.ExpoBadgeManager;
 import abi49_0_0.expo.modules.notifications.serverregistration.ServerRegistrationModule;
 import expo.modules.notifications.notifications.NotificationManager;
 import abi49_0_0.expo.modules.notifications.notifications.background.ExpoBackgroundNotificationTasksModule;
@@ -51,8 +50,7 @@ public class NotificationsPackage extends BasePackage {
   public List<SingletonModule> createSingletonModules(Context context) {
     return Arrays.asList(
       new PushTokenManager(),
-      new NotificationManager(),
-      new ExpoBadgeManager(context)
+      new NotificationManager()
     );
   }
 
