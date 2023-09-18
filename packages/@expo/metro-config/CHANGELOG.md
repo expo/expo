@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- `isCSSEnabled` now defaults to `true`
+- `isCSSEnabled` now defaults to `true` ([#24489](https://github.com/expo/expo/pull/24489) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🎉 New features
 
