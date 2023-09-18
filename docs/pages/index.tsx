@@ -7,6 +7,7 @@ import {
   DiscordIcon,
   DiscourseIcon,
   GithubIcon,
+  Mail01Icon,
   RedditIcon,
   TwitterIcon,
 } from '@expo/styleguide-icons';
@@ -296,6 +297,12 @@ export function JoinTheCommunity() {
             link="https://www.reddit.com/r/expo"
             icon={<RedditIcon className="icon-lg text-palette-white" />}
             iconBackground="#FC471E"
+          />
+          <CommunityGridCell
+            title="Newsletter"
+            description="Get the latest updates from monthly Expo newsletter."
+            link="http://eepurl.com/hk1tCn"
+            icon={<Mail01Icon className="icon-lg text-palette-white" />}
           />
         </Row>
       </CellContainer>
