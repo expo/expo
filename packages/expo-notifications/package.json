@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications",
-  "version": "0.24.1",
+  "version": "0.24.2",
   "description": "Notifications module",
   "main": "build/index.js",
   "types": "build/index.d.ts",

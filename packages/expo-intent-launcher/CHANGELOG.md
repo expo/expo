@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed errors in debug and crashes in production when an intent is launched without found activities. ([#24481](https://github.com/expo/expo/pull/24481) by [@robertying](https://github.com/robertying))
-
 ### 💡 Others
+
+## 10.9.1 — 2023-09-18
+
+### 🐛 Bug fixes
+
+- Fixed errors in debug and crashes in production when an intent is launched without found activities. ([#24481](https://github.com/expo/expo/pull/24481) by [@robertying](https://github.com/robertying))
 
 ## 10.9.0 — 2023-09-04
 

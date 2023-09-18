@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix SPA web mode in Expo Router. ([#24472](https://github.com/expo/expo/pull/24472) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+## 0.13.2 — 2023-09-18
+
+### 🐛 Bug fixes
+
+- Fix SPA web mode in Expo Router. ([#24472](https://github.com/expo/expo/pull/24472) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.13.1 — 2023-09-15
 

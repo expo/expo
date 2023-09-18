@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.5.2 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
 ## 1.3.3 — 2023-09-15
 
 ### 🐛 Bug fixes
