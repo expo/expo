@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 11.7.1 — 2023-09-18
+
+### 🐛 Bug fixes
+
+- Fix broken JS test. ([#24498](https://github.com/expo/expo/pull/24498) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
 - [iOS] Bump `SQLite`version to latest. ([#24375](https://github.com/expo/expo/pull/24375) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 11.7.0 — 2023-09-15

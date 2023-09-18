@@ -53,7 +53,10 @@ export async function exportAppAsync(
   setNodeEnv(dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
-  const exp = await getPublicExpoManifestAsync(projectRoot);
+  const exp = await getPublicExpoManifestAsync(projectRoot, {
+    // Web doesn't require validation.
+    skipValidation: platforms.length === 1 && platforms[0] === 'web',
+  });
 
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
   const basePath = (exp.experiments?.basePath?.replace(/\/+$/, '') ?? '').trim();

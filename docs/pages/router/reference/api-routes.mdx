@@ -4,7 +4,7 @@ description: Learn how to create server functions with Expo Router.
 hidden: true
 ---
 
-> **info** This feature is still experimental. Available from Expo SDK 50 and Expo Router v3.
+> **warning** This feature is still experimental. Available from Expo SDK 50 and Expo Router v3.
 
 import { FileTree } from '~/ui/components/FileTree';
 import { Step } from '~/ui/components/Step';
@@ -26,17 +26,19 @@ Expo Router enables you to write server code for all platforms, right in your **
 
 Server features require a custom Node.js server. Most hosting providers support Node.js, including [Netlify](#netlify), [Cloudflare](https://www.cloudflare.com/), and [Vercel](https://vercel.com).
 
-## API Routes
+## What are API Routes
 
-API Routes are functions that are executed when a route is matched. They can be used to securely handle sensitive data, such as API keys, or to implement custom server logic. API Routes should be executed in a [WinterCG](https://wintercg.org/)-compliant environment.
+API Routes are functions that are executed when a route is matched. They can be used to handle sensitive data, such as API keys securely, or implement custom server logic. API Routes should be executed in a [WinterCG](https://wintercg.org/)-compliant environment.
 
-API Routes are defined by creating files in the `app` directory with the `+api.js` extension. For example, the following route handler will be executed when the route `/hello` is matched.
+API Routes are defined by creating files in the **app** directory with the `+api.js` extension. For example, the following route handler is executed when the route `/hello` is matched.
 
 <FileTree files={['app/index.js', ['app/hello+api.ts', 'API Route']]} />
 
+## Create an API route
+
 <Step label="1">
 
-Create an API route in the `app` directory. The following route handler will be executed when the route `/hello` is matched.
+An API route is created in the **app** directory. For example, add the following route handler. It is executed when the route `/hello` is matched.
 
 ```js app/hello+api.ts
 import { ExpoRequest, ExpoResponse } from 'expo-router/server';
@@ -46,7 +48,7 @@ export function GET(request: ExpoRequest) {
 }
 ```
 
-You can export any of the following functions `GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS` from a server route. The function will be executed when the corresponding HTTP method is matched. Unsupported methods will automatically return `405: Method not allowed`.
+You can export any of the following functions `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, and `OPTIONS` from a server route. The function executes when the corresponding HTTP method is matched. Unsupported methods will automatically return `405: Method not allowed`.
 
 </Step>
 
@@ -60,7 +62,7 @@ Start the development server with Expo CLI:
 
 <Step label="3">
 
-To access the data, you can make a network request to the route. You can run the following in the terminal to quickly test the route:
+You can make a network request to the route to access the data. Run the following command to test the route:
 
 <Terminal cmd={['$ curl http://localhost:8081/hello']} />
 
@@ -80,7 +82,7 @@ export default function App() {
 }
 ```
 
-This won't work by default on native as `/hello` does not provide an origin URL. You can configure the origin URL in `app.json`, this can be a mock URL in development:
+This won't work by default on native as `/hello` does not provide an origin URL. You can configure the origin URL in the app config file. It can be a mock URL in development. For example:
 
 ```json app.json
 {
@@ -88,7 +90,7 @@ This won't work by default on native as `/hello` does not provide an origin URL.
     [
       "expo-router",
       {
-        /* @info The URL where the API routes are hosted at. */
+        /* @info The URL where the API routes are hosted. */
         "origin": "https://evanbacon.dev/"
         /* @end */
       }
@@ -101,13 +103,13 @@ This won't work by default on native as `/hello` does not provide an origin URL.
 
 <Step label="4">
 
-    Deploy the website and server to a [hosting provider](#deployment) in order to access the routes in production on both web and native.
+Deploy the website and server to a [hosting provider](#deployment) to access the routes in production on both native and web.
 
 </Step>
 
 ## Requests
 
-Requests use the global `ExpoRequest` object. This object is a subclass of the standard [`Request`][wcg-request] object and provides additional functionality. Specifically the `expoUrl` object, which is a `URL` that has access to query parameters according to the Expo Router file convention.
+Requests use the global `ExpoRequest` object. It is a subclass of the standard [`Request`](https://fetch.spec.whatwg.org/#request) object and provides additional functionality such as the `expoUrl` object &mdash; a `URL` that has access to query parameters according to the Expo Router file convention.
 
 ```ts app/blog/[post]+api.ts
 import { ExpoRequest, ExpoResponse } from 'expo-router/server';
@@ -121,7 +123,7 @@ export async function GET(request: ExpoRequest, { post }: Record<string, string>
 
 ### Request body
 
-Use the `request.json()` function to access the request body. This function will automatically parse the body and return the result.
+Use the `request.json()` function to access the request body. It automatically parses the body and returns the result.
 
 ```ts app/validate+api.ts
 import { ExpoRequest, ExpoResponse } from 'expo-router/server';
@@ -135,7 +137,7 @@ export async function POST(request: ExpoRequest) {
 
 ## Response
 
-Responses use the global `ExpoResponse` object. This object is a subclass of the standard [`Response`][wcg-response] object and provides additional functionality. Specifically the `ExpoResponse.json` initializer which will automatically stringify the response body and return status 200.
+Responses use the global `ExpoResponse` object. It is a subclass of the standard [`Response`](https://fetch.spec.whatwg.org/#response) object and provides additional functionality such as the `ExpoResponse.json` &mdash; an initializer which automatically stringifies the response body and returns status `200`.
 
 ```ts app/demo+api.ts
 import { ExpoRequest, ExpoResponse } from 'expo-router/server';
@@ -147,7 +149,7 @@ export function GET() {
 
 ## Errors
 
-You can respond with server errors by using the `ExpoResponse` object.
+You can respond to server errors by using the `ExpoResponse` object.
 
 ```ts app/blog/[post].ts
 import { ExpoRequest, ExpoResponse } from 'expo-router/server';
@@ -166,43 +168,41 @@ export async function GET(request: ExpoRequest, { post }: Record<string, string>
 }
 ```
 
-Making requests with an undefined method will automatically return `405: Method not allowed`.
-
-If an error is thrown during the request, it will automatically return `500: Internal server error`.
+Making requests with an undefined method will automatically return `405: Method not allowed`. If an error is thrown during the request, it will automatically return `500: Internal server error`.
 
 ## Bundling
 
-API Routes are bundled with Expo CLI and [Metro bundler](/guides/customizing-metro), meaning they have access to all of the same language features as your client code.
+API Routes are bundled with Expo CLI and [Metro bundler](/guides/customizing-metro). They have access to all of the language features as your client code:
 
-- [TypeScript](/guides/typescript) –– types and [`tsconfig.json` paths](/guides/typescript#path-aliases).
-- [Environment variables](/guides/environment-variables) –– server routes have access to all environment variables, not just the ones prefixed with `EXPO_PUBLIC_`.
-- Node.js standard library –– ensure that you are using the correct version of Node.js locally for your server environment.
-- `babel.config.js` and `metro.config.js` support –– settings work across both client and server code.
+- [TypeScript](/guides/typescript) &mdash; types and [**tsconfig.json** paths](/guides/typescript#path-aliases).
+- [Environment variables](/guides/environment-variables) &mdash; server routes have access to all environment variables, not just the ones prefixed with `EXPO_PUBLIC_`.
+- Node.js standard library &mdash; ensure that you are using the correct version of Node.js locally for your server environment.
+- **babel.config.js** and **metro.config.js** support &mdash; settings work across both client and server code.
 
 {/* TODO: SSR, redirects, middleware, etc. */}
 
 ## Security
 
-> While in beta, server code may leak into the client bundle. This won't happen in the stable release.
+> **warning** While in beta, server code may leak into the client bundle. This won't happen in the stable release.
 
-Route handlers are executed in a sandboxed environment that is isolated from the client code. This means that you can safely store sensitive data in the route handlers without exposing it to the client.
+Route handlers are executed in a sandboxed environment that is isolated from the client code. It means you can safely store sensitive data in the route handlers without exposing it to the client.
 
-- If your client code imports code with a secret, it will still be included in the client bundle. This also applies to ALL files in the `app` directory that are not a route handler (suffixed with `+api.js`).
-- If your secret is in a `<...>+api.js` (Route Handler) file, it will not be included in the client bundle. This applies to all files that are imported in the route handler.
-- The secret stripping takes place in `expo/metro-config` and requires this be used in your `metro.config.js`!
+- Client code that imports code with a secret is included in the client bundle. It applies to **all files** in the **app directory** even though they are not a route handler file (such as suffixed with **+api.js**).
+- If the secret is in a **&lt;...&gt;+api.js** file, it is not included in the client bundle. It applies to all files that are imported in the route handler.
+- The secret stripping takes place in `expo/metro-config` and requires it to be used in the **metro.config.js**.
 
 ## Deployment
 
-> This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
+> **warning** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
 
-Every cloud hosting provider needs a custom adapter to support the Expo server runtime. The following providers have unofficial/experimental support from the Expo team.
+Every cloud hosting provider needs a custom adapter to support the Expo server runtime. The following third-party providers have unofficial or experimental support from the Expo team.
 
-Before you deploy with third-parties, it's good to be familiar with the basics of the [`npx expo export`](/more/expo-cli#exporting) command. Specifically:
+Before deploying to these providers, it may be good to be familiar with the basics of [`npx expo export`](/more/expo-cli#exporting) command:
 
-- `/dist` is the default export directory for Expo CLI.
-- Files in `/public` will be copied to `/dist` on export.
+- **/dist** is the default export directory for Expo CLI.
+- Files in **/public** are copied to **/dist** on export.
 - The `@expo/server` package is included with `expo` and delegates requests to the server routes.
-- `@expo/server` does **not** inflate environment variables from `.env` files, these are expected to be loaded either by the hosting provider or the user.
+- `@expo/server` does **not** inflate environment variables from **.env** files. They are expected to load either by the hosting provider or the user.
 - Metro is not included in the server.
 
 ### Express
@@ -211,21 +211,21 @@ Before you deploy with third-parties, it's good to be familiar with the basics o
 
 Install the required dependencies:
 
-<Terminal cmd={['$ yarn add -D express compression morgan']} />
+<Terminal cmd={['$ npm i -D express compression morgan']} />
 
 </Step>
 
 <Step label="2">
 
-Export the website for production.
+Export the website for production:
 
-<Terminal cmd={['$ yarn expo export -p web']} />
+<Terminal cmd={['$ npx expo export -p web']} />
 
 </Step>
 
 <Step label="3">
 
-Write a server entry file that serves the static files and delegates requests to the server routes.
+Write a server entry file that serves the static files and delegates requests to the server routes:
 
 ```js server.js
 #!/usr/bin/env node
@@ -277,11 +277,8 @@ app.listen(port, () => {
 
 <Step label="4">
 
-Start the server with `node`:
+Start the server with `node` command:
 
 <Terminal cmd={['$ node server.js']} />
 
 </Step>
-
-[wcg-request]: https://fetch.spec.whatwg.org/#request
-[wcg-response]: https://fetch.spec.whatwg.org/#response

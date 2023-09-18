@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "description": "Expo/React Native module with the developer menu.",
   "main": "build/DevMenu.js",
   "types": "build/DevMenu.d.ts",
@@ -8,7 +8,8 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "expo-module lint ./app/*",
+    "ts:check": "expo-module tsc --project tsconfig.app.json --noEmit & expo-module tsc --noEmit",
     "test": "expo-module test",
     "prepare": "expo-module prepare && ./scripts/reset-dev-menu-packager-host.sh",
     "prepublishOnly": "expo-module prepublishOnly",
