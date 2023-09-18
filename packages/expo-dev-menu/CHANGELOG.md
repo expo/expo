@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Drop support for configuring SDK 44 and below with Prebuild.
+- Drop support for configuring SDK 44 and below with Prebuild. ([#24504](https://github.com/expo/expo/pull/24504) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix eslint and TypeScript warnings ([#24497](https://github.com/expo/expo/pull/24497) by [@kadikraman](https://github.com/kadikraman))
 
 ## 3.2.0 — 2023-09-15
