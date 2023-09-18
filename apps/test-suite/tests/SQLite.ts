@@ -661,7 +661,7 @@ export function test(t) {
         const db = SQLite.openDatabase('test.db');
         await db.transactionAsync(async (tx) => {
           await tx.executeSqlAsync('DROP TABLE IF EXISTS foo;', []);
-          await tx.executeSqlAsync('create table foo (a primary key, b);', []);
+          await tx.executeSqlAsync('create table foo (a primary key, b INTEGER);', []);
           await tx.executeSqlAsync('select crsql_as_crr("foo");', []);
           await tx.executeSqlAsync('insert into foo (a,b) values (?, ?);', [1, 2]);
           await tx.executeSqlAsync('insert into foo (a,b) values (?, ?);', [3, 4]);
