@@ -8,9 +8,9 @@ import {
   DiscordIcon,
   DiscourseIcon,
   GithubIcon,
-  Map01DuotoneIcon,
-  NotificationMessageDuotoneIcon,
+  Image03DuotoneIcon,
   Mail01Icon,
+  NotificationMessageDuotoneIcon,
   RedditIcon,
   TwitterIcon,
 } from '@expo/styleguide-icons';
@@ -212,9 +212,9 @@ const Home = () => {
         <CellContainer>
           <Row>
             <APIGridCell
-              title="Maps"
-              link="/versions/latest/sdk/map-view"
-              icon={<Map01DuotoneIcon className="h-16 w-16" />}
+              title="Image"
+              link="/versions/latest/sdk/image/"
+              icon={<Image03DuotoneIcon className="h-16 w-16" />}
             />
             <APIGridCell
               title="Camera"
