@@ -7,9 +7,9 @@ import {
   DiscordIcon,
   DiscourseIcon,
   GithubIcon,
+  Mail01Icon,
   RedditIcon,
   TwitterIcon,
-  Mail01DuotoneIcon,
 } from '@expo/styleguide-icons';
 import type { PropsWithChildren } from 'react';
 import { Row, ScreenClassProvider } from 'react-grid-system';
@@ -302,7 +302,7 @@ export function JoinTheCommunity() {
             title="Newsletter"
             description="Get the latest updates from monthly Expo newsletter."
             link="http://eepurl.com/hk1tCn"
-            icon={<Mail01DuotoneIcon className="icon-lg text-palette-white" />}
+            icon={<Mail01Icon className="icon-lg text-palette-white" />}
           />
         </Row>
       </CellContainer>

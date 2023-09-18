@@ -2,7 +2,7 @@ import { SnackLogo } from '@expo/styleguide';
 import {
   ChangelogIcon,
   DiscordIcon,
-  Mail01DuotoneIcon,
+  Mail01Icon,
   MessageDotsSquareIcon,
 } from '@expo/styleguide-icons';
 import { useRouter } from 'next/compat/router';
@@ -56,7 +56,7 @@ export const SidebarFooter = () => {
         secondary
         href="http://eepurl.com/hk1tCn"
         title="Newsletter"
-        Icon={Mail01DuotoneIcon}
+        Icon={Mail01Icon}
         isExternal
       />
     </div>
