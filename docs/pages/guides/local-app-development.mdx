@@ -199,7 +199,9 @@ To build your project locally you can use compile commands from Expo CLI which g
 
 The above commands compile your project into an app locally. You can also add the `--device` flag to create a debug build of your project and run it on a connected device. These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building.
 
-After building your project for the first time, you can modify your project's configuration or native code. However, it is recommended to make these modifications using [app config](/workflow/configuration/) or by creating a [config plugin](/config-plugins/introduction/).
+To modify your project's configuration or native code after the first build, you've to rebuild your project. Running `npx expo prebuild` again layers the changes on the top of existing files. It may also produce different results after the build.
+
+To avoid this, add native directories to the project's **.gitignore** and use `npx expo pebuild --clean` command. This ensures that the project is always managed and the [`--clean` flag](/workflow/prebuild/#clean) will delete existing directories before regenerating them. You can use [app config](/workflow/configuration/) or create a [config plugin](/config-plugins/introduction/) to modify your project's configuration or code inside the native directories.
 
 To learn more about how compilation and prebuild works, see the following guides:
 
