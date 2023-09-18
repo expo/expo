@@ -22,7 +22,7 @@ export enum UpdateEventType {
   ERROR = 'error',
 }
 
-enum UpdateCheckResultNotAvailableReason {
+export enum UpdateCheckResultNotAvailableReason {
   /**
    * No update manifest or rollback directive received from the update server.
    */
