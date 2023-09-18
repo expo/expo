@@ -119,13 +119,9 @@ const withDevMenuPodfile: ConfigPlugin = (config) => {
 };
 
 const withDevMenu = (config: ExpoConfig) => {
-  // projects using SDKs before 45 need the old regex-based integration
-  // TODO: remove this config plugin once we drop support for SDK 44
-  if (config.sdkVersion && semver.lt(config.sdkVersion, '45.0.0')) {
-    config = withDevMenuActivity(config);
-    config = withDevMenuPodfile(config);
-    config = withDevMenuAppDelegate(config);
-  }
+  config = withDevMenuActivity(config);
+  config = withDevMenuPodfile(config);
+  config = withDevMenuAppDelegate(config);
   return config;
 };
 

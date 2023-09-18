@@ -255,14 +255,10 @@ const withDevLauncherPodfile: ConfigPlugin = (config) => {
 };
 
 const withDevLauncher = (config: ExpoConfig) => {
-  // projects using SDKs before 45 need the old regex-based integration
-  // TODO: remove these once we drop support for SDK 44
-  if (config.sdkVersion && semver.lt(config.sdkVersion, '45.0.0')) {
-    config = withDevLauncherActivity(config);
-    config = withDevLauncherApplication(config);
-    config = withDevLauncherPodfile(config);
-    config = withDevLauncherAppDelegate(config);
-  }
+  config = withDevLauncherActivity(config);
+  config = withDevLauncherApplication(config);
+  config = withDevLauncherPodfile(config);
+  config = withDevLauncherAppDelegate(config);
   return config;
 };
 

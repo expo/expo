@@ -186,14 +186,10 @@ const withDevLauncherPodfile = (config) => {
     ]);
 };
 const withDevLauncher = (config) => {
-    // projects using SDKs before 45 need the old regex-based integration
-    // TODO: remove these once we drop support for SDK 44
-    if (config.sdkVersion && semver_1.default.lt(config.sdkVersion, '45.0.0')) {
-        config = withDevLauncherActivity(config);
-        config = withDevLauncherApplication(config);
-        config = withDevLauncherPodfile(config);
-        config = (0, withDevLauncherAppDelegate_1.withDevLauncherAppDelegate)(config);
-    }
+    config = withDevLauncherActivity(config);
+    config = withDevLauncherApplication(config);
+    config = withDevLauncherPodfile(config);
+    config = (0, withDevLauncherAppDelegate_1.withDevLauncherAppDelegate)(config);
     return config;
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withDevLauncher, pkg.name, pkg.version);
