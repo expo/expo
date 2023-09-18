@@ -18,6 +18,15 @@ export const SLUG = /\[.+?\]/g;
 export const ARRAY_GROUP_REGEX = /\(\s*\w[\w\s]*?,.*?\)/g;
 // /(group1,group2,group3)/test - captures ["group1", "group2", "group3"]
 export const CAPTURE_GROUP_REGEX = /[\\(,]\s*(\w[\w\s]*?)\s*(?=[,\\)])/g;
+/**
+ * Match:
+ *  - _layout files
+ *  - filenames that take the form of `+${string}`, including +html, and API routes
+ *    - Routes can still use `+`, but it cannot be in the last segment.
+ *  - All variations of 404 files, 404.ts, [404].ts, [...404].ts
+ *    - Only matches 404 on the top level, nested 404 files are allowed
+ */
+export const TYPED_ROUTES_EXCLUSION_REGEX = /(_layout|\+[^/]+|^404|^\[(\.\.\.)?404\])\.[tj]sx?$/;
 
 export interface SetupTypedRoutesOptions {
   server?: ServerLike;
@@ -162,8 +171,7 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
   };
 
   const isRouteFile = (filePath: string) => {
-    // Layout and filenames starting with `+` are not routes
-    if (filePath.match(/_layout\.[tj]sx?$/) || filePath.match(/\/\+/)) {
+    if (filePath.match(TYPED_ROUTES_EXCLUSION_REGEX)) {
       return false;
     }
 
