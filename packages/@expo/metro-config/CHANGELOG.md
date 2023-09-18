@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- `isCSSEnabled` now defaults to `true`
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

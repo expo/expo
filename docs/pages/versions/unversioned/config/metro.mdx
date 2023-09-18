@@ -54,15 +54,28 @@ Client environment variable inlining can be disabled with the environment variab
 
 > **info** CSS support is under development and currently only works on web.
 
-Expo supports CSS in your project. You can import CSS files from any component. CSS Modules are also supported. To enable CSS, configure your `metro.config.js` as follows, setting `isCSSEnabled` to `true`:
+> **warning** CSS support was enabled by default in SDK 50. If using SDK 49, you will need to set `isCSSEnabled` to `true` in the Metro config.
+
+Expo supports CSS in your project. You can import CSS files from any component. CSS Modules are also supported.
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname);
+
+module.exports = config;
+```
+
+CSS support can be toggled by setting `isCSSEnabled` in the Metro config.
 
 ```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname, {
-  // Enable CSS support.
-  isCSSEnabled: true,
+  // disable CSS support.
+  isCSSEnabled: false,
 });
 
 module.exports = config;
