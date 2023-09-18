@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Include `_ctx-html` file in public release. ([#24472](https://github.com/expo/expo/pull/24472) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+## 3.1.2 — 2023-09-18
+
+### 🐛 Bug fixes
+
+- Include `_ctx-html` file in public release. ([#24472](https://github.com/expo/expo/pull/24472) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.1.1 — 2023-09-15
 

@@ -2205,7 +2205,7 @@ PODS:
     - ExpoModulesCore
   - EXConstants (15.1.0):
     - ExpoModulesCore
-  - EXContacts (12.5.0):
+  - EXContacts (12.5.1):
     - ExpoModulesCore
   - EXFont (11.7.0):
     - ExpoModulesCore
@@ -2225,11 +2225,11 @@ PODS:
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - EXNotifications (0.24.1):
+  - EXNotifications (0.24.2):
     - ExpoModulesCore
   - EXPermissions (14.4.0):
     - ExpoModulesCore
-  - Expo (50.0.0-alpha.4):
+  - Expo (50.0.0-alpha.5):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.1.2):
     - ExpoModulesCore
@@ -2264,9 +2264,9 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.6.0):
     - ExpoModulesCore
-  - ExpoHead (3.1.1):
+  - ExpoHead (3.1.2):
     - ExpoModulesCore
-  - ExpoImage (1.5.1):
+  - ExpoImage (1.5.2):
     - ExpoModulesCore
     - SDWebImage (~> 5.17.0)
     - SDWebImageAVIFCoder (~> 0.10.1)
@@ -2325,7 +2325,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (11.5.0):
     - ExpoModulesCore
-  - ExpoSQLite (11.7.0):
+  - ExpoSQLite (11.7.1):
     - ExpoModulesCore
     - sqlite3 (~> 3.42.0)
   - ExpoStoreReview (6.6.0):
@@ -2342,7 +2342,7 @@ PODS:
     - ExpoModulesCore
   - EXScreenCapture (5.5.0):
     - ExpoModulesCore
-  - EXSplashScreen (0.23.0):
+  - EXSplashScreen (0.23.1):
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -2351,7 +2351,7 @@ PODS:
   - EXTaskManager (11.5.0):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.21.0):
+  - EXUpdates (0.21.1):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -2361,7 +2361,7 @@ PODS:
     - ReachabilitySwift
     - React-Core
     - sqlite3 (~> 3.42.0)
-  - EXUpdates/Tests (0.21.0):
+  - EXUpdates/Tests (0.21.1):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -4918,16 +4918,16 @@ SPEC CHECKSUMS:
   EXCalendar: f4dac0aa190d359f20652659707f5cc307656b6d
   EXCamera: 3302fc0e5188a47a2272a439acef7d9a5248a67c
   EXConstants: 2a5b45fc0f6eccd4351349eadb0c022b735329ae
-  EXContacts: 921cb74db0a191e931df4a3811bcce33820e5702
+  EXContacts: 80f3433f7403286a87c105208348423e109ccb8d
   EXFont: b5d79c5341f45b55c362e323735fe658003afc7a
   EXImageLoader: 03063370bc06ea1825713d3f55fe0455f7c88d04
   EXJSONUtils: b82ded3f9fed1681638c772207bb2e35651478eb
   EXLocation: e5dd52bdf61ccb6153c9e46ad4cb2686c96a35f9
   EXManifests: 3b001efa12886d0abc2b011bc32c4f3346b74256
   EXMediaLibrary: 802eee8ef888ee16ef80f1b79005d3d611793e14
-  EXNotifications: 91905ba30c801a44a1c8c5531b2870d3bec0fb41
+  EXNotifications: f6ae23a3d89a1e2236bca9861dc9bd36b4544cda
   EXPermissions: 51c6115893689c3e9787f4819aa67ceeae601038
-  Expo: 0ccb4f7970a51de586683f48f2e738836f66aa94
+  Expo: 001317580dc33f3a8bdcebd50adaf7f58cc9e303
   ExpoAppleAuthentication: 8c95178a99e7fdb8aea1e3f6385843708471c3df
   ExpoBackgroundFetch: fed277fbbb3ed9765c7a74e17c0f7fb23efda936
   ExpoBattery: 5f17ec31ec27b8a59f4c87ffe6e69fdbbf4a7cc0
@@ -4941,8 +4941,8 @@ SPEC CHECKSUMS:
   ExpoFileSystem: 62cf8d5681581de1fb43b8af8ea6d7604eb786a6
   ExpoGL: 6aedfc52c13c1eea5728ec4504f96580bc4dee65
   ExpoHaptics: 604aca02e942d1d43c139cae7cf397b26f85476f
-  ExpoHead: 57d01ae682309f5b6a293eb44343010c56d1bacc
-  ExpoImage: bbd451559f49f78d858592fe1d4d74aedb3d900b
+  ExpoHead: 625d2c4518d00ccc47cd7cbeb89975570ad57ba0
+  ExpoImage: 2674cbdeaf6292b065727fdeacf78104b486dc58
   ExpoImageManipulator: 6d37f811d47a89afb34c0ec2521c6a6ea5f5a5be
   ExpoImagePicker: 9e5c745cb3e56ee00e1cfe5d6af59caab66ecf1a
   ExpoKeepAwake: df1cf76de3171cd57e7cc8a2547401404fcc0b31
@@ -4961,7 +4961,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 5366dab0e9a270a6da3acbb1e3471d5522044baf
   ExpoSMS: fbd73390bb7abf0388c8631d6b78186e1342049f
   ExpoSpeech: 8a73bb7e6e84a5b5b8dbaabd5b4f287bec39bf3b
-  ExpoSQLite: 1b715f89f306f0f9fe4f96d0e54cc3d058d5c578
+  ExpoSQLite: 30654205a1c7d55209699e843390fb1290d202bc
   ExpoStoreReview: 6a63b9ae177bc6b46ec1679eb800ecc8a83a649a
   ExpoSystemUI: e4afa05539f42fe3be09d21a6498e5495019a5b2
   ExpoTrackingTransparency: b14d3e7946b36962ee87c8656be540d60ff70c5d
@@ -4969,13 +4969,13 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: d2ded9402b7f8ac10f148238e352eaa4026f2865
   ExpoWebBrowser: 1ff7c5454410b9fbc55084bf298c5914608904d4
   EXScreenCapture: 6ba7b396fd8afd19cb9a5e0ac8820188baf5415e
-  EXSplashScreen: f464b6f673272b7e427d3816dd7ec07e943095b3
+  EXSplashScreen: 02ca46718fc0d8e6c7ec16b1e93644e4008d048b
   EXStructuredHeaders: b0591d7da7218124a950335b746366f0b2a90178
   EXTaskManager: aae3b3c8144af1e0bfdbe8a3cc19fb116a01368d
-  EXUpdates: b6ffa480cd2539863f548f4b7e3c5a46d1fdfe72
+  EXUpdates: a910a0b964a12f9c7a6d673bad3c5eb70249fc5e
   EXUpdatesInterface: 98f69982f4b429eb62a1d99259bc980038240f27
   FBAEMKit: af2972f39bb0f3f7c45998f435b007833c32ffb2
-  FBAudienceNetwork: 03e273f66b70756be7d060927111af97b7641b06
+  FBAudienceNetwork: 4d6223a9a88a22e9dca8c9e6c1829a8745b86228
   FBLazyVector: 5d4a3b7f411219a45a6d952f77d2c0a6c9989da5
   FBReactNativeSpec: df3315aada45b530ac36e68e3aa3197eaf61f41f
   FBSDKCoreKit: 19e2e18b3be578d7a51fed8fdd8c152bef0b9511

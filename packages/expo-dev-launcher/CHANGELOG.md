@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.2.1 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
 ## 2.4.12 — 2023-09-16
 
 ### 💡 Others
@@ -19,6 +23,7 @@
 ## 2.4.11 — 2023-09-15
 
 ### 🐛 Bug fixes
+
 - Fetch dev sessions whenever navigating to the launcher home screen. ([#24378](https://github.com/expo/expo/pull/24378) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
