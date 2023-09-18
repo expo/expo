@@ -408,53 +408,52 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
       middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
 
-      const appDir = getRouterDirectoryWithManifest(this.projectRoot, exp);
+      if (useServerRendering) {
+        const appDir = getRouterDirectoryWithManifest(this.projectRoot, exp);
+        middleware.use(
+          createRouteHandlerMiddleware(this.projectRoot, {
+            ...options,
+            appDir,
+            getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
+            getStaticPageAsync: (pathname) => {
+              return this.getStaticPageAsync(pathname, {
+                mode: options.mode ?? 'development',
+                minify: options.minify,
+                // No base path in development
+                basePath: '',
+              });
+            },
+          })
+        );
 
-      middleware.use(
-        createRouteHandlerMiddleware(this.projectRoot, {
-          ...options,
-          appDir,
-          getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
-          getStaticPageAsync: (pathname) => {
-            return this.getStaticPageAsync(pathname, {
-              mode: options.mode ?? 'development',
-              minify: options.minify,
-              // No base path in development
-              basePath: '',
-            });
-          },
-        })
-      );
+        // @ts-expect-error: TODO
+        if (exp.web?.output === 'server') {
+          // Cache observation for API Routes...
+          observeApiRouteChanges(
+            this.projectRoot,
+            {
+              metro,
+              server,
+            },
+            async (filepath, op) => {
+              if (isApiRouteConvention(filepath)) {
+                debug(`[expo-cli] ${op} ${filepath}`);
+                if (op === 'change' || op === 'add') {
+                  rebundleApiRoute(this.projectRoot, filepath, {
+                    ...options,
+                    appDir,
+                  });
+                }
 
-      // @ts-expect-error: TODO
-      if (exp.web?.output === 'server') {
-        // Cache observation for API Routes...
-        observeApiRouteChanges(
-          this.projectRoot,
-          {
-            metro,
-            server,
-          },
-          async (filepath, op) => {
-            if (isApiRouteConvention(filepath)) {
-              debug(`[expo-cli] ${op} ${filepath}`);
-              if (op === 'change' || op === 'add') {
-                rebundleApiRoute(this.projectRoot, filepath, {
-                  ...options,
-                  appDir,
-                });
-              }
-
-              if (op === 'delete') {
-                // TODO: Cancel the bundling of the deleted route.
+                if (op === 'delete') {
+                  // TODO: Cancel the bundling of the deleted route.
+                }
               }
             }
-          }
-        );
-      }
-
-      // This MUST run last since it's the fallback.
-      if (!useServerRendering) {
+          );
+        }
+      } else {
+        // This MUST run last since it's the fallback.
         middleware.use(
           new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
         );

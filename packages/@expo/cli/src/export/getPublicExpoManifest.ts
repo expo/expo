@@ -6,7 +6,8 @@ import { CommandError } from '../utils/errors';
 
 /** Get the public Expo manifest from the local project config. */
 export async function getPublicExpoManifestAsync(
-  projectRoot: string
+  projectRoot: string,
+  { skipValidation }: { skipValidation?: boolean } = {}
 ): Promise<ExpoConfig & { locales: LocaleMap; sdkVersion: string }> {
   // Read the config in public mode which strips the `hooks`.
   const { exp } = getConfig(projectRoot, {
@@ -16,7 +17,11 @@ export async function getPublicExpoManifestAsync(
   });
 
   // Only allow projects to be published with UNVERSIONED if a correct token is set in env
-  if (exp.sdkVersion === 'UNVERSIONED' && !env.EXPO_SKIP_MANIFEST_VALIDATION_TOKEN) {
+  if (
+    !skipValidation &&
+    exp.sdkVersion === 'UNVERSIONED' &&
+    !env.EXPO_SKIP_MANIFEST_VALIDATION_TOKEN
+  ) {
     throw new CommandError('INVALID_OPTIONS', 'Cannot publish with sdkVersion UNVERSIONED.');
   }
 
