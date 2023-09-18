@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix broken JS test. ([#24498](https://github.com/expo/expo/pull/24498) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 - [iOS] Bump `SQLite`version to latest. ([#24375](https://github.com/expo/expo/pull/24375) by [@alanjhughes](https://github.com/alanjhughes))
