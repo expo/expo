@@ -751,7 +751,9 @@ const createNestedStateObject = (
     for (const [name, value] of Object.entries(params)) {
       if (!route.params?.[name]) {
         route.params[name] = value;
-      } else if (process.env.NODE_ENV !== 'production') {
+      }
+
+      if (process.env.NODE_ENV === 'development') {
         console.warn(
           `Route '/${route.name}' with param '${name}' was specified both in the path and as a param, removing from path`
         );

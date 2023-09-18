@@ -519,11 +519,16 @@ const createNestedStateObject = (path, routes, routeConfigs, initialRoutes) => {
     route.path = (0, matchers_1.stripGroupSegmentsFromPath)(path);
     const params = parseQueryParams(route.path, findParseConfigForRoute(route.name, routeConfigs));
     if (params) {
-        const resolvedParams = { ...route.params, ...params };
-        if (Object.keys(resolvedParams).length > 0) {
-            route.params = resolvedParams;
+        route.params ??= {};
+        for (const [name, value] of Object.entries(params)) {
+            if (!route.params?.[name]) {
+                route.params[name] = value;
+            }
+            if (process.env.NODE_ENV === 'development') {
+                console.warn(`Route '/${route.name}' with param '${name}' was specified both in the path and as a param, removing from path`);
+            }
         }
-        else {
+        if (Object.keys(route.params).length === 0) {
             delete route.params;
         }
     }
