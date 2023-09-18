@@ -17,7 +17,7 @@ import expo.modules.notifications.service.NotificationsService;
 /**
  * A "task" responsible for managing response to a single notification.
  */
-/* package */ class SingleNotificationHandlerTask {
+public class SingleNotificationHandlerTask {
   /**
    * Name of the event asking the delegate for behavior.
    */

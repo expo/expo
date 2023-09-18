@@ -24,7 +24,7 @@ class ScopedServerRegistrationModule(context: Context) : ServerRegistrationModul
     // expo-notifications-specific installation ID
     // from scoped SharedPreferences to scoped noBackupDir
     // and use it from now on.
-    val legacyUuid = mInstallationId.uuid
+    val legacyUuid = installationId.uuid
     if (legacyUuid != null) {
       promise.resolve(legacyUuid)
     } else {
