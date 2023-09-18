@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import React, { Text } from 'react-native';
 
 import { Slot, router, useGlobalSearchParams } from '../exports';
