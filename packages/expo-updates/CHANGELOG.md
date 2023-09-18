@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing export in checkForUpdateAsync result. (by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.18.13 — 2023-09-15
