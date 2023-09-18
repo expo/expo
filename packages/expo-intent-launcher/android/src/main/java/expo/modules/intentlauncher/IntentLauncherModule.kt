@@ -9,6 +9,7 @@ import androidx.core.os.bundleOf
 import expo.modules.intentlauncher.exceptions.ActivityAlreadyStartedException
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
