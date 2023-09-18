@@ -2,12 +2,13 @@ package expo.modules.notifications.notifications.categories
 
 import android.content.Context
 import android.os.Bundle
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
 import expo.modules.core.arguments.MapArguments
 import expo.modules.core.errors.InvalidArgumentException
-import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.notifications.ModuleNotFoundException
 import expo.modules.notifications.ResultReceiverBody
 import expo.modules.notifications.createDefaultResultReceiver
 import expo.modules.notifications.notifications.categories.serializers.NotificationsCategoriesSerializer
@@ -19,7 +20,6 @@ import expo.modules.notifications.service.NotificationsService.Companion.deleteC
 import expo.modules.notifications.service.NotificationsService.Companion.getCategories
 import expo.modules.notifications.service.NotificationsService.Companion.setCategory
 
-private const val EXPORTED_NAME = "ExpoNotificationCategoriesModule"
 private const val IDENTIFIER_KEY = "identifier"
 private const val BUTTON_TITLE_KEY = "buttonTitle"
 private const val OPTIONS_KEY = "options"
@@ -27,36 +27,41 @@ private const val OPENS_APP_TO_FOREGROUND_KEY = "opensAppToForeground"
 private const val TEXT_INPUT_OPTIONS_KEY = "textInput"
 private const val PLACEHOLDER_KEY = "placeholder"
 
-open class ExpoNotificationCategoriesModule(context: Context) : ExportedModule(context) {
-  protected lateinit var serializer: NotificationsCategoriesSerializer
+open class ExpoNotificationCategoriesModule : Module() {
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    serializer = moduleRegistry.getModule(NotificationsCategoriesSerializer::class.java)
+  protected val serializer by lazy {
+    appContext.legacyModule<NotificationsCategoriesSerializer>()
+      ?: throw ModuleNotFoundException(NotificationsCategoriesSerializer::class)
   }
 
-  override fun getName(): String {
-    return EXPORTED_NAME
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+  override fun definition() = ModuleDefinition {
+    Name("ExpoNotificationCategoriesModule")
+
+    AsyncFunction("getNotificationCategoriesAsync") { promise: Promise ->
+      getCategories(
+        context,
+        createResultReceiver { resultCode: Int, resultData: Bundle ->
+          val categories = resultData.getParcelableArrayList<NotificationCategory>(NotificationsService.NOTIFICATION_CATEGORIES_KEY)
+          if (resultCode == NotificationsService.SUCCESS_CODE && categories != null) {
+            promise.resolve(serializeCategories(categories))
+          } else {
+            promise.reject("ERR_CATEGORIES_FETCH_FAILED", "A list of notification categories could not be fetched.", null)
+          }
+        }
+      )
+    }
+
+    AsyncFunction("setNotificationCategoryAsync", this@ExpoNotificationCategoriesModule::setNotificationCategoryAsync)
+
+    AsyncFunction("deleteNotificationCategoryAsync", this@ExpoNotificationCategoriesModule::deleteNotificationCategoryAsync)
   }
 
   private fun createResultReceiver(body: ResultReceiverBody) =
     createDefaultResultReceiver(null, body)
 
-  @ExpoMethod
-  open fun getNotificationCategoriesAsync(promise: Promise) {
-    getCategories(
-      context,
-      createResultReceiver { resultCode: Int, resultData: Bundle ->
-        val categories = resultData.getParcelableArrayList<NotificationCategory>(NotificationsService.NOTIFICATION_CATEGORIES_KEY)
-        if (resultCode == NotificationsService.SUCCESS_CODE && categories != null) {
-          promise.resolve(serializeCategories(categories))
-        } else {
-          promise.reject("ERR_CATEGORIES_FETCH_FAILED", "A list of notification categories could not be fetched.")
-        }
-      }
-    )
-  }
-
-  @ExpoMethod
   open fun setNotificationCategoryAsync(
     identifier: String,
     actionArguments: List<Map<String, Any>>,
@@ -102,13 +107,12 @@ open class ExpoNotificationCategoriesModule(context: Context) : ExportedModule(c
         if (resultCode == NotificationsService.SUCCESS_CODE && category != null) {
           promise.resolve(serializer.toBundle(category))
         } else {
-          promise.reject("ERR_CATEGORY_SET_FAILED", "The provided category could not be set.")
+          promise.reject("ERR_CATEGORY_SET_FAILED", "The provided category could not be set.", null)
         }
       }
     )
   }
 
-  @ExpoMethod
   open fun deleteNotificationCategoryAsync(identifier: String, promise: Promise) {
     deleteCategory(
       context,
@@ -117,7 +121,7 @@ open class ExpoNotificationCategoriesModule(context: Context) : ExportedModule(c
         if (resultCode == NotificationsService.SUCCESS_CODE) {
           promise.resolve(resultData.getBoolean(NotificationsService.SUCCEEDED_KEY))
         } else {
-          promise.reject("ERR_CATEGORY_DELETE_FAILED", "The category could not be deleted.")
+          promise.reject("ERR_CATEGORY_DELETE_FAILED", "The category could not be deleted.", null)
         }
       }
     )

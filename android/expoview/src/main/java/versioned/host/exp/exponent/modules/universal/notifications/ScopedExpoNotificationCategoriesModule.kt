@@ -1,17 +1,15 @@
 package versioned.host.exp.exponent.modules.universal.notifications
 
-import android.content.Context
 import android.os.Bundle
-import expo.modules.core.Promise
+import expo.modules.kotlin.Promise
 import expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule
 import expo.modules.notifications.notifications.model.NotificationCategory
 import host.exp.exponent.kernel.ExperienceKey
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsIdUtils
 
 class ScopedExpoNotificationCategoriesModule(
-  context: Context,
   private val experienceKey: ExperienceKey
-) : ExpoNotificationCategoriesModule(context) {
+) : ExpoNotificationCategoriesModule() {
   override fun setNotificationCategoryAsync(
     identifier: String,
     actionArguments: List<Map<String, Any>>,

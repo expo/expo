@@ -2,7 +2,7 @@ package versioned.host.exp.exponent.modules.universal.notifications
 
 import android.content.Context
 import android.os.Bundle
-import expo.modules.core.Promise
+import expo.modules.kotlin.Promise
 import expo.modules.notifications.notifications.NotificationSerializer
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import expo.modules.notifications.notifications.model.Notification
@@ -15,9 +15,9 @@ import host.exp.exponent.notifications.ScopedNotificationsUtils
 import host.exp.exponent.notifications.model.ScopedNotificationRequest
 
 class ScopedExpoNotificationPresentationModule(
-  context: Context,
+  private val context: Context,
   private val experienceKey: ExperienceKey
-) : ExpoNotificationPresentationModule(context) {
+) : ExpoNotificationPresentationModule() {
   private val scopedNotificationsUtils = ScopedNotificationsUtils(context)
 
   override fun createNotificationRequest(
@@ -47,7 +47,7 @@ class ScopedExpoNotificationPresentationModule(
             promise.resolve(null)
             return@createResultReceiver
           }
-          doDismissNotificationAsync(identifier, promise)
+          super.dismissNotificationAsync(identifier, promise)
         } else {
           val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
           promise.reject(
@@ -82,10 +82,6 @@ class ScopedExpoNotificationPresentationModule(
         }
       }
     )
-  }
-
-  private fun doDismissNotificationAsync(identifier: String, promise: Promise) {
-    super.dismissNotificationAsync(identifier, promise)
   }
 
   private fun dismissSelectedAsync(identifiers: Array<String>, promise: Promise) {

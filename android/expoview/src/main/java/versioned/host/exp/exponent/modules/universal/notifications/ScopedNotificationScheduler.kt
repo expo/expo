@@ -3,7 +3,7 @@ package versioned.host.exp.exponent.modules.universal.notifications
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import expo.modules.core.Promise
+import expo.modules.kotlin.Promise
 import expo.modules.notifications.notifications.NotificationSerializer
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import expo.modules.notifications.notifications.model.NotificationContent
@@ -15,13 +15,13 @@ import host.exp.exponent.notifications.ScopedNotificationsUtils
 import host.exp.exponent.notifications.model.ScopedNotificationRequest
 import host.exp.exponent.utils.ScopedContext
 
-class ScopedNotificationScheduler(context: Context, private val experienceKey: ExperienceKey) :
-  NotificationScheduler(context) {
+class ScopedNotificationScheduler(private val context: Context, private val experienceKey: ExperienceKey) :
+  NotificationScheduler() {
   private val scopedNotificationsUtils: ScopedNotificationsUtils = ScopedNotificationsUtils(context)
 
   override val schedulingContext: Context
     get() = if (context is ScopedContext) {
-      (context as ScopedContext).baseContext
+      context.baseContext
     } else {
       context
     }

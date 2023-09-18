@@ -4,12 +4,12 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import expo.modules.core.ExportedModule
-import expo.modules.core.Promise
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.core.errors.InvalidArgumentException
-import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.notifications.ResultReceiverBody
 import expo.modules.notifications.createDefaultResultReceiver
 import expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder
@@ -30,67 +30,92 @@ import expo.modules.notifications.service.NotificationsService.Companion.removeA
 import expo.modules.notifications.service.NotificationsService.Companion.removeScheduledNotification
 import expo.modules.notifications.service.NotificationsService.Companion.schedule
 
-open class NotificationScheduler(context: Context) : ExportedModule(context) {
-  override fun getName(): String = "ExpoNotificationScheduler"
-
+open class NotificationScheduler : Module() {
   protected open val schedulingContext: Context
-    get() = context ?: throw Exceptions.ReactContextLost()
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   private val handler = Handler(Looper.getMainLooper())
 
   protected fun createResultReceiver(body: ResultReceiverBody) =
     createDefaultResultReceiver(handler, body)
 
-  @ExpoMethod
-  fun getAllScheduledNotificationsAsync(promise: Promise) {
-    getAllScheduledNotifications(
-      schedulingContext,
-      createResultReceiver { resultCode: Int, resultData: Bundle ->
-        if (resultCode == NotificationsService.SUCCESS_CODE) {
-          val requests = resultData.getParcelableArrayList<NotificationRequest>(NotificationsService.NOTIFICATION_REQUESTS_KEY)
-          if (requests == null) {
-            promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.")
-          } else {
-            promise.resolve(serializeScheduledNotificationRequests(requests))
-          }
-        } else {
-          val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
-          promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.", e)
-        }
-      }
-    )
-  }
+  override fun definition() = ModuleDefinition {
+    Name("ExpoNotificationScheduler")
 
-  @ExpoMethod
-  fun scheduleNotificationAsync(identifier: String, notificationContentMap: ReadableArguments, triggerParams: ReadableArguments?, promise: Promise) {
-    try {
-      val content = ArgumentsNotificationContentBuilder(context).setPayload(notificationContentMap).build()
-      val request = createNotificationRequest(
-        identifier,
-        content,
-        triggerFromParams(triggerParams)
-      )
-
-      schedule(
+    AsyncFunction("getAllScheduledNotificationsAsync") { promise: Promise ->
+      getAllScheduledNotifications(
         schedulingContext,
-        request,
         createResultReceiver { resultCode: Int, resultData: Bundle ->
           if (resultCode == NotificationsService.SUCCESS_CODE) {
-            promise.resolve(identifier)
+            val requests = resultData.getParcelableArrayList<NotificationRequest>(NotificationsService.NOTIFICATION_REQUESTS_KEY)
+            if (requests == null) {
+              promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.", null)
+            } else {
+              promise.resolve(serializeScheduledNotificationRequests(requests))
+            }
           } else {
-            val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
-            promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule the notification. ${e?.message}", e)
+            val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+            promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.", e)
           }
         }
       )
-    } catch (e: InvalidArgumentException) {
-      promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule the notification. ${e.message}", e)
-    } catch (e: NullPointerException) {
-      promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule the notification. Encountered unexpected null value. ${e.message}", e)
+    }
+
+    AsyncFunction("scheduleNotificationAsync") { identifier: String, notificationContentMap: ReadableArguments, triggerParams: ReadableArguments?, promise: Promise ->
+      try {
+        val content = ArgumentsNotificationContentBuilder(schedulingContext).setPayload(notificationContentMap).build()
+        val request = createNotificationRequest(
+          identifier,
+          content,
+          triggerFromParams(triggerParams)
+        )
+
+        schedule(
+          schedulingContext,
+          request,
+          createResultReceiver { resultCode: Int, resultData: Bundle ->
+            if (resultCode == NotificationsService.SUCCESS_CODE) {
+              promise.resolve(identifier)
+            } else {
+              val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
+              promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule the notification. ${e?.message}", e)
+            }
+          }
+        )
+      } catch (e: InvalidArgumentException) {
+        promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule the notification. ${e.message}", e)
+      } catch (e: NullPointerException) {
+        promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule the notification. Encountered unexpected null value. ${e.message}", e)
+      }
+    }
+
+    AsyncFunction("cancelScheduledNotificationAsync", this@NotificationScheduler::cancelScheduledNotificationAsync)
+
+    AsyncFunction("cancelAllScheduledNotificationsAsync", this@NotificationScheduler::cancelAllScheduledNotificationsAsync)
+
+    AsyncFunction("getNextTriggerDateAsync") { triggerParams: ReadableArguments?, promise: Promise ->
+      try {
+        val trigger = triggerFromParams(triggerParams)
+        if (trigger is SchedulableNotificationTrigger) {
+          val nextTriggerDate = trigger.nextTriggerDate()
+          if (nextTriggerDate == null) {
+            promise.resolve(null)
+          } else {
+            promise.resolve(nextTriggerDate.time.toDouble())
+          }
+        } else {
+          val triggerDescription = if (trigger == null) "null" else trigger.javaClass.name
+          val message = String.format("It is not possible to get next trigger date for triggers other than calendar-based. Provided trigger resulted in %s trigger.", triggerDescription)
+          promise.reject("ERR_NOTIFICATIONS_INVALID_CALENDAR_TRIGGER", message, null)
+        }
+      } catch (e: InvalidArgumentException) {
+        promise.reject("ERR_NOTIFICATIONS_FAILED_TO_GET_NEXT_TRIGGER_DATE", "Failed to get next trigger date for the trigger. ${e.message}", e)
+      } catch (e: NullPointerException) {
+        promise.reject("ERR_NOTIFICATIONS_FAILED_TO_GET_NEXT_TRIGGER_DATE", "Failed to get next trigger date for the trigger. Encountered unexpected null value. ${e.message}", e)
+      }
     }
   }
 
-  @ExpoMethod
   open fun cancelScheduledNotificationAsync(identifier: String, promise: Promise) {
     removeScheduledNotification(
       schedulingContext,
@@ -106,7 +131,6 @@ open class NotificationScheduler(context: Context) : ExportedModule(context) {
     )
   }
 
-  @ExpoMethod
   open fun cancelAllScheduledNotificationsAsync(promise: Promise) {
     removeAllScheduledNotifications(
       schedulingContext,
@@ -119,29 +143,6 @@ open class NotificationScheduler(context: Context) : ExportedModule(context) {
         }
       }
     )
-  }
-
-  @ExpoMethod
-  fun getNextTriggerDateAsync(triggerParams: ReadableArguments?, promise: Promise) {
-    try {
-      val trigger = triggerFromParams(triggerParams)
-      if (trigger is SchedulableNotificationTrigger) {
-        val nextTriggerDate = trigger.nextTriggerDate()
-        if (nextTriggerDate == null) {
-          promise.resolve(null)
-        } else {
-          promise.resolve(nextTriggerDate.time.toDouble())
-        }
-      } else {
-        val triggerDescription = if (trigger == null) "null" else trigger.javaClass.name
-        val message = String.format("It is not possible to get next trigger date for triggers other than calendar-based. Provided trigger resulted in %s trigger.", triggerDescription)
-        promise.reject("ERR_NOTIFICATIONS_INVALID_CALENDAR_TRIGGER", message)
-      }
-    } catch (e: InvalidArgumentException) {
-      promise.reject("ERR_NOTIFICATIONS_FAILED_TO_GET_NEXT_TRIGGER_DATE", "Failed to get next trigger date for the trigger. ${e.message}", e)
-    } catch (e: NullPointerException) {
-      promise.reject("ERR_NOTIFICATIONS_FAILED_TO_GET_NEXT_TRIGGER_DATE", "Failed to get next trigger date for the trigger. Encountered unexpected null value. ${e.message}", e)
-    }
   }
 
   @Throws(InvalidArgumentException::class)
