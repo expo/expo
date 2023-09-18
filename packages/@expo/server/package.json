@@ -25,6 +25,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/server#readme",
   "files": [
     "build",
+    "vendor",
     "install.js"
   ],
   "dependencies": {
