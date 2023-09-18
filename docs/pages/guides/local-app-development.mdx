@@ -72,6 +72,8 @@ Android Studio allows installing Android SDK, Android SDK Platform, and Android 
 
 <Tab label='Windows'>
 
+To set up your development environment on Windows for Android, you've to install Node.js, JDK, and Android Studio.
+
 #### Prerequisites
 
 Use a package manager such as [Chocolatey](https://chocolatey.org/) to install the following dependencies.
@@ -91,6 +93,40 @@ If you have already installed Node.js on your system, make sure the version is 1
 <Step label="2">
 
 Install [Java SE Development Kit (JDK)](https://openjdk.org/projects/jdk/11/):
+
+<Terminal cmd={['$ choco install -y microsoft-openjdk11']} />
+
+If you already have JDK installed on your system, we recommend JDK11.
+
+</Step>
+
+#### Install and configure Android Studio
+
+Android Studio allows installing Android SDK, Android SDK Platform, and Android Virtual Device. They are required to set up the Android development environment. Follow the [instructions on the Android Studio Emulator](/workflow/android-studio-emulator/) to install these tools.
+
+</Tab>
+
+<Tab label="Linux">
+
+To set up your development environment on Linux for Android, you've to install Node.js, JDK, and Android Studio.
+
+#### Install dependencies
+
+<Step label="1">
+
+Install Node.js 16 or above by following [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager).
+
+</Step>
+
+<Step label="2">
+
+Follow [installation instructions from the Watchman installation guide](https://facebook.github.io/watchman/docs/install#linux) to compile and install it from the source.
+
+</Step>
+
+<Step label="3">
+
+Install Java SE Development Kit (JDK) version 11. You can download and install [OpenJDK](http://openjdk.java.net/) from [AdoptOpenJDK](https://adoptopenjdk.net/) or your system packager.
 
 <Terminal cmd={['$ choco install -y microsoft-openjdk11']} />
 
