@@ -55,6 +55,7 @@ exceptions:
   - I
   - JavaScript
   - JavaScriptCore
+  - Java Development Kit
   - Jest
   - Library
   - Linking
@@ -63,6 +64,7 @@ exceptions:
   - Module
   - Modules
   - Native
+  - Node.js
   - Package
   - Plugins
   - Podfile
@@ -83,6 +85,7 @@ exceptions:
   - Submit
   - TypeScript
   - Update
+  - Watchman
   - Web
   - Wix
   - Xcode
