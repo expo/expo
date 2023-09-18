@@ -8,7 +8,8 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "expo-module lint ./app/*",
+    "ts:check": "expo-module tsc --project tsconfig.app.json --noEmit & expo-module tsc --noEmit",
     "test": "expo-module test",
     "prepare": "expo-module prepare && ./scripts/reset-dev-menu-packager-host.sh",
     "prepublishOnly": "expo-module prepublishOnly",

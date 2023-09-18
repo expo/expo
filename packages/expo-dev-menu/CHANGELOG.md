@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fix eslint and TypeScript warnings ([#24497](https://github.com/expo/expo/pull/24497) by [@kadikraman](https://github.com/kadikraman))
+
 ## 3.2.0 — 2023-09-15
 
 ### 🎉 New features
