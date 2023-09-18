@@ -9,7 +9,6 @@ import {
 } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
-import semver from 'semver';
 
 import { InstallationPage } from './constants';
 import { withDevMenuAppDelegate } from './withDevMenuAppDelegate';
