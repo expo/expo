@@ -61,8 +61,7 @@ class IntentLauncherModule : Module() {
       try {
         currentActivity.startActivityForResult(intent, REQUEST_CODE)
         pendingPromise = promise
-      }
-      catch (e: Throwable) {
+      } catch (e: Throwable) {
         promise.reject(e.toCodedException())
       }
     }
