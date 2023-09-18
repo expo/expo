@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add Netlify adapter.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
