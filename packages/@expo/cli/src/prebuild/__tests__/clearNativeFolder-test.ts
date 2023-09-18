@@ -1,3 +1,4 @@
+import { PackageJSONConfig } from '@expo/config';
 import { vol } from 'memfs';
 
 import rnFixture from './fixtures/react-native-project';
@@ -127,6 +128,48 @@ describe(getMalformedNativeProjectsAsync, () => {
     const projectRoot = '/';
     vol.fromJSON({}, projectRoot);
     const malformed = await getMalformedNativeProjectsAsync(projectRoot, ['ios', 'android']);
+    expect(malformed).toStrictEqual([]);
+  });
+
+  it(`finds both platforms if EXPO_TV is set`, async () => {
+    const projectRoot = '/';
+    const pkg: PackageJSONConfig = {
+      dependencies: {
+        'react-native': '0.72.4',
+      },
+    };
+    // mock out some non-empty ios and android folders.
+    vol.fromJSON(
+      {
+        'android/foobar': 'x',
+        'ios/Info.plist': 'xx',
+        'ios/another/file': 'xx',
+      },
+      '/'
+    );
+    const malformed = await getMalformedNativeProjectsAsync(
+      projectRoot,
+      ['android', 'ios'],
+      pkg,
+      true
+    );
+    expect(malformed).toStrictEqual(['android', 'ios']);
+  });
+  it(`finds no platforms if EXPO_TV is set and folders are empty`, async () => {
+    const projectRoot = '/';
+    const pkg: PackageJSONConfig = {
+      dependencies: {
+        'react-native': '0.72.4',
+      },
+    };
+    // mock out some non-empty ios and android folders.
+    vol.fromJSON({}, '/');
+    const malformed = await getMalformedNativeProjectsAsync(
+      projectRoot,
+      ['android', 'ios'],
+      pkg,
+      true
+    );
     expect(malformed).toStrictEqual([]);
   });
 });

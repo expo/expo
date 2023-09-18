@@ -70,9 +70,6 @@ export async function prebuildAsync(
     }
     // Clear the native folders before syncing
     await clearNativeFolder(projectRoot, options.platforms);
-  } else {
-    // Check if the existing project folders are malformed.
-    await promptToClearMalformedNativeProjectsAsync(projectRoot, options.platforms);
   }
 
   // Warn if the project is attempting to prebuild an unsupported platform (iOS on Windows).
@@ -82,6 +79,17 @@ export async function prebuildAsync(
 
   // Get the Expo config, create it if missing.
   const { exp, pkg } = await ensureConfigAsync(projectRoot, { platforms: options.platforms });
+
+  // Check for malformed native folders
+  if (!options.clean) {
+    // Check if the existing project folders are malformed.
+    await promptToClearMalformedNativeProjectsAsync(
+      projectRoot,
+      options.platforms,
+      pkg,
+      env.EXPO_TV
+    );
+  }
 
   // Create native projects from template.
   const { hasNewProjectFiles, needsPodInstall, hasNewDependencies } = await updateFromTemplateAsync(

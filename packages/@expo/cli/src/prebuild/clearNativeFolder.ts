@@ -1,8 +1,10 @@
+import { PackageJSONConfig } from '@expo/config';
 import { AndroidConfig, IOSConfig, ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
+import { needsReactNativeDependencyChangedForTV } from './updatePackageJson';
 import * as Log from '../log';
 import { directoryExistsAsync } from '../utils/dir';
 import { isInteractive } from '../utils/interactive';
@@ -90,18 +92,28 @@ async function filterPlatformsThatDoNotExistAsync(
 /** Get a list of native platforms that have existing directories which contain malformed projects. */
 export async function getMalformedNativeProjectsAsync(
   projectRoot: string,
-  platforms: ArbitraryPlatform[]
+  platforms: ArbitraryPlatform[],
+  pkg?: PackageJSONConfig,
+  isTV?: boolean
 ): Promise<ArbitraryPlatform[]> {
   const VERIFIERS: Record<ArbitraryPlatform, (root: string) => Promise<boolean>> = {
     android: hasRequiredAndroidFilesAsync,
     ios: hasRequiredIOSFilesAsync,
   };
 
+  const needsTVChange = pkg
+    ? needsReactNativeDependencyChangedForTV(pkg.dependencies, { isTV })
+    : false;
+
   const checkablePlatforms = platforms.filter((platform) => platform in VERIFIERS);
   const checkPlatforms = await filterPlatformsThatDoNotExistAsync(projectRoot, checkablePlatforms);
   return (
     await Promise.all(
       checkPlatforms.map(async (platform) => {
+        if (needsTVChange) {
+          Log.warn(`Existing ${platform} folder cannot be used with EXPO_TV=${isTV}.`);
+          return platform;
+        }
         if (!VERIFIERS[platform]) {
           return false;
         }
@@ -116,9 +128,11 @@ export async function getMalformedNativeProjectsAsync(
 
 export async function promptToClearMalformedNativeProjectsAsync(
   projectRoot: string,
-  checkPlatforms: ArbitraryPlatform[]
+  checkPlatforms: ArbitraryPlatform[],
+  pkg?: PackageJSONConfig,
+  isTV?: boolean
 ) {
-  const platforms = await getMalformedNativeProjectsAsync(projectRoot, checkPlatforms);
+  const platforms = await getMalformedNativeProjectsAsync(projectRoot, checkPlatforms, pkg, isTV);
 
   if (!platforms.length) {
     return;
