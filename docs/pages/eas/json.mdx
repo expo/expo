@@ -1,0 +1,40 @@
+---
+title: eas.json
+description: Learn about available properties for EAS Build and EAS Submit to configure and override their default behavior from within your project.
+maxHeadingDepth: 4
+---
+
+import { EasJsonPropertiesTable } from '~/components/plugins/EasJsonPropertiesTable';
+import { Collapsible } from '~/ui/components/Collapsible';
+
+import commonSchema from '~/public/static/schemas/unversioned/eas-json-build-common-schema.js';
+import androidSchema from '~/public/static/schemas/unversioned/eas-json-build-android-schema.js';
+import iosSchema from '~/public/static/schemas/unversioned/eas-json-build-ios-schema.js';
+import submitAndroidSchema from '~/public/static/schemas/unversioned/eas-json-submit-android-schema.js';
+import submitIosSchema from '~/public/static/schemas/unversioned/eas-json-submit-ios-schema.js';
+
+**eas.json** is the configuration file for EAS CLI and services. It is located at the root of a project next to the **package.json**. This is a reference of all available schema properties for [EAS Build](/build/introduction) (`build`) and [EAS Submit](/submit/introduction) (`submit`).
+
+## EAS Build
+
+### Common options for native platforms
+
+<EasJsonPropertiesTable schema={commonSchema} />
+
+### Android-specific options
+
+<EasJsonPropertiesTable schema={androidSchema} />
+
+### iOS-specific options
+
+<EasJsonPropertiesTable schema={iosSchema} />
+
+## EAS Submit
+
+### Android-specific options
+
+<EasJsonPropertiesTable schema={submitAndroidSchema} />
+
+### iOS-specific options
+
+<EasJsonPropertiesTable schema={submitIosSchema} />
