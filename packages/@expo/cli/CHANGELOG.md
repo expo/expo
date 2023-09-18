@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Enable `tsconfigPaths` and remove `expo.experiments.tsconfigPaths` flag
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
