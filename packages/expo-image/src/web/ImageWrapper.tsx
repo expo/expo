@@ -69,7 +69,6 @@ function useHeaders(
         const blob = await result.blob();
         setObjectURL(URL.createObjectURL(blob));
       } catch (error) {
-        console.error(error);
         onError?.forEach((e) => e?.({ source }));
       }
     })();
