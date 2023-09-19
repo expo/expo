@@ -5,6 +5,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
@@ -14,6 +15,7 @@ import expo.modules.imagepicker.UNLIMITED_SELECTION
 import expo.modules.imagepicker.getAllDataUris
 import expo.modules.imagepicker.toMediaType
 import expo.modules.kotlin.activityresult.AppContextActivityResultContract
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.providers.AppContextProvider
 import java.io.Serializable
 
@@ -28,9 +30,8 @@ internal class ImageLibraryContract(
   private val appContextProvider: AppContextProvider,
 ) : AppContextActivityResultContract<ImageLibraryContractOptions, ImagePickerContractResult> {
   private val contentResolver: ContentResolver
-    get() = requireNotNull(appContextProvider.appContext.reactContext) {
-      "React Application Context is null"
-    }.contentResolver
+    get() = appContextProvider.appContext.reactContext?.contentResolver
+      ?: throw Exceptions.ReactContextLost()
 
   override fun createIntent(context: Context, input: ImageLibraryContractOptions): Intent {
     val request = PickVisualMediaRequest.Builder()
@@ -86,9 +87,9 @@ internal class ImageLibraryContract(
           )
         } else {
           if (intent.data != null) {
-            intent.data?.let {
-              val type = it.toMediaType(contentResolver)
-              ImagePickerContractResult.Success(listOf(type to it))
+            intent.data?.let { uri ->
+              val type = uri.toMediaType(contentResolver)
+              ImagePickerContractResult.Success(listOf(type to uri))
             }
           } else {
             uris.firstOrNull()?.let { uri ->

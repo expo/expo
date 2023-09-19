@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- On Android, support `fileName` and `filesize` in the returned assets.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

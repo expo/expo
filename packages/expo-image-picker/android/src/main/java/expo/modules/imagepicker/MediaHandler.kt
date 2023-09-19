@@ -3,7 +3,11 @@ package expo.modules.imagepicker
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Base64
+import android.util.Log
 import androidx.core.net.toUri
 import expo.modules.imagepicker.exporters.CompressionImageExporter
 import expo.modules.imagepicker.exporters.ImageExporter
@@ -55,16 +59,34 @@ internal class MediaHandler(
     val exif = options.exif.takeIf { it }
       ?.let { exportedImage.exif(context.contentResolver) }
 
+    val fileData = getAdditionalFileData(sourceUri)
+
     return ImagePickerAsset(
       type = MediaType.IMAGE,
       uri = Uri.fromFile(outputFile).toString(),
       width = exportedImage.width,
       height = exportedImage.height,
+      fileName = fileData?.fileName,
+      filesize = fileData?.filesize,
       base64 = base64,
       exif = exif,
       assetId = sourceUri.getMediaStoreAssetId(),
     )
   }
+
+  private fun getAdditionalFileData(uri: Uri): AdditionalFileData? = context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+    val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+    cursor.moveToFirst()
+
+    val name: String? = cursor.getString(nameIndex)
+    val size = cursor.getLong(sizeIndex)
+    AdditionalFileData(
+      name,
+      size
+    )
+  }
+
 
   private suspend fun handleVideo(
     sourceUri: Uri,
@@ -78,11 +100,15 @@ internal class MediaHandler(
         setDataSource(context, outputUri)
       }
 
+      val fileData = getAdditionalFileData(sourceUri)
+
       return ImagePickerAsset(
         type = MediaType.VIDEO,
         uri = outputUri.toString(),
         width = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH),
         height = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT),
+        fileName = fileData?.fileName,
+        filesize = fileData?.filesize,
         duration = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_DURATION),
         rotation = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION),
         assetId = sourceUri.getMediaStoreAssetId()
@@ -92,3 +118,8 @@ internal class MediaHandler(
     }
   }
 }
+
+data class AdditionalFileData(
+  val fileName: String?,
+  val filesize: Long?
+)
