@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoNotificationPermissionsModule;
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoNotificationPermissionsModule');
 //# sourceMappingURL=NotificationPermissionsModule.native.js.map
