@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Migrated codebase to use Expo Modules API.
+
 ## 0.24.2 — 2023-09-18
 
 _This version does not introduce any user-facing changes._
