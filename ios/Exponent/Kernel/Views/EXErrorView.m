@@ -75,7 +75,7 @@
 - (void)setError:(NSError *)error
 {
   _error = error;
-  NSString *errorHeader = [EXManifestResource formatHeader: error];
+  NSString *errorHeader = [EXManifestResource formatHeader:error];
   NSString *errorDetail = [error localizedDescription];
   
   if (errorHeader != nil) {
@@ -104,7 +104,7 @@
       break;
     }
   }
-  NSAttributedString *attributedErrorString = [EXManifestResource addErrorStringHyperlinks: errorDetail];
+  NSAttributedString *attributedErrorString = [EXManifestResource addErrorStringHyperlinks:errorDetail];
 
   UIFont *font = _txtErrorDetail.font;
   _txtErrorDetail.attributedText = attributedErrorString;

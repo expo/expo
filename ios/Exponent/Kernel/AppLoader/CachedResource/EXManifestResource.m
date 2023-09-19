@@ -212,7 +212,7 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
   !((NSString *)manifestObj[@"signature"]) && shouldBypassVerification;
 }
 
-- (NSInteger) sdkVersionStringToInt: (NSString *) sdkVersion {
+- (NSInteger)sdkVersionStringToInt:(nonnull NSString *)sdkVersion {
   NSRange snackSdkVersionRange = [sdkVersion rangeOfString: @"."];
   return [[sdkVersion substringToIndex: snackSdkVersionRange.location] intValue];
 }
@@ -330,12 +330,12 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
     NSString *supportedSDKVersionsString = [supportedSdkVersions componentsJoinedByString:@", "];
     NSInteger latestSupportedSdkVersionValue = [self sdkVersionStringToInt: supportedSdkVersions[0]];
 
-    formattedMessage = [NSString stringWithFormat: @"The snack \"%@\" was found, but it is not compatible with your version of Expo Go. It was released for SDK %@, but your Expo Go supports only SDKs %@.", fullName, snackSdkVersion, supportedSDKVersionsString];
+    formattedMessage = [NSString stringWithFormat:@"The snack \"%@\" was found, but it is not compatible with your version of Expo Go. It was released for SDK %@, but your Expo Go supports only SDKs %@.", fullName, snackSdkVersion, supportedSDKVersionsString];
 
     if (snackSdkVersionValue > latestSupportedSdkVersionValue) {
-      formattedMessage = [NSString stringWithFormat: @"%@\n\nYou need to update your Expo Go app in order to run this snack.", formattedMessage];
+      formattedMessage = [NSString stringWithFormat:@"%@\n\nYou need to update your Expo Go app in order to run this snack.", formattedMessage];
     } else {
-      formattedMessage = [NSString stringWithFormat: @"%@\n\nSnack needs to be upgraded to a current SDK version. To do it, open the project at https://snack.expo.dev. It will be automatically upgraded to a supported SDK version.", formattedMessage];
+      formattedMessage = [NSString stringWithFormat:@"%@\n\nSnack needs to be upgraded to a current SDK version. To do it, open the project at https://snack.expo.dev. It will be automatically upgraded to a supported SDK version.", formattedMessage];
     }
     formattedMessage = [NSString stringWithFormat:@"%@\n\nLearn more about SDK versions and Expo Go in the https://docs.expo.dev/get-started/expo-go/#sdk-versions.", formattedMessage];
   }
@@ -347,11 +347,11 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
 + (NSString * _Nonnull)formatHeader:(NSError * _Nonnull)error {
   NSString *errorCode = error.userInfo[@"errorCode"];
 
-  if ([errorCode isEqualToString: @"EXPERIENCE_SDK_VERSION_OUTDATED"]) {
+  if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_OUTDATED"]) {
     return @"Project is incompatible with this version of Expo Go" ;
-  } else if ([errorCode isEqualToString: @"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
+  } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
     return @"Project is incompatible with this version of Expo Go";
-  } else if ([errorCode isEqualToString: @"SNACK_NOT_FOUND_FOR_SDK_VERSION"]) {
+  } else if ([errorCode isEqualToString:@"SNACK_NOT_FOUND_FOR_SDK_VERSION"]) {
     return @"This Snack is incompatible with this version of Expo Go";
   }
   return nil;
