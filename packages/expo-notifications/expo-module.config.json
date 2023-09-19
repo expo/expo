@@ -10,6 +10,7 @@
       "expo.modules.notifications.notifications.channels.NotificationChannelManagerModule",
       "expo.modules.notifications.notifications.emitting.NotificationsEmitter",
       "expo.modules.notifications.notifications.handling.NotificationsHandler",
+      "expo.modules.notifications.permissions.NotificationPermissionsModule",
       "expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule",
       "expo.modules.notifications.notifications.scheduling.NotificationScheduler",
       "expo.modules.notifications.serverregistration.ServerRegistrationModule",
