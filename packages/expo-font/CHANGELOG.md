@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
-- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 11.7.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Updated types for server functions. ([#23911](https://github.com/expo/expo/pull/23911) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.6.0 — 2023-09-04
 

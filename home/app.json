@@ -22,22 +22,15 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "host.exp.exponent",
-      "publishBundlePath": "../ios/Exponent/Supporting/kernel.ios.bundle"
+      "bundleIdentifier": "host.exp.exponent"
     },
     "android": {
-      "package": "host.exp.exponent",
-      "publishBundlePath": "../android/app/src/main/assets/kernel.android.bundle"
+      "package": "host.exp.exponent"
     },
     "androidStatusBar": {
       "barStyle": "dark-content"
     },
     "scheme": "exp",
-    "isKernel": true,
-    "kernel": {
-      "iosManifestPath": "../ios/Exponent/Supporting/kernel-manifest.json",
-      "androidManifestPath": "../android/app/src/main/assets/kernel-manifest.json"
-    },
     "jsEngine": "hermes",
     "extra": {
       "eas": {
@@ -45,7 +38,7 @@
       }
     },
     "runtimeVersion": {
-      "policy": "appVersion"
+      "policy": "sdkVersion"
     }
   }
 }

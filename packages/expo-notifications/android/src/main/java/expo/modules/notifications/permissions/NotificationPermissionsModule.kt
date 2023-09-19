@@ -1,5 +1,6 @@
 package expo.modules.notifications.permissions
 
+import android.Manifest
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
@@ -15,6 +16,11 @@ import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsResponse
 import expo.modules.interfaces.permissions.PermissionsStatus
 
+private const val ANDROID_RESPONSE_KEY = "android"
+private const val IMPORTANCE_KEY = "importance"
+private const val INTERRUPTION_FILTER_KEY = "interruptionFilter"
+private val PERMISSIONS: Array<String> = arrayOf(Manifest.permission.POST_NOTIFICATIONS)
+
 class NotificationPermissionsModule(context: Context?) : ExportedModule(context) {
   private lateinit var moduleRegistry: ModuleRegistry
 
@@ -22,9 +28,7 @@ class NotificationPermissionsModule(context: Context?) : ExportedModule(context)
     this.moduleRegistry = moduleRegistry
   }
 
-  override fun getName(): String {
-    return EXPORTED_NAME
-  }
+  override fun getName(): String = "ExpoNotificationPermissionsModule"
 
   @ExpoMethod
   fun getPermissionsAsync(promise: Promise) {
@@ -96,7 +100,7 @@ class NotificationPermissionsModule(context: Context?) : ExportedModule(context)
     val platformBundle = bundleOf(
       IMPORTANCE_KEY to managerCompat.importance,
     ).apply {
-      val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+      val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && notificationManager != null) {
         putInt(INTERRUPTION_FILTER_KEY, notificationManager.currentInterruptionFilter)
       }
@@ -127,18 +131,5 @@ class NotificationPermissionsModule(context: Context?) : ExportedModule(context)
       },
       *PERMISSIONS
     )
-  }
-
-  companion object {
-    private const val EXPORTED_NAME = "ExpoNotificationPermissionsModule"
-    private const val ANDROID_RESPONSE_KEY = "android"
-    private const val IMPORTANCE_KEY = "importance"
-    private const val INTERRUPTION_FILTER_KEY = "interruptionFilter"
-
-    private val PERMISSIONS: Array<String>
-      /**
-       * TODO: Use {@link Android.Manifest.permission.POST_NOTIFICATIONS} when we support compileSdkVersion 33
-       */
-      get() = arrayOf("android.permission.POST_NOTIFICATIONS")
   }
 }

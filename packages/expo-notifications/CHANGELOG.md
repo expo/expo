@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 0.24.2 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.24.1 — 2023-09-15
+
+### 💡 Others
+
+- Remove legacy expo package notifications module code. ([#24325](https://github.com/expo/expo/pull/24325) by [@wschurman](https://github.com/wschurman))
+
+## 0.24.0 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
 ## 0.23.0 — 2023-09-04
 
 ### 🎉 New features

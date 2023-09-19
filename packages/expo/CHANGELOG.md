@@ -6,6 +6,26 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 50.0.0-alpha.5 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-alpha.4 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.11 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-alpha.3 — 2023-09-15
+
+### 🎉 New features
+
 - Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes

@@ -8,15 +8,30 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed an issue with CRSQLite missing a minimum OS version on iOS, causing rejections on AppStore Connect submission. ([#24347](https://github.com/expo/expo/pull/24347) by [@derekstavis](https://github.com/derekstavis))
+### 💡 Others
+
+## 11.7.1 — 2023-09-18
+
+### 🐛 Bug fixes
+
+- Fix broken JS test. ([#24498](https://github.com/expo/expo/pull/24498) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
+
+- [iOS] Bump `SQLite`version to latest. ([#24375](https://github.com/expo/expo/pull/24375) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.7.0 — 2023-09-15
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed an issue with CRSQLite missing a minimum OS version on iOS, causing rejections on AppStore Connect submission. ([#24347](https://github.com/expo/expo/pull/24347) by [@derekstavis](https://github.com/derekstavis))
 
 ## 11.3.3 — 2023-09-08
 
 ### 🎉 New features
 
 - Add support for running raw queries on Android. ([#24320](https://github.com/expo/expo/pull/24320) by [@alanjhughes](https://github.com/alanjhughes))
+- On Android, add support for `CRSQLite`. ([#24322](https://github.com/expo/expo/pull/24322) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 

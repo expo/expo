@@ -6,16 +6,41 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Add missing export in checkForUpdateAsync result. (by [@douglowder](https://github.com/douglowder)) ([#24503](https://github.com/expo/expo/pull/24503) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+## 0.21.1 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.13 — 2023-09-15
+
+### 🐛 Bug fixes
+
+- [iOS] remove force unwrap in download handler. ([#24299](https://github.com/expo/expo/pull/24299) by [@douglowder](https://github.com/douglowder))
+- Fix updates enabled defaulting on iOS. ([#24327](https://github.com/expo/expo/pull/24327) by [@wschurman](https://github.com/wschurman))
+- [Android] Make scopekey only required when getting database entity. ([#24466](https://github.com/expo/expo/pull/24466) by [@wschurman](https://github.com/wschurman))
+
+## 0.21.0 — 2023-09-15
+
+### 🎉 New features
+
 - Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 - Fix updates enabled defaulting on iOS. ([#24327](https://github.com/expo/expo/pull/24327) by [@wschurman](https://github.com/wschurman))
+- [Android] Make scopekey only required when getting database entity. ([#24466](https://github.com/expo/expo/pull/24466) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
 - Update E2E test. ([#24272](https://github.com/expo/expo/pull/24272) by [@EvanBacon](https://github.com/EvanBacon))
-- [iOS] Disable packager and bundle JS when EX_UPDATES_NATIVE_DEBUG set. ([#24366](https://github.com/expo/expo/pull/24366) by [@douglowder](https://github.com/douglowder))
+- [iOS] Disable packager and bundle JS when `EX_UPDATES_NATIVE_DEBUG` set. ([#24366](https://github.com/expo/expo/pull/24366) by [@douglowder](https://github.com/douglowder))
+- Add Apple TV to Updates E2E (build only). ([#24411](https://github.com/expo/expo/pull/24411) by [@douglowder](https://github.com/douglowder))
+- Add `sqlite3` to the podspec to use newer version that the built in. ([#24375](https://github.com/expo/expo/pull/24375) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.20.0 — 2023-09-04
 

@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.8.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
@@ -32,6 +38,7 @@
 - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018), [#24019](https://github.com/expo/expo/pull/24019) by [@kudo](https://github.com/kudo))
 - [Android] `Property` component can now take the native shared object instance as the first argument. ([#24206](https://github.com/expo/expo/pull/24206) by [@lukmccall](https://github.com/lukmccall))
 - Introduced `requireOptionalNativeModule` that returns `null` when the module cannot be found instead of throwing an error. ([#24262](https://github.com/expo/expo/pull/24262) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Introduced shared refs – a way to pass native objects among different independent modules. ([#24446](https://github.com/expo/expo/pull/24446) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 

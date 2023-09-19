@@ -11,6 +11,6 @@
                expectToFail:(XCTestExpectation *)expectToFail;
 - (void)request;
 
-@property (nonatomic, readonly) EXHomeLoader *appLoader;
+@property (nonatomic, readonly) EXDevelopmentHomeLoader *appLoader;
 
 @end

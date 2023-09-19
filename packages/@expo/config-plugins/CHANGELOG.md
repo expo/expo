@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 7.5.0 — 2023-09-15
+
+### 🛠 Breaking changes
+
 - Replace `getRuntimeVersion` / `getRuntimeVersionNullable` with `getRuntimeVersionAsync` / `getRuntimeVersionNullableAsync`. ([#24126](https://github.com/expo/expo/pull/24126) by [@mccraveiro](https://github.com/mccraveiro))
 
 ### 🎉 New features
@@ -12,7 +22,7 @@
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [iOS] Fix DeviceFamily.ts to work for Apple TV. ([#24411](https://github.com/expo/expo/pull/24411) by [@douglowder](https://github.com/douglowder))
 
 ## 7.4.0 — 2023-09-04
 

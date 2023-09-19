@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
-- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.23.1 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.23.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 

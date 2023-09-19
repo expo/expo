@@ -6,7 +6,7 @@ import * as SQLite from 'expo-sqlite';
 export const name = 'SQLite';
 
 // The version here needs to be the same as both the podspec and build.gradle for expo-sqlite
-const VERSION = '3.39.2';
+const VERSION = '3.42.0';
 
 // TODO: Only tests successful cases, needs to test error cases like bad database name etc.
 export function test(t) {
@@ -661,7 +661,7 @@ export function test(t) {
         const db = SQLite.openDatabase('test.db');
         await db.transactionAsync(async (tx) => {
           await tx.executeSqlAsync('DROP TABLE IF EXISTS foo;', []);
-          await tx.executeSqlAsync('create table foo (a primary key, b);', []);
+          await tx.executeSqlAsync('create table foo (a primary key, b INTEGER);', []);
           await tx.executeSqlAsync('select crsql_as_crr("foo");', []);
           await tx.executeSqlAsync('insert into foo (a,b) values (?, ?);', [1, 2]);
           await tx.executeSqlAsync('insert into foo (a,b) values (?, ?);', [3, 4]);
