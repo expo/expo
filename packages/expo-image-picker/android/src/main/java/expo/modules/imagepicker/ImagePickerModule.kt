@@ -162,7 +162,7 @@ class ImagePickerModule : Module() {
    */
   private suspend fun launchPicker(
     pickerLauncher: suspend () -> ImagePickerContractResult,
-  ): ImagePickerContractResult.Success = withContext(Dispatchers.Main) {
+  ): ImagePickerContractResult.Success = withContext(Dispatchers.IO) {
     when (val pickingResult = pickerLauncher()) {
       is ImagePickerContractResult.Success -> pickingResult
       is ImagePickerContractResult.Cancelled -> throw OperationCanceledException()
