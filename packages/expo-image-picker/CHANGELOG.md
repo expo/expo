@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- On Android, support `fileName` and `filesize` in the returned assets. ([#24524](https://github.com/expo/expo/pull/24524) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
