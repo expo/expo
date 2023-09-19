@@ -1,4 +1,4 @@
-import { useFocusEffect } from '@react-navigation/core';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   Heading,
   Text,
