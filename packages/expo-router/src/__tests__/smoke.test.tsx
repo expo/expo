@@ -1,10 +1,10 @@
 import React, { Text } from 'react-native';
 
-import { Slot, useGlobalSearchParams } from '../exports';
+import { Slot, router, useGlobalSearchParams } from '../exports';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Redirect } from '../link/Link';
-import { renderRouter, screen } from '../testing-library';
+import { act, renderRouter, screen } from '../testing-library';
 
 it('404', async () => {
   const Index = jest.fn(() => <Redirect href="/404" />);
@@ -122,4 +122,48 @@ it('nested layouts', async () => {
   expect(Index).toHaveBeenCalledTimes(1);
   expect(Home).toHaveBeenCalledTimes(1);
   expect(HomeNested).toHaveBeenCalledTimes(1);
+});
+
+it('deep linking nested groups', async () => {
+  const RootLayout = jest.fn(() => <Slot />);
+  const AppLayout = jest.fn(() => <Stack />);
+  const TabsLayout = jest.fn(() => <Tabs />);
+  const HomeLayout = jest.fn(() => <Stack />);
+
+  const Home = jest.fn(() => <Text testID="Home" />);
+
+  const OtherTabsLayout = jest.fn(() => <Stack />);
+  const NestedTabsLayout = jest.fn(() => <Tabs />);
+  const OtherTabsIndex = jest.fn(() => <Text testID="OtherTabsHome" />);
+
+  renderRouter(
+    {
+      _layout: RootLayout,
+      '(app)/_layout': AppLayout,
+      '(app)/(tabs)/_layout': TabsLayout,
+      '(app)/(tabs)/home/_layout': HomeLayout,
+      '(app)/(tabs)/home/index': Home,
+      '(app)/(other_tabs)/_layout': OtherTabsLayout,
+      '(app)/(other_tabs)/(nested_tabs)/_layout': NestedTabsLayout,
+      '(app)/(other_tabs)/(nested_tabs)/home/index': OtherTabsIndex,
+    },
+    {
+      initialUrl: '/(app)/(other_tabs)/(nested_tabs)/home',
+    }
+  );
+
+  // Start in a deeply nested navigator
+  expect(await screen.getByTestId('OtherTabsHome')).toBeOnTheScreen();
+
+  act(() => router.replace('/(app)/(tabs)/home'));
+
+  expect(await screen.getByTestId('Home')).toBeOnTheScreen();
+
+  expect(RootLayout).toHaveBeenCalledTimes(1);
+  expect(AppLayout).toHaveBeenCalledTimes(2);
+  expect(TabsLayout).toHaveBeenCalledTimes(1);
+  expect(HomeLayout).toHaveBeenCalledTimes(1);
+  expect(OtherTabsLayout).toHaveBeenCalledTimes(1);
+  expect(NestedTabsLayout).toHaveBeenCalledTimes(1);
+  expect(OtherTabsIndex).toHaveBeenCalledTimes(1);
 });
