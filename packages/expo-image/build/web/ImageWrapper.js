@@ -51,7 +51,6 @@ function useHeaders(source, cachePolicy, onError) {
                 setObjectURL(URL.createObjectURL(blob));
             }
             catch (error) {
-                console.error(error);
                 onError?.forEach((e) => e?.({ source }));
             }
         })();
