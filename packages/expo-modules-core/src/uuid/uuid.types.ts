@@ -1,13 +1,15 @@
-type UUID = string;
-
 /**
- * Collection of functions used for generating Universally Unique Identifiers.
+ * Collection of utilities used for generating Universally Unique Identifiers.
  */
-export type Uuid = {
+export type UUID = {
   /**
-   * A UUID generated based on the `value` and `namespace` parameters, which always gives the same result for the same inputs.
+   * A UUID generated randomly.
    */
-  v5: (name: string, namespace: Uuidv5Namespace | UUID) => UUID;
+  v4: () => string;
+  /**
+   * A UUID generated based on the `value` and `namespace` parameters, which always produces the same result for the same inputs.
+   */
+  v5: (name: string, namespace: string | number[]) => string;
   namespace: typeof Uuidv5Namespace;
 };
 

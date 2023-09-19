@@ -1,7 +1,5 @@
-import sha1 from './lib/sha1';
-import v35 from './lib/v35';
 import bytesToUuid from './lib/bytesToUuid';
-import { UUID } from './uuid.types';
+import { UUID, Uuidv5Namespace } from './uuid.types';
 
 const nativeUuidv4 = globalThis?.expo?.uuidv4;
 const nativeUuidv5 = globalThis?.expo?.uuidv5;
@@ -34,6 +32,7 @@ function uuidv5(name: string, namespace: string | number[]) {
 
 const uuid: UUID = {
   v4: uuidv4,
-  v5: (name: string, namespace: string | number[]) => uuidv5(name, namespace),
+  v5: uuidv5,
+  namespace: Uuidv5Namespace,
 };
 export default uuid;
