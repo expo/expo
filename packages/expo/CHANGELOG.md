@@ -4,6 +4,26 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+- Reduce size on web. ([#24294](https://github.com/expo/expo/pull/24294) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- [iOS] Disable packager and bundle JS when EX_UPDATES_NATIVE_DEBUG set. ([#24366](https://github.com/expo/expo/pull/24366) by [@douglowder](https://github.com/douglowder))
+
+## 49.0.10 — 2023-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-alpha.2 — 2023-09-04
+
+### 🛠 Breaking changes
+
 - Drop legacy `hashAssetFiles` (SDK 32) in favor of `expo-assets` version. ([#24090](https://github.com/expo/expo/pull/24090) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features

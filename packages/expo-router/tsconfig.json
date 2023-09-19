@@ -2,7 +2,8 @@
   "extends": "expo-module-scripts/tsconfig.base",
   "compilerOptions": {
     "outDir": "./build",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "module": "commonjs"
   },
   "include": ["./src", "./types/jest.d.ts", "./types/expect.d.ts", "../expo/src/ts-declarations"],
   "exclude": [

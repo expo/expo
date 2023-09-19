@@ -1,8 +1,22 @@
+import sha1 from './lib/sha1';
+import v35 from './lib/v35';
 import bytesToUuid from './lib/bytesToUuid';
-import { Uuid, Uuidv5Namespace } from './uuid.types';
+import { UUID } from './uuid.types';
 
+const nativeUuidv4 = globalThis?.expo?.uuidv4;
 const nativeUuidv5 = globalThis?.expo?.uuidv5;
-export default function uuidv5(name: string, namespace: Uuidv5Namespace | string | number[]) {
+
+function uuidv4(): string {
+  if (!nativeUuidv4) {
+    throw Error(
+      "Native UUID version 4 generator implementation wasn't found in `expo-modules-core`"
+    );
+  }
+
+  return nativeUuidv4();
+}
+
+function uuidv5(name: string, namespace: string | number[]) {
   const parsedNamespace =
     Array.isArray(namespace) && namespace.length === 16 ? bytesToUuid(namespace) : namespace;
 
@@ -18,7 +32,8 @@ export default function uuidv5(name: string, namespace: Uuidv5Namespace | string
   return nativeUuidv5(name, parsedNamespace);
 }
 
-export const uuid: Uuid = {
-  v5: uuidv5,
-  namespace: Uuidv5Namespace,
+const uuid: UUID = {
+  v4: uuidv4,
+  v5: (name: string, namespace: string | number[]) => uuidv5(name, namespace),
 };
+export default uuid;

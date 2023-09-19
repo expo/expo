@@ -10,7 +10,7 @@ const Sourcer_1 = require("./sourcer/Sourcer");
  * Create a fingerprint from project
  */
 async function createFingerprintAsync(projectRoot, options) {
-    const opts = (0, Options_1.normalizeOptions)(options);
+    const opts = await (0, Options_1.normalizeOptionsAsync)(projectRoot, options);
     const sources = await (0, Sourcer_1.getHashSourcesAsync)(projectRoot, opts);
     const normalizedSources = (0, Sort_1.sortSources)((0, Dedup_1.dedupSources)(sources, projectRoot));
     const fingerprint = await (0, Hash_1.createFingerprintFromSourcesAsync)(normalizedSources, projectRoot, opts);

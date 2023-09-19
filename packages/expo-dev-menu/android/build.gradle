@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '4.0.0'
+version = '4.1.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -70,7 +70,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 10
-    versionName '4.0.0'
+    versionName '4.1.0'
   }
   lintOptions {
     abortOnError false
@@ -112,11 +112,20 @@ android {
   }
 }
 
+task clenupAssets(type: Delete) {
+  // In the past, assets were placed in the `main` directory.
+  // However, this is no longer the case. To ensure a smooth transition,
+  // we’re also removing assets from the old location.
+  delete files("src/main/assets")
+}
+
 task copyAssets(type: Copy) {
+  dependsOn(clenupAssets)
+
   from('../assets') {
     exclude "*.ios.*"
   }
-  into 'src/main/assets'
+  into 'src/debug/assets'
 }
 
 project.afterEvaluate {

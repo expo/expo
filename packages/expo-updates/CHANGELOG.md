@@ -4,6 +4,23 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+- Fix updates enabled defaulting on iOS. ([#24327](https://github.com/expo/expo/pull/24327) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Update E2E test. ([#24272](https://github.com/expo/expo/pull/24272) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Disable packager and bundle JS when EX_UPDATES_NATIVE_DEBUG set. ([#24366](https://github.com/expo/expo/pull/24366) by [@douglowder](https://github.com/douglowder))
+
+## 0.20.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
 - Change source of truth for constants types. ([#24049](https://github.com/expo/expo/pull/24049) by [@wschurman](https://github.com/wschurman))
 - Remove classic manifest types and classic updates. ([#24053](https://github.com/expo/expo/pull/24053), [#24066](https://github.com/expo/expo/pull/24066) by [@wschurman](https://github.com/wschurman))
 
@@ -13,12 +30,12 @@
 - Add rollback support to useUpdates(). ([#24071](https://github.com/expo/expo/pull/24071) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
+
 - [Android] completely fix `node` execution on Windows ([#24116](https://github.com/expo/expo/pull/24116) by [@weykon](https://github.com/weykon))
 - [Android] Fixed the `node` execution on Windows. ([#23983](https://github.com/expo/expo/pull/23983) by [@kudo](https://github.com/kudo))
 - Bare update manifest non-nullability parity. ([#23166](https://github.com/expo/expo/pull/23166) by [@wschurman](https://github.com/wschurman))
 - Support importing assets from out of the project root when working in monorepos. ([#24090](https://github.com/expo/expo/pull/24090) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 💡 Others
+- Prevent failed updates from passing checkForUpdateAsync(). ([#24112](https://github.com/expo/expo/pull/24112) by [@douglowder](https://github.com/douglowder))
 
 ## 0.19.1 — 2023-08-02
 

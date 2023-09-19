@@ -8,6 +8,10 @@ import java.util.UUID
 class CoreModule : Module() {
   override fun definition() = ModuleDefinition {
     // Expose some common classes and maybe even the `modules` host object in the future.
+    Function("uuidv4") {
+      return@Function UUID.randomUUID().toString()
+    }
+
     Function("uuidv5") { name: String, namespace: String ->
       val namespaceUUID = try {
         UUID.fromString(namespace)

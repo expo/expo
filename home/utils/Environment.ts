@@ -4,20 +4,6 @@ import semver from 'semver';
 
 import * as Kernel from '../kernel/Kernel';
 
-const PRODUCTION_EXPONENT_HOME_PROJECT_ID = '6b6c6660-df76-11e6-b9b4-59d1587e6774';
-
-const isProductionClassicManifest =
-  (Constants.manifest?.originalFullName === '@exponent/home' ||
-    Constants.manifest?.id === '@exponent/home' ||
-    Constants.manifest?.projectId === PRODUCTION_EXPONENT_HOME_PROJECT_ID) &&
-  Constants.manifest?.publishedTime;
-
-const isProductionManifest =
-  Constants.manifest2?.extra?.eas?.projectId === PRODUCTION_EXPONENT_HOME_PROJECT_ID &&
-  !Constants.manifest2.extra.expoGo;
-
-const isProduction = isProductionClassicManifest || isProductionManifest;
-
 const IOSClientReleaseType = Kernel.iosClientReleaseType;
 
 const IsIOSRestrictedBuild =
@@ -40,7 +26,6 @@ const supportedSdksString = `SDK${
 } ${sortedSupportedExpoSdks.map((sdk) => semver.major(sdk)).join(', ')}`;
 
 export default {
-  isProduction,
   IOSClientReleaseType,
   IsIOSRestrictedBuild,
   lowestSupportedSdkVersion,

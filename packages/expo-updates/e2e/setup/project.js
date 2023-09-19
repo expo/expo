@@ -10,7 +10,6 @@ const expoDependencyNames = [
   '@expo/cli',
   '@expo/config-plugins',
   '@expo/config-types',
-  '@expo/dev-server',
   '@expo/prebuild-config',
   'expo-application',
   'expo-constants',
@@ -126,7 +125,6 @@ async function copyCommonFixturesToProject(projectRoot, appJsFileName, repoRoot)
       'eas-hooks',
       'e2e',
       'scripts',
-      'xcode.env.local',
     ],
     {
       cwd: projectFilesSourcePath,

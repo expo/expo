@@ -119,7 +119,7 @@ See the [Argument Types](#argument-types) section for more details on what types
 It is recommended to use `AsyncFunction` over `Function` when it:
 
 - does I/O bound tasks such as sending network requests or interacting with the file system
-- needs to be run on different thread, e.g. the main UI thread for UI-related tasks
+- needs to be run on a different thread, for example, the main UI thread for UI-related tasks
 - is an extensive or long-lasting operation that would block the JavaScript thread which in turn would reduce the responsiveness of the application
 
 <CodeBlocksTable>
@@ -600,7 +600,7 @@ Function("readFile") { path: String, options: FileReadOptions ->
 </APIBox>
 <APIBox header="Enums">
 
-With enums we can go even further with the above example (with `FileReadOptions` record) and limit supported encodings to `"utf8"` and `"base64"`. To use an enum as an argument or record field, it must represent a primitive value (e.g. `String`, `Int`) and conform to `Enumerable`.
+With enums we can go even further with the above example (with `FileReadOptions` record) and limit supported encodings to `"utf8"` and `"base64"`. To use an enum as an argument or record field, it must represent a primitive value (for example, `String`, `Int`) and conform to `Enumerable`.
 
 <CodeBlocksTable>
 
@@ -863,7 +863,7 @@ The app context is an interface to a single Expo app.
 
 A base class that should be used by all exported views.
 
-On iOS, `ExpoView` extends the `RCTView` which handles some styles (e.g. borders) and accessibility.
+On iOS, `ExpoView` extends the `RCTView` which handles some styles (for example, borders) and accessibility.
 
 #### Properties
 

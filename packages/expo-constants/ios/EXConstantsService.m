@@ -88,11 +88,15 @@ EX_REGISTER_MODULE();
 
 - (CGFloat)statusBarHeight
 {
+#if TARGET_OS_TV
+  return 0;
+#else
   __block CGSize statusBarSize;
   [EXUtilities performSynchronouslyOnMainThread:^{
     statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
   }];
   return MIN(statusBarSize.width, statusBarSize.height);
+#endif
 }
 
 - (NSString *)iosVersion
@@ -104,14 +108,15 @@ EX_REGISTER_MODULE();
 {
   UIUserInterfaceIdiom idiom = UI_USER_INTERFACE_IDIOM();
 
-  // tv and carplay aren't accounted for here
   switch (idiom) {
+    case UIUserInterfaceIdiomTV:
+      return @"tv";
     case UIUserInterfaceIdiomPhone:
-    return @"handset";
+      return @"handset";
     case UIUserInterfaceIdiomPad:
-    return @"tablet";
+      return @"tablet";
     default:
-    return @"unsupported";
+      return @"unsupported";
   }
 }
 

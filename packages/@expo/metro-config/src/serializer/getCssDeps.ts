@@ -109,7 +109,9 @@ function getCssMetadata(module: JSModule): MetroModuleCSSMetadata | null {
 }
 
 export function fileNameFromContents({ filepath, src }: { filepath: string; src: string }): string {
-  return getFileName(filepath) + '-' + hashString(filepath + src);
+  // Decode if the path is encoded from the Metro dev server, then normalize paths for Windows support.
+  const decoded = decodeURIComponent(filepath).replace(/\\/g, '/');
+  return getFileName(decoded) + '-' + hashString(decoded + src);
 }
 
 export function getFileName(module: string) {

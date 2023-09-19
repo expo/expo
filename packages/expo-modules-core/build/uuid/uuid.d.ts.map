@@ -1,1 +1,1 @@
-{"version":3,"file":"uuid.d.ts","sourceRoot":"","sources":["../../src/uuid/uuid.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,IAAI,EAAE,eAAe,EAAE,MAAM,cAAc,CAAC;AAGrD,MAAM,CAAC,OAAO,UAAU,MAAM,CAAC,IAAI,EAAE,MAAM,EAAE,SAAS,EAAE,eAAe,GAAG,MAAM,GAAG,MAAM,EAAE,UAc1F;AAED,eAAO,MAAM,IAAI,EAAE,IAGlB,CAAC"}
+{"version":3,"file":"uuid.d.ts","sourceRoot":"","sources":["../../src/uuid/uuid.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,IAAI,EAAE,MAAM,cAAc,CAAC;AAcpC,QAAA,MAAM,IAAI,EAAE,IAGX,CAAC;AACF,eAAe,IAAI,CAAC"}

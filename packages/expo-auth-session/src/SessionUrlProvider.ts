@@ -49,9 +49,7 @@ export class SessionUrlProvider {
     }
 
     const legacyExpoProjectFullName =
-      options.projectNameForProxy ||
-      Constants.expoConfig?.originalFullName ||
-      Constants.__unsafeNoWarnManifest?.originalFullName;
+      options.projectNameForProxy || Constants.expoConfig?.originalFullName;
 
     if (!legacyExpoProjectFullName) {
       let nextSteps = '';

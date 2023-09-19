@@ -20,7 +20,8 @@ exports[`APISection expo-apple-authentication 1`] = `
         Component
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-component"
       >
         <svg
           aria-label="permalink"
@@ -75,7 +76,8 @@ exports[`APISection expo-apple-authentication 1`] = `
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-appleauthenticationbutton"
         >
           <svg
             aria-label="permalink"
@@ -308,7 +310,8 @@ for more details.
           Props
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-props"
         >
           <svg
             aria-label="permalink"
@@ -364,7 +367,8 @@ for more details.
               </code>
             </span>
             <span
-              class="css-13330di"
+              class="css-15j1jyt-PermalinkCopyIcon"
+              id="docs-anchor-permalink-buttonstyle"
             >
               <svg
                 aria-label="permalink"
@@ -448,7 +452,8 @@ for more details.
               </code>
             </span>
             <span
-              class="css-13330di"
+              class="css-15j1jyt-PermalinkCopyIcon"
+              id="docs-anchor-permalink-buttontype"
             >
               <svg
                 aria-label="permalink"
@@ -532,7 +537,8 @@ for more details.
               </code>
             </span>
             <span
-              class="css-13330di"
+              class="css-15j1jyt-PermalinkCopyIcon"
+              id="docs-anchor-permalink-cornerradius"
             >
               <svg
                 aria-label="permalink"
@@ -624,7 +630,8 @@ for more details.
               </code>
             </span>
             <span
-              class="css-13330di"
+              class="css-15j1jyt-PermalinkCopyIcon"
+              id="docs-anchor-permalink-onpress"
             >
               <svg
                 aria-label="permalink"
@@ -718,7 +725,8 @@ in here.
               </code>
             </span>
             <span
-              class="css-13330di"
+              class="css-15j1jyt-PermalinkCopyIcon"
+              id="docs-anchor-permalink-style"
             >
               <svg
                 aria-label="permalink"
@@ -843,7 +851,8 @@ properties.
             Inherited Props
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-inherited-props"
           >
             <svg
               aria-label="permalink"
@@ -914,7 +923,8 @@ properties.
         Methods
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-methods"
       >
         <svg
           aria-label="permalink"
@@ -969,7 +979,8 @@ properties.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-getcredentialstateasyncuser"
         >
           <svg
             aria-label="permalink"
@@ -1237,7 +1248,8 @@ value depending on the state of the credential.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-isavailableasync"
         >
           <svg
             aria-label="permalink"
@@ -1373,7 +1385,8 @@ value depending on the state of the credential.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-refreshasyncoptions"
         >
           <svg
             aria-label="permalink"
@@ -1606,7 +1619,8 @@ refresh operation.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-signinasyncoptions"
         >
           <svg
             aria-label="permalink"
@@ -1886,7 +1900,8 @@ sign-in operation.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-signoutasyncoptions"
         >
           <svg
             aria-label="permalink"
@@ -2145,7 +2160,8 @@ sign-out operation.
         Event Subscriptions
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-event-subscriptions"
       >
         <svg
           aria-label="permalink"
@@ -2200,7 +2216,8 @@ sign-out operation.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-addrevokelistenerlistener"
         >
           <svg
             aria-label="permalink"
@@ -2359,7 +2376,8 @@ sign-out operation.
         Types
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-types"
       >
         <svg
           aria-label="permalink"
@@ -2414,7 +2432,8 @@ sign-out operation.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-appleauthenticationcredential"
         >
           <svg
             aria-label="permalink"
@@ -2939,7 +2958,8 @@ developers.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-appleauthenticationfullname"
         >
           <svg
             aria-label="permalink"
@@ -3246,7 +3266,8 @@ may be
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-appleauthenticationrefreshoptions"
         >
           <svg
             aria-label="permalink"
@@ -3556,7 +3577,8 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-appleauthenticationsigninoptions"
         >
           <svg
             aria-label="permalink"
@@ -3887,7 +3909,8 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-appleauthenticationsignoutoptions"
         >
           <svg
             aria-label="permalink"
@@ -4127,7 +4150,8 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-subscription"
         >
           <svg
             aria-label="permalink"
@@ -4238,7 +4262,8 @@ OAuth 2.0 protocol
         Enums
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-enums"
       >
         <svg
           aria-label="permalink"
@@ -4293,7 +4318,8 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-appleauthenticationbuttonstyle"
         >
           <svg
             aria-label="permalink"
@@ -4366,7 +4392,8 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-white"
           >
             <svg
               aria-label="permalink"
@@ -4434,7 +4461,8 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-white_outline"
           >
             <svg
               aria-label="permalink"
@@ -4502,7 +4530,8 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-black"
           >
             <svg
               aria-label="permalink"
@@ -4571,7 +4600,8 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-appleauthenticationbuttontype"
         >
           <svg
             aria-label="permalink"
@@ -4644,7 +4674,8 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-sign_in"
           >
             <svg
               aria-label="permalink"
@@ -4712,7 +4743,8 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-continue"
           >
             <svg
               aria-label="permalink"
@@ -4813,7 +4845,8 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-sign_up"
           >
             <svg
               aria-label="permalink"
@@ -4882,7 +4915,8 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-appleauthenticationcredentialstate"
         >
           <svg
             aria-label="permalink"
@@ -5008,7 +5042,8 @@ for more details.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-revoked"
           >
             <svg
               aria-label="permalink"
@@ -5070,7 +5105,8 @@ for more details.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-authorized"
           >
             <svg
               aria-label="permalink"
@@ -5132,7 +5168,8 @@ for more details.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-not_found"
           >
             <svg
               aria-label="permalink"
@@ -5194,7 +5231,8 @@ for more details.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-transferred"
           >
             <svg
               aria-label="permalink"
@@ -5257,7 +5295,8 @@ for more details.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-appleauthenticationoperation"
         >
           <svg
             aria-label="permalink"
@@ -5312,7 +5351,8 @@ for more details.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-implicit"
           >
             <svg
               aria-label="permalink"
@@ -5380,7 +5420,8 @@ for more details.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-login"
           >
             <svg
               aria-label="permalink"
@@ -5442,7 +5483,8 @@ for more details.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-refresh"
           >
             <svg
               aria-label="permalink"
@@ -5504,7 +5546,8 @@ for more details.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-logout"
           >
             <svg
               aria-label="permalink"
@@ -5567,7 +5610,8 @@ for more details.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-appleauthenticationscope"
         >
           <svg
             aria-label="permalink"
@@ -5737,7 +5781,8 @@ for more details.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-full_name"
           >
             <svg
               aria-label="permalink"
@@ -5799,7 +5844,8 @@ for more details.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-email"
           >
             <svg
               aria-label="permalink"
@@ -5862,7 +5908,8 @@ for more details.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-appleauthenticationuserdetectionstatus"
         >
           <svg
             aria-label="permalink"
@@ -5976,7 +6023,8 @@ for more details.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-unsupported"
           >
             <svg
               aria-label="permalink"
@@ -6044,7 +6092,8 @@ for more details.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-unknown"
           >
             <svg
               aria-label="permalink"
@@ -6112,7 +6161,8 @@ for more details.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-likely_real"
           >
             <svg
               aria-label="permalink"
@@ -6178,7 +6228,8 @@ exports[`APISection expo-barcode-scanner 1`] = `
         Component
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-component"
       >
         <svg
           aria-label="permalink"
@@ -6233,7 +6284,8 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-barcodescanner"
         >
           <svg
             aria-label="permalink"
@@ -6308,7 +6360,8 @@ exports[`APISection expo-barcode-scanner 1`] = `
           Props
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-props"
         >
           <svg
             aria-label="permalink"
@@ -6364,7 +6417,8 @@ exports[`APISection expo-barcode-scanner 1`] = `
               </code>
             </span>
             <span
-              class="css-13330di"
+              class="css-15j1jyt-PermalinkCopyIcon"
+              id="docs-anchor-permalink-barcodetypes"
             >
               <svg
                 aria-label="permalink"
@@ -6487,7 +6541,8 @@ minimize battery usage.
               </code>
             </span>
             <span
-              class="css-13330di"
+              class="css-15j1jyt-PermalinkCopyIcon"
+              id="docs-anchor-permalink-onbarcodescanned"
             >
               <svg
                 aria-label="permalink"
@@ -6648,7 +6703,8 @@ data has been retrieved.
               </code>
             </span>
             <span
-              class="css-13330di"
+              class="css-15j1jyt-PermalinkCopyIcon"
+              id="docs-anchor-permalink-type"
             >
               <svg
                 aria-label="permalink"
@@ -6777,7 +6833,8 @@ Same as
             Inherited Props
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-inherited-props"
           >
             <svg
               aria-label="permalink"
@@ -6848,7 +6905,8 @@ Same as
         Hooks
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-hooks"
       >
         <svg
           aria-label="permalink"
@@ -6903,7 +6961,8 @@ Same as
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-usepermissionsoptions"
         >
           <svg
             aria-label="permalink"
@@ -7214,7 +7273,8 @@ This uses both
         Methods
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-methods"
       >
         <svg
           aria-label="permalink"
@@ -7269,7 +7329,8 @@ This uses both
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-barcodescannergetpermissionsasync"
         >
           <svg
             aria-label="permalink"
@@ -7408,7 +7469,8 @@ This uses both
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-barcodescannerrequestpermissionsasync"
         >
           <svg
             aria-label="permalink"
@@ -7569,7 +7631,8 @@ This uses both
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-barcodescannerscanfromurlasyncurl-barcodetypes"
         >
           <svg
             aria-label="permalink"
@@ -7853,7 +7916,8 @@ code.
         Interfaces
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-interfaces"
       >
         <svg
           aria-label="permalink"
@@ -7908,7 +7972,8 @@ code.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-permissionresponse"
         >
           <svg
             aria-label="permalink"
@@ -8146,7 +8211,8 @@ in order to enable/disable the permission.
         Types
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-types"
       >
         <svg
           aria-label="permalink"
@@ -8201,7 +8267,8 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-barcodebounds"
         >
           <svg
             aria-label="permalink"
@@ -8366,7 +8433,8 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-barcodeevent"
         >
           <svg
             aria-label="permalink"
@@ -8508,7 +8576,8 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-barcodeeventcallbackarguments"
         >
           <svg
             aria-label="permalink"
@@ -8630,7 +8699,8 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-barcodepoint"
         >
           <svg
             aria-label="permalink"
@@ -8807,7 +8877,8 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-barcodescannedcallback"
         >
           <svg
             aria-label="permalink"
@@ -8931,7 +9002,8 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-barcodescannerresult"
         >
           <svg
             aria-label="permalink"
@@ -9210,7 +9282,8 @@ you don't get this value.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-barcodesize"
         >
           <svg
             aria-label="permalink"
@@ -9365,7 +9438,8 @@ you don't get this value.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-permissionhookoptions"
         >
           <svg
             aria-label="permalink"
@@ -9438,7 +9512,8 @@ you don't get this value.
         Enums
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-enums"
       >
         <svg
           aria-label="permalink"
@@ -9493,7 +9568,8 @@ you don't get this value.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-permissionstatus"
         >
           <svg
             aria-label="permalink"
@@ -9548,7 +9624,8 @@ you don't get this value.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-denied"
           >
             <svg
               aria-label="permalink"
@@ -9616,7 +9693,8 @@ you don't get this value.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-granted"
           >
             <svg
               aria-label="permalink"
@@ -9684,7 +9762,8 @@ you don't get this value.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-undetermined"
           >
             <svg
               aria-label="permalink"
@@ -9750,7 +9829,8 @@ exports[`APISection expo-pedometer 1`] = `
         Methods
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-methods"
       >
         <svg
           aria-label="permalink"
@@ -9805,7 +9885,8 @@ exports[`APISection expo-pedometer 1`] = `
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-getpermissionsasync"
         >
           <svg
             aria-label="permalink"
@@ -9959,7 +10040,8 @@ exports[`APISection expo-pedometer 1`] = `
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-getstepcountasyncstart-end"
         >
           <svg
             aria-label="permalink"
@@ -10273,7 +10355,8 @@ a start date that is more than seven days in the past returns only the available
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-isavailableasync"
         >
           <svg
             aria-label="permalink"
@@ -10403,7 +10486,8 @@ available on this device.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-requestpermissionsasync"
         >
           <svg
             aria-label="permalink"
@@ -10524,7 +10608,8 @@ available on this device.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-watchstepcountcallback"
         >
           <svg
             aria-label="permalink"
@@ -10736,7 +10821,8 @@ provided with a single argument that is
         Interfaces
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-interfaces"
       >
         <svg
           aria-label="permalink"
@@ -10791,7 +10877,8 @@ provided with a single argument that is
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-permissionresponse"
         >
           <svg
             aria-label="permalink"
@@ -11029,7 +11116,8 @@ in order to enable/disable the permission.
         Types
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-types"
       >
         <svg
           aria-label="permalink"
@@ -11084,7 +11172,8 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-pedometerresult"
         >
           <svg
             aria-label="permalink"
@@ -11207,7 +11296,8 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-pedometerupdatecallback"
         >
           <svg
             aria-label="permalink"
@@ -11337,7 +11427,8 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-permissionexpiration"
         >
           <svg
             aria-label="permalink"
@@ -11424,7 +11515,8 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-subscription"
         >
           <svg
             aria-label="permalink"
@@ -11535,7 +11627,8 @@ in order to enable/disable the permission.
         Enums
       </span>
       <span
-        class="css-13330di"
+        class="css-15j1jyt-PermalinkCopyIcon"
+        id="docs-anchor-permalink-enums"
       >
         <svg
           aria-label="permalink"
@@ -11590,7 +11683,8 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-13330di"
+          class="css-15j1jyt-PermalinkCopyIcon"
+          id="docs-anchor-permalink-permissionstatus"
         >
           <svg
             aria-label="permalink"
@@ -11645,7 +11739,8 @@ in order to enable/disable the permission.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-denied"
           >
             <svg
               aria-label="permalink"
@@ -11713,7 +11808,8 @@ in order to enable/disable the permission.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-granted"
           >
             <svg
               aria-label="permalink"
@@ -11781,7 +11877,8 @@ in order to enable/disable the permission.
             </code>
           </span>
           <span
-            class="css-13330di"
+            class="css-15j1jyt-PermalinkCopyIcon"
+            id="docs-anchor-permalink-undetermined"
           >
             <svg
               aria-label="permalink"

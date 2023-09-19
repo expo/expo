@@ -1,4 +1,4 @@
-import { Uuid, Uuidv5Namespace } from './uuid.types';
-export default function uuidv5(name: string, namespace: Uuidv5Namespace | string | number[]): string;
-export declare const uuid: Uuid;
+import { UUID } from './uuid.types';
+declare const uuid: UUID;
+export default uuid;
 //# sourceMappingURL=uuid.d.ts.map
