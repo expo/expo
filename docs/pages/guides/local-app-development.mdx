@@ -23,7 +23,7 @@ To follow the steps described in this guide, see the instructions below on how t
 
 <Tab label='macOS'>
 
-To set up your development environment on macOS for Android, you've to install Node.js, Watchman, JDK, and Android Studio.
+To set up your development environment on macOS for Android, you will install Node.js, Watchman, JDK, and Android Studio.
 
 #### Prerequisites
 
@@ -72,7 +72,7 @@ Android Studio allows installing Android SDK, Android SDK Platform, and Android 
 
 <Tab label='Windows'>
 
-To set up your development environment on Windows for Android, you've to install Node.js, JDK, and Android Studio.
+To set up your development environment on Windows for Android, you will install Node.js, JDK, and Android Studio.
 
 #### Prerequisites
 
@@ -108,7 +108,7 @@ Android Studio allows installing Android SDK, Android SDK Platform, and Android 
 
 <Tab label="Linux">
 
-To set up your development environment on Linux for Android, you've to install Node.js, Watchman, JDK, and Android Studio.
+To set up your development environment on Linux for Android, you will install Node.js, Watchman, JDK, and Android Studio.
 
 #### Install dependencies
 
@@ -199,7 +199,7 @@ To build your project locally you can use compile commands from Expo CLI which g
 
 The above commands compile your project into an app locally. You can also add the `--device` flag to create a debug build of your project and run it on a connected device. These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building.
 
-To modify your project's configuration or native code after the first build, you've to rebuild your project. Running `npx expo prebuild` again layers the changes on the top of existing files. It may also produce different results after the build.
+To modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on the top of existing files. It may also produce different results after the build.
 
 To avoid this, add native directories to the project's **.gitignore** and use `npx expo pebuild --clean` command. This ensures that the project is always managed, and the [`--clean` flag](/workflow/prebuild/#clean) will delete existing directories before regenerating them. You can use [app config](/workflow/configuration/) or create a [config plugin](/config-plugins/introduction/) to modify your project's configuration or code inside the native directories.
 
