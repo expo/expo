@@ -285,11 +285,11 @@ Start the server with `node` command:
 
 ### Netlify
 
-> This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
+> **warning** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
 
 <Step label="1">
 
-Create a server entry file, all requests will be delegated through this middleware. The exact file location is important.
+Create a server entry file. All requests will be delegated through this middleware. The exact file location is important.
 
 ```js netlify/functions/server.js
 const { createRequestHandler } = require('@expo/server/adapter/netlify');
@@ -308,7 +308,7 @@ module.exports = { handler };
 
 <Step label="2">
 
-Create a Netlify configuration file to redirect all requests to the server function.
+Create a Netlify configuration file at the root of your project to redirect all requests to the server function.
 
 ```yaml netlify.toml
 [build]
@@ -361,6 +361,6 @@ You can now visit your website at the URL provided by Netlify CLI. Running `netl
 
 <Step label="5">
 
-If you're using any environment variables or `.env` files, you'll need to add them to Netlify. You can do this by going to the "Site settings" page and adding them to the "Build & deploy" section.
+If you're using any environment variables or **.env** files, add them to Netlify. You can do this by going to the **Site settings** and adding them to the **Build & deploy** section.
 
 </Step>
