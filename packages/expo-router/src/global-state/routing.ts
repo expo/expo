@@ -1,17 +1,10 @@
-import { CommonActions, getActionFromState, StackActions } from '@react-navigation/core';
-import { TabActions } from '@react-navigation/native';
+import { type NavigationAction, type NavigationState } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 
 import type { RouterStore } from './router-store';
+import { ResultState } from '../fork/getStateFromPath';
 import { Href, resolveHref } from '../link/href';
 import { resolve } from '../link/path';
-import {
-  NavigateAction,
-  findTopRouteForTarget,
-  getEarliestMismatchedRoute,
-  getQualifiedStateForTopOfTargetState,
-  isMovingToSiblingRoute,
-} from '../link/stateOperations';
 import { hasUrlProtocolPrefix } from '../utils/url';
 
 function assertIsReady(store: RouterStore) {
@@ -91,113 +84,87 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
 
   const state = this.linking.getStateFromPath!(href, this.linking.config);
 
-  if (!state) {
+  if (!state || state.routes.length === 0) {
     console.error('Could not generate a valid navigation state for the given path: ' + href);
     return;
   }
 
-  const rootState = navigationRef.getRootState();
-
-  // Ensure simple operations are used when moving between siblings
-  // in the same navigator. This ensures that the state is not reset.
-  // TODO: We may need to apply this at a larger scale in the future.
-  if (isMovingToSiblingRoute(rootState, state)) {
-    // Can perform naive movements
-    const knownOwnerState = getQualifiedStateForTopOfTargetState(rootState, state)!;
-    const nextRoute = findTopRouteForTarget(state);
-    // NOTE(EvanBacon): There's an issue where moving from "a -> b" is considered siblings:
-    // a. index (initialRouteName="index")
-    // b. stack/index
-    // However, the preservation approach doesn't work because it would be moving to a route with the same name.
-    // The next check will see if the current focused route has the same name as the next route, if so, then fallback on
-    // the default React Navigation logic.
-    if (
-      findTopRouteForTarget(
-        // @ts-expect-error: stale types don't matter here
-        rootState
-      )?.name !== nextRoute.name
-    ) {
-      if (event === 'REPLACE') {
-        if (knownOwnerState.type === 'tab') {
-          navigationRef.dispatch(TabActions.jumpTo(nextRoute.name, nextRoute.params));
-        } else {
-          navigationRef.dispatch(StackActions.replace(nextRoute.name, nextRoute.params));
-        }
-      } else {
-        // NOTE: Not sure if we should pop or push here...
-        navigationRef.dispatch(CommonActions.navigate(nextRoute.name, nextRoute.params));
-      }
-      return;
-    }
-  }
-
-  // TODO: Advanced movements across multiple navigators
-
-  const action = getActionFromState(state, this.linking.config);
-  if (action) {
-    // Here we have a navigation action to a nested screen, where we should ideally replace.
-    // This request can only be fulfilled if the target is an initial route.
-    // First, check if the action is fully initial routes.
-    // Then find the nearest mismatched route in the existing state.
-    // Finally, use the correct navigator-based action to replace the nested screens.
-    // NOTE(EvanBacon): A future version of this will involve splitting the navigation request so we replace as much as possible, then push the remaining screens to fulfill the request.
-    if (event === 'REPLACE' && isAbsoluteInitialRoute(action)) {
-      const earliest = getEarliestMismatchedRoute(rootState, action.payload);
-      if (earliest) {
-        if (earliest.type === 'stack') {
-          navigationRef.dispatch(StackActions.replace(earliest.name, earliest.params));
-        } else {
-          navigationRef.dispatch(TabActions.jumpTo(earliest.name, earliest.params));
-        }
-        return;
-      } else {
-        // This should never happen because moving to the same route would be handled earlier
-        // in the sibling operations.
-      }
-    }
-
-    // Ignore the replace event here since replace across
-    // navigators is not supported.
-    navigationRef.dispatch(action);
-  } else {
-    navigationRef.reset(state);
+  switch (event) {
+    case 'REPLACE':
+      return navigationRef.dispatch(getNavigateReplaceAction(state, navigationRef.getRootState()));
+    default:
+      return navigationRef.dispatch(getNavigatePushAction(state));
   }
 }
 
-/** @returns `true` if the action is moving to the first screen of all the navigators in the action. */
-export function isAbsoluteInitialRoute(
-  action: ReturnType<typeof getActionFromState>
-): action is NavigateAction {
-  if (action?.type !== 'NAVIGATE') {
-    return false;
-  }
-
-  let next = action.payload.params;
-  // iterate all child screens and bail out if any are not initial.
-  while (next) {
-    if (!isNavigationState(next)) {
-      // Not sure when this would happen
-      return false;
-    }
-    if (next.initial === true) {
-      next = next.params;
-      // return true;
-    } else if (next.initial === false) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-type NavStateParams = {
-  params?: NavStateParams;
-  path: string;
-  initial: boolean;
+type NavigationParams = Partial<{
   screen: string;
-  state: unknown;
-};
+  params: NavigationParams;
+}>;
 
-function isNavigationState(obj: any): obj is NavStateParams {
-  return 'initial' in obj;
+function rewriteNavigationStateToParams(
+  state?: { routes: ResultState['routes'] },
+  params: NavigationParams = {}
+) {
+  if (!state) return params;
+  // We Should always have at least one route in the state
+  const lastRoute = state.routes.at(-1)!;
+  params.screen = lastRoute.name;
+  // Weirdly, this always needs to be an object. If it's undefined, it won't work.
+  params.params = lastRoute.params ?? {};
+
+  if (lastRoute.state) {
+    rewriteNavigationStateToParams(lastRoute.state, params.params);
+  }
+
+  return params;
+}
+
+function getNavigatePushAction(state: ResultState) {
+  const { screen, params } = rewriteNavigationStateToParams(state);
+  return {
+    type: 'NAVIGATE',
+    payload: {
+      name: screen,
+      params,
+    },
+  };
+}
+
+function getNavigateReplaceAction(
+  previousState: ResultState,
+  parentState: NavigationState,
+  lastNavigatorSupportingReplace: NavigationState = parentState
+): NavigationAction {
+  // We should always have at least one route in the state
+  const state = previousState.routes.at(-1)!;
+
+  // Only these navigators support replace
+  if (parentState.type === 'stack' || parentState.type === 'tab') {
+    lastNavigatorSupportingReplace = parentState;
+  }
+
+  const currentRoute = parentState.routes.find((route) => route.name === state.name);
+  const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
+
+  // If there is nested state and the routes are equal, we should keep going down the tree
+  if (state.state && routesAreEqual && currentRoute.state) {
+    return getNavigateReplaceAction(
+      state.state,
+      currentRoute.state as any,
+      lastNavigatorSupportingReplace
+    );
+  }
+
+  // Either we reached the bottom of the state or the point where the routes diverged
+  const { screen, params } = rewriteNavigationStateToParams(previousState);
+  return {
+    type: lastNavigatorSupportingReplace.type === 'stack' ? 'REPLACE' : 'JUMP_TO',
+    payload: {
+      name: screen,
+      params,
+      // Ensure that the last navigator supporting replace is the one that handles the action
+      source: lastNavigatorSupportingReplace?.key,
+    },
+  };
 }

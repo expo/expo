@@ -157,7 +157,7 @@ it('preserves history when replacing screens within the same navigator', () => {
         return <Redirect href="/permissions" />;
       }
 
-      return <Text>protexted</Text>;
+      return <Text>protected</Text>;
     },
   });
 
@@ -192,9 +192,9 @@ it('replaces from top level modal to initial route in a tab navigator', () => {
       },
       default: () => <Stack />,
     },
-    '[...missing]': () => <Text>missing</Text>,
+    '[...missing]': () => <Text testID="missing">missing</Text>,
     '(tabs)/_layout': () => <Tabs />,
-    '(tabs)/index': () => <Text>two</Text>,
+    '(tabs)/index': () => <Text testID="two">two</Text>,
   });
 
   expect(screen).toHavePathname('/');
@@ -203,10 +203,23 @@ it('replaces from top level modal to initial route in a tab navigator', () => {
   act(() => router.push('/missing-screen'));
   expect(screen).toHavePathname('/missing-screen');
   expect(screen).toHaveSegments(['[...missing]']);
+  expect(screen.getByTestId('missing')).toBeOnTheScreen();
+
   act(() => router.push('/'));
-  // /protected should have a redirect that replaces the pathname
   expect(screen).toHavePathname('/');
   expect(screen).toHaveSegments(['(tabs)']);
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+
+  // Ensure it also works for replace
+  act(() => router.push('/missing-screen'));
+  expect(screen).toHavePathname('/missing-screen');
+  expect(screen).toHaveSegments(['[...missing]']);
+  expect(screen.getByTestId('missing')).toBeOnTheScreen();
+
+  act(() => router.replace('/'));
+  expect(screen).toHavePathname('/');
+  expect(screen).toHaveSegments(['(tabs)']);
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
 });
 
 it('pushes auto-encoded params and fully qualified URLs', () => {
@@ -318,7 +331,7 @@ it('can check goBack before navigation mounts', () => {
   expect(router.canGoBack()).toBe(false);
 });
 
-it('can push back from a nested modal to a nested sibling', async () => {
+it('can navigate back from a nested modal to a nested sibling', async () => {
   renderRouter({
     _layout: () => (
       <Stack>
@@ -346,6 +359,14 @@ it('can push back from a nested modal to a nested sibling', async () => {
   expect(screen).toHavePathname('/modal');
 
   act(() => router.push('/slot'));
+  expect(screen).toHavePathname('/slot');
+
+  // Ensure it also works fo replace
+
+  act(() => router.push('/(group)/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  act(() => router.replace('/slot'));
   expect(screen).toHavePathname('/slot');
 });
 
@@ -412,4 +433,56 @@ it('respects basePath', async () => {
   const text = await screen.findByTestId('rendered-path');
 
   expect(text).toHaveTextContent('/');
+});
+
+it('can redirect within a group layout', () => {
+  renderRouter({
+    '(group)/_layout': function Component() {
+      const pathname = usePathname();
+
+      if (pathname === '/') {
+        return <Redirect href="/page" />;
+      }
+
+      return <Stack />;
+    },
+    '(group)/index': () => <Text testID="index" />,
+    '(group)/page': () => <Text testID="page" />,
+  });
+
+  expect(screen).toHavePathname('/page');
+  expect(screen.getByTestId('page')).toBeOnTheScreen();
+});
+
+it('can replace across groups', async () => {
+  renderRouter({
+    _layout: () => <Tabs />,
+    'one/_layout': () => <Stack />,
+    'one/screen': () => <Text testID="one/screen" />,
+    'two/_layout': () => <Stack />,
+    'two/screen': () => <Text testID="two/screen" />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/two/screen'));
+  expect(screen).toHavePathname('/two/screen');
+  expect(screen.getByTestId('two/screen')).toBeOnTheScreen();
+
+  act(() => router.push('/one/screen'));
+  expect(screen).toHavePathname('/one/screen');
+  expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
+
+  // Should replace at the top Tabs
+  act(() => router.replace('/two/screen'));
+  expect(screen).toHavePathname('/two/screen');
+  expect(screen.getByTestId('two/screen')).toBeOnTheScreen();
+
+  act(() => router.back());
+
+  act(() => router.push('/one/screen'));
+  expect(screen).toHavePathname('/one/screen');
+  expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
+
+  expect(router.canGoBack()).toBe(false);
 });
