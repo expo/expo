@@ -3,11 +3,8 @@ package expo.modules.imagepicker
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Base64
-import android.util.Log
 import androidx.core.net.toUri
 import expo.modules.imagepicker.exporters.CompressionImageExporter
 import expo.modules.imagepicker.exporters.ImageExporter
@@ -86,7 +83,6 @@ internal class MediaHandler(
       size
     )
   }
-
 
   private suspend fun handleVideo(
     sourceUri: Uri,
