@@ -401,7 +401,7 @@ it('can pop back from a nested modal to a nested sibling', async () => {
   expect(screen).toHavePathname('/slot');
 });
 
-xit('can deep link, pop back, and move around with initialRouteName in root layout', async () => {
+it('can deep link, pop back, and move around with initialRouteName in root layout', async () => {
   renderRouter(
     {
       _layout: {
