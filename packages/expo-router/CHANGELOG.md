@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Throw unhandled actions in tests.
+
 ## 3.1.2 — 2023-09-18
 
 ### 🐛 Bug fixes
