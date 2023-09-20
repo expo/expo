@@ -6,4 +6,3 @@ enum CalendarPermissionsStatus: Int {
   case notDetermined = 2
   case unknown = 3
 }
-

@@ -3,11 +3,11 @@ import EventKit
 
 public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
   private let eventStore: EKEventStore
-  
+
   init(eventStore: EKEventStore) {
     self.eventStore = eventStore
   }
-  
+
   static public func permissionType() -> String {
     return "reminders"
   }
