@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.3.0 — 2023-09-20
+
+### 🛠 Breaking changes
+
+- This version includes fingerprint result breaking changes. ([#24520](https://github.com/expo/expo/pull/24520) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- Improve fingerprint sourcing scope for local config-plugins. ([#24520](https://github.com/expo/expo/pull/24520) by [@kudo](https://github.com/kudo))
+
 ## 0.2.0 — 2023-09-08
 
 ### 🛠 Breaking changes

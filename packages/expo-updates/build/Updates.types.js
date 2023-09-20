@@ -18,7 +18,7 @@ export var UpdateEventType;
      */
     UpdateEventType["ERROR"] = "error";
 })(UpdateEventType || (UpdateEventType = {}));
-var UpdateCheckResultNotAvailableReason;
+export var UpdateCheckResultNotAvailableReason;
 (function (UpdateCheckResultNotAvailableReason) {
     /**
      * No update manifest or rollback directive received from the update server.

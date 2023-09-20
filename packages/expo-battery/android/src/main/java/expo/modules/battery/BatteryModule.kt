@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
-import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import expo.modules.kotlin.exception.Exceptions
@@ -82,12 +81,9 @@ class BatteryModule : Module() {
     }
 
     AsyncFunction("isBatteryOptimizationEnabledAsync") {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        val packageName = context.applicationContext.packageName
-        val powerManager = context.applicationContext.getSystemService(Context.POWER_SERVICE) as? PowerManager
-        return@AsyncFunction powerManager?.isIgnoringBatteryOptimizations(packageName) == false
-      }
-      return@AsyncFunction false
+      val packageName = context.applicationContext.packageName
+      val powerManager = context.applicationContext.getSystemService(Context.POWER_SERVICE) as? PowerManager
+      return@AsyncFunction powerManager?.isIgnoringBatteryOptimizations(packageName) == false
     }
   }
 

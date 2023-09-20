@@ -3,13 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSourceId = exports.createContentsHashResultsAsync = exports.createDirHashResultsAsync = exports.isIgnoredPath = exports.createFileHashResultsAsync = exports.createFingerprintSourceAsync = exports.createFingerprintFromSourcesAsync = void 0;
+exports.createSourceId = exports.createContentsHashResultsAsync = exports.createDirHashResultsAsync = exports.createFileHashResultsAsync = exports.createFingerprintSourceAsync = exports.createFingerprintFromSourcesAsync = void 0;
 const crypto_1 = require("crypto");
 const fs_1 = require("fs");
 const promises_1 = __importDefault(require("fs/promises"));
-const minimatch_1 = __importDefault(require("minimatch"));
 const p_limit_1 = __importDefault(require("p-limit"));
 const path_1 = __importDefault(require("path"));
+const Path_1 = require("../utils/Path");
 const Profile_1 = require("../utils/Profile");
 /**
  * Create a `Fingerprint` from `HashSources` array
@@ -80,7 +80,7 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
     */
     return limiter(() => {
         return new Promise((resolve, reject) => {
-            if (isIgnoredPath(filePath, options.ignorePaths)) {
+            if ((0, Path_1.isIgnoredPath)(filePath, options.ignorePaths)) {
                 return resolve(null);
             }
             let resolved = false;
@@ -104,29 +104,11 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
 }
 exports.createFileHashResultsAsync = createFileHashResultsAsync;
 /**
- * Indicate the given `filePath` should be excluded by `ignorePaths`
- */
-function isIgnoredPath(filePath, ignorePaths, minimatchOptions = { dot: true }) {
-    const minimatchObjs = ignorePaths.map((ignorePath) => new minimatch_1.default.Minimatch(ignorePath, minimatchOptions));
-    let result = false;
-    for (const minimatchObj of minimatchObjs) {
-        const currMatch = minimatchObj.match(filePath);
-        if (minimatchObj.negate && result && !currMatch) {
-            // Special handler for negate (!pattern).
-            // As long as previous match result is true and not matched from the current negate pattern, we should early return.
-            return false;
-        }
-        result || (result = currMatch);
-    }
-    return result;
-}
-exports.isIgnoredPath = isIgnoredPath;
-/**
  * Create `HashResult` for a dir.
  * If the dir is excluded, returns null rather than a HashResult
  */
 async function createDirHashResultsAsync(dirPath, limiter, projectRoot, options, depth = 0) {
-    if (isIgnoredPath(dirPath, options.ignorePaths)) {
+    if ((0, Path_1.isIgnoredPath)(dirPath, options.ignorePaths)) {
         return null;
     }
     const dirents = (await promises_1.default.readdir(path_1.default.join(projectRoot, dirPath), { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name));

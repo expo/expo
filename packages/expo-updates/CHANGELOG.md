@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing export in checkForUpdateAsync result. (by [@douglowder](https://github.com/douglowder)) ([#24503](https://github.com/expo/expo/pull/24503) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.21.1 — 2023-09-18
@@ -46,6 +48,7 @@ _This version does not introduce any user-facing changes._
 
 - Change source of truth for constants types. ([#24049](https://github.com/expo/expo/pull/24049) by [@wschurman](https://github.com/wschurman))
 - Remove classic manifest types and classic updates. ([#24053](https://github.com/expo/expo/pull/24053), [#24066](https://github.com/expo/expo/pull/24066) by [@wschurman](https://github.com/wschurman))
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
 
