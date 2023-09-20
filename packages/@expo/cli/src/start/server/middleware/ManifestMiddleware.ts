@@ -1,4 +1,11 @@
-import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
+import {
+  ExpoConfig,
+  ExpoGoConfig,
+  getConfig,
+  PackageJSONConfig,
+  ProjectConfig,
+} from '@expo/config';
+import { resolveEntryPoint } from '@expo/config/paths';
 import findWorkspaceRoot from 'find-yarn-workspace-root';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -6,7 +13,6 @@ import { resolve } from 'url';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
-import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 import * as Log from '../../../log';
@@ -16,6 +22,7 @@ import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
+import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
 
@@ -31,15 +38,18 @@ export function getWorkspaceRoot(projectRoot: string): string | null {
   }
 }
 
+const supportedPlatforms = ['ios', 'android', 'web', 'none'];
+
 export function getEntryWithServerRoot(
   projectRoot: string,
-  projectConfig: ProjectConfig,
-  platform: string
+  props: { platform: string; pkg?: PackageJSONConfig }
 ) {
-  return path.relative(
-    getMetroServerRoot(projectRoot),
-    resolveAbsoluteEntryPoint(projectRoot, platform, projectConfig)
-  );
+  if (!supportedPlatforms.includes(props.platform)) {
+    throw new CommandError(
+      `Failed to resolve the project's entry file: The platform "${props.platform}" is not supported.`
+    );
+  }
+  return path.relative(getMetroServerRoot(projectRoot), resolveEntryPoint(projectRoot, props));
 }
 
 export function getMetroServerRoot(projectRoot: string) {
@@ -53,10 +63,9 @@ export function getMetroServerRoot(projectRoot: string) {
 /** Get the main entry module ID (file) relative to the project root. */
 export function resolveMainModuleName(
   projectRoot: string,
-  projectConfig: ProjectConfig,
-  platform: string
+  props: { platform: string; pkg?: PackageJSONConfig }
 ): string {
-  const entryPoint = getEntryWithServerRoot(projectRoot, projectConfig, platform);
+  const entryPoint = getEntryWithServerRoot(projectRoot, props);
 
   debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
 
@@ -189,7 +198,10 @@ export abstract class ManifestMiddleware<
     const projectConfig = getConfig(this.projectRoot);
 
     // Read from headers
-    const mainModuleName = this.resolveMainModuleName(projectConfig, platform);
+    const mainModuleName = this.resolveMainModuleName({
+      pkg: projectConfig.pkg,
+      platform,
+    });
 
     // Create the manifest and set fields within it
     const expoGoConfig = this.getExpoGoConfig({
@@ -217,8 +229,8 @@ export abstract class ManifestMiddleware<
   }
 
   /** Get the main entry module ID (file) relative to the project root. */
-  private resolveMainModuleName(projectConfig: ProjectConfig, platform: string): string {
-    let entryPoint = getEntryWithServerRoot(this.projectRoot, projectConfig, platform);
+  private resolveMainModuleName(props: { pkg: PackageJSONConfig; platform: string }): string {
+    let entryPoint = getEntryWithServerRoot(this.projectRoot, props);
 
     debug(`Resolved entry point: ${entryPoint} (project root: ${this.projectRoot})`);
 
@@ -358,7 +370,10 @@ export abstract class ManifestMiddleware<
   public getWebBundleUrl() {
     const platform = 'web';
     // Read from headers
-    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
+    const mainModuleName = this.resolveMainModuleName({
+      pkg: this.initialProjectConfig.pkg,
+      platform,
+    });
     return this._getBundleUrlPath({
       platform,
       mainModuleName,

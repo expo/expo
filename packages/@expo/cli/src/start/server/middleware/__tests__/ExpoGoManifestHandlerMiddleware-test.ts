@@ -65,7 +65,7 @@ jest.mock('../resolveAssets', () => ({
   resolveManifestAssets: jest.fn(),
   resolveGoogleServicesFile: jest.fn(),
 }));
-jest.mock('../resolveEntryPoint', () => ({
+jest.mock('@expo/config/paths', () => ({
   resolveEntryPoint: jest.fn(() => './index.js'),
 }));
 jest.mock('@expo/config', () => ({
