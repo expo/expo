@@ -12,7 +12,7 @@ const PnpmPackageManager_1 = require("../node/PnpmPackageManager");
 const YarnPackageManager_1 = require("../node/YarnPackageManager");
 const nodeWorkspaces_1 = require("./nodeWorkspaces");
 /** The order of the package managers to use when resolving automatically */
-exports.RESOLUTION_ORDER = ['yarn', 'npm', 'pnpm', 'bun'];
+exports.RESOLUTION_ORDER = ['bun', 'yarn', 'npm', 'pnpm'];
 /**
  * Resolve the workspace root for a project, if its part of a monorepo.
  * Optionally, provide a specific packager to only resolve that one specifically.

@@ -8,7 +8,20 @@
 
 ### 🐛 Bug fixes
 
+- Detect bun before yarn to allow bun install --yarn usage. ([#24360](https://github.com/expo/expo/pull/24360) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+## 1.2.0 — 2023-09-15
+
+### 🎉 New features
+
+- Add support for [Bun](https://bun.sh) package manager. ([#24168](https://github.com/expo/expo/pull/24168) by [@colinhacks](https://github.com/colinhacks))
+
+### 🐛 Bug fixes
+
+- Fix build files. ([#24344](https://github.com/expo/expo/pull/24344) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove console log. ([#24355](https://github.com/expo/expo/pull/24355) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 1.1.1 — 2023-09-11
 
