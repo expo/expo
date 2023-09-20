@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Transpile for Node 18 (LTS).
+- Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
 - Skip extraneous static HTML export in server mode. ([#24529](https://github.com/expo/expo/pull/24529) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.13.2 — 2023-09-18
