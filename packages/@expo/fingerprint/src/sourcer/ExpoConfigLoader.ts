@@ -36,15 +36,18 @@ async function runAsync(programName: string, args: string[] = []) {
   console.log(JSON.stringify({ config, loadedModules: filteredLoadedModules }));
 }
 
-(async () => {
-  const programIndex = process.argv.findIndex((arg) => arg === __filename);
-  try {
-    await runAsync(process.argv[programIndex], process.argv.slice(programIndex + 1));
-  } catch (e) {
-    console.error('Uncaught Error', e);
-    process.exit(1);
-  }
-})();
+// If running from the command line
+if (require.main?.filename === __filename) {
+  (async () => {
+    const programIndex = process.argv.findIndex((arg) => arg === __filename);
+    try {
+      await runAsync(process.argv[programIndex], process.argv.slice(programIndex + 1));
+    } catch (e) {
+      console.error('Uncaught Error', e);
+      process.exit(1);
+    }
+  })();
+}
 
 /**
  * Load the generated ignored paths file from caller and remove the file after loading
@@ -71,4 +74,11 @@ async function loadIgnoredPathsAsync(ignoredFile: string | null) {
   } catch {}
 
   return ignorePaths;
+}
+
+/**
+ * Get the path to the ExpoConfigLoader file.
+ */
+export function getExpoConfigLoaderPath() {
+  return path.join(__dirname, 'ExpoConfigLoader.js');
 }

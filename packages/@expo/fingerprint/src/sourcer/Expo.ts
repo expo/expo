@@ -6,6 +6,7 @@ import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { getExpoConfigLoaderPath } from './ExpoConfigLoader';
 import { getFileBasedHashSourceAsync, stringifyJsonSorted } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 
@@ -24,18 +25,9 @@ export async function getExpoConfigSourcesAsync(
   let loadedModules: string[] = [];
   const ignoredFile = await createTempIgnoredFileAsync(options);
   try {
-    // TypeScript is only for unit tests
-    const isTypeScript = path.extname(__filename) === '.ts';
-    const nodeProgram = isTypeScript ? 'ts-node' : 'node';
-    const expoConfigLoaderPath = 'ExpoConfigLoader' + (isTypeScript ? '.ts' : '.js');
     const { stdout } = await spawnAsync(
       'npx',
-      [
-        nodeProgram,
-        path.join(__dirname, expoConfigLoaderPath),
-        path.resolve(projectRoot),
-        ignoredFile,
-      ],
+      ['node', getExpoConfigLoaderPath(), path.resolve(projectRoot), ignoredFile],
       { cwd: __dirname }
     );
     const stdoutJson = JSON.parse(stdout);
