@@ -81,10 +81,48 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         }
     }
     const Component = store.rootComponent;
-    return (react_1.default.createElement(NavigationContainer_1.default, { ref: store.navigationRef, initialState: store.initialState, linking: store.linking, documentTitle: {
+    return (react_1.default.createElement(NavigationContainer_1.default, { ref: store.navigationRef, initialState: store.initialState, linking: store.linking, onUnhandledAction: onUnhandledAction, documentTitle: {
             enabled: false,
         } },
         react_1.default.createElement(WrapperComponent, null,
             react_1.default.createElement(Component, null))));
+}
+let onUnhandledAction;
+if (process.env.NODE_ENV !== 'production') {
+    onUnhandledAction = (action) => {
+        const payload = action.payload;
+        let message = `The action '${action.type}'${payload ? ` with payload ${JSON.stringify(action.payload)}` : ''} was not handled by any navigator.`;
+        switch (action.type) {
+            case 'NAVIGATE':
+            case 'PUSH':
+            case 'REPLACE':
+            case 'JUMP_TO':
+                if (payload?.name) {
+                    message += `\n\nDo you have a route named '${payload.name}'?`;
+                }
+                else {
+                    message += `\n\nYou need to pass the name of the screen to navigate to. This may be a bug.`;
+                }
+                break;
+            case 'GO_BACK':
+            case 'POP':
+            case 'POP_TO_TOP':
+                message += `\n\nIs there any screen to go back to?`;
+                break;
+            case 'OPEN_DRAWER':
+            case 'CLOSE_DRAWER':
+            case 'TOGGLE_DRAWER':
+                message += `\n\nIs your screen inside a Drawer navigator?`;
+                break;
+        }
+        message += `\n\nThis is a development-only warning and won't be shown in production.`;
+        if (process.env.NODE_ENV === 'test') {
+            throw new Error(message);
+        }
+        console.error(message);
+    };
+}
+else {
+    onUnhandledAction = function () { };
 }
 //# sourceMappingURL=ExpoRoot.js.map

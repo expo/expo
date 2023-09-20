@@ -401,6 +401,36 @@ it('can pop back from a nested modal to a nested sibling', async () => {
   expect(screen).toHavePathname('/slot');
 });
 
+it('can deep link, pop back, and move around with initialRouteName in root layout', async () => {
+  renderRouter(
+    {
+      _layout: {
+        unstable_settings: {
+          initialRouteName: 'index',
+        },
+        default: () => (
+          <Stack>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="a" />
+          </Stack>
+        ),
+      },
+      index: () => <Text />,
+      'a/_layout': () => <Stack />,
+      'a/b/index': () => <Text />,
+    },
+    {
+      initialUrl: '/a/b',
+    }
+  );
+  expect(screen).toHavePathname('/a/b');
+  act(() => router.back());
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/a/b'));
+  expect(screen).toHavePathname('/a/b');
+});
+
 jest.mock('expo-constants', () => ({
   __esModule: true,
   ExecutionEnvironment: jest.requireActual('expo-constants').ExecutionEnvironment,
