@@ -1,10 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect } from 'react';
 import ColorTintFilter, { getTintColorStyle } from './ColorTintFilter';
 import { getImageWrapperEventHandler } from './getImageWrapperEventHandler';
+import { useHeaders, useImageHashes } from './hooks';
 import { absoluteFilledPosition, getObjectPositionFromContentPositionObject } from './positioning';
-import { useBlurhash } from '../utils/blurhash/useBlurhash';
-import { isThumbhashString } from '../utils/resolveSources';
-import { thumbHashStringToDataURL } from '../utils/thumbhash/thumbhash';
 function getFetchPriorityFromImagePriority(priority = 'normal') {
     return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }
@@ -16,60 +14,6 @@ function getImgPropsFromSource(source) {
         };
     }
     return {};
-}
-function useThumbhash(source) {
-    const isThumbhash = isThumbhashString(source?.uri || '');
-    const strippedThumbhashString = source?.uri?.replace(/thumbhash:\//, '') ?? '';
-    const thumbhashSource = useMemo(() => (isThumbhash ? { uri: thumbHashStringToDataURL(strippedThumbhashString) } : null), [strippedThumbhashString, isThumbhash]);
-    return thumbhashSource;
-}
-function useImageHashes(source) {
-    const thumbhash = useThumbhash(source);
-    const blurhash = useBlurhash(source);
-    return useMemo(() => ({
-        resolvedSource: blurhash ?? thumbhash ?? source,
-        isImageHash: !!blurhash || !!thumbhash,
-    }), [blurhash, thumbhash]);
-}
-function useHeaders(source, cachePolicy, onError) {
-    const [objectURL, setObjectURL] = useState(null);
-    useEffect(() => {
-        (async () => {
-            if (!source?.headers || !source.uri) {
-                return;
-            }
-            try {
-                const result = await fetch(source.uri, {
-                    headers: source.headers,
-                    cache: cachePolicy === 'none' ? 'no-cache' : 'default',
-                    redirect: 'follow',
-                });
-                if (!result.ok) {
-                    throw new Error(`Failed to fetch image: ${result.status} ${result.statusText}`);
-                }
-                const blob = await result.blob();
-                setObjectURL(URL.createObjectURL(blob));
-            }
-            catch (error) {
-                onError?.forEach((e) => e?.({ source }));
-            }
-        })();
-    }, [source]);
-    useEffect(() => {
-        return () => {
-            if (objectURL) {
-                URL.revokeObjectURL(objectURL);
-            }
-        };
-    }, [objectURL]);
-    if (!source?.headers) {
-        return source;
-    }
-    if (!objectURL) {
-        // Avoid fetching a URL without headers if we have headers
-        return null;
-    }
-    return { ...source, uri: objectURL };
 }
 const ImageWrapper = React.forwardRef(({ source, events, contentPosition, hashPlaceholderContentPosition, priority, style, hashPlaceholderStyle, tintColor, className, accessibilityLabel, cachePolicy, ...props }, ref) => {
     useEffect(() => {
