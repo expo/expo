@@ -4,7 +4,6 @@ package versioned.host.exp.exponent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import com.facebook.common.logging.FLog
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
@@ -78,22 +77,20 @@ object VersionedUtils {
 
   private fun requestOverlayPermission(context: Context) {
     // From the unexposed DebugOverlayController static helper
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      // Get permission to show debug overlay in dev builds.
-      if (!Settings.canDrawOverlays(context)) {
-        val intent = Intent(
-          Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-          Uri.parse("package:" + context.packageName)
-        ).apply {
-          flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-        FLog.w(
-          ReactConstants.TAG,
-          "Overlay permissions needs to be granted in order for React Native apps to run in development mode"
-        )
-        if (intent.resolveActivity(context.packageManager) != null) {
-          context.startActivity(intent)
-        }
+    // Get permission to show debug overlay in dev builds.
+    if (!Settings.canDrawOverlays(context)) {
+      val intent = Intent(
+        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+        Uri.parse("package:" + context.packageName)
+      ).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+      }
+      FLog.w(
+        ReactConstants.TAG,
+        "Overlay permissions needs to be granted in order for React Native apps to run in development mode"
+      )
+      if (intent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(intent)
       }
     }
   }

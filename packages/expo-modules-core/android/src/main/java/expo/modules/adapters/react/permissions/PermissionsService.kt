@@ -1,13 +1,11 @@
 package expo.modules.adapters.react.permissions
 
 import android.Manifest
-import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
@@ -115,7 +113,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
 
   @Throws(IllegalStateException::class)
   override fun askForPermissions(responseListener: PermissionsResponseListener, vararg permissions: String) {
-    if (permissions.contains(Manifest.permission.WRITE_SETTINGS) && isRuntimePermissionsAvailable()) {
+    if (permissions.contains(Manifest.permission.WRITE_SETTINGS)) {
       val permissionsToAsk = permissions.toMutableList().apply { remove(Manifest.permission.WRITE_SETTINGS) }.toTypedArray()
       val newListener = PermissionsResponseListener {
         val status = if (hasWriteSettingsPermission()) {
@@ -227,15 +225,6 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   }
 
   protected open fun askForManifestPermissions(permissions: Array<out String>, listener: PermissionsResponseListener) {
-    if (!isRuntimePermissionsAvailable()) {
-      // It's not possible to ask for the permissions in the runtime.
-      // We return to the user the permissions status, which was granted during installation.
-      addToAskedPermissionsCache(permissions)
-      val permissionsResult = permissions.map { getManifestPermission(it) }.toIntArray()
-      listener.onResult(parseNativeResult(permissions, permissionsResult))
-      return
-    }
-
     delegateRequestToActivity(permissions, listener)
   }
 
@@ -305,7 +294,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
    * 4. other permission invokes other system-specific activity that is visible as dialog what moves app again into background
    * 5. upon user action app is restored and [onHostResume] is being called again, but no further action is invoked and promise is resolved
    */
-  @TargetApi(Build.VERSION_CODES.M)
+
   private fun askForWriteSettingsPermissionFirst() {
     Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
       data = Uri.parse("package:${context.packageName}")
@@ -317,14 +306,8 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   }
 
   private fun hasWriteSettingsPermission(): Boolean {
-    return if (isRuntimePermissionsAvailable()) {
-      Settings.System.canWrite(context.applicationContext)
-    } else {
-      true
-    }
+    return Settings.System.canWrite(context.applicationContext)
   }
-
-  private fun isRuntimePermissionsAvailable() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
 
   override fun onHostResume() {
     if (!mWriteSettingsPermissionBeingAsked) {

@@ -8,13 +8,11 @@ import android.content.pm.ProviderInfo
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
-import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import org.xmlpull.v1.XmlPullParser.END_DOCUMENT
 import org.xmlpull.v1.XmlPullParser.START_TAG
@@ -38,7 +36,6 @@ import java.io.IOException
  *
  * For usage details, see [FileProvider] documentation
  */
-@RequiresApi(Build.VERSION_CODES.KITKAT)
 class ClipboardFileProvider : ContentProvider() {
   private val defaultProjectionColumns = arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE)
 

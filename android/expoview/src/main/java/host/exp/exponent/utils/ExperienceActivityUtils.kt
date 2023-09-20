@@ -182,26 +182,25 @@ object ExperienceActivityUtils {
   @UiThread
   private fun setStyle(style: String?, activity: Activity): String {
     var appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      val decorView = activity.window.decorView
-      var systemUiVisibilityFlags = decorView.systemUiVisibility
-      when (style) {
-        STATUS_BAR_STYLE_LIGHT_CONTENT -> {
-          systemUiVisibilityFlags =
-            systemUiVisibilityFlags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-          appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT
-        }
-        STATUS_BAR_STYLE_DARK_CONTENT -> {
-          systemUiVisibilityFlags = systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-          appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT
-        }
-        else -> {
-          systemUiVisibilityFlags = systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-          appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT
-        }
+    val decorView = activity.window.decorView
+    var systemUiVisibilityFlags = decorView.systemUiVisibility
+    when (style) {
+      STATUS_BAR_STYLE_LIGHT_CONTENT -> {
+        systemUiVisibilityFlags =
+          systemUiVisibilityFlags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+        appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT
       }
-      decorView.systemUiVisibility = systemUiVisibilityFlags
+      STATUS_BAR_STYLE_DARK_CONTENT -> {
+        systemUiVisibilityFlags = systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT
+      }
+      else -> {
+        systemUiVisibilityFlags = systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT
+      }
     }
+    decorView.systemUiVisibility = systemUiVisibilityFlags
+
     return appliedStatusBarStyle
   }
 
