@@ -230,7 +230,7 @@ Write a server entry file that serves the static files and delegates requests to
 #!/usr/bin/env node
 
 const path = require('path');
-const { createRequestHandler } = require('@expo/server/build/vendor/express');
+const { createRequestHandler } = require('@expo/server/adapter/express');
 
 const express = require('express');
 const compression = require('compression');
@@ -279,5 +279,87 @@ app.listen(port, () => {
 Start the server with `node` command:
 
 <Terminal cmd={['$ node server.js']} />
+
+</Step>
+
+### Netlify
+
+> **warning** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
+
+<Step label="1">
+
+Create a server entry file. All requests will be delegated through this middleware. The exact file location is important.
+
+```js netlify/functions/server.js
+const { createRequestHandler } = require('@expo/server/adapter/netlify');
+
+const handler = createRequestHandler({
+  /* @info Points to the root `dist/` (output) folder */
+  build: require('path').join(__dirname, '../../dist'),
+  /* @end */
+  mode: process.env.NODE_ENV,
+});
+
+module.exports = { handler };
+```
+
+</Step>
+
+<Step label="2">
+
+Create a Netlify configuration file at the root of your project to redirect all requests to the server function.
+
+```yaml netlify.toml
+[build]
+  command = "expo export -p web"
+  functions = "netlify/functions"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/server"
+  status = 404
+
+[functions]
+  # Include everything to ensure dynamic routes can be used.
+  included_files = ["dist/**/*"]
+
+[[headers]]
+  for = "/dist/_expo/functions/*"
+  [headers.values]
+    # Set to 60 seconds as an example.
+    "Cache-Control" = "public, max-age=60, s-maxage=60"
+```
+
+</Step>
+
+<Step label="3">
+
+After you have created the configuration files, you can build the website and functions with Expo CLI:
+
+<Terminal cmd={['$ npx expo export -p web']} />
+
+</Step>
+
+<Step label="4">
+
+Deploy to Netlify with the [Netlify CLI](https://docs.netlify.com/cli/get-started/).
+
+<Terminal
+  cmd={[
+    '# Install the Netlify CLI globally if needed.',
+    '$ npm install netlify-cli -g',
+    '# Deploy the website.',
+    '$ netlify deploy',
+  ]}
+/>
+
+You can now visit your website at the URL provided by Netlify CLI. Running `netlify deploy --prod` will publish to the production URL.
+
+</Step>
+
+<Step label="5">
+
+If you're using any environment variables or **.env** files, add them to Netlify. You can do this by going to the **Site settings** and adding them to the **Build & deploy** section.
 
 </Step>
