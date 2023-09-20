@@ -1,5 +1,5 @@
 {
-  "extends": "@tsconfig/node14/tsconfig.json",
+  "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
     "declaration": true,
     "importHelpers": true,
@@ -10,10 +10,7 @@
     "target": "ES2019",
     "outDir": "./build-cli",
     "rootDir": "cli",
-    "typeRoots": [
-      "./ts-declarations",
-      "./node_modules/@types"
-    ]
+    "typeRoots": ["./ts-declarations", "./node_modules/@types"]
   },
   "include": ["./cli"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*"]

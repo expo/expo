@@ -7,7 +7,7 @@ export async function transformCssModuleWeb(props: {
   src: string;
   options: { projectRoot: string; minify: boolean; dev: boolean; sourceMap: boolean };
 }) {
-  const { transform } = await import('lightningcss');
+  const { transform } = require('lightningcss') as typeof import('lightningcss');
 
   // TODO: Add bundling to resolve imports
   // https://lightningcss.dev/bundling.html#bundling-order

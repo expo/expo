@@ -8,9 +8,10 @@ export type Command = (argv?: string[]) => void;
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
-  'codesigning:generate': () => import('./generateCodeSigning').then((i) => i.generateCodeSigning),
+  'codesigning:generate': () =>
+    import('./generateCodeSigning.js').then((i) => i.generateCodeSigning),
   'codesigning:configure': () =>
-    import('./configureCodeSigning').then((i) => i.configureCodeSigning),
+    import('./configureCodeSigning.js').then((i) => i.configureCodeSigning),
 };
 
 const args = arg(

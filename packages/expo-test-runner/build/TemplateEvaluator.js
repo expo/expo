@@ -26,6 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dot_1 = require("dot");
 const fs = __importStar(require("fs-extra"));
 class TemplateEvaluator {
+    definitions;
     constructor(definitions) {
         this.definitions = definitions;
     }

@@ -155,7 +155,7 @@ export async function transform(
 
   // Global CSS:
 
-  const { transform } = await import('lightningcss');
+  const { transform } = require('lightningcss') as typeof import('lightningcss');
 
   // TODO: Add bundling to resolve imports
   // https://lightningcss.dev/bundling.html#bundling-order

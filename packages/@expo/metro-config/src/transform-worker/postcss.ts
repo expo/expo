@@ -56,7 +56,8 @@ async function processWithPostcssInputConfigAsync(
   debug('plugins:', plugins);
 
   // TODO: Surely this can be cached...
-  const postcss = await import('postcss');
+  const postcss = require('postcss') as typeof import('postcss');
+
   const processor = postcss.default(plugins);
   const { content } = await processor.process(src, processOptions);
 

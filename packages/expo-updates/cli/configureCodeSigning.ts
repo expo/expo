@@ -37,7 +37,7 @@ Configure expo-updates code signing for this project and verify setup
     );
   }
 
-  const { configureCodeSigningAsync } = await import('./configureCodeSigningAsync');
+  const { configureCodeSigningAsync } = await import('./configureCodeSigningAsync.js');
 
   const certificateInput = requireArg(args, '--certificate-input-directory');
   const keyInput = requireArg(args, '--key-input-directory');

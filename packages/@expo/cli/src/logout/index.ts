@@ -24,6 +24,6 @@ export const expoLogout: Command = async (argv) => {
     );
   }
 
-  const { logoutAsync } = await import('../api/user/user');
+  const { logoutAsync } = await import('../api/user/user.js');
   return logoutAsync().catch(logCmdError);
 };

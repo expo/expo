@@ -194,7 +194,7 @@ export async function fixPackagesAsync(
  * This should be dropped in favor of autolinking in the future.
  */
 async function applyPluginsAsync(projectRoot: string, packages: string[]) {
-  const { autoAddConfigPluginsAsync } = await import('./utils/autoAddConfigPlugins');
+  const { autoAddConfigPluginsAsync } = await import('./utils/autoAddConfigPlugins.js');
 
   try {
     const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });

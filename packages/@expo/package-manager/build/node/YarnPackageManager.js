@@ -6,12 +6,9 @@ const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
 const spawn_1 = require("../utils/spawn");
 const yarn_1 = require("../utils/yarn");
 class YarnPackageManager extends BasePackageManager_1.BasePackageManager {
-    constructor() {
-        super(...arguments);
-        this.name = 'yarn';
-        this.bin = 'yarnpkg';
-        this.lockFile = nodeWorkspaces_1.YARN_LOCK_FILE;
-    }
+    name = 'yarn';
+    bin = 'yarnpkg';
+    lockFile = nodeWorkspaces_1.YARN_LOCK_FILE;
     /** Check if Yarn is running in offline mode, and add the `--offline` flag */
     async withOfflineFlagAsync(namesOrFlags) {
         return (await (0, yarn_1.isYarnOfflineAsync)()) ? [...namesOrFlags, '--offline'] : namesOrFlags;
