@@ -3,7 +3,6 @@
 
   "compilerOptions": {
     "declaration": true,
-    "moduleResolution": "node",
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true,
