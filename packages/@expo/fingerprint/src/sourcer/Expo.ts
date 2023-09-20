@@ -26,8 +26,8 @@ export async function getExpoConfigSourcesAsync(
   const ignoredFile = await createTempIgnoredFileAsync(options);
   try {
     const { stdout } = await spawnAsync(
-      'npx',
-      ['node', getExpoConfigLoaderPath(), path.resolve(projectRoot), ignoredFile],
+      'node',
+      [getExpoConfigLoaderPath(), path.resolve(projectRoot), ignoredFile],
       { cwd: __dirname }
     );
     const stdoutJson = JSON.parse(stdout);

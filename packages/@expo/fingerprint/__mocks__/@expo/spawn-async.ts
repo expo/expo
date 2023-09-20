@@ -13,15 +13,10 @@ const mockSpawnAsync = jest
       args: Parameters<SpawnAsyncType>[1],
       options: Parameters<SpawnAsyncType>[2]
     ) => {
-      if (
-        args != null &&
-        args.length >= 3 &&
-        ['node', 'ts-node'].includes(args[0]) &&
-        path.parse(args[1]).name === 'ExpoConfigLoader'
-      ) {
+      if (args != null && args.length >= 2 && path.parse(args[0]).name === 'ExpoConfigLoader') {
         // For unit tests, we don't really spawn a process to execute the ExpoConfigLoader because the file system is just a memfs.
         // Rather than that, we just call `getConfig` directly.
-        const projectRoot = args[2];
+        const projectRoot = args[1];
         const config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
         const stdout = JSON.stringify({ config, loadedModules: [] });
         return {
