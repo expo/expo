@@ -4,6 +4,8 @@ import { normalizeOptionsAsync } from '../../Options';
 import { getPatchPackageSourcesAsync } from '../PatchPackage';
 import { getHashSourcesAsync } from '../Sourcer';
 
+jest.mock('@expo/spawn-async');
+jest.mock('fs');
 jest.mock('fs/promises');
 jest.mock('/app/package.json', () => ({}), { virtual: true });
 
@@ -28,6 +30,7 @@ describe(getPatchPackageSourcesAsync, () => {
 
 describe('patch-package postinstall', () => {
   it('should contain `package.json` scripts block for lifecycle patches', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     const scriptsBlock = {
       postinstall: 'npx patch-package',
     };

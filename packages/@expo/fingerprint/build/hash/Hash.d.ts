@@ -1,4 +1,3 @@
-import minimatch from 'minimatch';
 import pLimit from 'p-limit';
 import type { Fingerprint, FingerprintSource, HashResult, HashSource, HashSourceContents, NormalizedOptions } from '../Fingerprint.types';
 /**
@@ -14,10 +13,6 @@ export declare function createFingerprintSourceAsync(source: HashSource, limiter
  * Create a `HashResult` from a file
  */
 export declare function createFileHashResultsAsync(filePath: string, limiter: pLimit.Limit, projectRoot: string, options: NormalizedOptions): Promise<HashResult | null>;
-/**
- * Indicate the given `filePath` should be excluded by `ignorePaths`
- */
-export declare function isIgnoredPath(filePath: string, ignorePaths: string[], minimatchOptions?: minimatch.IOptions): boolean;
 /**
  * Create `HashResult` for a dir.
  * If the dir is excluded, returns null rather than a HashResult

@@ -18,6 +18,31 @@ export const DEFAULT_IGNORE_PATHS = [
   'app.config.js',
   'app.config.json',
   'app.json',
+
+  // Ignore default javascript files when calling `getConfig()`
+  '**/node_modules/@babel/**/*',
+  '**/node_modules/@expo/**/*',
+  '**/node_modules/@jridgewell/**/*',
+  '**/node_modules/expo/config.js',
+  '**/node_modules/expo/config-plugins.js',
+  `**/node_modules/{${[
+    'debug',
+    'escape-string-regexp',
+    'getenv',
+    'graceful-fs',
+    'has-flag',
+    'imurmurhash',
+    'js-tokens',
+    'json5',
+    'lines-and-columns',
+    'require-from-string',
+    'resolve-from',
+    'signal-exit',
+    'sucrase',
+    'supports-color',
+    'ts-interface-checker',
+    'write-file-atomic',
+  ].join(',')}}/**/*`,
 ];
 
 export async function normalizeOptionsAsync(
