@@ -111,13 +111,13 @@ function rewriteNavigationStateToParams(
   const lastRoute = state.routes.at(-1)!;
   params.screen = lastRoute.name;
   // Weirdly, this always needs to be an object. If it's undefined, it won't work.
-  params.params = lastRoute.params ?? {};
+  params.params = lastRoute.params ? JSON.parse(JSON.stringify(lastRoute.params)) : {};
 
   if (lastRoute.state) {
     rewriteNavigationStateToParams(lastRoute.state, params.params);
   }
 
-  return params;
+  return JSON.parse(JSON.stringify(params));
 }
 
 function getNavigatePushAction(state: ResultState) {
