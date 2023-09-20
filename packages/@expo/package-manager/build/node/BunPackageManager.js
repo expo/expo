@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BunPackageManager = void 0;
-const BasePackageManager_1 = require("./BasePackageManager");
 const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
+const BasePackageManager_1 = require("./BasePackageManager");
 class BunPackageManager extends BasePackageManager_1.BasePackageManager {
     constructor() {
         super(...arguments);

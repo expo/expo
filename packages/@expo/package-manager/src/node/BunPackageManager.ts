@@ -1,5 +1,5 @@
-import { BasePackageManager } from './BasePackageManager';
 import { findYarnOrNpmWorkspaceRoot, BUN_LOCK_FILE } from '../utils/nodeWorkspaces';
+import { BasePackageManager } from './BasePackageManager';
 
 export class BunPackageManager extends BasePackageManager {
   readonly name = 'bun';
