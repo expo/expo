@@ -1,4 +1,7 @@
 /**
  * A helper script to load the Expo config and loaded plugins from a project
  */
-export {};
+/**
+ * Get the path to the ExpoConfigLoader file.
+ */
+export declare function getExpoConfigLoaderPath(): string;

@@ -10,6 +10,7 @@ const promises_1 = __importDefault(require("fs/promises"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
+const ExpoConfigLoader_1 = require("./ExpoConfigLoader");
 const Utils_1 = require("./Utils");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 async function getExpoConfigSourcesAsync(projectRoot, options) {
@@ -21,16 +22,7 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
     let loadedModules = [];
     const ignoredFile = await createTempIgnoredFileAsync(options);
     try {
-        // TypeScript is only for unit tests
-        const isTypeScript = path_1.default.extname(__filename) === '.ts';
-        const nodeProgram = isTypeScript ? 'ts-node' : 'node';
-        const expoConfigLoaderPath = 'ExpoConfigLoader' + (isTypeScript ? '.ts' : '.js');
-        const { stdout } = await (0, spawn_async_1.default)('npx', [
-            nodeProgram,
-            path_1.default.join(__dirname, expoConfigLoaderPath),
-            path_1.default.resolve(projectRoot),
-            ignoredFile,
-        ], { cwd: __dirname });
+        const { stdout } = await (0, spawn_async_1.default)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: __dirname });
         const stdoutJson = JSON.parse(stdout);
         config = stdoutJson.config;
         loadedModules = stdoutJson.loadedModules;

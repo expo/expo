@@ -6,6 +6,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getExpoConfigLoaderPath = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const module_1 = __importDefault(require("module"));
 const path_1 = __importDefault(require("path"));
@@ -31,16 +32,19 @@ async function runAsync(programName, args = []) {
     const filteredLoadedModules = loadedModules.filter((modulePath) => !(0, Path_1.isIgnoredPath)(modulePath, ignoredPaths));
     console.log(JSON.stringify({ config, loadedModules: filteredLoadedModules }));
 }
-(async () => {
-    const programIndex = process.argv.findIndex((arg) => arg === __filename);
-    try {
-        await runAsync(process.argv[programIndex], process.argv.slice(programIndex + 1));
-    }
-    catch (e) {
-        console.error('Uncaught Error', e);
-        process.exit(1);
-    }
-})();
+// If running from the command line
+if (require.main?.filename === __filename) {
+    (async () => {
+        const programIndex = process.argv.findIndex((arg) => arg === __filename);
+        try {
+            await runAsync(process.argv[programIndex], process.argv.slice(programIndex + 1));
+        }
+        catch (e) {
+            console.error('Uncaught Error', e);
+            process.exit(1);
+        }
+    })();
+}
 /**
  * Load the generated ignored paths file from caller and remove the file after loading
  */
@@ -66,4 +70,11 @@ async function loadIgnoredPathsAsync(ignoredFile) {
     catch { }
     return ignorePaths;
 }
+/**
+ * Get the path to the ExpoConfigLoader file.
+ */
+function getExpoConfigLoaderPath() {
+    return path_1.default.join(__dirname, 'ExpoConfigLoader.js');
+}
+exports.getExpoConfigLoaderPath = getExpoConfigLoaderPath;
 //# sourceMappingURL=ExpoConfigLoader.js.map
