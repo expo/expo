@@ -1,5 +1,15 @@
 class KotlinExpoModulesCorePlugin implements Plugin<Project> {
   void apply(Project project) {
+    // For compatibility reasons the plugin needs to declare that it provides common build.gradle
+    // options for the modules
+    project.rootProject.ext.expoProvidesDefaultConfig = {
+      true
+    }
+
+    project.ext.safeExtGet = { prop, fallback ->
+      project.rootProject.ext.has(prop) ? project.rootProject.ext.get(prop) : fallback
+    }
+
     project.buildscript {
       project.ext.kotlinVersion = {
         project.rootProject.ext.has("kotlinVersion")
@@ -23,11 +33,62 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
           : "1.8.10-1.0.9"
       }
     }
+
+    // Setup build options that are common for all modules
+    if (project.plugins.hasPlugin('kotlin-android')) {
+      project.android {
+        compileSdkVersion project.ext.safeExtGet("compileSdkVersion", 33)
+
+        defaultConfig {
+          minSdkVersion project.ext.safeExtGet("minSdkVersion", 23)
+          targetSdkVersion project.ext.safeExtGet("targetSdkVersion", 33)
+        }
+
+        lintOptions {
+          abortOnError false
+        }
+      }
+    }
   }
 }
 
 ext.applyKotlinExpoModulesCorePlugin = {
   apply plugin: KotlinExpoModulesCorePlugin
+}
+
+ext.useExpoPublishing = {
+  afterEvaluate {
+    publishing {
+      publications {
+        release(MavenPublication) {
+          from components.release
+        }
+      }
+      repositories {
+        maven {
+          url = mavenLocal().url
+        }
+      }
+    }
+  }
+
+  android {
+    publishing {
+      singleVariant("release") {
+        withSourcesJar()
+      }
+    }
+  }
+}
+
+ext.useCoreDependencies = {
+  dependencies {
+    // Avoids cyclic dependencies
+    if (!project.project.name.startsWith("expo-modules-core")) {
+      implementation project.project(':expo-modules-core')
+    }
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${project.ext.kotlinVersion()}"
+  }
 }
 
 ext.boolish = { value ->

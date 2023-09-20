@@ -5,6 +5,17 @@ apply plugin: 'maven-publish'
 // Import autolinking script
 apply from: "../scripts/autolinking.gradle"
 
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+if (expoModulesCorePlugin.exists()) {
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+
+  // Remove this check, but keep the contents after SDK49 support is dropped
+  if (safeExtGet("expoProvidesDefaultConfig", false)) {
+    useExpoPublishing()
+  }
+}
+
 static def versionToNumber(major, minor, patch) {
   return patch * 100 + minor * 10000 + major * 1000000
 }
@@ -36,12 +47,6 @@ group = 'host.exp.exponent'
 version = '50.0.0-alpha.5'
 
 buildscript {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  if (expoModulesCorePlugin.exists()) {
-    apply from: expoModulesCorePlugin
-    applyKotlinExpoModulesCorePlugin()
-  }
-
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -65,23 +70,44 @@ buildscript {
   }
 }
 
-afterEvaluate {
-  publishing {
-    publications {
-      release(MavenPublication) {
-        from components.release
+// Remove this if and it's contents, when support for SDK49 is dropped
+if (!safeExtGet("expoProvidesDefaultConfig", false)) {
+  afterEvaluate {
+    publishing {
+      publications {
+        release(MavenPublication) {
+          from components.release
+        }
       }
-    }
-    repositories {
-      maven {
-        url = mavenLocal().url
+      repositories {
+        maven {
+          url = mavenLocal().url
+        }
       }
     }
   }
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 33)
+  // Remove this if and it's contents, when support for SDK49 is dropped
+  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
+    compileSdkVersion safeExtGet("compileSdkVersion", 33)
+
+    defaultConfig {
+      minSdkVersion safeExtGet("minSdkVersion", 23)
+      targetSdkVersion safeExtGet("targetSdkVersion", 33)
+    }
+
+    publishing {
+      singleVariant("release") {
+        withSourcesJar()
+      }
+    }
+
+    lintOptions {
+      abortOnError false
+    }
+  }
 
   def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
   if (agpVersion.tokenize('.')[0].toInteger() < 8) {
@@ -97,14 +123,9 @@ android {
 
   namespace "expo.core"
   defaultConfig {
-    minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 1
     versionName "50.0.0-alpha.5"
     consumerProguardFiles("proguard-rules.pro")
-  }
-  lintOptions {
-    abortOnError false
   }
   testOptions {
     unitTests.includeAndroidResources = true
@@ -126,11 +147,6 @@ android {
           srcDirs += "src/reactNativeHostWrapper64"
         }
       }
-    }
-  }
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
     }
   }
 }

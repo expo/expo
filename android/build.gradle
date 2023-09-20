@@ -3,7 +3,7 @@ import com.android.build.api.variant.AndroidComponentsExtension
 
 buildscript {
   ext {
-    minSdkVersion = 21
+    minSdkVersion = 23
     targetSdkVersion = 33
     compileSdkVersion = 33
 

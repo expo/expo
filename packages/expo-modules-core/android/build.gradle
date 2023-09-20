@@ -8,13 +8,18 @@ apply plugin: "de.undercouch.download"
 group = 'host.exp.exponent'
 version = '1.8.0'
 
-buildscript {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  if (expoModulesCorePlugin.exists()) {
-    apply from: expoModulesCorePlugin
-    applyKotlinExpoModulesCorePlugin()
-  }
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+if (expoModulesCorePlugin.exists()) {
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
 
+  // Remove this check, but keep the contents after SDK49 support is dropped
+  if (safeExtGet("expoProvidesDefaultConfig", false)) {
+    useExpoPublishing()
+  }
+}
+
+buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -89,23 +94,44 @@ USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 
 def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
-afterEvaluate {
-  publishing {
-    publications {
-      release(MavenPublication) {
-        from components.release
+// Remove this if and it's contents, when support for SDK49 is dropped
+if (!safeExtGet("expoProvidesDefaultConfig", false)) {
+  afterEvaluate {
+    publishing {
+      publications {
+        release(MavenPublication) {
+          from components.release
+        }
       }
-    }
-    repositories {
-      maven {
-        url = mavenLocal().url
+      repositories {
+        maven {
+          url = mavenLocal().url
+        }
       }
     }
   }
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 33)
+  // Remove this if and it's contents, when support for SDK49 is dropped
+  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
+    compileSdkVersion safeExtGet("compileSdkVersion", 33)
+
+    defaultConfig {
+      minSdkVersion safeExtGet("minSdkVersion", 23)
+      targetSdkVersion safeExtGet("targetSdkVersion", 33)
+    }
+
+    publishing {
+      singleVariant("release") {
+        withSourcesJar()
+      }
+    }
+
+    lintOptions {
+      abortOnError false
+    }
+  }
 
   if (rootProject.hasProperty("ndkPath")) {
     ndkPath rootProject.ext.ndkPath
@@ -128,8 +154,6 @@ android {
 
   namespace "expo.modules"
   defaultConfig {
-    minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
     versionName "1.8.0"
@@ -217,9 +241,6 @@ android {
     }
   }
 
-  lintOptions {
-    abortOnError false
-  }
 
   testOptions {
     unitTests.includeAndroidResources = true
@@ -232,11 +253,6 @@ android {
         showExceptions true
         showStandardStreams true
       }
-    }
-  }
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
     }
   }
 }
