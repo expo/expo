@@ -113,6 +113,7 @@ exceptions:
   - JSON
   - JavaScript
   - JavaScriptCore
+  - Java Development Kit
   - Jest
   - Keychain
   - Kotlin
@@ -129,6 +130,7 @@ exceptions:
   - manifest.json
   - metro.config.js
   - Native
+  - Node.js
   - NavigationContainer
   - Next.js
   - New Architecture
@@ -187,6 +189,7 @@ exceptions:
   - Turtle
   - TypeScript
   - Update
+  - Watchman
   - URL
   - URLs
   - V8
