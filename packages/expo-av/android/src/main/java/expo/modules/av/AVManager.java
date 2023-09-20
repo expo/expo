@@ -720,10 +720,6 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   private AudioDeviceInfo getDeviceInfoFromUid(String uid) {
     AudioDeviceInfo deviceInfo = null;
-    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
-      return deviceInfo;
-    }
-
     int id = Integer.valueOf(uid);
     AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
     for (AudioDeviceInfo device : audioDevices) {
@@ -737,9 +733,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   private Bundle getMapFromDeviceInfo(AudioDeviceInfo deviceInfo) {
     Bundle map = new Bundle();
-    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
-      return map;
-    }
+
     int type = deviceInfo.getType();
     String typeStr = String.valueOf(type);
     if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
@@ -804,20 +798,16 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void getAvailableInputs(final Promise promise) {
-    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M){
-      promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Getting available inputs is not supported on devices running Android version lower than Android 6.0");
-    } else {
-      ArrayList<Bundle> devices = new ArrayList();
-      AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
-      for (AudioDeviceInfo deviceInfo : audioDevices) {
-        int type = deviceInfo.getType();
-        if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
-          final Bundle map = getMapFromDeviceInfo(deviceInfo);
-          devices.add(map);
-        }
+    ArrayList<Bundle> devices = new ArrayList();
+    AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
+    for (AudioDeviceInfo deviceInfo : audioDevices) {
+      int type = deviceInfo.getType();
+      if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+        final Bundle map = getMapFromDeviceInfo(deviceInfo);
+        devices.add(map);
       }
-      promise.resolve(devices);
     }
+    promise.resolve(devices);
   }
 
   @Override
