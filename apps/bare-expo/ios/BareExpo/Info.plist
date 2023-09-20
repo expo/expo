@@ -62,6 +62,10 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Allow bare-expo to access your calendar</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>Allow bare-expo to access your reminders</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>Allow bare-expo to access your calendar</string>
 	<key>NSCalendarsUsageDescription</key>

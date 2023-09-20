@@ -16,7 +16,13 @@ public class CalendarPermissionsRequester: NSObject, EXPermissionsRequester {
     var status: CalendarPermissionsStatus
     var permissions: EKAuthorizationStatus
 
-    let calendarUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSCalendarsFullAccessUsageDescription")
+    var calendarUsageDescription: Any?
+    if #available(iOS 17.0, *) {
+      calendarUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSCalendarsFullAccessUsageDescription")
+    } else {
+      calendarUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSCalendarsUsageDescription")
+    }
+
     if let calendarUsageDescription {
       permissions = EKEventStore.authorizationStatus(for: .event)
     } else {

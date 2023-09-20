@@ -16,7 +16,12 @@ public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
     var status: CalendarPermissionsStatus
     var permissions: EKAuthorizationStatus
 
-    let remindersUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSRemindersFullAccessUsageDescription")
+    var remindersUsageDescription: Any?
+    if #available(iOS 17.0, *) {
+      remindersUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSRemindersFullAccessUsageDescription")
+    } else {
+      remindersUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSRemindersUsageDescription")
+    }
 
     if let remindersUsageDescription {
       permissions = EKEventStore.authorizationStatus(for: .reminder)
