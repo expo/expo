@@ -9,10 +9,6 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noImplicitReturns": true,
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "paths": {
-      "*": ["ts-declarations/*", "node_modules/*"]
-    }
+    "allowSyntheticDefaultImports": true
   }
 }
