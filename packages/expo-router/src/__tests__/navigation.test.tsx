@@ -517,10 +517,10 @@ it('can replace across groups', async () => {
   expect(router.canGoBack()).toBe(false);
 });
 
-it('can move without creating circular structure references', async () => {
+it('can push nested stacks without creating circular references', async () => {
   renderRouter({
     _layout: () => <Stack />,
-    index: () => <Text testID="one" />,
+    index: () => <Text />,
     'menu/_layout': () => <Stack />,
     'menu/[id]': () => <Text />,
     'menu/index': () => <Text />,
@@ -528,4 +528,19 @@ it('can move without creating circular structure references', async () => {
   expect(screen).toHavePathname('/');
   act(() => router.push('/menu'));
   act(() => router.push('/menu/123'));
+  expect(screen).toHavePathname('/menu/123');
+});
+
+it('can push nested stacks with initial route names without creating circular references', async () => {
+  renderRouter({
+    _layout: { initialRouteName: 'index', default: () => <Stack /> },
+    index: () => <Text />,
+    'menu/_layout': { initialRouteName: 'index', default: () => <Stack /> },
+    'menu/[id]': () => <Text />,
+    'menu/index': () => <Text />,
+  });
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/menu'));
+  act(() => router.push('/menu/123'));
+  expect(screen).toHavePathname('/menu/123');
 });
