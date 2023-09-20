@@ -516,3 +516,16 @@ it('can replace across groups', async () => {
 
   expect(router.canGoBack()).toBe(false);
 });
+
+it('can move without creating circular structure references', async () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text testID="one" />,
+    'menu/_layout': () => <Stack />,
+    'menu/[id]': () => <Text />,
+    'menu/index': () => <Text />,
+  });
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/menu'));
+  act(() => router.push('/menu/123'));
+});
