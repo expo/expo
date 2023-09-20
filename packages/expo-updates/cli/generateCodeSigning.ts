@@ -40,7 +40,7 @@ Generate expo-updates private key, public key, and code signing certificate usin
     );
   }
 
-  const { generateCodeSigningAsync } = await import('./generateCodeSigningAsync');
+  const { generateCodeSigningAsync } = await import('./generateCodeSigningAsync.js');
 
   const keyOutput = requireArg(args, '--key-output-directory');
   const certificateOutput = requireArg(args, '--certificate-output-directory');

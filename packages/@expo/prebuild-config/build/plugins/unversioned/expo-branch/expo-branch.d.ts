@@ -1,2 +1,2 @@
-declare const _default: import("packages/@expo/config-plugins/build").ConfigPlugin;
+declare const _default: import("@expo/config-plugins").ConfigPlugin;
 export default _default;

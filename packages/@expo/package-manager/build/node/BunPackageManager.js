@@ -4,12 +4,9 @@ exports.BunPackageManager = void 0;
 const BasePackageManager_1 = require("./BasePackageManager");
 const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
 class BunPackageManager extends BasePackageManager_1.BasePackageManager {
-    constructor() {
-        super(...arguments);
-        this.name = 'bun';
-        this.bin = 'bun';
-        this.lockFile = nodeWorkspaces_1.BUN_LOCK_FILE;
-    }
+    name = 'bun';
+    bin = 'bun';
+    lockFile = nodeWorkspaces_1.BUN_LOCK_FILE;
     workspaceRoot() {
         const root = (0, nodeWorkspaces_1.findYarnOrNpmWorkspaceRoot)(this.ensureCwdDefined('workspaceRoot'));
         if (root) {

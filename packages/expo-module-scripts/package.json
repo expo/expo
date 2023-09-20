@@ -29,7 +29,7 @@
     "@babel/cli": "^7.1.2",
     "@expo/npm-proofread": "^1.0.1",
     "@testing-library/react-hooks": "^7.0.1",
-    "@tsconfig/node14": "^1.0.3",
+    "@tsconfig/node18": "^18.2.2",
     "@types/jest": "^29.2.1",
     "babel-preset-expo": "~9.7.0",
     "commander": "^2.19.0",

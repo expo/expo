@@ -52,7 +52,6 @@
     "validate-npm-package-name": "^4.0.0"
   },
   "devDependencies": {
-    "@tsconfig/node14": "^1.0.3",
     "@types/ejs": "^3.1.0",
     "@types/find-up": "^4.0.0",
     "@types/prompts": "^2.0.14",

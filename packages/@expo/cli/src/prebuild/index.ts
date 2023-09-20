@@ -55,9 +55,9 @@ export const expoPrebuild: Command = async (argv) => {
     // ../utils/errors
     { logCmdError },
   ] = await Promise.all([
-    import('./prebuildAsync'),
-    import('./resolveOptions'),
-    import('../utils/errors'),
+    import('./prebuildAsync.js'),
+    import('./resolveOptions.js'),
+    import('../utils/errors.js'),
   ]);
 
   return (() => {

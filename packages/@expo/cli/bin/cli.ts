@@ -18,25 +18,25 @@ export type Command = (argv?: string[]) => void;
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
   // NOTE(EvanBacon): Ensure every bundler-related command sets `NODE_ENV` as expected for the command.
-  'run:ios': () => import('../src/run/ios').then((i) => i.expoRunIos),
-  'run:android': () => import('../src/run/android').then((i) => i.expoRunAndroid),
-  start: () => import('../src/start').then((i) => i.expoStart),
-  prebuild: () => import('../src/prebuild').then((i) => i.expoPrebuild),
-  config: () => import('../src/config').then((i) => i.expoConfig),
-  export: () => import('../src/export').then((i) => i.expoExport),
-  'export:web': () => import('../src/export/web').then((i) => i.expoExportWeb),
-  'export:embed': () => import('../src/export/embed').then((i) => i.expoExportEmbed),
+  'run:ios': () => import('../src/run/ios/index.js').then((i) => i.expoRunIos),
+  'run:android': () => import('../src/run/android/index.js').then((i) => i.expoRunAndroid),
+  start: () => import('../src/start/index.js').then((i) => i.expoStart),
+  prebuild: () => import('../src/prebuild/index.js').then((i) => i.expoPrebuild),
+  config: () => import('../src/config/index.js').then((i) => i.expoConfig),
+  export: () => import('../src/export/index.js').then((i) => i.expoExport),
+  'export:web': () => import('../src/export/web/index.js').then((i) => i.expoExportWeb),
+  'export:embed': () => import('../src/export/embed/index.js').then((i) => i.expoExportEmbed),
 
   // Auxiliary commands
-  install: () => import('../src/install').then((i) => i.expoInstall),
-  add: () => import('../src/install').then((i) => i.expoInstall),
-  customize: () => import('../src/customize').then((i) => i.expoCustomize),
+  install: () => import('../src/install/index.js').then((i) => i.expoInstall),
+  add: () => import('../src/install/index.js').then((i) => i.expoInstall),
+  customize: () => import('../src/customize/index.js').then((i) => i.expoCustomize),
 
   // Auth
-  login: () => import('../src/login').then((i) => i.expoLogin),
-  logout: () => import('../src/logout').then((i) => i.expoLogout),
-  register: () => import('../src/register').then((i) => i.expoRegister),
-  whoami: () => import('../src/whoami').then((i) => i.expoWhoami),
+  login: () => import('../src/login/index.js').then((i) => i.expoLogin),
+  logout: () => import('../src/logout/index.js').then((i) => i.expoLogout),
+  register: () => import('../src/register/index.js').then((i) => i.expoRegister),
+  whoami: () => import('../src/whoami/index.js').then((i) => i.expoWhoami),
 };
 
 const args = arg(
