@@ -225,6 +225,10 @@ describe('server-output', () => {
       // TODO: We shouldn't export this
       expect(files).toContain('_expo/functions/api/empty+api.js');
 
+      // Has single variation of group file
+      expect(files).toContain('(alpha)/beta.html');
+      expect(files).not.toContain('beta.html');
+
       // Injected by framework
       expect(files).toContain('_sitemap.html');
       expect(files).toContain('[...404].html');

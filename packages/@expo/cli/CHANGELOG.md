@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Skip extraneous static HTML export in server mode.
+
 ## 0.13.2 — 2023-09-18
 
 ### 🐛 Bug fixes
