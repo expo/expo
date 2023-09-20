@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, fix permissions error on `iOS 17`.
+
 ### 💡 Others
 
 ## 12.0.0 — 2023-09-04
