@@ -2,7 +2,6 @@ package host.exp.exponent.utils
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import android.widget.Switch
 import androidx.test.InstrumentationRegistry
@@ -21,7 +20,7 @@ object DeviceUtils {
 
     val context = InstrumentationRegistry.getContext()
     // Enable draw over other apps if necessary
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
+    if (!Settings.canDrawOverlays(context)) {
       // Open settings
       val intent =
         Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:host.exp.exponent"))
