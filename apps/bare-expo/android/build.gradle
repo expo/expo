@@ -6,7 +6,7 @@ buildscript {
     ext {
         buildToolsVersion = '33.0.0'
         gradlePluginVersion = '7.4.2'
-        minSdkVersion = 21
+        minSdkVersion = 23
         compileSdkVersion = 33
         targetSdkVersion = 33
         // Some dependencies still expect supportLibVersion to be defined
