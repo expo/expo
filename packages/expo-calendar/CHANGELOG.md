@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- On `iOS`, fix permissions error on `iOS 17`.
+- On `iOS`, fix permissions error on `iOS 17`. ([#24545](https://github.com/expo/expo/pull/24545) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
