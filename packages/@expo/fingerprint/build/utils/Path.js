@@ -18,7 +18,7 @@ function isIgnoredPath(filePath, ignorePaths, minimatchOptions = { dot: true }) 
             // As long as previous match result is true and not matched from the current negate pattern, we should early return.
             return false;
         }
-        result || (result = currMatch);
+        result ||= currMatch;
     }
     return result;
 }
