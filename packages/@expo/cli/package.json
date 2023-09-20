@@ -109,7 +109,8 @@
   },
   "taskr": {
     "requires": [
-      "./taskfile-swc.js"
+      "./taskfile-swc.js",
+      "./taskfile-metro-babel.js"
     ]
   },
   "devDependencies": {
