@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Prevent circular navigation references.
+- Prevent circular navigation references. ([#24548](https://github.com/expo/expo/pull/24548) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
