@@ -6,6 +6,17 @@ apply plugin: 'maven-publish'
 group = 'host.exp.exponent'
 version = '0.20.0'
 
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+if (expoModulesCorePlugin.exists()) {
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+  // Remove this check, but keep the contents after SDK49 support is dropped
+  if (safeExtGet("expoProvidesDefaultConfig", false)) {
+    useExpoPublishing()
+    useCoreDependencies()
+  }
+}
+
 // Utility method to derive boolean values from the environment or from Java properties,
 // and return them as strings to be used in BuildConfig fields
 def getBoolStringFromPropOrEnv(String name, Boolean defaultValue) {
@@ -32,17 +43,6 @@ def exUpdatesNativeDebug = getBoolStringFromPropOrEnv("EX_UPDATES_NATIVE_DEBUG",
 // If true, code will run that delays app loading until updates is initialized, to prevent ANR issues.
 // (default true)
 def exUpdatesAndroidDelayLoadApp = getBoolStringFromPropOrEnv("EX_UPDATES_ANDROID_DELAY_LOAD_APP", true)
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-if (expoModulesCorePlugin.exists()) {
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-  // Remove this check, but keep the contents after SDK49 support is dropped
-  if (safeExtGet("expoProvidesDefaultConfig", false)) {
-    useExpoPublishing()
-    useCoreDependencies()
-  }
-}
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.

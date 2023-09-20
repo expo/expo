@@ -5,6 +5,17 @@ apply plugin: 'maven-publish'
 // Import autolinking script
 apply from: "../scripts/autolinking.gradle"
 
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+if (expoModulesCorePlugin.exists()) {
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+
+  // Remove this check, but keep the contents after SDK49 support is dropped
+  if (safeExtGet("expoProvidesDefaultConfig", false)) {
+    useExpoPublishing()
+  }
+}
+
 static def versionToNumber(major, minor, patch) {
   return patch * 100 + minor * 10000 + major * 1000000
 }
@@ -34,17 +45,6 @@ ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
 version = '50.0.0-alpha.2'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-if (expoModulesCorePlugin.exists()) {
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-
-  // Remove this check, but keep the contents after SDK49 support is dropped
-  if (safeExtGet("expoProvidesDefaultConfig", false)) {
-    useExpoPublishing()
-  }
-}
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
