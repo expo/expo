@@ -113,7 +113,7 @@ If you are migrating from `expo build` and using `expo publish` to update your a
 
 ### No more automatic publishing before building
 
-With classic builds, the default behavior was to automatically publish your app with Classic Updates as an update prior to running a build. This had some unintended consequences. For example, sometimes developers would run a build and be surprised to learn that their existing app was updated as a side effect.
+With classic builds, the default behavior was to automatically publish your app with Classic Updates as an update before running a build. This had some unintended consequences. For example, sometimes developers would run a build and be surprised to learn that their existing app was updated as a side effect.
 
 With EAS Build, the Classic Update's `expo publish` command is not run as part of the build process. Instead, the JavaScript bundle is generated locally on EAS Build at build time and directly embedded in the app.
 

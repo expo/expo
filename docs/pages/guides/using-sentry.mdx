@@ -122,7 +122,7 @@ try {
 
 <Step label="4">
 
-### App Configuration
+### App configuration
 
 Configuring `sentry-expo` is done through the config plugin in your [app config](/workflow/configuration/).
 
@@ -208,7 +208,7 @@ Add `expo.plugins` to your project's **app.json** or **app.config.js** file:
 
 </Step>
 
-## Source Maps
+## Source maps
 
 {/* TODO: Drop `expo publish` mention */}
 
@@ -295,7 +295,7 @@ For more information on how to get started, see [`sentry-testkit` documentation]
 
 ## Error reporting semantics
 
-In order to ensure that errors are reported reliably, Sentry defers reporting the data to their backend until the next time you load the app after a fatal error rather than trying to report it upon catching the exception. It saves the stacktrace and other metadata to `AsyncStorage` and sends it immediately when the app starts.
+To ensure that errors are reported reliably, Sentry defers reporting the data to their backend until the next time you load the app after a fatal error rather than trying to report it upon catching the exception. It saves the stacktrace and other metadata to `AsyncStorage` and sends it immediately when the app starts.
 
 ## Disabled by default in dev
 

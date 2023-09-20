@@ -49,7 +49,7 @@ module.exports = async function (env, argv) {
 
 React Native for Web uses [some advanced browser features](https://github.com/necolas/react-native-web/blob/e4ed0fd3c863e6c61aa3ea8afeff79b7fa74b461/packages/docs/src/introduction.stories.mdx#install) that might not be available in every browser. Expo web tries to include these features with `@expo/webpack-config`.
 
-### ResizeObserver
+### `ResizeObserver`
 
 **TL;DR:** To fully support `onLayout` install `resize-observer-polyfill`.
 
@@ -63,7 +63,7 @@ Falling back to window.onresize.
 
 To get everything working properly, you'll want to install and include a global polyfill for `ResizeObserver`.
 
-### Adding ResizeObserver
+### Adding `ResizeObserver`
 
 - Install the polyfill:
   <Terminal cmd={['$ npx expo install resize-observer-polyfill']} />
@@ -71,7 +71,7 @@ To get everything working properly, you'll want to install and include a global 
 
 The reason it automatically includes the polyfill is that `react-native-web` needs it included immediately. webpack can inject the polyfill before any of the application code has been executed. Alternatively, you can customize the webpack config and include the polyfill in the `entry` field yourself.
 
-### Testing the ResizeObserver polyfill
+### Testing the `ResizeObserver` polyfill
 
 - Open the running Expo project in iOS Safari.
 - Connect the device to an Apple computer.

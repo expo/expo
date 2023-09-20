@@ -12,77 +12,192 @@ exceptions:
   - app.config.js
   - app.json
   - app.plugin.js
+  - assets
   - create-expo-app
   - create-react-native-app
   - iOS
   - web
   - API
+  - APIs
   - Android
+  - AndroidManifest
+  - Android Studio
+  - APNs
   - App
+  - AppDelegate
+  - App Store Connect
   - Apple
+  - Apple App Store
+  - Apple Developer
+  - Apple Developer Account
+  - Apple Developer Console
+  - Apple Developer Portal
+  - Apple ID
+  - Apple Pay
+  - Asset Links
+  - Async Storage
   - Autolinking
   - AuthSession
+  - AWS Amplify Console
   - Babel
   - Build
+  - babel.config.js
+  - Chrome
   - CLI
+  - Classic Updates
   - Client
   - CocoaPods
   - CodePush
+  - Command Line Tools
   - Config
+  - Config Plugin
+  - Context
   - Continuous
+  - credentials.json
+  - Debug
   - Debugger
   - Debugging
-  - Development
+  - Detox
   - Dev
+  - DevTools
+  - Developer Console
+  - Developer Mode
   - Dynamic
+  - detach
+  - E2E
   - EAS
   - EAS Build
   - EAS Submit
   - EAS Metadata
   - EAS Update
   - EAS Insights
+  - Element Inspector
   - Emulator
+  - Enums
+  - Environment Variable
+  - Environment Variables
+  - ESLint
   - Expo
+  - ExpoKit
+  - Expo Application Services
+  - eject
+  - esbuild
+  - expo
   - Fastlane
+  - Firebase
+  - FileSystem
   - Files
   - Flipper
+  - Frequently Asked Questions
   - FYI
   - Generation
+  - GitHub
+  - GitHub Pages
   - Go
   - Google
+  - Google Developer
+  - Google Font
+  - Google Service Account
+  - Google Pay
+  - Giphy's
+  - GLView
+  - gitignore
+  - Play Store
   - Gradle
+  - Group
+  - Gymfile
+  - Head
   - Hermes
   - I
+  - Info.plist
+  - JSON
   - JavaScript
   - JavaScriptCore
   - Jest
+  - Keychain
+  - Kotlin
   - Library
+  - Link
   - Linking
+  - Location
   - Meta
+  - Metro
   - Mods
   - Module
   - Modules
+  - macOS
+  - manifest.json
+  - metro.config.js
   - Native
+  - NavigationContainer
+  - Next.js
+  - New Architecture
+  - Node
+  - npm
+  - Organizations
   - Package
+  - Personal Accounts
+  - Performance Monitor
   - Plugins
   - Podfile
+  - PostCSS
   - Prebuild
+  - Privacy Shield
+  - Push Notification
+  - package.json
+  - props
   - RTL
+  - React
   - React Native
   - React Navigation
+  - Reanimated
+  - Remote Debugging
+  - REST API
+  - Route
+  - Remote JS
   - Render
   - Rendering
   - Route
   - Routes
   - Router
   - Router's
+  - RTL
   - Runtime
+  - Search
+  - SecureStore
+  - Sentry
   - Server-side
+  - Sierra
   - Simulator
+  - SLAs
+  - Smart Banner
+  - Smart App Banners
+  - Software Mansion
+  - Splash
+  - Screen
+  - Snack
+  - SQLite
   - Static
+  - Storage Access Framework
   - Submit
+  - Swift
+  - Terser
+  - TestFlight
+  - Transporter
+  - Turtle
   - TypeScript
   - Update
+  - URL
+  - URLs
+  - V8
+  - Vercel
+  - VS Code
   - Web
+  - WebGL
+  - WebView
+  - Workflow
   - Wix
+  - webpack
+  - webpack.config.js
   - Xcode
+  - Yarn

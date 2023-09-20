@@ -302,7 +302,7 @@ const ctx = require.context(
 if (ctx.keys().length) ctx(ctx.keys()[0]);
 ```
 
-#### Tailwind Usage
+#### Tailwind usage
 
 You can use Tailwind with React DOM elements as-is:
 
@@ -370,7 +370,7 @@ react {
 
 In your `ios/<Project>.xcodeproj/project.pbxproj` file, replace the following scripts:
 
-#### "Start Packager"
+#### `"Start Packager"`
 
 ```diff
 +			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\nexport RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > `$NODE_BINARY --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/.packager.env'\"`\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open `$NODE_BINARY --print \"require('path').dirname(require.resolve('expo/package.json')) + '/scripts/launchPackager.command'\"` || echo \"Can't start packager automatically\"\n  fi\nfi\n";
@@ -442,7 +442,7 @@ fi
 
 > You can set `CLI_PATH`, `BUNDLE_COMMAND`, and `ENTRY_FILE` environment variables to overwrite these defaults.
 
-### Custom Entry File
+### Custom entry file
 
 By default, React Native only supports using a root `index.js` file as the entry file (or platform-specific variation like `index.ios.js`). Expo projects allow using any entry file, but this requires addition bare setup.
 

@@ -18,7 +18,7 @@ The legacy Expo CLI can be installed as a global npm package on your development
 
 Not versioning the CLI with your project lowers backwards compatibility, and makes it harder to use your project in continuous environments like GitHub Actions. To combat this, we moved to using a versioned CLI in SDK 46.
 
-## Checking CLI Version
+## Checking CLI version
 
 To check the current version of the global Expo CLI you are using, use the `--version` option.
 
@@ -700,7 +700,7 @@ Alias: `expo ui`
 
 {/* END GENERATED BLOCK. DO NOT MODIFY MANUALLY. */}
 
-## Expo CLI Migration
+## Expo CLI migration
 
 In Expo SDK 46, we migrated to a new suite of tooling that is versioned in the `expo` package. Below is a migration guide showing where the legacy `expo-cli` commands live now.
 
@@ -768,7 +768,7 @@ In Expo SDK 46, we migrated to a new suite of tooling that is versioned in the `
 | `expo upload:android`            | `eas submit -p android` | Moved to `eas-cli` |
 | `expo upload:ios`                | `eas submit -p ios`     | Moved to `eas-cli` |
 
-### Other Notes
+### Other notes
 
 - Dev Tools UI has been deprecated in favor of the CLI's Terminal UI, Flipper, and Remote Debugging.
 - `npx expo install` now supports installing the correct version of `react-native`, `react`, `react-dom` automatically.

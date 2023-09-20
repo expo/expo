@@ -8,7 +8,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 Developing a plugin is a great way to extend the Expo ecosystem. However, there are times you'll want to debug your plugin. This page provides some of the best practices for developing and debugging a plugin.
 
-## Develop a Plugin
+## Develop a plugin
 
 > Use [modifier previews](https://github.com/expo/vscode-expo#expo-preview-modifier) to debug the results of your plugin live.
 
@@ -488,11 +488,9 @@ Notice that `expo-location` uses `version: '11.0.0'`, and `react-native-maps` us
 For the most _stable_ experience, you should try to have no `UNVERSIONED` plugins in your project. This is because the `UNVERSIONED` plugin may not support the native code in your project.
 For instance, say you have an `UNVERSIONED` Facebook plugin in your project, if the Facebook native code or plugin has a breaking change, that will break the way your project prebuilds and cause it to error on build.
 
-## Static Modification
+## Static modification
 
-Plugins can transform application code with regular expressions, but these modifications are dangerous, if the template changes over time
-then the regex becomes hard to predict (similarly, if the user modifies a file manually or uses a custom template).
-Here are some examples of files you shouldn't modify manually, and alternatives.
+Plugins can transform application code with regular expressions, but these modifications are dangerous if the template changes over time then the regex becomes hard to predict (similarly if the user modifies a file manually or uses a custom template). Here are some examples of files you shouldn't modify manually, and alternatives.
 
 ### Android Gradle Files
 
@@ -520,7 +518,7 @@ project.ext.react = [/* @info This code would be added to the template ahead of 
 
 Generally, you should only interact with the Gradle file via Expo [Autolinking][autolinking], this provides a programmatic interface with the project files.
 
-### iOS App Delegate
+### iOS AppDelegate
 
 Some modules may need to add delegate methods to the project AppDelegate, this can be done dangerously via the `withAppDelegate` mod,
 or it can be done safely by adding support for unimodules AppDelegate proxy to the native module.
@@ -564,7 +562,7 @@ end
 
 Generally, you should only interact with the Podfile via Expo [Autolinking][autolinking], this provides a programmatic interface with the project files.
 
-### Custom Base Modifiers
+### Custom base modifiers
 
 The Expo CLI `npx expo prebuild` command uses [`@expo/prebuild-config`][prebuild-config] to get the default base modifiers. These defaults only manage a subset of common files, if you want to manage custom files you can do that locally by adding new base modifiers.
 

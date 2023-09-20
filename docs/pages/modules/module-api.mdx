@@ -9,16 +9,16 @@ import { APIBox } from '~/components/plugins/APIBox';
 import { PlatformTags } from '~/ui/components/Tag';
 import { APIMethod } from '~/components/plugins/api/APISectionMethods';
 
-The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primitives that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy to use and convenient API that is consistent across platforms where possible.
+The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primitives that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy-to-use and convenient API that is consistent across platforms where possible.
 
-## Definition Components
+## Definition components
 
-As you might have noticed in the snippets on the [Get Started](./get-started.mdx) page, each module class must implement the `definition` function.
+As you might have noticed in the snippets on the [Get Started](/modules/get-started) page, each module class must implement the `definition` function.
 The module definition consists of the DSL components that describe the module's functionality and behavior.
 
 <APIBox header="Name">
 
-Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument. Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
+Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument. This can be inferred from the module's class name, but it's recommended to set it explicitly for clarity.
 
 ```swift Swift / Kotlin
 Name("MyModuleName")
@@ -70,9 +70,9 @@ Defines a native synchronous function that will be exported to JavaScript. Synch
 - **name**: `String` — Name of the function that you'll call from JavaScript.
 - **body**: `(args...) -> ReturnType` — The closure to run when the function is called.
 
-The function can receive up to 8 arguments. This is due to the limitations of generics in both Swift and Kotlin, because this component must be implemented separately for each arity.
+The function can receive up to 8 arguments. This is due to the limitations of generics in both Swift and Kotlin because this component must be implemented separately for each arity.
 
-See the [Argument Types](#argument-types) section for more details on what types can be used in the function body.
+See the [Argument types](#argument-types) section for more details on what types can be used in the function body.
 
 <CodeBlocksTable>
 
@@ -104,7 +104,7 @@ function getMessage() {
 </APIBox>
 <APIBox header="AsyncFunction">
 
-Defines a JavaScript function that always returns a `Promise` and whose native code is by default dispatched on the different thread than the JavaScript runtime runs on.
+Defines a JavaScript function that always returns a `Promise` and whose native code is by default dispatched on a different thread than the JavaScript runtime runs on.
 
 #### Arguments
 
@@ -114,7 +114,7 @@ Defines a JavaScript function that always returns a `Promise` and whose native c
 If the type of the last argument is `Promise`, the function will wait for the promise to be resolved or rejected before the response is passed back to JavaScript. Otherwise, the function is immediately resolved with the returned value or rejected if it throws an exception.
 The function can receive up to 8 arguments (including the promise).
 
-See the [Argument Types](#argument-types) section for more details on what types can be used in the function body.
+See the [Argument types](#argument-types) section for more details on what types can be used in the function body.
 
 It is recommended to use `AsyncFunction` over `Function` when it:
 
@@ -159,7 +159,7 @@ async function getMessageAsync() {
 
 `AsyncFunction` can receive a suspendable body on Android. However, it has to be passed in the infix notation after the `Coroutine` block. You can read more about suspendable functions and coroutines on [coroutine overview](https://kotlinlang.org/docs/coroutines-overview.html).
 
-`AsyncFunction` with suspendable body can't receive `Promise` as an argument. It uses a suspension mechanism to execute asynchronous calls.
+`AsyncFunction` with a suspendable body can't receive `Promise` as an argument. It uses a suspension mechanism to execute asynchronous calls.
 The function is immediately resolved with the returned value of the provided suspendable block or rejected if it throws an exception. The function can receive up to 8 arguments.
 
 By default, suspend functions are dispatched on the module's coroutine scope. Moreover, every other suspendable function called from the body block is run within the same scope.
@@ -508,9 +508,9 @@ RemoveChildViewAt { parent, index ->
 
 </APIBox>
 
-## Argument Types
+## Argument types
 
-Fundamentally, only primitive and serializable data can be passed back and forth between the runtimes. However, usually native modules need to receive custom data structures — more sophisticated than just the dictionary/map where the values are of unknown (`Any`) type and so each value has to be validated and casted on its own. The Expo Modules API provides protocols to make it more convenient to work with data objects, to provide automatic validation, and finally, to ensure native type-safety on each object member.
+Fundamentally, only primitive and serializable data can be passed back and forth between the runtimes. However, usually native modules need to receive custom data structures — more sophisticated than just the dictionary/map where the values are of unknown (`Any`) type and so each value has to be validated and cast on its own. The Expo Modules API provides protocols to make it more convenient to work with data objects, to provide automatic validation, and finally, to ensure native type-safety on each object member.
 
 <APIBox header="Primitives">
 
@@ -532,7 +532,7 @@ Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are alre
 
 | Native iOS Type         | TypeScript                                                                                                                                                                        |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `URL`                   | `string` with a URL. When scheme is not provided, it's assumed to be a file URL.                                                                                                  |
+| `URL`                   | `string` with a URL. When a scheme is not provided, it's assumed to be a file URL.                                                                                                |
 | `CGFloat`               | `number`                                                                                                                                                                          |
 | `CGPoint`               | `{ x: number, y: number }` or `number[]` with _x_ and _y_ coords                                                                                                                  |
 | `CGSize`                | `{ width: number, height: number }` or `number[]` with _width_ and _height_                                                                                                       |
@@ -555,8 +555,8 @@ Similarly, some common Android types from packages like `java.io`, `java.net`, o
 </APIBox>
 <APIBox header="Records">
 
-_Record_ is a convertible type and an equivalent of the dictionary (Swift) or map (Kotlin), but represented as a struct where each field can have its own type and provide a default value.
-It is a better way to represent a JavaScript object with the native type-safety.
+_Record_ is a convertible type and an equivalent of the dictionary (Swift) or map (Kotlin), but represented as a struct where each field can have its type and provide a default value.
+It is a better way to represent a JavaScript object with the native type safety.
 
 <CodeBlocksTable>
 
@@ -600,7 +600,7 @@ Function("readFile") { path: String, options: FileReadOptions ->
 </APIBox>
 <APIBox header="Enums">
 
-With enums we can go even further with the above example (with `FileReadOptions` record) and limit supported encodings to `"utf8"` and `"base64"`. To use an enum as an argument or record field, it must represent a primitive value (for example, `String`, `Int`) and conform to `Enumerable`.
+With enums, we can go even further with the above example (with `FileReadOptions` record) and limit supported encodings to `"utf8"` and `"base64"`. To use an enum as an argument or record field, it must represent a primitive value (for example, `String`, `Int`) and conform to `Enumerable`.
 
 <CodeBlocksTable>
 
@@ -720,7 +720,7 @@ Function("mutateMe") { jsObject: JavaScriptObject ->
 
 </APIBox>
 
-## Native Classes
+## Native classes
 
 <APIBox header="Module">
 
