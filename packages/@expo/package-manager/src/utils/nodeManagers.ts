@@ -25,7 +25,7 @@ export type NodePackageManagerForProject = PackageManagerOptions &
   Partial<Record<NodePackageManager['name'], boolean>>;
 
 /** The order of the package managers to use when resolving automatically */
-export const RESOLUTION_ORDER: NodePackageManager['name'][] = ['yarn', 'npm', 'pnpm', 'bun'];
+export const RESOLUTION_ORDER: NodePackageManager['name'][] = ['bun', 'yarn', 'npm', 'pnpm'];
 
 /**
  * Resolve the workspace root for a project, if its part of a monorepo.
