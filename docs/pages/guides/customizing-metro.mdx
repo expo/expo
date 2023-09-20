@@ -79,7 +79,7 @@ Metro also supports removing code based on the `__DEV__` global boolean, however
 
 ## Tree shaking by platform
 
-In order to remove code based on the `Platform` module from `react-native`, you need to add the following to your **metro.config.js**:
+To remove code based on the `Platform` module from `react-native`, you need to add the following to your **metro.config.js**:
 
 ```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
@@ -279,7 +279,7 @@ To use it, run the following command:
 
 This will show an interactive breakdown of what makes up your JavaScript bundle. Using this, you can find large packages that you may not have intended to bundle into your project. The smaller the bundle, the faster your app will start.
 
-## Web Support
+## Web support
 
 > **info** Metro web support is under development and only works with the [local Expo CLI](/more/expo-cli/) and Expo SDK 46 or newer. It's recommended you use it with [Expo Router](https://expo.github.io/router/docs).
 
@@ -365,7 +365,7 @@ The output is found in the **dist** directory. To test it locally and see it wil
 
 You can deploy the website using any popular web host by following a guide from [publishing websites](/distribution/publishing-websites), and substitute the **web-build** directory for **dist**.
 
-#### Static Files
+#### Static files
 
 Expo's Metro implementation supports hosting static files from the dev server by putting them in the root **public/** directory. It is similar to many other web frameworks. In Expo webpack, the **web** directory is default.
 

@@ -3,6 +3,7 @@
 // swiftlint:disable closure_body_length
 // swiftlint:disable superfluous_else
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable line_length
 
 // this class uses a ton of implicit non-null properties based on method call order. not worth changing to appease lint
 // swiftlint:disable force_unwrapping
@@ -30,8 +31,34 @@ public protocol AppLoaderTaskDelegate: AnyObject {
   )
 }
 
+public enum RemoteCheckResultNotAvailableReason {
+  /**
+   * No update manifest or rollback directive received from the update server.
+   */
+  case noUpdateAvailableOnServer
+  /**
+   * An update manifest was received from the update server, but the update is not
+   * launchable, or does not pass the configured selection policy.
+   */
+  case updateRejectedBySelectionPolicy
+  /**
+   * An update manifest was received from the update server, but the update has been
+   * previously launched on this device and never successfully launched.
+   */
+  case updatePreviouslyFailed
+  /**
+   * A rollback directive was received from the update server, but the directive
+   * does not pass the configured selection policy.
+   */
+  case rollbackRejectedBySelectionPolicy
+  /**
+   * A rollback directive was received from the update server, but this app has no embedded update.
+   */
+  case rollbackNoEmbedded
+}
+
 public enum RemoteCheckResult {
-  case noUpdateAvailable
+  case noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason)
   case updateAvailable(manifest: [String: Any])
   case rollBackToEmbedded(commitTime: Date)
   case error(error: Error)
@@ -120,7 +147,6 @@ public final class AppLoaderTask: NSObject {
 
   public func start() {
     guard config.isEnabled else {
-      // swiftlint:disable:next line_length
       let errorMessage = "AppLoaderTask was passed a configuration object with updates disabled. You should load updates from an embedded source rather than calling AppLoaderTask, or enable updates in the configuration."
       logger.error(message: errorMessage, code: .updateFailedToLoad)
       delegateQueue.async {
@@ -137,7 +163,6 @@ public final class AppLoaderTask: NSObject {
     }
 
     guard config.updateUrl != nil else {
-      // swiftlint:disable:next line_length
       let errorMessage = "AppLoaderTask was passed a configuration object with a null URL. You must pass a nonnull URL in order to use AppLoaderTask to load updates."
       logger.error(message: errorMessage, code: .updateFailedToLoad)
       delegateQueue.async {
@@ -354,7 +379,7 @@ public final class AppLoaderTask: NSObject {
           self.isUpToDate = true
           if let swiftDelegate = self.swiftDelegate {
             self.delegateQueue.async {
-              swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable)
+              swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(reason: .noUpdateAvailableOnServer))
             }
           }
           return false
@@ -388,7 +413,7 @@ public final class AppLoaderTask: NSObject {
         self.isUpToDate = true
         if let swiftDelegate = self.swiftDelegate {
           self.delegateQueue.async {
-            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable)
+            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(reason: .noUpdateAvailableOnServer))
           }
         }
         return false
@@ -423,7 +448,7 @@ public final class AppLoaderTask: NSObject {
         self.isUpToDate = true
         if let swiftDelegate = self.swiftDelegate {
           self.delegateQueue.async {
-            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable)
+            swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.noUpdateAvailable(reason: .updateRejectedBySelectionPolicy))
           }
         }
         return false
@@ -530,3 +555,4 @@ public final class AppLoaderTask: NSObject {
 // swiftlint:enable force_unwrapping
 // swiftlint:enable superfluous_else
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable line_length

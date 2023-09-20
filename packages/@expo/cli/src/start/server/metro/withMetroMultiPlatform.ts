@@ -316,6 +316,26 @@ export function withExtendedResolver(
         );
       }
 
+      if (
+        // is web
+        platform === 'web' &&
+        // Not server runtime
+        !isNode &&
+        // Is Node.js built-in
+        isNodeExternal(moduleName)
+      ) {
+        // Perform optional resolve first. If the module doesn't exist (no module in the node_modules)
+        // then we can mock the file to use an empty module.
+        result ??= optionalResolve(moduleName);
+
+        if (!result) {
+          // In this case, mock the file to use an empty module.
+          return {
+            type: 'empty',
+          };
+        }
+      }
+
       result ??= doResolve(moduleName);
 
       if (result) {
@@ -395,7 +415,7 @@ export async function withMetroMultiPlatformAsync(
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
-    webOutput?: 'single' | 'static';
+    webOutput?: 'single' | 'static' | 'server';
     routerDirectory: string;
   }
 ) {
@@ -405,7 +425,7 @@ export async function withMetroMultiPlatformAsync(
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 
-  if (webOutput === 'static') {
+  if (['static', 'server'].includes(webOutput ?? '')) {
     // Enable static rendering in runtime space.
     process.env.EXPO_PUBLIC_USE_STATIC = '1';
   }

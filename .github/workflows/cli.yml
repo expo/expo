@@ -9,6 +9,7 @@ on:
       - packages/@expo/metro-runtime/**
       - packages/@expo/metro-config/**
       - packages/@expo/fingerprint/**
+      - packages/create-expo/**
       - packages/expo-router/**
       - yarn.lock
   pull_request:
@@ -18,6 +19,7 @@ on:
       - packages/@expo/metro-runtime/**
       - packages/@expo/metro-config/**
       - packages/@expo/fingerprint/**
+      - packages/create-expo/**
       - packages/expo-router/**
       - yarn.lock
   schedule:

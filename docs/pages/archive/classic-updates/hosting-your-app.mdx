@@ -44,7 +44,7 @@ Once you've exported your update's static files, you can host the contents on yo
 
 To setup a QR code to view your hosted update, or if you want to host your files locally, follow the instructions below in the 'Loading QR Code/URL in Development' section.
 
-### HTTP Headers
+### HTTP headers
 
 On some hosting services such as [AWS](https://aws.amazon.com/) and [Firebase](http://firebase.google.com/), you'll need to explicitly set the header `"Content-Type"` of JavaScript files as `"application/javascript"` so that [updates](./configuring-updates) work correctly. Otherwise [Updates.checkForUpdateAsync()](/versions/latest/sdk/updates/#updatescheckforupdateasync) will fail with the error _"Failed to fetch new update"_.
 
@@ -130,11 +130,11 @@ Here is an example URL from a remote server: [https://expo.github.io/self-hostin
 
 Here is an example URL from localhost: `http://localhost:8000/android-index.json`
 
-## Advanced Topics
+## Advanced topics
 
 ### Debugging
 
-When Expo CLI bundles your update, minification is always enabled. In order to see the original source code of your update for debugging purposes, you can generate source maps. Here is an example workflow:
+When Expo CLI bundles your update, minification is always enabled. To see the original source code of your update for debugging purposes, you can generate source maps. Here is an example workflow:
 
 1. Run `expo export --dump-sourcemap --public-url <your-url>`. This will also export your bundle sourcemaps in the **bundles** directory.
 2. A **debug.html** file will also be created at the root of your output directory.
@@ -142,7 +142,7 @@ When Expo CLI bundles your update, minification is always enabled. In order to s
 
 ![Debugging Source Code](/static/images/host-your-app-debug.png)
 
-### Asset Hosting
+### Asset hosting
 
 By default, all assets are hosted from an `assets` path resolving from your `public-url` (for example, https://expo.github.io/self-hosting-example/assets). You can override this behavior in the `assetUrlOverride` field of your `android-index.json`. All relative URL's will be resolved from the `public-url`.
 

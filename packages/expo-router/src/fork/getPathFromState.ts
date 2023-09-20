@@ -1,5 +1,6 @@
 import { PathConfig, PathConfigMap, validatePathConfig } from '@react-navigation/core';
 import type { NavigationState, PartialState, Route } from '@react-navigation/routers';
+import Constants from 'expo-constants';
 import * as queryString from 'query-string';
 
 import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
@@ -402,7 +403,7 @@ function getPathFromResolvedState(
     }
   }
 
-  return { path: basicSanitizePath(path), params: decodeParams(allParams) };
+  return { path: appendBasePath(basicSanitizePath(path)), params: decodeParams(allParams) };
 }
 
 function decodeParams(params: Record<string, string>) {
@@ -443,7 +444,10 @@ function getPathWithConventionsCollapsed({
           return `[...${name}]`;
         }
         if (params[name]) {
-          return params[name].join('/');
+          if (Array.isArray(params[name])) {
+            return params[name].join('/');
+          }
+          return params[name];
         }
         if (i === 0) {
           // This can occur when a wildcard matches all routes and the given path was `/`.
@@ -609,3 +613,15 @@ const createNormalizedConfigs = (
   Object.fromEntries(
     Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)])
   );
+
+export function appendBasePath(
+  path: string,
+  assetPrefix: string | undefined = Constants.expoConfig?.experiments?.basePath
+) {
+  if (process.env.NODE_ENV !== 'development') {
+    if (assetPrefix) {
+      return `/${assetPrefix.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
+    }
+  }
+  return path;
+}

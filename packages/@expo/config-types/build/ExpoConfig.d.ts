@@ -41,7 +41,7 @@ export interface ExpoConfig {
      * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion';
+        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental';
     };
     /**
      * Your app version. In addition to this field, you'll also use `ios.buildNumber` and `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). On iOS this corresponds to `CFBundleShortVersionString`, and on Android, this corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
@@ -248,6 +248,14 @@ export interface ExpoConfig {
      * Enable experimental features that may be unstable, unsupported, or removed without deprecation notices.
      */
     experiments?: {
+        /**
+         * Export a website relative to a subpath of a domain. The path will be prepended as-is to links to all bundled resources. Prefix the path with a `/` (recommended) to load all resources relative to the server root. If the path **does not** start with a `/` then resources will be loaded relative to the code that requests them, this could lead to unexpected behavior. Example '/subpath'. Defaults to '' (empty string).
+         */
+        basePath?: string;
+        /**
+         * If true, indicates that this project does not support tablets or handsets, and only supports Apple TV and Android TV
+         */
+        supportsTVOnly?: boolean;
         /**
          * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
          */
@@ -463,7 +471,7 @@ export interface IOS {
      * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion';
+        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental';
     };
 }
 /**
@@ -739,7 +747,7 @@ export interface Android {
      * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion';
+        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental';
     };
 }
 export interface AndroidIntentFiltersData {

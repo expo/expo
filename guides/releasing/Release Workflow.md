@@ -252,7 +252,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 - Make sure to run `yarn` in `home`.
 - Publish dev home first by running `et publish-dev-home`. Commit the change to `dev-home-config.json`; do not commit any other changes from the script (in particular, if it changes `home/app.json`, do not commit those changes).
 - Run a debug build of both the iOS and Android versions of Expo Go to smoke test the newly published dev home.
-- To publish production home, log into expo-cli with the `exponent` account (credentials in 1P). Then publish home with `EXPO_NO_DOCTOR=true expo publish`. This will publish home to production (making it available as an OTA update for the SDK version in `app.json`) and write changes to two manifests and bundles (one each for iOS and Android) in the repo. Commit these changes.
+- To publish production home, log into eas-cli with the `exponent` account (credentials in 1P). Then publish home with `et publish-prod-home`. This will publish home to production (update is unused in production) and write to two manifests and bundles (one each for iOS and Android) in the repo to be embedded in builds of Expo Go. Commit these changes.
 
 ## 3.2. Build and submit
 

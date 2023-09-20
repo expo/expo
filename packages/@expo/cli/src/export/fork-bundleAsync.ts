@@ -117,7 +117,6 @@ export async function bundleAsync(
       const { code, map } = await metroServer.build(bundleOptions);
       const [assets, css] = await Promise.all([
         getAssets(metroServer, bundleOptions),
-        // metroServer.getAssets(bundleOptions),
         getCssModulesFromBundler(config, metroServer.getBundler(), bundleOptions),
       ]);
 

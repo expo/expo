@@ -38,13 +38,13 @@ function _hash() {
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 // s = static
 const STATIC_EXPORT_DIRECTORY = '_expo/static/css';
-function filterJsModules(dependencies, {
+function filterJsModules(dependencies, type, {
   processModuleFilter,
   projectRoot
 }) {
   const assets = [];
   for (const module of dependencies.values()) {
-    if ((0, _js().isJsModule)(module) && processModuleFilter(module) && (0, _js().getJsOutput)(module).type === 'js/module' && _path().default.relative(projectRoot, module.path) !== 'package.json') {
+    if ((0, _js().isJsModule)(module) && processModuleFilter(module) && (0, _js().getJsOutput)(module).type === type && _path().default.relative(projectRoot, module.path) !== 'package.json') {
       assets.push(module);
     }
   }
@@ -55,7 +55,7 @@ function getCssSerialAssets(dependencies, {
   projectRoot
 }) {
   const assets = [];
-  for (const module of filterJsModules(dependencies, {
+  for (const module of filterJsModules(dependencies, 'js/module', {
     processModuleFilter,
     projectRoot
   })) {
@@ -100,7 +100,9 @@ function fileNameFromContents({
   filepath,
   src
 }) {
-  return getFileName(filepath) + '-' + (0, _hash().hashString)(filepath + src);
+  // Decode if the path is encoded from the Metro dev server, then normalize paths for Windows support.
+  const decoded = decodeURIComponent(filepath).replace(/\\/g, '/');
+  return getFileName(decoded) + '-' + (0, _hash().hashString)(decoded + src);
 }
 function getFileName(module) {
   return _path().default.basename(module).replace(/\.[^.]+$/, '');
