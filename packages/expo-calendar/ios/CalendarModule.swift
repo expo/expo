@@ -11,8 +11,8 @@ public class CalendarModule: Module {
 
     OnCreate {
       self.appContext?.permissions?.register([
-        CalendarPermissionsRequester(),
-        RemindersPermissionRequester()
+        CalendarPermissionsRequester(eventStore: eventStore),
+        RemindersPermissionRequester(eventStore: eventStore)
       ])
       initializePermittedEntities()
     }

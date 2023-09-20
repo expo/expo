@@ -2,11 +2,16 @@ import ExpoModulesCore
 import EventKit
 
 public class CalendarPermissionsRequester: NSObject, EXPermissionsRequester {
-  private let eventStore = EKEventStore()
+  private let eventStore: EKEventStore
+  
+  init(eventStore: EKEventStore) {
+    self.eventStore = eventStore
+  }
+  
   static public func permissionType() -> String {
     return "calendar"
   }
-
+  
   public func getPermissions() -> [AnyHashable: Any] {
     var status: CalendarPermissionsStatus
     var permissions: EKAuthorizationStatus

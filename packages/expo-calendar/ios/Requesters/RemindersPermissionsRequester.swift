@@ -2,6 +2,12 @@ import ExpoModulesCore
 import EventKit
 
 public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
+  private let eventStore: EKEventStore
+  
+  init(eventStore: EKEventStore) {
+    self.eventStore = eventStore
+  }
+  
   static public func permissionType() -> String {
     return "reminders"
   }
@@ -33,7 +39,6 @@ public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
   }
 
   public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
-    let eventStore = EKEventStore()
     if #available(iOS 17.0, *) {
       eventStore.requestFullAccessToReminders { [weak self] _, error in
         guard let self else {
