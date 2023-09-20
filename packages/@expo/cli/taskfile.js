@@ -30,7 +30,7 @@ export async function compile_react_native(task, opts) {
   // const sourceDir = path.relative(__dirname, rnDir) + '/index.js';
   // const sourceDir =
   //   path.relative(__dirname, rnDir) + '/Libraries/TurboModule/samples/NativeSampleTurboModule.js';
-  const sourceDir = path.relative(__dirname, rnDir) + '/**/*.+(js|jsx|json)';
+  const sourceDir = path.relative(__dirname, rnDir) + '/**/*.+(png|js|jsx|json)';
 
   await task
     .source(sourceDir, {

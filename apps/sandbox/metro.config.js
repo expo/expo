@@ -11,7 +11,8 @@ const root = path.join(__dirname, '../..');
 
 config.watchFolders = [
   __dirname,
-  ...['packages', 'node_modules', 'react-native-lab'].map((v) => path.join(root, v)),
+  ...['packages', 'node_modules'].map((v) => path.join(root, v)),
+  // ...['packages', 'node_modules', 'react-native-lab'].map((v) => path.join(root, v)),
 ];
 
 config.resolver.blockList = [

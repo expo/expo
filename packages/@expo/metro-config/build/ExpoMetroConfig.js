@@ -162,6 +162,7 @@ function getDefaultConfig(projectRoot, options = {}) {
     console.log(_chalk().default.gray(`\u203A Unstable feature ${_chalk().default.bold`EXPO_USE_EXOTIC`} is enabled. Bundling may not work as expected, and is subject to breaking changes.`));
   }
   const reactNativePath = _path().default.dirname((0, _resolveFrom().default)(projectRoot, 'react-native/package.json'));
+  const compiledReactNativePath = _path().default.join(_path().default.dirname((0, _resolveFrom().default)(projectRoot, '@expo/cli/package.json')), 'dist/compiled/react-native');
   try {
     // Set the `EXPO_METRO_CACHE_KEY_VERSION` variable for use in the custom babel transformer.
     // This hack is used because there doesn't appear to be anyway to resolve
@@ -203,6 +204,7 @@ function getDefaultConfig(projectRoot, options = {}) {
     } catch {}
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
+    console.log(`- Compiled React Native: ${compiledReactNativePath}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
@@ -241,7 +243,7 @@ function getDefaultConfig(projectRoot, options = {}) {
       getModulesRunBeforeMainModule: () => {
         const preModules = [
         // MUST be first
-        require.resolve(_path().default.join(reactNativePath, 'Libraries/Core/InitializeCore'))];
+        require.resolve(_path().default.join(compiledReactNativePath, 'Libraries/Core/InitializeCore'))];
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
         // This will only be applied if the module is installed and imported somewhere in the bundle already.
@@ -251,7 +253,7 @@ function getDefaultConfig(projectRoot, options = {}) {
         }
         return preModules;
       },
-      getPolyfills: () => require(_path().default.join(reactNativePath, 'rn-get-polyfills'))()
+      getPolyfills: () => require(_path().default.join(compiledReactNativePath, 'rn-get-polyfills'))()
     },
     server: {
       rewriteRequestUrl: (0, _rewriteRequestUrl().getRewriteRequestUrl)(projectRoot),
@@ -280,7 +282,8 @@ function getDefaultConfig(projectRoot, options = {}) {
       babelTransformerPath: isExotic ?
       // TODO: Combine these into one transformer.
       require.resolve('./transformer/metro-expo-exotic-babel-transformer') : require.resolve('./babel-transformer'),
-      assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
+      assetRegistryPath: _path().default.join(compiledReactNativePath, 'Libraries/Image/AssetRegistry'),
+      //'react-native/Libraries/Image/AssetRegistry',
       assetPlugins: getAssetPlugins(projectRoot)
     }
   });

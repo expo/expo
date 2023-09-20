@@ -70,6 +70,10 @@ export function getDefaultConfig(
   }
 
   const reactNativePath = path.dirname(resolveFrom(projectRoot, 'react-native/package.json'));
+  const compiledReactNativePath = path.join(
+    path.dirname(resolveFrom(projectRoot, '@expo/cli/package.json')),
+    'dist/compiled/react-native'
+  );
 
   try {
     // Set the `EXPO_METRO_CACHE_KEY_VERSION` variable for use in the custom babel transformer.
@@ -111,6 +115,7 @@ export function getDefaultConfig(
     } catch {}
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
+    console.log(`- Compiled React Native: ${compiledReactNativePath}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
@@ -152,7 +157,7 @@ export function getDefaultConfig(
       getModulesRunBeforeMainModule: () => {
         const preModules: string[] = [
           // MUST be first
-          require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
+          require.resolve(path.join(compiledReactNativePath, 'Libraries/Core/InitializeCore')),
         ];
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
@@ -164,7 +169,7 @@ export function getDefaultConfig(
 
         return preModules;
       },
-      getPolyfills: () => require(path.join(reactNativePath, 'rn-get-polyfills'))(),
+      getPolyfills: () => require(path.join(compiledReactNativePath, 'rn-get-polyfills'))(),
     },
     server: {
       rewriteRequestUrl: getRewriteRequestUrl(projectRoot),
@@ -199,7 +204,7 @@ export function getDefaultConfig(
         ? // TODO: Combine these into one transformer.
           require.resolve('./transformer/metro-expo-exotic-babel-transformer')
         : require.resolve('./babel-transformer'),
-      assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
+      assetRegistryPath: path.join(compiledReactNativePath, 'Libraries/Image/AssetRegistry'), //'react-native/Libraries/Image/AssetRegistry',
       assetPlugins: getAssetPlugins(projectRoot),
     },
   });

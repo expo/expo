@@ -109,7 +109,10 @@ export function withExtendedResolver(
   // swap out the transformer based on platform.
   const assetRegistryPath = fs.realpathSync(
     // This is the native asset registry alias for native.
-    path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
+    path.resolve(
+      resolveFrom(projectRoot, '@expo/cli/dist/compiled/react-native/Libraries/Image/AssetRegistry')
+    )
+    // path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
     // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
     // path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
   );
@@ -339,6 +342,13 @@ export function withExtendedResolver(
       result ??= doResolve(moduleName);
 
       if (result) {
+        // if (
+        //   result.type === 'sourceFile' &&
+        //   result.filePath.match(/\/react-native\//) &&
+        //   !context.originModulePath.match(/\/react-native\//)
+        // ) {
+        //   console.log('RN >', result.filePath, '--', context.originModulePath);
+        // }
         // Replace the web resolver with the original one.
         // This is basically an alias for web-only.
         if (shouldAliasAssetRegistryForWeb(platform, result)) {

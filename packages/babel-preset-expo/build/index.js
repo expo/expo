@@ -96,16 +96,16 @@ function babelPresetExpo(api, options = {}) {
         ],
         plugins: [
             ...extraPlugins,
-            [
-                // Redirect all `react-native/*` imports to `@expo/cli/dist/compiled/react-native/*`
-                require.resolve('babel-plugin-module-resolver'),
-                {
-                    alias: {
-                        '^react-native$': '@expo/cli/dist/compiled/react-native',
-                        '^react-native/(.*)$': '@expo/cli/dist/compiled/react-native/$1',
-                    },
-                },
-            ],
+            // [
+            //   // Redirect all `react-native/*` imports to `@expo/cli/dist/compiled/react-native/*`
+            //   require.resolve('babel-plugin-module-resolver'),
+            //   {
+            //     alias: {
+            //       '^react-native$': '@expo/cli/dist/compiled/react-native',
+            //       '^react-native/(.*)$': '@expo/cli/dist/compiled/react-native/$1',
+            //     },
+            //   },
+            // ],
             // TODO: Remove
             [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
             require.resolve('@babel/plugin-proposal-export-namespace-from'),
@@ -117,14 +117,17 @@ function babelPresetExpo(api, options = {}) {
     };
 }
 function getAliasPlugin() {
-    if (!hasModule('@expo/vector-icons')) {
-        return null;
-    }
+    // if (!hasModule('@expo/vector-icons')) {
+    //   return null;
+    // }
     return [
         require.resolve('babel-plugin-module-resolver'),
         {
             alias: {
                 'react-native-vector-icons': '@expo/vector-icons',
+                // Redirect all `react-native/*` imports to `@expo/cli/dist/compiled/react-native/*`
+                '^react-native$': '@expo/cli/dist/compiled/react-native',
+                '^react-native/(.+)$': '@expo/cli/dist/compiled/react-native/\\1',
             },
         },
     ];

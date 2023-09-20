@@ -45,13 +45,8 @@ module.exports = function (task) {
 
   task.plugin('metroBabel', {}, function* (file, environment, { stripExtension } = {}) {
     // Don't compile .d.ts
-    if (file.base.endsWith('.d.ts')) return;
-
-    if (file.base.endsWith('.json')) {
-      // minify JSON
-      //   file.data = Buffer.from(JSON.parse(JSON.stringify(file.data.toString('utf-8'))));
-      return;
-    }
+    // TODO: minify package.json
+    if (['.png', '.d.ts', '.json'].some((ext) => file.base.endsWith(ext))) return;
 
     const filePath = path.join(file.dir, file.base);
     const inputFilePath = path.join(__dirname, filePath);
