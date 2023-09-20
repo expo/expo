@@ -44,7 +44,7 @@ jobs:
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 15.0
-        run: sudo xcode-select --switch /Applications/Xcode-15.app
+        run: sudo xcode-select --switch /Applications/Xcode_15.0.app
       - name: 🔓 Decrypt secrets if possible
         uses: ./.github/actions/expo-git-decrypt
         with:
