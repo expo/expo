@@ -16,7 +16,9 @@ export function DevMenuServerInfo({ task }: Props) {
     : null;
   const taskUrl = task.manifestUrl ? FriendlyUrls.toFriendlyString(task.manifestUrl) : '';
   const devServerName =
-    manifest && manifest.extra?.expoGo?.developer ? manifest.extra.expoGo.developer.tool : null;
+    manifest && 'extra' in manifest && manifest.extra?.expoGo?.developer
+      ? manifest.extra.expoGo.developer.tool
+      : null;
 
   return (
     <View bg="default" padding="medium">

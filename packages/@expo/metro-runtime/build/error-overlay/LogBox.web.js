@@ -7,7 +7,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-const react_native_1 = require("react-native");
 let LogBox;
 /**
  * LogBox displays logs in the app.
@@ -37,7 +36,7 @@ if (__DEV__) {
                 };
             }
             consoleErrorImpl = registerError;
-            if (react_native_1.Platform.isTesting) {
+            if (process.env.NODE_ENV === 'test') {
                 LogBoxData.setDisabled(true);
             }
         },

@@ -82,6 +82,7 @@ export function createBundleUrlPath({
   minify = mode === 'production',
   environment,
   serializerOutput,
+  serializerIncludeMaps,
   lazy,
 }: {
   platform: string;
@@ -90,6 +91,7 @@ export function createBundleUrlPath({
   minify?: boolean;
   environment?: string;
   serializerOutput?: 'static';
+  serializerIncludeMaps?: boolean;
   lazy?: boolean;
 }): string {
   const queryParams = new URLSearchParams({
@@ -112,6 +114,9 @@ export function createBundleUrlPath({
   }
   if (serializerOutput) {
     queryParams.append('serializer.output', serializerOutput);
+  }
+  if (serializerIncludeMaps) {
+    queryParams.append('serializer.map', String(serializerIncludeMaps));
   }
 
   return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
@@ -391,7 +396,7 @@ export abstract class ManifestMiddleware<
       const platform = parsePlatformHeader(req);
       // On web, serve the public folder
       if (!platform || platform === 'web') {
-        if (this.initialProjectConfig.exp.web?.output === 'static') {
+        if (['static', 'server'].includes(this.initialProjectConfig.exp.web?.output ?? '')) {
           // Skip the spa-styled index.html when static generation is enabled.
           next();
           return true;

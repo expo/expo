@@ -8,8 +8,15 @@ import {
   createProjectHashAsync,
   diffFingerprintChangesAsync,
 } from '../../src/Fingerprint';
-import { normalizeOptions } from '../../src/Options';
+import { normalizeOptionsAsync } from '../../src/Options';
 import { getHashSourcesAsync } from '../../src/sourcer/Sourcer';
+
+jest.mock('../../src/sourcer/ExpoConfigLoader', () => ({
+  // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
+  getExpoConfigLoaderPath: jest.fn(() =>
+    path.resolve(__dirname, '..', '..', 'build', 'sourcer', 'ExpoConfigLoader.js')
+  ),
+}));
 
 describe('managed project test', () => {
   jest.setTimeout(600000);
@@ -65,7 +72,7 @@ describe('managed project test', () => {
 
     const configPath = path.join(projectRoot, 'app.json');
     const config = JSON.parse(await fs.readFile(configPath, 'utf8'));
-    config.jsEngine = 'hermes';
+    config.expo.jsEngine = 'hermes';
     await fs.writeFile(configPath, JSON.stringify(config, null, 2));
 
     const hash2 = await createProjectHashAsync(projectRoot);
@@ -147,7 +154,10 @@ describe(`getHashSourcesAsync - managed project`, () => {
   });
 
   it('should match snapshot', async () => {
-    const sources = await getHashSourcesAsync(projectRoot, normalizeOptions());
+    const sources = await getHashSourcesAsync(
+      projectRoot,
+      await normalizeOptionsAsync(projectRoot)
+    );
     expect(sources).toMatchSnapshot();
   });
 });

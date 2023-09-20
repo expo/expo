@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
@@ -6,6 +7,7 @@ import { exportAssetsAsync, exportCssAssetsAsync } from './exportAssets';
 import { unstable_exportStaticAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
+import { persistMetroAssetsAsync } from './persistMetroAssets';
 import { printBundleSizes } from './printBundleSizes';
 import { Options } from './resolveOptions';
 import {
@@ -16,7 +18,6 @@ import {
   writeSourceMapsAsync,
 } from './writeContents';
 import * as Log from '../log';
-import { importCliSaveAssetsFromProject } from '../start/server/metro/resolveFromProject';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
@@ -52,9 +53,25 @@ export async function exportAppAsync(
   setNodeEnv(dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
-  const exp = await getPublicExpoManifestAsync(projectRoot);
+  const exp = await getPublicExpoManifestAsync(projectRoot, {
+    // Web doesn't require validation.
+    skipValidation: platforms.length === 1 && platforms[0] === 'web',
+  });
 
-  const useWebSSG = exp.web?.output === 'static';
+  const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
+  const basePath = (exp.experiments?.basePath?.replace(/\/+$/, '') ?? '').trim();
+
+  // Print out logs
+  if (basePath) {
+    Log.log();
+    Log.log(chalk.gray`Using (experimental) base path: ${basePath}`);
+    // Warn if not using an absolute path.
+    if (!basePath.startsWith('/')) {
+      Log.log(
+        chalk.yellow`  Base path does not start with a slash. Requests will not be absolute.`
+      );
+    }
+  }
 
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
@@ -75,7 +92,9 @@ export async function exportAppAsync(
       platforms,
       minify,
       // TODO: Breaks asset exports
-      // platforms: useWebSSG ? platforms.filter((platform) => platform !== 'web') : platforms,
+      // platforms: useServerRendering
+      //   ? platforms.filter((platform) => platform !== 'web')
+      //   : platforms,
       dev,
       // TODO: Disable source map generation if we aren't outputting them.
     }
@@ -107,31 +126,38 @@ export async function exportAppAsync(
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
   const { hashes, fileNames } = await writeBundlesAsync({
     bundles,
-    useWebSSG,
+    useServerRendering,
     outputDir: bundlesPath,
   });
 
   Log.log('Finished saving JS Bundles');
 
   if (platforms.includes('web')) {
-    if (useWebSSG) {
+    if (useServerRendering) {
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
-        // TODO: Expose
         minify,
+        basePath,
+        includeMaps: dumpSourcemap,
+        // @ts-expect-error: server not on type yet
+        exportServer: exp.web?.output === 'server',
       });
       Log.log('Finished saving static files');
     } else {
       const cssLinks = await exportCssAssetsAsync({
         outputDir,
         bundles,
+        basePath,
       });
       let html = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-        scripts: [`/bundles/${fileNames.web}`],
+        scripts: [`${basePath}/bundles/${fileNames.web}`],
         cssLinks,
       });
       // Add the favicon assets to the HTML.
-      const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, outputDir);
+      const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
+        outputDir,
+        basePath,
+      });
       if (modifyHtml) {
         html = modifyHtml(html);
       }
@@ -143,12 +169,12 @@ export async function exportAppAsync(
     // TODO: Use a different mechanism for static web.
     if (bundles.web) {
       // Save assets like a typical bundler, preserving the file paths on web.
-      const saveAssets = importCliSaveAssetsFromProject(projectRoot);
-      await Promise.all(
-        Object.entries(bundles).map(([platform, bundle]) => {
-          return saveAssets(bundle.assets, platform, staticFolder, undefined);
-        })
-      );
+      // TODO: Update React Native Web to support loading files from asset hashes.
+      await persistMetroAssetsAsync(bundles.web.assets, {
+        platform: 'web',
+        outputDirectory: staticFolder,
+        basePath,
+      });
     }
   }
 

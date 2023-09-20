@@ -1,5 +1,10 @@
 import { SnackLogo } from '@expo/styleguide';
-import { ChangelogIcon, DiscordIcon, MessageDotsSquareIcon } from '@expo/styleguide-icons';
+import {
+  ChangelogIcon,
+  DiscordIcon,
+  Mail01Icon,
+  MessageDotsSquareIcon,
+} from '@expo/styleguide-icons';
 import { useRouter } from 'next/compat/router';
 
 import { SidebarSingleEntry } from './SidebarSingleEntry';
@@ -45,6 +50,13 @@ export const SidebarFooter = () => {
         href="https://expo.dev/changelog"
         title="Changelog"
         Icon={ChangelogIcon}
+        isExternal
+      />
+      <SidebarSingleEntry
+        secondary
+        href="http://eepurl.com/hk1tCn"
+        title="Newsletter"
+        Icon={Mail01Icon}
         isExternal
       />
     </div>

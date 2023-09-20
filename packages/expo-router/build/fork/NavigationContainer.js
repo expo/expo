@@ -1,4 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // We only need to fork on native to support any prefixes.
-import { NavigationContainer } from '@react-navigation/native';
-export default NavigationContainer;
+const native_1 = require("@react-navigation/native");
+exports.default = native_1.NavigationContainer;
 //# sourceMappingURL=NavigationContainer.js.map

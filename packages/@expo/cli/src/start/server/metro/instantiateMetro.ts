@@ -1,7 +1,7 @@
 import { ExpoConfig, getConfig } from '@expo/config';
-import { MetroDevServerOptions, prependMiddleware } from '@expo/dev-server';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
+import { Server as ConnectServer } from 'connect';
 import http from 'http';
 import type Metro from 'metro';
 import { Terminal } from 'metro-core';
@@ -10,18 +10,23 @@ import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { importExpoMetroConfig } from './resolveFromProject';
-import { getRouterDirectory } from './router';
+import { importCliServerApiFromProject, importExpoMetroConfig } from './resolveFromProject';
+import { getRouterDirectoryModuleIdWithManifest } from './router';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
+import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
 import { Log } from '../../../log';
 import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
-import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
+import createJsInspectorMiddleware from '../middleware/inspector/createJsInspectorMiddleware';
+import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
+import { remoteDevtoolsCorsMiddleware } from '../middleware/remoteDevtoolsCorsMiddleware';
+import { remoteDevtoolsSecurityHeadersMiddleware } from '../middleware/remoteDevtoolsSecurityHeadersMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
+import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
 
 // From expo/dev-server but with ability to use custom logger.
@@ -76,21 +81,28 @@ export async function loadMetroConfigAsync(
     !exp.sdkVersion ||
     gteSdkVersion(exp, '50.0.0')
   ) {
-    // TODO: Handle asset prefix.
     if (isExporting) {
       // This token will be used in the asset plugin to ensure the path is correct for writing locally.
       // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = '/assets?export_path=/assets';
+      config.transformer.publicPath = `/assets?export_path=${
+        (exp.experiments?.basePath ?? '') + '/assets'
+      }`;
     } else {
       // @ts-expect-error: typed as readonly
       config.transformer.publicPath = '/assets/?unstable_path=.';
+    }
+  } else {
+    if (isExporting && exp.experiments?.basePath) {
+      // This token will be used in the asset plugin to ensure the path is correct for writing locally.
+      // @ts-expect-error: typed as readonly.
+      config.transformer.publicPath = exp.experiments?.basePath;
     }
   }
 
   const platformBundlers = getPlatformBundlers(exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
-    routerDirectory: exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot),
+    routerDirectory: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     config,
     platformBundlers,
     isTsconfigPathsEnabled: !!exp.experiments?.tsconfigPaths,
@@ -131,12 +143,30 @@ export async function instantiateMetroAsync(
     { exp, isExporting }
   );
 
-  const { middleware, websocketEndpoints, eventsSocketEndpoint, messageSocketEndpoint } =
-    createDevServerMiddleware(projectRoot, {
+  const { createDevServerMiddleware, securityHeadersMiddleware } =
+    importCliServerApiFromProject(projectRoot);
+
+  const { middleware, messageSocketEndpoint, eventsSocketEndpoint, websocketEndpoints } =
+    createDevServerMiddleware({
       port: metroConfig.server.port,
       watchFolders: metroConfig.watchFolders,
     });
 
+  // securityHeadersMiddleware does not support cross-origin requests for remote devtools to get the sourcemap.
+  // We replace with the enhanced version.
+  replaceMiddlewareWith(
+    middleware as ConnectServer,
+    securityHeadersMiddleware,
+    remoteDevtoolsSecurityHeadersMiddleware
+  );
+
+  middleware.use(remoteDevtoolsCorsMiddleware);
+
+  prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
+
+  middleware.use('/inspector', createJsInspectorMiddleware());
+
+  // TODO: We can probably drop this now.
   const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
   // @ts-expect-error: can't mutate readonly config
   metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {

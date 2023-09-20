@@ -5,6 +5,7 @@ import { Options, ResolvedOptions, resolveOptionsAsync } from './resolveOptions'
 import { Log } from '../../log';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
@@ -32,6 +33,11 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     appName: props.appName,
     buildCache: props.buildCache,
   });
+
+  // Ensure the port hasn't become busy during the build.
+  if (props.shouldStartBundler && !(await ensurePortAvailabilityAsync(projectRoot, props))) {
+    props.shouldStartBundler = false;
+  }
 
   const manager = await startBundlerAsync(projectRoot, {
     port: props.port,

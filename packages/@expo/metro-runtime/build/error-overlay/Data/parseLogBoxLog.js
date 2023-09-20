@@ -11,13 +11,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseLogBoxLog = exports.parseLogBoxException = exports.parseComponentStack = exports.parseInterpolation = void 0;
-const UTFSequence_1 = __importDefault(require("react-native/Libraries/UTFSequence"));
 const parseErrorStack_1 = __importDefault(require("../modules/parseErrorStack"));
 const stringifySafe_1 = __importDefault(require("../modules/stringifySafe"));
 const BABEL_TRANSFORM_ERROR_FORMAT = /^(?:TransformError )?(?:SyntaxError: |ReferenceError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/;
 const BABEL_CODE_FRAME_ERROR_FORMAT = /^(?:TransformError )?(?:.*):? (?:.*?)(\/.*): ([\s\S]+?)\n([ >]{2}[\d\s]+ \|[\s\S]+|\u{001b}[\s\S]+)/u;
 const METRO_ERROR_FORMAT = /^(?:InternalError Metro has encountered an error:) (.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/u;
-const SUBSTITUTION = UTFSequence_1.default.BOM + '%s';
+const SUBSTITUTION = '\ufeff%s';
 function parseInterpolation(args) {
     const categoryParts = [];
     const contentParts = [];

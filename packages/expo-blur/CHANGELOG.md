@@ -4,13 +4,25 @@
 
 ### 🛠 Breaking changes
 
-### 🎉 New features
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
 
-- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.7.0 — 2023-09-15
+
+### 🎉 New features
+
+- Support more blur effects. On iOS, using `UIBlurEffect.Style`. On Android, find the closest available color reference. ([#24392](https://github.com/expo/expo/pull/24392) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
 
 ## 12.5.0 — 2023-08-02
 

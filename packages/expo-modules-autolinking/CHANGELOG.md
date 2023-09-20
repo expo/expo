@@ -8,13 +8,34 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 1.6.0 — 2023-09-15
+
+### 🐛 Bug fixes
+
+- Maintain hierarchical order when linking isolated modules ([#24351](https://github.com/expo/expo/pull/24351) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- [iOS] Disable packager and bundle JS when EX_UPDATES_NATIVE_DEBUG set. ([#24366](https://github.com/expo/expo/pull/24366) by [@douglowder](https://github.com/douglowder))
+
+## 1.5.2 — 2023-09-04
+
+### 🐛 Bug fixes
+
 - Add support for pnpm isolated modules ([#23867](https://github.com/expo/expo/pull/23867) by [@byCedric](https://github.com/byCedric))
 - Resolve cli for isolated modules before running node scripts. ([#23926](https://github.com/expo/expo/pull/23926) by [@byCedric](https://github.com/byCedric))
-- Fixed `expo_patch_react_imports!` missing some lines with spaces before or after the imports. ([#23923](https://github.com/expo/expo/pull/23923) by [@liamjones](https://github.com/liamjones))
 
 ### 💡 Others
 
 - [Android] Made `generateExpoModulesPackageList` task cacheable. ([#23847](https://github.com/expo/expo/pull/23847) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.5.1 - 2023-08-22
+
+### 🐛 Bug fixes
+
+- Fixed `expo_patch_react_imports!` missing some lines with spaces before or after the imports. ([#23923](https://github.com/expo/expo/pull/23923) by [@liamjones](https://github.com/liamjones))
 
 ## 1.5.0 — 2023-06-21
 

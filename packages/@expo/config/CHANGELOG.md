@@ -4,13 +4,23 @@
 
 ### 🛠 Breaking changes
 
-- Remove classic manifest types. ([#24054](https://github.com/expo/expo/pull/24054) by [@wschurman](https://github.com/wschurman))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Fixed the `withAnonymous` config plugins' property name for anonymous raw functions. ([#24363](https://github.com/expo/expo/pull/24363) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 8.3.1 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 8.3.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Remove classic manifest types. ([#24054](https://github.com/expo/expo/pull/24054) by [@wschurman](https://github.com/wschurman))
 
 ## 8.2.1 — 2023-08-02
 

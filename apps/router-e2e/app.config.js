@@ -23,11 +23,12 @@ module.exports = {
     backgroundColor: '#ffffff',
   },
   experiments: {
+    basePath: process.env.EXPO_E2E_BASE_PATH || undefined,
     tsconfigPaths: process.env.EXPO_USE_PATH_ALIASES,
     typedRoutes: true,
   },
   web: {
-    output: process.env.EXPO_USE_STATIC === '1' ? 'static' : 'single',
+    output: process.env.EXPO_USE_STATIC ?? 'static',
     bundler: 'metro',
   },
   plugins: [

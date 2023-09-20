@@ -4,6 +4,24 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.5.1 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 12.5.0 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 12.4.0 — 2023-09-04
+
 ### 🎉 New features
 
 - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
@@ -11,8 +29,6 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix `addContactAsync` failing when an e-mail or a phone number is provided with an id. ([#23877](https://github.com/expo/expo/pull/23877) by [@behenate](https://github.com/behenate))
-
-### 💡 Others
 
 ## 12.3.1 — 2023-08-02
 

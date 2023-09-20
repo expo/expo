@@ -1,5 +1,11 @@
-import Constants from 'expo-constants';
-import URL from 'url-parse';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getStaticUrlFromExpoRouter = void 0;
+const expo_constants_1 = __importDefault(require("expo-constants"));
+const url_parse_1 = __importDefault(require("url-parse"));
 const protocolWarningString = `{ plugins: [["expo-router", { origin: "...<URL>..." }]] }`;
 /** `lodash.memoize` */
 function memoize(fn) {
@@ -15,7 +21,7 @@ function memoize(fn) {
     });
 }
 function sanitizeUrl(url) {
-    const parsed = new URL(url);
+    const parsed = new url_parse_1.default(url);
     // Allow empty protocol, http, and https
     const validProtocol = !parsed.protocol || parsed.protocol === 'http:' || parsed.protocol === 'https:';
     if (!validProtocol) {
@@ -30,7 +36,7 @@ function sanitizeUrl(url) {
 const memoSanitizeUrl = memoize(sanitizeUrl);
 function getUrlFromConstants() {
     // This will require a rebuild in bare-workflow to update.
-    const manifest = Constants.expoConfig;
+    const manifest = expo_constants_1.default.expoConfig;
     const origin = manifest?.extra?.router?.headOrigin ?? manifest?.extra?.router?.origin;
     if (!origin) {
         throwOrAlert(`Expo Head: Add the handoff origin to the Expo Config (requires rebuild). Add the Config Plugin ${protocolWarningString}, where \`origin\` is the hosted URL.`);
@@ -56,9 +62,10 @@ function throwOrAlert(msg) {
         throw new Error(msg);
     }
 }
-export function getStaticUrlFromExpoRouter(pathname) {
+function getStaticUrlFromExpoRouter(pathname) {
     // const host = "https://expo.io";
     // Append the URL we'd find in context
     return getUrlFromConstants() + pathname;
 }
+exports.getStaticUrlFromExpoRouter = getStaticUrlFromExpoRouter;
 //# sourceMappingURL=url.js.map

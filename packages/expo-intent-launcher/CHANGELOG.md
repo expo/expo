@@ -4,13 +4,25 @@
 
 ### 🛠 Breaking changes
 
-### 🎉 New features
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
 
-- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 10.9.1 — 2023-09-18
+
+### 🐛 Bug fixes
+
+- Fixed errors in debug and crashes in production when an intent is launched without found activities. ([#24481](https://github.com/expo/expo/pull/24481) by [@robertying](https://github.com/robertying))
+
+## 10.9.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
 
 ## 10.8.0 — 2023-08-02
 

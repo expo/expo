@@ -8,6 +8,8 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 
+> **Warning** React Native no longer recommends Flipper ([RFC0641](https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0641-decoupling-flipper-from-react-native-core.md)). Features from Flipper, such as React Developer Tools and the network inspector, are available directly through Expo CLI in SDK 49 and greater. [Learn more](/debugging/tools.mdx).
+
 [Flipper](https://fbflipper.com/) is a platform tool for debugging React Native projects on an emulator/simulator or a physical device. It supports projects running on Android and iOS and is available as a desktop application on macOS, Windows, and Linux.
 
 It offers various features such as a device log viewer, interactive native layout inspector, network inspector, local database inspector, crash reporter, and more. You can add more plugins available in the Flipper desktop app.
@@ -77,7 +79,7 @@ Installing the package adds the `expo-build-properties` plugin to your project's
 
 > The above configuration only works with SDK 48 or above. For SDK 47 and lower, use the following steps described:
 
-The [`expo-community-flipper`](<(https://github.com/jakobo/expo-community-flipper#expo-community-flipper)>) plugin depends on the `react-native-flipper` library. Run the following command to install both of them:
+The [`expo-community-flipper`](https://github.com/jakobo/expo-community-flipper#expo-community-flipper) plugin depends on the `react-native-flipper` library. Run the following command to install both of them:
 
 <Terminal cmd={['$ npx expo install expo-community-flipper react-native-flipper']} />
 

@@ -4,18 +4,30 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 4.4.0 — 2023-09-04
+
 ### 🎉 New features
 
 - Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Bump `Glide` version to resolve `SecurityException` on Android 13. ([#24196](https://github.com/expo/expo/pull/24196) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 4.3.0 — 2023-06-13
 
 - Removed `com.facebook.fresco:fresco` dependency ([#22542](https://github.com/expo/expo/pull/22542) by [@josephyanks](https://github.com/josephyanks))
+
 ### 📚 3rd party library updates
+
 - Updated `com.github.bumptech.glide:glide` to `4.13.2` and added customizable `glideVersion` variable on ext. ([#22542](https://github.com/expo/expo/pull/22542) by [@josephyanks](https://github.com/josephyanks))
 
 ### 🐛 Bug fixes
