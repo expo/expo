@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- This version includes fingerprint result breaking changes. ([#24520](https://github.com/expo/expo/pull/24520) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
+
+- Improve fingerprint sourcing scope for local config-plugins. ([#24520](https://github.com/expo/expo/pull/24520) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

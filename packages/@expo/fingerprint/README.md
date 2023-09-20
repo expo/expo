@@ -116,3 +116,73 @@ console.log(result);
 ## CLI Usage
 
 `npx @expo/fingerprint /path/to/projectRoot`
+
+## Limitations
+
+## Limited support for [config-plugins raw functions](https://docs.expo.dev/config-plugins/plugins-and-mods/#raw-functions)
+
+When using config-plugins with raw functions, it's essential to be aware of certain limitations, particularly in the context of fingerprinting. Expo makes its best effort to generate fingerprints for changes made through config-plugins; however, raw functions pose specific challenges. Raw functions are not serializable as fingerprints, which means they cannot be directly used for generating unique hashes.
+
+To work around this limitation, Expo employs one of the following strategies to create serializable fingerprints for raw functions:
+
+1. **Using `Function.name`**: Expo utilizes the `Function.name` property if available for named raw functions. This property provides a recognizable name for the function, which can be used as a fingerprint property.
+
+2. **Using `withAnonymous`**: For anonymous raw functions without a `Function.name`, Expo resorts to using 'withAnonymous' as the fingerprint property. This is a generic identifier for anonymous functions.
+
+Here's an example to illustrate these concepts:
+
+```javascript
+// In app.config.js
+const { withInfoPlist } = require('expo/config-plugins');
+
+const withMyPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
+    config.modResults.NSLocationWhenInUseUsageDescription = 'Allow $(PRODUCT_NAME) to use your location';
+    return config;
+  });
+};
+
+export default ({ config }) => {
+  config.plugins ||= [];
+  config.plugins.push(withMyPlugin);
+  config.plugins.push((config) => config);
+  return config;
+};`
+```
+
+In this example, Expo will use ['withMyPlugin', 'withAnonymous'] as plugin properties for fingerprint hashing.
+
+It's important to note that due to this design, if you make changes to the implementation of raw config-plugins functions, such as altering the Info.plist value within 'withMyPlugin', the fingerprint will still generate the same hash value. To ensure unique fingerprints when modifying config-plugins implementations, consider the following options:
+
+- **Avoid Anonymous Functions**: Avoid using anonymous raw config-plugins functions. Instead, use named functions whenever possible, and ensure that their names remain consistent as long as the implementation changes.
+
+- **Use Local config-plugins**: Alternatively, you can create local config-plugins as separate modules, each with its own export. This approach allows you to specify a different function name when making changes to the config-plugins implementations.
+
+  Here's an example of using a local config-plugin:
+
+  ```javascript
+  // In ./plugins/withMyPlugin.js
+  const { withInfoPlist } = require('expo/config-plugins');
+
+  const withMyPlugin = (config) => {
+    return withInfoPlist(config, (config) => {
+      config.modResults.NSLocationWhenInUseUsageDescription =
+        'Allow $(PRODUCT_NAME) to use your location';
+      return config;
+    });
+  };
+
+  module.exports = withMyPlugin;
+  ```
+
+  ```json
+  // in app.json
+  {
+    "expo": {
+      // ...
+      "plugins": "./plugins/withMyPlugin"
+    }
+  }
+  ```
+
+By following these guidelines, you can effectively manage changes to config-plugins and ensure that fingerprinting remains consistent and reliable.
