@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Throw unhandled actions in tests. ([#24525](https://github.com/expo/expo/pull/24525) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 3.1.2 — 2023-09-18
 
 ### 🐛 Bug fixes
