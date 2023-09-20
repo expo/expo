@@ -9,10 +9,6 @@ const withCalendar = (config, { calendarPermission, remindersPermission } = {}) 
         config.ios = {};
     if (!config.ios.infoPlist)
         config.ios.infoPlist = {};
-    config.ios.infoPlist.NSCalendarsUsageDescription =
-        calendarPermission || config.ios.infoPlist.NSCalendarsUsageDescription || CALENDARS_USAGE;
-    config.ios.infoPlist.NSRemindersUsageDescription =
-        remindersPermission || config.ios.infoPlist.NSRemindersUsageDescription || REMINDERS_USAGE;
     config.ios.infoPlist.NSCalendarsFullAccessUsageDescription =
         calendarPermission ||
             config.ios.infoPlist.NSCalendarsFullAccessUsageDescription ||

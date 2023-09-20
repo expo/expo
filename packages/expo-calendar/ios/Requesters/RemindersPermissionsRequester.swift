@@ -7,24 +7,26 @@ public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
   }
 
   public func getPermissions() -> [AnyHashable: Any] {
-    var status: EXPermissionStatus
+    var status: CalendarPermissionsStatus
     var permissions: EKAuthorizationStatus
 
-    let remindersUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSRemindersUsageDescription")
+    let remindersUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSRemindersFullAccessUsageDescription")
 
-    if remindersUsageDescription == nil {
-      permissions = .denied
-    } else {
+    if let remindersUsageDescription {
       permissions = EKEventStore.authorizationStatus(for: .reminder)
+    } else {
+      permissions = .denied
     }
 
     switch permissions {
-    case .authorized:
-      status = EXPermissionStatusGranted
     case .restricted, .denied:
-      status = EXPermissionStatusDenied
+      status = .denied
     case .notDetermined:
-      status = EXPermissionStatusUndetermined
+      status = .notDetermined
+    case .fullAccess:
+      status = .granted
+    @unknown default:
+      status = .unknown
     }
 
     return ["status": status.rawValue]
@@ -32,14 +34,27 @@ public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
 
   public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
     let eventStore = EKEventStore()
-    eventStore.requestAccess(to: .reminder) { [weak self] _, error in
-      guard let self else {
-        return
+    if #available(iOS 17.0, *) {
+      eventStore.requestFullAccessToReminders { [weak self] _, error in
+        guard let self else {
+          return
+        }
+        if let error {
+          reject("E_REMINDERS_ERROR_UNKNOWN", error.localizedDescription, error)
+        } else {
+          resolve(self.getPermissions())
+        }
       }
-      if let error {
-        reject("E_REMINDERS_ERROR_UNKNOWN", error.localizedDescription, error)
-      } else {
-        resolve(self.getPermissions())
+    } else {
+      eventStore.requestAccess(to: .reminder) { [weak self] _, error in
+        guard let self else {
+          return
+        }
+        if let error {
+          reject("E_REMINDERS_ERROR_UNKNOWN", error.localizedDescription, error)
+        } else {
+          resolve(self.getPermissions())
+        }
       }
     }
   }
