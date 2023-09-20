@@ -133,6 +133,7 @@ const general = [
   makeSection('', [makePage('guides/overview.mdx')]),
   makeSection('Development process', [
     makePage('workflow/configuration.mdx'),
+    makePage('guides/local-app-development.mdx'),
     makePage('workflow/using-libraries.mdx'),
     makePage('guides/permissions.mdx'),
     makePage('guides/environment-variables.mdx'),
