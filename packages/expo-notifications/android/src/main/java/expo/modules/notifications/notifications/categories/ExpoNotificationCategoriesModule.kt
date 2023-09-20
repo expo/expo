@@ -43,8 +43,8 @@ open class ExpoNotificationCategoriesModule : Module() {
     AsyncFunction("getNotificationCategoriesAsync") { promise: Promise ->
       getCategories(
         context,
-        createResultReceiver { resultCode: Int, resultData: Bundle ->
-          val categories = resultData.getParcelableArrayList<NotificationCategory>(NotificationsService.NOTIFICATION_CATEGORIES_KEY)
+        createResultReceiver { resultCode: Int, resultData: Bundle? ->
+          val categories = resultData?.getParcelableArrayList<NotificationCategory>(NotificationsService.NOTIFICATION_CATEGORIES_KEY)
           if (resultCode == NotificationsService.SUCCESS_CODE && categories != null) {
             promise.resolve(serializeCategories(categories))
           } else {
@@ -64,8 +64,8 @@ open class ExpoNotificationCategoriesModule : Module() {
 
   open fun setNotificationCategoryAsync(
     identifier: String,
-    actionArguments: List<Map<String, Any>>,
-    categoryOptions: Map<String, Any>?,
+    actionArguments: List<Map<String, Any?>>,
+    categoryOptions: Map<String, Any?>?,
     promise: Promise
   ) {
     val actions = mutableListOf<NotificationAction>()
@@ -102,8 +102,8 @@ open class ExpoNotificationCategoriesModule : Module() {
     setCategory(
       context,
       NotificationCategory(identifier, actions),
-      createResultReceiver { resultCode: Int, resultData: Bundle ->
-        val category = resultData.getParcelable<NotificationCategory>(NotificationsService.NOTIFICATION_CATEGORY_KEY)
+      createResultReceiver { resultCode: Int, resultData: Bundle? ->
+        val category = resultData?.getParcelable<NotificationCategory>(NotificationsService.NOTIFICATION_CATEGORY_KEY)
         if (resultCode == NotificationsService.SUCCESS_CODE && category != null) {
           promise.resolve(serializer.toBundle(category))
         } else {
@@ -117,9 +117,9 @@ open class ExpoNotificationCategoriesModule : Module() {
     deleteCategory(
       context,
       identifier,
-      createResultReceiver { resultCode: Int, resultData: Bundle ->
+      createResultReceiver { resultCode: Int, resultData: Bundle? ->
         if (resultCode == NotificationsService.SUCCESS_CODE) {
-          promise.resolve(resultData.getBoolean(NotificationsService.SUCCEEDED_KEY))
+          promise.resolve(resultData?.getBoolean(NotificationsService.SUCCEEDED_KEY))
         } else {
           promise.reject("ERR_CATEGORY_DELETE_FAILED", "The category could not be deleted.", null)
         }

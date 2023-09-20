@@ -12,8 +12,8 @@ class ScopedExpoNotificationCategoriesModule(
 ) : ExpoNotificationCategoriesModule() {
   override fun setNotificationCategoryAsync(
     identifier: String,
-    actionArguments: List<Map<String, Any>>,
-    categoryOptions: Map<String, Any>?,
+    actionArguments: List<Map<String, Any?>>,
+    categoryOptions: Map<String, Any?>?,
     promise: Promise
   ) {
     val scopedCategoryIdentifier = ScopedNotificationsIdUtils.getScopedCategoryId(experienceKey, identifier)

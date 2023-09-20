@@ -44,11 +44,11 @@ class ScopedNotificationScheduler(private val context: Context, private val expe
     NotificationsService.getScheduledNotification(
       schedulingContext,
       identifier,
-      createResultReceiver { resultCode: Int, resultData: Bundle ->
+      createResultReceiver { resultCode: Int, resultData: Bundle? ->
         if (resultCode == NotificationsService.SUCCESS_CODE) {
           val request = when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> resultData.getParcelable(NotificationsService.NOTIFICATION_REQUEST_KEY, ScopedNotificationRequest::class.java)
-            else -> resultData.getParcelable(NotificationsService.NOTIFICATION_REQUEST_KEY)
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> resultData?.getParcelable(NotificationsService.NOTIFICATION_REQUEST_KEY, ScopedNotificationRequest::class.java)
+            else -> resultData?.getParcelable(NotificationsService.NOTIFICATION_REQUEST_KEY)
           }
           if (request == null || !scopedNotificationsUtils.shouldHandleNotification(request, experienceKey)) {
             promise.resolve(null)
@@ -56,7 +56,7 @@ class ScopedNotificationScheduler(private val context: Context, private val expe
           }
           doCancelScheduledNotificationAsync(identifier, promise)
         } else {
-          val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+          val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
           promise.reject(
             "ERR_NOTIFICATIONS_FAILED_TO_FETCH",
             "Failed to fetch scheduled notifications.",
@@ -70,9 +70,9 @@ class ScopedNotificationScheduler(private val context: Context, private val expe
   override fun cancelAllScheduledNotificationsAsync(promise: Promise) {
     NotificationsService.getAllScheduledNotifications(
       schedulingContext,
-      createResultReceiver { resultCode: Int, resultData: Bundle ->
+      createResultReceiver { resultCode: Int, resultData: Bundle? ->
         if (resultCode == NotificationsService.SUCCESS_CODE) {
-          val requests = resultData.getParcelableArrayList<NotificationRequest>(
+          val requests = resultData?.getParcelableArrayList<NotificationRequest>(
             NotificationsService.NOTIFICATION_REQUESTS_KEY
           )
           if (requests == null) {
@@ -92,7 +92,7 @@ class ScopedNotificationScheduler(private val context: Context, private val expe
           }
           cancelSelectedNotificationsAsync(toRemove.toTypedArray(), promise)
         } else {
-          val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+          val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
           promise.reject(
             "ERR_NOTIFICATIONS_FAILED_TO_CANCEL",
             "Failed to cancel all notifications.",
@@ -111,11 +111,11 @@ class ScopedNotificationScheduler(private val context: Context, private val expe
     NotificationsService.removeScheduledNotifications(
       schedulingContext,
       identifiers.toList(),
-      createResultReceiver { resultCode: Int, resultData: Bundle ->
+      createResultReceiver { resultCode: Int, resultData: Bundle? ->
         if (resultCode == NotificationsService.SUCCESS_CODE) {
           promise.resolve(null)
         } else {
-          val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+          val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
           promise.reject(
             "ERR_NOTIFICATIONS_FAILED_TO_CANCEL",
             "Failed to cancel all notifications.",

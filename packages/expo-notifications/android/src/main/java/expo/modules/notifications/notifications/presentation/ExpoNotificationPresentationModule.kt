@@ -39,11 +39,11 @@ open class ExpoNotificationPresentationModule : Module() {
         context,
         notification,
         null,
-        createResultReceiver { resultCode: Int, resultData: Bundle ->
+        createResultReceiver { resultCode: Int, resultData: Bundle? ->
           if (resultCode == NotificationsService.SUCCESS_CODE) {
             promise.resolve(identifier)
           } else {
-            val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+            val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
             promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification could not be presented.", e)
           }
         }
@@ -53,12 +53,12 @@ open class ExpoNotificationPresentationModule : Module() {
     AsyncFunction("getPresentedNotificationsAsync") { promise: Promise ->
       getAllPresented(
         context,
-        createResultReceiver { resultCode: Int, resultData: Bundle ->
-          val notifications = resultData.getParcelableArrayList<Notification>(NotificationsService.NOTIFICATIONS_KEY)
+        createResultReceiver { resultCode: Int, resultData: Bundle? ->
+          val notifications = resultData?.getParcelableArrayList<Notification>(NotificationsService.NOTIFICATIONS_KEY)
           if (resultCode == NotificationsService.SUCCESS_CODE && notifications != null) {
             promise.resolve(serializeNotifications(notifications))
           } else {
-            val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+            val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
             promise.reject("ERR_NOTIFICATIONS_FETCH_FAILED", "A list of displayed notifications could not be fetched.", e)
           }
         }
@@ -74,11 +74,11 @@ open class ExpoNotificationPresentationModule : Module() {
     dismiss(
       context,
       arrayOf(identifier),
-      createResultReceiver { resultCode: Int, resultData: Bundle ->
+      createResultReceiver { resultCode: Int, resultData: Bundle? ->
         if (resultCode == NotificationsService.SUCCESS_CODE) {
           promise.resolve(null)
         } else {
-          val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+          val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
           promise.reject("ERR_NOTIFICATION_DISMISSAL_FAILED", "Notification could not be dismissed.", e)
         }
       }
@@ -88,11 +88,11 @@ open class ExpoNotificationPresentationModule : Module() {
   protected open fun dismissAllNotificationsAsync(promise: Promise) {
     dismissAll(
       context,
-      createResultReceiver { resultCode: Int, resultData: Bundle ->
+      createResultReceiver { resultCode: Int, resultData: Bundle? ->
         if (resultCode == NotificationsService.SUCCESS_CODE) {
           promise.resolve(null)
         } else {
-          val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+          val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
           promise.reject("ERR_NOTIFICATIONS_DISMISSAL_FAILED", "Notifications could not be dismissed.", e)
         }
       }
