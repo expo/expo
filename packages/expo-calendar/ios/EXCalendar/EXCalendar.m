@@ -770,10 +770,24 @@ EX_EXPORT_METHOD_AS(requestCalendarPermissionsAsync,
                     requestCalendarPermissionsAsync:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
-                                                         withRequester:[EXCalendarPermissionRequester class]
-                                                               resolve:resolve
-                                                                reject:reject];
+  if (@available(iOS 17, *)) {
+    [[self eventStore] requestFullAccessToEventsWithCompletion:^(BOOL granted, NSError * _Nullable error) {
+      EXPermissionStatus status = granted ? EXPermissionStatusGranted : EXPermissionStatusDenied;
+      if (error) {
+        reject(@"E_CALENDAR_ERROR_UNKNOWN", error.localizedDescription, error);
+        return;
+      }
+    
+      resolve(@{
+        @"status": @(status)
+      });
+    }];
+  } else {
+    [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                           withRequester:[EXCalendarPermissionRequester class]
+                                                                 resolve:resolve
+                                                                  reject:reject];
+  }
 }
 
 EX_EXPORT_METHOD_AS(getRemindersPermissionsAsync,
@@ -790,10 +804,24 @@ EX_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
                     requestRemindersPermissionsAsync:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
-                                                         withRequester:[EXRemindersPermissionRequester class]
-                                                               resolve:resolve
-                                                                reject:reject];
+  if (@available(iOS 17, *)) {
+    [[self eventStore] requestFullAccessToRemindersWithCompletion:^(BOOL granted, NSError * _Nullable error) {
+      EXPermissionStatus status = granted ? EXPermissionStatusGranted : EXPermissionStatusDenied;
+      if (error) {
+        reject(@"E_CALENDAR_ERROR_UNKNOWN", error.localizedDescription, error);
+        return;
+      }
+    
+      resolve(@{
+        @"status": @(status)
+      });
+    }];
+  } else {
+    [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                           withRequester:[EXRemindersPermissionRequester class]
+                                                                 resolve:resolve
+                                                                  reject:reject];
+  }
 }
 
 #pragma mark - helpers
