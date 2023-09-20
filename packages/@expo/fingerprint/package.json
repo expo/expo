@@ -11,7 +11,7 @@
     "clean": "rimraf build ./tsconfig.tsbuildinfo",
     "lint": "eslint .",
     "test": "jest",
-    "test:e2e": "jest --config e2e/jest.config.js"
+    "test:e2e": "yarn prepare && jest --config e2e/jest.config.js"
   },
   "bin": {
     "fingerprint": "bin/cli.js"
