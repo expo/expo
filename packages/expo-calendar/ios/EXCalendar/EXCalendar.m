@@ -790,10 +790,10 @@ EX_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
                     requestRemindersPermissionsAsync:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-    [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
-                                                           withRequester:[EXRemindersPermissionRequester class]
-                                                                 resolve:resolve
-                                                                  reject:reject];
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXRemindersPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
 }
 
 #pragma mark - helpers
