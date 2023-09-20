@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.dependency 'ExpoModulesCore'
   # The builtin sqlite does not support extensions so we update it
-  s.dependency 'sqlite3', '3.39.2'
+  s.dependency 'sqlite3', '~> 3.42.0'
   
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {

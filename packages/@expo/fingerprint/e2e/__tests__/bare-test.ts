@@ -6,6 +6,13 @@ import rimraf from 'rimraf';
 
 import { createProjectHashAsync } from '../../src/Fingerprint';
 
+jest.mock('../../src/sourcer/ExpoConfigLoader', () => ({
+  // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
+  getExpoConfigLoaderPath: jest.fn(() =>
+    path.resolve(__dirname, '..', '..', 'build', 'sourcer', 'ExpoConfigLoader.js')
+  ),
+}));
+
 describe('bare project test', () => {
   jest.setTimeout(600000);
   const tmpDir = os.tmpdir();

@@ -88,25 +88,24 @@ class DevLauncherExpoActivityConfigurator(
   @UiThread
   private fun setStyle(style: String?, activity: Activity): String {
     var appliedStatusBarStyle = DevLauncherStatusBarStyle.LIGHT
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      val decorView = activity.window.decorView
-      var systemUiVisibilityFlags = decorView.systemUiVisibility
-      when (style) {
-        DevLauncherStatusBarStyle.LIGHT -> {
-          systemUiVisibilityFlags = systemUiVisibilityFlags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-          appliedStatusBarStyle = DevLauncherStatusBarStyle.LIGHT
-        }
-        DevLauncherStatusBarStyle.DARK -> {
-          systemUiVisibilityFlags = systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-          appliedStatusBarStyle = DevLauncherStatusBarStyle.DARK
-        }
-        else -> {
-          systemUiVisibilityFlags = systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-          appliedStatusBarStyle = DevLauncherStatusBarStyle.DARK
-        }
+    val decorView = activity.window.decorView
+    var systemUiVisibilityFlags = decorView.systemUiVisibility
+    when (style) {
+      DevLauncherStatusBarStyle.LIGHT -> {
+        systemUiVisibilityFlags = systemUiVisibilityFlags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+        appliedStatusBarStyle = DevLauncherStatusBarStyle.LIGHT
       }
-      decorView.systemUiVisibility = systemUiVisibilityFlags
+      DevLauncherStatusBarStyle.DARK -> {
+        systemUiVisibilityFlags = systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        appliedStatusBarStyle = DevLauncherStatusBarStyle.DARK
+      }
+      else -> {
+        systemUiVisibilityFlags = systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        appliedStatusBarStyle = DevLauncherStatusBarStyle.DARK
+      }
     }
+    decorView.systemUiVisibility = systemUiVisibilityFlags
+
     return appliedStatusBarStyle
   }
 
