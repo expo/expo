@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Improve truncated Metro Node.js errors.
+
 ## 0.13.2 — 2023-09-18
 
 ### 🐛 Bug fixes
