@@ -67,9 +67,9 @@ Safari PWAs do not use the **manifest.json**, instead they rely on meta tags in 
 
 ### Offline
 
-In order to add offline support, you'll need to add service workers to your project. We recommend using [Workbox](https://developers.google.com/web/tools/workbox/modules/workbox-webpack-plugin) as it handles most of the heavy lifting.
+To add offline support, you'll need to add service workers to your project. We recommend using [Workbox](https://developers.google.com/web/tools/workbox/modules/workbox-webpack-plugin) as it handles most of the heavy lifting.
 
-### Related Applications
+### Related applications
 
 [Related applications](https://developer.mozilla.org/en-US/docs/Web/Manifest#related_applications) are a way of telling your website which apps it should install in favor of a PWA, Expo websites try to recommend the native app when possible.
 
@@ -111,7 +111,7 @@ export default {
 };
 ```
 
-### Manual Setup
+### Manual setup
 
 Under the hood `@expo/webpack-config` uses a CLI called `expo-pwa`. If you want more control on how PWAs are generated, you can use the `expo-pwa` CLI directly.
 

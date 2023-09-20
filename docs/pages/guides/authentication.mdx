@@ -1822,7 +1822,7 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       scopes: ['user-read-email', 'playlist-modify-public'],
-      // In order to follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
+      // To follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
       // this must be set to false
       usePKCE: false,
       redirectUri: makeRedirectUri({
@@ -1887,7 +1887,7 @@ export default function App() {
       /* @end */
       clientId: 'CLIENT_ID',
       scopes: ['user-read-email', 'playlist-modify-public'],
-      // In order to follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
+      // To follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
       // this must be set to false
       usePKCE: false,
       redirectUri: makeRedirectUri({
@@ -2416,7 +2416,7 @@ export default function App() {
 
 Here are a few examples of some common redirect URI patterns you may end up using.
 
-### Standalone and Bare
+### Standalone and bare
 
 > `yourscheme://path`
 
@@ -2440,7 +2440,7 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
   - If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them (`yarn ios`, `yarn android`).
 - **Usage:** `promptAsync({ redirectUri })`
 
-## Improving User Experience
+## Improving user experience
 
 The "login flow" is an important thing to get right, in a lot of cases this is where the user will _commit_ to using your app again. A bad experience can cause users to give up on your app before they've really gotten to use it.
 

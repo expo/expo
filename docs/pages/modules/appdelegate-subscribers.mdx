@@ -27,7 +27,7 @@ Delegate functions that need to return a value have some additional logic to rec
 
 #### `application(_:didFinishLaunchingWithOptions:) -> Bool`
 
-According to the [Apple documentation](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622921-application), you should return `false` if the app cannot handle the URL resource or continue a user activity, otherwise `true` should be returned. The return value is ignored if the app is launched as a result of a remote notification.
+According to the [Apple documentation](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622921-application), you should return `false` if the app cannot handle the URL resource or continue a user activity, otherwise `true` should be returned. The return value is ignored if the app is launched because of a remote notification.
 In such situations, if at least one of the subscribers returns `true`, the `ExpoAppDelegate` will return `true` as well.
 
 #### `application(_:didReceiveRemoteNotification:fetchCompletionHandler:)`

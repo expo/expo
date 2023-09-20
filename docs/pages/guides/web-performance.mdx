@@ -18,11 +18,11 @@ Many performance tools at your disposal will not only optimize your web app, but
 - #### webpack Config
   [`@expo/webpack-config`](https://www.npmjs.com/package/@expo/webpack-config) A default webpack config that's optimized for running `react-native-web` apps and creating [progressive web apps](https://developers.google.com/web/progressive-web-apps/).
 
-## What Makes My App Large?
+## What makes my app large?
 
 To inspect bundle sizes, you can use a webpack plugin called [_Webpack Bundle Analyzer_](https://github.com/webpack-contrib/webpack-bundle-analyzer). This plugin will help you visualize the size of your static bundles. You can use this to identify unwanted large packages that you may not have bundled intentionally.
 
-### Using Bundle Analyzer
+### Using bundle analyzer
 
 1. Install the bundle analyzer:
    <Terminal cmd={['$ yarn add -D webpack-bundle-analyzer']} />
@@ -50,7 +50,7 @@ module.exports = async (env, argv) => {
 };
 ```
 
-### Finding Tree-Shaking Errors
+### Finding tree-shaking errors
 
 If you want to track down why a package was included, you can build your project in [debug mode](https://github.com/expo/expo-cli/blob/af9e390b74dcb7a0132e73b34ea0cdb9437a771c/packages/xdl/src/Web.ts#L69-L92).
 

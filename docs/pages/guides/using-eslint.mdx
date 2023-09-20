@@ -82,7 +82,7 @@ You can lint your code manually from the command-line with the script:
 
 > **Recommended:** If you're using VS Code, install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to lint your code as you type.
 
-## Envrionment configuration
+## Environment configuration
 
 ESLint is generally configured for a single environment. However, the source code is written in JavaScript in an Expo app runs in multiple different environments. For example, the **app.config.js**, **metro.config.js**, **babel.config.js**, and **app/+html.tsx** files are run in a Node.js environment. It means they have access to the global `__dirname` variable and can use Node.js modules such as `path`. Standard Expo project files like **app/index.js** can be run in Hermes, Node.js, or the web browser.
 
