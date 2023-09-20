@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent circular navigation references. ([#24548](https://github.com/expo/expo/pull/24548) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 - Throw unhandled actions in tests. ([#24525](https://github.com/expo/expo/pull/24525) by [@EvanBacon](https://github.com/EvanBacon))
