@@ -1,7 +1,7 @@
 'use strict';
 
-var AssetSourceResolver = require("./AssetSourceResolver");
-var _require = require("./AssetUtils"),
+var AssetSourceResolver = require('./AssetSourceResolver');
+var _require = require('./AssetUtils'),
   pickScale = _require.pickScale;
 var AssetRegistry = require('@react-native/assets-registry/registry');
 var _customSourceTransformer, _serverURL, _scriptURL;
@@ -12,7 +12,7 @@ function getSourceCodeScriptURL() {
   }
   var sourceCode = global.nativeExtensions && global.nativeExtensions.SourceCode;
   if (!sourceCode) {
-    sourceCode = require("../NativeModules/specs/NativeSourceCode").default;
+    sourceCode = require('../NativeModules/specs/NativeSourceCode').default;
   }
   _sourceCodeScriptURL = sourceCode.getConstants().scriptURL;
   return _sourceCodeScriptURL;

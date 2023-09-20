@@ -1,6 +1,6 @@
 'use strict';
 
-var I18nManager = require("../ReactNative/I18nManager");
+var I18nManager = require('../ReactNative/I18nManager');
 function resolveBoxStyle(prefix, style) {
   var hasParts = false;
   var result = {

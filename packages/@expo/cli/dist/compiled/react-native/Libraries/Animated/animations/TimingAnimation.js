@@ -19,7 +19,7 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 var _easeInOut;
 function easeInOut() {
   if (!_easeInOut) {
-    var Easing = require("../Easing").default;
+    var Easing = require('../Easing').default;
     _easeInOut = Easing.inOut(Easing.ease);
   }
   return _easeInOut;

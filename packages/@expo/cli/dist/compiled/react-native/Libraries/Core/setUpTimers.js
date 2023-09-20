@@ -1,9 +1,9 @@
 'use strict';
 
 var _global$HermesInterna, _global$HermesInterna2;
-var _require = require("../Utilities/FeatureDetection"),
+var _require = require('../Utilities/FeatureDetection'),
   isNativeFunction = _require.isNativeFunction;
-var _require2 = require("../Utilities/PolyfillFunctions"),
+var _require2 = require('../Utilities/PolyfillFunctions'),
   polyfillGlobal = _require2.polyfillGlobal;
 if (__DEV__) {
   if (typeof global.Promise !== 'function') {
@@ -16,7 +16,7 @@ var hasPromiseQueuedToJSVM = hasNativePromise || hasHermesPromiseQueuedToJSVM;
 if (global.RN$Bridgeless !== true) {
   var defineLazyTimer = function defineLazyTimer(name) {
     polyfillGlobal(name, function () {
-      return require("./Timers/JSTimers")[name];
+      return require('./Timers/JSTimers')[name];
     });
   };
   defineLazyTimer('setTimeout');
@@ -30,18 +30,18 @@ if (global.RN$Bridgeless !== true) {
 }
 if (hasPromiseQueuedToJSVM) {
   polyfillGlobal('setImmediate', function () {
-    return require("./Timers/immediateShim").setImmediate;
+    return require('./Timers/immediateShim').setImmediate;
   });
   polyfillGlobal('clearImmediate', function () {
-    return require("./Timers/immediateShim").clearImmediate;
+    return require('./Timers/immediateShim').clearImmediate;
   });
 } else {
   if (global.RN$Bridgeless !== true) {
     polyfillGlobal('setImmediate', function () {
-      return require("./Timers/JSTimers").queueReactNativeMicrotask;
+      return require('./Timers/JSTimers').queueReactNativeMicrotask;
     });
     polyfillGlobal('clearImmediate', function () {
-      return require("./Timers/JSTimers").clearReactNativeMicrotask;
+      return require('./Timers/JSTimers').clearReactNativeMicrotask;
     });
   }
 }
@@ -52,7 +52,7 @@ if (hasHermesPromiseQueuedToJSVM) {
   });
 } else {
   polyfillGlobal('queueMicrotask', function () {
-    return require("./Timers/queueMicrotask.js").default;
+    return require('./Timers/queueMicrotask.js').default;
   });
 }
 //# sourceMappingURL=setUpTimers.js.map

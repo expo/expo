@@ -3,8 +3,8 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 var _getDevServer2 = _interopRequireDefault(require("../Core/Devtools/getDevServer"));
 var _LogBox = _interopRequireDefault(require("../LogBox/LogBox"));
 var _NativeRedBox = _interopRequireDefault(require("../NativeModules/specs/NativeRedBox"));
-var DevSettings = require("./DevSettings");
-var Platform = require("./Platform");
+var DevSettings = require('./DevSettings');
+var Platform = require('./Platform');
 var invariant = require('invariant');
 var MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
 var prettyFormat = require('pretty-format');
@@ -20,7 +20,7 @@ var HMRClient = {
       throw new Error(hmrUnavailableReason);
     }
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
-    var LoadingView = require("./LoadingView");
+    var LoadingView = require('./LoadingView');
     hmrClient.send(JSON.stringify({
       type: 'log-opt-in'
     }));
@@ -77,7 +77,7 @@ var HMRClient = {
     invariant(bundleEntry, 'Missing required parameter `bundleEntry`');
     invariant(host, 'Missing required parameter `host`');
     invariant(!hmrClient, 'Cannot initialize hmrClient twice');
-    var LoadingView = require("./LoadingView");
+    var LoadingView = require('./LoadingView');
     var serverHost = port !== null && port !== '' ? `${host}:${port}` : host;
     var serverScheme = scheme;
     var client = new MetroHMRClient(`${serverScheme}://${serverHost}/hot`);
@@ -197,7 +197,7 @@ function dismissRedbox() {
   if (Platform.OS === 'ios' && _NativeRedBox.default != null && _NativeRedBox.default.dismiss != null) {
     _NativeRedBox.default.dismiss();
   } else {
-    var NativeExceptionsManager = require("../Core/NativeExceptionsManager").default;
+    var NativeExceptionsManager = require('../Core/NativeExceptionsManager').default;
     NativeExceptionsManager && NativeExceptionsManager.dismissRedbox && NativeExceptionsManager.dismissRedbox();
   }
 }

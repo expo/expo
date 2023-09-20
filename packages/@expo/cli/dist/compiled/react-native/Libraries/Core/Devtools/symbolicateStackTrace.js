@@ -2,7 +2,7 @@
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
-var getDevServer = require("./getDevServer");
+var getDevServer = require('./getDevServer');
 function symbolicateStackTrace(_x) {
   return _symbolicateStackTrace.apply(this, arguments);
 }
@@ -13,7 +13,7 @@ function _symbolicateStackTrace() {
     if (!devServer.bundleLoadedFromServer) {
       throw new Error('Bundle was not loaded from Metro.');
     }
-    var fetch = (_global$fetch = global.fetch) != null ? _global$fetch : require("../../Network/fetch");
+    var fetch = (_global$fetch = global.fetch) != null ? _global$fetch : require('../../Network/fetch');
     var response = yield fetch(devServer.url + 'symbolicate', {
       method: 'POST',
       body: JSON.stringify({

@@ -47,8 +47,8 @@ function useAnimatedProps(props) {
     }
     return function () {
       onUpdateRef.current = null;
-      for (var _ref3 of events) {
-        var _ref2 = (0, _slicedToArray2.default)(_ref3, 2);
+      for (var _ref of events) {
+        var _ref2 = (0, _slicedToArray2.default)(_ref, 2);
         var _propName = _ref2[0];
         var _propValue = _ref2[1];
         _propValue.__detach(target, _propName);

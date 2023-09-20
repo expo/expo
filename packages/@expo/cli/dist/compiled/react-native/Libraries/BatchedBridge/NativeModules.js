@@ -2,7 +2,7 @@
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
-var BatchedBridge = require("./BatchedBridge");
+var BatchedBridge = require('./BatchedBridge');
 var invariant = require('invariant');
 function genModule(config, moduleID) {
   if (!config) {
@@ -103,7 +103,7 @@ if (global.nativeModuleProxy) {
 } else if (!global.nativeExtensions) {
   var bridgeConfig = global.__fbBatchedBridgeConfig;
   invariant(bridgeConfig, '__fbBatchedBridgeConfig is not set, cannot invoke native modules');
-  var defineLazyObjectProperty = require("../Utilities/defineLazyObjectProperty");
+  var defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
   (bridgeConfig.remoteModuleConfig || []).forEach(function (config, moduleID) {
     var info = genModule(config, moduleID);
     if (!info) {

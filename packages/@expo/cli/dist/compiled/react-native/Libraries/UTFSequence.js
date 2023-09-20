@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var deepFreezeAndThrowOnMutationInDev = require("./Utilities/deepFreezeAndThrowOnMutationInDev");
+var deepFreezeAndThrowOnMutationInDev = require('./Utilities/deepFreezeAndThrowOnMutationInDev');
 var UTFSequence = deepFreezeAndThrowOnMutationInDev({
   BOM: "\uFEFF",
   BULLET: "\u2022",

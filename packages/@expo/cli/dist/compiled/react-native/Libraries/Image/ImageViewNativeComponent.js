@@ -33,7 +33,7 @@ var __INTERNAL_VIEW_CONFIG = _Platform.default.OS === 'android' ? {
     internal_analyticTag: true,
     resizeMode: true,
     tintColor: {
-      process: require("../StyleSheet/processColor").default
+      process: require('../StyleSheet/processColor').default
     },
     borderBottomLeftRadius: true,
     borderTopLeftRadius: true,
@@ -44,10 +44,10 @@ var __INTERNAL_VIEW_CONFIG = _Platform.default.OS === 'android' ? {
     shouldNotifyLoadEvents: true,
     defaultSrc: true,
     overlayColor: {
-      process: require("../StyleSheet/processColor").default
+      process: require('../StyleSheet/processColor').default
     },
     borderColor: {
-      process: require("../StyleSheet/processColor").default
+      process: require('../StyleSheet/processColor').default
     },
     accessible: true,
     progressiveRenderingEnabled: true,
@@ -82,16 +82,16 @@ var __INTERNAL_VIEW_CONFIG = _Platform.default.OS === 'android' ? {
   validAttributes: Object.assign({
     blurRadius: true,
     capInsets: {
-      diff: require("../Utilities/differ/insetsDiffer")
+      diff: require('../Utilities/differ/insetsDiffer')
     },
     defaultSource: {
-      process: require("./resolveAssetSource")
+      process: require('./resolveAssetSource')
     },
     internal_analyticTag: true,
     resizeMode: true,
     source: true,
     tintColor: {
-      process: require("../StyleSheet/processColor").default
+      process: require('../StyleSheet/processColor').default
     }
   }, (0, _ViewConfigIgnore.ConditionallyIgnoredEventHandlers)({
     onLoadStart: true,

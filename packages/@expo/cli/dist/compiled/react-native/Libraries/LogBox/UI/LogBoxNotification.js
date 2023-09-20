@@ -89,7 +89,7 @@ function DismissButton(props) {
       onPress: props.onPress,
       style: dismissStyles.press,
       children: (0, _jsxRuntime.jsx)(_Image.default, {
-        source: require("./LogBoxImages/close.png"),
+        source: require('./LogBoxImages/close.png'),
         style: dismissStyles.image
       })
     })

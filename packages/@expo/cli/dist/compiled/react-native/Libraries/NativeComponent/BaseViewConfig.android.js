@@ -145,13 +145,13 @@ var directEventTypes = {
 };
 var validAttributesForNonEventProps = {
   backgroundColor: {
-    process: require("../StyleSheet/processColor").default
+    process: require('../StyleSheet/processColor').default
   },
   transform: true,
   opacity: true,
   elevation: true,
   shadowColor: {
-    process: require("../StyleSheet/processColor").default
+    process: require('../StyleSheet/processColor').default
   },
   zIndex: true,
   renderToHardwareTextureAndroid: true,

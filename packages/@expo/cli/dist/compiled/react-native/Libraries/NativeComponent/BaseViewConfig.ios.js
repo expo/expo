@@ -158,15 +158,15 @@ var validAttributesForNonEventProps = {
   accessibilityIgnoresInvertColors: true,
   testID: true,
   backgroundColor: {
-    process: require("../StyleSheet/processColor").default
+    process: require('../StyleSheet/processColor').default
   },
   backfaceVisibility: true,
   opacity: true,
   shadowColor: {
-    process: require("../StyleSheet/processColor").default
+    process: require('../StyleSheet/processColor').default
   },
   shadowOffset: {
-    diff: require("../Utilities/differ/sizesDiffer")
+    diff: require('../Utilities/differ/sizesDiffer')
   },
   shadowOpacity: true,
   shadowRadius: true,
@@ -174,7 +174,7 @@ var validAttributesForNonEventProps = {
   overflow: true,
   shouldRasterizeIOS: true,
   transform: {
-    diff: require("../Utilities/differ/matricesDiffer")
+    diff: require('../Utilities/differ/matricesDiffer')
   },
   accessibilityRole: true,
   accessibilityState: true,
@@ -183,38 +183,38 @@ var validAttributesForNonEventProps = {
   removeClippedSubviews: true,
   borderRadius: true,
   borderColor: {
-    process: require("../StyleSheet/processColor").default
+    process: require('../StyleSheet/processColor').default
   },
   borderCurve: true,
   borderWidth: true,
   borderStyle: true,
   hitSlop: {
-    diff: require("../Utilities/differ/insetsDiffer")
+    diff: require('../Utilities/differ/insetsDiffer')
   },
   collapsable: true,
   borderTopWidth: true,
   borderTopColor: {
-    process: require("../StyleSheet/processColor").default
+    process: require('../StyleSheet/processColor').default
   },
   borderRightWidth: true,
   borderRightColor: {
-    process: require("../StyleSheet/processColor").default
+    process: require('../StyleSheet/processColor').default
   },
   borderBottomWidth: true,
   borderBottomColor: {
-    process: require("../StyleSheet/processColor").default
+    process: require('../StyleSheet/processColor').default
   },
   borderLeftWidth: true,
   borderLeftColor: {
-    process: require("../StyleSheet/processColor").default
+    process: require('../StyleSheet/processColor').default
   },
   borderStartWidth: true,
   borderStartColor: {
-    process: require("../StyleSheet/processColor").default
+    process: require('../StyleSheet/processColor').default
   },
   borderEndWidth: true,
   borderEndColor: {
-    process: require("../StyleSheet/processColor").default
+    process: require('../StyleSheet/processColor').default
   },
   borderTopLeftRadius: true,
   borderTopRightRadius: true,

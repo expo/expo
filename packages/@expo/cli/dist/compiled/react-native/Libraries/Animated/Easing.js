@@ -70,7 +70,7 @@ var Easing = {
     return 7.5625 * t2 * t2 + 0.984375;
   },
   bezier: function bezier(x1, y1, x2, y2) {
-    var _bezier = require("./bezier").default;
+    var _bezier = require('./bezier').default;
     return _bezier(x1, y1, x2, y2);
   },
   in: function _in(easing) {

@@ -3,9 +3,9 @@
 var _ReactNativePrivateInterface = require("react-native/Libraries/ReactPrivate/ReactNativePrivateInterface");
 var ReactFabric;
 if (__DEV__) {
-  ReactFabric = require("../implementations/ReactFabric-dev");
+  ReactFabric = require('../implementations/ReactFabric-dev');
 } else {
-  ReactFabric = require("../implementations/ReactFabric-prod");
+  ReactFabric = require('../implementations/ReactFabric-prod');
 }
 if (global.RN$Bridgeless) {
   global.RN$stopSurface = ReactFabric.stopSurface;

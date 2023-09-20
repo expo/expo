@@ -1,6 +1,6 @@
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _NativeVibration = _interopRequireDefault(require("./NativeVibration"));
-var Platform = require("../Utilities/Platform");
+var Platform = require('../Utilities/Platform');
 var _vibrating = false;
 var _id = 0;
 var _default_vibration_length = 400;

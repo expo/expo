@@ -1,6 +1,6 @@
 'use strict';
 
-var getDevServer = require("./getDevServer");
+var getDevServer = require('./getDevServer');
 function openFileInEditor(file, lineNumber) {
   fetch(getDevServer().url + 'open-stack-frame', {
     method: 'POST',

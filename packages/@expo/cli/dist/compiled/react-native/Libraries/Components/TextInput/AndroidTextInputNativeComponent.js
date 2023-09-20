@@ -65,13 +65,13 @@ var __INTERNAL_VIEW_CONFIG = {
     inlineImagePadding: true,
     contextMenuHidden: true,
     textShadowColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     maxLength: true,
     selectTextOnFocus: true,
     textShadowRadius: true,
     underlineColorAndroid: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     textDecorationLine: true,
     submitBehavior: true,
@@ -79,10 +79,10 @@ var __INTERNAL_VIEW_CONFIG = {
     fontStyle: true,
     textShadowOffset: true,
     selectionColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     placeholderTextColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     importantForAutofill: true,
     lineHeight: true,
@@ -91,7 +91,7 @@ var __INTERNAL_VIEW_CONFIG = {
     keyboardType: true,
     multiline: true,
     color: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     autoComplete: true,
     numberOfLines: true,
@@ -100,7 +100,7 @@ var __INTERNAL_VIEW_CONFIG = {
     fontSize: true,
     onKeyPress: true,
     cursorColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     text: true,
     showSoftInputOnFocus: true,
@@ -124,24 +124,24 @@ var __INTERNAL_VIEW_CONFIG = {
     fontVariant: true,
     borderBottomRightRadius: true,
     borderBottomColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderRadius: true,
     borderRightColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderTopRightRadius: true,
     borderStyle: true,
     borderBottomLeftRadius: true,
     borderLeftColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderTopLeftRadius: true,
     borderTopColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     }
   }
 };

@@ -1,6 +1,6 @@
 'use strict';
 
-var parseHermesStack = require("./parseHermesStack");
+var parseHermesStack = require('./parseHermesStack');
 function convertHermesStack(stack) {
   var frames = [];
   for (var entry of stack.entries) {

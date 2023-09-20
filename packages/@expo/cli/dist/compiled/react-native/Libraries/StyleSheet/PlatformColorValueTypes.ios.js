@@ -26,7 +26,7 @@ var normalizeColorObject = function normalizeColorObject(color) {
   if ('semantic' in color) {
     return color;
   } else if ('dynamic' in color && color.dynamic !== undefined) {
-    var normalizeColor = require("./normalizeColor");
+    var normalizeColor = require('./normalizeColor');
     var dynamic = color.dynamic;
     var dynamicColor = {
       dynamic: {
@@ -43,7 +43,7 @@ var normalizeColorObject = function normalizeColorObject(color) {
 exports.normalizeColorObject = normalizeColorObject;
 var processColorObject = function processColorObject(color) {
   if ('dynamic' in color && color.dynamic != null) {
-    var processColor = require("./processColor").default;
+    var processColor = require('./processColor').default;
     var dynamic = color.dynamic;
     var dynamicColor = {
       dynamic: {

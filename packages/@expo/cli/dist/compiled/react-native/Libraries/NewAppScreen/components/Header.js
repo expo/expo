@@ -16,7 +16,7 @@ var Header = function Header() {
   return (0, _jsxRuntime.jsxs)(_ImageBackground.default, {
     accessibilityRole: "image",
     testID: "new-app-screen-header",
-    source: require("./logo.png"),
+    source: require('./logo.png'),
     style: [styles.background, {
       backgroundColor: isDarkMode ? _Colors.default.darker : _Colors.default.lighter
     }],

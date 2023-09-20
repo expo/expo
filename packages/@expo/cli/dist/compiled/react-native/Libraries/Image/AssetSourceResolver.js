@@ -3,9 +3,9 @@
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-var PixelRatio = require("../Utilities/PixelRatio").default;
-var Platform = require("../Utilities/Platform");
-var _require = require("./AssetUtils"),
+var PixelRatio = require('../Utilities/PixelRatio').default;
+var Platform = require('../Utilities/Platform');
+var _require = require('./AssetUtils'),
   pickScale = _require.pickScale;
 var _require2 = require('@react-native/assets-registry/path-support'),
   getAndroidResourceFolderName = _require2.getAndroidResourceFolderName,

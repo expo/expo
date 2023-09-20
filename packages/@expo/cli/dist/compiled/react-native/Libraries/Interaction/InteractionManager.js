@@ -1,8 +1,8 @@
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _EventEmitter = _interopRequireDefault(require("../vendor/emitter/EventEmitter"));
-var BatchedBridge = require("../BatchedBridge/BatchedBridge");
-var infoLog = require("../Utilities/infoLog");
-var TaskQueue = require("./TaskQueue");
+var BatchedBridge = require('../BatchedBridge/BatchedBridge');
+var infoLog = require('../Utilities/infoLog');
+var TaskQueue = require('./TaskQueue');
 var invariant = require('invariant');
 var _emitter = new _EventEmitter.default();
 var DEBUG_DELAY = 0;

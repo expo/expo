@@ -41,7 +41,7 @@ function LogBoxInspectorHeader(props) {
       children: [(0, _jsxRuntime.jsx)(LogBoxInspectorHeaderButton, {
         disabled: props.total <= 1,
         level: props.level,
-        image: require("./LogBoxImages/chevron-left.png"),
+        image: require('./LogBoxImages/chevron-left.png'),
         onPress: function onPress() {
           return props.onSelectIndex(prevIndex);
         }
@@ -54,7 +54,7 @@ function LogBoxInspectorHeader(props) {
       }), (0, _jsxRuntime.jsx)(LogBoxInspectorHeaderButton, {
         disabled: props.total <= 1,
         level: props.level,
-        image: require("./LogBoxImages/chevron-right.png"),
+        image: require('./LogBoxImages/chevron-right.png'),
         onPress: function onPress() {
           return props.onSelectIndex(nextIndex);
         }

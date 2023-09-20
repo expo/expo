@@ -1,9 +1,9 @@
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _NativeUIManager = _interopRequireDefault(require("./NativeUIManager"));
-var NativeModules = require("../BatchedBridge/NativeModules");
-var defineLazyObjectProperty = require("../Utilities/defineLazyObjectProperty");
-var Platform = require("../Utilities/Platform");
-var UIManagerProperties = require("./UIManagerProperties");
+var NativeModules = require('../BatchedBridge/NativeModules');
+var defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
+var Platform = require('../Utilities/Platform');
+var UIManagerProperties = require('./UIManagerProperties');
 var viewManagerConfigs = {};
 var triedLoadingConfig = new Set();
 var NativeUIManagerConstants = {};

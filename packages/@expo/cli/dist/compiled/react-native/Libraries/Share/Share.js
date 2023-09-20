@@ -3,8 +3,8 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 var _NativeActionSheetManager = _interopRequireDefault(require("../ActionSheetIOS/NativeActionSheetManager"));
 var _NativeShareModule = _interopRequireDefault(require("./NativeShareModule"));
-var processColor = require("../StyleSheet/processColor").default;
-var Platform = require("../Utilities/Platform");
+var processColor = require('../StyleSheet/processColor').default;
+var Platform = require('../Utilities/Platform');
 var invariant = require('invariant');
 var Share = function () {
   function Share() {

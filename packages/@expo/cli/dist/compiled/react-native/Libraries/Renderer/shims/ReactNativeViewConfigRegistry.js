@@ -19,16 +19,16 @@ function processEventTypes(viewConfig) {
     }
   }
   if (bubblingEventTypes != null) {
-    for (var _topLevelType2 in bubblingEventTypes) {
-      if (customBubblingEventTypes[_topLevelType2] == null) {
-        customBubblingEventTypes[_topLevelType2] = bubblingEventTypes[_topLevelType2];
+    for (var _topLevelType in bubblingEventTypes) {
+      if (customBubblingEventTypes[_topLevelType] == null) {
+        customBubblingEventTypes[_topLevelType] = bubblingEventTypes[_topLevelType];
       }
     }
   }
   if (directEventTypes != null) {
-    for (var _topLevelType4 in directEventTypes) {
-      if (customDirectEventTypes[_topLevelType4] == null) {
-        customDirectEventTypes[_topLevelType4] = directEventTypes[_topLevelType4];
+    for (var _topLevelType2 in directEventTypes) {
+      if (customDirectEventTypes[_topLevelType2] == null) {
+        customDirectEventTypes[_topLevelType2] = directEventTypes[_topLevelType2];
       }
     }
   }

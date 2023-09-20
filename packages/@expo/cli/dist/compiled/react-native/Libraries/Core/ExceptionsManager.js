@@ -43,7 +43,7 @@ function preprocessException(data) {
 }
 var exceptionID = 0;
 function reportException(e, isFatal, reportToConsole) {
-  var parseErrorStack = require("./Devtools/parseErrorStack");
+  var parseErrorStack = require('./Devtools/parseErrorStack');
   var stack = parseErrorStack(e == null ? void 0 : e.stack);
   var currentExceptionID = ++exceptionID;
   var originalMessage = e.message || '';
@@ -73,12 +73,12 @@ function reportException(e, isFatal, reportToConsole) {
     console.error(data.message);
   }
   if (__DEV__) {
-    var LogBox = require("../LogBox/LogBox").default;
+    var LogBox = require('../LogBox/LogBox').default;
     LogBox.addException(Object.assign({}, data, {
       isComponentError: !!e.isComponentError
     }));
   } else if (isFatal || e.type !== 'warn') {
-    var NativeExceptionsManager = require("./NativeExceptionsManager").default;
+    var NativeExceptionsManager = require('./NativeExceptionsManager').default;
     if (NativeExceptionsManager) {
       NativeExceptionsManager.reportException(data);
     }
@@ -116,7 +116,7 @@ function reactConsoleErrorHandler() {
   if (firstArg != null && firstArg.stack) {
     error = firstArg;
   } else {
-    var stringifySafe = require("../Utilities/stringifySafe").default;
+    var stringifySafe = require('../Utilities/stringifySafe').default;
     if (typeof firstArg === 'string' && firstArg.startsWith('Warning: ')) {
       return;
     }

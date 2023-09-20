@@ -1,6 +1,6 @@
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _Platform = _interopRequireDefault(require("../Utilities/Platform"));
-var ReactNativeVersion = require("./ReactNativeVersion");
+var ReactNativeVersion = require('./ReactNativeVersion');
 exports.checkVersions = function checkVersions() {
   var nativeVersion = _Platform.default.constants.reactNativeVersion;
   if (ReactNativeVersion.version.major !== nativeVersion.major || ReactNativeVersion.version.minor !== nativeVersion.minor) {

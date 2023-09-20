@@ -8,6 +8,8 @@ async function nativeBabelFlowTransform(input, options) {
       input,
       {
         babelrc: false,
+        configFile: false,
+
         plugins: [require('babel-plugin-transform-flow-enums')],
         presets: [
           require('metro-react-native-babel-preset').getPreset(input, {}),

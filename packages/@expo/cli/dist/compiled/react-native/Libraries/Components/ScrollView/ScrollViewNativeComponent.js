@@ -30,7 +30,7 @@ var __INTERNAL_VIEW_CONFIG = _Platform.default.OS === 'android' ? {
   },
   validAttributes: {
     contentOffset: {
-      diff: require("../../Utilities/differ/pointsDiffer")
+      diff: require('../../Utilities/differ/pointsDiffer')
     },
     decelerationRate: true,
     disableIntervalMomentum: true,
@@ -49,29 +49,29 @@ var __INTERNAL_VIEW_CONFIG = _Platform.default.OS === 'android' ? {
     nestedScrollEnabled: true,
     borderStyle: true,
     borderRightColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderBottomColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     persistentScrollbar: true,
     endFillColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     fadingEdgeLength: true,
     overScrollMode: true,
     borderTopLeftRadius: true,
     scrollPerfTag: true,
     borderTopColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     removeClippedSubviews: true,
     borderTopRightRadius: true,
     borderLeftColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     pointerEvents: true,
     isInvertedVirtualizedList: true
@@ -110,10 +110,10 @@ var __INTERNAL_VIEW_CONFIG = _Platform.default.OS === 'android' ? {
     canCancelContentTouches: true,
     centerContent: true,
     contentInset: {
-      diff: require("../../Utilities/differ/insetsDiffer")
+      diff: require('../../Utilities/differ/insetsDiffer')
     },
     contentOffset: {
-      diff: require("../../Utilities/differ/pointsDiffer")
+      diff: require('../../Utilities/differ/pointsDiffer')
     },
     contentInsetAdjustmentBehavior: true,
     decelerationRate: true,
@@ -130,7 +130,7 @@ var __INTERNAL_VIEW_CONFIG = _Platform.default.OS === 'android' ? {
     scrollEnabled: true,
     scrollEventThrottle: true,
     scrollIndicatorInsets: {
-      diff: require("../../Utilities/differ/insetsDiffer")
+      diff: require('../../Utilities/differ/insetsDiffer')
     },
     scrollToOverflowEnabled: true,
     scrollsToTop: true,

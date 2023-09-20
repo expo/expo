@@ -47,34 +47,34 @@ var __INTERNAL_VIEW_CONFIG = _Platform.default.OS === 'android' ? {
     borderStartWidth: true,
     borderEndWidth: true,
     borderColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderLeftColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderRightColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderTopColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderBottomColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderStartColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderEndColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderBlockColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderBlockEndColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderBlockStartColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     focusable: true,
     overflow: true,

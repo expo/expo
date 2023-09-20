@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-var Dimensions = require("./Dimensions").default;
+var Dimensions = require('./Dimensions').default;
 var PixelRatio = function () {
   function PixelRatio() {
     (0, _classCallCheck2.default)(this, PixelRatio);

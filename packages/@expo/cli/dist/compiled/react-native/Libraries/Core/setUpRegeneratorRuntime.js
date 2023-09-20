@@ -1,8 +1,8 @@
 'use strict';
 
-var _require = require("../Utilities/FeatureDetection"),
+var _require = require('../Utilities/FeatureDetection'),
   hasNativeConstructor = _require.hasNativeConstructor;
-var _require2 = require("../Utilities/PolyfillFunctions"),
+var _require2 = require('../Utilities/PolyfillFunctions'),
   polyfillGlobal = _require2.polyfillGlobal;
 var hasNativeGenerator;
 try {

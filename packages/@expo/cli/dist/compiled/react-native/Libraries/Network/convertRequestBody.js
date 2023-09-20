@@ -1,8 +1,8 @@
 'use strict';
 
-var Blob = require("../Blob/Blob");
-var binaryToBase64 = require("../Utilities/binaryToBase64");
-var FormData = require("./FormData");
+var Blob = require('../Blob/Blob');
+var binaryToBase64 = require('../Utilities/binaryToBase64');
+var FormData = require('./FormData');
 function convertRequestBody(body) {
   if (typeof body === 'string') {
     return {

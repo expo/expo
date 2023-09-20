@@ -4,8 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var Platform = require("../Utilities/Platform");
-var normalizeColor = require("./normalizeColor");
+var Platform = require('../Utilities/Platform');
+var normalizeColor = require('./normalizeColor');
 function processColor(color) {
   if (color === undefined || color === null) {
     return color;
@@ -15,7 +15,7 @@ function processColor(color) {
     return undefined;
   }
   if (typeof normalizedColor === 'object') {
-    var processColorObject = require("./PlatformColorValueTypes").processColorObject;
+    var processColorObject = require('./PlatformColorValueTypes').processColorObject;
     var processedColorObj = processColorObject(normalizedColor);
     if (processedColorObj != null) {
       return processedColorObj;

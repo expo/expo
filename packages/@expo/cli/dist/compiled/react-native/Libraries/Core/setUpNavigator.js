@@ -1,6 +1,6 @@
 'use strict';
 
-var _require = require("../Utilities/PolyfillFunctions"),
+var _require = require('../Utilities/PolyfillFunctions'),
   polyfillObjectProperty = _require.polyfillObjectProperty;
 var navigator = global.navigator;
 if (navigator === undefined) {

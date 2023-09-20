@@ -128,8 +128,8 @@ var AnimatedTransform = function (_AnimatedWithChildren) {
             });
           } else if (typeof value === 'object') {
             result[key] = {};
-            for (var _ref3 of Object.entries(value)) {
-              var _ref2 = (0, _slicedToArray2.default)(_ref3, 2);
+            for (var _ref of Object.entries(value)) {
+              var _ref2 = (0, _slicedToArray2.default)(_ref, 2);
               var nestedKey = _ref2[0];
               var nestedValue = _ref2[1];
               if (nestedValue instanceof _AnimatedNode.default) {

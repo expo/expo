@@ -13,7 +13,7 @@ var __INTERNAL_VIEW_CONFIG = {
     decelerationRate: true,
     disableIntervalMomentum: true,
     endFillColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     fadingEdgeLength: true,
     nestedScrollEnabled: true,
@@ -35,22 +35,22 @@ var __INTERNAL_VIEW_CONFIG = {
     borderRadius: true,
     borderStyle: true,
     borderRightColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderBottomColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     borderTopLeftRadius: true,
     borderTopColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     removeClippedSubviews: true,
     borderTopRightRadius: true,
     borderLeftColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     pointerEvents: true
   }

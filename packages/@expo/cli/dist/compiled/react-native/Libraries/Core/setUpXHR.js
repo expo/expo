@@ -1,42 +1,42 @@
 'use strict';
 
-var _require = require("../Utilities/PolyfillFunctions"),
+var _require = require('../Utilities/PolyfillFunctions'),
   polyfillGlobal = _require.polyfillGlobal;
 polyfillGlobal('XMLHttpRequest', function () {
-  return require("../Network/XMLHttpRequest");
+  return require('../Network/XMLHttpRequest');
 });
 polyfillGlobal('FormData', function () {
-  return require("../Network/FormData");
+  return require('../Network/FormData');
 });
 polyfillGlobal('fetch', function () {
-  return require("../Network/fetch").fetch;
+  return require('../Network/fetch').fetch;
 });
 polyfillGlobal('Headers', function () {
-  return require("../Network/fetch").Headers;
+  return require('../Network/fetch').Headers;
 });
 polyfillGlobal('Request', function () {
-  return require("../Network/fetch").Request;
+  return require('../Network/fetch').Request;
 });
 polyfillGlobal('Response', function () {
-  return require("../Network/fetch").Response;
+  return require('../Network/fetch').Response;
 });
 polyfillGlobal('WebSocket', function () {
-  return require("../WebSocket/WebSocket");
+  return require('../WebSocket/WebSocket');
 });
 polyfillGlobal('Blob', function () {
-  return require("../Blob/Blob");
+  return require('../Blob/Blob');
 });
 polyfillGlobal('File', function () {
-  return require("../Blob/File");
+  return require('../Blob/File');
 });
 polyfillGlobal('FileReader', function () {
-  return require("../Blob/FileReader");
+  return require('../Blob/FileReader');
 });
 polyfillGlobal('URL', function () {
-  return require("../Blob/URL").URL;
+  return require('../Blob/URL').URL;
 });
 polyfillGlobal('URLSearchParams', function () {
-  return require("../Blob/URL").URLSearchParams;
+  return require('../Blob/URL').URLSearchParams;
 });
 polyfillGlobal('AbortController', function () {
   return require('abort-controller/dist/abort-controller').AbortController;

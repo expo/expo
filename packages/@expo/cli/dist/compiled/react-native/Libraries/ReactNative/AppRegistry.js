@@ -159,7 +159,7 @@ if (!(global.RN$Bridgeless === true)) {
   _BatchedBridge.default.registerCallableModule('AppRegistry', AppRegistry);
   AppRegistry.registerComponent('LogBox', function () {
     if (__DEV__) {
-      return require("../LogBox/LogBoxInspectorContainer").default;
+      return require('../LogBox/LogBoxInspectorContainer').default;
     } else {
       return function NoOp() {
         return null;

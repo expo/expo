@@ -9,20 +9,20 @@ var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/ge
 var _jsxRuntime = require("react/jsx-runtime");
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var ReactNativeStyleAttributes = require("../Components/View/ReactNativeStyleAttributes");
-var View = require("../Components/View/View");
-var PressabilityDebug = require("../Pressability/PressabilityDebug");
-var _require = require("../ReactNative/RendererProxy"),
+var ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+var View = require('../Components/View/View');
+var PressabilityDebug = require('../Pressability/PressabilityDebug');
+var _require = require('../ReactNative/RendererProxy'),
   findNodeHandle = _require.findNodeHandle;
-var StyleSheet = require("../StyleSheet/StyleSheet");
-var Dimensions = require("../Utilities/Dimensions").default;
-var Platform = require("../Utilities/Platform");
-var getInspectorDataForViewAtPoint = require("./getInspectorDataForViewAtPoint");
-var InspectorOverlay = require("./InspectorOverlay");
-var InspectorPanel = require("./InspectorPanel");
+var StyleSheet = require('../StyleSheet/StyleSheet');
+var Dimensions = require('../Utilities/Dimensions').default;
+var Platform = require('../Utilities/Platform');
+var getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
+var InspectorOverlay = require('./InspectorOverlay');
+var InspectorPanel = require('./InspectorPanel');
 var React = require('react');
 var hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-hook.resolveRNStyle = require("../StyleSheet/flattenStyle");
+hook.resolveRNStyle = require('../StyleSheet/flattenStyle');
 hook.nativeStyleEditorValidAttributes = Object.keys(ReactNativeStyleAttributes);
 var Inspector = function (_React$Component) {
   (0, _inherits2.default)(Inspector, _React$Component);

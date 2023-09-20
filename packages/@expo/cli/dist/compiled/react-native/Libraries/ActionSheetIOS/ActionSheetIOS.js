@@ -2,7 +2,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
 var _NativeActionSheetManager = _interopRequireDefault(require("./NativeActionSheetManager"));
 var _excluded = ["tintColor", "cancelButtonTintColor", "destructiveButtonIndex"];
-var processColor = require("../StyleSheet/processColor").default;
+var processColor = require('../StyleSheet/processColor').default;
 var invariant = require('invariant');
 var ActionSheetIOS = {
   showActionSheetWithOptions: function showActionSheetWithOptions(options, callback) {

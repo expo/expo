@@ -1,8 +1,8 @@
 'use strict';
 
-var ReactNativeStyleAttributes = require("../Components/View/ReactNativeStyleAttributes");
-var PixelRatio = require("../Utilities/PixelRatio").default;
-var flatten = require("./flattenStyle");
+var ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+var PixelRatio = require('../Utilities/PixelRatio').default;
+var flatten = require('./flattenStyle');
 var hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();

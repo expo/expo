@@ -1,7 +1,7 @@
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _NativeTiming = _interopRequireDefault(require("./NativeTiming"));
-var BatchedBridge = require("../../BatchedBridge/BatchedBridge");
-var Systrace = require("../../Performance/Systrace");
+var BatchedBridge = require('../../BatchedBridge/BatchedBridge');
+var Systrace = require('../../Performance/Systrace');
 var invariant = require('invariant');
 var FRAME_DURATION = 1000 / 60;
 var IDLE_CALLBACK_FRAME_DEADLINE = 1;

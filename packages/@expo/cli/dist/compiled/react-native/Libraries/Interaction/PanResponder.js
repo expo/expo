@@ -4,8 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var InteractionManager = require("./InteractionManager");
-var TouchHistoryMath = require("./TouchHistoryMath");
+var InteractionManager = require('./InteractionManager');
+var TouchHistoryMath = require('./TouchHistoryMath');
 var currentCentroidXOfTouchesChangedAfter = TouchHistoryMath.currentCentroidXOfTouchesChangedAfter;
 var currentCentroidYOfTouchesChangedAfter = TouchHistoryMath.currentCentroidYOfTouchesChangedAfter;
 var previousCentroidXOfTouchesChangedAfter = TouchHistoryMath.previousCentroidXOfTouchesChangedAfter;

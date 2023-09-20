@@ -1,5 +1,5 @@
 'use strict';
-var ExceptionsManager = require("./ExceptionsManager");
+var ExceptionsManager = require('./ExceptionsManager');
 ExceptionsManager.installConsoleErrorReporter();
 if (!global.__fbDisableExceptionsManager) {
   var handleError = function handleError(e, isFatal) {
@@ -10,7 +10,7 @@ if (!global.__fbDisableExceptionsManager) {
       throw e;
     }
   };
-  var ErrorUtils = require("../vendor/core/ErrorUtils");
+  var ErrorUtils = require('../vendor/core/ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
 }
 //# sourceMappingURL=setUpErrorHandling.js.map

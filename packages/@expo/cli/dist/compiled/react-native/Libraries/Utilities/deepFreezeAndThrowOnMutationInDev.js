@@ -19,8 +19,8 @@ function deepFreezeAndThrowOnMutationInDev(object) {
     }
     Object.freeze(object);
     Object.seal(object);
-    for (var _i2 = 0; _i2 < keys.length; _i2++) {
-      var _key = keys[_i2];
+    for (var _i = 0; _i < keys.length; _i++) {
+      var _key = keys[_i];
       if (_hasOwnProperty.call(object, _key)) {
         deepFreezeAndThrowOnMutationInDev(object[_key]);
       }

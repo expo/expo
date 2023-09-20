@@ -8,7 +8,7 @@ var Blob = function () {
     var parts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
     var options = arguments.length > 1 ? arguments[1] : undefined;
     (0, _classCallCheck2.default)(this, Blob);
-    var BlobManager = require("./BlobManager");
+    var BlobManager = require('./BlobManager');
     this.data = BlobManager.createFromParts(parts, options).data;
   }
   (0, _createClass2.default)(Blob, [{
@@ -25,7 +25,7 @@ var Blob = function () {
   }, {
     key: "slice",
     value: function slice(start, end) {
-      var BlobManager = require("./BlobManager");
+      var BlobManager = require('./BlobManager');
       var _this$data = this.data,
         offset = _this$data.offset,
         size = _this$data.size;
@@ -55,7 +55,7 @@ var Blob = function () {
   }, {
     key: "close",
     value: function close() {
-      var BlobManager = require("./BlobManager");
+      var BlobManager = require('./BlobManager');
       BlobManager.release(this.data.blobId);
       this.data = null;
     }

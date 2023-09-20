@@ -19,17 +19,17 @@ var ScrollViewViewConfig = {
     canCancelContentTouches: true,
     centerContent: true,
     contentInset: {
-      diff: require("../../Utilities/differ/pointsDiffer")
+      diff: require('../../Utilities/differ/pointsDiffer')
     },
     contentOffset: {
-      diff: require("../../Utilities/differ/pointsDiffer")
+      diff: require('../../Utilities/differ/pointsDiffer')
     },
     contentInsetAdjustmentBehavior: true,
     decelerationRate: true,
     directionalLockEnabled: true,
     disableIntervalMomentum: true,
     endFillColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     fadingEdgeLength: true,
     indicatorStyle: true,
@@ -53,7 +53,7 @@ var ScrollViewViewConfig = {
     scrollEnabled: true,
     scrollEventThrottle: true,
     scrollIndicatorInsets: {
-      diff: require("../../Utilities/differ/pointsDiffer")
+      diff: require('../../Utilities/differ/pointsDiffer')
     },
     scrollPerfTag: true,
     scrollToOverflowEnabled: true,

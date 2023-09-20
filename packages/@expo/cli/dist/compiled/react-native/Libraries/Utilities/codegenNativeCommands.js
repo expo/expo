@@ -2,7 +2,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _require = require("../ReactNative/RendererProxy"),
+var _require = require('../ReactNative/RendererProxy'),
   dispatchCommand = _require.dispatchCommand;
 function codegenNativeCommands(options) {
   var commandObj = {};

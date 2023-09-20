@@ -68,7 +68,7 @@ function getNextState() {
   };
 }
 function reportLogBoxError(error, componentStack) {
-  var ExceptionsManager = require("../../Core/ExceptionsManager");
+  var ExceptionsManager = require('../../Core/ExceptionsManager');
   error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
   if (componentStack != null) {
     error.componentStack = componentStack;

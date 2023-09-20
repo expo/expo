@@ -39,11 +39,11 @@ var AppContainer = function (_React$Component) {
   (0, _createClass2.default)(AppContainer, [{
     key: "mountReactDevToolsOverlays",
     value: function mountReactDevToolsOverlays() {
-      var DevtoolsOverlay = require("../Inspector/DevtoolsOverlay").default;
+      var DevtoolsOverlay = require('../Inspector/DevtoolsOverlay').default;
       var devtoolsOverlay = (0, _jsxRuntime.jsx)(DevtoolsOverlay, {
         inspectedView: this._mainRef
       });
-      var TraceUpdateOverlay = require("../Components/TraceUpdateOverlay/TraceUpdateOverlay").default;
+      var TraceUpdateOverlay = require('../Components/TraceUpdateOverlay/TraceUpdateOverlay').default;
       var traceUpdateOverlay = (0, _jsxRuntime.jsx)(TraceUpdateOverlay, {});
       this.setState({
         devtoolsOverlay: devtoolsOverlay,
@@ -57,7 +57,7 @@ var AppContainer = function (_React$Component) {
       if (__DEV__) {
         if (!this.props.internal_excludeInspector) {
           this._subscription = _RCTDeviceEventEmitter.default.addListener('toggleElementInspector', function () {
-            var Inspector = require("../Inspector/Inspector");
+            var Inspector = require('../Inspector/Inspector');
             var inspector = _this2.state.inspector ? null : (0, _jsxRuntime.jsx)(Inspector, {
               inspectedView: _this2._mainRef,
               onRequestRerenderApp: function onRequestRerenderApp(updateInspectedView) {
@@ -104,7 +104,7 @@ var AppContainer = function (_React$Component) {
       var logBox = null;
       if (__DEV__) {
         if (!this.props.internal_excludeLogBox) {
-          var LogBoxNotificationContainer = require("../LogBox/LogBoxNotificationContainer").default;
+          var LogBoxNotificationContainer = require('../LogBox/LogBoxNotificationContainer').default;
           logBox = (0, _jsxRuntime.jsx)(LogBoxNotificationContainer, {});
         }
       }

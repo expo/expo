@@ -1,6 +1,6 @@
 'use strict';
 
-var infoLog = require("../Utilities/infoLog");
+var infoLog = require('../Utilities/infoLog');
 var JSEventLoopWatchdog = {
   getStats: function getStats() {
     return {

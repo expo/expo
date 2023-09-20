@@ -9,14 +9,14 @@ var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/ge
 var _jsxRuntime = require("react/jsx-runtime");
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var ScrollView = require("../Components/ScrollView/ScrollView");
-var TouchableHighlight = require("../Components/Touchable/TouchableHighlight");
-var View = require("../Components/View/View");
-var FlatList = require("../Lists/FlatList");
-var XHRInterceptor = require("../Network/XHRInterceptor");
-var StyleSheet = require("../StyleSheet/StyleSheet");
-var Text = require("../Text/Text");
-var WebSocketInterceptor = require("../WebSocket/WebSocketInterceptor");
+var ScrollView = require('../Components/ScrollView/ScrollView');
+var TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
+var View = require('../Components/View/View');
+var FlatList = require('../Lists/FlatList');
+var XHRInterceptor = require('../Network/XHRInterceptor');
+var StyleSheet = require('../StyleSheet/StyleSheet');
+var Text = require('../Text/Text');
+var WebSocketInterceptor = require('../WebSocket/WebSocketInterceptor');
 var React = require('react');
 var LISTVIEW_CELL_HEIGHT = 15;
 var nextXHRId = 0;

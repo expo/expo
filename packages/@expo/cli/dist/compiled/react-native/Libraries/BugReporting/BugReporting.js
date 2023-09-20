@@ -7,7 +7,7 @@ var _NativeRedBox = _interopRequireDefault(require("../NativeModules/specs/Nativ
 var _NativeBugReporting = _interopRequireDefault(require("./NativeBugReporting"));
 function defaultExtras() {
   BugReporting.addFileSource('react_hierarchy.txt', function () {
-    return require("./dumpReactTree")();
+    return require('./dumpReactTree')();
   });
 }
 var BugReporting = function () {
@@ -53,17 +53,17 @@ var BugReporting = function () {
     key: "collectExtraData",
     value: function collectExtraData() {
       var extraData = {};
-      for (var _ref3 of BugReporting._extraSources) {
-        var _ref2 = (0, _slicedToArray2.default)(_ref3, 2);
+      for (var _ref of BugReporting._extraSources) {
+        var _ref2 = (0, _slicedToArray2.default)(_ref, 2);
         var _key = _ref2[0];
         var callback = _ref2[1];
         extraData[_key] = callback();
       }
       var fileData = {};
-      for (var _ref6 of BugReporting._fileSources) {
-        var _ref5 = (0, _slicedToArray2.default)(_ref6, 2);
-        var _key2 = _ref5[0];
-        var _callback = _ref5[1];
+      for (var _ref3 of BugReporting._fileSources) {
+        var _ref4 = (0, _slicedToArray2.default)(_ref3, 2);
+        var _key2 = _ref4[0];
+        var _callback = _ref4[1];
         fileData[_key2] = _callback();
       }
       if (_NativeBugReporting.default != null && _NativeBugReporting.default.setExtraData != null) {

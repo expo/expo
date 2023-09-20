@@ -2,7 +2,7 @@
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
-var stringifySafe = require("../Utilities/stringifySafe").default;
+var stringifySafe = require('../Utilities/stringifySafe').default;
 var invariant = require('invariant');
 function processTransform(transform) {
   if (typeof transform === 'string') {

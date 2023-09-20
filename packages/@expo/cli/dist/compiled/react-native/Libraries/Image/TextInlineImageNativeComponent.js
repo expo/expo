@@ -15,7 +15,7 @@ var __INTERNAL_VIEW_CONFIG = {
     resizeMode: true,
     src: true,
     tintColor: {
-      process: require("../StyleSheet/processColor").default
+      process: require('../StyleSheet/processColor').default
     },
     headers: true
   }

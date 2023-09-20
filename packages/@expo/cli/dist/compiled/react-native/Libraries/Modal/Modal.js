@@ -14,14 +14,14 @@ var _jsxRuntime = require("react/jsx-runtime");
 var _container, _ModalInjection$unsta;
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var ScrollView = require("../Components/ScrollView/ScrollView");
-var View = require("../Components/View/View");
-var AppContainer = require("../ReactNative/AppContainer");
-var I18nManager = require("../ReactNative/I18nManager");
-var _require = require("../ReactNative/RootTag"),
+var ScrollView = require('../Components/ScrollView/ScrollView');
+var View = require('../Components/View/View');
+var AppContainer = require('../ReactNative/AppContainer');
+var I18nManager = require('../ReactNative/I18nManager');
+var _require = require('../ReactNative/RootTag'),
   RootTagContext = _require.RootTagContext;
-var StyleSheet = require("../StyleSheet/StyleSheet");
-var Platform = require("../Utilities/Platform");
+var StyleSheet = require('../StyleSheet/StyleSheet');
+var Platform = require('../Utilities/Platform');
 var React = require('react');
 var ModalEventEmitter = Platform.OS === 'ios' && _NativeModalManager.default != null ? new _NativeEventEmitter.default(Platform.OS !== 'ios' ? null : _NativeModalManager.default) : null;
 var uniqueModalIdentifier = 0;

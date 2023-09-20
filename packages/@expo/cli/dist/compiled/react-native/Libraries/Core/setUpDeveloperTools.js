@@ -1,12 +1,12 @@
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _Platform = _interopRequireDefault(require("../Utilities/Platform"));
 if (__DEV__) {
-  require("./setUpReactDevTools");
-  var JSInspector = require("../JSInspector/JSInspector");
-  JSInspector.registerAgent(require("../JSInspector/NetworkAgent"));
+  require('./setUpReactDevTools');
+  var JSInspector = require('../JSInspector/JSInspector');
+  JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
   var isLikelyARealBrowser = global.navigator != null && global.navigator.appName === 'Netscape';
   if (!_Platform.default.isTesting) {
-    var HMRClient = require("../Utilities/HMRClient");
+    var HMRClient = require('../Utilities/HMRClient');
     if (console._isPolyfilled) {
       ['trace', 'info', 'warn', 'error', 'log', 'group', 'groupCollapsed', 'groupEnd', 'debug'].forEach(function (level) {
         var originalFunction = console[level];
@@ -22,6 +22,6 @@ if (__DEV__) {
       HMRClient.log('log', [`JavaScript logs will appear in your ${isLikelyARealBrowser ? 'browser' : 'environment'} console`]);
     }
   }
-  require("./setUpReactRefresh");
+  require('./setUpReactRefresh');
 }
 //# sourceMappingURL=setUpDeveloperTools.js.map

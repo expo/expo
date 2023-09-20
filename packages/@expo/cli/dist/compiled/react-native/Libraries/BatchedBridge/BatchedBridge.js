@@ -1,6 +1,6 @@
 'use strict';
 
-var MessageQueue = require("./MessageQueue");
+var MessageQueue = require('./MessageQueue');
 var BatchedBridge = new MessageQueue();
 Object.defineProperty(global, '__fbBatchedBridge', {
   configurable: true,

@@ -3,8 +3,8 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 var _NativeBlobModule = _interopRequireDefault(require("./NativeBlobModule"));
 var _invariant = _interopRequireDefault(require("invariant"));
-var Blob = require("./Blob");
-var BlobRegistry = require("./BlobRegistry");
+var Blob = require('./Blob');
+var BlobRegistry = require('./BlobRegistry');
 function uuidv4() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     var r = Math.random() * 16 | 0,

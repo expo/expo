@@ -4,7 +4,7 @@ var _nullthrows = _interopRequireDefault(require("nullthrows"));
 function isFabricReactTag(reactTag) {
   return reactTag % 2 === 0;
 }
-var UIManagerImpl = global.RN$Bridgeless === true ? require("./BridgelessUIManager") : require("./PaperUIManager");
+var UIManagerImpl = global.RN$Bridgeless === true ? require('./BridgelessUIManager') : require('./PaperUIManager');
 var UIManager = Object.assign({}, UIManagerImpl, {
   measure: function measure(reactTag, callback) {
     if (isFabricReactTag(reactTag)) {

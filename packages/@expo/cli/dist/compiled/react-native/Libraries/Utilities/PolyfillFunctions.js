@@ -1,6 +1,6 @@
 'use strict';
 
-var defineLazyObjectProperty = require("./defineLazyObjectProperty");
+var defineLazyObjectProperty = require('./defineLazyObjectProperty');
 function polyfillObjectProperty(object, name, getValue) {
   var descriptor = Object.getOwnPropertyDescriptor(object, name);
   if (__DEV__ && descriptor) {

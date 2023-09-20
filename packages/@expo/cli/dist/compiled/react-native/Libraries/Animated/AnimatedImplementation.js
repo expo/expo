@@ -73,17 +73,17 @@ var maybeVectorAnim = function maybeVectorAnim(value, config, anim) {
     var configG = Object.assign({}, config);
     var configB = Object.assign({}, config);
     var configA = Object.assign({}, config);
-    for (var _key2 in config) {
-      var _config$_key = config[_key2],
+    for (var _key in config) {
+      var _config$_key = config[_key],
         r = _config$_key.r,
         g = _config$_key.g,
         b = _config$_key.b,
         a = _config$_key.a;
       if (r !== undefined && g !== undefined && b !== undefined && a !== undefined) {
-        configR[_key2] = r;
-        configG[_key2] = g;
-        configB[_key2] = b;
-        configA[_key2] = a;
+        configR[_key] = r;
+        configG[_key] = g;
+        configB[_key] = b;
+        configA[_key] = a;
       }
     }
     var aR = anim(value.r, configR);

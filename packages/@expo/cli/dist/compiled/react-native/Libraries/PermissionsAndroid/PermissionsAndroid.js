@@ -5,7 +5,7 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/creat
 var _NativeDialogManagerAndroid = _interopRequireDefault(require("../NativeModules/specs/NativeDialogManagerAndroid"));
 var _NativePermissionsAndroid = _interopRequireDefault(require("./NativePermissionsAndroid"));
 var _invariant = _interopRequireDefault(require("invariant"));
-var Platform = require("../Utilities/Platform");
+var Platform = require('../Utilities/Platform');
 var PERMISSION_REQUEST_RESULT = Object.freeze({
   GRANTED: 'granted',
   DENIED: 'denied',

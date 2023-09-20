@@ -1,240 +1,240 @@
 'use strict';
 var invariant = require('invariant');
-var warnOnce = require("./Libraries/Utilities/warnOnce");
+var warnOnce = require('./Libraries/Utilities/warnOnce');
 module.exports = {
   get AccessibilityInfo() {
-    return require("./Libraries/Components/AccessibilityInfo/AccessibilityInfo").default;
+    return require('./Libraries/Components/AccessibilityInfo/AccessibilityInfo').default;
   },
   get ActivityIndicator() {
-    return require("./Libraries/Components/ActivityIndicator/ActivityIndicator").default;
+    return require('./Libraries/Components/ActivityIndicator/ActivityIndicator').default;
   },
   get Button() {
-    return require("./Libraries/Components/Button");
+    return require('./Libraries/Components/Button');
   },
   get DrawerLayoutAndroid() {
-    return require("./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid");
+    return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid');
   },
   get FlatList() {
-    return require("./Libraries/Lists/FlatList");
+    return require('./Libraries/Lists/FlatList');
   },
   get Image() {
-    return require("./Libraries/Image/Image");
+    return require('./Libraries/Image/Image');
   },
   get ImageBackground() {
-    return require("./Libraries/Image/ImageBackground");
+    return require('./Libraries/Image/ImageBackground');
   },
   get InputAccessoryView() {
-    return require("./Libraries/Components/TextInput/InputAccessoryView");
+    return require('./Libraries/Components/TextInput/InputAccessoryView');
   },
   get KeyboardAvoidingView() {
-    return require("./Libraries/Components/Keyboard/KeyboardAvoidingView").default;
+    return require('./Libraries/Components/Keyboard/KeyboardAvoidingView').default;
   },
   get Modal() {
-    return require("./Libraries/Modal/Modal");
+    return require('./Libraries/Modal/Modal');
   },
   get Pressable() {
-    return require("./Libraries/Components/Pressable/Pressable").default;
+    return require('./Libraries/Components/Pressable/Pressable').default;
   },
   get ProgressBarAndroid() {
     warnOnce('progress-bar-android-moved', 'ProgressBarAndroid has been extracted from react-native core and will be removed in a future release. ' + "It can now be installed and imported from '@react-native-community/progress-bar-android' instead of 'react-native'. " + 'See https://github.com/react-native-progress-view/progress-bar-android');
-    return require("./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid");
+    return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid');
   },
   get RefreshControl() {
-    return require("./Libraries/Components/RefreshControl/RefreshControl");
+    return require('./Libraries/Components/RefreshControl/RefreshControl');
   },
   get SafeAreaView() {
-    return require("./Libraries/Components/SafeAreaView/SafeAreaView").default;
+    return require('./Libraries/Components/SafeAreaView/SafeAreaView').default;
   },
   get ScrollView() {
-    return require("./Libraries/Components/ScrollView/ScrollView");
+    return require('./Libraries/Components/ScrollView/ScrollView');
   },
   get SectionList() {
-    return require("./Libraries/Lists/SectionList").default;
+    return require('./Libraries/Lists/SectionList').default;
   },
   get StatusBar() {
-    return require("./Libraries/Components/StatusBar/StatusBar");
+    return require('./Libraries/Components/StatusBar/StatusBar');
   },
   get Switch() {
-    return require("./Libraries/Components/Switch/Switch").default;
+    return require('./Libraries/Components/Switch/Switch').default;
   },
   get Text() {
-    return require("./Libraries/Text/Text");
+    return require('./Libraries/Text/Text');
   },
   get TextInput() {
-    return require("./Libraries/Components/TextInput/TextInput");
+    return require('./Libraries/Components/TextInput/TextInput');
   },
   get Touchable() {
-    return require("./Libraries/Components/Touchable/Touchable");
+    return require('./Libraries/Components/Touchable/Touchable');
   },
   get TouchableHighlight() {
-    return require("./Libraries/Components/Touchable/TouchableHighlight");
+    return require('./Libraries/Components/Touchable/TouchableHighlight');
   },
   get TouchableNativeFeedback() {
-    return require("./Libraries/Components/Touchable/TouchableNativeFeedback");
+    return require('./Libraries/Components/Touchable/TouchableNativeFeedback');
   },
   get TouchableOpacity() {
-    return require("./Libraries/Components/Touchable/TouchableOpacity");
+    return require('./Libraries/Components/Touchable/TouchableOpacity');
   },
   get TouchableWithoutFeedback() {
-    return require("./Libraries/Components/Touchable/TouchableWithoutFeedback");
+    return require('./Libraries/Components/Touchable/TouchableWithoutFeedback');
   },
   get View() {
-    return require("./Libraries/Components/View/View");
+    return require('./Libraries/Components/View/View');
   },
   get VirtualizedList() {
-    return require("./Libraries/Lists/VirtualizedList");
+    return require('./Libraries/Lists/VirtualizedList');
   },
   get VirtualizedSectionList() {
-    return require("./Libraries/Lists/VirtualizedSectionList");
+    return require('./Libraries/Lists/VirtualizedSectionList');
   },
   get ActionSheetIOS() {
-    return require("./Libraries/ActionSheetIOS/ActionSheetIOS");
+    return require('./Libraries/ActionSheetIOS/ActionSheetIOS');
   },
   get Alert() {
-    return require("./Libraries/Alert/Alert");
+    return require('./Libraries/Alert/Alert');
   },
   get Animated() {
-    return require("./Libraries/Animated/Animated").default;
+    return require('./Libraries/Animated/Animated').default;
   },
   get Appearance() {
-    return require("./Libraries/Utilities/Appearance");
+    return require('./Libraries/Utilities/Appearance');
   },
   get AppRegistry() {
-    return require("./Libraries/ReactNative/AppRegistry");
+    return require('./Libraries/ReactNative/AppRegistry');
   },
   get AppState() {
-    return require("./Libraries/AppState/AppState");
+    return require('./Libraries/AppState/AppState');
   },
   get BackHandler() {
-    return require("./Libraries/Utilities/BackHandler");
+    return require('./Libraries/Utilities/BackHandler');
   },
   get Clipboard() {
     warnOnce('clipboard-moved', 'Clipboard has been extracted from react-native core and will be removed in a future release. ' + "It can now be installed and imported from '@react-native-clipboard/clipboard' instead of 'react-native'. " + 'See https://github.com/react-native-clipboard/clipboard');
-    return require("./Libraries/Components/Clipboard/Clipboard");
+    return require('./Libraries/Components/Clipboard/Clipboard');
   },
   get DeviceInfo() {
-    return require("./Libraries/Utilities/DeviceInfo");
+    return require('./Libraries/Utilities/DeviceInfo');
   },
   get DevSettings() {
-    return require("./Libraries/Utilities/DevSettings");
+    return require('./Libraries/Utilities/DevSettings');
   },
   get Dimensions() {
-    return require("./Libraries/Utilities/Dimensions").default;
+    return require('./Libraries/Utilities/Dimensions').default;
   },
   get Easing() {
-    return require("./Libraries/Animated/Easing").default;
+    return require('./Libraries/Animated/Easing').default;
   },
   get findNodeHandle() {
-    return require("./Libraries/ReactNative/RendererProxy").findNodeHandle;
+    return require('./Libraries/ReactNative/RendererProxy').findNodeHandle;
   },
   get I18nManager() {
-    return require("./Libraries/ReactNative/I18nManager");
+    return require('./Libraries/ReactNative/I18nManager');
   },
   get InteractionManager() {
-    return require("./Libraries/Interaction/InteractionManager");
+    return require('./Libraries/Interaction/InteractionManager');
   },
   get Keyboard() {
-    return require("./Libraries/Components/Keyboard/Keyboard");
+    return require('./Libraries/Components/Keyboard/Keyboard');
   },
   get LayoutAnimation() {
-    return require("./Libraries/LayoutAnimation/LayoutAnimation");
+    return require('./Libraries/LayoutAnimation/LayoutAnimation');
   },
   get Linking() {
-    return require("./Libraries/Linking/Linking");
+    return require('./Libraries/Linking/Linking');
   },
   get LogBox() {
-    return require("./Libraries/LogBox/LogBox").default;
+    return require('./Libraries/LogBox/LogBox').default;
   },
   get NativeDialogManagerAndroid() {
-    return require("./Libraries/NativeModules/specs/NativeDialogManagerAndroid").default;
+    return require('./Libraries/NativeModules/specs/NativeDialogManagerAndroid').default;
   },
   get NativeEventEmitter() {
-    return require("./Libraries/EventEmitter/NativeEventEmitter").default;
+    return require('./Libraries/EventEmitter/NativeEventEmitter').default;
   },
   get Networking() {
-    return require("./Libraries/Network/RCTNetworking").default;
+    return require('./Libraries/Network/RCTNetworking').default;
   },
   get PanResponder() {
-    return require("./Libraries/Interaction/PanResponder").default;
+    return require('./Libraries/Interaction/PanResponder').default;
   },
   get PermissionsAndroid() {
-    return require("./Libraries/PermissionsAndroid/PermissionsAndroid");
+    return require('./Libraries/PermissionsAndroid/PermissionsAndroid');
   },
   get PixelRatio() {
-    return require("./Libraries/Utilities/PixelRatio").default;
+    return require('./Libraries/Utilities/PixelRatio').default;
   },
   get PushNotificationIOS() {
     warnOnce('pushNotificationIOS-moved', 'PushNotificationIOS has been extracted from react-native core and will be removed in a future release. ' + "It can now be installed and imported from '@react-native-community/push-notification-ios' instead of 'react-native'. " + 'See https://github.com/react-native-push-notification-ios/push-notification-ios');
-    return require("./Libraries/PushNotificationIOS/PushNotificationIOS");
+    return require('./Libraries/PushNotificationIOS/PushNotificationIOS');
   },
   get Settings() {
-    return require("./Libraries/Settings/Settings");
+    return require('./Libraries/Settings/Settings');
   },
   get Share() {
-    return require("./Libraries/Share/Share");
+    return require('./Libraries/Share/Share');
   },
   get StyleSheet() {
-    return require("./Libraries/StyleSheet/StyleSheet");
+    return require('./Libraries/StyleSheet/StyleSheet');
   },
   get Systrace() {
-    return require("./Libraries/Performance/Systrace");
+    return require('./Libraries/Performance/Systrace');
   },
   get ToastAndroid() {
-    return require("./Libraries/Components/ToastAndroid/ToastAndroid");
+    return require('./Libraries/Components/ToastAndroid/ToastAndroid');
   },
   get TurboModuleRegistry() {
-    return require("./Libraries/TurboModule/TurboModuleRegistry");
+    return require('./Libraries/TurboModule/TurboModuleRegistry');
   },
   get UIManager() {
-    return require("./Libraries/ReactNative/UIManager");
+    return require('./Libraries/ReactNative/UIManager');
   },
   get unstable_batchedUpdates() {
-    return require("./Libraries/ReactNative/RendererProxy").unstable_batchedUpdates;
+    return require('./Libraries/ReactNative/RendererProxy').unstable_batchedUpdates;
   },
   get useAnimatedValue() {
-    return require("./Libraries/Animated/useAnimatedValue").default;
+    return require('./Libraries/Animated/useAnimatedValue').default;
   },
   get useColorScheme() {
-    return require("./Libraries/Utilities/useColorScheme").default;
+    return require('./Libraries/Utilities/useColorScheme').default;
   },
   get useWindowDimensions() {
-    return require("./Libraries/Utilities/useWindowDimensions").default;
+    return require('./Libraries/Utilities/useWindowDimensions').default;
   },
   get UTFSequence() {
-    return require("./Libraries/UTFSequence").default;
+    return require('./Libraries/UTFSequence').default;
   },
   get Vibration() {
-    return require("./Libraries/Vibration/Vibration");
+    return require('./Libraries/Vibration/Vibration');
   },
   get YellowBox() {
-    return require("./Libraries/YellowBox/YellowBoxDeprecated");
+    return require('./Libraries/YellowBox/YellowBoxDeprecated');
   },
   get DeviceEventEmitter() {
-    return require("./Libraries/EventEmitter/RCTDeviceEventEmitter").default;
+    return require('./Libraries/EventEmitter/RCTDeviceEventEmitter').default;
   },
   get DynamicColorIOS() {
-    return require("./Libraries/StyleSheet/PlatformColorValueTypesIOS").DynamicColorIOS;
+    return require('./Libraries/StyleSheet/PlatformColorValueTypesIOS').DynamicColorIOS;
   },
   get NativeAppEventEmitter() {
-    return require("./Libraries/EventEmitter/RCTNativeAppEventEmitter");
+    return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter');
   },
   get NativeModules() {
-    return require("./Libraries/BatchedBridge/NativeModules");
+    return require('./Libraries/BatchedBridge/NativeModules');
   },
   get Platform() {
-    return require("./Libraries/Utilities/Platform");
+    return require('./Libraries/Utilities/Platform');
   },
   get PlatformColor() {
-    return require("./Libraries/StyleSheet/PlatformColorValueTypes").PlatformColor;
+    return require('./Libraries/StyleSheet/PlatformColorValueTypes').PlatformColor;
   },
   get processColor() {
-    return require("./Libraries/StyleSheet/processColor").default;
+    return require('./Libraries/StyleSheet/processColor').default;
   },
   get requireNativeComponent() {
-    return require("./Libraries/ReactNative/requireNativeComponent").default;
+    return require('./Libraries/ReactNative/requireNativeComponent').default;
   },
   get RootTagContext() {
-    return require("./Libraries/ReactNative/RootTag").RootTagContext;
+    return require('./Libraries/ReactNative/RootTag').RootTagContext;
   },
   get unstable_enableLogBox() {
     return function () {

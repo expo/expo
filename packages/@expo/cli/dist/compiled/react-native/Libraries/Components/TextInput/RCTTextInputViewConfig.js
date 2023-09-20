@@ -84,7 +84,7 @@ var RCTTextInputViewConfig = {
     fontWeight: true,
     fontVariant: true,
     textShadowOffset: {
-      diff: require("../../Utilities/differ/sizesDiffer")
+      diff: require('../../Utilities/differ/sizesDiffer')
     },
     allowFontScaling: true,
     fontStyle: true,
@@ -99,21 +99,21 @@ var RCTTextInputViewConfig = {
     letterSpacing: true,
     textDecorationStyle: true,
     textDecorationColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     color: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     maxFontSizeMultiplier: true,
     textShadowColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     editable: true,
     inputAccessoryViewID: true,
     caretHidden: true,
     enablesReturnKeyAutomatically: true,
     placeholderTextColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     clearButtonMode: true,
     keyboardType: true,
@@ -123,7 +123,7 @@ var RCTTextInputViewConfig = {
     mostRecentEventCount: true,
     scrollEnabled: true,
     selectionColor: {
-      process: require("../../StyleSheet/processColor").default
+      process: require('../../StyleSheet/processColor').default
     },
     contextMenuHidden: true,
     secureTextEntry: true,

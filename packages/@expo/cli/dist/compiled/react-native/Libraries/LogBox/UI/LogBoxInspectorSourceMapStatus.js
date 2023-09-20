@@ -60,11 +60,11 @@ function LogBoxInspectorSourceMapStatus(props) {
   var color;
   switch (props.status) {
     case 'FAILED':
-      image = require("./LogBoxImages/alert-triangle.png");
+      image = require('./LogBoxImages/alert-triangle.png');
       color = LogBoxStyle.getErrorColor(1);
       break;
     case 'PENDING':
-      image = require("./LogBoxImages/loader.png");
+      image = require('./LogBoxImages/loader.png');
       color = LogBoxStyle.getWarningColor(1);
       break;
   }

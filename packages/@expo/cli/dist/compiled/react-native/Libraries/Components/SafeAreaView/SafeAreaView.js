@@ -12,7 +12,7 @@ var exported;
 if (_Platform.default.OS === 'android') {
   exported = _View.default;
 } else {
-  exported = require("./RCTSafeAreaViewNativeComponent").default;
+  exported = require('./RCTSafeAreaViewNativeComponent').default;
 }
 var _default = exported;
 exports.default = _default;

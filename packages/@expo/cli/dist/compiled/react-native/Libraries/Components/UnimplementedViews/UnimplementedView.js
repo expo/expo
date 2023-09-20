@@ -23,7 +23,7 @@ var UnimplementedView = function (_React$Component) {
   (0, _createClass2.default)(UnimplementedView, [{
     key: "render",
     value: function render() {
-      var View = require("../View/View");
+      var View = require('../View/View');
       return (0, _jsxRuntime.jsx)(View, {
         style: [styles.unimplementedView, this.props.style],
         children: this.props.children

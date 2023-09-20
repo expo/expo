@@ -4,7 +4,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 var _FabricUIManager = require("../ReactNative/FabricUIManager");
 var _ReactNativeFeatureFlags = _interopRequireDefault(require("../ReactNative/ReactNativeFeatureFlags"));
 var _Platform = _interopRequireDefault(require("../Utilities/Platform"));
-var UIManager = require("../ReactNative/UIManager");
+var UIManager = require('../ReactNative/UIManager');
 var isLayoutAnimationEnabled = _ReactNativeFeatureFlags.default.isLayoutAnimationEnabled();
 function setEnabled(value) {
   isLayoutAnimationEnabled = isLayoutAnimationEnabled;

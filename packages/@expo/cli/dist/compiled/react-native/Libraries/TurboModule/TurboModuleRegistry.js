@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.get = get;
 exports.getEnforcing = getEnforcing;
 var _invariant = _interopRequireDefault(require("invariant"));
-var NativeModules = require("../BatchedBridge/NativeModules");
+var NativeModules = require('../BatchedBridge/NativeModules');
 var turboModuleProxy = global.__turboModuleProxy;
 function requireModule(name) {
   if (global.RN$Bridgeless !== true) {

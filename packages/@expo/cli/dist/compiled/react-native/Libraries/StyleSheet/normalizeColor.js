@@ -2,7 +2,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 var _normalizeColors = _interopRequireDefault(require("@react-native/normalize-colors"));
 function normalizeColor(color) {
   if (typeof color === 'object' && color != null) {
-    var _require = require("./PlatformColorValueTypes"),
+    var _require = require('./PlatformColorValueTypes'),
       normalizeColorObject = _require.normalizeColorObject;
     var normalizedColor = normalizeColorObject(color);
     if (normalizedColor != null) {

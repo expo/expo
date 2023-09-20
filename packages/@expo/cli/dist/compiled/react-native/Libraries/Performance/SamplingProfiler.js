@@ -15,7 +15,7 @@ var SamplingProfiler = {
       console.log('Error occurred when restarting Sampling Profiler: ' + e.toString());
       error = e.toString();
     }
-    var NativeJSCSamplingProfiler = require("./NativeJSCSamplingProfiler").default;
+    var NativeJSCSamplingProfiler = require('./NativeJSCSamplingProfiler').default;
     if (NativeJSCSamplingProfiler) {
       NativeJSCSamplingProfiler.operationComplete(token, result, error);
     }

@@ -95,10 +95,11 @@ export async function compile_react_native(task, opts) {
 
 export default async function (task) {
   const opts = { dev: true };
-  await task.clear('build');
-  await task.start('build', opts);
   await task.clear('dist/compiled');
   await task.start('compile_react_native', opts);
+
+  await task.clear('build');
+  await task.start('build', opts);
   if (process.stdout.isTTY && !boolish('CI', false) && !boolish('EXPO_NONINTERACTIVE', false)) {
     await task.watch('bin/*', 'bin', opts);
     await task.watch('src/**/*.+(js|ts)', 'cli', opts);

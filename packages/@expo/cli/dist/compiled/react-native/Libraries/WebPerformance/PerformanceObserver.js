@@ -87,8 +87,8 @@ function applyDurationThresholds() {
   }).reduce(function (accumulator, currentValue) {
     return union(accumulator, currentValue);
   }, new Map());
-  for (var _ref5 of durationThresholds) {
-    var _ref4 = (0, _slicedToArray2.default)(_ref5, 2);
+  for (var _ref3 of durationThresholds) {
+    var _ref4 = (0, _slicedToArray2.default)(_ref3, 2);
     var entryType = _ref4[0];
     var durationThreshold = _ref4[1];
     _NativePerformanceObserver.default == null ? void 0 : _NativePerformanceObserver.default.setDurationThreshold((0, _RawPerformanceEntry.performanceEntryTypeToRaw)(entryType), durationThreshold != null ? durationThreshold : 0);
@@ -199,10 +199,10 @@ exports.default = PerformanceObserver;
 PerformanceObserver.supportedEntryTypes = Object.freeze(['mark', 'measure', 'event']);
 function union(a, b) {
   var res = new Map();
-  for (var _ref8 of a) {
-    var _ref7 = (0, _slicedToArray2.default)(_ref8, 2);
-    var k = _ref7[0];
-    var v = _ref7[1];
+  for (var _ref5 of a) {
+    var _ref6 = (0, _slicedToArray2.default)(_ref5, 2);
+    var k = _ref6[0];
+    var v = _ref6[1];
     if (!b.has(k)) {
       res.set(k, v);
     } else {

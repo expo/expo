@@ -1,8 +1,8 @@
 var _AndroidTextInputNativeComponent = require("../../Components/TextInput/AndroidTextInputNativeComponent");
 var _RCTSingelineTextInputNativeComponent = require("../../Components/TextInput/RCTSingelineTextInputNativeComponent");
-var _require = require("../../ReactNative/RendererProxy"),
+var _require = require('../../ReactNative/RendererProxy'),
   findNodeHandle = _require.findNodeHandle;
-var Platform = require("../../Utilities/Platform");
+var Platform = require('../../Utilities/Platform');
 var React = require('react');
 var currentlyFocusedInputRef = null;
 var inputs = new Set();

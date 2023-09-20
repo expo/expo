@@ -1,6 +1,6 @@
 'use strict';
 
-var BatchedBridge = require("../BatchedBridge/BatchedBridge");
+var BatchedBridge = require('../BatchedBridge/BatchedBridge');
 var RCTEventEmitter = {
   register: function register(eventEmitter) {
     if (global.RN$Bridgeless) {

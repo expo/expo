@@ -3,7 +3,7 @@
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-var infoLog = require("../Utilities/infoLog");
+var infoLog = require('../Utilities/infoLog');
 var invariant = require('invariant');
 var DEBUG = false;
 var TaskQueue = function () {

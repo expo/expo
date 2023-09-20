@@ -25,13 +25,13 @@ var RCTSinglelineTextInputNativeCommands;
 var RCTMultilineTextInputView;
 var RCTMultilineTextInputNativeCommands;
 if (_Platform.default.OS === 'android') {
-  AndroidTextInput = require("./AndroidTextInputNativeComponent").default;
-  AndroidTextInputCommands = require("./AndroidTextInputNativeComponent").Commands;
+  AndroidTextInput = require('./AndroidTextInputNativeComponent').default;
+  AndroidTextInputCommands = require('./AndroidTextInputNativeComponent').Commands;
 } else if (_Platform.default.OS === 'ios') {
-  RCTSinglelineTextInputView = require("./RCTSingelineTextInputNativeComponent").default;
-  RCTSinglelineTextInputNativeCommands = require("./RCTSingelineTextInputNativeComponent").Commands;
-  RCTMultilineTextInputView = require("./RCTMultilineTextInputNativeComponent").default;
-  RCTMultilineTextInputNativeCommands = require("./RCTMultilineTextInputNativeComponent").Commands;
+  RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent').default;
+  RCTSinglelineTextInputNativeCommands = require('./RCTSingelineTextInputNativeComponent').Commands;
+  RCTMultilineTextInputView = require('./RCTMultilineTextInputNativeComponent').default;
+  RCTMultilineTextInputNativeCommands = require('./RCTMultilineTextInputNativeComponent').Commands;
 }
 var emptyFunctionThatReturnsTrue = function emptyFunctionThatReturnsTrue() {
   return true;

@@ -1,14 +1,14 @@
 'use strict';
 
-var ReactNativeStyleAttributes = require("../Components/View/ReactNativeStyleAttributes");
-var resolveAssetSource = require("../Image/resolveAssetSource");
-var processColor = require("../StyleSheet/processColor").default;
-var processColorArray = require("../StyleSheet/processColorArray");
-var insetsDiffer = require("../Utilities/differ/insetsDiffer");
-var matricesDiffer = require("../Utilities/differ/matricesDiffer");
-var pointsDiffer = require("../Utilities/differ/pointsDiffer");
-var sizesDiffer = require("../Utilities/differ/sizesDiffer");
-var UIManager = require("./UIManager");
+var ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+var resolveAssetSource = require('../Image/resolveAssetSource');
+var processColor = require('../StyleSheet/processColor').default;
+var processColorArray = require('../StyleSheet/processColorArray');
+var insetsDiffer = require('../Utilities/differ/insetsDiffer');
+var matricesDiffer = require('../Utilities/differ/matricesDiffer');
+var pointsDiffer = require('../Utilities/differ/pointsDiffer');
+var sizesDiffer = require('../Utilities/differ/sizesDiffer');
+var UIManager = require('./UIManager');
 var invariant = require('invariant');
 function getNativeComponentAttributes(uiViewClassName) {
   var _bubblingEventTypes, _directEventTypes;

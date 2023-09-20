@@ -7,8 +7,8 @@ var _Platform = _interopRequireDefault(require("../Utilities/Platform"));
 var _RCTLog = _interopRequireDefault(require("../Utilities/RCTLog"));
 var LogBox;
 if (__DEV__) {
-  var LogBoxData = require("./Data/LogBoxData");
-  var _require = require("./Data/parseLogBoxLog"),
+  var LogBoxData = require('./Data/LogBoxData');
+  var _require = require('./Data/parseLogBoxLog'),
     parseLogBoxLog = _require.parseLogBoxLog,
     parseInterpolation = _require.parseInterpolation;
   var originalConsoleError;
@@ -22,7 +22,7 @@ if (__DEV__) {
         return;
       }
       isLogBoxInstalled = true;
-      require("../NativeModules/specs/NativeLogBox");
+      require('../NativeModules/specs/NativeLogBox');
       var isFirstInstall = originalConsoleError == null;
       if (isFirstInstall) {
         originalConsoleError = console.error.bind(console);

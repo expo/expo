@@ -1,6 +1,6 @@
 'use strict';
 
-var XMLHttpRequest = require("./XMLHttpRequest");
+var XMLHttpRequest = require('./XMLHttpRequest');
 var originalXHROpen = XMLHttpRequest.prototype.open;
 var originalXHRSend = XMLHttpRequest.prototype.send;
 var originalXHRSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;

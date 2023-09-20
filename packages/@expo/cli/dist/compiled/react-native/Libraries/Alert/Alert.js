@@ -13,7 +13,7 @@ var Alert = function () {
       if (_Platform.default.OS === 'ios') {
         Alert.prompt(title, message, buttons, 'default', undefined, undefined, options);
       } else if (_Platform.default.OS === 'android') {
-        var NativeDialogManagerAndroid = require("../NativeModules/specs/NativeDialogManagerAndroid").default;
+        var NativeDialogManagerAndroid = require('../NativeModules/specs/NativeDialogManagerAndroid').default;
         if (!NativeDialogManagerAndroid) {
           return;
         }
