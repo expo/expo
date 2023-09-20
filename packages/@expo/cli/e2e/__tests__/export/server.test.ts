@@ -77,6 +77,16 @@ describe('server-output', () => {
         /<div id="root">/
       );
     });
+
+    it(`can serve up group routes`, async () => {
+      // Can access the same route from different paths
+      expect(await fetch('http://localhost:3000/beta').then((res) => res.text())).toMatch(
+        /<div data-testid="alpha-beta-text">/
+      );
+      expect(await fetch('http://localhost:3000/(alpha)/beta').then((res) => res.text())).toMatch(
+        /<div data-testid="alpha-beta-text">/
+      );
+    });
     it(`can serve up dynamic html routes`, async () => {
       expect(await fetch('http://localhost:3000/blog/123').then((res) => res.text())).toMatch(
         /\[post\]/
