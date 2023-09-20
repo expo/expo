@@ -5,9 +5,21 @@ import {
   getExactRoutes,
   getRecursiveTree,
   getRoutes,
-  getUserDefinedDeepDynamicRoute,
+  getUserDefinedTopLevelNotFoundRoute,
 } from '../getRoutes';
 import { RequireContext } from '../types';
+
+function ctx(...keys: string[]) {
+  return createMockContextModule(
+    keys.reduce(
+      (prev, curr) => ({
+        ...prev,
+        [curr]: { default: () => {} },
+      }),
+      {} as Record<string, any>
+    )
+  );
+}
 
 function createMockContextModule(map: Record<string, Record<string, any>> = {}) {
   const contextModule = jest.fn((key) => map[key]);
@@ -26,13 +38,13 @@ function dropFunctions({ loadRoute, ...node }: RouteNode) {
   };
 }
 
-const ROUTE_404 = {
+const ROUTE_NOT_FOUND = {
   children: [],
-  contextKey: './[...404].tsx',
-  dynamic: [{ deep: true, name: '404' }],
+  contextKey: './+not-found.tsx',
+  dynamic: [{ deep: true, name: '+not-found', notFound: true }],
   generated: true,
   internal: true,
-  route: '[...404]',
+  route: '+not-found',
 };
 
 const ROUTE_DIRECTORY = {
@@ -53,21 +65,6 @@ const asFileNode = (route: Partial<FileNode>): FileNode => ({
     };
   },
   normalizedName: 'INVALID_TEST_VALUE',
-  contextKey: 'INVALID_TEST_VALUE',
-  ...route,
-});
-
-const asRouteNode = (route: Partial<RouteNode>) => ({
-  loadRoute(): any {
-    return {
-      default() {
-        return null;
-      },
-    };
-  },
-  children: [],
-  dynamic: null,
-  route: 'INVALID_TEST_VALUE',
   contextKey: 'INVALID_TEST_VALUE',
   ...route,
 });
@@ -157,107 +154,54 @@ describe(getRecursiveTree, () => {
   });
 });
 
-describe(getUserDefinedDeepDynamicRoute, () => {
-  it(`should match top-level deep dynamic with nested index`, () => {
+describe(getUserDefinedTopLevelNotFoundRoute, () => {
+  it(`should match top-level not found files`, () => {
+    ['./+not-found.tsx', './(group)/+not-found.tsx', './(group)/(2)/+not-found.tsx'].forEach(
+      (name) => {
+        expect(getUserDefinedTopLevelNotFoundRoute(getExactRoutes(ctx(name))!)).toEqual(
+          expect.objectContaining({
+            contextKey: name,
+          })
+        );
+      }
+    );
+  });
+  it(`should not match top-level deep dynamic with nested index`, () => {
     [
-      './[...else].tsx',
-      './(group)/[...else].tsx',
-      './(group)/[...else]/(group).tsx',
-      './(group)/[...else]/(group)/index.tsx',
-      './[...else]/index.tsx',
-      './[...else]/(group)/index.tsx',
-      './(group1)/[...else]/(group2)/index.tsx',
-      './(group1)/[...else]/(group2)/(group3)/index.tsx',
+      './(group)/+not-found/(group).tsx',
+      './(group)/+not-found/(group)/index.tsx',
+      './+not-found/index.tsx',
+      './+not-found/(group)/index.tsx',
+      './(group1)/+not-found/(group2)/index.tsx',
+      './(group1)/+not-found/(group2)/(group3)/index.tsx',
     ].forEach((name) => {
-      expect(
-        getUserDefinedDeepDynamicRoute(
-          getRoutes(
-            createMockContextModule({
-              [name]: { default() {} },
-            })
-          )!
-        )
-      ).toEqual(
-        expect.objectContaining({
-          contextKey: name,
-        })
-      );
+      expect(getUserDefinedTopLevelNotFoundRoute(getExactRoutes(ctx(name))!)).toEqual(null);
     });
   });
 
-  it(`should return a basic deep dynamic route`, () => {
-    const routes = asRouteNode({
-      children: [
-        asRouteNode({
-          route: '[...404]',
-        }),
-      ],
-    });
-    expect(getUserDefinedDeepDynamicRoute(routes)).toEqual(routes.children[0]);
+  it(`should return a basic not-found route`, () => {
+    const routes = getExactRoutes(ctx('./+not-found.js'));
+    expect(getUserDefinedTopLevelNotFoundRoute(routes)).toEqual(routes.children[0]);
   });
-  it(`does not return a nested deep dynamic route `, () => {
-    const deep = asRouteNode({
-      route: '[...404]',
-    });
-    const routes = asRouteNode({
-      children: [
-        asRouteNode({
-          route: 'home',
-          children: [deep],
-        }),
-      ],
-    });
-    expect(getUserDefinedDeepDynamicRoute(routes)).toEqual(null);
-  });
-  it(`should return a top-level deep dynamic route when nested in a group`, () => {
-    const deep = asRouteNode({
-      route: '[...404]',
-    });
-    const routes = asRouteNode({
-      children: [
-        asRouteNode({
-          route: '(group)',
-          children: [
-            asRouteNode({
-              route: '(another)',
-              children: [deep],
-            }),
-          ],
-        }),
-      ],
-    });
-    expect(getUserDefinedDeepDynamicRoute(routes)).toEqual(deep);
-  });
-  it(`does not return a dynamic route`, () => {
+  it(`does not return a nested not-found route `, () => {
     expect(
-      getUserDefinedDeepDynamicRoute(
-        asRouteNode({
-          children: [
-            // [404].js
-            asRouteNode({
-              route: '[404]',
-            }),
-          ],
-        })
-      )
+      getUserDefinedTopLevelNotFoundRoute(getExactRoutes(ctx('./home/+not-found.js')))
     ).toEqual(null);
+  });
 
+  it(`should return a not-found route when nested in groups without layouts`, () => {
     expect(
-      getUserDefinedDeepDynamicRoute(
-        asRouteNode({
-          children: [
-            // home/
-            asRouteNode({
-              route: 'home',
-              children: [
-                // [404].js
-                asRouteNode({
-                  route: '[404]',
-                }),
-              ],
-            }),
-          ],
-        })
+      getUserDefinedTopLevelNotFoundRoute(getExactRoutes(ctx('./(group)/(another)/+not-found.tsx')))
+    ).toEqual(
+      expect.objectContaining({
+        route: '(group)/(another)/+not-found',
+      })
+    );
+  });
+  it(`does not return a top-level not-found`, () => {
+    expect(
+      getUserDefinedTopLevelNotFoundRoute(
+        getExactRoutes(ctx('./home/_layout.tsx', './home/+not-found.tsx'))
       )
     ).toEqual(null);
   });
@@ -267,15 +211,7 @@ describe(getExactRoutes, () => {
   // NOTE(EvanBacon): This tests when all you have is a root layout.
   it(`automatically blocks +html file`, () => {
     expect(
-      dropFunctions(
-        getExactRoutes(
-          createMockContextModule({
-            './+html.js': { default() {} },
-            './other/+html.js': { default() {} },
-            './_layout.tsx': { default() {} },
-          })
-        )!
-      )
+      dropFunctions(getExactRoutes(ctx('./+html.js', './other/+html.js', './_layout.tsx'))!)
     ).toEqual({
       children: [
         {
@@ -295,23 +231,15 @@ describe(getExactRoutes, () => {
 describe(getRoutes, () => {
   // NOTE(EvanBacon): This tests when all you have is a root layout.
   it(`should allow a custom root _layout route`, () => {
-    expect(
-      dropFunctions(
-        getRoutes(
-          createMockContextModule({
-            './_layout.tsx': { default() {} },
-          })
-        )!
-      )
-    ).toEqual({
+    expect(dropFunctions(getRoutes(ctx('./_layout.tsx'))!)).toEqual({
       children: [
         {
           children: [],
-          contextKey: './[...404].tsx',
-          dynamic: [{ deep: true, name: '404' }],
+          contextKey: './+not-found.tsx',
+          dynamic: [{ deep: true, name: '+not-found', notFound: true }],
           generated: true,
           internal: true,
-          route: '[...404]',
+          route: '+not-found',
         },
       ],
       contextKey: './_layout.tsx',
@@ -321,15 +249,7 @@ describe(getRoutes, () => {
   });
 
   it(`should support a single nested route without layouts`, () => {
-    expect(
-      dropFunctions(
-        getRoutes(
-          createMockContextModule({
-            './some/nested/value.tsx': { default() {} },
-          })
-        )!
-      )
-    ).toEqual({
+    expect(dropFunctions(getRoutes(ctx('./some/nested/value.tsx'))!)).toEqual({
       children: [
         {
           children: [],
@@ -338,7 +258,7 @@ describe(getRoutes, () => {
           route: 'some/nested/value',
         },
         ROUTE_DIRECTORY,
-        ROUTE_404,
+        ROUTE_NOT_FOUND,
       ],
       contextKey: './_layout.tsx',
       dynamic: null,
@@ -348,16 +268,7 @@ describe(getRoutes, () => {
   });
 
   it(`get dynamic routes`, () => {
-    expect(
-      dropFunctions(
-        getRoutes(
-          createMockContextModule({
-            './[dynamic].tsx': { default() {} },
-            './[...deep].tsx': { default() {} },
-          })
-        )!
-      )
-    ).toEqual(
+    expect(dropFunctions(getRoutes(ctx('./[dynamic].tsx', './[...deep].tsx'))!)).toEqual(
       expect.objectContaining({
         generated: true,
         children: [
@@ -386,6 +297,7 @@ describe(getRoutes, () => {
             route: '[...deep]',
           },
           ROUTE_DIRECTORY,
+          ROUTE_NOT_FOUND,
           // No 404 route because we have a dynamic route
         ],
       })
@@ -396,20 +308,20 @@ describe(getRoutes, () => {
     expect(
       dropFunctions(
         getRoutes(
-          createMockContextModule({
-            './(stack)/_layout.tsx': { default() {} },
-            './(stack)/home.tsx': { default() {} },
-            './(stack)/settings.tsx': { default() {} },
-            './(stack)/user/(default)/_layout.tsx': { default() {} },
-            './(stack)/user/(default)/posts.tsx': { default() {} },
-            './(stack)/user/profile.tsx': { default() {} },
-            './(stack)/user/[profile].tsx': { default() {} },
-            './(stack)/user/settings/_layout.tsx': { default() {} },
-            './(stack)/user/settings/info.tsx': { default() {} },
-            './(stack)/user/settings/[...other].tsx': { default() {} },
-            './another.tsx': { default() {} },
-            './some/nested/value.tsx': { default() {} },
-          })
+          ctx(
+            './(stack)/_layout.tsx',
+            './(stack)/home.tsx',
+            './(stack)/settings.tsx',
+            './(stack)/user/(default)/_layout.tsx',
+            './(stack)/user/(default)/posts.tsx',
+            './(stack)/user/profile.tsx',
+            './(stack)/user/[profile].tsx',
+            './(stack)/user/settings/_layout.tsx',
+            './(stack)/user/settings/info.tsx',
+            './(stack)/user/settings/[...other].tsx',
+            './another.tsx',
+            './some/nested/value.tsx'
+          )
         )!
       )
     ).toEqual({
@@ -495,7 +407,7 @@ describe(getRoutes, () => {
           route: 'some/nested/value',
         },
         ROUTE_DIRECTORY,
-        ROUTE_404,
+        ROUTE_NOT_FOUND,
       ],
       contextKey: './_layout.tsx',
       dynamic: null,
@@ -504,6 +416,6 @@ describe(getRoutes, () => {
     });
   });
   it(`should convert an empty context module to routes`, () => {
-    expect(getRoutes(createMockContextModule({}))).toBeNull();
+    expect(getRoutes(ctx())).toBeNull();
   });
 });
