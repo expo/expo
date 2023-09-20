@@ -33,20 +33,18 @@ export function useHeaders(source, cachePolicy, onError) {
                     throw new Error(`Failed to fetch image: ${result.status} ${result.statusText}`);
                 }
                 const blob = await result.blob();
-                setObjectURL(URL.createObjectURL(blob));
+                setObjectURL((prevObjURL) => {
+                    if (prevObjURL) {
+                        URL.revokeObjectURL(prevObjURL);
+                    }
+                    return URL.createObjectURL(blob);
+                });
             }
             catch (error) {
                 onError?.forEach((e) => e?.({ source }));
             }
         })();
     }, [source]);
-    useEffect(() => {
-        return () => {
-            if (objectURL) {
-                URL.revokeObjectURL(objectURL);
-            }
-        };
-    }, [objectURL]);
     if (!source?.headers) {
         return source;
     }
