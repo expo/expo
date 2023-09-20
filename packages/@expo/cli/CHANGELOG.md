@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Skip extraneous static HTML export in server mode. ([#24529](https://github.com/expo/expo/pull/24529) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.13.2 — 2023-09-18
 
 ### 🐛 Bug fixes

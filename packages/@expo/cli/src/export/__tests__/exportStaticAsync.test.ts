@@ -111,6 +111,7 @@ describe(getHtmlFiles, () => {
   it(`should get html files`, () => {
     expect(
       getHtmlFiles({
+        includeGroupVariations: true,
         manifest: {
           initialRouteName: undefined,
           screens: {
@@ -148,6 +149,7 @@ describe(getHtmlFiles, () => {
   it(`should get html files 2`, () => {
     expect(
       getHtmlFiles({
+        includeGroupVariations: true,
         manifest: {
           initialRouteName: undefined,
           screens: {
@@ -184,6 +186,70 @@ describe(getHtmlFiles, () => {
       '(root)/(index)/notifications.html',
     ]);
   });
+  it(`should get html files without group variation`, () => {
+    expect(
+      getHtmlFiles({
+        includeGroupVariations: false,
+        manifest: {
+          initialRouteName: undefined,
+          screens: {
+            '(root)': {
+              path: '(root)',
+              screens: {
+                '(index)': {
+                  path: '(index)',
+                  screens: {
+                    '[...missing]': '*missing',
+                    index: '',
+                    notifications: 'notifications',
+                  },
+                  initialRouteName: 'index',
+                },
+              },
+              initialRouteName: '(index)',
+            },
+          },
+        },
+      }).sort((a, b) => a.length - b.length)
+    ).toEqual([
+      '(root)/(index)/index.html',
+      '(root)/(index)/[...missing].html',
+      '(root)/(index)/notifications.html',
+    ]);
+
+    expect(
+      getHtmlFiles({
+        includeGroupVariations: false,
+        manifest: {
+          initialRouteName: undefined,
+          screens: {
+            alpha: {
+              path: 'alpha',
+              screens: { index: '', second: 'second' },
+              initialRouteName: 'index',
+            },
+            '(app)': {
+              path: '(app)',
+              screens: { compose: 'compose', index: '', 'note/[note]': 'note/:note' },
+              initialRouteName: 'index',
+            },
+            '(auth)/sign-in': '(auth)/sign-in',
+            _sitemap: '_sitemap',
+            '[...404]': '*404',
+          },
+        },
+      }).sort((a, b) => a.length - b.length)
+    ).toEqual([
+      '_sitemap.html',
+      '[...404].html',
+      'alpha/index.html',
+      '(app)/index.html',
+      'alpha/second.html',
+      '(app)/compose.html',
+      '(auth)/sign-in.html',
+      '(app)/note/[note].html',
+    ]);
+  });
 });
 
 describe(getFilesToExportFromServerAsync, () => {
@@ -191,6 +257,7 @@ describe(getFilesToExportFromServerAsync, () => {
     const renderAsync = jest.fn(async () => '');
     expect(
       await getFilesToExportFromServerAsync('/', {
+        includeGroupVariations: true,
         manifest: {
           initialRouteName: undefined,
           screens: {

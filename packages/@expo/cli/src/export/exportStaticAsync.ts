@@ -73,16 +73,18 @@ export async function getFilesToExportFromServerAsync(
   {
     manifest,
     renderAsync,
+    includeGroupVariations,
   }: {
     manifest: any;
     renderAsync: (pathname: string) => Promise<string>;
+    includeGroupVariations?: boolean;
   }
 ): Promise<Map<string, string>> {
   // name : contents
   const files = new Map<string, string>();
 
   await Promise.all(
-    getHtmlFiles({ manifest }).map(async (outputPath) => {
+    getHtmlFiles({ manifest, includeGroupVariations }).map(async (outputPath) => {
       const pathname = outputPath.replace(/(?:index)?\.html$/, '');
       try {
         files.set(outputPath, '');
@@ -124,6 +126,10 @@ export async function exportFromServerAsync(
 
   const files = await getFilesToExportFromServerAsync(projectRoot, {
     manifest,
+    // Servers can handle group routes automatically and therefore
+    // don't require the build-time generation of every possible group
+    // variation.
+    includeGroupVariations: !exportServer,
     async renderAsync(pathname: string) {
       const template = await renderAsync(pathname);
       let html = await devServer.composeResourcesWithHtml({
@@ -204,7 +210,13 @@ export function modifyBundlesWithSourceMaps(
   return source;
 }
 
-export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
+export function getHtmlFiles({
+  manifest,
+  includeGroupVariations,
+}: {
+  manifest: any;
+  includeGroupVariations?: boolean;
+}): string[] {
   const htmlFiles = new Set<string>();
 
   function traverseScreens(screens: string | { screens: any; path: string }, basePath = '') {
@@ -219,8 +231,12 @@ export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
               ? basePath + 'index'
               : basePath.slice(0, -1);
         }
-        // TODO: Dedupe requests for alias routes.
-        addOptionalGroups(filePath);
+        if (includeGroupVariations) {
+          // TODO: Dedupe requests for alias routes.
+          addOptionalGroups(filePath);
+        } else {
+          htmlFiles.add(filePath);
+        }
       } else if (typeof value === 'object' && value?.screens) {
         const newPath = basePath + value.path + '/';
         traverseScreens(value.screens, newPath);
