@@ -112,8 +112,8 @@ export function withExtendedResolver(
   const assetRegistryPath = fs.realpathSync(
     // This is the native asset registry alias for native.
     path.resolve(
-      resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry')
-      // resolveFrom(projectRoot, '@expo/cli/dist/compiled/react-native/Libraries/Image/AssetRegistry')
+      // resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry')
+      resolveFrom(projectRoot, '@expo/cli/dist/compiled/react-native/Libraries/Image/AssetRegistry')
     )
     // path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
     // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
