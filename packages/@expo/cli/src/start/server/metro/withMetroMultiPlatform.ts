@@ -382,19 +382,16 @@ export function withExtendedResolver(
 
       let fp: string = '';
 
-      if (moduleName !== 'event-target-shim' && !moduleName.endsWith('.png')) {
+      if (moduleName !== 'event-target-shim') {
         // console.log('t', moduleName);
         fp = otherResolve.sync(moduleName, {
           basedir: path.dirname(context.originModulePath),
           extensions: sources,
           moduleDirectory: ['packages', 'node_modules'],
-          packageFilter(pkg, pkgfile, dir) {
+          packageFilter(pkg) {
             // set the pkg.main to the first available field in context.mainFields
             for (const field of context.mainFields) {
               if (pkg[field]) {
-                // if (dir.includes('event-target-shim')) {
-                //   console.log('>>>', field, pkg[field])
-                // }
                 pkg.main = pkg[field];
                 break;
               }
@@ -403,10 +400,18 @@ export function withExtendedResolver(
           },
         });
 
-        result = {
-          type: 'sourceFile',
-          filePath: fp,
-        };
+        if ([...context.assetExts.values()].some((asset) => fp.endsWith(asset))) {
+          // console.log('BOXBOXBOX', fp);
+          result = {
+            type: 'assetFiles',
+            filePaths: [fp],
+          };
+        } else {
+          result = {
+            type: 'sourceFile',
+            filePath: fp,
+          };
+        }
 
         return result;
       }
@@ -416,13 +421,7 @@ export function withExtendedResolver(
         if (result.type !== 'sourceFile') {
           console.log('??', moduleName, fp, result);
         }
-        if (
-          result.type === 'sourceFile' &&
-          fp &&
-          fp !== result.filePath
-          // &&
-          // fp.replace(/node_modules/, 'packages') !== result.filePath
-        ) {
+        if (result.type === 'sourceFile' && fp && fp !== result.filePath) {
           console.log('RN >', moduleName, fp, result.filePath, sources);
         }
 
