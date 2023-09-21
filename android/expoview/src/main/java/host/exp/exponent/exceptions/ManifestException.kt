@@ -53,7 +53,7 @@ class ManifestException : ExponentException {
         val supportedSdks = Constants.SDK_VERSIONS_LIST.map {
           it.substring(0, it.indexOf('.')).toInt()
         }.sorted()
-        val supportedSdksString = { conjunction : String ->
+        val supportedSdksString = { conjunction: String ->
           supportedSdks.subList(0, supportedSdks.size - 1)
             .joinToString(", ") + " $conjunction ${supportedSdks.last()}"
         }
@@ -77,10 +77,10 @@ class ManifestException : ExponentException {
 
                 formattedMessage =
                   "This project uses SDK $sdkVersionRequired, but this version of Expo Go supports only SDKs ${supportedSdksString("and")}.<br><br>" +
-                    "To open this project:<br>" +
-                    "• Update it to SDK ${supportedSdksString("or")}.<br>" +
-                    "• Install an older version of Expo Go that supports the project's SDK version.<br><br>" +
-                    "If you are unsure how to update the project or install a suitable version of Expo Go, refer to the <a href='https://docs.expo.dev/get-started/expo-go/#sdk-versions'>SDK Versions Guide</a>."
+                  "To open this project:<br>" +
+                  "• Update it to SDK ${supportedSdksString("or")}.<br>" +
+                  "• Install an older version of Expo Go that supports the project's SDK version.<br><br>" +
+                  "If you are unsure how to update the project or install a suitable version of Expo Go, refer to the <a href='https://docs.expo.dev/get-started/expo-go/#sdk-versions'>SDK Versions Guide</a>."
               }
               "SNACK_NOT_FOUND_FOR_SDK_VERSION" -> {
                 formattedMessage =
