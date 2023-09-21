@@ -15,6 +15,7 @@
 - Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve truncated Metro Node.js errors. ([#24546](https://github.com/expo/expo/pull/24546) by [@EvanBacon](https://github.com/EvanBacon))
 - Skip extraneous static HTML export in server mode. ([#24529](https://github.com/expo/expo/pull/24529) by [@EvanBacon](https://github.com/EvanBacon))
+- Use Metro and web TypeScript types from `expo` instead of `expo-router`. ([#24255](https://github.com/expo/expo/pull/24255) by [@marklawlor](https://github.com/marklawlor))
 
 ## 0.13.2 — 2023-09-18
 
