@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import chalk from 'chalk';
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
 import { Resolution, ResolutionContext } from 'metro-resolver';
@@ -21,10 +22,12 @@ import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroE
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
 import { withMetroResolvers } from './withMetroResolvers';
+import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
 import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
+import { learnMore } from '../../../utils/link';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
@@ -93,10 +96,12 @@ export function withExtendedResolver(
     projectRoot,
     tsconfig,
     platforms,
+    isTsconfigPathsEnabled,
   }: {
     projectRoot: string;
     tsconfig: TsConfigPaths | null;
     platforms: string[];
+    isTsconfigPathsEnabled?: boolean;
   }
 ) {
   // Get the `transformer.assetRegistryPath`
@@ -153,7 +158,7 @@ export function withExtendedResolver(
       })
     : null;
 
-  if (isInteractive()) {
+  if (isTsconfigPathsEnabled && isInteractive()) {
     // TODO: We should track all the files that used imports and invalidate them
     // currently the user will need to save all the files that use imports to
     // use the new aliases.
@@ -229,7 +234,7 @@ export function withExtendedResolver(
         };
       }
 
-      if (tsconfig?.baseUrl) {
+      if (tsconfig?.baseUrl && isTsconfigPathsEnabled) {
         context = {
           ...context,
           nodeModulesPaths: [
@@ -403,10 +408,12 @@ export async function withMetroMultiPlatformAsync(
   {
     config,
     platformBundlers,
+    isTsconfigPathsEnabled,
     webOutput,
     routerDirectory,
   }: {
     config: ConfigT;
+    isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     webOutput?: 'single' | 'static' | 'server';
     routerDirectory: string;
@@ -434,7 +441,15 @@ export async function withMetroMultiPlatformAsync(
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
   }
 
-  const tsconfig = await loadTsConfigPathsAsync(projectRoot);
+  let tsconfig: null | TsConfigPaths = null;
+
+  if (isTsconfigPathsEnabled) {
+    Log.warn(
+      chalk.yellow`Experimental path aliases feature is enabled. ` +
+        learnMore('https://docs.expo.dev/guides/typescript/#path-aliases')
+    );
+    tsconfig = await loadTsConfigPathsAsync(projectRoot);
+  }
 
   await setupNodeExternals(projectRoot);
 
@@ -442,6 +457,7 @@ export async function withMetroMultiPlatformAsync(
     config,
     platformBundlers,
     tsconfig,
+    isTsconfigPathsEnabled,
   });
 }
 
@@ -450,9 +466,11 @@ function withMetroMultiPlatform(
   {
     config,
     platformBundlers,
+    isTsconfigPathsEnabled,
     tsconfig,
   }: {
     config: ConfigT;
+    isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     tsconfig: TsConfigPaths | null;
   }
@@ -475,6 +493,7 @@ function withMetroMultiPlatform(
   return withExtendedResolver(config, {
     projectRoot,
     tsconfig,
+    isTsconfigPathsEnabled,
     platforms: expoConfigPlatforms,
   });
 }

@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Enable `tsconfigPaths` and remove `expo.experiments.tsconfigPaths` flag ([#24490](https://github.com/expo/expo/pull/24490) by [@marklawlor](https://github.com/marklawlor))
+- Enable `tsconfigPaths` by default flag ([#24490](https://github.com/expo/expo/pull/24490) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🎉 New features
 
