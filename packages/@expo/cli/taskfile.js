@@ -49,6 +49,48 @@ export async function compile_expo_modules_core(task, opts) {
         react: 'react',
         'react/jsx-runtime': 'react/jsx-runtime',
         'react-native': '@expo/cli/dist/compiled/react-native',
+
+        '@babel/runtime/helpers/interopRequireDefault':
+          '@babel/runtime/helpers/interopRequireDefault',
+        '@babel/runtime/helpers/classCallCheck': '@babel/runtime/helpers/classCallCheck',
+        '@babel/runtime/helpers/createClass': '@babel/runtime/helpers/createClass',
+        '@babel/runtime/helpers/inherits': '@babel/runtime/helpers/inherits',
+        '@babel/runtime/helpers/possibleConstructorReturn':
+          '@babel/runtime/helpers/possibleConstructorReturn',
+        '@babel/runtime/helpers/getPrototypeOf': '@babel/runtime/helpers/getPrototypeOf',
+        '@babel/runtime/helpers/toPropertyKey': '@babel/runtime/helpers/toPropertyKey',
+        '@babel/runtime/helpers/typeof': '@babel/runtime/helpers/typeof',
+        '@babel/runtime/helpers/toPrimitive': '@babel/runtime/helpers/toPrimitive',
+        '@babel/runtime/helpers/setPrototypeOf': '@babel/runtime/helpers/setPrototypeOf',
+        '@babel/runtime/helpers/assertThisInitialized':
+          '@babel/runtime/helpers/assertThisInitialized',
+        '@babel/runtime/helpers/slicedToArray': '@babel/runtime/helpers/slicedToArray',
+        '@babel/runtime/helpers/arrayWithHoles': '@babel/runtime/helpers/arrayWithHoles',
+        '@babel/runtime/helpers/iterableToArrayLimit':
+          '@babel/runtime/helpers/iterableToArrayLimit',
+        '@babel/runtime/helpers/unsupportedIterableToArray':
+          '@babel/runtime/helpers/unsupportedIterableToArray',
+        '@babel/runtime/helpers/arrayLikeToArray': '@babel/runtime/helpers/arrayLikeToArray',
+        '@babel/runtime/helpers/nonIterableRest': '@babel/runtime/helpers/nonIterableRest',
+        '@babel/runtime/helpers/toConsumableArray': '@babel/runtime/helpers/toConsumableArray',
+        '@babel/runtime/helpers/arrayWithoutHoles': '@babel/runtime/helpers/arrayWithoutHoles',
+        '@babel/runtime/helpers/iterableToArray': '@babel/runtime/helpers/iterableToArray',
+        '@babel/runtime/helpers/nonIterableSpread': '@babel/runtime/helpers/nonIterableSpread',
+        '@babel/runtime/helpers/wrapNativeSuper': '@babel/runtime/helpers/wrapNativeSuper',
+        '@babel/runtime/helpers/isNativeFunction': '@babel/runtime/helpers/isNativeFunction',
+        '@babel/runtime/helpers/construct': '@babel/runtime/helpers/construct',
+        '@babel/runtime/helpers/isNativeReflectConstruct':
+          '@babel/runtime/helpers/isNativeReflectConstruct',
+        '@babel/runtime/helpers/asyncToGenerator': '@babel/runtime/helpers/asyncToGenerator',
+        '@babel/runtime/helpers/get': '@babel/runtime/helpers/get',
+        '@babel/runtime/helpers/superPropBase': '@babel/runtime/helpers/superPropBase',
+        '@babel/runtime/helpers/objectWithoutProperties':
+          '@babel/runtime/helpers/objectWithoutProperties',
+        '@babel/runtime/helpers/objectWithoutPropertiesLoose':
+          '@babel/runtime/helpers/objectWithoutPropertiesLoose',
+        '@babel/runtime/helpers/defineProperty': '@babel/runtime/helpers/defineProperty',
+        '@babel/runtime/helpers/toArray': '@babel/runtime/helpers/toArray',
+        '@babel/runtime/helpers/extends': '@babel/runtime/helpers/extends',
       },
       target: 'es5',
       minify: false,
@@ -136,15 +178,49 @@ export async function compile_deprecated_react_native_prop_types(task, opts) {
         'react-native': '@expo/cli/dist/compiled/react-native',
         'react-native/Libraries/Utilities/codegenNativeComponent':
           '@expo/cli/dist/compiled/react-native/Libraries/Utilities/codegenNativeComponent',
+
         '@babel/runtime/helpers/interopRequireDefault':
           '@babel/runtime/helpers/interopRequireDefault',
-        '@babel/runtime/helpers/objectWithoutProperties':
-          '@babel/runtime/helpers/objectWithoutProperties',
-        '@babel/runtime/helpers/objectWithoutProperties':
-          '@babel/runtime/helpers/objectWithoutProperties',
-        '@babel/runtime/helpers/interopRequireDefault':
-          '@babel/runtime/helpers/interopRequireDefault',
+        '@babel/runtime/helpers/classCallCheck': '@babel/runtime/helpers/classCallCheck',
+        '@babel/runtime/helpers/createClass': '@babel/runtime/helpers/createClass',
+        '@babel/runtime/helpers/inherits': '@babel/runtime/helpers/inherits',
+        '@babel/runtime/helpers/possibleConstructorReturn':
+          '@babel/runtime/helpers/possibleConstructorReturn',
+        '@babel/runtime/helpers/getPrototypeOf': '@babel/runtime/helpers/getPrototypeOf',
+        '@babel/runtime/helpers/toPropertyKey': '@babel/runtime/helpers/toPropertyKey',
+        '@babel/runtime/helpers/typeof': '@babel/runtime/helpers/typeof',
+        '@babel/runtime/helpers/toPrimitive': '@babel/runtime/helpers/toPrimitive',
+        '@babel/runtime/helpers/setPrototypeOf': '@babel/runtime/helpers/setPrototypeOf',
+        '@babel/runtime/helpers/assertThisInitialized':
+          '@babel/runtime/helpers/assertThisInitialized',
         '@babel/runtime/helpers/slicedToArray': '@babel/runtime/helpers/slicedToArray',
+        '@babel/runtime/helpers/arrayWithHoles': '@babel/runtime/helpers/arrayWithHoles',
+        '@babel/runtime/helpers/iterableToArrayLimit':
+          '@babel/runtime/helpers/iterableToArrayLimit',
+        '@babel/runtime/helpers/unsupportedIterableToArray':
+          '@babel/runtime/helpers/unsupportedIterableToArray',
+        '@babel/runtime/helpers/arrayLikeToArray': '@babel/runtime/helpers/arrayLikeToArray',
+        '@babel/runtime/helpers/nonIterableRest': '@babel/runtime/helpers/nonIterableRest',
+        '@babel/runtime/helpers/toConsumableArray': '@babel/runtime/helpers/toConsumableArray',
+        '@babel/runtime/helpers/arrayWithoutHoles': '@babel/runtime/helpers/arrayWithoutHoles',
+        '@babel/runtime/helpers/iterableToArray': '@babel/runtime/helpers/iterableToArray',
+        '@babel/runtime/helpers/nonIterableSpread': '@babel/runtime/helpers/nonIterableSpread',
+        '@babel/runtime/helpers/wrapNativeSuper': '@babel/runtime/helpers/wrapNativeSuper',
+        '@babel/runtime/helpers/isNativeFunction': '@babel/runtime/helpers/isNativeFunction',
+        '@babel/runtime/helpers/construct': '@babel/runtime/helpers/construct',
+        '@babel/runtime/helpers/isNativeReflectConstruct':
+          '@babel/runtime/helpers/isNativeReflectConstruct',
+        '@babel/runtime/helpers/asyncToGenerator': '@babel/runtime/helpers/asyncToGenerator',
+        '@babel/runtime/helpers/get': '@babel/runtime/helpers/get',
+        '@babel/runtime/helpers/superPropBase': '@babel/runtime/helpers/superPropBase',
+        '@babel/runtime/helpers/objectWithoutProperties':
+          '@babel/runtime/helpers/objectWithoutProperties',
+        '@babel/runtime/helpers/objectWithoutPropertiesLoose':
+          '@babel/runtime/helpers/objectWithoutPropertiesLoose',
+        '@babel/runtime/helpers/defineProperty': '@babel/runtime/helpers/defineProperty',
+        '@babel/runtime/helpers/toArray': '@babel/runtime/helpers/toArray',
+        '@babel/runtime/helpers/extends': '@babel/runtime/helpers/extends',
+
         ...externals,
       },
       target: 'es5',
@@ -182,15 +258,49 @@ export async function compile_react_native_safe_area_context(task, opts) {
         'react-native': '@expo/cli/dist/compiled/react-native',
         'react-native/Libraries/Utilities/codegenNativeComponent':
           '@expo/cli/dist/compiled/react-native/Libraries/Utilities/codegenNativeComponent',
+
         '@babel/runtime/helpers/interopRequireDefault':
           '@babel/runtime/helpers/interopRequireDefault',
-        '@babel/runtime/helpers/objectWithoutProperties':
-          '@babel/runtime/helpers/objectWithoutProperties',
-        '@babel/runtime/helpers/objectWithoutProperties':
-          '@babel/runtime/helpers/objectWithoutProperties',
-        '@babel/runtime/helpers/interopRequireDefault':
-          '@babel/runtime/helpers/interopRequireDefault',
+        '@babel/runtime/helpers/classCallCheck': '@babel/runtime/helpers/classCallCheck',
+        '@babel/runtime/helpers/createClass': '@babel/runtime/helpers/createClass',
+        '@babel/runtime/helpers/inherits': '@babel/runtime/helpers/inherits',
+        '@babel/runtime/helpers/possibleConstructorReturn':
+          '@babel/runtime/helpers/possibleConstructorReturn',
+        '@babel/runtime/helpers/getPrototypeOf': '@babel/runtime/helpers/getPrototypeOf',
+        '@babel/runtime/helpers/toPropertyKey': '@babel/runtime/helpers/toPropertyKey',
+        '@babel/runtime/helpers/typeof': '@babel/runtime/helpers/typeof',
+        '@babel/runtime/helpers/toPrimitive': '@babel/runtime/helpers/toPrimitive',
+        '@babel/runtime/helpers/setPrototypeOf': '@babel/runtime/helpers/setPrototypeOf',
+        '@babel/runtime/helpers/assertThisInitialized':
+          '@babel/runtime/helpers/assertThisInitialized',
         '@babel/runtime/helpers/slicedToArray': '@babel/runtime/helpers/slicedToArray',
+        '@babel/runtime/helpers/arrayWithHoles': '@babel/runtime/helpers/arrayWithHoles',
+        '@babel/runtime/helpers/iterableToArrayLimit':
+          '@babel/runtime/helpers/iterableToArrayLimit',
+        '@babel/runtime/helpers/unsupportedIterableToArray':
+          '@babel/runtime/helpers/unsupportedIterableToArray',
+        '@babel/runtime/helpers/arrayLikeToArray': '@babel/runtime/helpers/arrayLikeToArray',
+        '@babel/runtime/helpers/nonIterableRest': '@babel/runtime/helpers/nonIterableRest',
+        '@babel/runtime/helpers/toConsumableArray': '@babel/runtime/helpers/toConsumableArray',
+        '@babel/runtime/helpers/arrayWithoutHoles': '@babel/runtime/helpers/arrayWithoutHoles',
+        '@babel/runtime/helpers/iterableToArray': '@babel/runtime/helpers/iterableToArray',
+        '@babel/runtime/helpers/nonIterableSpread': '@babel/runtime/helpers/nonIterableSpread',
+        '@babel/runtime/helpers/wrapNativeSuper': '@babel/runtime/helpers/wrapNativeSuper',
+        '@babel/runtime/helpers/isNativeFunction': '@babel/runtime/helpers/isNativeFunction',
+        '@babel/runtime/helpers/construct': '@babel/runtime/helpers/construct',
+        '@babel/runtime/helpers/isNativeReflectConstruct':
+          '@babel/runtime/helpers/isNativeReflectConstruct',
+        '@babel/runtime/helpers/asyncToGenerator': '@babel/runtime/helpers/asyncToGenerator',
+        '@babel/runtime/helpers/get': '@babel/runtime/helpers/get',
+        '@babel/runtime/helpers/superPropBase': '@babel/runtime/helpers/superPropBase',
+        '@babel/runtime/helpers/objectWithoutProperties':
+          '@babel/runtime/helpers/objectWithoutProperties',
+        '@babel/runtime/helpers/objectWithoutPropertiesLoose':
+          '@babel/runtime/helpers/objectWithoutPropertiesLoose',
+        '@babel/runtime/helpers/defineProperty': '@babel/runtime/helpers/defineProperty',
+        '@babel/runtime/helpers/toArray': '@babel/runtime/helpers/toArray',
+        '@babel/runtime/helpers/extends': '@babel/runtime/helpers/extends',
+
         ...externals,
       },
       target: 'es5',
