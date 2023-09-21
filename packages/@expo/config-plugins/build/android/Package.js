@@ -292,7 +292,9 @@ function replacePackageName(content, oldName, newName) {
   // Replace any quoted instances "com.old" -> "com.new"
   .replace(new RegExp(`"${oldNameEscaped}"`, 'g'), `"${newName}"`)
   // Replace special non-quoted instances, only when prefixed by package or namespace
-  .replace(new RegExp(`(package|namespace)\\s+${oldNameEscaped}`, 'g'), `$1 ${newName}`);
+  .replace(new RegExp(`(package|namespace)(\\s+)${oldNameEscaped}`, 'g'), `$1$2${newName}`)
+  // Replace special import instances, without overlapping with other imports (trailing `.` to close it off)
+  .replace(new RegExp(`(import\\s+)${oldNameEscaped}\\.`, 'g'), `$1${newName}.`);
 }
 
 /**
