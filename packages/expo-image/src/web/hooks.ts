@@ -55,6 +55,7 @@ export function useHeaders(
           }
           return URL.createObjectURL(blob);
         });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         onError?.forEach((e) => e?.({ source }));
       }
