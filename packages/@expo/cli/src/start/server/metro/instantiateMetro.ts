@@ -29,6 +29,12 @@ import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
 
+let hasExpoRouter = false;
+try {
+  require('expo-router');
+  hasExpoRouter = true;
+} catch {}
+
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
@@ -105,7 +111,7 @@ export async function loadMetroConfigAsync(
     routerDirectory: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     config,
     platformBundlers,
-    isTsconfigPathsEnabled: !!exp.experiments?.tsconfigPaths,
+    isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? hasExpoRouter,
     webOutput: exp.web?.output ?? 'single',
   });
 
