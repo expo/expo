@@ -44,8 +44,8 @@ module.exports = {
       type: 'ios.simulator',
       headless: Boolean(process.env.CI),
       device: {
-        type: 'iPhone 14 Pro',
-        os: 'iOS 16.4',
+        type: 'iPhone 15 Pro',
+        os: 'iOS 17.0',
       },
     },
     emulator: {
