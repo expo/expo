@@ -39,37 +39,37 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   let platform = api.caller((caller) => (caller as any)?.platform);
   const filename = api.caller((caller) => (caller as any)?.filename);
 
-  // if (
-  //   filename.match(/\/node_modules\//) &&
-  //   !filename.match(
-  //     /\/node_modules\/(expo-router|abort-controller|nanoid|@expo|@react-native|@react-navigation|metro-runtime)\//
-  //   )
-  // ) {
-  //   if (filename.match(/\.m[jt]sx?$/)) {
-  //     // Compile to commonjs for .mjs files.
-  //     return {
-  //       plugins: [getAliasPlugin(platform)!],
-  //       presets: [
-  //         [
-  //           '@babel/preset-env',
-  //           {
-  //             modules: 'commonjs',
-  //             targets: {
-  //               node: 'current',
-  //             },
-  //           },
-  //         ],
-  //       ],
-  //     };
-  //   }
+  if (
+    filename.match(/\/node_modules\//) &&
+    !filename.match(
+      /\/node_modules\/(expo-router|abort-controller|nanoid|@expo|@react-native|@react-navigation|metro-runtime)\//
+    )
+  ) {
+    if (filename.match(/\.m[jt]sx?$/)) {
+      // Compile to commonjs for .mjs files.
+      return {
+        plugins: [getAliasPlugin(platform)!],
+        presets: [
+          [
+            '@babel/preset-env',
+            {
+              modules: 'commonjs',
+              targets: {
+                node: 'current',
+              },
+            },
+          ],
+        ],
+      };
+    }
 
-  //   // metro-runtime must be transpiled
+    // metro-runtime must be transpiled
 
-  //   console.log('>', filename);
-  //   // return {
-  //   //   plugins: [getAliasPlugin(platform)!],
-  //   // };
-  // }
+    console.log('>', filename);
+    return {
+      // plugins: [getAliasPlugin(platform)!],
+    };
+  }
   // if (filename.includes('expo-router'))
   // console.log('>', filename);
 
