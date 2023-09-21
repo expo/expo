@@ -19,7 +19,7 @@ export const TESTS = [
   'Localization',
   // 'SecureStore',
   // 'Segment',
-  // 'SQLite',
+  'SQLite',
   'Random',
   'Permissions',
   'KeepAwake',
