@@ -9,6 +9,9 @@ const assert_1 = __importDefault(require("assert"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 class BasePackageManager {
+    silent;
+    log;
+    options;
     constructor({ silent, log, env = process.env, ...options } = {}) {
         this.silent = !!silent;
         this.log = log ?? (!silent ? console.log : undefined);

@@ -13,7 +13,7 @@ import { Step } from '~/ui/components/Step';
 
 The `expo-updates` library supports end-to-end code signing. Code signing allows developers to cryptographically sign their updates with their own keys. The signatures are then verified on the client before the update is applied, which ensures ISPs, CDNs, cloud providers, and even EAS itself cannot tamper with updates run by apps.
 
-## Code Signing with EAS Update
+## Code signing with EAS Update
 
 <Step label="1">
 
@@ -76,11 +76,11 @@ otherwise.
 
 </Step>
 
-## Key Rotation
+## Key rotation
 
 Key rotation is the process by which the key pair used for signing updates is changed. This is most commonly done in a few cases:
 
-- Key expiration. In step (1) from the section above, we set `certificate-validity-duration-years` to 10 years (though it can be configured to any value). This means that after 10 years, updates signed with the private key corresponding to the certificate will no longer be applied after being downloaded by the app. Updates downloaded prior to the expiration of their signing certificate will continue to function normally. Rotating keys well before the certificate expires helps to preempt any potential key expiration issues and helps to guarantee all users are using the new certificate before the old certificate expires.
+- Key expiration. In step (1) from the section above, we set `certificate-validity-duration-years` to 10 years (though it can be configured to any value). This means that after 10 years, updates signed with the private key corresponding to the certificate will no longer be applied after being downloaded by the app. Updates downloaded before the expiration of their signing certificate will continue to function normally. Rotating keys well before the certificate expires helps to preempt any potential key expiration issues and helps to guarantee all users are using the new certificate before the old certificate expires.
 - Private key compromise. If the private key used to sign updates is accidentally exposed to the public, it can no longer be considered secure and therefore can no longer guarantee integrity of updates it signed. For example, a malicious actor could craft a malicious update and sign it with the leaked private key.
 - Key rotation for security best practices. It is best practice to rotate keys periodically to ensure that a system is resilient to manual key rotation in response to one of the other reasons above.
 
@@ -91,7 +91,7 @@ In any of these cases, the procedure is similar:
 3. The certificate is part of the app's runtime, so a new runtime version should be set for builds using this certificate to ensure that only updates signed with the new key run in the new build.
 4. Publish signed updates using the new key by following step (3) above.
 
-## Removing Code Signing
+## Removing code signing
 
 The process of removing code signing from an app is similar to [key rotation](#key-rotation) and can be thought of as a key rotation to a `null` key.
 

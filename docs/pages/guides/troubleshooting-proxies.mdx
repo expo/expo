@@ -3,7 +3,7 @@ title: Troubleshoot proxies
 description: Learn about troubleshooting proxies with a set of recommended tools.
 ---
 
-## macOS Proxy Configuration (Sierra)
+## macOS proxy configuration (Sierra)
 
 > If anything goes wrong, you can revert to the "Automatic Proxy settings" in System Network Preferences using Automatic Proxy Configuration `your-corporate-proxy-uri:port-number/proxy.pac`.
 
@@ -11,14 +11,14 @@ description: Learn about troubleshooting proxies with a set of recommended tools
 
 To run this in the local iOS Simulator while on your corporate wi-fi network, a local proxy manager is required. This local proxy application, named [Charles](http://charlesproxy.com), is what our iOS Dev Team uses. Meet Charles, and get to know him. He is your friend.
 
-#### Open macOS Network Preferences
+#### Open macOS network preferences
 
 1. Open `System Preferences` for your Mac (Apple Menu > System Preferences).
 2. Go to Network.
 3. Be sure your `Location` is set to your proxy network, and not "Automatic".
 4. With Wi-Fi selected on the left and/or ethernet connection, click `Advanced...` on the bottom right side of the window.
 
-#### Configure Proxy Address
+#### Configure proxy address
 
 1. Disable/uncheck "Automatic Proxy Configuration" if it is set.
 2. Check "Web Proxy (HTTP)" and set "Web Proxy Server" to 127.0.0.1 : 8888
@@ -46,7 +46,7 @@ To run this in the local iOS Simulator while on your corporate wi-fi network, a 
 
 9. Check "Always bypass external proxies for localhost"
 
-### iOS Simulator Configuration
+### iOS Simulator configuration
 
 If you have an existing iOS Simulator custom setup going that is not working, "Simulator > Reset Content and Settings" from the menu.
 
@@ -80,7 +80,7 @@ Open `~/.gitconfig` and set
   proxy = http://localhost:8888
 ```
 
-### For Command line applications
+### For command line applications
 
 Depending on your shell, and config, Open `~/.bashrc`, `~/.bash_profile`, or `~/.zshrc` or wherever you set your shell variables and set:
 

@@ -401,6 +401,36 @@ it('can pop back from a nested modal to a nested sibling', async () => {
   expect(screen).toHavePathname('/slot');
 });
 
+it('can deep link, pop back, and move around with initialRouteName in root layout', async () => {
+  renderRouter(
+    {
+      _layout: {
+        unstable_settings: {
+          initialRouteName: 'index',
+        },
+        default: () => (
+          <Stack>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="a" />
+          </Stack>
+        ),
+      },
+      index: () => <Text />,
+      'a/_layout': () => <Stack />,
+      'a/b/index': () => <Text />,
+    },
+    {
+      initialUrl: '/a/b',
+    }
+  );
+  expect(screen).toHavePathname('/a/b');
+  act(() => router.back());
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/a/b'));
+  expect(screen).toHavePathname('/a/b');
+});
+
 jest.mock('expo-constants', () => ({
   __esModule: true,
   ExecutionEnvironment: jest.requireActual('expo-constants').ExecutionEnvironment,
@@ -485,4 +515,32 @@ it('can replace across groups', async () => {
   expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
 
   expect(router.canGoBack()).toBe(false);
+});
+
+it('can push nested stacks without creating circular references', async () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text />,
+    'menu/_layout': () => <Stack />,
+    'menu/[id]': () => <Text />,
+    'menu/index': () => <Text />,
+  });
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/menu'));
+  act(() => router.push('/menu/123'));
+  expect(screen).toHavePathname('/menu/123');
+});
+
+it('can push nested stacks with initial route names without creating circular references', async () => {
+  renderRouter({
+    _layout: { initialRouteName: 'index', default: () => <Stack /> },
+    index: () => <Text />,
+    'menu/_layout': { initialRouteName: 'index', default: () => <Stack /> },
+    'menu/[id]': () => <Text />,
+    'menu/index': () => <Text />,
+  });
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/menu'));
+  act(() => router.push('/menu/123'));
+  expect(screen).toHavePathname('/menu/123');
 });
