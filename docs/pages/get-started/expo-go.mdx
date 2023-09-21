@@ -9,11 +9,10 @@ import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 import { Step } from '~/ui/components/Step';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-[Expo Go](https://expo.dev/client) is a free, [open-source](https://github.com/expo/expo/tree/main/home) sandbox for learning and experimenting with React Native on Android and iOS devices. You can install it directly from App Stores, and get up and running within minutes — no need to install a native toolchain and compile an app.
+[Expo Go](https://expo.dev/client) is a free, [open-source](https://github.com/expo/expo/tree/main/home) sandbox for learning and experimenting with React Native on Android and iOS devices. You can install it directly from App Stores, and get up and running within minutes &mdash; no need to install a native toolchain and compile an app.
 
-Expo Go is not recommended for building production-quality apps — use [development builds](/develop/development-builds/introduction.mdx) instead. It's also not recommend for deploying/distributing apps, [learn more about deployment](/deploy/build-project/). That said, everything that you learn while working in Expo Go will be transferable to development builds, and you're likely to come back to Expo Go along your journey when you want to try new ideas in a quick new project sandbox. It's a great place to start!
+Expo Go is not recommended for building production-quality apps &mdash; use [development builds](/develop/development-builds/introduction) instead. It's also not recommended for [deploying/distributing apps](/deploy/build-project/). That said, everything you learn while working in Expo Go will be transferable to development builds, and you're likely to come back to Expo Go along your journey when you want to try new ideas in a quick new project sandbox. It's a great place to start!
 
 ## Install Expo Go on your device
 
@@ -59,7 +58,7 @@ When running a project that was created for an unsupported SDK version in Expo G
 ```
 "Project is incompatible with this version of Expo Go"
 ```
-To fix this, upgrading your project to a [supported SDK version](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) is highly recommended. If you want to learn how to do it, see [Upgrade the project to a new SDK Version](#upgrade-the-project-to-a-new-sdk-version).
+To fix this, upgrading your project to a [supported SDK version](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) is highly recommended. If you want to learn how to do it, see [Upgrade the project to a new SDK Version](#how-do-i-upgrade-my-project-from).
 
 </Collapsible>
 
@@ -71,9 +70,9 @@ Refer to the ["Upgrading Expo SDK" guide](/workflow/upgrading-expo-sdk-walkthrou
 
 <Collapsible summary="How can I install an older version of Expo Go to run my project?">
 
-If you can't upgrade your project to a newer SDK version, you can still run it using an older version of Expo Go — however, this method will not work for physical iOS devices because it is not possible to install apps directly (sideload). If you need to run your project on a physical iOS device, consider creating a [development build](/develop/development-builds/introduction.mdx).
+If you can't upgrade your project to a newer SDK version, you can still run it using an older version of Expo Go. However, this method will not work for physical iOS devices because it is not possible to install apps directly (sideload). If you need to run your project on a physical iOS device, consider creating a [development build](/develop/development-builds/introduction).
 
-If you are trying to use this method on a physical Android device, you will need to connect it to your computer and enable the **USB Debugging** option. Learn more about [Android emulators](/workflow/android-studio-emulator.mdx) and [iOS simulators](/workflow/ios-simulator.mdx)
+If you are trying to use this method on a physical Android device, connect it to your computer and enable the **USB Debugging** option. To learn more, see [Android emulators](/workflow/android-studio-emulator) and [iOS simulators](/workflow/ios-simulator)
 
 <Step label="1">
   If installed, remove Expo Go from your device/simulator.
