@@ -1,0 +1,73 @@
+'use strict';
+
+var DeprecatedColorPropType = require('./DeprecatedColorPropType');
+var DeprecatedTextPropTypes = require('./DeprecatedTextPropTypes');
+var DeprecatedViewPropTypes = require('./DeprecatedViewPropTypes');
+var PropTypes = require('prop-types');
+var DataDetectorTypes = ['address', 'all', 'calendarEvent', 'link', 'none', 'phoneNumber'];
+var DeprecatedTextInputPropTypes = Object.assign({}, DeprecatedViewPropTypes, {
+  allowFontScaling: PropTypes.bool,
+  autoCapitalize: PropTypes.oneOf(['none', 'sentences', 'words', 'characters']),
+  autoComplete: PropTypes.oneOf(['additional-name', 'address-line1', 'address-line2', 'bday', 'bday-day', 'bday-month', 'bday-year', 'birthdate-day', 'birthdate-full', 'birthdate-month', 'birthdate-year', 'cc-csc', 'cc-exp', 'cc-exp-day', 'cc-exp-month', 'cc-exp-year', 'cc-number', 'country', 'current-password', 'email', 'family-name', 'gender', 'given-name', 'honorific-prefix', 'honorific-suffix', 'name', 'name-family', 'name-given', 'name-middle', 'name-middle-initial', 'name-prefix', 'name-suffix', 'new-password', 'nickname', 'off', 'one-time-code', 'organization', 'organization-title', 'password', 'password-new', 'postal-address', 'postal-address-country', 'postal-address-extended', 'postal-address-extended-postal-code', 'postal-address-locality', 'postal-address-region', 'postal-code', 'sex', 'sms-otp', 'street-address', 'tel', 'tel-country-code', 'tel-device', 'tel-national', 'url', 'username', 'username-new']),
+  autoCorrect: PropTypes.bool,
+  autoFocus: PropTypes.bool,
+  blurOnSubmit: PropTypes.bool,
+  caretHidden: PropTypes.bool,
+  clearButtonMode: PropTypes.oneOf(['always', 'never', 'unless-editing', 'while-editing']),
+  clearTextOnFocus: PropTypes.bool,
+  cursorColor: DeprecatedColorPropType,
+  contextMenuHidden: PropTypes.bool,
+  dataDetectorTypes: PropTypes.oneOfType([PropTypes.oneOf(DataDetectorTypes), PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes))]),
+  defaultValue: PropTypes.string,
+  disableFullscreenUI: PropTypes.bool,
+  editable: PropTypes.bool,
+  enablesReturnKeyAutomatically: PropTypes.bool,
+  enterKeyHint: PropTypes.oneOf(['done', 'enter', 'go', 'next', 'previous', 'search', 'send']),
+  inlineImageLeft: PropTypes.string,
+  inlineImagePadding: PropTypes.number,
+  inputAccessoryViewID: PropTypes.string,
+  inputMode: PropTypes.oneOf(['decimal', 'email', 'none', 'numeric', 'search', 'tel', 'text', 'url']),
+  keyboardAppearance: PropTypes.oneOf(['default', 'dark', 'light']),
+  keyboardType: PropTypes.oneOf(['ascii-capable', 'ascii-capable-number-pad', 'decimal-pad', 'default', 'email-address', 'name-phone-pad', 'number-pad', 'numbers-and-punctuation', 'numeric', 'phone-pad', 'twitter', 'url', 'visible-password', 'web-search']),
+  lineBreakStrategyIOS: PropTypes.oneOf(['hangul-word', 'none', 'push-out', 'standard']),
+  maxFontSizeMultiplier: PropTypes.number,
+  maxLength: PropTypes.number,
+  multiline: PropTypes.bool,
+  numberOfLines: PropTypes.number,
+  onBlur: PropTypes.func,
+  onChange: PropTypes.func,
+  onChangeText: PropTypes.func,
+  onContentSizeChange: PropTypes.func,
+  onEndEditing: PropTypes.func,
+  onFocus: PropTypes.func,
+  onKeyPress: PropTypes.func,
+  onLayout: PropTypes.func,
+  onScroll: PropTypes.func,
+  onSelectionChange: PropTypes.func,
+  onSubmitEditing: PropTypes.func,
+  onTextInput: PropTypes.func,
+  placeholder: PropTypes.string,
+  placeholderTextColor: DeprecatedColorPropType,
+  readOnly: PropTypes.bool,
+  rejectResponderTermination: PropTypes.bool,
+  returnKeyLabel: PropTypes.string,
+  returnKeyType: PropTypes.oneOf(['default', 'done', 'emergency-call', 'go', 'google', 'join', 'next', 'none', 'previous', 'route', 'search', 'send', 'yahoo']),
+  rows: PropTypes.number,
+  scrollEnabled: PropTypes.bool,
+  secureTextEntry: PropTypes.bool,
+  selection: PropTypes.shape({
+    end: PropTypes.number,
+    start: PropTypes.number.isRequired
+  }),
+  selectionColor: DeprecatedColorPropType,
+  selectTextOnFocus: PropTypes.bool,
+  showSoftInputOnFocus: PropTypes.bool,
+  spellCheck: PropTypes.bool,
+  style: DeprecatedTextPropTypes.style,
+  submitBehavior: PropTypes.oneOf(['blurAndSubmit', 'newline', 'submit']),
+  textBreakStrategy: PropTypes.oneOf(['balanced', 'highQuality', 'simple']),
+  textContentType: PropTypes.oneOf(['addressCity', 'addressCityAndState', 'addressState', 'countryName', 'creditCardNumber', 'emailAddress', 'familyName', 'fullStreetAddress', 'givenName', 'jobTitle', 'location', 'middleName', 'name', 'namePrefix', 'nameSuffix', 'newPassword', 'nickname', 'none', 'oneTimeCode', 'organizationName', 'password', 'postalCode', 'streetAddressLine1', 'streetAddressLine2', 'sublocality', 'telephoneNumber', 'URL', 'username']),
+  underlineColorAndroid: DeprecatedColorPropType,
+  value: PropTypes.string
+});
+module.exports = DeprecatedTextInputPropTypes;

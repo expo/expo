@@ -436,9 +436,12 @@ export function withExtendedResolver(
         'expo-modules-core',
         'react-native-screens',
         'react-freeze',
+        // 'abort-controller',
         'react-native-safe-area-context',
+        'deprecated-react-native-prop-types',
         '@react-native/virtualized-lists',
         '@react-native-masked-view/masked-view',
+        'pretty-format',
       ]) {
         if (moduleName === alias) {
           moduleName = '@expo/cli/dist/compiled/' + alias;

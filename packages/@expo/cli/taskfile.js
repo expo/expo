@@ -72,6 +72,7 @@ export async function compile__react_native_virtualized_lists(task, opts) {
     .metroBabel('cli', { dev: opts.dev })
     .target('dist/compiled/@react-native/virtualized-lists');
 }
+
 export async function compile_metro_runtime(task, opts) {
   const rnDir = path.join(require.resolve('metro-runtime/package.json'), '..');
   const sourceDir = path.relative(__dirname, rnDir) + '/**/*.+(js|jsx|json)';
@@ -87,7 +88,71 @@ export async function compile_metro_runtime(task, opts) {
     .metroBabel('cli', { dev: opts.dev })
     .target('dist/compiled/metro-runtime');
 }
+export async function compile_pretty_format(task, opts) {
+  const rnDir = path.join(require.resolve('pretty-format/package.json'), '../build');
+  const sourceDir = path.relative(__dirname, rnDir) + '/**/*.+(js|jsx|json)';
 
+  await task
+    .source(sourceDir, {
+      ignore: [
+        ...['node_modules/**', '**/__tests__/**', '**/__mocks__/**', '**/__flowtests__/**'].map(
+          (p) => path.relative(__dirname, rnDir) + '/' + p
+        ),
+      ],
+    })
+    .metroBabel('cli', { dev: opts.dev })
+    .target('dist/compiled/pretty-format');
+}
+
+export async function compile_deprecated_react_native_prop_types(task, opts) {
+  const moduleId = 'deprecated-react-native-prop-types';
+  const externals = {
+    '@react-native/normalize-colors': '@react-native/normalize-colors',
+    'prop-types': 'prop-types',
+  };
+
+  const rnDir = path.join(require.resolve(moduleId + '/package.json'), '../');
+  const sourceDir = path.relative(__dirname, rnDir) + '/**/*.+(js|ts|tsx)';
+
+  const out = `dist/compiled/${moduleId}/_temp-ios`;
+  return task
+    .source(sourceDir, {
+      ignore: [
+        ...['node_modules/**', '**/__tests__/**', '**/__mocks__/**'].map(
+          (p) => path.relative(__dirname, rnDir) + '/' + p
+        ),
+      ],
+    })
+    .metroBabel('cli', { dev: opts.dev })
+    .collapsePlatformExtensions('ios')
+    .target(out)
+    .source(path.join(out, 'index.js'))
+    .ncc({
+      packageName: moduleId,
+      externals: {
+        invariant: 'invariant',
+        react: 'react',
+        'react/jsx-runtime': 'react/jsx-runtime',
+        'react-native': '@expo/cli/dist/compiled/react-native',
+        'react-native/Libraries/Utilities/codegenNativeComponent':
+          '@expo/cli/dist/compiled/react-native/Libraries/Utilities/codegenNativeComponent',
+        '@babel/runtime/helpers/interopRequireDefault':
+          '@babel/runtime/helpers/interopRequireDefault',
+        '@babel/runtime/helpers/objectWithoutProperties':
+          '@babel/runtime/helpers/objectWithoutProperties',
+        '@babel/runtime/helpers/objectWithoutProperties':
+          '@babel/runtime/helpers/objectWithoutProperties',
+        '@babel/runtime/helpers/interopRequireDefault':
+          '@babel/runtime/helpers/interopRequireDefault',
+        '@babel/runtime/helpers/slicedToArray': '@babel/runtime/helpers/slicedToArray',
+        ...externals,
+      },
+      target: 'es5',
+      minify: false,
+    })
+    .rename('index.ios.js')
+    .target('dist/compiled/' + moduleId);
+}
 export async function compile_react_native_safe_area_context(task, opts) {
   const moduleId = 'react-native-safe-area-context';
   const externals = {};
@@ -150,6 +215,21 @@ export async function compile_react_native_screens(task, opts) {
     .metroBabel('cli', { dev: opts.dev })
     .target('dist/compiled/react-native-screens');
 }
+// export async function compile_abort_controller(task, opts) {
+//   const rnDir = path.join(require.resolve('abort-controller/package.json'), '../src');
+//   const sourceDir = path.relative(__dirname, rnDir) + '/**/*.+(js|jsx|tsx|ts|json)';
+
+//   await task
+//     .source(sourceDir, {
+//       ignore: [
+//         ...['node_modules/**', '**/__tests__/**', '**/__mocks__/**', '**/__flowtests__/**'].map(
+//           (p) => path.relative(__dirname, rnDir) + '/' + p
+//         ),
+//       ],
+//     })
+//     .metroBabel('cli', { dev: opts.dev })
+//     .target('dist/compiled/abort-controller');
+// }
 export async function compile_react_freeze(task, opts) {
   const rnDir = path.join(require.resolve('react-freeze/package.json'), '../src');
   const sourceDir = path.relative(__dirname, rnDir) + '/**/*.+(js|jsx|tsx|ts|json)';
@@ -265,20 +345,22 @@ export async function compile_react_native(task, opts) {
 
 export default async function (task) {
   const opts = { dev: true };
-  // await task.clear('dist/compiled');
-  // await task.start('compile_react_native', opts);
-  // await task.start('compile_metro_runtime', opts);
-  // await task.start('compile__react_native_virtualized_lists', opts);
+  await task.clear('dist/compiled');
+  await task.start('compile_react_native', opts);
+  await task.start('compile_metro_runtime', opts);
+  await task.start('compile__react_native_virtualized_lists', opts);
   // await task.clear('dist/compiled/expo-modules-core');
-  // await task.start('compile_expo_modules_core', opts);
+  await task.start('compile_expo_modules_core', opts);
   // await task.clear('dist/compiled/react-native-safe-area-context');
-  // await task.start('compile_react_native_safe_area_context', opts);
+  await task.start('compile_react_native_safe_area_context', opts);
 
   // await task.clear('dist/compiled/react-native-screens');
   await task.start('compile_react_native_screens', opts);
-  await task.clear('dist/compiled/react-freeze');
+  // await task.clear('dist/compiled/react-freeze');
   await task.start('compile_react_freeze', opts);
   await task.start('compile__react_native_masked_view_masked_view', opts);
+  await task.start('compile_deprecated_react_native_prop_types', opts);
+  await task.start('compile_pretty_format', opts);
 
   // await task.clear('build');
   // await task.start('build', opts);
