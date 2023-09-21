@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the `withAnonymous` config plugins' property name for anonymous raw functions. ([#24363](https://github.com/expo/expo/pull/24363) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 8.3.1 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
 
 ## 8.3.0 — 2023-09-04
 

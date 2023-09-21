@@ -4,11 +4,26 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.5.2 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 1.3.3 — 2023-09-15
+
+### 🐛 Bug fixes
+
+- Fixed placeholders aren't always replaced by full-size images on Android. ([#23705](https://github.com/expo/expo/pull/23705) by [@lukmccall](https://github.com/lukmccall))
+- Fix the image components rendering incorrect assets when the Proguard is enabled on Android. ([#23704](https://github.com/expo/expo/pull/23704) by [@lukmccall](https://github.com/lukmccall))
+- Fixed gif and awebp memory leak on Android. ([#24259](https://github.com/expo/expo/pull/24259) by [@jingpeng](https://github.com/jingpeng))
+- Suppress "Operation cancelled by user during sending the request" error when the load request is canceled (interrupted) by a new one. ([#24279](https://github.com/expo/expo/pull/24279) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.5.1 — 2023-09-11
 

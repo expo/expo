@@ -22,9 +22,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deepEqual = exports.getPathDataFromState = void 0;
+exports.appendBasePath = exports.deepEqual = exports.getPathDataFromState = void 0;
 const core_1 = require("@react-navigation/core");
+const expo_constants_1 = __importDefault(require("expo-constants"));
 const queryString = __importStar(require("query-string"));
 const matchers_1 = require("../matchers");
 const DEFAULT_SCREENS = {};
@@ -310,7 +314,7 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
             break;
         }
     }
-    return { path: basicSanitizePath(path), params: decodeParams(allParams) };
+    return { path: appendBasePath(basicSanitizePath(path)), params: decodeParams(allParams) };
 }
 function decodeParams(params) {
     const parsed = {};
@@ -332,7 +336,10 @@ function getPathWithConventionsCollapsed({ pattern, routePath, params, preserveG
                 return `[...${name}]`;
             }
             if (params[name]) {
-                return params[name].join('/');
+                if (Array.isArray(params[name])) {
+                    return params[name].join('/');
+                }
+                return params[name];
             }
             if (i === 0) {
                 // This can occur when a wildcard matches all routes and the given path was `/`.
@@ -446,4 +453,13 @@ const createConfigItem = (config, parentPattern) => {
     };
 };
 const createNormalizedConfigs = (options, pattern) => Object.fromEntries(Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)]));
+function appendBasePath(path, assetPrefix = expo_constants_1.default.expoConfig?.experiments?.basePath) {
+    if (process.env.NODE_ENV !== 'development') {
+        if (assetPrefix) {
+            return `/${assetPrefix.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
+        }
+    }
+    return path;
+}
+exports.appendBasePath = appendBasePath;
 //# sourceMappingURL=getPathFromState.js.map

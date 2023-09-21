@@ -87,10 +87,6 @@ class LocalAuthenticationModule : Module() {
     }
 
     AsyncFunction("authenticateAsync") { options: AuthOptions, promise: Promise ->
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        promise.reject("E_NOT_SUPPORTED", "Cannot display biometric prompt on android versions below 6.0", null)
-        return@AsyncFunction
-      }
       val fragmentActivity = currentActivity as? FragmentActivity
       if (fragmentActivity == null) {
         promise.reject(Exceptions.MissingActivity())
@@ -311,19 +307,7 @@ class LocalAuthenticationModule : Module() {
   // supported prior to API 30.
   // https://developer.android.com/reference/androidx/biometric/BiometricManager#canAuthenticate(int)
   private val isDeviceSecure: Boolean
-    get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      keyguardManager.isDeviceSecure
-    } else {
-      // NOTE: `KeyguardManager#isKeyguardSecure()` considers SIM locked state,
-      // but it will be ignored on falling-back to device credential on biometric authentication.
-      // That means, setting level to `SECURITY_LEVEL_SECRET` might be misleading for some users.
-      // But there is no equivalent APIs prior to M.
-      // `andriodx.biometric.BiometricManager#canAuthenticate(int)` looks like an alternative,
-      // but specifying `BiometricManager.Authenticators.DEVICE_CREDENTIAL` alone is not
-      // supported prior to API 30.
-      // https://developer.android.com/reference/androidx/biometric/BiometricManager#canAuthenticate(int)
-      keyguardManager.isKeyguardSecure
-    }
+    get() = keyguardManager.isDeviceSecure
 
   private fun convertErrorCode(code: Int): String {
     return when (code) {

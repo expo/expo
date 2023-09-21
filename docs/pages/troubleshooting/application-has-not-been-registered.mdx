@@ -27,7 +27,7 @@ The most common cause of this error is that there is an exception thrown in your
 
 If you're in this situation, the error message you're seeing is a [red herring](https://en.wikipedia.org/wiki/Red_herring), it's distracting you from the real error that led to the application not being registered.
 
-Look at your logs prior to this error message to see what may have caused it. A frequent cause is multiple versions of a native module dependency that registers itself as a view &mdash; for example [this Stack Overflow thread](https://stackoverflow.com/questions/67543844/invariant-violation-main-has-not-been-registered-while-running-react-native-a/67550379) where the poster has multiple versions of `react-native-safe-area-context` in their dependencies.
+Look at your logs before this error message to see what may have caused it. A frequent cause is multiple versions of a native module dependency that registers itself as a view &mdash; for example [this Stack Overflow thread](https://stackoverflow.com/questions/67543844/invariant-violation-main-has-not-been-registered-while-running-react-native-a/67550379) where the poster has multiple versions of `react-native-safe-area-context` in their dependencies.
 
 ### Your app root component may not be registered
 

@@ -11,10 +11,13 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
 
+import { exportAllApiRoutesAsync, rebundleApiRoute } from './bundleApiRoutes';
+import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
+import { fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { getRouterDirectoryWithManifest, isApiRouteConvention } from './router';
+import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
@@ -39,10 +42,9 @@ import {
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
-import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 
-class ForwardHtmlError extends CommandError {
+export class ForwardHtmlError extends CommandError {
   constructor(
     message: string,
     public html: string,
@@ -81,15 +83,49 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return port;
   }
 
+  async getExpoRouterRoutesManifestAsync({ appDir }: { appDir: string }) {
+    const manifest = await fetchManifest(this.projectRoot, {
+      asJson: true,
+      appDir,
+    });
+
+    if (!manifest) {
+      throw new CommandError(
+        'EXPO_ROUTER_SERVER_MANIFEST',
+        'Unexpected error: server manifest could not be fetched.'
+      );
+    }
+
+    return manifest;
+  }
+
+  async exportExpoRouterApiRoutesAsync({
+    mode,
+    appDir,
+  }: {
+    mode: 'development' | 'production';
+    appDir: string;
+  }) {
+    return exportAllApiRoutesAsync(this.projectRoot, {
+      mode,
+      appDir,
+      port: this.getInstance()?.location.port,
+      shouldThrow: true,
+    });
+  }
+
   async composeResourcesWithHtml({
     mode,
     resources,
     template,
     devBundleUrl,
+    basePath,
   }: {
     mode: 'development' | 'production';
     resources: SerialAsset[];
     template: string;
+    /** asset prefix used for deploying to non-standard origins like GitHub pages. */
+    basePath: string;
     devBundleUrl?: string;
   }): Promise<string> {
     if (!resources) {
@@ -99,6 +135,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return htmlFromSerialAssets(resources, {
       dev: isDev,
       template,
+      basePath,
       bundleUrl: isDev ? devBundleUrl : undefined,
     });
   }
@@ -124,7 +161,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
     return {
       // Get routes from Expo Router.
-      manifest: await getManifest({ fetchData: true }),
+      manifest: await getManifest({ fetchData: true, preserveApiRoutes: false }),
       // Get route generating function
       async renderAsync(path: string) {
         return await getStaticContent(new URL(path, url));
@@ -212,21 +249,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
   }
 
-  private async renderStaticErrorAsync(error: Error) {
-    return getErrorOverlayHtmlAsync({
-      error,
-      projectRoot: this.projectRoot,
-    });
-  }
-
   async getStaticPageAsync(
     pathname: string,
     {
       mode,
       minify = mode !== 'development',
+      basePath,
     }: {
       mode: 'development' | 'production';
       minify?: boolean;
+      basePath: string;
     }
   ) {
     const devBundleUrlPathname = createBundleUrlPath({
@@ -262,6 +294,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       resources,
       template: staticHtml,
       devBundleUrl: devBundleUrlPathname,
+      basePath,
     });
     return {
       content,
@@ -367,7 +400,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
       const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
-      const useWebSSG = exp.web?.output === 'static';
+      const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
 
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
@@ -375,53 +408,52 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // This should come after the static middleware so it doesn't serve the favicon from `public/favicon.ico`.
       middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
 
-      if (useWebSSG) {
-        middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-          if (!req?.url) {
-            return next();
-          }
+      if (useServerRendering) {
+        const appDir = getRouterDirectoryWithManifest(this.projectRoot, exp);
+        middleware.use(
+          createRouteHandlerMiddleware(this.projectRoot, {
+            ...options,
+            appDir,
+            getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
+            getStaticPageAsync: (pathname) => {
+              return this.getStaticPageAsync(pathname, {
+                mode: options.mode ?? 'development',
+                minify: options.minify,
+                // No base path in development
+                basePath: '',
+              });
+            },
+          })
+        );
 
-          // TODO: Formal manifest for allowed paths
-          if (req.url.endsWith('.ico')) {
-            return next();
-          }
-          if (req.url.includes('serializer.output=static')) {
-            return next();
-          }
+        // @ts-expect-error: TODO
+        if (exp.web?.output === 'server') {
+          // Cache observation for API Routes...
+          observeApiRouteChanges(
+            this.projectRoot,
+            {
+              metro,
+              server,
+            },
+            async (filepath, op) => {
+              if (isApiRouteConvention(filepath)) {
+                debug(`[expo-cli] ${op} ${filepath}`);
+                if (op === 'change' || op === 'add') {
+                  rebundleApiRoute(this.projectRoot, filepath, {
+                    ...options,
+                    appDir,
+                  });
+                }
 
-          try {
-            const { content } = await this.getStaticPageAsync(req.url, {
-              mode: options.mode ?? 'development',
-            });
-
-            res.setHeader('Content-Type', 'text/html');
-            res.end(content);
-          } catch (error: any) {
-            res.setHeader('Content-Type', 'text/html');
-            // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
-            if (error instanceof ForwardHtmlError) {
-              res.statusCode = error.statusCode;
-              res.end(error.html);
-              return;
+                if (op === 'delete') {
+                  // TODO: Cancel the bundling of the deleted route.
+                }
+              }
             }
-            try {
-              res.end(await this.renderStaticErrorAsync(error));
-            } catch (staticError: any) {
-              // Fallback error for when Expo Router is misconfigured in the project.
-              res.end(
-                '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
-                  error.message +
-                  '<br/><br/>' +
-                  staticError.message +
-                  '</span>'
-              );
-            }
-          }
-        });
-      }
-
-      // This MUST run last since it's the fallback.
-      if (!useWebSSG) {
+          );
+        }
+      } else {
+        // This MUST run last since it's the fallback.
         middleware.use(
           new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
         );
@@ -480,7 +512,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           // Run once, this prevents the TypeScript project prerequisite from running on every file change.
           off();
           const { TypeScriptProjectPrerequisite } = await import(
-            '../../doctor/typescript/TypeScriptProjectPrerequisite'
+            '../../doctor/typescript/TypeScriptProjectPrerequisite.js'
           );
 
           try {
@@ -528,7 +560,18 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
 
 function htmlFromSerialAssets(
   assets: SerialAsset[],
-  { dev, template, bundleUrl }: { dev: boolean; template: string; bundleUrl?: string }
+  {
+    dev,
+    template,
+    basePath,
+    bundleUrl,
+  }: {
+    dev: boolean;
+    template: string;
+    basePath: string;
+    /** This is dev-only. */
+    bundleUrl?: string;
+  }
 ) {
   // Combine the CSS modules into tags that have hot refresh data attributes.
   const styleString = assets
@@ -538,8 +581,8 @@ function htmlFromSerialAssets(
         return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
       } else {
         return [
-          `<link rel="preload" href="/${filename}" as="style">`,
-          `<link rel="stylesheet" href="/${filename}">`,
+          `<link rel="preload" href="${basePath}/${filename}" as="style">`,
+          `<link rel="stylesheet" href="${basePath}/${filename}">`,
         ].join('');
       }
     })
@@ -551,7 +594,7 @@ function htmlFromSerialAssets(
     ? `<script src="${bundleUrl}" defer></script>`
     : jsAssets
         .map(({ filename }) => {
-          return `<script src="/${filename}" defer></script>`;
+          return `<script src="${basePath}/${filename}" defer></script>`;
         })
         .join('');
 

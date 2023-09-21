@@ -1,5 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
-import findUp from 'find-up';
+import { getConfig } from 'expo/config';
 import fs from 'fs';
 import { vol, fs as volFS } from 'memfs';
 import path from 'path';
@@ -148,9 +148,9 @@ describe(getExpoConfigSourcesAsync, () => {
 
   it('should return empty array when expo package is not installed', async () => {
     vol.fromJSON(require('./fixtures/BareReactNative70Project.json'));
-    const mockedResolveFrom = resolveFrom as jest.MockedFunction<typeof resolveFrom>;
+    const mockedResolveFrom = resolveFrom.silent as jest.MockedFunction<typeof resolveFrom.silent>;
     mockedResolveFrom.mockImplementationOnce((fromDirectory: string, moduleId: string) => {
-      const actualResolver = jest.requireActual('resolve-from');
+      const actualResolver = jest.requireActual('resolve-from').silent;
       // To fake the case as no expo installed, trying to resolve as **nonexist/expo/config** module
       return actualResolver(fromDirectory, 'nonexist/expo/config');
     });
@@ -222,114 +222,38 @@ export default ({ config }) => {
       })
     );
   });
-});
 
-describe(`getExpoConfigSourcesAsync - config-plugins`, () => {
-  let baseAppJson: { expo: any };
-
-  function setupThirdPartyPlugin() {
-    vol.mkdirSync('/app/node_modules/third-party', { recursive: true });
-
-    // package.json
-    vol.writeFileSync('/app/node_modules/third-party/package.json', '{}');
-    const mockFindUpSync = findUp.sync as jest.MockedFunction<typeof findUp.sync>;
-    mockFindUpSync.mockReturnValue('/app/node_modules/third-party/package.json');
-
-    // entry file
-    const withNoopPlugin = (config: any) => config;
-    jest.mock('/app/node_modules/third-party/index.js', () => ({ default: withNoopPlugin }), {
-      virtual: true,
-    });
-    const mockResolveFrom = resolveFrom.silent as jest.MockedFunction<typeof resolveFrom.silent>;
-    mockResolveFrom.mockReturnValue('/app/node_modules/third-party/index.js');
-  }
-
-  beforeEach(() => {
-    jest.doMock('fs', () => volFS);
+  it('should contain extra files from config plugins', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
-    baseAppJson = JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString());
-  });
-
-  afterEach(() => {
-    vol.reset();
-    const mockResolveFrom = resolveFrom.silent as jest.MockedFunction<typeof resolveFrom.silent>;
-    mockResolveFrom.mockReset();
-  });
-
-  it('should contain external config-plugin dir', async () => {
-    setupThirdPartyPlugin();
-
-    vol.writeFileSync(
-      '/app/app.json',
-      JSON.stringify({
-        ...baseAppJson,
-        expo: {
-          ...baseAppJson.expo,
-          plugins: ['third-party'],
-        },
-      })
-    );
+    const config = await getConfig('/app', { skipSDKVersionRequirement: true });
+    const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
+    const stdout = JSON.stringify({
+      config,
+      loadedModules: [
+        'node_modules/third-party/index.js',
+        'node_modules/third-party/node_modules/transitive-third-party/index.js',
+      ],
+    });
+    mockSpawnAsync.mockResolvedValueOnce({
+      output: [],
+      stdout,
+      stderr: '',
+      signal: null,
+      status: 0,
+    });
     const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     expect(sources).toContainEqual(
       expect.objectContaining({
-        type: 'dir',
-        filePath: 'node_modules/third-party',
+        type: 'file',
+        filePath: 'node_modules/third-party/index.js',
       })
     );
-  });
-
-  it('should contain external config-plugin dir from plugin with parameters', async () => {
-    setupThirdPartyPlugin();
-
-    vol.writeFileSync(
-      '/app/app.json',
-      JSON.stringify({
-        ...baseAppJson,
-        expo: {
-          ...baseAppJson.expo,
-          plugins: [['third-party', { parameter: 'foo' }]],
-        },
-      })
-    );
-    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     expect(sources).toContainEqual(
       expect.objectContaining({
-        type: 'dir',
-        filePath: 'node_modules/third-party',
+        type: 'file',
+        filePath: 'node_modules/third-party/node_modules/transitive-third-party/index.js',
       })
     );
-  });
-
-  it('should not contain external config-plugin dir from raw function plugins', async () => {
-    vol.writeFileSync(
-      '/app/app.config.js',
-      `\
-export default ({ config }) => {
-  return config;
-};`
-    );
-    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
-
-    vol.writeFileSync(
-      '/app/app.config.js',
-      `\
-export default ({ config }) => {
-  config.plugins ||= [];
-  const withNoopPlugin = (config: any) => config;
-  config.plugins.push(withNoopPlugin);
-  return config;
-};`
-    );
-    const sources2 = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
-
-    // sources2 will contain the plugins from expo config, but sources will not.
-    const sourcesWithoutExpoConfig = sources.filter(
-      (item) => item.type !== 'contents' || item.id !== 'expoConfig'
-    );
-    const sources2WithoutExpoConfig = sources2.filter(
-      (item) => item.type !== 'contents' || item.id !== 'expoConfig'
-    );
-    expect(sourcesWithoutExpoConfig).toEqual(sources2WithoutExpoConfig);
   });
 });
 

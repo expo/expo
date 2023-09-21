@@ -1,9 +1,4 @@
-import {
-  PermissionResponse,
-  PermissionStatus,
-  UnavailabilityError,
-  uuidv4,
-} from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform, Share } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';
@@ -316,7 +311,7 @@ export type Contact = {
    * Additional information.
    * > On iOS 13+, the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
    * > The Expo Go app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple](https://developer.apple.com/contact/request/contact-note-field),
-   * > set the [`ios.accessesContactNotes`](./config/app.mdx#accessescontactnotes) field in app.json to `true`, and [create your development build](/develop/development-builds/create-a-build/).
+   * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/create-a-build/).
    */
   note?: string;
   /**
@@ -827,7 +822,7 @@ export async function createGroupAsync(name?: string, containerId?: string): Pro
     throw new UnavailabilityError('Contacts', 'createGroupAsync');
   }
 
-  name = name || uuidv4();
+  name = name || uuid.v4();
   if (!containerId) {
     containerId = await getDefaultContainerIdAsync();
   }

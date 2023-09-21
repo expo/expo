@@ -11,7 +11,7 @@ import { URL } from 'url';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importCliServerApiFromProject, importExpoMetroConfig } from './resolveFromProject';
-import { getRouterDirectory } from './router';
+import { getRouterDirectoryModuleIdWithManifest } from './router';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
@@ -81,21 +81,28 @@ export async function loadMetroConfigAsync(
     !exp.sdkVersion ||
     gteSdkVersion(exp, '50.0.0')
   ) {
-    // TODO: Handle asset prefix.
     if (isExporting) {
       // This token will be used in the asset plugin to ensure the path is correct for writing locally.
       // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = '/assets?export_path=/assets';
+      config.transformer.publicPath = `/assets?export_path=${
+        (exp.experiments?.basePath ?? '') + '/assets'
+      }`;
     } else {
       // @ts-expect-error: typed as readonly
       config.transformer.publicPath = '/assets/?unstable_path=.';
+    }
+  } else {
+    if (isExporting && exp.experiments?.basePath) {
+      // This token will be used in the asset plugin to ensure the path is correct for writing locally.
+      // @ts-expect-error: typed as readonly.
+      config.transformer.publicPath = exp.experiments?.basePath;
     }
   }
 
   const platformBundlers = getPlatformBundlers(exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
-    routerDirectory: exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot),
+    routerDirectory: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     config,
     platformBundlers,
     isTsconfigPathsEnabled: !!exp.experiments?.tsconfigPaths,

@@ -380,7 +380,7 @@ A Promise that resolves to an array of strings, each containing the name of a fi
 
 ### `FileSystem.downloadAsync(uri, fileUri, options)`
 
-Download the contents at a remote URI to a file in the app's file system. The directory for a local file uri must exist prior to calling this function.
+Download the contents at a remote URI to a file in the app's file system. The directory for a local file uri must exist before calling this function.
 
 #### Example
 
@@ -486,7 +486,7 @@ Returns a Promise that resolves to an object with the following fields:
 
 ### `FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)`
 
-Create a `DownloadResumable` object which can start, pause, and resume a download of contents at a remote URI to a file in the app's file system. Please note: You need to call `downloadAsync()`, on a `DownloadResumable` instance to initiate the download. The `DownloadResumable` object has a callback that provides download progress updates. Downloads can be resumed across app restarts by using `AsyncStorage` to store the `DownloadResumable.savable()` object for later retrieval. The `savable` object contains the arguments required to initialize a new `DownloadResumable` object to resume the download after an app restart. The directory for a local file uri must exist prior to calling this function.
+Create a `DownloadResumable` object which can start, pause, and resume a download of contents at a remote URI to a file in the app's file system. Please note: You need to call `downloadAsync()`, on a `DownloadResumable` instance to initiate the download. The `DownloadResumable` object has a callback that provides download progress updates. Downloads can be resumed across app restarts by using `AsyncStorage` to store the `DownloadResumable.savable()` object for later retrieval. The `savable` object contains the arguments required to initialize a new `DownloadResumable` object to resume the download after an app restart. The directory for a local file uri must exist before calling this function.
 
 #### Arguments
 
@@ -650,7 +650,7 @@ A SAF URI is a URI that is compatible with the Storage Access Framework. It shou
 import { StorageAccessFramework } from 'expo-file-system';
 ```
 
-### Example Usage
+### Example usage
 
 ```ts
 import { StorageAccessFramework } from 'expo-file-system';
