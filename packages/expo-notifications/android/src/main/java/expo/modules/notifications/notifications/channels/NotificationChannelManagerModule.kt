@@ -1,6 +1,7 @@
 package expo.modules.notifications.notifications.channels
 
 import android.os.Build
+import android.os.Bundle
 import androidx.annotation.RequiresApi
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.kotlin.modules.Module
@@ -27,6 +28,16 @@ open class NotificationChannelManagerModule : Module() {
 
       channelManager = provider.channelManager
       channelSerializer = provider.channelSerializer
+    }
+
+    AsyncFunction("getNotificationChannelsAsync") {
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        return@AsyncFunction emptyList<Bundle>()
+      }
+
+      return@AsyncFunction channelManager
+        .notificationChannels
+        .map(channelSerializer::toBundle)
     }
 
     AsyncFunction("getNotificationChannelAsync") { channelId: String ->

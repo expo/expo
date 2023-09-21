@@ -2,12 +2,14 @@ package expo.modules.notifications.notifications.categories
 
 import android.content.Context
 import android.os.Bundle
-import expo.modules.core.arguments.MapArguments
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.records.Required
 import expo.modules.notifications.ModuleNotFoundException
 import expo.modules.notifications.ResultReceiverBody
 import expo.modules.notifications.createDefaultResultReceiver
@@ -20,12 +22,32 @@ import expo.modules.notifications.service.NotificationsService.Companion.deleteC
 import expo.modules.notifications.service.NotificationsService.Companion.getCategories
 import expo.modules.notifications.service.NotificationsService.Companion.setCategory
 
-private const val IDENTIFIER_KEY = "identifier"
-private const val BUTTON_TITLE_KEY = "buttonTitle"
-private const val OPTIONS_KEY = "options"
-private const val OPENS_APP_TO_FOREGROUND_KEY = "opensAppToForeground"
-private const val TEXT_INPUT_OPTIONS_KEY = "textInput"
-private const val PLACEHOLDER_KEY = "placeholder"
+class NotificationActionRecord : Record {
+  @Field
+  @Required
+  val identifier: String = ""
+
+  @Field
+  @Required
+  val buttonTitle: String = ""
+
+  @Field
+  val textInput: TextInput? = null
+
+  @Field
+  val options = Options()
+
+  class TextInput : Record {
+    @Field
+    @Required
+    val placeholder: String = ""
+  }
+
+  class Options : Record {
+    @Field
+    val opensAppToForeground = true
+  }
+}
 
 open class ExpoNotificationCategoriesModule : Module() {
 
@@ -64,34 +86,28 @@ open class ExpoNotificationCategoriesModule : Module() {
 
   open fun setNotificationCategoryAsync(
     identifier: String,
-    actionArguments: List<Map<String, Any?>>,
+    actionArguments: List<NotificationActionRecord>,
     categoryOptions: Map<String, Any?>?,
     promise: Promise
   ) {
     val actions = mutableListOf<NotificationAction>()
     for (actionMap in actionArguments) {
-      val actionParams = MapArguments(actionMap)
-      val actionOptions = MapArguments(actionParams.getMap(OPTIONS_KEY, emptyMap<String, Any?>()) as Map<String, Any?>)
-      val textInputOptions = if (actionParams.containsKey(TEXT_INPUT_OPTIONS_KEY)) {
-        MapArguments(actionParams.getMap(TEXT_INPUT_OPTIONS_KEY) as Map<String, Any?>)
-      } else {
-        null
-      }
+      val textInputOptions = actionMap.textInput
       if (textInputOptions != null) {
         actions.add(
           TextInputNotificationAction(
-            actionParams.getString(IDENTIFIER_KEY, null),
-            actionParams.getString(BUTTON_TITLE_KEY, null),
-            actionOptions.getBoolean(OPENS_APP_TO_FOREGROUND_KEY, true),
-            textInputOptions.getString(PLACEHOLDER_KEY, null)
+            actionMap.identifier,
+            actionMap.buttonTitle,
+            actionMap.options.opensAppToForeground,
+            textInputOptions.placeholder
           )
         )
       } else {
         actions.add(
           NotificationAction(
-            actionParams.getString(IDENTIFIER_KEY, null),
-            actionParams.getString(BUTTON_TITLE_KEY, null),
-            actionOptions.getBoolean(OPENS_APP_TO_FOREGROUND_KEY, true)
+            actionMap.identifier,
+            actionMap.buttonTitle,
+            actionMap.options.opensAppToForeground,
           )
         )
       }

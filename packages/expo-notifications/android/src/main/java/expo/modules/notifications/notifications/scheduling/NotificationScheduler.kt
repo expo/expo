@@ -199,7 +199,7 @@ open class NotificationScheduler : Module() {
 
       "yearly" -> {
         val day = params["day"] as? Number
-        val month = params["mont"] as? Number
+        val month = params["month"] as? Number
         val hour = params["hour"] as? Number
         val minute = params["minute"] as? Number
 
