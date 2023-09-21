@@ -9,9 +9,12 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
 - Fetch dev sessions whenever navigating to the launcher home screen. ([#24378](https://github.com/expo/expo/pull/24378), [#24502](https://github.com/expo/expo/pull/24502) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
+
+- Drop support for configuring SDK 44 and below with Prebuild. ([#24504](https://github.com/expo/expo/pull/24504) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.2.1 — 2023-09-18
 
