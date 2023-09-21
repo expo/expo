@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Only modify quoted or prefixed android package names.
+- Only modify quoted or prefixed android package names. ([#24559](https://github.com/expo/expo/pull/24559) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
