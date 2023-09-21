@@ -12,6 +12,9 @@ module.exports = {
     bundler: 'metro',
   },
   experiments: {
-    typedRoutes: process.env._EXPO_E2E_USE_TYPED_ROUTES ? true : undefined,
+    typedRoutes:
+      '_EXPO_E2E_USE_TYPED_ROUTES' in process.env
+        ? Boolean(process.env._EXPO_E2E_USE_TYPED_ROUTES)
+        : true,
   },
 };
