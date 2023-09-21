@@ -32,6 +32,8 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
+import { getBareExtensions } from '@expo/config/paths';
+const otherResolve = require('resolve') as typeof import('resolve');
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -192,6 +194,13 @@ export function withExtendedResolver(
 
   let nodejsSourceExtensions: string[] | null = null;
 
+  const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
+  const sourceExts = getBareExtensions(['ios', 'native'], sourceExtsConfig).map((v) => '.' + v);
+  const sourceExtsWithoutMjs = getBareExtensions(['ios', 'native'], {
+    ...sourceExtsConfig,
+    isModern: false,
+  }).map((v) => '.' + v);
+
   return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
@@ -297,7 +306,11 @@ export function withExtendedResolver(
       }
 
       let result: Resolution | null = null;
-
+      let sources = sourceExts;
+      // moduleName.includes('event-target-shim') &&
+      // context.originModulePath.includes(path.sep + 'react-native' + path.sep)
+      //   ? sourceExtsWithoutMjs
+      //   : sourceExts;
       // React Native uses `event-target-shim` incorrectly and this causes the native runtime
       // to fail to load. This is a temporary workaround until we can fix this upstream.
       // https://github.com/facebook/react-native/pull/38628
@@ -305,6 +318,7 @@ export function withExtendedResolver(
         moduleName.includes('event-target-shim') &&
         context.originModulePath.includes(path.sep + 'react-native' + path.sep)
       ) {
+        sources = sourceExtsWithoutMjs;
         context.sourceExts = context.sourceExts.filter((f) => !f.includes('mjs'));
         debug('Skip mjs support for event-target-shim in:', context.originModulePath);
       }
@@ -339,16 +353,79 @@ export function withExtendedResolver(
         }
       }
 
+      for (const alias of [
+        'react-native',
+        'expo-modules-core',
+        '@react-native/virtualized-lists',
+      ]) {
+        if (moduleName === alias) {
+          moduleName = '@expo/cli/dist/compiled/' + alias;
+          break;
+        } else if (moduleName.startsWith(alias + '/')) {
+          moduleName = moduleName.replace(
+            new RegExp(`^${alias}\/(.*)`),
+            // /react-native\/(.*)/,
+            `@expo/cli/dist/compiled/${alias}/$1`
+          );
+          break;
+        }
+      }
+
+      if (moduleName === 'metro-runtime') {
+        moduleName = '@expo/cli/dist/compiled/metro-runtime/src';
+      } else if (moduleName.startsWith('metro-runtime' + '/')) {
+        moduleName = moduleName.replace(
+          new RegExp(`^${'metro-runtime'}\/(.*)`),
+          `@expo/cli/dist/compiled/${'metro-runtime'}/$1`
+        );
+      }
+
+      let fp: string = '';
+
+      if (moduleName !== 'event-target-shim' && !moduleName.endsWith('.png')) {
+        // console.log('t', moduleName);
+        fp = otherResolve.sync(moduleName, {
+          basedir: path.dirname(context.originModulePath),
+          extensions: sources,
+          moduleDirectory: ['packages', 'node_modules'],
+          packageFilter(pkg, pkgfile, dir) {
+            // set the pkg.main to the first available field in context.mainFields
+            for (const field of context.mainFields) {
+              if (pkg[field]) {
+                // if (dir.includes('event-target-shim')) {
+                //   console.log('>>>', field, pkg[field])
+                // }
+                pkg.main = pkg[field];
+                break;
+              }
+            }
+            return pkg;
+          },
+        });
+
+        result = {
+          type: 'sourceFile',
+          filePath: fp,
+        };
+
+        return result;
+      }
       result ??= doResolve(moduleName);
 
       if (result) {
-        // if (
-        //   result.type === 'sourceFile' &&
-        //   result.filePath.match(/\/react-native\//) &&
-        //   !context.originModulePath.match(/\/react-native\//)
-        // ) {
-        //   console.log('RN >', result.filePath, '--', context.originModulePath);
-        // }
+        if (result.type !== 'sourceFile') {
+          console.log('??', moduleName, fp, result);
+        }
+        if (
+          result.type === 'sourceFile' &&
+          fp &&
+          fp !== result.filePath
+          // &&
+          // fp.replace(/node_modules/, 'packages') !== result.filePath
+        ) {
+          console.log('RN >', moduleName, fp, result.filePath, sources);
+        }
+
         // Replace the web resolver with the original one.
         // This is basically an alias for web-only.
         if (shouldAliasAssetRegistryForWeb(platform, result)) {
@@ -377,6 +454,7 @@ export function withExtendedResolver(
           result.filePath = reactNativeWebAppContainer;
         }
       }
+
       return result;
     },
   ]);

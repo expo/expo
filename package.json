@@ -25,6 +25,7 @@
     "react-refresh": "^0.14.0",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/core": "^6.4.9",
+    "react-is": "^18.2.0",
     "**/util": "~0.12.4"
   },
   "dependencies": {

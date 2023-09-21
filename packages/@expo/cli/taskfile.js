@@ -165,16 +165,15 @@ export default async function (task) {
   // await task.start('compile_react_native', opts);
   // await task.start('compile_metro_runtime', opts);
   // await task.start('compile__react_native_virtualized_lists', opts);
-  await task.clear('dist/compiled/expo-modules-core');
-  await task.start('compile_expo_modules_core', opts);
-  // await task.serial(['compile_expo_modules_core', 'ncc_expo_modules_core'], opts);
+  // await task.clear('dist/compiled/expo-modules-core');
+  // await task.start('compile_expo_modules_core', opts);
 
-  // await task.clear('build');
-  // await task.start('build', opts);
-  // if (process.stdout.isTTY && !boolish('CI', false) && !boolish('EXPO_NONINTERACTIVE', false)) {
-  //   await task.watch('bin/*', 'bin', opts);
-  //   await task.watch('src/**/*.+(js|ts)', 'cli', opts);
-  // }
+  await task.clear('build');
+  await task.start('build', opts);
+  if (process.stdout.isTTY && !boolish('CI', false) && !boolish('EXPO_NONINTERACTIVE', false)) {
+    await task.watch('bin/*', 'bin', opts);
+    await task.watch('src/**/*.+(js|ts)', 'cli', opts);
+  }
 }
 
 export async function release(task) {
