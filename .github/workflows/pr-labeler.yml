@@ -54,8 +54,6 @@ jobs:
         uses: expo/expo-github-action/fingerprint@main
         with:
           working-directory: apps/bare-expo
-      - name: 👀 Dump fingerprint diff
-        run: echo "${{ steps.fingerprint.outputs.fingerprint-diff }}"
 
       - name: 🏷️ Labeling PR
         uses: actions/github-script@v6
