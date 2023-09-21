@@ -1,6 +1,7 @@
 const { boolish } = require('getenv');
 const path = require('path');
 const process = require('process');
+import fs from 'fs';
 
 export async function bin(task, opts) {
   await task
@@ -23,6 +24,38 @@ export async function build(task, opts) {
 }
 
 // Prebuilt modules
+
+export async function compile_expo_modules_core(task, opts) {
+  const rnDir = path.join(require.resolve('expo-modules-core/package.json'), '../src');
+  const sourceDir = path.relative(__dirname, rnDir) + '/**/*.+(js|ts|tsx)';
+
+  const out = 'dist/compiled/expo-modules-core/_temp-ios';
+  await task
+    .source(sourceDir, {
+      ignore: [
+        ...['node_modules/**', '**/__tests__/**', '**/__mocks__/**'].map(
+          (p) => path.relative(__dirname, rnDir) + '/' + p
+        ),
+      ],
+    })
+    .metroBabel('cli', { dev: opts.dev })
+    .collapsePlatformExtensions('ios')
+    .target(out)
+    .source(path.join(out, 'index.js'))
+    .ncc({
+      packageName: 'expo-modules-core',
+      externals: {
+        invariant: 'invariant',
+        react: 'react',
+        'react/jsx-runtime': 'react/jsx-runtime',
+        'react-native': '@expo/cli/dist/compiled/react-native',
+      },
+      target: 'es5',
+      minify: false,
+    })
+    .rename('index.ios.js')
+    .target('dist/compiled/expo-modules-core');
+}
 
 export async function compile__react_native_virtualized_lists(task, opts) {
   const rnDir = path.join(require.resolve('@react-native/virtualized-lists/package.json'), '..');
@@ -128,17 +161,20 @@ export async function compile_react_native(task, opts) {
 
 export default async function (task) {
   const opts = { dev: true };
-  await task.clear('dist/compiled');
-  await task.start('compile_react_native', opts);
-  await task.start('compile_metro_runtime', opts);
-  await task.start('compile__react_native_virtualized_lists', opts);
+  // await task.clear('dist/compiled');
+  // await task.start('compile_react_native', opts);
+  // await task.start('compile_metro_runtime', opts);
+  // await task.start('compile__react_native_virtualized_lists', opts);
+  await task.clear('dist/compiled/expo-modules-core');
+  await task.start('compile_expo_modules_core', opts);
+  // await task.serial(['compile_expo_modules_core', 'ncc_expo_modules_core'], opts);
 
-  await task.clear('build');
-  await task.start('build', opts);
-  if (process.stdout.isTTY && !boolish('CI', false) && !boolish('EXPO_NONINTERACTIVE', false)) {
-    await task.watch('bin/*', 'bin', opts);
-    await task.watch('src/**/*.+(js|ts)', 'cli', opts);
-  }
+  // await task.clear('build');
+  // await task.start('build', opts);
+  // if (process.stdout.isTTY && !boolish('CI', false) && !boolish('EXPO_NONINTERACTIVE', false)) {
+  //   await task.watch('bin/*', 'bin', opts);
+  //   await task.watch('src/**/*.+(js|ts)', 'cli', opts);
+  // }
 }
 
 export async function release(task) {

@@ -110,6 +110,7 @@
   "taskr": {
     "requires": [
       "./taskfile-swc.js",
+      "./taskfile-ncc.js",
       "./taskfile-metro-babel.js"
     ]
   },

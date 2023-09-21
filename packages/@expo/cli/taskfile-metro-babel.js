@@ -45,7 +45,7 @@ async function nativeBabelFlowTransform(input, options) {
 module.exports = function (task) {
   // Like `/^(cli|sdk)$/`
 
-  task.plugin('metroBabel', {}, function* (file, environment, { stripExtension } = {}) {
+  task.plugin('metroBabel', {}, function* (file, environment, { stripExtension, platform } = {}) {
     // Don't compile .d.ts
     // TODO: minify package.json
     if (['.png', '.d.ts', '.json'].some((ext) => file.base.endsWith(ext))) return;
@@ -87,5 +87,24 @@ module.exports = function (task) {
     }
 
     file.data = Buffer.from(output.code);
+  });
+
+  task.plugin('collapsePlatformExtensions', {}, function* (file, platform, {} = {}) {
+    const platforms = [platform];
+    if (['ios', 'android'].includes(platform)) {
+      platforms.push('native');
+    }
+
+    for (const platform of platforms) {
+      const endRegex = new RegExp(`.${platform}.[jt]sx?$`, 'i');
+      if (file.base.match(endRegex)) {
+        file.base = file.base.replace(endRegex, '.js');
+        break;
+      }
+    }
+  });
+
+  task.plugin('rename', {}, function* (file, name, {} = {}) {
+    file.base = name;
   });
 };
