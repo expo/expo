@@ -112,7 +112,8 @@ export function withExtendedResolver(
   const assetRegistryPath = fs.realpathSync(
     // This is the native asset registry alias for native.
     path.resolve(
-      resolveFrom(projectRoot, '@expo/cli/dist/compiled/react-native/Libraries/Image/AssetRegistry')
+      resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry')
+      // resolveFrom(projectRoot, '@expo/cli/dist/compiled/react-native/Libraries/Image/AssetRegistry')
     )
     // path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
     // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
@@ -434,13 +435,12 @@ export function withExtendedResolver(
       for (const alias of [
         'react-native',
         'expo-modules-core',
-        'react-native-screens',
+        // 'react-native-screens',
         'react-freeze',
-        // 'abort-controller',
-        'react-native-safe-area-context',
-        'deprecated-react-native-prop-types',
-        '@react-native/virtualized-lists',
-        '@react-native-masked-view/masked-view',
+        // 'react-native-safe-area-context',
+        // 'deprecated-react-native-prop-types',
+        // '@react-native/virtualized-lists',
+        // '@react-native-masked-view/masked-view',
         'pretty-format',
       ]) {
         if (moduleName === alias) {
@@ -456,14 +456,14 @@ export function withExtendedResolver(
         }
       }
 
-      if (moduleName === 'metro-runtime') {
-        moduleName = '@expo/cli/dist/compiled/metro-runtime/src';
-      } else if (moduleName.startsWith('metro-runtime' + '/')) {
-        moduleName = moduleName.replace(
-          new RegExp(`^${'metro-runtime'}\/(.*)`),
-          `@expo/cli/dist/compiled/${'metro-runtime'}/$1`
-        );
-      }
+      // if (moduleName === 'metro-runtime') {
+      //   moduleName = '@expo/cli/dist/compiled/metro-runtime/src';
+      // } else if (moduleName.startsWith('metro-runtime' + '/')) {
+      //   moduleName = moduleName.replace(
+      //     new RegExp(`^${'metro-runtime'}\/(.*)`),
+      //     `@expo/cli/dist/compiled/${'metro-runtime'}/$1`
+      //   );
+      // }
 
       result ??= doResolve(moduleName);
 
