@@ -22,11 +22,10 @@ export const CAPTURE_GROUP_REGEX = /[\\(,]\s*(\w[\w\s]*?)\s*(?=[,\\)])/g;
  * Match:
  *  - _layout files
  *  - filenames that take the form of `+${string}`, including +html, and API routes
- *    - Routes can still use `+`, but it cannot be in the last segment.
+ *  - Routes can still use `+`, but it cannot be in the last segment.
  *  - All variations of 404 files, 404.ts, [404].ts, [...404].ts
- *    - Only matches 404 on the top level, nested 404 files are allowed
  */
-export const TYPED_ROUTES_EXCLUSION_REGEX = /(_layout|\+[^/]+|^404|^\[(\.\.\.)?404\])\.[tj]sx?$/;
+export const TYPED_ROUTES_EXCLUSION_REGEX = /(_layout|404|\[(\.\.\.)?404\]|\+[^/]+)\.[tj]sx?$/;
 
 export interface SetupTypedRoutesOptions {
   server?: ServerLike;
