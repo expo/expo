@@ -1,26 +1,31 @@
 // adapted from https://gist.github.com/ngbrown/d62eb518753378eb0a9bf02bb4723235
 // modified from https://gist.github.com/WorldMaker/a3cbe0059acd827edee568198376b95a
 // https://github.com/woltapp/react-blurhash/issues/3
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import decode from './decode';
-export function useBlurhash(blurhash, width = 32, height = 32, punch = 1) {
+import { isBlurhashString } from '../resolveSources';
+const DEFAULT_SIZE = {
+    width: 32,
+    height: 32,
+};
+export function useBlurhash(blurhash, punch = 1) {
     punch = punch || 1;
-    const [url, setUrl] = useState(null);
+    const [uri, setUri] = useState(null);
     useEffect(() => {
         let isCanceled = false;
-        if (!blurhash)
+        if (!blurhash || !blurhash.uri || !isBlurhashString(blurhash.uri))
             return;
-        const pixels = decode(blurhash, width, height, punch);
+        const pixels = decode(blurhash.uri, blurhash?.width ?? DEFAULT_SIZE.width, blurhash?.height ?? DEFAULT_SIZE.height, punch);
         const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = blurhash?.width ?? DEFAULT_SIZE.width;
+        canvas.height = blurhash?.height ?? DEFAULT_SIZE.height;
         const context = canvas.getContext('2d');
-        const imageData = context.createImageData(width, height);
+        const imageData = context.createImageData(blurhash?.width ?? DEFAULT_SIZE.width, blurhash?.height ?? DEFAULT_SIZE.height);
         imageData.data.set(pixels);
         context.putImageData(imageData, 0, 0);
         canvas.toBlob((blob) => {
             if (!isCanceled) {
-                setUrl((oldUrl) => {
+                setUri((oldUrl) => {
                     if (oldUrl) {
                         URL.revokeObjectURL(oldUrl);
                     }
@@ -30,14 +35,14 @@ export function useBlurhash(blurhash, width = 32, height = 32, punch = 1) {
         });
         return function cleanupBlurhash() {
             isCanceled = true;
-            setUrl((oldUrl) => {
+            setUri((oldUrl) => {
                 if (oldUrl) {
                     URL.revokeObjectURL(oldUrl);
                 }
                 return null;
             });
         };
-    }, [blurhash, height, width, punch]);
-    return url;
+    }, [blurhash?.uri, blurhash?.height, blurhash?.width, punch]);
+    return useMemo(() => (uri ? { uri } : null), [uri]);
 }
 //# sourceMappingURL=useBlurhash.js.map
