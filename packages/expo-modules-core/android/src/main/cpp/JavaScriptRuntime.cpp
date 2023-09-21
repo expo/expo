@@ -129,8 +129,6 @@ JavaScriptRuntime::JavaScriptRuntime(
     ),
     "<<evaluated>>"
   );
-
-  installMainObject();
 #endif // !UNIT_TEST
 }
 
@@ -145,7 +143,6 @@ JavaScriptRuntime::JavaScriptRuntime(
   // In this code flow, the runtime should be owned by something else like the CatalystInstance.
   // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
   this->runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
-  installMainObject();
 }
 
 jsi::Runtime &JavaScriptRuntime::get() const {
