@@ -53,7 +53,7 @@ describe(modifyBundlesWithSourceMaps, () => {
   });
 });
 
-describe.only(getPathVariations, () => {
+describe(getPathVariations, () => {
   it(`should get path variations`, () => {
     expect(getPathVariations('(foo)/bar/(bax)/baz').sort()).toEqual([
       '(foo)/bar/(bax)/baz',
