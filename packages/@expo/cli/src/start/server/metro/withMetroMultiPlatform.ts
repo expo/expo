@@ -437,7 +437,7 @@ export function withExtendedResolver(
         'expo-modules-core',
         'react-native-screens',
         'react-freeze',
-        // 'react-native-safe-area-context',
+        'react-native-safe-area-context',
         // 'deprecated-react-native-prop-types',
         '@react-native/virtualized-lists',
         '@react-native-masked-view/masked-view',
