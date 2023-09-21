@@ -217,6 +217,12 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
   return [[sdkVersion substringToIndex: snackSdkVersionRange.location] intValue];
 }
 
+- (NSString *)supportedSdkVersionsConjunctionString:(nonnull NSString *)conjuction {
+  NSArray *supportedSDKVersions = [EXVersions sharedInstance].versions[@"sdkVersions"];
+  NSString *stringBeginning = [[supportedSDKVersions subarrayWithRange:NSMakeRange(0, supportedSDKVersions.count - 1)] componentsJoinedByString:@", "];
+  return [NSString stringWithFormat:@"%@ %@ %@", stringBeginning, conjuction, [supportedSDKVersions lastObject]];
+}
+
 - (NSError *)verifyManifestSdkVersion:(EXManifestsManifest *)maybeManifest
 {
   NSString *errorCode;
@@ -307,10 +313,10 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
     NSString *sdkVersionRequired = [availableSDKVersions firstObject];
     NSString *supportedSDKVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@", "];
 
-    formattedMessage = [NSString stringWithFormat:@"This project was set to use SDK %@, but this version of Expo Go supports only SDKs %@. \n\n To successfully open this project you can: \n • Update it to a version that's compatible with your Expo Go \n • Install an older version of Expo Go that supports the project's SDK version. \n\n If you are unsure how to update the project or install a suitable version of Expo Go, check out the https://docs.expo.dev/get-started/expo-go/#sdk-versions", sdkVersionRequired, supportedSDKVersions];
+    formattedMessage = [NSString stringWithFormat:@"This project uses SDK %@, but this version of Expo Go supports only SDKs %@. \n\n To open this project: \n • Update it to SDK %@. \n • Install an older version of Expo Go that supports the project's SDK version. \n\nIf you are unsure how to update the project or install a suitable version of Expo Go, refer to the https://docs.expo.dev/get-started/expo-go/#sdk-versions", sdkVersionRequired, [self supportedSdkVersionsConjunctionString:@"and"], [self supportedSdkVersionsConjunctionString:@"or"]];
   } else if ([errorCode isEqualToString:@"NO_SDK_VERSION_SPECIFIED"]) {
     NSString *supportedSDKVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@", "];
-    formattedMessage = [NSString stringWithFormat:@"Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDKs (runtimes): %@. A development build must be used to load other runtimes.", supportedSDKVersions];
+    formattedMessage = [NSString stringWithFormat:@"Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDKs (runtimes): %@. A development build must be used to load other runtimes.\nhttps://docs.expo.dev/develop/development-builds/introduction/", supportedSDKVersions];
   } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
     formattedMessage = @"The project you requested requires a newer version of Expo Go. Please download the latest version from the App Store.";
   } else if ([errorCode isEqualToString:@"NO_COMPATIBLE_EXPERIENCE_FOUND"]){
@@ -327,10 +333,9 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
     NSString *snackSdkVersion = metadata[@"sdkVersions"][0];
     NSInteger snackSdkVersionValue = [self sdkVersionStringToInt: snackSdkVersion];
     NSArray *supportedSdkVersions = [EXVersions sharedInstance].versions[@"sdkVersions"];
-    NSString *supportedSDKVersionsString = [supportedSdkVersions componentsJoinedByString:@", "];
     NSInteger latestSupportedSdkVersionValue = [self sdkVersionStringToInt: supportedSdkVersions[0]];
 
-    formattedMessage = [NSString stringWithFormat:@"The snack \"%@\" was found, but it is not compatible with your version of Expo Go. It was released for SDK %@, but your Expo Go supports only SDKs %@.", fullName, snackSdkVersion, supportedSDKVersionsString];
+    formattedMessage = [NSString stringWithFormat:@"The snack \"%@\" was found, but it is not compatible with your version of Expo Go. It was released for SDK %@, but your Expo Go supports only SDKs %@.", fullName, snackSdkVersion, [self supportedSdkVersionsConjunctionString:@"and"]];
 
     if (snackSdkVersionValue > latestSupportedSdkVersionValue) {
       formattedMessage = [NSString stringWithFormat:@"%@\n\nYou need to update your Expo Go app in order to run this snack.", formattedMessage];
@@ -361,6 +366,7 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
   NSDictionary *linkMappings = @{
     @"https://docs.expo.dev/get-started/expo-go/#sdk-versions": @"SDK Versions Guide",
     @"https://snack.expo.dev": @"Expo Snack website",
+    @"https://docs.expo.dev/develop/development-builds/introduction/": @"Learn more about development builds",
   };
   NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:errorString];
 

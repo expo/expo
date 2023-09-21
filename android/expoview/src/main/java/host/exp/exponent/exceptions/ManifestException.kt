@@ -7,6 +7,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.lang.Exception
+import java.lang.NumberFormatException
 
 class ManifestException : ExponentException {
   private val manifestUrl: String
@@ -49,6 +50,14 @@ class ManifestException : ExponentException {
       Constants.INITIAL_URL -> "Could not load app.$extraMessage"
       else -> {
         var formattedMessage = "Could not load $manifestUrl.$extraMessage"
+        val supportedSdks = Constants.SDK_VERSIONS_LIST.map {
+          it.substring(0, it.indexOf('.')).toInt()
+        }.sorted()
+        val supportedSdksString = { conjunction : String ->
+          supportedSdks.subList(0, supportedSdks.size - 1)
+            .joinToString(", ") + " $conjunction ${supportedSdks.last()}"
+        }
+
         if (errorJSON != null) {
           try {
             val errorCode = errorJSON!!.getString("errorCode")
@@ -65,20 +74,17 @@ class ManifestException : ExponentException {
                 val sdkVersionRequired = availableSDKVersions.getString(0).let {
                   it.substring(0, it.indexOf('.'))
                 }
-                val supportedSdks = Constants.SDK_VERSIONS_LIST.map {
-                  it.substring(0, it.indexOf('.')).toInt()
-                }.sorted().joinToString(", ")
 
                 formattedMessage =
-                  "This project was set to use SDK $sdkVersionRequired, but this version of Expo Go supports only SDKs $supportedSdks.<br><br>" +
-                  "To successfully open this project you can:<br>" +
-                  "• Update it to a version that's compatible with your Expo Go<br>" +
-                  "• Install an older version of Expo Go that supports the project's SDK version.<br><br>" +
-                  "If you are unsure how to update the project or install a suitable version of Expo Go, check out the <a href='https://docs.expo.dev/get-started/expo-go/#sdk-versions'>SDK Versions Guide</a>."
+                  "This project uses SDK $sdkVersionRequired, but this version of Expo Go supports only SDKs ${supportedSdksString("and")}.<br><br>" +
+                    "To open this project:<br>" +
+                    "• Update it to SDK ${supportedSdksString("or")}.<br>" +
+                    "• Install an older version of Expo Go that supports the project's SDK version.<br><br>" +
+                    "If you are unsure how to update the project or install a suitable version of Expo Go, refer to the <a href='https://docs.expo.dev/get-started/expo-go/#sdk-versions'>SDK Versions Guide</a>."
               }
-              "NO_SDK_VERSION_SPECIFIED" -> {
+              "SNACK_NOT_FOUND_FOR_SDK_VERSION" -> {
                 formattedMessage =
-                  "Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDKs (runtimes): " + Constants.SDK_VERSIONS_LIST.joinToString() + ". A development build must be used to load other runtimes."
+                  "Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDKs (runtimes): " + Constants.SDK_VERSIONS_LIST.joinToString() + ". A development build must be used to load other runtimes.<br><a href='https://docs.expo.dev/develop/development-builds/introduction/'>Learn more about development builds</a>."
               }
               "EXPERIENCE_SDK_VERSION_TOO_NEW" ->
                 formattedMessage =
@@ -95,17 +101,22 @@ class ManifestException : ExponentException {
               "SNACK_NOT_FOUND_FOR_SDK_VERSION" -> run closure@{
                 val metadata = errorJSON!!.getJSONObject("metadata")
                 val fullName = metadata["fullName"] ?: ""
-                val snackSdkVersion = (metadata["sdkVersions"] as? JSONArray)?.get(0) as? String ?: "unknown"
+                val snackSdkVersion =
+                  (metadata["sdkVersions"] as? JSONArray)?.get(0) as? String ?: "unknown"
 
-                if (snackSdkVersion == "unknown") {
+                if (snackSdkVersion == "unknown" || snackSdkVersion.indexOf(".") == -1) {
                   formattedMessage = rawMessage
                   return@closure
                 }
-                val snackSdkVersionValue = Integer.parseInt(snackSdkVersion.substring(0, snackSdkVersion.indexOf(".")))
-                val supportedSdks = Constants.SDK_VERSIONS_LIST.map {
-                  it.substring(0, it.indexOf('.')).toInt()
-                }.sorted()
-                formattedMessage = "The snack \"${fullName}\" was found, but it is not compatible with your version of Expo Go. It was released for SDK $snackSdkVersionValue, but your Expo Go supports only SDKs ${supportedSdks.joinToString(", ")}."
+
+                val snackSdkVersionValue = try {
+                  Integer.parseInt(snackSdkVersion.substring(0, snackSdkVersion.indexOf(".")))
+                } catch (e: NumberFormatException) {
+                  formattedMessage = rawMessage
+                  return@closure
+                }
+                formattedMessage =
+                  "The snack \"${fullName}\" was found, but it is not compatible with your version of Expo Go. It was released for SDK $snackSdkVersionValue, but your Expo Go supports only SDKs ${supportedSdksString("and")}."
                 formattedMessage += if (supportedSdks.last() < snackSdkVersionValue) {
                   "<br><br>You need to update your Expo Go app in order to run this Snack."
                 } else {
