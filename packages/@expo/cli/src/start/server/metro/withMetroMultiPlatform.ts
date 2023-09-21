@@ -201,6 +201,9 @@ export function withExtendedResolver(
     isModern: false,
   }).map((v) => '.' + v);
 
+  const sourceExtsEndsWithRegex = new RegExp(`(${sourceExts.join('|')})$`);
+  const sourceExtsWithoutMjsEndsWithRegex = new RegExp(`(${sourceExtsWithoutMjs.join('|')})$`);
+
   return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
@@ -307,6 +310,7 @@ export function withExtendedResolver(
 
       let result: Resolution | null = null;
       let sources = sourceExts;
+      let sourcesRegExp = sourceExtsEndsWithRegex;
       // moduleName.includes('event-target-shim') &&
       // context.originModulePath.includes(path.sep + 'react-native' + path.sep)
       //   ? sourceExtsWithoutMjs
@@ -319,6 +323,7 @@ export function withExtendedResolver(
         context.originModulePath.includes(path.sep + 'react-native' + path.sep)
       ) {
         sources = sourceExtsWithoutMjs;
+        sourcesRegExp = sourceExtsWithoutMjsEndsWithRegex;
         context.sourceExts = context.sourceExts.filter((f) => !f.includes('mjs'));
         debug('Skip mjs support for event-target-shim in:', context.originModulePath);
       }
@@ -382,48 +387,49 @@ export function withExtendedResolver(
 
       let fp: string = '';
 
-      if (moduleName !== 'event-target-shim') {
-        // console.log('t', moduleName);
-        fp = otherResolve.sync(moduleName, {
-          basedir: path.dirname(context.originModulePath),
-          extensions: sources,
-          moduleDirectory: ['packages', 'node_modules'],
-          packageFilter(pkg) {
-            // set the pkg.main to the first available field in context.mainFields
-            for (const field of context.mainFields) {
-              if (pkg[field]) {
-                pkg.main = pkg[field];
-                break;
-              }
+      // if (moduleName !== 'event-target-shim') {
+      // console.log('t', moduleName);
+      fp = otherResolve.sync(moduleName, {
+        basedir: path.dirname(context.originModulePath),
+        extensions: sources,
+        preserveSymlinks: false,
+        // moduleDirectory: ['packages', 'node_modules'],
+        packageFilter(pkg) {
+          // set the pkg.main to the first available field in context.mainFields
+          for (const field of context.mainFields) {
+            if (pkg[field]) {
+              pkg.main = pkg[field];
+              break;
             }
-            return pkg;
-          },
-        });
+          }
+          return pkg;
+        },
+      });
 
-        if ([...context.assetExts.values()].some((asset) => fp.endsWith(asset))) {
-          // console.log('BOXBOXBOX', fp);
-          result = {
-            type: 'assetFiles',
-            filePaths: [fp],
-          };
-        } else {
-          result = {
-            type: 'sourceFile',
-            filePath: fp,
-          };
-        }
-
-        return result;
+      if (sourcesRegExp.test(fp)) {
+        result = {
+          type: 'sourceFile',
+          filePath: fp,
+        };
+      } else {
+        // TODO: Asset extensions...
+        result = {
+          type: 'assetFiles',
+          filePaths: [fp],
+        };
       }
-      result ??= doResolve(moduleName);
+
+      // return result;
+      // }
+      // result ??= doResolve(moduleName);
 
       if (result) {
-        if (result.type !== 'sourceFile') {
-          console.log('??', moduleName, fp, result);
-        }
-        if (result.type === 'sourceFile' && fp && fp !== result.filePath) {
-          console.log('RN >', moduleName, fp, result.filePath, sources);
-        }
+        // if (result.type !== 'sourceFile') {
+        //   console.log('??', moduleName, fp, result);
+        // }
+        // if (result.type === 'sourceFile' && fp && fp !== result.filePath) {
+        //   console.log('RN >', moduleName, fp, result.filePath, sources);
+        // }
 
         // Replace the web resolver with the original one.
         // This is basically an alias for web-only.
