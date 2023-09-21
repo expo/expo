@@ -82,4 +82,3 @@ var View = React.forwardRef(function (_ref, forwardedRef) {
 });
 View.displayName = 'View';
 module.exports = View;
-//# sourceMappingURL=View.js.map

@@ -4,4 +4,3 @@ var VirtualizedListContextResetter = require('@react-native/virtualized-lists').
 module.exports = {
   VirtualizedListContextResetter: VirtualizedListContextResetter
 };
-//# sourceMappingURL=VirtualizedListContext.js.map

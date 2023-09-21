@@ -144,4 +144,3 @@ var styles = _StyleSheet.default.create({
 });
 var _default = LogBoxInspectorCodeFrame;
 exports.default = _default;
-//# sourceMappingURL=LogBoxInspectorCodeFrame.js.map

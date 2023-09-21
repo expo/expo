@@ -215,4 +215,3 @@ var Performance = function () {
   return Performance;
 }();
 exports.default = Performance;
-//# sourceMappingURL=Performance.js.map

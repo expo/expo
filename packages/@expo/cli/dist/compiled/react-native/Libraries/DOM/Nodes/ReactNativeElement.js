@@ -77,4 +77,3 @@ var ReactNativeElement = function (_ReadOnlyElement) {
   return ReactNativeElement;
 }(_ReadOnlyElement2.default);
 exports.default = ReactNativeElement;
-//# sourceMappingURL=ReactNativeElement.js.map

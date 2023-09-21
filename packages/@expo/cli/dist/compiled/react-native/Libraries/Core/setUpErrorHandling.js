@@ -13,4 +13,3 @@ if (!global.__fbDisableExceptionsManager) {
   var ErrorUtils = require('../vendor/core/ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
 }
-//# sourceMappingURL=setUpErrorHandling.js.map

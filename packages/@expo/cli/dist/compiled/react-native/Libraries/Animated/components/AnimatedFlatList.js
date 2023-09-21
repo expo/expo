@@ -18,4 +18,3 @@ var FlatListWithEventThrottle = React.forwardRef(function (props, ref) {
 });
 var _default = (0, _createAnimatedComponent.default)(FlatListWithEventThrottle);
 exports.default = _default;
-//# sourceMappingURL=AnimatedFlatList.js.map

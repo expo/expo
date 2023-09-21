@@ -174,4 +174,3 @@ var AnimatedNode = function () {
   return AnimatedNode;
 }();
 exports.default = AnimatedNode;
-//# sourceMappingURL=AnimatedNode.js.map

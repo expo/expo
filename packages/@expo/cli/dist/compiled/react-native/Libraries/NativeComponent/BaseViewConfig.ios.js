@@ -329,4 +329,3 @@ var PlatformBaseViewConfigIos = {
 };
 var _default = PlatformBaseViewConfigIos;
 exports.default = _default;
-//# sourceMappingURL=BaseViewConfig.ios.js.map

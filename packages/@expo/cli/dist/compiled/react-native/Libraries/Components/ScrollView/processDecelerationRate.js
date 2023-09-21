@@ -15,4 +15,3 @@ function processDecelerationRate(decelerationRate) {
   return decelerationRate;
 }
 module.exports = processDecelerationRate;
-//# sourceMappingURL=processDecelerationRate.js.map

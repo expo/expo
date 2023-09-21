@@ -108,4 +108,3 @@ var ImageViewNativeComponent = NativeComponentRegistry.get('RCTImageView', funct
 });
 var _default = ImageViewNativeComponent;
 exports.default = _default;
-//# sourceMappingURL=ImageViewNativeComponent.js.map

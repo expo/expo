@@ -213,4 +213,3 @@ function showCompileError() {
   throw error;
 }
 module.exports = HMRClient;
-//# sourceMappingURL=HMRClient.js.map

@@ -541,4 +541,3 @@ var styles = StyleSheet.create({
   }
 });
 module.exports = NetworkOverlay;
-//# sourceMappingURL=NetworkOverlay.js.map

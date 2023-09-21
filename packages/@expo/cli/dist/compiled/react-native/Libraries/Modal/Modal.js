@@ -147,4 +147,3 @@ var styles = StyleSheet.create({
 });
 var ExportedModal = (_ModalInjection$unsta = _ModalInjection.default.unstable_Modal) != null ? _ModalInjection$unsta : Modal;
 module.exports = ExportedModal;
-//# sourceMappingURL=Modal.js.map

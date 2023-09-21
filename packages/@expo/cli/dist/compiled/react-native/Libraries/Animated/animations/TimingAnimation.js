@@ -124,4 +124,3 @@ var TimingAnimation = function (_Animation) {
   return TimingAnimation;
 }(_Animation2.default);
 exports.default = TimingAnimation;
-//# sourceMappingURL=TimingAnimation.js.map

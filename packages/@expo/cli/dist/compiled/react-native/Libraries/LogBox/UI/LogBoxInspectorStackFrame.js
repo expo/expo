@@ -93,4 +93,3 @@ var styles = _StyleSheet.default.create({
 });
 var _default = LogBoxInspectorStackFrame;
 exports.default = _default;
-//# sourceMappingURL=LogBoxInspectorStackFrame.js.map

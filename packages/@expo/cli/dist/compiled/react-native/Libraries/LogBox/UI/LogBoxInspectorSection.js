@@ -50,4 +50,3 @@ var styles = _StyleSheet.default.create({
 });
 var _default = LogBoxInspectorSection;
 exports.default = _default;
-//# sourceMappingURL=LogBoxInspectorSection.js.map

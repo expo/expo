@@ -76,4 +76,3 @@ if (!initialDims) {
 Dimensions.set(initialDims);
 var _default = Dimensions;
 exports.default = _default;
-//# sourceMappingURL=Dimensions.js.map

@@ -189,4 +189,3 @@ var styles = _StyleSheet.default.create({
   }
 });
 module.exports = DrawerLayoutAndroid;
-//# sourceMappingURL=DrawerLayoutAndroid.android.js.map

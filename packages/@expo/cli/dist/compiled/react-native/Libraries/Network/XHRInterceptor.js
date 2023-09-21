@@ -96,4 +96,3 @@ var XHRInterceptor = {
   }
 };
 module.exports = XHRInterceptor;
-//# sourceMappingURL=XHRInterceptor.js.map

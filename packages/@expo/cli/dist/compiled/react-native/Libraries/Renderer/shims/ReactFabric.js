@@ -13,4 +13,3 @@ if (global.RN$Bridgeless) {
   _ReactNativePrivateInterface.BatchedBridge.registerCallableModule('ReactFabric', ReactFabric);
 }
 module.exports = ReactFabric;
-//# sourceMappingURL=ReactFabric.js.map

@@ -114,4 +114,3 @@ function createPressabilityConfig(_ref) {
 }
 TouchableWithoutFeedback.displayName = 'TouchableWithoutFeedback';
 module.exports = TouchableWithoutFeedback;
-//# sourceMappingURL=TouchableWithoutFeedback.js.map

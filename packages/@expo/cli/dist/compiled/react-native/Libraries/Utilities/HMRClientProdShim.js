@@ -10,4 +10,3 @@ var HMRClientProdShim = {
   log: function log() {}
 };
 module.exports = HMRClientProdShim;
-//# sourceMappingURL=HMRClientProdShim.js.map

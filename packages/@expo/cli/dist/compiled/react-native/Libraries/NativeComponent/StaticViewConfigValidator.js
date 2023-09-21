@@ -88,4 +88,3 @@ function accumulateDifferences(differences, path, nativeObject, staticObject) {
 function ifObject(value) {
   return typeof value === 'object' && !Array.isArray(value) ? value : null;
 }
-//# sourceMappingURL=StaticViewConfigValidator.js.map

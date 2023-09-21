@@ -174,4 +174,3 @@ if (__DEV__) {
 }
 var _default = LogBox;
 exports.default = _default;
-//# sourceMappingURL=LogBox.js.map

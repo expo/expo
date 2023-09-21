@@ -44,4 +44,3 @@ polyfillGlobal('AbortController', function () {
 polyfillGlobal('AbortSignal', function () {
   return require('abort-controller/dist/abort-controller').AbortSignal;
 });
-//# sourceMappingURL=setUpXHR.js.map

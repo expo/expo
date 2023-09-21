@@ -24,4 +24,3 @@ module.exports = function getInspectorDataForViewAtPoint(inspectedView, location
     }
   }
 };
-//# sourceMappingURL=getInspectorDataForViewAtPoint.js.map

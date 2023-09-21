@@ -36,4 +36,3 @@ var RCTLog = {
   }
 };
 module.exports = RCTLog;
-//# sourceMappingURL=RCTLog.js.map

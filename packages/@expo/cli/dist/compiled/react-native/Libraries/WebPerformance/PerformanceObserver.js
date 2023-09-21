@@ -217,4 +217,3 @@ function difference(a, b) {
     return !b.has(x);
   }));
 }
-//# sourceMappingURL=PerformanceObserver.js.map

@@ -9,4 +9,3 @@ module.exports = {
     _NativeDialogManagerAndroid.default.showAlert(args, emptyCallback, callback || emptyCallback);
   }
 };
-//# sourceMappingURL=RCTAlertManager.android.js.map

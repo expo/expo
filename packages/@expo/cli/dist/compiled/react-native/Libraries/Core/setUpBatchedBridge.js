@@ -44,4 +44,3 @@ if (__DEV__) {
     return require('../Utilities/HMRClientProdShim');
   });
 }
-//# sourceMappingURL=setUpBatchedBridge.js.map

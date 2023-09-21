@@ -22,4 +22,3 @@ var SamplingProfiler = {
   }
 };
 module.exports = SamplingProfiler;
-//# sourceMappingURL=SamplingProfiler.js.map

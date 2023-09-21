@@ -29,4 +29,3 @@ var Platform = {
   }
 };
 module.exports = Platform;
-//# sourceMappingURL=Platform.ios.js.map

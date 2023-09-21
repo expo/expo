@@ -70,4 +70,3 @@ var ScrollViewViewConfig = {
   }
 };
 module.exports = ScrollViewViewConfig;
-//# sourceMappingURL=ScrollViewViewConfig.js.map

@@ -10,4 +10,3 @@ function getReactTree() {
   return 'React tree dumps have been temporarily disabled while React is ' + 'upgraded to Fiber.';
 }
 module.exports = dumpReactTree;
-//# sourceMappingURL=dumpReactTree.js.map

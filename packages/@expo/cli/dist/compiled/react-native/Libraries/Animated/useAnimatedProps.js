@@ -99,4 +99,3 @@ function isFabricInstance(instance) {
   var _instance$getScrollRe;
   return (0, _ReactFabricPublicInstanceUtils.isPublicInstance)(instance) || (0, _ReactFabricPublicInstanceUtils.isPublicInstance)(instance == null ? void 0 : instance.getNativeScrollRef == null ? void 0 : instance.getNativeScrollRef()) || (0, _ReactFabricPublicInstanceUtils.isPublicInstance)(instance == null ? void 0 : instance.getScrollResponder == null ? void 0 : (_instance$getScrollRe = instance.getScrollResponder()) == null ? void 0 : _instance$getScrollRe.getNativeScrollRef == null ? void 0 : _instance$getScrollRe.getNativeScrollRef());
 }
-//# sourceMappingURL=useAnimatedProps.js.map

@@ -17,4 +17,3 @@ var _default = (0, _codegenNativeComponent.default)('PullToRefreshView', {
   excludedPlatforms: ['android']
 });
 exports.default = _default;
-//# sourceMappingURL=PullToRefreshViewNativeComponent.js.map

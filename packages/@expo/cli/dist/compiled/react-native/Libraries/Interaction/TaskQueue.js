@@ -119,4 +119,3 @@ var TaskQueue = function () {
   return TaskQueue;
 }();
 module.exports = TaskQueue;
-//# sourceMappingURL=TaskQueue.js.map

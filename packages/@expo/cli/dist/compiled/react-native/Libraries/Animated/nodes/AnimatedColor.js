@@ -246,4 +246,3 @@ var AnimatedColor = function (_AnimatedWithChildren) {
   return AnimatedColor;
 }(_AnimatedWithChildren2.default);
 exports.default = AnimatedColor;
-//# sourceMappingURL=AnimatedColor.js.map

@@ -47,4 +47,3 @@ var styles = _StyleSheet.default.create({
   }
 });
 module.exports = InputAccessoryView;
-//# sourceMappingURL=InputAccessoryView.js.map

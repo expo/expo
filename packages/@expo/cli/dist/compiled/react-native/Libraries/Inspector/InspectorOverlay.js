@@ -69,4 +69,3 @@ var styles = StyleSheet.create({
   }
 });
 module.exports = InspectorOverlay;
-//# sourceMappingURL=InspectorOverlay.js.map

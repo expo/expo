@@ -25,4 +25,3 @@ var FrameRateLogger = {
   }
 };
 module.exports = FrameRateLogger;
-//# sourceMappingURL=FrameRateLogger.js.map

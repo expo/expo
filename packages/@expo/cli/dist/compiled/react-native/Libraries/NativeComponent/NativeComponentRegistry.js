@@ -77,4 +77,3 @@ function unstable_hasStaticViewConfig(name) {
     native = _ref2.native;
   return !native;
 }
-//# sourceMappingURL=NativeComponentRegistry.js.map

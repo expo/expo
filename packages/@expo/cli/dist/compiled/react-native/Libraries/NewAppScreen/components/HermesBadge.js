@@ -38,4 +38,3 @@ var styles = _StyleSheet.default.create({
 });
 var _default = HermesBadge;
 exports.default = _default;
-//# sourceMappingURL=HermesBadge.js.map

@@ -180,4 +180,3 @@ var stackStyles = _StyleSheet.default.create({
 });
 var _default = LogBoxInspectorStackFrames;
 exports.default = _default;
-//# sourceMappingURL=LogBoxInspectorStackFrames.js.map

@@ -264,4 +264,3 @@ function parseLogBoxLog(args) {
     componentStack: componentStack
   });
 }
-//# sourceMappingURL=parseLogBoxLog.js.map

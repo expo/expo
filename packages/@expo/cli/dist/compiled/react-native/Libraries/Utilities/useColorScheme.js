@@ -17,4 +17,3 @@ function useColorScheme() {
     return _Appearance.default.getColorScheme();
   });
 }
-//# sourceMappingURL=useColorScheme.js.map

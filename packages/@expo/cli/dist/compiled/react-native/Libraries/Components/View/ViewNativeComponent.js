@@ -93,4 +93,3 @@ var Commands = (0, _codegenNativeCommands.default)({
 exports.Commands = Commands;
 var _default = ViewNativeComponent;
 exports.default = _default;
-//# sourceMappingURL=ViewNativeComponent.js.map

@@ -32,4 +32,3 @@ function createAnimatedComponent(Component) {
     }));
   });
 }
-//# sourceMappingURL=createAnimatedComponent.js.map

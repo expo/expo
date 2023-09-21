@@ -206,4 +206,3 @@ var verticalAlignToTextAlignVerticalMap = {
   middle: 'center'
 };
 module.exports = Text;
-//# sourceMappingURL=Text.js.map

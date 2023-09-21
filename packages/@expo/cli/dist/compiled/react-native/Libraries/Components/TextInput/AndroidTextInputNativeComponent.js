@@ -151,4 +151,3 @@ var AndroidTextInputNativeComponent = NativeComponentRegistry.get('AndroidTextIn
 });
 var _default = AndroidTextInputNativeComponent;
 exports.default = _default;
-//# sourceMappingURL=AndroidTextInputNativeComponent.js.map

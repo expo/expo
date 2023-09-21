@@ -19,4 +19,3 @@ function useMergeRefs() {
     }
   }, [].concat(refs));
 }
-//# sourceMappingURL=useMergeRefs.js.map

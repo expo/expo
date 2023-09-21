@@ -132,4 +132,3 @@ var styles = StyleSheet.create({
   }
 });
 module.exports = BoxInspector;
-//# sourceMappingURL=BoxInspector.js.map

@@ -169,4 +169,3 @@ var styles = _StyleSheet.default.create({
     right: 0
   }
 });
-//# sourceMappingURL=DevtoolsOverlay.js.map

@@ -236,4 +236,3 @@ var Touchable = React.forwardRef(function (props, hostRef) {
 });
 Touchable.displayName = 'TouchableHighlight';
 module.exports = Touchable;
-//# sourceMappingURL=TouchableHighlight.js.map

@@ -198,4 +198,3 @@ var KeyboardAvoidingView = function (_React$Component) {
 }(React.Component);
 var _default = KeyboardAvoidingView;
 exports.default = _default;
-//# sourceMappingURL=KeyboardAvoidingView.js.map

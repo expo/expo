@@ -26,4 +26,3 @@ var SceneTracker = {
   }
 };
 module.exports = SceneTracker;
-//# sourceMappingURL=SceneTracker.js.map

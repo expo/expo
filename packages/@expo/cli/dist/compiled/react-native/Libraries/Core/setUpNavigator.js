@@ -12,4 +12,3 @@ if (navigator === undefined) {
     return 'ReactNative';
   });
 }
-//# sourceMappingURL=setUpNavigator.js.map

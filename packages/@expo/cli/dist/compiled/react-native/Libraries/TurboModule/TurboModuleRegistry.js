@@ -28,4 +28,3 @@ function getEnforcing(name) {
   (0, _invariant.default)(module != null, `TurboModuleRegistry.getEnforcing(...): '${name}' could not be found. ` + 'Verify that a module by this name is registered in the native binary.');
   return module;
 }
-//# sourceMappingURL=TurboModuleRegistry.js.map

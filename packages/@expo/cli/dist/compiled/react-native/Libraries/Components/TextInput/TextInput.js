@@ -442,4 +442,3 @@ var verticalAlignToTextAlignVerticalMap = {
   middle: 'center'
 };
 module.exports = ExportedForwardRef;
-//# sourceMappingURL=TextInput.js.map

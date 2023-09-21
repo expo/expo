@@ -43,4 +43,3 @@ module.exports = {
   isRTL: i18nConstants.isRTL,
   doLeftAndRightSwapInRTL: i18nConstants.doLeftAndRightSwapInRTL
 };
-//# sourceMappingURL=I18nManager.js.map

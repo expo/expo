@@ -8,4 +8,3 @@ var _default = (0, _codegenNativeComponent.default)('ActivityIndicatorView', {
   paperComponentName: 'RCTActivityIndicatorView'
 });
 exports.default = _default;
-//# sourceMappingURL=ActivityIndicatorViewNativeComponent.js.map

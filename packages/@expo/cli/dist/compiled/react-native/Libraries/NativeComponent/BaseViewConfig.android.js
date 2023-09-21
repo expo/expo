@@ -279,4 +279,3 @@ var PlatformBaseViewConfigAndroid = {
 };
 var _default = PlatformBaseViewConfigAndroid;
 exports.default = _default;
-//# sourceMappingURL=BaseViewConfig.android.js.map

@@ -99,4 +99,3 @@ var LayoutAnimation = {
   setEnabled: setEnabled
 };
 module.exports = LayoutAnimation;
-//# sourceMappingURL=LayoutAnimation.js.map

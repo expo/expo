@@ -70,4 +70,3 @@ var PooledClass = {
   fourArgumentPooler: fourArgumentPooler
 };
 module.exports = PooledClass;
-//# sourceMappingURL=PooledClass.js.map

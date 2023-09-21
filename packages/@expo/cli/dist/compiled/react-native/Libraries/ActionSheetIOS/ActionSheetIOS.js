@@ -46,4 +46,3 @@ var ActionSheetIOS = {
   }
 };
 module.exports = ActionSheetIOS;
-//# sourceMappingURL=ActionSheetIOS.js.map

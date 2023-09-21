@@ -16,4 +16,3 @@ if (_Platform.default.OS === 'android') {
 }
 var _default = exported;
 exports.default = _default;
-//# sourceMappingURL=SafeAreaView.js.map

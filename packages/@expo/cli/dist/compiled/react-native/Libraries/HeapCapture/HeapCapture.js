@@ -16,4 +16,3 @@ var HeapCapture = {
   }
 };
 module.exports = HeapCapture;
-//# sourceMappingURL=HeapCapture.js.map

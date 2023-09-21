@@ -23,4 +23,3 @@ function isIgnored(value) {
   }
   return false;
 }
-//# sourceMappingURL=ViewConfigIgnore.js.map

@@ -72,4 +72,3 @@ if (__DEV__) {
   }(React.Component);
 }
 module.exports = YellowBox;
-//# sourceMappingURL=YellowBoxDeprecated.js.map

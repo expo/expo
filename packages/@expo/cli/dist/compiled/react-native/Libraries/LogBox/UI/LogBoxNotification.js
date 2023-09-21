@@ -203,4 +203,3 @@ var toastStyles = _StyleSheet.default.create({
 });
 var _default = LogBoxLogNotification;
 exports.default = _default;
-//# sourceMappingURL=LogBoxNotification.js.map

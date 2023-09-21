@@ -30,4 +30,3 @@ function defineLazyObjectProperty(object, name, descriptor) {
   });
 }
 module.exports = defineLazyObjectProperty;
-//# sourceMappingURL=defineLazyObjectProperty.js.map

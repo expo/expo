@@ -9,4 +9,3 @@ var _default = (0, _codegenNativeComponent.default)('ModalHostView', {
   paperComponentName: 'RCTModalHostView'
 });
 exports.default = _default;
-//# sourceMappingURL=RCTModalHostViewNativeComponent.js.map

@@ -200,4 +200,3 @@ var styles = _StyleSheet.default.create({
 });
 var _default = ScrollViewStickyHeaderWithForwardedRef;
 exports.default = _default;
-//# sourceMappingURL=ScrollViewStickyHeader.js.map

@@ -8,4 +8,3 @@ var _default = (0, _codegenNativeComponent.default)('AndroidProgressBar', {
   interfaceOnly: true
 });
 exports.default = _default;
-//# sourceMappingURL=ProgressBarAndroidNativeComponent.js.map

@@ -38,4 +38,3 @@ if (NativeModule != null) {
 }
 var _default = NativeBlobModule;
 exports.default = _default;
-//# sourceMappingURL=NativeBlobModule.js.map

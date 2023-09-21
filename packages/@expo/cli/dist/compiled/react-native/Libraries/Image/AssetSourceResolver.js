@@ -98,4 +98,3 @@ var AssetSourceResolver = function () {
 }();
 AssetSourceResolver.pickScale = pickScale;
 module.exports = AssetSourceResolver;
-//# sourceMappingURL=AssetSourceResolver.js.map

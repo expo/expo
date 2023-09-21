@@ -4998,4 +4998,3 @@ exports.stopSurface = function (containerTag) {
 exports.unmountComponentAtNode = function (containerTag) {
   this.stopSurface(containerTag);
 };
-//# sourceMappingURL=ReactFabric-prod.js.map

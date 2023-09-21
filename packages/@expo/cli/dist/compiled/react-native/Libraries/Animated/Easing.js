@@ -92,4 +92,3 @@ var Easing = {
 };
 var _default = Easing;
 exports.default = _default;
-//# sourceMappingURL=Easing.js.map

@@ -8,4 +8,3 @@ var SoundManager = {
   }
 };
 module.exports = SoundManager;
-//# sourceMappingURL=SoundManager.js.map

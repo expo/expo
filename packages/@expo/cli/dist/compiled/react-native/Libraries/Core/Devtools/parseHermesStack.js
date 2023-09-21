@@ -62,4 +62,3 @@ module.exports = function parseHermesStack(stack) {
     entries: entries
   };
 };
-//# sourceMappingURL=parseHermesStack.js.map

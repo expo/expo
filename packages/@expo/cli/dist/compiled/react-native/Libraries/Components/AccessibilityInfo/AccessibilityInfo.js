@@ -172,4 +172,3 @@ var AccessibilityInfo = {
 };
 var _default = AccessibilityInfo;
 exports.default = _default;
-//# sourceMappingURL=AccessibilityInfo.js.map

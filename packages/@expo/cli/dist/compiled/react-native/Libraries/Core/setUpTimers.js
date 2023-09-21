@@ -55,4 +55,3 @@ if (hasHermesPromiseQueuedToJSVM) {
     return require('./Timers/queueMicrotask.js').default;
   });
 }
-//# sourceMappingURL=setUpTimers.js.map

@@ -282,4 +282,3 @@ var PerformanceLogger = function () {
 function createPerformanceLogger(isLoggingForWebPerformance) {
   return new PerformanceLogger(isLoggingForWebPerformance);
 }
-//# sourceMappingURL=createPerformanceLogger.js.map

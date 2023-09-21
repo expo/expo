@@ -60,4 +60,3 @@ function performanceEntryTypeToRaw(type) {
       throw new TypeError(`performanceEntryTypeToRaw: unexpected performance entry type received: ${type}`);
   }
 }
-//# sourceMappingURL=RawPerformanceEntry.js.map

@@ -34,4 +34,3 @@ function getImageSourceProperties(imageSource) {
   }
   return object;
 }
-//# sourceMappingURL=ImageSource.js.map

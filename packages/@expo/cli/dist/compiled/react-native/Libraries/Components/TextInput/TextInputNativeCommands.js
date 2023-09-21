@@ -8,4 +8,3 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 var supportedCommands = ['focus', 'blur', 'setTextAndSelection'];
 var _default = supportedCommands;
 exports.default = _default;
-//# sourceMappingURL=TextInputNativeCommands.js.map

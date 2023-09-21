@@ -18,4 +18,3 @@ function nativeImageSource(spec) {
   };
 }
 module.exports = nativeImageSource;
-//# sourceMappingURL=nativeImageSource.js.map

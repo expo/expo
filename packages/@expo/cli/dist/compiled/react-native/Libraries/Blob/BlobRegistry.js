@@ -22,4 +22,3 @@ module.exports = {
   unregister: unregister,
   has: has
 };
-//# sourceMappingURL=BlobRegistry.js.map

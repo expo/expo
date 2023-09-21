@@ -283,4 +283,3 @@ var AnimatedInterpolation = function (_AnimatedWithChildren) {
   return AnimatedInterpolation;
 }(_AnimatedWithChildren2.default);
 exports.default = AnimatedInterpolation;
-//# sourceMappingURL=AnimatedInterpolation.js.map

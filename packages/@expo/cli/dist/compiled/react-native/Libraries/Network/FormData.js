@@ -61,4 +61,3 @@ var FormData = function () {
   return FormData;
 }();
 module.exports = FormData;
-//# sourceMappingURL=FormData.js.map

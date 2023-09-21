@@ -36,4 +36,3 @@ var ExceptionsManager = {
 };
 var _default = ExceptionsManager;
 exports.default = _default;
-//# sourceMappingURL=NativeExceptionsManager.js.map

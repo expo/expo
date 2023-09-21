@@ -70,4 +70,3 @@ var QuickPerformanceLogger = {
   }
 };
 module.exports = QuickPerformanceLogger;
-//# sourceMappingURL=QuickPerformanceLogger.js.map

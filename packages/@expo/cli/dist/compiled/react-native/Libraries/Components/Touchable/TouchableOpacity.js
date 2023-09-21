@@ -196,4 +196,3 @@ var Touchable = React.forwardRef(function (props, ref) {
 });
 Touchable.displayName = 'TouchableOpacity';
 module.exports = Touchable;
-//# sourceMappingURL=TouchableOpacity.js.map

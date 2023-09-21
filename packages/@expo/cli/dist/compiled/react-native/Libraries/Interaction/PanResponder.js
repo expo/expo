@@ -151,4 +151,3 @@ function clearInteractionHandle(interactionState, callback, event, gestureState)
 }
 var _default = PanResponder;
 exports.default = _default;
-//# sourceMappingURL=PanResponder.js.map

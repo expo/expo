@@ -19,4 +19,3 @@ function flattenStyle(style) {
   return result;
 }
 module.exports = flattenStyle;
-//# sourceMappingURL=flattenStyle.js.map

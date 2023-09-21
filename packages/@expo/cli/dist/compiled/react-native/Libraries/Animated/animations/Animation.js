@@ -56,4 +56,3 @@ var Animation = function () {
   return Animation;
 }();
 exports.default = Animation;
-//# sourceMappingURL=Animation.js.map

@@ -108,4 +108,3 @@ var messageStyles = _StyleSheet.default.create({
 });
 var _default = LogBoxInspectorMessageHeader;
 exports.default = _default;
-//# sourceMappingURL=LogBoxInspectorMessageHeader.js.map

@@ -69,4 +69,3 @@ var AnimatedMultiplication = function (_AnimatedWithChildren) {
   return AnimatedMultiplication;
 }(_AnimatedWithChildren2.default);
 exports.default = AnimatedMultiplication;
-//# sourceMappingURL=AnimatedMultiplication.js.map

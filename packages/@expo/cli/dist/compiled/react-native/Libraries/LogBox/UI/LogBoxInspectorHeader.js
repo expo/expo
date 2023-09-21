@@ -148,4 +148,3 @@ var styles = _StyleSheet.default.create({
 });
 var _default = LogBoxInspectorHeader;
 exports.default = _default;
-//# sourceMappingURL=LogBoxInspectorHeader.js.map

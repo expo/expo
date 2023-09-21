@@ -61,4 +61,3 @@ var AndroidHorizontalScrollViewNativeComponent = NativeComponentRegistry.get('An
 });
 var _default = AndroidHorizontalScrollViewNativeComponent;
 exports.default = _default;
-//# sourceMappingURL=AndroidHorizontalScrollViewNativeComponent.js.map

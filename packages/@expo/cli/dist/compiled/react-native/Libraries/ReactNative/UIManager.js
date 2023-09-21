@@ -75,4 +75,3 @@ var UIManager = Object.assign({}, UIManagerImpl, {
   }
 });
 module.exports = UIManager;
-//# sourceMappingURL=UIManager.js.map

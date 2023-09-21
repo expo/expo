@@ -13,4 +13,3 @@ var RCTEventEmitter = {
   }
 };
 module.exports = RCTEventEmitter;
-//# sourceMappingURL=RCTEventEmitter.js.map

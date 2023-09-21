@@ -36,4 +36,3 @@ var RCTNetworking = {
 };
 var _default = RCTNetworking;
 exports.default = _default;
-//# sourceMappingURL=RCTNetworking.ios.js.map

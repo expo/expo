@@ -121,4 +121,3 @@ var styles = _StyleSheet.default.create({
 });
 var _default = LogBoxMessage;
 exports.default = _default;
-//# sourceMappingURL=LogBoxMessage.js.map

@@ -160,4 +160,3 @@ var styles = _StyleSheet.default.create({
   })
 });
 module.exports = Button;
-//# sourceMappingURL=Button.js.map

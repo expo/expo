@@ -150,4 +150,3 @@ var DOMRectReadOnly = function () {
   return DOMRectReadOnly;
 }();
 exports.default = DOMRectReadOnly;
-//# sourceMappingURL=DOMRectReadOnly.js.map

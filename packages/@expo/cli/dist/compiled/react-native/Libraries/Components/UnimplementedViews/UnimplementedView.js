@@ -40,4 +40,3 @@ var styles = _StyleSheet.default.create({
   } : {}
 });
 module.exports = UnimplementedView;
-//# sourceMappingURL=UnimplementedView.js.map

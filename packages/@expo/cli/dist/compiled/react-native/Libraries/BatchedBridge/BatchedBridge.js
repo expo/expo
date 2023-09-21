@@ -7,4 +7,3 @@ Object.defineProperty(global, '__fbBatchedBridge', {
   value: BatchedBridge
 });
 module.exports = BatchedBridge;
-//# sourceMappingURL=BatchedBridge.js.map

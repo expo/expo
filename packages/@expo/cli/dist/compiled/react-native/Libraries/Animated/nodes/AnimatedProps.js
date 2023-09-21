@@ -163,4 +163,3 @@ var AnimatedProps = function (_AnimatedNode) {
   return AnimatedProps;
 }(_AnimatedNode2.default);
 exports.default = AnimatedProps;
-//# sourceMappingURL=AnimatedProps.js.map

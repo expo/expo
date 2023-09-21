@@ -5387,4 +5387,3 @@ exports.unstable_batchedUpdates = batchedUpdates;
 if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined' && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === 'function') {
   __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
 }
-//# sourceMappingURL=ReactNativeRenderer-profiling.js.map

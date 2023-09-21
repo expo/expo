@@ -10,4 +10,3 @@ var sizesDiffer = function sizesDiffer(one, two) {
   return defaultedOne !== defaultedTwo && (defaultedOne.width !== defaultedTwo.width || defaultedOne.height !== defaultedTwo.height);
 };
 module.exports = sizesDiffer;
-//# sourceMappingURL=sizesDiffer.js.map

@@ -610,4 +610,3 @@ if (__DEV__) {
     return global[__METRO_GLOBAL_PREFIX__ + "__ReactRefresh"] || metroRequire.Refresh;
   };
 }
-//# sourceMappingURL=require.js.map

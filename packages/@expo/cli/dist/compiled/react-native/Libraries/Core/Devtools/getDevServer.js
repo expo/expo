@@ -18,4 +18,3 @@ function getDevServer() {
   };
 }
 module.exports = getDevServer;
-//# sourceMappingURL=getDevServer.js.map

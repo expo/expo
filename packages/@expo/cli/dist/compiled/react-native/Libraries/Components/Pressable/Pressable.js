@@ -145,4 +145,3 @@ var MemoedPressable = React.memo(React.forwardRef(Pressable));
 MemoedPressable.displayName = 'Pressable';
 var _default = MemoedPressable;
 exports.default = _default;
-//# sourceMappingURL=Pressable.js.map

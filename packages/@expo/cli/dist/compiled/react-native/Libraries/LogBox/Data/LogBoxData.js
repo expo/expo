@@ -376,4 +376,3 @@ function withSubscription(WrappedComponent) {
   }(React.Component);
   return LogBoxStateSubscription;
 }
-//# sourceMappingURL=LogBoxData.js.map

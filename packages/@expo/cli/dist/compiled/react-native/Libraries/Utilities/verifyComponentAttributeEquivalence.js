@@ -67,4 +67,3 @@ function stringifyViewConfig(viewConfig) {
     return val;
   }, 2);
 }
-//# sourceMappingURL=verifyComponentAttributeEquivalence.js.map

@@ -40,4 +40,3 @@ if (__DEV__) {
   RCTNativeAppEventEmitter.addListener('RCTDevMenuShown', connectToDevTools);
   connectToDevTools();
 }
-//# sourceMappingURL=setUpReactDevTools.js.map

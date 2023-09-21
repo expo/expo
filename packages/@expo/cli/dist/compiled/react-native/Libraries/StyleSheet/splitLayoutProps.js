@@ -50,4 +50,3 @@ function splitLayoutProps(props) {
     inner: inner
   };
 }
-//# sourceMappingURL=splitLayoutProps.js.map

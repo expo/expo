@@ -13,4 +13,3 @@ Position.prototype.destructor = function () {
 };
 _PooledClass.default.addPoolingTo(Position, twoArgumentPooler);
 module.exports = Position;
-//# sourceMappingURL=Position.js.map

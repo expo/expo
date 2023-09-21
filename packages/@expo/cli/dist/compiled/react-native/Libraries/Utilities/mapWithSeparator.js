@@ -11,4 +11,3 @@ function mapWithSeparator(items, itemRenderer, spacerRenderer) {
   return mapped;
 }
 module.exports = mapWithSeparator;
-//# sourceMappingURL=mapWithSeparator.js.map

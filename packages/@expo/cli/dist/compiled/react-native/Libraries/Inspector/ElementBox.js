@@ -110,4 +110,3 @@ function resolveSizeInPlace(style, direction, dimension) {
   }
 }
 module.exports = ElementBox;
-//# sourceMappingURL=ElementBox.js.map

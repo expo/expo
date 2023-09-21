@@ -12,4 +12,3 @@ var _default = {
   unstable_createImageComponent: null
 };
 exports.default = _default;
-//# sourceMappingURL=ImageInjection.js.map

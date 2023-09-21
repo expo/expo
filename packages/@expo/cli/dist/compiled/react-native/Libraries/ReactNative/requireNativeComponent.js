@@ -13,4 +13,3 @@ var requireNativeComponent = function requireNativeComponent(uiViewClassName) {
 };
 var _default = requireNativeComponent;
 exports.default = _default;
-//# sourceMappingURL=requireNativeComponent.js.map

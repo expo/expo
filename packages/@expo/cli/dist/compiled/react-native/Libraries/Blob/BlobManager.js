@@ -109,4 +109,3 @@ var BlobManager = function () {
 }();
 BlobManager.isAvailable = !!_NativeBlobModule.default;
 module.exports = BlobManager;
-//# sourceMappingURL=BlobManager.js.map

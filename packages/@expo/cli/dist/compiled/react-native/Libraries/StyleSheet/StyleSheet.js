@@ -60,4 +60,3 @@ module.exports = {
     return obj;
   }
 };
-//# sourceMappingURL=StyleSheet.js.map

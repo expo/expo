@@ -219,4 +219,3 @@ var getBackgroundProp = _Platform.default.OS === 'android' ? function (backgroun
 };
 TouchableNativeFeedback.displayName = 'TouchableNativeFeedback';
 module.exports = TouchableNativeFeedback;
-//# sourceMappingURL=TouchableNativeFeedback.js.map

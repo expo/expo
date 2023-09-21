@@ -44,4 +44,3 @@ function LogBoxButton(props) {
 }
 var _default = LogBoxButton;
 exports.default = _default;
-//# sourceMappingURL=LogBoxButton.js.map

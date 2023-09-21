@@ -32,4 +32,3 @@ var CustomEvent = function (_EventPolyfill) {
 }(_EventPolyfill2.default);
 var _default = CustomEvent;
 exports.default = _default;
-//# sourceMappingURL=CustomEvent.js.map

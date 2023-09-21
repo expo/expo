@@ -157,4 +157,3 @@ var ScrollViewNativeComponent = NativeComponentRegistry.get('RCTScrollView', fun
 });
 var _default = ScrollViewNativeComponent;
 exports.default = _default;
-//# sourceMappingURL=ScrollViewNativeComponent.js.map

@@ -30,4 +30,3 @@ var StaticRenderer = function (_React$Component) {
   return StaticRenderer;
 }(React.Component);
 module.exports = StaticRenderer;
-//# sourceMappingURL=StaticRenderer.js.map

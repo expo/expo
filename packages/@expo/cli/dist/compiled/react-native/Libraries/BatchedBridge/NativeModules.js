@@ -121,4 +121,3 @@ if (global.nativeModuleProxy) {
   });
 }
 module.exports = NativeModules;
-//# sourceMappingURL=NativeModules.js.map

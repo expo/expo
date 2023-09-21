@@ -6,4 +6,3 @@ if (__DEV__) {
   TextAncestorContext.displayName = 'TextAncestorContext';
 }
 module.exports = TextAncestorContext;
-//# sourceMappingURL=TextAncestor.js.map

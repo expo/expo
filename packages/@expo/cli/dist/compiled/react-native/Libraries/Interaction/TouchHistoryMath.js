@@ -51,4 +51,3 @@ var TouchHistoryMath = {
   noCentroid: -1
 };
 module.exports = TouchHistoryMath;
-//# sourceMappingURL=TouchHistoryMath.js.map

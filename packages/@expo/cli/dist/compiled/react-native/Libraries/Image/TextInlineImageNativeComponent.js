@@ -26,4 +26,3 @@ var TextInlineImage = NativeComponentRegistry.get('RCTTextInlineImage', function
 });
 var _default = TextInlineImage;
 exports.default = _default;
-//# sourceMappingURL=TextInlineImageNativeComponent.js.map

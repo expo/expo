@@ -53,4 +53,3 @@ var NativeVirtualText = !global.RN$Bridgeless && !_UIManager.default.hasViewMana
   return (0, _ViewConfig.createViewConfig)(virtualTextViewConfig);
 });
 exports.NativeVirtualText = NativeVirtualText;
-//# sourceMappingURL=TextNativeComponent.js.map

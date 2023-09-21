@@ -22,4 +22,3 @@ require('../ReactNative/AppRegistry');
 var GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
 GlobalPerformanceLogger.markPoint('initializeCore_start', GlobalPerformanceLogger.currentTimestamp() - (Date.now() - start));
 GlobalPerformanceLogger.markPoint('initializeCore_end');
-//# sourceMappingURL=InitializeCore.js.map

@@ -17,4 +17,3 @@ var Settings = {
   }
 };
 module.exports = Settings;
-//# sourceMappingURL=Settings.android.js.map

@@ -13,4 +13,3 @@ module.exports = {
   setupFiles: [require.resolve('./jest/setup.js')],
   testEnvironment: require.resolve('./jest/react-native-env.js')
 };
-//# sourceMappingURL=jest-preset.js.map

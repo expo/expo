@@ -11,4 +11,3 @@ var _default = (0, _codegenNativeCommands.default)({
   supportedCommands: ['flashScrollIndicators', 'scrollTo', 'scrollToEnd', 'zoomToRect']
 });
 exports.default = _default;
-//# sourceMappingURL=ScrollViewCommands.js.map

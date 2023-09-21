@@ -134,4 +134,3 @@ function _validateTransform(key, value, transformation) {
   }
 }
 module.exports = processTransform;
-//# sourceMappingURL=processTransform.js.map

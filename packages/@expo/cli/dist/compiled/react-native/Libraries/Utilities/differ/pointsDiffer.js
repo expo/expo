@@ -10,4 +10,3 @@ var pointsDiffer = function pointsDiffer(one, two) {
   return one !== two && (one.x !== two.x || one.y !== two.y);
 };
 module.exports = pointsDiffer;
-//# sourceMappingURL=pointsDiffer.js.map

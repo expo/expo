@@ -73,4 +73,3 @@ var Blob = function () {
   return Blob;
 }();
 module.exports = Blob;
-//# sourceMappingURL=Blob.js.map

@@ -17,4 +17,3 @@ function composeIndexers(maybeA, maybeB) {
   var _ref;
   return maybeA == null || maybeB == null ? (_ref = maybeA != null ? maybeA : maybeB) != null ? _ref : {} : Object.assign({}, maybeA, maybeB);
 }
-//# sourceMappingURL=ViewConfig.js.map

@@ -9,4 +9,3 @@ function legacySendAccessibilityEvent(reactTag, eventType) {
   }
 }
 module.exports = legacySendAccessibilityEvent;
-//# sourceMappingURL=legacySendAccessibilityEvent.android.js.map

@@ -123,4 +123,3 @@ function copyWithSet(obj, path, value) {
   return copyWithSetImpl(obj, path, 0, value);
 }
 module.exports = getData;
-//# sourceMappingURL=getReactData.js.map

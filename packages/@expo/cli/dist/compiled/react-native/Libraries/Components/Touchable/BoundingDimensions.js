@@ -16,4 +16,3 @@ BoundingDimensions.getPooledFromElement = function (element) {
 };
 _PooledClass.default.addPoolingTo(BoundingDimensions, twoArgumentPooler);
 module.exports = BoundingDimensions;
-//# sourceMappingURL=BoundingDimensions.js.map

@@ -36,4 +36,3 @@ var BackHandler = {
   }
 };
 module.exports = BackHandler;
-//# sourceMappingURL=BackHandler.android.js.map

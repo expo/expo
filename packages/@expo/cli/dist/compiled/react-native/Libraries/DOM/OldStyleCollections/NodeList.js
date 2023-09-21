@@ -71,4 +71,3 @@ exports.default = NodeList;
 function createNodeList(elements) {
   return new NodeList(elements);
 }
-//# sourceMappingURL=NodeList.js.map

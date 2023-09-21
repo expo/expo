@@ -5,4 +5,3 @@ function dismissKeyboard() {
   TextInputState.blurTextInput(TextInputState.currentlyFocusedInput());
 }
 module.exports = dismissKeyboard;
-//# sourceMappingURL=dismissKeyboard.js.map

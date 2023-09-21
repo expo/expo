@@ -14,4 +14,3 @@ function createSquare(size) {
 function normalizeRect(rectOrSize) {
   return typeof rectOrSize === 'number' ? createSquare(rectOrSize) : rectOrSize;
 }
-//# sourceMappingURL=Rect.js.map

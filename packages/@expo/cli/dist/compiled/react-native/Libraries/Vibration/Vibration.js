@@ -73,4 +73,3 @@ var Vibration = {
   }
 };
 module.exports = Vibration;
-//# sourceMappingURL=Vibration.js.map

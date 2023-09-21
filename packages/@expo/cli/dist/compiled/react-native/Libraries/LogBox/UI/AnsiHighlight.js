@@ -81,4 +81,3 @@ var styles = _StyleSheet.default.create({
     flexDirection: 'row'
   }
 });
-//# sourceMappingURL=AnsiHighlight.js.map

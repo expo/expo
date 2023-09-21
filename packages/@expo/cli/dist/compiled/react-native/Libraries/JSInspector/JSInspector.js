@@ -11,4 +11,3 @@ var JSInspector = {
   }
 };
 module.exports = JSInspector;
-//# sourceMappingURL=JSInspector.js.map

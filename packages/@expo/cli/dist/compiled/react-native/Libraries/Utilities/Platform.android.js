@@ -26,4 +26,3 @@ var Platform = {
   }
 };
 module.exports = Platform;
-//# sourceMappingURL=Platform.android.js.map

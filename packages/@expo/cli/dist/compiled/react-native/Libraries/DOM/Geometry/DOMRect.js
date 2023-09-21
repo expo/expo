@@ -62,4 +62,3 @@ var DOMRect = function (_DOMRectReadOnly) {
   return DOMRect;
 }(_DOMRectReadOnly2.default);
 exports.default = DOMRect;
-//# sourceMappingURL=DOMRect.js.map

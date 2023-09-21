@@ -27,4 +27,3 @@ var PerformanceEntry = function () {
   return PerformanceEntry;
 }();
 exports.PerformanceEntry = PerformanceEntry;
-//# sourceMappingURL=PerformanceEntry.js.map

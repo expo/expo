@@ -114,4 +114,3 @@ module.exports = {
   unregisterInput: unregisterInput,
   isTextInput: isTextInput
 };
-//# sourceMappingURL=TextInputState.js.map

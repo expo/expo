@@ -36,4 +36,3 @@ var File = function (_Blob) {
   return File;
 }(Blob);
 module.exports = File;
-//# sourceMappingURL=File.js.map

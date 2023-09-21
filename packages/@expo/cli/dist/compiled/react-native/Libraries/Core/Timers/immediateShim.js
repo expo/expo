@@ -32,4 +32,3 @@ var immediateShim = {
   clearImmediate: clearImmediate
 };
 module.exports = immediateShim;
-//# sourceMappingURL=immediateShim.js.map

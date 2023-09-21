@@ -145,4 +145,3 @@ var styles = _StyleSheet.default.create({
   }
 });
 module.exports = AppContainer;
-//# sourceMappingURL=AppContainer.js.map

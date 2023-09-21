@@ -58,4 +58,3 @@ function fromBouncinessAndSpeed(bounciness, speed) {
     damping: dampingFromOrigamiValue(bouncyFriction)
   };
 }
-//# sourceMappingURL=SpringConfig.js.map

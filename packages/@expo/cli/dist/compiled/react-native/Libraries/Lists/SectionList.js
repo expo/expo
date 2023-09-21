@@ -100,4 +100,3 @@ var SectionList = function (_React$PureComponent) {
   return SectionList;
 }(React.PureComponent);
 exports.default = SectionList;
-//# sourceMappingURL=SectionList.js.map

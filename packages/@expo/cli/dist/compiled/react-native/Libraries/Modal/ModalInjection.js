@@ -6,4 +6,3 @@ var _default = {
   unstable_Modal: null
 };
 exports.default = _default;
-//# sourceMappingURL=ModalInjection.js.map

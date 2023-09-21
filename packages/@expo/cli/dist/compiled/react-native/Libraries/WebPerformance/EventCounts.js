@@ -66,4 +66,3 @@ var EventCounts = function () {
   return EventCounts;
 }();
 exports.default = EventCounts;
-//# sourceMappingURL=EventCounts.js.map

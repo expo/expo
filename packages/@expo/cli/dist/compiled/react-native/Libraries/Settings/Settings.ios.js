@@ -50,4 +50,3 @@ var Settings = {
 };
 _RCTDeviceEventEmitter.default.addListener('settingsUpdated', Settings._sendObservations.bind(Settings));
 module.exports = Settings;
-//# sourceMappingURL=Settings.ios.js.map

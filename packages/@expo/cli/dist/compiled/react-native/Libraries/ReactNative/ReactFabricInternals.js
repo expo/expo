@@ -4,4 +4,3 @@ var createReactNativeComponentClass = require('../Renderer/shims/createReactNati
 module.exports = {
   createReactNativeComponentClass: createReactNativeComponentClass
 };
-//# sourceMappingURL=ReactFabricInternals.js.map

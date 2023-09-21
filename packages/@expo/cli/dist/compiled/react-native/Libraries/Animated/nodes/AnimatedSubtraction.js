@@ -69,4 +69,3 @@ var AnimatedSubtraction = function (_AnimatedWithChildren) {
   return AnimatedSubtraction;
 }(_AnimatedWithChildren2.default);
 exports.default = AnimatedSubtraction;
-//# sourceMappingURL=AnimatedSubtraction.js.map

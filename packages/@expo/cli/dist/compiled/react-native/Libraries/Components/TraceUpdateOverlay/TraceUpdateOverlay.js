@@ -115,4 +115,3 @@ var styles = _StyleSheet.default.create({
     right: 0
   }
 });
-//# sourceMappingURL=TraceUpdateOverlay.js.map

@@ -18,4 +18,3 @@ function queueMicrotask(callback) {
     }, 0);
   });
 }
-//# sourceMappingURL=queueMicrotask.js.map

@@ -86,4 +86,3 @@ var RefreshControl = function (_React$Component) {
   return RefreshControl;
 }(React.Component);
 module.exports = RefreshControl;
-//# sourceMappingURL=RefreshControl.js.map

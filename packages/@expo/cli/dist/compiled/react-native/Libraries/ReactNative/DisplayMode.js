@@ -20,4 +20,3 @@ function coerceDisplayMode(value) {
 }
 var _default = DisplayMode;
 exports.default = _default;
-//# sourceMappingURL=DisplayMode.js.map

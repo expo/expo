@@ -51,4 +51,3 @@ exports.default = HTMLCollection;
 function createHTMLCollection(elements) {
   return new HTMLCollection(elements);
 }
-//# sourceMappingURL=HTMLCollection.js.map

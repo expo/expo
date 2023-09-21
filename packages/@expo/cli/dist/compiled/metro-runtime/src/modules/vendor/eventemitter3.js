@@ -159,4 +159,3 @@ EventEmitter.EventEmitter = EventEmitter;
 if ("undefined" !== typeof module) {
   module.exports = EventEmitter;
 }
-//# sourceMappingURL=eventemitter3.js.map

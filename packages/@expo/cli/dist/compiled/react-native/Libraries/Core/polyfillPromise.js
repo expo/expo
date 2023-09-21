@@ -17,4 +17,3 @@ if ((_global = global) != null && (_global$HermesInterna = _global.HermesInterna
     return require('../Promise');
   });
 }
-//# sourceMappingURL=polyfillPromise.js.map

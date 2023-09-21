@@ -14,4 +14,3 @@ function normalizeColor(color) {
   }
 }
 module.exports = normalizeColor;
-//# sourceMappingURL=normalizeColor.js.map

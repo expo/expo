@@ -11,4 +11,3 @@ var States = {
   RESPONDER_ACTIVE_LONG_PRESS_OUT: 'RESPONDER_ACTIVE_LONG_PRESS_OUT',
   ERROR: 'ERROR'
 };
-//# sourceMappingURL=Touchable.flow.js.map

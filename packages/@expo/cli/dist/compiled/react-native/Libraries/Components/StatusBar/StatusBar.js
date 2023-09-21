@@ -216,4 +216,3 @@ StatusBar._updatePropsStack = function () {
   });
 };
 module.exports = StatusBar;
-//# sourceMappingURL=StatusBar.js.map

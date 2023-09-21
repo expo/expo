@@ -283,4 +283,3 @@ if (!_NativeTiming.default) {
 }
 BatchedBridge.setReactNativeMicrotasksCallback(JSTimers.callReactNativeMicrotasks);
 module.exports = ExportedJSTimers;
-//# sourceMappingURL=JSTimers.js.map

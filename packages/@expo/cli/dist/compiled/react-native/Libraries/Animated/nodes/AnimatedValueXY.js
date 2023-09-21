@@ -159,4 +159,3 @@ var AnimatedValueXY = function (_AnimatedWithChildren) {
   return AnimatedValueXY;
 }(_AnimatedWithChildren2.default);
 exports.default = AnimatedValueXY;
-//# sourceMappingURL=AnimatedValueXY.js.map

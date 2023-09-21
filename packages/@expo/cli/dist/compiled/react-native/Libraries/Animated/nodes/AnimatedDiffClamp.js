@@ -73,4 +73,3 @@ var AnimatedDiffClamp = function (_AnimatedWithChildren) {
   return AnimatedDiffClamp;
 }(_AnimatedWithChildren2.default);
 exports.default = AnimatedDiffClamp;
-//# sourceMappingURL=AnimatedDiffClamp.js.map

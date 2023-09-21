@@ -34,4 +34,3 @@ var ReactNativeRuntimeDiagnostics = {
   }
 };
 module.exports = ReactNativeRuntimeDiagnostics;
-//# sourceMappingURL=ReactNativeRuntimeDiagnostics.js.map

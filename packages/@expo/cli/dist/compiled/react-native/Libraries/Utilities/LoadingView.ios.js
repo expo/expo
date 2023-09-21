@@ -27,4 +27,3 @@ module.exports = {
     _NativeDevLoadingView.default && _NativeDevLoadingView.default.hide();
   }
 };
-//# sourceMappingURL=LoadingView.ios.js.map

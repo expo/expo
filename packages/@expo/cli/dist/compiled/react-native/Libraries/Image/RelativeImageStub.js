@@ -11,4 +11,3 @@ module.exports = AssetRegistry.registerAsset({
   name: 'icon',
   type: 'png'
 });
-//# sourceMappingURL=RelativeImageStub.js.map

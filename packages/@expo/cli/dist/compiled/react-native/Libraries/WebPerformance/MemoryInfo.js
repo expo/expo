@@ -33,4 +33,3 @@ var MemoryInfo = function () {
   return MemoryInfo;
 }();
 exports.default = MemoryInfo;
-//# sourceMappingURL=MemoryInfo.js.map

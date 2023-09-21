@@ -12,4 +12,3 @@ var DynamicColorIOS = function DynamicColorIOS(tuple) {
   });
 };
 exports.DynamicColorIOS = DynamicColorIOS;
-//# sourceMappingURL=PlatformColorValueTypesIOS.ios.js.map

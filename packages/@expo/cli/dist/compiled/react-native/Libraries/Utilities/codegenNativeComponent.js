@@ -25,4 +25,3 @@ function codegenNativeComponent(componentName, options) {
 }
 var _default = codegenNativeComponent;
 exports.default = _default;
-//# sourceMappingURL=codegenNativeComponent.js.map

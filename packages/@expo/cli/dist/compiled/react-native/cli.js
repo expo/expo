@@ -6,4 +6,3 @@ if (require.main === module) {
   cli.run();
 }
 module.exports = cli;
-//# sourceMappingURL=cli.js.map

@@ -83,4 +83,3 @@ var styles = _StyleSheet.default.create({
 });
 var _default = ActivityIndicatorWithRef;
 exports.default = _default;
-//# sourceMappingURL=ActivityIndicator.js.map

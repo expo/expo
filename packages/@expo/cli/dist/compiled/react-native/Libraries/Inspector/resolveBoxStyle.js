@@ -73,4 +73,3 @@ function resolveBoxStyle(prefix, style) {
   return hasParts ? result : null;
 }
 module.exports = resolveBoxStyle;
-//# sourceMappingURL=resolveBoxStyle.js.map

@@ -24,6 +24,21 @@ export async function build(task, opts) {
 
 // Prebuilt modules
 
+export async function compile__react_native_virtualized_lists(task, opts) {
+  const rnDir = path.join(require.resolve('@react-native/virtualized-lists/package.json'), '..');
+  const sourceDir = path.relative(__dirname, rnDir) + '/**/*.+(js|jsx|json)';
+
+  await task
+    .source(sourceDir, {
+      ignore: [
+        ...['node_modules/**', '**/__tests__/**', '**/__mocks__/**', '**/__flowtests__/**'].map(
+          (p) => path.relative(__dirname, rnDir) + '/' + p
+        ),
+      ],
+    })
+    .metroBabel('cli', { dev: opts.dev })
+    .target('dist/compiled/@react-native/virtualized-lists');
+}
 export async function compile_metro_runtime(task, opts) {
   const rnDir = path.join(require.resolve('metro-runtime/package.json'), '..');
   const sourceDir = path.relative(__dirname, rnDir) + '/**/*.+(js|jsx|json)';
@@ -116,6 +131,7 @@ export default async function (task) {
   await task.clear('dist/compiled');
   await task.start('compile_react_native', opts);
   await task.start('compile_metro_runtime', opts);
+  await task.start('compile__react_native_virtualized_lists', opts);
 
   await task.clear('build');
   await task.start('build', opts);

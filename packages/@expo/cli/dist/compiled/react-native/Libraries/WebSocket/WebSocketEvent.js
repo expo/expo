@@ -8,4 +8,3 @@ var WebSocketEvent = (0, _createClass2.default)(function WebSocketEvent(type, ev
   Object.assign(this, eventInitDict);
 });
 module.exports = WebSocketEvent;
-//# sourceMappingURL=WebSocketEvent.js.map

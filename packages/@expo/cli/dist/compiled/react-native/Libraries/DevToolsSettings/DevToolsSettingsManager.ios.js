@@ -30,4 +30,3 @@ var DevToolsSettingsManager = {
   }
 };
 module.exports = DevToolsSettingsManager;
-//# sourceMappingURL=DevToolsSettingsManager.ios.js.map

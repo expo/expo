@@ -25,4 +25,3 @@ var MultilineTextInputNativeComponent = NativeComponentRegistry.get('RCTMultilin
 });
 var _default = MultilineTextInputNativeComponent;
 exports.default = _default;
-//# sourceMappingURL=RCTMultilineTextInputNativeComponent.js.map

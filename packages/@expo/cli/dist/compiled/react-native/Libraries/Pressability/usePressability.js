@@ -25,4 +25,3 @@ function usePressability(config) {
   }, [pressability]);
   return pressability == null ? null : pressability.getEventHandlers();
 }
-//# sourceMappingURL=usePressability.js.map

@@ -70,4 +70,3 @@ var _LogBoxInspectorContainer = function (_React$Component) {
 exports._LogBoxInspectorContainer = _LogBoxInspectorContainer;
 var _default = LogBoxData.withSubscription(_LogBoxInspectorContainer);
 exports.default = _default;
-//# sourceMappingURL=LogBoxInspectorContainer.js.map

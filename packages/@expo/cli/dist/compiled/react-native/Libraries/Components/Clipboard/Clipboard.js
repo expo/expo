@@ -8,4 +8,3 @@ module.exports = {
     _NativeClipboard.default.setString(content);
   }
 };
-//# sourceMappingURL=Clipboard.js.map

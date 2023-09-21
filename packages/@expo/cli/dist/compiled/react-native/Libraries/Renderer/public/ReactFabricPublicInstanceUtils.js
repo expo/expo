@@ -8,4 +8,3 @@ function isPublicInstance(maybeInstance) {
 function isLegacyFabricInstance(maybeInstance) {
   return maybeInstance != null && maybeInstance['_internalInstanceHandle'] != null && maybeInstance['_internalInstanceHandle'].stateNode != null && maybeInstance['_internalInstanceHandle'].stateNode.canonical != null;
 }
-//# sourceMappingURL=ReactFabricPublicInstanceUtils.js.map

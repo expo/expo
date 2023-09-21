@@ -125,4 +125,3 @@ function getProcessorForType(typeName) {
   return null;
 }
 module.exports = getNativeComponentAttributes;
-//# sourceMappingURL=getNativeComponentAttributes.js.map

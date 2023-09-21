@@ -35,4 +35,3 @@ var ReactNativeViewAttributes = {
   RCTView: RCTView
 };
 module.exports = ReactNativeViewAttributes;
-//# sourceMappingURL=ReactNativeViewAttributes.js.map

@@ -19,4 +19,3 @@ var VERTICAL = Object.freeze({
   horizontal: false
 });
 exports.VERTICAL = VERTICAL;
-//# sourceMappingURL=ScrollViewContext.js.map

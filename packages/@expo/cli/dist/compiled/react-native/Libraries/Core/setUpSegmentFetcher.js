@@ -12,4 +12,3 @@ function __fetchSegment(segmentId, options, callback) {
   });
 }
 global.__fetchSegment = __fetchSegment;
-//# sourceMappingURL=setUpSegmentFetcher.js.map

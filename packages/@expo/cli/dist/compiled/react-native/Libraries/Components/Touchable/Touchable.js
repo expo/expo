@@ -392,4 +392,3 @@ var Touchable = {
   }
 };
 module.exports = Touchable;
-//# sourceMappingURL=Touchable.js.map

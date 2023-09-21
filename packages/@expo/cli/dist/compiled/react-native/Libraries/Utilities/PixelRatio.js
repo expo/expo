@@ -41,4 +41,3 @@ var PixelRatio = function () {
 }();
 var _default = PixelRatio;
 exports.default = _default;
-//# sourceMappingURL=PixelRatio.js.map

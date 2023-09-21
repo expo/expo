@@ -29,4 +29,3 @@ module.exports = {
   polyfillObjectProperty: polyfillObjectProperty,
   polyfillGlobal: polyfillGlobal
 };
-//# sourceMappingURL=PolyfillFunctions.js.map

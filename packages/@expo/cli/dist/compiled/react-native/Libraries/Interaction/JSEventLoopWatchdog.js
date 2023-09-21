@@ -62,4 +62,3 @@ var longestStall = 0;
 var lastInterval = 0;
 var handlers = [];
 module.exports = JSEventLoopWatchdog;
-//# sourceMappingURL=JSEventLoopWatchdog.js.map

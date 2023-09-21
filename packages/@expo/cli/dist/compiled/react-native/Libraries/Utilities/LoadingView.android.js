@@ -26,4 +26,3 @@ module.exports = {
     _NativeDevLoadingView.default && _NativeDevLoadingView.default.hide();
   }
 };
-//# sourceMappingURL=LoadingView.android.js.map

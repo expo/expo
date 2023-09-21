@@ -15,4 +15,3 @@ function useRefEffect(effect) {
     }
   }, [effect]);
 }
-//# sourceMappingURL=useRefEffect.js.map

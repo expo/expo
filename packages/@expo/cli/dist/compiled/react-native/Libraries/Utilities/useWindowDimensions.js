@@ -30,4 +30,3 @@ function useWindowDimensions() {
   }, [dimensions]);
   return dimensions;
 }
-//# sourceMappingURL=useWindowDimensions.js.map

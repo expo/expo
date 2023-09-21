@@ -99,4 +99,3 @@ var LogBoxLog = function () {
 }();
 var _default = LogBoxLog;
 exports.default = _default;
-//# sourceMappingURL=LogBoxLog.js.map

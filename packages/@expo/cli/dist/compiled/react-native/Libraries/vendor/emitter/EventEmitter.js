@@ -68,4 +68,3 @@ function allocate(registry, eventType) {
   }
   return registrations;
 }
-//# sourceMappingURL=EventEmitter.js.map

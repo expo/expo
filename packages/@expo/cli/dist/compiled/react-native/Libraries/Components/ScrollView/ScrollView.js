@@ -636,4 +636,3 @@ var ForwardedScrollView = React.forwardRef(Wrapper);
 ForwardedScrollView.Context = _ScrollViewContext.default;
 ForwardedScrollView.displayName = 'ScrollView';
 module.exports = ForwardedScrollView;
-//# sourceMappingURL=ScrollView.js.map

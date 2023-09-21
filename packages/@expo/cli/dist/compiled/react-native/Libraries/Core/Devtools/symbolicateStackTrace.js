@@ -25,4 +25,3 @@ function _symbolicateStackTrace() {
   return _symbolicateStackTrace.apply(this, arguments);
 }
 module.exports = symbolicateStackTrace;
-//# sourceMappingURL=symbolicateStackTrace.js.map

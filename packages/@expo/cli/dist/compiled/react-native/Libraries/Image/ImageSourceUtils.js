@@ -74,4 +74,3 @@ function getImageSourcesFromImageProps(imageProps) {
   }
   return sources;
 }
-//# sourceMappingURL=ImageSourceUtils.js.map

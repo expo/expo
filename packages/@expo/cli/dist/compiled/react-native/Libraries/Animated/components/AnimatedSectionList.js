@@ -18,4 +18,3 @@ var SectionListWithEventThrottle = React.forwardRef(function (props, ref) {
 });
 var _default = (0, _createAnimatedComponent.default)(SectionListWithEventThrottle);
 exports.default = _default;
-//# sourceMappingURL=AnimatedSectionList.js.map

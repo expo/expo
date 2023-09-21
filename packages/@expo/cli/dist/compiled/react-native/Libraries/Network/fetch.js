@@ -6,4 +6,3 @@ module.exports = {
   Request: Request,
   Response: Response
 };
-//# sourceMappingURL=fetch.js.map

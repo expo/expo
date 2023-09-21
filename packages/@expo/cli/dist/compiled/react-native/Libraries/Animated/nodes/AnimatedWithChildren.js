@@ -86,4 +86,3 @@ var AnimatedWithChildren = function (_AnimatedNode) {
   return AnimatedWithChildren;
 }(_AnimatedNode2.default);
 exports.default = AnimatedWithChildren;
-//# sourceMappingURL=AnimatedWithChildren.js.map

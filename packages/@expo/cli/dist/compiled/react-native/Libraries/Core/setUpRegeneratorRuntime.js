@@ -16,4 +16,3 @@ if (!hasNativeGenerator) {
     return require('regenerator-runtime/runtime');
   });
 }
-//# sourceMappingURL=setUpRegeneratorRuntime.js.map

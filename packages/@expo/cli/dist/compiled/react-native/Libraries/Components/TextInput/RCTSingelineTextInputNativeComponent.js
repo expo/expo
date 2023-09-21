@@ -21,4 +21,3 @@ var SinglelineTextInputNativeComponent = NativeComponentRegistry.get('RCTSinglel
 });
 var _default = SinglelineTextInputNativeComponent;
 exports.default = _default;
-//# sourceMappingURL=RCTSingelineTextInputNativeComponent.js.map

@@ -33,4 +33,3 @@ var ReloadInstructions = _Platform.default.select({
 });
 var _default2 = ReloadInstructions;
 exports.default = _default2;
-//# sourceMappingURL=ReloadInstructions.js.map

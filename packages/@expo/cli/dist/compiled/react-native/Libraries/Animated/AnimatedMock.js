@@ -123,4 +123,3 @@ var _default = {
   Event: _AnimatedEvent.AnimatedEvent
 };
 exports.default = _default;
-//# sourceMappingURL=AnimatedMock.js.map

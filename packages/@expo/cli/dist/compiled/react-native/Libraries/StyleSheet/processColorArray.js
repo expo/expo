@@ -15,4 +15,3 @@ function processColorElement(color) {
   return value;
 }
 module.exports = processColorArray;
-//# sourceMappingURL=processColorArray.js.map

@@ -97,4 +97,3 @@ function _processUpdate() {
   _deleteInteractionSet.clear();
 }
 module.exports = InteractionManager;
-//# sourceMappingURL=InteractionManager.js.map

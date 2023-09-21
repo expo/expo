@@ -11,4 +11,3 @@ Object.defineProperty(global, '__rctDeviceEventEmitter', {
 });
 var _default = RCTDeviceEventEmitter;
 exports.default = _default;
-//# sourceMappingURL=RCTDeviceEventEmitter.js.map

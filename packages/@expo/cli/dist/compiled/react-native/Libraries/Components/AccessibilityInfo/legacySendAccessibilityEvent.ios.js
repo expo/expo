@@ -6,4 +6,3 @@ function legacySendAccessibilityEvent(reactTag, eventType) {
   }
 }
 module.exports = legacySendAccessibilityEvent;
-//# sourceMappingURL=legacySendAccessibilityEvent.ios.js.map

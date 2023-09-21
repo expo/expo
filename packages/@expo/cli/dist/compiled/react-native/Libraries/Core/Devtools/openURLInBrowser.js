@@ -10,4 +10,3 @@ function openURLInBrowser(url) {
   });
 }
 module.exports = openURLInBrowser;
-//# sourceMappingURL=openURLInBrowser.js.map

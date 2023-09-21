@@ -6,4 +6,3 @@ if (__DEV__) {
   require('promise/setimmediate/rejection-tracking').enable(require('./promiseRejectionTrackingOptions').default);
 }
 module.exports = Promise;
-//# sourceMappingURL=Promise.js.map

@@ -8,4 +8,3 @@ module.exports = {
     _NativeAlertManager.default.alertWithArgs(args, callback);
   }
 };
-//# sourceMappingURL=RCTAlertManager.ios.js.map

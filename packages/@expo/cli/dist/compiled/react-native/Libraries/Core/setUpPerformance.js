@@ -14,4 +14,3 @@ if (_NativePerformance.default) {
     };
   }
 }
-//# sourceMappingURL=setUpPerformance.js.map

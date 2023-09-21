@@ -30,4 +30,3 @@ if (_Platform.default.OS === 'web') {
 function isHoverEnabled() {
   return isEnabled;
 }
-//# sourceMappingURL=HoverState.js.map

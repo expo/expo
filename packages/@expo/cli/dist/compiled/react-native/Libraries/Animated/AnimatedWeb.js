@@ -12,4 +12,3 @@ var _default = Object.assign({}, _AnimatedImplementation.default, {
   img: _AnimatedImplementation.default.createAnimatedComponent('img')
 });
 exports.default = _default;
-//# sourceMappingURL=AnimatedWeb.js.map

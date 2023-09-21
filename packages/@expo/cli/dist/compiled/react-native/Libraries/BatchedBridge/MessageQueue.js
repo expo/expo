@@ -337,4 +337,3 @@ var MessageQueue = function () {
   return MessageQueue;
 }();
 module.exports = MessageQueue;
-//# sourceMappingURL=MessageQueue.js.map

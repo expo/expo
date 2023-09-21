@@ -7,4 +7,3 @@ function isLoggingForWebPerformance() {
 }
 var GlobalPerformanceLogger = (0, _createPerformanceLogger.default)(isLoggingForWebPerformance());
 module.exports = GlobalPerformanceLogger;
-//# sourceMappingURL=GlobalPerformanceLogger.js.map

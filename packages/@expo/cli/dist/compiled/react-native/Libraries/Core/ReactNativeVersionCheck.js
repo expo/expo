@@ -10,4 +10,3 @@ exports.checkVersions = function checkVersions() {
 function _formatVersion(version) {
   return `${version.major}.${version.minor}.${version.patch}` + (version.prerelease != undefined ? `-${version.prerelease}` : '');
 }
-//# sourceMappingURL=ReactNativeVersionCheck.js.map

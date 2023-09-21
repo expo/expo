@@ -22,4 +22,3 @@ var ReactNativeFeatureFlags = {
   }
 };
 module.exports = ReactNativeFeatureFlags;
-//# sourceMappingURL=ReactNativeFeatureFlags.js.map

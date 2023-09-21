@@ -115,4 +115,3 @@ var Alert = function () {
   return Alert;
 }();
 module.exports = Alert;
-//# sourceMappingURL=Alert.js.map

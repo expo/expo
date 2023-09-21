@@ -168,4 +168,3 @@ if (!(global.RN$Bridgeless === true)) {
   });
 }
 module.exports = AppRegistry;
-//# sourceMappingURL=AppRegistry.js.map

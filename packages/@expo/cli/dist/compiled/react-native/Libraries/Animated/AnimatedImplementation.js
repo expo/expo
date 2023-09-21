@@ -410,4 +410,3 @@ var _default = {
   Event: _AnimatedEvent.AnimatedEvent
 };
 exports.default = _default;
-//# sourceMappingURL=AnimatedImplementation.js.map

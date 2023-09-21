@@ -85,4 +85,3 @@ var AnimatedTracking = function (_AnimatedNode) {
   return AnimatedTracking;
 }(_AnimatedNode2.default);
 exports.default = AnimatedTracking;
-//# sourceMappingURL=AnimatedTracking.js.map

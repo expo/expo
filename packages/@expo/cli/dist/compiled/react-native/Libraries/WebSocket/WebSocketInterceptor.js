@@ -138,4 +138,3 @@ var WebSocketInterceptor = {
   }
 };
 module.exports = WebSocketInterceptor;
-//# sourceMappingURL=WebSocketInterceptor.js.map

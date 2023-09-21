@@ -17,4 +17,3 @@ var InspectorAgent = function () {
   return InspectorAgent;
 }();
 module.exports = InspectorAgent;
-//# sourceMappingURL=InspectorAgent.js.map

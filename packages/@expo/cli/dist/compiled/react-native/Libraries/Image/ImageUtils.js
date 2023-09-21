@@ -11,4 +11,3 @@ function convertObjectFitToResizeMode(objectFit) {
   };
   return objectFitMap[objectFit];
 }
-//# sourceMappingURL=ImageUtils.js.map

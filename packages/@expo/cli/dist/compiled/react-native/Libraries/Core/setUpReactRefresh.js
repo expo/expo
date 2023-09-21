@@ -26,4 +26,3 @@ if (__DEV__) {
   };
   global[(global.__METRO_GLOBAL_PREFIX__ || '') + '__ReactRefresh'] = Refresh;
 }
-//# sourceMappingURL=setUpReactRefresh.js.map

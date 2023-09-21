@@ -16,6 +16,7 @@ function babelPresetExpo(api, options = {}) {
         if (filename.match(/\.m[jt]sx?$/)) {
             // Compile to commonjs for .mjs files.
             return {
+                plugins: [getAliasPlugin(platform)],
                 presets: [
                     [
                         '@babel/preset-env',
@@ -33,13 +34,16 @@ function babelPresetExpo(api, options = {}) {
         if (filename.match(
         // /\/node_modules\/(\@babel|react|react-is|react-devtools-core|scheduler|react-refresh|invariant)\//
         // /\/node_modules\/(\@babel|react|react-is|react-devtools-core|scheduler|react-refresh|invariant|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port)\//
-        /\/node_modules\/(\@babel|react|react-is|deprecated-react-native-prop-types|react-devtools-core|scheduler|react-refresh|invariant|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port|querystringify|anser|whatwg-fetch|regenerator-runtime|pretty-format|event-target-shim|promise|)\//
+        /\/node_modules\//
+        // /\/node_modules\/(\@babel|react|react-is|deprecated-react-native-prop-types|react-devtools-core|scheduler|react-refresh|invariant|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port|querystringify|anser|whatwg-fetch|regenerator-runtime|pretty-format|event-target-shim|promise|)\//
         // /\/node_modules\/(\@babel|react|invariant|deprecated-react-native-prop-types|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|react-is|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|scheduler|requires-port|querystringify|anser|whatwg-fetch|regenerator-runtime|pretty-format|event-target-shim|react-devtools-core|react-refresh|promise|metro-runtime)\//
         )) {
-            return {};
+            return {
+                plugins: [getAliasPlugin(platform)],
+            };
         }
-        console.log('>', filename);
     }
+    console.log('>', filename);
     // If the `platform` prop is not defined then this must be a custom config that isn't
     // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
     if (!platform && isWebpack) {
@@ -158,12 +162,13 @@ function getAliasPlugin(platform) {
         aliases['react-native-vector-icons'] = '@expo/vector-icons';
     }
     if (platform !== 'web') {
-        ['react-native'].forEach((moduleId) => {
+        ['react-native', '@react-native/virtual-lists'].forEach((moduleId) => {
             // Redirect all `react-native/*` imports to `@expo/cli/dist/compiled/react-native/*`
             aliases[`^${moduleId}$`] = `@expo/cli/dist/compiled/${moduleId}`;
             aliases[`^${moduleId}/(.*)$`] = `@expo/cli/dist/compiled/${moduleId}/\\1`;
         });
         aliases[`^metro-runtime$`] = `@expo/cli/dist/compiled/metro-runtime/src/index`;
+        // TODO: Not `metro-runtime/src/polyfills/require.js`
         aliases[`^metro-runtime/(.*)$`] = `@expo/cli/dist/compiled/metro-runtime/\\1`;
     }
     return [

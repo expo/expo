@@ -57,4 +57,3 @@ function getHighlightColor(opacity) {
 function getTextColor(opacity) {
   return `rgba(255, 255, 255, ${opacity == null ? 1 : opacity})`;
 }
-//# sourceMappingURL=LogBoxStyle.js.map

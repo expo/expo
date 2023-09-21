@@ -14,4 +14,3 @@ var Commands = (0, _codegenNativeCommands.default)({
 exports.Commands = Commands;
 var _default = (0, _codegenNativeComponent.default)('AndroidDrawerLayout');
 exports.default = _default;
-//# sourceMappingURL=AndroidDrawerLayoutNativeComponent.js.map

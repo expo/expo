@@ -10,4 +10,3 @@ var _default = (0, _codegenNativeComponent.default)('InputAccessory', {
   excludedPlatforms: ['android']
 });
 exports.default = _default;
-//# sourceMappingURL=RCTInputAccessoryViewNativeComponent.js.map

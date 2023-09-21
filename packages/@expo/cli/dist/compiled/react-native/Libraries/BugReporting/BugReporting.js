@@ -85,4 +85,3 @@ BugReporting._fileSources = new Map();
 BugReporting._subscription = null;
 BugReporting._redboxSubscription = null;
 module.exports = BugReporting;
-//# sourceMappingURL=BugReporting.js.map

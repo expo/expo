@@ -45,4 +45,3 @@ function symbolicate(stack) {
   }
   return promise;
 }
-//# sourceMappingURL=LogBoxSymbolication.js.map

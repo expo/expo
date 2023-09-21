@@ -202,4 +202,3 @@ WebSocket.OPEN = OPEN;
 WebSocket.CLOSING = CLOSING;
 WebSocket.CLOSED = CLOSED;
 module.exports = WebSocket;
-//# sourceMappingURL=WebSocket.js.map

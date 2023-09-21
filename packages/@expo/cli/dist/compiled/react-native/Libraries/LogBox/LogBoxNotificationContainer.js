@@ -82,4 +82,3 @@ var styles = _StyleSheet.default.create({
 });
 var _default = LogBoxData.withSubscription(_LogBoxNotificationContainer);
 exports.default = _default;
-//# sourceMappingURL=LogBoxNotificationContainer.js.map

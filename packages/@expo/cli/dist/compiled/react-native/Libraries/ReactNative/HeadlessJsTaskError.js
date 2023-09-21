@@ -21,4 +21,3 @@ var HeadlessJsTaskError = function (_Error) {
   return (0, _createClass2.default)(HeadlessJsTaskError);
 }((0, _wrapNativeSuper2.default)(Error));
 exports.default = HeadlessJsTaskError;
-//# sourceMappingURL=HeadlessJsTaskError.js.map

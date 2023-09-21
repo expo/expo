@@ -17,4 +17,3 @@ var NativeSourceCode = {
 };
 var _default = NativeSourceCode;
 exports.default = _default;
-//# sourceMappingURL=NativeSourceCode.js.map

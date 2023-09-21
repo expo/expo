@@ -121,4 +121,3 @@ if (!global.nativeCallSyncHook) {
   });
 }
 module.exports = UIManagerJS;
-//# sourceMappingURL=PaperUIManager.js.map

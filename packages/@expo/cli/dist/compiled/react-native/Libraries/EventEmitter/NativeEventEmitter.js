@@ -72,4 +72,3 @@ var NativeEventEmitter = function () {
   return NativeEventEmitter;
 }();
 exports.default = NativeEventEmitter;
-//# sourceMappingURL=NativeEventEmitter.js.map

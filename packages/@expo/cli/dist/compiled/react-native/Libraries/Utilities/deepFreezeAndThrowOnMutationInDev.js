@@ -35,4 +35,3 @@ function identity(value) {
   return value;
 }
 module.exports = deepFreezeAndThrowOnMutationInDev;
-//# sourceMappingURL=deepFreezeAndThrowOnMutationInDev.js.map

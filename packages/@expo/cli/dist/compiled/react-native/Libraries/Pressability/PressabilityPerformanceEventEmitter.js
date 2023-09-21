@@ -40,4 +40,3 @@ var PressabilityPerformanceEventEmitter = function () {
 var PressabilityPerformanceEventEmitterSingleton = new PressabilityPerformanceEventEmitter();
 var _default = PressabilityPerformanceEventEmitterSingleton;
 exports.default = _default;
-//# sourceMappingURL=PressabilityPerformanceEventEmitter.js.map

@@ -42,4 +42,3 @@ module.exports = {
     return require('../Events/CustomEvent').default;
   }
 };
-//# sourceMappingURL=ReactNativePrivateInterface.js.map

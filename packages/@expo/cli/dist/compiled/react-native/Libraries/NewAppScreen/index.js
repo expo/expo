@@ -44,4 +44,3 @@ var _Header = _interopRequireDefault(require("./components/Header"));
 var _HermesBadge = _interopRequireDefault(require("./components/HermesBadge"));
 var _LearnMoreLinks = _interopRequireDefault(require("./components/LearnMoreLinks"));
 var _ReloadInstructions = _interopRequireDefault(require("./components/ReloadInstructions"));
-//# sourceMappingURL=index.js.map

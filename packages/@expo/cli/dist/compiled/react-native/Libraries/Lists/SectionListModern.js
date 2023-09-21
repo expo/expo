@@ -56,4 +56,3 @@ var SectionList = (0, _react.forwardRef)(function (props, ref) {
 });
 var _default = SectionList;
 exports.default = _default;
-//# sourceMappingURL=SectionListModern.js.map

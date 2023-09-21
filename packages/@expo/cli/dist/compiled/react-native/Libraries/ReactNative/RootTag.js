@@ -14,4 +14,3 @@ if (__DEV__) {
 function createRootTag(rootTag) {
   return rootTag;
 }
-//# sourceMappingURL=RootTag.js.map

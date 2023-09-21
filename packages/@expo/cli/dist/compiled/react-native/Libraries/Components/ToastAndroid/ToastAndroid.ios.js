@@ -12,4 +12,3 @@ var ToastAndroid = {
   }
 };
 module.exports = ToastAndroid;
-//# sourceMappingURL=ToastAndroid.ios.js.map

@@ -591,4 +591,3 @@ function convertPointerEventToMouseEvent(input) {
     }
   });
 }
-//# sourceMappingURL=Pressability.js.map

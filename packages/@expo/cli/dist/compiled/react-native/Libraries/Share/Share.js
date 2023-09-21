@@ -67,4 +67,3 @@ var Share = function () {
 Share.sharedAction = 'sharedAction';
 Share.dismissedAction = 'dismissedAction';
 module.exports = Share;
-//# sourceMappingURL=Share.js.map

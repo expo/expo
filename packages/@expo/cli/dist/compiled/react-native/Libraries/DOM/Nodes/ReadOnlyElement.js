@@ -112,4 +112,3 @@ var ReadOnlyElement = function (_ReadOnlyNode) {
   return ReadOnlyElement;
 }(_ReadOnlyNode2.default);
 exports.default = ReadOnlyElement;
-//# sourceMappingURL=ReadOnlyElement.js.map

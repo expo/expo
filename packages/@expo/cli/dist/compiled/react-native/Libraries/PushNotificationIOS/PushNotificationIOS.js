@@ -242,4 +242,3 @@ PushNotificationIOS.FetchResult = {
   ResultFailed: 'UIBackgroundFetchResultFailed'
 };
 module.exports = PushNotificationIOS;
-//# sourceMappingURL=PushNotificationIOS.js.map

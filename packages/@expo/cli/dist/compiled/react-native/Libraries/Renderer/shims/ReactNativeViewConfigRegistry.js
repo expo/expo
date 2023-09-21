@@ -56,4 +56,3 @@ exports.get = function (name) {
   (0, _invariant.default)(viewConfig, 'View config not found for name %s', name);
   return viewConfig;
 };
-//# sourceMappingURL=ReactNativeViewConfigRegistry.js.map

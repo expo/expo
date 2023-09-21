@@ -4,4 +4,3 @@ exports.version = {
   patch: 4,
   prerelease: null
 };
-//# sourceMappingURL=ReactNativeVersion.js.map

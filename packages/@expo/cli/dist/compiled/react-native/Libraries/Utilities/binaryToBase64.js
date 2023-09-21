@@ -18,4 +18,3 @@ function binaryToBase64(data) {
   return base64.fromByteArray(new Uint8Array(buffer, byteOffset, byteLength));
 }
 module.exports = binaryToBase64;
-//# sourceMappingURL=binaryToBase64.js.map

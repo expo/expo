@@ -161,4 +161,3 @@ var NetworkAgent = function (_InspectorAgent) {
 }(InspectorAgent);
 NetworkAgent.DOMAIN = 'Network';
 module.exports = NetworkAgent;
-//# sourceMappingURL=NetworkAgent.js.map

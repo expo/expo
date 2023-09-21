@@ -111,4 +111,3 @@ var SwitchWithForwardedRef = React.forwardRef(function Switch(props, forwardedRe
 });
 var _default = SwitchWithForwardedRef;
 exports.default = _default;
-//# sourceMappingURL=Switch.js.map

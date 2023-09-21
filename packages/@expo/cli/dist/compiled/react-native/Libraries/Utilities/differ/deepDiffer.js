@@ -60,4 +60,3 @@ var deepDiffer = function deepDiffer(one, two) {
 };
 deepDiffer.unstable_setLogListeners = unstable_setLogListeners;
 module.exports = deepDiffer;
-//# sourceMappingURL=deepDiffer.js.map

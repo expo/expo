@@ -11,4 +11,3 @@ var logError = function logError() {
   }
 };
 module.exports = logError;
-//# sourceMappingURL=logError.js.map

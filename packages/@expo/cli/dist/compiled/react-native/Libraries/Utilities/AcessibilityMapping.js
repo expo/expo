@@ -139,4 +139,3 @@ function getAccessibilityRoleFromRole(role) {
   }
   return undefined;
 }
-//# sourceMappingURL=AcessibilityMapping.js.map

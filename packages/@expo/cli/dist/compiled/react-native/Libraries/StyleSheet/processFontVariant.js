@@ -8,4 +8,3 @@ function processFontVariant(fontVariant) {
   return match;
 }
 module.exports = processFontVariant;
-//# sourceMappingURL=processFontVariant.js.map

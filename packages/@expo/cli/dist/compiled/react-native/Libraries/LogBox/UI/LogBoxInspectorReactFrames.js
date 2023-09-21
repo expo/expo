@@ -172,4 +172,3 @@ var componentStyles = _StyleSheet.default.create({
 });
 var _default = LogBoxInspectorReactFrames;
 exports.default = _default;
-//# sourceMappingURL=LogBoxInspectorReactFrames.js.map

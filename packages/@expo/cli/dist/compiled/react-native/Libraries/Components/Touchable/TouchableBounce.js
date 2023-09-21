@@ -178,4 +178,3 @@ module.exports = React.forwardRef(function (props, hostRef) {
     hostRef: hostRef
   }));
 });
-//# sourceMappingURL=TouchableBounce.js.map

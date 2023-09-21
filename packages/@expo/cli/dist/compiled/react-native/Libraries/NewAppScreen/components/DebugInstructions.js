@@ -39,4 +39,3 @@ var DebugInstructions = _Platform.default.select({
 });
 var _default2 = DebugInstructions;
 exports.default = _default2;
-//# sourceMappingURL=DebugInstructions.js.map

@@ -24,4 +24,3 @@ if (__DEV__) {
   }
   require('./setUpReactRefresh');
 }
-//# sourceMappingURL=setUpDeveloperTools.js.map

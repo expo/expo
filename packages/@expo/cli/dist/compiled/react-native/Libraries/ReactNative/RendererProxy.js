@@ -12,4 +12,3 @@ Object.keys(_RendererImplementation).forEach(function (key) {
     }
   });
 });
-//# sourceMappingURL=RendererProxy.js.map

@@ -140,4 +140,3 @@ var styles = StyleSheet.create({
   }
 });
 module.exports = ElementProperties;
-//# sourceMappingURL=ElementProperties.js.map

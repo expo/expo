@@ -18,4 +18,3 @@ function codegenNativeCommands(options) {
 }
 var _default = codegenNativeCommands;
 exports.default = _default;
-//# sourceMappingURL=codegenNativeCommands.js.map

@@ -9,4 +9,3 @@ function setNormalizedColorAlpha(input, alpha) {
   return (input & 0xffffff00 | alpha) >>> 0;
 }
 module.exports = setNormalizedColorAlpha;
-//# sourceMappingURL=setNormalizedColorAlpha.js.map

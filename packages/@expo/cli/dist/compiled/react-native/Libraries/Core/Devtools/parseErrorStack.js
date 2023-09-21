@@ -34,4 +34,3 @@ function parseErrorStack(errorStack) {
   return parsedStack;
 }
 module.exports = parseErrorStack;
-//# sourceMappingURL=parseErrorStack.js.map

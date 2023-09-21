@@ -15,4 +15,3 @@ function unstable_hasComponent(name) {
   }
   return hasNativeComponent;
 }
-//# sourceMappingURL=NativeComponentRegistryUnstable.js.map

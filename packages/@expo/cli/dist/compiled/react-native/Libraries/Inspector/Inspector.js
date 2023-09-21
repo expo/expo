@@ -242,4 +242,3 @@ var styles = StyleSheet.create({
   }
 });
 module.exports = Inspector;
-//# sourceMappingURL=Inspector.js.map

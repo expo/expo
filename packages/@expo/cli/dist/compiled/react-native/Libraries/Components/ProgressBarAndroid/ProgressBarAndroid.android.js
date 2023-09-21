@@ -22,4 +22,3 @@ var ProgressBarAndroid = function ProgressBarAndroid(_ref, forwardedRef) {
 };
 var ProgressBarAndroidToExport = React.forwardRef(ProgressBarAndroid);
 module.exports = ProgressBarAndroidToExport;
-//# sourceMappingURL=ProgressBarAndroid.android.js.map

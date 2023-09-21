@@ -12,4 +12,3 @@ var BackHandler = {
   removeEventListener: function removeEventListener(_eventName, _handler) {}
 };
 module.exports = BackHandler;
-//# sourceMappingURL=BackHandler.ios.js.map

@@ -17,4 +17,3 @@ var NativeDeviceInfo = {
 };
 var _default = NativeDeviceInfo;
 exports.default = _default;
-//# sourceMappingURL=NativeDeviceInfo.js.map

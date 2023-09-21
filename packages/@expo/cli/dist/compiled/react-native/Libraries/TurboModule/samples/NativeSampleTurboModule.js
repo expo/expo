@@ -12,4 +12,3 @@ var EnumInt = require("flow-enums-runtime")({
 exports.EnumInt = EnumInt;
 var _default = TurboModuleRegistry.getEnforcing('SampleTurboModule');
 exports.default = _default;
-//# sourceMappingURL=NativeSampleTurboModule.js.map

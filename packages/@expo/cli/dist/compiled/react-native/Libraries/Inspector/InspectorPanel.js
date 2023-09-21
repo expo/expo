@@ -154,4 +154,3 @@ var styles = StyleSheet.create({
   }
 });
 module.exports = InspectorPanel;
-//# sourceMappingURL=InspectorPanel.js.map

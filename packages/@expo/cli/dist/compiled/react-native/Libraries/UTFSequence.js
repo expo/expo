@@ -24,4 +24,3 @@ var UTFSequence = deepFreezeAndThrowOnMutationInDev({
 });
 var _default = UTFSequence;
 exports.default = _default;
-//# sourceMappingURL=UTFSequence.js.map

@@ -297,4 +297,3 @@ var styles = StyleSheet.create({
   }
 });
 module.exports = FlatList;
-//# sourceMappingURL=FlatList.js.map

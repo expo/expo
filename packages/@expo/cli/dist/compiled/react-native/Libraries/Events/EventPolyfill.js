@@ -66,4 +66,3 @@ var EventPolyfill = function () {
 global.Event = EventPolyfill;
 var _default = EventPolyfill;
 exports.default = _default;
-//# sourceMappingURL=EventPolyfill.js.map

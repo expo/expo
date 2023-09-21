@@ -6,4 +6,3 @@ var createReactNativeComponentClass = function createReactNativeComponentClass(n
   return register(name, callback);
 };
 module.exports = createReactNativeComponentClass;
-//# sourceMappingURL=createReactNativeComponentClass.js.map

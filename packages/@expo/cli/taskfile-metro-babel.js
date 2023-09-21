@@ -56,7 +56,7 @@ module.exports = function (task) {
 
     const options = {
       filename: path.join(file.dir, file.base),
-      sourceMaps: true,
+      //   sourceMaps: true,
       sourceFileName: path.relative(outputFilePath, inputFilePath),
       //   ...setting.options,
     };

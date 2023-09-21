@@ -88,4 +88,3 @@ var DecayAnimation = function (_Animation) {
   return DecayAnimation;
 }(_Animation2.default);
 exports.default = DecayAnimation;
-//# sourceMappingURL=DecayAnimation.js.map

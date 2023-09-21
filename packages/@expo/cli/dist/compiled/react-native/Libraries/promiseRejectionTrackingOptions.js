@@ -31,4 +31,3 @@ var rejectionTrackingOptions = {
 };
 var _default = rejectionTrackingOptions;
 exports.default = _default;
-//# sourceMappingURL=promiseRejectionTrackingOptions.js.map

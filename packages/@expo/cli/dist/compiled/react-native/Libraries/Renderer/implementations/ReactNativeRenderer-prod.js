@@ -5095,4 +5095,3 @@ exports.unmountComponentAtNodeAndRemoveContainer = function (containerTag) {
   ReactNativePrivateInterface.UIManager.removeRootView(containerTag);
 };
 exports.unstable_batchedUpdates = batchedUpdates;
-//# sourceMappingURL=ReactNativeRenderer-prod.js.map

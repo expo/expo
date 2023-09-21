@@ -161,4 +161,3 @@ FileReader.EMPTY = EMPTY;
 FileReader.LOADING = LOADING;
 FileReader.DONE = DONE;
 module.exports = FileReader;
-//# sourceMappingURL=FileReader.js.map

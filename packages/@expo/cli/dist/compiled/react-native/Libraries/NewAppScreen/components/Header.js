@@ -50,4 +50,3 @@ var styles = _StyleSheet.default.create({
 });
 var _default = Header;
 exports.default = _default;
-//# sourceMappingURL=Header.js.map

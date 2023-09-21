@@ -9,4 +9,3 @@ module.exports = {
   isNativeFunction: isNativeFunction,
   hasNativeConstructor: hasNativeConstructor
 };
-//# sourceMappingURL=FeatureDetection.js.map

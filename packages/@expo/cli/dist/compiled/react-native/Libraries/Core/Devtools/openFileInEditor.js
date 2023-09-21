@@ -14,4 +14,3 @@ function openFileInEditor(file, lineNumber) {
   });
 }
 module.exports = openFileInEditor;
-//# sourceMappingURL=openFileInEditor.js.map

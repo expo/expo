@@ -67,4 +67,3 @@ function resolveAssetSource(source) {
 resolveAssetSource.pickScale = pickScale;
 resolveAssetSource.setCustomSourceTransformer = setCustomSourceTransformer;
 module.exports = resolveAssetSource;
-//# sourceMappingURL=resolveAssetSource.js.map

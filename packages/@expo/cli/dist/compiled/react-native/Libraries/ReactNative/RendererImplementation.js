@@ -46,4 +46,3 @@ function unstable_batchedUpdates(fn, bookkeeping) {
 function isProfilingRenderer() {
   return Boolean(__DEV__);
 }
-//# sourceMappingURL=RendererImplementation.js.map

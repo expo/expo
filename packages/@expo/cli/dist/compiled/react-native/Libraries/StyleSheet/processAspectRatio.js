@@ -35,4 +35,3 @@ function processAspectRatio(aspectRatio) {
   return Number(matches[0]);
 }
 module.exports = processAspectRatio;
-//# sourceMappingURL=processAspectRatio.js.map

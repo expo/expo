@@ -123,4 +123,3 @@ var styles = _StyleSheet.default.create({
 });
 var _default = LogBoxInspectorSourceMapStatus;
 exports.default = _default;
-//# sourceMappingURL=LogBoxInspectorSourceMapStatus.js.map

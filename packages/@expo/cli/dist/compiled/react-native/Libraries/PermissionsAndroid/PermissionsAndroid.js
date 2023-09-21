@@ -143,4 +143,3 @@ var PermissionsAndroid = function () {
 }();
 var PermissionsAndroidInstance = new PermissionsAndroid();
 module.exports = PermissionsAndroidInstance;
-//# sourceMappingURL=PermissionsAndroid.js.map

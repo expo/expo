@@ -32,4 +32,3 @@ var PerformanceEventTiming = function (_PerformanceEntry) {
   return (0, _createClass2.default)(PerformanceEventTiming);
 }(_PerformanceEntry2.PerformanceEntry);
 exports.PerformanceEventTiming = PerformanceEventTiming;
-//# sourceMappingURL=PerformanceEventTiming.js.map

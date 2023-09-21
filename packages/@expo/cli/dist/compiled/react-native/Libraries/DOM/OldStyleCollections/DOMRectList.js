@@ -46,4 +46,3 @@ exports.default = DOMRectList;
 function createDOMRectList(elements) {
   return new DOMRectList(elements);
 }
-//# sourceMappingURL=DOMRectList.js.map

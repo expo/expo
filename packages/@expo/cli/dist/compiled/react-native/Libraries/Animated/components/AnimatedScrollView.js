@@ -70,4 +70,3 @@ var AnimatedScrollViewWithInvertedRefreshControl = React.forwardRef(function (pr
 var AnimatedScrollViewWithoutInvertedRefreshControl = (0, _createAnimatedComponent.default)(_ScrollView.default);
 var _default = AnimatedScrollView;
 exports.default = _default;
-//# sourceMappingURL=AnimatedScrollView.js.map

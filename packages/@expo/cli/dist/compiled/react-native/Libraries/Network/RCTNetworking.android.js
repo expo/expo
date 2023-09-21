@@ -64,4 +64,3 @@ var RCTNetworking = function (_NativeEventEmitter) {
 }(_NativeEventEmitter2.default);
 var _default = new RCTNetworking();
 exports.default = _default;
-//# sourceMappingURL=RCTNetworking.android.js.map

@@ -12,4 +12,3 @@ function useAnimatedValue(initialValue, config) {
   }
   return ref.current;
 }
-//# sourceMappingURL=useAnimatedValue.js.map

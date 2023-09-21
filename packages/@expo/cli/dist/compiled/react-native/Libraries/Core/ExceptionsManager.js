@@ -145,4 +145,3 @@ module.exports = {
   SyntheticError: SyntheticError,
   unstable_setExceptionDecorator: unstable_setExceptionDecorator
 };
-//# sourceMappingURL=ExceptionsManager.js.map

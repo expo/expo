@@ -7,4 +7,3 @@ exports.isAsyncDebugging = isAsyncDebugging;
 if (__DEV__) {
   exports.isAsyncDebugging = isAsyncDebugging = !global.nativeExtensions && !global.nativeCallSyncHook && !global.RN$Bridgeless;
 }
-//# sourceMappingURL=DebugEnvironment.js.map

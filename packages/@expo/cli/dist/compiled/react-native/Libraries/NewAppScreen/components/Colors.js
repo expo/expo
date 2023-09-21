@@ -12,4 +12,3 @@ var _default = {
   black: '#000'
 };
 exports.default = _default;
-//# sourceMappingURL=Colors.js.map

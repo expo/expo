@@ -63,4 +63,3 @@ var Keyboard = function () {
   return Keyboard;
 }();
 module.exports = new Keyboard();
-//# sourceMappingURL=Keyboard.js.map

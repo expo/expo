@@ -57,4 +57,3 @@ function renderApplication(RootComponent, initialProps, rootTag, WrapperComponen
   });
   performanceLogger.stopTimespan('renderApplication_React_render');
 }
-//# sourceMappingURL=renderApplication.js.map

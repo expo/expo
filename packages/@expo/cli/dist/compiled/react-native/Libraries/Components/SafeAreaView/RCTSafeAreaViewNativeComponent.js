@@ -9,4 +9,3 @@ var _default = (0, _codegenNativeComponent.default)('SafeAreaView', {
   interfaceOnly: true
 });
 exports.default = _default;
-//# sourceMappingURL=RCTSafeAreaViewNativeComponent.js.map

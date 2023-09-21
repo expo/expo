@@ -181,4 +181,3 @@ var AnimatedEvent = function () {
   return AnimatedEvent;
 }();
 exports.AnimatedEvent = AnimatedEvent;
-//# sourceMappingURL=AnimatedEvent.js.map

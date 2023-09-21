@@ -7,4 +7,3 @@ exports.getFabricUIManager = getFabricUIManager;
 function getFabricUIManager() {
   return global.nativeFabricUIManager;
 }
-//# sourceMappingURL=FabricUIManager.js.map

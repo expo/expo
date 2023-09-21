@@ -32,4 +32,3 @@ function processColor(color) {
 }
 var _default = processColor;
 exports.default = _default;
-//# sourceMappingURL=processColor.js.map

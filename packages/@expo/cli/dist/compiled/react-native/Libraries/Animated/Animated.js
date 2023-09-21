@@ -28,4 +28,3 @@ var _default = Object.assign({
   }
 }, Animated);
 exports.default = _default;
-//# sourceMappingURL=Animated.js.map

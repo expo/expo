@@ -58,4 +58,3 @@ if (__DEV__) {
   };
   global[(global.__METRO_GLOBAL_PREFIX__ || '') + '__SYSTRACE'] = Systrace;
 }
-//# sourceMappingURL=Systrace.js.map

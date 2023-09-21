@@ -64,4 +64,3 @@ var AppState = function () {
   return AppState;
 }();
 module.exports = new AppState();
-//# sourceMappingURL=AppState.js.map

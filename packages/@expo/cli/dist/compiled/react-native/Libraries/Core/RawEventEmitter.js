@@ -7,4 +7,3 @@ var _EventEmitter = _interopRequireDefault(require("../vendor/emitter/EventEmitt
 var RawEventEmitter = new _EventEmitter.default();
 var _default = RawEventEmitter;
 exports.default = _default;
-//# sourceMappingURL=RawEventEmitter.js.map

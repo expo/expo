@@ -38,4 +38,3 @@ module.exports = {
     return eventEmitter.addListener('change', listener);
   }
 };
-//# sourceMappingURL=Appearance.js.map

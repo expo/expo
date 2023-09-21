@@ -29,4 +29,3 @@ var NativeStatusBarManager = {
 };
 var _default = NativeStatusBarManager;
 exports.default = _default;
-//# sourceMappingURL=NativeStatusBarManagerAndroid.js.map

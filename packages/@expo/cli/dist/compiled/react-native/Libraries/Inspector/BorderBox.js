@@ -40,4 +40,3 @@ var BorderBox = function (_React$Component) {
   return BorderBox;
 }(React.Component);
 module.exports = BorderBox;
-//# sourceMappingURL=BorderBox.js.map

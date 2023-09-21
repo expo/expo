@@ -72,4 +72,3 @@ var ImageBackground = function (_React$Component) {
   return ImageBackground;
 }(React.Component);
 module.exports = ImageBackground;
-//# sourceMappingURL=ImageBackground.js.map

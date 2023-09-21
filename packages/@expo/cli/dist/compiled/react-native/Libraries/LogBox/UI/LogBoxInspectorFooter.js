@@ -100,4 +100,3 @@ var styles = _StyleSheet.default.create({
 });
 var _default = LogBoxInspectorFooter;
 exports.default = _default;
-//# sourceMappingURL=LogBoxInspectorFooter.js.map

@@ -161,4 +161,3 @@ var styles = _StyleSheet.default.create({
   }
 });
 module.exports = Image;
-//# sourceMappingURL=Image.android.js.map

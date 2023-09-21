@@ -17,4 +17,3 @@ var _default = (0, _codegenNativeComponent.default)('Switch', {
   excludedPlatforms: ['android']
 });
 exports.default = _default;
-//# sourceMappingURL=SwitchNativeComponent.js.map

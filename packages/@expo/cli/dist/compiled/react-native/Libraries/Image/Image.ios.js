@@ -138,4 +138,3 @@ var styles = _StyleSheet.default.create({
   }
 });
 module.exports = Image;
-//# sourceMappingURL=Image.ios.js.map

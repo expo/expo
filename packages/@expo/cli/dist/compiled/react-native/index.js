@@ -398,4 +398,3 @@ if (__DEV__) {
     }
   });
 }
-//# sourceMappingURL=index.js.map

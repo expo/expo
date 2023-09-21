@@ -26,4 +26,3 @@ module.exports = {
     }
   }
 };
-//# sourceMappingURL=react-native.config.js.map

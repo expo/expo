@@ -43,4 +43,3 @@ var ReactNativeStartupTiming = function () {
   return ReactNativeStartupTiming;
 }();
 exports.default = ReactNativeStartupTiming;
-//# sourceMappingURL=ReactNativeStartupTiming.js.map

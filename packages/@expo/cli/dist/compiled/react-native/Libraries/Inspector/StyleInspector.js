@@ -73,4 +73,3 @@ var styles = StyleSheet.create({
   }
 });
 module.exports = StyleInspector;
-//# sourceMappingURL=StyleInspector.js.map

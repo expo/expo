@@ -35,4 +35,3 @@ var NativeStatusBarManager = {
 };
 var _default = NativeStatusBarManager;
 exports.default = _default;
-//# sourceMappingURL=NativeStatusBarManagerIOS.js.map

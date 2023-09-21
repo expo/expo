@@ -4,4 +4,3 @@ if (!global.alert) {
     require('../Alert/Alert').alert('Alert', '' + text);
   };
 }
-//# sourceMappingURL=setUpAlert.js.map

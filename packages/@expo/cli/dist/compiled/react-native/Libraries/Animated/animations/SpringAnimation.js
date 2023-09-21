@@ -200,4 +200,3 @@ var SpringAnimation = function (_Animation) {
   return SpringAnimation;
 }(_Animation2.default);
 exports.default = SpringAnimation;
-//# sourceMappingURL=SpringAnimation.js.map

@@ -38,4 +38,3 @@ if (__DEV__) {
   };
 }
 module.exports = DevSettings;
-//# sourceMappingURL=DevSettings.js.map

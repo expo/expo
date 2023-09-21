@@ -195,4 +195,3 @@ function mergeUpdates(base, next) {
   return result;
 }
 module.exports = HMRClient;
-//# sourceMappingURL=HMRClient.js.map

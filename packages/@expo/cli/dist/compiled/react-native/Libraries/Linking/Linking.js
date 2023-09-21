@@ -79,4 +79,3 @@ var Linking = function (_NativeEventEmitter) {
   return Linking;
 }(_NativeEventEmitter2.default);
 module.exports = new Linking();
-//# sourceMappingURL=Linking.js.map

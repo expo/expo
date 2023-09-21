@@ -477,4 +477,3 @@ XMLHttpRequest.LOADING = LOADING;
 XMLHttpRequest.DONE = DONE;
 XMLHttpRequest._interceptor = null;
 module.exports = XMLHttpRequest;
-//# sourceMappingURL=XMLHttpRequest.js.map

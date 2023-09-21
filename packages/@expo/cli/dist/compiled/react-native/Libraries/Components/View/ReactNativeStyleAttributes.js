@@ -146,4 +146,3 @@ var ReactNativeStyleAttributes = {
   objectFit: true
 };
 module.exports = ReactNativeStyleAttributes;
-//# sourceMappingURL=ReactNativeStyleAttributes.js.map

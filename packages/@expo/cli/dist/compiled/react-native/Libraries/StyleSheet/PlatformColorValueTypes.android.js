@@ -22,4 +22,3 @@ var processColorObject = function processColorObject(color) {
   return color;
 };
 exports.processColorObject = processColorObject;
-//# sourceMappingURL=PlatformColorValueTypes.android.js.map
