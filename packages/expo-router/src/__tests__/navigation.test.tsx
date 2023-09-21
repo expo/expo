@@ -415,7 +415,7 @@ it('respects basePath', async () => {
 });
 
 it('will warn if a href provides duplicate parameters', async () => {
-  const spy = jest.spyOn(global.console, 'warn').mockImplementation(() => {});
+  const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
   renderRouter({
     index: () => <Redirect href="/test?id=test23" />,
