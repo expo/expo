@@ -54,10 +54,12 @@ jobs:
         uses: expo/expo-github-action/fingerprint@main
         with:
           working-directory: apps/bare-expo
+      - name: 👀 Dump fingerprint diff
+        run: echo "${{ steps.fingerprint.outputs.fingerprint-diff }}"
 
       - name: 🏷️ Labeling PR
         uses: actions/github-script@v6
-        if: ${{ github.event_name == 'pull_request' && github.steps.fingerprint.outputs.fingerprint-diff == '[]' }}
+        if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.fingerprint-diff == '[]' }}
         with:
           script: |
             try {
