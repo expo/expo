@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- URL encode asset paths defined as query parameter.
+
 ### 💡 Others
 
 ## 8.12.1 — 2023-09-16
