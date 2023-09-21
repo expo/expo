@@ -62,6 +62,7 @@ export default function ExpoImage({
   contentFit,
   contentPosition,
   placeholderContentFit,
+  cachePolicy,
   onLoad,
   transition,
   onError,
@@ -135,6 +136,7 @@ export default function ExpoImage({
             ...style,
           }}
           className={className}
+          cachePolicy={cachePolicy}
           priority={priority}
           contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
           hashPlaceholderContentPosition={contentPosition}
