@@ -12,7 +12,7 @@ export function matchDeepDynamicRouteName(name: string): string | undefined {
 
 /** Match `(page)` -> `page` */
 export function matchGroupName(name: string): string | undefined {
-  return name.match(/^\(([^/]+?)\)$/)?.[1];
+  return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
 }
 
 export function getNameFromFilePath(name: string): string {
