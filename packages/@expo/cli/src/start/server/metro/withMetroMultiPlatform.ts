@@ -131,23 +131,23 @@ export function withExtendedResolver(
 
   const isWebEnabled = platforms.includes('web');
 
-  const { resolve: resolveWithMetro } = importMetroResolverFromProject(projectRoot);
+  // const { resolve: resolveWithMetro } = importMetroResolverFromProject(projectRoot);
 
-  const pkgJsonCache: Map<string, any> = new Map();
+  // const pkgJsonCache: Map<string, any> = new Map();
 
-  const readPackageSync: (
-    readFileSync: (file: string) => string | { toString(): string },
-    pkgfile: string
-  ) => Record<string, unknown> = (readFileSync, pkgfile) => {
-    // TODO: Invalidate cache when package.json changes.
-    if (pkgJsonCache.has(pkgfile)) {
-      return pkgJsonCache.get(pkgfile);
-    }
-    // @ts-expect-error: This is what they do internally.
-    const pkg = JSON.parse(readFileSync(pkgfile));
-    pkgJsonCache.set(pkgfile, pkg);
-    return pkg;
-  };
+  // const readPackageSync: (
+  //   readFileSync: (file: string) => string | { toString(): string },
+  //   pkgfile: string
+  // ) => Record<string, unknown> = (readFileSync, pkgfile) => {
+  //   // TODO: Invalidate cache when package.json changes.
+  //   if (pkgJsonCache.has(pkgfile)) {
+  //     return pkgJsonCache.get(pkgfile);
+  //   }
+  //   // @ts-expect-error: This is what they do internally.
+  //   const pkg = JSON.parse(readFileSync(pkgfile));
+  //   pkgJsonCache.set(pkgfile, pkg);
+  //   return pkg;
+  // };
 
   function fastResolve(
     context: ResolutionContext,
@@ -156,26 +156,43 @@ export function withExtendedResolver(
   ): Resolution {
     // TODO: Add improved error handling.
     const fp = otherResolve.sync(moduleName, {
+      // basedir: context.unstable_getRealPath,
       basedir: path.dirname(context.originModulePath),
       extensions: context.sourceExts,
       // Used to ensure files trace to packages instead of node_modules in expo/expo. This is how Metro works and
       // the app doesn't finish without it.
       preserveSymlinks: false,
-      readPackageSync,
+      readPackageSync: (readFileSync, pkgFile) => {
+        return context.getPackage(pkgFile) ?? JSON.parse(readFileSync(pkgfile));
+      },
+      moduleDirectory: context.nodeModulesPaths,
+      // readPackageSync,
       // moduleDirectory: ['packages', 'node_modules'],
       packageFilter(pkg) {
         // set the pkg.main to the first available field in context.mainFields
         for (const field of context.mainFields) {
-          if (pkg[field]) {
+          if (pkg[field] && typeof pkg[field] === 'string') {
+            // object-inspect uses browser: {} in package.json
             pkg.main = pkg[field];
             break;
           }
         }
         return pkg;
       },
+
+      // Not needed but added for parity...
+
+      // @ts-ignore
+      realpathSync: context.unstable_getRealPath,
     });
 
     if (context.sourceExts.some((ext) => fp.endsWith(ext))) {
+      // TODO: Support `browser: { "util.inspect.js": false }` in package.json
+      if (fp.endsWith('object-inspect/util.inspect.js')) {
+        return {
+          type: 'empty',
+        };
+      }
       // if (sourcesRegExp.test(fp)) {
       return {
         type: 'sourceFile',
@@ -417,7 +434,11 @@ export function withExtendedResolver(
       for (const alias of [
         'react-native',
         'expo-modules-core',
+        'react-native-screens',
+        'react-freeze',
+        'react-native-safe-area-context',
         '@react-native/virtualized-lists',
+        '@react-native-masked-view/masked-view',
       ]) {
         if (moduleName === alias) {
           moduleName = '@expo/cli/dist/compiled/' + alias;
@@ -447,9 +468,9 @@ export function withExtendedResolver(
         // if (result.type !== 'sourceFile') {
         //   console.log('??', moduleName, fp, result);
         // }
-        // if (result.type === 'sourceFile' && fp && fp !== result.filePath) {
-        //   console.log('RN >', moduleName, fp, result.filePath, sources);
-        // }
+        if (result.type === 'sourceFile') {
+          // console.log('RN >', moduleName, context.originModulePath, result.filePath);
+        }
 
         // Replace the web resolver with the original one.
         // This is basically an alias for web-only.

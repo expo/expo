@@ -39,7 +39,10 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   let platform = api.caller((caller) => (caller as any)?.platform);
   const filename = api.caller((caller) => (caller as any)?.filename);
 
-  if (filename.match(/\/node_modules\//) && !filename.match(/\/node_modules\/@react-native\//)) {
+  if (
+    filename.match(/\/node_modules\//) &&
+    !filename.match(/\/node_modules\/(expo-router|@expo|@react-native|@react-navigation)\//)
+  ) {
     if (filename.match(/\.m[jt]sx?$/)) {
       // Compile to commonjs for .mjs files.
       return {
@@ -60,19 +63,19 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
     // metro-runtime must be transpiled
 
-    if (
-      filename.match(
-        // /\/node_modules\/(\@babel|react|react-is|react-devtools-core|scheduler|react-refresh|invariant)\//
-        // /\/node_modules\/(\@babel|react|react-is|react-devtools-core|scheduler|react-refresh|invariant|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port)\//
-        /\/node_modules\//
-        // /\/node_modules\/(\@babel|react|react-is|deprecated-react-native-prop-types|react-devtools-core|scheduler|react-refresh|invariant|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port|querystringify|anser|whatwg-fetch|regenerator-runtime|pretty-format|event-target-shim|promise|)\//
-        // /\/node_modules\/(\@babel|react|invariant|deprecated-react-native-prop-types|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|react-is|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|scheduler|requires-port|querystringify|anser|whatwg-fetch|regenerator-runtime|pretty-format|event-target-shim|react-devtools-core|react-refresh|promise|metro-runtime)\//
-      )
-    ) {
-      return {
-        plugins: [getAliasPlugin(platform)!],
-      };
-    }
+    // if (
+    //   filename.match(
+    //     // /\/node_modules\/(\@babel|react|react-is|react-devtools-core|scheduler|react-refresh|invariant)\//
+    //     // /\/node_modules\/(\@babel|react|react-is|react-devtools-core|scheduler|react-refresh|invariant|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port)\//
+    //     /\/node_modules\//
+    //     // /\/node_modules\/(\@babel|react|react-is|deprecated-react-native-prop-types|react-devtools-core|scheduler|react-refresh|invariant|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port|querystringify|anser|whatwg-fetch|regenerator-runtime|pretty-format|event-target-shim|promise|)\//
+    //     // /\/node_modules\/(\@babel|react|invariant|deprecated-react-native-prop-types|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|react-is|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|scheduler|requires-port|querystringify|anser|whatwg-fetch|regenerator-runtime|pretty-format|event-target-shim|react-devtools-core|react-refresh|promise|metro-runtime)\//
+    //   )
+    // ) {
+    //   return {
+    //     plugins: [getAliasPlugin(platform)!],
+    //   };
+    // }
   }
   // console.log('>', filename);
 
@@ -182,16 +185,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
     plugins: [
       ...extraPlugins,
-      // [
-      //   // Redirect all `react-native/*` imports to `@expo/cli/dist/compiled/react-native/*`
-      //   require.resolve('babel-plugin-module-resolver'),
-      //   {
-      //     alias: {
-      //       '^react-native$': '@expo/cli/dist/compiled/react-native',
-      //       '^react-native/(.*)$': '@expo/cli/dist/compiled/react-native/$1',
-      //     },
-      //   },
-      // ],
       // TODO: Remove
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
       require.resolve('@babel/plugin-proposal-export-namespace-from'),
