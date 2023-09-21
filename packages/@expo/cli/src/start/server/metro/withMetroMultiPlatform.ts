@@ -435,7 +435,7 @@ export function withExtendedResolver(
       for (const alias of [
         'react-native',
         'expo-modules-core',
-        // 'react-native-screens',
+        'react-native-screens',
         'react-freeze',
         // 'react-native-safe-area-context',
         // 'deprecated-react-native-prop-types',
