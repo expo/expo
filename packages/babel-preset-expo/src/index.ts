@@ -205,9 +205,14 @@ function getAliasPlugin(platform: string): PluginItem | null {
     aliases['react-native-vector-icons'] = '@expo/vector-icons';
   }
   if (platform !== 'web') {
-    // Redirect all `react-native/*` imports to `@expo/cli/dist/compiled/react-native/*`
-    aliases['^react-native$'] = '@expo/cli/dist/compiled/react-native';
-    aliases['^react-native/(.*)$'] = '@expo/cli/dist/compiled/react-native/\\1';
+    ['react-native'].forEach((moduleId) => {
+      // Redirect all `react-native/*` imports to `@expo/cli/dist/compiled/react-native/*`
+      aliases[`^${moduleId}$`] = `@expo/cli/dist/compiled/${moduleId}`;
+      aliases[`^${moduleId}/(.*)$`] = `@expo/cli/dist/compiled/${moduleId}/\\1`;
+    });
+
+    aliases[`^metro-runtime$`] = `@expo/cli/dist/compiled/metro-runtime/src/index`;
+    aliases[`^metro-runtime/(.*)$`] = `@expo/cli/dist/compiled/metro-runtime/\\1`;
   }
   return [
     require.resolve('babel-plugin-module-resolver'),

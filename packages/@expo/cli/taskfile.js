@@ -24,6 +24,22 @@ export async function build(task, opts) {
 
 // Prebuilt modules
 
+export async function compile_metro_runtime(task, opts) {
+  const rnDir = path.join(require.resolve('metro-runtime/package.json'), '..');
+  const sourceDir = path.relative(__dirname, rnDir) + '/**/*.+(js|jsx|json)';
+
+  await task
+    .source(sourceDir, {
+      ignore: [
+        ...['node_modules/**', '**/__tests__/**', '**/__mocks__/**', '**/__flowtests__/**'].map(
+          (p) => path.relative(__dirname, rnDir) + '/' + p
+        ),
+      ],
+    })
+    .metroBabel('cli', { dev: opts.dev })
+    .target('dist/compiled/metro-runtime');
+}
+
 export async function compile_react_native(task, opts) {
   const rnDir = path.join(require.resolve('react-native/package.json'), '..');
   const rnPkg = require(path.join(rnDir, 'package.json'));
@@ -92,13 +108,14 @@ export async function compile_react_native(task, opts) {
 }
 
 // TODO: @react-native/virtualized-lists
-
+// ../../node_modules/@react-native/normalize-colors/index.js
 // End prebuilt modules
 
 export default async function (task) {
   const opts = { dev: true };
   await task.clear('dist/compiled');
   await task.start('compile_react_native', opts);
+  await task.start('compile_metro_runtime', opts);
 
   await task.clear('build');
   await task.start('build', opts);
