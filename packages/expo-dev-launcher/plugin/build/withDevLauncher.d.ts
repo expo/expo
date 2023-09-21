@@ -1,4 +1,2 @@
-import { ConfigPlugin } from 'expo/config-plugins';
-export declare function modifyJavaMainActivity(content: string): string;
-declare const _default: ConfigPlugin<unknown>;
+declare const _default: import("expo/config-plugins").ConfigPlugin<void>;
 export default _default;
