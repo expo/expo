@@ -126,12 +126,11 @@ export function updatePkgDependencies(
     pkg.dependencies = {};
   }
 
-  // Remove react-native dependency from package if this is a conversion to or from a TV project
+  // Throw an error if EXPO_TV is set and the react-native dependency is wrong
   if (needsReactNativeDependencyChangedForTV(pkg.dependencies, { isTV: env.EXPO_TV })) {
-    Log.warn(
-      `Existing react-native version ${pkg.dependencies['react-native']} cannot be used with EXPO_TV=${env.EXPO_TV}, it will be replaced.`
+    throw new Error(
+      `Existing react-native version ${pkg.dependencies['react-native']} cannot be used with EXPO_TV=${env.EXPO_TV}; it should be replaced with "npm:react-native-tvos@0.72.4-0.`
     );
-    delete pkg.dependencies['react-native'];
   }
 
   const { dependencies, devDependencies } = templatePkg;
@@ -295,19 +294,21 @@ function versionRangesIntersect(rangeA: string | SemverRange, rangeB: string | S
 
 /**
  * Determine if the react-native dependency in the project needs to be replaced
- * when prebuilding and the value of the EXPO_TV environment setting has changed.
+ * when prebuilding and the EXPO_TV environment variable is set
  */
 export function needsReactNativeDependencyChangedForTV(
   dependencies: any,
   params?: { isTV?: boolean }
 ) {
   const rnVersion: string | undefined = dependencies['react-native'];
-  // If the package currently has no react-native dependency, prebuild should add
-  // the template version
-  if (rnVersion === undefined) {
-    return true;
+  if (!params?.isTV) {
+    return false;
   }
-  const rnVersionIsTV = (rnVersion?.indexOf('npm:react-native-tvos') ?? -1) === 0;
-  // Return true if the existing version is not TV, and the template is TV, or vice versa
-  return (params?.isTV ?? false) !== rnVersionIsTV;
+  // If the package currently has no react-native dependency, prebuild will add
+  // the template version anyway
+  if (rnVersion === undefined) {
+    return false;
+  }
+  // Return true if the existing version is not the TV fork
+  return (rnVersion?.indexOf('npm:react-native-tvos') ?? -1) !== 0;
 }
