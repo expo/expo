@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS`, fix permissions error on `iOS 17`. ([#24545](https://github.com/expo/expo/pull/24545) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 12.0.0 — 2023-09-04
