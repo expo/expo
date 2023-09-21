@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Only modify quoted or prefixed android package names.
+
 ### 💡 Others
 
 - Update tests. ([#25211](https://github.com/expo/expo/pull/25211) by [@EvanBacon](https://github.com/EvanBacon))
