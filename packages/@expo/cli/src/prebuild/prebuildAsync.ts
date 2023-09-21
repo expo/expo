@@ -83,12 +83,7 @@ export async function prebuildAsync(
   // Check for malformed native folders
   if (!options.clean) {
     // Check if the existing project folders are malformed.
-    await promptToClearMalformedNativeProjectsAsync(
-      projectRoot,
-      options.platforms,
-      pkg,
-      env.EXPO_TV
-    );
+    await promptToClearMalformedNativeProjectsAsync(projectRoot, options.platforms, env.EXPO_TV);
   }
 
   // Create native projects from template.

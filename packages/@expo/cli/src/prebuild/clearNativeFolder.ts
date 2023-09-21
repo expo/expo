@@ -1,15 +1,14 @@
-import { PackageJSONConfig } from '@expo/config';
 import { AndroidConfig, IOSConfig, ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import { needsReactNativeDependencyChangedForTV } from './updatePackageJson';
 import * as Log from '../log';
 import { directoryExistsAsync } from '../utils/dir';
 import { isInteractive } from '../utils/interactive';
 import { logNewSection } from '../utils/ora';
 import { confirmAsync } from '../utils/prompts';
+import { needsIosProjectChangedForTV } from '../utils/tv';
 
 type ArbitraryPlatform = ModPlatform | string;
 
@@ -93,7 +92,6 @@ async function filterPlatformsThatDoNotExistAsync(
 export async function getMalformedNativeProjectsAsync(
   projectRoot: string,
   platforms: ArbitraryPlatform[],
-  pkg?: PackageJSONConfig,
   isTV?: boolean
 ): Promise<ArbitraryPlatform[]> {
   const VERIFIERS: Record<ArbitraryPlatform, (root: string) => Promise<boolean>> = {
@@ -101,9 +99,9 @@ export async function getMalformedNativeProjectsAsync(
     ios: hasRequiredIOSFilesAsync,
   };
 
-  const needsTVChange = pkg
-    ? needsReactNativeDependencyChangedForTV(pkg.dependencies, { isTV })
-    : false;
+  // If this is true, then both ios and android folders were created with the wrong template,
+  // and need to be cleaned.
+  const needsTVChange = needsIosProjectChangedForTV(projectRoot, { isTV });
 
   const checkablePlatforms = platforms.filter((platform) => platform in VERIFIERS);
   const checkPlatforms = await filterPlatformsThatDoNotExistAsync(projectRoot, checkablePlatforms);
@@ -129,10 +127,9 @@ export async function getMalformedNativeProjectsAsync(
 export async function promptToClearMalformedNativeProjectsAsync(
   projectRoot: string,
   checkPlatforms: ArbitraryPlatform[],
-  pkg?: PackageJSONConfig,
   isTV?: boolean
 ) {
-  const platforms = await getMalformedNativeProjectsAsync(projectRoot, checkPlatforms, pkg, isTV);
+  const platforms = await getMalformedNativeProjectsAsync(projectRoot, checkPlatforms, isTV);
 
   if (!platforms.length) {
     return;

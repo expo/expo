@@ -9,6 +9,7 @@ import * as Log from '../log';
 import { env } from '../utils/env';
 import { isModuleSymlinked } from '../utils/isModuleSymlinked';
 import { logNewSection } from '../utils/ora';
+import { needsReactNativeDependencyChangedForTV } from '../utils/tv';
 
 export type DependenciesMap = { [key: string]: string | number };
 
@@ -290,25 +291,4 @@ function versionRangesIntersect(rangeA: string | SemverRange, rangeB: string | S
   } catch {
     return false;
   }
-}
-
-/**
- * Determine if the react-native dependency in the project needs to be replaced
- * when prebuilding and the EXPO_TV environment variable is set
- */
-export function needsReactNativeDependencyChangedForTV(
-  dependencies: any,
-  params?: { isTV?: boolean }
-) {
-  const rnVersion: string | undefined = dependencies['react-native'];
-  if (!params?.isTV) {
-    return false;
-  }
-  // If the package currently has no react-native dependency, prebuild will add
-  // the template version anyway
-  if (rnVersion === undefined) {
-    return false;
-  }
-  // Return true if the existing version is not the TV fork
-  return (rnVersion?.indexOf('npm:react-native-tvos') ?? -1) !== 0;
 }
