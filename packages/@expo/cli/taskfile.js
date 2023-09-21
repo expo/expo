@@ -91,6 +91,8 @@ export async function compile_react_native(task, opts) {
     .target('dist/compiled/react-native');
 }
 
+// TODO: @react-native/virtualized-lists
+
 // End prebuilt modules
 
 export default async function (task) {

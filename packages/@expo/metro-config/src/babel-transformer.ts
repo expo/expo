@@ -219,6 +219,9 @@ const transform: BabelTransformer['transform'] = ({
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
         isServer: options.customTransformOptions?.environment === 'node',
+
+        isPrecompiled: !!/\/@expo\/cli\/dist\/compiled\//.test(filename),
+        filename,
       },
       ast: true,
 

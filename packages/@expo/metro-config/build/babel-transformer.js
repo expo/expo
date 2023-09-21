@@ -243,7 +243,9 @@ const transform = ({
         platform: options.platform,
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
-        isServer: ((_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment) === 'node'
+        isServer: ((_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment) === 'node',
+        isPrecompiled: !!/\/@expo\/cli\/dist\/compiled\//.test(filename),
+        filename
       },
       ast: true,
       // NOTE(EvanBacon): We split the parse/transform steps up to accommodate

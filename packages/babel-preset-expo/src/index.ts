@@ -25,17 +25,61 @@ export type BabelPresetExpoOptions = {
 };
 
 function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): TransformOptions {
+  const isPrecompiled = api.caller((caller) => (caller as any)?.isPrecompiled);
+
+  if (isPrecompiled) {
+    // console.log('filename', filename);
+    return {};
+  }
+
   const { web = {}, native = {}, reanimated } = options;
 
   const bundler = api.caller(getBundler);
   const isWebpack = bundler === 'webpack';
   let platform = api.caller((caller) => (caller as any)?.platform);
+  const filename = api.caller((caller) => (caller as any)?.filename);
+
+  if (filename.match(/\/node_modules\//) && !filename.match(/\/node_modules\/@react-native\//)) {
+    if (filename.match(/\.m[jt]sx?$/)) {
+      // Compile to commonjs for .mjs files.
+      return {
+        presets: [
+          [
+            '@babel/preset-env',
+            {
+              modules: 'commonjs',
+              targets: {
+                node: 'current',
+              },
+            },
+          ],
+        ],
+      };
+    }
+
+    // metro-runtime must be transpiled
+
+    if (
+      filename.match(
+        // /\/node_modules\/(\@babel|react|react-is|react-devtools-core|scheduler|react-refresh|invariant)\//
+        // /\/node_modules\/(\@babel|react|react-is|react-devtools-core|scheduler|react-refresh|invariant|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port)\//
+        /\/node_modules\/(\@babel|react|react-is|deprecated-react-native-prop-types|react-devtools-core|scheduler|react-refresh|invariant|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|requires-port|querystringify|anser|whatwg-fetch|regenerator-runtime|pretty-format|event-target-shim|promise|)\//
+        // /\/node_modules\/(\@babel|react|invariant|deprecated-react-native-prop-types|memoize-one|nullthrows|use-sync-external-store|prop-types|base64-js|react-is|stacktrace-parser|blueimp-md5|url-parse|path-browserify|object-assign|scheduler|requires-port|querystringify|anser|whatwg-fetch|regenerator-runtime|pretty-format|event-target-shim|react-devtools-core|react-refresh|promise|metro-runtime)\//
+      )
+    ) {
+      return {};
+    }
+    console.log('>', filename);
+  }
 
   // If the `platform` prop is not defined then this must be a custom config that isn't
   // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
   if (!platform && isWebpack) {
     platform = 'web';
   }
+
+  // if (platform !== 'web') {
+  // }
 
   const platformOptions: BabelPresetExpoPlatformOptions =
     platform === 'web'
@@ -80,7 +124,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // back to the preset.
   }
 
-  const aliasPlugin = getAliasPlugin();
+  const aliasPlugin = getAliasPlugin(platform);
   if (aliasPlugin) {
     extraPlugins.push(aliasPlugin);
   }
@@ -155,19 +199,20 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   };
 }
 
-function getAliasPlugin(): PluginItem | null {
-  // if (!hasModule('@expo/vector-icons')) {
-  //   return null;
-  // }
+function getAliasPlugin(platform: string): PluginItem | null {
+  const aliases: Record<string, string> = {};
+  if (hasModule('@expo/vector-icons')) {
+    aliases['react-native-vector-icons'] = '@expo/vector-icons';
+  }
+  if (platform !== 'web') {
+    // Redirect all `react-native/*` imports to `@expo/cli/dist/compiled/react-native/*`
+    aliases['^react-native$'] = '@expo/cli/dist/compiled/react-native';
+    aliases['^react-native/(.*)$'] = '@expo/cli/dist/compiled/react-native/\\1';
+  }
   return [
     require.resolve('babel-plugin-module-resolver'),
     {
-      alias: {
-        'react-native-vector-icons': '@expo/vector-icons',
-        // Redirect all `react-native/*` imports to `@expo/cli/dist/compiled/react-native/*`
-        '^react-native$': '@expo/cli/dist/compiled/react-native',
-        '^react-native/(.+)$': '@expo/cli/dist/compiled/react-native/\\1',
-      },
+      alias: aliases,
     },
   ];
 }
