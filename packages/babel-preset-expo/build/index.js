@@ -32,7 +32,7 @@ function babelPresetExpo(api, options = {}) {
             };
         }
         // metro-runtime must be transpiled
-        console.log('>', filename);
+        // console.log('>', filename);
         return {
         // plugins: [getAliasPlugin(platform)!],
         };

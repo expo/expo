@@ -438,7 +438,7 @@ export function withExtendedResolver(
         'react-native-screens',
         'react-freeze',
         'react-native-safe-area-context',
-        // 'deprecated-react-native-prop-types',
+        'deprecated-react-native-prop-types',
         '@react-native/virtualized-lists',
         '@react-native-masked-view/masked-view',
         'pretty-format',

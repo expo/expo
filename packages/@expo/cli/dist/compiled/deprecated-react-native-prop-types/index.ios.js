@@ -1,10 +1,10 @@
 /******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 32:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var normalizeColor = __nccwpck_require__(370);
@@ -44,7 +44,6 @@ module.exports = ColorPropType;
 /***/ 208:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var PropTypes = __nccwpck_require__(900);
@@ -61,7 +60,6 @@ module.exports = DeprecatedEdgeInsetsPropType;
 /***/ 237:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var DeprecatedColorPropType = __nccwpck_require__(32);
@@ -108,7 +106,6 @@ module.exports = DeprecatedImagePropType;
 /***/ 165:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var PropTypes = __nccwpck_require__(900);
@@ -131,12 +128,11 @@ module.exports = ImageSourcePropType;
 /***/ 353:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var DeprecatedColorPropType = __nccwpck_require__(32);
 var DeprecatedLayoutPropTypes = __nccwpck_require__(428);
-var DeprecatedShadowPropTypesIOS = __nccwpck_require__(136);
+var DeprecatedShadowPropTypesIOS = __nccwpck_require__(583);
 var DeprecatedTransformPropTypes = __nccwpck_require__(576);
 var PropTypes = __nccwpck_require__(900);
 var DeprecatedImageStylePropTypes = Object.assign({}, DeprecatedLayoutPropTypes, DeprecatedShadowPropTypesIOS, DeprecatedTransformPropTypes, {
@@ -163,7 +159,6 @@ module.exports = DeprecatedImageStylePropTypes;
 /***/ 428:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var PropTypes = __nccwpck_require__(900);
@@ -252,7 +247,6 @@ module.exports = DeprecatedLayoutPropTypes;
 /***/ 737:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var PropTypes = __nccwpck_require__(900);
@@ -264,10 +258,29 @@ module.exports = PointPropType;
 
 /***/ }),
 
+/***/ 583:
+/***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
+
+
+
+var DeprecatedColorPropType = __nccwpck_require__(32);
+var PropTypes = __nccwpck_require__(900);
+var DeprecatedShadowPropTypesIOS = {
+  shadowColor: DeprecatedColorPropType,
+  shadowOffset: PropTypes.shape({
+    height: PropTypes.number,
+    width: PropTypes.number
+  }),
+  shadowOpacity: PropTypes.number,
+  shadowRadius: PropTypes.number
+};
+module.exports = DeprecatedShadowPropTypesIOS;
+
+/***/ }),
+
 /***/ 882:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var deprecatedCreateStrictShapeTypeChecker = __nccwpck_require__(333);
@@ -310,7 +323,6 @@ module.exports = DeprecatedStyleSheetPropType;
 /***/ 409:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var DeprecatedColorPropType = __nccwpck_require__(32);
@@ -390,7 +402,6 @@ module.exports = DeprecatedTextInputPropTypes;
 /***/ 996:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var DeprecatedColorPropType = __nccwpck_require__(32);
@@ -461,7 +472,6 @@ module.exports = DeprecatedTextPropTypes;
 /***/ 375:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var DeprecatedColorPropType = __nccwpck_require__(32);
@@ -500,7 +510,6 @@ module.exports = DeprecatedTextStylePropTypes;
 /***/ 576:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var PropTypes = __nccwpck_require__(900);
@@ -538,7 +547,6 @@ module.exports = DeprecatedTransformPropTypes;
 /***/ 507:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var PropTypes = __nccwpck_require__(900);
@@ -556,7 +564,6 @@ module.exports = DeprecatedViewAccessibility;
 /***/ 360:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var DeprecatedEdgeInsetsPropType = __nccwpck_require__(208);
@@ -679,12 +686,11 @@ module.exports = DeprecatedViewPropTypes;
 /***/ 143:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var DeprecatedColorPropType = __nccwpck_require__(32);
 var DeprecatedLayoutPropTypes = __nccwpck_require__(428);
-var DeprecatedShadowPropTypesIOS = __nccwpck_require__(136);
+var DeprecatedShadowPropTypesIOS = __nccwpck_require__(583);
 var DeprecatedTransformPropTypes = __nccwpck_require__(576);
 var PropTypes = __nccwpck_require__(900);
 var DeprecatedViewStylePropTypes = Object.assign({}, DeprecatedLayoutPropTypes, DeprecatedShadowPropTypesIOS, DeprecatedTransformPropTypes, {
@@ -728,7 +734,6 @@ module.exports = DeprecatedViewStylePropTypes;
 /***/ 333:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 var invariant = __nccwpck_require__(251);
@@ -777,7 +782,6 @@ module.exports = deprecatedCreateStrictShapeTypeChecker;
 /***/ 692:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
-"use strict";
 
 
 module.exports = {
@@ -806,18 +810,9 @@ module.exports = {
 
 /***/ }),
 
-/***/ 136:
-/***/ (function(module) {
-
-module.exports = eval("require")("./DeprecatedShadowPropTypesIOS");
-
-
-/***/ }),
-
 /***/ 370:
 /***/ (function(module) {
 
-"use strict";
 module.exports = require("@react-native/normalize-colors");
 
 /***/ }),
@@ -825,7 +820,6 @@ module.exports = require("@react-native/normalize-colors");
 /***/ 251:
 /***/ (function(module) {
 
-"use strict";
 module.exports = require("invariant");
 
 /***/ }),
@@ -833,7 +827,6 @@ module.exports = require("invariant");
 /***/ 900:
 /***/ (function(module) {
 
-"use strict";
 module.exports = require("prop-types");
 
 /***/ })

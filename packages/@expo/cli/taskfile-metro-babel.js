@@ -101,7 +101,7 @@ module.exports = function (task) {
     }
 
     for (const platform of platforms) {
-      const endRegex = new RegExp(`.${platform}.[jt]sx?$`, 'i');
+      const endRegex = new RegExp(`\\.${platform}\\.[jt]sx?$`, 'i');
       if (file.base.match(endRegex)) {
         file.base = file.base.replace(endRegex, '.js');
         break;
