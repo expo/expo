@@ -131,7 +131,64 @@ export function withExtendedResolver(
 
   const isWebEnabled = platforms.includes('web');
 
-  const { resolve } = importMetroResolverFromProject(projectRoot);
+  const { resolve: resolveWithMetro } = importMetroResolverFromProject(projectRoot);
+
+  const pkgJsonCache: Map<string, any> = new Map();
+
+  const readPackageSync: (
+    readFileSync: (file: string) => string | { toString(): string },
+    pkgfile: string
+  ) => Record<string, unknown> = (readFileSync, pkgfile) => {
+    // TODO: Invalidate cache when package.json changes.
+    if (pkgJsonCache.has(pkgfile)) {
+      return pkgJsonCache.get(pkgfile);
+    }
+    // @ts-expect-error: This is what they do internally.
+    const pkg = JSON.parse(readFileSync(pkgfile));
+    pkgJsonCache.set(pkgfile, pkg);
+    return pkg;
+  };
+
+  function fastResolve(
+    context: ResolutionContext,
+    moduleName: string,
+    platform: string | null
+  ): Resolution {
+    // TODO: Add improved error handling.
+    const fp = otherResolve.sync(moduleName, {
+      basedir: path.dirname(context.originModulePath),
+      extensions: context.sourceExts,
+      // Used to ensure files trace to packages instead of node_modules in expo/expo. This is how Metro works and
+      // the app doesn't finish without it.
+      preserveSymlinks: false,
+      readPackageSync,
+      // moduleDirectory: ['packages', 'node_modules'],
+      packageFilter(pkg) {
+        // set the pkg.main to the first available field in context.mainFields
+        for (const field of context.mainFields) {
+          if (pkg[field]) {
+            pkg.main = pkg[field];
+            break;
+          }
+        }
+        return pkg;
+      },
+    });
+
+    if (context.sourceExts.some((ext) => fp.endsWith(ext))) {
+      // if (sourcesRegExp.test(fp)) {
+      return {
+        type: 'sourceFile',
+        filePath: fp,
+      };
+    } else {
+      // TODO: Asset extensions...
+      return {
+        type: 'assetFiles',
+        filePaths: [fp],
+      };
+    }
+  }
 
   const extraNodeModules: { [key: string]: Record<string, string> } = {};
 
@@ -272,21 +329,23 @@ export function withExtendedResolver(
         mainFields = preferredMainFields[platform];
       }
       function doResolve(moduleName: string): Resolution | null {
-        return resolve(
+        // return resolveWithMetro(
+        return fastResolve(
           {
             ...context,
             resolveRequest: undefined,
             mainFields,
+            sourceExts: sources,
 
             // Passing `mainFields` directly won't be considered (in certain version of Metro)
             // we need to extend the `getPackageMainPath` directly to
             // use platform specific `mainFields`.
             // @ts-ignore
-            getPackageMainPath(packageJsonPath) {
-              // @ts-expect-error: mainFields is not on type
-              const package_ = context.moduleCache.getPackage(packageJsonPath);
-              return package_.getMain(mainFields);
-            },
+            // getPackageMainPath(packageJsonPath) {
+            //   // @ts-expect-error: mainFields is not on type
+            //   const package_ = context.moduleCache.getPackage(packageJsonPath);
+            //   return package_.getMain(mainFields);
+            // },
           },
           moduleName,
           platform
@@ -311,10 +370,7 @@ export function withExtendedResolver(
       let result: Resolution | null = null;
       let sources = sourceExts;
       let sourcesRegExp = sourceExtsEndsWithRegex;
-      // moduleName.includes('event-target-shim') &&
-      // context.originModulePath.includes(path.sep + 'react-native' + path.sep)
-      //   ? sourceExtsWithoutMjs
-      //   : sourceExts;
+
       // React Native uses `event-target-shim` incorrectly and this causes the native runtime
       // to fail to load. This is a temporary workaround until we can fix this upstream.
       // https://github.com/facebook/react-native/pull/38628
@@ -324,7 +380,7 @@ export function withExtendedResolver(
       ) {
         sources = sourceExtsWithoutMjs;
         sourcesRegExp = sourceExtsWithoutMjsEndsWithRegex;
-        context.sourceExts = context.sourceExts.filter((f) => !f.includes('mjs'));
+        // context.sourceExts = context.sourceExts.filter((f) => !f.includes('mjs'));
         debug('Skip mjs support for event-target-shim in:', context.originModulePath);
       }
 
@@ -385,43 +441,7 @@ export function withExtendedResolver(
         );
       }
 
-      let fp: string = '';
-
-      // if (moduleName !== 'event-target-shim') {
-      // console.log('t', moduleName);
-      fp = otherResolve.sync(moduleName, {
-        basedir: path.dirname(context.originModulePath),
-        extensions: sources,
-        preserveSymlinks: false,
-        // moduleDirectory: ['packages', 'node_modules'],
-        packageFilter(pkg) {
-          // set the pkg.main to the first available field in context.mainFields
-          for (const field of context.mainFields) {
-            if (pkg[field]) {
-              pkg.main = pkg[field];
-              break;
-            }
-          }
-          return pkg;
-        },
-      });
-
-      if (sourcesRegExp.test(fp)) {
-        result = {
-          type: 'sourceFile',
-          filePath: fp,
-        };
-      } else {
-        // TODO: Asset extensions...
-        result = {
-          type: 'assetFiles',
-          filePaths: [fp],
-        };
-      }
-
-      // return result;
-      // }
-      // result ??= doResolve(moduleName);
+      result ??= doResolve(moduleName);
 
       if (result) {
         // if (result.type !== 'sourceFile') {
