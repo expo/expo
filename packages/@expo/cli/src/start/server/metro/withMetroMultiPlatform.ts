@@ -443,6 +443,7 @@ export function withExtendedResolver(
         '@react-native-masked-view/masked-view',
         'pretty-format',
         '@react-navigation/core',
+        '@react-navigation/routers',
       ]) {
         if (moduleName === alias) {
           moduleName = '@expo/cli/dist/compiled/' + alias;
