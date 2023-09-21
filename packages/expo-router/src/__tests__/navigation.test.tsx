@@ -276,42 +276,38 @@ it('does not loop infinitely when pushing a screen with empty options to an inva
   expect(screen).toHavePathname('/main/welcome');
 });
 
-it('can push nested initial route name', () => {
+it('can navigate to hoisted groups', () => {
+  /** https://github.com/expo/router/issues/805 */
+
   renderRouter({
-    _layout: {
-      unstable_settings: {
-        // Should be able to push another stack even when this is set.
-        initialRouteName: 'index',
-      },
-      default: () => <Stack />,
-    },
-    index: () => <Text />,
-    'settings/_layout': () => <Slot />,
-    'settings/index': () => <Text />,
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/route': () => <Text testID="route" />,
   });
 
   expect(screen).toHavePathname('/');
-  act(() => router.push('/settings'));
-  expect(screen).toHavePathname('/settings');
+  act(() => router.push('/example/(a)/route'));
+
+  expect(screen).toHavePathname('/example/route');
+  expect(screen.getByTestId('route')).toBeTruthy();
 });
 
-it('can replace nested initial route name', () => {
+it('can navigate to nested groups', () => {
   renderRouter({
-    _layout: {
-      unstable_settings: {
-        // Should be able to push another stack even when this is set.
-        initialRouteName: 'index',
-      },
-      default: () => <Stack />,
-    },
-    index: () => <Text />,
-    'settings/_layout': () => <Slot />,
-    'settings/index': () => <Text />,
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/route': () => <Text testID="route" />,
   });
 
   expect(screen).toHavePathname('/');
-  act(() => router.replace('/settings'));
-  expect(screen).toHavePathname('/settings');
+
+  act(() => router.push('/example/(a)/folder/(d)/route'));
+
+  expect(screen).toHavePathname('/example/folder/route');
+  expect(screen.getByTestId('route')).toBeTruthy();
 });
 
 it('can check goBack before navigation mounts', () => {
