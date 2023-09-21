@@ -439,8 +439,8 @@ export function withExtendedResolver(
         'react-freeze',
         // 'react-native-safe-area-context',
         // 'deprecated-react-native-prop-types',
-        // '@react-native/virtualized-lists',
-        // '@react-native-masked-view/masked-view',
+        '@react-native/virtualized-lists',
+        '@react-native-masked-view/masked-view',
         'pretty-format',
       ]) {
         if (moduleName === alias) {
