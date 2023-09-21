@@ -15,7 +15,9 @@ namespace react = facebook::react;
 namespace expo {
 
 class JavaScriptValue;
+
 class JavaScriptObject;
+
 class JSIInteropModuleRegistry;
 
 #if REACT_NATIVE_TARGET_VERSION >= 73
@@ -79,17 +81,18 @@ public:
    */
   void drainJSEventLoop();
 
+  void installMainObject();
+
   std::shared_ptr<react::CallInvoker> jsInvoker;
   std::shared_ptr<NativeMethodCallInvokerCompatible> nativeInvoker;
 
   std::shared_ptr<jsi::Object> getMainObject();
 
   JSIInteropModuleRegistry *getModuleRegistry();
+
 private:
   std::shared_ptr<jsi::Runtime> runtime;
   std::shared_ptr<jsi::Object> mainObject;
   JSIInteropModuleRegistry *jsiInteropModuleRegistry;
-
-  void installMainObject();
 };
 } // namespace expo
