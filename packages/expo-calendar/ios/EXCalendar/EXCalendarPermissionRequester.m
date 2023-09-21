@@ -53,7 +53,7 @@
 {
   EKEventStore *eventStore = [[EKEventStore alloc] init];
   EX_WEAKIFY(self)
-  if (@available(iOS 17, *)) {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 170000
     [eventStore requestFullAccessToEventsWithCompletion:^(BOOL granted, NSError * _Nullable error) {
       EX_STRONGIFY(self)
       if (error && error.code != 100) {
@@ -62,7 +62,7 @@
         resolve([self getPermissions]);
       }
     }];
-  } else {
+#else
     [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
       EX_STRONGIFY(self)
       // Error code 100 is a when the user denies permission; in that case we don't want to reject.
@@ -72,7 +72,7 @@
         resolve([self getPermissions]);
       }
     }];
-  }
+#endif
 }
 
 

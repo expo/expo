@@ -45,7 +45,7 @@ module.exports = {
       headless: Boolean(process.env.CI),
       device: {
         type: 'iPhone 14 Pro',
-        os: 'iOS 17.0',
+        os: 'iOS 16.4',
       },
     },
     emulator: {
