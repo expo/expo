@@ -136,7 +136,7 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
       if (errorQueue.isEmpty()) {
         return@runOnUiThread
       }
-      val (isFatal, errorMessage) = sendErrorsToErrorActivity()
+      val (isFatal, errorMessage, errorHeader) = sendErrorsToErrorActivity()
       if (!shouldShowErrorScreen(errorMessage)) {
         return@runOnUiThread
       }
@@ -162,6 +162,7 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
       onError(intent)
       intent.apply {
         putExtra(ErrorActivity.DEBUG_MODE_KEY, isDebugModeEnabled)
+        putExtra(ErrorActivity.ERROR_HEADER_KEY, errorHeader)
         putExtra(ErrorActivity.USER_ERROR_MESSAGE_KEY, errorMessage.userErrorMessage())
         putExtra(
           ErrorActivity.DEVELOPER_ERROR_MESSAGE_KEY,
@@ -199,9 +200,10 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
       // Otherwise onResume will consumeErrorQueue
     }
 
-    private fun sendErrorsToErrorActivity(): Pair<Boolean, ExponentErrorMessage> {
+    private fun sendErrorsToErrorActivity(): Triple<Boolean, ExponentErrorMessage, String?> {
       var isFatal = false
       var errorMessage = developerErrorMessage("")
+      var errorHeader: String? = null
       synchronized(errorQueue) {
         while (!errorQueue.isEmpty()) {
           val error = errorQueue.remove()
@@ -209,12 +211,13 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
 
           // Just use the last error message for now, is there a better way to do this?
           errorMessage = error.errorMessage
+          errorHeader = error.errorHeader
           if (error.isFatal) {
             isFatal = true
           }
         }
       }
-      return Pair(isFatal, errorMessage)
+      return Triple(isFatal, errorMessage, errorHeader)
     }
   }
 }
