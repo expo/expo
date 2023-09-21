@@ -933,7 +933,7 @@ class Kernel : KernelInterface() {
   }
 
   override fun handleError(exception: Exception) {
-    handleReactNativeError(ExceptionUtils.exceptionToErrorMessage(exception), null, -1, true)
+    handleReactNativeError(ExceptionUtils.exceptionToErrorMessage(exception), null, -1, true, ExceptionUtils.exceptionToErrorHeader(exception))
   }
 
   // TODO: probably need to call this from other places.
@@ -1080,7 +1080,8 @@ class Kernel : KernelInterface() {
       errorMessage: ExponentErrorMessage,
       detailsUnversioned: Any?,
       exceptionId: Int?,
-      isFatal: Boolean
+      isFatal: Boolean,
+      errorHeader: String? = null,
     ) {
       val stackList = ArrayList<Bundle>()
       if (detailsUnversioned != null) {
@@ -1120,7 +1121,7 @@ class Kernel : KernelInterface() {
       val stack = stackList.toTypedArray()
       BaseExperienceActivity.addError(
         ExponentError(
-          errorMessage, stack,
+          errorMessage, errorHeader, stack,
           getExceptionId(exceptionId), isFatal
         )
       )

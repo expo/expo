@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package host.exp.exponent.kernel
 
-private const val MAX_LENGTH = 300
+private const val MAX_LENGTH = 600
 
 class ExponentErrorMessage(
   private var userErrorMessage: String?,
