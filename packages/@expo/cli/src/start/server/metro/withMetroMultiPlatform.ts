@@ -442,6 +442,7 @@ export function withExtendedResolver(
         '@react-native/virtualized-lists',
         '@react-native-masked-view/masked-view',
         'pretty-format',
+        '@react-navigation/core',
       ]) {
         if (moduleName === alias) {
           moduleName = '@expo/cli/dist/compiled/' + alias;

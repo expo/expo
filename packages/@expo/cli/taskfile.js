@@ -224,6 +224,97 @@ export async function compile_deprecated_react_native_prop_types(task, opts) {
         ...externals,
       },
       target: 'es5',
+      minify: true,
+    })
+    .rename('index.ios.js')
+    .target('dist/compiled/' + moduleId);
+}
+
+export async function compile_react_navigation_core(task, opts) {
+  const moduleId = '@react-navigation/core';
+  const externals = {
+    'prop-types': 'prop-types',
+
+    '@react-navigation/routers': '@react-navigation/routers',
+    'escape-string-regexp': 'escape-string-regexp',
+    nanoid: 'nanoid',
+    'nanoid/non-secure': 'nanoid/non-secure',
+    'query-string': 'query-string',
+    'react-is': 'react-is',
+    'use-latest-callback': 'use-latest-callback',
+  };
+
+  const rnDir = path.join(require.resolve(moduleId + '/package.json'), '../src');
+  const sourceDir = path.relative(__dirname, rnDir) + '/**/*.+(js|ts|tsx)';
+
+  const out = `dist/compiled/${moduleId}/_temp-ios`;
+  return task
+    .source(sourceDir, {
+      ignore: [
+        ...['node_modules/**', '**/__tests__/**', '**/__mocks__/**'].map(
+          (p) => path.relative(__dirname, rnDir) + '/' + p
+        ),
+      ],
+    })
+    .metroBabel('cli', { dev: opts.dev })
+    .collapsePlatformExtensions('ios')
+    .target(out)
+    .source(path.join(out, 'index.js'))
+    .ncc({
+      packageName: moduleId,
+      externals: {
+        invariant: 'invariant',
+        react: 'react',
+        'react/jsx-runtime': 'react/jsx-runtime',
+        'react-native': '@expo/cli/dist/compiled/react-native',
+        'react-native/Libraries/Utilities/codegenNativeComponent':
+          '@expo/cli/dist/compiled/react-native/Libraries/Utilities/codegenNativeComponent',
+
+        '@babel/runtime/helpers/interopRequireDefault':
+          '@babel/runtime/helpers/interopRequireDefault',
+        '@babel/runtime/helpers/classCallCheck': '@babel/runtime/helpers/classCallCheck',
+        '@babel/runtime/helpers/createClass': '@babel/runtime/helpers/createClass',
+        '@babel/runtime/helpers/inherits': '@babel/runtime/helpers/inherits',
+        '@babel/runtime/helpers/possibleConstructorReturn':
+          '@babel/runtime/helpers/possibleConstructorReturn',
+        '@babel/runtime/helpers/getPrototypeOf': '@babel/runtime/helpers/getPrototypeOf',
+        '@babel/runtime/helpers/toPropertyKey': '@babel/runtime/helpers/toPropertyKey',
+        '@babel/runtime/helpers/typeof': '@babel/runtime/helpers/typeof',
+        '@babel/runtime/helpers/toPrimitive': '@babel/runtime/helpers/toPrimitive',
+        '@babel/runtime/helpers/setPrototypeOf': '@babel/runtime/helpers/setPrototypeOf',
+        '@babel/runtime/helpers/assertThisInitialized':
+          '@babel/runtime/helpers/assertThisInitialized',
+        '@babel/runtime/helpers/slicedToArray': '@babel/runtime/helpers/slicedToArray',
+        '@babel/runtime/helpers/arrayWithHoles': '@babel/runtime/helpers/arrayWithHoles',
+        '@babel/runtime/helpers/iterableToArrayLimit':
+          '@babel/runtime/helpers/iterableToArrayLimit',
+        '@babel/runtime/helpers/unsupportedIterableToArray':
+          '@babel/runtime/helpers/unsupportedIterableToArray',
+        '@babel/runtime/helpers/arrayLikeToArray': '@babel/runtime/helpers/arrayLikeToArray',
+        '@babel/runtime/helpers/nonIterableRest': '@babel/runtime/helpers/nonIterableRest',
+        '@babel/runtime/helpers/toConsumableArray': '@babel/runtime/helpers/toConsumableArray',
+        '@babel/runtime/helpers/arrayWithoutHoles': '@babel/runtime/helpers/arrayWithoutHoles',
+        '@babel/runtime/helpers/iterableToArray': '@babel/runtime/helpers/iterableToArray',
+        '@babel/runtime/helpers/nonIterableSpread': '@babel/runtime/helpers/nonIterableSpread',
+        '@babel/runtime/helpers/wrapNativeSuper': '@babel/runtime/helpers/wrapNativeSuper',
+        '@babel/runtime/helpers/isNativeFunction': '@babel/runtime/helpers/isNativeFunction',
+        '@babel/runtime/helpers/construct': '@babel/runtime/helpers/construct',
+        '@babel/runtime/helpers/isNativeReflectConstruct':
+          '@babel/runtime/helpers/isNativeReflectConstruct',
+        '@babel/runtime/helpers/asyncToGenerator': '@babel/runtime/helpers/asyncToGenerator',
+        '@babel/runtime/helpers/get': '@babel/runtime/helpers/get',
+        '@babel/runtime/helpers/superPropBase': '@babel/runtime/helpers/superPropBase',
+        '@babel/runtime/helpers/objectWithoutProperties':
+          '@babel/runtime/helpers/objectWithoutProperties',
+        '@babel/runtime/helpers/objectWithoutPropertiesLoose':
+          '@babel/runtime/helpers/objectWithoutPropertiesLoose',
+        '@babel/runtime/helpers/defineProperty': '@babel/runtime/helpers/defineProperty',
+        '@babel/runtime/helpers/toArray': '@babel/runtime/helpers/toArray',
+        '@babel/runtime/helpers/extends': '@babel/runtime/helpers/extends',
+
+        ...externals,
+      },
+      target: 'es5',
       minify: false,
     })
     .rename('index.ios.js')
@@ -455,22 +546,24 @@ export async function compile_react_native(task, opts) {
 
 export default async function (task) {
   const opts = { dev: true };
-  await task.clear('dist/compiled');
-  await task.start('compile_react_native', opts);
-  await task.start('compile_metro_runtime', opts);
-  await task.start('compile__react_native_virtualized_lists', opts);
-  // await task.clear('dist/compiled/expo-modules-core');
-  await task.start('compile_expo_modules_core', opts);
-  // await task.clear('dist/compiled/react-native-safe-area-context');
-  await task.start('compile_react_native_safe_area_context', opts);
+  // await task.clear('dist/compiled');
+  // await task.start('compile_react_native', opts);
+  // await task.start('compile_metro_runtime', opts);
+  // await task.start('compile__react_native_virtualized_lists', opts);
+  // // await task.clear('dist/compiled/expo-modules-core');
+  // await task.start('compile_expo_modules_core', opts);
+  // // await task.clear('dist/compiled/react-native-safe-area-context');
+  // await task.start('compile_react_native_safe_area_context', opts);
 
-  // await task.clear('dist/compiled/react-native-screens');
-  await task.start('compile_react_native_screens', opts);
-  // await task.clear('dist/compiled/react-freeze');
-  await task.start('compile_react_freeze', opts);
-  await task.start('compile__react_native_masked_view_masked_view', opts);
-  await task.start('compile_deprecated_react_native_prop_types', opts);
-  await task.start('compile_pretty_format', opts);
+  // // await task.clear('dist/compiled/react-native-screens');
+  // await task.start('compile_react_native_screens', opts);
+  // await task.start('compile_react_freeze', opts);
+  // await task.start('compile__react_native_masked_view_masked_view', opts);
+  await task.clear('dist/compiled/@react-navigation/core');
+  await task.start('compile_react_navigation_core', opts);
+  // await task.clear('dist/compiled/deprecated-react-native-prop-types');
+  // await task.start('compile_deprecated_react_native_prop_types', opts);
+  // await task.start('compile_pretty_format', opts);
 
   // await task.clear('build');
   // await task.start('build', opts);
