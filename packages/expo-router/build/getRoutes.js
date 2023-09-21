@@ -116,16 +116,6 @@ function applyDefaultInitialRouteName(node) {
         initialRouteName,
     };
 }
-function cloneGroupRoute(node, { name: nextName }) {
-    const groupName = `(${nextName})`;
-    const parts = node.contextKey.split('/');
-    parts[parts.length - 2] = groupName;
-    return {
-        ...node,
-        route: groupName,
-        contextKey: parts.join('/'),
-    };
-}
 function folderNodeToRouteNode({ name, children }) {
     // Empty folder, skip it.
     if (!children.length) {
@@ -145,19 +135,8 @@ function fileNodeToRouteNode(tree) {
     if (!node)
         throw new Error('node must be defined');
     const dynamic = generateDynamic(name);
-    const groupName = (0, matchers_1.matchGroupName)(name);
-    const multiGroup = groupName?.includes(',');
-    const clones = multiGroup ? groupName.split(',').map((v) => ({ name: v.trim() })) : null;
-    // Assert duplicates:
-    if (clones) {
-        const names = new Set();
-        for (const clone of clones) {
-            if (names.has(clone.name)) {
-                throw new Error(`Array syntax cannot contain duplicate group name "${clone.name}" in "${node.contextKey}".`);
-            }
-            names.add(clone.name);
-        }
-    }
+    const clones = extrapolateGroupRoutes(name, node.contextKey);
+    clones.delete(name);
     const output = {
         loadRoute: node.loadRoute,
         route: name,
@@ -165,8 +144,12 @@ function fileNodeToRouteNode(tree) {
         children: getTreeNodesAsRouteNodes(children),
         dynamic,
     };
-    if (Array.isArray(clones)) {
-        return clones.map((clone) => applyDefaultInitialRouteName(cloneGroupRoute({ ...output }, clone)));
+    if (clones.size) {
+        return [...clones].map((clone) => applyDefaultInitialRouteName({
+            ...output,
+            contextKey: node.contextKey.replace(output.route, clone),
+            route: clone,
+        }));
     }
     return [
         applyDefaultInitialRouteName({
@@ -177,6 +160,26 @@ function fileNodeToRouteNode(tree) {
             dynamic,
         }),
     ];
+}
+function extrapolateGroupRoutes(route, contextKey, routes = new Set()) {
+    const match = (0, matchers_1.matchGroupName)(route);
+    if (!match) {
+        routes.add(route);
+        return routes;
+    }
+    const groups = match?.split(',');
+    const groupsSet = new Set(groups);
+    if (groupsSet.size !== groups.length) {
+        throw new Error(`Array syntax cannot contain duplicate group name "${groups}" in "${contextKey}".`);
+    }
+    if (groups.length === 1) {
+        routes.add(route);
+        return routes;
+    }
+    for (const group of groups) {
+        extrapolateGroupRoutes(route.replace(match, group.trim()), contextKey, routes);
+    }
+    return routes;
 }
 function treeNodeToRouteNode(tree) {
     if (tree.node) {

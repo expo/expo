@@ -292,9 +292,15 @@ describe(loadStaticParamsAsync, () => {
           children: [
             {
               children: [],
-              contextKey: './(app)/(index,about)/blog/[post].tsx',
+              contextKey: './(app)/(index)/blog/[post].tsx',
               dynamic: [{ deep: false, name: 'post' }],
-              route: '(index,about)/blog/[post]',
+              route: '(index)/blog/[post]',
+            },
+            {
+              children: [],
+              contextKey: './(app)/(about)/blog/[post].tsx',
+              dynamic: [{ deep: false, name: 'post' }],
+              route: '(about)/blog/[post]',
             },
           ],
           contextKey: './(app)/_layout.tsx',
@@ -315,21 +321,39 @@ describe(loadStaticParamsAsync, () => {
           children: [
             {
               children: [],
-              contextKey: './(app)/(index,about)/blog/[post].tsx',
+              contextKey: './(app)/(index)/blog/[post].tsx',
               dynamic: [{ deep: false, name: 'post' }],
-              route: '(index,about)/blog/[post]',
+              route: '(index)/blog/[post]',
             },
             {
               children: [],
-              contextKey: './(app)/(index,about)/blog/123.tsx',
+              contextKey: './(app)/(index)/blog/123.tsx',
               dynamic: null,
-              route: '(index,about)/blog/123',
+              route: '(index)/blog/123',
             },
             {
               children: [],
-              contextKey: './(app)/(index,about)/blog/abc.tsx',
+              contextKey: './(app)/(index)/blog/abc.tsx',
               dynamic: null,
-              route: '(index,about)/blog/abc',
+              route: '(index)/blog/abc',
+            },
+            {
+              children: [],
+              contextKey: './(app)/(about)/blog/[post].tsx',
+              dynamic: [{ deep: false, name: 'post' }],
+              route: '(about)/blog/[post]',
+            },
+            {
+              children: [],
+              contextKey: './(app)/(about)/blog/123.tsx',
+              dynamic: null,
+              route: '(about)/blog/123',
+            },
+            {
+              children: [],
+              contextKey: './(app)/(about)/blog/abc.tsx',
+              dynamic: null,
+              route: '(about)/blog/abc',
             },
           ],
           contextKey: './(app)/_layout.tsx',

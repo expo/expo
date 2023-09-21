@@ -22,9 +22,20 @@ describe(matchGroupName, () => {
     expect(matchGroupName('[...foobar]')).toEqual(undefined);
     expect(matchGroupName('[foobar]')).toEqual(undefined);
     expect(matchGroupName('(foobar)')).toEqual('foobar');
+    expect(matchGroupName('(foo,bar)')).toEqual('foo,bar');
     expect(matchGroupName('((foobar))')).toEqual('(foobar)');
     expect(matchGroupName('(...foobar)')).toEqual('...foobar');
     expect(matchGroupName('foobar')).toEqual(undefined);
+    expect(matchGroupName('leading/foobar')).toEqual(undefined);
+    expect(matchGroupName('leading/(foobar)')).toEqual('foobar');
+    expect(matchGroupName('leading/((foobar))')).toEqual('(foobar)');
+    expect(matchGroupName('leading/(...foobar)')).toEqual('...foobar');
+    expect(matchGroupName('leading/(foo,bar)')).toEqual('foo,bar');
+    expect(matchGroupName('leading/foobar/trailing')).toEqual(undefined);
+    expect(matchGroupName('leading/(foobar)/trailing')).toEqual('foobar');
+    expect(matchGroupName('leading/((foobar))/trailing')).toEqual('(foobar)');
+    expect(matchGroupName('leading/(...foobar)/trailing')).toEqual('...foobar');
+    expect(matchGroupName('leading/(foo,bar)/trailing)')).toEqual('foo,bar');
   });
 });
 describe(matchDynamicName, () => {
