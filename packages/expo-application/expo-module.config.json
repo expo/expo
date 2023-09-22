@@ -1,0 +1,7 @@
+{
+  "name": "expo-application",
+  "platforms": ["ios", "android"],
+  "android": {
+    "modules": ["expo.modules.application.ApplicationModule"]
+  }
+}

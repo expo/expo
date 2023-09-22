@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import ExpoApplication from './ExpoApplication';
 // @needsAudit
 /**
@@ -44,19 +44,24 @@ export const applicationId = ExpoApplication
     : null;
 // @needsAudit
 /**
- * The value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID).
+ * Gets the value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID).
  * This is a hexadecimal `string` unique to each combination of app-signing key, user, and device.
  * The value may change if a factory reset is performed on the device or if an APK signing key changes.
  * For more information about how the platform handles `ANDROID_ID` in Android 8.0 (API level 26)
  * and higher, see [Android 8.0 Behavior Changes](https://developer.android.com/about/versions/oreo/android-8.0-changes.html#privacy-all).
- * On iOS and web, this value is `null`.
+ * On iOS and web, this function is unavailable.
  * > In versions of the platform lower than Android 8.0 (API level 26), this value remains constant
  * > for the lifetime of the user's device. See the [ANDROID_ID](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID)
  * > official docs for more information.
  * @example `"dd96dec43fb81c97"`
  * @platform android
  */
-export const androidId = ExpoApplication ? ExpoApplication.androidId || null : null;
+export function getAndroidId() {
+    if (Platform.OS !== 'android') {
+        throw new UnavailabilityError('expo-application', 'androidId');
+    }
+    return ExpoApplication.androidId;
+}
 // @needsAudit
 /**
  * Gets the referrer URL of the installed app with the [`Install Referrer API`](https://developer.android.com/google/play/installreferrer)
