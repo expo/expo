@@ -19,9 +19,8 @@ public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
     let description = {
       if #available(iOS 17.0, *) {
         return "NSRemindersFullAccessUsageDescription"
-      } else {
-        return "NSRemindersUsageDescription"
       }
+      return "NSRemindersUsageDescription"
     }()
 
     if let remindersUsageDescription = Bundle.main.object(forInfoDictionaryKey: description) {

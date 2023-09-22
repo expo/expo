@@ -19,9 +19,8 @@ public class CalendarPermissionsRequester: NSObject, EXPermissionsRequester {
     let description = {
       if #available(iOS 17.0, *) {
         return "NSCalendarsFullAccessUsageDescription"
-      } else {
-        return "NSCalendarsUsageDescription"
       }
+      return "NSCalendarsUsageDescription"
     }()
 
     if let calendarUsageDescription = Bundle.main.object(forInfoDictionaryKey: description) {
