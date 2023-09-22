@@ -1,19 +1,18 @@
 package host.exp.exponent.utils
 
 import android.Manifest
-import host.exp.exponent.kernel.ExperienceKey
-import javax.inject.Inject
-import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
-import host.exp.exponent.experience.ReactNativeActivity
-import android.content.pm.PackageManager
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.pm.PackageManager
 import android.provider.Settings
 import com.facebook.react.modules.core.PermissionListener
 import host.exp.exponent.di.NativeModuleDepsProvider
+import host.exp.exponent.experience.ReactNativeActivity
+import host.exp.exponent.kernel.ExperienceKey
+import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
 import host.exp.expoview.Exponent
 import host.exp.expoview.R
-import java.util.*
+import javax.inject.Inject
 
 class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
   @Inject
@@ -141,6 +140,7 @@ class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
       Manifest.permission.READ_MEDIA_IMAGES -> R.string.perm_read_media_images
       Manifest.permission.READ_MEDIA_VIDEO -> R.string.perm_read_media_videos
       Manifest.permission.READ_MEDIA_AUDIO -> R.string.perm_read_media_audio
+      Manifest.permission.POST_NOTIFICATIONS -> R.string.perm_notifications
       else -> -1
     }
   }

@@ -1,20 +1,22 @@
 package expo.modules.notifications.badge
 
-import android.content.Context
-import expo.modules.core.ExportedModule
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
-class BadgeModule(context: Context) : ExportedModule(context) {
-  override fun getName(): String = "ExpoBadgeModule"
+class BadgeModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("ExpoBadgeModule")
 
-  @ExpoMethod
-  fun getBadgeCountAsync(promise: Promise) {
-    promise.resolve(BadgeHelper.badgeCount)
-  }
+    AsyncFunction("getBadgeCountAsync") {
+      BadgeHelper.badgeCount
+    }
 
-  @ExpoMethod
-  fun setBadgeCountAsync(badgeCount: Int, promise: Promise) {
-    promise.resolve(BadgeHelper.setBadgeCount(context, badgeCount))
+    AsyncFunction("setBadgeCountAsync") { badgeCount: Int ->
+      BadgeHelper.setBadgeCount(
+        appContext.reactContext ?: throw Exceptions.ReactContextLost(),
+        badgeCount
+      )
+    }
   }
 }

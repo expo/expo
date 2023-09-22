@@ -8,15 +8,25 @@ import expo.modules.core.interfaces.RegistryLifecycleListener
 import expo.modules.font.FontLoaderModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.manifests.core.Manifest
-import host.exp.exponent.utils.ScopedContext
 import host.exp.exponent.kernel.ExperienceKey
+import host.exp.exponent.utils.ScopedContext
 import versioned.host.exp.exponent.core.modules.ExpoGoModule
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsCategoriesSerializer
 import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider
-import versioned.host.exp.exponent.modules.universal.notifications.*
-import versioned.host.exp.exponent.modules.universal.sensors.*
-import java.lang.RuntimeException
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationCategoriesModule
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationPresentationModule
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationScheduler
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsEmitter
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsHandler
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedServerRegistrationModule
+import versioned.host.exp.exponent.modules.universal.sensors.ScopedAccelerometerService
+import versioned.host.exp.exponent.modules.universal.sensors.ScopedGravitySensorService
+import versioned.host.exp.exponent.modules.universal.sensors.ScopedGyroscopeService
+import versioned.host.exp.exponent.modules.universal.sensors.ScopedLinearAccelerationSensorService
+import versioned.host.exp.exponent.modules.universal.sensors.ScopedMagnetometerService
+import versioned.host.exp.exponent.modules.universal.sensors.ScopedMagnetometerUncalibratedService
+import versioned.host.exp.exponent.modules.universal.sensors.ScopedRotationVectorSensorService
 
 open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistryProvider?, modulesProvider: ModulesProvider? = null) :
   ModuleRegistryAdapter(moduleRegistryProvider, modulesProvider), ScopedModuleRegistryAdapter {
@@ -52,12 +62,6 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     moduleRegistry.registerInternalModule(UpdatesBinding(scopedContext, experienceProperties))
 
     // Overriding expo-notifications classes
-    moduleRegistry.registerExportedModule(ScopedNotificationsEmitter(scopedContext, experienceKey))
-    moduleRegistry.registerExportedModule(ScopedNotificationsHandler(scopedContext, experienceKey))
-    moduleRegistry.registerExportedModule(ScopedNotificationScheduler(scopedContext, experienceKey))
-    moduleRegistry.registerExportedModule(ScopedExpoNotificationCategoriesModule(scopedContext, experienceKey))
-    moduleRegistry.registerExportedModule(ScopedExpoNotificationPresentationModule(scopedContext, experienceKey))
-    moduleRegistry.registerExportedModule(ScopedServerRegistrationModule(scopedContext))
     moduleRegistry.registerInternalModule(ScopedNotificationsChannelsProvider(scopedContext, experienceKey))
     moduleRegistry.registerInternalModule(ScopedNotificationsCategoriesSerializer())
 
@@ -81,18 +85,26 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
       reactContext,
       moduleRegistry
     ) { appContext ->
-      appContext.registry.register(
-        ExpoGoModule(manifest)
-      )
-      appContext.registry.register(
-        ScopedSecureStoreModule(scopedContext)
-      )
-      appContext.registry.register(
-        object : FontLoaderModule() {
-          override val prefix: String
-            get() = "ExpoFont-"
-        }
-      )
+      with(appContext.registry) {
+        register(
+          ExpoGoModule(manifest),
+          ScopedSecureStoreModule(scopedContext),
+          object : FontLoaderModule() {
+            override val prefix: String
+              get() = "ExpoFont-"
+          }
+        )
+
+        // Notifications
+        register(
+          ScopedNotificationsEmitter(scopedContext, experienceKey),
+          ScopedNotificationsHandler(scopedContext, experienceKey),
+          ScopedServerRegistrationModule(),
+          ScopedNotificationScheduler(scopedContext, experienceKey),
+          ScopedExpoNotificationPresentationModule(scopedContext, experienceKey),
+          ScopedExpoNotificationCategoriesModule(experienceKey)
+        )
+      }
     }
   }
 

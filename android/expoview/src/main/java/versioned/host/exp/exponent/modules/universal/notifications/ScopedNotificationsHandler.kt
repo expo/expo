@@ -8,7 +8,7 @@ import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.notifications.ScopedNotificationsUtils
 
 class ScopedNotificationsHandler(context: Context, private val experienceKey: ExperienceKey) :
-  NotificationsHandler(context) {
+  NotificationsHandler() {
   private val scopedNotificationsUtils: ScopedNotificationsUtils = ScopedNotificationsUtils(context)
 
   override fun onNotificationReceived(notification: Notification) {

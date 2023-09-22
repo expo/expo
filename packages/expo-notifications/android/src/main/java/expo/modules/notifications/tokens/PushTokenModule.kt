@@ -1,13 +1,12 @@
 package expo.modules.notifications.tokens
 
-import android.content.Context
 import android.os.Bundle
 import com.google.firebase.messaging.FirebaseMessaging
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.core.interfaces.services.EventEmitter
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.notifications.ModuleNotFoundException
 import expo.modules.notifications.tokens.interfaces.PushTokenListener
 import expo.modules.notifications.tokens.interfaces.PushTokenManager
 
@@ -16,70 +15,64 @@ private const val NEW_TOKEN_EVENT_TOKEN_KEY = "devicePushToken"
 private const val REGISTRATION_FAIL_CODE = "E_REGISTRATION_FAILED"
 private const val UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE = "E_UNREGISTER_FOR_NOTIFICATIONS_FAILED"
 
-class PushTokenModule(context: Context) : ExportedModule(context), PushTokenListener {
+class PushTokenModule : Module(), PushTokenListener {
   private lateinit var tokenManager: PushTokenManager
   private var eventEmitter: EventEmitter? = null
-  override fun getName(): String = "ExpoPushTokenManager"
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    eventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
+  override fun definition() = ModuleDefinition {
+    Name("ExpoPushTokenManager")
 
-    // Register the module as a listener in PushTokenManager singleton module.
-    // Deregistration happens in onDestroy callback.
-    tokenManager = requireNotNull(
-      moduleRegistry.getSingletonModule("PushTokenManager", PushTokenManager::class.java)
-    )
-    tokenManager.addListener(this)
-  }
+    OnCreate {
+      eventEmitter = appContext.legacyModule()
+        ?: throw ModuleNotFoundException(EventEmitter::class)
 
-  override fun onDestroy() {
-    tokenManager.removeListener(this)
-  }
+      // Register the module as a listener in PushTokenManager singleton module.
+      // Deregistration happens in onDestroy callback.
+      tokenManager = requireNotNull(
+        appContext.legacyModuleRegistry.getSingletonModule("PushTokenManager", PushTokenManager::class.java)
+      )
+      tokenManager.addListener(this@PushTokenModule)
+    }
 
-  /**
-   * Fetches Firebase push token and resolves the promise.
-   *
-   * @param promise Promise to be resolved with the token.
-   */
-  @ExpoMethod
-  fun getDevicePushTokenAsync(promise: Promise) {
-    FirebaseMessaging.getInstance().token
-      .addOnCompleteListener { task ->
-        if (!task.isSuccessful) {
-          val exception = task.exception
-          if (exception == null) {
-            promise.reject(REGISTRATION_FAIL_CODE, "Fetching the token failed.")
-          } else {
-            promise.reject(REGISTRATION_FAIL_CODE, "Fetching the token failed: ${exception.message}", exception)
+    OnDestroy {
+      tokenManager.removeListener(this@PushTokenModule)
+    }
+
+    /**
+     * Fetches Firebase push token and resolves the promise.
+     *
+     * @param promise Promise to be resolved with the token.
+     */
+    AsyncFunction("getDevicePushTokenAsync") { promise: Promise ->
+      FirebaseMessaging.getInstance().token
+        .addOnCompleteListener { task ->
+          if (!task.isSuccessful) {
+            val exception = task.exception
+            promise.reject(REGISTRATION_FAIL_CODE, "Fetching the token failed: ${exception?.message ?: "unknown"}", exception)
+            return@addOnCompleteListener
           }
-          return@addOnCompleteListener
-        }
-        val token = task.result
-        if (token == null) {
-          promise.reject(REGISTRATION_FAIL_CODE, "Fetching the token failed. Invalid token.")
-          return@addOnCompleteListener
-        }
-
-        promise.resolve(token)
-        onNewToken(token)
-      }
-  }
-
-  @ExpoMethod
-  fun unregisterForNotificationsAsync(promise: Promise) {
-    FirebaseMessaging.getInstance().deleteToken()
-      .addOnCompleteListener { task ->
-        if (!task.isSuccessful) {
-          val exception = task.exception
-          if (exception == null) {
-            promise.reject(UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE, "Unregistering for notifications failed.")
-          } else {
-            promise.reject(UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE, "Unregistering for notifications failed: ${exception.message}", exception)
+          val token = task.result
+          if (token == null) {
+            promise.reject(REGISTRATION_FAIL_CODE, "Fetching the token failed. Invalid token.", null)
+            return@addOnCompleteListener
           }
-          return@addOnCompleteListener
+
+          promise.resolve(token)
+          onNewToken(token)
         }
-        promise.resolve(null)
-      }
+    }
+
+    AsyncFunction("unregisterForNotificationsAsync") { promise: Promise ->
+      FirebaseMessaging.getInstance().deleteToken()
+        .addOnCompleteListener { task ->
+          if (!task.isSuccessful) {
+            val exception = task.exception
+            promise.reject(UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE, "Unregistering for notifications failed: ${exception?.message ?: "unknown"}", exception)
+            return@addOnCompleteListener
+          }
+          promise.resolve(null)
+        }
+    }
   }
 
   /**
