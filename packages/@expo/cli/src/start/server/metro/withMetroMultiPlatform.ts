@@ -85,72 +85,7 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
   return nodejsSourceExtensions;
 }
 
-/**
- * Apply custom resolvers to do the following:
- * - Disable `.native.js` extensions on web.
- * - Alias `react-native` to `react-native-web` on web.
- * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
- * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
- */
-export function withExtendedResolver(
-  config: ConfigT,
-  {
-    projectRoot,
-    tsconfig,
-    platforms,
-    isTsconfigPathsEnabled,
-  }: {
-    projectRoot: string;
-    tsconfig: TsConfigPaths | null;
-    platforms: string[];
-    isTsconfigPathsEnabled?: boolean;
-  }
-) {
-  // Get the `transformer.assetRegistryPath`
-  // this needs to be unified since you can't dynamically
-  // swap out the transformer based on platform.
-  const assetRegistryPath = fs.realpathSync(
-    // This is the native asset registry alias for native.
-
-    path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
-
-    // path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
-    // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
-    // path.resolve(resolveFrom(projectRoot, '@react-native/assets-registry/registry.js'))
-  );
-
-  let reactNativeWebAppContainer: string | null = null;
-  try {
-    reactNativeWebAppContainer = fs.realpathSync(
-      // This is the native asset registry alias for native.
-      path.resolve(resolveFrom(projectRoot, 'expo-router/build/fork/react-native-web-container'))
-      // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
-      // path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
-    );
-  } catch {}
-
-  const isWebEnabled = platforms.includes('web');
-
-  const { resolve: resolveWithMetro } = importMetroResolverFromProject(projectRoot);
-
-  // const pkgJsonCache: Map<string, any> = new Map();
-
-  // const readPackageSync: (
-  //   readFileSync: (file: string) => string | { toString(): string },
-  //   pkgfile: string
-  // ) => Record<string, unknown> = (readFileSync, pkgfile) => {
-  //   // TODO: Invalidate cache when package.json changes.
-  //   if (pkgJsonCache.has(pkgfile)) {
-  //     return pkgJsonCache.get(pkgfile);
-  //   }
-  //   // @ts-expect-error: This is what they do internally.
-  //   const pkg = JSON.parse(readFileSync(pkgfile));
-  //   pkgJsonCache.set(pkgfile, pkg);
-  //   return pkg;
-  // };
-
-  const preserveSymlinks = config.resolver?.unstable_enableSymlinks ?? false;
-
+function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boolean }) {
   const cachedExtensions: Map<string, readonly string[]> = new Map();
 
   function getAdjustedExtensions({
@@ -193,21 +128,6 @@ export function withExtendedResolver(
     return output;
   }
 
-  // function addNativeExtensions(extensions: readonly string[], platform: string): string[] {
-  //   // Iterate the extensions, if one starts with `{platform}.(.*)` then add a `.native.$1` after it.
-  //   const output: string[] = [];
-
-  //   for (const ext of extensions) {
-  //     const platformPrefix = ext.match(new RegExp(`^(${platform})\\.(.*)`));
-  //     if (platformPrefix) {
-  //       output.push(ext, 'native.' + platformPrefix[2]);
-  //     } else {
-  //       output.push(ext);
-  //     }
-  //   }
-  //   return output;
-  // }
-
   function fastResolve(
     context: ResolutionContext,
     moduleName: string,
@@ -219,25 +139,23 @@ export function withExtendedResolver(
       isNative: context.preferNativePlatform,
     });
 
-    // if (moduleName === 'react-native' || moduleName.startsWith('react-native/')) {
-    //   console.log('WUT:', moduleName, context.originModulePath, extensions);
-    // }
-
-    // console.log('mod', moduleName, extensions);
     // TODO: Add improved error handling.
     const fp = otherResolve.sync(moduleName, {
-      // basedir: context.unstable_getRealPath,
       basedir: path.dirname(context.originModulePath),
       extensions,
       // Used to ensure files trace to packages instead of node_modules in expo/expo. This is how Metro works and
       // the app doesn't finish without it.
       preserveSymlinks,
       readPackageSync: (readFileSync, pkgFile) => {
-        return context.getPackage(pkgFile) ?? JSON.parse(readFileSync(pkgfile));
+        return (
+          context.getPackage(pkgFile) ??
+          JSON.parse(
+            // @ts-expect-error
+            readFileSync(pkgfile)
+          )
+        );
       },
       moduleDirectory: context.nodeModulesPaths,
-      // readPackageSync,
-      // moduleDirectory: ['packages', 'node_modules'],
       packageFilter(pkg) {
         // set the pkg.main to the first available field in context.mainFields
         for (const field of context.mainFields) {
@@ -266,20 +184,93 @@ export function withExtendedResolver(
           type: 'empty',
         };
       }
+
       // if (sourcesRegExp.test(fp)) {
       return {
         type: 'sourceFile',
         filePath: fp,
       };
     } else {
-      // TODO: context.resolveAsset, assetExts
-      // TODO: Asset extensions...
+      // NOTE: platform extensions may not be supported on assets.
+
+      if (platform === 'web') {
+        // Skip multi-resolution on web/server bundles. Only consideration here is that
+        // we may still need it in case the only image is a multi-resolution image.
+        return {
+          type: 'assetFiles',
+          filePaths: [fp],
+        };
+      }
+
+      const dirPath = path.dirname(fp);
+      const extension = path.extname(fp);
+      const basename = path.basename(fp, extension);
       return {
         type: 'assetFiles',
-        filePaths: [fp],
+        // Support multi-resolution asset extensions...
+        filePaths: context.resolveAsset(dirPath, basename, extension) ?? [fp],
       };
     }
   }
+
+  return fastResolve;
+}
+
+/**
+ * Apply custom resolvers to do the following:
+ * - Disable `.native.js` extensions on web.
+ * - Alias `react-native` to `react-native-web` on web.
+ * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
+ * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
+ */
+export function withExtendedResolver(
+  config: ConfigT,
+  {
+    projectRoot,
+    tsconfig,
+    platforms,
+    isTsconfigPathsEnabled,
+    isFastResolverEnabled,
+  }: {
+    projectRoot: string;
+    tsconfig: TsConfigPaths | null;
+    platforms: string[];
+    isTsconfigPathsEnabled?: boolean;
+    isFastResolverEnabled?: boolean;
+  }
+) {
+  if (isFastResolverEnabled) {
+    Log.warn(`Experimental bundling features are enabled.`);
+  }
+
+  // Get the `transformer.assetRegistryPath`
+  // this needs to be unified since you can't dynamically
+  // swap out the transformer based on platform.
+  const assetRegistryPath = fs.realpathSync(
+    // This is the native asset registry alias for native.
+
+    path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
+
+    // path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
+    // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
+    // path.resolve(resolveFrom(projectRoot, '@react-native/assets-registry/registry.js'))
+  );
+
+  let reactNativeWebAppContainer: string | null = null;
+  try {
+    reactNativeWebAppContainer = fs.realpathSync(
+      // This is the native asset registry alias for native.
+      path.resolve(resolveFrom(projectRoot, 'expo-router/build/fork/react-native-web-container'))
+      // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
+      // path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
+    );
+  } catch {}
+
+  const isWebEnabled = platforms.includes('web');
+
+  const resolver = isFastResolverEnabled
+    ? createFastResolver({ preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false })
+    : importMetroResolverFromProject(projectRoot).resolve;
 
   const extraNodeModules: { [key: string]: Record<string, string> } = {};
 
@@ -341,16 +332,6 @@ export function withExtendedResolver(
   }
 
   let nodejsSourceExtensions: string[] | null = null;
-
-  // const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
-  // const sourceExts = getBareExtensions(['ios', 'native'], sourceExtsConfig).map((v) => '.' + v);
-  // const sourceExtsWithoutMjs = getBareExtensions(['ios', 'native'], {
-  //   ...sourceExtsConfig,
-  //   isModern: false,
-  // }).map((v) => '.' + v);
-
-  // const sourceExtsEndsWithRegex = new RegExp(`(${sourceExts.join('|')})$`);
-  // const sourceExtsWithoutMjsEndsWithRegex = new RegExp(`(${sourceExtsWithoutMjs.join('|')})$`);
 
   return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
@@ -420,23 +401,20 @@ export function withExtendedResolver(
         mainFields = preferredMainFields[platform];
       }
       function doResolve(moduleName: string): Resolution | null {
-        // return resolveWithMetro(
-        return fastResolve(
+        return resolver(
           {
             ...context,
             resolveRequest: undefined,
             mainFields,
-            // sourceExts: sources,
-
             // Passing `mainFields` directly won't be considered (in certain version of Metro)
             // we need to extend the `getPackageMainPath` directly to
             // use platform specific `mainFields`.
             // @ts-ignore
-            // getPackageMainPath(packageJsonPath) {
-            //   // @ts-expect-error: mainFields is not on type
-            //   const package_ = context.moduleCache.getPackage(packageJsonPath);
-            //   return package_.getMain(mainFields);
-            // },
+            getPackageMainPath(packageJsonPath) {
+              // @ts-expect-error: mainFields is not on type
+              const package_ = context.moduleCache.getPackage(packageJsonPath);
+              return package_.getMain(mainFields);
+            },
           },
           moduleName,
           platform
@@ -580,12 +558,14 @@ export async function withMetroMultiPlatformAsync(
     isTsconfigPathsEnabled,
     webOutput,
     routerDirectory,
+    isFastResolverEnabled,
   }: {
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     webOutput?: 'single' | 'static' | 'server';
     routerDirectory: string;
+    isFastResolverEnabled?: boolean;
   }
 ) {
   // Auto pick app entry for router.
@@ -627,6 +607,7 @@ export async function withMetroMultiPlatformAsync(
     platformBundlers,
     tsconfig,
     isTsconfigPathsEnabled,
+    isFastResolverEnabled,
   });
 }
 
@@ -637,11 +618,13 @@ function withMetroMultiPlatform(
     platformBundlers,
     isTsconfigPathsEnabled,
     tsconfig,
+    isFastResolverEnabled,
   }: {
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     tsconfig: TsConfigPaths | null;
+    isFastResolverEnabled?: boolean;
   }
 ) {
   let expoConfigPlatforms = Object.entries(platformBundlers)
@@ -664,5 +647,6 @@ function withMetroMultiPlatform(
     tsconfig,
     isTsconfigPathsEnabled,
     platforms: expoConfigPlatforms,
+    isFastResolverEnabled,
   });
 }
