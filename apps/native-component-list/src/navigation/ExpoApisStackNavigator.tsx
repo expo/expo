@@ -309,12 +309,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/PermissionsScreen'));
-    },
-    name: 'Permissions',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/PrintScreen'));
     },
     name: 'Print',

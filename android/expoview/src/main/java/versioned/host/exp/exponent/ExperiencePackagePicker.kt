@@ -54,7 +54,6 @@ import expo.modules.notifications.notifications.channels.NotificationChannelGrou
 import expo.modules.notifications.notifications.channels.NotificationChannelManagerModule
 import expo.modules.notifications.permissions.NotificationPermissionsModule
 import expo.modules.notifications.tokens.PushTokenModule
-import expo.modules.permissions.PermissionsPackage
 import expo.modules.print.PrintModule
 import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCaptureModule
@@ -95,7 +94,6 @@ object ExperiencePackagePicker : ModulesProvider {
     LocationPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
-    PermissionsPackage(),
     SensorsPackage(),
     SplashScreenPackage(),
     SystemUIPackage(),

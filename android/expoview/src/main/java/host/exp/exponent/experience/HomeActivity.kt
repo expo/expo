@@ -32,7 +32,6 @@ import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.notifications.NotificationsPackage
-import expo.modules.permissions.PermissionsPackage
 import expo.modules.splashscreen.SplashScreenImageResizeMode
 import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
@@ -149,7 +148,6 @@ open class HomeActivity : BaseExperienceActivity() {
     fun homeExpoPackages(): List<Package> {
       return listOf(
         ConstantsPackage(),
-        PermissionsPackage(),
         FileSystemPackage(),
         BarCodeScannerPackage(),
         KeepAwakePackage(),

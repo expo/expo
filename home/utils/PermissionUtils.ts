@@ -1,8 +1,8 @@
-import * as Permissions from 'expo-permissions';
+import * as Camera from 'expo-camera';
 import { Alert, Linking } from 'react-native';
 
 export async function requestCameraPermissionsAsync(): Promise<boolean> {
-  const { status } = await Permissions.askAsync(Permissions.CAMERA);
+  const { status } = await Camera.requestCameraPermissionsAsync();
   return status === 'granted';
 }
 
