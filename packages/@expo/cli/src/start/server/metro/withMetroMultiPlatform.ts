@@ -115,7 +115,6 @@ function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boolean })
       });
 
       output = nextOutput;
-      // output = addNativeExtensions(metroSourceExtensions, platform);
     }
 
     output = Array.from(new Set<string>(output));
