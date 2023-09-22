@@ -32,6 +32,8 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
+import { getBareExtensions } from '@expo/config/paths';
+const otherResolve = require('resolve') as typeof import('resolve');
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -109,9 +111,12 @@ export function withExtendedResolver(
   // swap out the transformer based on platform.
   const assetRegistryPath = fs.realpathSync(
     // This is the native asset registry alias for native.
+
     path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
+
+    // path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
     // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
-    // path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
+    // path.resolve(resolveFrom(projectRoot, '@react-native/assets-registry/registry.js'))
   );
 
   let reactNativeWebAppContainer: string | null = null;
@@ -126,7 +131,155 @@ export function withExtendedResolver(
 
   const isWebEnabled = platforms.includes('web');
 
-  const { resolve } = importMetroResolverFromProject(projectRoot);
+  const { resolve: resolveWithMetro } = importMetroResolverFromProject(projectRoot);
+
+  // const pkgJsonCache: Map<string, any> = new Map();
+
+  // const readPackageSync: (
+  //   readFileSync: (file: string) => string | { toString(): string },
+  //   pkgfile: string
+  // ) => Record<string, unknown> = (readFileSync, pkgfile) => {
+  //   // TODO: Invalidate cache when package.json changes.
+  //   if (pkgJsonCache.has(pkgfile)) {
+  //     return pkgJsonCache.get(pkgfile);
+  //   }
+  //   // @ts-expect-error: This is what they do internally.
+  //   const pkg = JSON.parse(readFileSync(pkgfile));
+  //   pkgJsonCache.set(pkgfile, pkg);
+  //   return pkg;
+  // };
+
+  const preserveSymlinks = config.resolver?.unstable_enableSymlinks ?? false;
+
+  const cachedExtensions: Map<string, readonly string[]> = new Map();
+
+  function getAdjustedExtensions({
+    metroSourceExtensions,
+    platform,
+    isNative,
+  }: {
+    metroSourceExtensions: readonly string[];
+    platform: string | null;
+    isNative: boolean;
+  }): readonly string[] {
+    const key = JSON.stringify({ metroSourceExtensions, platform, isNative });
+    if (cachedExtensions.has(key)) {
+      return cachedExtensions.get(key)!;
+    }
+
+    let output = metroSourceExtensions;
+    if (platform) {
+      const nextOutput: string[] = [];
+
+      output.forEach((ext) => {
+        nextOutput.push(`${platform}.${ext}`);
+        if (isNative) {
+          nextOutput.push(`native.${ext}`);
+        }
+        nextOutput.push(ext);
+      });
+
+      output = nextOutput;
+      // output = addNativeExtensions(metroSourceExtensions, platform);
+    }
+
+    output = Array.from(new Set<string>(output));
+
+    // resolve expects these to start with a dot.
+    output = output.map((ext) => `.${ext}`);
+
+    cachedExtensions.set(key, output);
+
+    return output;
+  }
+
+  // function addNativeExtensions(extensions: readonly string[], platform: string): string[] {
+  //   // Iterate the extensions, if one starts with `{platform}.(.*)` then add a `.native.$1` after it.
+  //   const output: string[] = [];
+
+  //   for (const ext of extensions) {
+  //     const platformPrefix = ext.match(new RegExp(`^(${platform})\\.(.*)`));
+  //     if (platformPrefix) {
+  //       output.push(ext, 'native.' + platformPrefix[2]);
+  //     } else {
+  //       output.push(ext);
+  //     }
+  //   }
+  //   return output;
+  // }
+
+  function fastResolve(
+    context: ResolutionContext,
+    moduleName: string,
+    platform: string | null
+  ): Resolution {
+    const extensions = getAdjustedExtensions({
+      metroSourceExtensions: context.sourceExts,
+      platform,
+      isNative: context.preferNativePlatform,
+    });
+
+    // if (moduleName === 'react-native' || moduleName.startsWith('react-native/')) {
+    //   console.log('WUT:', moduleName, context.originModulePath, extensions);
+    // }
+
+    // console.log('mod', moduleName, extensions);
+    // TODO: Add improved error handling.
+    const fp = otherResolve.sync(moduleName, {
+      // basedir: context.unstable_getRealPath,
+      basedir: path.dirname(context.originModulePath),
+      extensions,
+      // Used to ensure files trace to packages instead of node_modules in expo/expo. This is how Metro works and
+      // the app doesn't finish without it.
+      preserveSymlinks,
+      readPackageSync: (readFileSync, pkgFile) => {
+        return context.getPackage(pkgFile) ?? JSON.parse(readFileSync(pkgfile));
+      },
+      moduleDirectory: context.nodeModulesPaths,
+      // readPackageSync,
+      // moduleDirectory: ['packages', 'node_modules'],
+      packageFilter(pkg) {
+        // set the pkg.main to the first available field in context.mainFields
+        for (const field of context.mainFields) {
+          if (
+            pkg[field] &&
+            // object-inspect uses browser: {} in package.json
+            typeof pkg[field] === 'string'
+          ) {
+            pkg.main = pkg[field];
+            break;
+          }
+        }
+        return pkg;
+      },
+
+      // Not needed but added for parity...
+
+      // @ts-ignore
+      realpathSync: context.unstable_getRealPath,
+    });
+
+    if (context.sourceExts.some((ext) => fp.endsWith(ext))) {
+      // TODO: Support `browser: { "util.inspect.js": false }` in package.json
+      if (fp.endsWith('object-inspect/util.inspect.js')) {
+        return {
+          type: 'empty',
+        };
+      }
+      // if (sourcesRegExp.test(fp)) {
+      return {
+        type: 'sourceFile',
+        filePath: fp,
+      };
+    } else {
+      // TODO: context.resolveAsset, assetExts
+      // TODO: Asset extensions...
+      return {
+        type: 'assetFiles',
+        filePaths: [fp],
+      };
+    }
+  }
 
   const extraNodeModules: { [key: string]: Record<string, string> } = {};
 
@@ -188,6 +341,16 @@ export function withExtendedResolver(
   }
 
   let nodejsSourceExtensions: string[] | null = null;
+
+  // const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
+  // const sourceExts = getBareExtensions(['ios', 'native'], sourceExtsConfig).map((v) => '.' + v);
+  // const sourceExtsWithoutMjs = getBareExtensions(['ios', 'native'], {
+  //   ...sourceExtsConfig,
+  //   isModern: false,
+  // }).map((v) => '.' + v);
+
+  // const sourceExtsEndsWithRegex = new RegExp(`(${sourceExts.join('|')})$`);
+  // const sourceExtsWithoutMjsEndsWithRegex = new RegExp(`(${sourceExtsWithoutMjs.join('|')})$`);
 
   return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
@@ -257,21 +420,23 @@ export function withExtendedResolver(
         mainFields = preferredMainFields[platform];
       }
       function doResolve(moduleName: string): Resolution | null {
-        return resolve(
+        // return resolveWithMetro(
+        return fastResolve(
           {
             ...context,
             resolveRequest: undefined,
             mainFields,
+            // sourceExts: sources,
 
             // Passing `mainFields` directly won't be considered (in certain version of Metro)
             // we need to extend the `getPackageMainPath` directly to
             // use platform specific `mainFields`.
             // @ts-ignore
-            getPackageMainPath(packageJsonPath) {
-              // @ts-expect-error: mainFields is not on type
-              const package_ = context.moduleCache.getPackage(packageJsonPath);
-              return package_.getMain(mainFields);
-            },
+            // getPackageMainPath(packageJsonPath) {
+            //   // @ts-expect-error: mainFields is not on type
+            //   const package_ = context.moduleCache.getPackage(packageJsonPath);
+            //   return package_.getMain(mainFields);
+            // },
           },
           moduleName,
           platform
@@ -294,6 +459,8 @@ export function withExtendedResolver(
       }
 
       let result: Resolution | null = null;
+      // let sources = sourceExts;
+      // let sourcesRegExp = sourceExtsEndsWithRegex;
 
       // React Native uses `event-target-shim` incorrectly and this causes the native runtime
       // to fail to load. This is a temporary workaround until we can fix this upstream.
@@ -302,6 +469,8 @@ export function withExtendedResolver(
         moduleName.includes('event-target-shim') &&
         context.originModulePath.includes(path.sep + 'react-native' + path.sep)
       ) {
+        // sources = sourceExtsWithoutMjs;
+        // sourcesRegExp = sourceExtsWithoutMjsEndsWithRegex;
         context.sourceExts = context.sourceExts.filter((f) => !f.includes('mjs'));
         debug('Skip mjs support for event-target-shim in:', context.originModulePath);
       }
