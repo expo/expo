@@ -6,17 +6,16 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.RemoteException
 import android.provider.Settings
-import android.util.Log
-
+import com.android.installreferrer.api.InstallReferrerClient
+import com.android.installreferrer.api.InstallReferrerStateListener
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.Promise
 
-import com.android.installreferrer.api.InstallReferrerClient
-import com.android.installreferrer.api.InstallReferrerStateListener
-
-private val TAG = ApplicationModule::class.java.simpleName
+class ApplicationPackageNameNotFoundException(cause: PackageManager.NameNotFoundException)
+  : CodedException(message = "Unable to get install time of this application. Could not get package info or package name.", cause = cause)
 
 class ApplicationModule : Module() {
   private val context: Context
@@ -34,32 +33,26 @@ class ApplicationModule : Module() {
       )
     }
 
-    AsyncFunction("getAndroidIdAsync") {
-      return@AsyncFunction Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    Property("androidId") {
+      Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    AsyncFunction("getInstallationTimeAsync") { promise: Promise ->
+    AsyncFunction("getInstallationTimeAsync") {
       val packageManager = context.packageManager
       val packageName = context.packageName
-      try {
-        val info = packageManager.getPackageInfoCompat(packageName, 0)
-        return@AsyncFunction info.firstInstallTime.toDouble()
-      } catch (e: PackageManager.NameNotFoundException) {
-        Log.e(TAG, "Exception: ", e)
-        promise.reject("ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND", "Unable to get install time of this application. Could not get package info or package name.", e)
-      }
+      packageManager
+        .getPackageInfoCompat(packageName, 0)
+        .firstInstallTime
+        .toDouble()
     }
 
-    AsyncFunction("getLastUpdateTimeAsync") { promise: Promise ->
+    AsyncFunction("getLastUpdateTimeAsync") {
       val packageManager = context.packageManager
       val packageName = context.packageName
-      try {
-        val info = packageManager.getPackageInfoCompat(packageName, 0)
-        return@AsyncFunction info.lastUpdateTime.toDouble()
-      } catch (e: PackageManager.NameNotFoundException) {
-        Log.e(TAG, "Exception: ", e)
-        promise.reject("ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND", "Unable to get last update time of this application. Could not get package info or package name.", e)
-      }
+      packageManager
+        .getPackageInfoCompat(packageName, 0)
+        .lastUpdateTime
+        .toDouble()
     }
 
     AsyncFunction("getInstallReferrerAsync") { promise: Promise ->
@@ -76,15 +69,18 @@ class ApplicationModule : Module() {
                 val response = referrerClient.installReferrer
                 installReferrer.append(response.installReferrer)
               } catch (e: RemoteException) {
-                Log.e(TAG, "Exception: ", e)
                 promise.reject("ERR_APPLICATION_INSTALL_REFERRER_REMOTE_EXCEPTION", "RemoteException getting install referrer information. This may happen if the process hosting the remote object is no longer available.", e)
+                return
               }
               promise.resolve(installReferrer.toString())
             }
+
             InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED -> // API not available in the current Play Store app
               promise.reject("ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE", "The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed.", null)
+
             InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE -> // Connection could not be established
               promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error retrieving the install referrer: response code $responseCode", null)
+
             else -> promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error retrieving the install referrer: response code $responseCode", null)
           }
           referrerClient.endConnection()
@@ -97,27 +93,33 @@ class ApplicationModule : Module() {
     }
   }
 
-  private val applicationName get() = context.applicationInfo.loadLabel(context.packageManager).toString()
-  private val packageName get() = context.packageName
-  private val packageManager get() = context.packageManager
+  private val applicationName
+    get() = context.applicationInfo.loadLabel(context.packageManager).toString()
+  private val packageName
+    get() = context.packageName
+  private val packageManager
+    get() = context.packageManager
+  private val versionName
+    get() = packageManager.getPackageInfoCompat(packageName, 0).versionName
+  private val versionCode
+    get() = getLongVersionCode(packageManager.getPackageInfoCompat(packageName, 0)).toInt()
+}
 
-  private val versionName get() = packageManager.getPackageInfoCompat(packageName, 0).versionName
-  private val versionCode get() = getLongVersionCode(packageManager.getPackageInfoCompat(packageName, 0)).toInt()
-
-  companion object {
-    private fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): PackageInfo =
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(flags.toLong()))
-      } else {
-        @Suppress("DEPRECATION") getPackageInfo(packageName, flags)
-      }
-
-    private fun getLongVersionCode(info: PackageInfo): Long {
-      return if (Build.VERSION.SDK_INT >= 28) {
-        info.longVersionCode
-      } else {
-        @Suppress("DEPRECATION") info.versionCode.toLong()
-      }
+private fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): PackageInfo =
+  try {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(flags.toLong()))
+    } else {
+      @Suppress("DEPRECATION") getPackageInfo(packageName, flags)
     }
+  } catch (e: PackageManager.NameNotFoundException) {
+    throw ApplicationPackageNameNotFoundException(e)
+  }
+
+private fun getLongVersionCode(info: PackageInfo): Long {
+  return if (Build.VERSION.SDK_INT >= 28) {
+    info.longVersionCode
+  } else {
+    @Suppress("DEPRECATION") info.versionCode.toLong()
   }
 }

@@ -71,11 +71,11 @@ export async function test({ describe, it, expect, jasmine }) {
       });
 
       describe(`doesn't call Android-only methods`, () => {
-        it(`Application.getAndroidIdAsync() doesn't get called`, async () => {
+        it(`Application.getAndroidId() doesn't get called`, () => {
           let androidId;
           let error = null;
           try {
-            androidId = await Application.getAndroidIdAsync();
+            androidId = Application.getAndroidId();
           } catch (e) {
             error = e;
           }
@@ -108,11 +108,11 @@ export async function test({ describe, it, expect, jasmine }) {
     });
   } else if (Platform.OS === 'android') {
     describe(`Android device tests`, () => {
-      it(`Application.getAndroidIdAsync() returns String`, async () => {
+      it(`Application.getAndroidId() returns String`, () => {
         let error = null;
         let androidId;
         try {
-          androidId = await Application.getAndroidIdAsync();
+          androidId = Application.getAndroidId();
         } catch (e) {
           error = e;
         }
