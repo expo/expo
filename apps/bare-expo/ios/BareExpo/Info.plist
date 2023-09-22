@@ -72,8 +72,6 @@
 	<string>Allow bare-expo to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Allow bare-expo to use the camera</string>
-	<key>NSRemindersUsageDescription</key>
-	<string>Allow bare-expo to access your reminders</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow bare-expo experiences to access your contacts</string>
 	<key>NSFaceIDUsageDescription</key>
