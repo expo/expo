@@ -15,6 +15,19 @@ module.exports = function hashAssetFiles(asset) {
         .replace(/\.\.\//g, '_');
     }
 
+    // URL encode asset paths defined as `?export_path` or `?unstable_path` query parameters.
+    // Decoding should be done automatically when parsing the URL through Node or the browser.
+    const assetPathQueryParameter = asset.httpServerLocation.match(
+      /\?(export_path|unstable_path)=(.*)/
+    );
+    if (assetPathQueryParameter && assetPathQueryParameter[2]) {
+      const assetPath = assetPathQueryParameter[2];
+      asset.httpServerLocation = asset.httpServerLocation.replace(
+        assetPath,
+        encodeURIComponent(assetPath)
+      );
+    }
+
     return asset;
   });
 };
