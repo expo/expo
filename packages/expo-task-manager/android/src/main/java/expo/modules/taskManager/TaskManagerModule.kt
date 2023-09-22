@@ -56,13 +56,18 @@ class TaskManagerModule : Module() {
 
     OnStartObserving {
       val handler = Handler(Looper.getMainLooper())
-      handler.postDelayed({
-        taskManagerInternal?.flushQueuedEvents()
-      }, 1000)
+      handler.postDelayed(
+        {
+          taskManagerInternal?.flushQueuedEvents()
+        },
+        1000
+      )
     }
   }
 
   private val appScopeKey: String
-    get() = (taskManagerInternal
-      ?: throw ModuleNotFoundException(TaskManagerInterface::class.java.toString())).appScopeKey
+    get() = (
+      taskManagerInternal
+        ?: throw ModuleNotFoundException(TaskManagerInterface::class.java.toString())
+      ).appScopeKey
 }
