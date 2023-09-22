@@ -1,22 +1,33 @@
 package expo.modules.notifications.notifications.handling
 
-import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
-import expo.modules.core.ExportedModule
 import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
-import expo.modules.core.arguments.ReadableArguments
-import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import expo.modules.notifications.NotificationWasAlreadyHandledException
 import expo.modules.notifications.notifications.interfaces.NotificationListener
 import expo.modules.notifications.notifications.interfaces.NotificationManager
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
+import expo.modules.notifications.toLegacyPromise
 
-private const val SHOULD_SHOW_ALERT_KEY = "shouldShowAlert"
-private const val SHOULD_PLAY_SOUND_KEY = "shouldPlaySound"
-private const val SHOULD_SET_BADGE_KEY = "shouldSetBadge"
-private const val PRIORITY_KEY = "priority"
+class NotificationBehaviourRecord : Record {
+  @Field
+  val shouldShowAlert: Boolean = false
+
+  @Field
+  val shouldPlaySound: Boolean = false
+
+  @Field
+  val shouldSetBadge: Boolean = false
+
+  @Field
+  val priority: String? = null
+}
 
 /**
  * [NotificationListener] responsible for managing app's reaction to incoming
@@ -27,7 +38,7 @@ private const val PRIORITY_KEY = "priority"
  * which are responsible: one for each notification. This module serves as holder
  * for all of them and a proxy through which app responds with the behavior.
  */
-open class NotificationsHandler(context: Context) : ExportedModule(context), NotificationListener {
+open class NotificationsHandler : Module(), NotificationListener {
   private lateinit var notificationManager: NotificationManager
   private lateinit var moduleRegistry: ModuleRegistry
 
@@ -43,31 +54,35 @@ open class NotificationsHandler(context: Context) : ExportedModule(context), Not
 
   private val tasksMap = mutableMapOf<String, SingleNotificationHandlerTask>()
 
-  override fun getName(): String = "ExpoNotificationsHandlerModule"
+  override fun definition() = ModuleDefinition {
+    Name("ExpoNotificationsHandlerModule")
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    this.moduleRegistry = moduleRegistry
+    OnCreate {
+      moduleRegistry = appContext.legacyModuleRegistry
 
-    // Register the module as a listener in NotificationManager singleton module.
-    // Deregistration happens in onDestroy callback.
-    notificationManager = requireNotNull(moduleRegistry.getSingletonModule("NotificationManager", NotificationManager::class.java))
-    notificationManager.addListener(this)
-    notificationsHandlerThread = HandlerThread("NotificationsHandlerThread - " + this.javaClass.toString())
-    notificationsHandlerThread.start()
-    handler = Handler(notificationsHandlerThread.looper)
-  }
+      // Register the module as a listener in NotificationManager singleton module.
+      // Deregistration happens in onDestroy callback.
+      notificationManager = requireNotNull(moduleRegistry.getSingletonModule("NotificationManager", NotificationManager::class.java))
+      notificationManager.addListener(this@NotificationsHandler)
+      notificationsHandlerThread = HandlerThread("NotificationsHandlerThread - " + this.javaClass.toString())
+      notificationsHandlerThread.start()
+      handler = Handler(notificationsHandlerThread.looper)
+    }
 
-  override fun onDestroy() {
-    notificationManager.removeListener(this)
+    OnDestroy {
+      notificationManager.removeListener(this@NotificationsHandler)
 
-    tasksMap.values.forEach(SingleNotificationHandlerTask::stop)
+      tasksMap.values.forEach(SingleNotificationHandlerTask::stop)
 
-    // We don't have to use `quitSafely` here, cause all tasks were stopped
-    notificationsHandlerThread.quit()
+      // We don't have to use `quitSafely` here, cause all tasks were stopped
+      notificationsHandlerThread.quit()
+    }
+
+    AsyncFunction("handleNotificationAsync", this@NotificationsHandler::handleNotificationAsync)
   }
 
   /**
-   * Called by the app with [ReadableArguments] representing requested behavior
+   * Called by the app with [NotificationBehaviourRecord] representing requested behavior
    * that should be applied to the notification.
    *
    * @param identifier Identifier of the task which asked for behavior.
@@ -75,18 +90,16 @@ open class NotificationsHandler(context: Context) : ExportedModule(context), Not
    * @param promise    Promise to resolve once the notification is successfully presented
    * or fails to be presented.
    */
-  @ExpoMethod
-  fun handleNotificationAsync(identifier: String, behavior: ReadableArguments, promise: Promise) {
+  private fun handleNotificationAsync(identifier: String, behavior: NotificationBehaviourRecord, promise: Promise) {
     val task = tasksMap[identifier]
-    if (task == null) {
-      promise.reject("ERR_NOTIFICATION_HANDLED", "Failed to handle notification $identifier, it has already been handled.")
-      return
+      ?: throw NotificationWasAlreadyHandledException(identifier)
+
+    with(behavior) {
+      task.handleResponse(
+        NotificationBehavior(shouldShowAlert, shouldPlaySound, shouldSetBadge, priority),
+        promise.toLegacyPromise()
+      )
     }
-    val shouldShowAlert = behavior.getBoolean(SHOULD_SHOW_ALERT_KEY)
-    val shouldPlaySound = behavior.getBoolean(SHOULD_PLAY_SOUND_KEY)
-    val shouldSetBadge = behavior.getBoolean(SHOULD_SET_BADGE_KEY)
-    val priorityOverride = behavior.getString(PRIORITY_KEY)
-    task.handleResponse(NotificationBehavior(shouldShowAlert, shouldPlaySound, shouldSetBadge, priorityOverride), promise)
   }
 
   /**
@@ -96,6 +109,7 @@ open class NotificationsHandler(context: Context) : ExportedModule(context), Not
    * @param notification Notification received
    */
   override fun onNotificationReceived(notification: Notification) {
+    val context = appContext.reactContext ?: return
     val task = SingleNotificationHandlerTask(context, handler, moduleRegistry, notification, this)
     tasksMap[task.identifier] = task
     task.start()

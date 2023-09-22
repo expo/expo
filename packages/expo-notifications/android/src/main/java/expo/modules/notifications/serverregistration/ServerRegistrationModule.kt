@@ -1,29 +1,32 @@
 package expo.modules.notifications.serverregistration
 
 import android.content.Context
-import expo.modules.core.ExportedModule
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
-open class ServerRegistrationModule(context: Context) : ExportedModule(context) {
-  protected val installationId = InstallationId(context)
-  private val mRegistrationInfo = RegistrationInfo(context)
+open class ServerRegistrationModule : Module() {
+  val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  override fun getName(): String = "NotificationsServerRegistrationModule"
+  protected val installationId by lazy { InstallationId(context) }
+  private val mRegistrationInfo by lazy { RegistrationInfo(context) }
 
-  @ExpoMethod
-  open fun getInstallationIdAsync(promise: Promise) {
-    promise.resolve(installationId.orCreateUUID)
+  override fun definition() = ModuleDefinition {
+    Name("NotificationsServerRegistrationModule")
+
+    AsyncFunction("getInstallationIdAsync", this@ServerRegistrationModule::getInstallationId)
+
+    AsyncFunction("getRegistrationInfoAsync") {
+      mRegistrationInfo.get()
+    }
+
+    AsyncFunction("setRegistrationInfoAsync") { registrationInfo: String? ->
+      mRegistrationInfo.set(registrationInfo)
+    }
   }
 
-  @ExpoMethod
-  fun getRegistrationInfoAsync(promise: Promise) {
-    promise.resolve(mRegistrationInfo.get())
-  }
-
-  @ExpoMethod
-  fun setRegistrationInfoAsync(registrationInfo: String?, promise: Promise) {
-    mRegistrationInfo.set(registrationInfo)
-    promise.resolve(null)
+  open fun getInstallationId(): String {
+    return installationId.orCreateUUID
   }
 }
