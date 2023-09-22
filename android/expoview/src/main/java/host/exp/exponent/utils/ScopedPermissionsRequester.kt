@@ -12,7 +12,6 @@ import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
 import host.exp.expoview.Exponent
 import host.exp.expoview.R
-import java.util.Arrays
 import javax.inject.Inject
 
 class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
