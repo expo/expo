@@ -32,8 +32,8 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
-import { getBareExtensions } from '@expo/config/paths';
-const otherResolve = require('resolve') as typeof import('resolve');
+import { formatFileCandidates } from './formatFileCandidates';
+import otherResolve, { isCore } from 'resolve';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -85,6 +85,8 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
   return nodejsSourceExtensions;
 }
 
+class FailedToResolvePathError extends Error {}
+
 function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boolean }) {
   const cachedExtensions: Map<string, readonly string[]> = new Map();
 
@@ -132,49 +134,78 @@ function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boolean })
     moduleName: string,
     platform: string | null
   ): Resolution {
+    const environment = context.customResolverOptions?.environment;
+    const isServer = environment === 'node';
+
     const extensions = getAdjustedExtensions({
       metroSourceExtensions: context.sourceExts,
       platform,
       isNative: context.preferNativePlatform,
     });
 
-    // TODO: Add improved error handling.
-    const fp = otherResolve.sync(moduleName, {
-      basedir: path.dirname(context.originModulePath),
-      extensions,
-      // Used to ensure files trace to packages instead of node_modules in expo/expo. This is how Metro works and
-      // the app doesn't finish without it.
-      preserveSymlinks,
-      readPackageSync: (readFileSync, pkgFile) => {
-        return (
-          context.getPackage(pkgFile) ??
-          JSON.parse(
-            // @ts-expect-error
-            readFileSync(pkgfile)
-          )
-        );
-      },
-      moduleDirectory: context.nodeModulesPaths,
-      packageFilter(pkg) {
-        // set the pkg.main to the first available field in context.mainFields
-        for (const field of context.mainFields) {
-          if (
-            pkg[field] &&
-            // object-inspect uses browser: {} in package.json
-            typeof pkg[field] === 'string'
-          ) {
-            pkg.main = pkg[field];
-            break;
+    let fp: string;
+
+    try {
+      fp = otherResolve.sync(moduleName, {
+        basedir: path.dirname(context.originModulePath),
+        extensions,
+        // Used to ensure files trace to packages instead of node_modules in expo/expo. This is how Metro works and
+        // the app doesn't finish without it.
+        preserveSymlinks,
+        readPackageSync: (readFileSync, pkgFile) => {
+          return (
+            context.getPackage(pkgFile) ??
+            JSON.parse(
+              // @ts-expect-error
+              readFileSync(pkgfile)
+            )
+          );
+        },
+        moduleDirectory: context.nodeModulesPaths,
+        packageFilter(pkg) {
+          // set the pkg.main to the first available field in context.mainFields
+          for (const field of context.mainFields) {
+            if (
+              pkg[field] &&
+              // object-inspect uses browser: {} in package.json
+              typeof pkg[field] === 'string'
+            ) {
+              return {
+                ...pkg,
+                main: pkg[field],
+              };
+            }
           }
-        }
-        return pkg;
-      },
+          return pkg;
+        },
 
-      // Not needed but added for parity...
+        // Not needed but added for parity...
 
-      // @ts-ignore
-      realpathSync: context.unstable_getRealPath,
-    });
+        // @ts-ignore
+        realpathSync: context.unstable_getRealPath,
+      });
+
+      if (!isServer && isNodeExternal(fp)) {
+        // In this case, mock the file to use an empty module.
+        return {
+          type: 'empty',
+        };
+      }
+    } catch (error) {
+      // TODO: Add improved error handling.
+
+      throw new FailedToResolvePathError(
+        'The module could not be resolved because no file or module matched the pattern:\n' +
+          `  ${formatFileCandidates(
+            {
+              type: 'sourceFile',
+              filePathPrefix: moduleName,
+              candidateExts: extensions,
+            },
+            true
+          )}\n\n`
+      );
+    }
 
     if (context.sourceExts.some((ext) => fp.endsWith(ext))) {
       // TODO: Support `browser: { "util.inspect.js": false }` in package.json
@@ -461,6 +492,7 @@ export function withExtendedResolver(
       }
 
       if (
+        !isFastResolverEnabled &&
         // is web
         platform === 'web' &&
         // Not server runtime
@@ -482,7 +514,7 @@ export function withExtendedResolver(
 
       result ??= doResolve(moduleName);
 
-      if (result) {
+      if (result?.type === 'sourceFile') {
         // Replace the web resolver with the original one.
         // This is basically an alias for web-only.
         if (shouldAliasAssetRegistryForWeb(platform, result)) {
