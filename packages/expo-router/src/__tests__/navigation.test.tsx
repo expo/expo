@@ -331,6 +331,152 @@ it('can check goBack before navigation mounts', () => {
   expect(router.canGoBack()).toBe(false);
 });
 
+it('can push back from a nested modal to a nested sibling', async () => {
+  renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="slot" />
+        <Stack.Screen name="(group)" options={{ presentation: 'modal' }} />
+      </Stack>
+    ),
+
+    index: () => <Text />,
+
+    'slot/_layout': () => <Slot />,
+    'slot/index': () => <Text />,
+
+    '(group)/_layout': () => <Slot />,
+    '(group)/modal': () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/slot'));
+  expect(screen).toHavePathname('/slot');
+
+  act(() => router.push('/(group)/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  act(() => router.push('/slot'));
+  expect(screen).toHavePathname('/slot');
+});
+
+it('can pop back from a nested modal to a nested sibling', async () => {
+  renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="slot" />
+        <Stack.Screen name="(group)" options={{ presentation: 'modal' }} />
+      </Stack>
+    ),
+
+    index: () => <Text />,
+
+    'slot/_layout': () => <Slot />,
+    'slot/index': () => <Text />,
+
+    '(group)/_layout': () => <Slot />,
+    '(group)/modal': () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/slot'));
+  expect(screen).toHavePathname('/slot');
+
+  act(() => router.push('/(group)/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/slot');
+});
+
+it('can navigate to hoisted groups', () => {
+  /** https://github.com/expo/router/issues/805 */
+
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/route': () => <Text testID="route" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/example/(a)/route'));
+
+  expect(screen).toHavePathname('/example/route');
+  expect(screen.getByTestId('route')).toBeTruthy();
+});
+
+it('can navigate to nested groups', () => {
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/route': () => <Text testID="route" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/example/(a)/folder/(d)/route'));
+
+  expect(screen).toHavePathname('/example/folder/route');
+  expect(screen.getByTestId('route')).toBeTruthy();
+});
+
+it('can navigate to hoisted groups', () => {
+  /** https://github.com/expo/router/issues/805 */
+
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/route': () => <Text testID="route" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/example/(a)/route'));
+
+  expect(screen).toHavePathname('/example/route');
+  expect(screen.getByTestId('route')).toBeTruthy();
+});
+
+it('can navigate to nested groups', () => {
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/route': () => <Text testID="route" />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/example/(a)/folder/(d)/route'));
+
+  expect(screen).toHavePathname('/example/folder/route');
+  expect(screen.getByTestId('route')).toBeTruthy();
+});
+
+it('can check goBack before navigation mounts', () => {
+  renderRouter({
+    _layout: {
+      default() {
+        // No navigator mounted at the root, this should prevent navigation from working.
+        return <></>;
+      },
+    },
+    index: () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  // NOTE: This also tests that `canGoBack` does not throw.
+  expect(router.canGoBack()).toBe(false);
+});
+
 it('can navigate back from a nested modal to a nested sibling', async () => {
   renderRouter({
     _layout: () => (

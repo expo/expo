@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Prevent circular navigation references. ([#24548](https://github.com/expo/expo/pull/24548) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix navigating to shared routes. ([#24218](https://github.com/expo/expo/pull/24218) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
@@ -69,7 +70,6 @@
 - Prevent throwing in `canGoBack` before the navigation has mounted. ([#23959](https://github.com/expo/expo/pull/23959) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix error overlay not being applied on web. ([#24052](https://github.com/expo/expo/pull/24052) by [@EvanBacon](https://github.com/EvanBacon))
 - Add missing `listener` types. ([#24174](https://github.com/expo/expo/pull/24174) by [@muneebahmedayub](https://github.com/muneebahmedayub))
-- Fix drawer layout initial position. ([#24197](https://github.com/expo/expo/pull/24197) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 

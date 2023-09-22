@@ -1,7 +1,7 @@
-import 'react-native';
+import { StyleProp } from 'react-native';
+import * as RN from 'react-native';
 
 declare module 'react-native' {
-  import { StyleProp } from 'react-native';
   /**
    * View
    */
@@ -123,7 +123,7 @@ declare module 'react-native' {
    */
   interface TextProps {
     className?: string;
-    style?: RN.StyleProp<TextStyle>;
+    style?: StyleProp<TextStyle>;
     /** @platform web */
     tabIndex?: number;
     /** @platform web */
@@ -246,8 +246,6 @@ declare module 'react-native' {
     /** @platform web */
     textRendering?: string;
     /** @platform web */
-    textTransform?: string;
-    /** @platform web */
     unicodeBidi?: string;
     /** @platform web */
     wordWrap?: string;
@@ -266,14 +264,16 @@ declare module 'react-native' {
       | React.ReactNode
       | ((state: PressableStateCallbackType) => React.ReactNode)
       | undefined;
-    style?: StyleProp<ViewStyle> | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
+    style?:
+      | RN.StyleProp<ViewStyle>
+      | ((state: PressableStateCallbackType) => RN.StyleProp<ViewStyle>);
   }
 
   // export const Pressable: React.ForwardRefExoticComponent<
   //   PressableProps & React.RefAttributes<RN.View>
   // >;
 
-  interface FlatListProps {
+  interface FlatListProps<ItemT> extends RN.VirtualizedListProps<ItemT> {
     className?: string;
   }
 

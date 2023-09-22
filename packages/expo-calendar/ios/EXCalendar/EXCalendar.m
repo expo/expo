@@ -773,7 +773,7 @@ EX_EXPORT_METHOD_AS(requestCalendarPermissionsAsync,
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXCalendarPermissionRequester class]
                                                                resolve:resolve
-                                                                reject:reject];
+                                                                reject:reject];  
 }
 
 EX_EXPORT_METHOD_AS(getRemindersPermissionsAsync,
