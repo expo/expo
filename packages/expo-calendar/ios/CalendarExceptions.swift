@@ -6,15 +6,15 @@ internal class MissionPermissionsException: GenericException<String> {
   }
 }
 
-internal class DefaultCalendarsNotFoundException: Exception {
+internal class DefaultCalendarNotFoundException: Exception {
   override var reason: String {
-    "Could not find default calendars"
+    "Could not find the default calendar"
   }
 }
 
-internal class CalendarNotSavedException: GenericException<(String, String)> {
+internal class CalendarNotSavedException: GenericException<String> {
   override var reason: String {
-    "Calendar \(param.0) is immutable and cannot be modified"
+    "Calendar \(param) is immutable and cannot be modified"
   }
 }
 

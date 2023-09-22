@@ -6,6 +6,7 @@ public class CalendarModule: Module {
   private var permittedEntities: EKEntityMask = .event
   private var eventStore = EKEventStore()
 
+  // swiftlint:disable:next function_body_length
   // swiftlint:disable:next cyclomatic_complexity
   public func definition() -> ModuleDefinition {
     Name("ExpoCalendar")
@@ -42,10 +43,8 @@ public class CalendarModule: Module {
 
     AsyncFunction("getDefaultCalendarAsync") { () -> [String: Any] in
       try checkCalendarPermissions()
-      let defaultcalendar = eventStore.defaultCalendarForNewEvents
-
-      guard let defaultcalendar else {
-        throw DefaultCalendarsNotFoundException()
+      guard let defaultcalendar = eventStore.defaultCalendarForNewEvents else {
+        throw DefaultCalendarNotFoundException()
       }
       return serializeCalendar(calendar: defaultcalendar)
     }
@@ -99,11 +98,8 @@ public class CalendarModule: Module {
 
     AsyncFunction("getEventByIdAsync") { (eventId: String, startDateStr: Either<String, Double>?) -> [String: Any?] in
       try checkCalendarPermissions()
-
       let startDate = parse(date: startDateStr)
-      let calendarEvent = getEvent(with: eventId, startDate: startDate)
-
-      guard let calendarEvent else {
+      guard let calendarEvent = getEvent(with: eventId, startDate: startDate) else {
         throw EventNotFoundException(eventId)
       }
       return serializeCalendar(event: calendarEvent)
@@ -190,7 +186,7 @@ public class CalendarModule: Module {
       let endDate = parse(date: endDateStr)
 
       if calendarIds.isEmpty {
-        promise.reject(MissingParameterException())
+        promise.reject(CalendarIdRequiredException())
         return
       }
 
@@ -232,8 +228,7 @@ public class CalendarModule: Module {
       reminder.notes = details.notes
 
       if let timeZone = details.timeZone {
-        let eventTimeZone = TimeZone(identifier: timeZone)
-        if let eventTimeZone {
+        if let eventTimeZone = TimeZone(identifier: timeZone) {
           reminder.timeZone = eventTimeZone
         } else {
           throw InvalidTimeZoneException()
@@ -245,8 +240,7 @@ public class CalendarModule: Module {
       }
 
       if let recurrenceRule = details.recurrenceRule {
-        let rule = createRecurrenceRule(rule: recurrenceRule)
-        if let rule {
+        if let rule = createRecurrenceRule(rule: recurrenceRule) {
           reminder.recurrenceRules = [rule]
         }
       }
@@ -286,8 +280,7 @@ public class CalendarModule: Module {
     }
 
     AsyncFunction("getSourceByIdAsync") { (sourceId: String) -> [String: Any?] in
-      let source = eventStore.source(withIdentifier: sourceId)
-      guard let source else {
+      guard let source = eventStore.source(withIdentifier: sourceId) else {
         throw SourceNotFoundException(sourceId)
       }
       return serialize(ekSource: source)
@@ -416,7 +409,7 @@ public class CalendarModule: Module {
       }
 
       if calendar.isImmutable == true {
-        throw CalendarNotSavedException((record.title, ""))
+        throw CalendarNotSavedException(record.title)
       }
       return calendar
     }
@@ -450,8 +443,7 @@ public class CalendarModule: Module {
     guard let calendarId = event.calendarId else {
       throw CalendarIdRequiredException()
     }
-    let calendar = eventStore.calendar(withIdentifier: calendarId)
-    guard let calendar else {
+    guard let calendar = eventStore.calendar(withIdentifier: calendarId) else {
       throw CalendarIdNotFoundException(calendarId)
     }
 
