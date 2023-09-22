@@ -48,6 +48,12 @@ import expo.modules.navigationbar.NavigationBarModule
 import expo.modules.navigationbar.NavigationBarPackage
 import expo.modules.network.NetworkModule
 import expo.modules.notifications.NotificationsPackage
+import expo.modules.notifications.badge.BadgeModule
+import expo.modules.notifications.notifications.background.ExpoBackgroundNotificationTasksModule
+import expo.modules.notifications.notifications.channels.NotificationChannelGroupManagerModule
+import expo.modules.notifications.notifications.channels.NotificationChannelManagerModule
+import expo.modules.notifications.permissions.NotificationPermissionsModule
+import expo.modules.notifications.tokens.PushTokenModule
 import expo.modules.permissions.PermissionsPackage
 import expo.modules.print.PrintModule
 import expo.modules.random.RandomModule
@@ -125,6 +131,14 @@ object ExperiencePackagePicker : ModulesProvider {
     MagnetometerUncalibratedModule::class.java,
     PedometerModule::class.java,
     // End of Sensors
+    // Notifications
+    BadgeModule::class.java,
+    PushTokenModule::class.java,
+    NotificationPermissionsModule::class.java,
+    NotificationChannelManagerModule::class.java,
+    NotificationChannelGroupManagerModule::class.java,
+    ExpoBackgroundNotificationTasksModule::class.java,
+    // End of Notifications
     BatteryModule::class.java,
     BackgroundFetchModule::class.java,
     BarCodeScannerModule::class.java,

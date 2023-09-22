@@ -7,56 +7,51 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.os.bundleOf
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
 import expo.modules.core.arguments.ReadableArguments
-import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsResponse
 import expo.modules.interfaces.permissions.PermissionsStatus
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.notifications.ModuleNotFoundException
 
 private const val ANDROID_RESPONSE_KEY = "android"
 private const val IMPORTANCE_KEY = "importance"
 private const val INTERRUPTION_FILTER_KEY = "interruptionFilter"
 private val PERMISSIONS: Array<String> = arrayOf(Manifest.permission.POST_NOTIFICATIONS)
 
-class NotificationPermissionsModule(context: Context?) : ExportedModule(context) {
-  private lateinit var moduleRegistry: ModuleRegistry
+class NotificationPermissionsModule : Module() {
+  private val permissions: Permissions
+    get() = appContext.permissions ?: throw ModuleNotFoundException(Permissions::class)
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    this.moduleRegistry = moduleRegistry
-  }
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  override fun getName(): String = "ExpoNotificationPermissionsModule"
+  override fun definition() = ModuleDefinition {
+    Name("ExpoNotificationPermissionsModule")
 
-  @ExpoMethod
-  fun getPermissionsAsync(promise: Promise) {
-    if (context.applicationContext.applicationInfo.targetSdkVersion >= 33 && Build.VERSION.SDK_INT >= 33) {
-      getPermissionsWithPromiseImplApi33(promise)
-    } else {
-      getPermissionsWithPromiseImplClassic(promise)
+    AsyncFunction("getPermissionsAsync") { promise: Promise ->
+      if (context.applicationContext.applicationInfo.targetSdkVersion >= 33 && Build.VERSION.SDK_INT >= 33) {
+        getPermissionsWithPromiseImplApi33(promise)
+      } else {
+        getPermissionsWithPromiseImplClassic(promise)
+      }
     }
-  }
 
-  @ExpoMethod
-  fun requestPermissionsAsync(permissionsTypes: ReadableArguments?, promise: Promise) {
-    if (context.applicationContext.applicationInfo.targetSdkVersion >= 33 && Build.VERSION.SDK_INT >= 33) {
-      requestPermissionsWithPromiseImplApi33(promise)
-    } else {
-      getPermissionsWithPromiseImplClassic(promise)
+    AsyncFunction("requestPermissionsAsync") { _: ReadableArguments?, promise: Promise ->
+      if (context.applicationContext.applicationInfo.targetSdkVersion >= 33 && Build.VERSION.SDK_INT >= 33) {
+        requestPermissionsWithPromiseImplApi33(promise)
+      } else {
+        getPermissionsWithPromiseImplClassic(promise)
+      }
     }
   }
 
   @RequiresApi(33)
   private fun getPermissionsWithPromiseImplApi33(promise: Promise) {
-    val permissionManager = moduleRegistry.getModule(Permissions::class.java)
-    if (permissionManager == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?")
-      return
-    }
-
-    permissionManager.getPermissions(
+    permissions.getPermissions(
       { permissionsMap: Map<String, PermissionsResponse> ->
         val managerCompat = NotificationManagerCompat.from(context)
         val areEnabled = managerCompat.areNotificationsEnabled()
@@ -119,13 +114,7 @@ class NotificationPermissionsModule(context: Context?) : ExportedModule(context)
 
   @RequiresApi(33)
   private fun requestPermissionsWithPromiseImplApi33(promise: Promise) {
-    val permissionManager = moduleRegistry.getModule(Permissions::class.java)
-    if (permissionManager == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?")
-      return
-    }
-
-    permissionManager.askForPermissions(
+    permissions.askForPermissions(
       {
         getPermissionsWithPromiseImplApi33(promise)
       },

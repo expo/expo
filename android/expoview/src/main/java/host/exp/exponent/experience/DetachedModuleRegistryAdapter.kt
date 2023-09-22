@@ -5,14 +5,13 @@ import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.ModuleRegistry
 import expo.modules.core.interfaces.RegistryLifecycleListener
-import expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule
-import expo.modules.notifications.notifications.handling.NotificationsHandler
-import expo.modules.notifications.notifications.scheduling.NotificationScheduler
-import host.exp.exponent.utils.ScopedContext
-import host.exp.exponent.kernel.ExperienceKey
 import expo.modules.manifests.core.Manifest
-import versioned.host.exp.exponent.modules.universal.*
-import versioned.host.exp.exponent.modules.universal.notifications.ScopedServerRegistrationModule
+import host.exp.exponent.kernel.ExperienceKey
+import host.exp.exponent.utils.ScopedContext
+import versioned.host.exp.exponent.modules.universal.ConstantsBinding
+import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter
+import versioned.host.exp.exponent.modules.universal.ScopedUIManagerModuleWrapper
+import versioned.host.exp.exponent.modules.universal.UpdatesBinding
 
 open class DetachedModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistryProvider) :
   ExpoModuleRegistryAdapter(moduleRegistryProvider) {
@@ -48,15 +47,6 @@ open class DetachedModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegi
 
     // Overriding ScopedUIManagerModuleWrapper from ReactAdapterPackage
     moduleRegistry.registerInternalModule(ScopedUIManagerModuleWrapper(reactContext))
-
-    // Certain notifications classes should share `SharedPreferences` object with the notifications services, so we don't want to use scoped context.
-    moduleRegistry.registerExportedModule(NotificationScheduler(scopedContext.baseContext))
-    moduleRegistry.registerExportedModule(ExpoNotificationCategoriesModule(scopedContext.baseContext))
-    moduleRegistry.registerExportedModule(NotificationsHandler(scopedContext.baseContext))
-    // We consciously pass scoped context to ScopedServerRegistrationModule
-    // so it can access legacy scoped backed-up storage and migrates
-    // the legacy UUID to scoped non-backed-up storage.
-    moduleRegistry.registerExportedModule(ScopedServerRegistrationModule(scopedContext))
 
     // Adding other modules (not universal) to module registry as consumers.
     // It allows these modules to refer to universal modules.

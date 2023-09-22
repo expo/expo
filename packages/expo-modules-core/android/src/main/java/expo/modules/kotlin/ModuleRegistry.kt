@@ -50,6 +50,10 @@ class ModuleRegistry(
     registry[holder.name] = holder
   }
 
+  fun register(vararg modules: Module) {
+    modules.forEach { register(it) }
+  }
+
   fun register(provider: ModulesProvider) = apply {
     provider.getModulesList().forEach { type ->
       val module = type.newInstance()

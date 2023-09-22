@@ -2,7 +2,7 @@ package versioned.host.exp.exponent.modules.universal.notifications
 
 import android.content.Context
 import android.os.Bundle
-import expo.modules.core.Promise
+import expo.modules.kotlin.Promise
 import expo.modules.notifications.notifications.NotificationSerializer
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import expo.modules.notifications.notifications.model.Notification
@@ -15,9 +15,9 @@ import host.exp.exponent.notifications.ScopedNotificationsUtils
 import host.exp.exponent.notifications.model.ScopedNotificationRequest
 
 class ScopedExpoNotificationPresentationModule(
-  context: Context,
+  private val context: Context,
   private val experienceKey: ExperienceKey
-) : ExpoNotificationPresentationModule(context) {
+) : ExpoNotificationPresentationModule() {
   private val scopedNotificationsUtils = ScopedNotificationsUtils(context)
 
   override fun createNotificationRequest(
@@ -37,8 +37,8 @@ class ScopedExpoNotificationPresentationModule(
   override fun dismissNotificationAsync(identifier: String, promise: Promise) {
     NotificationsService.getAllPresented(
       context,
-      createResultReceiver { resultCode: Int, resultData: Bundle ->
-        val notifications = resultData.getParcelableArrayList<Notification>(
+      createResultReceiver { resultCode: Int, resultData: Bundle? ->
+        val notifications = resultData?.getParcelableArrayList<Notification>(
           NotificationsService.NOTIFICATIONS_KEY
         )
         if (resultCode == NotificationsService.SUCCESS_CODE && notifications != null) {
@@ -47,9 +47,9 @@ class ScopedExpoNotificationPresentationModule(
             promise.resolve(null)
             return@createResultReceiver
           }
-          doDismissNotificationAsync(identifier, promise)
+          super.dismissNotificationAsync(identifier, promise)
         } else {
-          val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+          val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
           promise.reject(
             "ERR_NOTIFICATIONS_FETCH_FAILED",
             "A list of displayed notifications could not be fetched.",
@@ -63,8 +63,8 @@ class ScopedExpoNotificationPresentationModule(
   override fun dismissAllNotificationsAsync(promise: Promise) {
     NotificationsService.getAllPresented(
       context,
-      createResultReceiver { resultCode: Int, resultData: Bundle ->
-        val notifications = resultData.getParcelableArrayList<Notification>(
+      createResultReceiver { resultCode: Int, resultData: Bundle? ->
+        val notifications = resultData?.getParcelableArrayList<Notification>(
           NotificationsService.NOTIFICATIONS_KEY
         )
         if (resultCode == NotificationsService.SUCCESS_CODE && notifications != null) {
@@ -73,7 +73,7 @@ class ScopedExpoNotificationPresentationModule(
             .map { it.notificationRequest.identifier }
           dismissSelectedAsync(toDismiss.toTypedArray(), promise)
         } else {
-          val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+          val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
           promise.reject(
             "ERR_NOTIFICATIONS_FETCH_FAILED",
             "A list of displayed notifications could not be fetched.",
@@ -84,19 +84,15 @@ class ScopedExpoNotificationPresentationModule(
     )
   }
 
-  private fun doDismissNotificationAsync(identifier: String, promise: Promise) {
-    super.dismissNotificationAsync(identifier, promise)
-  }
-
   private fun dismissSelectedAsync(identifiers: Array<String>, promise: Promise) {
     NotificationsService.dismiss(
       context,
       identifiers,
-      createResultReceiver { resultCode: Int, resultData: Bundle ->
+      createResultReceiver { resultCode: Int, resultData: Bundle? ->
         if (resultCode == NotificationsService.SUCCESS_CODE) {
           promise.resolve(null)
         } else {
-          val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+          val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
           promise.reject(
             "ERR_NOTIFICATIONS_DISMISSAL_FAILED",
             "Notifications could not be dismissed.",

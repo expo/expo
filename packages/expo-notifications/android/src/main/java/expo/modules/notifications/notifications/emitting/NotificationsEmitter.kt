@@ -1,12 +1,10 @@
 package expo.modules.notifications.notifications.emitting
 
-import android.content.Context
 import android.os.Bundle
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.core.interfaces.services.EventEmitter
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.notifications.ModuleNotFoundException
 import expo.modules.notifications.notifications.NotificationSerializer
 import expo.modules.notifications.notifications.interfaces.NotificationListener
 import expo.modules.notifications.notifications.interfaces.NotificationManager
@@ -17,28 +15,31 @@ private const val NEW_MESSAGE_EVENT_NAME = "onDidReceiveNotification"
 private const val NEW_RESPONSE_EVENT_NAME = "onDidReceiveNotificationResponse"
 private const val MESSAGES_DELETED_EVENT_NAME = "onNotificationsDeleted"
 
-open class NotificationsEmitter(context: Context) : ExportedModule(context), NotificationListener {
+open class NotificationsEmitter : Module(), NotificationListener {
   private lateinit var notificationManager: NotificationManager
   private var lastNotificationResponse: NotificationResponse? = null
   private var eventEmitter: EventEmitter? = null
-  override fun getName(): String = "ExpoNotificationsEmitter"
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    eventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
+  override fun definition() = ModuleDefinition {
+    Name("ExpoNotificationsEmitter")
 
-    // Register the module as a listener in NotificationManager singleton module.
-    // Deregistration happens in onDestroy callback.
-    notificationManager = requireNotNull(moduleRegistry.getSingletonModule("NotificationManager", NotificationManager::class.java))
-    notificationManager.addListener(this)
-  }
+    OnCreate {
+      eventEmitter = appContext.legacyModule<EventEmitter>()
+        ?: throw ModuleNotFoundException(EventEmitter::class)
 
-  override fun onDestroy() {
-    notificationManager.removeListener(this)
-  }
+      // Register the module as a listener in NotificationManager singleton module.
+      // Deregistration happens in onDestroy callback.
+      notificationManager = requireNotNull(appContext.legacyModuleRegistry.getSingletonModule("NotificationManager", NotificationManager::class.java))
+      notificationManager.addListener(this@NotificationsEmitter)
+    }
 
-  @ExpoMethod
-  fun getLastNotificationResponseAsync(promise: Promise) {
-    promise.resolve(lastNotificationResponse?.let(NotificationSerializer::toBundle))
+    OnDestroy {
+      notificationManager.removeListener(this@NotificationsEmitter)
+    }
+
+    AsyncFunction("getLastNotificationResponseAsync") {
+      lastNotificationResponse?.let(NotificationSerializer::toBundle)
+    }
   }
 
   /**
