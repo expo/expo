@@ -6,7 +6,7 @@ public class CalendarModule: Module {
   private var permittedEntities: EKEntityMask = .event
   private var eventStore = EKEventStore()
 
-  // swiftlint:disable:next cyclomatic_complexity
+  // swiftlint:disable:next cyclomatic_complexity function_body_length
   public func definition() -> ModuleDefinition {
     Name("ExpoCalendar")
 
