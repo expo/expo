@@ -184,8 +184,6 @@ function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boolean })
           type: 'empty',
         };
       }
-
-      // if (sourcesRegExp.test(fp)) {
       return {
         type: 'sourceFile',
         filePath: fp,
