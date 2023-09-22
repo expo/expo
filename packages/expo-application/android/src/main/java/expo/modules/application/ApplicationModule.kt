@@ -14,8 +14,8 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
-class ApplicationPackageNameNotFoundException(cause: PackageManager.NameNotFoundException)
-  : CodedException(message = "Unable to get install time of this application. Could not get package info or package name.", cause = cause)
+class ApplicationPackageNameNotFoundException(cause: PackageManager.NameNotFoundException) :
+  CodedException(message = "Unable to get install time of this application. Could not get package info or package name.", cause = cause)
 
 class ApplicationModule : Module() {
   private val context: Context

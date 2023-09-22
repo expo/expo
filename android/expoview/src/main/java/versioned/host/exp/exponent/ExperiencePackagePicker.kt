@@ -2,7 +2,6 @@ package versioned.host.exp.exponent
 
 import expo.modules.application.ApplicationModule
 import expo.modules.av.AVModule
-import expo.modules.application.ApplicationModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
