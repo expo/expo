@@ -209,7 +209,7 @@ function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boolean })
 
     if (context.sourceExts.some((ext) => fp.endsWith(ext))) {
       // TODO: Support `browser: { "util.inspect.js": false }` in package.json
-      if (fp.endsWith('object-inspect/util.inspect.js')) {
+      if (!isServer && fp.endsWith('object-inspect/util.inspect.js')) {
         return {
           type: 'empty',
         };
