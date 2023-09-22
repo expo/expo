@@ -1,7 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import * as React from 'react';
 import {
@@ -57,9 +56,10 @@ export default class GeofencingScreen extends React.Component<Props, State> {
   };
 
   didFocus = async () => {
-    const { status } = await Permissions.askAsync(Permissions.LOCATION);
+    const { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
+    const { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
 
-    if (status !== 'granted') {
+    if (foregroundStatus !== 'granted' || backgroundStatus !== 'granted') {
       this.appStateSubscription = AppState.addEventListener('change', this.handleAppStateChange);
       this.setState({
         error:

@@ -106,7 +106,6 @@
     "expo-navigation-bar": "~2.5.0",
     "expo-network": "~5.6.0",
     "expo-notifications": "~0.24.0",
-    "expo-permissions": "~14.4.0",
     "expo-print": "~12.6.0",
     "expo-processing": "2.3.3",
     "expo-progress": "^0.0.2",
