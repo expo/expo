@@ -101,3 +101,15 @@ internal class InvalidStatusExceptions: GenericException<String> {
     "`\(param)` is not a valid reminder status"
   }
 }
+
+internal class MissingCalendarPListValueException: GenericException<String> {
+  override var reason: String {
+    "This app is missing \(param), so calendar methods will fail. Add this key to your bundle's Info.plist"
+  }
+}
+
+internal class MissingRemindersPListValueException: GenericException<String> {
+  override var reason: String {
+    "This app is missing \(param), so reminders methods will fail. Add this key to your bundle's Info.plist"
+  }
+}

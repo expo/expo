@@ -16,16 +16,18 @@ public class CalendarPermissionsRequester: NSObject, EXPermissionsRequester {
     var status: CalendarPermissionsStatus
     var permissions: EKAuthorizationStatus
 
-    var calendarUsageDescription: Any?
-    if #available(iOS 17.0, *) {
-      calendarUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSCalendarsFullAccessUsageDescription")
-    } else {
-      calendarUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSCalendarsUsageDescription")
-    }
+    let description = {
+      if #available(iOS 17.0, *) {
+        return "NSCalendarsFullAccessUsageDescription"
+      } else {
+        return "NSCalendarsUsageDescription"
+      }
+    }()
 
-    if let calendarUsageDescription {
+    if let calendarUsageDescription = Bundle.main.object(forInfoDictionaryKey: description) {
       permissions = EKEventStore.authorizationStatus(for: .event)
     } else {
+      EXFatal(MissingCalendarPListValueException(description))
       permissions = .denied
     }
 

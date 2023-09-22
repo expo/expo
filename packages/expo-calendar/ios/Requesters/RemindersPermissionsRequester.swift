@@ -16,16 +16,18 @@ public class RemindersPermissionRequester: NSObject, EXPermissionsRequester {
     var status: CalendarPermissionsStatus
     var permissions: EKAuthorizationStatus
 
-    var remindersUsageDescription: Any?
-    if #available(iOS 17.0, *) {
-      remindersUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSRemindersFullAccessUsageDescription")
-    } else {
-      remindersUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSRemindersUsageDescription")
-    }
+    let description = {
+      if #available(iOS 17.0, *) {
+        return "NSRemindersFullAccessUsageDescription"
+      } else {
+        return "NSRemindersUsageDescription"
+      }
+    }()
 
-    if let remindersUsageDescription {
+    if let remindersUsageDescription = Bundle.main.object(forInfoDictionaryKey: description) {
       permissions = EKEventStore.authorizationStatus(for: .reminder)
     } else {
+      EXFatal(MissingCalendarPListValueException(description))
       permissions = .denied
     }
 
