@@ -10,7 +10,8 @@
 
 ### 🐛 Bug fixes
 
-- Fixed app launch when using multiple scenes. ([#24565](https://github.com/expo/expo/pull/24565) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix Cmd+D opening React Native Debug Menu on launcher screen. ([#24580](https://github.com/expo/expo/pull/24580) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fixed app launch when using multiple scenes. ([#24565](https://github.com/expo/expo/pull/24565) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Fetch dev sessions whenever navigating to the launcher home screen. ([#24378](https://github.com/expo/expo/pull/24378), [#24502](https://github.com/expo/expo/pull/24502) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
