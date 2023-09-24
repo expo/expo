@@ -8,7 +8,7 @@ You may need finer-grained control over your notifications, so communicating dir
 
 ## How to write FCM and APNs servers
 
-Before communicating directly with FCM & APNs, there is one client-side change you'll need to make in your app. When using Expo's notification service, you collect the `ExponentPushToken` with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken). Now that you're not using Expo's notification service, you'll need to collect the native device token instead with [`getDevicePushTokenAsync`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
+Before communicating directly with FCM and APNs, there is one client-side change you'll need to make in your app. When using Expo's notification service, you collect the `ExponentPushToken` with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken). Now that you're not using Expo's notification service, you'll need to collect the native device token instead with [`getDevicePushTokenAsync`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
 
 ```diff
 import * as Notifications from 'expo-notifications';
