@@ -121,6 +121,8 @@ redirects[module-config]=modules/module-config/
 redirects[eas-metadata]=eas/metadata/
 redirects[eas-metadata/introduction]=eas/metadata/
 redirects[eas-metadata/getting-started]=eas/metadata/getting-started/
+# EAS Build
+redirects[build-reference/eas-json]=eas/json/#eas-build
 
 # Development builds
 redirects[development/build]=development/create-development-builds/
