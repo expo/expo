@@ -24,7 +24,7 @@ type Props = {
 };
 
 const Anchor = createPermalinkedComponent(P, {
-  baseNestingLevel: 3,
+  baseNestingLevel: 4,
   sidebarType: HeadingType.InlineCode,
 });
 
