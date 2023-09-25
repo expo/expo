@@ -4,7 +4,7 @@ import CryptoKit
 
 func uuidv5(name: String, namespace: UUID) -> UUID {
   var spaceUID = namespace.uuid
-  var data = withUnsafePointer(to: &spaceUID) { [count =  MemoryLayout.size(ofValue: spaceUID)] in
+  var data = withUnsafePointer(to: &spaceUID) { [count = MemoryLayout.size(ofValue: spaceUID)] in
     Data(bytes: $0, count: count)
   }
 
@@ -28,5 +28,5 @@ func uuidv5(name: String, namespace: UUID) -> UUID {
   }
 
   // Convert digest to UUID and return
-  return UUID.init(uuid: uuidTuple)
+  return UUID(uuid: uuidTuple)
 }
