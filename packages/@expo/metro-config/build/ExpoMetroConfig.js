@@ -151,12 +151,15 @@ function getAssetPlugins(projectRoot) {
   return [hashAssetFilesPath];
 }
 let hasWarnedAboutExotic = false;
-function getDefaultConfig(projectRoot, options = {}) {
+function getDefaultConfig(projectRoot, {
+  mode,
+  isCSSEnabled = true
+} = {}) {
   const {
     getDefaultConfig: getDefaultMetroConfig,
     mergeConfig
   } = (0, _metroConfig2().importMetroConfig)(projectRoot);
-  const isExotic = options.mode === 'exotic' || _env2().env.EXPO_USE_EXOTIC;
+  const isExotic = mode === 'exotic' || _env2().env.EXPO_USE_EXOTIC;
   if (isExotic && !hasWarnedAboutExotic) {
     hasWarnedAboutExotic = true;
     console.log(_chalk().default.gray(`\u203A Unstable feature ${_chalk().default.bold`EXPO_USE_EXOTIC`} is enabled. Bundling may not work as expected, and is subject to breaking changes.`));
@@ -182,7 +185,7 @@ function getDefaultConfig(projectRoot, options = {}) {
   sourceExts.push('cjs');
   const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
   let sassVersion = null;
-  if (options.isCSSEnabled) {
+  if (isCSSEnabled) {
     sassVersion = getPkgVersion(projectRoot, 'sass');
     // Enable SCSS by default so we can provide a better error message
     // when sass isn't installed.
@@ -263,7 +266,7 @@ function getDefaultConfig(projectRoot, options = {}) {
     symbolicator: {
       customizeFrame: (0, _customizeFrame().getDefaultCustomizeFrame)()
     },
-    transformerPath: options.isCSSEnabled ?
+    transformerPath: isCSSEnabled ?
     // Custom worker that adds CSS support for Metro web.
     require.resolve('./transform-worker/transform-worker') : metroDefaultValues.transformerPath,
     transformer: {

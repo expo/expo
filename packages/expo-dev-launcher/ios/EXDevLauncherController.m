@@ -309,6 +309,8 @@
   if (url != nil) {
     // Connect to the websocket
     [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:url];
+  } else {
+    [self _addInitModuleObserver];
   }
 #endif
 
