@@ -222,6 +222,17 @@ class DevLauncherController private constructor() :
       }
 
     intent?.let {
+      val lastOpenedApp = recentlyOpedAppsRegistry.getMostRecentApp()
+      if(lastOpenedApp != null && intent.action == Intent.ACTION_MAIN) {
+        coroutineScope.launch {
+          try {
+            loadApp(Uri.parse(lastOpenedApp.url), activityToBeInvalidated)
+          } catch (e: Throwable) {
+            navigateToLauncher()
+          }
+        }
+        return true;
+      }
       return handleExternalIntent(it)
     }
 
