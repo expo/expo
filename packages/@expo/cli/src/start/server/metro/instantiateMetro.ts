@@ -105,7 +105,7 @@ export async function loadMetroConfigAsync(
     routerDirectory: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     config,
     platformBundlers,
-    isTsconfigPathsEnabled: !!exp.experiments?.tsconfigPaths,
+    isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',
   });
 
