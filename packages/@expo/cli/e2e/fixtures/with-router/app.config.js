@@ -12,7 +12,10 @@ module.exports = {
     bundler: 'metro',
   },
   experiments: {
-    tsconfigPaths: process.env._EXPO_E2E_USE_PATH_ALIASES ? true : undefined,
-    typedRoutes: process.env._EXPO_E2E_USE_TYPED_ROUTES ? true : undefined
+    tsconfigPaths:
+      '_EXPO_E2E_USE_PATH_ALIASES' in process.env
+        ? Boolean(process.env._EXPO_E2E_USE_PATH_ALIASES)
+        : true,
+    typedRoutes: process.env._EXPO_E2E_USE_TYPED_ROUTES ? true : undefined,
   },
 };
