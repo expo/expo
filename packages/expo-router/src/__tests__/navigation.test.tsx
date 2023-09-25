@@ -9,7 +9,6 @@ import {
   Redirect,
   Slot,
   usePathname,
-  Link,
 } from '../exports';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
