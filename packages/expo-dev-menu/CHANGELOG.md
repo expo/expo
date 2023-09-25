@@ -14,6 +14,10 @@
 
 - Drop support for configuring SDK 44 and below with Prebuild. ([#24504](https://github.com/expo/expo/pull/24504) by [@EvanBacon](https://github.com/EvanBacon))
 
+## 3.2.1 — 2023-09-25
+
+_This version does not introduce any user-facing changes._
+
 ## 4.2.1 — 2023-09-18
 
 ### 💡 Others
