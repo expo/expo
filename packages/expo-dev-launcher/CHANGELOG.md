@@ -7,6 +7,13 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.4.13 — 2023-09-25
+
+### 🐛 Bug fixes
+
 - Fetch dev sessions whenever navigating to the launcher home screen. ([#24378](https://github.com/expo/expo/pull/24378), [#24502](https://github.com/expo/expo/pull/24502) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others

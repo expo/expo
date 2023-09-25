@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Detect bun before yarn to allow bun install --yarn usage. ([#24360](https://github.com/expo/expo/pull/24360) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 1.1.2 — 2023-09-25
+
+### 🐛 Bug fixes
+
+- Detect bun before yarn to allow bun install --yarn usage. ([#24360](https://github.com/expo/expo/pull/24360) by [@byCedric](https://github.com/byCedric))
 
 ## 1.2.0 — 2023-09-15
 
