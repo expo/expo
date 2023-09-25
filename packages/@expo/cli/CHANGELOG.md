@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Enable `tsconfigPaths` by default flag ([#24490](https://github.com/expo/expo/pull/24490) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
