@@ -22,8 +22,8 @@ export default class Camera extends React.Component<CameraProps> {
     static Constants: ConstantsType;
     static ConversionTables: {
         type: Record<"front" | "back", string | number | undefined>;
-        flashMode: Record<"on" | "off" | "auto" | "torch", string | number | undefined>;
-        autoFocus: Record<"on" | "off" | "auto" | "singleShot", string | number | boolean | undefined>;
+        flashMode: Record<"auto" | "off" | "on" | "torch", string | number | undefined>;
+        autoFocus: Record<"auto" | "off" | "on" | "singleShot", string | number | boolean | undefined>;
         whiteBalance: Record<"auto" | "sunny" | "cloudy" | "shadow" | "incandescent" | "fluorescent" | "continuous" | "manual", string | number | undefined>;
     };
     static defaultProps: CameraProps;
@@ -102,7 +102,7 @@ export default class Camera extends React.Component<CameraProps> {
      * for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF
      * data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
      *
-     * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#filesystemcopyasyncoptions)
+     * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcachedirectory)
      * > to make a permanent copy of the image.
      */
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
