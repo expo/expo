@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `router.navigate` and `navigate` to `useRouter`
+- Add `router.navigate` and `navigate` to `useRouter` ([#24600](https://github.com/expo/expo/pull/24600) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
