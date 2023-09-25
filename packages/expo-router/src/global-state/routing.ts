@@ -93,7 +93,7 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
     case 'REPLACE':
       return navigationRef.dispatch(getNavigateReplaceAction(state, navigationRef.getRootState()));
     default:
-      return navigationRef.dispatch(getNavigatePushAction(state));
+      return navigationRef.dispatch(getNavigatePushAction(state, navigationRef.getRootState()));
   }
 }
 
@@ -120,10 +120,11 @@ function rewriteNavigationStateToParams(
   return JSON.parse(JSON.stringify(params));
 }
 
-function getNavigatePushAction(state: ResultState) {
+function getNavigatePushAction(state: ResultState, rootState: NavigationState) {
   const { screen, params } = rewriteNavigationStateToParams(state);
   return {
     type: 'NAVIGATE',
+    target: rootState.key,
     payload: {
       name: screen,
       params,
@@ -132,39 +133,41 @@ function getNavigatePushAction(state: ResultState) {
 }
 
 function getNavigateReplaceAction(
-  previousState: ResultState,
-  parentState: NavigationState,
+  desiredResultState: ResultState,
+  rootState: NavigationState,
+  parentState = rootState,
   lastNavigatorSupportingReplace: NavigationState = parentState
 ): NavigationAction {
   // We should always have at least one route in the state
-  const state = previousState.routes.at(-1)!;
+  const desiredRoute = desiredResultState.routes.at(-1)!;
 
   // Only these navigators support replace
   if (parentState.type === 'stack' || parentState.type === 'tab') {
     lastNavigatorSupportingReplace = parentState;
   }
 
-  const currentRoute = parentState.routes.find((route) => route.name === state.name);
+  const currentRoute = parentState.routes.find((route) => route.name === desiredRoute.name);
   const routesAreEqual = parentState.routes[parentState.index] === currentRoute;
 
   // If there is nested state and the routes are equal, we should keep going down the tree
-  if (state.state && routesAreEqual && currentRoute.state) {
+  if (desiredRoute.state && routesAreEqual && currentRoute.state) {
     return getNavigateReplaceAction(
-      state.state,
+      desiredRoute.state,
+      rootState,
       currentRoute.state as any,
       lastNavigatorSupportingReplace
     );
   }
 
   // Either we reached the bottom of the state or the point where the routes diverged
-  const { screen, params } = rewriteNavigationStateToParams(previousState);
+  const { screen, params } = rewriteNavigationStateToParams(desiredResultState);
+
   return {
     type: lastNavigatorSupportingReplace.type === 'stack' ? 'REPLACE' : 'JUMP_TO',
+    target: lastNavigatorSupportingReplace?.key,
     payload: {
       name: screen,
       params,
-      // Ensure that the last navigator supporting replace is the one that handles the action
-      source: lastNavigatorSupportingReplace?.key,
     },
   };
 }

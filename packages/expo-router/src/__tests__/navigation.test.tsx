@@ -9,6 +9,7 @@ import {
   Redirect,
   Slot,
   usePathname,
+  Link,
 } from '../exports';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
@@ -689,4 +690,44 @@ it('can push nested stacks with initial route names without creating circular re
   act(() => router.push('/menu'));
   act(() => router.push('/menu/123'));
   expect(screen).toHavePathname('/menu/123');
+});
+
+it('ensure push navigation is always handled by the root navigator', async () => {
+  renderRouter({
+    _layout: () => <Slot />,
+    index: () => <Text testID="index" />,
+    'one/_layout': () => <Slot />,
+    'one/index': () => <Text testID="one" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  act(() => router.push('/one'));
+  expect(screen).toHavePathname('/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.push('/'));
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+});
+
+it('ensure replace navigation is always handled by the correct navigator', async () => {
+  renderRouter({
+    _layout: () => <Slot />,
+    index: () => <Text testID="index" />,
+    'one/_layout': () => <Slot />,
+    'one/index': () => <Text testID="one" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  act(() => router.replace('/one'));
+  expect(screen).toHavePathname('/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.replace('/'));
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
