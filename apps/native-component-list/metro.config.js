@@ -2,9 +2,7 @@ const { createMetroConfiguration } = require('expo-yarn-workspaces');
 const path = require('path');
 
 /** @type {import('expo/metro-config').MetroConfig} */
-const baseConfig = createMetroConfiguration(__dirname, {
-  isCSSEnabled: true,
-});
+const baseConfig = createMetroConfiguration(__dirname);
 
 const root = path.join(__dirname, '../..');
 
