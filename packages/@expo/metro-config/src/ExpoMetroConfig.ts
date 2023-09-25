@@ -54,11 +54,11 @@ let hasWarnedAboutExotic = false;
 
 export function getDefaultConfig(
   projectRoot: string,
-  options: DefaultConfigOptions = {}
+  { mode, isCSSEnabled = true }: DefaultConfigOptions = {}
 ): InputConfigT {
   const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = importMetroConfig(projectRoot);
 
-  const isExotic = options.mode === 'exotic' || env.EXPO_USE_EXOTIC;
+  const isExotic = mode === 'exotic' || env.EXPO_USE_EXOTIC;
 
   if (isExotic && !hasWarnedAboutExotic) {
     hasWarnedAboutExotic = true;
@@ -90,7 +90,7 @@ export function getDefaultConfig(
   const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
 
   let sassVersion: string | null = null;
-  if (options.isCSSEnabled) {
+  if (isCSSEnabled) {
     sassVersion = getPkgVersion(projectRoot, 'sass');
     // Enable SCSS by default so we can provide a better error message
     // when sass isn't installed.
@@ -176,7 +176,7 @@ export function getDefaultConfig(
     symbolicator: {
       customizeFrame: getDefaultCustomizeFrame(),
     },
-    transformerPath: options.isCSSEnabled
+    transformerPath: isCSSEnabled
       ? // Custom worker that adds CSS support for Metro web.
         require.resolve('./transform-worker/transform-worker')
       : metroDefaultValues.transformerPath,
