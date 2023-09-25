@@ -53,6 +53,35 @@ const schema = {
                 networkInspector: { type: 'boolean', nullable: true },
                 extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
                 usesCleartextTraffic: { type: 'boolean', nullable: true },
+                queries: {
+                    required: ['package'],
+                    type: 'object',
+                    properties: {
+                        package: { type: 'string' },
+                        intent: {
+                            type: 'array',
+                            items: {
+                                type: 'object',
+                                properties: {
+                                    action: { type: 'string', nullable: true },
+                                    data: {
+                                        type: 'object',
+                                        properties: {
+                                            scheme: { type: 'string', nullable: true },
+                                            host: { type: 'string', nullable: true },
+                                            mimeType: { type: 'string', nullable: true },
+                                        },
+                                        nullable: true,
+                                    },
+                                    category: { type: 'array', items: { type: 'string' }, nullable: true },
+                                },
+                            },
+                            nullable: true,
+                        },
+                        provider: { type: 'array', items: { type: 'string' }, nullable: true },
+                    },
+                    nullable: true,
+                },
             },
             nullable: true,
         },

@@ -147,7 +147,23 @@ export type AndroidManifest = {
     'uses-permission'?: ManifestUsesPermission[];
     'uses-permission-sdk-23'?: ManifestUsesPermission[];
     'uses-feature'?: ManifestUsesFeature[];
+    queries: ManifestQuery[];
     application?: ManifestApplication[];
+  };
+};
+
+export type ManifestQuery = {
+  $: Omit<AndroidManifestAttributes, 'android:name'>,
+  package: {
+      $: {
+          'android:name': string;
+      };
+  };
+  intent: Omit<ManifestIntentFilter, '$'>[];
+  provider?: {
+      $: {
+          'android:authorities': string;
+      };
   };
 };
 

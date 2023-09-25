@@ -109,7 +109,21 @@ export type AndroidManifest = {
         'uses-permission'?: ManifestUsesPermission[];
         'uses-permission-sdk-23'?: ManifestUsesPermission[];
         'uses-feature'?: ManifestUsesFeature[];
+        queries: ManifestQuery[];
         application?: ManifestApplication[];
+    };
+};
+export type ManifestQuery = {
+    package: {
+        $: {
+            'android:name': string;
+        };
+    };
+    intent?: Omit<ManifestIntentFilter, '$'>[];
+    provider?: {
+        $: {
+            'android:authorities': string;
+        };
     };
 };
 export declare function writeAndroidManifestAsync(manifestPath: string, androidManifest: AndroidManifest): Promise<void>;

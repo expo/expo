@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidFlipper = exports.withAndroidBuildProperties = void 0;
+exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidFlipper = exports.withAndroidBuildProperties = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -191,3 +191,51 @@ function setUsesCleartextTraffic(androidManifest, value) {
     }
     return androidManifest;
 }
+const withAndroidQueries = (config, props) => {
+    return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+        if (props.android?.queries == null) {
+            return config;
+        }
+        const queries = config.modResults.manifest?.queries ?? [];
+        const provider = props.android.queries.provider
+            ? { $: { 'android:authorities': props.android.queries.provider?.join(';') } }
+            : undefined;
+        const newQueries = {
+            package: {
+                $: {
+                    'android:name': props.android.queries.package,
+                },
+            },
+            intent: renderQueryIntent(props.android.queries.intent),
+            provider,
+        };
+        queries.push(newQueries);
+        config.modResults.manifest.queries = queries;
+        return config;
+    });
+};
+exports.withAndroidQueries = withAndroidQueries;
+function renderQueryIntent(intentFilters) {
+    return (intentFilters?.map((intentFilter) => {
+        const { data, category, action } = intentFilter;
+        return {
+            action: [
+                // <action android:name="android.intent.action.VIEW"/>
+                {
+                    $: {
+                        'android:name': `android.intent.action.${action}`,
+                    },
+                },
+            ],
+            data: (Array.isArray(data) ? data : [data]).filter(Boolean).map((datum) => ({
+                $: Object.entries(datum ?? {}).reduce((prev, [key, value]) => ({ ...prev, [`android:${key}`]: value }), {}),
+            })),
+            category: (Array.isArray(category) ? category : [category]).filter(Boolean).map((cat) => ({
+                $: {
+                    'android:name': `android.intent.category.${cat}`,
+                },
+            })),
+        };
+    }) ?? []);
+}
+exports.default = renderQueryIntent;

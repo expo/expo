@@ -99,6 +99,7 @@ export interface PluginConfigTypeAndroid {
      * @see [Android documentation](https://developer.android.com/guide/topics/manifest/application-element#usesCleartextTraffic)
      */
     usesCleartextTraffic?: boolean;
+    queries?: PluginConfigTypeAndroidQueries;
 }
 /**
  * Interface representing available configuration for iOS native build properties.
@@ -247,6 +248,24 @@ export interface PluginConfigTypeAndroidPackagingOptions {
      * Array of patterns for native libraries that should not be stripped of debug symbols.
      */
     doNotStrip?: string[];
+}
+export interface PluginConfigTypeAndroidQueries {
+    package: string;
+    intent?: PluginConfigTypeAndroidQueriesIntent[];
+    provider?: string[];
+}
+export interface PluginConfigTypeAndroidQueriesIntent {
+    action?: string;
+    data?: {
+        scheme?: string;
+        host?: string;
+        mimeType?: string;
+    }[] | {
+        scheme?: string;
+        host?: string;
+        mimeType?: string;
+    };
+    category?: string | string[];
 }
 /**
  * @ignore

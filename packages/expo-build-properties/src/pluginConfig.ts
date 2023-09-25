@@ -1,3 +1,4 @@
+import { Android, AndroidIntentFiltersData } from '@expo/config-types';
 import Ajv, { JSONSchemaType } from 'ajv';
 import semver from 'semver';
 
@@ -122,6 +123,8 @@ export interface PluginConfigTypeAndroid {
    * @see [Android documentation](https://developer.android.com/guide/topics/manifest/application-element#usesCleartextTraffic)
    */
   usesCleartextTraffic?: boolean;
+
+  queries?: PluginConfigTypeAndroidQueries;
 }
 
 /**
@@ -279,6 +282,28 @@ export interface PluginConfigTypeAndroidPackagingOptions {
   doNotStrip?: string[];
 }
 
+export interface PluginConfigTypeAndroidQueries {
+  package: string;
+  intent?: PluginConfigTypeAndroidQueriesIntent[];
+  provider?: string[];
+}
+
+export interface PluginConfigTypeAndroidQueriesIntent {
+  action?: string;
+  data?:
+    | {
+        scheme?: string;
+        host?: string;
+        mimeType?: string;
+      }[]
+    | {
+        scheme?: string;
+        host?: string;
+        mimeType?: string;
+      };
+  category?: string | string[];
+}
+
 const schema: JSONSchemaType<PluginConfigType> = {
   type: 'object',
   properties: {
@@ -317,6 +342,36 @@ const schema: JSONSchemaType<PluginConfigType> = {
         extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
 
         usesCleartextTraffic: { type: 'boolean', nullable: true },
+
+        queries: {
+          required: ['package'],
+          type: 'object',
+          properties: {
+            package: { type: 'string' },
+            intent: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  action: { type: 'string', nullable: true },
+                  data: {
+                    type: 'object',
+                    properties: {
+                      scheme: { type: 'string', nullable: true },
+                      host: { type: 'string', nullable: true },
+                      mimeType: { type: 'string', nullable: true },
+                    },
+                    nullable: true,
+                  },
+                  category: { type: 'array', items: { type: 'string' }, nullable: true },
+                },
+              },
+              nullable: true,
+            },
+            provider: { type: 'array', items: { type: 'string' }, nullable: true },
+          },
+          nullable: true,
+        },
       },
       nullable: true,
     },

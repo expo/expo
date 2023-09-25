@@ -10,7 +10,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { appendContents, purgeContents } from './fileContentsUtils';
-import type { PluginConfigType } from './pluginConfig';
+import type { PluginConfigType, PluginConfigTypeAndroidQueriesIntent } from './pluginConfig';
+import { ManifestIntentFilter, ManifestQuery } from '@expo/config-plugins/build/android/Manifest';
 
 const { createBuildGradlePropsConfigPlugin } = AndroidConfig.BuildProperties;
 
@@ -237,4 +238,62 @@ function setUsesCleartextTraffic(
   }
 
   return androidManifest;
+}
+
+export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withAndroidManifest(config, (config) => {
+    if (props.android?.queries == null) {
+      return config;
+    }
+
+    const queries = config.modResults.manifest?.queries ?? [];
+
+    const provider = props.android.queries.provider
+      ? { $: { 'android:authorities': props.android.queries.provider?.join(';') } }
+      : undefined;
+    const newQueries = {
+      package: {
+        $: {
+          'android:name': props.android.queries.package,
+        },
+      },
+      intent: renderQueryIntent(props.android.queries.intent),
+      provider,
+    };
+
+    queries.push(newQueries);
+    config.modResults.manifest.queries = queries;
+    return config;
+  });
+};
+
+export default function renderQueryIntent(
+  intentFilters?: PluginConfigTypeAndroidQueriesIntent[]
+): Omit<ManifestIntentFilter, '$'>[] {
+  return (
+    intentFilters?.map((intentFilter) => {
+      const { data, category, action } = intentFilter;
+      return {
+        action: [
+          // <action android:name="android.intent.action.VIEW"/>
+          {
+            $: {
+              'android:name': `android.intent.action.${action}`,
+            },
+          },
+        ],
+        data: (Array.isArray(data) ? data : [data]).filter(Boolean).map((datum) => ({
+          $: Object.entries(datum ?? {}).reduce(
+            (prev, [key, value]) => ({ ...prev, [`android:${key}`]: value }),
+            {}
+          ),
+        })),
+        category: (Array.isArray(category) ? category : [category]).filter(Boolean).map((cat) => ({
+          $: {
+            'android:name': `android.intent.category.${cat}`,
+          },
+        })),
+      };
+    }) ?? []
+  );
 }
