@@ -199,7 +199,6 @@ export function getDefaultConfig(
         ? // TODO: Combine these into one transformer.
           require.resolve('./transformer/metro-expo-exotic-babel-transformer')
         : require.resolve('./babel-transformer'),
-      // assetRegistryPath: '@react-native/assets-registry/registry.js',
       assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
       assetPlugins: getAssetPlugins(projectRoot),
     },
