@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- On Android, remove `isClickable` on `SplashScreenView` that caused incorrect behaviour with `TalkBack`. ([#24601](https://github.com/expo/expo/pull/24601) by [@alanhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 0.23.1 — 2023-09-18
