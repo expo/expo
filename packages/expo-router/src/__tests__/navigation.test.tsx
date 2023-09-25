@@ -690,3 +690,35 @@ it('can push nested stacks with initial route names without creating circular re
   act(() => router.push('/menu/123'));
   expect(screen).toHavePathname('/menu/123');
 });
+
+it('can push & replace with nested Slots', async () => {
+  renderRouter({
+    _layout: () => <Slot />,
+    index: () => <Text testID="index" />,
+    'one/_layout': () => <Slot />,
+    'one/index': () => <Text testID="one" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // Push
+
+  act(() => router.push('/one'));
+  expect(screen).toHavePathname('/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.push('/'));
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // Replace
+
+  act(() => router.replace('/one'));
+  expect(screen).toHavePathname('/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.replace('/'));
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+});
