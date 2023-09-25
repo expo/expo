@@ -85,6 +85,10 @@ You can now run `npm run ts:check` or `yarn tsc` to type-check the project.
 
 A project's **tsconfig.json** should extend the `expo/tsconfig.base` by default. This sets the following default [compiler options](https://www.typescriptlang.org/docs/handbook/compiler-options.html) (which can be overwritten in your project's **tsconfig.json**):
 
+You can automatically generate a **tsconfig.json** file by running the command: 
+
+<Terminal cmd={['$ npx expo customize tsconfig.json']} />
+
 ## Project configuration
 
 Expo CLI will automatically modify your **tsconfig.json** to the preferred default which is optimized for universal React development:
@@ -92,7 +96,8 @@ Expo CLI will automatically modify your **tsconfig.json** to the preferred defau
 ```json tsconfig.json
 {
   "extends": "expo/tsconfig.base",
-  "compilerOptions": {}
+  "compilerOptions": {},
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }
 ```
 
@@ -208,6 +213,10 @@ Consider the following when using absolute imports:
 - If not using TypeScript, **jsconfig.json** can serve as an alternative to **tsconfig.json**.
 - Absolute imports are only supported by Metro (including Metro web) and not by `@expo/webpack-config`.
 - Bare projects require additional setup for this feature. See the [versioned Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
+
+## Type generation
+
+Some Expo libraries provide both static types and type generation capabilities. These types are automatically generated when the project builds or by running the `npx expo customize tsconfig.json` command.
 
 ## TypeScript for config files
 
