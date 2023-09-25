@@ -276,10 +276,7 @@ export function withExtendedResolver(
   // swap out the transformer based on platform.
   const assetRegistryPath = fs.realpathSync(
     // This is the native asset registry alias for native.
-
     path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
-
-    // path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
     // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
     // path.resolve(resolveFrom(projectRoot, '@react-native/assets-registry/registry.js'))
   );
@@ -465,8 +462,6 @@ export function withExtendedResolver(
       }
 
       let result: Resolution | null = null;
-      // let sources = sourceExts;
-      // let sourcesRegExp = sourceExtsEndsWithRegex;
 
       // React Native uses `event-target-shim` incorrectly and this causes the native runtime
       // to fail to load. This is a temporary workaround until we can fix this upstream.
@@ -475,8 +470,6 @@ export function withExtendedResolver(
         moduleName.includes('event-target-shim') &&
         context.originModulePath.includes(path.sep + 'react-native' + path.sep)
       ) {
-        // sources = sourceExtsWithoutMjs;
-        // sourcesRegExp = sourceExtsWithoutMjsEndsWithRegex;
         context.sourceExts = context.sourceExts.filter((f) => !f.includes('mjs'));
         debug('Skip mjs support for event-target-shim in:', context.originModulePath);
       }
