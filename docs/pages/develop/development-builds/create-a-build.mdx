@@ -14,11 +14,41 @@ import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 Development builds can be created with [EAS Build](/build/introduction/) or [locally](/guides/local-app-development/) on your computer if you have Android Studio and Xcode installed.
 
-<Video url="https://www.youtube.com/embed/LUFHXsBcW6w" />
-
 In this guide, you'll find information on how to create a development build and then install it on an emulator/simulator or a physical device to continue developing your app.
 
+## Prerequisites
+
+You need to initialize your project with Expo. If you still need to do so, see the [initializing steps](/get-started/create-a-project/#initialize-a-new-project) if you are starting a new project.
+
+We also recommend installing EAS CLI as a global npm dependency by running the following command:
+
+<Terminal cmd={['$ npm install -g eas-cli']} />
+
 <Step label="1">
+
+## Install expo-dev-client
+
+To initialize a development build, you need to install the `expo-dev-client` library in your project:
+
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
+
+</Step>
+
+<Step label="2">
+
+## Login to your Expo account
+
+Logging into your Expo account will be useful when creating a build or submitting your app to the app stores.
+
+If you are already signed in to an Expo account using Expo CLI, you can skip the steps described in this section. If you are not, run the following command to log in:
+
+<Terminal cmd={['$ eas login']} />
+
+You can check whether you are logged in by running `eas whoami`.
+
+</Step>
+
+<Step label="3">
 
 ## Initialize EAS Build
 
@@ -50,7 +80,7 @@ The `development` profile sets the following options:
 
 </Step>
 
-<Step label="2">
+<Step label="4">
 
 ## Create a build for emulator/simulator
 
@@ -108,7 +138,7 @@ See [Installing build on the simulator](/build-reference/simulators/#installing-
 
 </Step>
 
-<Step label="3">
+<Step label="5">
 
 ## Create a build for the device
 
@@ -150,13 +180,17 @@ You can also find this QR code on the build page in the [Expo dashboard](https:/
 
 </Tabs>
 
+## Video walkthrough
+
+<Video url="https://www.youtube.com/embed/LUFHXsBcW6w" />
+
 </Step>
 
 ## Next step
 
 <BoxLink
-  title="Share with your team"
-  description="Learn about how you can install and share a development build with your team or run it on multiple devices."
-  href="/develop/development-builds/share-with-your-team"
+  title="Use a development build"
+  description="Learn how to use development builds for a project."
+  href="/develop/development-builds/use-development-builds/"
   Icon={BookOpen02Icon}
 />
