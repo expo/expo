@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Improve tracking on Android.
+
 ## 1.8.0 — 2023-09-15
 
 ### 🎉 New features
