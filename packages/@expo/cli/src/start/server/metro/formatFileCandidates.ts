@@ -8,9 +8,8 @@
  * A fork of my proposed Metro change https://github.com/facebook/metro/pull/1036/files
  */
 
-import path from 'path';
-
 import type { FileCandidates } from 'metro-resolver';
+import path from 'path';
 
 function groupExtensions(exts: readonly string[]): string[][] {
   // Reverse the extensions and split into parts

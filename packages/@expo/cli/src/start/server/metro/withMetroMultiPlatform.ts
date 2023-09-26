@@ -9,6 +9,7 @@ import fs from 'fs';
 import { ConfigT } from 'metro-config';
 import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
+import otherResolve from 'resolve';
 import resolveFrom from 'resolve-from';
 
 import {
@@ -18,6 +19,7 @@ import {
   isNodeExternal,
   setupNodeExternals,
 } from './externals';
+import { formatFileCandidates } from './formatFileCandidates';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
@@ -32,8 +34,6 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
-import { formatFileCandidates } from './formatFileCandidates';
-import otherResolve, { isCore } from 'resolve';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -191,9 +191,8 @@ function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boolean })
           type: 'empty',
         };
       }
-    } catch (error) {
+    } catch {
       // TODO: Add improved error handling.
-
       throw new FailedToResolvePathError(
         'The module could not be resolved because no file or module matched the pattern:\n' +
           `  ${formatFileCandidates(
