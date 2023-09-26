@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add support for skipping the launcher screen and launching directly into a previously opened project. ([#24614](https://github.com/expo/expo/pull/24614) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix Cmd+D opening React Native Debug Menu on launcher screen. ([#24580](https://github.com/expo/expo/pull/24580) by [@gabrieldonadel](https://github.com/gabrieldonadel))

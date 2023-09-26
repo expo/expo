@@ -30,6 +30,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
+    "ajv": "8.11.0",
     "expo-dev-menu": "4.2.1",
     "expo-manifests": "~0.10.0",
     "resolve-from": "^5.0.0",

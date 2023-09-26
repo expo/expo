@@ -88,6 +88,16 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
     return result
   }
 
+  fun getMostRecentApp(): DevLauncherAppEntry? {
+    val recentlyOpenedApps = getRecentlyOpenedApps()
+
+    return if (recentlyOpenedApps.isNotEmpty()) {
+      recentlyOpenedApps.maxByOrNull { it.timestamp }
+    } else {
+      null
+    }
+  }
+
   fun clearRegistry() {
     sharedPreferences.edit().clear().apply()
   }
