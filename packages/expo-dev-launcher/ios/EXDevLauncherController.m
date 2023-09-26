@@ -256,7 +256,8 @@
       return;
   }
 
-  if(_lastOpenedAppUrl != nil){
+  BOOL shouldTryToLaunchLastOpenedBundle = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
+  if(_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle){
       [self loadApp:_lastOpenedAppUrl withProjectUrl:nil onSuccess:nil onError:^(NSError *error) {
           __weak typeof(self) weakSelf = self;
           dispatch_async(dispatch_get_main_queue(), ^{

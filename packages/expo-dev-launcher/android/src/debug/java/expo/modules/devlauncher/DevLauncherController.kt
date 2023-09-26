@@ -222,8 +222,9 @@ class DevLauncherController private constructor() :
       }
 
     intent?.let {
+      val shouldTryToLaunchLastOpenedBundle = getMetadataValue(context, "DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE").toBoolean()
       val lastOpenedApp = recentlyOpedAppsRegistry.getMostRecentApp()
-      if(lastOpenedApp != null && intent.action == Intent.ACTION_MAIN) {
+      if(shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null && intent.action == Intent.ACTION_MAIN) {
         coroutineScope.launch {
           try {
             loadApp(Uri.parse(lastOpenedApp.url), activityToBeInvalidated)
