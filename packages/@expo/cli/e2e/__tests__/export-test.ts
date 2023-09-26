@@ -83,7 +83,7 @@ describe('server', () => {
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
-          EXPO_USE_FAST_RESOLVER: 'true',
+          EXPO_USE_FAST_RESOLVER: 'false',
         },
       });
 
