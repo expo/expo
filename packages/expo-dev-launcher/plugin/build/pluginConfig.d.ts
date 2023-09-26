@@ -1,40 +1,32 @@
 /**
- * Interface representing base dev launcher configuration.
+ * Type representing base dev launcher configuration.
  */
-export interface PluginConfigType {
+export type PluginConfigType = PluginConfigOptionsByPlatform & PluginConfigOptions;
+/**
+ * Type representing available configuration for each platform.
+ */
+export type PluginConfigOptionsByPlatform = {
     /**
-     * Interface representing available configuration for Android dev launcher.
+     * Type representing available configuration for Android dev launcher.
      * @platform android
      */
-    android?: PluginConfigTypeAndroid;
+    android?: PluginConfigOptions;
     /**
-     * Interface representing available configuration for iOS dev launcher.
+     * Type representing available configuration for iOS dev launcher.
      * @platform ios
      */
-    ios?: PluginConfigTypeIos;
-}
+    ios?: PluginConfigOptions;
+};
 /**
- * Interface representing available configuration for Android dev launcher.
- * @platform android
+ * Type representing available configuration for dev launcher.
  */
-export interface PluginConfigTypeAndroid {
+export type PluginConfigOptions = {
     /**
      * Attempts to launch directly into a previously opened project. If unable to connect,
      * fall back to the launcher screen.
      */
     tryToLaunchLastOpenedBundle?: boolean;
-}
-/**
- * Interface representing available configuration for iOS dev launcher.
- * @platform ios
- */
-export interface PluginConfigTypeIos {
-    /**
-     * Attempts to launch directly into a previously opened project. If unable to connect,
-     * fall back to the launcher screen.
-     */
-    tryToLaunchLastOpenedBundle?: boolean;
-}
+};
 /**
  * @ignore
  */

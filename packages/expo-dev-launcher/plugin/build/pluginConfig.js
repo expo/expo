@@ -8,6 +8,7 @@ const ajv_1 = __importDefault(require("ajv"));
 const schema = {
     type: 'object',
     properties: {
+        tryToLaunchLastOpenedBundle: { type: 'boolean', nullable: true },
         android: {
             type: 'object',
             properties: {

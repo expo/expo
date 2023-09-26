@@ -13,24 +13,25 @@ export default createRunOncePlugin<PluginConfigType>(
   (config, props) => {
     validateConfig(props || {});
 
-    config = withInfoPlist(config, (config) => {
-      config.modResults['DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE'] =
-        props.ios?.tryToLaunchLastOpenedBundle;
-      return config;
-    });
+    if (props.ios?.tryToLaunchLastOpenedBundle ?? props.tryToLaunchLastOpenedBundle) {
+      config = withInfoPlist(config, (config) => {
+        config.modResults['DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE'] = true;
+        return config;
+      });
+    }
 
-    config = withAndroidManifest(config, (config) => {
-      const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+    if (props.android?.tryToLaunchLastOpenedBundle ?? props.tryToLaunchLastOpenedBundle) {
+      config = withAndroidManifest(config, (config) => {
+        const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
 
-      if (props.android?.tryToLaunchLastOpenedBundle) {
         AndroidConfig.Manifest.addMetaDataItemToMainApplication(
           mainApplication,
           'DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE',
-          props.android?.tryToLaunchLastOpenedBundle?.toString()
+          true?.toString()
         );
-      }
-      return config;
-    });
+        return config;
+      });
+    }
 
     return config;
   },
