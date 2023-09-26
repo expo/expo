@@ -131,6 +131,7 @@ redirects[development/troubleshooting]=development/introduction/
 redirects[development/upgrading]=development/introduction/
 redirects[development/extensions]=development/development-workflows/
 redirects[development/develop-your-project]=development/use-development-builds/
+redirects[develop/development-builds/installation/]=develop/development-builds/create-a-build/
 
 # Guides that have been deleted
 redirects[guides/using-gatsby]=/
