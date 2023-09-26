@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added a new type `ManifestQuery` to model the top-level `<queries>` tag in the App Manifest.
+
 ## 7.5.0 — 2023-09-15
 
 ### 🛠 Breaking changes

@@ -1,3 +1,4 @@
+import { ManifestQuery } from '@expo/config-plugins/build/android/Manifest';
 import {
   AndroidConfig,
   ConfigPlugin,
@@ -9,9 +10,9 @@ import {
 import fs from 'fs';
 import path from 'path';
 
+import { renderQueryIntents, renderQueryPackages, renderQueryProviders } from './androidQueryUtils';
 import { appendContents, purgeContents } from './fileContentsUtils';
-import type { PluginConfigType, PluginConfigTypeAndroidQueriesIntent } from './pluginConfig';
-import { ManifestIntentFilter, ManifestQuery } from '@expo/config-plugins/build/android/Manifest';
+import type { PluginConfigType } from './pluginConfig';
 
 const { createBuildGradlePropsConfigPlugin } = AndroidConfig.BuildProperties;
 
@@ -246,54 +247,23 @@ export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props
       return config;
     }
 
-    const queries = config.modResults.manifest?.queries ?? [];
+    const { queries } = props.android;
 
-    const provider = props.android.queries.provider
-      ? { $: { 'android:authorities': props.android.queries.provider?.join(';') } }
-      : undefined;
-    const newQueries = {
-      package: {
-        $: {
-          'android:name': props.android.queries.package,
-        },
-      },
-      intent: renderQueryIntent(props.android.queries.intent),
-      provider,
+    // Default template adds a single intent to the `queries` tag
+    const defaultIntents =
+      config.modResults.manifest.queries.map((q) => q.intent ?? []).flat() ?? [];
+
+    const additionalQueries: ManifestQuery = {
+      package: renderQueryPackages(queries.package),
+      intent: [...defaultIntents, ...renderQueryIntents(queries.intent)],
     };
 
-    queries.push(newQueries);
-    config.modResults.manifest.queries = queries;
+    const provider = renderQueryProviders(queries.provider);
+    if (provider != null) {
+      additionalQueries.provider = provider;
+    }
+
+    config.modResults.manifest.queries = [additionalQueries];
     return config;
   });
 };
-
-export default function renderQueryIntent(
-  intentFilters?: PluginConfigTypeAndroidQueriesIntent[]
-): Omit<ManifestIntentFilter, '$'>[] {
-  return (
-    intentFilters?.map((intentFilter) => {
-      const { data, category, action } = intentFilter;
-      return {
-        action: [
-          // <action android:name="android.intent.action.VIEW"/>
-          {
-            $: {
-              'android:name': `android.intent.action.${action}`,
-            },
-          },
-        ],
-        data: (Array.isArray(data) ? data : [data]).filter(Boolean).map((datum) => ({
-          $: Object.entries(datum ?? {}).reduce(
-            (prev, [key, value]) => ({ ...prev, [`android:${key}`]: value }),
-            {}
-          ),
-        })),
-        category: (Array.isArray(category) ? category : [category]).filter(Boolean).map((cat) => ({
-          $: {
-            'android:name': `android.intent.category.${cat}`,
-          },
-        })),
-      };
-    }) ?? []
-  );
-}

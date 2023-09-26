@@ -7,6 +7,7 @@ exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updat
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const androidQueryUtils_1 = require("./androidQueryUtils");
 const fileContentsUtils_1 = require("./fileContentsUtils");
 const { createBuildGradlePropsConfigPlugin } = config_plugins_1.AndroidConfig.BuildProperties;
 exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
@@ -196,46 +197,19 @@ const withAndroidQueries = (config, props) => {
         if (props.android?.queries == null) {
             return config;
         }
-        const queries = config.modResults.manifest?.queries ?? [];
-        const provider = props.android.queries.provider
-            ? { $: { 'android:authorities': props.android.queries.provider?.join(';') } }
-            : undefined;
-        const newQueries = {
-            package: {
-                $: {
-                    'android:name': props.android.queries.package,
-                },
-            },
-            intent: renderQueryIntent(props.android.queries.intent),
-            provider,
+        const { queries } = props.android;
+        // Default template adds a single intent to the `queries` tag
+        const defaultIntents = config.modResults.manifest.queries.map((q) => q.intent ?? []).flat() ?? [];
+        const additionalQueries = {
+            package: (0, androidQueryUtils_1.renderQueryPackages)(queries.package),
+            intent: [...defaultIntents, ...(0, androidQueryUtils_1.renderQueryIntents)(queries.intent)],
         };
-        queries.push(newQueries);
-        config.modResults.manifest.queries = queries;
+        const provider = (0, androidQueryUtils_1.renderQueryProviders)(queries.provider);
+        if (provider != null) {
+            additionalQueries.provider = provider;
+        }
+        config.modResults.manifest.queries = [additionalQueries];
         return config;
     });
 };
 exports.withAndroidQueries = withAndroidQueries;
-function renderQueryIntent(intentFilters) {
-    return (intentFilters?.map((intentFilter) => {
-        const { data, category, action } = intentFilter;
-        return {
-            action: [
-                // <action android:name="android.intent.action.VIEW"/>
-                {
-                    $: {
-                        'android:name': `android.intent.action.${action}`,
-                    },
-                },
-            ],
-            data: (Array.isArray(data) ? data : [data]).filter(Boolean).map((datum) => ({
-                $: Object.entries(datum ?? {}).reduce((prev, [key, value]) => ({ ...prev, [`android:${key}`]: value }), {}),
-            })),
-            category: (Array.isArray(category) ? category : [category]).filter(Boolean).map((cat) => ({
-                $: {
-                    'android:name': `android.intent.category.${cat}`,
-                },
-            })),
-        };
-    }) ?? []);
-}
-exports.default = renderQueryIntent;

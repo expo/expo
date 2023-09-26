@@ -4,20 +4,18 @@
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios"
+    "android": "expo start --android",
+    "ios": "expo start --ios"
   },
   "dependencies": {
     "expo": "~50.0.0-alpha.0",
-    "expo-build-properties": "~0.9.1",
     "expo-router": "^3.0.0",
     "react": "18.2.0",
     "react-native": "0.72.5"
   },
   "devDependencies": {
     "babel-preset-expo": "~9.7.0",
-    "expo-yarn-workspaces": "^2.0.0",
-    "@babel/core": "^7.20.0"
+    "expo-yarn-workspaces": "^2.0.0"
   },
   "private": true
 }

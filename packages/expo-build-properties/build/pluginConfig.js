@@ -57,7 +57,7 @@ const schema = {
                     required: ['package'],
                     type: 'object',
                     properties: {
-                        package: { type: 'string' },
+                        package: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
                         intent: {
                             type: 'array',
                             items: {

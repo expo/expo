@@ -5,6 +5,7 @@
     "privacy": "public",
     "sdkVersion": "UNVERSIONED",
     "scheme": "sandbox",
+
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,42 +28,11 @@
         {
           "origin": "https://naviloop.netlify.app/"
         }
-      ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "queries": {
-              "package": "test",
-              "intent": [
-                {
-                  "action": "BATTERY_CHANGED",
-                  "data": { "scheme": "https" },
-                  "category": ["BROWSABLE"]
-                },
-                {
-                  "action": "BATTERY_CHANGED",
-                  "data": { "scheme": "https" },
-                  "category": ["VIEWABLE"]
-                },
-                {
-                  "action": "BATTERY_CHANGED",
-                  "data": { "scheme": "https" },
-                  "category": ["BROWSABLE"]
-                }
-              ],
-              "provider": ["test", "test2"]
-            }
-          }
-        }
       ]
     ],
     "web": {
       "bundler": "metro",
       "output": "server"
-    },
-    "android": {
-      "package": "com.alanhughes.sandbox"
     }
   }
 }

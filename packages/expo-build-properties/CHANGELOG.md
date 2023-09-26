@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `withAndroidQueries` to allow adding and modifying the `<queries>` tag in the App Manifest.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

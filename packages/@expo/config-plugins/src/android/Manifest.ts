@@ -152,14 +152,15 @@ export type AndroidManifest = {
   };
 };
 
+type ManifestQueryIntent = Omit<ManifestIntentFilter, '$'>
+
 export type ManifestQuery = {
-  $: Omit<AndroidManifestAttributes, 'android:name'>,
   package: {
       $: {
           'android:name': string;
       };
-  };
-  intent: Omit<ManifestIntentFilter, '$'>[];
+  }[];
+  intent?: ManifestQueryIntent[];
   provider?: {
       $: {
           'android:authorities': string;

@@ -1,6 +1,5 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-import type { PluginConfigType, PluginConfigTypeAndroidQueriesIntent } from './pluginConfig';
-import { ManifestIntentFilter } from '@expo/config-plugins/build/android/Manifest';
+import type { PluginConfigType } from './pluginConfig';
 export declare const withAndroidBuildProperties: ConfigPlugin<PluginConfigType>;
 export declare const withAndroidFlipper: ConfigPlugin<PluginConfigType>;
 /**
@@ -22,4 +21,3 @@ export declare const withAndroidPurgeProguardRulesOnce: ConfigPlugin;
 export declare function updateAndroidProguardRules(contents: string, newProguardRules: string | null, updateMode: 'append' | 'overwrite'): string;
 export declare const withAndroidCleartextTraffic: ConfigPlugin<PluginConfigType>;
 export declare const withAndroidQueries: ConfigPlugin<PluginConfigType>;
-export default function renderQueryIntent(intentFilters?: PluginConfigTypeAndroidQueriesIntent[]): Omit<ManifestIntentFilter, '$'>[];

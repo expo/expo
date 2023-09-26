@@ -99,6 +99,12 @@ export interface PluginConfigTypeAndroid {
      * @see [Android documentation](https://developer.android.com/guide/topics/manifest/application-element#usesCleartextTraffic)
      */
     usesCleartextTraffic?: boolean;
+    /**
+     * Specifies the set of other apps that an app intends to interact with. These other apps are specified by package name,
+     * by intent signature, or by provider authority.
+     *
+     *  @see [Android documentation](https://developer.android.com/guide/topics/manifest/queries-element)
+     */
     queries?: PluginConfigTypeAndroidQueries;
 }
 /**
@@ -250,22 +256,51 @@ export interface PluginConfigTypeAndroidPackagingOptions {
     doNotStrip?: string[];
 }
 export interface PluginConfigTypeAndroidQueries {
-    package: string;
+    /**
+     * Specifies a single app that your app intends to access. This other app might integrate with your app, or your app might use services that the other app provides.
+     */
+    package: string[];
+    /**
+     * Specifies an intent filter signature. Your app can discover other apps that have matching <intent-filter> elements.
+     * These intents have restrictions compared to typical intent filter signatures.
+     *
+     * @see [Android documentation](https://developer.android.com/training/package-visibility/declaring#intent-filter-signature) for details
+     */
     intent?: PluginConfigTypeAndroidQueriesIntent[];
+    /**
+     * Specifies one or more content provider authorities. Your app can discover other apps whose content providers use the specified authorities.
+     * There are some restrictions on the options that you can include in this <provider> element, compared to a typical <provider> manifest element. You may only specify the android:authorities attribute.
+     */
     provider?: string[];
 }
 export interface PluginConfigTypeAndroidQueriesIntent {
+    /**
+     * A string naming the action to perform. Usually one of the platform-defined values, such as ACTION_SEND or ACTION_VIEW
+     */
     action?: string;
-    data?: {
-        scheme?: string;
-        host?: string;
-        mimeType?: string;
-    }[] | {
-        scheme?: string;
-        host?: string;
-        mimeType?: string;
-    };
+    /**
+     * A description of the data associated with the intent.
+     */
+    data?: PluginConfigTypeAndroidQueriesData;
+    /**
+     * Provides an additional way to characterize the activity handling the intent,
+     * usually related to the user gesture or location from which it's started.
+     */
     category?: string | string[];
+}
+export interface PluginConfigTypeAndroidQueriesData {
+    /**
+     * Specify a URI scheme that is handled
+     */
+    scheme?: string;
+    /**
+     * Specify a URI authority host that is handled
+     */
+    host?: string;
+    /**
+     * Specify a MIME type that is handled
+     */
+    mimeType?: string;
 }
 /**
  * @ignore
