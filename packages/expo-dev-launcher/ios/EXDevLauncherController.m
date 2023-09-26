@@ -57,6 +57,7 @@
 @property (nonatomic, strong) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, strong) EXDevLauncherBridgeDelegate *bridgeDelegate;
+@property (nonatomic, strong) NSURL *lastOpenedAppUrl;
 
 @end
 
@@ -249,18 +250,38 @@
   _window = window;
   EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
 
-  if (!launchOptions[UIApplicationLaunchOptionsURLKey]) {
-    [self navigateToLauncher];
-  } else {
+  if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
     // For deeplink launch, we need the keyWindow for expo-splash-screen to setup correctly.
     [_window makeKeyWindow];
+    return;
   }
+
+  BOOL shouldTryToLaunchLastOpenedBundle = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
+  if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
+    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil onSuccess:nil onError:^(NSError *error) {
+       __weak typeof(self) weakSelf = self;
+       dispatch_async(dispatch_get_main_queue(), ^{
+         typeof(self) self = weakSelf;
+         if (!self) {
+           return;
+         } 
+
+         [self navigateToLauncher];
+       });
+    }];
+    return;
+  }
+  [self navigateToLauncher];
 }
 
 - (void)autoSetupPrepare:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
 {
   _delegate = delegate;
   _launchOptions = launchOptions;
+  NSDictionary *lastOpenedApp = [self.recentlyOpenedAppsRegistry mostRecentApp];
+  if (lastOpenedApp != nil) {
+    _lastOpenedAppUrl = [NSURL URLWithString:lastOpenedApp[@"url"]];
+  }
   EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
 }
 
