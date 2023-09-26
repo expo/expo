@@ -12,8 +12,9 @@ class TaskManagerModule : Module() {
   private val _taskService: TaskServiceInterface? by lazy {
     appContext.legacyModuleRegistry.getSingletonModule("TaskService", TaskServiceInterface::class.java)
   }
-  private val taskService = _taskService
-    ?: throw ModuleNotFoundException(TaskServiceInterface::class.java.toString())
+  private val taskService: TaskServiceInterface
+    get() = _taskService
+      ?: throw ModuleNotFoundException(TaskServiceInterface::class.java.toString())
 
   private val taskManagerInternal: TaskManagerInterface? by lazy {
     appContext.legacyModule()
