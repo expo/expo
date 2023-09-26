@@ -251,25 +251,25 @@
   EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
 
   if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
-      // For deeplink launch, we need the keyWindow for expo-splash-screen to setup correctly.
-      [_window makeKeyWindow];
-      return;
+    // For deeplink launch, we need the keyWindow for expo-splash-screen to setup correctly.
+    [_window makeKeyWindow];
+    return;
   }
 
   BOOL shouldTryToLaunchLastOpenedBundle = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
-  if(_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle){
-      [self loadApp:_lastOpenedAppUrl withProjectUrl:nil onSuccess:nil onError:^(NSError *error) {
-          __weak typeof(self) weakSelf = self;
-          dispatch_async(dispatch_get_main_queue(), ^{
-              typeof(self) self = weakSelf;
-              if (!self) {
-                  return;
-              }
+  if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
+    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil onSuccess:nil onError:^(NSError *error) {
+       __weak typeof(self) weakSelf = self;
+       dispatch_async(dispatch_get_main_queue(), ^{
+         typeof(self) self = weakSelf;
+         if (!self) {
+           return;
+         } 
 
-              [self navigateToLauncher];
-          });
-      }];
-      return;
+         [self navigateToLauncher];
+       });
+    }];
+    return;
   }
   [self navigateToLauncher];
 }
@@ -279,7 +279,7 @@
   _delegate = delegate;
   _launchOptions = launchOptions;
   NSDictionary *lastOpenedApp = [self.recentlyOpenedAppsRegistry mostRecentApp];
-  if(lastOpenedApp != nil){
+  if (lastOpenedApp != nil) {
     _lastOpenedAppUrl = [NSURL URLWithString:lastOpenedApp[@"url"]];
   }
   EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;

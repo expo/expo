@@ -92,9 +92,9 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
     val recentlyOpenedApps = getRecentlyOpenedApps()
 
     return if (recentlyOpenedApps.isNotEmpty()) {
-        recentlyOpenedApps.maxByOrNull { it.timestamp }
+      recentlyOpenedApps.maxByOrNull { it.timestamp }
     } else {
-        null
+      null
     }
   }
 
