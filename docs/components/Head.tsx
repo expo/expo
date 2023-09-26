@@ -13,7 +13,7 @@ const Head = ({ title, description, canonicalUrl, children }: HeadProps) => (
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/static/images/favicon.ico" sizes="32x32" />
-    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <link rel="canonical" href={canonicalUrl} />
 
     <meta name="description" content={description === '' ? BASE_DESCRIPTION : description} />
     <meta property="og:title" content={title} />
