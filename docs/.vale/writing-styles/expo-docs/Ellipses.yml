@@ -5,4 +5,4 @@ level: warning
 action:
   name: remove
 tokens:
-  - '[A-Za-z]+\.\.\.'
+  - …

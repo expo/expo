@@ -12,15 +12,15 @@ Monorepos, or _"monolithic repositories"_, are single repositories containing mu
 
 ## Example monorepo
 
-In this example, we will set up a monorepo using yarn workspaces without the [nohoist](https://classic.yarnpkg.com/blog/2018/02/15/nohoist/) option. We will assume some familiar names, but you can fully customize them. After this guide, our basic structure should look like this:
+In this example, we will set up a monorepo using Yarn workspaces without the [nohoist](https://classic.yarnpkg.com/blog/2018/02/15/nohoist/) option. We will assume some familiar names, but you can fully customize them. After this guide, our basic structure should look like this:
 
 - **apps/** - Contains multiple projects, including React Native apps.
 - **packages/** - Contains different packages used by our apps.
-- **package.json** - Root package file, containing yarn workspaces config.
+- **package.json** - Root package file, containing Yarn workspaces config.
 
 ### Root package file
 
-All yarn monorepos should have a "root" **package.json** file. It is the main configuration for our monorepo and may contain packages installed for all projects in the repository. You can run `yarn init`, or create the **package.json** manually. It should look something like this:
+All Yarn monorepos should have a "root" **package.json** file. It is the main configuration for our monorepo and may contain packages installed for all projects in the repository. You can run `yarn init`, or create the **package.json** manually. It should look something like this:
 
 ```json package.json
 {
@@ -31,7 +31,7 @@ All yarn monorepos should have a "root" **package.json** file. It is the main co
 
 ### Set up yarn workspaces
 
-Yarn and other tooling have a concept called _"workspaces"_. Every package and app in our repository has its own workspace. Before we can use them, we have to instruct yarn where to find these workspaces. We can do that by setting the `workspaces` property using [glob patterns](https://classic.yarnpkg.com/lang/en/docs/workspaces/#toc-tips-tricks), in the **package.json**:
+Yarn and other tooling have a concept called _"workspaces"_. Every package and app in our repository has its own workspace. Before we can use them, we have to instruct Yarn where to find these workspaces. We can do that by setting the `workspaces` property using [glob patterns](https://classic.yarnpkg.com/lang/en/docs/workspaces/#toc-tips-tricks), in the **package.json**:
 
 ```json package.json
 {

@@ -69,7 +69,7 @@ Inside the app config, make changes to use [`runtimeVersion`](/versions/latest/c
   }
 ```
 
-> In the [introductory guide](/eas-update/getting-started), the channel name is set by EAS Build and is different for different EAS build profiles. Since this is a local build, it is necessary to set this request header explicitly in the app config.
+> In the [introductory guide](/eas-update/getting-started), the channel name is set by EAS Build and is different for various build profiles. Since this is a local build, it is necessary to set this request header explicitly in the app config.
 
 </Step>
 
@@ -126,9 +126,9 @@ Run the following commands to get the app running on Android or iOS.
   cmdCopy="npx expo run:android --variant release && npx expo run:ios --configuration Release"
 />
 
-We build the release version of the app, not the debug version. By default, a debug build expects to connect to a local React Native packager to load the application bundle and will not connect to the EAS update service.
+We build the release version of the app, not the debug version. By default, a debug build expects to connect to a local React Native packager to load the application bundle and will not connect to the EAS Update service.
 
-It is possible to create a **native debug** build that will connect to the EAS update service and allow debugging of native code. See [Testing updates with a debug build](#testing-updates-with-a-debug-build-of-your-app) section for the required changes.
+It is possible to create a **native debug** build that will connect to the EAS Update service and allow debugging of native code. See [Testing updates with a debug build](#testing-updates-with-a-debug-build-of-your-app) section for the required changes.
 
 </Step>
 
@@ -241,4 +241,4 @@ To do this for the above app, modify step 4 above as follows:
   cmdCopy={null}
 />
 
-The resulting app will be fully debuggable with Xcode or Android Studio, but will work with the EAS update service the same way as a release build, and will not connect to a local packager.
+The resulting app will be fully debuggable with Xcode or Android Studio, but will work with the EAS Update service the same way as a release build, and will not connect to a local packager.
