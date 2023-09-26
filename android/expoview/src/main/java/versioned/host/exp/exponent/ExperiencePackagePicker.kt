@@ -76,6 +76,7 @@ import expo.modules.sqlite.SQLiteModule
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
+import expo.modules.taskManager.TaskManagerModule
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.updates.UpdatesPackage
 import expo.modules.videothumbnails.VideoThumbnailsModule
@@ -179,6 +180,7 @@ object ExperiencePackagePicker : ModulesProvider {
     StoreReviewModule::class.java,
     SQLiteModule::class.java,
     SystemUIModule::class.java,
+    TaskManagerModule::class.java,
     VideoThumbnailsModule::class.java,
     VideoViewModule::class.java,
     WebBrowserModule::class.java,
