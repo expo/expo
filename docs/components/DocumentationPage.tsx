@@ -121,7 +121,7 @@ export default function DocumentationPage(props: Props) {
         title={props.title}
         description={props.description}
         canonicalUrl={
-          version !== 'latest' && version !== 'unversioned' ? getCanonicalUrl(pathname) : ''
+          version !== 'latest' && version !== 'unversioned' ? getCanonicalUrl(pathname) : undefined
         }>
         {props.hideFromSearch !== true && (
           <meta
