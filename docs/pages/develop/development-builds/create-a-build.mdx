@@ -14,7 +14,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 Development builds can be created with [EAS Build](/build/introduction/) or [locally](/guides/local-app-development/) on your computer if you have Android Studio and Xcode installed.
 
-In this guide, you'll find information on how to create a development build and then install it on an emulator/simulator or a physical device to continue developing your app.
+In this guide, you'll find information on creating a development build and installing it on an emulator/simulator or a physical device to continue developing your app.
 
 ## Prerequisites
 
@@ -54,7 +54,7 @@ You can check whether you are logged in by running `eas whoami`.
 
 We recommend EAS Build to manage your native projects. It allows a smooth experience, especially if you do not have experience with Xcode and Android studio builds or do not have them installed locally on your computer.
 
-EAS Build is created by running the `eas build` command. It also creates an [**eas.json**](/build/eas-json/) file at the root of your project directory with three build profiles automatically: `development`, `preview` and `production`. A minimal configuration is shown below:
+EAS Build is created by running the `eas build` command. It automatically creates an [**eas.json**](/build/eas-json/) file at the root of your project directory with three build profiles &mdash; `development`, `preview`, and `production`. A minimal configuration is shown below:
 
 ```json eas.json
 {
@@ -73,7 +73,7 @@ EAS Build is created by running the `eas build` command. It also creates an [**e
 
 The `development` profile sets the following options:
 
-- [`developmentClient`](/build-reference/eas-json/#developmentclient) to `true` to create a Debug build. This allows the `expo-dev-client` library to choose the update to load in your app and provide tools to help you develop it. It also generates a build artifact that you can install on a device or emulator/simulator.
+- [`developmentClient`](/build-reference/eas-json/#developmentclient) to `true` to create a Debug build. It allows the `expo-dev-client` library to choose the update to load in your app and provides tools to help you develop it. It also generates a build artifact you can install on a device or emulator/simulator.
 - [`distribution`](/build-reference/eas-json/#distribution) to `internal` makes the build ready for [internal distribution](/build/internal-distribution/).
 
 > iOS builds where `developmentClient` is set to `true` on the build profile should always be distributed as `internal`. If you are distributing for TestFlight, you have to set the distribution to `store`.
