@@ -31,6 +31,7 @@
     "eslint": "^8.45.0",
     "expo-yarn-workspaces": "*",
     "jsc-android": "^250231.0.0",
+    "node-gyp": "^9.4.0",
     "prettier": "^3.0.0",
     "yarn-deduplicate": "^6.0.0"
   }
