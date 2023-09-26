@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Added a new type `ManifestQuery` to model the top-level `<queries>` tag in the App Manifest.
+- Added a new type `ManifestQuery` to model the top-level `<queries>` tag in the App Manifest. ([#24619](https://github.com/expo/expo/pull/24619) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 7.5.0 — 2023-09-15
 
