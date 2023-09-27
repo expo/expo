@@ -94,12 +94,7 @@ import * as WebBrowser from 'expo-web-browser';
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
-/* @info Using the Expo proxy will redirect the user through auth.expo.io enabling you to use web links when configuring your project with an OAuth provider. This is not available on web. */
-const useProxy = true;
-/* @end */
-const redirectUri = AuthSession.makeRedirectUri({
-  useProxy,
-});
+const redirectUri = AuthSession.makeRedirectUri();
 
 export default function App() {
   /* @info If the provider supports auto discovery then you can pass an issuer to the `useAutoDiscovery` hook to fetch the discovery document. */
@@ -119,7 +114,7 @@ export default function App() {
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Button title="Login!" disabled={!request} onPress={() => promptAsync({ useProxy })} />
+      <Button title="Login!" disabled={!request} onPress={() => promptAsync()} />
       {result && <Text>{JSON.stringify(result, null, 2)}</Text>}
     </View>
   );
@@ -156,8 +151,7 @@ import jwtDecode from "jwt-decode";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const useProxy = true;
-const redirectUri = AuthSession.makeRedirectUri({ useProxy });
+const redirectUri = AuthSession.makeRedirectUri();
 
 /* @info <strong>Client ID:</strong> This can be found on the protocol tab of Asgardeo Console */
 const CLIENT_ID = "YOUR_CLIENT_ID";
@@ -224,7 +218,7 @@ export default function App() {
 
     return (
       <View style={styles.container}>
-        <Button title="Login" disabled={!request} onPress={() => promptAsync({ useProxy })} />
+        <Button title="Login" disabled={!request} onPress={() => promptAsync()} />
         {decodedIdToken && <Text>Welcome {decodedIdToken.given_name || ""}!</Text>}
         {decodedIdToken && <Text>{decodedIdToken.email}</Text>}
         <View style={styles.accessTokenBlock}>
@@ -263,8 +257,7 @@ import jwtDecode from "jwt-decode";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const useProxy = true;
-const redirectUri = AuthSession.makeRedirectUri({ useProxy });
+const redirectUri = AuthSession.makeRedirectUri();
 
 /* @info <strong>Client ID:</strong> This can be found on the protocol tab of Asgardeo Console */
 const CLIENT_ID = "YOUR_CLIENT_ID";
@@ -309,7 +302,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Button title="Login" disabled={!request} onPress={() => promptAsync({ useProxy })} />
+      <Button title="Login" disabled={!request} onPress={() => promptAsync()} />
       {decodedToken && <Text>Welcome {decodedToken.given_name || ""}!</Text>}
       {decodedToken && <Text>{decodedToken.email}</Text>}
       <View style={styles.accessTokenBlock}>
@@ -712,14 +705,11 @@ export default function App() {
 - The `redirectUri` requires 2 slashes (`://`).
 - Scopes must be joined with ':' so just create one long string.
 - Setup redirect URIs: Your Project > Permitted Redirect URIs: (be sure to save after making changes).
-  - _Expo Go_: `exp://localhost:8081/--/`. For SDK 48 and lower, the port number is `19000`.
   - _Web dev_: `https://localhost:19006`
     - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
     - Adding a slash to the end of the URL doesn't matter.
-  - _Standalone and Bare_: `your-scheme://`
+  - _Standalone/ development build_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
-  - _Proxy_: **Not Supported**
-    - You cannot use the Expo proxy (`useProxy`) because they don't allow `@` in their redirect URIs.
   - _Web production_: `https://yourwebsite.com`
     - Set this to whatever your deployed website URL is.
 
@@ -882,13 +872,10 @@ function useMounted() {
 - Scopes must be an empty array.
 - PKCE must be disabled (`usePKCE: false`) otherwise you'll get an error about `code_challenge` being included in the query string.
 - Implicit auth is supported.
-- When `responseType: ResponseType.Code` is used (default behavior) the `redirectUri` must be `https`. This means that code exchange auth cannot be done on native without `useProxy` enabled.
 
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 
 <Tab>
-
-Auth code responses (`ResponseType.Code`) will only work in native with `useProxy: true`.
 
 {/* prettier-ignore */}
 ```tsx
@@ -907,10 +894,6 @@ const discovery = {
   tokenEndpoint: 'https://www.dropbox.com/oauth2/token',
 };
 
-/* @info Implicit auth is universal, <code>.Code</code> will only work in native with <code>useProxy: true</code>. */
-const useProxy = Platform.select({ web: false, default: true });
-/* @end */
-
 export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -924,7 +907,6 @@ export default function App() {
         /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app',
         /* @end */
-        useProxy,
       }),
     },
     discovery
@@ -946,7 +928,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
+        promptAsync();
         /* @end */
       }}
     />
@@ -1117,8 +1099,6 @@ import { Button, Platform } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-const useProxy = Platform.select({ web: false, default: true });
-
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
@@ -1136,7 +1116,6 @@ export default function App() {
       scopes: ['activity', 'sleep'],
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        useProxy,
         /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
@@ -1161,7 +1140,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
+        promptAsync();
         /* @end */
       }}
     />
@@ -1481,8 +1460,6 @@ import { Button, Platform } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-const useProxy = Platform.select({ web: false, default: true });
-
 export default function App() {
   // Endpoint
   const discovery = useAutoDiscovery('https://<OKTA_DOMAIN>.com/oauth2/default');
@@ -1495,7 +1472,6 @@ export default function App() {
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
         native: 'com.okta.<OKTA_DOMAIN>:/callback',
-        useProxy,
       }),
     },
     discovery
@@ -1517,7 +1493,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
+        promptAsync();
         /* @end */
       }}
     />
@@ -1784,14 +1760,11 @@ export default function App() {
 [c-spotify]: https://developer.spotify.com/dashboard/applications
 
 - Setup your redirect URIs: Your project > Edit Settings > Redirect URIs (be sure to save after making changes).
-  - _Expo Go_: `exp://localhost:8081/--/`. For SDK 48 and lower, the port number is `19000`.
   - _Web dev_: `https://localhost:19006`
     - Important: Ensure there's no slash at the end of the URL unless manually changed in the app code with `makeRedirectUri({ path: '/' })`.
     - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
-  - _Custom app_: `your-scheme://`
+  - _Standalone/ development build_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
-  - _Proxy_: `https://auth.expo.io/@username/slug`
-    - If `useProxy` is enabled (native only), change **username** for your Expo username and **slug** for the `slug` in your app.json. Try not to change the slug for your app after using it for auth as this can lead to versioning issues.
   - _Web production_: `https://yourwebsite.com`
     - Set this to whatever your deployed website URL is.
 - For simpler authentication, use the **Implicit Flow** as it'll return an `access_token` without the need for a code exchange server request.
@@ -2207,8 +2180,6 @@ import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, Platform } from 'react-native';
 
-const useProxy = Platform.select({ web: false, default: true });
-
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
@@ -2225,10 +2196,9 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app',
         /* @end */
-        useProxy
       }),
       usePKCE: true,
       scopes: [
@@ -2254,7 +2224,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
+        promptAsync();
         /* @end */
       }}
     />
