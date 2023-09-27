@@ -189,12 +189,12 @@ Instead, migrate `navigation` to the `useRouter` hook.
 + import { useRouter } from 'expo-router';
 
 export default function Page({
--    navigation
+-  navigation
 }) {
--    navigation.push('User', { user: 'bacon' });
+-  navigation.push('User', { user: 'bacon' });
 
-+    const router = useRouter();
-+    router.push('/users/bacon');
++  const router = useRouter();
++  router.push('/users/bacon');
 }
 ```
 
@@ -204,11 +204,11 @@ Similarly, migrate from the `route` prop to the [`useLocalSearchParams`](/router
 + import { useLocalSearchParams } from 'expo-router';
 
 export default function Page({
--    route
+-  route
 }) {
--    const user = route?.params?.user;
+-  const user = route?.params?.user;
 
-+    const { user } = useLocalSearchParams();
++  const { user } = useLocalSearchParams();
 }
 ```
 
