@@ -52,7 +52,7 @@ export class DevServerManagerActions {
           Log.log(
             printItem(
               'Scan the QR code above to open the project in a development build. ' +
-                learnMore('https://expo.fyi/start')
+                learnMore('https://docs.expo.dev/develop/development-builds/introduction/')
             )
           );
         }
