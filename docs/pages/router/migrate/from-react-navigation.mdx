@@ -198,7 +198,7 @@ export default function Page({
 }
 ```
 
-Similarly, migrate from the `route` prop to the `useLocalSearchParams` hooks.
+Similarly, migrate from the `route` prop to the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook.
 
 ```diff
 + import { useLocalSearchParams } from 'expo-router';
@@ -442,7 +442,7 @@ Expo Router wraps `expo-splash-screen` and adds special handling to ensure it's 
 
 ### Navigation state observation
 
-If you're observing the navigation state directly, consider migrating to the `usePathname`, `useSegments`, and `useGlobalSearchParams` hooks.
+If you're observing the navigation state directly, migrate to the [`usePathname`](/router/reference/hooks/#usepathname), [`useSegments`](/router/reference/hooks/#usesegments), and [`useGlobalSearchParams`](/router/reference/hooks/#useglobalsearchparams) hooks.
 
 ### Pass params to nested screens
 
