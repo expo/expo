@@ -56,9 +56,6 @@ class BasePackageManager {
         this.deferRun = false;
         return myDeferredCommand;
     }
-    getRunSpawnParams(command) {
-        return { bin: this.bin, command, options: this.options };
-    }
     async versionAsync() {
         return await this.runAsync(['--version']).then(({ stdout }) => stdout.trim());
     }

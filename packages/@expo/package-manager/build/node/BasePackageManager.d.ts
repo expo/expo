@@ -27,11 +27,6 @@ export declare abstract class BasePackageManager implements PackageManager {
     protected ensureCwdDefined(method?: string): string;
     runAsync(command: string[]): SpawnPromise<SpawnResult>;
     addDeferredAsync(namesOrFlags: string[]): Promise<string>;
-    getRunSpawnParams(command: string[]): {
-        bin: string;
-        command: string[];
-        options: PackageManagerOptions;
-    };
     versionAsync(): Promise<string>;
     getConfigAsync(key: string): Promise<string>;
     removeLockfileAsync(): Promise<void>;
