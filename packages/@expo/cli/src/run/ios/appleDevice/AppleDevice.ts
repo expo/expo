@@ -252,6 +252,6 @@ async function launchApp(
     clientManager.end();
 
     // Fallback to devicectl for iOS 17 support
-    return await launchAppWithDeviceCtl(clientManager.device.Properties.SerialNumber, bundleId);
+    return await launchAppWithDeviceCtl(deviceId, bundleId);
   }
 }
