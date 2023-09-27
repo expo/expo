@@ -1438,7 +1438,6 @@ export default function App() {
 [c-okta]: https://developer.okta.com/signup/
 
 - You cannot define a custom `redirectUri`, Okta will provide you with one.
-- You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
 
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
@@ -1517,8 +1516,6 @@ export default function App() {
 [c-reddit]: https://www.reddit.com/prefs/apps
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Go: `exp://localhost:8081/--/*`. For SDK 48 and lower, the port number is `19000`.
-  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone / development build: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
