@@ -67,6 +67,7 @@
 ### 🐛 Bug fixes
 
 - Fallback to `xcrun devicectl` for iOS 17 to launch the app. ([#24635](https://github.com/expo/expo/pull/24635) by [@byCedric](https://github.com/byCedric))
+- Throw an error when bundling fails and try to output a more useful error message. ([#24639](https://github.com/expo/expo/pull/24639) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.13.2 — 2023-09-18
 
