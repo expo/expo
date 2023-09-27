@@ -33,7 +33,7 @@ export interface PackageManager {
     uninstallAsync(): Promise<void>;
     /** Add a normal dependency to the project */
     addAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
-    /** Initiates adding a normal dependency, but return the command string to be run later instead of the command itself.
+    /** Initiates adding a normal dependency (including side effects), but return the command string to be run later instead of the command itself.
      * This output is intended to be used in a detached child process, e.g. when a package updates itself, especially when chained to other commands.
      * Thus, addDeferredAsync() should generally be the last use of PackageManager before the current process exits.
      */
