@@ -89,7 +89,7 @@ To increase memory limits on your EAS Build builders, you can use [`large` resou
 
 When a build fails with `Task :app:bundleReleaseJsAndAssets FAILED` (Android) or `Metro encountered an error` (iOS), it means Metro bundler was unable to bundle the app's JavaScript code while trying to embed it in your app's binary. This error message is usually followed by a syntax error or other details about why bundling failed. Unfortunately, a standard React Native project is configured to perform this step late in the Gradle/Xcode build step, meaning it can take a while to see this error.
 
-You can build the production bundle locally by running `npx expo export` to bypass all of the other build steps so you can see this error much more quickly. Run this command repeatedly, resolving any syntax errors or other issues uncovered until the bundle builds successfully. Then try your EAS build again.
+You can build the production bundle locally by running `npx expo export` to bypass all of the other build steps so you can see this error much more quickly. Run this command repeatedly, resolving any syntax errors or other issues uncovered until the bundle builds successfully. Then try your EAS Build again.
 
 ## Verify that your project builds and runs locally
 

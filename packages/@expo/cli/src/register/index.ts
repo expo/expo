@@ -23,6 +23,6 @@ export const expoRegister: Command = async (argv) => {
     );
   }
 
-  const { registerAsync } = await import('./registerAsync');
+  const { registerAsync } = await import('./registerAsync.js');
   return registerAsync().catch(logCmdError);
 };

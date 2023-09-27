@@ -5,6 +5,7 @@
 #import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelAppRecord.h"
+#import "EXManifestResource.h"
 #import "EXUtil.h"
 
 @import EXManifests;
@@ -17,7 +18,7 @@
 @property (nonatomic, strong) IBOutlet UIStackView *btnStack;
 @property (nonatomic, strong) IBOutlet UIView *btnStackContainer;
 @property (nonatomic, strong) IBOutlet UILabel *lblUrl;
-@property (nonatomic, strong) IBOutlet UILabel *lblErrorDetail;
+@property (nonatomic, strong) IBOutlet UITextView *txtErrorDetail;
 @property (nonatomic, strong) IBOutlet UIScrollView *vContainer;
 
 - (void)_onTapRetry;
@@ -34,6 +35,9 @@
     
     [_btnRetry addTarget:self action:@selector(_onTapRetry) forControlEvents:UIControlEventTouchUpInside];
     [_btnBack addTarget:self action:@selector(_onTapBack) forControlEvents:UIControlEventTouchUpInside];
+
+    [_txtErrorDetail setTextContainerInset:UIEdgeInsetsZero];
+    _txtErrorDetail.textContainer.lineFragmentPadding = 0;
     
     for (UIButton *btnToStyle in @[ _btnRetry, _btnBack ]) {
       btnToStyle.layer.cornerRadius = 4.0;
@@ -71,11 +75,17 @@
 - (void)setError:(NSError *)error
 {
   _error = error;
-  _lblErrorDetail.text = [error localizedDescription];
+  NSString *errorHeader = [EXManifestResource formatHeader:error];
+  NSString *errorDetail = [error localizedDescription];
+  
+  if (errorHeader != nil) {
+    _lblError.text = errorHeader;
+  }
+
   switch (_type) {
     case kEXFatalErrorTypeLoading: {
       if (_error.code == kCFURLErrorNotConnectedToInternet) {
-        _lblErrorDetail.text = [NSString stringWithFormat:@"%@ Make sure you're connected to the internet.", _lblErrorDetail.text];
+        errorDetail = [NSString stringWithFormat:@"%@ Make sure you're connected to the internet.", errorDetail];
       } else if (_appRecord.appLoader.manifestUrl) {
         NSString *url = _appRecord.appLoader.manifestUrl.absoluteString;
         if ([self _urlLooksLikeLAN:url]) {
@@ -83,9 +93,9 @@
           if (@available(iOS 14, *)) {
             extraLANPermissionText = @", and that you have granted Expo Go the Local Network permission in the Settings app,";
           }
-          _lblErrorDetail.text = [NSString stringWithFormat:
+          errorDetail = [NSString stringWithFormat:
                             @"%@\n\nIt looks like you may be using a LAN URL. "
-                            "Make sure your device is on the same network as the server%@ or try using the tunnel connection type.", _lblErrorDetail.text, extraLANPermissionText];
+                            "Make sure your device is on the same network as the server%@ or try using the tunnel connection type.", errorDetail, extraLANPermissionText];
         }
       }
       break;
@@ -94,6 +104,12 @@
       break;
     }
   }
+  NSAttributedString *attributedErrorString = [EXManifestResource addErrorStringHyperlinks:errorDetail];
+
+  UIFont *font = _txtErrorDetail.font;
+  _txtErrorDetail.attributedText = attributedErrorString;
+  _txtErrorDetail.font = font;
+
   [self _resetUIState];
 }
 

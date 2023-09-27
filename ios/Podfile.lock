@@ -2227,8 +2227,6 @@ PODS:
     - React-Core
   - EXNotifications (0.24.2):
     - ExpoModulesCore
-  - EXPermissions (14.4.0):
-    - ExpoModulesCore
   - Expo (50.0.0-alpha.5):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.1.2):
@@ -2538,17 +2536,17 @@ PODS:
     - libavif/core
   - libevent (2.1.12)
   - libvmaf (2.3.1)
-  - libwebp (1.3.1):
-    - libwebp/demux (= 1.3.1)
-    - libwebp/mux (= 1.3.1)
-    - libwebp/sharpyuv (= 1.3.1)
-    - libwebp/webp (= 1.3.1)
-  - libwebp/demux (1.3.1):
+  - libwebp (1.3.2):
+    - libwebp/demux (= 1.3.2)
+    - libwebp/mux (= 1.3.2)
+    - libwebp/sharpyuv (= 1.3.2)
+    - libwebp/webp (= 1.3.2)
+  - libwebp/demux (1.3.2):
     - libwebp/webp
-  - libwebp/mux (1.3.1):
+  - libwebp/mux (1.3.2):
     - libwebp/demux
-  - libwebp/sharpyuv (1.3.1)
-  - libwebp/webp (1.3.1):
+  - libwebp/sharpyuv (1.3.2)
+  - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
   - lottie-ios (4.2.0)
   - lottie-react-native (6.1.2):
@@ -3469,7 +3467,6 @@ DEPENDENCIES:
   - EXManifests/Tests (from `../packages/expo-manifests/ios`)
   - EXMediaLibrary (from `../packages/expo-media-library/ios`)
   - EXNotifications (from `../packages/expo-notifications/ios`)
-  - EXPermissions (from `../packages/expo-permissions/ios`)
   - Expo (from `../packages/expo`)
   - ExpoAppleAuthentication (from `../packages/expo-apple-authentication/ios`)
   - ExpoBackgroundFetch (from `../packages/expo-background-fetch/ios`)
@@ -4350,8 +4347,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-media-library/ios"
   EXNotifications:
     :path: "../packages/expo-notifications/ios"
-  EXPermissions:
-    :path: "../packages/expo-permissions/ios"
   Expo:
     :path: "../packages/expo"
   ExpoAppleAuthentication:
@@ -4926,7 +4921,6 @@ SPEC CHECKSUMS:
   EXManifests: 3b001efa12886d0abc2b011bc32c4f3346b74256
   EXMediaLibrary: 802eee8ef888ee16ef80f1b79005d3d611793e14
   EXNotifications: f6ae23a3d89a1e2236bca9861dc9bd36b4544cda
-  EXPermissions: 51c6115893689c3e9787f4819aa67ceeae601038
   Expo: 001317580dc33f3a8bdcebd50adaf7f58cc9e303
   ExpoAppleAuthentication: 8c95178a99e7fdb8aea1e3f6385843708471c3df
   ExpoBackgroundFetch: fed277fbbb3ed9765c7a74e17c0f7fb23efda936
@@ -5005,7 +4999,7 @@ SPEC CHECKSUMS:
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libvmaf: 27f523f1e63c694d14d534cd0fddd2fab0ae8711
-  libwebp: 33dc822fbbf4503668d09f7885bbfedc76c45e96
+  libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   lottie-ios: 809ecf2d460ed650a6aed7aa88b2ec45fab4779c
   lottie-react-native: 3d6f1b0db1fd9e18b92af1fbfbf67037611bae67
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
@@ -5079,6 +5073,6 @@ SPEC CHECKSUMS:
   Yoga: 3efc43e0d48686ce2e8c60f99d4e6bd349aff981
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 3105ed43bf6053b4069c983367de5c39bb094d6f
+PODFILE CHECKSUM: 06342aaca572567c83a18449ba902704200b41cc
 
 COCOAPODS: 1.12.1

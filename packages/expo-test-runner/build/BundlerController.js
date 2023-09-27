@@ -7,6 +7,8 @@ const child_process_1 = require("child_process");
 const node_fetch_1 = __importDefault(require("node-fetch"));
 const Utils_1 = require("./Utils");
 class BundlerController {
+    path;
+    process;
     constructor(path) {
         this.path = path;
     }

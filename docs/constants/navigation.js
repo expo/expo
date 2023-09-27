@@ -227,7 +227,7 @@ const general = [
     ],
     { expanded: false }
   ),
-  makeSection('EAS', [makePage('eas/index.mdx')]),
+  makeSection('EAS', [makePage('eas/index.mdx'), makePage('eas/json.mdx')]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
     makePage('build/setup.mdx'),
@@ -261,7 +261,6 @@ const general = [
     makeGroup(
       'Reference',
       [
-        makePage('build-reference/eas-json.mdx'),
         makePage('build-reference/migrating.mdx'),
         makePage('build-reference/npm-hooks.mdx'),
         makePage('build-reference/private-npm-packages.mdx'),

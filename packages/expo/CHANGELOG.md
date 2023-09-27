@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 49.0.12 — 2023-09-25
+
+_This version does not introduce any user-facing changes._
+
 ## 50.0.0-alpha.5 — 2023-09-18
 
 _This version does not introduce any user-facing changes._
@@ -34,6 +38,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- Move Metro and web TypeScript types from Expo Router to `expo`. ([#24255](https://github.com/expo/expo/pull/24255) by [@marklawlor](https://github.com/marklawlor))
 - [iOS] Disable packager and bundle JS when EX_UPDATES_NATIVE_DEBUG set. ([#24366](https://github.com/expo/expo/pull/24366) by [@douglowder](https://github.com/douglowder))
 
 ## 49.0.10 — 2023-09-11

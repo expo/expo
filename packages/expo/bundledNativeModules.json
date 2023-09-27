@@ -60,7 +60,6 @@
   "expo-navigation-bar": "~2.5.0",
   "expo-network": "~5.6.0",
   "expo-notifications": "~0.24.2",
-  "expo-permissions": "~14.4.0",
   "expo-print": "~12.6.0",
   "expo-random": "~13.4.0",
   "expo-router": "~3.1.2",

@@ -381,11 +381,11 @@ EX_EXPORT_METHOD_AS(saveEventAsync,
     calendarEvent.recurrenceRules = nil;
   }
 
-  NSURL *URL = [NSURL URLWithString:[url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
-  if (URL) {
-    calendarEvent.URL = URL;
-  } else if (details[@"url"] == [NSNull null]) {
-    calendarEvent.URL = nil;
+  if (url) {
+    NSURLComponents *URLComponents = [NSURLComponents componentsWithString:url];
+    if (URLComponents && URLComponents.URL) {
+      calendarEvent.URL = URLComponents.URL;
+    }
   }
 
   if (startDate) {
@@ -651,11 +651,11 @@ EX_EXPORT_METHOD_AS(saveReminderAsync,
     reminder.recurrenceRules = nil;
   }
 
-  NSURL *URL = [NSURL URLWithString:[url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
-  if (URL) {
-    reminder.URL = URL;
-  } else if (details[@"url"] == [NSNull null]) {
-    reminder.URL = nil;
+  if (url) {
+    NSURLComponents *URLComponents = [NSURLComponents componentsWithString:url];
+    if (URLComponents && URLComponents.URL) {
+      reminder.URL = URLComponents.URL;
+    }
   }
 
   if (startDate) {
@@ -773,7 +773,7 @@ EX_EXPORT_METHOD_AS(requestCalendarPermissionsAsync,
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXCalendarPermissionRequester class]
                                                                resolve:resolve
-                                                                reject:reject];
+                                                                reject:reject];  
 }
 
 EX_EXPORT_METHOD_AS(getRemindersPermissionsAsync,
