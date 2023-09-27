@@ -15,6 +15,7 @@ Here are some **important rules** that apply to all authentication providers:
 - Build requests using `AuthSession.useAuthRequest()`, the hook allows for async setup which means mobile browsers won't block the authentication.
 - Be sure to disable the prompt until `request` is defined.
 - You can only invoke `promptAsync` in a user-interaction on web.
+- Expo Go cannot be used for local development and testing of OAuth or OpenID Connect-enabled apps due to the inability to customize your app scheme. You can instead use a [Development Build](/develop/development-builds/introduction/), which enables an Expo Go-like development experience that also supports OAuth redirects back to your app after login in a manner that works just like it would in production.
 
 ## Guides
 
