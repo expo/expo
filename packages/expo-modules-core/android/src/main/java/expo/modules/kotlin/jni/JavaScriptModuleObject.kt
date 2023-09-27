@@ -6,6 +6,7 @@ import com.facebook.react.bridge.NativeMap
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.objects.ObjectDefinitionData
+import expo.modules.kotlin.tracing.trace
 
 /**
  * A class to communicate with CPP part of the [expo.modules.kotlin.modules.Module] class.
@@ -33,19 +34,25 @@ class JavaScriptModuleObject(
   fun initUsingObjectDefinition(appContext: AppContext, definition: ObjectDefinitionData) = apply {
     val constants = definition.constantsProvider()
     val convertedConstants = Arguments.makeNativeMap(constants)
-    exportConstants(convertedConstants)
+    trace("Exporting constants") {
+      exportConstants(convertedConstants)
+    }
 
-    definition
-      .functions
-      .forEach { function ->
-        function.attachToJSObject(appContext, this)
-      }
+    trace("Attaching functions") {
+      definition
+        .functions
+        .forEach { function ->
+          function.attachToJSObject(appContext, this)
+        }
+    }
 
-    definition
-      .properties
-      .forEach { (_, prop) ->
-        prop.attachToJSObject(appContext, this)
-      }
+    trace("Attaching properties") {
+      definition
+        .properties
+        .forEach { (_, prop) ->
+          prop.attachToJSObject(appContext, this)
+        }
+    }
   }
 
   /**
