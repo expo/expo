@@ -19,7 +19,7 @@
 - Skip extraneous static HTML export in server mode. ([#24529](https://github.com/expo/expo/pull/24529) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove `isCSSEnabled` flag from e2e tests ([#24489](https://github.com/expo/expo/pull/24489) by [@marklawlor](https://github.com/marklawlor))
 - Use Metro and web TypeScript types from `expo` instead of `expo-router`. ([#24255](https://github.com/expo/expo/pull/24255) by [@marklawlor](https://github.com/marklawlor))
-- Fix link under the QR code when the development build is selected.
+- Fix link under the QR code when the development build is selected. ([#24640](https://github.com/expo/expo/pull/24640) by [@amandeepmittal](https://github.com/amandeepmittal))
 
 ## 0.13.2 — 2023-09-18
 
