@@ -12,7 +12,9 @@ import { isNodeExternal } from './externals';
 import { formatFileCandidates } from './formatFileCandidates';
 import { CommandError } from '../../../utils/errors';
 
-export class FailedToResolvePathError extends Error {}
+class FailedToResolvePathError extends Error {}
+
+class ShimModuleError extends Error {}
 
 export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boolean, }) {
   const cachedExtensions: Map<string, readonly string[]> = new Map();
@@ -57,10 +59,11 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
   }
 
   function fastResolve(
-    context: ResolutionContext,
+    context: Pick<ResolutionContext, 'unstable_enablePackageExports' | "customResolverOptions" | 'sourceExts' | 'preferNativePlatform'| "originModulePath" | "getPackage" | "nodeModulesPaths" | "mainFields" | "resolveAsset">,
     moduleName: string,
     platform: string | null
   ): Resolution {
+    // TODO: Support extraNodeModules for tsconfig basePath support
     // TODO: Support package exports import { resolve as resolveExports } from 'resolve.exports'
     // TODO: Support `resolver.blockList`
     if (context.unstable_enablePackageExports) {
@@ -86,7 +89,7 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
         // Used to ensure files trace to packages instead of node_modules in expo/expo. This is how Metro works and
         // the app doesn't finish without it.
         preserveSymlinks,
-        readPackageSync: (readFileSync, pkgFile) => {
+        readPackageSync(readFileSync, pkgFile) {
           return (
             context.getPackage(pkgFile) ??
             JSON.parse(
@@ -112,6 +115,24 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
           }
           return pkg;
         },
+
+        pathFilter: isServer ? undefined : (pkg: any, _resolvedPath: string, relativePathIn: string): string => {
+            let relativePath = relativePathIn;
+            if (relativePath[0] !== '.') {
+              relativePath = `./${relativePath}`;
+            }
+            
+            const replacements = pkg.browser;
+            if (replacements === undefined) {
+                return '';
+            }
+        
+            let mappedPath = replacements[relativePath];
+            if (mappedPath === false) {
+                throw new ShimModuleError();
+            }
+            return mappedPath;
+          },
        
 
         // Not needed but added for parity...
@@ -126,28 +147,34 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
           type: 'empty',
         };
       }
-    } catch {
-      // TODO: Add improved error handling.
-      throw new FailedToResolvePathError(
-        'The module could not be resolved because no file or module matched the pattern:\n' +
-          `  ${formatFileCandidates(
-            {
-              type: 'sourceFile',
-              filePathPrefix: moduleName,
-              candidateExts: extensions,
-            },
-            true
-          )}\n\n`
-      );
+    } catch (error: any) {
+
+        if (error instanceof ShimModuleError) {
+            return {
+                type: 'empty',
+            };
+        }
+
+        if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
+
+            // TODO: Add improved error handling.
+            throw new FailedToResolvePathError(
+              'The module could not be resolved because no file or module matched the pattern:\n' +
+                `  ${formatFileCandidates(
+                  {
+                    type: 'sourceFile',
+                    filePathPrefix: moduleName,
+                    candidateExts: extensions,
+                  },
+                  true
+                )}\n\n`
+            );
+        }
+        throw error
+
     }
 
     if (context.sourceExts.some((ext) => fp.endsWith(ext))) {
-      // TODO: Support `browser: { "util.inspect.js": false }` in package.json
-      if (!isServer && fp.endsWith('object-inspect/util.inspect.js')) {
-        return {
-          type: 'empty',
-        };
-      }
       return {
         type: 'sourceFile',
         filePath: fp,

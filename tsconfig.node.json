@@ -2,6 +2,7 @@
   "extends": "@tsconfig/node18/tsconfig.json",
 
   "compilerOptions": {
+    "esModuleInterop": true,
     "declaration": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
