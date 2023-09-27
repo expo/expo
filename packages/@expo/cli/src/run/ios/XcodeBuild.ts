@@ -360,9 +360,7 @@ function checkForBundlingErrors(lines: string[]) {
   }
 
   // Take 12 lines from the `Error:` line forwards
-  const block = new Array(11).fill(0)
-  .map((_, i) => lines[lastErrorIndex + i])
-  .join('\n');
+  const block = lines.slice(lastErrorIndex, lastErrorIndex + 11).join('\n')
 
   throw new CommandError(
     `Bundling Failed.\n${block}`
