@@ -11,12 +11,6 @@ export interface PackageManagerOptions extends SpawnOptions {
   silent?: boolean;
 
   /**
-   * If true, the package manager should only log the command which is executed, and not actually execute it.
-   * Used to retrieve commands for later execution in a different process (e.g., when upgrading the Expo package itself)
-   */
-  simulate?: boolean;
-
-  /**
    * The logging method used to communicate the command which is executed.
    * Without `silent`, this defaults to `console.log`.
    * When `silent` is set to `true`, this defaults to a no-op.
@@ -27,8 +21,6 @@ export interface PackageManagerOptions extends SpawnOptions {
 export interface PackageManager {
   /** The options for this package manager */
   readonly options: PackageManagerOptions;
-
-  lastCommand: string | null;
 
   /** Run any command using the package manager */
   runAsync(command: string[]): SpawnPromise<SpawnResult>;
@@ -52,6 +44,11 @@ export interface PackageManager {
 
   /** Add a normal dependency to the project */
   addAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
+  /** Initiates adding a normal dependency, but return the command string to be run later instead of the command itself.
+   * This output is intended to be used in a detached child process, e.g. when a package updates itself, especially when chained to other commands.
+   * Thus, addDeferredAsync() should generally be the last use of PackageManager before the current process exits.
+   */
+  addDeferredAsync(namesOrFlags: string[]): Promise<string>;
   /** Add a development dependency to the project */
   addDevAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
   /** Add a global dependency to the environment */

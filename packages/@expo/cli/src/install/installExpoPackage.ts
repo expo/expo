@@ -52,18 +52,15 @@ export async function installExpoPackageAsync(
     }
   }
 
-  // prevents the package manager from actually installing the package
-  // we will grab the command it intended to run and run it with the follow up command
-  packageManager.simulate = true;
-
-  await packageManager.addAsync([...packageManagerArguments, expoPackageToInstall]);
-
-  const expoInstallCommand = packageManager.lastCommand;
+  const expoInstallCommand = await packageManager.addDeferredAsync([
+    ...packageManagerArguments,
+    expoPackageToInstall,
+  ]);
 
   followUpCommand && Log.log(`> ${followUpCommand}`);
 
   const detachedCommandToRun = followUpCommand
-    ? `${expoInstallCommand} && ${followUpCommand}`
+    ? `${expoInstallCommand} && ${followUpCommand}` /* && is critical here so we avoid an infinite loop in the case where the expo install command fails */
     : expoInstallCommand;
 
   spawn(detachedCommandToRun!, {

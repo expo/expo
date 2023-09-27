@@ -1,6 +1,7 @@
 import spawnAsync, { SpawnPromise, SpawnResult } from '@expo/spawn-async';
 import assert from 'assert';
 import fs from 'fs';
+import invariant from 'invariant';
 import path from 'path';
 
 import { PackageManager, PackageManagerOptions } from '../PackageManager';
@@ -9,20 +10,15 @@ import { PendingSpawnPromise } from '../utils/spawn';
 export abstract class BasePackageManager implements PackageManager {
   readonly silent: boolean;
   readonly log?: (...args: any) => void;
-  simulate?: boolean;
   readonly options: PackageManagerOptions;
-  lastCommand: string | null = null;
 
-  constructor({
-    silent,
-    log,
-    simulate,
-    env = process.env,
-    ...options
-  }: PackageManagerOptions = {}) {
+  // used for deferred adding of packages, e.g., when a package updates itself
+  protected deferRun = false;
+  protected deferredCommand: string | null = null;
+
+  constructor({ silent, log, env = process.env, ...options }: PackageManagerOptions = {}) {
     this.silent = !!silent;
     this.log = log ?? (!silent ? console.log : undefined);
-    this.simulate = !!simulate;
     this.options = {
       stdio: silent ? undefined : 'inherit',
       ...options,
@@ -77,13 +73,27 @@ export abstract class BasePackageManager implements PackageManager {
   }
 
   runAsync(command: string[]) {
-    this.lastCommand = `${this.name} ${command.join(' ')}`;
-    this.log?.(`> ${this.lastCommand}`);
-    if (this.simulate) {
-      // no-op
+    const namePlusCommand = `${this.name} ${command.join(' ')}`;
+    this.log?.(`> ${namePlusCommand}`);
+    if (this.deferRun) {
+      this.deferredCommand = namePlusCommand;
+      // no-op to get a SpawnResult to return
       return spawnAsync('echo', [''], { ...this.options, stdio: undefined });
     }
     return spawnAsync(this.bin, command, this.options);
+  }
+
+  async addDeferredAsync(namesOrFlags: string[]) {
+    invariant(
+      !this.deferRun,
+      'addDeferredAsync cannot be called additional times while the first call is pending.'
+    );
+    this.deferRun = true;
+    await this.addAsync(namesOrFlags);
+    const myDeferredCommand = this.deferredCommand!;
+    this.deferredCommand = null;
+    this.deferRun = false;
+    return myDeferredCommand;
   }
 
   getRunSpawnParams(command: string[]) {
