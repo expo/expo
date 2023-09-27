@@ -467,7 +467,7 @@ In React Navigation, you can use the `initialRouteName` property of the linking 
 
 You can use the [`reset`](https://reactnavigation.org/docs/navigation-actions/#reset) action from the React Navigation library to reset the navigation state. It is dispatched using the [`useNavigation`](/router/reference/hooks/#usenavigation) hook from Expo Router to access the `navigation` prop.
 
-In the below example, the `navigation` prop is accessible from the `useNavigation` hook and the `CommonActions.reset` action from `@react-navigation/native`.
+In the below example, the `navigation` prop is accessible from the `useNavigation` hook and the `CommonActions.reset` action from `@react-navigation/native`. The object specified in the `reset` action replaces the existing navigation state with the new one.
 
 {/* prettier-ignore */}
 ```jsx app/screen.js
