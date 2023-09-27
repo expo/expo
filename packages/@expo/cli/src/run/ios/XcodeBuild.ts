@@ -286,6 +286,7 @@ export async function buildAsync(props: BuildProps): Promise<string> {
     }
   );
 
+  checkForBundlingErrors(results.split('\n'))
   const logFilePath = writeBuildLogs(projectRoot, results, error);
 
   if (code !== 0) {
@@ -347,4 +348,23 @@ function getErrorLogFilePath(projectRoot: string): [string, string] {
   const folder = path.join(projectRoot, '.expo');
   ensureDirectory(folder);
   return [path.join(folder, 'xcodebuild.log'), path.join(folder, 'xcodebuild-error.log')];
+}
+
+function checkForBundlingErrors(lines: string[]) {
+  // Find the last line beginning with `Error:` in the logs
+  const lastErrorIndex = lines.findLastIndex(line => line.startsWith("Error:"))
+
+  // Unless we find an error, we don't need to do anything
+  if (lastErrorIndex === -1) {
+    return
+  }
+
+  // Take 12 lines from the `Error:` line forwards
+  const block = new Array(11).fill(0)
+  .map((_, i) => lines[lastErrorIndex + i])
+  .join('\n');
+
+  throw new CommandError(
+    `Bundling Failed.\n${block}`
+  );
 }
