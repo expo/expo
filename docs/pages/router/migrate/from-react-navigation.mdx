@@ -463,6 +463,35 @@ router.push({ pathname: '/account/settings', params: { user: 'jane' } });
 
 In React Navigation, you can use the `initialRouteName` property of the linking configuration. In Expo Router, use [layout settings](/router/advanced/router-settings).
 
+### Reset navigation state
+
+You can use the [`reset`](https://reactnavigation.org/docs/navigation-actions/#reset) action from the React Navigation library to reset the navigation state. It is dispatched using the [`useNavigation`](/router/reference/hooks/#usenavigation) hook from Expo Router to access the `navigation` prop.
+
+In the below example, the `navigation` prop is accessible from the `useNavigation` hook and the `CommonActions.reset` action from `@react-navigation/native`.
+
+{/* prettier-ignore */}
+```jsx app/screen.js
+import { useNavigation } from 'expo-router'
+import { CommonActions } from '@react-navigation/native'
+
+export default function Screen() {
+  const navigation = useNavigation();
+
+  const handleResetAction = () => {
+    navigation.dispatch(CommonActions.reset({
+      routes: [{key: "(tabs)", name: "(tabs)"}]
+    }))
+  }
+
+  return (
+    <>
+    /* @hide ... */ /* @end */
+    <Button title='Reset' onPress={handleResetAction}>
+    </>
+  )
+}
+```
+
 ### Migrating TypeScript types
 
 Expo Router can automatically generate [statically typed routes](/router/reference/typed-routes), this will ensure you can only navigate to valid routes.
