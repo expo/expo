@@ -2444,9 +2444,12 @@ function App() {
 
 ### Implicit login
 
-You should never store your client secret locally in your bundle because there's no secure way to do this. Luckily a lot of providers have an "Implicit flow" which enables you to request an access token without the client secret. By default `expo-auth-session` requests an exchange code as this is the most widely applicable login method.
+Because there was no secure way to do this to store client secrets in your app bundle, historically, many providers have offered an "Implicit flow" which enables you to request an access token without the client secret. **This is no longer recommended** due to inherent security risks, including the risk of access token injection. Instead, most providers now support the authorization code with PKCE (Proof Key for Code Exchange) extension as a way to securely exchange an authorization code for an access token within your client app code. [Learn more about transitioning from Implicit flow to authorization code with PKCE](https://oauth.net/2/grant-types/implicit/).
 
-Here is an example of logging into Spotify without using a client secret.
+`expo-auth-session` still supports Implicit flow for legacy code purposes. Below is an example implementation of the Implicit flow.
+
+{/* prettier-ignore */}
+```tsx
 
 {/* prettier-ignore */}
 ```tsx
