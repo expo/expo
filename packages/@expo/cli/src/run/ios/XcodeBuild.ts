@@ -286,8 +286,8 @@ export async function buildAsync(props: BuildProps): Promise<string> {
     }
   );
 
-  checkForBundlingErrors(results.split('\n'))
   const logFilePath = writeBuildLogs(projectRoot, results, error);
+  checkForBundlingErrors(results.split('\n'))
 
   if (code !== 0) {
     // Determine if the logger found any errors;
