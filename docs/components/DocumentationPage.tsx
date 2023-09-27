@@ -117,7 +117,10 @@ export default function DocumentationPage(props: Props) {
       isMobileMenuVisible={isMobileMenuVisible}
       onContentScroll={handleContentScroll}
       sidebarScrollPosition={sidebarScrollPosition}>
-      <Head title={props.title} description={props.description}>
+      <Head
+        title={props.title}
+        description={props.description}
+        canonicalUrl={version !== 'unversioned' ? getCanonicalUrl(pathname) : undefined}>
         {props.hideFromSearch !== true && (
           <meta
             name="docsearch:version"
@@ -127,9 +130,6 @@ export default function DocumentationPage(props: Props) {
         {(version === 'unversioned' ||
           RoutesUtils.isPreviewPath(pathname) ||
           RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
-        {version !== 'latest' && version !== 'unversioned' && (
-          <link rel="canonical" href={getCanonicalUrl(pathname)} />
-        )}
       </Head>
       <div css={STYLES_DOCUMENT}>
         {props.title && (
