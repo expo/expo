@@ -287,7 +287,7 @@ export async function buildAsync(props: BuildProps): Promise<string> {
   );
 
   const logFilePath = writeBuildLogs(projectRoot, results, error);
-  checkForBundlingErrors(results.split('\n'))
+  checkForBundlingErrors(results.split('\n'));
 
   if (code !== 0) {
     // Determine if the logger found any errors;
@@ -352,17 +352,15 @@ function getErrorLogFilePath(projectRoot: string): [string, string] {
 
 function checkForBundlingErrors(lines: string[]) {
   // Find the last line beginning with `Error:` in the logs
-  const lastErrorIndex = lines.findLastIndex(line => line.startsWith("Error:"))
+  const lastErrorIndex = lines.findLastIndex((line) => line.startsWith('Error:'));
 
   // Unless we find an error, we don't need to do anything
   if (lastErrorIndex === -1) {
-    return
+    return;
   }
 
   // Take 12 lines from the `Error:` line forwards
-  const block = lines.slice(lastErrorIndex, lastErrorIndex + 11).join('\n')
+  const block = lines.slice(lastErrorIndex, lastErrorIndex + 11).join('\n');
 
-  throw new CommandError(
-    `Bundling Failed.\n${block}`
-  );
+  throw new CommandError(`Bundling Failed.\n${block}`);
 }
