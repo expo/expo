@@ -367,7 +367,7 @@ export default function App() {
     'https://login.microsoftonline.com/<TENANT_ID>/v2.0',
   );
   const redirectUri = makeRedirectUri({
-    /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+    /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
     scheme: undefined,
     /* @end */
     /* @info Azure requires there to be a path in your redirect URI. */
@@ -472,7 +472,7 @@ export default function App() {
       clientId: `${client_id}`,
       scopes: ['openid'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property in your app.json or app.config.js is used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property in your app.json or app.config.js is used instead. */
         scheme: 'your.app',
         /* @end */
       }),
@@ -708,7 +708,7 @@ export default function App() {
   - _Web dev_: `https://localhost:19006`
     - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
     - Adding a slash to the end of the URL doesn't matter.
-  - _Standalone/ development build_: `your-scheme://`
+  - _Standalone / development build_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
   - _Web production_: `https://yourwebsite.com`
     - Set this to whatever your deployed website URL is.
@@ -739,7 +739,7 @@ const discovery = {
   revocationEndpoint: "https://api.coinbase.com/oauth/revoke",
 };
 
-const redirectUri = makeRedirectUri({ /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */ scheme: 'your.app'/* @end */});
+const redirectUri = makeRedirectUri({ /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */ scheme: 'your.app'/* @end */});
 const CLIENT_ID = "CLIENT_ID";
 
 export default function App() {
@@ -902,9 +902,8 @@ export default function App() {
       scopes: [],
       // Dropbox doesn't support PKCE
       usePKCE: false,
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app',
         /* @end */
       }),
@@ -969,7 +968,7 @@ export default function App() {
       // Dropbox doesn't support PKCE
       usePKCE: false,
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1019,9 +1018,7 @@ export default function App() {
 [c-fitbit]: https://dev.fitbit.com/apps/new
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Go: `exp://localhost:8081/--/*`. For SDK 48 and lower, the port number is `19000`.
-  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
-  - Standalone or Bare: `com.your.app://*`
+  - Standalone / development build: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 
@@ -1052,7 +1049,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['activity', 'sleep'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1114,9 +1111,8 @@ export default function App() {
       /* @end */
       clientId: 'CLIENT_ID',
       scopes: ['activity', 'sleep'],
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1166,9 +1162,7 @@ export default function App() {
 [c-github]: https://github.com/settings/developers
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Go: `exp://localhost:8081/--/*`. For SDK 48 and lower, the port number is `19000`.
-  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
-  - Standalone or Bare: `com.your.app://*`
+  - Standalone / development build: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 - `revocationEndpoint` is dynamic and requires your `config.clientId`.
@@ -1200,7 +1194,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['identity'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1282,7 +1276,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       clientSecret: 'CLIENT_SECRET',
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app',
         /* @end */
       }),
@@ -1344,7 +1338,7 @@ export default function App() {
       /* @end */
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app',
         /* @end */
       }),
@@ -1468,9 +1462,7 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       scopes: ['openid', 'profile'],
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
         native: 'com.okta.<OKTA_DOMAIN>:/callback',
       }),
     },
@@ -1527,7 +1519,7 @@ export default function App() {
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
   - Expo Go: `exp://localhost:8081/--/*`. For SDK 48 and lower, the port number is `19000`.
   - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
-  - Standalone or Bare: `com.your.app://*`
+  - Standalone / development build: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 
@@ -1558,7 +1550,6 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['identity'],
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
         native: 'your.app://redirect',
       }),
     },
@@ -1621,7 +1612,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['identity'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1704,7 +1695,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['emoji:read'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1763,7 +1754,7 @@ export default function App() {
   - _Web dev_: `https://localhost:19006`
     - Important: Ensure there's no slash at the end of the URL unless manually changed in the app code with `makeRedirectUri({ path: '/' })`.
     - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
-  - _Standalone/ development build_: `your-scheme://`
+  - _Standalone / development build_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
   - _Web production_: `https://yourwebsite.com`
     - Set this to whatever your deployed website URL is.
@@ -1799,7 +1790,7 @@ export default function App() {
       // this must be set to false
       usePKCE: false,
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1864,7 +1855,7 @@ export default function App() {
       // this must be set to false
       usePKCE: false,
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1944,7 +1935,6 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['activity:read_all'],
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
         // the "redirect" must match your "Authorization Callback Domain" in the Strava dev console.
         native: 'your.app://redirect',
       }),
@@ -2043,7 +2033,7 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -2106,7 +2096,7 @@ export default function App() {
       /* @end */
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -2160,15 +2150,11 @@ export default function App() {
 - You will need to be approved by Twitter support before you can use the Twitter v2 API.
 - Web does not appear to work, the Twitter authentication website appears to block the popup, causing the `response` of `useAuthRequest` to always be `{type: 'dismiss'}`.
 - Example redirects:
-  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
-  - Standalone or Bare: `com.your.app://`
+  - Standalone / development build: `com.your.app://`
   - Web (dev `expo start --https`): `https://localhost:19006` (no ending slash)
 - The `redirectUri` requires 2 slashes (`://`).
 
 #### Expo Go
-
-You must use the proxy service in the Expo Go app because `exp://localhost:8081` cannot be added to your Twitter app as a redirect.
-
 <Tabs tabs={["Auth Code"]}>
 
 <Tab>
@@ -2280,7 +2266,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['profile', 'delivery'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -2343,7 +2329,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['profile', 'delivery'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -2386,7 +2372,7 @@ export default function App() {
 
 Here are a few examples of some common redirect URI patterns you may end up using.
 
-### Standalone and bare
+### Standalone / development build
 
 > `yourscheme://path`
 
@@ -2475,7 +2461,7 @@ function App() {
       clientId: 'CLIENT_ID',
       scopes: ['user-read-email', 'playlist-modify-public'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
