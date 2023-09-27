@@ -11,6 +11,7 @@ import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { createFastResolver } from './createExpoMetroResolver';
 import {
   EXTERNAL_REQUIRE_NATIVE_POLYFILL,
   EXTERNAL_REQUIRE_POLYFILL,
@@ -32,7 +33,6 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
-import { createFastResolver } from './createExpoMetroResolver';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 

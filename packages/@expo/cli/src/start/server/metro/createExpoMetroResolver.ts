@@ -16,7 +16,7 @@ class FailedToResolvePathError extends Error {}
 
 class ShimModuleError extends Error {}
 
-export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boolean, }) {
+export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boolean }) {
   const cachedExtensions: Map<string, readonly string[]> = new Map();
 
   function getAdjustedExtensions({
@@ -59,7 +59,18 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
   }
 
   function fastResolve(
-    context: Pick<ResolutionContext, 'unstable_enablePackageExports' | "customResolverOptions" | 'sourceExts' | 'preferNativePlatform'| "originModulePath" | "getPackage" | "nodeModulesPaths" | "mainFields" | "resolveAsset">,
+    context: Pick<
+      ResolutionContext,
+      | 'unstable_enablePackageExports'
+      | 'customResolverOptions'
+      | 'sourceExts'
+      | 'preferNativePlatform'
+      | 'originModulePath'
+      | 'getPackage'
+      | 'nodeModulesPaths'
+      | 'mainFields'
+      | 'resolveAsset'
+    >,
     moduleName: string,
     platform: string | null
   ): Resolution {
@@ -67,10 +78,9 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
     // TODO: Support package exports import { resolve as resolveExports } from 'resolve.exports'
     // TODO: Support `resolver.blockList`
     if (context.unstable_enablePackageExports) {
-        throw new CommandError('package exports are not supported with EXPO_USE_FAST_RESOLVER=1')
+      throw new CommandError('package exports are not supported with EXPO_USE_FAST_RESOLVER=1');
     }
 
-      
     const environment = context.customResolverOptions?.environment;
     const isServer = environment === 'node';
 
@@ -116,24 +126,25 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
           return pkg;
         },
 
-        pathFilter: isServer ? undefined : (pkg: any, _resolvedPath: string, relativePathIn: string): string => {
-            let relativePath = relativePathIn;
-            if (relativePath[0] !== '.') {
-              relativePath = `./${relativePath}`;
-            }
-            
-            const replacements = pkg.browser;
-            if (replacements === undefined) {
+        pathFilter: isServer
+          ? undefined
+          : (pkg: any, _resolvedPath: string, relativePathIn: string): string => {
+              let relativePath = relativePathIn;
+              if (relativePath[0] !== '.') {
+                relativePath = `./${relativePath}`;
+              }
+
+              const replacements = pkg.browser;
+              if (replacements === undefined) {
                 return '';
-            }
-        
-            let mappedPath = replacements[relativePath];
-            if (mappedPath === false) {
+              }
+
+              const mappedPath = replacements[relativePath];
+              if (mappedPath === false) {
                 throw new ShimModuleError();
-            }
-            return mappedPath;
-          },
-       
+              }
+              return mappedPath;
+            },
 
         // Not needed but added for parity...
 
@@ -148,30 +159,27 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
         };
       }
     } catch (error: any) {
+      if (error instanceof ShimModuleError) {
+        return {
+          type: 'empty',
+        };
+      }
 
-        if (error instanceof ShimModuleError) {
-            return {
-                type: 'empty',
-            };
-        }
-
-        if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
-
-            // TODO: Add improved error handling.
-            throw new FailedToResolvePathError(
-              'The module could not be resolved because no file or module matched the pattern:\n' +
-                `  ${formatFileCandidates(
-                  {
-                    type: 'sourceFile',
-                    filePathPrefix: moduleName,
-                    candidateExts: extensions,
-                  },
-                  true
-                )}\n\n`
-            );
-        }
-        throw error
-
+      if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
+        // TODO: Add improved error handling.
+        throw new FailedToResolvePathError(
+          'The module could not be resolved because no file or module matched the pattern:\n' +
+            `  ${formatFileCandidates(
+              {
+                type: 'sourceFile',
+                filePathPrefix: moduleName,
+                candidateExts: extensions,
+              },
+              true
+            )}\n\n`
+        );
+      }
+      throw error;
     }
 
     if (context.sourceExts.some((ext) => fp.endsWith(ext))) {
@@ -204,4 +212,3 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
 
   return fastResolve;
 }
-

@@ -1,8 +1,9 @@
+import { getBareExtensions } from '@expo/config/paths';
+import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
-import assert from 'assert';
+
 import { createFastResolver } from '../createExpoMetroResolver';
-import { getBareExtensions } from '@expo/config/paths';
 
 type SupportedContext = Parameters<ReturnType<typeof createFastResolver>>[0];
 
