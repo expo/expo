@@ -34,7 +34,7 @@ beforeEach(() => {
 });
 
 async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
-  const devServer = new MetroBundlerDevServer('/', getPlatformBundlers({}), false);
+  const devServer = new MetroBundlerDevServer('/', getPlatformBundlers({}));
   devServer['getAvailablePortAsync'] = jest.fn(() => Promise.resolve(3000));
   // Tested in the superclass
   devServer['postStartAsync'] = jest.fn(async () => {});
