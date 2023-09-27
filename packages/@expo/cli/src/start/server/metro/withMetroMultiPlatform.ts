@@ -9,7 +9,6 @@ import fs from 'fs';
 import { ConfigT } from 'metro-config';
 import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
-import otherResolve from 'resolve';
 import resolveFrom from 'resolve-from';
 
 import {
@@ -19,7 +18,6 @@ import {
   isNodeExternal,
   setupNodeExternals,
 } from './externals';
-import { formatFileCandidates } from './formatFileCandidates';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
@@ -34,6 +32,7 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
+import { createFastResolver } from './createExpoMetroResolver';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -83,164 +82,6 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
   nodejsSourceExtensions.splice(jsIndex + 1, 0, ...mjsExts);
 
   return nodejsSourceExtensions;
-}
-
-class FailedToResolvePathError extends Error {}
-
-function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boolean }) {
-  const cachedExtensions: Map<string, readonly string[]> = new Map();
-
-  function getAdjustedExtensions({
-    metroSourceExtensions,
-    platform,
-    isNative,
-  }: {
-    metroSourceExtensions: readonly string[];
-    platform: string | null;
-    isNative: boolean;
-  }): readonly string[] {
-    const key = JSON.stringify({ metroSourceExtensions, platform, isNative });
-    if (cachedExtensions.has(key)) {
-      return cachedExtensions.get(key)!;
-    }
-
-    let output = metroSourceExtensions;
-    if (platform) {
-      const nextOutput: string[] = [];
-
-      output.forEach((ext) => {
-        nextOutput.push(`${platform}.${ext}`);
-        if (isNative) {
-          nextOutput.push(`native.${ext}`);
-        }
-        nextOutput.push(ext);
-      });
-
-      output = nextOutput;
-    }
-
-    output = Array.from(new Set<string>(output));
-
-    // resolve expects these to start with a dot.
-    output = output.map((ext) => `.${ext}`);
-
-    cachedExtensions.set(key, output);
-
-    return output;
-  }
-
-  function fastResolve(
-    context: ResolutionContext,
-    moduleName: string,
-    platform: string | null
-  ): Resolution {
-    const environment = context.customResolverOptions?.environment;
-    const isServer = environment === 'node';
-
-    const extensions = getAdjustedExtensions({
-      metroSourceExtensions: context.sourceExts,
-      platform,
-      isNative: context.preferNativePlatform,
-    });
-
-    let fp: string;
-
-    try {
-      fp = otherResolve.sync(moduleName, {
-        basedir: path.dirname(context.originModulePath),
-        extensions,
-        // Used to ensure files trace to packages instead of node_modules in expo/expo. This is how Metro works and
-        // the app doesn't finish without it.
-        preserveSymlinks,
-        readPackageSync: (readFileSync, pkgFile) => {
-          return (
-            context.getPackage(pkgFile) ??
-            JSON.parse(
-              // @ts-expect-error
-              readFileSync(pkgfile)
-            )
-          );
-        },
-        moduleDirectory: context.nodeModulesPaths,
-        packageFilter(pkg) {
-          // set the pkg.main to the first available field in context.mainFields
-          for (const field of context.mainFields) {
-            if (
-              pkg[field] &&
-              // object-inspect uses browser: {} in package.json
-              typeof pkg[field] === 'string'
-            ) {
-              return {
-                ...pkg,
-                main: pkg[field],
-              };
-            }
-          }
-          return pkg;
-        },
-
-        // Not needed but added for parity...
-
-        // @ts-ignore
-        realpathSync: context.unstable_getRealPath,
-      });
-
-      if (!isServer && isNodeExternal(fp)) {
-        // In this case, mock the file to use an empty module.
-        return {
-          type: 'empty',
-        };
-      }
-    } catch {
-      // TODO: Add improved error handling.
-      throw new FailedToResolvePathError(
-        'The module could not be resolved because no file or module matched the pattern:\n' +
-          `  ${formatFileCandidates(
-            {
-              type: 'sourceFile',
-              filePathPrefix: moduleName,
-              candidateExts: extensions,
-            },
-            true
-          )}\n\n`
-      );
-    }
-
-    if (context.sourceExts.some((ext) => fp.endsWith(ext))) {
-      // TODO: Support `browser: { "util.inspect.js": false }` in package.json
-      if (!isServer && fp.endsWith('object-inspect/util.inspect.js')) {
-        return {
-          type: 'empty',
-        };
-      }
-      return {
-        type: 'sourceFile',
-        filePath: fp,
-      };
-    } else {
-      // NOTE: platform extensions may not be supported on assets.
-
-      if (platform === 'web') {
-        // Skip multi-resolution on web/server bundles. Only consideration here is that
-        // we may still need it in case the only image is a multi-resolution image.
-        return {
-          type: 'assetFiles',
-          filePaths: [fp],
-        };
-      }
-
-      const dirPath = path.dirname(fp);
-      const extension = path.extname(fp);
-      const basename = path.basename(fp, extension);
-      return {
-        type: 'assetFiles',
-        // Support multi-resolution asset extensions...
-        filePaths: context.resolveAsset(dirPath, basename, extension) ?? [fp],
-      };
-    }
-  }
-
-  return fastResolve;
 }
 
 /**
