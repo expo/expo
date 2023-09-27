@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+- Improve `expo-modules-autolinking` integration from its new public exported APIs. ([#24650](https://github.com/expo/expo/pull/24650) by [@kudo](https://github.com/kudo))
 
 ## 6.4.1 — 2023-09-15
 
