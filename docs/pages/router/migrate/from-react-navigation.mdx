@@ -212,7 +212,19 @@ export default function Page({
 }
 ```
 
-The [`navigate`](https://reactnavigation.org/docs/navigation-prop/#navigate) prop is accessible using [`useNavigation`](/router/reference/hooks/#usenavigation) hook.
+To access the [`navigation.navigate`](https://reactnavigation.org/docs/navigation-prop/#navigate), import the `navigation` prop from [`useNavigation`](/router/reference/hooks/#usenavigation) hook.
+
+```diff
++ import { useNavigation } from 'expo-router';
+
+export default function Page({
++  const navigation = useNavigation();
+
+  return (
+    <Button onPress={navigation.navigate('screenName')}>
+  )
+})
+```
 
 ### Migrate the Link component
 
