@@ -72,6 +72,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 - Docker image: `ubuntu:jammy-20220531`
 - NDK 21.4.7075529
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 8.7.5
 - npm 8.19.2
@@ -86,6 +87,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 - Docker image: `ubuntu:jammy-20220531`
 - NDK 21.4.7075529
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 7.0.0
 - npm 8.19.2
@@ -100,6 +102,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 - Docker image: `ubuntu:focal-20210921`
 - NDK 21.4.7075529
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 7.0.0
 - npm 8.19.2
@@ -114,6 +117,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 - Docker image: `ubuntu:focal-20210921`
 - NDK 21.4.7075529
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 7.0.0
 - npm 8.19.2
@@ -128,6 +132,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 - Docker image: `ubuntu:bionic-20210930`
 - NDK 19.2.5345600
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 7.0.0
 - npm 8.19.2
@@ -142,6 +147,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 - Docker image: `ubuntu:bionic-20210930`
 - NDK 19.2.5345600
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 7.0.0
 - npm 8.19.2
@@ -182,13 +188,31 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 ### iOS server images
 
-#### `macos-ventura-13.4-xcode-14.3.1` (`latest` for Apple silicon builders, only available for Apple silicon builders)
+#### `macos-ventura-13.6-xcode-15.0` (`latest`)
+
+<Collapsible summary="Details">
+
+- macOS Ventrua 13.6
+- Xcode 15.0 (15A240d)
+- Node.js 16.18.1
+- Bun 1.0.2
+- Yarn 1.22.17
+- pnpm 8.7.6
+- npm 8.1.2
+- fastlane 2.216.0
+- CocoaPods 1.13.0
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-ventura-13.4-xcode-14.3.1` (`default`)
 
 <Collapsible summary="Details">
 
 - macOS Ventrua 13.4
 - Xcode 14.3.1 (14E300c)
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 8.6.5
 - npm 8.1.2
@@ -198,13 +222,14 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### `macos-ventura-13.3-xcode-14.3` (`default` for Apple silicon builders, only available for Apple silicon builders)
+#### `macos-ventura-13.3-xcode-14.3`
 
 <Collapsible summary="Details">
 
 - macOS Ventrua 13.3
 - Xcode 14.3 (14E222b)
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 8.2.0
 - npm 8.1.2
@@ -214,13 +239,14 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### `macos-monterey-12.6-xcode-14.2` (`latest` for Intel builders)
+#### `macos-monterey-12.6-xcode-14.2`
 
 <Collapsible summary="Details">
 
 - macOS Monterey 12.6
 - Xcode 14.2 (14C18)
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 7.27.0
 - npm 8.19.2
@@ -237,6 +263,7 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - macOS Monterey 12.6
 - Xcode 14.1 (14B47b)
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 7.15.0
 - npm 8.19.2
@@ -253,6 +280,7 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - macOS Monterey 12.6
 - Xcode 14.0 (14A309)
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 7.11.0
 - npm 8.19.2
@@ -262,34 +290,19 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### `macos-monterey-12.4-xcode-13.4`
+#### `macos-monterey-12.4-xcode-13.4` (deprecated)
 
 <Collapsible summary="Details">
 
 - macOS Monterey 12.4
 - Xcode 13.4 (13F17a)
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 7.0.0
 - npm 8.19.2
 - fastlane 2.205.2
 - CocoaPods 1.11.3
-- Ruby 2.7
-
-</Collapsible>
-
-#### `macos-big-sur-11.4-xcode-13.0`
-
-<Collapsible summary="Details">
-
-- macOS Big Sur 11.4
-- Xcode 13.0 (13A233)
-- Node.js 16.18.1
-- Yarn 1.22.17
-- pnpm 7.0.0
-- npm 8.19.2
-- fastlane 2.185.1
-- CocoaPods 1.10.1
 - Ruby 2.7
 
 </Collapsible>
@@ -301,6 +314,7 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - macOS Monterey 12.3.1
 - Xcode 13.3.1 (13E500a)
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 7.0.0
 - npm 8.19.2
@@ -317,27 +331,12 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - macOS Monterey 12.1
 - Xcode 13.2.1 (13C100)
 - Node.js 16.18.1
+- Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 7.0.0
 - npm 8.19.2
 - fastlane 2.201.0
 - CocoaPods 1.11.2
-- Ruby 2.7
-
-</Collapsible>
-
-#### `macos-big-sur-11.4-xcode-12.5` (deprecated, only available for Intel builders)
-
-<Collapsible summary="Details">
-
-- macOS Big Sur 11.4
-- Xcode 12.5 (12E5244e)
-- Node.js 16.18.1
-- Yarn 1.22.17
-- pnpm 7.0.0
-- npm 8.19.2
-- fastlane 2.185.1
-- CocoaPods 1.10.1
 - Ruby 2.7
 
 </Collapsible>
