@@ -152,12 +152,14 @@ function getNavigateAction(state, rootState) {
         },
     };
 }
-function getNavigatePushAction(desiredState, navigationState) {
-    const sharedParents = getSharedNavigators(desiredState, navigationState, false);
-    if (sharedParents && sharedParents.at(-1)?.type === 'stack') {
+function getNavigatePushAction(desiredState, rootState) {
+    const sharedParents = getSharedNavigators(desiredState, rootState, false);
+    const lastSharedParent = sharedParents.at(-1);
+    if (lastSharedParent?.type === 'stack') {
         const { screen, params } = rewriteNavigationStateToParams(desiredState);
         return {
             type: 'PUSH',
+            target: lastSharedParent.key,
             payload: {
                 name: screen,
                 params,
@@ -165,7 +167,7 @@ function getNavigatePushAction(desiredState, navigationState) {
         };
     }
     else {
-        return getNavigateAction(desiredState, navigationState);
+        return getNavigateAction(desiredState, rootState);
     }
 }
 function getNavigateReplaceAction(desiredState, navigationState) {
@@ -199,6 +201,6 @@ function getSharedNavigators(left, right, allowPartial = true, shared = []) {
     else if (!isPartialMatch) {
         return shared;
     }
-    return undefined;
+    return [];
 }
 //# sourceMappingURL=routing.js.map
