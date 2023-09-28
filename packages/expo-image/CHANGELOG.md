@@ -12,7 +12,7 @@
 
 ### 🐛 Bug fixes
 
-- Remove `GlideWebpDecoder` until they update their `libwebp` dependency.
+- Remove `GlideWebpDecoder` until they update their `libwebp` dependency. ([#24656](https://github.com/expo/expo/pull/24656) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
