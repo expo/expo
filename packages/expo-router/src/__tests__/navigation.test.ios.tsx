@@ -736,17 +736,25 @@ it('can push nested stacks with initial route names without creating circular re
   expect(screen).toHavePathname('/menu/123');
 });
 
+<<<<<<< HEAD
 it('can push & replace with nested Slots', async () => {
   renderRouter({
     _layout: () => <Slot />,
     index: () => <Text testID="index" />,
     'one/_layout': () => <Slot />,
     'one/index': () => <Text testID="one" />,
+=======
+it.only('can push the same route multiple times', () => {
+  renderRouter({
+    index: () => <Text testID="index" />,
+    test: () => <Text testID="test" />,
+>>>>>>> 392d61869d (feat: add router.navigate)
   });
 
   expect(screen).toHavePathname('/');
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 
+<<<<<<< HEAD
   // Push
 
   act(() => router.push('/one'));
@@ -765,6 +773,21 @@ it('can push & replace with nested Slots', async () => {
 
   act(() => router.replace('/'));
   expect(screen).toHavePathname('/');
+=======
+  // // If we push once and go back, we are back to index
+  act(() => router.push('/test'));
+  expect(screen.getByTestId('test')).toBeOnTheScreen();
+  act(() => router.back());
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // If we push twice we will need to go back twice
+  act(() => router.push('/test'));
+  act(() => router.push('/test'));
+  expect(screen.getByTestId('test')).toBeOnTheScreen();
+  act(() => router.back());
+  expect(screen.getByTestId('test')).toBeOnTheScreen();
+  act(() => router.back());
+>>>>>>> 392d61869d (feat: add router.navigate)
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
 
