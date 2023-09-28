@@ -167,7 +167,7 @@ internal struct MediaHandler {
       }
     } // loadObject
   }
-  
+
   private func getMimeType(from pathExtension: String) -> String? {
     let filenameExtension = String(pathExtension.dropFirst())
     if #available(iOS 14, *) {
@@ -526,7 +526,7 @@ private struct ImageUtils {
 
     let options = PHContentEditingInputRequestOptions()
     options.isNetworkAccessAllowed = true
-    asset.requestContentEditingInput(with: options) { input, info in
+    asset.requestContentEditingInput(with: options) { input, _ in
       guard let imageUrl = input?.fullSizeImageURL,
             let properties = CIImage(contentsOf: imageUrl)?.properties
       else {
