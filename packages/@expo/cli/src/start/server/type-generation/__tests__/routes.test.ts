@@ -122,16 +122,9 @@ describe(`${TYPED_ROUTES_EXCLUSION_REGEX}`, () => {
     expect('/folder/route+anything.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
   });
 
-  it('will match 404 pages', () => {
-    expect('404.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
-    expect('[404].ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
-    expect('[...404].ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
-  });
-
-  it('will match nested 404 pages', () => {
-    expect('/folder/404.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
-    expect('/folder/[404].ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
-    expect('/folder/[...404].ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+  it('will match +not_found', () => {
+    expect('+not_found.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+    expect('/folder/+not_found.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
   });
 });
 
