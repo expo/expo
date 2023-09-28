@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Added Expo CLI devtools plugins support. ([#24650](https://github.com/expo/expo/pull/24650) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Ensure a unique static path is generated for each group during static extraction ([#24218](https://github.com/expo/expo/pull/24218) by [@marklawlor](https://github.com/marklawlor))
