@@ -107,6 +107,7 @@ function readFile(targetFile, options) {
                         uri,
                         width: image.naturalWidth ?? image.width,
                         height: image.naturalHeight ?? image.height,
+                        mimeType: targetFile.type,
                         // The blob's result cannot be directly decoded as Base64 without
                         // first removing the Data-URL declaration preceding the
                         // Base64-encoded data. To retrieve only the Base64 encoded string,

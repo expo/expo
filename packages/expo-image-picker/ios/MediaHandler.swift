@@ -74,6 +74,7 @@ internal struct MediaHandler {
                                                                                options: options)
 
       let targetUrl = try generateUrl(withFileExtension: fileExtension)
+      let mimeType = getMimeType(from: ".\(targetUrl.pathExtension)")
 
       // no modification requested
       let imageModified = options.allowsEditing || options.quality != nil
@@ -104,6 +105,7 @@ internal struct MediaHandler {
                                   height: image.size.height,
                                   fileName: fileName,
                                   fileSize: fileSize,
+                                  mimeType: mimeType,
                                   base64: base64,
                                   exif: exif)
         let response = ImagePickerResponse(assets: [imageInfo], canceled: false)
@@ -134,6 +136,7 @@ internal struct MediaHandler {
                                                                                  itemProvider: itemProvider,
                                                                                  options: self.options)
 
+        let mimeType = getMimeType(from: fileExtension)
         let targetUrl = try generateUrl(withFileExtension: fileExtension)
         try ImageUtils.write(imageData: imageData, to: targetUrl)
         let fileSize = getFileSize(from: targetUrl)
@@ -153,6 +156,7 @@ internal struct MediaHandler {
                                   height: image.size.height,
                                   fileName: fileName,
                                   fileSize: fileSize,
+                                  mimeType: mimeType,
                                   base64: base64,
                                   exif: exif)
         completion(index, .success(imageInfo))
@@ -162,6 +166,23 @@ internal struct MediaHandler {
         return completion(index, .failure(UnexpectedException(error)))
       }
     } // loadObject
+  }
+  
+  private func getMimeType(from pathExtension: String) -> String? {
+    let filenameExtension = String(pathExtension.dropFirst())
+    if #available(iOS 14, *) {
+      return UTType(filenameExtension: filenameExtension)?.preferredMIMEType
+    } else {
+      if let uti = UTTypeCreatePreferredIdentifierForTag(
+        kUTTagClassFilenameExtension,
+        pathExtension as NSString, nil
+      )?.takeRetainedValue() {
+        if let mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
+          return mimetype as String
+        }
+      }
+      return nil
+    }
   }
 
   // MARK: - Video
@@ -188,6 +209,7 @@ internal struct MediaHandler {
       let duration = VideoUtils.readDurationFrom(url: videoUrlToReadDurationFrom)
 
       let asset = mediaInfo[.phAsset] as? PHAsset
+      let mimeType = getMimeType(from: ".\(targetUrl.pathExtension)")
       let fileName = asset?.value(forKey: "filename") as? String
       let fileSize = getFileSize(from: targetUrl)
       let videoInfo = AssetInfo(assetId: asset?.localIdentifier,
@@ -197,6 +219,7 @@ internal struct MediaHandler {
                                 height: dimensions.height,
                                 fileName: fileName,
                                 fileSize: fileSize,
+                                mimeType: mimeType,
                                 duration: duration)
 
       completion(.success(ImagePickerResponse(assets: [videoInfo], canceled: false)))
@@ -224,6 +247,7 @@ internal struct MediaHandler {
         let transcodeFileType = AVFileType.mp4
         let transcodeFileExtension = ".mp4"
         let originalExtension = ".\(videoUrl.pathExtension)"
+        let mimeType = getMimeType(from: originalExtension)
 
         // We need to copy the result into a place that we control, because the picker
         // can remove the original file during conversion.
@@ -241,7 +265,7 @@ internal struct MediaHandler {
             return completion(index, .failure(exception))
           case .success(let targetUrl):
             let fileName = itemProvider.suggestedName.map { $0 + transcodeFileExtension }
-            let videoResult = buildVideoResult(for: targetUrl, withName: fileName, assetId: selectedVideo.assetIdentifier)
+            let videoResult = buildVideoResult(for: targetUrl, withName: fileName, mimeType: mimeType, assetId: selectedVideo.assetIdentifier)
             return completion(index, videoResult)
           }
         }
@@ -283,7 +307,7 @@ internal struct MediaHandler {
     return url
   }
 
-  private func buildVideoResult(for videoUrl: URL, withName fileName: String?, assetId: String?) -> SelectedMediaResult {
+  private func buildVideoResult(for videoUrl: URL, withName fileName: String?, mimeType: String?, assetId: String?) -> SelectedMediaResult {
     guard let size = VideoUtils.readSizeFrom(url: videoUrl) else {
       return .failure(FailedToReadVideoSizeException())
     }
@@ -297,6 +321,7 @@ internal struct MediaHandler {
                            height: size.height,
                            fileName: fileName,
                            fileSize: fileSize,
+                           mimeType: mimeType,
                            duration: duration)
     return .success(result)
   }
