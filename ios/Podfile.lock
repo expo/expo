@@ -2201,7 +2201,7 @@ PODS:
     - Branch (= 0.35.0)
     - ExpoModulesCore
     - React-Core
-  - EXCalendar (11.3.1):
+  - EXCalendar (11.3.2):
     - ExpoModulesCore
   - EXCamera (13.4.4):
     - ExpoModulesCore
@@ -2264,7 +2264,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.4.0):
     - ExpoModulesCore
-  - ExpoImage (1.3.3):
+  - ExpoImage (1.3.4):
     - ExpoModulesCore
     - SDWebImage (~> 5.15.8)
     - SDWebImageAVIFCoder (~> 0.10.0)
@@ -4898,7 +4898,7 @@ SPEC CHECKSUMS:
   EXBackgroundFetch: a4a45a5924d9ac6dd480d5d745aabe91bb17bb36
   EXBarCodeScanner: 44783bf0be375ab18a838dcfef29dd648397000a
   EXBranch: c01fc99d0a5e4ac6402b81f3c61ed180e5d355b7
-  EXCalendar: ec74fc35b442ea6b67bf338c7478eb525e04c13c
+  EXCalendar: 9706b81c497d3fbf3df5cf939a1c8fda2244bc12
   EXCamera: 6e6e79bf01a2b8190268d93297d8e79a843d5ede
   EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
   EXContacts: 9e8626eefc90c428af3d61a9e2869ac413d2569b
@@ -4923,7 +4923,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 5cb7389ff935b4addefdd466a606de51a512e922
   ExpoGL: 77f5c4f4c1efeebceabbbcb18540208c5ab67d12
   ExpoHaptics: 360af6898407ee4e8265d30a1a8fb16491a660eb
-  ExpoImage: e0182814c62f40dd4e2e74324ebbbbbc2a4464c9
+  ExpoImage: 912063c1082ed72f8ae6bbbe0196602257022fa9
   ExpoImageManipulator: 851be0965dd9f78019771b140282f1816dcc25ea
   ExpoImagePicker: c58fdf28be551681a8edc550bcec76c397a8dfcd
   ExpoKeepAwake: be4cbd52d9b177cde0fd66daa1913afa3161fc1d
