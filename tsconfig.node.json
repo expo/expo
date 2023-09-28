@@ -2,6 +2,7 @@
   "extends": "@tsconfig/node18/tsconfig.json",
 
   "compilerOptions": {
+    "esModuleInterop": true,
     "declaration": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
@@ -9,6 +10,7 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noImplicitReturns": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true
   }
 }

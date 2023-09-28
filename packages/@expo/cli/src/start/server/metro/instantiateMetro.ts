@@ -107,6 +107,7 @@ export async function loadMetroConfigAsync(
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',
+    isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
   });
 
   logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));

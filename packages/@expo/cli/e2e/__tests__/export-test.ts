@@ -81,6 +81,10 @@ describe('server', () => {
       // `npx expo export`
       await execa('node', [bin, 'export', '--dump-sourcemap', '--dump-assetmap'], {
         cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_FAST_RESOLVER: 'false',
+        },
       });
 
       const outputDir = path.join(projectRoot, 'dist');
