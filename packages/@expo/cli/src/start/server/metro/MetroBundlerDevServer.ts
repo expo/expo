@@ -10,6 +10,7 @@ import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAsset
 import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
+import fs from 'fs';
 
 import { exportAllApiRoutesAsync, rebundleApiRoute } from './bundleApiRoutes';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
@@ -43,6 +44,9 @@ import {
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
+import { getBareExtensions } from '@expo/config/paths';
+import { createFastResolver } from './createExpoMetroResolver';
 
 export class ForwardHtmlError extends CommandError {
   constructor(
@@ -396,6 +400,81 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     middleware.use(deepLinkMiddleware.getHandler());
 
     middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
+
+    const createContext = ({
+      platform,
+      isServer,
+      origin,
+    }: {
+      origin: string;
+      platform: string;
+      isServer?: boolean;
+    }) => {
+      const preferNativePlatform = platform === 'ios' || platform === 'android';
+      const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
+      const sourceExts = getBareExtensions([], sourceExtsConfig);
+
+      return {
+        resolveAsset: (a, b, c) => ['idk'],
+        customResolverOptions: Object.create({
+          environment: isServer ? 'node' : 'client',
+        }),
+        getPackage(packageJsonPath) {
+          return JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+        },
+        mainFields: preferNativePlatform
+          ? ['react-native', 'browser', 'main']
+          : isServer
+          ? ['module', 'main']
+          : ['browser', 'module', 'main'],
+        nodeModulesPaths: ['node_modules'],
+        originModulePath: origin,
+        preferNativePlatform,
+        sourceExts,
+        unstable_enablePackageExports: false,
+      };
+    };
+
+    const resolver = createFastResolver({ preserveSymlinks: false });
+
+    middleware.use(
+      '/_expo/resolve',
+      async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+        const url = req.url;
+        if (!url) return next();
+
+        console.log('Resolving: ', url);
+
+        const parsed = new URL(url, 'http://localhost:8081');
+        const platform = parsed.searchParams.get('platform')!;
+        const moduleId = parsed.searchParams.get('resolve')!;
+        const origin = parsed.searchParams.get('origin')!;
+
+        const context = createContext({
+          platform,
+          isServer: false,
+          origin: path.join(this.projectRoot, origin),
+        });
+        try {
+          const metroResults = resolver(context, moduleId, platform);
+
+          console.log('Resolved: ', metroResults);
+          if (metroResults.type === 'sourceFile') {
+            const text = await fs.readFileSync(metroResults.filePath, 'utf8');
+            res.setHeader('Content-Type', 'text/plain');
+            console.log('Return: ', text);
+            return res.end(text);
+          }
+        } catch (e) {
+          console.log('Error: ', e);
+
+          res.statusCode = 404;
+          return res.end(e.message);
+        }
+
+        return next();
+      }
+    );
 
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
