@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Allow pushing to the same route multiple times.
+- Allow pushing to the same route multiple times. ([#24600](https://github.com/expo/expo/pull/24600) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
