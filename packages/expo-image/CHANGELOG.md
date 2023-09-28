@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove `GlideWebpDecoder` until they update their `libwebp` dependency.
+
 ### 💡 Others
 
 ## 1.5.2 — 2023-09-18
