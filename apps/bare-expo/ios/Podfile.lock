@@ -46,8 +46,6 @@ PODS:
     - React-Core
   - EXNotifications (0.24.2):
     - ExpoModulesCore
-  - EXPermissions (14.4.0):
-    - ExpoModulesCore
   - Expo (50.0.0-alpha.5):
     - ExpoModulesCore
   - expo-dev-client (3.1.1):
@@ -839,7 +837,6 @@ DEPENDENCIES:
   - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
   - EXMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
-  - EXPermissions (from `../../../packages/expo-permissions/ios`)
   - Expo (from `../../../packages/expo`)
   - expo-dev-client (from `../../../packages/expo-dev-client/ios`)
   - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
@@ -1030,9 +1027,6 @@ EXTERNAL SOURCES:
   EXNotifications:
     inhibit_warnings: false
     :path: "../../../packages/expo-notifications/ios"
-  EXPermissions:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-permissions/ios"
   Expo:
     inhibit_warnings: false
     :path: "../../../packages/expo"
@@ -1316,7 +1310,6 @@ SPEC CHECKSUMS:
   EXManifests: 3b001efa12886d0abc2b011bc32c4f3346b74256
   EXMediaLibrary: 802eee8ef888ee16ef80f1b79005d3d611793e14
   EXNotifications: f6ae23a3d89a1e2236bca9861dc9bd36b4544cda
-  EXPermissions: 51c6115893689c3e9787f4819aa67ceeae601038
   Expo: 001317580dc33f3a8bdcebd50adaf7f58cc9e303
   expo-dev-client: 9249b1dc8236038479779b7ea56f5c8c5472616e
   expo-dev-launcher: bd6cc619cf034fd6fc1cb331ad30cbe2d5f0a773
