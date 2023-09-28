@@ -154,7 +154,7 @@ Let's start by creating our plugin with this minimal boilerplate. This will crea
 2. Create a **plugin/src/index.ts** file for our plugin:
 
    ```typescript plugin/src/index.ts
-   import { ConfigPlugin } from 'expo/config-plugins';
+   import { ConfigPlugin } from '@expo/config-plugins';
 
    const withMyApiKey: ConfigPlugin = config => {
      console.log('my custom plugin');
@@ -185,7 +185,7 @@ Now when running `npx expo prebuild` inside our **example** folder we should see
 
 <Terminal cmd={['$ cd example', '$ npx expo prebuild --clean']} />
 
-To inject our custom API keys into **AndroidManifest.xml** and **Info.plist** we can use a few helper [`mods` provided by `expo/config-plugins`](/config-plugins/plugins-and-mods/#what-are-mods), which makes it easy to modify native files. In our example, we will use two of them, `withAndroidManifest` and `withInfoPlist`.
+To inject our custom API keys into **AndroidManifest.xml** and **Info.plist** we can use a few helper [`mods` provided by `@expo/config-plugins`](/config-plugins/plugins-and-mods/#what-are-mods), which makes it easy to modify native files. In our example, we will use two of them, `withAndroidManifest` and `withInfoPlist`.
 
 As the name suggests, `withInfoPlist` allows us to read and modify **Info.plist** values. Using the `modResults` property, we can add custom values as demonstrated in the code snippet below:
 
@@ -227,7 +227,7 @@ import {
   withAndroidManifest,
   AndroidConfig,
   ConfigPlugin,
-} from 'expo/config-plugins';
+} from '@expo/config-plugins';
 
 const withMyApiKey: ConfigPlugin<{ apiKey: string }> = (config, { apiKey }) => {
   config = withInfoPlist(config, config => {
