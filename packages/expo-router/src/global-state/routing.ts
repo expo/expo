@@ -158,41 +158,10 @@ function getNavigateAction(state: ResultState, rootState: NavigationState) {
 }
 
 function getNavigatePushAction(desiredState: ResultState, rootState: NavigationState) {
-  const sharedParents = getSharedNavigators(desiredState, rootState, false);
-  const lastSharedParent = sharedParents.at(-1);
-
-  if (lastSharedParent?.type === 'stack') {
-    const { screen, params } = rewriteNavigationStateToParams(desiredState);
-    return {
-      type: 'PUSH',
-      target: lastSharedParent.key,
-      payload: {
-        name: screen,
-        params,
-      },
-    };
-  } else {
-    return getNavigateAction(desiredState, rootState);
-  }
-}
-
-function getNavigateReplaceAction(
-  desiredState: ResultState,
-  navigationState: NavigationState
-): NavigationAction {
-  const sharedParents = getSharedNavigators(desiredState, navigationState);
-  const lastNavigatorSupportingReplace =
-    sharedParents?.findLast((parent) => parent.type === 'stack' || parent.type === 'tab') ?? -1;
-
-  if (lastNavigatorSupportingReplace === -1) {
-    throw new Error();
-  }
-
   const { screen, params } = rewriteNavigationStateToParams(desiredState);
-
   return {
-    type: lastNavigatorSupportingReplace.type === 'stack' ? 'REPLACE' : 'JUMP_TO',
-    target: lastNavigatorSupportingReplace?.key,
+    type: 'PUSH',
+    target: rootState.key,
     payload: {
       name: screen,
       params,
@@ -200,34 +169,18 @@ function getNavigateReplaceAction(
   };
 }
 
-function getSharedNavigators(
-  left: ResultState,
-  right: NavigationState,
-  allowPartial = true,
-  shared: NavigationState[] = []
-) {
-  shared.push(right);
+function getNavigateReplaceAction(
+  desiredState: ResultState,
+  navigationState: NavigationState
+): NavigationAction {
+  const { screen, params } = rewriteNavigationStateToParams(desiredState);
 
-  const leftRoute = left.routes.at(-1)!;
-  const matchedRoute = right.routes.find((route) => route.name === leftRoute.name);
-  const routesShareNavigator = right.routes[right.index] === matchedRoute;
-
-  if (routesShareNavigator && leftRoute.state && matchedRoute.state) {
-    return getSharedNavigators(
-      leftRoute.state,
-      matchedRoute.state as NavigationState,
-      allowPartial,
-      shared
-    );
-  }
-
-  const isPartialMatch = shared.length > 1 || leftRoute.state || matchedRoute?.state;
-
-  if (allowPartial && isPartialMatch) {
-    return shared;
-  } else if (!isPartialMatch) {
-    return shared;
-  }
-
-  return [];
+  return {
+    type: 'REPLACE',
+    target: navigationState?.key,
+    payload: {
+      name: screen,
+      params,
+    },
+  };
 }

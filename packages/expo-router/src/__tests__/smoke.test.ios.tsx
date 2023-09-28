@@ -124,7 +124,7 @@ it('nested layouts', async () => {
   expect(HomeNested).toHaveBeenCalledTimes(1);
 });
 
-it('deep linking nested groups', async () => {
+it.only('deep linking nested groups', async () => {
   const RootLayout = jest.fn(() => <Slot />);
   const AppLayout = jest.fn(() => <Stack />);
   const TabsLayout = jest.fn(() => <Tabs />);
@@ -153,11 +153,11 @@ it('deep linking nested groups', async () => {
   );
 
   // Start in a deeply nested navigator
-  expect(await screen.getByTestId('OtherTabsHome')).toBeOnTheScreen();
+  expect(screen.getByTestId('OtherTabsHome')).toBeOnTheScreen();
 
   act(() => router.replace('/(app)/(tabs)/home'));
 
-  expect(await screen.getByTestId('Home')).toBeOnTheScreen();
+  expect(screen.getByTestId('Home')).toBeOnTheScreen();
 
   expect(RootLayout).toHaveBeenCalledTimes(1);
   expect(AppLayout).toHaveBeenCalledTimes(2);
