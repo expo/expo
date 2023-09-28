@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Add `router.navigate` and `navigate` to `useRouter`
+
 ### 🐛 Bug fixes
+
+- Allow pushing to the same route multiple times.
 
 ### 💡 Others
 
