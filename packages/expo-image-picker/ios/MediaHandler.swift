@@ -172,17 +172,16 @@ internal struct MediaHandler {
     let filenameExtension = String(pathExtension.dropFirst())
     if #available(iOS 14, *) {
       return UTType(filenameExtension: filenameExtension)?.preferredMIMEType
-    } else {
-      if let uti = UTTypeCreatePreferredIdentifierForTag(
-        kUTTagClassFilenameExtension,
-        pathExtension as NSString, nil
-      )?.takeRetainedValue() {
-        if let mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
-          return mimetype as String
-        }
-      }
-      return nil
     }
+    if let uti = UTTypeCreatePreferredIdentifierForTag(
+      kUTTagClassFilenameExtension,
+      pathExtension as NSString, nil
+    )?.takeRetainedValue() {
+      if let mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
+        return mimetype as String
+      }
+    }
+    return nil
   }
 
   // MARK: - Video
