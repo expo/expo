@@ -11,6 +11,7 @@ import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { createFastResolver } from './createExpoMetroResolver';
 import {
   EXTERNAL_REQUIRE_NATIVE_POLYFILL,
   EXTERNAL_REQUIRE_POLYFILL,
@@ -97,13 +98,19 @@ export function withExtendedResolver(
     tsconfig,
     platforms,
     isTsconfigPathsEnabled,
+    isFastResolverEnabled,
   }: {
     projectRoot: string;
     tsconfig: TsConfigPaths | null;
     platforms: string[];
     isTsconfigPathsEnabled?: boolean;
+    isFastResolverEnabled?: boolean;
   }
 ) {
+  if (isFastResolverEnabled) {
+    Log.warn(`Experimental bundling features are enabled.`);
+  }
+
   // Get the `transformer.assetRegistryPath`
   // this needs to be unified since you can't dynamically
   // swap out the transformer based on platform.
@@ -111,7 +118,7 @@ export function withExtendedResolver(
     // This is the native asset registry alias for native.
     path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
     // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
-    // path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
+    // path.resolve(resolveFrom(projectRoot, '@react-native/assets-registry/registry.js'))
   );
 
   let reactNativeWebAppContainer: string | null = null;
@@ -126,7 +133,9 @@ export function withExtendedResolver(
 
   const isWebEnabled = platforms.includes('web');
 
-  const { resolve } = importMetroResolverFromProject(projectRoot);
+  const resolver = isFastResolverEnabled
+    ? createFastResolver({ preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false })
+    : importMetroResolverFromProject(projectRoot).resolve;
 
   const extraNodeModules: { [key: string]: Record<string, string> } = {};
 
@@ -257,12 +266,11 @@ export function withExtendedResolver(
         mainFields = preferredMainFields[platform];
       }
       function doResolve(moduleName: string): Resolution | null {
-        return resolve(
+        return resolver(
           {
             ...context,
             resolveRequest: undefined,
             mainFields,
-
             // Passing `mainFields` directly won't be considered (in certain version of Metro)
             // we need to extend the `getPackageMainPath` directly to
             // use platform specific `mainFields`.
@@ -317,6 +325,7 @@ export function withExtendedResolver(
       }
 
       if (
+        !isFastResolverEnabled &&
         // is web
         platform === 'web' &&
         // Not server runtime
@@ -338,7 +347,7 @@ export function withExtendedResolver(
 
       result ??= doResolve(moduleName);
 
-      if (result) {
+      if (result?.type === 'sourceFile') {
         // Replace the web resolver with the original one.
         // This is basically an alias for web-only.
         if (shouldAliasAssetRegistryForWeb(platform, result)) {
@@ -411,12 +420,14 @@ export async function withMetroMultiPlatformAsync(
     isTsconfigPathsEnabled,
     webOutput,
     routerDirectory,
+    isFastResolverEnabled,
   }: {
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     webOutput?: 'single' | 'static' | 'server';
     routerDirectory: string;
+    isFastResolverEnabled?: boolean;
   }
 ) {
   // Auto pick app entry for router.
@@ -458,6 +469,7 @@ export async function withMetroMultiPlatformAsync(
     platformBundlers,
     tsconfig,
     isTsconfigPathsEnabled,
+    isFastResolverEnabled,
   });
 }
 
@@ -468,11 +480,13 @@ function withMetroMultiPlatform(
     platformBundlers,
     isTsconfigPathsEnabled,
     tsconfig,
+    isFastResolverEnabled,
   }: {
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     tsconfig: TsConfigPaths | null;
+    isFastResolverEnabled?: boolean;
   }
 ) {
   let expoConfigPlatforms = Object.entries(platformBundlers)
@@ -495,5 +509,6 @@ function withMetroMultiPlatform(
     tsconfig,
     isTsconfigPathsEnabled,
     platforms: expoConfigPlatforms,
+    isFastResolverEnabled,
   });
 }
