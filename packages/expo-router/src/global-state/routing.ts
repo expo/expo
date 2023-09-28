@@ -15,7 +15,7 @@ function assertIsReady(store: RouterStore) {
   }
 }
 
-export function navigate(this: RouterStore, url: Href) {
+export function pushOrPop(this: RouterStore, url: Href) {
   return this.linkTo(resolveHref(url));
 }
 

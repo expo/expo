@@ -59,7 +59,7 @@ class RouterStore {
     push = routing_1.push.bind(this);
     replace = routing_1.replace.bind(this);
     setParams = routing_1.setParams.bind(this);
-    navigate = routing_1.navigate.bind(this);
+    pushOrPop = routing_1.pushOrPop.bind(this);
     initialize(context, navigationRef, initialLocation) {
         // Clean up any previous state
         this.initialState = undefined;

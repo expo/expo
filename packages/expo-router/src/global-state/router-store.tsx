@@ -6,7 +6,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 
-import { canGoBack, goBack, linkTo, navigate, push, replace, setParams } from './routing';
+import { canGoBack, goBack, linkTo, pushOrPop, push, replace, setParams } from './routing';
 import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
 import { RouteNode } from '../Route';
@@ -46,7 +46,7 @@ export class RouterStore {
   push = push.bind(this);
   replace = replace.bind(this);
   setParams = setParams.bind(this);
-  navigate = navigate.bind(this);
+  pushOrPop = pushOrPop.bind(this);
 
   initialize(
     context: RequireContext,

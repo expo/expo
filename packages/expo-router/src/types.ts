@@ -19,7 +19,7 @@ export type Router = {
   /** Navigate to the provided href using a push operation if possible. */
   push: (href: Href) => void;
   /** Navigate to the provided href. */
-  navigate: (href: Href) => void;
+  pushOrPop: (href: Href) => void;
   /** Navigate to route without appending to the history. */
   replace: (href: Href) => void;
   /** Go back in the history. */
