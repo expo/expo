@@ -4,35 +4,47 @@ import { exportAppAsync } from '../exportApp';
 
 jest.mock('../../log');
 
+jest.mock('@expo/config', () => ({
+  getConfig: jest.fn(() => ({
+    pkg: {},
+    exp: {
+      sdkVersion: '49.0.0',
+      name: 'my-app',
+      slug: 'my-app',
+    },
+  })),
+}));
+
 jest.mock('../fork-bundleAsync', () => ({
-  createBundlesAsync: jest.fn(async (projectRoot, { platforms }: { platforms: string[] }) =>
-    platforms.reduce(
-      (prev, platform) => ({
-        ...prev,
-        [platform]: {
-          code: `var foo = true;`,
-          map: `${platform}_map`,
-          css: [
-            {
-              originFilename: 'styles.css',
-              filename: `_expo/static/css/bc6aa0a69dcebf8e8cac1faa76705756.css`,
-              source: '\ndiv {\n    background: cyan;\n}\n\n',
-            },
-          ],
-          assets: [
-            {
-              __packager_asset: true,
-              files: ['/icon.png'],
-              hash: '4e3f888fc8475f69fd5fa32f1ad5216a',
-              name: 'icon',
-              type: 'png',
-              fileHashes: ['4e3f888fc8475f69fd5fa32f1ad5216a'],
-            },
-          ],
-        },
-      }),
-      {}
-    )
+  createBundlesAsync: jest.fn(
+    async (projectRoot, projectConfig, { platforms }: { platforms: string[] }) =>
+      platforms.reduce(
+        (prev, platform) => ({
+          ...prev,
+          [platform]: {
+            code: `var foo = true;`,
+            map: `${platform}_map`,
+            css: [
+              {
+                originFilename: 'styles.css',
+                filename: `_expo/static/css/bc6aa0a69dcebf8e8cac1faa76705756.css`,
+                source: '\ndiv {\n    background: cyan;\n}\n\n',
+              },
+            ],
+            assets: [
+              {
+                __packager_asset: true,
+                files: ['/icon.png'],
+                hash: '4e3f888fc8475f69fd5fa32f1ad5216a',
+                name: 'icon',
+                type: 'png',
+                fileHashes: ['4e3f888fc8475f69fd5fa32f1ad5216a'],
+              },
+            ],
+          },
+        }),
+        {}
+      )
   ),
 }));
 
