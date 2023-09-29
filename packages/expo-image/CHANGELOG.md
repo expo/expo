@@ -8,9 +8,25 @@
 
 ### 🎉 New features
 
+- Added support for the `headers` key in the `source` object on web. ([#24447](https://github.com/expo/expo/pull/24447) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
+- Remove `GlideWebpDecoder` until they update their `libwebp` dependency. ([#24656](https://github.com/expo/expo/pull/24656) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 1.0.2 — 2023-09-29
+
+### 🐛 Bug fixes
+
+- Remove `GlideWebpDecoder` until they update their `libwebp` dependency. ([#24656](https://github.com/expo/expo/pull/24656) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.3.4 — 2023-09-28
+
+### 🐛 Bug fixes
+
+- Remove `GlideWebpDecoder` until they update their `libwebp` dependency. ([#24656](https://github.com/expo/expo/pull/24656) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 1.5.2 — 2023-09-18
 

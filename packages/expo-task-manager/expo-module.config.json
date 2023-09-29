@@ -1,0 +1,7 @@
+{
+  "name": "expo-task-manager",
+  "platforms": ["ios", "android"],
+  "android": {
+    "modules": ["expo.modules.taskManager.TaskManagerModule"]
+  }
+}

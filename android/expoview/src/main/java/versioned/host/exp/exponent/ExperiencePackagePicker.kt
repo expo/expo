@@ -1,6 +1,6 @@
 package versioned.host.exp.exponent
 
-import expo.modules.application.ApplicationPackage
+import expo.modules.application.ApplicationModule
 import expo.modules.av.AVModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
@@ -44,10 +44,16 @@ import expo.modules.location.LocationPackage
 import expo.modules.mailcomposer.MailComposerModule
 import expo.modules.manifests.core.Manifest
 import expo.modules.medialibrary.MediaLibraryModule
+import expo.modules.navigationbar.NavigationBarModule
 import expo.modules.navigationbar.NavigationBarPackage
 import expo.modules.network.NetworkModule
 import expo.modules.notifications.NotificationsPackage
-import expo.modules.permissions.PermissionsPackage
+import expo.modules.notifications.badge.BadgeModule
+import expo.modules.notifications.notifications.background.ExpoBackgroundNotificationTasksModule
+import expo.modules.notifications.notifications.channels.NotificationChannelGroupManagerModule
+import expo.modules.notifications.notifications.channels.NotificationChannelManagerModule
+import expo.modules.notifications.permissions.NotificationPermissionsModule
+import expo.modules.notifications.tokens.PushTokenModule
 import expo.modules.print.PrintModule
 import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCaptureModule
@@ -70,6 +76,7 @@ import expo.modules.sqlite.SQLiteModule
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
+import expo.modules.taskManager.TaskManagerModule
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.updates.UpdatesPackage
 import expo.modules.videothumbnails.VideoThumbnailsModule
@@ -78,7 +85,6 @@ import expo.modules.webbrowser.WebBrowserModule
 object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
-    ApplicationPackage(),
     BarCodeScannerPackage(),
     ConstantsPackage(),
     ContactsPackage(),
@@ -89,7 +95,6 @@ object ExperiencePackagePicker : ModulesProvider {
     LocationPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
-    PermissionsPackage(),
     SensorsPackage(),
     SplashScreenPackage(),
     SystemUIPackage(),
@@ -114,6 +119,7 @@ object ExperiencePackagePicker : ModulesProvider {
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
     AVModule::class.java,
+    ApplicationModule::class.java,
     // Sensors
     AccelerometerModule::class.java,
     BarometerModule::class.java,
@@ -124,6 +130,14 @@ object ExperiencePackagePicker : ModulesProvider {
     MagnetometerUncalibratedModule::class.java,
     PedometerModule::class.java,
     // End of Sensors
+    // Notifications
+    BadgeModule::class.java,
+    PushTokenModule::class.java,
+    NotificationPermissionsModule::class.java,
+    NotificationChannelManagerModule::class.java,
+    NotificationChannelGroupManagerModule::class.java,
+    ExpoBackgroundNotificationTasksModule::class.java,
+    // End of Notifications
     BatteryModule::class.java,
     BackgroundFetchModule::class.java,
     BarCodeScannerModule::class.java,
@@ -152,6 +166,7 @@ object ExperiencePackagePicker : ModulesProvider {
     LocalizationModule::class.java,
     MailComposerModule::class.java,
     MediaLibraryModule::class.java,
+    NavigationBarModule::class.java,
     NetworkModule::class.java,
     RandomModule::class.java,
     ScreenCaptureModule::class.java,
@@ -165,6 +180,7 @@ object ExperiencePackagePicker : ModulesProvider {
     StoreReviewModule::class.java,
     SQLiteModule::class.java,
     SystemUIModule::class.java,
+    TaskManagerModule::class.java,
     VideoThumbnailsModule::class.java,
     VideoViewModule::class.java,
     WebBrowserModule::class.java,

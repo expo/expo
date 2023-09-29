@@ -156,6 +156,11 @@ class Env {
   get EXPO_METRO_UNSTABLE_ERRORS() {
     return boolish('EXPO_METRO_UNSTABLE_ERRORS', false);
   }
+
+  /** Enable the unstable fast resolver for Metro. */
+  get EXPO_USE_FAST_RESOLVER() {
+    return boolish('EXPO_USE_FAST_RESOLVER', false);
+  }
 }
 
 export const env = new Env();

@@ -8,10 +8,23 @@
 
 ### 🎉 New features
 
+- Add support for skipping the launcher screen and launching directly into a previously opened project. ([#24614](https://github.com/expo/expo/pull/24614), [#24646](https://github.com/expo/expo/pull/24646) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
+
+- [iOS] Fix Cmd+D opening React Native Debug Menu on launcher screen. ([#24580](https://github.com/expo/expo/pull/24580) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fixed app launch when using multiple scenes. ([#24565](https://github.com/expo/expo/pull/24565) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Fetch dev sessions whenever navigating to the launcher home screen. ([#24378](https://github.com/expo/expo/pull/24378), [#24502](https://github.com/expo/expo/pull/24502) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
+
+- Drop support for configuring SDK 44 and below with Prebuild. ([#24504](https://github.com/expo/expo/pull/24504) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.4.13 — 2023-09-25
+
+### 🐛 Bug fixes
+
+- Fetch dev sessions whenever navigating to the launcher home screen. ([#24378](https://github.com/expo/expo/pull/24378), [#24502](https://github.com/expo/expo/pull/24502) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 3.2.1 — 2023-09-18
 

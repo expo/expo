@@ -5,9 +5,7 @@ const { FileStore } = require('metro-cache');
 const projectRoot = __dirname;
 
 /** @type {import('expo/metro-config').MetroConfig} */
-const config = createMetroConfiguration(projectRoot, {
-  isCSSEnabled: true,
-});
+const config = createMetroConfiguration(projectRoot);
 
 const path = require('path');
 

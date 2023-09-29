@@ -22,6 +22,6 @@ export const expoWhoami: Command = async (argv) => {
     );
   }
 
-  const { whoamiAsync } = await import('./whoamiAsync');
+  const { whoamiAsync } = await import('./whoamiAsync.js');
   return whoamiAsync().catch(logCmdError);
 };

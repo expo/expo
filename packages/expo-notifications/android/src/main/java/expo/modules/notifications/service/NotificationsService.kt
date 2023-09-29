@@ -593,6 +593,7 @@ open class NotificationsService : BroadcastReceiver() {
   }
 
   open fun handleIntent(context: Context, intent: Intent?) {
+    Log.e("dupa", intent.toString())
     if (intent != null && SETUP_ACTIONS.contains(intent.action)) {
       onSetupScheduledNotifications(context, intent)
     } else if (intent?.action === NOTIFICATION_EVENT_ACTION) {

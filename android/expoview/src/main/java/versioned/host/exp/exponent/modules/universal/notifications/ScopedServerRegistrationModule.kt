@@ -1,17 +1,15 @@
 package versioned.host.exp.exponent.modules.universal.notifications
 
-import android.content.Context
-import expo.modules.core.Promise
 import expo.modules.notifications.serverregistration.ServerRegistrationModule
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.storage.ExponentSharedPreferences
 import javax.inject.Inject
 
-class ScopedServerRegistrationModule(context: Context) : ServerRegistrationModule(context) {
+class ScopedServerRegistrationModule : ServerRegistrationModule() {
   @Inject
   lateinit var exponentSharedPreferences: ExponentSharedPreferences
 
-  override fun getInstallationIdAsync(promise: Promise) {
+  override fun getInstallationId(): String {
     // If there is an existing installation ID, so if:
     // - we're in Expo Go and running an experience
     //   which has previously been run on an older SDK
@@ -24,15 +22,11 @@ class ScopedServerRegistrationModule(context: Context) : ServerRegistrationModul
     // expo-notifications-specific installation ID
     // from scoped SharedPreferences to scoped noBackupDir
     // and use it from now on.
+    // Otherwise we can use the "common" installation ID
+    // that has the benefit of being used if the project
+    // is ejected to bare.
     val legacyUuid = installationId.uuid
-    if (legacyUuid != null) {
-      promise.resolve(legacyUuid)
-    } else {
-      // Otherwise we can use the "common" installation ID
-      // that has the benefit of being used if the project
-      // is ejected to bare.
-      promise.resolve(exponentSharedPreferences.getOrCreateUUID())
-    }
+    return legacyUuid ?: exponentSharedPreferences.getOrCreateUUID()
   }
 
   init {

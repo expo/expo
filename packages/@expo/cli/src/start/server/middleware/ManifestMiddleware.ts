@@ -15,6 +15,7 @@ import { ExpoMiddleware } from './ExpoMiddleware';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
+import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { stripExtension } from '../../../utils/url';
@@ -93,6 +94,7 @@ export function createBundleUrlPath({
   serializerOutput,
   serializerIncludeMaps,
   lazy,
+  engine,
 }: {
   platform: string;
   mainModuleName: string;
@@ -102,6 +104,7 @@ export function createBundleUrlPath({
   serializerOutput?: 'static';
   serializerIncludeMaps?: boolean;
   lazy?: boolean;
+  engine?: 'hermes';
 }): string {
   const queryParams = new URLSearchParams({
     platform: encodeURIComponent(platform),
@@ -117,6 +120,11 @@ export function createBundleUrlPath({
   if (minify) {
     queryParams.append('minify', String(minify));
   }
+
+  if (engine) {
+    queryParams.append('transform.engine', engine);
+  }
+
   if (environment) {
     queryParams.append('resolver.environment', environment);
     queryParams.append('transform.environment', environment);
@@ -203,6 +211,8 @@ export abstract class ManifestMiddleware<
       platform,
     });
 
+    const isHermesEnabled = isEnableHermesManaged(projectConfig.exp, platform);
+
     // Create the manifest and set fields within it
     const expoGoConfig = this.getExpoGoConfig({
       mainModuleName,
@@ -215,6 +225,7 @@ export abstract class ManifestMiddleware<
       platform,
       mainModuleName,
       hostname,
+      engine: isHermesEnabled ? 'hermes' : undefined,
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -265,10 +276,12 @@ export abstract class ManifestMiddleware<
     platform,
     mainModuleName,
     hostname,
+    engine,
   }: {
     platform: string;
     hostname?: string | null;
     mainModuleName: string;
+    engine?: 'hermes';
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
@@ -276,6 +289,7 @@ export abstract class ManifestMiddleware<
       platform,
       mainModuleName,
       lazy: shouldEnableAsyncImports(this.projectRoot),
+      engine,
     });
 
     return (
@@ -287,12 +301,14 @@ export abstract class ManifestMiddleware<
     );
   }
 
-  public _getBundleUrlPath({
+  private _getBundleUrlPath({
     platform,
     mainModuleName,
+    engine,
   }: {
     platform: string;
     mainModuleName: string;
+    engine?: 'hermes';
   }): string {
     const queryParams = new URLSearchParams({
       platform: encodeURIComponent(platform),
@@ -303,7 +319,9 @@ export abstract class ManifestMiddleware<
     if (shouldEnableAsyncImports(this.projectRoot)) {
       queryParams.append('lazy', String(true));
     }
-
+    if (engine) {
+      queryParams.append('transform.engine', String(engine));
+    }
     if (this.options.minify) {
       queryParams.append('minify', String(this.options.minify));
     }
@@ -377,6 +395,8 @@ export abstract class ManifestMiddleware<
     return this._getBundleUrlPath({
       platform,
       mainModuleName,
+      // Hermes doesn't support more modern JS features than most, if not all, modern browser.
+      engine: 'hermes',
     });
   }
 

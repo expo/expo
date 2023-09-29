@@ -39,7 +39,6 @@
     "expo-media-library": "~15.6.0",
     "expo-network": "~5.6.0",
     "expo-notifications": "~0.24.0",
-    "expo-permissions": "~14.4.0",
     "expo-random": "~13.4.0",
     "expo-secure-store": "~12.5.0",
     "expo-speech": "~11.5.0",
@@ -52,7 +51,7 @@
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.19",
     "react": "18.2.0",
-    "react-native": "0.72.4",
+    "react-native": "0.72.5",
     "react-native-gesture-handler": "~2.12.0",
     "sinon": "^7.1.1"
   },

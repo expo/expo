@@ -50,6 +50,7 @@ class ExpoURL extends node_url_1.URL {
 }
 exports.ExpoURL = ExpoURL;
 class ExpoRequest extends node_1.Request {
+    [exports.NON_STANDARD_SYMBOL];
     constructor(info, init) {
         super(info, init);
         this[exports.NON_STANDARD_SYMBOL] = {

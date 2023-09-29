@@ -1,15 +1,18 @@
 import { css } from '@emotion/react';
-import { Button, theme, typography } from '@expo/styleguide';
+import { Button, DocsLogo, theme, typography } from '@expo/styleguide';
 import { spacing, breakpoints, borderRadius } from '@expo/styleguide-base';
 import {
   ArrowUpRightIcon,
   ArrowRightIcon,
+  CameraPlusDuotoneIcon,
   DiscordIcon,
   DiscourseIcon,
   GithubIcon,
+  Image03DuotoneIcon,
   Mail01Icon,
+  NotificationMessageDuotoneIcon,
   RedditIcon,
-  TwitterIcon,
+  XLogoIcon,
 } from '@expo/styleguide-icons';
 import type { PropsWithChildren } from 'react';
 import { Row, ScreenClassProvider } from 'react-grid-system';
@@ -26,10 +29,6 @@ import {
   TalkGridCell,
 } from '~/ui/components/Home';
 import {
-  APICameraIcon,
-  APIListIcon,
-  APIMapsIcon,
-  APINotificationsIcon,
   DevicesImage,
   DevicesImageMasks,
   OfficeHoursImage,
@@ -212,18 +211,26 @@ const Home = () => {
         </Description>
         <CellContainer>
           <Row>
-            <APIGridCell title="Maps" link="/versions/latest/sdk/map-view" icon={<APIMapsIcon />} />
+            <APIGridCell
+              title="Image"
+              link="/versions/latest/sdk/image/"
+              icon={<Image03DuotoneIcon className="h-16 w-16" />}
+            />
             <APIGridCell
               title="Camera"
               link="/versions/latest/sdk/camera"
-              icon={<APICameraIcon />}
+              icon={<CameraPlusDuotoneIcon className="h-16 w-16" />}
             />
             <APIGridCell
               title="Notifications"
               link="/versions/latest/sdk/notifications"
-              icon={<APINotificationsIcon />}
+              icon={<NotificationMessageDuotoneIcon className="h-16 w-16" />}
             />
-            <APIGridCell title="View all APIs" link="/versions/latest/" icon={<APIListIcon />} />
+            <APIGridCell
+              title="View all APIs"
+              link="/versions/latest/"
+              icon={<DocsLogo className="h-16 w-16" />}
+            />
           </Row>
         </CellContainer>
         <div className="flex items-center gap-2">
@@ -277,11 +284,11 @@ export function JoinTheCommunity() {
         </Row>
         <Row>
           <CommunityGridCell
-            title="Twitter"
-            description="Follow Expo on Twitter for news and updates."
-            link="https://twitter.com/expo"
-            icon={<TwitterIcon className="icon-lg text-palette-white" />}
-            iconBackground="#1E8EF0"
+            title="X"
+            description="Follow Expo on X for news and updates."
+            link="https://x.com/expo"
+            icon={<XLogoIcon className="icon-lg text-palette-white" />}
+            iconBackground="#000000"
           />
           <CommunityGridCell
             title="Forums"
