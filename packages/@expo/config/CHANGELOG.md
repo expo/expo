@@ -4,8 +4,8 @@
 
 ### 🛠 Breaking changes
 
-- Remove `getEntryPoint`, `getEntryPointWithExtensions`, `resolveFromSilentWithExtensions` functions from `@expo/config/paths`.
-- Fully drop support for `expo.entryFile` in the `app.json`.
+- Remove `getEntryPoint`, `getEntryPointWithExtensions`, `resolveFromSilentWithExtensions` functions from `@expo/config/paths`. ([#24688](https://github.com/expo/expo/pull/24688) by [@EvanBacon](https://github.com/EvanBacon))
+- Fully drop support for `expo.entryFile` in the `app.json`. ([#24688](https://github.com/expo/expo/pull/24688) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
