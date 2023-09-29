@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import { createBundlesAsync } from './createBundles';
+import { createBundlesAsync } from './fork-bundleAsync';
 import { exportAssetsAsync, exportCssAssetsAsync } from './exportAssets';
 import { unstable_exportStaticAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
@@ -22,6 +22,7 @@ import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTempla
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
+import { getConfig } from '@expo/config';
 
 /**
  * The structure of the outputDir will be:
@@ -53,6 +54,7 @@ export async function exportAppAsync(
   setNodeEnv(dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
+  const projectConfig = getConfig(projectRoot);
   const exp = await getPublicExpoManifestAsync(projectRoot, {
     // Web doesn't require validation.
     skipValidation: platforms.length === 1 && platforms[0] === 'web',
@@ -85,7 +87,7 @@ export async function exportAppAsync(
   await copyPublicFolderAsync(publicPath, staticFolder);
 
   // Run metro bundler and create the JS bundles/source maps.
-  const bundles = await createBundlesAsync(projectRoot, {
+  const bundles = await createBundlesAsync(projectRoot, projectConfig, {
     clear: !!clear,
     platforms,
     minify,

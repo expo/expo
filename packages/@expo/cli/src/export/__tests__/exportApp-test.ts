@@ -4,7 +4,7 @@ import { exportAppAsync } from '../exportApp';
 
 jest.mock('../../log');
 
-jest.mock('../createBundles', () => ({
+jest.mock('../fork-bundleAsync', () => ({
   createBundlesAsync: jest.fn(async (projectRoot, { platforms }: { platforms: string[] }) =>
     platforms.reduce(
       (prev, platform) => ({
@@ -54,6 +54,7 @@ describe(exportAppAsync, () => {
 
     await exportAppAsync('/', {
       outputDir,
+      minify: true,
       platforms: ['ios'],
       dev: false,
       dumpAssetmap: true,
