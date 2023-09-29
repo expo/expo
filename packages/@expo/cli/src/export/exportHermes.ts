@@ -50,7 +50,7 @@ function getHermesCommandPlatform(): string {
 }
 
 export function isEnableHermesManaged(
-  expoConfig: Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>,
+  expoConfig: Partial<Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>>,
   platform: Platform
 ): boolean {
   switch (platform) {
