@@ -76,7 +76,7 @@ export async function createBundlesAsync(
   if (!bundleOptions.platforms.length) {
     return {};
   }
-  const { exp } = projectConfig;
+  const { exp, pkg } = projectConfig;
 
   const bundles = await bundleProductionMetroClientAsync(
     projectRoot,
@@ -88,7 +88,7 @@ export async function createBundlesAsync(
     },
     bundleOptions.platforms.map((platform: Platform) => ({
       platform,
-      entryPoint: getEntryWithServerRoot(projectRoot, projectConfig, platform),
+      entryPoint: getEntryWithServerRoot(projectRoot, { platform, pkg }),
       sourcemaps: bundleOptions.sourcemaps,
       minify: bundleOptions.minify,
       dev: bundleOptions.dev,
