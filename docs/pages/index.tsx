@@ -12,7 +12,7 @@ import {
   Mail01Icon,
   NotificationMessageDuotoneIcon,
   RedditIcon,
-  TwitterIcon,
+  XLogoIcon,
 } from '@expo/styleguide-icons';
 import type { PropsWithChildren } from 'react';
 import { Row, ScreenClassProvider } from 'react-grid-system';
@@ -284,11 +284,11 @@ export function JoinTheCommunity() {
         </Row>
         <Row>
           <CommunityGridCell
-            title="Twitter"
-            description="Follow Expo on Twitter for news and updates."
-            link="https://twitter.com/expo"
-            icon={<TwitterIcon className="icon-lg text-palette-white" />}
-            iconBackground="#1E8EF0"
+            title="X"
+            description="Follow Expo on X for news and updates."
+            link="https://x.com/expo"
+            icon={<XLogoIcon className="icon-lg text-palette-white" />}
+            iconBackground="#000000"
           />
           <CommunityGridCell
             title="Forums"
