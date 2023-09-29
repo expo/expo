@@ -112,6 +112,26 @@ export default function Details() {
 }
 ```
 
+It's sometimes useful to configure options using `navigation.setOptions()`, as an alternative to the `<Stack.Screen>` component.
+
+```jsx app/home.js
+import { Stack, useNavigation } from 'expo-router';
+import { Text, View } from 'react-native';
+
+export default function Home() {
+  const navigation = useNavigation();
+
+  React.useEffect(() => {
+    navigation.setOptions({ headerShown: false });
+  }, [navigation]);
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Home Screen</Text>
+    </View>
+  );
+}
+```
+
 ## Header buttons
 
 With the following file structure:
