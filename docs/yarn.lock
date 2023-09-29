@@ -477,27 +477,27 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.44.0.tgz#961a5903c74139390478bdc808bcde3fc45ab7af"
   integrity sha512-Ag+9YM4ocKQx9AarydN0KY2j0ErMHNIocPDrVo8zAE44xLTjEtz81OdR68/cydGtk6m6jDb5Za3r2useMzYmSw==
 
-"@expo/styleguide-base@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-base/-/styleguide-base-1.0.0.tgz#acdbbebba7fdc80b09fed9e7d73c512e5e0cf1d7"
-  integrity sha512-peDW75rMhPx/UnIExX4ZI96Qg0zKucsCbSQ3NQLcIMY1HSDi4ccolEWsFpHJSwjLobFaMOtgj6FBrLc8C/EPPA==
+"@expo/styleguide-base@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-base/-/styleguide-base-1.0.1.tgz#c05b64370fc1754ed7e3c627fd2d788582445cd2"
+  integrity sha512-Iu52/esfpMXB5cOT3oyTvcSdkwok9re9Wtu4Tz7cmeumjh+81kTIB1GHZn8W1RFhSx9dys0NXr3UqPD8MkngtQ==
   dependencies:
     "@radix-ui/colors" "^0.1.8"
 
-"@expo/styleguide-icons@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-1.0.0.tgz#a99c134d8c31446118448356f1f8f8b2db4c4511"
-  integrity sha512-gqKMLuSPlMbL00BnGpA+patLbBC3YYMh4NxszlMJpNXz/qkb2T7lykmrJoQH6KpLXn/ViO65B1TX6a7pvdO+Nw==
+"@expo/styleguide-icons@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-1.0.3.tgz#7a5f9236d495f0caaeb80635264eab3f7933da37"
+  integrity sha512-vw55OQBwPJMA8LuaqO9k91sWDCbsRNAigLDVJbx6VEMIGZYwWSL4x12QLKtiYYjx1vp+Z+tEHV3bp/fbiONppg==
   dependencies:
-    tailwind-merge "^1.12.0"
+    tailwind-merge "^1.13.2"
 
-"@expo/styleguide@^8.0.0":
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.0.0.tgz#cc37c3f4bc5a29dc9c9dc37587efa80200fdae0d"
-  integrity sha512-IIKReRslx7Ro3l7tjT2EO/Z9NE8ymkHzvJZnH+mcnXtGCBKFmIWA54E5gjYxA6ztUbRa0sW83o+igzA6PDhp5w==
+"@expo/styleguide@^8.0.3":
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.1.0.tgz#3a0b0cac8da6058078178e854aeda01702a00f2a"
+  integrity sha512-OHwYiGvVg9R+sE7TTmEHrv7QUVTx7jKzDw4//Kl94H6G3RxvhVNK/ZL/QI13Tkb/wYwNE25FEjAhVB5WrBsLOg==
   dependencies:
-    "@expo/styleguide-base" "^1.0.0"
-    tailwind-merge "^1.12.0"
+    "@expo/styleguide-base" "^1.0.1"
+    tailwind-merge "^1.13.2"
 
 "@gitbeaker/core@^21.7.0":
   version "21.7.0"
@@ -1081,9 +1081,9 @@
   integrity sha512-9X2obfABZuDVLCgPK9aX0a/x4jaOEweTTWE2+9sr0Qqqevj2Uv5XorvusThmc9XGYpS9yI+fhh8RTafBtGposw==
 
 "@radix-ui/colors@^0.1.8":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@radix-ui/colors/-/colors-0.1.8.tgz#b08c62536fc462a87632165fb28e9b18f9bd047e"
-  integrity sha512-jwRMXYwC0hUo0mv6wGpuw254Pd9p/R6Td5xsRpOmaWkUHlooNWqVcadgyzlRumMq3xfOTXwJReU0Jv+EIy4Jbw==
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@radix-ui/colors/-/colors-0.1.9.tgz#aad732ecc4ce1018adcb3aedd3ce3c573c2256cc"
+  integrity sha512-Vxq944ErPJsdVepjEUhOLO9ApUVOocA63knc+V2TkJ09D/AVOjiMIgkca/7VoYgODcla0qbSIBjje0SMfZMbAw==
 
 "@radix-ui/primitive@1.0.0":
   version "1.0.0"
@@ -8314,10 +8314,10 @@ synckit@^0.8.4:
     "@pkgr/utils" "^2.3.1"
     tslib "^2.4.0"
 
-tailwind-merge@^1.12.0:
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/tailwind-merge/-/tailwind-merge-1.12.0.tgz#747d09d64a25a4864150e8930f8e436866066cc8"
-  integrity sha512-Y17eDp7FtN1+JJ4OY0Bqv9OA41O+MS8c1Iyr3T6JFLnOgLg3EvcyMKZAnQ8AGyvB5Nxm3t9Xb5Mhe139m8QT/g==
+tailwind-merge@^1.13.2:
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/tailwind-merge/-/tailwind-merge-1.14.0.tgz#e677f55d864edc6794562c63f5001f45093cdb8b"
+  integrity sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==
 
 tailwindcss@^3.3.2:
   version "3.3.2"
