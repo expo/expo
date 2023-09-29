@@ -455,10 +455,6 @@ export async function withMetroMultiPlatformAsync(
   let tsconfig: null | TsConfigPaths = null;
 
   if (isTsconfigPathsEnabled) {
-    Log.warn(
-      chalk.yellow`Experimental path aliases feature is enabled. ` +
-        learnMore('https://docs.expo.dev/guides/typescript/#path-aliases')
-    );
     tsconfig = await loadTsConfigPathsAsync(projectRoot);
   }
 
