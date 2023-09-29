@@ -11,10 +11,12 @@ const createContext = ({
   platform,
   isServer,
   origin,
+  nodeModulesPaths = [],
 }: {
   origin: string;
   platform: string;
   isServer?: boolean;
+  nodeModulesPaths?: string[];
 }): SupportedContext => {
   const preferNativePlatform = platform === 'ios' || platform === 'android';
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
@@ -33,7 +35,7 @@ const createContext = ({
       : isServer
       ? ['module', 'main']
       : ['browser', 'module', 'main'],
-    nodeModulesPaths: ['node_modules'],
+    nodeModulesPaths: ['node_modules', ...nodeModulesPaths],
     originModulePath: origin,
     preferNativePlatform,
     sourceExts,
@@ -51,13 +53,19 @@ const originProjectRoot = path.join(
 
 function resolveTo(
   moduleId: string,
-  { platform, isServer, from = 'index.js' }: { platform: string; isServer?: boolean; from?: string }
+  {
+    platform,
+    isServer,
+    from = 'index.js',
+    nodeModulesPaths,
+  }: { platform: string; isServer?: boolean; from?: string; nodeModulesPaths?: string[] }
 ) {
   const resolver = createFastResolver({ preserveSymlinks: false });
   const context = createContext({
     platform,
     isServer,
     origin: path.join(originProjectRoot, from),
+    nodeModulesPaths,
   });
   const res = resolver(context, moduleId, platform);
 
@@ -81,6 +89,15 @@ describe(createFastResolver, () => {
       );
       expect(resolveTo('./App', { platform })).toEqual(
         expect.stringMatching(/\/native-component-list\/App.tsx$/)
+      );
+    });
+
+    it('resolves with baseUrl', () => {
+      expect(resolveTo('App.tsx', { platform, nodeModulesPaths: ['.'] })).toEqual(
+        expect.stringMatching(/\/native-component-list\/App.tsx$/)
+      );
+      expect(() => resolveTo('App.tsx', { platform })).toThrowError(
+        /The module could not be resolved because no file or module matched the pattern:/
       );
     });
 
