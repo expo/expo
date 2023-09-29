@@ -57,12 +57,17 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   // `metro-react-native-babel-preset` will handle it.
   const lazyImportsOption = options?.lazyImports;
 
-  const extraPlugins: PluginItem[] = [
+  const extraPlugins: PluginItem[] = [];
+
+  if (engine !== 'hermes') {
     // `metro-react-native-babel-preset` configures this plugin with `{ loose: true }`, which breaks all
     // getters and setters in spread objects. We need to add this plugin ourself without that option.
     // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
-    [require.resolve('@babel/plugin-proposal-object-rest-spread'), { loose: false }],
-  ];
+    extraPlugins.push([
+      require.resolve('@babel/plugin-proposal-object-rest-spread'),
+      { loose: false },
+    ]);
+  }
 
   // Set true to disable `@babel/plugin-transform-react-jsx`
   // we override this logic outside of the metro preset so we can add support for
