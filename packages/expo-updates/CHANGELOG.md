@@ -14,6 +14,10 @@
 
 - Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
 
+## 0.18.14 — 2023-09-27
+
+_This version does not introduce any user-facing changes._
+
 ## 0.21.1 — 2023-09-18
 
 _This version does not introduce any user-facing changes._
