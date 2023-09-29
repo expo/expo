@@ -9,6 +9,7 @@ import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAsset
 import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
+import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { stripExtension } from '../../../utils/url';
@@ -16,7 +17,6 @@ import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
-import { isEnableHermesManaged } from '../../../export/exportHermes';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
 
