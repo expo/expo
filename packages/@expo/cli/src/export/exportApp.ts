@@ -1,11 +1,12 @@
+import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import { createBundlesAsync } from './fork-bundleAsync';
 import { exportAssetsAsync, exportCssAssetsAsync } from './exportAssets';
 import { unstable_exportStaticAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
+import { createBundlesAsync } from './fork-bundleAsync';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
 import { printBundleSizes } from './printBundleSizes';
@@ -22,7 +23,6 @@ import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTempla
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
-import { getConfig } from '@expo/config';
 
 /**
  * The structure of the outputDir will be:
