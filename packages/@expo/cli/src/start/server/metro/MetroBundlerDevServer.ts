@@ -443,13 +443,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         const url = req.url;
         if (!url) return next();
 
-        console.log('Resolving: ', url);
-
         const parsed = new URL(url, 'http://localhost:8081');
         const platform = parsed.searchParams.get('platform')!;
-        const moduleId = parsed.searchParams.get('resolve')!;
+        const moduleId = parsed.searchParams.get('target')!;
         const origin = parsed.searchParams.get('origin')!;
 
+        console.log('Resolving: ', url, { platform, target: moduleId, origin });
         const context = createContext({
           platform,
           isServer: false,
@@ -460,7 +459,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
           console.log('Resolved: ', metroResults);
           if (metroResults.type === 'sourceFile') {
-            const text = await fs.readFileSync(metroResults.filePath, 'utf8');
+            const text =
+              'http://localhost:8081/' +
+              encodeURIComponent(path.relative(this.projectRoot, metroResults.filePath)); //await fs.readFileSync(metroResults.filePath, 'utf8');
+            // const text = await fs.readFileSync(metroResults.filePath, 'utf8');
             res.setHeader('Content-Type', 'text/plain');
             console.log('Return: ', text);
             return res.end(text);
