@@ -5,7 +5,7 @@ type BabelPresetExpoPlatformOptions = {
     withDevTools?: boolean;
     disableFlowStripTypesTransform?: boolean;
     enableBabelRuntime?: boolean;
-    unstable_transformProfile?: 'default' | 'hermes-canary';
+    unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
 };
 export type BabelPresetExpoOptions = {
     lazyImports?: boolean;

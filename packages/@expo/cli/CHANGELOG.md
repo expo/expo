@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Automatically optimize transformations based on Hermes usage.
+
 ### 🐛 Bug fixes
 
 - Ensure a unique static path is generated for each group during static extraction ([#24218](https://github.com/expo/expo/pull/24218) by [@marklawlor](https://github.com/marklawlor))

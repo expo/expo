@@ -12,7 +12,7 @@ type BabelPresetExpoPlatformOptions = {
   // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
   enableBabelRuntime?: boolean;
   // Defaults to `'default'`, can also use `'hermes-canary'`
-  unstable_transformProfile?: 'default' | 'hermes-canary';
+  unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
 };
 
 export type BabelPresetExpoOptions = {
@@ -30,6 +30,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const bundler = api.caller(getBundler);
   const isWebpack = bundler === 'webpack';
   let platform = api.caller((caller) => (caller as any)?.platform);
+  const engine = api.caller((caller) => (caller as any)?.engine) ?? 'hermes';
 
   // If the `platform` prop is not defined then this must be a custom config that isn't
   // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
@@ -43,9 +44,14 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           // Only disable import/export transform when Webpack is used because
           // Metro does not support tree-shaking.
           disableImportExportTransform: isWebpack,
+          unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
           ...web,
         }
-      : { disableImportExportTransform: false, ...native };
+      : {
+          disableImportExportTransform: false,
+          unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
+          ...native,
+        };
 
   // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
   // `metro-react-native-babel-preset` will handle it.
@@ -104,7 +110,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
           // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
           enableBabelRuntime: platformOptions.enableBabelRuntime,
-          // Defaults to `'default'`, can also use `'hermes-canary'`
+          // Defaults to `'hermes-stable'`. This reduces the amount of transforms required, as Hermes supports many modern language features.
           unstable_transformProfile: platformOptions.unstable_transformProfile,
           // Set true to disable `@babel/plugin-transform-react-jsx` and
           // the deprecated packages `@babel/plugin-transform-react-jsx-self`, and `@babel/plugin-transform-react-jsx-source`.
