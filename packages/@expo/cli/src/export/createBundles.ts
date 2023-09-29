@@ -20,7 +20,7 @@ export async function createBundlesAsync(
     return {};
   }
   const projectConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  const { exp } = projectConfig;
+  const { exp, pkg } = projectConfig;
 
   const bundles = await bundleAsync(
     projectRoot,
@@ -33,7 +33,7 @@ export async function createBundlesAsync(
     },
     bundleOptions.platforms.map((platform: Platform) => ({
       platform,
-      entryPoint: getEntryWithServerRoot(projectRoot, projectConfig, platform),
+      entryPoint: getEntryWithServerRoot(projectRoot, { pkg, platform }),
       minify: bundleOptions.minify,
       dev: bundleOptions.dev,
     }))

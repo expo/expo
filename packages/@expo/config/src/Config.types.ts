@@ -135,7 +135,8 @@ export type ConfigErrorCode =
   | 'INVALID_MODE'
   | 'INVALID_FORMAT'
   | 'INVALID_PLUGIN'
-  | 'INVALID_CONFIG';
+  | 'INVALID_CONFIG'
+  | 'ENTRY_NOT_FOUND';
 
 export type ConfigContext = {
   projectRoot: string;
