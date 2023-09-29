@@ -47,7 +47,8 @@ internal class MediaHandler(
     } else {
       CompressionImageExporter(appContextProvider, options.quality)
     }
-    val outputFile = createOutputFile(cacheDirectory, getType(context.contentResolver, sourceUri).toImageFileExtension())
+    val mimeType = getType(context.contentResolver, sourceUri)
+    val outputFile = createOutputFile(cacheDirectory, mimeType.toImageFileExtension())
 
     val exportedImage = exporter.exportAsync(sourceUri, outputFile, context.contentResolver)
     val base64 = options.base64.takeIf { it }
@@ -65,6 +66,7 @@ internal class MediaHandler(
       height = exportedImage.height,
       fileName = fileData?.fileName,
       filesize = fileData?.filesize,
+      mimeType = mimeType,
       base64 = base64,
       exif = exif,
       assetId = sourceUri.getMediaStoreAssetId(),
@@ -97,6 +99,7 @@ internal class MediaHandler(
       }
 
       val fileData = getAdditionalFileData(sourceUri)
+      val mimeType = getType(context.contentResolver, sourceUri)
 
       return ImagePickerAsset(
         type = MediaType.VIDEO,
@@ -105,6 +108,7 @@ internal class MediaHandler(
         height = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT),
         fileName = fileData?.fileName,
         filesize = fileData?.filesize,
+        mimeType = mimeType,
         duration = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_DURATION),
         rotation = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION),
         assetId = sourceUri.getMediaStoreAssetId()
