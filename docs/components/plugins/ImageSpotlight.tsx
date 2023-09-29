@@ -6,21 +6,36 @@ type Props = {
   style?: CSSProperties;
   containerStyle?: CSSProperties;
   src: string;
+  caption?: string;
 };
 
-export default function ImageSpotlight({ alt, src, style, containerStyle }: Props) {
+export default function ImageSpotlight({ alt, src, style, containerStyle, caption }: Props) {
   return (
-    <div
-      style={{
-        textAlign: 'center',
-        backgroundColor: theme.background.subtle,
-        paddingTop: 10,
-        paddingBottom: 10,
-        marginTop: 20,
-        marginBottom: 20,
-        ...containerStyle,
-      }}>
-      <img src={src} alt={alt} style={style} className="inline" />
-    </div>
+    <figure>
+      <div
+        style={{
+          textAlign: 'center',
+          backgroundColor: theme.background.subtle,
+          paddingTop: 10,
+          paddingBottom: 10,
+          marginTop: 20,
+          marginBottom: 20,
+          ...containerStyle,
+        }}>
+        <img src={src} alt={alt} style={style} className="inline" />
+      </div>
+      {caption && (
+        <figcaption
+          style={{
+            marginTop: 14,
+            fontSize: 14,
+            color: theme.text.secondary,
+            textAlign: 'center',
+            marginBottom: 20,
+          }}>
+          {caption}
+        </figcaption>
+      )}
+    </figure>
   );
 }
