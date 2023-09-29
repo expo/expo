@@ -45,6 +45,7 @@ type StaticRenderOptions = {
   minify?: boolean;
   platform?: string;
   environment?: 'node';
+  engine?: 'hermes';
 };
 
 const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
@@ -100,7 +101,13 @@ export async function createMetroEndpointAsync(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  { dev = false, platform = 'web', minify = false, environment }: StaticRenderOptions = {}
+  {
+    dev = false,
+    platform = 'web',
+    minify = false,
+    environment,
+    engine = 'hermes',
+  }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
@@ -111,6 +118,9 @@ export async function createMetroEndpointAsync(
 
   if (environment) {
     url += `&resolver.environment=${environment}&transform.environment=${environment}`;
+  }
+  if (engine) {
+    url += `&transform.engine=${engine}`;
   }
   return url;
 }
