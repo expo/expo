@@ -26,6 +26,12 @@
 - Use Metro and web TypeScript types from `expo` instead of `expo-router`. ([#24255](https://github.com/expo/expo/pull/24255) by [@marklawlor](https://github.com/marklawlor))
 - Speed up Metro tests with new resolver. ([#24616](https://github.com/expo/expo/pull/24616) by [@EvanBacon](https://github.com/EvanBacon))
 
+## 0.10.13 — 2023-09-27
+
+### 🐛 Bug fixes
+
+- Fallback to `xcrun devicectl` for iOS 17 to launch the app. ([#24635](https://github.com/expo/expo/pull/24635) by [@byCedric](https://github.com/byCedric))
+
 ## 0.13.2 — 2023-09-18
 
 ### 🐛 Bug fixes

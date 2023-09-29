@@ -16,6 +16,12 @@
 
 ### 💡 Others
 
+## 11.3.2 — 2023-09-28
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix check that determines if the version of Xcode supports `iOS 17`. ([#24655](https://github.com/expo/expo/pull/24655) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 11.3.1 — 2023-09-25
 
 ### 🐛 Bug fixes
