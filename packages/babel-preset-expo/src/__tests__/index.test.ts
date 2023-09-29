@@ -8,11 +8,65 @@ function getCaller(props: Record<string, string>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
 }
 
+it(`compiles sample files with Metro targeting Hermes`, () => {
+  const options = {
+    babelrc: false,
+    presets: [preset],
+    sourceMaps: true,
+    caller: getCaller({ name: 'metro', engine: 'hermes' }),
+  };
+  const fileName = path.resolve(__dirname, 'samples/App.js');
+
+  const withHermes = babel.transformFileSync(fileName, options);
+  const withoutHermes = babel.transformFileSync(fileName, {
+    babelrc: false,
+    presets: [preset],
+    sourceMaps: true,
+    caller: getCaller({ name: 'metro' }),
+  });
+
+  expect(withHermes.code).not.toEqual(withoutHermes.code);
+
+  // 😎
+  expect(withHermes.code.length).toBeLessThan(withoutHermes.code.length);
+});
+
+it(`supports overwriting the default engine option`, () => {
+  const fileName = path.resolve(__dirname, 'samples/App.js');
+
+  const firstPass = babel.transformFileSync(fileName, {
+    babelrc: false,
+    presets: [
+      [
+        preset,
+        {
+          native: {
+            // This should overwrite the default engine option which is passed to Babel via Expo CLI.
+            unstable_transformProfile: 'default',
+          },
+        },
+      ],
+    ],
+    sourceMaps: true,
+    caller: getCaller({ name: 'metro', platform: 'ios', engine: 'hermes' }),
+  });
+
+  const secondPass = babel.transformFileSync(fileName, {
+    babelrc: false,
+    presets: [[preset, {}]],
+    sourceMaps: true,
+    caller: getCaller({ name: 'metro', platform: 'ios', engine: 'hermes' }),
+  });
+
+  expect(firstPass.code).not.toEqual(secondPass.code);
+});
+
 describe.each([
   ['metro', getCaller({ name: 'metro' })],
+  ['metro+hermes', getCaller({ name: 'metro', engine: 'hermes' })],
   ['webpack', getCaller({ name: 'babel-loader' })],
 ])('%s', (_name, caller) => {
-  const isMetro = _name === 'metro';
+  const isMetro = _name.includes('metro');
   it(`compiles sample files`, () => {
     const options = {
       babelrc: false,

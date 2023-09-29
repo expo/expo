@@ -30,7 +30,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const bundler = api.caller(getBundler);
   const isWebpack = bundler === 'webpack';
   let platform = api.caller((caller) => (caller as any)?.platform);
-  const engine = api.caller((caller) => (caller as any)?.engine) ?? 'hermes';
+  const engine = api.caller((caller) => (caller as any)?.engine) ?? 'default';
 
   // If the `platform` prop is not defined then this must be a custom config that isn't
   // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
@@ -110,7 +110,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
           // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
           enableBabelRuntime: platformOptions.enableBabelRuntime,
-          // Defaults to `'hermes-stable'`. This reduces the amount of transforms required, as Hermes supports many modern language features.
+          // This reduces the amount of transforms required, as Hermes supports many modern language features.
           unstable_transformProfile: platformOptions.unstable_transformProfile,
           // Set true to disable `@babel/plugin-transform-react-jsx` and
           // the deprecated packages `@babel/plugin-transform-react-jsx-self`, and `@babel/plugin-transform-react-jsx-source`.

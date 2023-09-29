@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Automatically optimize transformations based on Hermes usage.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
