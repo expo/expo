@@ -18,12 +18,12 @@ import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './serv
 import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
-import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
 
