@@ -1,20 +1,19 @@
-import { getConfig, Platform, ProjectTarget } from '@expo/config';
+import { getConfig, Platform } from '@expo/config';
 
 import { bundleAsync, BundleOutput } from './fork-bundleAsync';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 
-export type PublishOptions = {
-  releaseChannel?: string;
-  target?: ProjectTarget;
-  resetCache?: boolean;
-  maxWorkers?: number;
-};
-
 // TODO: Reduce layers of indirection
 export async function createBundlesAsync(
   projectRoot: string,
-  publishOptions: PublishOptions = {},
-  bundleOptions: { platforms: Platform[]; dev?: boolean; minify?: boolean }
+  bundleOptions: {
+    clear?: boolean;
+    maxWorkers?: number;
+    platforms: Platform[];
+    dev?: boolean;
+    minify?: boolean;
+    sourcemaps?: boolean;
+  }
 ): Promise<Partial<Record<Platform, BundleOutput>>> {
   if (!bundleOptions.platforms.length) {
     return {};
@@ -27,11 +26,12 @@ export async function createBundlesAsync(
     exp,
     {
       // If not legacy, ignore the target option to prevent warnings from being thrown.
-      resetCache: publishOptions.resetCache,
-      maxWorkers: publishOptions.maxWorkers,
+      resetCache: bundleOptions.clear,
+      maxWorkers: bundleOptions.maxWorkers,
       quiet: false,
     },
     bundleOptions.platforms.map((platform: Platform) => ({
+      sourcemaps: bundleOptions.sourcemaps,
       platform,
       entryPoint: getEntryWithServerRoot(projectRoot, projectConfig, platform),
       minify: bundleOptions.minify,

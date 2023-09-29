@@ -85,20 +85,17 @@ export async function exportAppAsync(
   await copyPublicFolderAsync(publicPath, staticFolder);
 
   // Run metro bundler and create the JS bundles/source maps.
-  const bundles = await createBundlesAsync(
-    projectRoot,
-    { resetCache: !!clear },
-    {
-      platforms,
-      minify,
-      // TODO: Breaks asset exports
-      // platforms: useServerRendering
-      //   ? platforms.filter((platform) => platform !== 'web')
-      //   : platforms,
-      dev,
-      // TODO: Disable source map generation if we aren't outputting them.
-    }
-  );
+  const bundles = await createBundlesAsync(projectRoot, {
+    clear: !!clear,
+    platforms,
+    minify,
+    sourcemaps: dumpSourcemap,
+    // TODO: Breaks asset exports
+    // platforms: useServerRendering
+    //   ? platforms.filter((platform) => platform !== 'web')
+    //   : platforms,
+    dev,
+  });
 
   const bundleEntries = Object.entries(bundles);
   if (bundleEntries.length) {

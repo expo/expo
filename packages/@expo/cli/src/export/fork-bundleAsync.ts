@@ -28,13 +28,14 @@ export type BundleOptions = {
   dev?: boolean;
   minify?: boolean;
   sourceMapUrl?: string;
+  sourcemaps?: boolean;
 };
 export type BundleAssetWithFileHashes = Metro.AssetData & {
   fileHashes: string[]; // added by the hashAssets asset plugin
 };
 export type BundleOutput = {
   code: string;
-  map?: string;
+  map: string;
   hermesBytecodeBundle?: Uint8Array;
   hermesSourcemap?: string;
   css: CSSAsset[];
@@ -43,7 +44,11 @@ export type BundleOutput = {
 
 let nextBuildID = 0;
 
-async function assertEngineMismatchAsync(projectRoot: string, exp: ExpoConfig, platform: Platform) {
+async function assertEngineMismatchAsync(
+  projectRoot: string,
+  exp: Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>,
+  platform: Platform
+) {
   const isHermesManaged = isEnableHermesManaged(exp, platform);
 
   const paths = getConfigFilePaths(projectRoot);
@@ -148,14 +153,13 @@ export async function bundleAsync(
 
       reporter.terminal.log(`${platformTag} Building Hermes bytecode for the bundle`);
 
-      const hermesBundleOutput = await buildHermesBundleAsync(
-        projectRoot,
-        bundleOutput.code,
-        bundleOutput.map!,
-        bundle.minify ?? !bundle.dev
-      );
+      const hermesBundleOutput = await buildHermesBundleAsync(projectRoot, {
+        code: bundleOutput.code,
+        map: bundle.sourcemaps ? bundleOutput.map : null,
+        minify: bundle.minify ?? !bundle.dev,
+      });
       bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;
-      bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap;
+      bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap ?? undefined;
     }
     return bundleOutput;
   };
