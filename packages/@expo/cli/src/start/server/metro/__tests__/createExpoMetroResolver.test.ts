@@ -128,6 +128,35 @@ describe(createFastResolver, () => {
         type: 'sourceFile',
       });
     });
+    it('resolves module with browser shims with non-matching extensions', () => {
+      const resolver = createFastResolver({ preserveSymlinks: false });
+      const context = createContext({
+        platform,
+        origin: path.join(originProjectRoot, 'index.js'),
+      });
+      const results = resolver(context, 'uuid/v4', platform);
+      expect(results).toEqual({
+        filePath: expect.stringMatching(/\/uuid\/v4.js$/),
+        type: 'sourceFile',
+      });
+
+      assert(results.type === 'sourceFile');
+
+      // Browser shims are applied on native.
+      expect(
+        resolver(
+          createContext({
+            platform,
+            origin: results.filePath,
+          }),
+          './lib/rng',
+          platform
+        )
+      ).toEqual({
+        filePath: expect.stringMatching(/node_modules\/uuid\/lib\/rng-browser\.js/),
+        type: 'sourceFile',
+      });
+    });
     it('resolves an asset', () => {
       const resolver = createFastResolver({ preserveSymlinks: false });
       const context = createContext({

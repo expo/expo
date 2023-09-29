@@ -139,7 +139,9 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
                 return '';
               }
 
-              const mappedPath = replacements[relativePath];
+              // TODO: Probably use a better extension matching system here.
+              // This was added for `uuid/v4` -> `./lib/rng` -> `./lib/rng-browser.js`
+              const mappedPath = replacements[relativePath] ?? replacements[relativePath + '.js'];
               if (mappedPath === false) {
                 throw new ShimModuleError();
               }
