@@ -20,9 +20,8 @@ import {
 } from '../start/server/metro/resolveFromProject';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 
-export type MetroDevServerOptions = LoadOptions & {
-  quiet?: boolean;
-};
+export type MetroDevServerOptions = LoadOptions;
+
 export type BundleOptions = {
   entryPoint: string;
   platform: 'android' | 'ios' | 'web';
@@ -79,19 +78,18 @@ export async function createBundlesAsync(
   }
   const { exp } = projectConfig;
 
-  const bundles = await bundleAsync(
+  const bundles = await bundleProductionMetroClientAsync(
     projectRoot,
     exp,
     {
       // If not legacy, ignore the target option to prevent warnings from being thrown.
       resetCache: bundleOptions.clear,
       maxWorkers: bundleOptions.maxWorkers,
-      quiet: false,
     },
     bundleOptions.platforms.map((platform: Platform) => ({
-      sourcemaps: bundleOptions.sourcemaps,
       platform,
       entryPoint: getEntryWithServerRoot(projectRoot, projectConfig, platform),
+      sourcemaps: bundleOptions.sourcemaps,
       minify: bundleOptions.minify,
       dev: bundleOptions.dev,
     }))
@@ -107,10 +105,10 @@ export async function createBundlesAsync(
   );
 }
 
-export async function bundleAsync(
+async function bundleProductionMetroClientAsync(
   projectRoot: string,
   expoConfig: ExpoConfig,
-  options: MetroDevServerOptions,
+  metroOptions: MetroDevServerOptions,
   bundles: BundleOptions[]
 ): Promise<BundleOutput[]> {
   // Assert early so the user doesn't have to wait until bundling is complete to find out that
@@ -122,7 +120,7 @@ export async function bundleAsync(
   const metro = importMetroFromProject(projectRoot);
   const Server = importMetroServerFromProject(projectRoot);
 
-  const { config, reporter } = await loadMetroConfigAsync(projectRoot, options, {
+  const { config, reporter } = await loadMetroConfigAsync(projectRoot, metroOptions, {
     exp: expoConfig,
     isExporting: true,
   });
@@ -145,14 +143,12 @@ export async function bundleAsync(
       sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
-        if (!options.quiet) {
-          reporter.update({
-            buildID,
-            type: 'bundle_transform_progressed',
-            transformedFileCount,
-            totalFileCount,
-          });
-        }
+        reporter.update({
+          buildID,
+          type: 'bundle_transform_progressed',
+          transformedFileCount,
+          totalFileCount,
+        });
       },
     };
     const bundleDetails = {
