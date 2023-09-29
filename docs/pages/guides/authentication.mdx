@@ -1,5 +1,6 @@
 ---
 title: Authentication with OAuth or OpenID providers
+description: Learn how to utilize the expo-auth-session library to implement authentication with OAuth or OpenID providers.
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
@@ -11,10 +12,10 @@ Expo can be used to login to many popular providers on Android, iOS, and web. Mo
 Here are some **important rules** that apply to all authentication providers:
 
 - Use `WebBrowser.maybeCompleteAuthSession()` to dismiss the web popup. If you forget to add this then the popup window will not close.
-- Create redirects with `AuthSession.makeRedirectUri()` this does a lot of the heavy lifting involved with universal platform support. Behind the scenes it uses `expo-linking`.
+- Create redirects with `AuthSession.makeRedirectUri()` this does a lot of the heavy lifting involved with universal platform support. Behind the scenes, it uses `expo-linking`.
 - Build requests using `AuthSession.useAuthRequest()`, the hook allows for async setup which means mobile browsers won't block the authentication.
 - Be sure to disable the prompt until `request` is defined.
-- You can only invoke `promptAsync` in a user-interaction on web.
+- You can only invoke `promptAsync` in user interaction on the web.
 
 ## Guides
 

@@ -1,5 +1,6 @@
 ---
 title: Expo Router FAQs
+description: A list of common questions about Expo Router.
 sidebar_title: FAQ
 ---
 
@@ -32,20 +33,20 @@ Yes, Expo Router is the framework for universal React Native apps. Due to the de
 5. Async Routes (bundle splitting) improve development speed, especially in larger projects. They also make upgrades easier as errors are isolated to a single route, meaning you can incrementally update or refactor your app page-by-page rather than all at once (traditional React Native).
 6. Deep links always work, for every page. This makes it possible to share links to any content in the app, which is great for promoting your app, collecting bug reports, E2E testing, automating screenshots, and so on.
 7. Expo Head uses automatic links to enable deep-native integration. Features like Quick Notes, Handoff, Siri context, and universal links only require configuration setup, no code changes. This enables perfect vertical integration with the entire ecosystem of smart devices that a user has, leading to the types of user experiences that are only possible with universal apps (web ⇄ native).
-8. Expo Router has the ability to statically render each page automatically on web, enabling real SEO and full discoverability of your app's content. This is only possible because the file-based convention.
+8. Expo Router has the ability to statically render each page automatically on the web, enabling real SEO and full discoverability of your app's content. This is only possible because of the file-based convention.
 9. **Expo CLI** can infer a lot of information about your application when it follows a known convention. For example, we could implement automatic bundle splitting per route, or automatically generate a sitemap for your website. This is impossible when your app only has a single entry point.
-10. Re-engagment features like notifications and homescreen widgets are easier to integrate as you can simply intercept the launch and deep link, with query parameters, to anywhere in the app.
+10. Re-engagement features like notifications and home screen widgets are easier to integrate as you can simply intercept the launch and deep link, with query parameters, anywhere in the app.
 11. Like on the web, analytics and error reporting can easily be configured to automatically include the route name, which is useful for debugging and understanding user behavior.
 
 ## Why should I use Expo Router over React Navigation?
 
 Expo Router and React Navigation are both libraries from the Expo team. We built Expo Router on top of React Navigation to enable the benefits of file-based routing. Expo Router is a superset of React Navigation, meaning you can use any React Navigation components and APIs with Expo Router.
 
-If file-based routing isn't right for your project, you can drop down to React Navigation and setup routes, types, and links manually.
+If file-based routing isn't right for your project, you can drop down to React Navigation and set up routes, types, and links manually.
 
 ## How do I server-render my Expo Router website?
 
-Basic static rendering (SSG) is supported in Expo Router v2. Server-side rendering currently requires custom infrastructure to setup.
+Basic static rendering (SSG) is supported in Expo Router v2. Server-side rendering currently requires custom infrastructure to set up.
 
 ## Can I use React Navigation?
 
