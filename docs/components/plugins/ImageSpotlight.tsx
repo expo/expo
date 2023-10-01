@@ -11,19 +11,17 @@ type Props = {
 
 export default function ImageSpotlight({ alt, src, style, containerStyle, caption }: Props) {
   return (
-    <figure>
-      <div
-        style={{
-          textAlign: 'center',
-          backgroundColor: theme.background.subtle,
-          paddingTop: 10,
-          paddingBottom: 10,
-          marginTop: 20,
-          marginBottom: 20,
-          ...containerStyle,
-        }}>
-        <img src={src} alt={alt} style={style} className="inline" />
-      </div>
+    <figure
+      style={{
+        textAlign: 'center',
+        backgroundColor: theme.background.subtle,
+        paddingTop: 10,
+        paddingBottom: 10,
+        marginTop: 20,
+        marginBottom: 20,
+        ...containerStyle,
+      }}>
+      <img src={src} alt={alt} style={style} className="inline" />
       {caption && (
         <figcaption
           style={{
@@ -31,7 +29,6 @@ export default function ImageSpotlight({ alt, src, style, containerStyle, captio
             fontSize: 14,
             color: theme.text.secondary,
             textAlign: 'center',
-            marginBottom: 20,
           }}>
           {caption}
         </figcaption>
