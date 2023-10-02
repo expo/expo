@@ -4,11 +4,39 @@
 
 ### 🛠 Breaking changes
 
+- `isCSSEnabled` now defaults to `true` ([#24489](https://github.com/expo/expo/pull/24489) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🎉 New features
+
+- Automatically optimize transformations based on Hermes usage. ([#24672](https://github.com/expo/expo/pull/24672) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.13.1 — 2023-09-15
+
+### 🎉 New features
+
+- Shim server files in client environments. ([#24429](https://github.com/expo/expo/pull/24429) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.13.0 — 2023-09-15
+
+### 🎉 New features
+
+- Add `basePath` support. ([#23911](https://github.com/expo/expo/pull/23911) by [@EvanBacon](https://github.com/EvanBacon))
+- Replace `metroTarget: 'client' | 'node'` with `isServer: boolean` in the Babel caller. ([#24410](https://github.com/expo/expo/pull/24410) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Fix exporting paths on Windows machines. ([#24382](https://github.com/expo/expo/pull/24382) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Move `process.env` polyfill strip to `expo/metro-config`. ([#24455](https://github.com/expo/expo/pull/24455) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix build. ([#24309](https://github.com/expo/expo/pull/24309) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.12.0 — 2023-09-04
 

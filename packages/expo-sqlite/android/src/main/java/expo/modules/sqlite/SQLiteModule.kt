@@ -3,10 +3,13 @@ package expo.modules.sqlite
 
 import android.content.Context
 import android.database.Cursor
-import io.requery.android.database.sqlite.SQLiteDatabase
+import androidx.core.os.bundleOf
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import io.expo.android.database.sqlite.SQLiteCustomExtension
+import io.expo.android.database.sqlite.SQLiteDatabase
+import io.expo.android.database.sqlite.SQLiteDatabaseConfiguration
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -23,26 +26,14 @@ class SQLiteModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoSQLite")
 
+    Events("onDatabaseChange")
+
     AsyncFunction("exec") { dbName: String, queries: List<Query>, readOnly: Boolean ->
-      val db = getDatabase(dbName)
-      val results = queries.map { sqlQuery ->
-        val sql = sqlQuery.sql
-        val bindArgs = convertParamsToStringArray(sqlQuery.args)
-        try {
-          if (isSelect(sql)) {
-            doSelectInBackgroundAndPossiblyThrow(sql, bindArgs, db)
-          } else { // update/insert/delete
-            if (readOnly) {
-              SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, ReadOnlyException())
-            } else {
-              doUpdateInBackgroundAndPossiblyThrow(sql, bindArgs, db)
-            }
-          }
-        } catch (e: Throwable) {
-          SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, e)
-        }
-      }
-      return@AsyncFunction pluginResultsToPrimitiveData(results)
+      return@AsyncFunction execute(dbName, queries, readOnly)
+    }
+
+    AsyncFunction("execRawQuery") { dbName: String, queries: List<Query>, readOnly: Boolean ->
+      return@AsyncFunction execute(dbName, queries, readOnly, raw = true)
     }
 
     AsyncFunction("close") { dbName: String ->
@@ -69,6 +60,38 @@ class SQLiteModule : Module() {
         throw DeleteDatabaseException(dbName)
       }
     }
+
+    OnDestroy {
+      DATABASES.values.forEach {
+        it?.rawQuery("SELECT crsql_finalize()", emptyArray())
+      }
+    }
+  }
+
+  private fun execute(dbName: String, queries: List<Query>, readOnly: Boolean, raw: Boolean = false): List<Any> {
+    val db = getDatabase(dbName)
+    val results = queries.map { sqlQuery ->
+      val sql = sqlQuery.sql
+      val bindArgs = convertParamsToStringArray(sqlQuery.args)
+      try {
+        if (isSelect(sql)) {
+          doSelectInBackgroundAndPossiblyThrow(sql, bindArgs, db)
+        } else { // update/insert/delete
+          if (readOnly) {
+            SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, ReadOnlyException())
+          } else {
+            if (raw) {
+              doRawUpdate(sql, bindArgs, db)
+            } else {
+              doUpdateInBackgroundAndPossiblyThrow(sql, bindArgs, db)
+            }
+          }
+        }
+      } catch (e: Throwable) {
+        SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, e)
+      }
+    }
+    return pluginResultsToPrimitiveData(results)
   }
 
   // do a update/delete/insert operation
@@ -102,6 +125,71 @@ class SQLiteModule : Module() {
         EMPTY_RESULT
       }
     }
+  }
+
+  private fun doRawUpdate(
+    sql: String,
+    bindArgs: Array<String?>,
+    db: SQLiteDatabase
+  ): SQLitePluginResult {
+    return db.rawQuery(sql, bindArgs).use { cursor ->
+      val numRows = cursor.count
+      if (numRows == 0) {
+        return EMPTY_RESULT
+      }
+
+      val numColumns = cursor.columnCount
+      val columnNames = cursor.columnNames
+      val rows: Array<Array<Any?>> = Array(numRows) { arrayOfNulls(numColumns) }
+      var i = 0
+      while (cursor.moveToNext()) {
+        val row = rows[i]
+        for (j in 0 until numColumns) {
+          row[j] = getValueFromCursor(cursor, j, cursor.getType(j))
+        }
+        rows[i] = row
+        i++
+      }
+
+      if (isInsert(sql)) {
+        val rowsAffected = getRowsAffected(db)
+        val insertId = getInsertId(db)
+        SQLitePluginResult(rows, columnNames, rowsAffected, insertId, null)
+      } else if (isDelete(sql) || isUpdate(sql)) {
+        val rowsAffected = getRowsAffected(db)
+        SQLitePluginResult(rows, columnNames, rowsAffected, 0, null)
+      } else {
+        EMPTY_RESULT
+      }
+    }
+  }
+
+  private fun getRowsAffected(
+    db: SQLiteDatabase,
+  ): Int {
+    val cursor = db.rawQuery("SELECT changes() AS numRowsAffected", null)
+    val rowsAffected = if (cursor.moveToFirst()) {
+      val index = cursor.getColumnIndex("numRowsAffected")
+      cursor.getInt(index)
+    } else {
+      -1
+    }
+    cursor.close()
+    return rowsAffected
+  }
+
+  private fun getInsertId(
+    db: SQLiteDatabase,
+  ): Long {
+    val cursor = db.rawQuery("SELECT last_insert_rowid() AS insertId", null)
+    val insertId = if (cursor.moveToFirst()) {
+      val index = cursor.getColumnIndex("insertId")
+      cursor.getLong(index)
+    } else {
+      -1
+    }
+    cursor.close()
+    return insertId
   }
 
   // do a select operation
@@ -161,10 +249,35 @@ class SQLiteModule : Module() {
     }
     if (database == null) {
       DATABASES.remove(name)
-      database = SQLiteDatabase.openOrCreateDatabase(path, null)
+      val config = createConfig(path)
+      database = SQLiteDatabase.openDatabase(config, null, null)
+      addUpdateListener(database)
       DATABASES[name] = database
     }
     return database!!
+  }
+
+  private fun createConfig(path: String): SQLiteDatabaseConfiguration {
+    val crsqliteExtension = SQLiteCustomExtension("libcrsqlite", "sqlite3_crsqlite_init")
+    return SQLiteDatabaseConfiguration(path, SQLiteDatabase.CREATE_IF_NECESSARY, emptyList(), emptyList(), listOf(crsqliteExtension))
+  }
+
+  private fun addUpdateListener(database: SQLiteDatabase?) {
+    database?.addUpdateListener { tableName: String, operationType: Int, rowID: Int ->
+      sendEvent(
+        "onDatabaseChange",
+        bundleOf(
+          "tableName" to tableName,
+          "rowId" to rowID,
+          "typeId" to when (operationType) {
+            9 -> SqlAction.DELETE.value
+            18 -> SqlAction.INSERT.value
+            23 -> SqlAction.UPDATE.value
+            else -> SqlAction.UNKNOWN.value
+          }
+        )
+      )
+    }
   }
 
   internal class SQLitePluginResult(

@@ -72,7 +72,7 @@ This pattern has been proven to work in the React Native community in the follow
 
 React Native developers who don't use **Continuous Native Generation** have reported that upgrading their apps to the latest version of React Native is the number one weakness of the library as per [React Native Survey (2022)](https://results.stateofreactnative.com/opinions/opinions_pain_points).
 
-When using CNG, the upgrade process simply involves upgrading the NPM dependencies, app config, and re-running `npx expo prebuild --clean`.
+When using CNG, the upgrade process simply involves upgrading the npm dependencies, app config, and re-running `npx expo prebuild --clean`.
 
 ### Features
 
@@ -84,7 +84,7 @@ Here are a few impressive examples:
 - [iMessage Sticker App](https://github.com/expo/config-plugins/tree/main/packages/ios-stickers) &mdash; This Expo Config Plugin can generate an entire iMessage Sticker App from a JSON object.
 - [Cross-platform End-2-End testing](https://github.com/expo/config-plugins/tree/main/packages/detox) &mdash; Configure native apps to support E2E testing with Detox in a single-line.
 - [Entire Firebase suite](https://rnfirebase.io/) &mdash; Here you can see the entire native Firebase suite going from a multi-step native process across multiple IDEs, down to basic JSON configuration.
-- [Cross-platform Home screen Widgets](https://github.com/gaishimo/eas-widget-example) &mdash; This Expo Config Plugin can generate a home screen widget for iOS and Android.
+- [Cross-platform Home screen Widgets](https://github.com/gaishimo/eas-widget-example) &mdash; This Expo Config Plugin can generate a home screen widget for Android and iOS.
 - [Notification extension and code signing](https://github.com/OneSignal/onesignal-expo-plugin) &mdash; This Expo Config Plugin not only generates a notification extension target on iOS. However, it also augments the EAS credentials service to keep zero-config code signing working.
 - [Apple App Clips](https://github.com/bndkt/react-native-app-clip) &mdash; This Expo Config Plugin takes the process of generating an Apple App Clip from a multi-step process, ranging across multiple targets, and shakes it down to a single line `["react-native-app-clip", { "name": "My App Clip" }]`.
 
@@ -98,7 +98,7 @@ This nets out to better apps, built faster.
 
 No, CNG is a versatile pattern that can be applied to any native project. While Expo Prebuild is a tool that implements CNG specifically for React Native projects, the concept itself is not limited to this framework.
 
-### Can CNG be used for operating systems other than iOS and Android?
+### Can CNG be used for operating systems other than Android and iOS?
 
 Absolutely! CNG is an abstract concept that can be applied to any operating system. Take Expo for example, although Expo Prebuild officially implements CNG for Android and iOS, it also provides abstract platform support for users to create implementations for additional platforms.
 

@@ -58,14 +58,14 @@ jest.mock('../../../../api/getExpoGoIntermediateCertificate', () => ({
 }));
 jest.mock('@expo/config-plugins', () => ({
   Updates: {
-    getRuntimeVersion: jest.fn(() => '45.0.0'),
+    getRuntimeVersionAsync: jest.fn(() => Promise.resolve('45.0.0')),
   },
 }));
 jest.mock('../resolveAssets', () => ({
   resolveManifestAssets: jest.fn(),
   resolveGoogleServicesFile: jest.fn(),
 }));
-jest.mock('../resolveEntryPoint', () => ({
+jest.mock('@expo/config/paths', () => ({
   resolveEntryPoint: jest.fn(() => './index.js'),
 }));
 jest.mock('@expo/config', () => ({

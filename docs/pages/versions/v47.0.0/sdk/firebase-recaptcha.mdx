@@ -14,7 +14,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 `expo-firebase-recaptcha` provides a set of building blocks for creating a reCAPTCHA verifier and using that with your Firebase Phone authentication workflow.
 
-> Firebase phone authentication is not possible out of the box using the Firebase JS SDK. This because an Application Verifier object (reCAPTCHA) is needed as an additional security measure to verify that the user is real and not a bot.
+> Firebase phone authentication is impossible out of the box using the Firebase JS SDK. This is because an Application Verifier object (reCAPTCHA) is needed as an additional security measure to verify that the user is real and not a bot.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -59,7 +59,7 @@ If you are using `expo-firebase-recaptcha` with React Native Firebase, you'll ha
 
 This will ensure that the `@react-native-firebase/app` dependency version is compatible with the Expo SDK version your project uses.
 
-Also, make sure that you have React Native Firebase set up correctly in your project. For more information on how to configure it, see [using the native Firebase SDK](/guides/setup-native-firebase/#setup).
+Also, make sure that you have React Native Firebase set up correctly in your project. For more information on how to configure it, see [using the native Firebase SDK](/guides/using-firebase/).
 
 ### Basic usage
 
@@ -494,7 +494,7 @@ Modal screen that is automatically shown and displays a reCAPTCHA widget. The re
 
 - **firebaseConfig (IFirebaseOptions)** -- Firebase web configuration.
 - **firebaseVersion (string)** -- Optional version of the Firebase JavaScript SDK to load in the web-view. You can use this to load a custom or newer version. For example `version="7.9.0"`.
-- **attemptInvisibleVerification (boolean)** -- Attempts to verify without showing the reCAPTCHA workflow. The default is `false`. (Google terms apply - use `FirebaseRecaptchaBanner` to show te Google terms & policy).
+- **attemptInvisibleVerification (boolean)** -- Attempts to verify without showing the reCAPTCHA workflow. The default is `false`. (Google terms apply - use `FirebaseRecaptchaBanner` to show the Google terms and policy).
 - **appVerificationDisabledForTesting (boolean)** -- When set, disables app verification for the purpose of testing phone authentication. When this prop is `true`, a mock reCAPTCHA is rendered. This is useful for manual testing during development or for automated integration tests. See [Firebase Phone Auth](https://firebase.google.com/docs/auth/web/phone-auth#integration-testing) for more info.
 - **languageCode (string)** -- Language to display the reCAPTCHA challenge in. For a list of possible languages, see [reCAPTCHA Language Codes](https://developers.google.com/recaptcha/docs/language).
 - **title (string)** -- Title that is displayed on the top of the modal. The default is "reCAPTCHA".

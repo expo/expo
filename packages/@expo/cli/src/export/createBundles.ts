@@ -1,7 +1,6 @@
 import { getConfig, Platform, ProjectTarget } from '@expo/config';
 
 import { bundleAsync, BundleOutput } from './fork-bundleAsync';
-import * as Log from '../log';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 
 export type PublishOptions = {
@@ -21,7 +20,7 @@ export async function createBundlesAsync(
     return {};
   }
   const projectConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  const { exp } = projectConfig;
+  const { exp, pkg } = projectConfig;
 
   const bundles = await bundleAsync(
     projectRoot,
@@ -30,19 +29,11 @@ export async function createBundlesAsync(
       // If not legacy, ignore the target option to prevent warnings from being thrown.
       resetCache: publishOptions.resetCache,
       maxWorkers: publishOptions.maxWorkers,
-      logger: {
-        info(tag: unknown, message: string) {
-          Log.log(message);
-        },
-        error(tag: unknown, message: string) {
-          Log.error(message);
-        },
-      } as any,
       quiet: false,
     },
     bundleOptions.platforms.map((platform: Platform) => ({
       platform,
-      entryPoint: getEntryWithServerRoot(projectRoot, projectConfig, platform),
+      entryPoint: getEntryWithServerRoot(projectRoot, { pkg, platform }),
       minify: bundleOptions.minify,
       dev: bundleOptions.dev,
     }))

@@ -7,9 +7,9 @@ exports.createSourceId = exports.createContentsHashResultsAsync = exports.create
 const crypto_1 = require("crypto");
 const fs_1 = require("fs");
 const promises_1 = __importDefault(require("fs/promises"));
-const minimatch_1 = __importDefault(require("minimatch"));
 const p_limit_1 = __importDefault(require("p-limit"));
 const path_1 = __importDefault(require("path"));
+const Path_1 = require("../utils/Path");
 const Profile_1 = require("../utils/Profile");
 /**
  * Create a `Fingerprint` from `HashSources` array
@@ -60,6 +60,10 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
     // Backup code for faster hashing
     /*
     return limiter(async () => {
+      if (isIgnoredPath(filePath, options.ignorePaths)) {
+        return null;
+      }
+  
       const hasher = createHash(options.hashAlgorithm);
   
       const stat = await fs.stat(filePath);
@@ -76,6 +80,9 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
     */
     return limiter(() => {
         return new Promise((resolve, reject) => {
+            if ((0, Path_1.isIgnoredPath)(filePath, options.ignorePaths)) {
+                return resolve(null);
+            }
             let resolved = false;
             const hasher = (0, crypto_1.createHash)(options.hashAlgorithm);
             const stream = (0, fs_1.createReadStream)(path_1.default.join(projectRoot, filePath));
@@ -97,22 +104,11 @@ async function createFileHashResultsAsync(filePath, limiter, projectRoot, option
 }
 exports.createFileHashResultsAsync = createFileHashResultsAsync;
 /**
- * Indicate the given `dirPath` should be excluded by `dirExcludes`
- */
-function isExcludedDir(dirPath, dirExcludes) {
-    for (const exclude of dirExcludes) {
-        if ((0, minimatch_1.default)(dirPath, exclude)) {
-            return true;
-        }
-    }
-    return false;
-}
-/**
  * Create `HashResult` for a dir.
  * If the dir is excluded, returns null rather than a HashResult
  */
 async function createDirHashResultsAsync(dirPath, limiter, projectRoot, options, depth = 0) {
-    if (isExcludedDir(dirPath, options.dirExcludes)) {
+    if ((0, Path_1.isIgnoredPath)(dirPath, options.ignorePaths)) {
         return null;
     }
     const dirents = (await promises_1.default.readdir(path_1.default.join(projectRoot, dirPath), { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name));
@@ -128,12 +124,13 @@ async function createDirHashResultsAsync(dirPath, limiter, projectRoot, options,
         }
     }
     const hasher = (0, crypto_1.createHash)(options.hashAlgorithm);
-    const results = await Promise.all(promises);
+    const results = (await Promise.all(promises)).filter((result) => result != null);
+    if (results.length === 0) {
+        return null;
+    }
     for (const result of results) {
-        if (result != null) {
-            hasher.update(result.id);
-            hasher.update(result.hex);
-        }
+        hasher.update(result.id);
+        hasher.update(result.hex);
     }
     const hex = hasher.digest('hex');
     return { id: dirPath, hex };

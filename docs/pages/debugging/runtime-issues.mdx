@@ -9,6 +9,7 @@ import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
+import Video from '~/components/plugins/Video';
 
 Whether you're developing your app locally, sending it out to select beta testers, or launching your app live to the app stores, you'll always find yourself debugging issues. It's useful to split errors into two categories:
 
@@ -114,7 +115,9 @@ Errors or bugs in your production app can be much harder to solve, mainly becaus
 
 It can be a frustrating scenario when a production app crashes. There is very little information to look into when it happens. It's important to reproduce the issue, and even if you can't do that, to find any related crash reports.
 
-Start by reproducing the crash using your production app and then **find an associated crash report**.
+Start by reproducing the crash using your production app and then **find an associated crash report**. For Android, you can use `adb logcat` and for iOS you can use the Console app in Xcode.
+
+<Video url="https://www.youtube.com/watch?v=LvCci4Bwmpc" />
 
 #### Crash reports using adb logcat
 

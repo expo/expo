@@ -82,6 +82,7 @@ const home = [
         makePage('routing/layouts.mdx'),
         makePage('routing/appearance.mdx'),
         makePage('routing/error-handling.mdx'),
+        makePage('routing/next-steps.mdx'),
       ],
       { expanded: false }
     ),
@@ -93,7 +94,6 @@ const home = [
         makePage('develop/development-builds/create-a-build.mdx'),
         makePage('develop/development-builds/use-development-builds.mdx'),
         makePage('develop/development-builds/share-with-your-team.mdx'),
-        makePage('develop/development-builds/parallel-installation.mdx'),
         makePage('develop/development-builds/development-workflows.mdx'),
         makePage('develop/development-builds/next-steps.mdx'),
       ],
@@ -133,6 +133,7 @@ const general = [
   makeSection('', [makePage('guides/overview.mdx')]),
   makeSection('Development process', [
     makePage('workflow/configuration.mdx'),
+    makePage('guides/local-app-development.mdx'),
     makePage('workflow/using-libraries.mdx'),
     makePage('guides/permissions.mdx'),
     makePage('guides/environment-variables.mdx'),
@@ -226,7 +227,7 @@ const general = [
     ],
     { expanded: false }
   ),
-  makeSection('EAS', [makePage('eas/index.mdx')]),
+  makeSection('EAS', [makePage('eas/index.mdx'), makePage('eas/json.mdx')]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
     makePage('build/setup.mdx'),
@@ -260,7 +261,6 @@ const general = [
     makeGroup(
       'Reference',
       [
-        makePage('build-reference/eas-json.mdx'),
         makePage('build-reference/migrating.mdx'),
         makePage('build-reference/npm-hooks.mdx'),
         makePage('build-reference/private-npm-packages.mdx'),
@@ -450,6 +450,7 @@ const preview = [
     makePage('preview/introduction.mdx'),
     makePage('preview/support.mdx'),
     { expanded: true },
+    makeSection('Expo Router', [makePage('preview/api-routes.mdx')]),
   ]),
 ];
 

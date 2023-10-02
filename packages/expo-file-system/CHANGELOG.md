@@ -4,11 +4,24 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 15.7.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Migrated to Swift and Expo Modules API on iOS. ([#23943](https://github.com/expo/expo/pull/23943) by [@tsapeta](https://github.com/tsapeta))
+- Throw the correct error when we can't find the permissions modules. ([#24464](https://github.com/expo/expo/pull/24464) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 15.6.0 — 2023-09-04
 

@@ -1,4 +1,11 @@
-import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
+import {
+  ExpoConfig,
+  ExpoGoConfig,
+  getConfig,
+  PackageJSONConfig,
+  ProjectConfig,
+} from '@expo/config';
+import { resolveEntryPoint } from '@expo/config/paths';
 import findWorkspaceRoot from 'find-yarn-workspace-root';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -6,11 +13,12 @@ import { resolve } from 'url';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
-import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
+import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
@@ -31,15 +39,18 @@ export function getWorkspaceRoot(projectRoot: string): string | null {
   }
 }
 
+const supportedPlatforms = ['ios', 'android', 'web', 'none'];
+
 export function getEntryWithServerRoot(
   projectRoot: string,
-  projectConfig: ProjectConfig,
-  platform: string
+  props: { platform: string; pkg?: PackageJSONConfig }
 ) {
-  return path.relative(
-    getMetroServerRoot(projectRoot),
-    resolveAbsoluteEntryPoint(projectRoot, platform, projectConfig)
-  );
+  if (!supportedPlatforms.includes(props.platform)) {
+    throw new CommandError(
+      `Failed to resolve the project's entry file: The platform "${props.platform}" is not supported.`
+    );
+  }
+  return path.relative(getMetroServerRoot(projectRoot), resolveEntryPoint(projectRoot, props));
 }
 
 export function getMetroServerRoot(projectRoot: string) {
@@ -53,10 +64,9 @@ export function getMetroServerRoot(projectRoot: string) {
 /** Get the main entry module ID (file) relative to the project root. */
 export function resolveMainModuleName(
   projectRoot: string,
-  projectConfig: ProjectConfig,
-  platform: string
+  props: { platform: string; pkg?: PackageJSONConfig }
 ): string {
-  const entryPoint = getEntryWithServerRoot(projectRoot, projectConfig, platform);
+  const entryPoint = getEntryWithServerRoot(projectRoot, props);
 
   debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
 
@@ -84,6 +94,7 @@ export function createBundleUrlPath({
   serializerOutput,
   serializerIncludeMaps,
   lazy,
+  engine,
 }: {
   platform: string;
   mainModuleName: string;
@@ -93,6 +104,7 @@ export function createBundleUrlPath({
   serializerOutput?: 'static';
   serializerIncludeMaps?: boolean;
   lazy?: boolean;
+  engine?: 'hermes';
 }): string {
   const queryParams = new URLSearchParams({
     platform: encodeURIComponent(platform),
@@ -108,6 +120,11 @@ export function createBundleUrlPath({
   if (minify) {
     queryParams.append('minify', String(minify));
   }
+
+  if (engine) {
+    queryParams.append('transform.engine', engine);
+  }
+
   if (environment) {
     queryParams.append('resolver.environment', environment);
     queryParams.append('transform.environment', environment);
@@ -189,7 +206,12 @@ export abstract class ManifestMiddleware<
     const projectConfig = getConfig(this.projectRoot);
 
     // Read from headers
-    const mainModuleName = this.resolveMainModuleName(projectConfig, platform);
+    const mainModuleName = this.resolveMainModuleName({
+      pkg: projectConfig.pkg,
+      platform,
+    });
+
+    const isHermesEnabled = isEnableHermesManaged(projectConfig.exp, platform);
 
     // Create the manifest and set fields within it
     const expoGoConfig = this.getExpoGoConfig({
@@ -203,6 +225,7 @@ export abstract class ManifestMiddleware<
       platform,
       mainModuleName,
       hostname,
+      engine: isHermesEnabled ? 'hermes' : undefined,
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -217,8 +240,8 @@ export abstract class ManifestMiddleware<
   }
 
   /** Get the main entry module ID (file) relative to the project root. */
-  private resolveMainModuleName(projectConfig: ProjectConfig, platform: string): string {
-    let entryPoint = getEntryWithServerRoot(this.projectRoot, projectConfig, platform);
+  private resolveMainModuleName(props: { pkg: PackageJSONConfig; platform: string }): string {
+    let entryPoint = getEntryWithServerRoot(this.projectRoot, props);
 
     debug(`Resolved entry point: ${entryPoint} (project root: ${this.projectRoot})`);
 
@@ -253,10 +276,12 @@ export abstract class ManifestMiddleware<
     platform,
     mainModuleName,
     hostname,
+    engine,
   }: {
     platform: string;
     hostname?: string | null;
     mainModuleName: string;
+    engine?: 'hermes';
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
@@ -264,6 +289,7 @@ export abstract class ManifestMiddleware<
       platform,
       mainModuleName,
       lazy: shouldEnableAsyncImports(this.projectRoot),
+      engine,
     });
 
     return (
@@ -275,12 +301,14 @@ export abstract class ManifestMiddleware<
     );
   }
 
-  public _getBundleUrlPath({
+  private _getBundleUrlPath({
     platform,
     mainModuleName,
+    engine,
   }: {
     platform: string;
     mainModuleName: string;
+    engine?: 'hermes';
   }): string {
     const queryParams = new URLSearchParams({
       platform: encodeURIComponent(platform),
@@ -291,7 +319,9 @@ export abstract class ManifestMiddleware<
     if (shouldEnableAsyncImports(this.projectRoot)) {
       queryParams.append('lazy', String(true));
     }
-
+    if (engine) {
+      queryParams.append('transform.engine', String(engine));
+    }
     if (this.options.minify) {
       queryParams.append('minify', String(this.options.minify));
     }
@@ -358,10 +388,15 @@ export abstract class ManifestMiddleware<
   public getWebBundleUrl() {
     const platform = 'web';
     // Read from headers
-    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
+    const mainModuleName = this.resolveMainModuleName({
+      pkg: this.initialProjectConfig.pkg,
+      platform,
+    });
     return this._getBundleUrlPath({
       platform,
       mainModuleName,
+      // Hermes doesn't support more modern JS features than most, if not all, modern browser.
+      engine: 'hermes',
     });
   }
 
@@ -396,7 +431,7 @@ export abstract class ManifestMiddleware<
       const platform = parsePlatformHeader(req);
       // On web, serve the public folder
       if (!platform || platform === 'web') {
-        if (this.initialProjectConfig.exp.web?.output === 'static') {
+        if (['static', 'server'].includes(this.initialProjectConfig.exp.web?.output ?? '')) {
           // Skip the spa-styled index.html when static generation is enabled.
           next();
           return true;

@@ -121,6 +121,8 @@ redirects[module-config]=modules/module-config/
 redirects[eas-metadata]=eas/metadata/
 redirects[eas-metadata/introduction]=eas/metadata/
 redirects[eas-metadata/getting-started]=eas/metadata/getting-started/
+# EAS Build
+redirects[build-reference/eas-json]=eas/json/#eas-build
 
 # Development builds
 redirects[development/build]=development/create-development-builds/
@@ -161,9 +163,6 @@ redirects[introduction/walkthrough]=tutorial/introduction/
 redirects[tutorial/planning]=tutorial/introduction/
 redirects[tutorial/sharing]=tutorial/introduction/
 redirects[tutorial/text]=tutorial/introduction/
-
-# Push notifications
-redirects[push-notifications/using-fcm/]=push-notifications/push-notifications-setup/
 
 # EAS Update
 redirects[technical-specs/expo-updates-0/]=archive/technical-specs/expo-updates-0/

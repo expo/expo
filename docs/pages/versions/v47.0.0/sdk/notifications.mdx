@@ -771,7 +771,7 @@ Used to unregister tasks registered with `registerTaskAsync`.
 
 ### `getPermissionsAsync(): Promise<NotificationPermissionsStatus>`
 
-Calling this function checks current permissions settings related to notifications. It lets you verify whether the app is currently allowed to display alerts, play sounds, etc. There is no user-facing effect of calling this.
+Calling this function checks current permissions settings related to notifications. It lets you verify whether the app is currently allowed to display alerts, play sounds, and so on. There is no user-facing effect of calling this.
 
 #### Returns
 
@@ -1227,7 +1227,7 @@ Notification categories allow you to create interactive push notifications, so t
 <ImageSpotlight
   src="/static/images/sdk/notifications/categories.png"
   style={{ maxWidth: 800 }}
-  alt="image of notification categories on iOS and Android"
+  alt="image of notification categories on Android and iOS"
 />
 
 On iOS, notification categories also allow you to customize your notifications further. With each category, not only can you set interactive actions a user can take, but you can also configure things like the placeholder text to display when the user disables notification previews for your app.
@@ -1240,7 +1240,7 @@ Calling one of the following methods is a no-op on Web.
 
 - `identifier`: A string to associate as the ID of this category. You will pass this string in as the `categoryIdentifier` in your [`NotificationContent`](#notificationcontent) to associate a notification with this category. **Don't use the characters `:` or `-` in your category identifier. If you do, categories might not work as expected.**
 - `actions`: An array of [`NotificationAction`s](#notificationaction), which describe the actions associated with this category. Each of these actions takes the shape:
-  - `identifier`: A unique string that identifies this action. If a user takes this action (i.e. selects this button in the system's Notification UI), your app will receive this `actionIdentifier` via the [`NotificationResponseReceivedListener`](#addnotificationresponsereceivedlistenerlistener-event-notificationresponse--void-void).
+  - `identifier`: A unique string that identifies this action. If a user takes this action (for example, selects this button in the system's Notification UI), your app will receive this `actionIdentifier` via the [`NotificationResponseReceivedListener`](#addnotificationresponsereceivedlistenerlistener-event-notificationresponse--void-void).
   - `buttonTitle`: The title of the button triggering this action.
   - `textInput`: **Optional** object which, if provided, will result in a button that prompts the user for a text response.
     - `submitButtonTitle`: (**iOS only**) A string which will be used as the title for the button used for submitting the text response.
@@ -1501,7 +1501,7 @@ export type NotificationTrigger =
 
 An object represents a notification delivered by a push notification system.
 
-On Android under `remoteMessage` field a JS version of the Firebase `RemoteMessage` may be accessed. On iOS under `payload` you may find full contents of [`UNNotificationContent`'s](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) [`userInfo`](https://developer.apple.com/documentation/usernotifications/unnotificationcontent/1649869-userinfo?language=objc), i.e. [remote notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html)
+On Android under `remoteMessage` field a JS version of the Firebase `RemoteMessage` may be accessed. On iOS under `payload` you may find full contents of [`UNNotificationContent`'s](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) [`userInfo`](https://developer.apple.com/documentation/usernotifications/unnotificationcontent/1649869-userinfo?language=objc), which is the [remote notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html)
 
 ```ts
 export type PushNotificationTrigger = { type: 'push' } & (

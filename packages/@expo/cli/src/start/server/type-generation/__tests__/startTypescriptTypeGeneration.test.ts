@@ -31,7 +31,7 @@ it(`sets up typed routes`, async () => {
   expect(setupTypedRoutes).toBeCalledWith({
     metro,
     projectRoot: '/',
-    routerDirectory: 'app',
+    routerDirectory: '/app',
     server,
     typesDirectory: '/.expo/types',
   });
@@ -46,9 +46,9 @@ it(`sets up typed routes`, async () => {
     '/expo-env.d.ts',
   ]);
 
-  expect(fs.readFileSync('/expo-env.d.ts', 'utf8')).toMatch(
-    /<reference types="expo-router\/types" \/>/
-  );
+  expect(fs.readFileSync('/expo-env.d.ts', 'utf8')).toMatch(`/// <reference types="expo/types" />
+
+// NOTE: This file should not be edited and should be in your git ignore`);
   expect(fs.readFileSync('/.gitignore', 'utf8')).toMatch('expo-env.d.ts');
 });
 
@@ -73,7 +73,7 @@ it(`sets up typed routes and removes`, async () => {
   expect(setupTypedRoutes).toBeCalledWith({
     metro,
     projectRoot: '/',
-    routerDirectory: 'app',
+    routerDirectory: '/app',
     server,
     typesDirectory: '/.expo/types',
   });

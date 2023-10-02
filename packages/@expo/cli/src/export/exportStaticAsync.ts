@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -16,11 +17,21 @@ import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
+import {
+  getApiRoutesForDirectory,
+  getRouterDirectoryWithManifest,
+} from '../start/server/metro/router';
 import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
-type Options = { outputDir: string; minify: boolean; includeMaps: boolean };
+type Options = {
+  outputDir: string;
+  minify: boolean;
+  exportServer: boolean;
+  basePath: string;
+  includeMaps: boolean;
+};
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
@@ -62,16 +73,18 @@ export async function getFilesToExportFromServerAsync(
   {
     manifest,
     renderAsync,
+    includeGroupVariations,
   }: {
     manifest: any;
     renderAsync: (pathname: string) => Promise<string>;
+    includeGroupVariations?: boolean;
   }
 ): Promise<Map<string, string>> {
   // name : contents
   const files = new Map<string, string>();
 
   await Promise.all(
-    getHtmlFiles({ manifest }).map(async (outputPath) => {
+    getHtmlFiles({ manifest, includeGroupVariations }).map(async (outputPath) => {
       const pathname = outputPath.replace(/(?:index)?\.html$/, '');
       try {
         files.set(outputPath, '');
@@ -91,9 +104,12 @@ export async function getFilesToExportFromServerAsync(
 export async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, minify, includeMaps }: Options
+  { outputDir, basePath, exportServer, minify, includeMaps }: Options
 ): Promise<void> {
-  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, outputDir);
+  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const appDir = getRouterDirectoryWithManifest(projectRoot, exp);
+
+  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, { outputDir, basePath });
 
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
@@ -110,12 +126,17 @@ export async function exportFromServerAsync(
 
   const files = await getFilesToExportFromServerAsync(projectRoot, {
     manifest,
+    // Servers can handle group routes automatically and therefore
+    // don't require the build-time generation of every possible group
+    // variation.
+    includeGroupVariations: !exportServer,
     async renderAsync(pathname: string) {
       const template = await renderAsync(pathname);
       let html = await devServer.composeResourcesWithHtml({
         mode: 'production',
         resources,
         template,
+        basePath,
       });
 
       if (injectFaviconTag) {
@@ -132,6 +153,17 @@ export async function exportFromServerAsync(
       modifyBundlesWithSourceMaps(resource.filename, resource.source, includeMaps)
     );
   });
+
+  if (exportServer) {
+    const apiRoutes = await exportApiRoutesAsync({ outputDir, server: devServer, appDir });
+
+    // Add the api routes to the files to export.
+    for (const [route, contents] of apiRoutes) {
+      files.set(route, contents);
+    }
+  } else {
+    warnPossibleInvalidExportType(appDir);
+  }
 
   fs.mkdirSync(path.join(outputDir), { recursive: true });
 
@@ -178,7 +210,13 @@ export function modifyBundlesWithSourceMaps(
   return source;
 }
 
-export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
+export function getHtmlFiles({
+  manifest,
+  includeGroupVariations,
+}: {
+  manifest: any;
+  includeGroupVariations?: boolean;
+}): string[] {
   const htmlFiles = new Set<string>();
 
   function traverseScreens(screens: string | { screens: any; path: string }, basePath = '') {
@@ -193,8 +231,12 @@ export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
               ? basePath + 'index'
               : basePath.slice(0, -1);
         }
-        // TODO: Dedupe requests for alias routes.
-        addOptionalGroups(filePath);
+        if (includeGroupVariations) {
+          // TODO: Dedupe requests for alias routes.
+          addOptionalGroups(filePath);
+        } else {
+          htmlFiles.add(filePath);
+        }
       } else if (typeof value === 'object' && value?.screens) {
         const newPath = basePath + value.path + '/';
         traverseScreens(value.screens, newPath);
@@ -229,29 +271,93 @@ export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
 // Given a route like `(foo)/bar/(baz)`, return all possible variations of the route.
 // e.g. `(foo)/bar/(baz)`, `(foo)/bar/baz`, `foo/bar/(baz)`, `foo/bar/baz`,
 export function getPathVariations(routePath: string): string[] {
-  const variations = new Set<string>([routePath]);
+  const variations = new Set<string>();
   const segments = routePath.split('/');
 
-  function generateVariations(segments: string[], index: number): void {
-    if (index >= segments.length) {
+  function generateVariations(segments: string[], current = ''): void {
+    if (segments.length === 0) {
+      if (current) variations.add(current);
       return;
     }
 
-    const newSegments = [...segments];
-    while (
-      index < newSegments.length &&
-      matchGroupName(newSegments[index]) &&
-      newSegments.length > 1
-    ) {
-      newSegments.splice(index, 1);
-      variations.add(newSegments.join('/'));
-      generateVariations(newSegments, index + 1);
+    const [head, ...rest] = segments;
+
+    if (head.startsWith('(foo,foo')) {
     }
 
-    generateVariations(segments, index + 1);
+    if (matchGroupName(head)) {
+      const groups = head.slice(1, -1).split(',');
+
+      if (groups.length > 1) {
+        for (const group of groups) {
+          // If there are multiple groups, recurse on each group.
+          generateVariations([`(${group.trim()})`, ...rest], current);
+        }
+        return;
+      } else {
+        // Start a fork where this group is included
+        generateVariations(rest, current ? `${current}/(${groups[0]})` : `(${groups[0]})`);
+        // This code will continue and add paths without this group included`
+      }
+    } else if (current) {
+      current = `${current}/${head}`;
+    } else {
+      current = head;
+    }
+
+    generateVariations(rest, current);
   }
 
-  generateVariations(segments, 0);
+  generateVariations(segments);
 
   return Array.from(variations);
+}
+
+async function exportApiRoutesAsync({
+  outputDir,
+  server,
+  appDir,
+}: {
+  outputDir: string;
+  server: MetroBundlerDevServer;
+  appDir: string;
+}): Promise<Map<string, string>> {
+  const funcDir = path.join(outputDir, '_expo/functions');
+  fs.mkdirSync(path.join(funcDir), { recursive: true });
+
+  const [manifest, files] = await Promise.all([
+    server.getExpoRouterRoutesManifestAsync({
+      appDir,
+    }),
+    server
+      .exportExpoRouterApiRoutesAsync({
+        mode: 'production',
+        appDir,
+      })
+      .then((routes) => {
+        const files = new Map<string, string>();
+        for (const [route, contents] of routes) {
+          files.set(path.join('_expo/functions', route), contents);
+        }
+        return files;
+      }),
+  ]);
+
+  Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
+
+  files.set('_expo/routes.json', JSON.stringify(manifest, null, 2));
+
+  return files;
+}
+
+function warnPossibleInvalidExportType(appDir: string) {
+  const apiRoutes = getApiRoutesForDirectory(appDir);
+  if (apiRoutes.length) {
+    // TODO: Allow API Routes for native-only.
+    Log.warn(
+      chalk.yellow`Skipping export for API routes because \`web.output\` is not "server". You may want to remove the routes: ${apiRoutes
+        .map((v) => path.relative(appDir, v))
+        .join(', ')}`
+    );
+  }
 }

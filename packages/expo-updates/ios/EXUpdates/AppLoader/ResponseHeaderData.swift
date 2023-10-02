@@ -7,7 +7,7 @@ import EXStructuredHeaders
  * For non-multipart responses, this is the data from the headers in the response.
  * For multipart responses, this is the data from the headers in the outer response (as opposed to the headers in a part).
  */
-internal final class ResponseHeaderData {
+public final class ResponseHeaderData {
   /**
    * expo-protocol-version header. Indicates which version of the expo-updates protocol the response is.
    */
@@ -32,7 +32,7 @@ internal final class ResponseHeaderData {
    */
   let manifestSignature: String?
 
-  required init(protocolVersionRaw: String?, serverDefinedHeadersRaw: String?, manifestFiltersRaw: String?, manifestSignature: String?) {
+  public required init(protocolVersionRaw: String?, serverDefinedHeadersRaw: String?, manifestFiltersRaw: String?, manifestSignature: String?) {
     self.protocolVersionRaw = protocolVersionRaw
     self.serverDefinedHeadersRaw = serverDefinedHeadersRaw
     self.manifestFiltersRaw = manifestFiltersRaw
@@ -51,7 +51,7 @@ internal final class ResponseHeaderData {
     }
   }()
 
-  lazy var manifestFilters: [String: Any]? = {
+  public lazy var manifestFilters: [String: Any]? = {
     self.manifestFiltersRaw.let { it in
       ResponseHeaderData.dictionaryWithStructuredHeader(it)
     }

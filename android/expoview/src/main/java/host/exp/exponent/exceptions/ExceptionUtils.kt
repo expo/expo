@@ -54,6 +54,13 @@ object ExceptionUtils {
     }
   }
 
+  fun exceptionToErrorHeader(exception: Exception): String? {
+    if (exception is ManifestException) {
+      return exception.errorHeader
+    }
+    return null
+  }
+
   private fun getUserErrorMessage(exception: Exception?, context: Context): String? {
     if (exception is UnknownHostException || exception is ConnectException) {
       if (isAirplaneModeOn(context)) {

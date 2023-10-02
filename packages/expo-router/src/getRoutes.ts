@@ -26,6 +26,8 @@ type TreeNode = {
 
 type Options = {
   ignore?: RegExp[];
+  preserveApiRoutes?: boolean;
+  ignoreRequireErrors?: boolean;
 };
 
 /** Convert a flat map of file nodes into a nested tree of files. */
@@ -157,18 +159,6 @@ function applyDefaultInitialRouteName(node: RouteNode): RouteNode {
   };
 }
 
-function cloneGroupRoute(node: RouteNode, { name: nextName }: { name: string }): RouteNode {
-  const groupName = `(${nextName})`;
-  const parts = node.contextKey.split('/');
-  parts[parts.length - 2] = groupName;
-
-  return {
-    ...node,
-    route: groupName,
-    contextKey: parts.join('/'),
-  };
-}
-
 function folderNodeToRouteNode({ name, children }: TreeNode): RouteNode[] | null {
   // Empty folder, skip it.
   if (!children.length) {
@@ -194,23 +184,8 @@ function fileNodeToRouteNode(tree: TreeNode): RouteNode[] | null {
 
   const dynamic = generateDynamic(name);
 
-  const groupName = matchGroupName(name);
-  const multiGroup = groupName?.includes(',');
-
-  const clones = multiGroup ? groupName!.split(',').map((v) => ({ name: v.trim() })) : null;
-
-  // Assert duplicates:
-  if (clones) {
-    const names = new Set<string>();
-    for (const clone of clones) {
-      if (names.has(clone.name)) {
-        throw new Error(
-          `Array syntax cannot contain duplicate group name "${clone.name}" in "${node.contextKey}".`
-        );
-      }
-      names.add(clone.name);
-    }
-  }
+  const clones = extrapolateGroupRoutes(name, node.contextKey);
+  clones.delete(name);
 
   const output = {
     loadRoute: node.loadRoute,
@@ -220,9 +195,13 @@ function fileNodeToRouteNode(tree: TreeNode): RouteNode[] | null {
     dynamic,
   };
 
-  if (Array.isArray(clones)) {
-    return clones.map((clone) =>
-      applyDefaultInitialRouteName(cloneGroupRoute({ ...output }, clone))
+  if (clones.size) {
+    return [...clones].map((clone) =>
+      applyDefaultInitialRouteName({
+        ...output,
+        contextKey: node.contextKey.replace(output.route, clone),
+        route: clone,
+      })
     );
   }
 
@@ -237,6 +216,39 @@ function fileNodeToRouteNode(tree: TreeNode): RouteNode[] | null {
   ];
 }
 
+function extrapolateGroupRoutes(
+  route: string,
+  contextKey: string,
+  routes: Set<string> = new Set()
+): Set<string> {
+  const match = matchGroupName(route);
+
+  if (!match) {
+    routes.add(route);
+    return routes;
+  }
+
+  const groups = match?.split(',');
+  const groupsSet = new Set(groups);
+
+  if (groupsSet.size !== groups.length) {
+    throw new Error(
+      `Array syntax cannot contain duplicate group name "${groups}" in "${contextKey}".`
+    );
+  }
+
+  if (groups.length === 1) {
+    routes.add(route);
+    return routes;
+  }
+
+  for (const group of groups) {
+    extrapolateGroupRoutes(route.replace(match, group.trim()), contextKey, routes);
+  }
+
+  return routes;
+}
+
 function treeNodeToRouteNode(tree: TreeNode): RouteNode[] | null {
   if (tree.node) {
     return fileNodeToRouteNode(tree);
@@ -247,6 +259,7 @@ function treeNodeToRouteNode(tree: TreeNode): RouteNode[] | null {
 
 function contextModuleToFileNodes(
   contextModule: RequireContext,
+  options: Options = {},
   files: string[] = contextModule.keys()
 ): FileNode[] {
   const nodes = files.map((key) => {
@@ -257,14 +270,23 @@ function contextModuleToFileNodes(
         // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
         // filter the missing routes.
         if (EXPO_ROUTER_IMPORT_MODE === 'sync') {
-          if (!contextModule(key)?.default) {
+          const isApi = key.match(/\+api\.[jt]sx?$/);
+          if (!isApi && !contextModule(key)?.default) {
             return null;
           }
         }
       }
       const node: FileNode = {
         loadRoute() {
-          return contextModule(key);
+          if (options.ignoreRequireErrors) {
+            try {
+              return contextModule(key);
+            } catch {
+              return {};
+            }
+          } else {
+            return contextModule(key);
+          }
         },
         normalizedName: getNameFromFilePath(key),
         contextKey: key,
@@ -369,6 +391,9 @@ export async function getRoutesAsync(
 
 function getIgnoreList(options?: Options) {
   const ignore: RegExp[] = [/^\.\/\+html\.[tj]sx?$/, ...(options?.ignore ?? [])];
+  if (options?.preserveApiRoutes !== true) {
+    ignore.push(/\+api\.[tj]sx?$/);
+  }
   return ignore;
 }
 
@@ -385,7 +410,7 @@ function contextModuleToTree(contextModule: RequireContext, options?: Options) {
     ignore: getIgnoreList(options),
   });
   assertDuplicateRoutes(allowed);
-  const files = contextModuleToFileNodes(contextModule, allowed);
+  const files = contextModuleToFileNodes(contextModule, options, allowed);
   return getRecursiveTree(files);
 }
 
@@ -406,9 +431,9 @@ function appendSitemapRoute(routes: RouteNode) {
   ) {
     return routes;
   }
-  const { Sitemap, getNavOptions } = require('./views/Sitemap');
   routes.children.push({
     loadRoute() {
+      const { Sitemap, getNavOptions } = require('./views/Sitemap');
       return { default: Sitemap, getNavOptions };
     },
     route: '_sitemap',

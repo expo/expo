@@ -33,6 +33,21 @@ export class SQLiteDatabase {
         });
     }
     /**
+     * Due to limitations on `Android` this function is provided to allow raw SQL queries to be
+     * executed on the database. This will be less efficient than using the `exec` function, please use
+     * only when necessary.
+     */
+    execRawQuery(queries, readOnly, callback) {
+        if (Platform.OS === 'ios') {
+            return this.exec(queries, readOnly, callback);
+        }
+        ExpoSQLite.execRawQuery(this._name, queries.map(_serializeQuery), readOnly).then((nativeResultSets) => {
+            callback(null, nativeResultSets.map(_deserializeResultSet));
+        }, (error) => {
+            callback(error instanceof Error ? error : new Error(error));
+        });
+    }
+    /**
      * Executes the SQL statement and returns a Promise resolving with the result.
      */
     async execAsync(queries, readOnly) {
@@ -70,6 +85,10 @@ export class SQLiteDatabase {
         }
         return ExpoSQLite.deleteAsync(this._name);
     }
+    /**
+     * Used to listen to changes in the database.
+     * @param callback A function that receives the `tableName` and `rowId` of the modified data.
+     */
     onDatabaseChange(cb) {
         return emitter.addListener('onDatabaseChange', cb);
     }
@@ -148,6 +167,7 @@ export function openDatabase(name, version = '1.0', description = name, size = 1
     }
     const db = _openExpoSQLiteDatabase(name, version, description, size, callback);
     db.exec = db._db.exec.bind(db._db);
+    db.execRawQuery = db._db.execRawQuery.bind(db._db);
     db.execAsync = db._db.execAsync.bind(db._db);
     db.closeAsync = db._db.closeAsync.bind(db._db);
     db.closeSync = db._db.closeSync.bind(db._db);
@@ -169,7 +189,14 @@ export class ExpoSQLTransactionAsync {
     }
     async executeSqlAsync(sqlStatement, args) {
         const resultSets = await this.db.execAsync([{ sql: sqlStatement, args: args ?? [] }], this.readOnly);
-        return resultSets[0];
+        const result = resultSets[0];
+        if (isResultSetError(result)) {
+            throw result.error;
+        }
+        return result;
     }
+}
+function isResultSetError(result) {
+    return 'error' in result;
 }
 //# sourceMappingURL=SQLite.js.map

@@ -27,11 +27,6 @@ function wrapBundle(str: string) {
   return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
 }
 
-function stripProcess(str: string) {
-  // TODO: Remove from the metro prelude
-  return str.replace(/process=this\.process\|\|{},/m, '');
-}
-
 // TODO(EvanBacon): Group all the code together and version.
 const getRenderModuleId = (projectRoot: string): string => {
   const moduleId = resolveFrom.silent(projectRoot, 'expo-router/node/render.js');
@@ -50,6 +45,7 @@ type StaticRenderOptions = {
   minify?: boolean;
   platform?: string;
   environment?: 'node';
+  engine?: 'hermes';
 };
 
 const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
@@ -105,7 +101,13 @@ export async function createMetroEndpointAsync(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  { dev = false, platform = 'web', minify = false, environment }: StaticRenderOptions = {}
+  {
+    dev = false,
+    platform = 'web',
+    minify = false,
+    environment,
+    engine = 'hermes',
+  }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
@@ -116,6 +118,9 @@ export async function createMetroEndpointAsync(
 
   if (environment) {
     url += `&resolver.environment=${environment}&transform.environment=${environment}`;
+  }
+  if (engine) {
+    url += `&transform.engine=${engine}`;
   }
   return url;
 }
@@ -156,16 +161,10 @@ export async function requireFileContentsWithMetro(
 
   const content = await res.text();
 
-  let bun = wrapBundle(content);
-
-  // This exposes the entire environment to the bundle.
-  if (props.environment === 'node') {
-    bun = stripProcess(bun);
-  }
-
-  return bun;
+  return wrapBundle(content);
 }
-export async function requireWithMetro<T>(
+
+export async function requireWithMetro<T extends Record<string, (...args: any[]) => Promise<any>>>(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
@@ -177,7 +176,7 @@ export async function requireWithMetro<T>(
     absoluteFilePath,
     options
   );
-  return evalMetro(content);
+  return evalMetroAndWrapFunctions<T>(projectRoot, content);
 }
 
 export async function getStaticRenderFunctions(
@@ -191,7 +190,14 @@ export async function getStaticRenderFunctions(
     options
   );
 
-  const contents = evalMetro(scriptContents);
+  return evalMetroAndWrapFunctions(projectRoot, scriptContents);
+}
+
+export function evalMetroAndWrapFunctions<T = Record<string, (...args: any[]) => Promise<any>>>(
+  projectRoot: string,
+  script: string
+): Promise<T> {
+  const contents = evalMetro(script);
 
   // wrap each function with a try/catch that uses Metro's error formatter
   return Object.keys(contents).reduce((acc, key) => {

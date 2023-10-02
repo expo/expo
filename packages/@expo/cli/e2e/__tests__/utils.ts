@@ -1,11 +1,12 @@
 /* eslint-env jest */
 import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
-import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import mockedSpawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import assert from 'assert';
 import execa from 'execa';
 import findProcess from 'find-process';
 import fs from 'fs';
+import * as htmlParser from 'node-html-parser';
 import os from 'os';
 import path from 'path';
 import treeKill from 'tree-kill';
@@ -34,9 +35,7 @@ export async function abortingSpawnAsync(
   args: string[],
   options?: SpawnOptions
 ): Promise<SpawnResult> {
-  const spawnAsync = jest.requireActual(
-    '@expo/spawn-async'
-  ) as typeof import('@expo/spawn-async').default;
+  const spawnAsync = jest.requireActual('@expo/spawn-async') as typeof mockedSpawnAsync;
 
   const promise = spawnAsync(cmd, args, options);
   promise.child.stdout?.pipe(process.stdout);
@@ -227,4 +226,17 @@ export async function ensurePortFreeAsync(port: number) {
   } catch (error: any) {
     console.log(`Failed to kill process ${portProcess.name} on port ${port}: ${error.message}`);
   }
+}
+
+export async function getPage(output: string, route: string): Promise<string> {
+  return await fs.promises.readFile(path.join(output, route), 'utf8');
+}
+
+export async function getPageHtml(output: string, route: string) {
+  return htmlParser.parse(await getPage(output, route));
+}
+
+export function getRouterE2ERoot(): string {
+  const root = path.join(__dirname, '../../../../../apps/router-e2e');
+  return root;
 }

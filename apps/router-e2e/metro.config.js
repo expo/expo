@@ -5,9 +5,7 @@ const { FileStore } = require('metro-cache');
 const projectRoot = __dirname;
 
 /** @type {import('expo/metro-config').MetroConfig} */
-const config = createMetroConfiguration(projectRoot, {
-  isCSSEnabled: true,
-});
+const config = createMetroConfiguration(projectRoot);
 
 const path = require('path');
 
@@ -28,7 +26,13 @@ config.cacheStores = [
   // this ensures the transform-time environment variables are changed to reflect
   // the current project.
   new FileStore({
-    root: path.join(projectRoot, 'node_modules/.cache/metro', process.env.E2E_ROUTER_SRC || 'app'),
+    root: path.join(
+      projectRoot,
+      'node_modules/.cache/metro',
+      process.env.E2E_ROUTER_SRC || 'app',
+      // TODO: Move app.json to serializer instead of babel plugin.
+      process.env.EXPO_E2E_BASE_PATH || '/'
+    ),
   }),
 ];
 

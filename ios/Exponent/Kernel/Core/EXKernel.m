@@ -153,46 +153,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   return nil;
 }
 
-- (BOOL)sendNotification:(EXPendingNotification *)notification
-{
-  EXKernelAppRecord *destinationApp = [_appRegistry standaloneAppRecord] ?: [_appRegistry newestRecordWithScopeKey:notification.scopeKey];
-
-  // This allows home app record to receive notification events as well.
-  if (!destinationApp && [_appRegistry.homeAppRecord.scopeKey isEqualToString:notification.scopeKey]) {
-    destinationApp = _appRegistry.homeAppRecord;
-  }
-
-  if (destinationApp) {
-    // send the body to the already-open experience
-    BOOL success = [self _dispatchJSEvent:@"Exponent.notification" body:notification.properties toApp:destinationApp];
-    [self _moveAppToVisible:destinationApp];
-    return success;
-  } else {
-    // no app is currently running for this experience id.
-    // if we're Expo Go, we can query Home for a past experience in the user's history, and route the notification there.
-    if (_browserController) {
-      __weak typeof(self) weakSelf = self;
-      [_browserController getHistoryUrlForScopeKey:notification.scopeKey completion:^(NSString *urlString) {
-        if (urlString) {
-          NSURL *url = [NSURL URLWithString:urlString];
-          if (url) {
-            [weakSelf createNewAppWithUrl:url initialProps:@{ @"notification": notification.properties }];
-          }
-        }
-      }];
-      // If we're here, there's no active app in appRegistry matching notification.experienceId
-      // and we are in Expo Go, since _browserController is not nil.
-      // If so, we can return YES (meaning "notification has been successfully dispatched")
-      // because we pass the notification as initialProps in completion handler
-      // of getHistoryUrlForExperienceId:. If urlString passed to completion handler is empty,
-      // the notification is forgotten (this is the expected behavior).
-      return YES;
-    }
-  }
-
-  return NO;
-}
-
 /**
  *  If the bridge has a batchedBridge or parentBridge selector, posts the notification on that object as well.
  */

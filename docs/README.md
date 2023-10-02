@@ -252,7 +252,7 @@ Now, in the terminal window, navigate to **expo/docs** repo and run the command 
 
 ##### Disable changelog
 
-After making changes, when you are opening the PR, consider adding `<!-- disable:changelog-checks -->` in the PR description if the changes you are making are docs-related changes (such as updating the field description or fixing a typo, etc.)
+After making changes, when you are opening the PR, consider adding `<!-- disable:changelog-checks -->` in the PR description if the changes you are making are docs-related changes (such as updating the field description or fixing a typo, and so on).
 
 This will make sure that the ExpoBot on GitHub will not complain about updating the package’s changelog (some of these changes, as described above, are not worth mentioning in the changelog).
 

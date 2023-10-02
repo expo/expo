@@ -4,11 +4,16 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+- Migrated codebase to use Expo Modules API. ([#24157](https://github.com/expo/expo/pull/24157) by [@lukmccall](https://github.com/lukmccall))
 
 ## 11.5.0 — 2023-09-04
 

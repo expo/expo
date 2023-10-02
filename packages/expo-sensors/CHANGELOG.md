@@ -4,11 +4,19 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.6.0 — 2023-09-15
+
+### 💡 Others
+
+- Migrated to Swift and Expo Modules API on iOS. ([#24133](https://github.com/expo/expo/pull/24133) by [@tsapeta](https://github.com/tsapeta))
 
 ## 12.5.0 — 2023-09-04
 

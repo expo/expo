@@ -8,6 +8,41 @@
 
 ### 🐛 Bug fixes
 
+- Detect bun before yarn to allow bun install --yarn usage. ([#24360](https://github.com/expo/expo/pull/24360) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 1.1.2 — 2023-09-25
+
+### 🐛 Bug fixes
+
+- Detect bun before yarn to allow bun install --yarn usage. ([#24360](https://github.com/expo/expo/pull/24360) by [@byCedric](https://github.com/byCedric))
+
+## 1.2.0 — 2023-09-15
+
+### 🎉 New features
+
+- Add support for [Bun](https://bun.sh) package manager. ([#24168](https://github.com/expo/expo/pull/24168) by [@colinhacks](https://github.com/colinhacks))
+
+### 🐛 Bug fixes
+
+- Fix build files. ([#24344](https://github.com/expo/expo/pull/24344) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove console log. ([#24355](https://github.com/expo/expo/pull/24355) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 1.1.1 — 2023-09-11
+
+### 🐛 Bug fixes
+
+- Remove console log. ([#24355](https://github.com/expo/expo/pull/24355) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 1.1.0 — 2023-09-11
+
+### 🎉 New features
+
+- Add support for [Bun](https://bun.sh) package manager by [@colinhacks][https://github.com/colinhacks] ([#24168](https://github.com/expo/expo/pull/24168) by [@colinhacks](https://github.com/colinhacks))
+
 ### 💡 Others
 
 ## 1.0.3 — 2023-09-04

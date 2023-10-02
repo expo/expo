@@ -8,7 +8,45 @@
 
 ### 🐛 Bug fixes
 
+- Add missing export in checkForUpdateAsync result. (by [@douglowder](https://github.com/douglowder)) ([#24503](https://github.com/expo/expo/pull/24503) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
+
+- Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.18.14 — 2023-09-27
+
+_This version does not introduce any user-facing changes._
+
+## 0.21.1 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.13 — 2023-09-15
+
+### 🐛 Bug fixes
+
+- [iOS] remove force unwrap in download handler. ([#24299](https://github.com/expo/expo/pull/24299) by [@douglowder](https://github.com/douglowder))
+- Fix updates enabled defaulting on iOS. ([#24327](https://github.com/expo/expo/pull/24327) by [@wschurman](https://github.com/wschurman))
+- [Android] Make scopekey only required when getting database entity. ([#24466](https://github.com/expo/expo/pull/24466) by [@wschurman](https://github.com/wschurman))
+
+## 0.21.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+- Fix updates enabled defaulting on iOS. ([#24327](https://github.com/expo/expo/pull/24327) by [@wschurman](https://github.com/wschurman))
+- [Android] Make scopekey only required when getting database entity. ([#24466](https://github.com/expo/expo/pull/24466) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Update E2E test. ([#24272](https://github.com/expo/expo/pull/24272) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Disable packager and bundle JS when `EX_UPDATES_NATIVE_DEBUG` set. ([#24366](https://github.com/expo/expo/pull/24366) by [@douglowder](https://github.com/douglowder))
+- Add Apple TV to Updates E2E (build only). ([#24411](https://github.com/expo/expo/pull/24411) by [@douglowder](https://github.com/douglowder))
+- Add `sqlite3` to the podspec to use newer version that the built in. ([#24375](https://github.com/expo/expo/pull/24375) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.20.0 — 2023-09-04
 
@@ -16,6 +54,7 @@
 
 - Change source of truth for constants types. ([#24049](https://github.com/expo/expo/pull/24049) by [@wschurman](https://github.com/wschurman))
 - Remove classic manifest types and classic updates. ([#24053](https://github.com/expo/expo/pull/24053), [#24066](https://github.com/expo/expo/pull/24066) by [@wschurman](https://github.com/wschurman))
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
 
@@ -28,6 +67,7 @@
 - [Android] Fixed the `node` execution on Windows. ([#23983](https://github.com/expo/expo/pull/23983) by [@kudo](https://github.com/kudo))
 - Bare update manifest non-nullability parity. ([#23166](https://github.com/expo/expo/pull/23166) by [@wschurman](https://github.com/wschurman))
 - Support importing assets from out of the project root when working in monorepos. ([#24090](https://github.com/expo/expo/pull/24090) by [@EvanBacon](https://github.com/EvanBacon))
+- Prevent failed updates from passing checkForUpdateAsync(). ([#24112](https://github.com/expo/expo/pull/24112) by [@douglowder](https://github.com/douglowder))
 
 ## 0.19.1 — 2023-08-02
 

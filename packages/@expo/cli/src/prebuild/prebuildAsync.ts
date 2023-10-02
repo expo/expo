@@ -53,6 +53,7 @@ export async function prebuildAsync(
       npm?: boolean;
       yarn?: boolean;
       pnpm?: boolean;
+      bun?: boolean;
     };
     /** List of node modules to skip updating. */
     skipDependencyUpdate?: string[];
@@ -62,7 +63,7 @@ export async function prebuildAsync(
   require('@expo/env').load(projectRoot);
 
   if (options.clean) {
-    const { maybeBailOnGitStatusAsync } = await import('../utils/git');
+    const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
     // Clean the project folders...
     if (await maybeBailOnGitStatusAsync()) {
       return null;
@@ -104,6 +105,7 @@ export async function prebuildAsync(
       npm: !!options.packageManager?.npm,
       yarn: !!options.packageManager?.yarn,
       pnpm: !!options.packageManager?.pnpm,
+      bun: !!options.packageManager?.bun,
       silent: !(env.EXPO_DEBUG || env.CI),
     });
   }
@@ -124,7 +126,7 @@ export async function prebuildAsync(
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
   if (options.platforms.includes('ios') && options.install && needsPodInstall) {
-    const { installCocoaPodsAsync } = await import('../utils/cocoapods');
+    const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
 
     podsInstalled = await installCocoaPodsAsync(projectRoot);
   } else {

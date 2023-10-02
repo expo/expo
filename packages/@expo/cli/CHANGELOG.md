@@ -4,11 +4,75 @@
 
 ### 🛠 Breaking changes
 
+- Enable `tsconfigPaths` by default flag ([#24490](https://github.com/expo/expo/pull/24490) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🎉 New features
+
+- Automatically optimize transformations based on Hermes usage. ([#24672](https://github.com/expo/expo/pull/24672) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
+- Resolve browser shims with mismatched extensions. ([#24671](https://github.com/expo/expo/pull/24671) by [@EvanBacon](https://github.com/EvanBacon))
+- Ensure a unique static path is generated for each group during static extraction ([#24218](https://github.com/expo/expo/pull/24218) by [@marklawlor](https://github.com/marklawlor))
+- Fallback to `xcrun devicectl` for iOS 17 to launch the app. ([#24635](https://github.com/expo/expo/pull/24635) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Add tests for `baseUrl` with new resolver. ([#24673](https://github.com/expo/expo/pull/24673) by [@EvanBacon](https://github.com/EvanBacon))
+- Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+- Improve truncated Metro Node.js errors. ([#24546](https://github.com/expo/expo/pull/24546) by [@EvanBacon](https://github.com/EvanBacon))
+- Skip extraneous static HTML export in server mode. ([#24529](https://github.com/expo/expo/pull/24529) by [@EvanBacon](https://github.com/EvanBacon))
+- Fully drop support for `expo.entryFile` in the `app.json`. ([#24688](https://github.com/expo/expo/pull/24688) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove `isCSSEnabled` flag from e2e tests ([#24489](https://github.com/expo/expo/pull/24489) by [@marklawlor](https://github.com/marklawlor))
+- Use Metro and web TypeScript types from `expo` instead of `expo-router`. ([#24255](https://github.com/expo/expo/pull/24255) by [@marklawlor](https://github.com/marklawlor))
+- Speed up Metro tests with new resolver. ([#24616](https://github.com/expo/expo/pull/24616) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.10.13 — 2023-09-27
+
+### 🐛 Bug fixes
+
+- Fallback to `xcrun devicectl` for iOS 17 to launch the app. ([#24635](https://github.com/expo/expo/pull/24635) by [@byCedric](https://github.com/byCedric))
+
+## 0.13.2 — 2023-09-18
+
+### 🐛 Bug fixes
+
+- Fix SPA web mode in Expo Router. ([#24472](https://github.com/expo/expo/pull/24472) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.13.1 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.0 — 2023-09-15
+
+### 🛠 Breaking changes
+
+- Drop `/logs` and remove `@expo/dev-server` package. ([#24272](https://github.com/expo/expo/pull/24272) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+- Add experimental API Routes for Expo Router v3. ([#24429](https://github.com/expo/expo/pull/24429) by [@EvanBacon](https://github.com/EvanBacon))
+- Support mocking Node.js externals for client-side bundles. ([#24453](https://github.com/expo/expo/pull/24453) by [@EvanBacon](https://github.com/EvanBacon))
+- Add additional port check after build to ensure port is still available. ([#24315](https://github.com/expo/expo/pull/24315) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for bun as a package manager. ([#24344](https://github.com/expo/expo/pull/24344) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Upgrade `minipass@3.3.6` to use built-in types. ([#24402](https://github.com/expo/expo/pull/24402) by [@byCedric](https://github.com/byCedric))
+- Pin `tar@6.1.13` to avoid `minipass` compatibility issues. ([#24402](https://github.com/expo/expo/pull/24402) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Move `process.env` polyfill strip to `expo/metro-config`. ([#24455](https://github.com/expo/expo/pull/24455) by [@EvanBacon](https://github.com/EvanBacon))
+- Refactor e2e tests. ([#24385](https://github.com/expo/expo/pull/24385) by [@EvanBacon](https://github.com/EvanBacon))
+- Forward the project root path to `getRuntimeVersionAsync` and `getRuntimeVersionNullableAsync`. ([#24126](https://github.com/expo/expo/pull/24126) by [@mccraveiro](https://github.com/mccraveiro))
+
+## 0.10.12 — 2023-09-11
+
+### 🎉 New features
+
+- Add support for bun as a package manager. ([#24344](https://github.com/expo/expo/pull/24344) by [@EvanBacon](https://github.com/EvanBacon))
+- Add additional port check after build to ensure port is still available. ([#24315](https://github.com/expo/expo/pull/24315) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.12.0 — 2023-09-04
 
@@ -20,6 +84,7 @@
 
 ### 🎉 New features
 
+- Add `basePath` support for `npx expo export`. ([#23911](https://github.com/expo/expo/pull/23911) by [@EvanBacon](https://github.com/EvanBacon))
 - Add source map support with static Metro web exports. ([#24213](https://github.com/expo/expo/pull/24213) by [@EvanBacon](https://github.com/EvanBacon))
 - Validate android package name ahead of time. ([#24194](https://github.com/expo/expo/pull/24194) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve the Xcode setup instructions. ([#24191](https://github.com/expo/expo/pull/24191) by [@EvanBacon](https://github.com/EvanBacon))

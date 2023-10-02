@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Process
@@ -507,10 +506,10 @@ abstract class ReactNativeActivity :
       // This is the same on iOS.
       return true
     }
-    val errorRecoveryManager = ErrorRecoveryManager.getInstance(experienceKey!!)
-    errorRecoveryManager.markErrored()
 
-    if (!errorRecoveryManager.shouldReloadOnError()) {
+    val errorRecoveryManager = experienceKey?.let { ErrorRecoveryManager.getInstance(it) }
+    errorRecoveryManager?.markErrored()
+    if (errorRecoveryManager?.shouldReloadOnError() != true) {
       return true
     }
 
@@ -593,7 +592,7 @@ abstract class ReactNativeActivity :
       val name = manifest!!.getName()
       scopedPermissionsRequester = ScopedPermissionsRequester(experienceKey!!)
       scopedPermissionsRequester!!.requestPermissions(this, name ?: "", permissions, listener)
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    } else {
       super.requestPermissions(permissions, requestCode)
     }
   }

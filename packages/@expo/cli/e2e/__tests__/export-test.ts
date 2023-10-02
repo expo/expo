@@ -81,6 +81,10 @@ describe('server', () => {
       // `npx expo export`
       await execa('node', [bin, 'export', '--dump-sourcemap', '--dump-assetmap'], {
         cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_FAST_RESOLVER: 'false',
+        },
       });
 
       const outputDir = path.join(projectRoot, 'dist');
@@ -134,23 +138,6 @@ describe('server', () => {
               },
             ],
             bundle: expect.stringMatching(/bundles\/ios-.*\.hbc/),
-          },
-          web: {
-            assets: [
-              {
-                ext: 'png',
-                path: 'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
-              },
-              {
-                ext: 'png',
-                path: 'assets/9ce7db807e4147e00df372d053c154c2',
-              },
-              {
-                ext: 'ttf',
-                path: 'assets/3858f62230ac3c915f300c664312c63f',
-              },
-            ],
-            bundle: expect.stringMatching(/bundles\/web-.*\.js/),
           },
         },
         version: 0,
@@ -217,12 +204,9 @@ describe('server', () => {
         expect.stringMatching(/bundles\/web-[\w\d]+\.js/),
         expect.stringMatching(/bundles\/web-[\w\d]+\.map/),
         'debug.html',
-        'drawable-mdpi/assets_icon.png',
-        'drawable-xhdpi/assets_icon.png',
         'favicon.ico',
         'index.html',
         'metadata.json',
-        'raw/assets_font.ttf',
       ]);
     },
     // Could take 45s depending on how fast npm installs

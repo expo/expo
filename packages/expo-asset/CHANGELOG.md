@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- URL encode asset paths defined as query parameter. ([#24562](https://github.com/expo/expo/pull/24562) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+## 8.12.1 — 2023-09-16
+
+_This version does not introduce any user-facing changes._
 
 ## 8.12.0 — 2023-09-04
 

@@ -89,7 +89,7 @@ To increase memory limits on your EAS Build builders, you can use [`large` resou
 
 When a build fails with `Task :app:bundleReleaseJsAndAssets FAILED` (Android) or `Metro encountered an error` (iOS), it means Metro bundler was unable to bundle the app's JavaScript code while trying to embed it in your app's binary. This error message is usually followed by a syntax error or other details about why bundling failed. Unfortunately, a standard React Native project is configured to perform this step late in the Gradle/Xcode build step, meaning it can take a while to see this error.
 
-You can build the production bundle locally by running `npx expo export` to bypass all of the other build steps so you can see this error much more quickly. Run this command repeatedly, resolving any syntax errors or other issues uncovered until the bundle builds successfully. Then try your EAS build again.
+You can build the production bundle locally by running `npx expo export` to bypass all of the other build steps so you can see this error much more quickly. Run this command repeatedly, resolving any syntax errors or other issues uncovered until the bundle builds successfully. Then try your EAS Build again.
 
 ## Verify that your project builds and runs locally
 
@@ -111,9 +111,13 @@ You can verify that your project builds on your local machine with the `npx expo
   ]}
 />
 
-> If use [CNG](/workflow/continuous-native-generation.mdx), these commands will run `npx expo prebuild` to generate native projects in order to compile them.You likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting, unless you want to start managing these projects directly instead of generating them on demand.
-> <br/>
-> You can alternatively run a local build with `eas build --local` &mdash; this command will run a series of steps that is as close as it can be to what runs remotely on the hosted EAS Build service. It will copy your project to a temporary directory and make any necessary changes there. [Learn how to set this up and use it for debugging](/build-reference/local-builds.mdx#using-local-builds-for-debugging).
+> If use [CNG](/workflow/continuous-native-generation.mdx), these commands will run `npx expo prebuild` to generate native projects to compile them.You likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting, unless you want to start managing these projects directly instead of generating them on demand.
+>
+> <br />
+> You can alternatively run a local build with `eas build --local` &mdash; this command will run a series
+> of steps that is as close as it can be to what runs remotely on the hosted EAS Build service. It will
+> copy your project to a temporary directory and make any necessary changes there. [Learn how to set
+> this up and use it for debugging](/build-reference/local-builds.mdx#using-local-builds-for-debugging).
 
 If your native toolchains are installed correctly and you are unable to build and run your project in release mode on your local machine, it will not build on EAS Build. Fix the issues locally, then try again on EAS Build. The other advice in this doc may be useful to help you resolve the issue locally, but often this requires some knowledge of native tooling or judicious application of Google, Stack Overflow, and GitHub Issues.
 
@@ -124,7 +128,6 @@ If your native toolchains are installed correctly and you are unable to build an
 If you are willing and able to set up the appropriate native tools, then refer to the [React Native environment setup guide](https://reactnative.dev/docs/environment-setup).
 
 </Collapsible>
-
 
 <Collapsible summary="My app builds locally, but not on EAS Build">
 
