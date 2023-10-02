@@ -203,7 +203,38 @@ To modify your project's configuration or native code after the first build, you
 
 To avoid this, add native directories to the project's **.gitignore** and use `npx expo pebuild --clean` command. This ensures that the project is always managed, and the [`--clean` flag](/workflow/prebuild/#clean) will delete existing directories before regenerating them. You can use [app config](/workflow/configuration/) or create a [config plugin](/config-plugins/introduction/) to modify your project's configuration or code inside the native directories.
 
-To learn more about how compilation and prebuild works, see the following guides:
+To learn more about how prebuild works, see the following guide:
+
+<BoxLink
+  title="Prebuild"
+  description="Learn how Expo CLI generates native code of your project before compiling it."
+  href="/workflow/prebuild"
+  Icon={BookOpen02Icon}
+/>
+
+## Production like compilation for testing
+
+You can compile and run a production build on a device or a simulator using the commands from the following sections. This build type is not code-signed or ready to submit to the app stores. Compiling this type of build is useful to test for bugs that may show up in production.
+
+### Android
+
+To compile an Android for production, use the `--variant` flag with `release` as its value:
+
+<Terminal cmd={['$ npx expo run:android --variant release']} />
+
+You can also add the `--device` flag to create and run the build on a connected device.
+
+### iOS
+
+To compile an iOS app for production, use the `--configuration` flag with `Release` as its value:
+
+<Terminal cmd={['$ npx expo run:ios --configuration Release']} />
+
+You can also add the `--device` flag to create and run the build on a connected device.
+
+### Next step
+
+To learn more about how compilation works with Expo CLI, see the following guides:
 
 <BoxLink
   title="Compiling with Expo CLI"
@@ -217,10 +248,14 @@ To learn more about how compilation and prebuild works, see the following guides
   Icon={BookOpen02Icon}
 />
 
+## Production builds
+
+To learn how to natively code-sign your app, see Production builds:
+
 <BoxLink
-  title="Prebuild"
-  description="Learn how Expo CLI generates native code of your project before compiling it."
-  href="/workflow/prebuild"
+  title="Production builds"
+  description="Learn how to create a production build for your app that is ready to be submitted to app stores."
+  href="/deploy/build-project/"
   Icon={BookOpen02Icon}
 />
 
@@ -236,13 +271,4 @@ To learn more about how compilation and prebuild works, see the following guides
   }
   href="/build-reference/local-builds"
   Icon={BuildIcon}
-/>
-
-## Next steps
-
-<BoxLink
-  title="Production builds"
-  description="Learn how to create a production build for your app that is ready to be submitted to app stores."
-  href="/deploy/build-project/"
-  Icon={BookOpen02Icon}
 />
