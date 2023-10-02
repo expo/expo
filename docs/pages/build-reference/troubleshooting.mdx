@@ -131,12 +131,12 @@ If you are willing and able to set up the appropriate native tools, then refer t
 
 <Collapsible summary="My app builds locally, but not on EAS Build">
 
-By default, EAS Build follows a relatively straightforward process for building your app (learn more: [Android](/build-reference/android-builds.mdx), [iOS](/build-reference/ios-builds.mdx)), and if `npx expo run:android --variant release` & `npx expo run:ios --configuration Release` work locally, but your builds fail, then it's time to narrow down what configuration exists on your machine that hasn't been set up for your project on EAS Build yet.
+By default, EAS Build follows a relatively straightforward process for building your app for ([Android](/build-reference/android-builds) or [iOS](/build-reference/ios-builds)). If `npx expo run:android --variant release` and `npx expo run:ios --configuration Release` work locally, but your builds fail, then it's time to narrow down what configuration exists on your machine that hasn't been set up for your project on EAS Build yet.
 
 - Do a fresh `git clone` of your project to a new directory and get it running, ideally on a different machine. Pay attention to each of the steps that are needed and verify that they are also configured for EAS Build.
-- Check that your [environment variables](/guides/environment-variables.mdx) are properly configured.
+- Check that your [environment variables](/guides/environment-variables) are properly configured.
 - Verify that versions of Node.js, npm, Yarn, Xcode, Java, and other tools are the same in both environments.
-- Ensure that the archive you are uploading to EAS Build includes the same relevant source files ([learn more](https://expo.fyi/eas-build-archive)).
+- Ensure that the [archive you are uploading to EAS Build](https://expo.fyi/eas-build-archive) includes the same relevant source files.
 
 </Collapsible>
 
