@@ -112,7 +112,7 @@ export async function test({ describe, expect, it, ...t }) {
       } catch (e) {
         error = e;
       }
-      expect(error.message).toMatch(/not exist/);
+      expect(error.message).toMatch(/could not be deleted because it could not be found/);
     });
 
     it('download(md5, uri) -> read -> delete -> !exists -> read[error]', async () => {
@@ -465,7 +465,7 @@ export async function test({ describe, expect, it, ...t }) {
         const localUri = FS.documentDirectory + 'doesnt/exists/download1.png';
         await FS.downloadAsync(remoteUrl, localUri);
       } catch (err) {
-        expect(err.message).toMatch(/Directory '.*' does not exist/);
+        expect(err.message).toMatch(/exists before calling downloadAsync/);
       }
     }, 30000);
 
