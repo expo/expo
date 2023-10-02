@@ -50,7 +50,7 @@ private func findViewTag(_ value: JavaScriptValue) -> Int? {
     return value.getInt()
   }
   if value.isObject() {
-    let nativeTag = value.getObject().getProperty("nativeTag");
+    let nativeTag = value.getObject().getProperty("nativeTag")
     if nativeTag.isNumber() {
       return nativeTag.getInt()
     }
