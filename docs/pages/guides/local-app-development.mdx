@@ -214,7 +214,7 @@ To learn more about how prebuild works, see the following guide:
 
 ## Production like compilation for testing
 
-You can compile and run a production build on a device or a simulator using the commands from the following sections. This build type is not code-signed or ready to submit to the app stores. Compiling this type of build is useful to test for bugs that may show up in production.
+You can [compile](/more/expo-cli/#compiling) and run a production build on a device or a simulator using the commands from the following sections. This build type is not code-signed or ready to submit to the app stores. Compiling this type of build is useful to test for bugs that may show up in production.
 
 ### Android
 
@@ -231,22 +231,6 @@ To compile an iOS app for production, use the `--configuration` flag with `Relea
 <Terminal cmd={['$ npx expo run:ios --configuration Release']} />
 
 You can also add the `--device` flag to create and run the build on a connected device.
-
-### Next step
-
-To learn more about how compilation works with Expo CLI, see the following guides:
-
-<BoxLink
-  title="Compiling with Expo CLI"
-  description={
-    <>
-      Learn how Expo CLI uses <CODE>run</CODE> commands to compile your app locally, arguments you
-      can pass to the CLI and more.
-    </>
-  }
-  href="/more/expo-cli/#compiling"
-  Icon={BookOpen02Icon}
-/>
 
 ## Production builds
 
