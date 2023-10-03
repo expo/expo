@@ -20,3 +20,4 @@ ios/Pods
 android/.build
 android/app/build
 android/.gradle
+ios/.xcode.env.local
