@@ -49,6 +49,7 @@ xcuserdata
 
 # VSCode
 .history/
+/vscode/launch.json
 
 # Android
 *.apk
