@@ -167,16 +167,6 @@ function resolveConfigExport(result, configFile, request) {
   } else {
     result = (0, _Serialize().serializeSkippingMods)(result);
   }
-
-  // demo that spreading the original config is carrying over the symbol...
-  /*console.log(
-    'request?.config?.[hasBaseStaticConfig]',
-    // @ts-ignore
-    { ...request?.config }[hasBaseStaticConfig]
-  );
-  // ... but the dynamic config output is not
-  console.log('result?.[hasBaseStaticConfig]', result?.[hasBaseStaticConfig]);*/
-
   return {
     config: result,
     exportedObjectType,
