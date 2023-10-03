@@ -32,7 +32,7 @@
     /** Debug the Expo CLI when it is running against a test project.
         Starting the debugger with this config will start your locally-built Expo CLI
         but with it's CWD as a test project of your choice.
-        Be sure to run `yarn build -w` in expo/packages/@expo/cli first
+        Be sure to run `yarn build` in expo/packages/@expo/cli first
     */
     "name": "Launch Expo CLI",
     "request": "launch",
