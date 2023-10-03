@@ -134,8 +134,18 @@ object UpdatesUtils {
       }
 
       // only rename after the hash has been verified
-      if (!tmpFile.renameTo(destination)) {
-        throw IOException("File download was successful, but failed to move from temporary to permanent location " + destination.absolutePath)
+      // Since renameTo() does not expose detailed errors, and can fail if source and destination
+      // are not on the same mount point, we do a copyTo followed by delete
+      try {
+        tmpFile.copyTo(destination)
+      } catch (e: NoSuchFileException) {
+        throw IOException("File download was successful, but temp file ${tmpFile.absolutePath} does not exist")
+      } catch (e: FileAlreadyExistsException) {
+        throw IOException("File download was successful, but file already exists at ${destination.absolutePath}")
+      } catch (e: Exception) {
+        throw IOException("File download was successful, but an exception occurred: $e")
+      } finally {
+        tmpFile.delete()
       }
 
       return hash
