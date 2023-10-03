@@ -131,7 +131,7 @@ function isSyntaxError(error) {
  * @param request
  */
 function resolveConfigExport(result, configFile, request) {
-  var _result, _result2, _request$config, _result3;
+  var _request$config, _result, _result2;
   // add key to static config that we'll check for after the dynamic is evaluated
   // to see if the static config was used in determining the dynamic
   const hasBaseStaticConfig = Symbol();
@@ -150,32 +150,33 @@ function resolveConfigExport(result, configFile, request) {
     throw new (_Errors().ConfigError)(`Config file ${configFile} cannot return a Promise.`, 'INVALID_CONFIG');
   }
 
-  // If the expo object exists, ignore all other values.
-  if ((_result = result) !== null && _result !== void 0 && _result.expo) {
-    result = (0, _Serialize().serializeSkippingMods)(result.expo);
-  } else {
-    result = (0, _Serialize().serializeSkippingMods)(result);
-  }
-
-  // demo that spreading the original config is carrying over the symbol...
-  console.log('request?.config?.[hasBaseStaticConfig]',
-  // @ts-ignore
-  {
-    ...(request === null || request === void 0 ? void 0 : request.config)
-  }[hasBaseStaticConfig]);
-  // ... but the dynamic config output is not
-  console.log('result?.[hasBaseStaticConfig]', (_result2 = result) === null || _result2 === void 0 ? void 0 : _result2[hasBaseStaticConfig]);
-
   // If the key is not added, it suggests that the static config was not used as the base for the dynamic.
   // note(Keith): This is the most common way to use static and dynamic config together, but not the only way.
   // Hence, this is only output from getConfig() for informational purposes for use by tools like Expo Doctor
   // to suggest that there *may* be a problem.
   const mayHaveUnusedStaticConfig =
   // @ts-ignore
-  (request === null || request === void 0 ? void 0 : (_request$config = request.config) === null || _request$config === void 0 ? void 0 : _request$config[hasBaseStaticConfig]) && !((_result3 = result) !== null && _result3 !== void 0 && _result3[hasBaseStaticConfig]);
+  (request === null || request === void 0 ? void 0 : (_request$config = request.config) === null || _request$config === void 0 ? void 0 : _request$config[hasBaseStaticConfig]) && !((_result = result) !== null && _result !== void 0 && _result[hasBaseStaticConfig]);
   if (result) {
     delete result._hasBaseStaticConfig;
   }
+
+  // If the expo object exists, ignore all other values.
+  if ((_result2 = result) !== null && _result2 !== void 0 && _result2.expo) {
+    result = (0, _Serialize().serializeSkippingMods)(result.expo);
+  } else {
+    result = (0, _Serialize().serializeSkippingMods)(result);
+  }
+
+  // demo that spreading the original config is carrying over the symbol...
+  /*console.log(
+    'request?.config?.[hasBaseStaticConfig]',
+    // @ts-ignore
+    { ...request?.config }[hasBaseStaticConfig]
+  );
+  // ... but the dynamic config output is not
+  console.log('result?.[hasBaseStaticConfig]', result?.[hasBaseStaticConfig]);*/
+
   return {
     config: result,
     exportedObjectType,

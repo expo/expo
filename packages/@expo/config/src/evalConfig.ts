@@ -125,22 +125,6 @@ export function resolveConfigExport(
     throw new ConfigError(`Config file ${configFile} cannot return a Promise.`, 'INVALID_CONFIG');
   }
 
-  // If the expo object exists, ignore all other values.
-  if (result?.expo) {
-    result = serializeSkippingMods(result.expo);
-  } else {
-    result = serializeSkippingMods(result);
-  }
-
-  // demo that spreading the original config is carrying over the symbol...
-  console.log(
-    'request?.config?.[hasBaseStaticConfig]',
-    // @ts-ignore
-    { ...request?.config }[hasBaseStaticConfig]
-  );
-  // ... but the dynamic config output is not
-  console.log('result?.[hasBaseStaticConfig]', result?.[hasBaseStaticConfig]);
-
   // If the key is not added, it suggests that the static config was not used as the base for the dynamic.
   // note(Keith): This is the most common way to use static and dynamic config together, but not the only way.
   // Hence, this is only output from getConfig() for informational purposes for use by tools like Expo Doctor
@@ -150,6 +134,13 @@ export function resolveConfigExport(
     request?.config?.[hasBaseStaticConfig] && !result?.[hasBaseStaticConfig];
   if (result) {
     delete result._hasBaseStaticConfig;
+  }
+
+  // If the expo object exists, ignore all other values.
+  if (result?.expo) {
+    result = serializeSkippingMods(result.expo);
+  } else {
+    result = serializeSkippingMods(result);
   }
 
   return { config: result, exportedObjectType, mayHaveUnusedStaticConfig };
