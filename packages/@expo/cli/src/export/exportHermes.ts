@@ -49,7 +49,10 @@ function getHermesCommandPlatform(): string {
   }
 }
 
-export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform): boolean {
+export function isEnableHermesManaged(
+  expoConfig: Partial<Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>>,
+  platform: Platform
+): boolean {
   switch (platform) {
     case 'android': {
       return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
@@ -64,34 +67,53 @@ export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform
 
 interface HermesBundleOutput {
   hbc: Uint8Array;
-  sourcemap: string;
+  sourcemap: string | null;
 }
 export async function buildHermesBundleAsync(
   projectRoot: string,
-  code: string,
-  map: string,
-  optimize: boolean = false
+  {
+    code,
+    map,
+    minify = false,
+  }: {
+    code: string;
+    map: string | null;
+    minify?: boolean;
+  }
 ): Promise<HermesBundleOutput> {
   const tempDir = path.join(os.tmpdir(), `expo-bundler-${process.pid}`);
   await fs.ensureDir(tempDir);
   try {
     const tempBundleFile = path.join(tempDir, 'index.bundle');
-    const tempSourcemapFile = path.join(tempDir, 'index.bundle.map');
     await fs.writeFile(tempBundleFile, code);
-    await fs.writeFile(tempSourcemapFile, map);
+
+    if (map) {
+      const tempSourcemapFile = path.join(tempDir, 'index.bundle.map');
+      await fs.writeFile(tempSourcemapFile, map);
+    }
 
     const tempHbcFile = path.join(tempDir, 'index.hbc');
     const hermesCommand = importHermesCommandFromProject(projectRoot);
-    const args = ['-emit-binary', '-out', tempHbcFile, tempBundleFile, '-output-source-map'];
-    if (optimize) {
+    const args = ['-emit-binary', '-out', tempHbcFile, tempBundleFile];
+    if (minify) {
       args.push('-O');
+    }
+    if (map) {
+      args.push('-output-source-map');
     }
     await spawnAsync(hermesCommand, args);
 
-    const [hbc, sourcemap] = await Promise.all([
-      fs.readFile(tempHbcFile),
-      createHermesSourcemapAsync(projectRoot, map, `${tempHbcFile}.map`),
-    ]);
+    let hbc: Buffer;
+    let sourcemap: string | null = null;
+
+    if (!map) {
+      hbc = await fs.readFile(tempHbcFile);
+    } else {
+      [hbc, sourcemap] = await Promise.all([
+        fs.readFile(tempHbcFile),
+        createHermesSourcemapAsync(projectRoot, map, `${tempHbcFile}.map`),
+      ]);
+    }
     return {
       hbc,
       sourcemap,

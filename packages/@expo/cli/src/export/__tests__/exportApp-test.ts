@@ -4,9 +4,20 @@ import { exportAppAsync } from '../exportApp';
 
 jest.mock('../../log');
 
-jest.mock('../createBundles', () => ({
+jest.mock('@expo/config', () => ({
+  getConfig: jest.fn(() => ({
+    pkg: {},
+    exp: {
+      sdkVersion: '49.0.0',
+      name: 'my-app',
+      slug: 'my-app',
+    },
+  })),
+}));
+
+jest.mock('../fork-bundleAsync', () => ({
   createBundlesAsync: jest.fn(
-    async (projectRoot, options, { platforms }: { platforms: string[] }) =>
+    async (projectRoot, projectConfig, { platforms }: { platforms: string[] }) =>
       platforms.reduce(
         (prev, platform) => ({
           ...prev,
@@ -55,6 +66,7 @@ describe(exportAppAsync, () => {
 
     await exportAppAsync('/', {
       outputDir,
+      minify: true,
       platforms: ['ios'],
       dev: false,
       dumpAssetmap: true,
