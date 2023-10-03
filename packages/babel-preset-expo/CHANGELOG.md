@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Rewrite plugin for web and server environments.
+
 ## 9.7.0 — 2023-09-15
 
 ### 🛠 Breaking changes

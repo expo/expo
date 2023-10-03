@@ -45,7 +45,9 @@
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "@babel/plugin-proposal-object-rest-spread": "^7.12.13",
     "@babel/plugin-transform-react-jsx": "^7.12.17",
-    "@babel/preset-env": "^7.20.0",
+    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-react": "^7.22.15",
+    "@babel/preset-typescript": "^7.23.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-plugin-react-native-web": "~0.18.10",
     "metro-react-native-babel-preset": "0.76.8"

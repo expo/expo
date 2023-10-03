@@ -1,14 +1,13 @@
 import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
 import { lazyImports } from './lazyImports';
+import { babelPresetExpoWeb } from './web';
 
 type BabelPresetExpoPlatformOptions = {
   useTransformReactJSXExperimental?: boolean;
   disableImportExportTransform?: boolean;
   // Defaults to undefined, set to something truthy to disable `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`.
   withDevTools?: boolean;
-  // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
-  disableFlowStripTypesTransform?: boolean;
   // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
   enableBabelRuntime?: boolean;
   // Defaults to `'default'`, can also use `'hermes-canary'`
@@ -44,7 +43,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           // Only disable import/export transform when Webpack is used because
           // Metro does not support tree-shaking.
           disableImportExportTransform: isWebpack,
-          unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
+          unstable_transformProfile: 'default',
           ...web,
         }
       : {
@@ -58,6 +57,25 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const lazyImportsOption = options?.lazyImports;
 
   const extraPlugins: PluginItem[] = [];
+
+  const aliasPlugin = getAliasPlugin();
+  if (aliasPlugin) {
+    extraPlugins.push(aliasPlugin);
+  }
+
+  if (platform === 'web') {
+    return {
+      presets: [[babelPresetExpoWeb, options]],
+
+      plugins: [
+        ...extraPlugins,
+        // Automatically add `react-native-reanimated/plugin` when the package is installed.
+        // TODO: Move to be a customTransformOption.
+        hasModule('react-native-reanimated') &&
+          reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
+      ].filter(Boolean) as PluginItem[],
+    };
+  }
 
   if (engine !== 'hermes') {
     // `metro-react-native-babel-preset` configures this plugin with `{ loose: true }`, which breaks all
@@ -91,15 +109,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // back to the preset.
   }
 
-  const aliasPlugin = getAliasPlugin();
-  if (aliasPlugin) {
-    extraPlugins.push(aliasPlugin);
-  }
-
-  if (platform === 'web') {
-    extraPlugins.push(require.resolve('babel-plugin-react-native-web'));
-  }
-
   return {
     presets: [
       [
@@ -111,8 +120,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         {
           // Defaults to undefined, set to something truthy to disable `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`.
           withDevTools: platformOptions.withDevTools,
-          // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
-          disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
           // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
           enableBabelRuntime: platformOptions.enableBabelRuntime,
           // This reduces the amount of transforms required, as Hermes supports many modern language features.

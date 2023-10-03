@@ -356,7 +356,7 @@ exports[`webpack aliases @expo/vector-icons 1`] = `
 import"@expo/vector-icons";
 require("@expo/vector-icons");
 imposter.require('react-native-vector-icons');
-imposter.import('react-native-vector-icons');"
+imposter["import"]('react-native-vector-icons');"
 `;
 
 exports[`webpack composes with babel-plugin-module-resolver 1`] = `
