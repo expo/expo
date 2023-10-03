@@ -270,7 +270,7 @@ export default class Camera extends React.Component<CameraProps> {
    * @return Returns a Promise that resolves to an array of strings representing picture sizes that can be passed to `pictureSize` prop.
    * The list varies across Android devices but is the same for every iOS.
    */
-  async getAvailablePictureSizesAsync(ratio?: string): Promise<string[]> {
+  async getAvailablePictureSizesAsync(ratio: string): Promise<string[]> {
     if (!CameraManager.getAvailablePictureSizes) {
       throw new UnavailabilityError('Camera', 'getAvailablePictureSizesAsync');
     }
