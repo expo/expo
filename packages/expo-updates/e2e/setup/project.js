@@ -512,7 +512,7 @@ async function initAsync(
       CI: '1',
     },
     cwd: projectRoot,
-    stdio: 'ignore',
+    stdio: 'inherit',
   });
 
   // We are done with template tarball
