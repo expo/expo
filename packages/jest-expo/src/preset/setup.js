@@ -165,6 +165,9 @@ jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
 function attemptLookup(moduleName) {
   // hack to get the package name from the module name
   const filePath = stackTrace.getSync().find((line) => line.fileName.includes(moduleName));
+  if (!filePath) {
+    return null;
+  }
   const modulePath = findUp.sync('package.json', { cwd: filePath.fileName });
   const moduleMockPath = path.join(modulePath, '..', 'mocks', moduleName);
 
@@ -187,6 +190,14 @@ try {
     // Mock the `uuid` object with the implementation for web.
     ExpoModulesCore.uuid.v4 = uuid.default.v4;
     ExpoModulesCore.uuid.v5 = uuid.default.v5;
+
+    // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
+    // into the native proxy module. We're not really interested in checking whether the underlying
+    // method is called, just that the proxy method is called, since we have unit tests for the
+    // adapter and believe it works correctly.
+    //
+    // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
+    // This means the mock functions will not throw validation errors the way they would in an app.
 
     for (const moduleName of Object.keys(NativeModulesProxy)) {
       const nativeModule = NativeModulesProxy[moduleName];
@@ -217,14 +228,6 @@ try {
       },
     };
   });
-
-  // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
-  // into the native proxy module. We're not really interested in checking whether the underlying
-  // method is called, just that the proxy method is called, since we have unit tests for the
-  // adapter and believe it works correctly.
-  //
-  // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
-  // This means the mock functions will not throw validation errors the way they would in an app.
 } catch (error) {
   // Allow this module to be optional for bare-workflow
   if (error.code !== 'MODULE_NOT_FOUND') {
