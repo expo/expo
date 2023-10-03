@@ -94,6 +94,26 @@ By default, the `eas build` command will wait for your build to complete, but yo
 
 If you are a member of an organization and your build is on its behalf, you will find the build details on [the build dashboard for that account](https://expo.dev/accounts/[account]/builds).
 
+## Production builds locally
+
+To create a production build locally, see the following React Native guides for more information on the necessary steps that are required for Android and iOS.
+
+> **Note**: Following the guide below, in step four, when you build the release **.aab** for Android, use `npx expo run:android --variant release` command instead of `npx react-native build-android --mode=release`.
+
+<BoxLink
+  title="Publishing to Google Play Store"
+  description="Learn how to publish an app to Google Play Store by following the necessary steps manually."
+  Icon={BookOpen02Icon}
+  href="https://reactnative.dev/docs/signed-apk-android"
+/>
+
+<BoxLink
+  title="Publishing to Apple App Store"
+  description="Learn how to publish an app to Apple App Store by following the necessary steps manually."
+  Icon={BookOpen02Icon}
+  href="https://reactnative.dev/docs/publishing-to-app-store"
+/>
+
 ## Next steps
 
 <BoxLink
