@@ -1,4 +1,4 @@
-import { ExpoConfig, getConfigFilePaths, Platform } from '@expo/config';
+import { ExpoConfig, getConfigFilePaths, Platform, ProjectConfig } from '@expo/config';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro, { AssetData } from 'metro';
@@ -18,23 +18,24 @@ import {
   importMetroFromProject,
   importMetroServerFromProject,
 } from '../start/server/metro/resolveFromProject';
+import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 
-export type MetroDevServerOptions = LoadOptions & {
-  quiet?: boolean;
-};
+export type MetroDevServerOptions = LoadOptions;
+
 export type BundleOptions = {
   entryPoint: string;
   platform: 'android' | 'ios' | 'web';
   dev?: boolean;
   minify?: boolean;
   sourceMapUrl?: string;
+  sourcemaps?: boolean;
 };
 export type BundleAssetWithFileHashes = Metro.AssetData & {
   fileHashes: string[]; // added by the hashAssets asset plugin
 };
 export type BundleOutput = {
   code: string;
-  map?: string;
+  map: string;
   hermesBytecodeBundle?: Uint8Array;
   hermesSourcemap?: string;
   css: CSSAsset[];
@@ -43,7 +44,11 @@ export type BundleOutput = {
 
 let nextBuildID = 0;
 
-async function assertEngineMismatchAsync(projectRoot: string, exp: ExpoConfig, platform: Platform) {
+async function assertEngineMismatchAsync(
+  projectRoot: string,
+  exp: Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>,
+  platform: Platform
+) {
   const isHermesManaged = isEnableHermesManaged(exp, platform);
 
   const paths = getConfigFilePaths(projectRoot);
@@ -56,10 +61,54 @@ async function assertEngineMismatchAsync(projectRoot: string, exp: ExpoConfig, p
   );
 }
 
-export async function bundleAsync(
+export async function createBundlesAsync(
+  projectRoot: string,
+  projectConfig: ProjectConfig,
+  bundleOptions: {
+    clear?: boolean;
+    maxWorkers?: number;
+    platforms: Platform[];
+    dev?: boolean;
+    minify?: boolean;
+    sourcemaps?: boolean;
+  }
+): Promise<Partial<Record<Platform, BundleOutput>>> {
+  if (!bundleOptions.platforms.length) {
+    return {};
+  }
+  const { exp, pkg } = projectConfig;
+
+  const bundles = await bundleProductionMetroClientAsync(
+    projectRoot,
+    exp,
+    {
+      // If not legacy, ignore the target option to prevent warnings from being thrown.
+      resetCache: bundleOptions.clear,
+      maxWorkers: bundleOptions.maxWorkers,
+    },
+    bundleOptions.platforms.map((platform: Platform) => ({
+      platform,
+      entryPoint: getEntryWithServerRoot(projectRoot, { platform, pkg }),
+      sourcemaps: bundleOptions.sourcemaps,
+      minify: bundleOptions.minify,
+      dev: bundleOptions.dev,
+    }))
+  );
+
+  // { ios: bundle, android: bundle }
+  return bundleOptions.platforms.reduce<Partial<Record<Platform, BundleOutput>>>(
+    (prev, platform, index) => ({
+      ...prev,
+      [platform]: bundles[index],
+    }),
+    {}
+  );
+}
+
+async function bundleProductionMetroClientAsync(
   projectRoot: string,
   expoConfig: ExpoConfig,
-  options: MetroDevServerOptions,
+  metroOptions: MetroDevServerOptions,
   bundles: BundleOptions[]
 ): Promise<BundleOutput[]> {
   // Assert early so the user doesn't have to wait until bundling is complete to find out that
@@ -71,7 +120,7 @@ export async function bundleAsync(
   const metro = importMetroFromProject(projectRoot);
   const Server = importMetroServerFromProject(projectRoot);
 
-  const { config, reporter } = await loadMetroConfigAsync(projectRoot, options, {
+  const { config, reporter } = await loadMetroConfigAsync(projectRoot, metroOptions, {
     exp: expoConfig,
     isExporting: true,
   });
@@ -94,14 +143,12 @@ export async function bundleAsync(
       sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
-        if (!options.quiet) {
-          reporter.update({
-            buildID,
-            type: 'bundle_transform_progressed',
-            transformedFileCount,
-            totalFileCount,
-          });
-        }
+        reporter.update({
+          buildID,
+          type: 'bundle_transform_progressed',
+          transformedFileCount,
+          totalFileCount,
+        });
       },
     };
     const bundleDetails = {
@@ -148,14 +195,13 @@ export async function bundleAsync(
 
       reporter.terminal.log(`${platformTag} Building Hermes bytecode for the bundle`);
 
-      const hermesBundleOutput = await buildHermesBundleAsync(
-        projectRoot,
-        bundleOutput.code,
-        bundleOutput.map!,
-        bundle.minify ?? !bundle.dev
-      );
+      const hermesBundleOutput = await buildHermesBundleAsync(projectRoot, {
+        code: bundleOutput.code,
+        map: bundle.sourcemaps ? bundleOutput.map : null,
+        minify: bundle.minify ?? !bundle.dev,
+      });
       bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;
-      bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap;
+      bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap ?? undefined;
     }
     return bundleOutput;
   };
