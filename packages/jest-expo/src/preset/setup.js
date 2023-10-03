@@ -206,7 +206,14 @@ try {
         if (!nativeModuleMock) {
           return ExpoModulesCore.requireNativeModule(name);
         }
-        return nativeModuleMock;
+        return Object.fromEntries(
+          Object.entries(nativeModuleMock).map(([k, v]) => {
+            if (typeof v === 'function') {
+              return [k, jest.fn(v)];
+            }
+            return [k, v];
+          })
+        );
       },
     };
   });
