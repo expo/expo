@@ -17,7 +17,7 @@ export function createMetadataJson({
   fileNames,
 }: {
   bundles: Partial<Record<BundlePlatform, Pick<BundleOutput, 'assets'>>>;
-  fileNames: Record<string, string>;
+  fileNames: Record<string, string | undefined>;
 }): {
   version: 0;
   bundler: 'metro';
