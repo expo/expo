@@ -21,3 +21,4 @@ ios/.xcode.env.local
 android/.build
 android/app/build
 android/.gradle
+ios/.xcode.env.local
