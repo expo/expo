@@ -362,5 +362,5 @@ function checkForBundlingErrors(lines: string[]) {
   // Take 12 lines from the `Error:` line forwards
   const block = lines.slice(lastErrorIndex, lastErrorIndex + 11).join('\n');
 
-  throw new CommandError(`Bundling Failed.\n${block}`);
+  throw new CommandError(`Bundling failed.\n${block}`);
 }
