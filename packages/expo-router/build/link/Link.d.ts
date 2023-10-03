@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { TextProps, GestureResponderEvent } from 'react-native';
 import { Href, resolveHref } from './href';
+<<<<<<< HEAD
 interface WebAnchorProps {
     /**
      * **Web only:** Specifies where to open the `href`.
@@ -51,6 +52,14 @@ interface WebAnchorProps {
     download?: string;
 }
 export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
+=======
+/**
+ * @description Props for the Link component when not using
+ * typed routes (or before they are generated in development).
+ * @template T This type parameter can be ignored - it is only a stub
+ * for compatibility with the typed route system.
+ */ export interface LinkProps<T = any> extends Omit<TextProps, 'href' | 'hoverStyle'> {
+>>>>>>> 6a29e40ffa (chore(expo-router): build)
     /** Path to route to. */
     href: Href;
     /** Forward props to child component. Useful for custom buttons. */
