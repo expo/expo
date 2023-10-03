@@ -1,5 +1,6 @@
 ---
 title: metro.config.js
+description: A reference of available configurations in Metro.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -210,7 +211,7 @@ To setup, install the `sass` package in your project:
 
 <Terminal cmd={['$ yarn add -D sass']} />
 
-Then, ensure [CSS is setup](#css) in the `metro.config.js` file.
+Then, ensure [CSS is setup](#css) in the **metro.config.js** file.
 
 - When `sass` is installed, then modules without extensions will be resolved in the following order: `scss`, `sass`, `css`.
 - Only use the intended syntax with `sass` files.
@@ -371,9 +372,9 @@ Projects that don't use [Expo Prebuild](/workflow/prebuild) must configure nativ
 
 These modifications are meant to replace `npx react-native bundle` and `npx react-native start` with `npx expo export:embed` and `npx expo start` respectively.
 
-### `metro.config.js`
+### metro.config.js
 
-Ensure the `metro.config.js` extends `expo/metro-config`:
+Ensure the **metro.config.js** extends `expo/metro-config`:
 
 ```js
 const { getDefaultConfig } = require('expo/metro-config');
