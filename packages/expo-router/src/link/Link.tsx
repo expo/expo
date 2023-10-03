@@ -60,8 +60,13 @@ interface WebAnchorProps {
    */
   download?: string;
 }
-
-export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
+/**
+ * @description Props for the Link component when not using
+ * typed routes (or before they are generated in development).
+ * @template T This type parameter can be ignored - it is only a stub
+ * for compatibility with the typed route system.
+ */ // eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface LinkProps<T = any> extends Omit<TextProps, 'href'>, WebAnchorProps {
   /** Path to route to. */
   href: Href;
 
