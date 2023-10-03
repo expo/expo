@@ -41,7 +41,8 @@
     "jest-watch-typeahead": "2.2.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.19",
-    "react-test-renderer": "18.2.0"
+    "react-test-renderer": "18.2.0",
+    "stacktrace-js": "^2.0.2"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
