@@ -10,6 +10,7 @@
 - Add `useNavigationContainerRef` to access the root NavigationContainer ref. ([#26529](https://github.com/expo/expo/pull/26529) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
+- Provide isomorphic stubs for typed routes in the absence of generated types ([#24707](https://github.com/expo/expo/pull/24707) by [@helmturner](https://github.com/helmturner))
 
 - Remove error hiding system. ([#26607](https://github.com/expo/expo/pull/26607) by [@EvanBacon](https://github.com/EvanBacon))
 
