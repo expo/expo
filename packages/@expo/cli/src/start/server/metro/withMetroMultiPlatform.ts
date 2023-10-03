@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import chalk from 'chalk';
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
 import { Resolution, ResolutionContext } from 'metro-resolver';
@@ -28,7 +27,6 @@ import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
 import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
-import { learnMore } from '../../../utils/link';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
@@ -455,10 +453,6 @@ export async function withMetroMultiPlatformAsync(
   let tsconfig: null | TsConfigPaths = null;
 
   if (isTsconfigPathsEnabled) {
-    Log.warn(
-      chalk.yellow`Experimental path aliases feature is enabled. ` +
-        learnMore('https://docs.expo.dev/guides/typescript/#path-aliases')
-    );
     tsconfig = await loadTsConfigPathsAsync(projectRoot);
   }
 
