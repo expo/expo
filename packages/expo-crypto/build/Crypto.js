@@ -32,7 +32,8 @@ export function getRandomBytes(byteCount) {
     }
     if (ExpoCrypto.getRandomValues) {
         const byteArray = new Uint8Array(validByteCount);
-        return ExpoCrypto.getRandomValues(byteArray);
+        ExpoCrypto.getRandomValues(byteArray);
+        return byteArray;
     }
     else if (ExpoCrypto.getRandomBase64String) {
         const base64 = ExpoCrypto.getRandomBase64String(validByteCount);
@@ -54,7 +55,8 @@ export async function getRandomBytesAsync(byteCount) {
     const validByteCount = Math.floor(byteCount);
     if (ExpoCrypto.getRandomValues) {
         const byteArray = new Uint8Array(validByteCount);
-        return ExpoCrypto.getRandomValues(byteArray);
+        ExpoCrypto.getRandomValues(byteArray);
+        return byteArray;
     }
     else if (ExpoCrypto.getRandomBase64StringAsync) {
         const base64 = await ExpoCrypto.getRandomBase64StringAsync(validByteCount);
