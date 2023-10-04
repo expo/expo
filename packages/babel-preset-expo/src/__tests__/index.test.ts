@@ -137,8 +137,8 @@ it(`supports overwriting the default engine option`, () => {
 });
 
 describe.each([
-  ['metro', getCaller({ name: 'metro' })],
-  ['metro+hermes', getCaller({ name: 'metro', engine: 'hermes' })],
+  ['metro', getCaller({ name: 'metro', platform: 'ios' })],
+  ['metro+hermes', getCaller({ name: 'metro', engine: 'hermes', platform: 'ios' })],
   ['webpack', getCaller({ name: 'babel-loader' })],
 ])('%s', (_name, caller) => {
   const isMetro = _name.includes('metro');
