@@ -25,7 +25,10 @@ export function babelPresetExpoWeb(
 
   const metroOptions = options.web;
 
-  const extraPlugins: PluginItem[] = [require('babel-plugin-react-native-web')];
+  const extraPlugins: PluginItem[] = [
+    require('babel-plugin-react-native-web'),
+    require('@babel/plugin-syntax-export-default-from'),
+  ];
 
   if (metroOptions?.enableBabelRuntime !== false) {
     // Allows configuring a specific runtime version to optimize output
@@ -33,6 +36,7 @@ export function babelPresetExpoWeb(
     extraPlugins.push([
       require('@babel/plugin-transform-runtime'),
       {
+        corejs: false,
         helpers: true,
         regenerator: true,
         ...(isVersion && {
@@ -51,6 +55,7 @@ export function babelPresetExpoWeb(
         require('@babel/preset-env'),
         {
           modules: platformOptions.disableImportExportTransform ? false : 'commonjs',
+          exclude: ['transform-typeof-symbol'],
         },
       ],
 
@@ -83,24 +88,7 @@ export function babelPresetExpoWeb(
           require('babel-plugin-transform-flow-enums'),
         ],
       },
-
       // Additional features
-      {
-        plugins: [
-          require('@babel/plugin-syntax-dynamic-import'),
-          require('@babel/plugin-syntax-export-default-from'),
-
-          require('@babel/plugin-transform-spread'),
-          [
-            require('@babel/plugin-proposal-object-rest-spread'),
-            // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
-            {
-              loose: true,
-              useBuiltIns: true,
-            },
-          ],
-        ],
-      },
       {
         plugins: extraPlugins,
       },

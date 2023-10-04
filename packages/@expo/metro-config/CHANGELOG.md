@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Pass `isDev` to the Babel caller.
 - Automatically optimize transformations based on Hermes usage. ([#24672](https://github.com/expo/expo/pull/24672) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes

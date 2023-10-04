@@ -14,13 +14,17 @@ function babelPresetExpoWeb(api, options = {}) {
         ...options.web,
     };
     const metroOptions = options.web;
-    const extraPlugins = [require('babel-plugin-react-native-web')];
+    const extraPlugins = [
+        require('babel-plugin-react-native-web'),
+        require('@babel/plugin-syntax-export-default-from'),
+    ];
     if (metroOptions?.enableBabelRuntime !== false) {
         // Allows configuring a specific runtime version to optimize output
         const isVersion = typeof metroOptions?.enableBabelRuntime === 'string';
         extraPlugins.push([
             require('@babel/plugin-transform-runtime'),
             {
+                corejs: false,
                 helpers: true,
                 regenerator: true,
                 ...(isVersion && {
@@ -37,6 +41,7 @@ function babelPresetExpoWeb(api, options = {}) {
                 require('@babel/preset-env'),
                 {
                     modules: platformOptions.disableImportExportTransform ? false : 'commonjs',
+                    exclude: ['transform-typeof-symbol'],
                 },
             ],
             // React support with similar options to Metro.
@@ -67,21 +72,6 @@ function babelPresetExpoWeb(api, options = {}) {
                 ],
             },
             // Additional features
-            {
-                plugins: [
-                    require('@babel/plugin-syntax-dynamic-import'),
-                    require('@babel/plugin-syntax-export-default-from'),
-                    require('@babel/plugin-transform-spread'),
-                    [
-                        require('@babel/plugin-proposal-object-rest-spread'),
-                        // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
-                        {
-                            loose: true,
-                            useBuiltIns: true,
-                        },
-                    ],
-                ],
-            },
             {
                 plugins: extraPlugins,
             },
