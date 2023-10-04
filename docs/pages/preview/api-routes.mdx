@@ -363,3 +363,15 @@ You can now visit your website at the URL provided by Netlify CLI. Running `netl
 If you're using any environment variables or **.env** files, add them to Netlify. You can do this by going to the **Site settings** and adding them to the **Build & deploy** section.
 
 </Step>
+
+## Known limitations
+
+There are a number of known features that are not currently supported in the API Routes beta release.
+
+### No dynamic imports
+
+API Routes currently work by bundling all code (minus the Node.js built-ins) into a single file. This means that you cannot use any external dependencies that are not bundled with the server. For example, a library such as `sharp`, which includes multiple platform binaries, cannot be used. This will be addressed in a future version.
+
+### ESM not supported
+
+The current bundling implementation opts to be more unified than flexible. This means the limitation of native not supporting ESM is carried over to API Routes. All code will be transpiled down to Common JS (`require`/`module.exports`). However, we recommend you write API Routes using ESM regardless. This will be addressed in a future version.
