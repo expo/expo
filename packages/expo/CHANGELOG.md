@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Export `requireOptionalNativeModule` and `requireNativeModule`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 49.0.13 — 2023-09-27
 
 _This version does not introduce any user-facing changes._
