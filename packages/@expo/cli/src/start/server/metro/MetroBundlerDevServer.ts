@@ -11,7 +11,7 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
 
-import { bundleApiRoute, exportAllApiRoutesAsync, rebundleApiRoute } from './bundleApiRoutes';
+import { bundleApiRoute, rebundleApiRoute } from './bundleApiRoutes';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
