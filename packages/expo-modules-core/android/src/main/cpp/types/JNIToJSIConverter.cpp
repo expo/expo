@@ -83,7 +83,7 @@ jsi::Value convert(
   }
   if (env->IsInstanceOf(
     unpackedValue,
-    JavaReferencesCache::instance()->getJClass(
+    cache->getJClass(
       "expo/modules/kotlin/sharedobjects/SharedObject").clazz
   )) {
     auto jsObject = std::make_shared<jsi::Object>(jsi::Object(rt));
@@ -94,6 +94,14 @@ jsi::Value convert(
     );
     moduleRegistry->registerSharedObject(jni::make_local(unpackedValue), jsObjectRef);
     return jsi::Value(rt, *jsObject);
+  }
+  if (env->IsInstanceOf(
+    unpackedValue,
+    cache->getJClass("expo/modules/kotlin/jni/JavaScriptTypedArray").clazz
+  )) {
+    auto typedArray = jni::static_ref_cast<JavaScriptTypedArray::javaobject>(value);
+    auto jsTypedArray = typedArray->cthis()->get();
+    return jsi::Value(rt, *jsTypedArray);
   }
 
   return jsi::Value::undefined();
