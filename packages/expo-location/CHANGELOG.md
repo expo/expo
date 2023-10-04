@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Moved to the new Modules API.
+
 ## 16.3.0 — 2023-09-04
 
 ### 🎉 New features
