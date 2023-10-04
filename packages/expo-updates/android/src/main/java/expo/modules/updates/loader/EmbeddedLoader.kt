@@ -92,10 +92,6 @@ class EmbeddedLoader internal constructor(
     }
   }
 
-  override fun shouldSkipAsset(assetEntity: AssetEntity): Boolean {
-    return false
-  }
-
   companion object {
     private val TAG = EmbeddedLoader::class.java.simpleName
 
