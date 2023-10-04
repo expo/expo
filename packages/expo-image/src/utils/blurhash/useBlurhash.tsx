@@ -13,7 +13,7 @@ const DEFAULT_SIZE = {
 };
 
 // We scale up the canvas to avoid an irritating visual glitch when animating in Chrome.
-const scaleRatio = 5;
+const scaleRatio = 10;
 
 export function useBlurhash(
   blurhash: { uri?: string; width?: number; height?: number } | undefined | null,
@@ -42,12 +42,20 @@ export function useBlurhash(
     upscaledCanvas.width = (blurhash?.width ?? DEFAULT_SIZE.width) * scaleRatio;
     upscaledCanvas.height = (blurhash?.height ?? DEFAULT_SIZE.height) * scaleRatio;
     const context = canvas.getContext('2d');
-    const imageData = context!.createImageData(canvas.width, canvas.height);
+    if (!context) {
+      console.warn('Failed to decode blurhash');
+      return;
+    }
+    const imageData = context.createImageData(canvas.width, canvas.height);
     imageData.data.set(pixels);
-    context!.putImageData(imageData, 0, 0);
+    context.putImageData(imageData, 0, 0);
     const upscaledContext = upscaledCanvas.getContext('2d');
-    upscaledContext!.scale(scaleRatio, scaleRatio);
-    upscaledContext!.drawImage(canvas, 0, 0);
+    if (!upscaledContext) {
+      console.warn('Failed to decode blurhash');
+      return;
+    }
+    upscaledContext.scale(scaleRatio, scaleRatio);
+    upscaledContext.drawImage(canvas, 0, 0);
     upscaledCanvas.toBlob((blob) => {
       if (!isCanceled) {
         setUri((oldUrl) => {
