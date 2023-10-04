@@ -163,8 +163,7 @@ export async function digestStringAsync(
 export function getRandomValues<T extends IntBasedTypedArray | UintBasedTypedArray>(
   typedArray: T
 ): T {
-  ExpoCrypto.getRandomValues(typedArray);
-  return typedArray;
+  return ExpoCrypto.getRandomValues(typedArray);
 }
 
 /**
