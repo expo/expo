@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Change getRandomBytesAsync to use native getRandomValues when available. ([#24716](https://github.com/expo/expo/pull/24716) by [@aleqsio](https://github.com/aleqsio))
+
 ## 12.6.0 — 2023-09-04
 
 ### 🎉 New features
