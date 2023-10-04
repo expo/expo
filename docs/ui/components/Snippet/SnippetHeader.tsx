@@ -8,6 +8,7 @@ type SnippetHeaderProps = PropsWithChildren<{
   Icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
   alwaysDark?: boolean;
   float?: boolean;
+  operationType?: string | undefined;
 }>;
 
 export const SnippetHeader = ({
@@ -16,6 +17,7 @@ export const SnippetHeader = ({
   Icon,
   float,
   alwaysDark = false,
+  operationType,
 }: SnippetHeaderProps) => (
   <div
     className={mergeClasses(
@@ -32,6 +34,7 @@ export const SnippetHeader = ({
       )}>
       {Icon && <Icon className="icon-sm" />}
       {title}
+      {operationType ? ` - ${operationType}` : null}
     </LABEL>
     {!!children && <div className="flex justify-end items-center">{children}</div>}
   </div>
