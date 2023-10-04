@@ -110,7 +110,7 @@ public extension UIDevice {
         return ExpoDeviceType(modelName: "iPad (8th generation)", deviceYearClass: 2020)
       case "iPad12,1", "iPad12,2":
         return ExpoDeviceType(modelName: "iPad (9th generation)", deviceYearClass: 2021)
-      case "iPad13,18", "iPad13,19"
+      case "iPad13,18", "iPad13,19":
         return ExpoDeviceType(modelName: "iPad (10th generation)", deviceYearClass: 2022)
       case "iPad4,1", "iPad4,2", "iPad4,3":
         return ExpoDeviceType(modelName: "iPad Air", deviceYearClass: 2013)
