@@ -2262,7 +2262,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.6.0):
     - ExpoModulesCore
-  - ExpoHead (0.0.11):
+  - ExpoHead (3.1.2):
     - ExpoModulesCore
   - ExpoImage (1.5.2):
     - ExpoModulesCore
@@ -2331,6 +2331,8 @@ PODS:
   - ExpoSystemUI (2.6.0):
     - ExpoModulesCore
   - ExpoTrackingTransparency (3.2.0):
+    - ExpoModulesCore
+  - ExpoVideo (0.1.0):
     - ExpoModulesCore
   - ExpoVideoThumbnails (7.6.0):
     - ExpoModulesCore
@@ -2520,9 +2522,9 @@ PODS:
     - AppAuth/Core (~> 1.6)
     - GTMSessionFetcher/Core (< 4.0, >= 1.5)
   - GTMSessionFetcher/Core (3.1.1)
-  - hermes-engine (0.72.4):
-    - hermes-engine/Pre-built (= 0.72.4)
-  - hermes-engine/Pre-built (0.72.4)
+  - hermes-engine (0.72.5):
+    - hermes-engine/Pre-built (= 0.72.5)
+  - hermes-engine/Pre-built (0.72.5)
   - JKBigInteger (0.0.6)
   - libaom (3.0.0):
     - libvmaf (>= 2.2.0)
@@ -3481,7 +3483,7 @@ DEPENDENCIES:
   - ExpoFileSystem/Tests (from `../packages/expo-file-system/ios`)
   - ExpoGL (from `../packages/expo-gl`)
   - ExpoHaptics (from `../packages/expo-haptics/ios`)
-  - ExpoHead (from `../node_modules/expo-head/ios`)
+  - ExpoHead (from `../packages/expo-router/ios`)
   - ExpoImage (from `../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../packages/expo-image-manipulator/ios`)
   - ExpoImagePicker (from `../packages/expo-image-picker/ios`)
@@ -3506,6 +3508,7 @@ DEPENDENCIES:
   - ExpoStoreReview (from `../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../packages/expo-tracking-transparency/ios`)
+  - ExpoVideo (from `../packages/expo-video/ios`)
   - ExpoVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../packages/expo-web-browser/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
@@ -4373,7 +4376,7 @@ EXTERNAL SOURCES:
   ExpoHaptics:
     :path: "../packages/expo-haptics/ios"
   ExpoHead:
-    :path: "../node_modules/expo-head/ios"
+    :path: "../packages/expo-router/ios"
   ExpoImage:
     :path: "../packages/expo-image/ios"
   ExpoImageManipulator:
@@ -4420,6 +4423,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-system-ui/ios"
   ExpoTrackingTransparency:
     :path: "../packages/expo-tracking-transparency/ios"
+  ExpoVideo:
+    :path: "../packages/expo-video/ios"
   ExpoVideoThumbnails:
     :path: "../packages/expo-video-thumbnails/ios"
   ExpoWebBrowser:
@@ -4930,7 +4935,7 @@ SPEC CHECKSUMS:
   ExpoFileSystem: 62cf8d5681581de1fb43b8af8ea6d7604eb786a6
   ExpoGL: 6aedfc52c13c1eea5728ec4504f96580bc4dee65
   ExpoHaptics: 604aca02e942d1d43c139cae7cf397b26f85476f
-  ExpoHead: 8da645502363b53eeb99d99276a0adbe0ec8cff0
+  ExpoHead: 625d2c4518d00ccc47cd7cbeb89975570ad57ba0
   ExpoImage: 2674cbdeaf6292b065727fdeacf78104b486dc58
   ExpoImageManipulator: 6d37f811d47a89afb34c0ec2521c6a6ea5f5a5be
   ExpoImagePicker: 9e5c745cb3e56ee00e1cfe5d6af59caab66ecf1a
@@ -4954,6 +4959,7 @@ SPEC CHECKSUMS:
   ExpoStoreReview: 6a63b9ae177bc6b46ec1679eb800ecc8a83a649a
   ExpoSystemUI: e4afa05539f42fe3be09d21a6498e5495019a5b2
   ExpoTrackingTransparency: b14d3e7946b36962ee87c8656be540d60ff70c5d
+  ExpoVideo: d02bcd2a3afa123dc4a7edfc2d0db6cb5177bd6a
   ExpoVideoThumbnails: d2ded9402b7f8ac10f148238e352eaa4026f2865
   ExpoWebBrowser: 1ff7c5454410b9fbc55084bf298c5914608904d4
   EXScreenCapture: 6ba7b396fd8afd19cb9a5e0ac8820188baf5415e
@@ -4963,7 +4969,7 @@ SPEC CHECKSUMS:
   EXUpdates: a910a0b964a12f9c7a6d673bad3c5eb70249fc5e
   EXUpdatesInterface: 98f69982f4b429eb62a1d99259bc980038240f27
   FBAEMKit: af2972f39bb0f3f7c45998f435b007833c32ffb2
-  FBAudienceNetwork: 4d6223a9a88a22e9dca8c9e6c1829a8745b86228
+  FBAudienceNetwork: 03e273f66b70756be7d060927111af97b7641b06
   FBLazyVector: 71803c074f6325f10b5ec891c443b6bbabef0ca7
   FBReactNativeSpec: 91188c438ac0700baec9b0722333884f5986f347
   FBSDKCoreKit: 19e2e18b3be578d7a51fed8fdd8c152bef0b9511
@@ -4987,7 +4993,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
   GTMAppAuth: 99fb010047ba3973b7026e45393f51f27ab965ae
   GTMSessionFetcher: e8647203b65cee28c5f73d0f473d096653945e72
-  hermes-engine: 81191603c4eaa01f5e4ae5737a9efcf64756c7b2
+  hermes-engine: f6cf92a471053245614d9d8097736f6337d5b86c
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
