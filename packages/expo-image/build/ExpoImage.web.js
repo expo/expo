@@ -48,7 +48,7 @@ const setCssVariables = (element, size) => {
 };
 export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, cachePolicy, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, style, ...props }) {
     const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
-    const blurhashStyle = {
+    const imageHashStyle = {
         objectFit: placeholderContentFit || contentFit,
     };
     const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy, setCssVariables);
@@ -62,7 +62,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                     ...style,
                 }, className: className, events: {
                     onTransitionEnd: [onAnimationFinished],
-                }, contentPosition: { left: '50%', top: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: blurhashStyle })),
+                }, contentPosition: { left: '50%', top: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: imageHashStyle })),
         ]
         : null;
     const currentNodeAnimationKey = (recyclingKey
@@ -79,7 +79,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
                 ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                 ...style,
-            }, className: className, cachePolicy: cachePolicy, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: blurhashStyle, accessibilityLabel: props.accessibilityLabel })),
+            }, className: className, cachePolicy: cachePolicy, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: imageHashStyle, accessibilityLabel: props.accessibilityLabel })),
     ];
     return (React.createElement(View, { ref: containerRef, dataSet: { expoimage: true }, style: [{ overflow: 'hidden' }, style] },
         React.createElement(AnimationManager, { transition: transition, recyclingKey: recyclingKey, initial: initialNode }, currentNode)));
