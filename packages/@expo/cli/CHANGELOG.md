@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Automatically optimize transformations based on Hermes usage. ([#24672](https://github.com/expo/expo/pull/24672) by [@EvanBacon](https://github.com/EvanBacon))
+- Shim `react-native-web` BackHandler to remove excessive error message.
 
 ### 🐛 Bug fixes
 

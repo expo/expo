@@ -196,6 +196,8 @@ export function withExtendedResolver(
 
   let nodejsSourceExtensions: string[] | null = null;
 
+  const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '..', 'static/shims');
+
   return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
@@ -372,6 +374,23 @@ export function withExtendedResolver(
         ) {
           // @ts-expect-error: `readonly` for some reason.
           result.filePath = reactNativeWebAppContainer;
+        } else if (platform === 'web' && result.filePath.includes('node_modules')) {
+          // Replace with static shims
+
+          let normalName = normalizeSlashes(result.filePath);
+          // Drop everything up until the `node_modules` folder.
+          normalName = normalName.replace(/.*node_modules\//, '');
+
+          const shimPath = path.join(shimsFolder, normalName);
+          // console.log('normal:', normalName);
+          if (fs.existsSync(shimPath)) {
+            console.log('Using shim for:', result.filePath);
+            // @ts-expect-error: `readonly` for some reason.
+            result.filePath = shimPath;
+          }
+          if (normalName.includes('BackHandler')) {
+            console.log('shim', shimPath, normalName, result.filePath);
+          }
         }
       }
       return result;
