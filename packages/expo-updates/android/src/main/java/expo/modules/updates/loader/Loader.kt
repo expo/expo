@@ -27,7 +27,8 @@ abstract class Loader protected constructor(
   private val configuration: UpdatesConfiguration,
   private val database: UpdatesDatabase,
   private val updatesDirectory: File?,
-  private val loaderFiles: LoaderFiles
+  private val loaderFiles: LoaderFiles,
+  private val isEmbedded: Boolean
 ) {
   private var updateResponse: UpdateResponse? = null
   private var updateEntity: UpdateEntity? = null
@@ -304,7 +305,7 @@ abstract class Loader protected constructor(
         database.assetDao().insertAssets(finishedAssetList, updateEntity!!)
 
         if (erroredAssetList.size == 0) {
-          database.updateDao().markUpdateFinished(updateEntity!!, false)
+          database.updateDao().markUpdateFinished(updateEntity!!, isEmbedded)
         }
       } catch (e: Exception) {
         finishWithError("Error while adding new update to database", e)

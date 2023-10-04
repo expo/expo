@@ -120,7 +120,7 @@ class EmbeddedLoaderTest {
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
-    Assert.assertEquals(UpdateStatus.READY, updates[0].status)
+    Assert.assertEquals(UpdateStatus.EMBEDDED, updates[0].status)
 
     val assets = db.assetDao().loadAllAssets()
     Assert.assertEquals(3, assets.size.toLong())
@@ -144,7 +144,7 @@ class EmbeddedLoaderTest {
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
-    Assert.assertEquals(UpdateStatus.READY, updates[0].status)
+    Assert.assertEquals(UpdateStatus.EMBEDDED, updates[0].status)
 
     val assets = db.assetDao().loadAllAssets()
     Assert.assertEquals(3, assets.size.toLong())
@@ -172,7 +172,7 @@ class EmbeddedLoaderTest {
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
-    Assert.assertEquals(UpdateStatus.READY, updates[0].status)
+    Assert.assertEquals(UpdateStatus.EMBEDDED, updates[0].status)
 
     val assets = db.assetDao().loadAllAssets()
     Assert.assertEquals(2, assets.size.toLong())

@@ -28,14 +28,14 @@ class RemoteLoader internal constructor(
   updatesDirectory: File?,
   private val launchedUpdate: UpdateEntity?,
   private val loaderFiles: LoaderFiles
-) : Loader(context, configuration, database, updatesDirectory, loaderFiles) {
+) : Loader(context, configuration, database, updatesDirectory, loaderFiles, isEmbedded = false) {
   constructor(
     context: Context,
     configuration: UpdatesConfiguration,
     database: UpdatesDatabase,
     fileDownloader: FileDownloader,
     updatesDirectory: File?,
-    launchedUpdate: UpdateEntity?
+    launchedUpdate: UpdateEntity?,
   ) : this(context, configuration, database, fileDownloader, updatesDirectory, launchedUpdate, LoaderFiles())
 
   override fun loadRemoteUpdate(
