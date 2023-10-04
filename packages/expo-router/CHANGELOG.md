@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `file` to server manifest format to represent the location of the file on disk.
+
 ### 🐛 Bug fixes
 
 - Prevent circular navigation references. ([#24548](https://github.com/expo/expo/pull/24548) by [@EvanBacon](https://github.com/EvanBacon))
