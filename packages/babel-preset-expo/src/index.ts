@@ -8,27 +8,26 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const { reanimated } = options;
   const platform = api.caller(getPlatform);
 
-  const extraPlugins: PluginItem[] = [];
+  const plugins: PluginItem[] = [
+    // TODO: Remove decorators
+    [require('@babel/plugin-proposal-decorators'), { legacy: true }],
+    require('@babel/plugin-proposal-export-namespace-from'),
+  ];
 
   const aliasPlugin = getAliasPlugin();
   if (aliasPlugin) {
-    extraPlugins.push(aliasPlugin);
+    plugins.push(aliasPlugin);
+  }
+
+  // Automatically add `react-native-reanimated/plugin` when the package is installed.
+  // TODO: Move to be a customTransformOption.
+  if (hasModule('react-native-reanimated') && reanimated !== false) {
+    plugins.push(require('react-native-reanimated/plugin'));
   }
 
   return {
     presets: [[platform === 'web' ? babelPresetExpoWeb : babelPresetExpoNative, options]],
-
-    plugins: [
-      ...extraPlugins,
-      // TODO: Remove
-      [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
-      require.resolve('@babel/plugin-proposal-export-namespace-from'),
-
-      // Automatically add `react-native-reanimated/plugin` when the package is installed.
-      // TODO: Move to be a customTransformOption.
-      hasModule('react-native-reanimated') &&
-        reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
-    ].filter(Boolean) as PluginItem[],
+    plugins,
   };
 }
 
