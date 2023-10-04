@@ -90,7 +90,7 @@
     "jest": "^29.3.1",
     "jest-environment-jsdom": "^29.3.1",
     "next-router-mock": "^0.9.3",
-    "postcss": "^8.4.21",
+    "postcss": "^8.4.31",
     "postcss-import": "^15.1.0",
     "prettier": "^2.8.8",
     "puppeteer": "^17.1.3",
