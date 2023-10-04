@@ -33,6 +33,9 @@ function selectSource(sources, size, responsivePolicy) {
     if (sources == null || sources.length === 0) {
         return null;
     }
+    if (sources.length === 1) {
+        return sources[0];
+    }
     if (responsivePolicy !== 'static') {
         return findBestSourceForSize(sources, size);
     }

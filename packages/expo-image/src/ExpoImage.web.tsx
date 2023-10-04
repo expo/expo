@@ -75,7 +75,7 @@ export default function ExpoImage({
   ...props
 }: ImageNativeProps) {
   const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
-  const blurhashStyle = {
+  const imageHashStyle = {
     objectFit: placeholderContentFit || contentFit,
   };
   const { containerRef, source: selectedSource } = useSourceSelection(
@@ -106,7 +106,7 @@ export default function ExpoImage({
               }}
               contentPosition={{ left: '50%', top: '50%' }}
               hashPlaceholderContentPosition={contentPosition}
-              hashPlaceholderStyle={blurhashStyle}
+              hashPlaceholderStyle={imageHashStyle}
             />
           ),
       ]
@@ -140,7 +140,7 @@ export default function ExpoImage({
           priority={priority}
           contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
           hashPlaceholderContentPosition={contentPosition}
-          hashPlaceholderStyle={blurhashStyle}
+          hashPlaceholderStyle={imageHashStyle}
           accessibilityLabel={props.accessibilityLabel}
         />
       ),
