@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Added support for the `headers` key in the `source` object on web. ([#24447](https://github.com/expo/expo/pull/24447) by [@aleqsio](https://github.com/aleqsio))
+- Add support for setting `tintColor` on SVGs on Android ([#24733](https://github.com/expo/expo/pull/24733) by [@alanjhughes](https://github.com/alanjhughes) and [@kadikraman](https://github.com/kadikraman))
 
 ### 🐛 Bug fixes
 
