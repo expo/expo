@@ -304,7 +304,7 @@ abstract class Loader protected constructor(
         database.assetDao().insertAssets(finishedAssetList, updateEntity!!)
 
         if (erroredAssetList.size == 0) {
-          database.updateDao().markUpdateFinished(updateEntity!!, false)
+          database.updateDao().markUpdateFinished(updateEntity!!)
         }
       } catch (e: Exception) {
         finishWithError("Error while adding new update to database", e)
