@@ -90,11 +90,11 @@ abstract class UpdateDao {
   abstract fun _setUpdateCommitTime(id: UUID, commitTime: Date)
 
   @Transaction
-  open fun markUpdateFinished(update: UpdateEntity, isEmbedded: Boolean) {
+  open fun markUpdateFinished(update: UpdateEntity, hasSkippedEmbeddedAssets: Boolean) {
     var statusToMark = UpdateStatus.READY
     if (update.status === UpdateStatus.DEVELOPMENT) {
       statusToMark = UpdateStatus.DEVELOPMENT
-    } else if (isEmbedded) {
+    } else if (hasSkippedEmbeddedAssets) {
       statusToMark = UpdateStatus.EMBEDDED
     }
     _markUpdateWithStatus(statusToMark, update.id)
