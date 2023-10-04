@@ -1,0 +1,23 @@
+---
+title: Managing your own native projects
+description: Learn about managing your own native projects in an Expo project.
+sidebar_title: Managing your own native projects
+---
+
+import { TemplateBareMinimumDiffViewer} from '~/ui/components/TemplateBareMinimumDiffViewer';
+
+You don't have to use prebuild blah blah you lose some benefits but you can check in your own native projects and use them with Expo blah blah
+
+## Upgrading to the next Expo SDK version
+
+If you're using your own native projects, you'll need to upgrade them to the next Expo SDK version when you upgrade your Expo project.
+
+In addition to running `npm install expo; npx expo install --fix`, you may need to modify the files inside your ios and android folders blah blah.
+
+### Upgrade based on a diff
+
+You can use this diff tool to see what changes you need to make to your native projects to bring them up to date with your Expo SDK version.
+
+Choose your from SDK version and to SDK version to see the diff. Then apply those changes to your native projects.
+
+<TemplateBareMinimumDiffViewer />

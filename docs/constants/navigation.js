@@ -146,6 +146,7 @@ const general = [
         makePage('workflow/customizing.mdx'),
         makePage('workflow/prebuild.mdx'),
         makePage('guides/adopting-prebuild.mdx'),
+        makePage('workflow/manage-native-projects.mdx'),
       ],
       { expanded: false }
     ),
