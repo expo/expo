@@ -16,6 +16,11 @@ if (expoModulesCorePlugin.exists()) {
   }
 }
 
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
@@ -95,6 +100,21 @@ android {
   defaultConfig {
     versionCode 18
     versionName "11.7.1"
+
+    externalNativeBuild {
+      cmake {
+        abiFilters (*reactNativeArchitectures())
+        arguments "-DANDROID_STL=c++_shared"
+      }
+    }
+  }
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
+  }
+  buildFeatures {
+    prefab true
   }
 }
 
@@ -105,6 +125,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   }
 
-  implementation 'com.github.alanjhughes:sqlite-android:0.0.3'
-  implementation "androidx.sqlite:sqlite-ktx:2.3.1"
+  compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 }
