@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Added new devices for iOS. ([#24555](https://github.com/expo/expo/pull/24555) by [@johanholm](https://github.com/johanholm))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
