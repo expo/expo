@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed typed arrays couldn't be returned from synchronous functions.
+- Fixed typed arrays couldn't be returned from synchronous functions. ([#24744](https://github.com/expo/expo/pull/24744) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
