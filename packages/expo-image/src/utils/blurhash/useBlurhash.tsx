@@ -12,7 +12,7 @@ const DEFAULT_SIZE = {
   height: 32,
 };
 
-//We scale up the canvas to avoid an irritating visual glitch when animating in chrome.
+// We scale up the canvas to avoid an irritating visual glitch when animating in Chrome.
 const scaleRatio = 5;
 
 export function useBlurhash(
