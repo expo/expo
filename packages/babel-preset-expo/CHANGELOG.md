@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Rewrite plugin for web and server environments.
+- Rewrite plugin for web and server environments. ([#24725](https://github.com/expo/expo/pull/24725) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.7.0 — 2023-09-15
 
