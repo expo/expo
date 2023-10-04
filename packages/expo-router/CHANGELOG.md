@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `file` to server manifest format to represent the location of the file on disk.
+- Add `file` to server manifest format to represent the location of the file on disk. ([#24739](https://github.com/expo/expo/pull/24739) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
