@@ -244,6 +244,8 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (3.2.0):
     - ExpoModulesCore
+  - ExpoVideo (0.1.0):
+    - ExpoModulesCore
   - ExpoVideoThumbnails (7.6.0):
     - ExpoModulesCore
   - ExpoWebBrowser (12.6.0):
@@ -885,6 +887,7 @@ DEPENDENCIES:
   - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
+  - ExpoVideo (from `../../../packages/expo-video/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - EXScreenCapture (from `../../../packages/expo-screen-capture/ios`)
@@ -1151,6 +1154,9 @@ EXTERNAL SOURCES:
   ExpoTrackingTransparency:
     inhibit_warnings: false
     :path: "../../../packages/expo-tracking-transparency/ios"
+  ExpoVideo:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-video/ios"
   ExpoVideoThumbnails:
     inhibit_warnings: false
     :path: "../../../packages/expo-video-thumbnails/ios"
@@ -1347,6 +1353,7 @@ SPEC CHECKSUMS:
   ExpoStoreReview: 6a63b9ae177bc6b46ec1679eb800ecc8a83a649a
   ExpoSystemUI: e4afa05539f42fe3be09d21a6498e5495019a5b2
   ExpoTrackingTransparency: b14d3e7946b36962ee87c8656be540d60ff70c5d
+  ExpoVideo: d02bcd2a3afa123dc4a7edfc2d0db6cb5177bd6a
   ExpoVideoThumbnails: d2ded9402b7f8ac10f148238e352eaa4026f2865
   ExpoWebBrowser: 1ff7c5454410b9fbc55084bf298c5914608904d4
   EXScreenCapture: 6ba7b396fd8afd19cb9a5e0ac8820188baf5415e
