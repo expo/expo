@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 49.0.14 — 2023-10-05
+
+### 💡 Others
+
 - Export `requireNativeModule` by [@alanjhughes](https://github.com/alanjhughes)
 
 ## 49.0.13 — 2023-09-27
