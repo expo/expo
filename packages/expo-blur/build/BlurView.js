@@ -1,7 +1,6 @@
 import { requireNativeViewManager } from 'expo-modules-core';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { ExperimentalBlurMethod } from './BlurView.types';
 const NativeBlurView = requireNativeViewManager('ExpoBlurView');
 export default class BlurView extends React.Component {
     blurViewRef = React.createRef();
@@ -14,7 +13,7 @@ export default class BlurView extends React.Component {
         return this.blurViewRef?.current;
     }
     render() {
-        const { tint = 'default', intensity = 50, blurReductionFactor = 4, experimentalBlurMethod = ExperimentalBlurMethod.None, style, children, ...props } = this.props;
+        const { tint = 'default', intensity = 50, blurReductionFactor = 4, experimentalBlurMethod = 'none', style, children, ...props } = this.props;
         return (React.createElement(View, { ...props, style: [styles.container, style] },
             React.createElement(NativeBlurView, { ref: this.blurViewRef, tint: tint, intensity: intensity, blurReductionFactor: blurReductionFactor, experimentalBlurMethod: experimentalBlurMethod, style: StyleSheet.absoluteFill }),
             children));

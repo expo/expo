@@ -28,23 +28,20 @@ const blurStyles = [
   'systemThickMaterialDark',
   'systemChromeMaterialDark',
 ] as const;
+const blurMethods: ExperimentalBlurMethod[] = ['none', 'dimezisBlurView'];
 
 export default function BlurViewScreen() {
-  const [blurMethod, setBlurMethod] = React.useState(ExperimentalBlurMethod.None);
+  const [blurMethod, setBlurMethod] = React.useState<ExperimentalBlurMethod>('none');
   return (
     <ScrollView style={styles.container}>
       {Platform.OS === 'android' && (
         <>
           <Text style={styles.text}>Blur method:</Text>
           <SegmentedControl
-            values={Object.keys(ExperimentalBlurMethod)}
-            selectedIndex={Object.values(ExperimentalBlurMethod).indexOf(blurMethod)}
+            values={blurMethods}
+            selectedIndex={blurMethods.indexOf(blurMethod)}
             onChange={(event) => {
-              setBlurMethod(
-                ExperimentalBlurMethod[
-                  event.nativeEvent.value as keyof typeof ExperimentalBlurMethod
-                ]
-              );
+              setBlurMethod(event.nativeEvent.value as ExperimentalBlurMethod);
             }}
           />
         </>

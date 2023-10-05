@@ -1,19 +1,15 @@
 import { ViewProps } from 'react-native';
 /**
  * Blur method to use on Android.
+ *
+ * - `'none'` - Falls back to a semi-transparent view instead of rendering a blur effect.
+ *
+ * - `'dimezisBlurView'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library. This method may lead to decreased performance and rendering issues during transitions made by `react-native-screens`.
+ *
+ * @platform android
+ * @default 'none'
  */
-export declare enum ExperimentalBlurMethod {
-    /**
-     * Falls back to a semi-transparent view instead of rendering a blur effect.
-     */
-    None = "NONE",
-    /**
-     * Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library.
-     *
-     * This method may lead to decreased performance and rendering issues during transitions made by `react-native-screens`.
-     */
-    DimezisBlurView = "DIMEZIS_BLUR_VIEW"
-}
+export type ExperimentalBlurMethod = 'none' | 'dimezisBlurView';
 export type BlurViewProps = {
     /**
      * A tint mode which will be applied to the view.
@@ -31,7 +27,7 @@ export type BlurViewProps = {
     /**
      * A number by which the blur intensity will be divided on Android.
      *
-     * When using experimental blur methods on Android the perceived blur intensity might be different from iOS
+     * When using experimental blur methods on Android, the perceived blur intensity might differ from iOS
      * at different intensity levels. This property can be used to fine tune it on Android to match it
      * more closely with iOS.
      * @default 4
@@ -42,10 +38,10 @@ export type BlurViewProps = {
     /**
      * Blur method to use on Android.
      *
-     * Currently, `BlurView` support is experimental on Android and may cause performance and graphical issues.
+     * > **warning** Currently, `BlurView` support is experimental on Android and may cause performance and graphical issues.
      * It can be enabled by setting this property.
      *
-     * @default 'None'
+     * @default 'none'
      * @platform android
      */
     experimentalBlurMethod?: ExperimentalBlurMethod;

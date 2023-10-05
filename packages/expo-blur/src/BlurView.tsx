@@ -2,7 +2,7 @@ import { requireNativeViewManager } from 'expo-modules-core';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import { BlurViewProps, ExperimentalBlurMethod } from './BlurView.types';
+import { BlurViewProps } from './BlurView.types';
 
 const NativeBlurView = requireNativeViewManager('ExpoBlurView');
 export default class BlurView extends React.Component<BlurViewProps> {
@@ -22,7 +22,7 @@ export default class BlurView extends React.Component<BlurViewProps> {
       tint = 'default',
       intensity = 50,
       blurReductionFactor = 4,
-      experimentalBlurMethod = ExperimentalBlurMethod.None,
+      experimentalBlurMethod = 'none',
       style,
       children,
       ...props
