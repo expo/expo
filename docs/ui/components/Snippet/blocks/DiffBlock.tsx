@@ -8,15 +8,12 @@ import { SnippetHeader } from '../SnippetHeader';
 
 const randomCommitHash = () => Math.random().toString(36).slice(2, 9);
 
-function removePrefix(str: string) {
-  return str.replace('templates/expo-template-bare-minimum/', '');
-}
-
 // These types come from `react-diff-view` library
 type RenderLine = {
   oldRevision: string;
   newRevision: string;
-  type: 'unified' | 'split';
+  type: 'delete' | 'add' | 'modify';
+  //type: 'unified' | 'split';
   hunks: object[];
   newPath: string;
   oldPath: string;
@@ -25,9 +22,16 @@ type RenderLine = {
 type Props = PropsWithChildren<{
   source?: string;
   raw?: string;
+  filenameModifier?: (filename: string) => string;
+  showOperation?: boolean;
 }>;
 
-export const DiffBlock = ({ source, raw }: Props) => {
+export const DiffBlock = ({
+  source,
+  raw,
+  filenameModifier = str => str,
+  showOperation = false,
+}: Props) => {
   const [diff, setDiff] = useState<RenderLine[] | null>(raw ? parseDiff(raw) : null);
   useEffect(() => {
     if (source) {
@@ -57,9 +61,10 @@ export const DiffBlock = ({ source, raw }: Props) => {
   }: RenderLine) => (
     <Snippet key={oldRevision + '-' + newRevision}>
       <SnippetHeader
-        title={`${removePrefix(type === 'delete' ? oldPath : newPath)}`}
+        title={`${filenameModifier(type === 'delete' ? oldPath : newPath)}`}
         Icon={Copy07Icon}
         operationType={type}
+        showOperation={showOperation}
       />
       <SnippetContent className="p-0" hideOverflow>
         <Diff viewType="unified" diffType={type} hunks={hunks}>

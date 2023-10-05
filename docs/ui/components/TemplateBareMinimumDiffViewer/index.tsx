@@ -10,5 +10,11 @@ type Props = PropsWithChildren<{
 export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
   const diffFile = '/static/diffs/template-bare-minimum/47..49.diff';
 
-  return <DiffBlock source={diffFile} />;
+  return (
+    <DiffBlock
+      source={diffFile}
+      filenameModifier={str => str.replace('templates/expo-template-bare-minimum/', '')}
+      showOperation
+    />
+  );
 };
