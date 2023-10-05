@@ -24,6 +24,7 @@ type Props = PropsWithChildren<{
   raw?: string;
   filenameModifier?: (filename: string) => string;
   showOperation?: boolean;
+  collapseDeletedFiles?: boolean;
 }>;
 
 export const DiffBlock = ({
@@ -31,6 +32,7 @@ export const DiffBlock = ({
   raw,
   filenameModifier = str => str,
   showOperation = false,
+  collapseDeletedFiles = false,
 }: Props) => {
   const [diff, setDiff] = useState<RenderLine[] | null>(raw ? parseDiff(raw) : null);
   useEffect(() => {
@@ -66,10 +68,13 @@ export const DiffBlock = ({
         operationType={type}
         showOperation={showOperation}
       />
+
       <SnippetContent className="p-0" hideOverflow>
-        <Diff viewType="unified" diffType={type} hunks={hunks}>
-          {(hunks: any[]) => hunks.map(hunk => <Hunk key={hunk.content} hunk={hunk} />)}
-        </Diff>
+        {collapseDeletedFiles && type !== 'delete' ? (
+          <Diff viewType="unified" diffType={type} hunks={hunks}>
+            {(hunks: any[]) => hunks.map(hunk => <Hunk key={hunk.content} hunk={hunk} />)}
+          </Diff>
+        ) : null}
       </SnippetContent>
     </Snippet>
   );

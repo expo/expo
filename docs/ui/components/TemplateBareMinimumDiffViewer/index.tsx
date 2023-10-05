@@ -15,6 +15,7 @@ export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
       source={diffFile}
       filenameModifier={str => str.replace('templates/expo-template-bare-minimum/', '')}
       showOperation
+      collapseDeletedFiles
     />
   );
 };
