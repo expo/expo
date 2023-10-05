@@ -7,7 +7,6 @@ import { ViewProps } from 'react-native';
  * - `'dimezisBlurView'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library. This method may lead to decreased performance and rendering issues during transitions made by `react-native-screens`.
  *
  * @platform android
- * @default 'none'
  */
 export type ExperimentalBlurMethod = 'none' | 'dimezisBlurView';
 export type BlurViewProps = {
