@@ -86,7 +86,7 @@ function getMockReturnStatements(tsReturnType) {
         case typescript_1.default.SyntaxKind.TypeReference:
             // can be improved by expanding a set of default mocks
             return [
-                typescript_1.default.addSyntheticTrailingComment(typescript_1.default.factory.createReturnStatement(typescript_1.default.factory.createNull()), typescript_1.default.SyntaxKind.SingleLineCommentTrivia, `TODO: Replace with mock for value of type ${tsReturnType.typeName?.escapedText ?? ''}.`),
+                typescript_1.default.addSyntheticTrailingComment(typescript_1.default.factory.createReturnStatement(typescript_1.default.factory.createNull()), typescript_1.default.SyntaxKind.SingleLineCommentTrivia, ` TODO: Replace with mock for value of type ${tsReturnType.typeName?.escapedText ?? ''}.`),
             ];
     }
     return [];

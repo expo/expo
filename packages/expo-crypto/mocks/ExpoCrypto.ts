@@ -11,7 +11,7 @@ export function getRandomBase64String(length) {
   return '';
 }
 export function getRandomValues(array) {
-  return null; //TODO: Replace with mock for value of type TypedArray.
+  return null; // TODO: Replace with mock for value of type TypedArray.
 }
 export function digest(algorithm, output, data) {}
 export function randomUUID() {

@@ -73,7 +73,7 @@ function getMockReturnStatements(
         ts.addSyntheticTrailingComment(
           ts.factory.createReturnStatement(ts.factory.createNull()),
           ts.SyntaxKind.SingleLineCommentTrivia,
-          `TODO: Replace with mock for value of type ${
+          ` TODO: Replace with mock for value of type ${
             (tsReturnType.typeName as any)?.escapedText ?? ''
           }.`
         ),
