@@ -16,6 +16,7 @@ Here are some **important rules** that apply to all authentication providers:
 - Build requests using `AuthSession.useAuthRequest()`, the hook allows for async setup which means mobile browsers won't block the authentication.
 - Be sure to disable the prompt until `request` is defined.
 - You can only invoke `promptAsync` in user interaction on the web.
+- Expo Go cannot be used for local development and testing of OAuth or OpenID Connect-enabled apps due to the inability to customize your app scheme. You can instead use a [Development Build](/develop/development-builds/introduction/), which enables an Expo Go-like development experience and supports OAuth redirects back to your app after login in a manner that works just like it would in production.
 
 ## Guides
 
@@ -95,12 +96,7 @@ import * as WebBrowser from 'expo-web-browser';
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
-/* @info Using the Expo proxy will redirect the user through auth.expo.io enabling you to use web links when configuring your project with an OAuth provider. This is not available on web. */
-const useProxy = true;
-/* @end */
-const redirectUri = AuthSession.makeRedirectUri({
-  useProxy,
-});
+const redirectUri = AuthSession.makeRedirectUri();
 
 export default function App() {
   /* @info If the provider supports auto discovery then you can pass an issuer to the `useAutoDiscovery` hook to fetch the discovery document. */
@@ -120,7 +116,7 @@ export default function App() {
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Button title="Login!" disabled={!request} onPress={() => promptAsync({ useProxy })} />
+      <Button title="Login!" disabled={!request} onPress={() => promptAsync()} />
       {result && <Text>{JSON.stringify(result, null, 2)}</Text>}
     </View>
   );
@@ -143,7 +139,7 @@ export default function App() {
 - Make sure to check `Public Client` option in the console.
 - Choose the intended grant in the Allowed grant types section.
 
-<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code"]}>
 
 <Tab>
 
@@ -157,8 +153,7 @@ import jwtDecode from "jwt-decode";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const useProxy = true;
-const redirectUri = AuthSession.makeRedirectUri({ useProxy });
+const redirectUri = AuthSession.makeRedirectUri();
 
 /* @info <strong>Client ID:</strong> This can be found on the protocol tab of Asgardeo Console */
 const CLIENT_ID = "YOUR_CLIENT_ID";
@@ -225,7 +220,7 @@ export default function App() {
 
     return (
       <View style={styles.container}>
-        <Button title="Login" disabled={!request} onPress={() => promptAsync({ useProxy })} />
+        <Button title="Login" disabled={!request} onPress={() => promptAsync()} />
         {decodedIdToken && <Text>Welcome {decodedIdToken.given_name || ""}!</Text>}
         {decodedIdToken && <Text>{decodedIdToken.email}</Text>}
         <View style={styles.accessTokenBlock}>
@@ -233,91 +228,6 @@ export default function App() {
         </View>
       </View>
     );
-}
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    accessTokenBlock: {
-        width: 300,
-        height: 500,
-        overflow: "scroll"
-    }
-});
-```
-
-</Tab>
-
-<Tab>
-
-{/* prettier-ignore */}
-```tsx
-import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, Alert } from 'react-native';
-import * as AuthSession from "expo-auth-session";
-import * as WebBrowser from "expo-web-browser";
-import jwtDecode from "jwt-decode";
-
-WebBrowser.maybeCompleteAuthSession();
-
-const useProxy = true;
-const redirectUri = AuthSession.makeRedirectUri({ useProxy });
-
-/* @info <strong>Client ID:</strong> This can be found on the protocol tab of Asgardeo Console */
-const CLIENT_ID = "YOUR_CLIENT_ID";
-/* @end */
-
-export default function App() {
-
-  /* @info <strong>Auto Discovery URL:</strong> This can be found on the info tab of Asgardeo Console. Copy the link under `Issuer` */
-  const discovery = AuthSession.useAutoDiscovery('https://api.asgardeo.io/t/<YOUR_ORG_NAME>/oauth2/token');
-  /* @end */
-  const [decodedToken, setDecodedToken] = useState({});
-
-  const [request, result, promptAsync] = AuthSession.useAuthRequest(
-        {
-            redirectUri,
-            clientId: CLIENT_ID,
-            responseType: "token",
-            scopes: ["openid", "profile", "email"]
-        },
-        discovery
-    );
-
-  useEffect(() => {
-    (async function setResult() {
-      if (result) {
-        if (result.error) {
-          Alert.alert(
-            "Authentication error",
-            result.params.error_description || "something went wrong"
-          );
-          return;
-        }
-
-        if (result.type === "success") {
-          const jwtToken = result.params.access_token;
-          const decoded = jwtDecode(jwtToken);
-          setDecodedToken(decoded);
-        }
-      }
-    })();
-  }, [result]);
-
-  return (
-    <View style={styles.container}>
-      <Button title="Login" disabled={!request} onPress={() => promptAsync({ useProxy })} />
-      {decodedToken && <Text>Welcome {decodedToken.given_name || ""}!</Text>}
-      {decodedToken && <Text>{decodedToken.email}</Text>}
-      <View style={styles.accessTokenBlock}>
-        decodedToken && <Text>Access Token: {result?.params.access_token}</Text>
-      </View>
-    </View>
-  );
 }
 
 const styles = StyleSheet.create({
@@ -375,7 +285,7 @@ export default function App() {
     'https://login.microsoftonline.com/<TENANT_ID>/v2.0',
   );
   const redirectUri = makeRedirectUri({
-    /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+    /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
     scheme: undefined,
     /* @end */
     /* @info Azure requires there to be a path in your redirect URI. */
@@ -480,7 +390,7 @@ export default function App() {
       clientId: `${client_id}`,
       scopes: ['openid'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property in your app.json or app.config.js is used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property in your app.json or app.config.js is used instead. */
         scheme: 'your.app',
         /* @end */
       }),
@@ -713,18 +623,15 @@ export default function App() {
 - The `redirectUri` requires 2 slashes (`://`).
 - Scopes must be joined with ':' so just create one long string.
 - Setup redirect URIs: Your Project > Permitted Redirect URIs: (be sure to save after making changes).
-  - _Expo Go_: `exp://localhost:8081/--/`. For SDK 48 and lower, the port number is `19000`.
   - _Web dev_: `https://localhost:19006`
     - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
     - Adding a slash to the end of the URL doesn't matter.
-  - _Standalone and Bare_: `your-scheme://`
+  - _Standalone / development build_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
-  - _Proxy_: **Not Supported**
-    - You cannot use the Expo proxy (`useProxy`) because they don't allow `@` in their redirect URIs.
   - _Web production_: `https://yourwebsite.com`
     - Set this to whatever your deployed website URL is.
 
-<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code"]}>
 <Tab>
 
 {/* prettier-ignore */}
@@ -750,7 +657,7 @@ const discovery = {
   revocationEndpoint: "https://api.coinbase.com/oauth/revoke",
 };
 
-const redirectUri = makeRedirectUri({ /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */ scheme: 'your.app'/* @end */});
+const redirectUri = makeRedirectUri({ /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */ scheme: 'your.app'/* @end */});
 const CLIENT_ID = "CLIENT_ID";
 
 export default function App() {
@@ -859,11 +766,6 @@ function useMounted() {
 
 </Tab>
 
-<Tab>
-
-- Coinbase does not support implicit grant.
-
-</Tab>
 </Tabs>
 </Box>
 {/* End Coinbase */}
@@ -881,15 +783,10 @@ function useMounted() {
 [c-dropbox]: https://www.dropbox.com/developers/apps/create
 
 - Scopes must be an empty array.
-- PKCE must be disabled (`usePKCE: false`) otherwise you'll get an error about `code_challenge` being included in the query string.
-- Implicit auth is supported.
-- When `responseType: ResponseType.Code` is used (default behavior) the `redirectUri` must be `https`. This means that code exchange auth cannot be done on native without `useProxy` enabled.
 
-<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code"]}>
 
 <Tab>
-
-Auth code responses (`ResponseType.Code`) will only work in native with `useProxy: true`.
 
 {/* prettier-ignore */}
 ```tsx
@@ -908,24 +805,16 @@ const discovery = {
   tokenEndpoint: 'https://www.dropbox.com/oauth2/token',
 };
 
-/* @info Implicit auth is universal, <code>.Code</code> will only work in native with <code>useProxy: true</code>. */
-const useProxy = Platform.select({ web: false, default: true });
-/* @end */
-
 export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: 'CLIENT_ID',
       // There are no scopes so just pass an empty array
       scopes: [],
-      // Dropbox doesn't support PKCE
-      usePKCE: false,
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app',
         /* @end */
-        useProxy,
       }),
     },
     discovery
@@ -933,73 +822,8 @@ export default function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
-      /* @end */
-    }
-  }, [response]);
-
-  return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
-        /* @end */
-      }}
-    />
-  );
-}
-```
-
-</Tab>
-
-<Tab>
-
-{/* prettier-ignore */}
-```tsx
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
-import { Button } from 'react-native';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.dropbox.com/oauth2/authorize',
-  tokenEndpoint: 'https://www.dropbox.com/oauth2/token',
-};
-
-export default function App() {
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: 'CLIENT_ID',
-      // There are no scopes so just pass an empty array
-      scopes: [],
-      // Dropbox doesn't support PKCE
-      usePKCE: false,
-      redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-        scheme: 'your.app'
-        /* @end */
-      }),
-    },
-    discovery
-  );
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
       /* @end */
     }
   }, [response]);
@@ -1038,13 +862,11 @@ export default function App() {
 [c-fitbit]: https://dev.fitbit.com/apps/new
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Go: `exp://localhost:8081/--/*`. For SDK 48 and lower, the port number is `19000`.
-  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
-  - Standalone or Bare: `com.your.app://*`
+  - Standalone / development build: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 
-<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code"]}>
 <Tab>
 
 {/* prettier-ignore */}
@@ -1071,7 +893,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['activity', 'sleep'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1081,7 +903,7 @@ export default function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
       /* @end */
     }
@@ -1105,72 +927,6 @@ export default function App() {
 
 </Tab>
 
-<Tab>
-
-{/* prettier-ignore */}
-```tsx
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
-import { Button, Platform } from 'react-native';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-const useProxy = Platform.select({ web: false, default: true });
-
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
-  tokenEndpoint: 'https://api.fitbit.com/oauth2/token',
-  revocationEndpoint: 'https://api.fitbit.com/oauth2/revoke',
-};
-
-export default function App() {
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: 'CLIENT_ID',
-      scopes: ['activity', 'sleep'],
-      // For usage in managed apps using the proxy
-      redirectUri: makeRedirectUri({
-        useProxy,
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-        scheme: 'your.app'
-        /* @end */
-      }),
-    },
-    discovery
-  );
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
-      /* @end */
-    }
-  }, [response]);
-
-  return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
-        /* @end */
-      }}
-    />
-  );
-}
-```
-
-</Tab>
 </Tabs>
 </Box>
 {/* End FitBit */}
@@ -1188,14 +944,12 @@ export default function App() {
 [c-github]: https://github.com/settings/developers
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Go: `exp://localhost:8081/--/*`. For SDK 48 and lower, the port number is `19000`.
-  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
-  - Standalone or Bare: `com.your.app://*`
+  - Standalone / development build: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 - `revocationEndpoint` is dynamic and requires your `config.clientId`.
 
-<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code"]}>
 <Tab>
 
 {/* prettier-ignore */}
@@ -1222,7 +976,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['identity'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1232,7 +986,7 @@ export default function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
       /* @end */
     }
@@ -1256,11 +1010,6 @@ export default function App() {
 
 </Tab>
 
-<Tab>
-
-- Implicit grant is [not supported for GitHub](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/).
-
-</Tab>
 </Tabs>
 </Box>
 
@@ -1279,7 +1028,7 @@ export default function App() {
 - You will need to create a different provider app for each platform (dynamically choosing your `clientId`).
 - Learn more here: [imgur.com/oauth2](https://api.imgur.com/oauth2)
 
-<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code"]}>
 <Tab>
 
 ```tsx
@@ -1304,7 +1053,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       clientSecret: 'CLIENT_SECRET',
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app',
         /* @end */
       }),
@@ -1316,7 +1065,7 @@ export default function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
       /* @end */
     }
@@ -1340,66 +1089,6 @@ export default function App() {
 
 </Tab>
 
-<Tab>
-
-```tsx
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
-import { Button, Platform } from 'react-native';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-const discovery = {
-  authorizationEndpoint: 'https://api.imgur.com/oauth2/authorize',
-  tokenEndpoint: 'https://api.imgur.com/oauth2/token',
-};
-
-export default function App() {
-  // Request
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: 'CLIENT_ID',
-      redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-        scheme: 'your.app',
-        /* @end */
-      }),
-      scopes: [],
-    },
-    discovery
-  );
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
-      /* @end */
-    }
-  }, [response]);
-
-  return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync();
-        /* @end */
-      }}
-    />
-  );
-}
-```
-
-</Tab>
 </Tabs>
 </Box>
 {/* End Imgur */}
@@ -1466,9 +1155,8 @@ export default function App() {
 [c-okta]: https://developer.okta.com/signup/
 
 - You cannot define a custom `redirectUri`, Okta will provide you with one.
-- You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
 
-<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code"]}>
 <Tab>
 
 {/* prettier-ignore */}
@@ -1482,8 +1170,6 @@ import { Button, Platform } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-const useProxy = Platform.select({ web: false, default: true });
-
 export default function App() {
   // Endpoint
   const discovery = useAutoDiscovery('https://<OKTA_DOMAIN>.com/oauth2/default');
@@ -1492,11 +1178,8 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       scopes: ['openid', 'profile'],
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
         native: 'com.okta.<OKTA_DOMAIN>:/callback',
-        useProxy,
       }),
     },
     discovery
@@ -1504,7 +1187,7 @@ export default function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
       /* @end */
     }
@@ -1518,7 +1201,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
+        promptAsync();
         /* @end */
       }}
     />
@@ -1528,11 +1211,6 @@ export default function App() {
 
 </Tab>
 
-<Tab>
-
-- This flow is not documented yet, learn more [from the Okta website](https://developer.okta.com/docs/guides/implement-implicit/use-flow/).
-
-</Tab>
 </Tabs>
 </Box>
 {/* End Okta */}
@@ -1550,13 +1228,11 @@ export default function App() {
 [c-reddit]: https://www.reddit.com/prefs/apps
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Go: `exp://localhost:8081/--/*`. For SDK 48 and lower, the port number is `19000`.
-  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
-  - Standalone or Bare: `com.your.app://*`
+  - Standalone / development build: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 
-<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code"]}>
 
 <Tab>
 
@@ -1583,7 +1259,6 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['identity'],
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
         native: 'your.app://redirect',
       }),
     },
@@ -1592,7 +1267,7 @@ export default function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
       /* @end */
     }
@@ -1616,69 +1291,6 @@ export default function App() {
 
 </Tab>
 
-<Tab>
-
-- You must select the `installed` option for your app on Reddit to use implicit grant.
-
-{/* prettier-ignore */}
-```tsx
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
-import { Button } from 'react-native';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
-  tokenEndpoint: 'https://www.reddit.com/api/v1/access_token',
-};
-
-export default function App() {
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: 'CLIENT_ID',
-      scopes: ['identity'],
-      redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-        scheme: 'your.app'
-        /* @end */
-      }),
-    },
-    discovery
-  );
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
-      /* @end */
-    }
-  }, [response]);
-
-  return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync();
-        /* @end */
-      }}
-    />
-  );
-}
-```
-
-</Tab>
 </Tabs>
 </Box>
 {/* End Reddit */}
@@ -1702,7 +1314,7 @@ export default function App() {
 - Navigate to the **"Scopes"** section to enable scopes.
 - `revocationEndpoint` is not available.
 
-<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code"]}>
 
 <Tab>
 
@@ -1729,7 +1341,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['emoji:read'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1739,7 +1351,7 @@ export default function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
       /* @end */
     }
@@ -1763,11 +1375,6 @@ export default function App() {
 
 </Tab>
 
-<Tab>
-
-- Slack does not support implicit grant.
-
-</Tab>
 </Tabs>
 </Box>
 {/* End Slack */}
@@ -1785,20 +1392,16 @@ export default function App() {
 [c-spotify]: https://developer.spotify.com/dashboard/applications
 
 - Setup your redirect URIs: Your project > Edit Settings > Redirect URIs (be sure to save after making changes).
-  - _Expo Go_: `exp://localhost:8081/--/`. For SDK 48 and lower, the port number is `19000`.
   - _Web dev_: `https://localhost:19006`
     - Important: Ensure there's no slash at the end of the URL unless manually changed in the app code with `makeRedirectUri({ path: '/' })`.
     - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
-  - _Custom app_: `your-scheme://`
+  - _Standalone / development build_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
-  - _Proxy_: `https://auth.expo.io/@username/slug`
-    - If `useProxy` is enabled (native only), change **username** for your Expo username and **slug** for the `slug` in your app.json. Try not to change the slug for your app after using it for auth as this can lead to versioning issues.
   - _Web production_: `https://yourwebsite.com`
     - Set this to whatever your deployed website URL is.
-- For simpler authentication, use the **Implicit Flow** as it'll return an `access_token` without the need for a code exchange server request.
 - Learn more about the [Spotify API](https://developer.spotify.com/documentation/web-api/).
 
-<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code"]}>
 <Tab>
 
 {/* prettier-ignore */}
@@ -1827,7 +1430,7 @@ export default function App() {
       // this must be set to false
       usePKCE: false,
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1837,7 +1440,7 @@ export default function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
       /* @end */
     }
@@ -1861,70 +1464,6 @@ export default function App() {
 
 </Tab>
 
-<Tab>
-
-{/* prettier-ignore */}
-```tsx
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
-import { Button } from 'react-native';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-  tokenEndpoint: 'https://accounts.spotify.com/api/token',
-};
-
-export default function App() {
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: 'CLIENT_ID',
-      scopes: ['user-read-email', 'playlist-modify-public'],
-      // To follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
-      // this must be set to false
-      usePKCE: false,
-      redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-        scheme: 'your.app'
-        /* @end */
-      }),
-    },
-    discovery
-  );
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
-      /* @end */
-    }
-  }, [response]);
-
-  return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync();
-        /* @end */
-      }}
-    />
-  );
-}
-```
-
-</Tab>
 </Tabs>
 </Box>
 {/* End Spotify */}
@@ -1972,7 +1511,6 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['activity:read_all'],
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
         // the "redirect" must match your "Authorization Callback Domain" in the Strava dev console.
         native: 'your.app://redirect',
       }),
@@ -1982,7 +1520,7 @@ export default function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
       /* @end */
     }
@@ -2044,7 +1582,7 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 - You will need to enable 2FA on your Twitch account to create an application.
 
-<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code"]}>
 
 <Tab>
 
@@ -2071,7 +1609,7 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -2082,7 +1620,7 @@ export default function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
       /* @end */
     }
@@ -2106,68 +1644,6 @@ export default function App() {
 
 </Tab>
 
-<Tab>
-
-{/* prettier-ignore */}
-```tsx
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
-import { Button } from 'react-native';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://id.twitch.tv/oauth2/authorize',
-  tokenEndpoint: 'https://id.twitch.tv/oauth2/token',
-  revocationEndpoint: 'https://id.twitch.tv/oauth2/revoke',
-};
-
-export default function App() {
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: 'CLIENT_ID',
-      redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-        scheme: 'your.app'
-        /* @end */
-      }),
-      scopes: ['user:read:email', 'analytics:read:games'],
-    },
-    discovery
-  );
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
-      /* @end */
-    }
-  }, [response]);
-
-  return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync();
-        /* @end */
-      }}
-    />
-  );
-}
-```
-
-</Tab>
 </Tabs>
 </Box>
 {/* End Twitch */}
@@ -2188,14 +1664,9 @@ export default function App() {
 - You will need to be approved by Twitter support before you can use the Twitter v2 API.
 - Web does not appear to work, the Twitter authentication website appears to block the popup, causing the `response` of `useAuthRequest` to always be `{type: 'dismiss'}`.
 - Example redirects:
-  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
-  - Standalone or Bare: `com.your.app://`
+  - Standalone / development build: `com.your.app://`
   - Web (dev `expo start --https`): `https://localhost:19006` (no ending slash)
 - The `redirectUri` requires 2 slashes (`://`).
-
-#### Expo Go
-
-You must use the proxy service in the Expo Go app because `exp://localhost:8081` cannot be added to your Twitter app as a redirect.
 
 <Tabs tabs={["Auth Code"]}>
 
@@ -2207,8 +1678,6 @@ import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, Platform } from 'react-native';
-
-const useProxy = Platform.select({ web: false, default: true });
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -2226,10 +1695,9 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app',
         /* @end */
-        useProxy
       }),
       usePKCE: true,
       scopes: [
@@ -2241,7 +1709,7 @@ export default function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
       /* @end */
     }
@@ -2255,7 +1723,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
+        promptAsync();
         /* @end */
       }}
     />
@@ -2283,7 +1751,7 @@ export default function App() {
 - The `redirectUri` requires 2 slashes (`://`).
 - `scopes` can be difficult to get approved.
 
-<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code"]}>
 
 <Tab>
 
@@ -2311,7 +1779,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['profile', 'delivery'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -2321,7 +1789,7 @@ export default function App() {
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      /* @info Exchange the code for an access token in a server. */
       const { code } = response.params;
       /* @end */
     }
@@ -2345,68 +1813,6 @@ export default function App() {
 
 </Tab>
 
-<Tab>
-
-{/* prettier-ignore */}
-```tsx
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
-import { Button } from 'react-native';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://login.uber.com/oauth/v2/authorize',
-  tokenEndpoint: 'https://login.uber.com/oauth/v2/token',
-  revocationEndpoint: 'https://login.uber.com/oauth/v2/revoke',
-};
-
-export default function App() {
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: 'CLIENT_ID',
-      scopes: ['profile', 'delivery'],
-      redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-        scheme: 'your.app'
-        /* @end */
-      }),
-    },
-    discovery
-  );
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
-      /* @end */
-    }
-  }, [response]);
-
-  return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync();
-        /* @end */
-      }}
-    />
-  );
-}
-```
-
-</Tab>
 </Tabs>
 </Box>
 {/* End Uber */}
@@ -2417,7 +1823,7 @@ export default function App() {
 
 Here are a few examples of some common redirect URI patterns you may end up using.
 
-### Standalone and bare
+### Standalone / development build
 
 > `yourscheme://path`
 
@@ -2475,9 +1881,10 @@ function App() {
 
 ### Implicit login
 
-You should never store your client secret locally in your bundle because there's no secure way to do this. Luckily a lot of providers have an "Implicit flow" which enables you to request an access token without the client secret. By default `expo-auth-session` requests an exchange code as this is the most widely applicable login method.
+Because there was no secure way to do this to store client secrets in your app bundle, historically, many providers have offered an "Implicit flow" which enables you to request an access token without the client secret. **This is no longer recommended** due to inherent security risks, including the risk of access token injection. Instead, most providers now support the authorization code with PKCE (Proof Key for Code Exchange) extension to securely exchange an authorization code for an access token within your client app code. Learn more about [transitioning from Implicit flow to authorization code with PKCE](https://oauth.net/2/grant-types/implicit/).
 
-Here is an example of logging into Spotify without using a client secret.
+`expo-auth-session` still supports Implicit flow for legacy code purposes. Below is an example implementation of the Implicit flow.
+
 
 {/* prettier-ignore */}
 ```tsx
@@ -2503,7 +1910,7 @@ function App() {
       clientId: 'CLIENT_ID',
       scopes: ['user-read-email', 'playlist-modify-public'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
