@@ -106,7 +106,7 @@ class EmbeddedLoaderTest {
   @Throws(JSONException::class, IOException::class, NoSuchAlgorithmException::class)
   fun testEmbeddedLoader_MultipleScales() {
     val multipleScalesManifest: UpdateManifest = BareUpdateManifest.fromBareManifest(
-      BareManifest(JSONObject("{\"id\":\"d26d7f92-c7a6-4c44-9ada-4804eda7e6e2\",\"commitTime\":1630435460610,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"},{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":2,\"packagerHash\":\"4ecff55cf37460b7f768dc7b72bcea6b\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
+      BareManifest(JSONObject("{\"id\":\"d26d7f92-c7a6-4c44-9ada-4804eda7e6e2\",\"commitTime\":1630435460610,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1,2,3],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"},{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":2,\"packagerHash\":\"4ecff55cf37460b7f768dc7b72bcea6b\",\"subdirectory\":\"/assets\",\"scales\":[1,2,3],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
       configuration
     )
 
@@ -116,14 +116,14 @@ class EmbeddedLoaderTest {
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
-    verify(exactly = 2) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
+    verify(exactly = 3) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
-    Assert.assertEquals(UpdateStatus.EMBEDDED, updates[0].status)
+    Assert.assertEquals(UpdateStatus.READY, updates[0].status)
 
     val assets = db.assetDao().loadAllAssets()
-    Assert.assertEquals(2, assets.size.toLong())
+    Assert.assertEquals(3, assets.size.toLong())
   }
 
   @Test
@@ -140,14 +140,14 @@ class EmbeddedLoaderTest {
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
-    verify(exactly = 2) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
+    verify(exactly = 3) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
-    Assert.assertEquals(UpdateStatus.EMBEDDED, updates[0].status)
+    Assert.assertEquals(UpdateStatus.READY, updates[0].status)
 
     val assets = db.assetDao().loadAllAssets()
-    Assert.assertEquals(2, assets.size.toLong())
+    Assert.assertEquals(3, assets.size.toLong())
   }
 
   @Test

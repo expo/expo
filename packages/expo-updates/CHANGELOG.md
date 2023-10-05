@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Add missing export in checkForUpdateAsync result. (by [@douglowder](https://github.com/douglowder)) ([#24503](https://github.com/expo/expo/pull/24503) by [@douglowder](https://github.com/douglowder))
+- [Android] embedded loader should load images at all scales. ([#24549](https://github.com/expo/expo/pull/24549) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 

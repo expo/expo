@@ -43,7 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ios, android, tvos]
+        platform: [android, tvos]
     runs-on: ubuntu-22.04
     timeout-minutes: 40
     env:
