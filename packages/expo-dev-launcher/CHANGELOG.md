@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Improve 'Development servers' and 'Recently opened' UX. ([#24665](https://github.com/expo/expo/pull/24665) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add support for skipping the launcher screen and launching directly into a previously opened project. ([#24614](https://github.com/expo/expo/pull/24614), [#24646](https://github.com/expo/expo/pull/24646) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
