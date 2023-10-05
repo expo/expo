@@ -18,10 +18,10 @@ it(`invokes native method correctly`, async () => {
 });
 
 it(`invokes native method correctly`, async () => {
-  ExpoCrypto.getRandomBase64StringAsync.mockImplementationOnce(async () => '');
+  ExpoCrypto.getRandomValues.mockImplementationOnce(async () => '');
   const value = await Crypto.getRandomBytesAsync(0);
   expect(value instanceof Uint8Array).toBe(true);
-  expect(ExpoCrypto.getRandomBase64StringAsync).toHaveBeenLastCalledWith(0);
+  expect(ExpoCrypto.getRandomValues).toHaveBeenLastCalledWith(value);
 });
 
 it(`returns an array with the desired number of bytes`, async () => {

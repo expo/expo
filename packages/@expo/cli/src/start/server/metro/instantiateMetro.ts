@@ -54,7 +54,7 @@ export async function loadMetroConfigAsync(
   projectRoot: string,
   options: LoadOptions,
   {
-    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true }).exp,
+    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
     isExporting,
   }: { exp?: ExpoConfig; isExporting: boolean }
 ) {
@@ -107,6 +107,7 @@ export async function loadMetroConfigAsync(
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',
+    isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
   });
 
   logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
@@ -134,7 +135,6 @@ export async function instantiateMetroAsync(
   // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
   const { exp } = getConfig(projectRoot, {
     skipSDKVersionRequirement: true,
-    skipPlugins: true,
   });
 
   const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(

@@ -1,0 +1,96 @@
+---
+title: Use Bun
+description: A guide on using Bun with Expo and EAS.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+[Bun](https://bun.sh/) is a JavaScript runtime and a drop-in alternative for [Node.js](https://nodejs.org/en). In Expo projects, Bun can be used to install npm packages and run Node.js scripts. The benefits of using Bun are faster package installation than npm, pnpm, or yarn and [at least 4x faster startup time compared to Node.js](https://bun.sh/docs#design-goals), which gives a huge boost to your local development experience.
+
+## Start a new Expo project with Bun
+
+To create a new app using Bun, [install Bun on your local machine](https://bun.sh/) by running the command:
+
+<Terminal cmd={['$ curl -fsSL https://bun.sh/install | bash']} />
+
+Now, create your new Expo project:
+
+<Terminal cmd={['bun create expo my-app']} />
+
+You can also run any **package.json** script with `bun run`:
+
+<Terminal cmd={['bun run ios']} />
+
+To install any Expo library, you can use `bun expo install`:
+
+<Terminal cmd={['bun expo install expo-av']} />
+
+## Use Bun for EAS builds
+
+EAS decides which package manager to use based on the lockfile in your codebase. If you want EAS to use Bun, run `bun install` in your codebase and ensure it creates a **bun.lockb** &mdash; the Bun lockfile. Make sure to delete any other lockfiles. As long as this lockfile is in your codebase, Bun will be used as the package manager for your builds.
+
+### Customize Bun version on EAS
+
+EAS uses `bun@1.0.2` by default. If you need to use a particular version of Bun, you can configure the exact version in each build in your **eas.json**:
+
+{/* prettier-ignore */}
+```json eas.json
+{
+  "build": {
+    "test": {
+      "bun": "1.0.0"
+       /* @hide ... */ /* @end */
+    }
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+## Migrate to using Bun from npm, pnpm or yarn
+
+It is currently not possible to import another package manager's lockfile into Bun (though this feature is being [worked on](https://github.com/oven-sh/bun/issues/1751)). Until this is done, there is an element of risk to switching over to Bun on an existing project.
+
+The purpose of a lockfile is to _lock_ down your dependency tree. If there is a library in **package.json** whose version number starts with a `^` or `~`, you are likely to end up with a different version of the package.
+
+- `^` means you're opting into future minor and patch versions
+- `~` means you're opting into future patch versions only
+
+According to Semantic Versioning (SemVer), minor and patch versions do not include breaking changes. Unfortunately, breaking changes can still slip through. Since a lockdown file contains **specific versions** of dependencies, you will not get updates unless you explicitly opt-in. By deleting the lockfile, you are losing that safety and getting the latest versions available of all the packages as defined in your **package.json**.
+
+To migrate to using Bun (use at your own risk):
+
+<Terminal
+  cmd={[
+    '$ rm -rf node_modules',
+    '$ rm yarn.lock pnpm-lock.yaml package-lock.json',
+    '$ bun install',
+  ]}
+/>
+
+## Trusted dependencies
+
+Unlike other package managers, Bun does not automatically execute lifecycle scripts from installed libraries, as this is considered a security risk. However, if a package you are installing has a `postinstall` script that you want to run, you have to explicitly state that by including that library in your [`trusted dependencies`](https://bun.sh/guides/install/trusted) array in your **package.json**.
+
+For example, if you install `packageA`, which has a dependency on `packageB` and `packageB` has a `postinstall` script, you must add `packageB` in your `trustedDependencies`.
+
+To add a trusted dependency in your **package.json**, add:
+
+```json package.json
+"trustedDependencies": ["your-dependency"]
+```
+
+Then, remove your lockfile and re-install the dependencies:
+
+<Terminal cmd={['$ rm -rf node_modules', '$ rm bun.lockb', '$ bun install']} />
+
+## Common errors
+
+### EAS Build fails when using Sentry and Bun
+
+If you're using `sentry-expo` or `@sentry/react-native`, these depend on `@sentry/cli`, which updates source maps to Sentry during your build. The `@sentry/cli` package has a `postinstall` script which needs to run for the "upload source maps" script to become available.
+
+To fix this, add `@sentry/cli` to your [trusted dependencies](/#trusted-dependencies) array in **package.json**:
+
+```json package.json
+"trustedDependencies": ["@sentry/cli"]
+```

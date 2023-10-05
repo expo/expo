@@ -498,7 +498,7 @@ EX_EXPORT_METHOD_AS(getRemindersAsync,
   NSDate *startDate = [EXUtilities NSDate:startDateStr];
   NSDate *endDate = [EXUtilities NSDate:endDateStr];
 
-  if (calendars.count) {
+  if (calendars && calendars.count) {
     reminderCalendars = [[NSMutableArray alloc] init];
     NSArray *deviceCalendars = [self.eventStore calendarsForEntityType:EKEntityTypeReminder];
 

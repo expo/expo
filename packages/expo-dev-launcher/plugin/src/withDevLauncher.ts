@@ -10,8 +10,8 @@ import { PluginConfigType, validateConfig } from './pluginConfig';
 const pkg = require('expo-dev-launcher/package.json');
 
 export default createRunOncePlugin<PluginConfigType>(
-  (config, props) => {
-    validateConfig(props || {});
+  (config, props = {}) => {
+    validateConfig(props);
 
     if (props.ios?.tryToLaunchLastOpenedBundle ?? props.tryToLaunchLastOpenedBundle) {
       config = withInfoPlist(config, (config) => {

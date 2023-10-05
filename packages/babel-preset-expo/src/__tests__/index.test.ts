@@ -8,11 +8,140 @@ function getCaller(props: Record<string, string>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
 }
 
+it(`compiles samples with Metro targeting Hermes`, () => {
+  const options = {
+    babelrc: false,
+    presets: [preset],
+    sourceMaps: true,
+    filename: 'unknown',
+    configFile: false,
+    compact: false,
+    comments: true,
+    retainLines: true,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios' }),
+  };
+
+  // All of this code should remain intact.
+  const sourceCode = `
+// @babel/plugin-transform-computed-properties
+var obj = {
+  ["x" + foo]: "heh",
+  ["y" + bar]: "noo",
+  foo: "foo",
+  bar: "bar"
+};
+
+// @babel/plugin-transform-parameters
+function test(x = "hello", { a, b }, ...args) {
+  console.log(x, a, b, args);
+}
+
+// @babel/plugin-transform-shorthand-properties
+var a1 = 0;
+var c = { a1 };
+
+// @babel/plugin-proposal-optional-catch-binding
+try {
+  throw 0;
+} catch {
+}
+
+// @babel/plugin-transform-literals
+var d = 0b11; // binary integer literal
+var e = 0o7; // octal integer literal
+var f = "Hello\\u{000A}\\u{0009}!"; // unicode string literals, newline and tab
+
+// @babel/plugin-proposal-numeric-separator
+var budget = 1_000_000_000_000;
+var nibbles = 0b1010_0001_1000_0101;
+var message = 0xa0_b0_c0;
+
+// @babel/plugin-transform-sticky-regex
+var g = /o+/y;
+
+// @babel/plugin-transform-spread
+var h = ["a", "b", "c"];
+
+var i = [...h, "foo"];
+
+var j = foo(...h);
+
+// @babel/plugin-proposal-object-rest-spread
+var y = {};
+var x = 1;
+var k = { x, ...y };
+
+
+// @babel/plugin-proposal-optional-chaining
+var m = {}?.x;
+
+// @babel/plugin-proposal-nullish-coalescing-operator
+var obj2 = {};
+var foo = obj2.foo ?? "default";`;
+  const withHermes = babel.transform(sourceCode, options);
+
+  expect(withHermes.code).toEqual(sourceCode);
+});
+
+it(`compiles sample file with Metro targeting Hermes`, () => {
+  const options = {
+    babelrc: false,
+    presets: [preset],
+    sourceMaps: true,
+    caller: getCaller({ name: 'metro', engine: 'hermes' }),
+  };
+  const fileName = path.resolve(__dirname, 'samples/App.js');
+
+  const withHermes = babel.transformFileSync(fileName, options);
+  const withoutHermes = babel.transformFileSync(fileName, {
+    babelrc: false,
+    presets: [preset],
+    sourceMaps: true,
+    caller: getCaller({ name: 'metro' }),
+  });
+
+  expect(withHermes.code).not.toEqual(withoutHermes.code);
+
+  // 😎
+  expect(withHermes.code.length).toBeLessThan(withoutHermes.code.length);
+});
+
+it(`supports overwriting the default engine option`, () => {
+  const fileName = path.resolve(__dirname, 'samples/App.js');
+
+  const firstPass = babel.transformFileSync(fileName, {
+    babelrc: false,
+    presets: [
+      [
+        preset,
+        {
+          native: {
+            // This should overwrite the default engine option which is passed to Babel via Expo CLI.
+            unstable_transformProfile: 'default',
+          },
+        },
+      ],
+    ],
+    sourceMaps: true,
+    caller: getCaller({ name: 'metro', platform: 'ios', engine: 'hermes' }),
+  });
+
+  const secondPass = babel.transformFileSync(fileName, {
+    babelrc: false,
+    presets: [[preset, {}]],
+    sourceMaps: true,
+    caller: getCaller({ name: 'metro', platform: 'ios', engine: 'hermes' }),
+  });
+
+  expect(firstPass.code).not.toEqual(secondPass.code);
+});
+
 describe.each([
   ['metro', getCaller({ name: 'metro' })],
+  ['metro+hermes', getCaller({ name: 'metro', engine: 'hermes' })],
   ['webpack', getCaller({ name: 'babel-loader' })],
 ])('%s', (_name, caller) => {
-  const isMetro = _name === 'metro';
+  const isMetro = _name.includes('metro');
   it(`compiles sample files`, () => {
     const options = {
       babelrc: false,

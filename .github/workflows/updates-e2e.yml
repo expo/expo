@@ -43,7 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ios, android, tvos]
+        platform: [android, tvos]
     runs-on: ubuntu-22.04
     timeout-minutes: 40
     env:
@@ -54,7 +54,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(yarn global bin)" >> $GITHUB_PATH
       - name: ♻️ Restore caches
