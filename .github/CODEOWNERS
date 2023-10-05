@@ -7,6 +7,7 @@
 /packages/@expo/metro-runtime                   @EvanBacon @bycedric @marklawlor
 /packages/@expo/package-manager                 @EvanBacon @bycedric
 /packages/babel-preset-expo                     @brentvatne @ide @EvanBacon
+/packages/expo-*                                @alanjhughes
 /packages/expo-app-loader-provider              @tsapeta
 /packages/expo-apple-authentication             @tsapeta
 /packages/expo-application                      @ide
@@ -84,7 +85,6 @@
 /packages/expo-web-browser                      @tsapeta
 /packages/expo-yarn-workspaces                  @ide
 /packages/expo                                  @ide @tsapeta @brentvatne
-/packages/expo-*                                @alanjhughes
 /packages/jest-expo-enzyme                      @ide @EvanBacon
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne @EvanBacon
