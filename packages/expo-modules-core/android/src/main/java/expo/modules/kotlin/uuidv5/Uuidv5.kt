@@ -1,4 +1,4 @@
-package expo.modules.kotlin.modules.uuidv5
+package expo.modules.kotlin.uuidv5
 
 import java.nio.ByteBuffer
 import java.security.MessageDigest

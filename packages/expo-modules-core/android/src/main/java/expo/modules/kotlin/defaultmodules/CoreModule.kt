@@ -1,6 +1,6 @@
 package expo.modules.kotlin.defaultmodules
 
-import expo.modules.kotlin.modules.uuidv5.*
+import expo.modules.kotlin.uuidv5.*
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.util.UUID

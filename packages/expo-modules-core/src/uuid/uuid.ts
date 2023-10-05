@@ -20,7 +20,7 @@ function uuidv5(name: string, namespace: string | number[]) {
 
   // If parsed namespace is still an array it means that it wasn't valid
   if (Array.isArray(parsedNamespace)) {
-    throw new Error('`namespace` must be uuid string or an Array of 16 byte values');
+    throw new Error('`namespace` must be a valid UUID string or an Array of 16 byte values');
   }
 
   if (!nativeUuidv5) {
