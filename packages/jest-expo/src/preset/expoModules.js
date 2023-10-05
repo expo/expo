@@ -260,19 +260,6 @@ module.exports = {
           { name: 'writeContactToFileAsync', argumentsCount: 1, key: 16 },
           { name: 'dismissFormAsync', argumentsCount: 0, key: 17 },
         ],
-        ExpoCrypto: [
-          { name: 'digest', argumentsCount: 3, key: 'digest' },
-          { name: 'digestString', argumentsCount: 3, key: 'digestString' },
-          { name: 'digestStringAsync', argumentsCount: 3, key: 'digestStringAsync' },
-          { name: 'getRandomBase64String', argumentsCount: 1, key: 'getRandomBase64String' },
-          {
-            name: 'getRandomBase64StringAsync',
-            argumentsCount: 1,
-            key: 'getRandomBase64StringAsync',
-          },
-          { name: 'getRandomValues', argumentsCount: 1, key: 'getRandomValues' },
-          { name: 'randomUUID', argumentsCount: 0, key: 'randomUUID' },
-        ],
         ExpoDevice: [
           { name: 'getDeviceTypeAsync', argumentsCount: 0, key: 'getDeviceTypeAsync' },
           { name: 'getUptimeAsync', argumentsCount: 0, key: 'getUptimeAsync' },
@@ -282,7 +269,6 @@ module.exports = {
             key: 'isRootedExperimentalAsync',
           },
         ],
-        ExpoDevMenu: [],
         ExpoDocumentPicker: [
           { name: 'getDocumentAsync', argumentsCount: 1, key: 'getDocumentAsync' },
         ],
@@ -441,7 +427,7 @@ module.exports = {
         ],
         ExponentFileSystem: [
           { name: 'uploadAsync', argumentsCount: 3, key: 0 },
-          { name: 'readDirectoryAsync', argumentsCount: 2, key: 1 },
+          { name: 'readDirectoryAsync', argumentsCount: 1, key: 1 },
           { name: 'getTotalDiskCapacityAsync', argumentsCount: 0, key: 2 },
           { name: 'getInfoAsync', argumentsCount: 2, key: 3 },
           { name: 'downloadAsync', argumentsCount: 3, key: 4 },
@@ -688,7 +674,6 @@ module.exports = {
           mobileNetworkCode: { type: 'object', mock: null },
         },
         ExpoClipboard: {},
-        ExpoCrypto: {},
         ExpoDevice: {
           brand: { type: 'string' },
           deviceName: { type: 'string' },
@@ -742,9 +727,8 @@ module.exports = {
         },
         ExponentConstants: {
           appOwnership: { type: 'string' },
-          debugMode: { type: 'boolean', mock: true },
+          debugMode: { type: 'boolean', mock: false },
           deviceName: { type: 'string' },
-          deviceYearClass: { type: 'number', mock: 2023 },
           executionEnvironment: { type: 'string' },
           experienceUrl: { type: 'string' },
           expoRuntimeVersion: { type: 'string' },
@@ -773,7 +757,7 @@ module.exports = {
         ExponentGLView: {},
         ExponentImagePicker: {},
         ExpoNetwork: {},
-        ExpoPrint: {},
+        ExpoPrint: { Orientation: { type: 'object' } },
         ExpoRandom: {},
         ExpoScreenOrientation: {},
         ExpoSecureStore: {
@@ -946,7 +930,6 @@ module.exports = {
     getCurrentState: { type: 'function', functionType: 'promise' },
     removeListeners: { type: 'function', functionType: 'async' },
   },
-  RNCPickerManager: {},
   RNCSafeAreaContext: {
     getConstants: { type: 'function' },
     initialWindowMetrics: { type: 'object' },
@@ -989,10 +972,6 @@ module.exports = {
     updateGestureHandler: { type: 'function', functionType: 'async' },
   },
   RNSFullWindowOverlayManager: {},
-  RNSharedElementTransition: {
-    configure: { type: 'function', functionType: 'promise' },
-    getConstants: { type: 'function' },
-  },
   RNSkia: {
     getConstants: { type: 'function' },
     install: { type: 'function', functionType: 'sync' },
