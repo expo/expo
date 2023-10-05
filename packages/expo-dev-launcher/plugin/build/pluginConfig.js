@@ -8,18 +8,30 @@ const ajv_1 = __importDefault(require("ajv"));
 const schema = {
     type: 'object',
     properties: {
-        tryToLaunchLastOpenedBundle: { type: 'boolean', nullable: true },
+        launchModeExperimental: {
+            type: 'string',
+            enum: ['most-recent', 'launcher'],
+            nullable: true,
+        },
         android: {
             type: 'object',
             properties: {
-                tryToLaunchLastOpenedBundle: { type: 'boolean', nullable: true },
+                launchModeExperimental: {
+                    type: 'string',
+                    enum: ['most-recent', 'launcher'],
+                    nullable: true,
+                },
             },
             nullable: true,
         },
         ios: {
             type: 'object',
             properties: {
-                tryToLaunchLastOpenedBundle: { type: 'boolean', nullable: true },
+                launchModeExperimental: {
+                    type: 'string',
+                    enum: ['most-recent', 'launcher'],
+                    nullable: true,
+                },
             },
             nullable: true,
         },

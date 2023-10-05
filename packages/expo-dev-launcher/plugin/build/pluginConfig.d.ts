@@ -22,10 +22,16 @@ export type PluginConfigOptionsByPlatform = {
  */
 export type PluginConfigOptions = {
     /**
-     * Attempts to launch directly into a previously opened project. If unable to connect,
+     * **Experimental:** Determines whether to launch the most recently opened project or navigate to the launcher screen.
+     *
+     * - `'most-recent'` - Attempt to launch directly into a previously opened project and if unable to connect,
      * fall back to the launcher screen.
+     *
+     * - `'launcher'` - Opens the launcher screen.
+     *
+     * @default 'launcher'
      */
-    tryToLaunchLastOpenedBundle?: boolean;
+    launchModeExperimental?: 'most-recent' | 'launcher';
 };
 /**
  * @ignore
