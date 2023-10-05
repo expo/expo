@@ -101,8 +101,9 @@ THE TEXT WAS ALSO COPIED TO YOUR CLIPBOARD
   }
 }
 
+const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
+const blacklist = ['ExpoCrypto'];
 async function _getExpoModuleSpecsAsync() {
-  const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
   const moduleNames = await ExpoNativeModuleIntrospection.getNativeModuleNamesAsync();
   const expoModuleNames = moduleNames.filter((moduleName) => whitelist.test(moduleName)).sort();
   const specPromises = {};
@@ -117,16 +118,17 @@ async function _getModuleSpecAsync(moduleName, module) {
     return {};
   }
 
-  const moduleDescription = await ExpoNativeModuleIntrospection.introspectNativeModuleAsync(
-    moduleName
-  );
+  const moduleDescription =
+    await ExpoNativeModuleIntrospection.introspectNativeModuleAsync(moduleName);
   const spec = _addFunctionTypes(_mockify(module), moduleDescription.methods);
   if (moduleName === 'NativeUnimoduleProxy') {
-    spec.exportedMethods.mock = _sortObject(module.exportedMethods);
+    spec.exportedMethods.mock = _sortObjectAndBlacklistKeys(module.exportedMethods, blacklist);
     spec.viewManagersMetadata.mock = module.viewManagersMetadata;
     spec.modulesConstants.type = 'mock';
+
     spec.modulesConstants.mockDefinition = Object.keys(module.modulesConstants)
       .sort()
+      .filter((name) => !blacklist.includes(name))
       .reduce(
         (spec, moduleName) => ({
           ...spec,
@@ -164,9 +166,10 @@ const _addFunctionTypes = (spec, methods) =>
       spec
     );
 
-const _sortObject = (obj) =>
+const _sortObjectAndBlacklistKeys = (obj, blacklist) =>
   Object.keys(obj)
     .sort()
+    .filter((k) => !blacklist.includes(k))
     .reduce(
       (acc, el) => ({
         ...acc,
