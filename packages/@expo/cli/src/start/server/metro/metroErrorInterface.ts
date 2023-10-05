@@ -65,7 +65,9 @@ export async function logMetroErrorWithStack(
     const maxWarningLineLength = Math.max(200, process.stdout.columns);
 
     const lineText = codeFrame.content;
-    const isPreviewTooLong = lineText.length > maxWarningLineLength;
+    const isPreviewTooLong = codeFrame.content
+      .split('\n')
+      .some((line) => line.length > maxWarningLineLength);
     const column = codeFrame.location?.column;
     // When the preview is too long, we skip reading the file and attempting to apply
     // code coloring, this is because it can get very slow.

@@ -23,10 +23,12 @@ std::shared_ptr<NativeMethodCallInvokerCompatible> getNativeMethodCallInvokerHol
   return holder->cthis()->getNativeMethodCallInvoker();
 }
 #else
+
 std::shared_ptr<NativeMethodCallInvokerCompatible> getNativeMethodCallInvokerHolderCompatible(
   jni::alias_ref<NativeMethodCallInvokerHolderCompatible::javaobject> holder) {
   return holder->cthis()->getCallInvoker();
 }
+
 #endif
 
 } // namespace
@@ -71,6 +73,8 @@ void JSIInteropModuleRegistry::installJSI(
     getNativeMethodCallInvokerHolderCompatible(nativeInvokerHolder)
   );
 
+  runtimeHolder->installMainObject();
+
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(*runtime, expoModules);
 
@@ -105,6 +109,8 @@ void JSIInteropModuleRegistry::installJSIForTests(
   jsi::Runtime &jsiRuntime = runtimeHolder->get();
 
   jsRegistry = std::make_unique<JSReferencesCache>(jsiRuntime);
+
+  runtimeHolder->installMainObject();
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(jsiRuntime, expoModules);

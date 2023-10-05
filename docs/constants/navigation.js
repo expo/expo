@@ -133,6 +133,7 @@ const general = [
   makeSection('', [makePage('guides/overview.mdx')]),
   makeSection('Development process', [
     makePage('workflow/configuration.mdx'),
+    makePage('guides/local-app-development.mdx'),
     makePage('workflow/using-libraries.mdx'),
     makePage('guides/permissions.mdx'),
     makePage('guides/environment-variables.mdx'),
@@ -191,7 +192,6 @@ const general = [
       makePage('router/reference/search-parameters.mdx'),
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
-      makePage('router/reference/api-routes.mdx'),
       makePage('router/reference/async-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/typed-routes.mdx'),
@@ -227,7 +227,7 @@ const general = [
     ],
     { expanded: false }
   ),
-  makeSection('EAS', [makePage('eas/index.mdx')]),
+  makeSection('EAS', [makePage('eas/index.mdx'), makePage('eas/json.mdx')]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
     makePage('build/setup.mdx'),
@@ -261,7 +261,6 @@ const general = [
     makeGroup(
       'Reference',
       [
-        makePage('build-reference/eas-json.mdx'),
         makePage('build-reference/migrating.mdx'),
         makePage('build-reference/npm-hooks.mdx'),
         makePage('build-reference/private-npm-packages.mdx'),
@@ -374,6 +373,7 @@ const general = [
         makePage('guides/icons.mdx'),
         makePage('guides/localization.mdx'),
         makePage('guides/configuring-js-engines.mdx'),
+        makePage('guides/using-bun.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
@@ -451,6 +451,7 @@ const preview = [
     makePage('preview/introduction.mdx'),
     makePage('preview/support.mdx'),
     { expanded: true },
+    makeSection('Expo Router', [makePage('preview/api-routes.mdx')]),
   ]),
 ];
 

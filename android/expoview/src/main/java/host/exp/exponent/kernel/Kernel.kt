@@ -11,7 +11,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.nfc.NfcAdapter
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -868,11 +867,9 @@ class Kernel : KernelInterface() {
           task.finishAndRemoveTask()
           return
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          if (taskInfo.numActivities == 1 && (taskInfo.topActivity!!.className == LauncherActivity::class.java.name)) {
-            task.finishAndRemoveTask()
-            return
-          }
+        if (taskInfo.numActivities == 1 && (taskInfo.topActivity!!.className == LauncherActivity::class.java.name)) {
+          task.finishAndRemoveTask()
+          return
         }
       }
     } catch (e: NoSuchFieldException) {
@@ -936,7 +933,7 @@ class Kernel : KernelInterface() {
   }
 
   override fun handleError(exception: Exception) {
-    handleReactNativeError(ExceptionUtils.exceptionToErrorMessage(exception), null, -1, true)
+    handleReactNativeError(ExceptionUtils.exceptionToErrorMessage(exception), null, -1, true, ExceptionUtils.exceptionToErrorHeader(exception))
   }
 
   // TODO: probably need to call this from other places.
@@ -1083,7 +1080,8 @@ class Kernel : KernelInterface() {
       errorMessage: ExponentErrorMessage,
       detailsUnversioned: Any?,
       exceptionId: Int?,
-      isFatal: Boolean
+      isFatal: Boolean,
+      errorHeader: String? = null,
     ) {
       val stackList = ArrayList<Bundle>()
       if (detailsUnversioned != null) {
@@ -1123,7 +1121,7 @@ class Kernel : KernelInterface() {
       val stack = stackList.toTypedArray()
       BaseExperienceActivity.addError(
         ExponentError(
-          errorMessage, stack,
+          errorMessage, errorHeader, stack,
           getExceptionId(exceptionId), isFatal
         )
       )

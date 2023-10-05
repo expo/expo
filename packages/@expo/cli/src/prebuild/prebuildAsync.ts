@@ -63,7 +63,7 @@ export async function prebuildAsync(
   require('@expo/env').load(projectRoot);
 
   if (options.clean) {
-    const { maybeBailOnGitStatusAsync } = await import('../utils/git');
+    const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
     // Clean the project folders...
     if (await maybeBailOnGitStatusAsync()) {
       return null;
@@ -126,7 +126,7 @@ export async function prebuildAsync(
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
   if (options.platforms.includes('ios') && options.install && needsPodInstall) {
-    const { installCocoaPodsAsync } = await import('../utils/cocoapods');
+    const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
 
     podsInstalled = await installCocoaPodsAsync(projectRoot);
   } else {

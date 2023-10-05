@@ -1,13 +1,14 @@
 package versioned.host.exp.exponent.modules.universal.notifications
 
 import android.content.Context
-import host.exp.exponent.kernel.ExperienceKey
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter
+import expo.modules.notifications.notifications.model.Notification
+import expo.modules.notifications.notifications.model.NotificationResponse
+import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.notifications.ScopedNotificationsUtils
-import expo.modules.notifications.notifications.model.*
 
 class ScopedNotificationsEmitter(context: Context, private val experienceKey: ExperienceKey) :
-  NotificationsEmitter(context) {
+  NotificationsEmitter() {
   private val scopedNotificationsUtils: ScopedNotificationsUtils = ScopedNotificationsUtils(context)
 
   override fun onNotificationReceived(notification: Notification) {

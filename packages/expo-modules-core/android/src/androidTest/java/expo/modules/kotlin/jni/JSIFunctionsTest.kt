@@ -11,6 +11,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.typedarray.Float32Array
 import expo.modules.kotlin.typedarray.Int32Array
 import expo.modules.kotlin.typedarray.Int8Array
+import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -339,6 +340,25 @@ class JSIFunctionsTest {
     }
   ) {
     evaluateScript("expo.modules.TestModule.f(new Int32Array([1,2,3]), new Float32Array([1.0,2.0,3.0]), new Int8Array([1,2,3]))")
+  }
+
+  @Test
+  fun typed_arrays_should_be_returnable() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("genericTypedArray") { typedArray: TypedArray ->
+        typedArray
+      }
+      Function("intTypedArray") { typedArray: Int32Array ->
+        typedArray
+      }
+    }
+  ) {
+    val isArray = evaluateScript("expo.modules.TestModule.genericTypedArray(new Int32Array([1,2,3]))").isTypedArray()
+    val isArray2 = evaluateScript("expo.modules.TestModule.intTypedArray(new Int32Array([1,2,3]))").isTypedArray()
+
+    Truth.assertThat(isArray).isTrue()
+    Truth.assertThat(isArray2).isTrue()
   }
 
   @Test

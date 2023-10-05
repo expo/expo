@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+- Export `requireOptionalNativeModule` and `requireNativeModule`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 49.0.13 — 2023-09-27
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.12 — 2023-09-25
+
+_This version does not introduce any user-facing changes._
+
 ## 50.0.0-alpha.5 — 2023-09-18
 
 _This version does not introduce any user-facing changes._
@@ -34,6 +44,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- Move Metro and web TypeScript types from Expo Router to `expo`. ([#24255](https://github.com/expo/expo/pull/24255) by [@marklawlor](https://github.com/marklawlor))
 - [iOS] Disable packager and bundle JS when EX_UPDATES_NATIVE_DEBUG set. ([#24366](https://github.com/expo/expo/pull/24366) by [@douglowder](https://github.com/douglowder))
 
 ## 49.0.10 — 2023-09-11
@@ -45,6 +56,7 @@ _This version does not introduce any user-facing changes._
 ### 🛠 Breaking changes
 
 - Drop legacy `hashAssetFiles` (SDK 32) in favor of `expo-assets` version. ([#24090](https://github.com/expo/expo/pull/24090) by [@EvanBacon](https://github.com/EvanBacon))
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
 

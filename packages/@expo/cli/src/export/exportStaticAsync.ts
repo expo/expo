@@ -73,16 +73,18 @@ export async function getFilesToExportFromServerAsync(
   {
     manifest,
     renderAsync,
+    includeGroupVariations,
   }: {
     manifest: any;
     renderAsync: (pathname: string) => Promise<string>;
+    includeGroupVariations?: boolean;
   }
 ): Promise<Map<string, string>> {
   // name : contents
   const files = new Map<string, string>();
 
   await Promise.all(
-    getHtmlFiles({ manifest }).map(async (outputPath) => {
+    getHtmlFiles({ manifest, includeGroupVariations }).map(async (outputPath) => {
       const pathname = outputPath.replace(/(?:index)?\.html$/, '');
       try {
         files.set(outputPath, '');
@@ -124,6 +126,10 @@ export async function exportFromServerAsync(
 
   const files = await getFilesToExportFromServerAsync(projectRoot, {
     manifest,
+    // Servers can handle group routes automatically and therefore
+    // don't require the build-time generation of every possible group
+    // variation.
+    includeGroupVariations: !exportServer,
     async renderAsync(pathname: string) {
       const template = await renderAsync(pathname);
       let html = await devServer.composeResourcesWithHtml({
@@ -204,7 +210,13 @@ export function modifyBundlesWithSourceMaps(
   return source;
 }
 
-export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
+export function getHtmlFiles({
+  manifest,
+  includeGroupVariations,
+}: {
+  manifest: any;
+  includeGroupVariations?: boolean;
+}): string[] {
   const htmlFiles = new Set<string>();
 
   function traverseScreens(screens: string | { screens: any; path: string }, basePath = '') {
@@ -219,8 +231,12 @@ export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
               ? basePath + 'index'
               : basePath.slice(0, -1);
         }
-        // TODO: Dedupe requests for alias routes.
-        addOptionalGroups(filePath);
+        if (includeGroupVariations) {
+          // TODO: Dedupe requests for alias routes.
+          addOptionalGroups(filePath);
+        } else {
+          htmlFiles.add(filePath);
+        }
       } else if (typeof value === 'object' && value?.screens) {
         const newPath = basePath + value.path + '/';
         traverseScreens(value.screens, newPath);
@@ -255,29 +271,44 @@ export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
 // Given a route like `(foo)/bar/(baz)`, return all possible variations of the route.
 // e.g. `(foo)/bar/(baz)`, `(foo)/bar/baz`, `foo/bar/(baz)`, `foo/bar/baz`,
 export function getPathVariations(routePath: string): string[] {
-  const variations = new Set<string>([routePath]);
+  const variations = new Set<string>();
   const segments = routePath.split('/');
 
-  function generateVariations(segments: string[], index: number): void {
-    if (index >= segments.length) {
+  function generateVariations(segments: string[], current = ''): void {
+    if (segments.length === 0) {
+      if (current) variations.add(current);
       return;
     }
 
-    const newSegments = [...segments];
-    while (
-      index < newSegments.length &&
-      matchGroupName(newSegments[index]) &&
-      newSegments.length > 1
-    ) {
-      newSegments.splice(index, 1);
-      variations.add(newSegments.join('/'));
-      generateVariations(newSegments, index + 1);
+    const [head, ...rest] = segments;
+
+    if (head.startsWith('(foo,foo')) {
     }
 
-    generateVariations(segments, index + 1);
+    if (matchGroupName(head)) {
+      const groups = head.slice(1, -1).split(',');
+
+      if (groups.length > 1) {
+        for (const group of groups) {
+          // If there are multiple groups, recurse on each group.
+          generateVariations([`(${group.trim()})`, ...rest], current);
+        }
+        return;
+      } else {
+        // Start a fork where this group is included
+        generateVariations(rest, current ? `${current}/(${groups[0]})` : `(${groups[0]})`);
+        // This code will continue and add paths without this group included`
+      }
+    } else if (current) {
+      current = `${current}/${head}`;
+    } else {
+      current = head;
+    }
+
+    generateVariations(rest, current);
   }
 
-  generateVariations(segments, 0);
+  generateVariations(segments);
 
   return Array.from(variations);
 }

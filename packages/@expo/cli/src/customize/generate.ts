@@ -92,7 +92,7 @@ async function generateAsync(
       const template = TEMPLATES[file];
 
       if (template.id === 'tsconfig.json') {
-        const { typescript } = await import('./typescript');
+        const { typescript } = await import('./typescript.js');
         return typescript(projectRoot);
       }
 

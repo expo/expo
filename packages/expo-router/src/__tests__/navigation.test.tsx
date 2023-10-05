@@ -157,7 +157,7 @@ it('preserves history when replacing screens within the same navigator', () => {
         return <Redirect href="/permissions" />;
       }
 
-      return <Text>protexted</Text>;
+      return <Text>protected</Text>;
     },
   });
 
@@ -192,9 +192,9 @@ it('replaces from top level modal to initial route in a tab navigator', () => {
       },
       default: () => <Stack />,
     },
-    '[...missing]': () => <Text>missing</Text>,
+    '[...missing]': () => <Text testID="missing">missing</Text>,
     '(tabs)/_layout': () => <Tabs />,
-    '(tabs)/index': () => <Text>two</Text>,
+    '(tabs)/index': () => <Text testID="two">two</Text>,
   });
 
   expect(screen).toHavePathname('/');
@@ -203,10 +203,23 @@ it('replaces from top level modal to initial route in a tab navigator', () => {
   act(() => router.push('/missing-screen'));
   expect(screen).toHavePathname('/missing-screen');
   expect(screen).toHaveSegments(['[...missing]']);
+  expect(screen.getByTestId('missing')).toBeOnTheScreen();
+
   act(() => router.push('/'));
-  // /protected should have a redirect that replaces the pathname
   expect(screen).toHavePathname('/');
   expect(screen).toHaveSegments(['(tabs)']);
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+
+  // Ensure it also works for replace
+  act(() => router.push('/missing-screen'));
+  expect(screen).toHavePathname('/missing-screen');
+  expect(screen).toHaveSegments(['[...missing]']);
+  expect(screen.getByTestId('missing')).toBeOnTheScreen();
+
+  act(() => router.replace('/'));
+  expect(screen).toHavePathname('/');
+  expect(screen).toHaveSegments(['(tabs)']);
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
 });
 
 it('pushes auto-encoded params and fully qualified URLs', () => {
@@ -380,6 +393,190 @@ it('can pop back from a nested modal to a nested sibling', async () => {
   expect(screen).toHavePathname('/slot');
 });
 
+it('can navigate to hoisted groups', () => {
+  /** https://github.com/expo/router/issues/805 */
+
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/route': () => <Text testID="route" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/example/(a)/route'));
+
+  expect(screen).toHavePathname('/example/route');
+  expect(screen.getByTestId('route')).toBeTruthy();
+});
+
+it('can navigate to nested groups', () => {
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/route': () => <Text testID="route" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/example/(a)/folder/(d)/route'));
+
+  expect(screen).toHavePathname('/example/folder/route');
+  expect(screen.getByTestId('route')).toBeTruthy();
+});
+
+it('can navigate to hoisted groups', () => {
+  /** https://github.com/expo/router/issues/805 */
+
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/route': () => <Text testID="route" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/example/(a)/route'));
+
+  expect(screen).toHavePathname('/example/route');
+  expect(screen.getByTestId('route')).toBeTruthy();
+});
+
+it('can navigate to nested groups', () => {
+  renderRouter({
+    index: () => <></>,
+    _layout: () => <Slot />,
+    'example/(a,b)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/_layout': () => <Slot />,
+    'example/(a,b)/folder/(c,d)/route': () => <Text testID="route" />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/example/(a)/folder/(d)/route'));
+
+  expect(screen).toHavePathname('/example/folder/route');
+  expect(screen.getByTestId('route')).toBeTruthy();
+});
+
+it('can check goBack before navigation mounts', () => {
+  renderRouter({
+    _layout: {
+      default() {
+        // No navigator mounted at the root, this should prevent navigation from working.
+        return <></>;
+      },
+    },
+    index: () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  // NOTE: This also tests that `canGoBack` does not throw.
+  expect(router.canGoBack()).toBe(false);
+});
+
+it('can navigate back from a nested modal to a nested sibling', async () => {
+  renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="slot" />
+        <Stack.Screen name="(group)" options={{ presentation: 'modal' }} />
+      </Stack>
+    ),
+
+    index: () => <Text />,
+
+    'slot/_layout': () => <Slot />,
+    'slot/index': () => <Text />,
+
+    '(group)/_layout': () => <Slot />,
+    '(group)/modal': () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/slot'));
+  expect(screen).toHavePathname('/slot');
+
+  act(() => router.push('/(group)/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  act(() => router.push('/slot'));
+  expect(screen).toHavePathname('/slot');
+
+  // Ensure it also works fo replace
+
+  act(() => router.push('/(group)/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  act(() => router.replace('/slot'));
+  expect(screen).toHavePathname('/slot');
+});
+
+it('can pop back from a nested modal to a nested sibling', async () => {
+  renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="slot" />
+        <Stack.Screen name="(group)" options={{ presentation: 'modal' }} />
+      </Stack>
+    ),
+
+    index: () => <Text />,
+
+    'slot/_layout': () => <Slot />,
+    'slot/index': () => <Text />,
+
+    '(group)/_layout': () => <Slot />,
+    '(group)/modal': () => <Text />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/slot'));
+  expect(screen).toHavePathname('/slot');
+
+  act(() => router.push('/(group)/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/slot');
+});
+
+it('can deep link, pop back, and move around with initialRouteName in root layout', async () => {
+  renderRouter(
+    {
+      _layout: {
+        unstable_settings: {
+          initialRouteName: 'index',
+        },
+        default: () => (
+          <Stack>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="a" />
+          </Stack>
+        ),
+      },
+      index: () => <Text />,
+      'a/_layout': () => <Stack />,
+      'a/b/index': () => <Text />,
+    },
+    {
+      initialUrl: '/a/b',
+    }
+  );
+  expect(screen).toHavePathname('/a/b');
+  act(() => router.back());
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/a/b'));
+  expect(screen).toHavePathname('/a/b');
+});
+
 jest.mock('expo-constants', () => ({
   __esModule: true,
   ExecutionEnvironment: jest.requireActual('expo-constants').ExecutionEnvironment,
@@ -412,4 +609,116 @@ it('respects basePath', async () => {
   const text = await screen.findByTestId('rendered-path');
 
   expect(text).toHaveTextContent('/');
+});
+
+it('can redirect within a group layout', () => {
+  renderRouter({
+    '(group)/_layout': function Component() {
+      const pathname = usePathname();
+
+      if (pathname === '/') {
+        return <Redirect href="/page" />;
+      }
+
+      return <Stack />;
+    },
+    '(group)/index': () => <Text testID="index" />,
+    '(group)/page': () => <Text testID="page" />,
+  });
+
+  expect(screen).toHavePathname('/page');
+  expect(screen.getByTestId('page')).toBeOnTheScreen();
+});
+
+it('can replace across groups', async () => {
+  renderRouter({
+    _layout: () => <Tabs />,
+    'one/_layout': () => <Stack />,
+    'one/screen': () => <Text testID="one/screen" />,
+    'two/_layout': () => <Stack />,
+    'two/screen': () => <Text testID="two/screen" />,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/two/screen'));
+  expect(screen).toHavePathname('/two/screen');
+  expect(screen.getByTestId('two/screen')).toBeOnTheScreen();
+
+  act(() => router.push('/one/screen'));
+  expect(screen).toHavePathname('/one/screen');
+  expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
+
+  // Should replace at the top Tabs
+  act(() => router.replace('/two/screen'));
+  expect(screen).toHavePathname('/two/screen');
+  expect(screen.getByTestId('two/screen')).toBeOnTheScreen();
+
+  act(() => router.back());
+
+  act(() => router.push('/one/screen'));
+  expect(screen).toHavePathname('/one/screen');
+  expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
+
+  expect(router.canGoBack()).toBe(false);
+});
+
+it('can push nested stacks without creating circular references', async () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text />,
+    'menu/_layout': () => <Stack />,
+    'menu/[id]': () => <Text />,
+    'menu/index': () => <Text />,
+  });
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/menu'));
+  act(() => router.push('/menu/123'));
+  expect(screen).toHavePathname('/menu/123');
+});
+
+it('can push nested stacks with initial route names without creating circular references', async () => {
+  renderRouter({
+    _layout: { initialRouteName: 'index', default: () => <Stack /> },
+    index: () => <Text />,
+    'menu/_layout': { initialRouteName: 'index', default: () => <Stack /> },
+    'menu/[id]': () => <Text />,
+    'menu/index': () => <Text />,
+  });
+  expect(screen).toHavePathname('/');
+  act(() => router.push('/menu'));
+  act(() => router.push('/menu/123'));
+  expect(screen).toHavePathname('/menu/123');
+});
+
+it('can push & replace with nested Slots', async () => {
+  renderRouter({
+    _layout: () => <Slot />,
+    index: () => <Text testID="index" />,
+    'one/_layout': () => <Slot />,
+    'one/index': () => <Text testID="one" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // Push
+
+  act(() => router.push('/one'));
+  expect(screen).toHavePathname('/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.push('/'));
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // Replace
+
+  act(() => router.replace('/one'));
+  expect(screen).toHavePathname('/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.replace('/'));
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
 });

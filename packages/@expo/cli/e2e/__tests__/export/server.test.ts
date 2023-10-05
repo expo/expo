@@ -20,6 +20,7 @@ describe('server-output', () => {
           EXPO_USE_STATIC: 'server',
           E2E_ROUTER_SRC: 'server',
           E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
     },
@@ -75,6 +76,16 @@ describe('server-output', () => {
     it(`can serve up index html`, async () => {
       expect(await fetch('http://localhost:3000').then((res) => res.text())).toMatch(
         /<div id="root">/
+      );
+    });
+
+    it(`can serve up group routes`, async () => {
+      // Can access the same route from different paths
+      expect(await fetch('http://localhost:3000/beta').then((res) => res.text())).toMatch(
+        /<div data-testid="alpha-beta-text">/
+      );
+      expect(await fetch('http://localhost:3000/(alpha)/beta').then((res) => res.text())).toMatch(
+        /<div data-testid="alpha-beta-text">/
       );
     });
     it(`can serve up dynamic html routes`, async () => {
@@ -214,6 +225,10 @@ describe('server-output', () => {
 
       // TODO: We shouldn't export this
       expect(files).toContain('_expo/functions/api/empty+api.js');
+
+      // Has single variation of group file
+      expect(files).toContain('(alpha)/beta.html');
+      expect(files).not.toContain('beta.html');
 
       // Injected by framework
       expect(files).toContain('_sitemap.html');

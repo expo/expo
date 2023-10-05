@@ -28,7 +28,7 @@ Run the following command to install the `expo-notifications`, `expo-device` and
 
 <Terminal cmd={['$ npx expo install expo-notifications expo-device expo-constants']} />
 
-- [`expo-notifications`](/versions/latest/sdk/notifications) library is used to request a user's permission and to fetch the `ExpoPushToken`. It is not supported on an Android Emulator or an iOS simulator.
+- [`expo-notifications`](/versions/latest/sdk/notifications) library is used to request a user's permission and to fetch the `ExpoPushToken`. It is not supported on an Android Emulator or an iOS Simulator.
 - [`expo-device`](/versions/latest/sdk/device) is used to check whether the app is running on a physical device.
 - [`expo-constants`](/versions/latest/sdk/constants) is used to get the `projectId` value from the app config.
 
@@ -45,7 +45,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import Constants from "expo-constants";
+import Constants from 'expo-constants';
 
 /* @info This handler determines how your app handles notifications that come in while the app is foregrounded. */
 Notifications.setNotificationHandler({
@@ -215,16 +215,16 @@ For Android, you need to configure **Firebase Cloud Messaging (FCM)** to get you
 
    ```json google-services.json
    {
-      "client": [
-        {
-          "api_key": [
-            {
-              "current_key": "<your Google Cloud Platform API key>",
-            }
-          ]
-        }
-      ]
-    }
+     "client": [
+       {
+         "api_key": [
+           {
+             "current_key": "<your Google Cloud Platform API key>"
+           }
+         ]
+       }
+     ]
+   }
    ```
 
 6. Firebase also creates an API key in the Google Cloud Platform Credentials console with a name like **Android key (auto-created by Firebase)**. This could be a different key than the one found in **google-services.json**.

@@ -185,7 +185,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'client',
       serializerOutput: 'static',
       serializerIncludeMaps: includeMaps,
-      mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
+      mainModuleName: resolveMainModuleName(this.projectRoot, { platform: 'web' }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
     });
 
@@ -265,7 +265,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       platform: 'web',
       mode,
       environment: 'client',
-      mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
+      mainModuleName: resolveMainModuleName(this.projectRoot, { platform: 'web' }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
     });
 
@@ -512,7 +512,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           // Run once, this prevents the TypeScript project prerequisite from running on every file change.
           off();
           const { TypeScriptProjectPrerequisite } = await import(
-            '../../doctor/typescript/TypeScriptProjectPrerequisite'
+            '../../doctor/typescript/TypeScriptProjectPrerequisite.js'
           );
 
           try {

@@ -73,10 +73,10 @@ export const expoExportEmbed: Command = async (argv) => {
     { logCmdError },
     { resolveCustomBooleanArgsAsync },
   ] = await Promise.all([
-    import('./exportEmbedAsync'),
-    import('./resolveOptions'),
-    import('../../utils/errors'),
-    import('../../utils/resolveArgs'),
+    import('./exportEmbedAsync.js'),
+    import('./resolveOptions.js'),
+    import('../../utils/errors.js'),
+    import('../../utils/resolveArgs.js'),
   ]);
 
   return (async () => {

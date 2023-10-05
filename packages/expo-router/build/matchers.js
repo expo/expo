@@ -15,7 +15,7 @@ function matchDeepDynamicRouteName(name) {
 exports.matchDeepDynamicRouteName = matchDeepDynamicRouteName;
 /** Match `(page)` -> `page` */
 function matchGroupName(name) {
-    return name.match(/^\(([^/]+?)\)$/)?.[1];
+    return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
 }
 exports.matchGroupName = matchGroupName;
 function getNameFromFilePath(name) {
