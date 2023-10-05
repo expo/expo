@@ -59,10 +59,6 @@ class RemoteLoader internal constructor(
     mFileDownloader.downloadAsset(assetEntity, updatesDirectory, configuration, context, callback)
   }
 
-  override fun shouldSkipAsset(assetEntity: AssetEntity): Boolean {
-    return false
-  }
-
   companion object {
     private val TAG = RemoteLoader::class.java.simpleName
 

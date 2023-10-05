@@ -34,7 +34,6 @@ abstract class Loader protected constructor(
   private var callback: LoaderCallback? = null
   private var assetTotal = 0
   private var erroredAssetList = mutableListOf<AssetEntity>()
-  private var skippedAssetList = mutableListOf<AssetEntity>()
   private var existingAssetList = mutableListOf<AssetEntity>()
   private var finishedAssetList = mutableListOf<AssetEntity>()
 
@@ -89,8 +88,6 @@ abstract class Loader protected constructor(
     callback: AssetDownloadCallback
   )
 
-  protected abstract fun shouldSkipAsset(assetEntity: AssetEntity): Boolean
-
   // lifecycle methods for class
   fun start(callback: LoaderCallback) {
     if (this.callback != null) {
@@ -129,7 +126,6 @@ abstract class Loader protected constructor(
     callback = null
     assetTotal = 0
     erroredAssetList = mutableListOf()
-    skippedAssetList = mutableListOf()
     existingAssetList = mutableListOf()
     finishedAssetList = mutableListOf()
   }
@@ -219,17 +215,13 @@ abstract class Loader protected constructor(
   }
 
   private enum class AssetLoadResult {
-    FINISHED, ALREADY_EXISTS, ERRORED, SKIPPED
+    FINISHED, ALREADY_EXISTS, ERRORED
   }
 
   private fun downloadAllAssets(assetList: List<AssetEntity>) {
     assetTotal = assetList.size
     for (assetEntityCur in assetList) {
       var assetEntity = assetEntityCur
-      if (shouldSkipAsset(assetEntity)) {
-        handleAssetDownloadCompleted(assetEntity, AssetLoadResult.SKIPPED)
-        continue
-      }
 
       val matchingDbEntry = database.assetDao().loadAssetWithKey(assetEntity.key)
       if (matchingDbEntry != null) {
@@ -279,7 +271,6 @@ abstract class Loader protected constructor(
       AssetLoadResult.FINISHED -> finishedAssetList.add(assetEntity)
       AssetLoadResult.ALREADY_EXISTS -> existingAssetList.add(assetEntity)
       AssetLoadResult.ERRORED -> erroredAssetList.add(assetEntity)
-      AssetLoadResult.SKIPPED -> skippedAssetList.add(assetEntity)
       else -> throw AssertionError("Missing implementation for AssetLoadResult value")
     }
 
@@ -290,7 +281,7 @@ abstract class Loader protected constructor(
       assetTotal
     )
 
-    if (finishedAssetList.size + erroredAssetList.size + existingAssetList.size + skippedAssetList.size == assetTotal) {
+    if (finishedAssetList.size + erroredAssetList.size + existingAssetList.size == assetTotal) {
       try {
         for (asset in existingAssetList) {
           val existingAssetFound = database.assetDao()
@@ -313,7 +304,7 @@ abstract class Loader protected constructor(
         database.assetDao().insertAssets(finishedAssetList, updateEntity!!)
 
         if (erroredAssetList.size == 0) {
-          database.updateDao().markUpdateFinished(updateEntity!!, skippedAssetList.size != 0)
+          database.updateDao().markUpdateFinished(updateEntity!!)
         }
       } catch (e: Exception) {
         finishWithError("Error while adding new update to database", e)
