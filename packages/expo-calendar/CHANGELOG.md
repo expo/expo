@@ -13,6 +13,7 @@
 - On `iOS`, fix permissions error on `iOS 17`. ([#24545](https://github.com/expo/expo/pull/24545) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix url parsing when adding url in calendar event and reminder on iOS. ([#24102](https://github.com/expo/expo/pull/24102) by [@Thomas-Mollard](https://github.com/Thomas-Mollard))
 - On `iOS`, fix check that determines if the version of Xcode supports `iOS 17`. ([#24655](https://github.com/expo/expo/pull/24655) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, validate calendars argument in `getRemindersAsync` before accessing `count`. ([#24677](https://github.com/expo/expo/pull/24677) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
