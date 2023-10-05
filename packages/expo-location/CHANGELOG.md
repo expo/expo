@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- [Android] Moved to the new Modules API.
+- [Android] Moved to the new Modules API. ([#24737](https://github.com/expo/expo/pull/24737) by [@behenate](https://github.com/behenate))
 
 ## 16.3.0 — 2023-09-04
 
