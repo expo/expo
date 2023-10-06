@@ -19,10 +19,18 @@ function createMiddleware(devToolsPluginManager = new MockDevToolsPluginManager(
 
 function createMockResponse() {
   return {
+    getHeader: jest.fn(),
     setHeader: jest.fn(),
+    on: jest.fn(),
+    once: jest.fn(),
+    emit: jest.fn(),
     end: jest.fn(),
     statusCode: 200,
   } as unknown as ServerResponse;
+}
+
+async function delayAsync(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 describe(DevToolsPluginMiddleware, () => {
@@ -53,8 +61,8 @@ describe(DevToolsPluginMiddleware, () => {
       }),
       response
     );
+    await delayAsync(0);
     expect(response.statusCode).toBe(200);
-    expect(response.end).toBeCalledWith('<html></html>');
   });
 
   it('handleRequestAsync should return static resources from a matched plugin', async () => {
@@ -69,10 +77,9 @@ describe(DevToolsPluginMiddleware, () => {
     devToolsPluginManager.queryPluginWebpageRootAsync.mockResolvedValue(
       '/root/packages/hello-plugin/dist'
     );
-    const fakePngPayload = 'PNGPNG';
     vol.fromJSON({
       '/root/packages/hello-plugin/dist/index.html': '<html></html>',
-      '/root/packages/hello-plugin/dist/static/icon.png': fakePngPayload,
+      '/root/packages/hello-plugin/dist/static/icon.png': 'PNGPNG',
     });
 
     const middleware = createMiddleware(devToolsPluginManager);
@@ -86,8 +93,8 @@ describe(DevToolsPluginMiddleware, () => {
       }),
       response
     );
+    await delayAsync(0);
     expect(response.statusCode).toBe(200);
-    expect(response.end).toBeCalledWith(fakePngPayload);
     expect(response.setHeader).toBeCalledWith('Content-Type', 'image/png');
   });
 
@@ -103,6 +110,39 @@ describe(DevToolsPluginMiddleware, () => {
       }),
       response
     );
+    await delayAsync(0);
+    expect(response.statusCode).toBe(404);
+  });
+
+  it('handleRequestAsync should return 404 if plugin static resource is not found', async () => {
+    const devToolsPluginManager = new MockDevToolsPluginManager('/');
+    devToolsPluginManager.queryPluginsAsync.mockResolvedValue([
+      {
+        packageName: 'hello-plugin',
+        packageRoot: '/root/packages/hello-plugin',
+        webpageRoot: '/root/packages/hello-plugin/dist',
+      },
+    ]);
+    devToolsPluginManager.queryPluginWebpageRootAsync.mockResolvedValue(
+      '/root/packages/hello-plugin/dist'
+    );
+    vol.fromJSON({
+      '/root/packages/hello-plugin/dist/index.html': '<html></html>',
+      '/root/packages/hello-plugin/dist/static/icon.png': 'PNGPNG',
+    });
+
+    const middleware = createMiddleware(devToolsPluginManager);
+    const response = createMockResponse();
+    await middleware.handleRequestAsync(
+      asReq({
+        url: 'http://localhost:8081/_expo/plugins/hello-plugin/static/notfound.png',
+        headers: {
+          host: 'localhost:8081',
+        },
+      }),
+      response
+    );
+    await delayAsync(0);
     expect(response.statusCode).toBe(404);
   });
 

@@ -1,6 +1,7 @@
 import assert from 'assert';
 import { readFile } from 'fs/promises';
 import path from 'path';
+import send from 'send';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { ServerRequest, ServerResponse } from './server.types';
@@ -39,50 +40,8 @@ export class DevToolsPluginMiddleware extends ExpoMiddleware {
       return;
     }
 
-    const staticFilePath = this.shouldServeStaticFile(pluginName, pathname);
-    if (staticFilePath) {
-      const content = (await readFile(path.join(webpageRoot, staticFilePath))).toString('utf-8');
-      res.setHeader('Content-Type', DevToolsPluginMiddleware.getContentType(staticFilePath));
-      res.end(content);
-    } else {
-      const content = (await readFile(path.join(webpageRoot, 'index.html'))).toString('utf-8');
-      res.setHeader('Content-Type', 'text/html');
-      res.end(content);
-    }
-  }
-
-  private shouldServeStaticFile(pluginName: string, pathname: string): string | null {
-    const staticRoots = [
-      'static', // webpack
-      'bundles', // metro
-    ];
-    for (const staticRoot of staticRoots) {
-      const rootPath = `${DevToolsPluginEndpoint}/${pluginName}/${staticRoot}/`;
-      if (pathname.startsWith(rootPath)) {
-        const filePath = pathname.substring(rootPath.length);
-        return path.join(staticRoot, filePath);
-      }
-    }
-    return null;
-  }
-
-  private static getContentType(filePath: string): string {
-    switch (path.extname(filePath)) {
-      case '.svg':
-        return 'image/svg+xml';
-      case '.png':
-        return 'image/png';
-      case '.jpg':
-      case '.jpeg':
-        return 'image/jpeg';
-      case '.css':
-        return 'text/css';
-      case '.js':
-        return 'application/javascript';
-      case '.html':
-        return 'text/html';
-      default:
-        return 'text/plain';
-    }
+    const pathInPluginRoot =
+      pathname.substring(DevToolsPluginEndpoint.length + pluginName.length + 1) || '/';
+    send(req, pathInPluginRoot, { root: webpageRoot }).pipe(res);
   }
 }
