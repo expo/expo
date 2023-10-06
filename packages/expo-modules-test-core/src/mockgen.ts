@@ -124,6 +124,7 @@ function getMockLiterals(tsReturnType: TSNodes) {
   }
   switch (tsReturnType.kind) {
     case ts.SyntaxKind.AnyKeyword:
+    case ts.SyntaxKind.VoidKeyword:
       return undefined;
     case ts.SyntaxKind.UnionType:
       // we know the cast is correct since we create the type ourselves
@@ -134,8 +135,6 @@ function getMockLiterals(tsReturnType: TSNodes) {
       return ts.factory.createFalse();
     case ts.SyntaxKind.NumberKeyword:
       return ts.factory.createNumericLiteral('0');
-    case ts.SyntaxKind.VoidKeyword:
-      return undefined;
     case ts.SyntaxKind.ArrayType:
       return ts.factory.createArrayLiteralExpression();
     case ts.SyntaxKind.TypeLiteral:
@@ -146,7 +145,7 @@ function getMockLiterals(tsReturnType: TSNodes) {
         ts.factory.createNull(),
         ts.SyntaxKind.SingleLineCommentTrivia,
         ` TODO: Replace with mock for value of type ${
-          ((tsReturnType as any).typeName as any)?.escapedText ?? ''
+          ((tsReturnType as any)?.typeName as any)?.escapedText ?? ''
         }.`
       );
   }
@@ -158,7 +157,7 @@ function wrapWithAsync(tsType: ts.TypeNode) {
 }
 
 function maybeWrapWithReturnStatement(tsType: TSNodes) {
-  if (tsType.kind === ts.SyntaxKind.AnyKeyword) {
+  if (tsType.kind === ts.SyntaxKind.AnyKeyword || tsType.kind === ts.SyntaxKind.VoidKeyword) {
     return [];
   }
   return [ts.factory.createReturnStatement(getMockLiterals(tsType))];

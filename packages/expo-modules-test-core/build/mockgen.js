@@ -129,6 +129,7 @@ function getMockLiterals(tsReturnType) {
     }
     switch (tsReturnType.kind) {
         case typescript_1.default.SyntaxKind.AnyKeyword:
+        case typescript_1.default.SyntaxKind.VoidKeyword:
             return undefined;
         case typescript_1.default.SyntaxKind.UnionType:
             // we know the cast is correct since we create the type ourselves
@@ -139,15 +140,13 @@ function getMockLiterals(tsReturnType) {
             return typescript_1.default.factory.createFalse();
         case typescript_1.default.SyntaxKind.NumberKeyword:
             return typescript_1.default.factory.createNumericLiteral('0');
-        case typescript_1.default.SyntaxKind.VoidKeyword:
-            return undefined;
         case typescript_1.default.SyntaxKind.ArrayType:
             return typescript_1.default.factory.createArrayLiteralExpression();
         case typescript_1.default.SyntaxKind.TypeLiteral:
             return typescript_1.default.factory.createObjectLiteralExpression([], false);
         case typescript_1.default.SyntaxKind.TypeReference:
             // can be improved by expanding a set of default mocks
-            return typescript_1.default.addSyntheticTrailingComment(typescript_1.default.factory.createNull(), typescript_1.default.SyntaxKind.SingleLineCommentTrivia, ` TODO: Replace with mock for value of type ${tsReturnType.typeName?.escapedText ?? ''}.`);
+            return typescript_1.default.addSyntheticTrailingComment(typescript_1.default.factory.createNull(), typescript_1.default.SyntaxKind.SingleLineCommentTrivia, ` TODO: Replace with mock for value of type ${tsReturnType?.typeName?.escapedText ?? ''}.`);
     }
     return undefined;
 }
@@ -155,7 +154,7 @@ function wrapWithAsync(tsType) {
     return typescript_1.default.factory.createTypeReferenceNode('Promise', [tsType]);
 }
 function maybeWrapWithReturnStatement(tsType) {
-    if (tsType.kind === typescript_1.default.SyntaxKind.AnyKeyword) {
+    if (tsType.kind === typescript_1.default.SyntaxKind.AnyKeyword || tsType.kind === typescript_1.default.SyntaxKind.VoidKeyword) {
         return [];
     }
     return [typescript_1.default.factory.createReturnStatement(getMockLiterals(tsType))];
