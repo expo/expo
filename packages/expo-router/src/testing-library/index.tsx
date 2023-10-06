@@ -1,7 +1,7 @@
 /// <reference types="../../types/jest" />
 import './expect';
 
-import { render, RenderResult } from '@testing-library/react-native';
+import { render, screen as rnScreen } from '@testing-library/react-native';
 import path from 'path';
 import React from 'react';
 
@@ -19,15 +19,17 @@ import { RequireContext } from '../types';
 
 // re-export everything
 export * from '@testing-library/react-native';
+export let screen = rnScreen as RenderResult;
 
 type RenderRouterOptions = Parameters<typeof render>[1] & {
   initialUrl?: any;
 };
 
-type Result = ReturnType<typeof render> & {
+type RenderResult = ReturnType<typeof render> & {
   getPathname(): string;
   getSegments(): string[];
   getSearchParams(): Record<string, string | string[]>;
+  getRootState(): Record<string, unknown>;
 };
 
 function isOverrideContext(
@@ -36,22 +38,22 @@ function isOverrideContext(
   return Boolean(typeof context === 'object' && 'appDir' in context);
 }
 
-export function renderRouter(context?: string, options?: RenderRouterOptions): Result;
+export function renderRouter(context?: string, options?: RenderRouterOptions): RenderResult;
 export function renderRouter(
   context: Record<string, FileStub>,
   options?: RenderRouterOptions
-): Result;
+): RenderResult;
 export function renderRouter(
   context: { appDir: string; overrides: Record<string, FileStub> },
   options?: RenderRouterOptions
-): Result;
+): RenderResult;
 export function renderRouter(
   context:
     | string
     | { appDir: string; overrides: Record<string, FileStub> }
     | Record<string, FileStub> = './app',
   { initialUrl = '/', ...options }: RenderRouterOptions = {}
-): Result {
+): RenderResult {
   jest.useFakeTimers();
 
   let ctx: RequireContext;
@@ -85,7 +87,10 @@ export function renderRouter(
     ...options,
   });
 
-  return Object.assign(result, {
+  screen = Object.assign(result, {
+    getRootState() {
+      return store.rootStateSnapshot();
+    },
     getPathname(this: RenderResult): string {
       return store.routeInfoSnapshot().pathname;
     },
@@ -96,4 +101,6 @@ export function renderRouter(
       return store.routeInfoSnapshot().params;
     },
   });
+
+  return screen;
 }

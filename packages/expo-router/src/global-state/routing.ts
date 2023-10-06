@@ -28,6 +28,11 @@ export function goBack(this: RouterStore) {
   this.navigationRef?.current?.goBack();
 }
 
+export function navigateByEvent(this: RouterStore, event: string, url: Href) {
+  assertIsReady(this);
+  return this.linkTo(resolveHref(url), event);
+}
+
 export function canGoBack(this: RouterStore): boolean {
   // Return a default value here if the navigation hasn't mounted yet.
   // This can happen if the user calls `canGoBack` from the Root Layout route
@@ -45,11 +50,13 @@ export function setParams(this: RouterStore, params: Record<string, string | num
   return (this.navigationRef?.current?.setParams as any)(params);
 }
 
-export function linkTo(this: RouterStore, href: string, event?: string) {
-  if (shouldLinkExternally(href)) {
-    Linking.openURL(href);
+export function linkTo(this: RouterStore, originalHref: string, originalEvent = 'NAVIGATE') {
+  if (shouldLinkExternally(originalHref)) {
+    Linking.openURL(originalHref);
     return;
   }
+
+  let { href, event } = stripEventPrefix(originalHref, originalEvent);
 
   assertIsReady(this);
   const navigationRef = this.navigationRef.current;
@@ -112,8 +119,23 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
     case 'REPLACE':
       return navigationRef.dispatch(getNavigateReplaceAction(state, rootState));
     default:
-      return navigationRef.dispatch(getNavigatePushAction(state, rootState));
+      return navigationRef.dispatch(getNavigateAction(state, event, rootState));
   }
+}
+
+function stripEventPrefix(href: string, event: string) {
+  if (href.startsWith('#')) {
+    const index = href.indexOf(':');
+    event = href.slice(1, index);
+    href = href.slice(index + 1);
+  }
+
+  return {
+    href,
+    event: event
+      .replace(/([a-z])([A-Z])/g, '$1_$2') // Convert camelCase to SNAKE_CASE
+      .toUpperCase(),
+  };
 }
 
 type NavigationParams = Partial<{
@@ -139,10 +161,10 @@ function rewriteNavigationStateToParams(
   return JSON.parse(JSON.stringify(params));
 }
 
-function getNavigatePushAction(state: ResultState, rootState: NavigationState) {
+function getNavigateAction(state: ResultState, type: string, rootState: NavigationState) {
   const { screen, params } = rewriteNavigationStateToParams(state);
   return {
-    type: 'NAVIGATE',
+    type,
     target: rootState.key,
     payload: {
       name: screen,

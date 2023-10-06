@@ -8,5 +8,6 @@ exports.router = {
     back: () => router_store_1.store.goBack(),
     canGoBack: () => router_store_1.store.canGoBack(),
     setParams: (params) => router_store_1.store.setParams(params),
+    navigateByEvent: (event, href) => router_store_1.store.navigateByEvent(event, href),
 };
 //# sourceMappingURL=imperative-api.js.map

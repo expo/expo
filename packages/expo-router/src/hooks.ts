@@ -26,6 +26,7 @@ export function useRouter(): Router {
       replace: store.replace,
       setParams: store.setParams,
       canGoBack: store.canGoBack,
+      navigateByEvent: store.navigateByEvent,
       // TODO(EvanBacon): add `reload`
     }),
     []

@@ -20,6 +20,8 @@ export type Router = {
   push: (href: Href) => void;
   /** Navigate to route without appending to the history. */
   replace: (href: Href) => void;
+  /** Navigate to route without appending to the history. */
+  navigateByEvent: (event: string, href: Href) => void;
   /** Go back in the history. */
   back: () => void;
   /** If there's history that supports invoking the `back` function. */

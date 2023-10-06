@@ -7,4 +7,5 @@ export const router: Router = {
   back: () => store.goBack(),
   canGoBack: () => store.canGoBack(),
   setParams: (params) => store.setParams(params),
+  navigateByEvent: (event, href) => store.navigateByEvent(event, href),
 };

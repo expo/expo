@@ -5,6 +5,7 @@ declare global {
       toHavePathname(pathname: string): R;
       toHaveSegments(segments: string[]): R;
       toHaveSearchParams(params: Record<string, string>): R;
+      toHaveRootState(params: Record<string, unknown>): R;
     }
   }
 }

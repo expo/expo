@@ -12,4 +12,7 @@ expect.extend({
   toHaveSearchParams(screen, expected) {
     return matchers.toEqual(screen.getSearchParams(), expected);
   },
+  toHaveRootState(screen, expected) {
+    return matchers.toMatchObject(screen.getRootState(), expected);
+  },
 });

@@ -15,5 +15,8 @@ expect.extend({
     toHaveSearchParams(screen, expected) {
         return matchers_1.default.toEqual(screen.getSearchParams(), expected);
     },
+    toHaveRootState(screen, expected) {
+        return matchers_1.default.toMatchObject(screen.getRootState(), expected);
+    },
 });
 //# sourceMappingURL=expect.js.map

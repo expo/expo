@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkTo = exports.setParams = exports.canGoBack = exports.goBack = exports.replace = exports.push = void 0;
+exports.linkTo = exports.setParams = exports.canGoBack = exports.navigateByEvent = exports.goBack = exports.replace = exports.push = void 0;
 const Linking = __importStar(require("expo-linking"));
 const href_1 = require("../link/href");
 const path_1 = require("../link/path");
@@ -46,6 +46,11 @@ function goBack() {
     this.navigationRef?.current?.goBack();
 }
 exports.goBack = goBack;
+function navigateByEvent(event, url) {
+    assertIsReady(this);
+    return this.linkTo((0, href_1.resolveHref)(url), event);
+}
+exports.navigateByEvent = navigateByEvent;
 function canGoBack() {
     // Return a default value here if the navigation hasn't mounted yet.
     // This can happen if the user calls `canGoBack` from the Root Layout route
@@ -63,11 +68,12 @@ function setParams(params = {}) {
     return (this.navigationRef?.current?.setParams)(params);
 }
 exports.setParams = setParams;
-function linkTo(href, event) {
-    if ((0, url_1.shouldLinkExternally)(href)) {
-        Linking.openURL(href);
+function linkTo(originalHref, originalEvent = 'NAVIGATE') {
+    if ((0, url_1.shouldLinkExternally)(originalHref)) {
+        Linking.openURL(originalHref);
         return;
     }
+    let { href, event } = stripEventPrefix(originalHref, originalEvent);
     assertIsReady(this);
     const navigationRef = this.navigationRef.current;
     if (navigationRef == null) {
@@ -118,10 +124,23 @@ function linkTo(href, event) {
         case 'REPLACE':
             return navigationRef.dispatch(getNavigateReplaceAction(state, rootState));
         default:
-            return navigationRef.dispatch(getNavigatePushAction(state, rootState));
+            return navigationRef.dispatch(getNavigateAction(state, event, rootState));
     }
 }
 exports.linkTo = linkTo;
+function stripEventPrefix(href, event) {
+    if (href.startsWith('#')) {
+        const index = href.indexOf(':');
+        event = href.slice(1, index);
+        href = href.slice(index + 1);
+    }
+    return {
+        href,
+        event: event
+            .replace(/([a-z])([A-Z])/g, '$1_$2') // Convert camelCase to SNAKE_CASE
+            .toUpperCase(),
+    };
+}
 function rewriteNavigationStateToParams(state, params = {}) {
     if (!state)
         return params;
@@ -135,10 +154,10 @@ function rewriteNavigationStateToParams(state, params = {}) {
     }
     return JSON.parse(JSON.stringify(params));
 }
-function getNavigatePushAction(state, rootState) {
+function getNavigateAction(state, type, rootState) {
     const { screen, params } = rewriteNavigationStateToParams(state);
     return {
-        type: 'NAVIGATE',
+        type,
         target: rootState.key,
         payload: {
             name: screen,

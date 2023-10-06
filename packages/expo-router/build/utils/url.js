@@ -6,7 +6,7 @@ exports.shouldLinkExternally = exports.isWellKnownUri = exports.hasUrlProtocolPr
  * NOTE: Additional strictness added to ensure URLs sent in query parameters for in-app navigation are not matched.
  */
 function hasUrlProtocolPrefix(href) {
-    return /^[\w\d_+.-]+:\/\//.test(href);
+    return /^(?!#)[\w\d_+.-]+:/.test(href);
 }
 exports.hasUrlProtocolPrefix = hasUrlProtocolPrefix;
 function isWellKnownUri(href) {

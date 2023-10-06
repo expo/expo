@@ -17,7 +17,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRouter = void 0;
+exports.renderRouter = exports.screen = void 0;
 /// <reference types="../../types/jest" />
 require("./expect");
 const react_native_1 = require("@testing-library/react-native");
@@ -30,6 +30,7 @@ const getLinkingConfig_1 = require("../getLinkingConfig");
 const router_store_1 = require("../global-state/router-store");
 // re-export everything
 __exportStar(require("@testing-library/react-native"), exports);
+exports.screen = react_native_1.screen;
 function isOverrideContext(context) {
     return Boolean(typeof context === 'object' && 'appDir' in context);
 }
@@ -60,7 +61,10 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
     const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={ctx} location={location}/>, {
         ...options,
     });
-    return Object.assign(result, {
+    exports.screen = Object.assign(result, {
+        getRootState() {
+            return router_store_1.store.rootStateSnapshot();
+        },
         getPathname() {
             return router_store_1.store.routeInfoSnapshot().pathname;
         },
@@ -71,6 +75,7 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
             return router_store_1.store.routeInfoSnapshot().params;
         },
     });
+    return exports.screen;
 }
 exports.renderRouter = renderRouter;
 //# sourceMappingURL=index.js.map
