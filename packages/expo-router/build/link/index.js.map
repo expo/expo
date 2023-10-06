@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/link/index.ts"],"names":[],"mappings":"","sourcesContent":["export type { LinkProps } from './Link';\nexport type { Href, HrefObject, Route, SearchParams } from './href';\n"]}
