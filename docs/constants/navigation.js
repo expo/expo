@@ -373,6 +373,7 @@ const general = [
         makePage('guides/icons.mdx'),
         makePage('guides/localization.mdx'),
         makePage('guides/configuring-js-engines.mdx'),
+        makePage('guides/using-bun.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),

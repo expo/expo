@@ -1,5 +1,6 @@
 ---
 title: Handle platform differences
+description: In this tutorial, learn how to handle platform differences between native and web when creating a universal app.
 ---
 
 import { SnackInline, Terminal } from '~/ui/components/Snippet';
@@ -9,7 +10,7 @@ import { Step } from '~/ui/components/Step';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-Android, iOS, and the web have different capabilities. In our case, Android and iOS both are able to capture a screenshot with the `react-native-view-shot` library, however web browsers cannot.
+Android, iOS, and the web have different capabilities. In our case, both Android and iOS can capture a screenshot with the `react-native-view-shot` library, however, web browsers cannot.
 
 In this chapter, let's learn how to make an exception for web browsers to get the same functionality on all platforms.
 

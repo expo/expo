@@ -22,7 +22,7 @@ type ManifestResolutionError = Error & {
 /** Inline the contents of each platform's `googleServicesFile` so runtimes can access them. */
 export async function resolveGoogleServicesFile(
   projectRoot: string,
-  manifest: Pick<ExpoConfig, 'android' | 'ios'>
+  manifest: Partial<Pick<ExpoConfig, 'android' | 'ios'>>
 ) {
   if (manifest.android?.googleServicesFile) {
     try {
