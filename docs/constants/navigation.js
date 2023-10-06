@@ -146,7 +146,6 @@ const general = [
         makePage('workflow/customizing.mdx'),
         makePage('workflow/prebuild.mdx'),
         makePage('guides/adopting-prebuild.mdx'),
-        makePage('workflow/manage-native-projects.mdx'),
       ],
       { expanded: false }
     ),
@@ -402,6 +401,7 @@ const general = [
         makePage('bare/using-expo-client.mdx'),
         makePage('bare/install-dev-builds-in-bare.mdx'),
         makePage('bare/error-recovery.mdx'),
+        makePage('bare/upgrade.mdx'),
       ]),
     ],
     { expanded: true }

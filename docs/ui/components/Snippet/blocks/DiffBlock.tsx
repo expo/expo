@@ -13,7 +13,6 @@ type RenderLine = {
   oldRevision: string;
   newRevision: string;
   type: 'delete' | 'add' | 'modify';
-  //type: 'unified' | 'split';
   hunks: object[];
   newPath: string;
   oldPath: string;

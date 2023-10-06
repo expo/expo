@@ -1,7 +1,6 @@
 import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { spawn } from 'child_process';
 import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
 import os from 'os';
