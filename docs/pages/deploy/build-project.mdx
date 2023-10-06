@@ -12,9 +12,7 @@ import { BuildIcon, EasSubmitIcon, EasMetadataIcon, BookOpen02Icon } from '@expo
 
 Whether you have built a native app binary using [EAS](/build/setup/) or [locally](/guides/local-app-development/), the next step in your app development journey is to submit your app to the stores. To do so, you need to create a **production build**.
 
-## What is a production build
-
-Production builds are submitted to app stores for release to the general public or as part of a store-facilitated testing process such as TestFlight.
+Production builds are submitted to app stores for release to the general public or as part of a store-facilitated testing process such as TestFlight. This guide explains how to create production builds with [EAS](#production-builds-using-eas) and [locally](#production-builds-locally). It is also possible to create production builds for Expo apps with any CI service capable of compiling Android and iOS apps.
 
 ## Production builds using EAS
 
@@ -97,6 +95,8 @@ If you are a member of an organization and your build is on its behalf, you will
 ## Production builds locally
 
 To create a production build locally, see the following React Native guides for more information on the necessary steps that are required for Android and iOS.
+
+These guides assume your project has **android** and/or **ios** directories containing the respective native projects. If you use [Continuous Native Generation](/workflow/continuous-native-generation) then you will need to run [prebuild](/workflow/prebuild) to generate them before following these guides.
 
 > **Note**: Following the guide below, in step four, when you build the release **.aab** for Android, use `npx expo run:android --variant release` command instead of `npx react-native build-android --mode=release`.
 
