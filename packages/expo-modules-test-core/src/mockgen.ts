@@ -10,8 +10,11 @@ import { Closure, ClosureTypes, OutputModuleDefinition } from './types';
 
 const directoryPath = process.cwd();
 
+function isSwiftArray(type: string) {
+  return type.startsWith('[') && type.endsWith(']');
+}
 function maybeUnwrapSwiftArray(type: string) {
-  const isArray = type.startsWith('[') && type.endsWith(']');
+  const isArray = isSwiftArray(type);
   if (!isArray) {
     return type;
   }
@@ -19,15 +22,80 @@ function maybeUnwrapSwiftArray(type: string) {
   return innerType;
 }
 
-function isSwiftArray(type: string) {
-  return type.startsWith('[') && type.endsWith(']');
+function isSwiftOptional(type: string) {
+  return type.endsWith('?');
+}
+function maybeUnwrapSwiftOptional(type: string) {
+  const isOptional = isSwiftOptional(type);
+  if (!isOptional) {
+    return type;
+  }
+  const innerType = type.substring(0, type.length - 1);
+  return innerType;
 }
 
-function mapSwiftTypeToTsType(
-  type: string
-): ts.KeywordTypeNode | ts.TypeReferenceNode | ts.ArrayTypeNode {
+function isSwiftDictionary(type: string) {
+  return (
+    type.startsWith('[') &&
+    type.endsWith(']') &&
+    findRootColonInDictionary(type.substring(1, type.length - 1)) >= 0
+  );
+}
+function findRootColonInDictionary(type: string) {
+  let colonIndex = -1;
+  let openBracketsCount = 0;
+  for (let i = 0; i < type.length; i++) {
+    if (type[i] === '[') {
+      openBracketsCount++;
+    } else if (type[i] === ']') {
+      openBracketsCount--;
+    } else if (type[i] === ':' && openBracketsCount === 0) {
+      colonIndex = i;
+      break;
+    }
+  }
+  return colonIndex;
+}
+function unwrapSwiftDictionary(type: string) {
+  const innerType = type.substring(1, type.length - 1);
+  const colonPosition = findRootColonInDictionary(innerType);
+  return {
+    key: innerType.slice(0, colonPosition).trim(),
+    value: innerType.slice(colonPosition + 1).trim(),
+  };
+}
+
+type TSNodes =
+  | ts.UnionTypeNode
+  | ts.KeywordTypeNode
+  | ts.TypeReferenceNode
+  | ts.ArrayTypeNode
+  | ts.OptionalTypeNode
+  | ts.TypeLiteralNode;
+
+function mapSwiftTypeToTsType(type: string): TSNodes {
   if (!type) {
     return ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword);
+  }
+  if (isSwiftOptional(type)) {
+    return ts.factory.createUnionTypeNode([
+      mapSwiftTypeToTsType(maybeUnwrapSwiftOptional(type)),
+      ts.factory.createKeywordTypeNode(ts.SyntaxKind.UndefinedKeyword),
+    ]);
+  }
+  if (isSwiftDictionary(type)) {
+    const { key, value } = unwrapSwiftDictionary(type);
+    const keyType = mapSwiftTypeToTsType(key);
+    const valueType = mapSwiftTypeToTsType(value);
+
+    const indexSignature = ts.factory.createIndexSignature(
+      undefined,
+      [ts.factory.createParameterDeclaration(undefined, undefined, 'key', undefined, keyType)],
+      valueType
+    );
+
+    const typeLiteralNode = ts.factory.createTypeLiteralNode([indexSignature]);
+    return typeLiteralNode;
   }
   if (isSwiftArray(type)) {
     return ts.factory.createArrayTypeNode(mapSwiftTypeToTsType(maybeUnwrapSwiftArray(type)));
@@ -43,47 +111,57 @@ function mapSwiftTypeToTsType(
     case 'Float':
     case 'Double':
       return ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
+    case 'Any':
+      return ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword);
     default:
       return ts.factory.createTypeReferenceNode(type);
   }
 }
 
-function getMockReturnStatements(
-  tsReturnType: ts.KeywordTypeNode | ts.TypeReferenceNode | ts.ArrayTypeNode
-) {
+function getMockLiterals(tsReturnType: TSNodes) {
   if (!tsReturnType) {
-    return [];
+    return undefined;
   }
   switch (tsReturnType.kind) {
     case ts.SyntaxKind.AnyKeyword:
-      return [ts.factory.createReturnStatement(ts.factory.createNull())];
+      return undefined;
+    case ts.SyntaxKind.UnionType:
+      // we know the cast is correct since we create the type ourselves
+      return getMockLiterals(tsReturnType.types[0] as TSNodes);
     case ts.SyntaxKind.StringKeyword:
-      return [ts.factory.createReturnStatement(ts.factory.createStringLiteral(''))];
+      return ts.factory.createStringLiteral('');
     case ts.SyntaxKind.BooleanKeyword:
-      return [ts.factory.createReturnStatement(ts.factory.createFalse())];
+      return ts.factory.createFalse();
     case ts.SyntaxKind.NumberKeyword:
-      return [ts.factory.createReturnStatement(ts.factory.createNumericLiteral('0'))];
+      return ts.factory.createNumericLiteral('0');
     case ts.SyntaxKind.VoidKeyword:
-      return [];
+      return undefined;
     case ts.SyntaxKind.ArrayType:
-      return [ts.factory.createReturnStatement(ts.factory.createArrayLiteralExpression())];
+      return ts.factory.createArrayLiteralExpression();
+    case ts.SyntaxKind.TypeLiteral:
+      return ts.factory.createObjectLiteralExpression([], false);
     case ts.SyntaxKind.TypeReference:
       // can be improved by expanding a set of default mocks
-      return [
-        ts.addSyntheticTrailingComment(
-          ts.factory.createReturnStatement(ts.factory.createNull()),
-          ts.SyntaxKind.SingleLineCommentTrivia,
-          ` TODO: Replace with mock for value of type ${
-            (tsReturnType.typeName as any)?.escapedText ?? ''
-          }.`
-        ),
-      ];
+      return ts.addSyntheticTrailingComment(
+        ts.factory.createNull(),
+        ts.SyntaxKind.SingleLineCommentTrivia,
+        ` TODO: Replace with mock for value of type ${
+          ((tsReturnType as any).typeName as any)?.escapedText ?? ''
+        }.`
+      );
   }
-  return [];
+  return undefined;
 }
 
 function wrapWithAsync(tsType: ts.TypeNode) {
   return ts.factory.createTypeReferenceNode('Promise', [tsType]);
+}
+
+function maybeWrapWithReturnStatement(tsType: TSNodes) {
+  if (tsType.kind === ts.SyntaxKind.AnyKeyword) {
+    return [];
+  }
+  return [ts.factory.createReturnStatement(getMockLiterals(tsType))];
 }
 
 function getMockedFunctions(functions: Closure[], async = false) {
@@ -109,7 +187,7 @@ function getMockedFunctions(functions: Closure[], async = false) {
         )
       ) ?? [],
       async ? wrapWithAsync(returnType) : returnType,
-      ts.factory.createBlock(getMockReturnStatements(returnType), true)
+      ts.factory.createBlock(maybeWrapWithReturnStatement(returnType), true)
     );
     return func;
   });
@@ -154,42 +232,59 @@ function getPrefix() {
   return [ts.factory.createJSDocComment(prefix)];
 }
 
-function getMockForModule(module: OutputModuleDefinition) {
+function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean) {
   return ([] as (ts.TypeAliasDeclaration | ts.FunctionDeclaration | ts.JSDoc)[]).concat(
-    getMockedTypes(getTypesToMock(module)),
     getPrefix(),
+    includeTypes ? getMockedTypes(getTypesToMock(module)) : [],
     getMockedFunctions(module.functions),
     getMockedFunctions(module.asyncFunctions, true)
   );
 }
 
-export async function generateMocks(modules: OutputModuleDefinition[]) {
+async function prettifyCode(text: string, parser: 'babel' | 'typescript' = 'babel') {
+  return await prettier.format(text, {
+    parser,
+    plugins: parser === 'typescript' ? ['@babel/plugin-syntax-typescript'] : undefined,
+    tabWidth: 2,
+    printWidth: 100,
+    trailingComma: 'none',
+    singleQuote: true,
+  });
+}
+
+export async function generateMocks(
+  modules: OutputModuleDefinition[],
+  outputLanguage: 'javascript' | 'typescript' = 'javascript'
+) {
   const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 
   for (const m of modules) {
+    const filename = m.name + (outputLanguage === 'javascript' ? '.js' : '.ts');
     const resultFile = ts.createSourceFile(
-      m.name + '.ts',
+      filename,
       '',
       ts.ScriptTarget.Latest,
       false,
       ts.ScriptKind.TSX
     );
     fs.mkdirSync(path.join(directoryPath, 'mocks'), { recursive: true });
-    const filePath = path.join(directoryPath, 'mocks', m.name + '.ts');
+    const filePath = path.join(directoryPath, 'mocks', filename);
     // get ts nodearray from getMockForModule(m) array
-    const mock = ts.factory.createNodeArray(getMockForModule(m));
+    const mock = ts.factory.createNodeArray(getMockForModule(m, outputLanguage === 'typescript'));
     const printedTs = printer.printList(ts.ListFormat.MultiLine, mock, resultFile);
-    const compiledJs = ts.transpileModule(printedTs, {
-      compilerOptions: {
-        module: ts.ModuleKind.ESNext,
-        target: ts.ScriptTarget.ESNext,
-      },
-    }).outputText;
-    const prettyJs = await prettier.format(compiledJs, {
-      parser: 'babel',
-      tabWidth: 2,
-      singleQuote: true,
-    });
-    fs.writeFileSync(filePath, prettyJs);
+
+    if (outputLanguage === 'javascript') {
+      const compiledJs = ts.transpileModule(printedTs, {
+        compilerOptions: {
+          module: ts.ModuleKind.ESNext,
+          target: ts.ScriptTarget.ESNext,
+        },
+      }).outputText;
+      const prettifiedJs = await prettifyCode(compiledJs);
+      fs.writeFileSync(filePath, prettifiedJs);
+    } else {
+      const prettifiedTs = await prettifyCode(printedTs, 'typescript');
+      fs.writeFileSync(filePath, prettifiedTs);
+    }
   }
 }
