@@ -3,6 +3,7 @@ type ExpoObject = {
         [key: string]: any;
     };
     uuidv4: () => string;
+    uuidv5: (name: string, namespace: string) => string;
 };
 declare global {
     var expo: ExpoObject | undefined;
