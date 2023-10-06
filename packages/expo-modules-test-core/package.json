@@ -28,7 +28,6 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-test-core",
   "dependencies": {
-    "@babel/plugin-syntax-typescript": "^7.22.5",
     "@types/node": "^20.5.7",
     "glob": "^10.3.10",
     "prettier": "^3.0.3",

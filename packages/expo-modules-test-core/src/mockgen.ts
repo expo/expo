@@ -243,7 +243,6 @@ function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean)
 async function prettifyCode(text: string, parser: 'babel' | 'typescript' = 'babel') {
   return await prettier.format(text, {
     parser,
-    plugins: parser === 'typescript' ? ['@babel/plugin-syntax-typescript'] : undefined,
     tabWidth: 2,
     printWidth: 100,
     trailingComma: 'none',
