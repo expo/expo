@@ -141,7 +141,9 @@ export async function getVersionedPackagesAsync(
       // Some packages have the recommended version listed in https://exp.host/--/api/v2/versions.
       const isExcludedFromValidation = pkg?.expo?.install?.exclude?.includes(name);
       const hasSpecifiedExactVersion = rawSpec !== '';
-      if (isExcludedFromValidation || hasSpecifiedExactVersion) {
+      // React and React native should always be SDK compatible
+      const mustBeSDKCompaible = ['react', 'react-native'].includes(name);
+      if ((isExcludedFromValidation || hasSpecifiedExactVersion) && !mustBeSDKCompaible) {
         othersCount++;
         excludedNativeModules.push({
           name,

@@ -48,6 +48,126 @@ describe(getCombinedKnownVersionsAsync, () => {
 });
 
 describe(getVersionedPackagesAsync, () => {
+  it('should return an SDK compatible version of a package if one is available', async () => {
+    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    asMock(getVersionsAsync).mockResolvedValueOnce({
+      sdkVersions: {
+        '1.0.0': {
+          relatedPackages: {
+            '@expo/vector-icons': '3.0.0',
+          },
+          facebookReactVersion: 'facebook-react',
+          facebookReactNativeVersion: 'facebook-rn',
+        },
+      },
+    } as any);
+    const { packages, messages } = await getVersionedPackagesAsync('/', {
+      sdkVersion: '1.0.0',
+      packages: ['@expo/vector-icons'],
+      pkg: {},
+    });
+
+    expect(packages).toEqual(['@expo/vector-icons@3.0.0']);
+
+    expect(messages).toEqual(['1 SDK 1.0.0 compatible native module']);
+  });
+
+  it('should ignore SDK compatible version if package@version is passed in', async () => {
+    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    asMock(getVersionsAsync).mockResolvedValueOnce({
+      sdkVersions: {
+        '1.0.0': {
+          relatedPackages: {
+            '@expo/vector-icons': '3.0.0',
+          },
+          facebookReactVersion: 'facebook-react',
+          facebookReactNativeVersion: 'facebook-rn',
+        },
+      },
+    } as any);
+    const { packages, messages } = await getVersionedPackagesAsync('/', {
+      sdkVersion: '1.0.0',
+      packages: ['@expo/vector-icons@4.0.0'],
+      pkg: {},
+    });
+
+    expect(packages).toEqual(['@expo/vector-icons@4.0.0']);
+
+    expect(messages).toEqual(['1 other package']);
+  });
+
+  it('should return an SDK compatible version of react if one is available', async () => {
+    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    asMock(getVersionsAsync).mockResolvedValueOnce({
+      sdkVersions: {
+        '1.0.0': {
+          relatedPackages: {
+            '@expo/vector-icons': '3.0.0',
+          },
+          facebookReactVersion: 'facebook-react',
+          facebookReactNativeVersion: 'facebook-rn',
+        },
+      },
+    } as any);
+    const { packages, messages } = await getVersionedPackagesAsync('/', {
+      sdkVersion: '1.0.0',
+      packages: ['react'],
+      pkg: {},
+    });
+
+    expect(packages).toEqual(['react@facebook-react']);
+
+    expect(messages).toEqual(['1 SDK 1.0.0 compatible native module']);
+  });
+
+  it('should return the SDK compatible version of react even if react@version is passed in', async () => {
+    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    asMock(getVersionsAsync).mockResolvedValueOnce({
+      sdkVersions: {
+        '1.0.0': {
+          relatedPackages: {
+            '@expo/vector-icons': '3.0.0',
+          },
+          facebookReactVersion: 'facebook-react',
+          facebookReactNativeVersion: 'facebook-rn',
+        },
+      },
+    } as any);
+    const { packages, messages } = await getVersionedPackagesAsync('/', {
+      sdkVersion: '1.0.0',
+      packages: ['react@next'],
+      pkg: {},
+    });
+
+    expect(packages).toEqual(['react@facebook-react']);
+
+    expect(messages).toEqual(['1 SDK 1.0.0 compatible native module']);
+  });
+
+  it('should ignore SDK compatible version if package@version is passed in', async () => {
+    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
+    asMock(getVersionsAsync).mockResolvedValueOnce({
+      sdkVersions: {
+        '1.0.0': {
+          relatedPackages: {
+            '@expo/vector-icons': '3.0.0',
+          },
+          facebookReactVersion: 'facebook-react',
+          facebookReactNativeVersion: 'facebook-rn',
+        },
+      },
+    } as any);
+    const { packages, messages } = await getVersionedPackagesAsync('/', {
+      sdkVersion: '1.0.0',
+      packages: ['@expo/vector-icons@4.0.0'],
+      pkg: {},
+    });
+
+    expect(packages).toEqual(['@expo/vector-icons@4.0.0']);
+
+    expect(messages).toEqual(['1 other package']);
+  });
+
   it('should return versioned packages', async () => {
     asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
     asMock(getVersionsAsync).mockResolvedValueOnce({
@@ -69,7 +189,7 @@ describe(getVersionedPackagesAsync, () => {
       sdkVersion: '1.0.0',
       packages: [
         '@expo/vector-icons',
-        'react',
+        'react@next',
         '@expo/vector-icons@2.0.0',
         'expo-camera',
         'uuid@^3.4.0',
@@ -80,6 +200,7 @@ describe(getVersionedPackagesAsync, () => {
     expect(packages).toEqual([
       // Not specified -> sending an SDK compatible version
       '@expo/vector-icons@3.0.0',
+      // Version specified -> SDK compatible one anyway because react is except
       'react@facebook-react',
       // Version specified -> sending that version, NOT the SDK compatible one
       '@expo/vector-icons@2.0.0',
@@ -153,7 +274,7 @@ describe(getVersionedPackagesAsync, () => {
     } as any);
     const { packages, messages, excludedNativeModules } = await getVersionedPackagesAsync('/', {
       sdkVersion: '1.0.0',
-      packages: ['@expo/vector-icons', 'react', 'expo-camera', 'uuid@^3.4.0'],
+      packages: ['@expo/vector-icons', 'react@next', 'expo-camera', 'uuid@^3.4.0'],
       pkg: {
         expo: {
           install: {
@@ -166,6 +287,7 @@ describe(getVersionedPackagesAsync, () => {
     expect(packages).toEqual([
       // Custom
       '@expo/vector-icons@3.0.0',
+      // SDK compatible
       'react@facebook-react',
       // Passthrough
       'expo-camera', // but also excluded
