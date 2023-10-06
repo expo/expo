@@ -10,6 +10,10 @@
 
 ### 🐛 Bug fixes
 
+### ⚠️ Notices
+
+- Deprecate `deviceYearClass` constant. ([#24771](https://github.com/expo/expo/pull/24771) by [@fobos531](https://github.com/fobos531))
+
 ### 💡 Others
 
 ## 5.7.0 — 2023-09-15
