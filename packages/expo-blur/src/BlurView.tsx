@@ -22,6 +22,7 @@ export default class BlurView extends React.Component<BlurViewProps> {
       tint = 'default',
       intensity = 50,
       blurReductionFactor = 4,
+      experimentalBlurMethod = 'none',
       style,
       children,
       ...props
@@ -33,6 +34,7 @@ export default class BlurView extends React.Component<BlurViewProps> {
           tint={tint}
           intensity={intensity}
           blurReductionFactor={blurReductionFactor}
+          experimentalBlurMethod={experimentalBlurMethod}
           style={StyleSheet.absoluteFill}
         />
         {children}

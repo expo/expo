@@ -14,13 +14,9 @@ import { PlatformTags } from '~/ui/components/Tag';
 
 A React component that blurs everything underneath the view. Common usage of this is for navigation bars, tab bars, and modals.
 
-> **info** `BlurView` on Android is computationally expensive, so it is recommended not to render more than a few `BlurView` components at once.
+> **info** `BlurView` on Android is an experimental feature. To enable it use the [`experimentalBlurMethod`](#experimentalblurmethod) prop.
 
 <PlatformsSection emulator android ios simulator web />
-
-#### Known issues&ensp;<PlatformTags platforms={['android']} />
-
-`BlurView` may render incorrectly during screen transitions made by `react-native-screens`.
 
 ## Installation
 

@@ -1,4 +1,4 @@
-package expo.modules.blur
+package expo.modules.blur.enums
 
 import expo.modules.kotlin.types.Enumerable
 
