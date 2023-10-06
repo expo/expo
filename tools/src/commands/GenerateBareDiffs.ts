@@ -5,20 +5,9 @@ import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
-//import semver from 'semver';
 
 import { EXPO_DIR } from '../Constants';
 import logger from '../Logger';
-
-// Add minor/ patch to SDK version int if it's not already there, and not unversioned
-/*function sdkVersionToSemverish(sdkVersion : string) {
-  if (sdkVersion === 'unversioned') {
-    return sdkVersion;
-  }
-  if (sdkVersion.match(/^\d+$/)) {
-    return `${sdkVersion}.0.0`;
-  }
-}*/
 
 function allVersions(min, max) {
   const versions: string[] = [];
@@ -72,7 +61,6 @@ const executeDiffCommand = async (diffDirPath: string, sdkFrom: string, sdkTo: s
 };
 
 async function action() {
-  // TODO: assert we're running this on main so we get the right max version?
   const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);
 
   const diffDirPath = path.join(
