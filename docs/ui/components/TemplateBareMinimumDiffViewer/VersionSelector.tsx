@@ -4,9 +4,6 @@ import { spacing, borderRadius } from '@expo/styleguide-base';
 import { ChevronDownIcon } from '@expo/styleguide-icons';
 
 import * as Utilities from '~/common/utilities';
-import versions from '~/public/static/constants/versions.json';
-
-const { LATEST_VERSION, BETA_VERSION } = versions;
 
 const STYLES_SELECT = css({
   ...typography.fontSizes[14],
@@ -46,11 +43,7 @@ export const VersionSelector = ({
         onChange={e => setVersion(e.target.value)}>
         {availableVersions.map(version => (
           <option key={version} value={version}>
-            {Utilities.getUserFacingVersionString(
-              version,
-              LATEST_VERSION,
-              typeof BETA_VERSION === 'boolean' ? undefined : BETA_VERSION
-            )}
+            SDK {version}
           </option>
         ))}
       </select>
