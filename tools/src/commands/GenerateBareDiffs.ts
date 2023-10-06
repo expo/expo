@@ -10,11 +10,6 @@ import path from 'path';
 import { EXPO_DIR } from '../Constants';
 import logger from '../Logger';
 
-type ActionOptions = {
-  minSdk: string;
-  maxSdk: string;
-};
-
 // Add minor/ patch to SDK version int if it's not already there, and not unversioned
 /*function sdkVersionToSemverish(sdkVersion : string) {
   if (sdkVersion === 'unversioned') {
@@ -24,6 +19,28 @@ type ActionOptions = {
     return `${sdkVersion}.0.0`;
   }
 }*/
+
+function allVersions(min, max) {
+  const versions: string[] = [];
+  for (let i = min; i <= max; i++) {
+    versions.push(i.toString());
+  }
+  return versions;
+}
+
+function getReleasedSdkVersionRange() {
+  const packageJson = fs.readJSONSync(path.join(EXPO_DIR, 'packages', 'expo', 'package.json'));
+  const expoPackageVersion = packageJson.version;
+  let maxSdk = parseInt(expoPackageVersion.split('.')[0], 10);
+  // if current version is an alpha or beta, then one version behind is the latest stable release
+  if (expoPackageVersion.includes('alpha') || expoPackageVersion.includes('beta')) {
+    maxSdk--;
+  }
+  return {
+    maxSdk,
+    minSdk: maxSdk - 6,
+  };
+}
 
 const executeDiffCommand = async (diffDirPath: string, sdkFrom: string, sdkTo: string) => {
   function sdkToBranch(sdkVersion: string) {
@@ -54,34 +71,8 @@ const executeDiffCommand = async (diffDirPath: string, sdkFrom: string, sdkTo: s
   }
 };
 
-// Keep a running list of all SDK versions by the versions that are alerady in the diff directory.
-// When starting over, diff from lowest to highest, and then all versions will be diffed with each other.
-/*const readSdkVersions = async (diffDirPath: string, toSdkVersion: string) => {
-  function onlyUnique(value, index, array) {
-    return array.indexOf(value) === index;
-  }
-
-  const files = fs.readdirSync(diffDirPath);
-  const fromSdkVersions = files.map((file) => file.split('..')[0]);
-  fromSdkVersions.push(toSdkVersion); // add the SDK version that we're diffing to the list in case it's the first time we're generating a diff
-  const uniqueSdkVersions = fromSdkVersions.filter(onlyUnique);
-
-  if (uniqueSdkVersions.find((version) => version !== 'unversioned' && !version.match(/^\d+$/))) {
-    throw new Error('One or more diffs has an invalid SDK version. Bad!!!');
-  }
-
-  return uniqueSdkVersions;
-};*/
-
-async function action({ minSdk, maxSdk }: ActionOptions) {
-  function allVersions(min, max) {
-    const versions: string[] = [];
-    for (let i = parseInt(min, 10); i <= parseInt(max, 10); i++) {
-      versions.push(i.toString());
-    }
-    return versions;
-  }
-
+async function action() {
+  // TODO: assert we're running this on main so we get the right max version?
   const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);
 
   const diffDirPath = path.join(
@@ -98,7 +89,10 @@ async function action({ minSdk, maxSdk }: ActionOptions) {
     // generate from all other SDK version to the specified SDK version
     let diffJobs: PromiseLike<any>[] = [];
 
+    const { minSdk, maxSdk } = getReleasedSdkVersionRange();
+
     const sdkVersionsToDiff = allVersions(minSdk, maxSdk);
+    sdkVersionsToDiff.push('unversioned');
 
     // clear all versions before regenerating
     await spawnAsync('rm', ['-rf', diffDirPath]);
@@ -106,7 +100,10 @@ async function action({ minSdk, maxSdk }: ActionOptions) {
 
     // start with the lowest SDK version and diff it with all other SDK versions equal to or lower than it
     sdkVersionsToDiff.forEach((toSdkVersion) => {
-      const sdkVersionsLowerThenOrEqualTo = sdkVersionsToDiff.filter((s) => s <= toSdkVersion);
+      const sdkVersionsLowerThenOrEqualTo =
+        toSdkVersion === 'unversioned'
+          ? sdkVersionsToDiff
+          : sdkVersionsToDiff.filter((s) => s <= toSdkVersion);
       diffJobs = diffJobs.concat(
         sdkVersionsLowerThenOrEqualTo.map((fromSdkVersion) =>
           taskQueue.add(() => executeDiffCommand(diffDirPath, fromSdkVersion, toSdkVersion))
@@ -127,14 +124,8 @@ export default (program: Command) => {
   program
     .command('generate-bare-diffs')
     .alias('gbd')
-    .description(`Generate diffs of template-bare-minimum for bare upgrade instructions.`)
-    .option(
-      '-a, --minSdk <version>',
-      'Lowest SDK for which to generate diffs for all applicable previous SDK versions'
-    )
-    .option(
-      '-b, --maxSdk <version>',
-      'Highest SDK for which to generate diffs for all applicable previous SDK versions'
+    .description(
+      `Generate diffs of template-bare-minimum for bare upgrade instructions for the last 6 versions.`
     )
     .asyncAction(action);
 };
