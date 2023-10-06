@@ -1,6 +1,4 @@
 import assert from 'assert';
-import { readFile } from 'fs/promises';
-import path from 'path';
 import send from 'send';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
