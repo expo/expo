@@ -57,24 +57,31 @@ export const DiffBlock = ({
     hunks,
     newPath,
     oldPath,
-  }: RenderLine) => (
-    <Snippet key={oldRevision + '-' + newRevision}>
-      <SnippetHeader
-        title={`${filenameModifier(type === 'delete' ? oldPath : newPath)}`}
-        Icon={Copy07Icon}
-        operationType={type}
-        showOperation={showOperation}
-      />
+  }: RenderLine) => {
+    // older SDK template-bare-minimum files (e.g, 46) generate a diff with no hunks and no paths
+    // one example of this was a change to gradle-wrapper.jar
+    if (!hunks.length) {
+      return null;
+    }
+    return (
+      <Snippet key={oldRevision + '-' + newRevision}>
+        <SnippetHeader
+          title={`${filenameModifier(type === 'delete' ? oldPath : newPath)}`}
+          Icon={Copy07Icon}
+          operationType={type}
+          showOperation={showOperation}
+        />
 
-      <SnippetContent className="p-0" hideOverflow>
-        {collapseDeletedFiles && type !== 'delete' ? (
-          <Diff viewType="unified" diffType={type} hunks={hunks}>
-            {(hunks: any[]) => hunks.map(hunk => <Hunk key={hunk.content} hunk={hunk} />)}
-          </Diff>
-        ) : null}
-      </SnippetContent>
-    </Snippet>
-  );
+        <SnippetContent className="p-0" hideOverflow>
+          {collapseDeletedFiles && type !== 'delete' ? (
+            <Diff viewType="unified" diffType={type} hunks={hunks}>
+              {(hunks: any[]) => hunks.map(hunk => <Hunk key={hunk.content} hunk={hunk} />)}
+            </Diff>
+          ) : null}
+        </SnippetContent>
+      </Snippet>
+    );
+  };
 
   return <>{diff.map(renderFile)}</>;
 };

@@ -43,7 +43,7 @@ export const VersionSelector = ({
         onChange={e => setVersion(e.target.value)}>
         {availableVersions.map(version => (
           <option key={version} value={version}>
-            SDK {version}
+            {version === 'unversioned' ? 'unversioned' : `SDK ${version}`}
           </option>
         ))}
       </select>
