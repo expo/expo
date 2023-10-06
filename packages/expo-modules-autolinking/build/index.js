@@ -18,7 +18,7 @@ function registerSearchCommand(commandName, fn) {
         .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "ios", "android"', 'ios')
         .option('--silent', 'Silence resolution warnings')
         .addOption(new commander_1.default.Option('--project-root <projectRoot>', 'The path to the root of the project').default(process.cwd(), 'process.cwd()'))
-        .option('--only-project-deps', 'For a monorepo, include all modules even if they are not in the project dependencies.', true)
+        .option('--only-project-deps', 'For a monorepo, include only modules that are the project dependencies.', true)
         .option('--no-only-project-deps', 'Opposite of --only-project-deps', false)
         .action(async (searchPaths, providedOptions) => {
         const options = await (0, autolinking_1.mergeLinkingOptionsAsync)({
