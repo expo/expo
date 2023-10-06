@@ -12,7 +12,7 @@ const pkg = require('expo-font/package.json');
 const withFonts = (config, props) => {
     const fonts = props.fonts
         ?.map((p) => {
-        const resolvedPath = path_1.default.resolve(config._internal?.projectRoot, p);
+        const resolvedPath = path_1.default.resolve(config._internal?.projectRoot, typeof p === 'string' ? p : p.path);
         if (fs_1.default.statSync(resolvedPath).isDirectory()) {
             return fs_1.default.readdirSync(resolvedPath).map((file) => path_1.default.join(resolvedPath, file));
         }
@@ -22,6 +22,14 @@ const withFonts = (config, props) => {
     if (fonts.length === 0) {
         return config;
     }
+    const aliasObj = props.fonts?.reduce((acc, font) => {
+        if (typeof font === 'object') {
+            acc[font.alias ?? font.fontFamily] = font.fontFamily;
+            return acc;
+        }
+        return acc;
+    }, {});
+    console.log(aliasObj);
     config = (0, withFontsIos_1.withFontsIos)(config, fonts);
     config = (0, withFontsAndroid_1.withFontsAndroid)(config, fonts);
     return config;

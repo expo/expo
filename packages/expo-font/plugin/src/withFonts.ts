@@ -7,15 +7,24 @@ import { withFontsIos } from './withFontsIos';
 
 const pkg = require('expo-font/package.json');
 
+type Font = {
+  alias?: string;
+  fontFamily: string;
+  path: string;
+};
+
 export type FontProps = {
-  fonts?: string[];
+  fonts?: (Font | string)[];
 };
 
 const withFonts: ConfigPlugin<FontProps> = (config, props) => {
   const fonts =
     props.fonts
       ?.map((p) => {
-        const resolvedPath = path.resolve(config._internal?.projectRoot, p);
+        const resolvedPath = path.resolve(
+          config._internal?.projectRoot,
+          typeof p === 'string' ? p : p.path
+        );
         if (fs.statSync(resolvedPath).isDirectory()) {
           return fs.readdirSync(resolvedPath).map((file) => path.join(resolvedPath, file));
         }
