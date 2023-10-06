@@ -13,11 +13,16 @@ type Props = PropsWithChildren<{
 }>;
 
 export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
-  const diffFile = '/static/diffs/template-bare-minimum/48..49.diff';
   const [fromVersion, setFromVersion] = useState<string>('48');
   const [toVersion, setToVersion] = useState<string>('49');
 
   const versions = ['47', '48', '49'];
+
+  const maxVersion = versions.reduce((a, b) =>
+    a === 'unversioned' ? 'unversioned' : a > b ? a : b
+  );
+
+  const diffFile = `/static/diffs/template-bare-minimum/${fromVersion}..${toVersion}.diff`;
 
   return (
     <div>
@@ -33,7 +38,7 @@ export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
           <VersionSelector
             version={fromVersion}
             setVersion={setFromVersion}
-            availableVersions={versions}
+            availableVersions={versions.filter(version => version !== maxVersion)}
           />
         </div>
         <div css={selectorOuterStyle}>
@@ -41,7 +46,7 @@ export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
           <VersionSelector
             version={toVersion}
             setVersion={setToVersion}
-            availableVersions={versions.filter(version => version > fromVersion)}
+            availableVersions={versions.filter(version => version >= fromVersion)}
           />
         </div>
       </div>

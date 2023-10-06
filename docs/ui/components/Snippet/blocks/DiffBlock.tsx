@@ -50,8 +50,6 @@ export const DiffBlock = ({
     return null;
   }
 
-  console.log(diff);
-
   const renderFile = ({
     oldRevision = randomCommitHash(),
     newRevision = randomCommitHash(),
