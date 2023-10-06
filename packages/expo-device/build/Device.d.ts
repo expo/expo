@@ -85,6 +85,7 @@ export declare const productName: string | null;
 export declare const deviceType: DeviceType | null;
 /**
  * The [device year class](https://github.com/facebook/device-year-class) of this device. On web, this value is always `null`.
+ * @deprecated Since the official Facebook Device Year Class library is deprecated, this constant is also deprecated and will be removed in a future SDK version.
  */
 export declare const deviceYearClass: number | null;
 /**

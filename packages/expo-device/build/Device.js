@@ -87,6 +87,7 @@ export const productName = ExpoDevice ? ExpoDevice.productName || null : null;
 export const deviceType = ExpoDevice ? ExpoDevice.deviceType : null;
 /**
  * The [device year class](https://github.com/facebook/device-year-class) of this device. On web, this value is always `null`.
+ * @deprecated Since the official Facebook Device Year Class library is deprecated, this constant is also deprecated and will be removed in a future SDK version.
  */
 export const deviceYearClass = ExpoDevice ? ExpoDevice.deviceYearClass : null;
 /**
