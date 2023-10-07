@@ -201,7 +201,7 @@ The above commands compile your project into an app locally. You can also add th
 
 To modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on the top of existing files. It may also produce different results after the build.
 
-To avoid this, add native directories to the project's **.gitignore** and use `npx expo pebuild --clean` command. This ensures that the project is always managed, and the [`--clean` flag](/workflow/prebuild/#clean) will delete existing directories before regenerating them. You can use [app config](/workflow/configuration/) or create a [config plugin](/config-plugins/introduction/) to modify your project's configuration or code inside the native directories.
+To avoid this, add native directories to the project's **.gitignore** and use `npx expo prebuild --clean` command. This ensures that the project is always managed, and the [`--clean` flag](/workflow/prebuild/#clean) will delete existing directories before regenerating them. You can use [app config](/workflow/configuration/) or create a [config plugin](/config-plugins/introduction/) to modify your project's configuration or code inside the native directories.
 
 To learn more about how compilation and prebuild works, see the following guides:
 
