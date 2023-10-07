@@ -80,6 +80,18 @@ async function sendPushNotification(expoPushToken) {
 
 async function registerForPushNotificationsAsync() {
   let token;
+
+  /* @info On Android, you need to specify a channel. */
+  if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+  /* @end */
+
   /* @info You should make sure the app is running on a physical device since push notifications don't work on an emulator/simulator. */
   if (Device.isDevice) {
     /* @end */
@@ -102,17 +114,6 @@ async function registerForPushNotificationsAsync() {
   } else {
     alert('Must use physical device for Push Notifications');
   }
-
-  /* @info On Android, you need to specify a channel. */
-  if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
-  }
-  /* @end */
 
   return token;
 }
