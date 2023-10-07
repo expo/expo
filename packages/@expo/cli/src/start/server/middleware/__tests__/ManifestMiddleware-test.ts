@@ -21,9 +21,8 @@ jest.mock('../resolveAssets', () => ({
   resolveManifestAssets: jest.fn(),
   resolveGoogleServicesFile: jest.fn(),
 }));
-jest.mock('../resolveEntryPoint', () => ({
-  resolveEntryPoint: jest.fn(() => './index.js'),
-  resolveAbsoluteEntryPoint: jest.fn((projectRoot: string) =>
+jest.mock('@expo/config/paths', () => ({
+  resolveEntryPoint: jest.fn((projectRoot: string) =>
     require('path').join(projectRoot, './index.js')
   ),
 }));
@@ -94,7 +93,7 @@ describe('checkBrowserRequestAsync', () => {
         // NOTE(EvanBacon): Browsers won't pass the `expo-platform` header so we need to
         // provide the `platform=web` query parameter in order for the multi-platform dev server
         // to return the correct bundle.
-        '/index.bundle?platform=web&dev=true&hot=false',
+        '/index.bundle?platform=web&dev=true&hot=false&transform.engine=hermes',
       ],
     });
     expect(res.setHeader).toBeCalledWith('Content-Type', 'text/html');
