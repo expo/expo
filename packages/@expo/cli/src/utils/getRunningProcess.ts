@@ -53,7 +53,7 @@ export function getDirectoryOfProcessById(processId: number): string {
 
 export function isExpoMaybeRunningInDirectory(directory: string): boolean {
   const expoStartPids = execSync(
-    `ps -eo pid,command | grep grep -e "expo start" -e "expo run:ios" -e "expo run:android"`,
+    `ps -eo pid,command | grep -e "expo start" -e "expo run:ios" -e "expo run:android"`,
     defaultOptions
   )
     .trim()
