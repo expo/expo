@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- The Babel plugin `expo-router/babel` has been moved to `babel-preset-expo` and will be enabled automatically when `expo-router` is installed.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
