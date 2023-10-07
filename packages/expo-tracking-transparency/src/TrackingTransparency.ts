@@ -111,4 +111,13 @@ export function isAvailable(): boolean {
   );
 }
 
+/**
+ * Returns the [AAID](https://developer.android.com/training/articles/ad-id) on Android and [IDFA](https://developer.apple.com/documentation/adsupport/asidentifiermanager/advertisingidentifier) on iOS.
+ *
+ * @example `"e9228286-4c4e-4789-9d95-15827dcb291b"`
+ */
+export async function getAdvertisingIdAsync(): Promise<string | undefined> {
+  return await ExpoTrackingTransparency.getAdvertisingIdAsync();
+}
+
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };

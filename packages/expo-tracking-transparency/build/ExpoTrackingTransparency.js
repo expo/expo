@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoTrackingTransparency;
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoTrackingTransparency');
 //# sourceMappingURL=ExpoTrackingTransparency.js.map

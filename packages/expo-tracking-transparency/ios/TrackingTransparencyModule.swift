@@ -1,4 +1,5 @@
 import ExpoModulesCore
+import AdSupport
 
 public class TrackingTransparencyModule: Module {
   public func definition() -> ModuleDefinition {
@@ -24,6 +25,10 @@ public class TrackingTransparencyModule: Module {
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
+    }
+
+    AsyncFunction("getAdvertisingIdAsync") { () -> String in
+      return ASIdentifierManager.shared().advertisingIdentifier.uuidString
     }
   }
 }
