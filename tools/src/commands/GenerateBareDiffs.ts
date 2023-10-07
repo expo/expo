@@ -43,21 +43,15 @@ const executeDiffCommand = async (diffDirPath: string, sdkFrom: string, sdkTo: s
 
   const diffCommand = `origin/${sdkToBranch(sdkFrom)}..origin/${sdkToBranch(sdkTo)}`;
 
-  try {
-    const diff = await spawnAsync(
-      'git',
-      ['diff', diffCommand, '--', 'templates/expo-template-bare-minimum'],
-      {
-        cwd: EXPO_DIR,
-      }
-    );
+  const diff = await spawnAsync(
+    'git',
+    ['diff', diffCommand, '--', 'templates/expo-template-bare-minimum'],
+    {
+      cwd: EXPO_DIR,
+    }
+  );
 
-    fs.writeFileSync(diffPath, diff.stdout);
-  } catch (error) {
-    logger.error(error);
-    logger.log(error.stderr);
-    throw error;
-  }
+  fs.writeFileSync(diffPath, diff.stdout);
 };
 
 async function action() {
@@ -102,7 +96,11 @@ async function action() {
     // write the list of SDK versions to a file to generate list of versions for which diffs can be viewed
     fs.writeFileSync(path.join(diffDirPath, 'versions.json'), JSON.stringify(sdkVersionsToDiff));
 
-    logger.log(chalk.green(`\n🎉 Successfully generated diffs against all previous SDK versions!`));
+    logger.log(
+      chalk.green(
+        `\n🎉 Successfully generated diffs for template-bare-minimum for the last 6 SDK versions + main`
+      )
+    );
   } catch (error) {
     logger.error(error);
   }
