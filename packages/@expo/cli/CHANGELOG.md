@@ -10,9 +10,11 @@
 
 - Add new `+not-found` convention for 404s. ([#24528](https://github.com/expo/expo/pull/24528) by [@EvanBacon](https://github.com/EvanBacon))
 - Automatically optimize transformations based on Hermes usage. ([#24672](https://github.com/expo/expo/pull/24672) by [@EvanBacon](https://github.com/EvanBacon))
+- Shim `react-native-web` BackHandler to remove excessive error message. ([#24726](https://github.com/expo/expo/pull/24726) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
+- Fix app directory resolution. ([#24738](https://github.com/expo/expo/pull/24738) by [@EvanBacon](https://github.com/EvanBacon))
 - Skip generating Hermes sourcemaps when `--dump-sourcemap` is not provided. ([#24689](https://github.com/expo/expo/pull/24689) by [@EvanBacon](https://github.com/EvanBacon))
 - Resolve browser shims with mismatched extensions. ([#24671](https://github.com/expo/expo/pull/24671) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure a unique static path is generated for each group during static extraction ([#24218](https://github.com/expo/expo/pull/24218) by [@marklawlor](https://github.com/marklawlor))

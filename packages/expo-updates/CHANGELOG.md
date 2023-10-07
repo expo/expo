@@ -9,10 +9,18 @@
 ### 🐛 Bug fixes
 
 - Add missing export in checkForUpdateAsync result. (by [@douglowder](https://github.com/douglowder)) ([#24503](https://github.com/expo/expo/pull/24503) by [@douglowder](https://github.com/douglowder))
+- [Android] embedded loader should load images at all scales. ([#24549](https://github.com/expo/expo/pull/24549) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
 - Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.18.16 — 2023-10-05
+
+### 🐛 Bug fixes
+
+- Add missing export in checkForUpdateAsync result. (by [@douglowder](https://github.com/douglowder)) ([#24503](https://github.com/expo/expo/pull/24503) by [@douglowder](https://github.com/douglowder))
+- [Android] embedded loader should load images at all scales. ([#24549](https://github.com/expo/expo/pull/24549) by [@douglowder](https://github.com/douglowder))
 
 ## 0.18.14 — 2023-09-27
 

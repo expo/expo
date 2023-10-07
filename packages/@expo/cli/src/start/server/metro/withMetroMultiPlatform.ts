@@ -196,6 +196,8 @@ export function withExtendedResolver(
 
   let nodejsSourceExtensions: string[] | null = null;
 
+  const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '..', 'static/shims');
+
   return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
@@ -372,6 +374,18 @@ export function withExtendedResolver(
         ) {
           // @ts-expect-error: `readonly` for some reason.
           result.filePath = reactNativeWebAppContainer;
+        } else if (platform === 'web' && result.filePath.includes('node_modules')) {
+          // Replace with static shims
+
+          const normalName = normalizeSlashes(result.filePath)
+            // Drop everything up until the `node_modules` folder.
+            .replace(/.*node_modules\//, '');
+
+          const shimPath = path.join(shimsFolder, normalName);
+          if (fs.existsSync(shimPath)) {
+            // @ts-expect-error: `readonly` for some reason.
+            result.filePath = shimPath;
+          }
         }
       }
       return result;

@@ -32,8 +32,8 @@ const ImageWrapper = React.forwardRef(({ source, events, contentPosition, hashPl
                 objectPosition,
                 ...absoluteFilledPosition,
                 ...getTintColorStyle(tintColor),
-                ...(isImageHash ? hashPlaceholderStyle : {}),
                 ...style,
+                ...(isImageHash ? hashPlaceholderStyle : {}),
             }, 
             // @ts-ignore
             // eslint-disable-next-line react/no-unknown-property

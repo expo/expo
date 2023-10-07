@@ -4,7 +4,10 @@
  */
 'use strict';
 
+const findUp = require('find-up');
+const path = require('path');
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules');
+const stackTrace = require('stacktrace-js');
 
 const publicExpoModules = require('./expoModules');
 const internalExpoModules = require('./internalExpoModules');
@@ -159,12 +162,34 @@ jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
   },
 }));
 
+function attemptLookup(moduleName) {
+  // hack to get the package name from the module name
+  const filePath = stackTrace.getSync().find((line) => line.fileName.includes(moduleName));
+  if (!filePath) {
+    return null;
+  }
+  const modulePath = findUp.sync('package.json', { cwd: filePath.fileName });
+  const moduleMockPath = path.join(modulePath, '..', 'mocks', moduleName);
+
+  try {
+    const mockedPackageNativeModule = jest.requireActual(moduleMockPath);
+    return mockedPackageNativeModule;
+  } catch {
+    return null;
+  }
+}
+
 try {
-  jest.mock('expo-modules-core', () => {
+  jest.doMock('expo-modules-core', () => {
     const ExpoModulesCore = jest.requireActual('expo-modules-core');
     const uuid = jest.requireActual('expo-modules-core/build/uuid/uuid.web');
 
+    // support old hard-coded mocks TODO: remove this
     const { NativeModulesProxy } = ExpoModulesCore;
+
+    // Mock the `uuid` object with the implementation for web.
+    ExpoModulesCore.uuid.v4 = uuid.default.v4;
+    ExpoModulesCore.uuid.v5 = uuid.default.v5;
 
     // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
     // into the native proxy module. We're not really interested in checking whether the underlying
@@ -174,10 +199,6 @@ try {
     // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
     // This means the mock functions will not throw validation errors the way they would in an app.
 
-    // Mock the `uuid` object with the implementation for web.
-    ExpoModulesCore.uuid.v4 = uuid.default.v4;
-    ExpoModulesCore.uuid.v5 = uuid.default.v5;
-
     for (const moduleName of Object.keys(NativeModulesProxy)) {
       const nativeModule = NativeModulesProxy[moduleName];
       for (const propertyName of Object.keys(nativeModule)) {
@@ -186,8 +207,26 @@ try {
         }
       }
     }
-
-    return ExpoModulesCore;
+    return {
+      ...ExpoModulesCore,
+      requireNativeModule: (name) => {
+        // Support auto-mocking of expo-modules that:
+        // 1. have a mock in the `mocks` directory
+        // 2. the native module (e.g. ExpoCrypto) name matches the package name (expo-crypto)
+        const nativeModuleMock = attemptLookup(name);
+        if (!nativeModuleMock) {
+          return ExpoModulesCore.requireNativeModule(name);
+        }
+        return Object.fromEntries(
+          Object.entries(nativeModuleMock).map(([k, v]) => {
+            if (typeof v === 'function') {
+              return [k, jest.fn(v)];
+            }
+            return [k, v];
+          })
+        );
+      },
+    };
   });
 } catch (error) {
   // Allow this module to be optional for bare-workflow

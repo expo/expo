@@ -13,14 +13,14 @@ export default createRunOncePlugin<PluginConfigType>(
   (config, props = {}) => {
     validateConfig(props);
 
-    if (props.ios?.tryToLaunchLastOpenedBundle ?? props.tryToLaunchLastOpenedBundle) {
+    if ((props.ios?.launchModeExperimental || props.launchModeExperimental) === 'most-recent') {
       config = withInfoPlist(config, (config) => {
         config.modResults['DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE'] = true;
         return config;
       });
     }
 
-    if (props.android?.tryToLaunchLastOpenedBundle ?? props.tryToLaunchLastOpenedBundle) {
+    if ((props.android?.launchModeExperimental || props.launchModeExperimental) === 'most-recent') {
       config = withAndroidManifest(config, (config) => {
         const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
 
