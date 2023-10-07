@@ -41,7 +41,7 @@ describe(logIncorrectDependencies, () => {
 
     expect(Log.warn).toHaveBeenNthCalledWith(
       1,
-      expect.stringContaining('Some dependencies are incompatible')
+      expect.stringContaining('The following packages should be updated for best compatibility')
     );
     expect(Log.warn).toHaveBeenNthCalledWith(2, expect.stringContaining('expected version'));
     expect(Log.warn).toHaveBeenNthCalledWith(3, expect.stringContaining('npx expo install --fix'));
@@ -147,7 +147,7 @@ describe(validateDependenciesVersionsAsync, () => {
     );
     expect(Log.warn).toHaveBeenNthCalledWith(
       1,
-      expect.stringContaining('Some dependencies are incompatible with the installed')
+      expect.stringContaining('The following packages should be updated for best compatibility')
     );
     expect(Log.warn).toHaveBeenNthCalledWith(2, expect.stringContaining('expo-splash-screen'));
     expect(Log.warn).toHaveBeenNthCalledWith(3, expect.stringContaining('expo-updates'));
@@ -179,7 +179,7 @@ describe(validateDependenciesVersionsAsync, () => {
     );
     expect(Log.warn).toHaveBeenNthCalledWith(
       1,
-      expect.stringContaining('Some dependencies are incompatible with the installed')
+      expect.stringContaining('The following packages should be updated for best compatibility')
     );
     expect(Log.warn).toHaveBeenCalledWith(expect.stringContaining('expo-updates'));
     expect(Log.warn).not.toHaveBeenCalledWith(expect.stringContaining('expo-splash-screen'));
