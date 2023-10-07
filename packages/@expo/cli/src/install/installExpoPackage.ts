@@ -2,7 +2,7 @@ import * as PackageManager from '@expo/package-manager';
 import { spawn } from 'child_process';
 
 import * as Log from '../log';
-import { getRunningExpoProcessesForDirectory } from '../utils/getRunningProcess';
+import { isExpoMaybeRunningInDirectory } from '../utils/getRunningProcess';
 import { isInteractive } from '../utils/interactive';
 import { confirmAsync } from '../utils/prompts';
 
@@ -29,27 +29,12 @@ export async function installExpoPackageAsync(
     followUpCommand: string | undefined;
   }
 ) {
-  const runningExpoProcesses = await getRunningExpoProcessesForDirectory(projectRoot);
+  const isExpoMaybeRunningForProject = await isExpoMaybeRunningInDirectory(projectRoot);
 
-  if (runningExpoProcesses.length) {
+  if (isExpoMaybeRunningForProject) {
     Log.warn(
-      'The Expo CLI is running this project in another terminal window. It must be closed before installing.'
+      'The Expo CLI appears to be running this project in another terminal window. Close and restart any Expo CLI instances after the installation to complete the update.'
     );
-    let killExpoProcesses = false;
-    if (isInteractive()) {
-      killExpoProcesses = await confirmAsync({ message: 'Kill Expo CLI processes?' });
-    }
-
-    if (killExpoProcesses) {
-      runningExpoProcesses.forEach((pid) => {
-        process.kill(pid);
-      });
-    } else {
-      Log.exit(
-        'Aborting install since the Expo CLI is running. Kill any open Expo CLI processes for this project and try again.',
-        1
-      );
-    }
   }
 
   const expoInstallCommand = await packageManager.addDeferredAsync([

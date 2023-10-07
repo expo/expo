@@ -3,7 +3,8 @@ import { execFileSync, execSync } from 'child_process';
 import {
   getDirectoryOfProcessById,
   getPID,
-  getRunningExpoProcessesForDirectory,
+  isExpoMaybeRunningInDirectory,
+  getRunningProcess,
 } from '../getRunningProcess';
 
 const asMock = (fn: any): jest.Mock => fn;
@@ -24,12 +25,12 @@ describe(getDirectoryOfProcessById, () => {
   });
 });
 
-describe(getRunningExpoProcessesForDirectory, () => {
-  it(`should return pids matching npm run expo start`, () => {
+describe(isExpoMaybeRunningInDirectory, () => {
+  it(`should return true when a process running in folder contains expo start`, () => {
     asMock(execSync).mockImplementation((command) => {
       if (command.startsWith('ps')) {
         return `
-        38880 grep -w npm exec expo start
+        38880 grep -w expo start
         59789 npm exec expo start
         43113 npm exec expo start
         `;
@@ -42,8 +43,25 @@ describe(getRunningExpoProcessesForDirectory, () => {
       }
       return 'impossible!';
     });
-    const pids = getRunningExpoProcessesForDirectory('users/theguy/awesomeproject');
-    expect(pids.length).toBe(1);
-    expect(pids[0]).toBe(43113);
+    const isRunning = isExpoMaybeRunningInDirectory('users/theguy/awesomeproject');
+    expect(isRunning).toBe(true);
+  });
+
+  it(`should return false when no processes match expo start, expo run:ios, expo run:android`, () => {
+    asMock(execSync).mockImplementation((command) => {
+      if (command.startsWith('ps')) {
+        return `
+        38880 grep -w expo start
+        59789 something else
+        43113 still something else
+        `;
+      }
+      if (command.startsWith('lsof')) {
+        return 'users/theguy/notmyawesomeproject';
+      }
+      return 'impossible!';
+    });
+    const isRunning = isExpoMaybeRunningInDirectory('users/theguy/awesomeproject');
+    expect(isRunning).toBe(false);
   });
 });
