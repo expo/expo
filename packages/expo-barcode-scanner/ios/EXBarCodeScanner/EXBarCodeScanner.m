@@ -305,6 +305,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
   if (result) {
     completion(result, error);
+  } else {
+    completion(nil, error);
   }
 }
 
