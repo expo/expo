@@ -185,7 +185,7 @@ it(`matches unmatched existing groups against 404`, () => {
     getStateFromPath(
       '/(app)/(explore)',
       configFromFs([
-        '[...404].js',
+        '+not-found.js',
 
         '(app)/_layout.tsx',
 
