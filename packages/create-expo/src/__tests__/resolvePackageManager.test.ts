@@ -25,7 +25,7 @@ describe(resolvePackageManager, () => {
     process.env.npm_config_user_agent = 'pnpm';
     expect(resolvePackageManager()).toBe('pnpm');
   });
-  it('should use pnpm due to the user agent', () => {
+  it('should use bun due to the user agent', () => {
     process.env.npm_config_user_agent = 'bun';
     expect(resolvePackageManager()).toBe('bun');
   });
