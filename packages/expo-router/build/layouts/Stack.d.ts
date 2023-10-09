@@ -26,7 +26,7 @@ export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: any;
     }) => NativeStackNavigationOptions) | undefined;
-} & import("@react-navigation/native").StackRouterOptions, "children" | "id" | "initialRouteName" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/native").StackRouterOptions, "initialRouteName" | "children" | "id" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     id?: string | undefined;
     children: import("react").ReactNode;
     screenListeners?: Partial<{
@@ -76,7 +76,7 @@ export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<
         route: import("@react-navigation/native").RouteProp<ParamListBase, string>;
         navigation: any;
     }) => NativeStackNavigationOptions) | undefined;
-} & import("@react-navigation/native").StackRouterOptions, "children" | "id" | "initialRouteName" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/native").StackRouterOptions, "initialRouteName" | "children" | "id" | "screenListeners" | "screenOptions"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     id?: string | undefined;
     children: import("react").ReactNode;
     screenListeners?: Partial<{
