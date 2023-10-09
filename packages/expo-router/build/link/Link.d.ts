@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TextProps, GestureResponderEvent } from 'react-native';
 import { Href, resolveHref } from './href';
-export interface LinkProps extends Omit<TextProps, 'href' | 'hoverStyle'> {
+export interface LinkProps extends Omit<TextProps, 'href'> {
     /** Path to route to. */
     href: Href;
     /** Forward props to child component. Useful for custom buttons. */
@@ -29,6 +29,7 @@ export interface LinkComponent {
  * @param props.replace Should replace the current route without adding to the history.
  * @param props.asChild Forward props to child component. Useful for custom buttons.
  * @param props.children Child elements to render the content.
+ * @param props.className On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind.
  */
 export declare const Link: LinkComponent;
 //# sourceMappingURL=Link.d.ts.map

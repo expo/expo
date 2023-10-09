@@ -505,6 +505,7 @@ declare module "expo-router" {
    * @param props.replace Should replace the current route without adding to the history.
    * @param props.asChild Forward props to child component. Useful for custom buttons.
    * @param props.children Child elements to render the content.
+   * @param props.className On web, this sets the HTML \`class\` directly. On native, this can be used with CSS interop tools like Nativewind.
    */
   export const Link: LinkComponent;
   

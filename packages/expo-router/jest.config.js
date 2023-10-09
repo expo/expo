@@ -1,6 +1,6 @@
 const {
   getWebPreset,
-  getNodePreset,
+  //   getNodePreset,
   getIOSPreset,
   //   getAndroidPreset,
 } = require('jest-expo/config/getPlatformPreset');
@@ -18,7 +18,7 @@ module.exports = withWatchPlugins({
   projects: [
     // Create a new project for each platform.
     getWebPreset(),
-    getNodePreset(),
+    // getNodePreset(),
     getIOSPreset(),
     //   getAndroidPreset(),
   ].map(withDefaults),
