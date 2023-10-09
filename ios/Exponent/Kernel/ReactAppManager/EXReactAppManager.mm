@@ -665,7 +665,7 @@
     }
   }
 
-  expProps[@"shell"] = @(_appRecord == [EXKernel sharedInstance].appRegistry.standaloneAppRecord);
+  expProps[@"shell"] = @(_appRecord == nil);
   expProps[@"appOwnership"] = [self _appOwnership];
   if (_initialProps) {
     [expProps addEntriesFromDictionary:_initialProps];
@@ -693,9 +693,6 @@
 
 - (NSString *)_appOwnership
 {
-  if (_appRecord == [EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
-    return @"standalone";
-  }
   return @"expo";
 }
 

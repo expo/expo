@@ -8,7 +8,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentBare;
-FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentStandalone;
 FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentStoreClient;
 
 @interface EXConstantsService : NSObject <EXInternalModule, EXConstantsInterface>
