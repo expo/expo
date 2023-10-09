@@ -36,11 +36,7 @@
 #import <ABI47_0_0React/ABI47_0_0RCTAppearance.h>
 #endif
 
-#if defined(EX_DETACHED)
-#import "ExpoKit-Swift.h"
-#else
 #import "Expo_Go-Swift.h"
-#endif // defined(EX_DETACHED)
 
 @import EXManifests;
 
