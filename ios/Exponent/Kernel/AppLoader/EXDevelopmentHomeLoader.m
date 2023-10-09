@@ -14,11 +14,7 @@
 #import "EXVersions.h"
 #import "EXBuildConstants.h"
 
-#if defined(EX_DETACHED)
-#import "ExpoKit-Swift.h"
-#else
 #import "Expo_Go-Swift.h"
-#endif // defined(EX_DETACHED)
 
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
