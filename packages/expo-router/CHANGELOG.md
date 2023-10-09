@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `className` prop to `Link` component.
+- Add `className` prop to `Link` component. ([#24797](https://github.com/expo/expo/pull/24797) by [@EvanBacon](https://github.com/EvanBacon))
 - Add new `+not-found` convention for 404s. ([#24528](https://github.com/expo/expo/pull/24528) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
