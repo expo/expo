@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- fix `executeSqlAsync` to accept null properly as arguments. ([#24761](https://github.com/expo/expo/pull/24761) by [@spencerc99](https://github.com/spencerc99))
+
 ### 💡 Others
 
 ## 11.7.1 — 2023-09-18
