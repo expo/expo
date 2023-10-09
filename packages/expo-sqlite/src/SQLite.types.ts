@@ -54,7 +54,8 @@ export type SQLTransactionCallback = (transaction: SQLTransaction) => void;
 // @docsMissing
 export type SQLTransactionErrorCallback = (error: SQLError) => void;
 
-type SQLStatementArg = string | number | null;
+// @docsMissing
+export type SQLStatementArg = string | number | null;
 
 // @needsAudit
 /**
