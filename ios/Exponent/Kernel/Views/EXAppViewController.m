@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (self = [super init]) {
     _appRecord = record;
-    _isStandalone = [EXEnvironment sharedEnvironment].isDetached;
+    _isStandalone = false;
     // For iPads traitCollectionDidChange will not be called (it's always in the same size class). It is necessary
     // to init it in here, so it's possible to return it in the didUpdateDimensionsEvent of the module
     if (ScreenOrientationRegistry.shared.currentTraitCollection == nil) {
@@ -229,14 +229,6 @@ NS_ASSUME_NONNULL_BEGIN
     NSAssert(NO, @"AppViewController error handler was called on an object that isn't an NSError");
 #endif
     return;
-  }
-
-  // we don't ever want to show any Expo UI in a production standalone app, so hard crash
-  if ([EXEnvironment sharedEnvironment].isDetached && ![_appRecord.appManager enablesDeveloperTools]) {
-    NSException *e = [NSException exceptionWithName:@"ExpoFatalError"
-                                             reason:[NSString stringWithFormat:@"Expo encountered a fatal error: %@", [error localizedDescription]]
-                                           userInfo:@{NSUnderlyingErrorKey: error}];
-    @throw e;
   }
 
   NSString *domain = (error && error.domain) ? error.domain : @"";
