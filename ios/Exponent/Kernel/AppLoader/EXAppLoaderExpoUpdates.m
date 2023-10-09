@@ -255,10 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithError:(NSError *)error
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    _isEmergencyLaunch = YES;
-    [self _launchWithNoDatabaseAndError:error];
-  } else if (!_error) {
+  if (!_error) {
     _error = error;
 
     // if the error payload conforms to the error protocol, we can parse it and display
@@ -334,30 +331,22 @@ NS_ASSUME_NONNULL_BEGIN
     shouldCheckOnLaunch = NO;
     launchWaitMs = @(0);
   } else {
-    if ([EXEnvironment sharedEnvironment].isDetached) {
-      shouldCheckOnLaunch = [EXEnvironment sharedEnvironment].updatesCheckAutomatically;
-      launchWaitMs = [EXEnvironment sharedEnvironment].updatesFallbackToCacheTimeout;
-    } else {
-      shouldCheckOnLaunch = YES;
-      launchWaitMs = @(60000);
-    }
+    shouldCheckOnLaunch = YES;
+    launchWaitMs = @(60000);
   }
 
   NSURL *httpManifestUrl = [[self class] _httpUrlFromManifestUrl:_manifestUrl];
 
-  NSString *releaseChannel = [EXEnvironment sharedEnvironment].releaseChannel;
-  if (![EXEnvironment sharedEnvironment].isDetached) {
-    // in Expo Go, the release channel can change at runtime depending on the URL we load
-    NSURLComponents *manifestUrlComponents = [NSURLComponents componentsWithURL:httpManifestUrl resolvingAgainstBaseURL:YES];
-    releaseChannel = [EXKernelLinkingManager releaseChannelWithUrlComponents:manifestUrlComponents];
-  }
+  // in Expo Go, the release channel can change at runtime depending on the URL we load
+  NSURLComponents *manifestUrlComponents = [NSURLComponents componentsWithURL:httpManifestUrl resolvingAgainstBaseURL:YES];
+  NSString *releaseChannel = releaseChannel = [EXKernelLinkingManager releaseChannelWithUrlComponents:manifestUrlComponents];
 
   NSMutableDictionary *updatesConfig = [[NSMutableDictionary alloc] initWithDictionary:@{
     EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: httpManifestUrl.absoluteString,
     EXUpdatesConfig.EXUpdatesConfigSDKVersionKey: [self _sdkVersions],
     EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: httpManifestUrl.absoluteString,
     EXUpdatesConfig.EXUpdatesConfigReleaseChannelKey: releaseChannel,
-    EXUpdatesConfig.EXUpdatesConfigHasEmbeddedUpdateKey: @([EXEnvironment sharedEnvironment].isDetached),
+    EXUpdatesConfig.EXUpdatesConfigHasEmbeddedUpdateKey: @NO,
     EXUpdatesConfig.EXUpdatesConfigEnabledKey: @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
     EXUpdatesConfig.EXUpdatesConfigLaunchWaitMsKey: launchWaitMs,
     EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchKey: shouldCheckOnLaunch ? EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueAlways : EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueNever,
@@ -365,40 +354,38 @@ NS_ASSUME_NONNULL_BEGIN
     EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: [self _requestHeaders]
   }];
 
-  if (!EXEnvironment.sharedEnvironment.isDetached) {
-    // in Expo Go, embed the Expo Root Certificate and get the Expo Go intermediate certificate and development certificates
-    // from the multipart manifest response part
+  // in Expo Go, embed the Expo Root Certificate and get the Expo Go intermediate certificate and development certificates
+  // from the multipart manifest response part
 
-    NSString *expoRootCertPath = [[NSBundle mainBundle] pathForResource:@"expo-root" ofType:@"pem"];
-    if (!expoRootCertPath) {
-      @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                     reason:@"No expo-root certificate found in bundle"
-                                   userInfo:@{}];
-    }
-
-    NSError *error;
-    NSString *expoRootCert = [NSString stringWithContentsOfFile:expoRootCertPath encoding:NSUTF8StringEncoding error:&error];
-    if (error) {
-      expoRootCert = nil;
-    }
-    if (!expoRootCert) {
-      @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                     reason:@"Error reading expo-root certificate from bundle"
-                                   userInfo:@{ @"underlyingError": error.localizedDescription }];
-    }
-
-    updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey] = expoRootCert;
-    updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey] = @{
-      @"keyid": @"expo-root",
-      @"alg": @"rsa-v1_5-sha256",
-    };
-    updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey] = @YES;
-    updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey] = @YES;
-    
-    // in Expo Go, ignore directives in manifest responses and require a manifest. the current directives
-    // (no update available, roll back) don't have any practical use outside of standalone apps
-    updatesConfig[EXUpdatesConfig.EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey] = @YES;
+  NSString *expoRootCertPath = [[NSBundle mainBundle] pathForResource:@"expo-root" ofType:@"pem"];
+  if (!expoRootCertPath) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"No expo-root certificate found in bundle"
+                                 userInfo:@{}];
   }
+
+  NSError *error;
+  NSString *expoRootCert = [NSString stringWithContentsOfFile:expoRootCertPath encoding:NSUTF8StringEncoding error:&error];
+  if (error) {
+    expoRootCert = nil;
+  }
+  if (!expoRootCert) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Error reading expo-root certificate from bundle"
+                                 userInfo:@{ @"underlyingError": error.localizedDescription }];
+  }
+
+  updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey] = expoRootCert;
+  updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey] = @{
+    @"keyid": @"expo-root",
+    @"alg": @"rsa-v1_5-sha256",
+  };
+  updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey] = @YES;
+  updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey] = @YES;
+
+  // in Expo Go, ignore directives in manifest responses and require a manifest. the current directives
+  // (no update available, roll back) don't have any practical use outside of standalone apps
+  updatesConfig[EXUpdatesConfig.EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey] = @YES;
 
   _config = [EXUpdatesConfig configFromDictionary:updatesConfig];
 
@@ -524,7 +511,6 @@ NS_ASSUME_NONNULL_BEGIN
     // If legacy manifest is not yet verified, served by a third party, not standalone, and not an anonymous experience
     // then scope it locally by using the manifest URL as a scopeKey (id) and consider it verified.
     if (!mutableManifest[@"isVerified"] &&
-        !EXEnvironment.sharedEnvironment.isDetached &&
         ![EXKernelLinkingManager isExpoHostedUrl:_httpManifestUrl] &&
         ![EXAppLoaderExpoUpdates _isAnonymousExperience:manifest] &&
         [manifest isKindOfClass:[EXManifestsLegacyManifest class]]) {
@@ -627,14 +613,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)_clientEnvironment
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return @"STANDALONE";
-  } else {
-    return @"EXPO_DEVICE";
+  return @"EXPO_DEVICE";
 #if TARGET_IPHONE_SIMULATOR
-    return @"EXPO_SIMULATOR";
+  return @"EXPO_SIMULATOR";
 #endif
-  }
 }
 
 - (NSString *)_sdkVersions
