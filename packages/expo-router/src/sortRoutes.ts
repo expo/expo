@@ -1,5 +1,15 @@
-import { RouteNode } from './Route';
+import { DynamicConvention, RouteNode } from './Route';
 import { matchGroupName } from './matchers';
+
+function sortDynamicConvention(a: DynamicConvention, b: DynamicConvention) {
+  if (a.deep && !b.deep) {
+    return 1;
+  }
+  if (!a.deep && b.deep) {
+    return -1;
+  }
+  return 0;
+}
 
 export function sortRoutes(a: RouteNode, b: RouteNode): number {
   if (a.dynamic && !b.dynamic) {
@@ -12,14 +22,27 @@ export function sortRoutes(a: RouteNode, b: RouteNode): number {
     if (a.dynamic.length !== b.dynamic.length) {
       return b.dynamic.length - a.dynamic.length;
     }
+
     for (let i = 0; i < a.dynamic.length; i++) {
       const aDynamic = a.dynamic[i];
       const bDynamic = b.dynamic[i];
-      if (aDynamic.deep && !bDynamic.deep) {
+
+      if (aDynamic.notFound && bDynamic.notFound) {
+        const s = sortDynamicConvention(aDynamic, bDynamic);
+        if (s) {
+          return s;
+        }
+      }
+      if (aDynamic.notFound && !bDynamic.notFound) {
         return 1;
       }
-      if (!aDynamic.deep && bDynamic.deep) {
+      if (!aDynamic.notFound && bDynamic.notFound) {
         return -1;
+      }
+
+      const s = sortDynamicConvention(aDynamic, bDynamic);
+      if (s) {
+        return s;
       }
     }
     return 0;

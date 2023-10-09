@@ -7,7 +7,6 @@ import {
   matchGroupName,
   removeSupportedExtensions,
   stripGroupSegmentsFromPath,
-  stripInvisibleSegmentsFromPath,
 } from './matchers';
 import type { RequireContext } from './types';
 
@@ -100,10 +99,20 @@ function getTreeNodesAsRouteNodes(nodes: TreeNode[]): RouteNode[] {
 }
 
 export function generateDynamicFromSegment(name: string): DynamicConvention | null {
+  if (name === '+not-found') {
+    return {
+      name: '+not-found',
+      deep: true,
+      notFound: true,
+    };
+  }
+
   const deepDynamicName = matchDeepDynamicRouteName(name);
   const dynamicName = deepDynamicName ?? matchDynamicName(name);
-
-  return dynamicName ? { name: dynamicName, deep: !!deepDynamicName } : null;
+  if (!dynamicName) {
+    return null;
+  }
+  return { name: dynamicName, deep: !!deepDynamicName };
 }
 
 export function generateDynamic(name: string): RouteNode['dynamic'] {
@@ -316,11 +325,6 @@ function hasCustomRootLayoutNode(routes: RouteNode[]) {
   return false;
 }
 
-function treeNodesToRootRoute(treeNode: TreeNode): RouteNode | null {
-  const routes = treeNodeToRouteNode(treeNode);
-  return withOptionalRootLayout(routes);
-}
-
 function processKeys(files: string[], options: Options): string[] {
   const { ignore } = options;
 
@@ -376,7 +380,7 @@ export async function getRoutesAsync(
   contextModule: RequireContext,
   options?: Options
 ): Promise<RouteNode | null> {
-  const route = await getExactRoutesAsync(contextModule, options);
+  const route = getExactRoutes(contextModule, options);
   if (!route) {
     return null;
   }
@@ -400,8 +404,8 @@ function getIgnoreList(options?: Options) {
 /** Get routes without unmatched or sitemap. */
 export function getExactRoutes(contextModule: RequireContext, options?: Options): RouteNode | null {
   const treeNodes = contextModuleToTree(contextModule, options);
-  const route = treeNodesToRootRoute(treeNodes);
-  return route || null;
+  const routes = treeNodeToRouteNode(treeNodes);
+  return withOptionalRootLayout(routes) || null;
 }
 
 function contextModuleToTree(contextModule: RequireContext, options?: Options) {
@@ -412,15 +416,6 @@ function contextModuleToTree(contextModule: RequireContext, options?: Options) {
   assertDuplicateRoutes(allowed);
   const files = contextModuleToFileNodes(contextModule, options, allowed);
   return getRecursiveTree(files);
-}
-
-export async function getExactRoutesAsync(
-  contextModule: RequireContext,
-  options?: Options
-): Promise<RouteNode | null> {
-  const treeNodes = contextModuleToTree(contextModule, options);
-  const route = treeNodesToRootRoute(treeNodes);
-  return route || null;
 }
 
 function appendSitemapRoute(routes: RouteNode) {
@@ -448,15 +443,15 @@ function appendSitemapRoute(routes: RouteNode) {
 
 function appendUnmatchedRoute(routes: RouteNode) {
   // Auto add not found route if it doesn't exist
-  const userDefinedDynamicRoute = getUserDefinedDeepDynamicRoute(routes);
+  const userDefinedDynamicRoute = getUserDefinedTopLevelNotFoundRoute(routes);
   if (!userDefinedDynamicRoute) {
     routes.children.push({
       loadRoute() {
         return { default: require('./views/Unmatched').Unmatched };
       },
-      route: '[...404]',
-      contextKey: './[...404].tsx',
-      dynamic: [{ name: '404', deep: true }],
+      route: '+not-found',
+      contextKey: './+not-found.tsx',
+      dynamic: [{ name: '+not-found', deep: true, notFound: true }],
       children: [],
       generated: true,
       internal: true,
@@ -469,18 +464,18 @@ function appendUnmatchedRoute(routes: RouteNode) {
  * Exposed for testing.
  * @returns a top-level deep dynamic route if it exists, otherwise null.
  */
-export function getUserDefinedDeepDynamicRoute(routes: RouteNode): RouteNode | null {
+export function getUserDefinedTopLevelNotFoundRoute(routes: RouteNode): RouteNode | null {
   // Auto add not found route if it doesn't exist
   for (const route of routes.children ?? []) {
     if (route.generated) continue;
-    const opaqueRoute = stripInvisibleSegmentsFromPath(route.route);
-    const isDeepDynamic = matchDeepDynamicRouteName(opaqueRoute);
+    const isDeepDynamic =
+      stripGroupSegmentsFromPath(route.route) === '+not-found' && route.route.match(/\+not-found$/);
     if (isDeepDynamic) {
       return route;
     }
     // Recurse through group routes
     if (matchGroupName(route.route)) {
-      const child = getUserDefinedDeepDynamicRoute(route);
+      const child = getUserDefinedTopLevelNotFoundRoute(route);
       if (child) {
         return child;
       }

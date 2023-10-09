@@ -116,7 +116,7 @@ type State = PartialState<NavigationState>;
           },
         },
 
-        '[...404]': '*404',
+        '[...not-found]': '*not-found',
       },
     },
     '/evanbacon',
@@ -189,7 +189,7 @@ type State = PartialState<NavigationState>;
             },
           },
         },
-        '[...404]': '*404',
+        '[...not-found]': '*not-found',
       },
     },
     '/evanbacon',
@@ -310,7 +310,7 @@ it(`does not mutate incomplete state during invocation`, () => {
           initialRouteName: 'index',
         },
         _sitemap: '_sitemap',
-        '[...404]': '*404',
+        '[...not-found]': '*not-found',
       },
       preserveDynamicRoutes: false,
       preserveGroups: false,
@@ -1810,7 +1810,7 @@ it('matches wildcard patterns at root', () => {
   const path = '/test/bar/42/whatever';
   const config = {
     screens: {
-      404: '*404',
+      'not-found': '*not-found',
       Foo: {
         screens: {
           Bar: {
@@ -1822,7 +1822,7 @@ it('matches wildcard patterns at root', () => {
   };
 
   const state = {
-    routes: [{ name: '404' }],
+    routes: [{ name: 'not-found' }],
   };
 
   // NOTE(EvanBacon): This is custom behavior for our router
@@ -1841,7 +1841,7 @@ it('matches wildcard patterns at nested level', () => {
           Bar: {
             path: '/bar/:id/',
             screens: {
-              404: '*404',
+              'not-found': '*not-found',
             },
           },
         },
@@ -1859,7 +1859,7 @@ it('matches wildcard patterns at nested level', () => {
               name: 'Bar',
               params: { id: '42' },
               state: {
-                routes: [{ name: '404' }],
+                routes: [{ name: 'NOT-FOUND' }],
               },
             },
           ],
@@ -1884,8 +1884,8 @@ it('matches wildcard patterns at nested level with exact', () => {
           Bar: {
             path: '/bar/:id/',
             screens: {
-              404: {
-                path: '*404',
+              'not-found': {
+                path: '*not-found',
                 exact: true,
               },
             },
@@ -1905,7 +1905,7 @@ it('matches wildcard patterns at nested level with exact', () => {
             {
               name: 'Bar',
               state: {
-                routes: [{ name: '404' }],
+                routes: [{ name: 'not-found' }],
               },
             },
           ],
@@ -1930,7 +1930,7 @@ it('tries to match wildcard patterns at the end', () => {
           Bar: {
             path: '/bar/:id/',
             screens: {
-              404: '*404',
+              'not-found': '*not-found',
               Test: 'test',
             },
           },
@@ -1976,7 +1976,7 @@ it('uses nearest parent wildcard match for unmatched paths', () => {
               Baz: 'baz',
             },
           },
-          '[...404]': '*404',
+          '+not-found': '*+not-found',
         },
       },
     },
@@ -1990,7 +1990,7 @@ it('uses nearest parent wildcard match for unmatched paths', () => {
         state: {
           routes: [
             {
-              name: '[...404]',
+              name: '+not-found',
             },
           ],
         },

@@ -904,7 +904,7 @@ it('returns matching screen if path is only slash and root is a group', () => {
       screens: {
         '(app)/index': '(app)',
         '[id]': ':id',
-        '[...404]': '*404',
+        '[...slug]': '*slug',
       },
     })
   ).toEqual({ routes: [{ name: '(app)/index', path: '/' }] });
@@ -917,7 +917,7 @@ it('returns matching screen if path is only slash and root is a nested group', (
       screens: {
         '(one)/(two)/index': '(one)/(two)',
         '[id]': ':id',
-        '[...404]': '*404',
+        '[...slug]': '*slug',
       },
     })
   ).toEqual({ routes: [{ name: '(one)/(two)/index', path: '/' }] });
@@ -2138,14 +2138,14 @@ it('ignores extra slashes in the pattern', () => {
 
 it('matches wildcard patterns at root', () => {
   const path = '/test/bar/42/whatever';
-  const config = configFromFs(['[...404].js', 'foo/bar.js', 'index.js']);
+  const config = configFromFs(['[...slug].js', 'foo/bar.js', 'index.js']);
   const state = {
     routes: [
       {
         params: {
-          '404': ['test', 'bar', '42', 'whatever'],
+          slug: ['test', 'bar', '42', 'whatever'],
         },
-        name: '[...404]',
+        name: '[...slug]',
         path,
       },
     ],
@@ -2204,8 +2204,8 @@ xit('matches wildcard patterns at nested level with exact', () => {
           Bar: {
             path: '/bar/:id/',
             screens: {
-              404: {
-                path: '*404',
+              slug: {
+                path: '*slug',
                 exact: true,
               },
             },
@@ -2221,21 +2221,21 @@ xit('matches wildcard patterns at nested level with exact', () => {
       {
         name: 'Foo',
         params: {
-          '404': ['whatever'],
+          slug: ['whatever'],
         },
         state: {
           routes: [
             {
               name: 'Bar',
               params: {
-                '404': ['whatever'],
+                slug: ['whatever'],
               },
               state: {
                 routes: [
                   {
-                    name: '404',
+                    name: 'slug',
                     params: {
-                      '404': ['whatever'],
+                      slug: ['whatever'],
                     },
                     path,
                   },
@@ -2261,7 +2261,7 @@ it('tries to match wildcard patterns at the end', () => {
       bar: {
         path: 'bar',
         screens: {
-          '[...404]': '*404',
+          '[...slug]': '*slug',
           '[userSlug]': ':userSlug',
           ':id': {
             path: ':id',
@@ -2315,7 +2315,7 @@ it('uses nearest parent wildcard match for unmatched paths', () => {
               Baz: 'baz',
             },
           },
-          '[...404]': '*404',
+          '[...slug]': '*slug',
         },
       },
     },
@@ -2326,14 +2326,14 @@ it('uses nearest parent wildcard match for unmatched paths', () => {
       {
         name: 'Foo',
         params: {
-          '404': ['bar', '42', 'baz', 'test'],
+          slug: ['bar', '42', 'baz', 'test'],
         },
         state: {
           routes: [
             {
-              name: '[...404]',
+              name: '[...slug]',
               params: {
-                '404': ['bar', '42', 'baz', 'test'],
+                slug: ['bar', '42', 'baz', 'test'],
               },
               path,
             },

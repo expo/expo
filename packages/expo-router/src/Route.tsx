@@ -4,7 +4,7 @@ import type { ErrorBoundaryProps } from './exports';
 import { getContextKey } from './matchers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 
-export type DynamicConvention = { name: string; deep: boolean };
+export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
 
 export type LoadedRoute = {
   ErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;

@@ -101,7 +101,7 @@ describe('exports static', () => {
 
     // Injected by framework
     expect(files).toContain('_sitemap.html');
-    expect(files).toContain('[...404].html');
+    expect(files).toContain('+not-found.html');
 
     // Normal routes
     expect(files).toContain('about.html');
