@@ -323,14 +323,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)_clientEnvironment
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return @"STANDALONE";
-  } else {
-    return @"EXPO_DEVICE";
+  return @"EXPO_DEVICE";
 #if TARGET_IPHONE_SIMULATOR
-    return @"EXPO_SIMULATOR";
+  return @"EXPO_SIMULATOR";
 #endif
-  }
 }
 
 - (NSString *)_sdkVersions

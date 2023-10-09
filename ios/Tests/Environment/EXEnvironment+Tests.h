@@ -7,9 +7,7 @@
            withInfoPlist:(NSDictionary *)infoPlist
        withExpoKitDevUrl:(NSString *)expoKitDevelopmentUrl
     withEmbeddedManifest:(NSDictionary *)embeddedManifest
-              isDetached:(BOOL)isDetached
-      isDebugXCodeScheme:(BOOL)isDebugScheme
-            isUserDetach:(BOOL)isUserDetach;
+      isDebugXCodeScheme:(BOOL)isDebugScheme;
 
 - (void)_loadDefaultConfig;
 

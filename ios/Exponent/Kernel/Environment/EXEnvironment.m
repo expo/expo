@@ -46,7 +46,6 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
 
 - (void)_reset
 {
-  _isDetached = NO;
   _standaloneManifestUrl = nil;
   _urlScheme = nil;
   _areRemoteUpdatesEnabled = YES;
@@ -81,161 +80,32 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
     }
   }
   
-  BOOL isDetached = NO;
-#ifdef EX_DETACHED
-  isDetached = YES;
-#endif
-  
   BOOL isDebugXCodeScheme = NO;
 #if DEBUG
   isDebugXCodeScheme = YES;
 #endif
   
-  BOOL isUserDetach = NO;
-  if (isDetached) {
-#ifndef EX_DETACHED_SERVICE
-  isUserDetach = YES;
-#endif
-  }
-  
   [self _loadShellConfig:shellConfig
            withInfoPlist:infoPlist
        withExpoKitDevUrl:expoKitDevelopmentUrl
     withEmbeddedManifest:embeddedManifest
-              isDetached:isDetached
-      isDebugXCodeScheme:isDebugXCodeScheme
-            isUserDetach:isUserDetach];
+      isDebugXCodeScheme:isDebugXCodeScheme];
 }
 
 - (void)_loadShellConfig:(NSDictionary *)shellConfig
            withInfoPlist:(NSDictionary *)infoPlist
        withExpoKitDevUrl:(NSString *)expoKitDevelopmentUrl
     withEmbeddedManifest:(NSDictionary *)embeddedManifest
-              isDetached:(BOOL)isDetached
       isDebugXCodeScheme:(BOOL)isDebugScheme
-            isUserDetach:(BOOL)isUserDetach
 {
   [self _reset];
   NSMutableArray *allManifestUrls = [NSMutableArray array];
-  _isDetached = isDetached;
   _isDebugXCodeScheme = isDebugScheme;
 
   if (shellConfig) {
     _testEnvironment = [EXTest testEnvironmentFromString:shellConfig[@"testEnvironment"]];
-
-    if (_isDetached) {
-      // configure published shell url
-      [self _loadProductionUrlFromConfig:shellConfig];
-      if (_standaloneManifestUrl) {
-        [allManifestUrls addObject:_standaloneManifestUrl];
-      }
-      if (isDetached && isDebugScheme) {
-        // local detach development: point shell manifest url at local development url
-        [self _loadDetachedDevelopmentUrl:expoKitDevelopmentUrl];
-        if (_standaloneManifestUrl) {
-          [allManifestUrls addObject:_standaloneManifestUrl];
-        }
-      }
-      // load standalone url scheme
-      [self _loadUrlSchemeFromInfoPlist:infoPlist];
-      if (!_standaloneManifestUrl) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:@"This app is configured to be a standalone app, but does not specify a standalone manifest url."
-                                     userInfo:nil];
-      }
-      
-      // load bundleUrl from embedded manifest
-      [self _loadEmbeddedBundleUrlWithManifest:embeddedManifest];
-
-      // load everything else from EXShell
-      [self _loadMiscPropertiesWithConfig:shellConfig andInfoPlist:infoPlist];
-    }
   }
   _allManifestUrls = allManifestUrls;
-}
-
-- (void)_loadProductionUrlFromConfig:(NSDictionary *)shellConfig
-{
-  _standaloneManifestUrl = shellConfig[@"manifestUrl"];
-}
-
-- (void)_loadDetachedDevelopmentUrl:(NSString *)expoKitDevelopmentUrl
-{
-  if (expoKitDevelopmentUrl) {
-    _standaloneManifestUrl = expoKitDevelopmentUrl;
-  } else {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:@"You are running a detached app from Xcode, but it hasn't been configured for local development yet. "
-                                           "You must run a packager for this Expo project before running it from XCode."
-                                 userInfo:nil];
-  }
-}
-
-- (void)_loadUrlSchemeFromInfoPlist:(NSDictionary *)infoPlist
-{
-  if (infoPlist[@"CFBundleURLTypes"]) {
-    // if the shell app has a custom url scheme, read that.
-    // this was configured when the shell app was built.
-    NSArray *urlTypes = infoPlist[@"CFBundleURLTypes"];
-    if (urlTypes && urlTypes.count) {
-      NSDictionary *urlType = urlTypes[0];
-      NSArray *urlSchemes = urlType[@"CFBundleURLSchemes"];
-      if (urlSchemes) {
-        for (NSString *urlScheme in urlSchemes) {
-          if ([self _isValidStandaloneUrlScheme:urlScheme forDevelopment:NO]) {
-            _urlScheme = urlScheme;
-            break;
-          }
-        }
-      }
-    }
-  }
-}
-
-- (void)_loadMiscPropertiesWithConfig:(NSDictionary *)shellConfig andInfoPlist:(NSDictionary *)infoPlist
-{
-  _isManifestVerificationBypassed = [shellConfig[@"isManifestVerificationBypassed"] boolValue];
-  _areRemoteUpdatesEnabled = (shellConfig[@"areRemoteUpdatesEnabled"] == nil)
-    ? YES
-    : [shellConfig[@"areRemoteUpdatesEnabled"] boolValue];
-  _updatesCheckAutomatically = (shellConfig[@"updatesCheckAutomatically"] == nil)
-    ? YES
-    : [shellConfig[@"updatesCheckAutomatically"] boolValue];
-  _updatesFallbackToCacheTimeout = (shellConfig[@"updatesFallbackToCacheTimeout"] &&
-                                    [shellConfig[@"updatesFallbackToCacheTimeout"] isKindOfClass:[NSNumber class]])
-    ? shellConfig[@"updatesFallbackToCacheTimeout"]
-    : @(0);
-  if (infoPlist[@"ExpoReleaseChannel"]) {
-    _releaseChannel = infoPlist[@"ExpoReleaseChannel"];
-  } else {
-    _releaseChannel = (shellConfig[@"releaseChannel"] == nil) ? @"default" : shellConfig[@"releaseChannel"];
-  }
-  // other shell config goes here
-}
-
-- (void)_loadEmbeddedBundleUrlWithManifest:(NSDictionary *)manifest
-{
-  id bundleUrl = manifest[@"bundleUrl"];
-  if (bundleUrl && [bundleUrl isKindOfClass:[NSString class]]) {
-    _embeddedBundleUrl = (NSString *)bundleUrl;
-  }
-}
-
-/**
- *  Is this a valid url scheme for a standalone app?
- */
-- (BOOL)_isValidStandaloneUrlScheme:(NSString *)urlScheme forDevelopment:(BOOL)isForDevelopment
-{
-  // don't allow shell apps to intercept exp links
-  if (urlScheme && urlScheme.length) {
-    if (isForDevelopment) {
-      return YES;
-    } else {
-      // prod shell apps must have some non-exp/exps url scheme
-      return (![urlScheme isEqualToString:@"exp"] && ![urlScheme isEqualToString:@"exps"]);
-    }
-  }
-  return NO;
 }
 
 @end
