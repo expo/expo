@@ -18,11 +18,6 @@ FOUNDATION_EXPORT NSString * const kEXEmbeddedManifestResourceName;
 @property (nonatomic, readonly) BOOL isDebugXCodeScheme;
 
 /**
- *  The manifest url of the standalone app (if isDetached == true).
- */
-@property (nonatomic, readonly, nullable) NSString *standaloneManifestUrl;
-
-/**
  *  The custom url scheme for the standalone app (if isDetached == true).
  */
 @property (nonatomic, readonly, nullable) NSString *urlScheme;
@@ -38,7 +33,7 @@ FOUNDATION_EXPORT NSString * const kEXEmbeddedManifestResourceName;
 @property (nonatomic, readonly) NSString * _Nullable embeddedBundleUrl;
 
 /**
- *  Contains `standaloneManifestUrl`, and may also contain a local development url for a detached project.
+ *  May contain a local development url for a detached project.
  */
 @property (nonatomic, readonly, nonnull) NSArray *allManifestUrls;
 
@@ -67,11 +62,6 @@ FOUNDATION_EXPORT NSString * const kEXEmbeddedManifestResourceName;
  *  Whether the app is running in a test environment (local Xcode test target, CI, or not at all).
  */
 @property (nonatomic, assign) EXTestEnvironment testEnvironment;
-
-/**
- *  True if the given string is not null and equals self.urlScheme
- */
-- (BOOL)isStandaloneUrlScheme:(NSString *)scheme;
 
 /**
  *  True if urlScheme is nonnull.

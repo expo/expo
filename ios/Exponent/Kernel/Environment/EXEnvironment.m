@@ -32,11 +32,6 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   return self;
 }
 
-- (BOOL)isStandaloneUrlScheme:(NSString *)scheme
-{
-  return (_urlScheme && [scheme isEqualToString:_urlScheme]);
-}
-
 - (BOOL)hasUrlScheme
 {
   return (_urlScheme != nil);
@@ -46,7 +41,6 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
 
 - (void)_reset
 {
-  _standaloneManifestUrl = nil;
   _urlScheme = nil;
   _areRemoteUpdatesEnabled = YES;
   _updatesCheckAutomatically = YES;

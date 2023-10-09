@@ -224,8 +224,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   EXKernelAppRecord *appRecord = [_appRegistry newestRecordWithScopeKey:scopeKey];
   if (_browserController) {
     [self createNewAppWithUrl:appRecord.appLoader.manifestUrl initialProps:nil];
-  } else if (_appRegistry.standaloneAppRecord && appRecord == _appRegistry.standaloneAppRecord) {
-    [appRecord.viewController refresh];
   }
 }
 

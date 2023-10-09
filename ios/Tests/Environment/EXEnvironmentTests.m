@@ -15,7 +15,7 @@
 - (void)setUp
 {
   [super setUp];
-  
+
   _environment = [EXEnvironment sharedEnvironment];
   if (_environment.testEnvironment == EXTestEnvironmentNone) {
     _environment.testEnvironment = EXTestEnvironmentLocal;
@@ -28,7 +28,7 @@
   NSString *expectedProdUrl = [EXEnvironmentMocks shellConfig][@"manifestUrl"];
   XCTAssert(_environment.allManifestUrls.count == 1, @"Service standalone app should only have one manifest url");
   XCTAssert([_environment.allManifestUrls.firstObject isEqualToString:expectedProdUrl], @"Service standalone app's `allManifestUrls` should contain the prod manifest url");
-  
+
   [EXEnvironmentMocks loadDevDetachConfig];
   NSString *expectedDevUrl = [EXEnvironmentMocks expoKitDevUrl];
   XCTAssert(_environment.allManifestUrls.count == 2, @"Dev detached app should have one local, and one prod, manifest url");

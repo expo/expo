@@ -18,8 +18,6 @@ RCTFatalHandler handleFatalReactError = ^(NSError *error) {
       // show the error on Home or on the main standalone app if we can't figure out who this error belongs to
       if ([EXKernel sharedInstance].appRegistry.homeAppRecord) {
         record = [EXKernel sharedInstance].appRegistry.homeAppRecord;
-      } else if ([EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
-        record = [EXKernel sharedInstance].appRegistry.standaloneAppRecord;
       }
     }
     if (record) {

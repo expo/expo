@@ -8,7 +8,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSString * const ABI47_0_0EXConstantsExecutionEnvironmentBare;
-FOUNDATION_EXPORT NSString * const ABI47_0_0EXConstantsExecutionEnvironmentStandalone;
 FOUNDATION_EXPORT NSString * const ABI47_0_0EXConstantsExecutionEnvironmentStoreClient;
 
 @interface ABI47_0_0EXConstantsService : NSObject <ABI47_0_0EXInternalModule, ABI47_0_0EXConstantsInterface>
