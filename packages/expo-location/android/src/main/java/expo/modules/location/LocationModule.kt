@@ -33,7 +33,6 @@ import expo.modules.core.interfaces.ActivityEventListener
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
-import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -49,6 +48,8 @@ import expo.modules.location.records.LocationOptions
 import expo.modules.location.records.LocationProviderStatus
 import expo.modules.location.records.LocationResponse
 import expo.modules.location.records.LocationTaskOptions
+import expo.modules.location.records.PermissionDetailsLocationAndroid
+import expo.modules.location.records.PermissionRequestResponse
 import expo.modules.location.records.ReverseGeocodeLocation
 import expo.modules.location.records.ReverseGeocodeResponse
 import expo.modules.location.taskConsumers.GeofencingTaskConsumer
@@ -102,53 +103,55 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     Events(HEADING_EVENT_NAME, LOCATION_EVENT_NAME)
 
     // Deprecated
-    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
-      appContext.permissions ?: throw NoPermissionsModuleException()
+    AsyncFunction("requestPermissionsAsync") Coroutine { ->
+      val permissionsManager = appContext.permissions ?: throw NoPermissionsModuleException()
 
-      return@AsyncFunction if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-        Permissions.askForPermissionsWithPermissionsManager(
-          appContext.permissions,
-          promise,
+      return@Coroutine if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+        LocationHelpers.askForPermissionsWithPermissionsManager(
+          permissionsManager,
           Manifest.permission.ACCESS_FINE_LOCATION,
           Manifest.permission.ACCESS_COARSE_LOCATION,
           Manifest.permission.ACCESS_BACKGROUND_LOCATION
         )
       } else {
-        requestForegroundPermissionsAsync(promise)
+        LocationHelpers.askForPermissionsWithPermissionsManager(permissionsManager, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
       }
     }
 
     // Deprecated
-    AsyncFunction("getPermissionsAsync") { promise: Promise ->
-      appContext.permissions ?: throw NoPermissionsModuleException()
+    AsyncFunction("getPermissionsAsync") Coroutine { ->
+      val permissionsManager = appContext.permissions ?: throw NoPermissionsModuleException()
 
-      return@AsyncFunction if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-        Permissions.getPermissionsWithPermissionsManager(
-          appContext.permissions,
-          promise,
+      return@Coroutine if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+        LocationHelpers.getPermissionsWithPermissionsManager(
+          permissionsManager,
           Manifest.permission.ACCESS_FINE_LOCATION,
           Manifest.permission.ACCESS_COARSE_LOCATION,
           Manifest.permission.ACCESS_BACKGROUND_LOCATION
         )
       } else {
-        getForegroundPermissionsAsync(promise)
+        getForegroundPermissionsAsync()
       }
     }
 
-    AsyncFunction("requestForegroundPermissionsAsync") { promise: Promise ->
-      return@AsyncFunction requestForegroundPermissionsAsync(promise)
+    AsyncFunction("requestForegroundPermissionsAsync") Coroutine { ->
+      val permissionsManager = appContext.permissions ?: throw NoPermissionsModuleException()
+
+      LocationHelpers.askForPermissionsWithPermissionsManager(permissionsManager, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+      // We aren't using the values returned above, because we need to check if the user has provided fine location permissions
+      return@Coroutine getForegroundPermissionsAsync()
     }
 
-    AsyncFunction("requestBackgroundPermissionsAsync") { promise: Promise ->
-      return@AsyncFunction requestBackgroundPermissionsAsync(promise)
+    AsyncFunction("requestBackgroundPermissionsAsync") Coroutine { ->
+      return@Coroutine requestBackgroundPermissionsAsync()
     }
 
-    AsyncFunction("getForegroundPermissionsAsync") { promise: Promise ->
-      return@AsyncFunction getForegroundPermissionsAsync(promise)
+    AsyncFunction("getForegroundPermissionsAsync") Coroutine { ->
+      return@Coroutine getForegroundPermissionsAsync()
     }
 
-    AsyncFunction("getBackgroundPermissionsAsync") { promise: Promise ->
-      return@AsyncFunction getBackgroundPermissionsAsync(promise)
+    AsyncFunction("getBackgroundPermissionsAsync") Coroutine { ->
+      return@Coroutine getBackgroundPermissionsAsync()
     }
 
     AsyncFunction("getLastKnownPositionAsync") Coroutine { options: LocationLastKnownOptions ->
@@ -308,46 +311,51 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     }
   }
 
-  private fun requestForegroundPermissionsAsync(promise: Promise) {
-    if (appContext.permissions == null) {
-      promise.reject(NoPermissionsModuleException())
-      return
-    }
-    Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-  }
-
-  private fun getForegroundPermissionsAsync(promise: Promise) {
+  private suspend fun getForegroundPermissionsAsync(): PermissionRequestResponse {
     appContext.permissions?.let {
-      Permissions.getPermissionsWithPermissionsManager(it, promise, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-    } ?: promise.reject(NoPermissionsModuleException())
+      val locationPermission = LocationHelpers.getPermissionsWithPermissionsManager(it, Manifest.permission.ACCESS_COARSE_LOCATION)
+      val fineLocationPermission = LocationHelpers.getPermissionsWithPermissionsManager(it, Manifest.permission.ACCESS_FINE_LOCATION)
+
+      var accuracy = "none"
+      if (locationPermission.granted) {
+        accuracy = "coarse"
+      }
+      if (fineLocationPermission.granted) {
+        accuracy = "fine"
+      }
+
+      locationPermission.android = PermissionDetailsLocationAndroid(
+        scope = accuracy,
+        accuracy = accuracy
+      )
+
+      return locationPermission
+    } ?: throw NoPermissionsModuleException()
   }
 
-  private fun requestBackgroundPermissionsAsync(promise: Promise) {
+  private suspend fun requestBackgroundPermissionsAsync(): PermissionRequestResponse {
     if (!isBackgroundPermissionInManifest()) {
-      promise.reject(NoPermissionInManifestException("ACCESS_BACKGROUND_LOCATION"))
-      return
+      throw NoPermissionInManifestException("ACCESS_BACKGROUND_LOCATION")
     }
     if (!shouldAskBackgroundPermissions()) {
-      getForegroundPermissionsAsync(promise)
-      return
+      return getForegroundPermissionsAsync()
     }
-    appContext.permissions?.let {
-      Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-    } ?: promise.reject(NoPermissionsModuleException())
+    return appContext.permissions?.let {
+      val permissionResponseBundle = LocationHelpers.askForPermissionsWithPermissionsManager(it, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+      PermissionRequestResponse(permissionResponseBundle)
+    } ?: throw NoPermissionsModuleException()
   }
 
-  private fun getBackgroundPermissionsAsync(promise: Promise) {
+  private suspend fun getBackgroundPermissionsAsync(): PermissionRequestResponse {
     if (!isBackgroundPermissionInManifest()) {
-      promise.reject(NoPermissionInManifestException("ACCESS_BACKGROUND_LOCATION"))
-      return
+      throw NoPermissionInManifestException("ACCESS_BACKGROUND_LOCATION")
     }
     if (!shouldAskBackgroundPermissions()) {
-      getForegroundPermissionsAsync(promise)
-      return
+      return getForegroundPermissionsAsync()
     }
     appContext.permissions?.let {
-      Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-    } ?: promise.reject(NoPermissionsModuleException())
+      return LocationHelpers.getPermissionsWithPermissionsManager(it, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+    } ?: throw NoPermissionsModuleException()
   }
 
   /**
@@ -373,6 +381,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private fun getCurrentPositionAsync(options: LocationOptions, promise: Promise) {
     // Read options
     val locationRequest = LocationHelpers.prepareLocationRequest(options)
+    val currentLocationRequest = LocationHelpers.prepareCurrentLocationRequest(options)
     val showUserSettingsDialog = options.mayShowUserSettingsDialog
 
     // Check for permissions
@@ -381,15 +390,14 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       return
     }
     if (LocationHelpers.hasNetworkProviderEnabled(mContext) || !showUserSettingsDialog) {
-      LocationHelpers.requestSingleLocation(this, locationRequest, promise)
+      LocationHelpers.requestSingleLocation(mLocationProvider, currentLocationRequest, promise)
     } else {
-      // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
       addPendingLocationRequest(
         locationRequest,
         object : LocationActivityResultListener {
           override fun onResult(resultCode: Int) {
             if (resultCode == Activity.RESULT_OK) {
-              LocationHelpers.requestSingleLocation(this@LocationModule, locationRequest, promise)
+              LocationHelpers.requestSingleLocation(mLocationProvider, currentLocationRequest, promise)
             } else {
               promise.reject(LocationSettingsUnsatisfiedException())
             }

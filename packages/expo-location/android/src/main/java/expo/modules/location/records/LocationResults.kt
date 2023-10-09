@@ -13,6 +13,34 @@ import expo.modules.location.ConversionException
 import expo.modules.location.LocationModule
 import java.io.Serializable
 
+internal class PermissionRequestResponse(
+  @Field var canAskAgain: Boolean?,
+  @Field var expires: String?,
+  @Field var granted: Boolean,
+  @Field var status: String?,
+  @Field var android: PermissionDetailsLocationAndroid?
+) : Record, Serializable {
+  constructor(bundle: Bundle) : this(
+    canAskAgain = bundle.getBoolean("canAskAgain"),
+    expires = bundle.getString("expires")
+      ?: throw ConversionException(Bundle::class.java, PermissionRequestResponse::class.java, "value under `expires` key is undefined"),
+    granted = bundle.getBoolean("granted"),
+    status = bundle.getString("status")
+      ?: throw ConversionException(Bundle::class.java, PermissionRequestResponse::class.java, "value under `status` key is undefined"),
+    android = bundle.getBundle("android")?.let { PermissionDetailsLocationAndroid(it) }
+  )
+}
+
+internal class PermissionDetailsLocationAndroid(
+  @Field var scope: String,
+  @Field var accuracy: String
+) : Record, Serializable {
+  constructor(bundle: Bundle) : this(
+    scope = (bundle.getString("accuracy") ?: "none"),
+    accuracy = (bundle.getString("accuracy") ?: "none")
+  )
+}
+
 internal class LocationProviderStatus(
   @Field var backgroundModeEnabled: Boolean? = null,
   @Field var gpsAvailable: Boolean? = false,
@@ -57,6 +85,7 @@ internal class LocationResponse(
     timestamp = location.time.toDouble(),
     mocked = location.isFromMockProvider
   )
+
   internal fun <BundleType : BaseBundle> toBundle(bundleTypeClass: Class<BundleType>): BundleType {
     val bundle: BundleType = when (bundleTypeClass) {
       PersistableBundle::class.java -> PersistableBundle()
@@ -103,7 +132,8 @@ internal class LocationObjectCoords(
     val bundle: BundleType = when (bundleTypeClass) {
       PersistableBundle::class.java -> PersistableBundle()
       else -> Bundle()
-    } as? BundleType ?: throw ConversionException(LocationObjectCoords::class.java, bundleTypeClass, "Requested an unsupported bundle type")
+    } as? BundleType
+      ?: throw ConversionException(LocationObjectCoords::class.java, bundleTypeClass, "Requested an unsupported bundle type")
 
     bundle.apply {
       latitude?.let { putDouble("latitude", it) }
@@ -156,7 +186,7 @@ internal class ReverseGeocodeResponse(
   @Field var isoCountryCode: String,
   @Field var timezone: String?
 ) : Record, Serializable {
-  constructor(address: Address) : this (
+  constructor(address: Address) : this(
     city = address.locality,
     district = address.subLocality,
     streetNumber = address.subThoroughfare,

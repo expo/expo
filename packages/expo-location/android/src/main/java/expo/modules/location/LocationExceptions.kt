@@ -14,6 +14,9 @@ internal class LocationBackgroundUnauthorizedException :
 internal class LocationRequestRejectedException(cause: Exception) :
   CodedException("Location request has been rejected: " + cause.message)
 
+internal class LocationRequestCancelledException :
+  CodedException("Location request has been cancelled")
+
 internal class LocationSettingsUnsatisfiedException :
   CodedException("Location request failed due to unsatisfied device settings")
 

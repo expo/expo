@@ -3,19 +3,26 @@ package expo.modules.location
 import android.content.Context
 import android.location.Location
 import android.location.LocationManager
+import android.os.Bundle
+import com.google.android.gms.location.CurrentLocationRequest
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.Granularity
 import com.google.android.gms.location.LocationRequest
+import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.location.records.LocationLastKnownOptions
 import expo.modules.location.records.LocationOptions
 import expo.modules.location.records.LocationResponse
+import expo.modules.location.records.PermissionRequestResponse
 import io.nlopez.smartlocation.location.config.LocationAccuracy
 import io.nlopez.smartlocation.location.config.LocationParams
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class LocationHelpers {
   companion object {
-    val TAG: String = LocationHelpers::class.java.simpleName
-
     /**
      * Checks whether given location didn't exceed given `maxAge` and fits in the required accuracy.
      */
@@ -39,36 +46,41 @@ class LocationHelpers {
 
     internal fun prepareLocationRequest(options: LocationOptions): LocationRequest {
       val locationParams = mapOptionsToLocationParams(options)
-      val accuracy = options.accuracy
 
       return LocationRequest.create().apply {
         fastestInterval = locationParams.interval
         interval = locationParams.interval
         maxWaitTime = locationParams.interval
         smallestDisplacement = locationParams.distance
-        priority = mapAccuracyToPriority(accuracy)
+        priority = mapAccuracyToPriority(options.accuracy)
       }
     }
 
-    fun requestSingleLocation(locationModule: LocationModule, locationRequest: LocationRequest, promise: Promise) {
-      // we want just one update
-      locationRequest.numUpdates = 1
-      locationModule.requestLocationUpdates(
-        locationRequest, null,
-        object : LocationRequestCallbacks {
-          override fun onLocationChanged(location: Location) {
-            promise.resolve(LocationResponse(location))
-          }
+    internal fun prepareCurrentLocationRequest(options: LocationOptions): CurrentLocationRequest {
+      val locationParams = mapOptionsToLocationParams(options)
 
-          override fun onLocationError(cause: CodedException) {
-            promise.reject(cause)
-          }
+      return CurrentLocationRequest.Builder().apply {
+        setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
+        setPriority(mapAccuracyToPriority(options.accuracy))
+        setMaxUpdateAgeMillis(locationParams.interval)
+      }.build()
+    }
 
-          override fun onRequestFailed(cause: CodedException) {
-            promise.reject(cause)
+    fun requestSingleLocation(locationProvider: FusedLocationProviderClient, locationRequest: CurrentLocationRequest, promise: Promise) {
+      try {
+        locationProvider.getCurrentLocation(locationRequest, null)
+          .addOnSuccessListener {
+            promise.resolve(LocationResponse(it))
           }
-        }
-      )
+          .addOnFailureListener {
+            promise.reject(LocationRequestRejectedException(it))
+          }
+          .addOnCanceledListener {
+            promise.reject(LocationRequestCancelledException())
+          }
+      } catch (e: SecurityException) {
+        promise.reject(LocationRequestRejectedException(e))
+      }
     }
 
     fun requestContinuousUpdates(locationModule: LocationModule, locationRequest: LocationRequest, watchId: Int, promise: Promise) {
@@ -156,6 +168,45 @@ class LocationHelpers {
       context ?: return false
       val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return false
       return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
+    // Decorator for Permissions.getPermissionsWithPermissionsManager, for use in Kotlin coroutines
+    internal suspend fun getPermissionsWithPermissionsManager(contextPermissions: Permissions, vararg permissionStrings: String): PermissionRequestResponse {
+      return suspendCoroutine { continuation ->
+        Permissions.getPermissionsWithPermissionsManager(
+          contextPermissions,
+          object : Promise {
+            override fun resolve(value: Any?) {
+              val result = value as? Bundle ?: throw ConversionException(Any::class.java, Bundle::class.java, "value returned by the permission promise is not a Bundle")
+              continuation.resume(PermissionRequestResponse(result))
+            }
+
+            override fun reject(code: String, message: String?, cause: Throwable?) {
+              continuation.resumeWithException(CodedException(code, message, cause))
+            }
+          },
+          *permissionStrings
+        )
+      }
+    }
+
+    // Decorator for Permissions.getPermissionsWithPermissionsManager, for use in Kotlin coroutines
+    internal suspend fun askForPermissionsWithPermissionsManager(contextPermissions: Permissions, vararg permissionStrings: String): Bundle {
+      return suspendCoroutine {
+        Permissions.askForPermissionsWithPermissionsManager(
+          contextPermissions,
+          object : Promise {
+            override fun resolve(value: Any?) {
+              it.resume(value as? Bundle ?: throw ConversionException(Any::class.java, Bundle::class.java, "value returned by the permission promise is not a Bundle"))
+            }
+
+            override fun reject(code: String, message: String?, cause: Throwable?) {
+              it.resumeWithException(CodedException(code, message, cause))
+            }
+          },
+          *permissionStrings
+        )
+      }
     }
   }
 }
