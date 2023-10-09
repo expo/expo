@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- On `Android`, use `rawValue` in the case of scanning a contact card to return complete information.
+
 ### 💡 Others
 
 ## 12.7.0 — 2023-09-04
