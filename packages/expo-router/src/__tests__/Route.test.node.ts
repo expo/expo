@@ -16,7 +16,28 @@ const asRouteNode = (route: string) =>
     contextKey: 'INVALID_TEST_VALUE',
   }) as RouteNode;
 
+function getSortedRoutes(...routes: string[]) {
+  return routes
+    .map(asRouteNode)
+    .sort(sortRoutes)
+    .map((node) => node.route);
+}
+
 describe(sortRoutes, () => {
+  it(`sorts not found routes by priority`, () => {
+    expect(getSortedRoutes('[slug]', '[...slug]', '+not-found')).toEqual([
+      '[slug]',
+      '[...slug]',
+      '+not-found',
+    ]);
+    expect(getSortedRoutes('index', '[a]', 'beta', '+not-found', '[...a]')).toEqual([
+      'index',
+      'beta',
+      '[a]',
+      '[...a]',
+      '+not-found',
+    ]);
+  });
   it(`sorts index routes by priority`, () => {
     // Index before deep dynamic
     expect(sortRoutes(asRouteNode('index'), asRouteNode('[...a]'))).toBe(-1);

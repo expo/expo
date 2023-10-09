@@ -23,7 +23,9 @@ function getRoutesFor(files: string[]) {
 
 it(`sorts different route types`, () => {
   expect(
-    getServerManifest(getRoutesFor(['./a.js', './b+api.tsx', './404.ts', './c/[...404].tsx']))
+    getServerManifest(
+      getRoutesFor(['./a.js', './b+api.tsx', './+not-found.ts', './c/+not-found.tsx'])
+    )
   ).toEqual({
     apiRoutes: [
       expect.objectContaining({
@@ -37,10 +39,10 @@ it(`sorts different route types`, () => {
     ],
     notFoundRoutes: [
       expect.objectContaining({
-        page: './404',
+        page: './c/+not-found',
       }),
       expect.objectContaining({
-        page: './c/[...404]',
+        page: './+not-found',
       }),
     ],
   });

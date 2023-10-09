@@ -73,6 +73,21 @@ describe('server-output', () => {
       });
     });
 
+    it(`can serve up custom not-found`, async () => {
+      const res = await fetch('http://localhost:3000/missing');
+      expect(res.status).toEqual(404);
+      expect(await res.text()).toMatch(/<div data-testid="custom-404">/);
+    });
+    it(`can serve HTML and a function from the same route`, async () => {
+      expect(
+        await fetch('http://localhost:3000/matching-route/alpha').then((res) => res.text())
+      ).toMatch(/<div data-testid="alpha-text">/);
+      expect(
+        await fetch('http://localhost:3000/matching-route/alpha', {
+          method: 'POST',
+        }).then((res) => res.json())
+      ).toEqual({ foo: 'bar' });
+    });
     it(`can serve up index html`, async () => {
       expect(await fetch('http://localhost:3000').then((res) => res.text())).toMatch(
         /<div id="root">/
@@ -232,7 +247,7 @@ describe('server-output', () => {
 
       // Injected by framework
       expect(files).toContain('_sitemap.html');
-      expect(files).toContain('[...404].html');
+      expect(files).toContain('+not-found.html');
 
       // Normal routes
       expect(files).toContain('index.html');

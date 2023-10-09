@@ -441,6 +441,9 @@ function getPathWithConventionsCollapsed({
       // Since the page doesn't actually exist
       if (p.startsWith('*')) {
         if (preserveDynamicRoutes) {
+          if (name === 'not-found') {
+            return '+not-found';
+          }
           return `[...${name}]`;
         }
         if (params[name]) {

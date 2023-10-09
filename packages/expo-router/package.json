@@ -64,6 +64,7 @@
     "roots": [
       "src"
     ],
+    "watchPlugins": ["jest-watch-typeahead/filename", "jest-watch-typeahead/testname"],
     "setupFilesAfterEnv": [
       "./build/testing-library/mocks.js"
     ]

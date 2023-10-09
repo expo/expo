@@ -4,6 +4,7 @@ import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 export type DynamicConvention = {
     name: string;
     deep: boolean;
+    notFound?: boolean;
 };
 export type LoadedRoute = {
     ErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;

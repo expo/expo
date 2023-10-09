@@ -47,16 +47,17 @@ describe(RouterStore, () => {
           }),
           expect.objectContaining({
             children: [],
-            contextKey: './[...404].tsx',
+            contextKey: './+not-found.tsx',
             dynamic: [
               {
                 deep: true,
-                name: '404',
+                name: '+not-found',
+                notFound: true,
               },
             ],
             generated: true,
             internal: true,
-            route: '[...404]',
+            route: '+not-found',
           }),
         ],
         contextKey: './_layout.tsx',
@@ -68,7 +69,7 @@ describe(RouterStore, () => {
         config: {
           initialRouteName: undefined,
           screens: {
-            '[...404]': '*404',
+            '+not-found': '*not-found',
             _sitemap: '_sitemap',
             index: '',
           },

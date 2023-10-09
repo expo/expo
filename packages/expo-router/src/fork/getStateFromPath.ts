@@ -159,18 +159,21 @@ function assertConfigDuplicates(configs: RouteConfig[]) {
         // NOTE(EvanBacon): Adds more context to the error message since we know about the
         // file-based routing.
         const last = config.pattern.split('/').pop();
-        const routeType = last?.startsWith(':')
-          ? 'dynamic route'
-          : last?.startsWith('*')
-          ? 'dynamic-rest route'
-          : 'route';
-        throw new Error(
-          `The ${routeType} pattern '${config.pattern || '/'}' resolves to both '${
-            alpha.userReadableName
-          }' and '${
-            config.userReadableName
-          }'. Patterns must be unique and cannot resolve to more than one route.`
-        );
+
+        if (!last?.match(/^\*not-found$/)) {
+          const routeType = last?.startsWith(':')
+            ? 'dynamic route'
+            : last?.startsWith('*')
+            ? 'dynamic-rest route'
+            : 'route';
+          throw new Error(
+            `The ${routeType} pattern '${config.pattern || '/'}' resolves to both '${
+              alpha.userReadableName
+            }' and '${
+              config.userReadableName
+            }'. Patterns must be unique and cannot resolve to more than one route.`
+          );
+        }
       }
     }
 
@@ -230,10 +233,21 @@ function sortConfigs(a: RouteConfig, b: RouteConfig): number {
     if (bParts[i] == null) {
       return -1;
     }
+
     const aWildCard = aParts[i].startsWith('*');
     const bWildCard = bParts[i].startsWith('*');
     // if both are wildcard we compare next component
     if (aWildCard && bWildCard) {
+      const aNotFound = aParts[i].match(/^[*]not-found$/);
+      const bNotFound = bParts[i].match(/^[*]not-found$/);
+
+      if (aNotFound && bNotFound) {
+        continue;
+      } else if (aNotFound) {
+        return 1;
+      } else if (bNotFound) {
+        return -1;
+      }
       continue;
     }
     // if only a is wild card, b get higher priority
@@ -249,6 +263,17 @@ function sortConfigs(a: RouteConfig, b: RouteConfig): number {
     const bSlug = bParts[i].startsWith(':');
     // if both are wildcard we compare next component
     if (aSlug && bSlug) {
+      const aNotFound = aParts[i].match(/^[*]not-found$/);
+      const bNotFound = bParts[i].match(/^[*]not-found$/);
+
+      if (aNotFound && bNotFound) {
+        continue;
+      } else if (aNotFound) {
+        return 1;
+      } else if (bNotFound) {
+        return -1;
+      }
+
       continue;
     }
     // if only a is wild card, b get higher priority

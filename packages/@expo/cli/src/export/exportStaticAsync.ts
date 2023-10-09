@@ -257,7 +257,9 @@ export function getHtmlFiles({
     const parts = value.split('/');
     // Replace `:foo` with `[foo]` and `*foo` with `[...foo]`
     const partsWithGroups = parts.map((part) => {
-      if (part.startsWith(':')) {
+      if (part === '*not-found') {
+        return `+not-found`;
+      } else if (part.startsWith(':')) {
         return `[${part.slice(1)}]`;
       } else if (part.startsWith('*')) {
         return `[...${part.slice(1)}]`;
