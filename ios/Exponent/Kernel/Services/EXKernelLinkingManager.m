@@ -33,20 +33,16 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   EXKernelAppRecord *destinationApp = nil;
   NSURL *urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink];
 
-  if (appRegistry.standaloneAppRecord) {
-    destinationApp = appRegistry.standaloneAppRecord;
-  } else {
-    for (NSString *recordId in [appRegistry appEnumerator]) {
-      EXKernelAppRecord *appRecord = [appRegistry recordForId:recordId];
-      if (!appRecord || appRecord.status != kEXKernelAppRecordStatusRunning) {
-        continue;
-      }
-      if (appRecord.appLoader.manifestUrl && [[self class] _isUrl:urlToRoute deepLinkIntoAppWithManifestUrl:appRecord.appLoader.manifestUrl]) {
-        // this is a link into a bridge we already have running.
-        // use this bridge as the link's destination instead of the kernel.
-        destinationApp = appRecord;
-        break;
-      }
+  for (NSString *recordId in [appRegistry appEnumerator]) {
+    EXKernelAppRecord *appRecord = [appRegistry recordForId:recordId];
+    if (!appRecord || appRecord.status != kEXKernelAppRecordStatusRunning) {
+      continue;
+    }
+    if (appRecord.appLoader.manifestUrl && [[self class] _isUrl:urlToRoute deepLinkIntoAppWithManifestUrl:appRecord.appLoader.manifestUrl]) {
+      // this is a link into a bridge we already have running.
+      // use this bridge as the link's destination instead of the kernel.
+      destinationApp = appRecord;
+      break;
     }
   }
 
@@ -183,18 +179,6 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   }
 
   return [components URL];
-}
-
-+ (BOOL)_isStandaloneManifestUrl: (NSURL *)normalizedUri
-{
-  NSString *uriString = normalizedUri.absoluteString;
-  for (NSString *manifestUrl in [EXEnvironment sharedEnvironment].allManifestUrls) {
-    NSURL *normalizedManifestURL = [self _uriNormalizedForLinking:[NSURL URLWithString:manifestUrl]];
-    if ([normalizedManifestURL.absoluteString isEqualToString:uriString]) {
-      return YES;
-    }
-  }
-  return NO;
 }
 
 + (BOOL)isExpoHostedUrl: (NSURL *)url

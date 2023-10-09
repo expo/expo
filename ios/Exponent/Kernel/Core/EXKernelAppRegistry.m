@@ -75,11 +75,6 @@
   return _homeAppRecord;
 }
 
-- (EXKernelAppRecord *)standaloneAppRecord
-{
-  return nil;
-}
-
 - (EXKernelAppRecord *)recordForId:(NSString *)recordId
 {
   return [_appRegistry objectForKey:recordId];

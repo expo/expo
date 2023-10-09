@@ -31,11 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, readonly, nullable) EXKernelAppRecord *homeAppRecord;
 
-/**
- *  If we are running a standalone app, return the record for the standalone app.
- */
-@property (nonatomic, readonly, nullable) EXKernelAppRecord *standaloneAppRecord;
-
 - (EXKernelAppRecord *)recordForId:(NSString *)recordId;
 - (EXKernelAppRecord * _Nullable)newestRecordWithScopeKey:(NSString *)scopeKey;
 - (NSEnumerator<id> *)appEnumerator; // does not include home
