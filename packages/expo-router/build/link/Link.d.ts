@@ -8,6 +8,8 @@ export interface LinkProps extends Omit<TextProps, 'href' | 'hoverStyle'> {
     asChild?: boolean;
     /** Should replace the current route without adding to the history. */
     replace?: boolean;
+    /** On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind. */
+    className?: string;
     onPress?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
 }
 /** Redirects to the href as soon as the component is mounted. */

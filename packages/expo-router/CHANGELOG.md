@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `className` prop to `Link` component.
+
 ### 🐛 Bug fixes
 
 - Prevent circular navigation references. ([#24548](https://github.com/expo/expo/pull/24548) by [@EvanBacon](https://github.com/EvanBacon))

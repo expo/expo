@@ -61,9 +61,31 @@ exports.Redirect = Redirect;
  */
 exports.Link = React.forwardRef(ExpoRouterLink);
 exports.Link.resolveHref = href_1.resolveHref;
+// Mutate the style prop to add the className on web.
+function useInteropClassName(props) {
+    if (react_native_1.Platform.OS !== 'web') {
+        return props.style;
+    }
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    return React.useMemo(() => {
+        if (props.className == null) {
+            return props.style;
+        }
+        const cssStyle = {
+            $$css: true,
+            __routerLinkClassName: props.className,
+        };
+        if (Array.isArray(props.style)) {
+            return [...props.style, cssStyle];
+        }
+        return [props.style, cssStyle];
+    }, [props.style, props.className]);
+}
 function ExpoRouterLink({ href, replace, 
 // TODO: This does not prevent default on the anchor tag.
 asChild, ...rest }, ref) {
+    // Mutate the style prop to add the className on web.
+    const style = useInteropClassName(rest);
     const resolvedHref = React.useMemo(() => {
         if (href == null) {
             throw new Error('Link: href is required');
@@ -77,16 +99,13 @@ asChild, ...rest }, ref) {
         }
         props.onPress(e);
     };
-    return React.createElement(
-    // @ts-expect-error: slot is not type-safe
-    asChild ? react_slot_1.Slot : react_native_1.Text, {
-        ref,
-        ...props,
-        ...rest,
-        ...react_native_1.Platform.select({
-            web: { onClick: onPress },
+    const Element = asChild ? react_slot_1.Slot : react_native_1.Text;
+    // Avoid using createElement directly, favoring JSX, to allow tools like Nativewind to perform custom JSX handling on native.
+    return (React.createElement(Element, { ref: ref, ...props, ...rest, style: style, ...react_native_1.Platform.select({
+            web: {
+                onClick: onPress,
+            },
             default: { onPress },
-        }),
-    });
+        }) }));
 }
 //# sourceMappingURL=Link.js.map
