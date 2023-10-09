@@ -89,24 +89,13 @@
 
 - (BOOL)isUsingEmbeddedResource
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    // if the URL of our request matches the remote URL of the embedded JS bundle,
-    // skip checking any caches and just immediately open the NSBundle copy
-    if ([EXEnvironment sharedEnvironment].embeddedBundleUrl &&
-        [self.remoteUrl isEqual:[EXApiUtil encodedUrlFromString:[EXEnvironment sharedEnvironment].embeddedBundleUrl]]) {
-      return YES;
-    } else {
-      return NO;
-    }
-  } else {
 #if DEBUG
-    return NO;
+  return NO;
 #else
-    // we only need this because the bundle URL of prod home never changes, so we need
-    // to use the legacy logic and load embedded home if and only if a cached copy doesn't exist.
-    return [super isUsingEmbeddedResource];
+  // we only need this because the bundle URL of prod home never changes, so we need
+  // to use the legacy logic and load embedded home if and only if a cached copy doesn't exist.
+  return [super isUsingEmbeddedResource];
 #endif
-  }
 }
 
 - (NSError *)_validateResponseData:(NSData *)data response:(NSURLResponse *)response

@@ -31,27 +31,21 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   }
   EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
   EXKernelAppRecord *destinationApp = nil;
-  NSURL *urlToRoute = url;
+  NSURL *urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink];
 
-  if (isUniversalLink && [EXEnvironment sharedEnvironment].isDetached) {
-    destinationApp = [EXKernel sharedInstance].appRegistry.standaloneAppRecord;
+  if (appRegistry.standaloneAppRecord) {
+    destinationApp = appRegistry.standaloneAppRecord;
   } else {
-    urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink];
-
-    if (appRegistry.standaloneAppRecord) {
-      destinationApp = appRegistry.standaloneAppRecord;
-    } else {
-      for (NSString *recordId in [appRegistry appEnumerator]) {
-        EXKernelAppRecord *appRecord = [appRegistry recordForId:recordId];
-        if (!appRecord || appRecord.status != kEXKernelAppRecordStatusRunning) {
-          continue;
-        }
-        if (appRecord.appLoader.manifestUrl && [[self class] _isUrl:urlToRoute deepLinkIntoAppWithManifestUrl:appRecord.appLoader.manifestUrl]) {
-          // this is a link into a bridge we already have running.
-          // use this bridge as the link's destination instead of the kernel.
-          destinationApp = appRecord;
-          break;
-        }
+    for (NSString *recordId in [appRegistry appEnumerator]) {
+      EXKernelAppRecord *appRecord = [appRegistry recordForId:recordId];
+      if (!appRecord || appRecord.status != kEXKernelAppRecordStatusRunning) {
+        continue;
+      }
+      if (appRecord.appLoader.manifestUrl && [[self class] _isUrl:urlToRoute deepLinkIntoAppWithManifestUrl:appRecord.appLoader.manifestUrl]) {
+        // this is a link into a bridge we already have running.
+        // use this bridge as the link's destination instead of the kernel.
+        destinationApp = appRecord;
+        break;
       }
     }
   }
@@ -59,8 +53,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   if (destinationApp) {
     [[EXKernel sharedInstance] sendUrl:urlToRoute.absoluteString toAppRecord:destinationApp];
   } else {
-    if (![EXEnvironment sharedEnvironment].isDetached
-        && [EXKernel sharedInstance].appRegistry.homeAppRecord
+    if ([EXKernel sharedInstance].appRegistry.homeAppRecord
         && [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager.status == kEXReactAppManagerStatusRunning) {
       // if Home is present and running, open a new app with this url.
       // if home isn't running yet, we'll handle the LaunchOptions url after home finishes launching.
@@ -99,11 +92,6 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
 
 - (BOOL)linkingModule:(__unused id)linkingModule shouldOpenExpoUrl:(NSURL *)url
 {
-  // do not attempt to route internal exponent links at all if we're in a detached app.
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return NO;
-  }
-  
   // we don't need to explicitly include a standalone app custom URL scheme here
   // because the default iOS linking behavior will still hand those links back to Exponent.
   NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES];
@@ -127,17 +115,6 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
     return nil;
   }
   NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
-
-  // if the provided uri is the standalone app manifest uri,
-  // this should have been transformed into customscheme://deep-link
-  // and then all we do here is strip off the deep-link part.
-  if ([EXEnvironment sharedEnvironment].isDetached && [[EXEnvironment sharedEnvironment] isStandaloneUrlScheme:components.scheme]) {
-    if (useLegacy) {
-      return [NSString stringWithFormat:@"%@://%@", components.scheme, kEXExpoLegacyDeepLinkSeparator];
-    } else {
-      return [NSString stringWithFormat:@"%@://", components.scheme];
-    }
-  }
 
   NSMutableString* path = [NSMutableString stringWithString:components.path];
 
@@ -179,50 +156,13 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   if (!uri) {
     return nil;
   }
-  
-  // If the initial uri is a universal link in a standalone app don't touch it.
-  if ([EXEnvironment sharedEnvironment].isDetached && isUniversalLink) {
-    return uri;
-  }
-
-  NSURL *normalizedUri = [self _uriNormalizedForLinking:uri];
-
-  if ([EXEnvironment sharedEnvironment].isDetached && [EXEnvironment sharedEnvironment].hasUrlScheme) {
-    // if the provided uri is the standalone app manifest uri,
-    // transform this into customscheme://deep-link
-    if ([self _isStandaloneManifestUrl:normalizedUri]) {
-      NSString *uriString = normalizedUri.absoluteString;
-      NSRange deepLinkRange = [uriString rangeOfString:kEXExpoDeepLinkSeparator];
-      // deprecated but we still need to support these links
-      // TODO: remove this
-      NSRange deepLinkRangeLegacy = [uriString rangeOfString:kEXExpoLegacyDeepLinkSeparator];
-      NSString *deepLink = @"";
-      if (deepLinkRange.length > 0 && [[self class] isExpoHostedUrl:normalizedUri]) {
-        deepLink = [uriString substringFromIndex:deepLinkRange.location + kEXExpoDeepLinkSeparator.length];
-      } else if (deepLinkRangeLegacy.length > 0) {
-        deepLink = [uriString substringFromIndex:deepLinkRangeLegacy.location + kEXExpoLegacyDeepLinkSeparator.length];
-      }
-      NSString *result = [NSString stringWithFormat:@"%@://%@", [EXEnvironment sharedEnvironment].urlScheme, deepLink];
-      return [NSURL URLWithString:result];
-    }
-  }
-  return normalizedUri;
+  return [self _uriNormalizedForLinking:uri];
 }
 
 + (NSURL *)initialUriWithManifestUrl:(NSURL *)manifestUrl
 {
   NSURL *urlToTransform = manifestUrl;
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    NSDictionary *launchOptions = [ExpoKit sharedInstance].launchOptions;
-    NSURL *launchOptionsUrl = [[self class] initialUrlFromLaunchOptions:launchOptions];
-    if (!launchOptionsUrl) {
-      return nil;
-    }
-    urlToTransform = launchOptionsUrl;
-  }
-
   NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:urlToTransform resolvingAgainstBaseURL:YES];
-  
   return [[self class] uriTransformedForLinking:urlToTransform isUniversalLink:[urlComponents.scheme isEqualToString:@"https"]];
 }
 
@@ -230,14 +170,10 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
 {
   NSURLComponents *components = [NSURLComponents componentsWithURL:uri resolvingAgainstBaseURL:YES];
 
-  if ([EXEnvironment sharedEnvironment].isDetached && [[EXEnvironment sharedEnvironment] isStandaloneUrlScheme:components.scheme]) {
-    // if we're standalone and this uri had the standalone scheme, leave it alone.
+  if ([components.scheme isEqualToString:@"https"] || [components.scheme isEqualToString:@"exps"]) {
+    components.scheme = @"exps";
   } else {
-    if ([components.scheme isEqualToString:@"https"] || [components.scheme isEqualToString:@"exps"]) {
-      components.scheme = @"exps";
-    } else {
-      components.scheme = @"exp";
-    }
+    components.scheme = @"exp";
   }
 
   if ([components.scheme isEqualToString:@"exp"] && [components.port integerValue] == 80) {

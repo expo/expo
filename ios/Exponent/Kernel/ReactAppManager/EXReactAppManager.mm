@@ -156,7 +156,7 @@
 - (NSDictionary *)extraParams
 {
   // we allow the vanilla RN dev menu in some circumstances.
-  BOOL isStandardDevMenuAllowed = [EXEnvironment sharedEnvironment].isDetached;
+  BOOL isStandardDevMenuAllowed = false;
   NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:@{
     @"manifest": _appRecord.appLoader.manifest.rawManifestJSON,
     @"constants": @{
@@ -270,12 +270,7 @@
 
 - (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull EXManifestsManifest *)manifest
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    NSLog(@"Standalone bundle remote url is %@", [EXEnvironment sharedEnvironment].standaloneManifestUrl);
-    return kEXEmbeddedBundleResourceName;
-  } else {
-    return manifest.legacyId;
-  }
+  return manifest.legacyId;
 }
 
 - (BOOL)appFetcherShouldInvalidateBundleCache:(EXAppFetcher *)appFetcher
@@ -540,11 +535,7 @@
 
 - (void)toggleDevMenu
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
-  } else {
-    [[EXKernel sharedInstance] switchTasks];
-  }
+  [[EXKernel sharedInstance] switchTasks];
 }
 
 - (void)setupWebSocketControls
@@ -630,18 +621,11 @@
 
 - (NSDictionary *)launchOptionsForBridge
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    // pass the native app's launch options to standalone bridge.
-    return [ExpoKit sharedInstance].launchOptions;
-  }
   return @{};
 }
 
 - (Class)moduleRegistryDelegateClass
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return [ExpoKit sharedInstance].moduleRegistryDelegateClass;
-  }
   return nil;
 }
 
@@ -717,11 +701,7 @@
 
 - (NSString *)_executionEnvironment
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return EXConstantsExecutionEnvironmentStandalone;
-  } else {
-    return EXConstantsExecutionEnvironmentStoreClient;
-  }
+  return EXConstantsExecutionEnvironmentStoreClient;
 }
 
 - (NSString *)scopedDocumentDirectory
