@@ -30,9 +30,6 @@
   [constants setValue:[self expoClientVersion] forKey:@"expoVersion"];
 
   BOOL isDetached = NO;
-#ifdef ABI49_0_0EX_DETACHED
-  isDetached = YES;
-#endif
 
   constants[@"isDetached"] = @(isDetached);
   

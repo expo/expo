@@ -17,14 +17,12 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
 
-#ifndef EX_DETACHED
 // Kernel is DevMenu's delegate only in non-detached builds.
 #import "EXDevMenuManager.h"
 #import "EXDevMenuDelegateProtocol.h"
 
 @interface EXKernel () <EXDevMenuDelegateProtocol>
 @end
-#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -70,10 +68,8 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     // init service registry: classes which manage shared resources among all bridges
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
 
-#ifndef EX_DETACHED
     // Set the delegate of dev menu manager. Maybe it should be a separate class? Will see later once the delegate protocol gets too big.
     [[EXDevMenuManager sharedInstance] setDelegate:self];
-#endif
 
     // register for notifications to request reloading the visible app
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -210,11 +206,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   }
   
   if (_visibleApp != _appRegistry.homeAppRecord) {
-#ifndef EX_DETACHED // Just to compile without access to EXDevMenuManager, we wouldn't get here either way because browser controller is unset in this case.
     [EXUtil performSynchronouslyOnMainThread:^{
       [[EXDevMenuManager sharedInstance] toggle];
     }];
-#endif
   } else {
     EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
     for (NSString *recordId in appRegistry.appEnumerator) {
@@ -341,7 +335,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   }
 }
 
-#ifndef EX_DETACHED
 #pragma mark - EXDevMenuDelegateProtocol
 
 - (RCTBridge *)mainBridgeForDevMenuManager:(EXDevMenuManager *)manager
@@ -361,8 +354,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 {
   return !visibility || _visibleApp != _appRegistry.homeAppRecord;
 }
-
-#endif
 
 @end
 

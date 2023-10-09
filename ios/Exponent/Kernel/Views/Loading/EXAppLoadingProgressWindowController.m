@@ -4,9 +4,7 @@
 
 #import <ExpoModulesCore/EXDefines.h>
 
-#if !defined(EX_DETACHED)
 #import "Expo_Go-Swift.h"
-#endif // !defined(EX_DETACHED)
 
 #import "EXUtil.h"
 
@@ -30,7 +28,6 @@
 
 - (void)show
 {
-#if !defined(EX_DETACHED)
   if (!_enabled) {
     return;
   }
@@ -68,12 +65,10 @@
     self.textLabel.text =  @"Waiting for server ...";
     self.window.hidden = NO;
   });
-#endif // !defined(EX_DETACHED)
 }
 
 - (void)hide
 {
-#if !defined(EX_DETACHED)
   if (!_enabled) {
     return;
   }
@@ -87,12 +82,10 @@
       self.window = nil;
     }
   });
-#endif // !defined(EX_DETACHED)
 }
 
 - (void)updateStatusWithProgress:(EXLoadingProgress *)progress
 {
-#if !defined(EX_DETACHED)
   if (!_enabled) {
     return;
   }
@@ -109,12 +102,10 @@
     // TODO: (@bbarthec) maybe it's better to show/hide this based on other thing than progress status reported by the fetcher?
     self.window.hidden = !(progress.total.floatValue > 0);
   });
-#endif // !defined(EX_DETACHED)
 }
 
 - (void)updateStatus:(EXAppLoaderRemoteUpdateStatus)status
 {
-#if !defined(EX_DETACHED)
   if (!_enabled) {
     return;
   }
@@ -132,7 +123,6 @@
     self.textLabel.text = statusText;
     [self.textLabel setNeedsDisplay];
   });
-#endif // !defined(EX_DETACHED)
 }
 
 + (nullable NSString *)_loadingViewTextForStatus:(EXAppLoaderRemoteUpdateStatus)status
