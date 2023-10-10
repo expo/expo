@@ -100,36 +100,12 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   private String getScopedIdIfNotDetached(String categoryId) {
-    if (!Constants.isStandaloneApp()) {
-      String experienceScopeKey = mExperienceKey.getScopeKey();
-      return experienceScopeKey + ":" + categoryId;
-    }
-    return categoryId;
+    return mExperienceKey.getScopeKey() + ":" + categoryId;
   }
 
   @ReactMethod
   public void getDevicePushTokenAsync(final ReadableMap config, final Promise promise) {
-    if (!Constants.isStandaloneApp()) {
-      promise.reject("getDevicePushTokenAsync is only accessible within standalone applications");
-    }
-    try {
-      if (Constants.FCM_ENABLED) {
-        String token = FirebaseMessaging.getInstance().getToken().getResult();
-        if (token == null) {
-          promise.reject("FCM token has not been set");
-        } else {
-          WritableMap params = Arguments.createMap();
-          params.putString("type", "fcm");
-          params.putString("data", token);
-          promise.resolve(params);
-        }
-      } else {
-        promise.reject("ERR_NOTIFICATIONS_FCM_NOT_ENABLED", "FCM must be enabled in order to get the device push token");
-      }
-    } catch (Exception e) {
-      EXL.e(TAG, e.getMessage());
-      promise.reject(e.getMessage());
-    }
+    promise.reject("getDevicePushTokenAsync is not accessible in Expo Go");
   }
 
   @ReactMethod
