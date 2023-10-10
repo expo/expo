@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Automatically optimize transformations based on Hermes usage. ([#24672](https://github.com/expo/expo/pull/24672) by [@EvanBacon](https://github.com/EvanBacon))
+- Keep upstream additionalExts when adding env files, which adds support for the `.mjs` extension. ([#24809](https://github.com/expo/expo/pull/24809) by [@LinusU](https://github.com/LinusU))
 
 ### 🐛 Bug fixes
 
