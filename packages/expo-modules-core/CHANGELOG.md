@@ -16,6 +16,7 @@
 
 - Improve tracking on Android. ([#24625](https://github.com/expo/expo/pull/24625) by [@lukmccall](https://github.com/lukmccall))
 - Use native UUIDv5 generation on `Android` and `iOS`. ([#24200](https://github.com/expo/expo/pull/24200) by [@behenate](https://github.com/behenate))
+- Ensure native modules are installed before required. ([#24746](https://github.com/expo/expo/pull/24746) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.8.0 — 2023-09-15
 
