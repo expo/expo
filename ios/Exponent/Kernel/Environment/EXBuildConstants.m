@@ -54,7 +54,6 @@
   if (config[@"DEFAULT_API_KEYS"]) {
     _defaultApiKeys = config[@"DEFAULT_API_KEYS"];
   }
-  _expoKitDevelopmentUrl = config[@"developmentUrl"]; // TODO: make legacy name consistent with the rest of this file
 }
 
 + (EXKernelDevManifestSource)_kernelManifestSourceFromString:(NSString *)sourceString
