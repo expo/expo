@@ -40,6 +40,26 @@ internal class DeleteDatabaseFileException: GenericException<String> {
   }
 }
 
+internal class DatabaseIdNotFoundException: GenericException<DatabaseId> {
+  override var code: String {
+    "E_SQLITE_GET_DATABASE"
+  }
+
+  override var reason: String {
+    "Unable to find the opened database - databaseId[\(param)]"
+  }
+}
+
+internal class StatementIdNotFoundException: GenericException<StatementId> {
+  override var code: String {
+    "E_SQLITE_GET_STATEMENT"
+  }
+
+  override var reason: String {
+    "Unable to find the opened statement - statementId[\(param)]"
+  }
+}
+
 internal class InvalidSqlException: Exception {
   override var reason: String {
     "sql argument must be a string"
@@ -49,5 +69,15 @@ internal class InvalidSqlException: Exception {
 internal class InvalidArgumentsException: Exception {
   override var reason: String {
     "args must be an array"
+  }
+}
+
+internal class SQLiteErrorException: GenericException<String> {
+  override var code: String {
+    "E_SQLITE"
+  }
+
+  override var reason: String {
+    "\(param)"
   }
 }

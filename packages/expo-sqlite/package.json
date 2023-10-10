@@ -39,7 +39,8 @@
     "@expo/websql": "^1.0.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^3.0.0",
+    "sqlite3": "^5.1.6"
   },
   "peerDependencies": {
     "expo": "*"
