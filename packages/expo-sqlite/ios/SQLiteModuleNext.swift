@@ -15,6 +15,7 @@ public final class SQLiteModuleNext: Module {
   private var statementMap = [StatementId: Statement]()
   private var hasListeners = false
 
+  // swiftlint:disable:next cyclomatic_complexity function_body_length
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLiteNext")
 
@@ -45,10 +46,8 @@ public final class SQLiteModuleNext: Module {
       }
 
       // Try to find opened database for fast refresh
-      for (id, database) in databaseMap {
-        if database.dbName == dbName {
-          return id
-        }
+      for (id, database) in databaseMap where database.dbName == dbName {
+        return id
       }
 
       var db: OpaquePointer?
@@ -62,30 +61,9 @@ public final class SQLiteModuleNext: Module {
       if options.enableCRSQLite {
         crsqlite_init_from_swift(db)
       }
-      
+
       if options.enableChangeListener {
-        let contextPair = Unmanaged.passRetained(((self, database) as AnyObject))
-        contextPairs.append(contextPair)
-        sqlite3_update_hook(
-          db, { obj, action, _, tableName, rowId in
-            guard let obj,
-                  let tableName,
-                  let pair = Unmanaged<AnyObject>.fromOpaque(obj).takeUnretainedValue() as? (SQLiteModuleNext, Database) else {
-              return
-            }
-            let selfInstance = pair.0
-            let database = pair.1
-            if selfInstance.hasListeners {
-              selfInstance.sendEvent("onDatabaseChange", [
-                "dbName": database.dbName,
-                "tableName": String(cString: UnsafePointer(tableName)),
-                "rowId": rowId,
-                "typeId": SQLAction.fromCode(value: action)
-              ])
-            }
-          },
-          contextPair.toOpaque()
-        )
+        addUpdateHook(database)
       }
 
       databaseMap[id] = database
@@ -93,10 +71,8 @@ public final class SQLiteModuleNext: Module {
     }
 
     AsyncFunction("deleteDatabaseAsync") { (dbName: String) in
-      for (id, database) in databaseMap {
-        if database.dbName == dbName {
-          throw DeleteDatabaseException(dbName)
-        }
+      for (id, database) in databaseMap where database.dbName == dbName {
+        throw DeleteDatabaseException(dbName)
       }
 
       guard let path = pathForDatabaseName(name: dbName) else {
@@ -140,7 +116,7 @@ public final class SQLiteModuleNext: Module {
       guard let db = databaseMap[dbId] else {
         throw DatabaseIdNotFoundException(dbId)
       }
-      var error: UnsafeMutablePointer<CChar>? = nil
+      var error: UnsafeMutablePointer<CChar>?
       let ret = sqlite3_exec(db.instance, source, nil, nil, &error)
       if ret != SQLITE_OK, let error = error {
         let errorString = String(cString: error)
@@ -178,7 +154,7 @@ public final class SQLiteModuleNext: Module {
       }
       return [
         "lastID": Int(sqlite3_last_insert_rowid(db.instance)),
-        "changes": Int(sqlite3_changes(db.instance)),
+        "changes": Int(sqlite3_changes(db.instance))
       ]
     }
 
@@ -201,7 +177,7 @@ public final class SQLiteModuleNext: Module {
       }
       return [
         "lastID": Int(sqlite3_last_insert_rowid(db.instance)),
-        "changes": Int(sqlite3_changes(db.instance)),
+        "changes": Int(sqlite3_changes(db.instance))
       ]
     }
 
@@ -336,6 +312,30 @@ public final class SQLiteModuleNext: Module {
     return directory?.appendingPathComponent(name)
   }
 
+  private func addUpdateHook(_ database: Database) {
+    let contextPair = Unmanaged.passRetained(((self, database) as AnyObject))
+    contextPairs.append(contextPair)
+    // swiftlint:disable:next multiline_arguments
+    sqlite3_update_hook(database.instance, { obj, action, _, tableName, rowId in
+      guard let obj,
+        let tableName,
+        let pair = Unmanaged<AnyObject>.fromOpaque(obj).takeUnretainedValue() as? (SQLiteModuleNext, Database) else {
+        return
+      }
+      let selfInstance = pair.0
+      let database = pair.1
+      if selfInstance.hasListeners {
+        selfInstance.sendEvent("onDatabaseChange", [
+          "dbName": database.dbName,
+          "tableName": String(cString: UnsafePointer(tableName)),
+          "rowId": rowId,
+          "typeId": SQLAction.fromCode(value: action)
+        ])
+      }
+    },
+    contextPair.toOpaque())
+  }
+
   private func convertSqlLiteErrorToString(_ db: Database) -> String {
     let code = sqlite3_errcode(db.instance)
     let message = String(cString: sqlite3_errmsg(db.instance), encoding: .utf8) ?? ""
@@ -382,12 +382,16 @@ public final class SQLiteModuleNext: Module {
     case SQLITE_FLOAT:
       return sqlite3_column_double(instance, index)
     case SQLITE_TEXT:
-      let text = sqlite3_column_text(instance, index)
-      return String(cString: text!)
+      guard let text = sqlite3_column_text(instance, index) else {
+        throw Exception(name: "InvalidConvertibleException", description: "Null text")
+      }
+      return String(cString: text)
     case SQLITE_BLOB:
-      let blob = sqlite3_column_blob(instance, index)
+      guard let blob = sqlite3_column_blob(instance, index) else {
+        throw Exception(name: "InvalidConvertibleException", description: "Null blob")
+      }
       let size = sqlite3_column_bytes(instance, index)
-      return Data(bytes: blob!, count: Int(size))
+      return Data(bytes: blob, count: Int(size))
     case SQLITE_NULL:
       return NSNull()
     default:
@@ -409,7 +413,9 @@ public final class SQLiteModuleNext: Module {
     case let param as String:
       sqlite3_bind_text(instance, index, param, Int32(param.count), SQLITE_TRANSIENT)
     case let param as Data:
-      sqlite3_bind_blob(instance, index, (param as NSData).bytes, Int32(param.count), SQLITE_TRANSIENT)
+      param.withUnsafeBytes {
+        sqlite3_bind_blob(instance, index, $0.baseAddress, Int32(param.count), SQLITE_TRANSIENT)
+      }
     case let param as Bool:
       sqlite3_bind_int(instance, index, param ? 1 : 0)
     default:
