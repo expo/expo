@@ -35,7 +35,7 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
   // MARK: - RCTBridgeModule
 
   public static func moduleName() -> String! {
-    return "Expo"
+    return "ExpoModulesCore"
   }
 
   public static func requiresMainQueueSetup() -> Bool {
@@ -88,5 +88,21 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
     // otherwise legacy modules (e.g. permissions) won't be available in OnCreate { }
     appContext.useModulesProvider("ExpoModulesProvider")
     appContext.moduleRegistry.register(moduleType: NativeModulesProxyModule.self)
+  }
+
+  // MARK: - Exported methods
+
+  @objc
+  public func installModules() {
+    guard let bridge else {
+      log.error("Cannot install native modules because the bridge is no longer available")
+      return
+    }
+
+    // TODO: Keep this condition until we remove the other way of installing modules.
+    // See didSet on the `bridge` property above.
+    if appContext._runtime == nil {
+      appContext._runtime = EXJavaScriptRuntimeManager.runtime(fromBridge: bridge)
+    }
   }
 }
