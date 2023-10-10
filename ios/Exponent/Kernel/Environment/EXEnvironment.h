@@ -5,9 +5,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXPORT NSString * const kEXEmbeddedBundleResourceName;
-FOUNDATION_EXPORT NSString * const kEXEmbeddedManifestResourceName;
-
 @interface EXEnvironment : NSObject
 
 + (instancetype)sharedEnvironment;

@@ -7,9 +7,6 @@
 
 #import <React/RCTUtils.h>
 
-NSString * const kEXEmbeddedBundleResourceName = @"shell-app";
-NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
-
 @implementation EXEnvironment
 
 + (nonnull instancetype)sharedEnvironment
@@ -52,54 +49,17 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
 
 - (void)_loadDefaultConfig
 {
-  // use bundled EXShell.plist
-  NSString *configPath = [[NSBundle mainBundle] pathForResource:@"EXShell" ofType:@"plist"];
-  NSDictionary *shellConfig = (configPath) ? [NSDictionary dictionaryWithContentsOfFile:configPath] : [NSDictionary dictionary];
-  
-  // use ExpoKit dev url from EXBuildConstants
-  NSString *expoKitDevelopmentUrl = [EXBuildConstants sharedInstance].expoKitDevelopmentUrl;
-  
-  // use bundled info.plist
-  NSDictionary *infoPlist = [[NSBundle mainBundle] infoDictionary];
-
-  // use bundled shell app manifest
-  NSDictionary *embeddedManifest = @{};
-  NSString *path = [[NSBundle mainBundle] pathForResource:kEXEmbeddedManifestResourceName ofType:@"json"];
-  NSData *data = [NSData dataWithContentsOfFile:path];
-  if (data) {
-    NSError *jsonError;
-    id manifest = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&jsonError];
-    if (!jsonError && [manifest isKindOfClass:[NSDictionary class]]) {
-      embeddedManifest = (NSDictionary *)manifest;
-    }
-  }
-  
   BOOL isDebugXCodeScheme = NO;
 #if DEBUG
   isDebugXCodeScheme = YES;
 #endif
   
-  [self _loadShellConfig:shellConfig
-           withInfoPlist:infoPlist
-       withExpoKitDevUrl:expoKitDevelopmentUrl
-    withEmbeddedManifest:embeddedManifest
-      isDebugXCodeScheme:isDebugXCodeScheme];
+  [self _resetAndLoadIsDebugXCodeScheme:isDebugXCodeScheme];
 }
 
-- (void)_loadShellConfig:(NSDictionary *)shellConfig
-           withInfoPlist:(NSDictionary *)infoPlist
-       withExpoKitDevUrl:(NSString *)expoKitDevelopmentUrl
-    withEmbeddedManifest:(NSDictionary *)embeddedManifest
-      isDebugXCodeScheme:(BOOL)isDebugScheme
-{
+- (void)_resetAndLoadIsDebugXCodeScheme:(BOOL)isDebugScheme {
   [self _reset];
-  NSMutableArray *allManifestUrls = [NSMutableArray array];
   _isDebugXCodeScheme = isDebugScheme;
-
-  if (shellConfig) {
-    _testEnvironment = [EXTest testEnvironmentFromString:shellConfig[@"testEnvironment"]];
-  }
-  _allManifestUrls = allManifestUrls;
 }
 
 @end
