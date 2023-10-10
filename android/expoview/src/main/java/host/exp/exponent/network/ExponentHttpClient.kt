@@ -2,10 +2,8 @@
 package host.exp.exponent.network
 
 import android.content.Context
-import host.exp.exponent.Constants
 import host.exp.exponent.analytics.EXL
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okio.BufferedSource
 import okio.buffer
 import okio.source
@@ -127,35 +125,6 @@ class ExponentHttpClient(
     initialResponse: Response?,
     initialException: IOException?
   ) {
-    try {
-      val normalizedUri = normalizeUri(uri)
-      for (embeddedResponse in Constants.EMBEDDED_RESPONSES) {
-        // We only want to use embedded responses once. After they are used they will be added
-        // to the OkHttp cache and we should use the version from that cache. We don't want a situation
-        // where we have version 1 of a manifest saved as the embedded response, get version 2 saved
-        // to the OkHttp cache, cache gets evicted, and we regress to version 1. Want to only use
-        // monotonically increasing manifest versions.
-        if (normalizedUri == normalizeUri(embeddedResponse.url)) {
-          val response = Response.Builder()
-            .request(call.request())
-            .protocol(Protocol.HTTP_1_1)
-            .code(200)
-            .message("OK")
-            .body(
-              responseBodyForFile(
-                embeddedResponse.responseFilePath,
-                embeddedResponse.mediaType.toMediaTypeOrNull()
-              )
-            )
-            .build()
-          callback.onCachedResponse(OkHttpV1ExpoResponse(response), true)
-          return
-        }
-      }
-    } catch (e: Throwable) {
-      EXL.e(TAG, e)
-    }
-
     when {
       initialResponse != null -> callback.onResponse(OkHttpV1ExpoResponse(initialResponse))
       initialException != null -> callback.onFailure(initialException)
