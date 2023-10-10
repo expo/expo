@@ -169,8 +169,7 @@
 		B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B575EEA21D54175A00DCABBC /* shell-app-manifest.json */; };
 		B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B575EEA31D54175B00DCABBC /* shell-app.bundle */; };
 		B5854ED720D078C6001D2F6E /* EXClientTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854ED620D078C6001D2F6E /* EXClientTestCase.m */; };
-		B5854ED920D0790C001D2F6E /* EXDevDetachTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854ED820D0790C001D2F6E /* EXDevDetachTestCase.m */; };
-		B5854EDB20D07944001D2F6E /* EXProdServiceTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854EDA20D07944001D2F6E /* EXProdServiceTestCase.m */; };
+		B5854ED920D0790C001D2F6E /* EXDevTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854ED820D0790C001D2F6E /* EXDevTestCase.m */; };
 		B5854EEB20D07D4D001D2F6E /* EXLinkingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854EEA20D07D4D001D2F6E /* EXLinkingTests.m */; };
 		B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = B58F125B20B73455003E13F1 /* EXEnvironment.m */; };
 		B59B59491F6369480083850D /* EXTestEnvironment.plist in Resources */ = {isa = PBXBuildFile; fileRef = B59B59481F6369480083850D /* EXTestEnvironment.plist */; };
@@ -202,7 +201,6 @@
 		B5EF826F1F55B8F100FC7424 /* launch_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EF826D1F55B8F100FC7424 /* launch_icon.png */; };
 		B5FABDF020DD8E6800642528 /* EXAppLoaderRequestExpectation.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDEF20DD8E6800642528 /* EXAppLoaderRequestExpectation.m */; };
 		B5FABDF220DD91D500642528 /* EXAppLoaderConfigurationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF120DD91D500642528 /* EXAppLoaderConfigurationTests.m */; };
-		B5FABDF420DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF320DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m */; };
 		B5FABDF620DD926E00642528 /* EXFileDownloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF520DD926E00642528 /* EXFileDownloaderTests.m */; };
 		B5FABDF820DD942A00642528 /* EXAppLoaderRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF720DD942A00642528 /* EXAppLoaderRequestTests.m */; };
 		B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */; };
@@ -769,11 +767,9 @@
 		B575EEA21D54175A00DCABBC /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "shell-app-manifest.json"; sourceTree = "<group>"; };
 		B575EEA31D54175B00DCABBC /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "shell-app.bundle"; sourceTree = "<group>"; };
 		B5854ED620D078C6001D2F6E /* EXClientTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXClientTestCase.m; sourceTree = "<group>"; };
-		B5854ED820D0790C001D2F6E /* EXDevDetachTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevDetachTestCase.m; sourceTree = "<group>"; };
-		B5854EDA20D07944001D2F6E /* EXProdServiceTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXProdServiceTestCase.m; sourceTree = "<group>"; };
+		B5854ED820D0790C001D2F6E /* EXDevTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevTestCase.m; sourceTree = "<group>"; };
 		B5854EE420D07AE3001D2F6E /* EXClientTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXClientTestCase.h; sourceTree = "<group>"; };
-		B5854EE520D07B3E001D2F6E /* EXDevDetachTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevDetachTestCase.h; sourceTree = "<group>"; };
-		B5854EE620D07B5D001D2F6E /* EXProdServiceTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXProdServiceTestCase.h; sourceTree = "<group>"; };
+		B5854EE520D07B3E001D2F6E /* EXDevTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevTestCase.h; sourceTree = "<group>"; };
 		B5854EE720D07BCB001D2F6E /* EXAppLoader+Tests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EXAppLoader+Tests.h"; sourceTree = "<group>"; };
 		B5854EEA20D07D4D001D2F6E /* EXLinkingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLinkingTests.m; sourceTree = "<group>"; };
 		B58F125A20B73455003E13F1 /* EXEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXEnvironment.h; sourceTree = "<group>"; };
@@ -833,7 +829,6 @@
 		B5FABDEE20DD8E6800642528 /* EXAppLoaderRequestExpectation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppLoaderRequestExpectation.h; sourceTree = "<group>"; };
 		B5FABDEF20DD8E6800642528 /* EXAppLoaderRequestExpectation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderRequestExpectation.m; sourceTree = "<group>"; };
 		B5FABDF120DD91D500642528 /* EXAppLoaderConfigurationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderConfigurationTests.m; sourceTree = "<group>"; };
-		B5FABDF320DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderConfigurationTestsProdService.m; sourceTree = "<group>"; };
 		B5FABDF520DD926E00642528 /* EXFileDownloaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXFileDownloaderTests.m; sourceTree = "<group>"; };
 		B5FABDF720DD942A00642528 /* EXAppLoaderRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderRequestTests.m; sourceTree = "<group>"; };
 		B5FB73781FF6DADB001C764B /* EXConstantsBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXConstantsBinding.h; sourceTree = "<group>"; };
@@ -1267,10 +1262,8 @@
 				B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */,
 				B5854EE420D07AE3001D2F6E /* EXClientTestCase.h */,
 				B5854ED620D078C6001D2F6E /* EXClientTestCase.m */,
-				B5854EE520D07B3E001D2F6E /* EXDevDetachTestCase.h */,
-				B5854ED820D0790C001D2F6E /* EXDevDetachTestCase.m */,
-				B5854EE620D07B5D001D2F6E /* EXProdServiceTestCase.h */,
-				B5854EDA20D07944001D2F6E /* EXProdServiceTestCase.m */,
+				B5854EE520D07B3E001D2F6E /* EXDevTestCase.h */,
+				B5854ED820D0790C001D2F6E /* EXDevTestCase.m */,
 			);
 			path = Environment;
 			sourceTree = "<group>";
@@ -1361,7 +1354,6 @@
 			children = (
 				B5854EE720D07BCB001D2F6E /* EXAppLoader+Tests.h */,
 				B5FABDF120DD91D500642528 /* EXAppLoaderConfigurationTests.m */,
-				B5FABDF320DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m */,
 				B5FABDEE20DD8E6800642528 /* EXAppLoaderRequestExpectation.h */,
 				B5FABDEF20DD8E6800642528 /* EXAppLoaderRequestExpectation.m */,
 				B5FABDF720DD942A00642528 /* EXAppLoaderRequestTests.m */,
@@ -2767,16 +2759,14 @@
 			files = (
 				B5FABDF020DD8E6800642528 /* EXAppLoaderRequestExpectation.m in Sources */,
 				B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */,
-				B5854EDB20D07944001D2F6E /* EXProdServiceTestCase.m in Sources */,
 				B50C4C0B20EEBCE20090E5F9 /* EXApiV2Tests.m in Sources */,
 				B5FABDF820DD942A00642528 /* EXAppLoaderRequestTests.m in Sources */,
 				B5854ED720D078C6001D2F6E /* EXClientTestCase.m in Sources */,
 				B505BA2120CAF80D0046ACFB /* EXEnvironmentTests.m in Sources */,
 				B5FABDF620DD926E00642528 /* EXFileDownloaderTests.m in Sources */,
 				B5FABDF220DD91D500642528 /* EXAppLoaderConfigurationTests.m in Sources */,
-				B5854ED920D0790C001D2F6E /* EXDevDetachTestCase.m in Sources */,
+				B5854ED920D0790C001D2F6E /* EXDevTestCase.m in Sources */,
 				B5854EEB20D07D4D001D2F6E /* EXLinkingTests.m in Sources */,
-				B5FABDF420DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m in Sources */,
 				254282F6B824A72BCE19E8D8 /* ExpoModulesProvider.swift in Sources */,
 				1AFFCC1AE264EA3954D91AE2 /* ExpoModulesProvider.swift in Sources */,
 			);
