@@ -29,22 +29,11 @@
   return self;
 }
 
-- (BOOL)hasUrlScheme
-{
-  return (_urlScheme != nil);
-}
-
 #pragma mark - internal
 
 - (void)_reset
 {
-  _urlScheme = nil;
-  _areRemoteUpdatesEnabled = YES;
-  _updatesCheckAutomatically = YES;
-  _updatesFallbackToCacheTimeout = @(0);
-  _allManifestUrls = @[];
   _isDebugXCodeScheme = NO;
-  _releaseChannel = @"default";
 }
 
 - (void)_loadDefaultConfig
