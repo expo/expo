@@ -22,20 +22,6 @@
   }
 }
 
-- (void)testIsAllManifestUrlsPropertyCorrect
-{
-  [EXEnvironmentMocks loadProdServiceConfig];
-  NSString *expectedProdUrl = [EXEnvironmentMocks shellConfig][@"manifestUrl"];
-  XCTAssert(_environment.allManifestUrls.count == 1, @"Service standalone app should only have one manifest url");
-  XCTAssert([_environment.allManifestUrls.firstObject isEqualToString:expectedProdUrl], @"Service standalone app's `allManifestUrls` should contain the prod manifest url");
-
-  [EXEnvironmentMocks loadDevDetachConfig];
-  NSString *expectedDevUrl = [EXEnvironmentMocks expoKitDevUrl];
-  XCTAssert(_environment.allManifestUrls.count == 2, @"Dev detached app should have one local, and one prod, manifest url");
-  XCTAssert([_environment.allManifestUrls containsObject:expectedProdUrl], @"Dev detached app's `allManifestUrls` should contain the prod manifest url");
-  XCTAssert([_environment.allManifestUrls containsObject:expectedDevUrl], @"Dev detached app's `allManifestUrls` should contain the dev manifest url");
-}
-
 - (void)testDoesDefaultConfigRespectXcodeScheme
 {
   [_environment _loadDefaultConfig];

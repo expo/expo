@@ -188,9 +188,6 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
                                   // HACK: because `SecItemCopyMatching` doesn't work in older iOS (see EXApiUtil.m)
                                   ([UIDevice currentDevice].systemVersion.floatValue < 10) ||
                                   
-                                  // the developer disabled manifest verification
-                                  [EXEnvironment sharedEnvironment].isManifestVerificationBypassed ||
-                                  
                                   // we're using a copy that came with the NSBundle and was therefore already codesigned
                                   [self isUsingEmbeddedResource] ||
                                   

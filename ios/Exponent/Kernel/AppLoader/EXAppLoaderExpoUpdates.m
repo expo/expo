@@ -343,7 +343,7 @@ NS_ASSUME_NONNULL_BEGIN
     EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: httpManifestUrl.absoluteString,
     EXUpdatesConfig.EXUpdatesConfigReleaseChannelKey: releaseChannel,
     EXUpdatesConfig.EXUpdatesConfigHasEmbeddedUpdateKey: @NO,
-    EXUpdatesConfig.EXUpdatesConfigEnabledKey: @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
+    EXUpdatesConfig.EXUpdatesConfigEnabledKey: @YES,
     EXUpdatesConfig.EXUpdatesConfigLaunchWaitMsKey: launchWaitMs,
     EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchKey: shouldCheckOnLaunch ? EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueAlways : EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueNever,
     EXUpdatesConfig.EXUpdatesConfigExpectsSignedManifestKey: @YES,
@@ -384,11 +384,6 @@ NS_ASSUME_NONNULL_BEGIN
   updatesConfig[EXUpdatesConfig.EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey] = @YES;
 
   _config = [EXUpdatesConfig configFromDictionary:updatesConfig];
-
-  if (![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
-    [self _launchWithNoDatabaseAndError:nil];
-    return;
-  }
 
   EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
 
@@ -527,7 +522,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // if the app bypassed verification or the manifest is scoped to a random anonymous
     // scope key, automatically verify it
-    if (![mutableManifest[@"isVerified"] boolValue] && (EXEnvironment.sharedEnvironment.isManifestVerificationBypassed || [EXAppLoaderExpoUpdates _isAnonymousExperience:manifest])) {
+    if (![mutableManifest[@"isVerified"] boolValue] && [EXAppLoaderExpoUpdates _isAnonymousExperience:manifest]) {
       mutableManifest[@"isVerified"] = @(YES);
     }
 
