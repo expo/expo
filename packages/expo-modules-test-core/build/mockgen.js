@@ -33,7 +33,14 @@ const path_1 = __importDefault(require("path"));
 const prettier = __importStar(require("prettier"));
 const typescript_1 = __importDefault(require("typescript"));
 const directoryPath = process.cwd();
+/*
+We receive types from sourcekitten and getStructure like so (examples):
+[AcceptedTypes]?, UIColor?, [String: Any]
+
+We need to parse them first to ts nodes in mapSwiftTypeToTsType with the following helper functions.
+*/
 function isSwiftArray(type) {
+    // This can also be an object, but we check that first, so if it's not an object and is wrapped with [] it's an array.
     return type.startsWith('[') && type.endsWith(']');
 }
 function maybeUnwrapSwiftArray(type) {
@@ -60,6 +67,12 @@ function isSwiftDictionary(type) {
         type.endsWith(']') &&
         findRootColonInDictionary(type.substring(1, type.length - 1)) >= 0);
 }
+/*
+The Swift object type can have nested objects as the type of it's values (or maybe even keys).
+[String: [String: Any]]
+
+We can't use regex to find the root colon, so this is the safest way – by counting brackets.
+*/
 function findRootColonInDictionary(type) {
     let colonIndex = -1;
     let openBracketsCount = 0;
@@ -85,6 +98,10 @@ function unwrapSwiftDictionary(type) {
         value: innerType.slice(colonPosition + 1).trim(),
     };
 }
+/*
+Main function that converts a string representation of a Swift type to a Typescript compiler API node AST.
+We can pass those types straight to a typescript printer (a fn that converts AST to text).
+*/
 function mapSwiftTypeToTsType(type) {
     if (!type) {
         return typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.VoidKeyword);
@@ -107,6 +124,7 @@ function mapSwiftTypeToTsType(type) {
         return typescript_1.default.factory.createArrayTypeNode(mapSwiftTypeToTsType(maybeUnwrapSwiftArray(type)));
     }
     switch (type) {
+        // Our custom representation for types that we have no type hints for. Not necessairly Swift any.
         case 'unknown':
             return typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.AnyKeyword);
         case 'String':
@@ -117,12 +135,13 @@ function mapSwiftTypeToTsType(type) {
         case 'Float':
         case 'Double':
             return typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.NumberKeyword);
-        case 'Any':
+        case 'Any': // Swift Any type
             return typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.AnyKeyword);
-        default:
+        default: // Custom Swift type (record) – for now mapped to a custom TS type exported at the top of the file by `getMockedTypes`.
             return typescript_1.default.factory.createTypeReferenceNode(type);
     }
 }
+// Mocks require sample return values, so we generate them based on TS AST.
 function getMockLiterals(tsReturnType) {
     if (!tsReturnType) {
         return undefined;
@@ -132,7 +151,8 @@ function getMockLiterals(tsReturnType) {
         case typescript_1.default.SyntaxKind.VoidKeyword:
             return undefined;
         case typescript_1.default.SyntaxKind.UnionType:
-            // we know the cast is correct since we create the type ourselves
+            // we take the first element of our union for the mock – we know the cast is correct since we create the type ourselves
+            // the second is `undefined` for optionals.
             return getMockLiterals(tsReturnType.types[0]);
         case typescript_1.default.SyntaxKind.StringKeyword:
             return typescript_1.default.factory.createStringLiteral('');
@@ -143,9 +163,10 @@ function getMockLiterals(tsReturnType) {
         case typescript_1.default.SyntaxKind.ArrayType:
             return typescript_1.default.factory.createArrayLiteralExpression();
         case typescript_1.default.SyntaxKind.TypeLiteral:
+            // handles a dictionary, could be improved by creating an object fitting the schema instead of an empty one
             return typescript_1.default.factory.createObjectLiteralExpression([], false);
         case typescript_1.default.SyntaxKind.TypeReference:
-            // can be improved by expanding a set of default mocks
+            // A fallback – we print a comment that these mocks are not fitting the custom type. Could be improved by expanding a set of default mocks.
             return typescript_1.default.addSyntheticTrailingComment(typescript_1.default.factory.createNull(), typescript_1.default.SyntaxKind.SingleLineCommentTrivia, ` TODO: Replace with mock for value of type ${tsReturnType?.typeName?.escapedText ?? ''}.`);
     }
     return undefined;
@@ -159,6 +180,9 @@ function maybeWrapWithReturnStatement(tsType) {
     }
     return [typescript_1.default.factory.createReturnStatement(getMockLiterals(tsType))];
 }
+/*
+We itterate over a list of functions and we create TS AST for each of them.
+*/
 function getMockedFunctions(functions, async = false) {
     return functions.map((fnStructure) => {
         const name = typescript_1.default.factory.createIdentifier(fnStructure.name);
@@ -170,18 +194,29 @@ function getMockedFunctions(functions, async = false) {
         return func;
     });
 }
+// Collect all type references used in any of the AST types to generate type aliases
+// e.g. type `[URL: string]?` will generate `type URL = any;`
+function getAllTypeReferences(node, accumulator) {
+    if (typescript_1.default.isTypeReferenceNode(node)) {
+        accumulator.push(node.typeName?.escapedText);
+    }
+    node.forEachChild((n) => getAllTypeReferences(n, accumulator));
+}
+// Itterate over types to collect the aliases.
 function getTypesToMock(module) {
     const foundTypes = [];
     Object.values(module)
         .flatMap((t) => (Array.isArray(t) ? t?.map((t2) => t2?.types) : [] ?? []))
         .forEach((types) => {
         types?.parameters.forEach(({ typename }) => {
-            foundTypes.push(maybeUnwrapSwiftArray(typename));
+            getAllTypeReferences(mapSwiftTypeToTsType(typename), foundTypes);
         });
-        types?.returnType && foundTypes.push(maybeUnwrapSwiftArray(types.returnType));
+        types?.returnType &&
+            getAllTypeReferences(mapSwiftTypeToTsType(types?.returnType), foundTypes);
     });
-    return new Set(foundTypes.filter((ft) => mapSwiftTypeToTsType(ft).kind === typescript_1.default.SyntaxKind.TypeReference));
+    return new Set(foundTypes);
 }
+// Get a mock for a custom type'
 function getMockedTypes(types) {
     return Array.from(types).map((type) => {
         const name = typescript_1.default.factory.createIdentifier(type);
