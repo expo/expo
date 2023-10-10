@@ -271,6 +271,10 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       if (!shouldUseForegroundService && isMissingBackgroundPermissions()) {
         throw LocationBackgroundUnauthorizedException()
       }
+      if (!AppForegroundedSingleton.isForegrounded && options.foregroundService != null) {
+        throw ForegroundServiceStartNotAllowedException()
+      }
+
       mTaskManager.registerTask(taskName, LocationTaskConsumer::class.java, options.toMutableMap())
       return@AsyncFunction
     }
@@ -308,6 +312,14 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
       mTaskManager.unregisterTask(taskName, GeofencingTaskConsumer::class.java)
       return@AsyncFunction
+    }
+
+    OnActivityEntersForeground {
+      AppForegroundedSingleton.isForegrounded = true
+    }
+
+    OnActivityEntersBackground {
+      AppForegroundedSingleton.isForegrounded = false
     }
   }
 

@@ -27,6 +27,7 @@ import expo.modules.interfaces.taskManager.TaskConsumerInterface
 import expo.modules.interfaces.taskManager.TaskExecutionCallback
 import expo.modules.interfaces.taskManager.TaskInterface
 import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface
+import expo.modules.location.AppForegroundedSingleton
 import expo.modules.location.LocationHelpers
 import expo.modules.location.records.LocationOptions
 import expo.modules.location.records.LocationResponse
@@ -163,6 +164,10 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   private fun maybeStartForegroundService() {
     // Foreground service is available as of Android Oreo.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return
+    }
+    if (!AppForegroundedSingleton.isForegrounded) {
+      Log.w(TAG, "Foreground location task cannot be started while the app is in the background!")
       return
     }
     val task = mTask ?: run {
@@ -310,7 +315,6 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   companion object {
     private const val TAG = "LocationTaskConsumer"
     private const val FOREGROUND_SERVICE_KEY = "foregroundService"
-    var VERSION = 1
     private var sLastTimestamp: Long = 0
     fun shouldUseForegroundService(options: Map<String?, Any?>): Boolean {
       return options.containsKey(FOREGROUND_SERVICE_KEY)

@@ -210,3 +210,11 @@ class LocationHelpers {
     }
   }
 }
+
+/**
+ * A singleton that keeps information about whether the app is in the foreground or not.
+ * This is a simple solution for passing current foreground information from the LocationModule to LocationTaskConsumer.
+ */
+object AppForegroundedSingleton {
+  var isForegrounded = false
+}
