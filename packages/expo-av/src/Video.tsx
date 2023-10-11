@@ -12,6 +12,7 @@ import {
   AVPlaybackStatus,
   AVPlaybackStatusToSet,
   AVPlaybackTolerance,
+  PitchCorrectionQuality,
 } from './AV';
 import ExpoVideoManager from './ExpoVideoManager';
 import ExponentAV from './ExponentAV';
@@ -236,7 +237,11 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
     positionMillis: number,
     tolerances?: AVPlaybackTolerance
   ) => Promise<AVPlaybackStatus>;
-  setRateAsync!: (rate: number, shouldCorrectPitch: boolean) => Promise<AVPlaybackStatus>;
+  setRateAsync!: (
+    rate: number,
+    shouldCorrectPitch: boolean,
+    pitchCorrectionQuality?: PitchCorrectionQuality
+  ) => Promise<AVPlaybackStatus>;
   setVolumeAsync!: (volume: number, audioPan?: number) => Promise<AVPlaybackStatus>;
   setIsMutedAsync!: (isMuted: boolean) => Promise<AVPlaybackStatus>;
   setIsLoopingAsync!: (isLooping: boolean) => Promise<AVPlaybackStatus>;

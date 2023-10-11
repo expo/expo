@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { NativeMethods } from 'react-native';
-import { Playback, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackTolerance } from './AV';
+import { Playback, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackTolerance, PitchCorrectionQuality } from './AV';
 import { VideoFullscreenUpdateEvent, VideoNativeProps, VideoProps, VideoReadyForDisplayEvent, VideoState } from './Video.types';
 declare class Video extends React.Component<VideoProps, VideoState> implements Playback {
     _nativeRef: React.RefObject<React.Component<VideoNativeProps, any, any> & NativeMethods>;
@@ -67,7 +67,7 @@ declare class Video extends React.Component<VideoProps, VideoState> implements P
     pauseAsync: () => Promise<AVPlaybackStatus>;
     stopAsync: () => Promise<AVPlaybackStatus>;
     setPositionAsync: (positionMillis: number, tolerances?: AVPlaybackTolerance) => Promise<AVPlaybackStatus>;
-    setRateAsync: (rate: number, shouldCorrectPitch: boolean) => Promise<AVPlaybackStatus>;
+    setRateAsync: (rate: number, shouldCorrectPitch: boolean, pitchCorrectionQuality?: PitchCorrectionQuality) => Promise<AVPlaybackStatus>;
     setVolumeAsync: (volume: number, audioPan?: number) => Promise<AVPlaybackStatus>;
     setIsMutedAsync: (isMuted: boolean) => Promise<AVPlaybackStatus>;
     setIsLoopingAsync: (isLooping: boolean) => Promise<AVPlaybackStatus>;

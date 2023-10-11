@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Update pitch algorithm settings for iOS >= 17. ([#24678](https://github.com/expo/expo/pull/24678) by [@hromovp](https://github.com/hromovp))
+
 ### 💡 Others
 
 ## 13.7.0 — 2023-09-15
