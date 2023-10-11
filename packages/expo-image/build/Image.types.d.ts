@@ -93,8 +93,7 @@ export interface ImageProps extends ViewProps {
      */
     contentFit?: ImageContentFit;
     /**
-     * Determines how the placeholder should be resized to fit its container
-     * @hidden Described in the {@link ImageProps['contentFit']}
+     * Determines how the placeholder should be resized to fit its container. Available resize modes are the same as for the [`contentFit`](#contentfit) prop.
      * @default 'scale-down'
      */
     placeholderContentFit?: ImageContentFit;

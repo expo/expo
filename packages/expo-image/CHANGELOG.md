@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- Make `placeholderContentFit` visible in the docs. ([#24801](https://github.com/expo/expo/pull/24801) by [@behenate](https://github.com/behenate))
+
 ## 1.0.2 — 2023-09-29
 
 ### 🐛 Bug fixes
