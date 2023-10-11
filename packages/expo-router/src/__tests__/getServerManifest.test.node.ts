@@ -52,12 +52,13 @@ it(`converts a server manifest`, () => {
   expect(getServerManifest(getRoutesFor(['./home.js', './api/[post]+api.tsx']))).toEqual({
     apiRoutes: [
       {
+        file: './api/[post]+api.tsx',
         namedRegex: '^/api/(?<post>[^/]+?)(?:/)?$',
         page: './api/[post]+api',
         routeKeys: { post: 'post' },
       },
     ],
-    htmlRoutes: [{ namedRegex: '^/home(?:/)?$', page: './home', routeKeys: {} }],
+    htmlRoutes: [{ file: './home.js', namedRegex: '^/home(?:/)?$', page: './home', routeKeys: {} }],
     notFoundRoutes: [],
   });
 });
@@ -88,6 +89,7 @@ it(`supports groups`, () => {
     apiRoutes: [],
     htmlRoutes: [
       {
+        file: './(a)/b.tsx',
         namedRegex: '^(?:/\\(a\\))?/b(?:/)?$',
         page: './(a)/b',
         routeKeys: {},
@@ -103,13 +105,15 @@ it(`converts index routes`, () => {
   ).toEqual({
     apiRoutes: [],
     htmlRoutes: [
-      { namedRegex: '^/(?:/)?$', page: './index', routeKeys: {} },
+      { file: './index.tsx', namedRegex: '^/(?:/)?$', page: './index', routeKeys: {} },
       {
+        file: './a/index/b.tsx',
         namedRegex: '^/a/index/b(?:/)?$',
         page: './a/index/b',
         routeKeys: {},
       },
       {
+        file: './a/index/index.js',
         namedRegex: '^/a/index(?:/)?$',
         page: './a/index/index',
         routeKeys: {},
@@ -183,16 +187,19 @@ it(`converts dynamic routes`, () => {
     apiRoutes: [],
     htmlRoutes: [
       {
+        file: './c/[d]/e/[...f].js',
         namedRegex: '^/c/(?<d>[^/]+?)/e/(?<f>.+?)(?:/)?$',
         page: './c/[d]/e/[...f]',
         routeKeys: { d: 'd', f: 'f' },
       },
       {
+        file: './[a].tsx',
         namedRegex: '^/(?<a>[^/]+?)(?:/)?$',
         page: './[a]',
         routeKeys: { a: 'a' },
       },
       {
+        file: './[...b].tsx',
         namedRegex: '^/(?<b>.+?)(?:/)?$',
         page: './[...b]',
         routeKeys: { b: 'b' },
