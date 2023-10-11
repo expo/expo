@@ -11,7 +11,7 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
 
-import { exportAllApiRoutesAsync, rebundleApiRoute } from './bundleApiRoutes';
+import { bundleApiRoute, rebundleApiRoute } from './bundleApiRoutes';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
@@ -102,16 +102,36 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async exportExpoRouterApiRoutesAsync({
     mode,
     appDir,
+    outputDir,
   }: {
     mode: 'development' | 'production';
     appDir: string;
+    outputDir: string;
   }) {
-    return exportAllApiRoutesAsync(this.projectRoot, {
-      mode,
+    const manifest = await this.getExpoRouterRoutesManifestAsync({
       appDir,
-      port: this.getInstance()?.location.port,
-      shouldThrow: true,
     });
+
+    const files: Map<string, string> = new Map();
+
+    for (const route of manifest.apiRoutes) {
+      const filepath = path.join(appDir, route.file);
+      const contents = await bundleApiRoute(this.projectRoot, filepath, {
+        mode,
+        appDir,
+        port: this.getInstance()?.location.port,
+        shouldThrow: true,
+      });
+      const artifactFilename = path.join(
+        outputDir,
+        path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js'))
+      );
+      files.set(artifactFilename, contents!);
+      // Remap the manifest files to represent the output files.
+      route.file = artifactFilename;
+    }
+
+    return { manifest, files };
   }
 
   async composeResourcesWithHtml({

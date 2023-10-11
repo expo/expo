@@ -59,7 +59,7 @@ export function createRequestHandler(
       return fs.readFileSync(filePath, 'utf-8');
     },
     getApiRoute = async (route) => {
-      const filePath = path.join(distFolder, '_expo/functions', route.page + '.js');
+      const filePath = path.join(distFolder, route.file);
 
       debug(`Handling API route: ${route.page}: ${filePath}`);
 
@@ -68,7 +68,10 @@ export function createRequestHandler(
         return null;
       }
 
-      return require(filePath);
+      if (/\.[cj]s$/.test(filePath)) {
+        return require(filePath);
+      }
+      return import(filePath);
     },
     logApiRouteExecutionError = (error: Error) => {
       console.error(error);
