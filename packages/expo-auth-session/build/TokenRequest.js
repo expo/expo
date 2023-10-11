@@ -135,12 +135,14 @@ class TokenRequest extends Request {
     clientSecret;
     scopes;
     extraParams;
+    extraHeaders;
     constructor(request, grantType) {
         super(request);
         this.grantType = grantType;
         this.clientId = request.clientId;
         this.clientSecret = request.clientSecret;
         this.extraParams = request.extraParams;
+        this.extraHeaders = request.extraHeaders;
         this.scopes = request.scopes;
     }
     getHeaders() {
@@ -153,6 +155,13 @@ class TokenRequest extends Request {
             const credentials = `${encodedClientId}:${encodedClientSecret}`;
             const basicAuth = Base64.encodeNoWrap(credentials);
             headers.Authorization = `Basic ${basicAuth}`;
+        }
+        if (this.extraHeaders) {
+            for (const extra in this.extraHeaders) {
+                if (extra in this.extraHeaders && !(extra in headers)) {
+                    headers[extra] = this.extraHeaders[extra];
+                }
+            }
         }
         return headers;
     }
@@ -277,6 +286,7 @@ export class RefreshTokenRequest extends TokenRequest {
 export class RevokeTokenRequest extends Request {
     clientId;
     clientSecret;
+    extraHeaders;
     token;
     tokenTypeHint;
     constructor(request) {
@@ -284,6 +294,7 @@ export class RevokeTokenRequest extends Request {
         invariant(request.token, `\`RevokeTokenRequest\` requires a valid \`token\` to revoke.`);
         this.clientId = request.clientId;
         this.clientSecret = request.clientSecret;
+        this.extraHeaders = request.extraHeaders;
         this.token = request.token;
         this.tokenTypeHint = request.tokenTypeHint;
     }
@@ -297,6 +308,13 @@ export class RevokeTokenRequest extends Request {
             const credentials = `${encodedClientId}:${encodedClientSecret}`;
             const basicAuth = Base64.encodeNoWrap(credentials);
             headers.Authorization = `Basic ${basicAuth}`;
+        }
+        if (this.extraHeaders) {
+            for (const extra in this.extraHeaders) {
+                if (extra in this.extraHeaders && !(extra in headers)) {
+                    headers[extra] = this.extraHeaders[extra];
+                }
+            }
         }
         return headers;
     }

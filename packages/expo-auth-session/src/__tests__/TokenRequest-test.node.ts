@@ -35,6 +35,7 @@ describe('AccessTokenRequest', () => {
       scopes: ['test', 'value'],
       clientSecret: undefined,
       extraParams: undefined,
+      extraHeaders: undefined,
     });
     // No Authorization header is included when the client secret isn't present.
     expect(request.getHeaders()).toStrictEqual({
@@ -77,6 +78,38 @@ describe('AccessTokenRequest', () => {
       'Content-Type': 'application/x-www-form-urlencoded',
     });
   });
+  it(`creates a token exchange request with extra headers set`, async () => {
+    const request = new AccessTokenRequest({
+      code: 'odjie-some-code',
+      redirectUri: 'bcn://oauth',
+      clientId: 'my-client_id',
+      extraHeaders: {
+        'my-tx-id': 'some-tx-id',
+        otherTxId: 'other-tx-id',
+      },
+    });
+    // Test is the extraHeaders are set in the config
+    expect(request.getRequestConfig()).toStrictEqual({
+      clientId: 'my-client_id',
+      clientSecret: undefined,
+      code: 'odjie-some-code',
+      extraHeaders: {
+        'my-tx-id': 'some-tx-id',
+        otherTxId: 'other-tx-id',
+      },
+      extraParams: undefined,
+      grantType: 'authorization_code',
+      redirectUri: 'bcn://oauth',
+      scopes: undefined,
+    });
+
+    // Ensure the extraHeaders are added to the headers.
+    expect(request.getHeaders()).toStrictEqual({
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'my-tx-id': 'some-tx-id',
+      otherTxId: 'other-tx-id',
+    });
+  });
   it(`throws when a discovery doesn't contain a tokenEndpoint`, async () => {
     const request = new AccessTokenRequest({
       code: 'bacon-some-code',
@@ -98,6 +131,10 @@ describe('RefreshTokenRequest', () => {
       extraParams: {
         batman: 'and-robin',
       },
+      extraHeaders: {
+        'my-tx-id': 'some-tx-id',
+        otherTxId: 'other-tx-id',
+      },
     });
     // Test the query when the client secret isn't provided.
     expect(request.getQueryBody()).toStrictEqual({
@@ -118,10 +155,16 @@ describe('RefreshTokenRequest', () => {
       extraParams: {
         batman: 'and-robin',
       },
+      extraHeaders: {
+        'my-tx-id': 'some-tx-id',
+        otherTxId: 'other-tx-id',
+      },
     });
     // No Authorization header is included when the client secret isn't present.
     expect(request.getHeaders()).toStrictEqual({
       'Content-Type': 'application/x-www-form-urlencoded',
+      'my-tx-id': 'some-tx-id',
+      otherTxId: 'other-tx-id',
     });
   });
 
@@ -144,6 +187,10 @@ describe('RevokeTokenRequest', () => {
       tokenTypeHint: TokenTypeHint.AccessToken,
       clientId: 'my-client_id',
       scopes: ['test', 'value'],
+      extraHeaders: {
+        'my-tx-id': 'some-tx-id',
+        otherTxId: 'other-tx-id',
+      },
     });
     // Test the query is serialized properly.
     expect(request.getQueryBody()).toStrictEqual({
@@ -151,9 +198,23 @@ describe('RevokeTokenRequest', () => {
       token: 'my-token',
       token_type_hint: 'access_token',
     });
+    // Test the request config
+    expect(request.getRequestConfig()).toStrictEqual({
+      clientId: 'my-client_id',
+      clientSecret: undefined,
+      token: 'my-token',
+      tokenTypeHint: 'access_token',
+      extraHeaders: {
+        'my-tx-id': 'some-tx-id',
+        otherTxId: 'other-tx-id',
+      },
+    });
     // No Authorization header is included when the client secret isn't present.
+    // And the extraHeaders are set when set in config.
     expect(request.getHeaders()).toStrictEqual({
       'Content-Type': 'application/x-www-form-urlencoded',
+      'my-tx-id': 'some-tx-id',
+      otherTxId: 'other-tx-id',
     });
   });
 

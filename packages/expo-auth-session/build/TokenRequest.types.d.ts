@@ -49,6 +49,10 @@ export interface TokenRequestConfig {
      */
     extraParams?: Record<string, string>;
     /**
+     * Extra HTTP header params that'll be added to the HTTP header of the requests.
+     */
+    extraHeaders?: Record<string, string>;
+    /**
      * List of strings to request access to.
      *
      * [Section 3.3](https://tools.ietf.org/html/rfc6749#section-3.3)

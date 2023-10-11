@@ -305,6 +305,7 @@ export class AccessTokenRequest
       code: this.code,
       redirectUri: this.redirectUri,
       extraParams: this.extraParams,
+      extraHeaders: this.extraHeaders,
       scopes: this.scopes,
     };
   }
@@ -344,6 +345,7 @@ export class RefreshTokenRequest
       grantType: this.grantType,
       refreshToken: this.refreshToken,
       extraParams: this.extraParams,
+      extraHeaders: this.extraHeaders,
       scopes: this.scopes,
     };
   }
@@ -422,6 +424,7 @@ export class RevokeTokenRequest
       clientSecret: this.clientSecret,
       token: this.token,
       tokenTypeHint: this.tokenTypeHint,
+      extraHeaders: this.extraHeaders,
     };
   }
 
