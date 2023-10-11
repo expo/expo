@@ -12,7 +12,7 @@ function requireContext(base = '.', scanSubDirectories = true, regularExpression
     function readDirectory(directory) {
         node_fs_1.default.readdirSync(directory).forEach((file) => {
             const fullPath = node_path_1.default.resolve(directory, file);
-            const relativePath = `./${node_path_1.default.relative(base, fullPath)}`;
+            const relativePath = `./${node_path_1.default.relative(base, fullPath).split(node_path_1.default.sep).join('/')}`;
             if (node_fs_1.default.statSync(fullPath).isDirectory()) {
                 if (scanSubDirectories)
                     readDirectory(fullPath);

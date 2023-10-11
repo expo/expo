@@ -15,7 +15,7 @@ export default function requireContext(
   function readDirectory(directory: string) {
     fs.readdirSync(directory).forEach((file: string) => {
       const fullPath = path.resolve(directory, file);
-      const relativePath = `./${path.relative(base, fullPath)}`;
+      const relativePath = `./${path.relative(base, fullPath).split(path.sep).join('/')}`;
 
       if (fs.statSync(fullPath).isDirectory()) {
         if (scanSubDirectories) readDirectory(fullPath);
