@@ -244,6 +244,7 @@ export class AccessTokenRequest extends TokenRequest {
             code: this.code,
             redirectUri: this.redirectUri,
             extraParams: this.extraParams,
+            extraHeaders: this.extraHeaders,
             scopes: this.scopes,
         };
     }
@@ -274,6 +275,7 @@ export class RefreshTokenRequest extends TokenRequest {
             grantType: this.grantType,
             refreshToken: this.refreshToken,
             extraParams: this.extraParams,
+            extraHeaders: this.extraHeaders,
             scopes: this.scopes,
         };
     }
@@ -338,6 +340,7 @@ export class RevokeTokenRequest extends Request {
             clientSecret: this.clientSecret,
             token: this.token,
             tokenTypeHint: this.tokenTypeHint,
+            extraHeaders: this.extraHeaders,
         };
     }
     getQueryBody() {

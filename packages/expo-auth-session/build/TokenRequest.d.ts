@@ -81,6 +81,7 @@ export declare class AccessTokenRequest extends TokenRequest<AccessTokenRequestC
         code: string;
         redirectUri: string;
         extraParams: Record<string, string> | undefined;
+        extraHeaders: Record<string, string> | undefined;
         scopes: string[] | undefined;
     };
 }
@@ -99,6 +100,7 @@ export declare class RefreshTokenRequest extends TokenRequest<RefreshTokenReques
         grantType: GrantType;
         refreshToken: string | undefined;
         extraParams: Record<string, string> | undefined;
+        extraHeaders: Record<string, string> | undefined;
         scopes: string[] | undefined;
     };
 }
@@ -126,6 +128,7 @@ export declare class RevokeTokenRequest extends Request<RevokeTokenRequestConfig
         clientSecret: string | undefined;
         token: string;
         tokenTypeHint: TokenTypeHint | undefined;
+        extraHeaders: Record<string, string> | undefined;
     };
     getQueryBody(): Record<string, string>;
 }

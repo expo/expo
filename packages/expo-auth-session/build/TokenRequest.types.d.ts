@@ -49,7 +49,7 @@ export interface TokenRequestConfig {
      */
     extraParams?: Record<string, string>;
     /**
-     * Extra HTTP header params that'll be added to the HTTP header of the requests.
+     * Extra HTTP header params that'll be added to the HTTP header of requests.
      */
     extraHeaders?: Record<string, string>;
     /**
