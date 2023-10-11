@@ -40,6 +40,7 @@ export declare const applicationId: string | null;
  * > official docs for more information.
  * @example `"dd96dec43fb81c97"`
  * @platform android
+ * @deprecated Use `TrackingTransparency.getAndroidId()` instead.
  */
 export declare function getAndroidId(): string;
 /**
@@ -74,6 +75,7 @@ export declare function getInstallReferrerAsync(): Promise<string>;
  * // "68753A44-4D6F-1226-9C60-0050E4C00067"
  * ```
  * @platform ios
+ * @deprecated Use `TrackingTransparency.getIosIdForVendor()` instead.
  */
 export declare function getIosIdForVendorAsync(): Promise<string | null>;
 export declare enum ApplicationReleaseType {

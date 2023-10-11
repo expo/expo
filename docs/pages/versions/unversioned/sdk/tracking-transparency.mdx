@@ -20,7 +20,7 @@ A library for requesting permission to track the user or their device. Examples 
 
 For more information on Apple's new App Tracking Transparency framework, please refer to their [documentation](https://developer.apple.com/app-store/user-privacy-and-data-use/).
 
-<PlatformsSection ios simulator />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -109,11 +109,8 @@ const styles = StyleSheet.create({
 
 ## API
 
-```js
-import {
-  requestTrackingPermissionsAsync,
-  getTrackingPermissionsAsync,
-} from 'expo-tracking-transparency';
+```ts
+import * as ExpoTrackingTransparency from 'expo-tracking-transparency';
 ```
 
 <APISection packageName="expo-tracking-transparency" />
@@ -122,7 +119,7 @@ import {
 
 ### Android
 
-_No permissions required_.
+<AndroidPermissions permissions={['com.google.android.gms.permission.AD_ID']} />
 
 ### iOS
 

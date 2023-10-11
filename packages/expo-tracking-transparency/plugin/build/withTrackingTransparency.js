@@ -17,6 +17,9 @@ const withUserTrackingPermission = (config, { userTrackingPermission } = {}) => 
         userTrackingPermission ||
             config.ios.infoPlist.NSUserTrackingUsageDescription ||
             exports.DEFAULT_NSUserTrackingUsageDescription;
+    config = config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
+        'com.google.android.gms.permission.AD_ID',
+    ]);
     return config;
 };
 exports.withUserTrackingPermission = withUserTrackingPermission;

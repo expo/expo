@@ -2,23 +2,29 @@ package expo.modules.trackingtransparency
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.ads.identifier.AdvertisingIdClient
 import android.content.Context
 import expo.modules.kotlin.exception.Exceptions
+import android.provider.Settings
 
 class TrackingTransparencyModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   override fun definition() = ModuleDefinition {
+    // TODO: Rename the package to 'ExpoTracking'
     Name("ExpoTrackingTransparency")
 
-    AsyncFunction("getAdvertisingIdAsync") {
-      return@AsyncFunction getAdvertisingIdAsync()
+    Property("androidId") {
+      Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    }
+
+    Function("getAdvertisingId") {
+      return@Function getAdvertisingId()
     }
   }
 
-  private fun getAdvertisingIdAsync(): String? {
-      return AdvertisingIdClient.getAdvertisingIdInfo(context).id
+  private fun getAdvertisingId(): String? {
+    return AdvertisingIdClient.getAdvertisingIdInfo(context).id
   }
 }

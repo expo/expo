@@ -3,10 +3,19 @@ import AdSupport
 
 public class TrackingTransparencyModule: Module {
   public func definition() -> ModuleDefinition {
+    // TODO: Rename the package to 'ExpoTracking'
     Name("ExpoTrackingTransparency")
 
     OnCreate {
       EXPermissionsMethodsDelegate.register([TrackingTransparencyPermissionRequester()], withPermissionsManager: self.appContext?.permissions)
+    }
+
+    Function("getAdvertisingId") { () -> String in
+      return ASIdentifierManager.shared().advertisingIdentifier.uuidString
+    }
+
+    Function("getIosIdForVendor") { () -> String? in
+      return UIDevice.current.identifierForVendor?.uuidString
     }
 
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
@@ -25,10 +34,6 @@ public class TrackingTransparencyModule: Module {
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
-    }
-
-    AsyncFunction("getAdvertisingIdAsync") { () -> String in
-      return ASIdentifierManager.shared().advertisingIdentifier.uuidString
     }
   }
 }
