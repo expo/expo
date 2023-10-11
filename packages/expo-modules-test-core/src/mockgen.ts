@@ -11,10 +11,10 @@ import { Closure, ClosureTypes, OutputModuleDefinition } from './types';
 const directoryPath = process.cwd();
 
 /*
-We receive types from sourcekitten and getStructure like so (examples):
+We receive types from SourceKitten and `getStructure` like so (examples):
 [AcceptedTypes]?, UIColor?, [String: Any]
 
-We need to parse them first to ts nodes in mapSwiftTypeToTsType with the following helper functions.
+We need to parse them first to TS nodes in `mapSwiftTypeToTsType` with the following helper functions.
 */
 
 function isSwiftArray(type: string) {
@@ -90,7 +90,7 @@ type TSNode =
 
 /*
 Main function that converts a string representation of a Swift type to a Typescript compiler API node AST.
-We can pass those types straight to a typescript printer (a fn that converts AST to text).
+We can pass those types straight to a TypeScript printer (a function that converts AST to text).
 */
 function mapSwiftTypeToTsType(type: string): TSNode {
   if (!type) {
@@ -187,7 +187,7 @@ function maybeWrapWithReturnStatement(tsType: TSNode) {
 }
 
 /*
-We itterate over a list of functions and we create TS AST for each of them.
+We iterate over a list of functions and we create TS AST for each of them.
 */
 function getMockedFunctions(functions: Closure[], async = false) {
   return functions.map((fnStructure) => {
@@ -227,7 +227,9 @@ function getAllTypeReferences(node: ts.Node, accumulator: string[]) {
   node.forEachChild((n) => getAllTypeReferences(n, accumulator));
 }
 
-// Itterate over types to collect the aliases.
+/**
+ * Iterates over types to collect the aliases.
+ */
 function getTypesToMock(module: OutputModuleDefinition) {
   const foundTypes: string[] = [];
 
@@ -243,7 +245,9 @@ function getTypesToMock(module: OutputModuleDefinition) {
   return new Set(foundTypes);
 }
 
-// Get a mock for a custom type'
+/**
+ * Gets a mock for a custom type.
+ */
 function getMockedTypes(types: Set<string>) {
   return Array.from(types).map((type) => {
     const name = ts.factory.createIdentifier(type);
