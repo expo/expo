@@ -197,11 +197,12 @@ commands[command]().then((exec) => {
   // NOTE(EvanBacon): Track some basic telemetry events indicating the command
   // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
   // We do this to determine how well deprecations are going before removing a command.
-  const { logEventAsync } =
+  const { logEventAsync, flushDetached } =
     require('../src/utils/analytics/rudderstackClient') as typeof import('../src/utils/analytics/rudderstackClient');
   logEventAsync('action', {
     action: `expo ${command}`,
     source: 'expo/cli',
     source_version: process.env.__EXPO_VERSION,
   });
+  flushDetached();
 });

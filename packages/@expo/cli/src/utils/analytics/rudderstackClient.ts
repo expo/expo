@@ -1,11 +1,15 @@
 import RudderAnalytics from '@expo/rudder-sdk-node';
+import { spawn } from 'child_process';
 import * as ciInfo from 'ci-info';
+import fs from 'fs';
 import os from 'os';
+import path from 'path';
 
 import UserSettings from '../../api/user/UserSettings';
 import { getUserAsync } from '../../api/user/user';
 import { env } from '../env';
 
+const DETACHED_FLUSH = !env.EXPO_DEBUG;
 const PLATFORM_TO_ANALYTICS_PLATFORM: { [platform: string]: string } = {
   darwin: 'Mac',
   win32: 'Windows',
@@ -19,6 +23,9 @@ let identifyData: {
   deviceId: string;
   traits: Record<string, any>;
 } | null = null;
+
+export type DetachedEventsQueue = Parameters<typeof logEventAsync>[];
+const detachedFlushQueue: DetachedEventsQueue = [];
 
 export function resetInternalStateForTesting() {
   identified = false;
@@ -42,8 +49,15 @@ export function getRudderAnalyticsClient(): RudderAnalytics {
   );
 
   // Install flush on exit...
-  process.on('SIGINT', () => client?.flush?.());
-  process.on('SIGTERM', () => client?.flush?.());
+  if (DETACHED_FLUSH) {
+    console.log('DETACHED FLUSH ENABLED');
+    process.on('SIGINT', () => flushDetached());
+    process.on('SIGTERM', () => flushDetached());
+  } else {
+    console.log('DETACHED FLUSH DISABLED');
+    process.on('SIGINT', () => client?.flush?.());
+    process.on('SIGTERM', () => client?.flush?.());
+  }
 
   return client;
 }
@@ -64,7 +78,7 @@ export async function setUserDataAsync(userId: string, traits: Record<string, an
   identifyIfNotYetIdentified();
 }
 
-type Event =
+export type Event =
   | 'action'
   | 'Open Url on Device'
   | 'Start Project'
@@ -83,6 +97,12 @@ export async function logEventAsync(
   properties: Record<string, any> = {}
 ): Promise<void> {
   if (env.EXPO_NO_TELEMETRY) {
+    return;
+  }
+
+  // Keep in memory when using detached flush
+  if (DETACHED_FLUSH) {
+    detachedFlushQueue.push([event, properties]);
     return;
   }
 
@@ -130,4 +150,23 @@ export function getContext(): Record<string, any> {
     app: { name: 'expo', version: process.env.__EXPO_VERSION },
     ci: ciInfo.isCI ? { name: ciInfo.name, isPr: ciInfo.isPR } : undefined,
   };
+}
+
+export function flushDetached() {
+  // Nothing to flush
+  if (!detachedFlushQueue.length) {
+    console.log('Skipping flush, no events to flush');
+    return;
+  }
+
+  const eventsFile = path.join(UserSettings.getDirectory(), '_events.json');
+  fs.writeFileSync(eventsFile, JSON.stringify(detachedFlushQueue));
+
+  console.log('Written to', eventsFile);
+
+  spawn(process.execPath, [require.resolve('./flushDetachedRudderstack'), eventsFile], {
+    detached: true,
+    windowsHide: true,
+    shell: false,
+  });
 }
