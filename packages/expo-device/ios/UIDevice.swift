@@ -86,6 +86,14 @@ public extension UIDevice {
         return ExpoDeviceType(modelName: "iPhone 14 Pro", deviceYearClass: 2022)
       case "iPhone15,3":
         return ExpoDeviceType(modelName: "iPhone 14 Pro Max", deviceYearClass: 2022)
+      case "iPhone15,4":
+        return ExpoDeviceType(modelName: "iPhone 15", deviceYearClass: 2023)
+      case "iPhone15,5":
+        return ExpoDeviceType(modelName: "iPhone 15 Plus", deviceYearClass: 2023)
+      case "iPhone16,1":
+        return ExpoDeviceType(modelName: "iPhone 15 Pro", deviceYearClass: 2023)
+      case "iPhone16,2":
+        return ExpoDeviceType(modelName: "iPhone 15 Pro Max", deviceYearClass: 2023)
       case "iPhone8,4":
         return ExpoDeviceType(modelName: "iPhone SE", deviceYearClass: 2016)
       case "iPhone12,8":
@@ -102,6 +110,8 @@ public extension UIDevice {
         return ExpoDeviceType(modelName: "iPad (8th generation)", deviceYearClass: 2020)
       case "iPad12,1", "iPad12,2":
         return ExpoDeviceType(modelName: "iPad (9th generation)", deviceYearClass: 2021)
+      case "iPad13,18", "iPad13,19":
+        return ExpoDeviceType(modelName: "iPad (10th generation)", deviceYearClass: 2022)
       case "iPad4,1", "iPad4,2", "iPad4,3":
         return ExpoDeviceType(modelName: "iPad Air", deviceYearClass: 2013)
       case "iPad5,3", "iPad5,4":
@@ -132,6 +142,8 @@ public extension UIDevice {
         return ExpoDeviceType(modelName: "iPad Pro (11-inch) (2nd generation)", deviceYearClass: 2020)
       case "iPad13,4", "iPad13,5", "iPad13,6", "iPad13,7":
         return ExpoDeviceType(modelName: "iPad Pro (11-inch) (3rd generation)", deviceYearClass: 2021)
+      case "iPad14,3-A", "iPad14,3-B", "iPad14,4-A", "iPad14,4-B":
+        return ExpoDeviceType(modelName: "iPad Pro (11-inch) (4rd generation)", deviceYearClass: 2022)
       case "iPad6,7", "iPad6,8":
         return ExpoDeviceType(modelName: "iPad Pro (12.9-inch) (1st generation)", deviceYearClass: 2015)
       case "iPad7,1", "iPad7,2":
@@ -142,6 +154,8 @@ public extension UIDevice {
         return ExpoDeviceType(modelName: "iPad Pro (12.9-inch) (4th generation)", deviceYearClass: 2020)
       case "iPad13,8", "iPad13,9", "iPad13,10", "iPad13,11":
         return ExpoDeviceType(modelName: "iPad Pro (12.9-inch) (5th generation)", deviceYearClass: 2021)
+      case "iPad14,5-A", "iPad14,5-B", "iPad14,6-A", "iPad14,6-B":
+        return ExpoDeviceType(modelName: "iPad Pro (12.9-inch) (6th generation)", deviceYearClass: 2022)
       case "AppleTV5,3":
         return ExpoDeviceType(modelName: "Apple TV HD (4th Generation, Siri)", deviceYearClass: 2015)
       case "AppleTV6,2":

@@ -547,6 +547,50 @@ it('can pop back from a nested modal to a nested sibling', async () => {
   expect(screen).toHavePathname('/slot');
 });
 
+it('supports multi-level 404s', async () => {
+  renderRouter({
+    index: () => <Text>found</Text>,
+    '+not-found': () => <Text>404</Text>,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(await screen.findByText('found')).toBeOnTheScreen();
+
+  act(() => router.push('/123'));
+  expect(await screen.findByText('404')).toBeOnTheScreen();
+
+  act(() => router.push('/123/456'));
+  expect(await screen.findByText('404')).toBeOnTheScreen();
+});
+
+it('supports dynamic 404s next to dynamic routes', async () => {
+  renderRouter({
+    index: () => <Text />,
+    '[slug]': () => <Text>found</Text>,
+    '+not-found': () => <Text>404</Text>,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/123'));
+  expect(screen).toHavePathname('/123');
+  expect(await screen.findByText('found')).toBeOnTheScreen();
+});
+
+it('supports deep dynamic 404s next to dynamic routes', async () => {
+  renderRouter({
+    index: () => <Text />,
+    '+not-found': () => <Text>404</Text>,
+    '[...slug]': () => <Text>found</Text>,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  act(() => router.push('/123'));
+  expect(screen).toHavePathname('/123');
+  expect(await screen.findByText('found')).toBeOnTheScreen();
+});
+
 it('can deep link, pop back, and move around with initialRouteName in root layout', async () => {
   renderRouter(
     {

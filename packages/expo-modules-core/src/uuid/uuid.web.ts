@@ -1,6 +1,6 @@
 import sha1 from './lib/sha1';
 import v35 from './lib/v35';
-import { UUID } from './uuid.types';
+import { UUID, Uuidv5Namespace } from './uuid.types';
 
 function uuidv4(): string {
   // Crypto needs to be required when run in Node.js environment.
@@ -18,5 +18,7 @@ function uuidv4(): string {
 const uuid: UUID = {
   v4: uuidv4,
   v5: v35('v5', 0x50, sha1),
+  namespace: Uuidv5Namespace,
 };
+
 export default uuid;

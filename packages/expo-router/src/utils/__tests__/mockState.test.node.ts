@@ -31,7 +31,7 @@ describe(configFromFs, () => {
     // Ensure we don't need to explicitly add the initial route name
     expect(
       configFromFs([
-        '[...404].js',
+        '+not-found.js',
         '(app)/_layout.tsx',
         '(app)/(explore)/_layout.tsx',
         '(app)/(explore)/[user]/index.tsx',
@@ -41,7 +41,7 @@ describe(configFromFs, () => {
       initialRouteName: undefined,
       screens: {
         // Should match 404... maybe
-        '[...404]': '*404',
+        '+not-found': '*not-found',
         '(app)': {
           path: '(app)',
           initialRouteName: undefined,
@@ -63,7 +63,7 @@ describe(configFromFs, () => {
   it(`matches parallel`, () => {
     expect(
       configFromFs([
-        '[...404].js',
+        '+not-found.js',
         '(app)/_layout.tsx',
         [
           '(app)/(explore)/_layout.tsx',
@@ -90,7 +90,7 @@ describe(configFromFs, () => {
       initialRouteName: undefined,
       screens: {
         // Should match 404... maybe
-        '[...404]': '*404',
+        '+not-found': '*not-found',
         '(app)': {
           path: '(app)',
           initialRouteName: undefined,

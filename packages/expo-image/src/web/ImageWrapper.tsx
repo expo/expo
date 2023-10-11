@@ -46,7 +46,6 @@ const ImageWrapper = React.forwardRef(
 
     // Thumbhash uri always has to start with 'thumbhash:/'
     const { resolvedSource, isImageHash } = useImageHashes(source);
-
     const objectPosition = getObjectPositionFromContentPositionObject(
       isImageHash ? hashPlaceholderContentPosition : contentPosition
     );
@@ -68,8 +67,8 @@ const ImageWrapper = React.forwardRef(
             objectPosition,
             ...absoluteFilledPosition,
             ...getTintColorStyle(tintColor),
-            ...(isImageHash ? hashPlaceholderStyle : {}),
             ...style,
+            ...(isImageHash ? hashPlaceholderStyle : {}),
           }}
           // @ts-ignore
           // eslint-disable-next-line react/no-unknown-property

@@ -34,16 +34,7 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
   _originalUrl = originalUrl;
   _canBeWrittenToCache = NO;
   
-  NSString *resourceName;
-  if ([EXEnvironment sharedEnvironment].isDetached && [originalUrl.absoluteString isEqual:[EXEnvironment sharedEnvironment].standaloneManifestUrl]) {
-    resourceName = kEXEmbeddedManifestResourceName;
-    if ([EXEnvironment sharedEnvironment].releaseChannel){
-      self.releaseChannel = [EXEnvironment sharedEnvironment].releaseChannel;
-    }
-    NSLog(@"EXManifestResource: Standalone manifest remote url is %@ (%@)", url, originalUrl);
-  } else {
-    resourceName = [EXKernelLinkingManager linkingUriForExperienceUri:url useLegacy:YES];
-  }
+  NSString *resourceName = [EXKernelLinkingManager linkingUriForExperienceUri:url useLegacy:YES];
   
   if (self = [super initWithResourceName:resourceName resourceType:@"json" remoteUrl:url cachePath:[[self class] cachePath]]) {
     self.shouldVersionCache = NO;
@@ -196,9 +187,6 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
   bool shouldBypassVerification =(
                                   // HACK: because `SecItemCopyMatching` doesn't work in older iOS (see EXApiUtil.m)
                                   ([UIDevice currentDevice].systemVersion.floatValue < 10) ||
-                                  
-                                  // the developer disabled manifest verification
-                                  [EXEnvironment sharedEnvironment].isManifestVerificationBypassed ||
                                   
                                   // we're using a copy that came with the NSBundle and was therefore already codesigned
                                   [self isUsingEmbeddedResource] ||

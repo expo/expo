@@ -29,7 +29,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-test-core",
   "dependencies": {
     "@types/node": "^20.5.7",
-    "glob": "^10.3.4",
+    "glob": "^10.3.10",
     "prettier": "^3.0.3",
     "xml-js": "^1.6.11",
     "yaml": "^2.3.2"
