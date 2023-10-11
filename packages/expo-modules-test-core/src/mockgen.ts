@@ -89,7 +89,7 @@ type TSNode =
   | ts.TypeLiteralNode;
 
 /*
-Main function that converts a string representation of a Swift type to a Typescript compiler API node AST.
+Main function that converts a string representation of a Swift type to a TypeScript compiler API node AST.
 We can pass those types straight to a TypeScript printer (a function that converts AST to text).
 */
 function mapSwiftTypeToTsType(type: string): TSNode {
