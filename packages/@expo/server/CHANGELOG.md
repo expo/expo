@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Use `file` in manifest to support loading mjs/cjs API routes. ([#24739](https://github.com/expo/expo/pull/24739) by [@EvanBacon](https://github.com/EvanBacon))
 - Add Netlify adapter. ([#24510](https://github.com/expo/expo/pull/24510) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes

@@ -26,7 +26,7 @@ export function getAppRouterRelativeEntryPath(
   // It doesn't matter if the app folder exists.
   const appFolder = path.join(projectRoot, routerDirectory);
   const appRoot = path.relative(path.dirname(routerEntry), appFolder);
-  debug('routerEntry', routerEntry, appFolder, appRoot);
+  debug('expo-router entry', routerEntry, appFolder, appRoot);
   return appRoot;
 }
 
@@ -57,7 +57,7 @@ export function getRouterDirectory(projectRoot: string): string {
     return 'src/app';
   }
 
-  Log.debug('Using app as the root directory for Expo Router.');
+  debug('Using app as the root directory for Expo Router.');
   return 'app';
 }
 

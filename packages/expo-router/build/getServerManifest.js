@@ -41,6 +41,7 @@ function getMatchableManifestForPaths(paths) {
 function getNamedRouteRegex(normalizedRoute, page) {
     const result = getNamedParametrizedRoute(normalizedRoute);
     return {
+        file: page,
         page: page.replace(/\.[jt]sx?$/, ''),
         namedRegex: `^${result.namedParameterizedRoute}(?:/)?$`,
         routeKeys: result.routeKeys,

@@ -324,26 +324,15 @@ async function exportApiRoutesAsync({
   server: MetroBundlerDevServer;
   appDir: string;
 }): Promise<Map<string, string>> {
-  const funcDir = path.join(outputDir, '_expo/functions');
+  const functionsDir = '_expo/functions';
+  const funcDir = path.join(outputDir, functionsDir);
   fs.mkdirSync(path.join(funcDir), { recursive: true });
 
-  const [manifest, files] = await Promise.all([
-    server.getExpoRouterRoutesManifestAsync({
-      appDir,
-    }),
-    server
-      .exportExpoRouterApiRoutesAsync({
-        mode: 'production',
-        appDir,
-      })
-      .then((routes) => {
-        const files = new Map<string, string>();
-        for (const [route, contents] of routes) {
-          files.set(path.join('_expo/functions', route), contents);
-        }
-        return files;
-      }),
-  ]);
+  const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
+    mode: 'production',
+    appDir,
+    outputDir: functionsDir,
+  });
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
 

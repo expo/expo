@@ -5,6 +5,7 @@ import { getServerManifest } from './getServerManifest';
 import { RequireContext } from './types';
 
 export type RouteInfo<TRegex = string> = {
+  file: string;
   page: string;
   namedRegex: TRegex;
   routeKeys: { [named: string]: string };
