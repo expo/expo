@@ -218,8 +218,10 @@ function getMockedFunctions(functions: Closure[], async = false) {
   });
 }
 
-// Collect all type references used in any of the AST types to generate type aliases
-// e.g. type `[URL: string]?` will generate `type URL = any;`
+/**
+ * Collect all type references used in any of the AST types to generate type aliases
+ * e.g. type `[URL: string]?` will generate `type URL = any;`
+ */
 function getAllTypeReferences(node: ts.Node, accumulator: string[]) {
   if (ts.isTypeReferenceNode(node)) {
     accumulator.push((node.typeName as any)?.escapedText);
