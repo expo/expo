@@ -144,19 +144,44 @@ Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro)
 
 ### Modify babel.config.js
 
-Add `expo-router/babel` plugin in the `plugins` array to your project's **babel.config.js**:
+<Tabs>
 
-```js babel.config.js
-module.exports = function (api) {
-  api.cache(true);
-  return {
-    presets: ['babel-preset-expo'],
-    /* @info Add it in the plugins list as the last plugin.*/
-    plugins: ['expo-router/babel'],
-    /* @end */
-  };
-};
-```
+  <Tab label="SDK 50 and above">
+
+    Ensure you use `babel-preset-expo` as the `preset`, or delete the **babel.config.js** file:
+
+    ```js babel.config.js
+    module.exports = function (api) {
+      api.cache(true);
+      return {
+        presets: ['babel-preset-expo'],
+      };
+    };
+    ```
+
+    If you're upgrading from a version of Expo Router that is older than v3, remove the `plugins: ['expo-router/babel']`. `expo-router/babel` was merged in `babel-preset-expo` in SDK 50 (Expo Router v3).
+
+  </Tab>
+
+  <Tab label="SDK 49 and below">
+
+    Add `expo-router/babel` plugin in the `plugins` array to your project's **babel.config.js**:
+
+    ```js babel.config.js
+    module.exports = function (api) {
+      api.cache(true);
+      return {
+        presets: ['babel-preset-expo'],
+        /* @info Add it in the plugins list as the last plugin.*/
+        plugins: ['expo-router/babel'],
+        /* @end */
+      };
+    };
+    ```
+
+  </Tab>
+
+</Tabs>
 
 </Step>
 
