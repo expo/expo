@@ -788,16 +788,6 @@ module.exports = {
         ExpoAppleAuthentication: { propsNames: ['buttonStyle', 'buttonType', 'cornerRadius'] },
         ExpoBarCodeScanner: { propsNames: ['barCodeTypes', 'type'] },
         ExpoBlurView: { propsNames: ['intensity', 'tint'] },
-        // ExpoClipboard: {
-        //   propsNames: [
-        //     'acceptedContentTypes',
-        //     'backgroundColor',
-        //     'cornerStyle',
-        //     'displayMode',
-        //     'foregroundColor',
-        //     'imageOptions',
-        //   ],
-        // },
         ExpoImage: {
           propsNames: [
             'accessibilityLabel',
