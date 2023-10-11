@@ -9,6 +9,7 @@ import resolveFrom from 'resolve-from';
 import { getRoutePaths } from './router';
 
 export type ExpoRouterServerManifestV1Route<TRegex = string> = {
+  file: string;
   page: string;
   routeKeys: Record<string, string>;
   namedRegex: TRegex;
