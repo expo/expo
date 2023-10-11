@@ -34,10 +34,10 @@ const prettier = __importStar(require("prettier"));
 const typescript_1 = __importDefault(require("typescript"));
 const directoryPath = process.cwd();
 /*
-We receive types from sourcekitten and getStructure like so (examples):
+We receive types from SourceKitten and `getStructure` like so (examples):
 [AcceptedTypes]?, UIColor?, [String: Any]
 
-We need to parse them first to ts nodes in mapSwiftTypeToTsType with the following helper functions.
+We need to parse them first to TS nodes in `mapSwiftTypeToTsType` with the following helper functions.
 */
 function isSwiftArray(type) {
     // This can also be an object, but we check that first, so if it's not an object and is wrapped with [] it's an array.
@@ -100,7 +100,7 @@ function unwrapSwiftDictionary(type) {
 }
 /*
 Main function that converts a string representation of a Swift type to a Typescript compiler API node AST.
-We can pass those types straight to a typescript printer (a fn that converts AST to text).
+We can pass those types straight to a TypeScript printer (a function that converts AST to text).
 */
 function mapSwiftTypeToTsType(type) {
     if (!type) {
@@ -181,7 +181,7 @@ function maybeWrapWithReturnStatement(tsType) {
     return [typescript_1.default.factory.createReturnStatement(getMockLiterals(tsType))];
 }
 /*
-We itterate over a list of functions and we create TS AST for each of them.
+We iterate over a list of functions and we create TS AST for each of them.
 */
 function getMockedFunctions(functions, async = false) {
     return functions.map((fnStructure) => {
@@ -202,7 +202,9 @@ function getAllTypeReferences(node, accumulator) {
     }
     node.forEachChild((n) => getAllTypeReferences(n, accumulator));
 }
-// Itterate over types to collect the aliases.
+/**
+ * Iterates over types to collect the aliases.
+ */
 function getTypesToMock(module) {
     const foundTypes = [];
     Object.values(module)
@@ -216,7 +218,9 @@ function getTypesToMock(module) {
     });
     return new Set(foundTypes);
 }
-// Get a mock for a custom type'
+/**
+ * Gets a mock for a custom type.
+ */
 function getMockedTypes(types) {
     return Array.from(types).map((type) => {
         const name = typescript_1.default.factory.createIdentifier(type);
