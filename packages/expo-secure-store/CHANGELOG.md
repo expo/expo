@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the 'WHEN_UNLOCKED_THIS_DEVICE_ONLY' constraint being incorrectly mapped wrong secure store accessible
+
 ### 💡 Others
 
 ## 12.5.0 — 2023-09-04
