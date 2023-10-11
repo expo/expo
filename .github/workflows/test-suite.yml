@@ -76,7 +76,7 @@ jobs:
         run: |
           brew tap wix/brew
           brew install applesimutils
-          brew install watchman
+          brew install watchman || true
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
