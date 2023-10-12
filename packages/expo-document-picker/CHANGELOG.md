@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [web] Fix promise never resolving when user cancels the picker. ([#24838](https://github.com/expo/expo/pull/24838) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 11.7.0 — 2023-09-04
