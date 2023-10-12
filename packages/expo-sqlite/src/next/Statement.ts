@@ -1,61 +1,21 @@
-import ExpoSQLite from './ExpoSQLiteNext';
+import { NativeDatabase } from './NativeDatabase';
+import {
+  BindParams,
+  BindValue,
+  NativeStatement,
+  RunResult,
+  VariadicBindParams,
+} from './NativeStatement';
 
-/**
- * Result of a `runAsync` call.
- */
-export interface RunResult {
-  /**
-   * The last inserted row ID.
-   */
-  lastID: number;
-
-  /**
-   * The number of rows affected.
-   */
-  changes: number;
-}
-
-/**
- * Bind parameters to the prepared statement.
- * You can either pass the parameters in the following forms:
- *
- * @example
- * - Variadic arguments for unnamed parameters.
- * ```ts
- * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ? AND intValue = ?');
- * await statement.getAsync('test1', 789);
- * ```
- *
- * @example
- * - A single array for unnamed parameters.
- * ```ts
- * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ? AND intValue = ?');
- * await statement.getAsync(['test1', 789]);
- * ```
- *
- * @example
- * - A single object for [named parameters](https://www.sqlite.org/lang_expr.html)
- *
- *   Through we support multiple named parameter forms like `:VVV`, `@VVV`, and `$VVV`. We recommend using `$VVV` because JavaScript allows using `$` in identifiers without escaping.
- * ```ts
- * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = $value AND intValue = $intValue');
- * await statement.getAsync({ $value: 'test1', $intValue: 789 });
- * ```
- */
-export type BindValue = string | number | null | boolean;
-export type BindParams = Record<string, BindValue> | BindValue[];
-export type VariadicBindParams = BindValue[];
+export { BindParams, BindValue, RunResult, VariadicBindParams };
 
 /**
  * A prepared statement returned by `Database.prepareAsync()` that can be binded with parameters and executed.
  */
 export class Statement {
-  /**
-   * @internal
-   */
   constructor(
-    public readonly databaseId: number,
-    public readonly statementId: number
+    private readonly nativeDatabase: NativeDatabase,
+    private readonly nativeStatement: NativeStatement
   ) {}
 
   /**
@@ -68,13 +28,9 @@ export class Statement {
   public async runAsync(...params: unknown[]): Promise<RunResult> {
     const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
     if (shouldPassAsObject) {
-      return await ExpoSQLite.statementObjectRunAsync(
-        this.databaseId,
-        this.statementId,
-        bindParams
-      );
+      return await this.nativeStatement.objectRunAsync(this.nativeDatabase, bindParams);
     } else {
-      return await ExpoSQLite.statementArrayRunAsync(this.databaseId, this.statementId, bindParams);
+      return await this.nativeStatement.arrayRunAsync(this.nativeDatabase, bindParams);
     }
   }
 
@@ -96,12 +52,12 @@ export class Statement {
   public async *eachAsync<T>(...params: unknown[]): AsyncIterableIterator<T> {
     const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
     const func = shouldPassAsObject
-      ? ExpoSQLite.statementObjectGetAsync
-      : ExpoSQLite.statementArrayGetAsync;
+      ? this.nativeStatement.objectGetAsync.bind(this.nativeStatement)
+      : this.nativeStatement.arrayGetAsync.bind(this.nativeStatement);
 
     let result: T | null = null;
     do {
-      result = await func(this.databaseId, this.statementId, bindParams);
+      result = await func(this.nativeDatabase, bindParams);
       if (result != null) {
         yield result;
       }
@@ -118,13 +74,9 @@ export class Statement {
   public async getAsync<T>(...params: unknown[]): Promise<T | null> {
     const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
     if (shouldPassAsObject) {
-      return await ExpoSQLite.statementObjectGetAsync(
-        this.databaseId,
-        this.statementId,
-        bindParams
-      );
+      return await this.nativeStatement.objectGetAsync(this.nativeDatabase, bindParams);
     } else {
-      return await ExpoSQLite.statementArrayGetAsync(this.databaseId, this.statementId, bindParams);
+      return await this.nativeStatement.arrayGetAsync(this.nativeDatabase, bindParams);
     }
   }
 
@@ -138,17 +90,9 @@ export class Statement {
   public async allAsync<T>(...params: unknown[]): Promise<T[]> {
     const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
     if (shouldPassAsObject) {
-      return await ExpoSQLite.statementObjectGetAllAsync(
-        this.databaseId,
-        this.statementId,
-        bindParams
-      );
+      return await this.nativeStatement.objectGetAllAsync(this.nativeDatabase, bindParams);
     } else {
-      return await ExpoSQLite.statementArrayGetAllAsync(
-        this.databaseId,
-        this.statementId,
-        bindParams
-      );
+      return await this.nativeStatement.arrayGetAllAsync(this.nativeDatabase, bindParams);
     }
   }
 
@@ -156,7 +100,7 @@ export class Statement {
    * Reset the prepared statement cursor.
    */
   public async resetAsync(): Promise<void> {
-    await ExpoSQLite.statementResetAsync(this.databaseId, this.statementId);
+    await this.nativeStatement.resetAsync(this.nativeDatabase);
   }
 
   /**
@@ -164,7 +108,7 @@ export class Statement {
    * > **Note:** Remember to finalize the prepared statement whenever you call `prepareAsync()` to avoid resource leaks.
    */
   public async finalizeAsync(): Promise<void> {
-    await ExpoSQLite.statementFinalizeAsync(this.databaseId, this.statementId);
+    await this.nativeStatement.finalizeAsync(this.nativeDatabase);
   }
 }
 

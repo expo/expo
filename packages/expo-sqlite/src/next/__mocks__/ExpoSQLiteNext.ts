@@ -2,10 +2,8 @@ import assert from 'assert';
 import sqlite3 from 'sqlite3';
 import { promisify } from 'util';
 
-const databaseMap = new Map<number, Database>();
-const statementMap = new Map<number, Statement>();
-let nextDatabaseId = 1;
-let nextStatementId = 1;
+import { OpenOptions } from '../NativeDatabase';
+import { BindParams } from '../NativeStatement';
 
 type RunResult = Pick<sqlite3.RunResult, 'lastID' | 'changes'>;
 
@@ -14,185 +12,117 @@ export default {
     return 'ExpoSQLiteNext';
   },
 
-  openDatabaseAsync: jest
-    .fn()
-    .mockImplementation(async (dbName: string, options?: unknown): Promise<number> => {
-      const db = await openDatabaseAsync(dbName);
-      const id = nextDatabaseId++;
-      databaseMap.set(id, db);
-      return id;
-    }),
-
   deleteDatebaseAsync: jest.fn(),
 
-  isInTransaction: jest.fn().mockReturnValue(false),
-  isInTransactionAsync: jest.fn().mockResolvedValue(false),
-
-  closeDatabaseAsync: jest.fn().mockImplementation(async (databaseId: number): Promise<void> => {
-    const db = databaseMap.get(databaseId);
-    assert(db);
-    db.closeAsync();
-  }),
-
-  execAsync: jest
+  NativeDatabase: jest
     .fn()
-    .mockImplementation(async (databaseId: number, source: string): Promise<void> => {
-      const db = databaseMap.get(databaseId);
-      assert(db);
-      await db.execAsync(source);
-    }),
+    .mockImplementation((dbName: string, options?: OpenOptions) => new NativeDatabase(dbName)),
 
-  prepareAsync: jest
-    .fn()
-    .mockImplementation(async (databaseId: number, source: string): Promise<number> => {
-      const db = databaseMap.get(databaseId);
-      assert(db);
-      const id = nextStatementId++;
-      const statement = await db.prepareAsync(source);
-      statementMap.set(id, statement);
-      return id;
-    }),
-
-  statementArrayRunAsync: jest
-    .fn()
-    .mockImplementation(
-      async (databaseId: number, statementId: number, bindParams: any[]): Promise<RunResult> => {
-        const statement = statementMap.get(statementId);
-        assert(statement);
-        return statement.runAsync(bindParams);
-      }
-    ),
-
-  statementObjectRunAsync: jest
-    .fn()
-    .mockImplementation(
-      async (
-        databaseId: number,
-        statementId: number,
-        bindParams: Record<string, any>
-      ): Promise<RunResult> => {
-        const statement = statementMap.get(statementId);
-        assert(statement);
-        return statement.runAsync(bindParams);
-      }
-    ),
-
-  statementArrayGetAsync: jest
-    .fn()
-    .mockImplementation(
-      async (databaseId: number, statementId: number, bindParams: any[]): Promise<unknown> => {
-        const statement = statementMap.get(statementId);
-        assert(statement);
-        if (statement.isInIteration) {
-          return await statement.iterGetAsync();
-        } else {
-          return await statement.getAsync(bindParams);
-        }
-      }
-    ),
-
-  statementObjectGetAsync: jest
-    .fn()
-    .mockImplementation(
-      async (
-        databaseId: number,
-        statementId: number,
-        bindParams: Record<string, any>
-      ): Promise<unknown> => {
-        const statement = statementMap.get(statementId);
-        assert(statement);
-        if (statement.isInIteration) {
-          return await statement.iterGetAsync();
-        } else {
-          return await statement.getAsync(bindParams);
-        }
-      }
-    ),
-
-  statementArrayGetAllAsync: jest
-    .fn()
-    .mockImplementation(
-      async (databaseId: number, statementId: number, bindParams: any[]): Promise<unknown> => {
-        const statement = statementMap.get(statementId);
-        assert(statement);
-        return await statement.allAsync(bindParams);
-      }
-    ),
-
-  statementObjectGetAllAsync: jest
-    .fn()
-    .mockImplementation(
-      async (
-        databaseId: number,
-        statementId: number,
-        bindParams: Record<string, any>
-      ): Promise<unknown> => {
-        const statement = statementMap.get(statementId);
-        assert(statement);
-        return await statement.allAsync(bindParams);
-      }
-    ),
-
-  statementResetAsync: jest
-    .fn()
-    .mockImplementation(async (databaseId: number, statementId: number): Promise<void> => {
-      const statement = statementMap.get(statementId);
-      assert(statement);
-      return statement.resetAsync();
-    }),
-
-  statementFinalizeAsync: jest
-    .fn()
-    .mockImplementation(async (databaseId: number, statementId: number): Promise<void> => {
-      const statement = statementMap.get(statementId);
-      assert(statement);
-      return statement.finalizeAsync();
-    }),
+  NativeStatement: jest.fn().mockImplementation(() => new NativeStatement()),
 };
 
 //#region async sqlite3
 
 /**
- * A sqlite3.Database wrapper with async methods.
+ * A sqlite3.Database wrapper with async methods and conforming to the NativeDatabase interface.
  */
-class Database extends sqlite3.Database {
-  closeAsync = promisify(this.close.bind(this));
-  runAsync = promisify(this.run.bind(this));
-  execAsync = promisify(this.exec.bind(this));
-  getAsync = promisify(this.get.bind(this));
-  allAsync = promisify(this.all.bind(this));
+class NativeDatabase extends sqlite3.Database {
+  initAsync = jest.fn().mockResolvedValue(null);
+  isInTransaction = jest.fn().mockReturnValue(false);
+  isInTransactionAsync = jest.fn().mockResolvedValue(false);
 
-  prepareAsync = (sql: string): Promise<Statement> =>
-    Promise.resolve(new Statement(this.prepare(sql)));
+  closeAsync = jest
+    .fn()
+    .mockImplementation(promisify(this.close.bind(this)) as () => Promise<void>);
+
+  execAsync = jest
+    .fn()
+    .mockImplementation(promisify(this.exec.bind(this)) as (sql: string) => Promise<void>);
+
+  prepareAsync = jest
+    .fn()
+    .mockImplementation(async (nativeStatement: NativeStatement, source: string) => {
+      nativeStatement.sqlite3Stmt = this.prepare(source);
+    });
 }
 
 /**
- * A sqlite3.Statement wrapper with async methods.
+ * A sqlite3.Statement wrapper with async methods and conforming to the NativeStatement interface.
  */
-class Statement {
+class NativeStatement {
+  public sqlite3Stmt: sqlite3.Statement | null = null;
   public isInIteration = false;
-  constructor(private readonly statement: sqlite3.Statement) {}
 
-  runAsync = (...params: any[]): Promise<RunResult> => {
+  public arrayRunAsync = jest
+    .fn()
+    .mockImplementation((database: NativeDatabase, params: BindParams): Promise<RunResult> => {
+      return this._runAsync(params);
+    });
+  public objectRunAsync = jest
+    .fn()
+    .mockImplementation((database: NativeDatabase, params: BindParams): Promise<RunResult> => {
+      return this._runAsync(params);
+    });
+
+  public arrayGetAsync = jest
+    .fn()
+    .mockImplementation((database: NativeDatabase, params: BindParams): Promise<any> => {
+      if (this.isInIteration) {
+        return this._iterGetAsync();
+      } else {
+        return this._getAsync(params);
+      }
+    });
+  public objectGetAsync = jest
+    .fn()
+    .mockImplementation((database: NativeDatabase, params: BindParams): Promise<any> => {
+      if (this.isInIteration) {
+        return this._iterGetAsync();
+      } else {
+        return this._getAsync(params);
+      }
+    });
+
+  public arrayGetAllAsync = jest
+    .fn()
+    .mockImplementation((database: NativeDatabase, params: BindParams): Promise<any> => {
+      return this._allAsync(params);
+    });
+  public objectGetAllAsync = jest
+    .fn()
+    .mockImplementation((database: NativeDatabase, params: BindParams): Promise<any> => {
+      return this._allAsync(params);
+    });
+
+  public resetAsync = jest.fn().mockImplementation((database: NativeDatabase): Promise<void> => {
+    return this._resetAsync();
+  });
+  public finalizeAsync = jest.fn().mockImplementation((database: NativeDatabase): Promise<void> => {
+    return this._finalizeAsync();
+  });
+
+  private _runAsync = (...params: any[]): Promise<RunResult> => {
     return new Promise<RunResult>((resolve, reject) => {
-      this.statement.run(...params, (err) => {
+      assert(this.sqlite3Stmt);
+      this.sqlite3Stmt.run(...params, (err) => {
         if (err) {
           reject(err);
         } else {
           resolve({
             // @ts-expect-error
-            lastID: this.statement.lastID,
+            lastID: this.sqlite3Stmt.lastID,
             // @ts-expect-error
-            changes: this.statement.changes,
+            changes: this.sqlite3Stmt.changes,
           });
         }
       });
     });
   };
 
-  getAsync = <T>(...params: any[]) =>
+  private _getAsync = <T>(...params: any[]) =>
     new Promise<T | null>((resolve, reject) => {
-      this.statement.get(...params, (err, row) => {
+      assert(this.sqlite3Stmt);
+      this.sqlite3Stmt.get(...params, (err, row) => {
         if (err) {
           reject(err);
         } else {
@@ -202,9 +132,10 @@ class Statement {
       });
     });
 
-  iterGetAsync = <T>() =>
+  private _iterGetAsync = <T>() =>
     new Promise<T | null>((resolve, reject) => {
-      this.statement.get((err, row) => {
+      assert(this.sqlite3Stmt);
+      this.sqlite3Stmt.get((err, row) => {
         if (err) {
           reject(err);
         } else {
@@ -213,9 +144,10 @@ class Statement {
       });
     });
 
-  allAsync = <T>(...params: any[]) =>
+  private _allAsync = <T>(...params: any[]) =>
     new Promise<T[]>((resolve, reject) => {
-      this.statement.all(...params, (err, rows) => {
+      assert(this.sqlite3Stmt);
+      this.sqlite3Stmt.all(...params, (err, rows) => {
         if (err) {
           reject(err);
         } else {
@@ -225,9 +157,10 @@ class Statement {
       });
     });
 
-  resetAsync = () =>
+  private _resetAsync = () =>
     new Promise<void>((resolve, reject) => {
-      this.statement.reset((err) => {
+      assert(this.sqlite3Stmt);
+      this.sqlite3Stmt.reset((err) => {
         if (err) {
           reject(err);
         } else {
@@ -237,9 +170,10 @@ class Statement {
       });
     });
 
-  finalizeAsync = () =>
+  private _finalizeAsync = () =>
     new Promise<void>((resolve, reject) => {
-      this.statement.finalize((err) => {
+      assert(this.sqlite3Stmt);
+      this.sqlite3Stmt.finalize((err) => {
         if (err) {
           reject(err);
         } else {
@@ -248,21 +182,6 @@ class Statement {
         }
       });
     });
-}
-
-/**
- * async version of sqlite3.Database
- */
-function openDatabaseAsync(filename: string): Promise<Database> {
-  return new Promise<Database>((resolve, reject) => {
-    const db = new Database(filename, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(db);
-      }
-    });
-  });
 }
 
 //#endregion

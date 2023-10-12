@@ -1,56 +1,13 @@
-/**
- * Result of a `runAsync` call.
- */
-export interface RunResult {
-    /**
-     * The last inserted row ID.
-     */
-    lastID: number;
-    /**
-     * The number of rows affected.
-     */
-    changes: number;
-}
-/**
- * Bind parameters to the prepared statement.
- * You can either pass the parameters in the following forms:
- *
- * @example
- * - Variadic arguments for unnamed parameters.
- * ```ts
- * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ? AND intValue = ?');
- * await statement.getAsync('test1', 789);
- * ```
- *
- * @example
- * - A single array for unnamed parameters.
- * ```ts
- * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ? AND intValue = ?');
- * await statement.getAsync(['test1', 789]);
- * ```
- *
- * @example
- * - A single object for [named parameters](https://www.sqlite.org/lang_expr.html)
- *
- *   Through we support multiple named parameter forms like `:VVV`, `@VVV`, and `$VVV`. We recommend using `$VVV` because JavaScript allows using `$` in identifiers without escaping.
- * ```ts
- * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = $value AND intValue = $intValue');
- * await statement.getAsync({ $value: 'test1', $intValue: 789 });
- * ```
- */
-export type BindValue = string | number | null | boolean;
-export type BindParams = Record<string, BindValue> | BindValue[];
-export type VariadicBindParams = BindValue[];
+import { NativeDatabase } from './NativeDatabase';
+import { BindParams, BindValue, NativeStatement, RunResult, VariadicBindParams } from './NativeStatement';
+export { BindParams, BindValue, RunResult, VariadicBindParams };
 /**
  * A prepared statement returned by `Database.prepareAsync()` that can be binded with parameters and executed.
  */
 export declare class Statement {
-    readonly databaseId: number;
-    readonly statementId: number;
-    /**
-     * @internal
-     */
-    constructor(databaseId: number, statementId: number);
+    private readonly nativeDatabase;
+    private readonly nativeStatement;
+    constructor(nativeDatabase: NativeDatabase, nativeStatement: NativeStatement);
     /**
      * Run the prepared statement and return the result.
      *

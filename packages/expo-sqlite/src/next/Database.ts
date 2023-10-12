@@ -1,82 +1,38 @@
 import { EventEmitter, Subscription } from 'expo-modules-core';
 
 import ExpoSQLite from './ExpoSQLiteNext';
+import { NativeDatabase, OpenOptions } from './NativeDatabase';
 import { BindParams, RunResult, Statement, VariadicBindParams } from './Statement';
 
+export { OpenOptions };
+
 const emitter = new EventEmitter(ExpoSQLite);
-
-/**
- * Options for opening a database.
- */
-export interface OpenOptions {
-  /**
-   * Whether to enable the CR-SQLite extension.
-   * @default false
-   */
-  enableCRSQLite?: boolean;
-
-  /**
-   * Whether to call the `sqlite3_update_hook` function and enable the `onDatabaseChange` events.
-   * @default false
-   */
-  enableChangeListener?: boolean;
-}
 
 /**
  * A SQLite database.
  */
 export class Database {
-  private databaseId: number = -1;
-
-  private constructor(
-    public readonly dbName: string,
-    private readonly options?: OpenOptions
-  ) {}
-  private async openAsync(): Promise<number> {
-    return await ExpoSQLite.openDatabaseAsync(this.dbName, this.options ?? {});
-  }
-
-  /**
-   * Open a database.
-   *
-   * @param dbName The name of the database file to open.
-   * @param options Open options.
-   * @returns Database object.
-   */
-  public static async openDatabaseAsync(dbName: string, options?: OpenOptions): Promise<Database> {
-    const db = new Database(dbName, options);
-    db.databaseId = await db.openAsync();
-    return db;
-  }
-
-  /**
-   * Delete a database file.
-   *
-   * @param dbName The name of the database file to delete.
-   */
-  public static async deleteDatabaseAsync(dbName: string): Promise<void> {
-    return await ExpoSQLite.deleteDatabaseAsync(dbName);
-  }
+  constructor(private readonly nativeDatabase: NativeDatabase) {}
 
   /**
    * Synchronous call to return whether the database is currently in a transaction.
    */
   public isInTransaction(): boolean {
-    return ExpoSQLite.isInTransaction(this.databaseId);
+    return this.nativeDatabase.isInTransaction();
   }
 
   /**
    * Asynchronous call to return whether the database is currently in a transaction.
    */
-  public async isInTransactionAsync(): Promise<boolean> {
-    return await ExpoSQLite.isInTransactionAsync(this.databaseId);
+  public isInTransactionAsync(): Promise<boolean> {
+    return this.nativeDatabase.isInTransactionAsync();
   }
 
   /**
    * Close the database.
    */
-  public async closeAsync(): Promise<void> {
-    await ExpoSQLite.closeDatabaseAsync(this.databaseId);
+  public closeAsync(): Promise<void> {
+    return this.nativeDatabase.closeAsync();
   }
 
   /**
@@ -85,8 +41,8 @@ export class Database {
    *
    * @param source A string containing all the SQL queries.
    */
-  public async execAsync(source: string): Promise<void> {
-    await ExpoSQLite.execAsync(this.databaseId, source);
+  public execAsync(source: string): Promise<void> {
+    return this.nativeDatabase.execAsync(source);
   }
 
   /**
@@ -96,8 +52,9 @@ export class Database {
    * @returns A `Statement` object.
    */
   public async prepareAsync(source: string): Promise<Statement> {
-    const statementId = await ExpoSQLite.prepareAsync(this.databaseId, source);
-    return new Statement(this.databaseId, statementId);
+    const nativeStatement = new ExpoSQLite.NativeStatement();
+    await this.nativeDatabase.prepareAsync(nativeStatement, source);
+    return new Statement(this.nativeDatabase, nativeStatement);
   }
 
   /**
@@ -107,26 +64,13 @@ export class Database {
    */
   public async transactionAsync(txn: () => Promise<void>): Promise<void> {
     try {
-      await this.execAsync('BEGIN');
+      await this.nativeDatabase.execAsync('BEGIN');
       await txn();
-      await this.execAsync('COMMIT');
+      await this.nativeDatabase.execAsync('COMMIT');
     } catch (e) {
-      await this.execAsync('ROLLBACK');
+      await this.nativeDatabase.execAsync('ROLLBACK');
       throw e;
     }
-  }
-
-  /**
-   * Add a listener for database changes.
-   * > Note: to enable this feature, you must set `enableChangeListener` to `true` when opening the database.
-   *
-   * @param listener A function that receives the `dbName`, `tableName` and `rowId` of the modified data.
-   * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
-   */
-  addDatabaseChangeListener(
-    listener: (event: { dbName: string; tableName: string; rowId: number }) => void
-  ): Subscription {
-    return emitter.addListener('onDatabaseChange', listener);
   }
 
   //#region Statement API shorthands
@@ -197,6 +141,37 @@ export class Database {
   //#endregion
 }
 
-export const openDatabaseAsync = Database.openDatabaseAsync;
+/**
+ * Open a database.
+ *
+ * @param dbName The name of the database file to open.
+ * @param options Open options.
+ * @returns Database object.
+ */
+export async function openDatabaseAsync(dbName: string, options?: OpenOptions): Promise<Database> {
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, options ?? {});
+  await nativeDatabase.initAsync();
+  return new Database(nativeDatabase);
+}
 
-export const deleteDatabaseAsync = Database.deleteDatabaseAsync;
+/**
+ * Delete a database file.
+ *
+ * @param dbName The name of the database file to delete.
+ */
+export async function deleteDatabaseAsync(dbName: string): Promise<void> {
+  return await ExpoSQLite.deleteDatabaseAsync(dbName);
+}
+
+/**
+ * Add a listener for database changes.
+ * > Note: to enable this feature, you must set `enableChangeListener` to `true` when opening the database.
+ *
+ * @param listener A function that receives the `dbName`, `tableName` and `rowId` of the modified data.
+ * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
+ */
+export function addDatabaseChangeListener(
+  listener: (event: { dbName: string; tableName: string; rowId: number }) => void
+): Subscription {
+  return emitter.addListener('onDatabaseChange', listener);
+}

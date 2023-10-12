@@ -1,34 +1,30 @@
-import ExpoSQLite from './ExpoSQLiteNext';
 /**
  * A prepared statement returned by `Database.prepareAsync()` that can be binded with parameters and executed.
  */
 export class Statement {
-    databaseId;
-    statementId;
-    /**
-     * @internal
-     */
-    constructor(databaseId, statementId) {
-        this.databaseId = databaseId;
-        this.statementId = statementId;
+    nativeDatabase;
+    nativeStatement;
+    constructor(nativeDatabase, nativeStatement) {
+        this.nativeDatabase = nativeDatabase;
+        this.nativeStatement = nativeStatement;
     }
     async runAsync(...params) {
         const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
         if (shouldPassAsObject) {
-            return await ExpoSQLite.statementObjectRunAsync(this.databaseId, this.statementId, bindParams);
+            return await this.nativeStatement.objectRunAsync(this.nativeDatabase, bindParams);
         }
         else {
-            return await ExpoSQLite.statementArrayRunAsync(this.databaseId, this.statementId, bindParams);
+            return await this.nativeStatement.arrayRunAsync(this.nativeDatabase, bindParams);
         }
     }
     async *eachAsync(...params) {
         const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
         const func = shouldPassAsObject
-            ? ExpoSQLite.statementObjectGetAsync
-            : ExpoSQLite.statementArrayGetAsync;
+            ? this.nativeStatement.objectGetAsync.bind(this.nativeStatement)
+            : this.nativeStatement.arrayGetAsync.bind(this.nativeStatement);
         let result = null;
         do {
-            result = await func(this.databaseId, this.statementId, bindParams);
+            result = await func(this.nativeDatabase, bindParams);
             if (result != null) {
                 yield result;
             }
@@ -37,33 +33,33 @@ export class Statement {
     async getAsync(...params) {
         const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
         if (shouldPassAsObject) {
-            return await ExpoSQLite.statementObjectGetAsync(this.databaseId, this.statementId, bindParams);
+            return await this.nativeStatement.objectGetAsync(this.nativeDatabase, bindParams);
         }
         else {
-            return await ExpoSQLite.statementArrayGetAsync(this.databaseId, this.statementId, bindParams);
+            return await this.nativeStatement.arrayGetAsync(this.nativeDatabase, bindParams);
         }
     }
     async allAsync(...params) {
         const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
         if (shouldPassAsObject) {
-            return await ExpoSQLite.statementObjectGetAllAsync(this.databaseId, this.statementId, bindParams);
+            return await this.nativeStatement.objectGetAllAsync(this.nativeDatabase, bindParams);
         }
         else {
-            return await ExpoSQLite.statementArrayGetAllAsync(this.databaseId, this.statementId, bindParams);
+            return await this.nativeStatement.arrayGetAllAsync(this.nativeDatabase, bindParams);
         }
     }
     /**
      * Reset the prepared statement cursor.
      */
     async resetAsync() {
-        await ExpoSQLite.statementResetAsync(this.databaseId, this.statementId);
+        await this.nativeStatement.resetAsync(this.nativeDatabase);
     }
     /**
      * Finalize the prepared statement.
      * > **Note:** Remember to finalize the prepared statement whenever you call `prepareAsync()` to avoid resource leaks.
      */
     async finalizeAsync() {
-        await ExpoSQLite.statementFinalizeAsync(this.databaseId, this.statementId);
+        await this.nativeStatement.finalizeAsync(this.nativeDatabase);
     }
 }
 /**

@@ -11,11 +11,11 @@ public final class SQLiteModuleNext: Module {
   // will release the pair when `closeDatabase` is called.
   private var contextPairs = [Unmanaged<AnyObject>]()
 
-  private var databaseMap = [DatabaseId: Database]()
-  private var statementMap = [StatementId: Statement]()
+  private var cachedDatabases = [NativeDatabase]()
+  private var cachedStatements = [NativeStatement]()
   private var hasListeners = false
 
-  // swiftlint:disable:next cyclomatic_complexity function_body_length
+  // swiftlint:disable:next cyclomatic_complexity
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLiteNext")
 
@@ -30,48 +30,18 @@ public final class SQLiteModuleNext: Module {
     }
 
     OnDestroy {
-      statementMap.values.forEach {
-        sqlite3_finalize($0.instance)
+      cachedStatements.forEach {
+        sqlite3_finalize($0.pointer)
       }
-      statementMap.removeAll()
-      databaseMap.values.forEach {
+      cachedStatements.removeAll()
+      cachedDatabases.forEach {
         closeDatabase($0)
       }
-      databaseMap.removeAll()
-    }
-
-    AsyncFunction("openDatabaseAsync") { (dbName: String, options: OpenDatabaseOptions) -> DatabaseId in
-      guard let path = pathForDatabaseName(name: dbName) else {
-        throw DatabaseException()
-      }
-
-      // Try to find opened database for fast refresh
-      for (id, database) in databaseMap where database.dbName == dbName {
-        return id
-      }
-
-      var db: OpaquePointer?
-      if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
-        throw DatabaseException()
-      }
-
-      let id = Database.pullNextId()
-      let database = Database(id: id, dbName: dbName, openOptions: options, instance: db)
-
-      if options.enableCRSQLite {
-        crsqlite_init_from_swift(db)
-      }
-
-      if options.enableChangeListener {
-        addUpdateHook(database)
-      }
-
-      databaseMap[id] = database
-      return id
+      cachedDatabases.removeAll()
     }
 
     AsyncFunction("deleteDatabaseAsync") { (dbName: String) in
-      for (id, database) in databaseMap where database.dbName == dbName {
+      for database in cachedDatabases where database.dbName == dbName {
         throw DeleteDatabaseException(dbName)
       }
 
@@ -90,214 +60,191 @@ public final class SQLiteModuleNext: Module {
       }
     }
 
-    Function("isInTransaction") { (dbId: DatabaseId) -> Bool in
-      guard let db = databaseMap[dbId] else {
-        throw DatabaseIdNotFoundException(dbId)
-      }
-      return sqlite3_get_autocommit(db.instance) == 0
-    }
+    // swiftlint:disable:next closure_body_length
+    Class(NativeDatabase.self) {
+      Constructor { (dbName: String, options: OpenDatabaseOptions) -> NativeDatabase in
+        guard let path = pathForDatabaseName(name: dbName) else {
+          throw DatabaseException()
+        }
 
-    AsyncFunction("isInTransactionAsync") { (dbId: DatabaseId) -> Bool in
-      guard let db = databaseMap[dbId] else {
-        throw DatabaseIdNotFoundException(dbId)
-      }
-      return sqlite3_get_autocommit(db.instance) == 0
-    }
+        // Try to find opened database for fast refresh
+        for database in cachedDatabases where database.dbName == dbName {
+          return database
+        }
 
-    AsyncFunction("closeDatabaseAsync") { (dbId: DatabaseId) in
-      guard let db = databaseMap[dbId] else {
-        throw DatabaseIdNotFoundException(dbId)
-      }
-      closeDatabase(db)
-      databaseMap.removeValue(forKey: dbId)
-    }
+        var db: OpaquePointer?
+        if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
+          throw DatabaseException()
+        }
 
-    AsyncFunction("execAsync") { (dbId: DatabaseId, source: String) in
-      guard let db = databaseMap[dbId] else {
-        throw DatabaseIdNotFoundException(dbId)
+        let database = NativeDatabase(db, dbName: dbName, openOptions: options)
+        cachedDatabases.append(database)
+        return database
       }
-      var error: UnsafeMutablePointer<CChar>?
-      let ret = sqlite3_exec(db.instance, source, nil, nil, &error)
-      if ret != SQLITE_OK, let error = error {
-        let errorString = String(cString: error)
-        sqlite3_free(error)
-        throw SQLiteErrorException(errorString)
-      }
-    }
 
-    AsyncFunction("prepareAsync") { (dbId: DatabaseId, source: String) -> StatementId in
-      guard let db = databaseMap[dbId] else {
-        throw DatabaseIdNotFoundException(dbId)
-      }
-      var statement: OpaquePointer?
-      if sqlite3_prepare_v2(db.instance, source, Int32(source.count), &statement, nil) != SQLITE_OK {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(db))
-      }
-      let id = Statement.pullNextId()
-      statementMap[id] = Statement(id: id, instance: statement)
-      return id
-    }
-
-    AsyncFunction("statementArrayRunAsync") { (dbId: DatabaseId, statementId: StatementId, bindParams: [Any]) -> [String: Int] in
-      guard let db = databaseMap[dbId] else {
-        throw DatabaseIdNotFoundException(dbId)
-      }
-      guard let statement = statementMap[statementId] else {
-        throw StatementIdNotFoundException(statementId)
-      }
-      for (index, param) in bindParams.enumerated() {
-        try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
-      }
-      let ret = sqlite3_step(statement.instance)
-      if ret != SQLITE_ROW && ret != SQLITE_DONE {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(db))
-      }
-      return [
-        "lastID": Int(sqlite3_last_insert_rowid(db.instance)),
-        "changes": Int(sqlite3_changes(db.instance))
-      ]
-    }
-
-    AsyncFunction("statementObjectRunAsync") { (dbId: DatabaseId, statementId: StatementId, bindParams: [String: Any]) -> [String: Int] in
-      guard let db = databaseMap[dbId] else {
-        throw DatabaseIdNotFoundException(dbId)
-      }
-      guard let statement = statementMap[statementId] else {
-        throw StatementIdNotFoundException(statementId)
-      }
-      for (name, param) in bindParams {
-        let index = sqlite3_bind_parameter_index(statement.instance, name.cString(using: .utf8))
-        if index > 0 {
-          try bindStatementParam(statement: statement, with: param, at: index)
+      AsyncFunction("initAsync") { (database: NativeDatabase) in
+        if database.openOptions.enableCRSQLite {
+          crsqlite_init_from_swift(database.pointer)
+        }
+        if database.openOptions.enableChangeListener {
+          addUpdateHook(database)
         }
       }
-      let ret = sqlite3_step(statement.instance)
-      if ret != SQLITE_ROW && ret != SQLITE_DONE {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(db))
-      }
-      return [
-        "lastID": Int(sqlite3_last_insert_rowid(db.instance)),
-        "changes": Int(sqlite3_changes(db.instance))
-      ]
-    }
 
-    AsyncFunction("statementArrayGetAsync") { (dbId: DatabaseId, statementId: StatementId, bindParams: [Any]) -> Row? in
-      guard let db = databaseMap[dbId] else {
-        throw DatabaseIdNotFoundException(dbId)
+      Function("isInTransaction") { (database: NativeDatabase) -> Bool in
+        return sqlite3_get_autocommit(database.pointer) == 0
       }
-      guard let statement = statementMap[statementId] else {
-        throw StatementIdNotFoundException(statementId)
-      }
-      for (index, param) in bindParams.enumerated() {
-        try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
-      }
-      let ret = sqlite3_step(statement.instance)
-      if ret == SQLITE_ROW {
-        return try getRow(statement: statement)
-      }
-      if ret != SQLITE_DONE {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(db))
-      }
-      return nil
-    }
 
-    AsyncFunction("statementObjectGetAsync") { (dbId: DatabaseId, statementId: StatementId, bindParams: [String: Any]) -> Row? in
-      guard let db = databaseMap[dbId] else {
-        throw DatabaseIdNotFoundException(dbId)
+      AsyncFunction("isInTransactionAsync") { (database: NativeDatabase) -> Bool in
+        return sqlite3_get_autocommit(database.pointer) == 0
       }
-      guard let statement = statementMap[statementId] else {
-        throw StatementIdNotFoundException(statementId)
-      }
-      for (name, param) in bindParams {
-        let index = sqlite3_bind_parameter_index(statement.instance, name.cString(using: .utf8))
-        if index > 0 {
-          try bindStatementParam(statement: statement, with: param, at: index)
+
+      AsyncFunction("closeAsync") { (database: NativeDatabase) in
+        closeDatabase(database)
+        if let index = cachedDatabases.firstIndex(of: database) {
+          cachedDatabases.remove(at: index)
         }
       }
-      let ret = sqlite3_step(statement.instance)
-      if ret == SQLITE_ROW {
-        return try getRow(statement: statement)
+
+      AsyncFunction("execAsync") { (database: NativeDatabase, source: String) in
+        var error: UnsafeMutablePointer<CChar>?
+        let ret = sqlite3_exec(database.pointer, source, nil, nil, &error)
+        if ret != SQLITE_OK, let error = error {
+          let errorString = String(cString: error)
+          sqlite3_free(error)
+          throw SQLiteErrorException(errorString)
+        }
       }
-      if ret != SQLITE_DONE {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(db))
+
+      AsyncFunction("prepareAsync") { (database: NativeDatabase, statement: NativeStatement, source: String) in
+        if sqlite3_prepare_v2(database.pointer, source, Int32(source.count), &statement.pointer, nil) != SQLITE_OK {
+          throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+        }
+        cachedStatements.append(statement)
       }
-      return nil
     }
 
-    AsyncFunction("statementArrayGetAllAsync") { (dbId: DatabaseId, statementId: StatementId, bindParams: [Any]) -> [Row] in
-      guard let db = databaseMap[dbId] else {
-        throw DatabaseIdNotFoundException(dbId)
+    // swiftlint:disable:next closure_body_length
+    Class(NativeStatement.self) {
+      Constructor {
+        return NativeStatement()
       }
-      guard let statement = statementMap[statementId] else {
-        throw StatementIdNotFoundException(statementId)
+
+      AsyncFunction("arrayRunAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> [String: Int] in
+        for (index, param) in bindParams.enumerated() {
+          try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
+        }
+        let ret = sqlite3_step(statement.pointer)
+        if ret != SQLITE_ROW && ret != SQLITE_DONE {
+          throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+        }
+        return [
+          "lastID": Int(sqlite3_last_insert_rowid(database.pointer)),
+          "changes": Int(sqlite3_changes(database.pointer))
+        ]
       }
-      for (index, param) in bindParams.enumerated() {
-        try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
+
+      AsyncFunction("objectRunAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> [String: Int] in
+        for (name, param) in bindParams {
+          let index = sqlite3_bind_parameter_index(statement.pointer, name.cString(using: .utf8))
+          if index > 0 {
+            try bindStatementParam(statement: statement, with: param, at: index)
+          }
+        }
+        let ret = sqlite3_step(statement.pointer)
+        if ret != SQLITE_ROW && ret != SQLITE_DONE {
+          throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+        }
+        return [
+          "lastID": Int(sqlite3_last_insert_rowid(database.pointer)),
+          "changes": Int(sqlite3_changes(database.pointer))
+        ]
       }
-      var rows: [Row] = []
-      while true {
-        let ret = sqlite3_step(statement.instance)
+
+      AsyncFunction("arrayGetAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> Row? in
+        for (index, param) in bindParams.enumerated() {
+          try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
+        }
+        let ret = sqlite3_step(statement.pointer)
         if ret == SQLITE_ROW {
-          rows.append(try getRow(statement: statement))
-          continue
-        } else if ret == SQLITE_DONE {
-          break
+          return try getRow(statement: statement)
         }
-        throw SQLiteErrorException(convertSqlLiteErrorToString(db))
+        if ret != SQLITE_DONE {
+          throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+        }
+        return nil
       }
-      return rows
-    }
 
-    AsyncFunction("statementObjectGetAllAsync") { (dbId: DatabaseId, statementId: StatementId, bindParams: [String: Any]) -> [Row] in
-      guard let db = databaseMap[dbId] else {
-        throw DatabaseIdNotFoundException(dbId)
-      }
-      guard let statement = statementMap[statementId] else {
-        throw StatementIdNotFoundException(statementId)
-      }
-      for (name, param) in bindParams {
-        let index = sqlite3_bind_parameter_index(statement.instance, name.cString(using: .utf8))
-        if index > 0 {
-          try bindStatementParam(statement: statement, with: param, at: index)
+      AsyncFunction("objectGetAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> Row? in
+        for (name, param) in bindParams {
+          let index = sqlite3_bind_parameter_index(statement.pointer, name.cString(using: .utf8))
+          if index > 0 {
+            try bindStatementParam(statement: statement, with: param, at: index)
+          }
         }
-      }
-      var rows: [Row] = []
-      while true {
-        let ret = sqlite3_step(statement.instance)
+        let ret = sqlite3_step(statement.pointer)
         if ret == SQLITE_ROW {
-          rows.append(try getRow(statement: statement))
-          continue
-        } else if ret == SQLITE_DONE {
-          break
+          return try getRow(statement: statement)
         }
-        throw SQLiteErrorException(convertSqlLiteErrorToString(db))
+        if ret != SQLITE_DONE {
+          throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+        }
+        return nil
       }
-      return rows
-    }
 
-    AsyncFunction("statementResetAsync") { (dbId: DatabaseId, statementId: StatementId) in
-      guard let db = databaseMap[dbId] else {
-        throw DatabaseIdNotFoundException(dbId)
+      AsyncFunction("arrayGetAllAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> [Row] in
+        for (index, param) in bindParams.enumerated() {
+          try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
+        }
+        var rows: [Row] = []
+        while true {
+          let ret = sqlite3_step(statement.pointer)
+          if ret == SQLITE_ROW {
+            rows.append(try getRow(statement: statement))
+            continue
+          } else if ret == SQLITE_DONE {
+            break
+          }
+          throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+        }
+        return rows
       }
-      guard let statement = statementMap[statementId] else {
-        throw StatementIdNotFoundException(statementId)
-      }
-      if sqlite3_reset(statement.instance) != SQLITE_OK {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(db))
-      }
-    }
 
-    AsyncFunction("statementFinalizeAsync") { (dbId: DatabaseId, statementId: StatementId) in
-      guard let db = databaseMap[dbId] else {
-        throw DatabaseIdNotFoundException(dbId)
+      AsyncFunction("objectGetAllAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> [Row] in
+        for (name, param) in bindParams {
+          let index = sqlite3_bind_parameter_index(statement.pointer, name.cString(using: .utf8))
+          if index > 0 {
+            try bindStatementParam(statement: statement, with: param, at: index)
+          }
+        }
+        var rows: [Row] = []
+        while true {
+          let ret = sqlite3_step(statement.pointer)
+          if ret == SQLITE_ROW {
+            rows.append(try getRow(statement: statement))
+            continue
+          } else if ret == SQLITE_DONE {
+            break
+          }
+          throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+        }
+        return rows
       }
-      guard let statement = statementMap[statementId] else {
-        throw StatementIdNotFoundException(statementId)
+
+      AsyncFunction("resetAsync") { (statement: NativeStatement, database: NativeDatabase) in
+        if sqlite3_reset(statement.pointer) != SQLITE_OK {
+          throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+        }
       }
-      if sqlite3_finalize(statement.instance) != SQLITE_OK {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(db))
+
+      AsyncFunction("finalizeAsync") { (statement: NativeStatement, database: NativeDatabase) in
+        if sqlite3_finalize(statement.pointer) != SQLITE_OK {
+          throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+        }
+        if let index = cachedStatements.firstIndex(of: statement) {
+          cachedStatements.remove(at: index)
+        }
       }
-      statementMap.removeValue(forKey: statementId)
     }
   }
 
@@ -312,14 +259,14 @@ public final class SQLiteModuleNext: Module {
     return directory?.appendingPathComponent(name)
   }
 
-  private func addUpdateHook(_ database: Database) {
+  private func addUpdateHook(_ database: NativeDatabase) {
     let contextPair = Unmanaged.passRetained(((self, database) as AnyObject))
     contextPairs.append(contextPair)
     // swiftlint:disable:next multiline_arguments
-    sqlite3_update_hook(database.instance, { obj, action, _, tableName, rowId in
+    sqlite3_update_hook(database.pointer, { obj, action, _, tableName, rowId in
       guard let obj,
         let tableName,
-        let pair = Unmanaged<AnyObject>.fromOpaque(obj).takeUnretainedValue() as? (SQLiteModuleNext, Database) else {
+        let pair = Unmanaged<AnyObject>.fromOpaque(obj).takeUnretainedValue() as? (SQLiteModuleNext, NativeDatabase) else {
         return
       }
       let selfInstance = pair.0
@@ -336,23 +283,23 @@ public final class SQLiteModuleNext: Module {
     contextPair.toOpaque())
   }
 
-  private func convertSqlLiteErrorToString(_ db: Database) -> String {
-    let code = sqlite3_errcode(db.instance)
-    let message = String(cString: sqlite3_errmsg(db.instance), encoding: .utf8) ?? ""
+  private func convertSqlLiteErrorToString(_ db: NativeDatabase) -> String {
+    let code = sqlite3_errcode(db.pointer)
+    let message = String(cString: sqlite3_errmsg(db.pointer), encoding: .utf8) ?? ""
     return "Error code \(code): \(message)"
   }
 
-  private func closeDatabase(_ db: Database) {
+  private func closeDatabase(_ db: NativeDatabase) {
     if db.openOptions.enableCRSQLite {
-      sqlite3_exec(db.instance, "SELECT crsql_finalize()", nil, nil, nil)
+      sqlite3_exec(db.pointer, "SELECT crsql_finalize()", nil, nil, nil)
     }
-    sqlite3_close(db.instance)
+    sqlite3_close(db.pointer)
 
     if let index = contextPairs.firstIndex(where: {
-      guard let pair = $0.takeUnretainedValue() as? (SQLiteModuleNext, Database) else {
+      guard let pair = $0.takeUnretainedValue() as? (SQLiteModuleNext, NativeDatabase) else {
         return false
       }
-      if pair.1.id != db.id {
+      if pair.1.sharedObjectId != db.sharedObjectId {
         return false
       }
       $0.release()
@@ -362,18 +309,18 @@ public final class SQLiteModuleNext: Module {
     }
   }
 
-  private func getRow(statement: Statement) throws -> Row {
+  private func getRow(statement: NativeStatement) throws -> Row {
     var row = Row()
-    let columnCount = sqlite3_column_count(statement.instance)
+    let columnCount = sqlite3_column_count(statement.pointer)
     for i in 0..<Int(columnCount) {
-      let columnName = String(cString: sqlite3_column_name(statement.instance, Int32(i)))
+      let columnName = String(cString: sqlite3_column_name(statement.pointer, Int32(i)))
       row[columnName] = try getColumnValue(statement: statement, at: Int32(i))
     }
     return row
   }
 
-  private func getColumnValue(statement: Statement, at index: Int32) throws -> Any {
-    let instance = statement.instance
+  private func getColumnValue(statement: NativeStatement, at index: Int32) throws -> Any {
+    let instance = statement.pointer
     let type = sqlite3_column_type(instance, index)
 
     switch type {
@@ -399,8 +346,8 @@ public final class SQLiteModuleNext: Module {
     }
   }
 
-  private func bindStatementParam(statement: Statement, with param: Any, at index: Int32) throws {
-    let instance = statement.instance
+  private func bindStatementParam(statement: NativeStatement, with param: Any, at index: Int32) throws {
+    let instance = statement.pointer
     switch param {
     case Optional<Any>.none:
       sqlite3_bind_null(instance, index)

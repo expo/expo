@@ -1,43 +1,13 @@
 import { Subscription } from 'expo-modules-core';
+import { NativeDatabase, OpenOptions } from './NativeDatabase';
 import { BindParams, RunResult, Statement, VariadicBindParams } from './Statement';
-/**
- * Options for opening a database.
- */
-export interface OpenOptions {
-    /**
-     * Whether to enable the CR-SQLite extension.
-     * @default false
-     */
-    enableCRSQLite?: boolean;
-    /**
-     * Whether to call the `sqlite3_update_hook` function and enable the `onDatabaseChange` events.
-     * @default false
-     */
-    enableChangeListener?: boolean;
-}
+export { OpenOptions };
 /**
  * A SQLite database.
  */
 export declare class Database {
-    readonly dbName: string;
-    private readonly options?;
-    private databaseId;
-    private constructor();
-    private openAsync;
-    /**
-     * Open a database.
-     *
-     * @param dbName The name of the database file to open.
-     * @param options Open options.
-     * @returns Database object.
-     */
-    static openDatabaseAsync(dbName: string, options?: OpenOptions): Promise<Database>;
-    /**
-     * Delete a database file.
-     *
-     * @param dbName The name of the database file to delete.
-     */
-    static deleteDatabaseAsync(dbName: string): Promise<void>;
+    private readonly nativeDatabase;
+    constructor(nativeDatabase: NativeDatabase);
     /**
      * Synchronous call to return whether the database is currently in a transaction.
      */
@@ -70,18 +40,6 @@ export declare class Database {
      * @param txn An async function to execute within a transaction.
      */
     transactionAsync(txn: () => Promise<void>): Promise<void>;
-    /**
-     * Add a listener for database changes.
-     * > Note: to enable this feature, you must set `enableChangeListener` to `true` when opening the database.
-     *
-     * @param listener A function that receives the `dbName`, `tableName` and `rowId` of the modified data.
-     * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
-     */
-    addDatabaseChangeListener(listener: (event: {
-        dbName: string;
-        tableName: string;
-        rowId: number;
-    }) => void): Subscription;
     /**
      * Shorthand for `prepareAsync` and `Statement.runAsync`.
      * Unlike `Statement.runAsync`, this method finalizes the statement after execution.
@@ -119,6 +77,30 @@ export declare class Database {
     allAsync<T>(source: string, ...params: VariadicBindParams): Promise<T[]>;
     allAsync<T>(source: string, params: BindParams): Promise<T[]>;
 }
-export declare const openDatabaseAsync: typeof Database.openDatabaseAsync;
-export declare const deleteDatabaseAsync: typeof Database.deleteDatabaseAsync;
+/**
+ * Open a database.
+ *
+ * @param dbName The name of the database file to open.
+ * @param options Open options.
+ * @returns Database object.
+ */
+export declare function openDatabaseAsync(dbName: string, options?: OpenOptions): Promise<Database>;
+/**
+ * Delete a database file.
+ *
+ * @param dbName The name of the database file to delete.
+ */
+export declare function deleteDatabaseAsync(dbName: string): Promise<void>;
+/**
+ * Add a listener for database changes.
+ * > Note: to enable this feature, you must set `enableChangeListener` to `true` when opening the database.
+ *
+ * @param listener A function that receives the `dbName`, `tableName` and `rowId` of the modified data.
+ * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
+ */
+export declare function addDatabaseChangeListener(listener: (event: {
+    dbName: string;
+    tableName: string;
+    rowId: number;
+}) => void): Subscription;
 //# sourceMappingURL=Database.d.ts.map
