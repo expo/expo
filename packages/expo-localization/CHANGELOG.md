@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] fix tvOS compilation. ([#24845](https://github.com/expo/expo/pull/24845) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 14.5.0 — 2023-09-04
