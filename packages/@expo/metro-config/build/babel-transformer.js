@@ -246,7 +246,9 @@ const transform = ({
         isServer: ((_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment) === 'node',
         // Pass the engine to babel so we can automatically transpile for the correct
         // target environment.
-        engine: (_options$customTransf2 = options.customTransformOptions) === null || _options$customTransf2 === void 0 ? void 0 : _options$customTransf2.engine
+        engine: (_options$customTransf2 = options.customTransformOptions) === null || _options$customTransf2 === void 0 ? void 0 : _options$customTransf2.engine,
+        // Provide the project root for accurately reading the Expo config.
+        projectRoot: options.projectRoot
       },
       ast: true,
       // NOTE(EvanBacon): We split the parse/transform steps up to accommodate

@@ -78,7 +78,7 @@ var m = {}?.x;
 // @babel/plugin-proposal-nullish-coalescing-operator
 var obj2 = {};
 var foo = obj2.foo ?? "default";`;
-  const withHermes = babel.transform(sourceCode, options);
+  const withHermes = babel.transform(sourceCode, options)!;
 
   expect(withHermes.code).toEqual(sourceCode);
 });
@@ -92,18 +92,18 @@ it(`compiles sample file with Metro targeting Hermes`, () => {
   };
   const fileName = path.resolve(__dirname, 'samples/App.js');
 
-  const withHermes = babel.transformFileSync(fileName, options);
+  const withHermes = babel.transformFileSync(fileName, options)!;
   const withoutHermes = babel.transformFileSync(fileName, {
     babelrc: false,
     presets: [preset],
     sourceMaps: true,
     caller: getCaller({ name: 'metro' }),
-  });
+  })!;
 
   expect(withHermes.code).not.toEqual(withoutHermes.code);
 
   // 😎
-  expect(withHermes.code.length).toBeLessThan(withoutHermes.code.length);
+  expect(withHermes.code!.length).toBeLessThan(withoutHermes.code!.length);
 });
 
 it(`supports overwriting the default engine option`, () => {
@@ -124,14 +124,14 @@ it(`supports overwriting the default engine option`, () => {
     ],
     sourceMaps: true,
     caller: getCaller({ name: 'metro', platform: 'ios', engine: 'hermes' }),
-  });
+  })!;
 
   const secondPass = babel.transformFileSync(fileName, {
     babelrc: false,
     presets: [[preset, {}]],
     sourceMaps: true,
     caller: getCaller({ name: 'metro', platform: 'ios', engine: 'hermes' }),
-  });
+  })!;
 
   expect(firstPass.code).not.toEqual(secondPass.code);
 });
@@ -153,7 +153,10 @@ describe.each([
     const filenames = fs.readdirSync(samplesPath);
 
     for (const filename of filenames) {
-      const { code, map, ast } = babel.transformFileSync(path.join(samplesPath, filename), options);
+      const { code, map, ast } = babel.transformFileSync(
+        path.join(samplesPath, filename),
+        options
+      )!;
 
       expect(code).toBeDefined();
       expect(map).toBeDefined();
@@ -174,7 +177,7 @@ describe.each([
     const sourceCode = `
 import { View } from 'react-native';
 `;
-    const { code } = babel.transform(sourceCode, options);
+    const { code } = babel.transform(sourceCode, options)!;
 
     expect(code).toMatchSnapshot();
   });
@@ -192,7 +195,7 @@ import { View } from 'react-native';
     const sourceCode = `
 export * as default from './Animated';
 `;
-    const { code } = babel.transform(sourceCode, options);
+    const { code } = babel.transform(sourceCode, options)!;
 
     expect(code).toMatchSnapshot();
   });
@@ -213,7 +216,7 @@ import { Text, View } from 'react-native';
 export default function App() {
   return (<View><Text>Hello World</Text></View>);
 }`;
-    const { code } = babel.transform(sourceCode, options);
+    const { code } = babel.transform(sourceCode, options)!;
 
     expect(code).toMatch(/"react\/jsx-runtime"/);
 
@@ -234,7 +237,7 @@ export default function App() {
       caller,
     };
 
-    const code = babel.transformFileSync(samplesPath, options).code;
+    const code = babel.transformFileSync(samplesPath, options)!.code;
     expect(code).toContain("'worklet';");
     expect(code).toMatchSnapshot();
   });
@@ -256,7 +259,7 @@ export default function App() {
       return src.replace(new RegExp(samplesPath, 'g'), '[mock]/worklet.js');
     }
 
-    const code = stablePaths(babel.transformFileSync(samplesPath, options).code);
+    const code = stablePaths(babel.transformFileSync(samplesPath, options)!.code);
 
     expect(code).toMatchSnapshot();
 
@@ -266,7 +269,7 @@ export default function App() {
           ...options,
           // Test that duplicate plugins make no difference
           plugins: [require.resolve('react-native-reanimated/plugin')],
-        }).code
+        })!.code
       )
     ).toBe(code);
   });
@@ -354,13 +357,13 @@ describe('"lazyImports" option', () => {
       babelrc: false,
       presets: [preset],
     };
-    const { code: codeDefault } = babel.transformFileSync(testFilename, optionsDefault);
+    const { code: codeDefault } = babel.transformFileSync(testFilename, optionsDefault)!;
 
     const optionsNull = {
       babelrc: false,
       presets: [[preset, { lazyImports: null }]],
     };
-    const { code: codeNull } = babel.transformFileSync(testFilename, optionsNull);
+    const { code: codeNull } = babel.transformFileSync(testFilename, optionsNull)!;
 
     expect(codeDefault).toEqual(codeNull);
   });
@@ -380,7 +383,7 @@ describe('"lazyImports" option', () => {
       retainLines: true,
     };
 
-    const { code } = babel.transformFileSync(testFilename, options);
+    const { code } = babel.transformFileSync(testFilename, options)!;
     expect(code).toMatchSnapshot();
   });
 });
