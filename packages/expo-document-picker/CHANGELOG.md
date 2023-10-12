@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [web] Fix promise never resolving when user cancels the picker.
+
 ### 💡 Others
 
 ## 11.7.0 — 2023-09-04
