@@ -1,9 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const common_1 = require("./common");
+const expo_inline_manifest_plugin_1 = require("./expo-inline-manifest-plugin");
+const expo_router_plugin_1 = require("./expo-router-plugin");
 const lazyImports_1 = require("./lazyImports");
 function babelPresetExpo(api, options = {}) {
     const { web = {}, native = {}, reanimated } = options;
-    const bundler = api.caller(getBundler);
+    const bundler = api.caller(common_1.getBundler);
     const isWebpack = bundler === 'webpack';
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
@@ -65,6 +68,13 @@ function babelPresetExpo(api, options = {}) {
     }
     if (platform === 'web') {
         extraPlugins.push(require.resolve('babel-plugin-react-native-web'));
+        // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
+        if (bundler !== 'webpack') {
+            extraPlugins.push(expo_inline_manifest_plugin_1.expoInlineManifestPlugin);
+        }
+    }
+    if ((0, common_1.hasModule)('expo-router')) {
+        extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
     }
     return {
         presets: [
@@ -111,13 +121,13 @@ function babelPresetExpo(api, options = {}) {
             require.resolve('@babel/plugin-proposal-export-namespace-from'),
             // Automatically add `react-native-reanimated/plugin` when the package is installed.
             // TODO: Move to be a customTransformOption.
-            hasModule('react-native-reanimated') &&
+            (0, common_1.hasModule)('react-native-reanimated') &&
                 reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
         ].filter(Boolean),
     };
 }
 function getAliasPlugin() {
-    if (!hasModule('@expo/vector-icons')) {
+    if (!(0, common_1.hasModule)('@expo/vector-icons')) {
         return null;
     }
     return [
@@ -128,33 +138,6 @@ function getAliasPlugin() {
             },
         },
     ];
-}
-function hasModule(name) {
-    try {
-        return !!require.resolve(name);
-    }
-    catch (error) {
-        if (error.code === 'MODULE_NOT_FOUND' && error.message.includes(name)) {
-            return false;
-        }
-        throw error;
-    }
-}
-/** Determine which bundler is being used. */
-function getBundler(caller) {
-    if (!caller)
-        return null;
-    if (caller.bundler)
-        return caller.bundler;
-    if (
-    // Known tools that use `webpack`-mode via `babel-loader`: `@expo/webpack-config`, Next.js <10
-    caller.name === 'babel-loader' ||
-        // NextJS 11 uses this custom caller name.
-        caller.name === 'next-babel-turbo-loader') {
-        return 'webpack';
-    }
-    // Assume anything else is Metro.
-    return 'metro';
 }
 exports.default = babelPresetExpo;
 module.exports = babelPresetExpo;
