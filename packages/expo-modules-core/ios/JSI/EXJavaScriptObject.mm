@@ -104,6 +104,11 @@
   expo::common::setDeallocator(*[_runtime get], _jsObjectPtr, deallocatorBlock);
 }
 
+- (void)triggerDeallocatorForTesting
+{
+  expo::common::triggerDeallocatorForTesting(*[_runtime get], _jsObjectPtr);
+}
+
 #pragma mark - Equality
 
 - (BOOL)isEqual:(id)object
