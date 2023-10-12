@@ -91,6 +91,5 @@ NS_SWIFT_NAME(JavaScriptObject)
 #pragma mark - Deallocator
 
 - (void)setObjectDeallocator:(void (^ _Nonnull)(void))deallocatorBlock;
-- (void)triggerDeallocatorForTesting;
 
 @end

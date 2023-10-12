@@ -78,7 +78,7 @@ public final class SharedObjectRegistry {
   /**
    Deletes the shared objects pair with a given ID.
    */
-  private static func delete(_ id: SharedObjectId) {
+  internal static func delete(_ id: SharedObjectId) {
     if let pair = pairs[id] {
       // Reset an ID on the objects.
       pair.native.sharedObjectId = 0

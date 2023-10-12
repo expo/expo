@@ -60,16 +60,14 @@ final class SharedObjectRegistrySpec: ExpoSpec {
 
     describe("delete") {
       it("deletes objects pair") {
-        let jsObject = runtime.createObject()
-        let id = SharedObjectRegistry.add(native: TestSharedObject(), javaScript: jsObject)
-        jsObject.triggerDeallocatorForTesting()
+        let id = SharedObjectRegistry.add(native: TestSharedObject(), javaScript: runtime.createObject())
+        SharedObjectRegistry.delete(id)
         expect(SharedObjectRegistry.get(id)).to(beNil())
       }
       it("resets id on native object") {
         let nativeObject = TestSharedObject()
-        let jsObject = runtime.createObject()
-        let id = SharedObjectRegistry.add(native: nativeObject, javaScript: jsObject)
-        jsObject.triggerDeallocatorForTesting()
+        let id = SharedObjectRegistry.add(native: nativeObject, javaScript: runtime.createObject())
+        SharedObjectRegistry.delete(id)
         expect(nativeObject.sharedObjectId) == 0
       }
     }
