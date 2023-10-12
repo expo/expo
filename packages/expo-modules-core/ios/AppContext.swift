@@ -91,7 +91,7 @@ public final class AppContext: NSObject {
   }
 
   public convenience init(legacyModulesProxy: Any, legacyModuleRegistry: Any, config: AppContextConfig = .default) {
-    self.init()
+    self.init(config: config)
     self.legacyModulesProxy = legacyModulesProxy as? LegacyNativeModulesProxy
     self.legacyModuleRegistry = legacyModuleRegistry as? EXModuleRegistry
   }
