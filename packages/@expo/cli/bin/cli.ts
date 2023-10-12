@@ -2,11 +2,10 @@
 import arg from 'arg';
 import chalk from 'chalk';
 import Debug from 'debug';
-
-import { env } from '../src/utils/env';
+import { boolish } from 'getenv';
 
 // Setup before requiring `debug`.
-if (env.EXPO_DEBUG) {
+if (boolish('EXPO_DEBUG', false)) {
   Debug.enable('expo:*');
 } else if (Debug.enabled('expo:')) {
   process.env.EXPO_DEBUG = '1';
@@ -195,7 +194,7 @@ process.on('SIGTERM', () => process.exit(0));
 commands[command]().then((exec) => {
   exec(commandArgs);
 
-  if (!env.EXPO_NO_TELEMETRY) {
+  if (!boolish('EXPO_NO_TELEMETRY', false)) {
     // NOTE(EvanBacon): Track some basic telemetry events indicating the command
     // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
     // We do this to determine how well deprecations are going before removing a command.
