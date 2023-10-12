@@ -9,7 +9,7 @@ import useLinkToPathProps from './useLinkToPathProps';
 import { useRouter } from '../hooks';
 import { useFocusEffect } from '../useFocusEffect';
 
-export interface LinkProps extends Omit<TextProps, 'href' | 'hoverStyle'> {
+export interface LinkProps extends Omit<TextProps, 'href'> {
   /** Path to route to. */
   href: Href;
 
@@ -19,6 +19,9 @@ export interface LinkProps extends Omit<TextProps, 'href' | 'hoverStyle'> {
 
   /** Should replace the current route without adding to the history. */
   replace?: boolean;
+
+  /** On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind. */
+  className?: string;
 
   onPress?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
 }
@@ -50,10 +53,34 @@ export interface LinkComponent {
  * @param props.replace Should replace the current route without adding to the history.
  * @param props.asChild Forward props to child component. Useful for custom buttons.
  * @param props.children Child elements to render the content.
+ * @param props.className On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind.
  */
 export const Link = React.forwardRef(ExpoRouterLink) as unknown as LinkComponent;
 
 Link.resolveHref = resolveHref;
+
+// Mutate the style prop to add the className on web.
+function useInteropClassName(props: { style?: TextProps['style']; className?: string }) {
+  if (Platform.OS !== 'web') {
+    return props.style;
+  }
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return React.useMemo(() => {
+    if (props.className == null) {
+      return props.style;
+    }
+    const cssStyle = {
+      $$css: true,
+      __routerLinkClassName: props.className,
+    };
+
+    if (Array.isArray(props.style)) {
+      return [...props.style, cssStyle];
+    }
+    return [props.style, cssStyle];
+  }, [props.style, props.className]);
+}
 
 function ExpoRouterLink(
   {
@@ -65,6 +92,9 @@ function ExpoRouterLink(
   }: LinkProps,
   ref: React.ForwardedRef<Text>
 ) {
+  // Mutate the style prop to add the className on web.
+  const style = useInteropClassName(rest);
+
   const resolvedHref = React.useMemo(() => {
     if (href == null) {
       throw new Error('Link: href is required');
@@ -81,17 +111,21 @@ function ExpoRouterLink(
     props.onPress(e);
   };
 
-  return React.createElement(
-    // @ts-expect-error: slot is not type-safe
-    asChild ? Slot : Text,
-    {
-      ref,
-      ...props,
-      ...rest,
-      ...Platform.select({
-        web: { onClick: onPress } as any,
+  const Element = asChild ? Slot : Text;
+
+  // Avoid using createElement directly, favoring JSX, to allow tools like Nativewind to perform custom JSX handling on native.
+  return (
+    <Element
+      ref={ref}
+      {...props}
+      {...rest}
+      style={style}
+      {...Platform.select({
+        web: {
+          onClick: onPress,
+        } as any,
         default: { onPress },
-      }),
-    }
+      })}
+    />
   );
 }

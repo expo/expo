@@ -59,16 +59,6 @@
     "react-native",
     "expo"
   ],
-  "jest": {
-    "preset": "jest-expo",
-    "roots": [
-      "src"
-    ],
-    "watchPlugins": ["jest-watch-typeahead/filename", "jest-watch-typeahead/testname"],
-    "setupFilesAfterEnv": [
-      "./build/testing-library/mocks.js"
-    ]
-  },
   "peerDependencies": {
     "@react-navigation/drawer": "^6.5.8",
     "expo": "^49.0.0",
@@ -94,13 +84,14 @@
   "devDependencies": {
     "@react-navigation/drawer": "^6.5.0",
     "@testing-library/jest-native": "^5.4.2",
+    "@testing-library/react": "^14.0.0",
     "@testing-library/react-native": "^12.0.1",
     "@types/url-parse": "^1.4.8",
     "tsd": "^0.28.1"
   },
   "dependencies": {
-    "@expo/server": "^0.1.0",
     "@expo/metro-runtime": "3.0.2",
+    "@expo/server": "^0.1.0",
     "@radix-ui/react-slot": "1.0.1",
     "@react-navigation/bottom-tabs": "~6.5.7",
     "@react-navigation/native": "~6.1.6",
