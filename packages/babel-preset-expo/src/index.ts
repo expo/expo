@@ -1,5 +1,8 @@
 import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
+import { getBundler, hasModule } from './common';
+import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
+import { expoRouterBabelPlugin } from './expo-router-plugin';
 import { lazyImports } from './lazyImports';
 
 type BabelPresetExpoPlatformOptions = {
@@ -98,6 +101,15 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   if (platform === 'web') {
     extraPlugins.push(require.resolve('babel-plugin-react-native-web'));
+
+    // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
+    if (bundler !== 'webpack') {
+      extraPlugins.push(expoInlineManifestPlugin);
+    }
+  }
+
+  if (hasModule('expo-router')) {
+    extraPlugins.push(expoRouterBabelPlugin);
   }
 
   return {
@@ -168,34 +180,6 @@ function getAliasPlugin(): PluginItem | null {
       },
     },
   ];
-}
-
-function hasModule(name: string): boolean {
-  try {
-    return !!require.resolve(name);
-  } catch (error: any) {
-    if (error.code === 'MODULE_NOT_FOUND' && error.message.includes(name)) {
-      return false;
-    }
-    throw error;
-  }
-}
-
-/** Determine which bundler is being used. */
-function getBundler(caller: any) {
-  if (!caller) return null;
-  if (caller.bundler) return caller.bundler;
-  if (
-    // Known tools that use `webpack`-mode via `babel-loader`: `@expo/webpack-config`, Next.js <10
-    caller.name === 'babel-loader' ||
-    // NextJS 11 uses this custom caller name.
-    caller.name === 'next-babel-turbo-loader'
-  ) {
-    return 'webpack';
-  }
-
-  // Assume anything else is Metro.
-  return 'metro';
 }
 
 export default babelPresetExpo;
