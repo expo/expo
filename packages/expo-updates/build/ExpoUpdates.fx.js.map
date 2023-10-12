@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoUpdates.fx.js","sourceRoot":"","sources":["../src/ExpoUpdates.fx.ts"],"names":[],"mappings":"AAAA,mFAAmF;AACnF,OAAO,YAAY,CAAC","sourcesContent":["// Load expo-asset immediately to set a custom `source` transformer in React Native\nimport 'expo-asset';\n"]}
