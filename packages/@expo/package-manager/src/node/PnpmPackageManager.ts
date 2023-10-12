@@ -21,6 +21,10 @@ export class PnpmPackageManager extends BasePackageManager {
     return null;
   }
 
+  runAsync(scriptName: string, argsOrFlags: string[] = []) {
+    return this.executeAsync(['run', scriptName, ...argsOrFlags]);
+  }
+
   installAsync(namesOrFlags: string[] = []) {
     if (env.CI && !namesOrFlags.join(' ').includes('frozen-lockfile')) {
       namesOrFlags.unshift('--no-frozen-lockfile');

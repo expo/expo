@@ -20,6 +20,10 @@ export class BunPackageManager extends BasePackageManager {
     return null;
   }
 
+  runAsync(scriptName: string, argsOrFlags: string[] = []) {
+    return this.executeAsync(['run', scriptName, ...argsOrFlags]);
+  }
+
   installAsync(namesOrFlags: string[] = []) {
     return this.executeAsync(['install', ...namesOrFlags]);
   }

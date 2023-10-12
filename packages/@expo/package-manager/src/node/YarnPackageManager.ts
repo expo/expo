@@ -27,6 +27,10 @@ export class YarnPackageManager extends BasePackageManager {
     return null;
   }
 
+  runAsync(scriptName: string, argsOrFlags: string[] = []) {
+    return this.executeAsync(['run', scriptName, ...argsOrFlags]);
+  }
+
   installAsync(flags: string[] = []) {
     return createPendingSpawnAsync(
       () => this.withOfflineFlagAsync(['install']),

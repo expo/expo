@@ -110,6 +110,30 @@ describe('NpmPackageManager', () => {
     });
   });
 
+  describe('runAsync', () => {
+    it('runs script without arguments', async () => {
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+
+      expect(await npm.runAsync('lint'));
+      expect(spawnAsync).toBeCalledWith(
+        'npm',
+        ['run', 'lint'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('runs script with arguments', async () => {
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+
+      expect(await npm.runAsync('lint', ['--max-warnings', '0']));
+      expect(spawnAsync).toBeCalledWith(
+        'npm',
+        ['run', 'lint', '"--"', '--max-warnings', '0'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+  });
+
   describe('versionAsync', () => {
     it('returns version from npm', async () => {
       mockedSpawnAsync.mockImplementation(() =>

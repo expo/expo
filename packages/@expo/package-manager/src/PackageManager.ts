@@ -25,6 +25,9 @@ export interface PackageManager {
   /** Run any command using the package manager */
   executeAsync(command: string[]): SpawnPromise<SpawnResult>;
 
+  /** Execute a package script using the package manager */
+  runAsync(scriptName: string, argsOrFlags?: string[]): SpawnPromise<SpawnResult>;
+
   /** Get the version of the used package manager */
   versionAsync(): Promise<string>;
   /** Get a single configuration property from the package manager */

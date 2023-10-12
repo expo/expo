@@ -102,6 +102,30 @@ describe('BunPackageManager', () => {
     });
   });
 
+  describe('runAsync', () => {
+    it('runs script without arguments', async () => {
+      const bun = new BunPackageManager({ cwd: projectRoot });
+
+      expect(await bun.runAsync('lint'));
+      expect(spawnAsync).toBeCalledWith(
+        'bun',
+        ['run', 'lint'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('runs script with arguments', async () => {
+      const bun = new BunPackageManager({ cwd: projectRoot });
+
+      expect(await bun.runAsync('lint', ['--max-warnings', '0']));
+      expect(spawnAsync).toBeCalledWith(
+        'bun',
+        ['run', 'lint', '--max-warnings', '0'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+  });
+
   describe('versionAsync', () => {
     it('returns version from bun', async () => {
       mockedSpawnAsync.mockImplementation(() =>

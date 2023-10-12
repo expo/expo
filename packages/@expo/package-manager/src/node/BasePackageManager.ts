@@ -36,6 +36,8 @@ export abstract class BasePackageManager implements PackageManager {
     };
   }
 
+  abstract runAsync(scriptName: string, argsOrFlags?: string[]): SpawnPromise<SpawnResult>;
+
   abstract addAsync(
     namesOrFlags: string[]
   ): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;

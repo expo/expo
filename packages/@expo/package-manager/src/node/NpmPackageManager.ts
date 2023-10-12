@@ -25,6 +25,14 @@ export class NpmPackageManager extends BasePackageManager {
     return null;
   }
 
+  runAsync(scriptName: string, argsOrFlags: string[] = []) {
+    if (!argsOrFlags.length) {
+      return this.executeAsync(['run', scriptName]);
+    }
+
+    return this.executeAsync(['run', scriptName, '"--"', ...argsOrFlags]);
+  }
+
   addAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();

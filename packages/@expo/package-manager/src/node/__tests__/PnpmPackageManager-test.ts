@@ -116,6 +116,30 @@ describe('PnpmPackageManager', () => {
     });
   });
 
+  describe('runAsync', () => {
+    it('runs script without arguments', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+
+      expect(await pnpm.runAsync('lint'));
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['run', 'lint'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('runs script with arguments', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+
+      expect(await pnpm.runAsync('lint', ['--max-warnings', '0']));
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['run', 'lint', '--max-warnings', '0'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+  });
+
   describe('versionAsync', () => {
     it('returns version from pnpm', async () => {
       mockedSpawnAsync.mockImplementation(() =>

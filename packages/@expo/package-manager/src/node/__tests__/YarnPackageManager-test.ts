@@ -102,6 +102,30 @@ describe('YarnPackageManager', () => {
     });
   });
 
+  describe('runAsync', () => {
+    it('runs script without arguments', async () => {
+      const yarn = new YarnPackageManager({ cwd: projectRoot });
+
+      expect(await yarn.runAsync('lint'));
+      expect(spawnAsync).toBeCalledWith(
+        'yarnpkg',
+        ['run', 'lint'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('runs script with arguments', async () => {
+      const yarn = new YarnPackageManager({ cwd: projectRoot });
+
+      expect(await yarn.runAsync('lint', ['--max-warnings', '0']));
+      expect(spawnAsync).toBeCalledWith(
+        'yarnpkg',
+        ['run', 'lint', '--max-warnings', '0'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+  });
+
   describe('versionAsync', () => {
     it('returns version from yarn', async () => {
       mockedSpawnAsync.mockImplementation(() =>
