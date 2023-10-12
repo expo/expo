@@ -174,7 +174,7 @@ public extension UIDevice {
       case "i386", "x86_64":
         return ExpoDeviceType(modelName: "Simulator tvOS", deviceYearClass: currentYear)
       default:
-        return identifier
+        return ExpoDeviceType(modelName: identifier, deviceYearClass: currentYear)
       }
 #endif
     }
