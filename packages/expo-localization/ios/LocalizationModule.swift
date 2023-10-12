@@ -115,7 +115,7 @@ public class LocalizationModule: Module {
   }
 
   static func getMeasurementSystemForLocale(_ locale: Locale) -> String {
-    if #available(iOS 16, *) {
+    if #available(iOS 16, tvOS 16, *) {
       let measurementSystems = [
         Locale.MeasurementSystem.us: "us",
         Locale.MeasurementSystem.uk: "uk",
