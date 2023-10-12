@@ -227,19 +227,6 @@ module.exports = {
             key: 'getMobileNetworkCodeAsync',
           },
         ],
-        ExpoClipboard: [
-          { name: 'getImageAsync', argumentsCount: 1, key: 'getImageAsync' },
-          { name: 'getStringAsync', argumentsCount: 1, key: 'getStringAsync' },
-          { name: 'getUrlAsync', argumentsCount: 0, key: 'getUrlAsync' },
-          { name: 'hasImageAsync', argumentsCount: 0, key: 'hasImageAsync' },
-          { name: 'hasStringAsync', argumentsCount: 0, key: 'hasStringAsync' },
-          { name: 'hasUrlAsync', argumentsCount: 0, key: 'hasUrlAsync' },
-          { name: 'setImageAsync', argumentsCount: 1, key: 'setImageAsync' },
-          { name: 'setStringAsync', argumentsCount: 2, key: 'setStringAsync' },
-          { name: 'setUrlAsync', argumentsCount: 1, key: 'setUrlAsync' },
-          { name: 'startObserving', argumentsCount: 0, key: 'startObserving' },
-          { name: 'stopObserving', argumentsCount: 0, key: 'stopObserving' },
-        ],
         ExpoContacts: [
           { name: 'getDefaultContainerIdentifierAsync', argumentsCount: 0, key: 0 },
           { name: 'addExistingGroupToContainerAsync', argumentsCount: 2, key: 1 },
@@ -673,7 +660,6 @@ module.exports = {
           mobileCountryCode: { type: 'object', mock: null },
           mobileNetworkCode: { type: 'object', mock: null },
         },
-        ExpoClipboard: {},
         ExpoDevice: {
           brand: { type: 'string' },
           deviceName: { type: 'string' },
@@ -802,16 +788,6 @@ module.exports = {
         ExpoAppleAuthentication: { propsNames: ['buttonStyle', 'buttonType', 'cornerRadius'] },
         ExpoBarCodeScanner: { propsNames: ['barCodeTypes', 'type'] },
         ExpoBlurView: { propsNames: ['intensity', 'tint'] },
-        ExpoClipboard: {
-          propsNames: [
-            'acceptedContentTypes',
-            'backgroundColor',
-            'cornerStyle',
-            'displayMode',
-            'foregroundColor',
-            'imageOptions',
-          ],
-        },
         ExpoImage: {
           propsNames: [
             'accessibilityLabel',
