@@ -49,17 +49,17 @@ describe('BunPackageManager', () => {
     });
   });
 
-  describe('runAsync', () => {
+  describe('executeAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();
       const bun = new BunPackageManager({ cwd: projectRoot, log });
-      await bun.runAsync(['install', '--some-flag']);
+      await bun.executeAsync(['install', '--some-flag']);
       expect(log).toHaveBeenCalledWith('> bun install --some-flag');
     });
 
     it('inherits stdio output without silent', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.runAsync(['install']);
+      await bun.executeAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -70,7 +70,7 @@ describe('BunPackageManager', () => {
 
     it('does not inherit stdio with silent', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot, silent: true });
-      await bun.runAsync(['install']);
+      await bun.executeAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -81,7 +81,7 @@ describe('BunPackageManager', () => {
 
     it('adds a single package with custom parameters', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.runAsync(['add', '--peer', '@babel/core']);
+      await bun.executeAsync(['add', '--peer', '@babel/core']);
 
       expect(spawnAsync).toBeCalledWith(
         'bun',
@@ -92,7 +92,7 @@ describe('BunPackageManager', () => {
 
     it('adds multiple packages with custom parameters', async () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
-      await bun.runAsync(['add', '--peer', '@babel/core', '@babel/runtime']);
+      await bun.executeAsync(['add', '--peer', '@babel/core', '@babel/runtime']);
 
       expect(spawnAsync).toBeCalledWith(
         'bun',

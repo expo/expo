@@ -21,7 +21,7 @@ export class BunPackageManager extends BasePackageManager {
   }
 
   installAsync(namesOrFlags: string[] = []) {
-    return this.runAsync(['install', ...namesOrFlags]);
+    return this.executeAsync(['install', ...namesOrFlags]);
   }
 
   addAsync(namesOrFlags: string[] = []) {
@@ -29,7 +29,7 @@ export class BunPackageManager extends BasePackageManager {
       return this.installAsync();
     }
 
-    return this.runAsync(['add', ...namesOrFlags]);
+    return this.executeAsync(['add', ...namesOrFlags]);
   }
 
   addDevAsync(namesOrFlags: string[] = []) {
@@ -37,7 +37,7 @@ export class BunPackageManager extends BasePackageManager {
       return this.installAsync();
     }
 
-    return this.runAsync(['add', '--dev', ...namesOrFlags]);
+    return this.executeAsync(['add', '--dev', ...namesOrFlags]);
   }
 
   addGlobalAsync(namesOrFlags: string[] = []) {
@@ -45,18 +45,18 @@ export class BunPackageManager extends BasePackageManager {
       return this.installAsync();
     }
 
-    return this.runAsync(['add', '--global', ...namesOrFlags]);
+    return this.executeAsync(['add', '--global', ...namesOrFlags]);
   }
 
   removeAsync(namesOrFlags: string[]) {
-    return this.runAsync(['remove', ...namesOrFlags]);
+    return this.executeAsync(['remove', ...namesOrFlags]);
   }
 
   removeDevAsync(namesOrFlags: string[]) {
-    return this.runAsync(['remove', ...namesOrFlags]);
+    return this.executeAsync(['remove', ...namesOrFlags]);
   }
 
   removeGlobalAsync(namesOrFlags: string[]) {
-    return this.runAsync(['remove', '--global', ...namesOrFlags]);
+    return this.executeAsync(['remove', '--global', ...namesOrFlags]);
   }
 }

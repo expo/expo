@@ -63,17 +63,17 @@ describe('PnpmPackageManager', () => {
     });
   });
 
-  describe('runAsync', () => {
+  describe('executeAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();
       const pnpm = new PnpmPackageManager({ cwd: projectRoot, log });
-      await pnpm.runAsync(['install', '--some-flag']);
+      await pnpm.executeAsync(['install', '--some-flag']);
       expect(log).toHaveBeenCalledWith('> pnpm install --some-flag');
     });
 
     it('inherits stdio output without silent', async () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
-      await pnpm.runAsync(['install']);
+      await pnpm.executeAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -84,7 +84,7 @@ describe('PnpmPackageManager', () => {
 
     it('does not inherit stdio with silent', async () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot, silent: true });
-      await pnpm.runAsync(['install']);
+      await pnpm.executeAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -95,7 +95,7 @@ describe('PnpmPackageManager', () => {
 
     it('adds a single package with custom parameters', async () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
-      await pnpm.runAsync(['add', '--save-peer', '@babel/core']);
+      await pnpm.executeAsync(['add', '--save-peer', '@babel/core']);
 
       expect(spawnAsync).toBeCalledWith(
         'pnpm',
@@ -106,7 +106,7 @@ describe('PnpmPackageManager', () => {
 
     it('adds multiple packages with custom parameters', async () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
-      await pnpm.runAsync(['add', '--save-peer', '@babel/core', '@babel/runtime']);
+      await pnpm.executeAsync(['add', '--save-peer', '@babel/core', '@babel/runtime']);
 
       expect(spawnAsync).toBeCalledWith(
         'pnpm',

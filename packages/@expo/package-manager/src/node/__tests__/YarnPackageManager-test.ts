@@ -49,17 +49,17 @@ describe('YarnPackageManager', () => {
     });
   });
 
-  describe('runAsync', () => {
+  describe('executeAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();
       const yarn = new YarnPackageManager({ cwd: projectRoot, log });
-      await yarn.runAsync(['install', '--some-flag']);
+      await yarn.executeAsync(['install', '--some-flag']);
       expect(log).toHaveBeenCalledWith('> yarn install --some-flag');
     });
 
     it('inherits stdio output without silent', async () => {
       const yarn = new YarnPackageManager({ cwd: projectRoot });
-      await yarn.runAsync(['install']);
+      await yarn.executeAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -70,7 +70,7 @@ describe('YarnPackageManager', () => {
 
     it('does not inherit stdio with silent', async () => {
       const yarn = new YarnPackageManager({ cwd: projectRoot, silent: true });
-      await yarn.runAsync(['install']);
+      await yarn.executeAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -81,7 +81,7 @@ describe('YarnPackageManager', () => {
 
     it('adds a single package with custom parameters', async () => {
       const yarn = new YarnPackageManager({ cwd: projectRoot });
-      await yarn.runAsync(['add', '--peer', '@babel/core']);
+      await yarn.executeAsync(['add', '--peer', '@babel/core']);
 
       expect(spawnAsync).toBeCalledWith(
         'yarnpkg',
@@ -92,7 +92,7 @@ describe('YarnPackageManager', () => {
 
     it('adds multiple packages with custom parameters', async () => {
       const yarn = new YarnPackageManager({ cwd: projectRoot });
-      await yarn.runAsync(['add', '--peer', '@babel/core', '@babel/runtime']);
+      await yarn.executeAsync(['add', '--peer', '@babel/core', '@babel/runtime']);
 
       expect(spawnAsync).toBeCalledWith(
         'yarnpkg',

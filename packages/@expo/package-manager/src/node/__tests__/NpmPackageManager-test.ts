@@ -49,17 +49,17 @@ describe('NpmPackageManager', () => {
     });
   });
 
-  describe('runAsync', () => {
+  describe('executeAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();
       const npm = new NpmPackageManager({ cwd: projectRoot, log });
-      await npm.runAsync(['install', '--some-flag']);
+      await npm.executeAsync(['install', '--some-flag']);
       expect(log).toHaveBeenCalledWith('> npm install --some-flag');
     });
 
     it('inherits stdio output without silent', async () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
-      await npm.runAsync(['install']);
+      await npm.executeAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -70,7 +70,7 @@ describe('NpmPackageManager', () => {
 
     it('does not inherit stdio with silent', async () => {
       const npm = new NpmPackageManager({ cwd: projectRoot, silent: true });
-      await npm.runAsync(['install']);
+      await npm.executeAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -81,7 +81,7 @@ describe('NpmPackageManager', () => {
 
     it('returns spawn promise with child', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
-      expect(npm.runAsync(['install'])).toHaveProperty(
+      expect(npm.executeAsync(['install'])).toHaveProperty(
         'child',
         expect.objectContaining(STUB_SPAWN_CHILD)
       );
@@ -89,7 +89,7 @@ describe('NpmPackageManager', () => {
 
     it('adds a single package with custom parameters', async () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
-      await npm.runAsync(['install', '--save-peer', '@babel/core']);
+      await npm.executeAsync(['install', '--save-peer', '@babel/core']);
 
       expect(spawnAsync).toBeCalledWith(
         'npm',
@@ -100,7 +100,7 @@ describe('NpmPackageManager', () => {
 
     it('adds multiple packages with custom parameters', async () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
-      await npm.runAsync(['install', '--save-peer', '@babel/core', '@babel/runtime']);
+      await npm.executeAsync(['install', '--save-peer', '@babel/core', '@babel/runtime']);
 
       expect(spawnAsync).toBeCalledWith(
         'npm',
