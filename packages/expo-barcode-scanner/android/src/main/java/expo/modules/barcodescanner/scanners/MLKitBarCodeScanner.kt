@@ -38,7 +38,7 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
     return scanBlocking(inputImage)
   }
 
-  private fun scanBlocking(inputImage: InputImage): List<BarCodeScannerResult> = runBlocking {
+  private fun scanBlocking(inputImage: InputImage): List<BarCodeScannerResult> = runBlocking(Dispatchers.IO) {
     try {
       val result: List<Barcode> = barcodeScanner.process(inputImage).await()
       val results = mutableListOf<BarCodeScannerResult>()
@@ -46,7 +46,11 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
         return@runBlocking results
       }
       for (barcode in result) {
-        val displayValue = barcode.displayValue
+        val value = if (barcode.valueType == Barcode.TYPE_CONTACT_INFO) {
+          barcode.rawValue ?: barcode.rawBytes?.let { String(it) }
+        } else {
+          barcode.displayValue
+        }
         val cornerPoints = mutableListOf<Int>()
         barcode.cornerPoints?.let { points ->
           for (point in points) {
@@ -54,7 +58,7 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
           }
         }
 
-        results.add(BarCodeScannerResult(barcode.format, displayValue, cornerPoints, inputImage.height, inputImage.width))
+        results.add(BarCodeScannerResult(barcode.format, value, cornerPoints, inputImage.height, inputImage.width))
       }
       return@runBlocking results
     } catch (e: Exception) {
