@@ -102,7 +102,7 @@ THE TEXT WAS ALSO COPIED TO YOUR CLIPBOARD
 }
 
 const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
-const blacklist = ['ExpoCrypto'];
+const blacklist = ['ExpoCrypto', 'ExpoClipboard'];
 async function _getExpoModuleSpecsAsync() {
   const moduleNames = await ExpoNativeModuleIntrospection.getNativeModuleNamesAsync();
   const expoModuleNames = moduleNames.filter((moduleName) => whitelist.test(moduleName)).sort();
