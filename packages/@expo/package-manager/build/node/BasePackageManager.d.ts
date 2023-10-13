@@ -5,8 +5,6 @@ export declare abstract class BasePackageManager implements PackageManager {
     readonly silent: boolean;
     readonly log?: (...args: any) => void;
     readonly options: PackageManagerOptions;
-    protected deferRun: boolean;
-    protected deferredCommand: string | null;
     constructor({ silent, log, env, ...options }?: PackageManagerOptions);
     /** Get the name of the package manager */
     abstract readonly name: string;
@@ -26,7 +24,6 @@ export declare abstract class BasePackageManager implements PackageManager {
     /** Ensure the CWD is set to a non-empty string */
     protected ensureCwdDefined(method?: string): string;
     runAsync(command: string[]): spawnAsync.SpawnPromise<spawnAsync.SpawnResult>;
-    addDeferredAsync(namesOrFlags: string[]): Promise<string>;
     versionAsync(): Promise<string>;
     getConfigAsync(key: string): Promise<string>;
     removeLockfileAsync(): Promise<void>;
