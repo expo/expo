@@ -1,10 +1,8 @@
+import { spawnAsync } from '@expo/osascript';
 import * as PackageManager from '@expo/package-manager';
-import { spawn } from 'child_process';
 
 import * as Log from '../log';
-import { isExpoMaybeRunningInDirectory } from '../utils/getRunningProcess';
-import { isInteractive } from '../utils/interactive';
-import { confirmAsync } from '../utils/prompts';
+import { getRunningProcess } from '../utils/getRunningProcess';
 
 /**
  * Given a list of incompatible packages, installs the correct versions of the packages with the package manager used for the project.
@@ -29,7 +27,9 @@ export async function installExpoPackageAsync(
     followUpCommand: string | undefined;
   }
 ) {
-  const isExpoMaybeRunningForProject = await isExpoMaybeRunningInDirectory(projectRoot);
+  // Check if there's potentially a dev server running in the current folder and warn about it
+  // (not guaranteed to be Expo CLI, and the CLI isn't always running on 8081, but it's a good guess)
+  const isExpoMaybeRunningForProject = !!(await getRunningProcess(8081));
 
   if (isExpoMaybeRunningForProject) {
     Log.warn(
@@ -37,20 +37,16 @@ export async function installExpoPackageAsync(
     );
   }
 
-  const expoInstallCommand = await packageManager.addDeferredAsync([
-    ...packageManagerArguments,
-    expoPackageToInstall,
-  ]);
+  // Safe to use current process to upgrade Expo package- doesn't affect current process
+  await packageManager.addAsync([expoPackageToInstall]);
 
-  followUpCommand && Log.log(`> ${followUpCommand}`);
+  // TODO: error handling
 
-  const detachedCommandToRun = followUpCommand
-    ? `${expoInstallCommand} && ${followUpCommand}` /* && is critical here so we avoid an infinite loop in the case where the expo install command fails */
-    : expoInstallCommand;
+  // But, we need to spawn a new process to install the rest of the packages, as only then will the latest Expo package be used
+  if (followUpCommand) {
+    // TODO: need to split up follow-up command into arguments
+    await spawnAsync([followUpCommand]);
+  }
 
-  spawn(detachedCommandToRun!, {
-    ...packageManager.options,
-    detached: true,
-    shell: true,
-  });
+  // TODO: possible conclusion message
 }
