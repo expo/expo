@@ -14,6 +14,10 @@ public final class ModuleRegistry: Sequence {
    */
   internal func register(holder: ModuleHolder) {
     log.info("Registering module '\(holder.name)'")
+    // module already registered, don't re-register
+    if registry[holder.name] != nil {
+      return
+    }
     registry[holder.name] = holder
   }
 
