@@ -105,7 +105,7 @@ export interface PluginConfigTypeAndroid {
      *
      *  @see [Android documentation](https://developer.android.com/guide/topics/manifest/queries-element)
      */
-    queries?: PluginConfigTypeAndroidQueries;
+    manifestQueries?: PluginConfigTypeAndroidQueries;
 }
 /**
  * Interface representing available configuration for iOS native build properties.

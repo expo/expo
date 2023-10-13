@@ -128,7 +128,7 @@ export interface PluginConfigTypeAndroid {
    *
    *  @see [Android documentation](https://developer.android.com/guide/topics/manifest/queries-element)
    */
-  queries?: PluginConfigTypeAndroidQueries;
+  manifestQueries?: PluginConfigTypeAndroidQueries;
 }
 
 /**
@@ -375,7 +375,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
 
         usesCleartextTraffic: { type: 'boolean', nullable: true },
 
-        queries: {
+        manifestQueries: {
           required: ['package'],
           type: 'object',
           properties: {

@@ -1,4 +1,3 @@
-import { ManifestQuery } from '@expo/config-plugins/build/android/Manifest';
 import {
   AndroidConfig,
   ConfigPlugin,
@@ -243,22 +242,22 @@ function setUsesCleartextTraffic(
 
 export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props) => {
   return withAndroidManifest(config, (config) => {
-    if (props.android?.queries == null) {
+    if (props.android?.manifestQueries == null) {
       return config;
     }
 
-    const { queries } = props.android;
+    const { manifestQueries } = props.android;
 
     // Default template adds a single intent to the `queries` tag
     const defaultIntents =
       config.modResults.manifest.queries.map((q) => q.intent ?? []).flat() ?? [];
 
-    const additionalQueries: ManifestQuery = {
-      package: renderQueryPackages(queries.package),
-      intent: [...defaultIntents, ...renderQueryIntents(queries.intent)],
+    const additionalQueries: AndroidConfig.Manifest.ManifestQuery = {
+      package: renderQueryPackages(manifestQueries.package),
+      intent: [...defaultIntents, ...renderQueryIntents(manifestQueries.intent)],
     };
 
-    const provider = renderQueryProviders(queries.provider);
+    const provider = renderQueryProviders(manifestQueries.provider);
     if (provider != null) {
       additionalQueries.provider = provider;
     }

@@ -53,7 +53,7 @@ const schema = {
                 networkInspector: { type: 'boolean', nullable: true },
                 extraMavenRepos: { type: 'array', items: { type: 'string' }, nullable: true },
                 usesCleartextTraffic: { type: 'boolean', nullable: true },
-                queries: {
+                manifestQueries: {
                     required: ['package'],
                     type: 'object',
                     properties: {

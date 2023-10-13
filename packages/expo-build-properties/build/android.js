@@ -194,17 +194,17 @@ function setUsesCleartextTraffic(androidManifest, value) {
 }
 const withAndroidQueries = (config, props) => {
     return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
-        if (props.android?.queries == null) {
+        if (props.android?.manifestQueries == null) {
             return config;
         }
-        const { queries } = props.android;
+        const { manifestQueries } = props.android;
         // Default template adds a single intent to the `queries` tag
         const defaultIntents = config.modResults.manifest.queries.map((q) => q.intent ?? []).flat() ?? [];
         const additionalQueries = {
-            package: (0, androidQueryUtils_1.renderQueryPackages)(queries.package),
-            intent: [...defaultIntents, ...(0, androidQueryUtils_1.renderQueryIntents)(queries.intent)],
+            package: (0, androidQueryUtils_1.renderQueryPackages)(manifestQueries.package),
+            intent: [...defaultIntents, ...(0, androidQueryUtils_1.renderQueryIntents)(manifestQueries.intent)],
         };
-        const provider = (0, androidQueryUtils_1.renderQueryProviders)(queries.provider);
+        const provider = (0, androidQueryUtils_1.renderQueryProviders)(manifestQueries.provider);
         if (provider != null) {
             additionalQueries.provider = provider;
         }
