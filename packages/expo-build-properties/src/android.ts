@@ -9,6 +9,7 @@ import {
 import fs from 'fs';
 import path from 'path';
 
+import { renderQueryIntents, renderQueryPackages, renderQueryProviders } from './androidQueryUtils';
 import { appendContents, purgeContents } from './fileContentsUtils';
 import type { PluginConfigType } from './pluginConfig';
 
@@ -238,3 +239,30 @@ function setUsesCleartextTraffic(
 
   return androidManifest;
 }
+
+export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withAndroidManifest(config, (config) => {
+    if (props.android?.manifestQueries == null) {
+      return config;
+    }
+
+    const { manifestQueries } = props.android;
+
+    // Default template adds a single intent to the `queries` tag
+    const defaultIntents =
+      config.modResults.manifest.queries.map((q) => q.intent ?? []).flat() ?? [];
+
+    const additionalQueries: AndroidConfig.Manifest.ManifestQuery = {
+      package: renderQueryPackages(manifestQueries.package),
+      intent: [...defaultIntents, ...renderQueryIntents(manifestQueries.intent)],
+    };
+
+    const provider = renderQueryProviders(manifestQueries.provider);
+    if (provider != null) {
+      additionalQueries.provider = provider;
+    }
+
+    config.modResults.manifest.queries = [additionalQueries];
+    return config;
+  });
+};
