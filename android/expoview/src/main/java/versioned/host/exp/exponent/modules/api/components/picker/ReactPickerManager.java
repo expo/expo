@@ -297,6 +297,10 @@ public abstract class ReactPickerManager extends BaseViewManager<ReactPicker, Re
         textView.setTextColor(item.getInt("color"));
       }
 
+      if (item.hasKey("contentDescription") && !item.isNull("contentDescription")) {
+        textView.setContentDescription(item.getString("contentDescription"));
+      }
+
       if (item.hasKey("fontFamily") && !item.isNull("fontFamily")) {
         Typeface face = Typeface.create(item.getString("fontFamily"), Typeface.NORMAL);
         textView.setTypeface(face);
