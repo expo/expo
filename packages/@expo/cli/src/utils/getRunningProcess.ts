@@ -51,29 +51,6 @@ export function getDirectoryOfProcessById(processId: number): string {
   ).trim();
 }
 
-export function isExpoMaybeRunningInDirectory(directory: string): boolean {
-  const expoStartPids = execSync(
-    `ps -eo pid,command | grep -e "expo start" -e "expo run:ios" -e "expo run:android"`,
-    defaultOptions
-  )
-    .trim()
-    .split(/\r?\n|\r|\n/g)
-    .filter((line) => !line.includes('grep')) //remove proc that was grepping the procs
-    .map((line) => line.trim().split(' ')[0]);
-
-  const expoStartPidsForDirectory = expoStartPids.filter((pid) => {
-    const procDirectory = getDirectoryOfProcessById(Number(pid));
-    if (procDirectory === directory) {
-      return true;
-    }
-    return false;
-  });
-
-  const runningProcessOnPort = getRunningProcess(8081);
-
-  return !!expoStartPidsForDirectory.length || runningProcessOnPort?.directory === directory;
-}
-
 /** Get information about a running process given a port. Returns null if no process is running on the given port. */
 export function getRunningProcess(port: number): {
   /** The PID value for the port. */
