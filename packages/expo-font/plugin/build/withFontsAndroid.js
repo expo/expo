@@ -5,18 +5,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withFontsAndroid = void 0;
 const config_plugins_1 = require("expo/config-plugins");
-const fs_1 = __importDefault(require("fs"));
+const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+const utils_1 = require("./utils");
 const withFontsAndroid = (config, fonts) => {
     return (0, config_plugins_1.withDangerousMod)(config, [
         'android',
-        (config) => {
-            (fonts || []).forEach((asset) => {
+        async (config) => {
+            const resolvedFonts = await (0, utils_1.resolveFontPaths)(fonts, config.modRequest.projectRoot);
+            await Promise.all(resolvedFonts.map(async (asset) => {
                 const fontsDir = path_1.default.join(config.modRequest.platformProjectRoot, 'app/src/main/assets/fonts');
-                fs_1.default.mkdirSync(fontsDir, { recursive: true });
+                await promises_1.default.mkdir(fontsDir, { recursive: true });
                 const output = path_1.default.join(fontsDir, path_1.default.basename(asset));
-                fs_1.default.copyFileSync(asset, output);
-            });
+                await promises_1.default.copyFile(asset, output);
+            }));
             return config;
         },
     ]);

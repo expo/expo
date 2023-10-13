@@ -8,6 +8,8 @@ import {
 } from 'expo/config-plugins';
 import path from 'path';
 
+import { resolveFontPaths } from './utils';
+
 export const withFontsIos: ConfigPlugin<string[]> = (config, fonts) => {
   config = addFontsToTarget(config, fonts);
   config = addFontsToPlist(config, fonts);
@@ -15,40 +17,33 @@ export const withFontsIos: ConfigPlugin<string[]> = (config, fonts) => {
 };
 
 function addFontsToTarget(config: ExpoConfig, fonts: string[]) {
-  return withXcodeProject(config, (config) => {
+  return withXcodeProject(config, async (config) => {
+    const resolvedFonts = await resolveFontPaths(fonts, config.modRequest.projectRoot);
     const project = config.modResults;
     const platformProjectRoot = config.modRequest.platformProjectRoot;
     IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');
-    addResourceFile(project, platformProjectRoot, fonts);
+    addResourceFile(project, platformProjectRoot, resolvedFonts);
     return config;
   });
 }
 
 function addFontsToPlist(config: ExpoConfig, fonts: string[]) {
-  return withInfoPlist(config, (config) => {
-    // @ts-ignore Type mismatch with the lib
+  return withInfoPlist(config, async (config) => {
+    const resolvedFonts = await resolveFontPaths(fonts, config.modRequest.projectRoot);
     const existingFonts = config.modResults.UIAppFonts || [];
 
-    const fontList = fonts.map((font) => path.basename(font)) ?? [];
-
-    const allFonts = [
-      // @ts-expect-error
-      ...existingFonts,
-      ...fontList,
-    ];
-
-    // @ts-ignore Type mismatch with the lib
+    const fontList = resolvedFonts.map((font) => path.basename(font)) ?? [];
+    const allFonts = [...existingFonts, ...fontList];
     config.modResults.UIAppFonts = Array.from(new Set(allFonts));
 
     return config;
   });
 }
 
-function addResourceFile(project: XcodeProject, platformRoot: string, f?: string[]) {
-  return (f ?? [])
+function addResourceFile(project: XcodeProject, platformRoot: string, f: string[]) {
+  return f
     .map((font) => {
       const fontPath = path.relative(platformRoot, font);
-
       return project.addResourceFile(fontPath, {
         target: project.getFirstTarget().uuid,
       });

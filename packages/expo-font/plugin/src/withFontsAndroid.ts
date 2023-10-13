@@ -1,20 +1,25 @@
 import { ConfigPlugin, withDangerousMod } from 'expo/config-plugins';
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
+
+import { resolveFontPaths } from './utils';
 
 export const withFontsAndroid: ConfigPlugin<string[]> = (config, fonts) => {
   return withDangerousMod(config, [
     'android',
-    (config) => {
-      (fonts || []).forEach((asset) => {
-        const fontsDir = path.join(
-          config.modRequest.platformProjectRoot,
-          'app/src/main/assets/fonts'
-        );
-        fs.mkdirSync(fontsDir, { recursive: true });
-        const output = path.join(fontsDir, path.basename(asset));
-        fs.copyFileSync(asset, output);
-      });
+    async (config) => {
+      const resolvedFonts = await resolveFontPaths(fonts, config.modRequest.projectRoot);
+      await Promise.all(
+        resolvedFonts.map(async (asset) => {
+          const fontsDir = path.join(
+            config.modRequest.platformProjectRoot,
+            'app/src/main/assets/fonts'
+          );
+          await fs.mkdir(fontsDir, { recursive: true });
+          const output = path.join(fontsDir, path.basename(asset));
+          await fs.copyFile(asset, output);
+        })
+      );
       return config;
     },
   ]);
