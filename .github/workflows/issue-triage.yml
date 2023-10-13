@@ -79,6 +79,8 @@ jobs:
 
   issue-accepted:
     runs-on: ubuntu-22.04
+    permissions:
+      issues: write
     if: github.event.label.name == 'issue accepted'
     steps:
       - name: Comment on issue
@@ -94,6 +96,22 @@ jobs:
               This comment acknowledges we believe this may be a bug and there’s enough information to investigate it.
               However, we can’t promise any sort of timeline for resolution. We prioritize issues based on severity, breadth of impact, and alignment with our roadmap. If you’d like to help move it more quickly, you can continue to investigate it more deeply and/or you can open a pull request that fixes the cause.
             `})
+      - name: Remove "Needs Review" label
+        uses: actions/github-script@v6
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: ['needs review']
+              })
+            } catch (e) {
+              if (e.status != 404) {
+                throw e;
+              }
+            }
       - name: 👀 Checkout
         uses: actions/checkout@v3
       - name: ➕ Add `bin` to GITHUB_PATH
