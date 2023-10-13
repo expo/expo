@@ -6,10 +6,10 @@ import {
   ArrowRightIcon,
   CameraPlusDuotoneIcon,
   DiscordIcon,
-  DiscourseIcon,
   GithubIcon,
   Image03DuotoneIcon,
   Mail01Icon,
+  MessageDotsSquareDuotoneIcon,
   NotificationMessageDuotoneIcon,
   RedditIcon,
   XLogoIcon,
@@ -293,8 +293,8 @@ export function JoinTheCommunity() {
           <CommunityGridCell
             title="Forums"
             description="Ask or answer a question on the forums."
-            link="https://forums.expo.dev/"
-            icon={<DiscourseIcon className="icon-lg text-palette-white" />}
+            link="https://discord.gg/expo"
+            icon={<MessageDotsSquareDuotoneIcon className="icon-lg text-palette-white" />}
           />
         </Row>
         <Row>

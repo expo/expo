@@ -40,7 +40,7 @@ export const SidebarFooter = () => {
       />
       <SidebarSingleEntry
         secondary
-        href="https://forums.expo.dev"
+        href="https://discord.gg/expo"
         title="Forums"
         Icon={MessageDotsSquareIcon}
         isExternal
