@@ -81,7 +81,7 @@ jobs:
 
   ios-test:
     needs: ios-build
-    runs-on: macos-13
+    runs-on: macos-12
     env:
       REACT_NATIVE_OVERRIDE_VERSION: 9999.9999.9999
     steps:
@@ -89,8 +89,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 14.3
-        run: sudo xcode-select --switch /Applications/Xcode_14.3.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🌠 Download builds
@@ -120,7 +118,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: bare-expo-artifacts
-          path: ~/.maestro/tests
+          path: |
+            ~/.maestro/tests
+            ~/Library/Logs/maestro
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')

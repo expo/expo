@@ -83,7 +83,7 @@ async function testAsync(
   const maestroFlowFilePath = path.join(projectRoot, MAESTRO_GENERATED_FLOW);
   await createMaestroFlowAsync(projectRoot, maestroFlowFilePath);
   console.log(`\n📷 Starting Maestro tests - maestroFlowFilePath[${maestroFlowFilePath}]`);
-  await spawnAsync('maestro', ['test', maestroFlowFilePath], { stdio: 'inherit' });
+  await spawnAsync('maestro', ['--device', deviceId, 'test', maestroFlowFilePath], { stdio: 'inherit' });
 }
 
 /**
