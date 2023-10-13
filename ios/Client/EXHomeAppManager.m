@@ -13,17 +13,14 @@
 #import "EXReactAppManager+Private.h"
 #import "EXVersionManagerObjC.h"
 #import "EXVersions.h"
+#import "EXEmbeddedHomeLoader.h"
 
 #import <EXConstants/EXConstantsService.h>
 
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
 
-#if defined(EX_DETACHED)
-#import "ExpoKit-Swift.h"
-#else
 #import "Expo_Go-Swift.h"
-#endif // defined(EX_DETACHED)
 
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
@@ -31,8 +28,6 @@
 @import EXUpdates;
 
 NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
-NSString *kEXHomeBundleResourceName = @"kernel.ios";
-NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 @implementation EXHomeAppManager
 
@@ -168,47 +163,6 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
     initialHomeUrl = [EXKernelLinkingManager initialUrlFromLaunchOptions:[self launchOptionsForBridge]];
   }
   return initialHomeUrl;
-}
-
-+ (EXManifestAndAssetRequestHeaders * _Nullable)bundledHomeManifestAndAssetRequestHeaders
-{
-  NSString *manifestAndAssetRequestHeadersJson = nil;
-  BOOL usesNSBundleManifest = NO;
-
-  // if developing, use development manifest from EXBuildConstants
-  if ([EXBuildConstants sharedInstance].isDevKernel) {
-    manifestAndAssetRequestHeadersJson = [EXBuildConstants sharedInstance].kernelManifestAndAssetRequestHeadersJsonString;
-  }
-
-  // otherwise use published manifest
-  if (!manifestAndAssetRequestHeadersJson) {
-    NSString *manifestPath = [[NSBundle mainBundle] pathForResource:kEXHomeManifestResourceName ofType:@"json"];
-    if (manifestPath) {
-      NSError *error;
-      usesNSBundleManifest = YES;
-      NSString *manifestJson = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:&error];
-      if (!error) {
-        manifestAndAssetRequestHeadersJson = [NSString stringWithFormat:@"{\"manifest\": %@, \"assetRequestHeaders\":{}}", manifestJson];
-      }
-    }
-  }
-
-  if (manifestAndAssetRequestHeadersJson) {
-    id manifestAndAssetRequestHeaders = RCTJSONParse(manifestAndAssetRequestHeadersJson, nil);
-    if ([manifestAndAssetRequestHeaders isKindOfClass:[NSDictionary class]]) {
-      id manifest = manifestAndAssetRequestHeaders[@"manifest"];
-      id assetRequestHeaders = manifestAndAssetRequestHeaders[@"assetRequestHeaders"];
-      if ([manifest isKindOfClass:[NSDictionary class]]) {
-        if (usesNSBundleManifest && !([manifest[@"id"] isEqualToString:@"@exponent/home"])) {
-          DDLogError(@"Bundled kernel manifest was published with an id other than @exponent/home");
-        }
-        return [[EXManifestAndAssetRequestHeaders alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:manifest]
-                                                      assetRequestHeaders:assetRequestHeaders];
-      }
-    }
-  }
-
-  return nil;
 }
 
 - (BOOL)requiresValidManifests

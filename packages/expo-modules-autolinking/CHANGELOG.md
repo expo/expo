@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 1.6.0 — 2023-09-15
+
+### 🐛 Bug fixes
+
 - Maintain hierarchical order when linking isolated modules ([#24351](https://github.com/expo/expo/pull/24351) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others

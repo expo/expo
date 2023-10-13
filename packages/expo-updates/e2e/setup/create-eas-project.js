@@ -26,5 +26,5 @@ const runtimeVersion = '1.0.0';
 
   await initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin });
 
-  await setupE2EAppAsync(projectRoot, localCliBin, repoRoot);
+  await setupE2EAppAsync(projectRoot, { localCliBin, repoRoot });
 })();

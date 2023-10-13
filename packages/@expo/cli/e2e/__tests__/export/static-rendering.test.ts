@@ -23,9 +23,10 @@ describe('exports static', () => {
           cwd: projectRoot,
           env: {
             NODE_ENV: 'production',
-            EXPO_USE_STATIC: '1',
+            EXPO_USE_STATIC: 'static',
             E2E_ROUTER_SRC: 'static-rendering',
             E2E_ROUTER_ASYNC: 'development',
+            EXPO_USE_FAST_RESOLVER: 'true',
           },
         }
       );
@@ -100,7 +101,7 @@ describe('exports static', () => {
 
     // Injected by framework
     expect(files).toContain('_sitemap.html');
-    expect(files).toContain('[...404].html');
+    expect(files).toContain('+not-found.html');
 
     // Normal routes
     expect(files).toContain('about.html');

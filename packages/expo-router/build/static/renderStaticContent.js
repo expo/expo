@@ -50,7 +50,7 @@ const debug = require('debug')('expo:router:renderStaticContent');
 react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options) {
-    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, options);
+    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, { preserveApiRoutes: true, ...options });
     if (!routeTree) {
         throw new Error('No routes found');
     }

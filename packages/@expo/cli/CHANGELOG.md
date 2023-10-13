@@ -4,11 +4,63 @@
 
 ### 🛠 Breaking changes
 
+- Enable `tsconfigPaths` by default flag ([#24490](https://github.com/expo/expo/pull/24490) by [@marklawlor](https://github.com/marklawlor))
+
+### 🎉 New features
+
+- Add `file` to server manifest to support mjs/cjs API Routes. ([#24739](https://github.com/expo/expo/pull/24739) by [@EvanBacon](https://github.com/EvanBacon))
+- Add new `+not-found` convention for 404s. ([#24528](https://github.com/expo/expo/pull/24528) by [@EvanBacon](https://github.com/EvanBacon))
+- Automatically optimize transformations based on Hermes usage. ([#24672](https://github.com/expo/expo/pull/24672) by [@EvanBacon](https://github.com/EvanBacon))
+- Shim `react-native-web` BackHandler to remove excessive error message. ([#24726](https://github.com/expo/expo/pull/24726) by [@EvanBacon](https://github.com/EvanBacon))
+- `npx expo install --check|fix` now checks for and fixes an out-of-date `expo` package patch release ([#24142](https://github.com/expo/expo/pull/24142) by [@keith-kurak](https://github.com/keith-kurak))
+
+### 🐛 Bug fixes
+
+- Fix app directory resolution. ([#24738](https://github.com/expo/expo/pull/24738) by [@EvanBacon](https://github.com/EvanBacon))
+- Skip generating Hermes sourcemaps when `--dump-sourcemap` is not provided. ([#24689](https://github.com/expo/expo/pull/24689) by [@EvanBacon](https://github.com/EvanBacon))
+- Resolve browser shims with mismatched extensions. ([#24671](https://github.com/expo/expo/pull/24671) by [@EvanBacon](https://github.com/EvanBacon))
+- Ensure a unique static path is generated for each group during static extraction ([#24218](https://github.com/expo/expo/pull/24218) by [@marklawlor](https://github.com/marklawlor))
+- Fallback to `xcrun devicectl` for iOS 17 to launch the app. ([#24635](https://github.com/expo/expo/pull/24635) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Update doc blocks for Expo Router type generation. ([#24797](https://github.com/expo/expo/pull/24797) by [@EvanBacon](https://github.com/EvanBacon))
+- Drop warning for tsconfigPaths. ([#24686](https://github.com/expo/expo/pull/24686) by [@EvanBacon](https://github.com/EvanBacon))
+- Add tests for `baseUrl` with new resolver. ([#24673](https://github.com/expo/expo/pull/24673) by [@EvanBacon](https://github.com/EvanBacon))
+- Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+- Improve truncated Metro Node.js errors. ([#24546](https://github.com/expo/expo/pull/24546) by [@EvanBacon](https://github.com/EvanBacon))
+- Skip extraneous static HTML export in server mode. ([#24529](https://github.com/expo/expo/pull/24529) by [@EvanBacon](https://github.com/EvanBacon))
+- Fully drop support for `expo.entryFile` in the `app.json`. ([#24688](https://github.com/expo/expo/pull/24688) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove `isCSSEnabled` flag from e2e tests ([#24489](https://github.com/expo/expo/pull/24489) by [@marklawlor](https://github.com/marklawlor))
+- Use Metro and web TypeScript types from `expo` instead of `expo-router`. ([#24255](https://github.com/expo/expo/pull/24255) by [@marklawlor](https://github.com/marklawlor))
+- Speed up Metro tests with new resolver. ([#24616](https://github.com/expo/expo/pull/24616) by [@EvanBacon](https://github.com/EvanBacon))
+- Skip loading the telemetry client when disabled. ([#24841](https://github.com/expo/expo/pull/24841) by [@byCedric](https://github.com/byCedric))
+
+## 0.10.13 — 2023-09-27
+
+### 🐛 Bug fixes
+
+- Fallback to `xcrun devicectl` for iOS 17 to launch the app. ([#24635](https://github.com/expo/expo/pull/24635) by [@byCedric](https://github.com/byCedric))
+
+## 0.13.2 — 2023-09-18
+
+### 🐛 Bug fixes
+
+- Fix SPA web mode in Expo Router. ([#24472](https://github.com/expo/expo/pull/24472) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.13.1 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.0 — 2023-09-15
+
+### 🛠 Breaking changes
+
 - Drop `/logs` and remove `@expo/dev-server` package. ([#24272](https://github.com/expo/expo/pull/24272) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
-- `npx expo install --check|fix` now checks for and fixes an out-of-date `expo` package patch release ([#24142](https://github.com/expo/expo/pull/24142) by [@keith-kurak](https://github.com/keith-kurak))
+- Add experimental API Routes for Expo Router v3. ([#24429](https://github.com/expo/expo/pull/24429) by [@EvanBacon](https://github.com/EvanBacon))
 - Support mocking Node.js externals for client-side bundles. ([#24453](https://github.com/expo/expo/pull/24453) by [@EvanBacon](https://github.com/EvanBacon))
 - Add additional port check after build to ensure port is still available. ([#24315](https://github.com/expo/expo/pull/24315) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for bun as a package manager. ([#24344](https://github.com/expo/expo/pull/24344) by [@EvanBacon](https://github.com/EvanBacon))

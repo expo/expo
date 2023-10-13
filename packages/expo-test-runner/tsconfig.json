@@ -1,21 +1,10 @@
 {
   "include": ["./src"],
-  "extends": "@tsconfig/node14/tsconfig.json",
+  "extends": "../../tsconfig.node",
   "compilerOptions": {
     "outDir": "./build",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "types": [],
-    "typeRoots": ["./ts-declarations", "node_modules/@types"],
+    "paths": {},
     "sourceMap": true,
-    "declaration": true,
-    "inlineSources": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "strictFunctionTypes": true,
-    "skipLibCheck": true,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
-    "allowSyntheticDefaultImports": true
+    "inlineSources": true
   }
 }

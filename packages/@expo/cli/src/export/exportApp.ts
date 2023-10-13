@@ -1,11 +1,12 @@
+import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import { createBundlesAsync } from './createBundles';
 import { exportAssetsAsync, exportCssAssetsAsync } from './exportAssets';
 import { unstable_exportStaticAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
+import { createBundlesAsync } from './fork-bundleAsync';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
 import { printBundleSizes } from './printBundleSizes';
@@ -53,9 +54,13 @@ export async function exportAppAsync(
   setNodeEnv(dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
-  const exp = await getPublicExpoManifestAsync(projectRoot);
+  const projectConfig = getConfig(projectRoot);
+  const exp = await getPublicExpoManifestAsync(projectRoot, {
+    // Web doesn't require validation.
+    skipValidation: platforms.length === 1 && platforms[0] === 'web',
+  });
 
-  const useWebSSG = exp.web?.output === 'static';
+  const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
   const basePath = (exp.experiments?.basePath?.replace(/\/+$/, '') ?? '').trim();
 
   // Print out logs
@@ -82,18 +87,17 @@ export async function exportAppAsync(
   await copyPublicFolderAsync(publicPath, staticFolder);
 
   // Run metro bundler and create the JS bundles/source maps.
-  const bundles = await createBundlesAsync(
-    projectRoot,
-    { resetCache: !!clear },
-    {
-      platforms,
-      minify,
-      // TODO: Breaks asset exports
-      // platforms: useWebSSG ? platforms.filter((platform) => platform !== 'web') : platforms,
-      dev,
-      // TODO: Disable source map generation if we aren't outputting them.
-    }
-  );
+  const bundles = await createBundlesAsync(projectRoot, projectConfig, {
+    clear: !!clear,
+    platforms,
+    minify,
+    sourcemaps: dumpSourcemap,
+    // TODO: Breaks asset exports
+    // platforms: useServerRendering
+    //   ? platforms.filter((platform) => platform !== 'web')
+    //   : platforms,
+    dev,
+  });
 
   const bundleEntries = Object.entries(bundles);
   if (bundleEntries.length) {
@@ -121,19 +125,21 @@ export async function exportAppAsync(
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
   const { hashes, fileNames } = await writeBundlesAsync({
     bundles,
-    useWebSSG,
+    useServerRendering,
     outputDir: bundlesPath,
   });
 
   Log.log('Finished saving JS Bundles');
 
   if (platforms.includes('web')) {
-    if (useWebSSG) {
+    if (useServerRendering) {
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
         minify,
         basePath,
         includeMaps: dumpSourcemap,
+        // @ts-expect-error: server not on type yet
+        exportServer: exp.web?.output === 'server',
       });
       Log.log('Finished saving static files');
     } else {

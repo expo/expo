@@ -4,7 +4,6 @@ package host.exp.exponent.experience
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Debug
 import android.view.View
@@ -33,7 +32,6 @@ import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.notifications.NotificationsPackage
-import expo.modules.permissions.PermissionsPackage
 import expo.modules.splashscreen.SplashScreenImageResizeMode
 import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
@@ -108,16 +106,12 @@ open class HomeActivity : BaseExperienceActivity() {
   private fun tryInstallLeakCanary(shouldAskForPermissions: Boolean) {
     if (BuildConfig.DEBUG && Constants.ENABLE_LEAK_CANARY) {
       // Leak canary needs WRITE_EXTERNAL_STORAGE permission
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        if (shouldAskForPermissions && ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-          ) != PackageManager.PERMISSION_GRANTED
-        ) {
-          requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1248919246)
-        } else {
-          LeakCanary.install(application)
-        }
+      if (shouldAskForPermissions && ContextCompat.checkSelfPermission(
+          this,
+          Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED
+      ) {
+        requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1248919246)
       } else {
         LeakCanary.install(application)
       }
@@ -154,7 +148,6 @@ open class HomeActivity : BaseExperienceActivity() {
     fun homeExpoPackages(): List<Package> {
       return listOf(
         ConstantsPackage(),
-        PermissionsPackage(),
         FileSystemPackage(),
         BarCodeScannerPackage(),
         KeepAwakePackage(),

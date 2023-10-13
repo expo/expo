@@ -38,11 +38,11 @@ function createBundleHash(bundle: string | Uint8Array): string {
 export async function writeBundlesAsync({
   bundles,
   outputDir,
-  useWebSSG,
+  useServerRendering,
 }: {
   bundles: Partial<Record<Platform, Pick<BundleOutput, 'hermesBytecodeBundle' | 'code'>>>;
   outputDir: string;
-  useWebSSG?: boolean;
+  useServerRendering?: boolean;
 }) {
   const hashes: Partial<Record<Platform, string>> = {};
   const fileNames: Partial<Record<Platform, string>> = {};
@@ -52,7 +52,7 @@ export async function writeBundlesAsync({
     Pick<BundleOutput, 'hermesBytecodeBundle' | 'code'>,
   ][]) {
     // TODO: Move native to use the newer `_expo/...` bundle writing system.
-    if (platform === 'web' && useWebSSG) {
+    if (platform === 'web' && useServerRendering) {
       continue;
     }
     const bundle = bundleOutput.hermesBytecodeBundle ?? bundleOutput.code;
@@ -85,17 +85,17 @@ export async function writeSourceMapsAsync({
   fileNames,
   outputDir,
 }: {
-  bundles: Record<
-    string,
-    Pick<BundleOutput, 'hermesSourcemap' | 'map' | 'hermesBytecodeBundle' | 'code'>
+  bundles: Partial<
+    Record<string, Pick<BundleOutput, 'hermesSourcemap' | 'map' | 'hermesBytecodeBundle' | 'code'>>
   >;
-  hashes?: Record<string, string>;
-  fileNames?: Record<string, string>;
+  hashes?: Record<string, string | undefined>;
+  fileNames?: Record<string, string | undefined>;
   outputDir: string;
 }): Promise<SourceMapWriteResult[]> {
   return (
     await Promise.all(
       Object.entries(bundles).map(async ([platform, bundle]) => {
+        if (!bundle) return null;
         const sourceMap = bundle.hermesSourcemap ?? bundle.map;
         if (!sourceMap) {
           debug(`Skip writing sourcemap (platform: ${platform})`);
@@ -103,7 +103,7 @@ export async function writeSourceMapsAsync({
         }
 
         const hash =
-          hashes?.[platform] ?? createBundleHash(bundle.hermesBytecodeBundle ?? bundle.code);
+          hashes?.[platform] ?? createBundleHash(bundle.hermesBytecodeBundle ?? bundle.code!);
         const mapName = `${platform}-${hash}.map`;
         await fs.writeFile(path.join(outputDir, mapName), sourceMap);
 
@@ -137,8 +137,8 @@ export async function writeMetadataJsonAsync({
   fileNames,
 }: {
   outputDir: string;
-  bundles: Record<string, Pick<BundleOutput, 'assets'>>;
-  fileNames: Record<string, string>;
+  bundles: Record<string, Pick<BundleOutput, 'assets'> | undefined>;
+  fileNames: Record<string, string | undefined>;
 }) {
   const contents = createMetadataJson({
     bundles,
@@ -168,12 +168,13 @@ export async function writeDebugHtmlAsync({
   fileNames,
 }: {
   outputDir: string;
-  fileNames: Record<string, string>;
+  fileNames: Record<string, string | undefined>;
 }) {
   // Make a debug html so user can debug their bundles
   const contents = `
       ${Object.values(fileNames)
-        .map((fileName) => `<script src="${path.join('bundles', fileName)}"></script>`)
+        .filter((value) => value != null)
+        .map((fileName) => `<script src="${path.join('bundles', fileName!)}"></script>`)
         .join('\n      ')}
       Open up this file in Chrome. In the JavaScript developer console, navigate to the Source tab.
       You can see a red colored folder containing the original source code from your bundle.

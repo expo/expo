@@ -37,7 +37,11 @@ export default class LaunchBrowserImplWindows implements LaunchBrowserImpl, Laun
       const { status } = await spawnAsync(
         'powershell.exe',
         ['-c', `Get-Package -Name '${this.MAP[browserType].fullName}'`],
-        { env, stdio: 'ignore' }
+        {
+          // @ts-expect-error: Missing NODE_ENV
+          env,
+          stdio: 'ignore',
+        }
       );
       result = status === 0;
     } catch {
@@ -83,7 +87,11 @@ export default class LaunchBrowserImplWindows implements LaunchBrowserImpl, Laun
             '-c',
             `taskkill.exe /pid @(Get-WmiObject Win32_Process -Filter "name = '${this._appId}.exe' AND CommandLine LIKE '%chrome-devtools-frontend.appspot.com%'" | Select-Object -ExpandProperty ProcessId)`,
           ],
-          { env, stdio: 'ignore' }
+          {
+            // @ts-expect-error: Missing NODE_ENV
+            env,
+            stdio: 'ignore',
+          }
         );
       } catch {}
       this._appId = undefined;

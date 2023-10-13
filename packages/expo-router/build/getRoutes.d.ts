@@ -13,6 +13,8 @@ type TreeNode = {
 };
 type Options = {
     ignore?: RegExp[];
+    preserveApiRoutes?: boolean;
+    ignoreRequireErrors?: boolean;
 };
 /** Convert a flat map of file nodes into a nested tree of files. */
 export declare function getRecursiveTree(files: FileNode[]): TreeNode;
@@ -28,11 +30,10 @@ export declare function getRoutes(contextModule: RequireContext, options?: Optio
 export declare function getRoutesAsync(contextModule: RequireContext, options?: Options): Promise<RouteNode | null>;
 /** Get routes without unmatched or sitemap. */
 export declare function getExactRoutes(contextModule: RequireContext, options?: Options): RouteNode | null;
-export declare function getExactRoutesAsync(contextModule: RequireContext, options?: Options): Promise<RouteNode | null>;
 /**
  * Exposed for testing.
  * @returns a top-level deep dynamic route if it exists, otherwise null.
  */
-export declare function getUserDefinedDeepDynamicRoute(routes: RouteNode): RouteNode | null;
+export declare function getUserDefinedTopLevelNotFoundRoute(routes: RouteNode): RouteNode | null;
 export {};
 //# sourceMappingURL=getRoutes.d.ts.map

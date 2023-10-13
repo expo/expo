@@ -13,11 +13,11 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 With EAS Build, you can build a workflow for running E2E tests for your application. In this guide, you will learn how to use one of the most popular libraries ([Detox](https://wix.github.io/Detox)) to do that.
 
-This guide explains how to run E2E tests with Detox in a bare workflow project. You can use [`@config-plugins/detox`](https://github.com/expo/config-plugins/tree/main/packages/detox) for a managed project, but you may need to adjust some of the instructions in this guide in order to do so.
+This guide explains how to run E2E tests with Detox in a bare workflow project. You can use [`@config-plugins/detox`](https://github.com/expo/config-plugins/tree/main/packages/detox) for a managed project, but you may need to adjust some of the instructions in this guide to do so.
 
 ## Running iOS tests
 
-### 1. Initialize a new Bare Workflow project
+### 1. Initialize a new bare workflow project
 
 Let's start by initializing a new Expo project, installing and configuring `@config-plugins/detox`, and running `npx expo prebuild` to generate the native projects.
 
@@ -122,7 +122,7 @@ Let's add two development dependencies to the project - `jest` and `detox`. `jes
 
 <Terminal
   cmd={[
-    '# Install jest & detox',
+    '# Install jest and detox',
     '$ npm install --save-dev jest detox',
     '# Create Detox configuration files',
     '$ npx detox init -r jest',
@@ -318,7 +318,7 @@ fi
 
 ```
 
-Next, create **eas-hooks/eas-build-on-success.sh** with the following contents. The script runs different commands for Android and iOS. For iOS, the only command is `detox test`. For Android, it's a bit more complicated. You'll have to start the emulator prior to running the tests as `detox` sometimes seems to be having problems with starting the emulator on its own and it can get stuck on running the first test from your test suite. After the `detox test` run, there is a command that kills the previously started emulator.
+Next, create **eas-hooks/eas-build-on-success.sh** with the following contents. The script runs different commands for Android and iOS. For iOS, the only command is `detox test`. For Android, it's a bit more complicated. You'll have to start the emulator before running the tests as `detox` sometimes seems to be having problems with starting the emulator on its own and it can get stuck on running the first test from your test suite. After the `detox test` run, there is a command that kills the previously started emulator.
 
 ```sh eas-hooks/eas-build-on-success.sh
 #!/usr/bin/env bash
@@ -452,7 +452,7 @@ After going to the build details page you should see that the build failed. Use 
 
 The full example from this guide is available at https://github.com/expo/eas-tests-example.
 
-## Alternative Approaches
+## Alternative approaches
 
 ### Using development builds to speed up test run time
 

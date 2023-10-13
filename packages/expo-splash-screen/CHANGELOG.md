@@ -4,11 +4,25 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- On Android, remove `isClickable` on `SplashScreenView` that caused incorrect behaviour with `TalkBack`. ([#24601](https://github.com/expo/expo/pull/24601) by [@alanhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 0.23.1 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.23.0 — 2023-09-15
+
 ### 🎉 New features
 
 - Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

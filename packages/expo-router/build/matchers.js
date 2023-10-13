@@ -15,7 +15,7 @@ function matchDeepDynamicRouteName(name) {
 exports.matchDeepDynamicRouteName = matchDeepDynamicRouteName;
 /** Match `(page)` -> `page` */
 function matchGroupName(name) {
-    return name.match(/^\(([^/]+?)\)$/)?.[1];
+    return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
 }
 exports.matchGroupName = matchGroupName;
 function getNameFromFilePath(name) {
@@ -34,7 +34,7 @@ function getContextKey(name) {
 exports.getContextKey = getContextKey;
 /** Remove `.js`, `.ts`, `.jsx`, `.tsx` */
 function removeSupportedExtensions(name) {
-    return name.replace(/\.[jt]sx?$/g, '');
+    return name.replace(/(\+api)?\.[jt]sx?$/g, '');
 }
 exports.removeSupportedExtensions = removeSupportedExtensions;
 // Remove any amount of `./` and `../` from the start of the string

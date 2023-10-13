@@ -11,9 +11,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.nfc.NfcAdapter
-import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
@@ -173,7 +171,7 @@ class Kernel : KernelInterface() {
       isStarted = true
     }
     hasError = false
-    if (!exponentSharedPreferences.shouldUseInternetKernel()) {
+    if (!exponentSharedPreferences.shouldUseEmbeddedKernel()) {
       try {
         // Make sure we can get the manifest successfully. This can fail in dev mode
         // if the kernel packager is not running.
@@ -198,37 +196,8 @@ class Kernel : KernelInterface() {
     // On first run use the embedded kernel js but fire off a request for the new js in the background.
     val bundleUrlToLoad =
       bundleUrl + (if (ExpoViewBuildConfig.DEBUG) "" else "?versionName=" + ExpoViewKernel.instance.versionName)
-    if (exponentSharedPreferences.shouldUseInternetKernel() &&
-      exponentSharedPreferences.getBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_FIRST_KERNEL_RUN_KEY)
-    ) {
+    if (exponentSharedPreferences.shouldUseEmbeddedKernel()) {
       kernelBundleListener().onBundleLoaded(Constants.EMBEDDED_KERNEL_PATH)
-
-      // Now preload bundle for next run
-      Handler().postDelayed(
-        {
-          Exponent.instance.loadJSBundle(
-            null,
-            bundleUrlToLoad,
-            bundleAssetRequestHeaders,
-            KernelConstants.KERNEL_BUNDLE_ID,
-            RNObject.UNVERSIONED,
-            object : BundleListener {
-              override fun onBundleLoaded(localBundlePath: String) {
-                exponentSharedPreferences.setBoolean(
-                  ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_FIRST_KERNEL_RUN_KEY,
-                  false
-                )
-                EXL.d(TAG, "Successfully preloaded kernel bundle")
-              }
-
-              override fun onError(e: Exception) {
-                EXL.e(TAG, "Error preloading kernel bundle: $e")
-              }
-            }
-          )
-        },
-        KernelConstants.DELAY_TO_PRELOAD_KERNEL_JS
-      )
     } else {
       var shouldNotUseKernelCache =
         exponentSharedPreferences.getBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.SHOULD_NOT_USE_KERNEL_CACHE)
@@ -898,11 +867,9 @@ class Kernel : KernelInterface() {
           task.finishAndRemoveTask()
           return
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          if (taskInfo.numActivities == 1 && (taskInfo.topActivity!!.className == LauncherActivity::class.java.name)) {
-            task.finishAndRemoveTask()
-            return
-          }
+        if (taskInfo.numActivities == 1 && (taskInfo.topActivity!!.className == LauncherActivity::class.java.name)) {
+          task.finishAndRemoveTask()
+          return
         }
       }
     } catch (e: NoSuchFieldException) {
@@ -966,7 +933,7 @@ class Kernel : KernelInterface() {
   }
 
   override fun handleError(exception: Exception) {
-    handleReactNativeError(ExceptionUtils.exceptionToErrorMessage(exception), null, -1, true)
+    handleReactNativeError(ExceptionUtils.exceptionToErrorMessage(exception), null, -1, true, ExceptionUtils.exceptionToErrorHeader(exception))
   }
 
   // TODO: probably need to call this from other places.
@@ -1113,7 +1080,8 @@ class Kernel : KernelInterface() {
       errorMessage: ExponentErrorMessage,
       detailsUnversioned: Any?,
       exceptionId: Int?,
-      isFatal: Boolean
+      isFatal: Boolean,
+      errorHeader: String? = null,
     ) {
       val stackList = ArrayList<Bundle>()
       if (detailsUnversioned != null) {
@@ -1153,7 +1121,7 @@ class Kernel : KernelInterface() {
       val stack = stackList.toTypedArray()
       BaseExperienceActivity.addError(
         ExponentError(
-          errorMessage, stack,
+          errorMessage, errorHeader, stack,
           getExceptionId(exceptionId), isFatal
         )
       )

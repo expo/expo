@@ -39,7 +39,7 @@ export const expoConfig: Command = async (argv) => {
     { configAsync },
     // ../utils/errors
     { logCmdError },
-  ] = await Promise.all([import('./configAsync'), import('../utils/errors')]);
+  ] = await Promise.all([import('./configAsync.js'), import('../utils/errors.js')]);
 
   return configAsync(getProjectRoot(args), {
     // Parsed options

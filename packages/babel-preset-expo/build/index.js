@@ -1,11 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const common_1 = require("./common");
+const expo_inline_manifest_plugin_1 = require("./expo-inline-manifest-plugin");
+const expo_router_plugin_1 = require("./expo-router-plugin");
 const lazyImports_1 = require("./lazyImports");
 function babelPresetExpo(api, options = {}) {
     const { web = {}, native = {}, reanimated } = options;
-    const bundler = api.caller(getBundler);
+    const bundler = api.caller(common_1.getBundler);
     const isWebpack = bundler === 'webpack';
     let platform = api.caller((caller) => caller?.platform);
+    const engine = api.caller((caller) => caller?.engine) ?? 'default';
     // If the `platform` prop is not defined then this must be a custom config that isn't
     // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
     if (!platform && isWebpack) {
@@ -16,18 +20,27 @@ function babelPresetExpo(api, options = {}) {
             // Only disable import/export transform when Webpack is used because
             // Metro does not support tree-shaking.
             disableImportExportTransform: isWebpack,
+            unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
             ...web,
         }
-        : { disableImportExportTransform: false, ...native };
+        : {
+            disableImportExportTransform: false,
+            unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
+            ...native,
+        };
     // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
     // `metro-react-native-babel-preset` will handle it.
     const lazyImportsOption = options?.lazyImports;
-    const extraPlugins = [
+    const extraPlugins = [];
+    if (engine !== 'hermes') {
         // `metro-react-native-babel-preset` configures this plugin with `{ loose: true }`, which breaks all
         // getters and setters in spread objects. We need to add this plugin ourself without that option.
         // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
-        [require.resolve('@babel/plugin-proposal-object-rest-spread'), { loose: false }],
-    ];
+        extraPlugins.push([
+            require.resolve('@babel/plugin-proposal-object-rest-spread'),
+            { loose: false },
+        ]);
+    }
     // Set true to disable `@babel/plugin-transform-react-jsx`
     // we override this logic outside of the metro preset so we can add support for
     // React 17 automatic JSX transformations.
@@ -55,6 +68,13 @@ function babelPresetExpo(api, options = {}) {
     }
     if (platform === 'web') {
         extraPlugins.push(require.resolve('babel-plugin-react-native-web'));
+        // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
+        if (bundler !== 'webpack') {
+            extraPlugins.push(expo_inline_manifest_plugin_1.expoInlineManifestPlugin);
+        }
+    }
+    if ((0, common_1.hasModule)('expo-router')) {
+        extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
     }
     return {
         presets: [
@@ -71,7 +91,7 @@ function babelPresetExpo(api, options = {}) {
                     disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
                     // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
                     enableBabelRuntime: platformOptions.enableBabelRuntime,
-                    // Defaults to `'default'`, can also use `'hermes-canary'`
+                    // This reduces the amount of transforms required, as Hermes supports many modern language features.
                     unstable_transformProfile: platformOptions.unstable_transformProfile,
                     // Set true to disable `@babel/plugin-transform-react-jsx` and
                     // the deprecated packages `@babel/plugin-transform-react-jsx-self`, and `@babel/plugin-transform-react-jsx-source`.
@@ -101,13 +121,13 @@ function babelPresetExpo(api, options = {}) {
             require.resolve('@babel/plugin-proposal-export-namespace-from'),
             // Automatically add `react-native-reanimated/plugin` when the package is installed.
             // TODO: Move to be a customTransformOption.
-            hasModule('react-native-reanimated') &&
+            (0, common_1.hasModule)('react-native-reanimated') &&
                 reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
         ].filter(Boolean),
     };
 }
 function getAliasPlugin() {
-    if (!hasModule('@expo/vector-icons')) {
+    if (!(0, common_1.hasModule)('@expo/vector-icons')) {
         return null;
     }
     return [
@@ -118,33 +138,6 @@ function getAliasPlugin() {
             },
         },
     ];
-}
-function hasModule(name) {
-    try {
-        return !!require.resolve(name);
-    }
-    catch (error) {
-        if (error.code === 'MODULE_NOT_FOUND' && error.message.includes(name)) {
-            return false;
-        }
-        throw error;
-    }
-}
-/** Determine which bundler is being used. */
-function getBundler(caller) {
-    if (!caller)
-        return null;
-    if (caller.bundler)
-        return caller.bundler;
-    if (
-    // Known tools that use `webpack`-mode via `babel-loader`: `@expo/webpack-config`, Next.js <10
-    caller.name === 'babel-loader' ||
-        // NextJS 11 uses this custom caller name.
-        caller.name === 'next-babel-turbo-loader') {
-        return 'webpack';
-    }
-    // Assume anything else is Metro.
-    return 'metro';
 }
 exports.default = babelPresetExpo;
 module.exports = babelPresetExpo;

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserDefinedDeepDynamicRoute = exports.getExactRoutesAsync = exports.getExactRoutes = exports.getRoutesAsync = exports.getRoutes = exports.assertDuplicateRoutes = exports.generateDynamic = exports.generateDynamicFromSegment = exports.getRecursiveTree = void 0;
+exports.getUserDefinedTopLevelNotFoundRoute = exports.getExactRoutes = exports.getRoutesAsync = exports.getRoutes = exports.assertDuplicateRoutes = exports.generateDynamic = exports.generateDynamicFromSegment = exports.getRecursiveTree = void 0;
 const import_mode_1 = __importDefault(require("./import-mode"));
 const matchers_1 = require("./matchers");
 /** Convert a flat map of file nodes into a nested tree of files. */
@@ -66,9 +66,19 @@ function getTreeNodesAsRouteNodes(nodes) {
         .filter(Boolean);
 }
 function generateDynamicFromSegment(name) {
+    if (name === '+not-found') {
+        return {
+            name: '+not-found',
+            deep: true,
+            notFound: true,
+        };
+    }
     const deepDynamicName = (0, matchers_1.matchDeepDynamicRouteName)(name);
     const dynamicName = deepDynamicName ?? (0, matchers_1.matchDynamicName)(name);
-    return dynamicName ? { name: dynamicName, deep: !!deepDynamicName } : null;
+    if (!dynamicName) {
+        return null;
+    }
+    return { name: dynamicName, deep: !!deepDynamicName };
 }
 exports.generateDynamicFromSegment = generateDynamicFromSegment;
 function generateDynamic(name) {
@@ -116,16 +126,6 @@ function applyDefaultInitialRouteName(node) {
         initialRouteName,
     };
 }
-function cloneGroupRoute(node, { name: nextName }) {
-    const groupName = `(${nextName})`;
-    const parts = node.contextKey.split('/');
-    parts[parts.length - 2] = groupName;
-    return {
-        ...node,
-        route: groupName,
-        contextKey: parts.join('/'),
-    };
-}
 function folderNodeToRouteNode({ name, children }) {
     // Empty folder, skip it.
     if (!children.length) {
@@ -145,19 +145,8 @@ function fileNodeToRouteNode(tree) {
     if (!node)
         throw new Error('node must be defined');
     const dynamic = generateDynamic(name);
-    const groupName = (0, matchers_1.matchGroupName)(name);
-    const multiGroup = groupName?.includes(',');
-    const clones = multiGroup ? groupName.split(',').map((v) => ({ name: v.trim() })) : null;
-    // Assert duplicates:
-    if (clones) {
-        const names = new Set();
-        for (const clone of clones) {
-            if (names.has(clone.name)) {
-                throw new Error(`Array syntax cannot contain duplicate group name "${clone.name}" in "${node.contextKey}".`);
-            }
-            names.add(clone.name);
-        }
-    }
+    const clones = extrapolateGroupRoutes(name, node.contextKey);
+    clones.delete(name);
     const output = {
         loadRoute: node.loadRoute,
         route: name,
@@ -165,8 +154,12 @@ function fileNodeToRouteNode(tree) {
         children: getTreeNodesAsRouteNodes(children),
         dynamic,
     };
-    if (Array.isArray(clones)) {
-        return clones.map((clone) => applyDefaultInitialRouteName(cloneGroupRoute({ ...output }, clone)));
+    if (clones.size) {
+        return [...clones].map((clone) => applyDefaultInitialRouteName({
+            ...output,
+            contextKey: node.contextKey.replace(output.route, clone),
+            route: clone,
+        }));
     }
     return [
         applyDefaultInitialRouteName({
@@ -178,13 +171,33 @@ function fileNodeToRouteNode(tree) {
         }),
     ];
 }
+function extrapolateGroupRoutes(route, contextKey, routes = new Set()) {
+    const match = (0, matchers_1.matchGroupName)(route);
+    if (!match) {
+        routes.add(route);
+        return routes;
+    }
+    const groups = match?.split(',');
+    const groupsSet = new Set(groups);
+    if (groupsSet.size !== groups.length) {
+        throw new Error(`Array syntax cannot contain duplicate group name "${groups}" in "${contextKey}".`);
+    }
+    if (groups.length === 1) {
+        routes.add(route);
+        return routes;
+    }
+    for (const group of groups) {
+        extrapolateGroupRoutes(route.replace(match, group.trim()), contextKey, routes);
+    }
+    return routes;
+}
 function treeNodeToRouteNode(tree) {
     if (tree.node) {
         return fileNodeToRouteNode(tree);
     }
     return folderNodeToRouteNode(tree);
 }
-function contextModuleToFileNodes(contextModule, files = contextModule.keys()) {
+function contextModuleToFileNodes(contextModule, options = {}, files = contextModule.keys()) {
     const nodes = files.map((key) => {
         // In development, check if the file exports a default component
         // this helps keep things snappy when creating files. In production we load all screens lazily.
@@ -193,14 +206,25 @@ function contextModuleToFileNodes(contextModule, files = contextModule.keys()) {
                 // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
                 // filter the missing routes.
                 if (import_mode_1.default === 'sync') {
-                    if (!contextModule(key)?.default) {
+                    const isApi = key.match(/\+api\.[jt]sx?$/);
+                    if (!isApi && !contextModule(key)?.default) {
                         return null;
                     }
                 }
             }
             const node = {
                 loadRoute() {
-                    return contextModule(key);
+                    if (options.ignoreRequireErrors) {
+                        try {
+                            return contextModule(key);
+                        }
+                        catch {
+                            return {};
+                        }
+                    }
+                    else {
+                        return contextModule(key);
+                    }
                 },
                 normalizedName: (0, matchers_1.getNameFromFilePath)(key),
                 contextKey: key,
@@ -225,10 +249,6 @@ function hasCustomRootLayoutNode(routes) {
         return true;
     }
     return false;
-}
-function treeNodesToRootRoute(treeNode) {
-    const routes = treeNodeToRouteNode(treeNode);
-    return withOptionalRootLayout(routes);
 }
 function processKeys(files, options) {
     const { ignore } = options;
@@ -271,7 +291,7 @@ function getRoutes(contextModule, options) {
 }
 exports.getRoutes = getRoutes;
 async function getRoutesAsync(contextModule, options) {
-    const route = await getExactRoutesAsync(contextModule, options);
+    const route = getExactRoutes(contextModule, options);
     if (!route) {
         return null;
     }
@@ -283,13 +303,16 @@ async function getRoutesAsync(contextModule, options) {
 exports.getRoutesAsync = getRoutesAsync;
 function getIgnoreList(options) {
     const ignore = [/^\.\/\+html\.[tj]sx?$/, ...(options?.ignore ?? [])];
+    if (options?.preserveApiRoutes !== true) {
+        ignore.push(/\+api\.[tj]sx?$/);
+    }
     return ignore;
 }
 /** Get routes without unmatched or sitemap. */
 function getExactRoutes(contextModule, options) {
     const treeNodes = contextModuleToTree(contextModule, options);
-    const route = treeNodesToRootRoute(treeNodes);
-    return route || null;
+    const routes = treeNodeToRouteNode(treeNodes);
+    return withOptionalRootLayout(routes) || null;
 }
 exports.getExactRoutes = getExactRoutes;
 function contextModuleToTree(contextModule, options) {
@@ -298,24 +321,18 @@ function contextModuleToTree(contextModule, options) {
         ignore: getIgnoreList(options),
     });
     assertDuplicateRoutes(allowed);
-    const files = contextModuleToFileNodes(contextModule, allowed);
+    const files = contextModuleToFileNodes(contextModule, options, allowed);
     return getRecursiveTree(files);
 }
-async function getExactRoutesAsync(contextModule, options) {
-    const treeNodes = contextModuleToTree(contextModule, options);
-    const route = treeNodesToRootRoute(treeNodes);
-    return route || null;
-}
-exports.getExactRoutesAsync = getExactRoutesAsync;
 function appendSitemapRoute(routes) {
     if (!routes.children.length ||
         // Allow overriding the sitemap route
         routes.children.some((route) => route.route === '_sitemap')) {
         return routes;
     }
-    const { Sitemap, getNavOptions } = require('./views/Sitemap');
     routes.children.push({
         loadRoute() {
+            const { Sitemap, getNavOptions } = require('./views/Sitemap');
             return { default: Sitemap, getNavOptions };
         },
         route: '_sitemap',
@@ -329,15 +346,15 @@ function appendSitemapRoute(routes) {
 }
 function appendUnmatchedRoute(routes) {
     // Auto add not found route if it doesn't exist
-    const userDefinedDynamicRoute = getUserDefinedDeepDynamicRoute(routes);
+    const userDefinedDynamicRoute = getUserDefinedTopLevelNotFoundRoute(routes);
     if (!userDefinedDynamicRoute) {
         routes.children.push({
             loadRoute() {
                 return { default: require('./views/Unmatched').Unmatched };
             },
-            route: '[...404]',
-            contextKey: './[...404].tsx',
-            dynamic: [{ name: '404', deep: true }],
+            route: '+not-found',
+            contextKey: './+not-found.tsx',
+            dynamic: [{ name: '+not-found', deep: true, notFound: true }],
             children: [],
             generated: true,
             internal: true,
@@ -349,19 +366,18 @@ function appendUnmatchedRoute(routes) {
  * Exposed for testing.
  * @returns a top-level deep dynamic route if it exists, otherwise null.
  */
-function getUserDefinedDeepDynamicRoute(routes) {
+function getUserDefinedTopLevelNotFoundRoute(routes) {
     // Auto add not found route if it doesn't exist
     for (const route of routes.children ?? []) {
         if (route.generated)
             continue;
-        const opaqueRoute = (0, matchers_1.stripInvisibleSegmentsFromPath)(route.route);
-        const isDeepDynamic = (0, matchers_1.matchDeepDynamicRouteName)(opaqueRoute);
+        const isDeepDynamic = (0, matchers_1.stripGroupSegmentsFromPath)(route.route) === '+not-found' && route.route.match(/\+not-found$/);
         if (isDeepDynamic) {
             return route;
         }
         // Recurse through group routes
         if ((0, matchers_1.matchGroupName)(route.route)) {
-            const child = getUserDefinedDeepDynamicRoute(route);
+            const child = getUserDefinedTopLevelNotFoundRoute(route);
             if (child) {
                 return child;
             }
@@ -369,7 +385,7 @@ function getUserDefinedDeepDynamicRoute(routes) {
     }
     return null;
 }
-exports.getUserDefinedDeepDynamicRoute = getUserDefinedDeepDynamicRoute;
+exports.getUserDefinedTopLevelNotFoundRoute = getUserDefinedTopLevelNotFoundRoute;
 function withOptionalRootLayout(routes) {
     if (!routes?.length) {
         return null;

@@ -171,6 +171,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/build/automating-submissions/': '/build/automate-submissions/',
   '/workflow/run-on-device/': '/build/internal-distribution/',
 
+  // EAS Build
+  '/build-reference/eas-json/': '/eas/json/#eas-build',
+
   // Old redirects
   '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
   '/versions/latest/sdk/': '/versions/latest/',

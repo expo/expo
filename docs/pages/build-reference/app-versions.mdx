@@ -15,7 +15,7 @@ In managed projects, we use fields `version`/`android.versionCode`/`ios.buildNum
 - [`ios.buildNumber`][config-ios-buildnumber] field in **app.json** represents `CFBundleVersion` in **Info.plist**.
 - [`android.versionCode`][config-android-versioncode] field in **app.json** represents `versionCode` in **android/app/build.gradle**.
 
-One of the most frequent causes of app store rejections is submitting a build with a duplicate version number. This happens when a developer forgets to increment the version number prior to running a build.
+One of the most frequent causes of app store rejections is submitting a build with a duplicate version number. This happens when a developer forgets to increment the version number before running a build.
 
 EAS Build can manage automatically incrementing these versions for you if you opt into using the "remote" app version source. The default behavior is to use a "local" app version source, which means you control versions manually in their respective config files.
 

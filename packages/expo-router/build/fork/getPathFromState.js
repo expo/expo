@@ -333,10 +333,16 @@ function getPathWithConventionsCollapsed({ pattern, routePath, params, preserveG
         // Since the page doesn't actually exist
         if (p.startsWith('*')) {
             if (preserveDynamicRoutes) {
+                if (name === 'not-found') {
+                    return '+not-found';
+                }
                 return `[...${name}]`;
             }
             if (params[name]) {
-                return params[name].join('/');
+                if (Array.isArray(params[name])) {
+                    return params[name].join('/');
+                }
+                return params[name];
             }
             if (i === 0) {
                 // This can occur when a wildcard matches all routes and the given path was `/`.

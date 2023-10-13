@@ -24,6 +24,7 @@ export interface SetupTypedRoutesOptions {
   metro?: Server | null;
   typesDirectory: string;
   projectRoot: string;
+  /** Absolute expo router routes directory. */
   routerDirectory: string;
 }
 
@@ -34,10 +35,8 @@ export async function setupTypedRoutes({
   projectRoot,
   routerDirectory,
 }: SetupTypedRoutesOptions) {
-  const absoluteRouterDirectory = path.join(projectRoot, routerDirectory);
-
   const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath, isRouteFile } =
-    getTypedRoutesUtils(absoluteRouterDirectory);
+    getTypedRoutesUtils(routerDirectory);
 
   if (metro && server) {
     // Setup out watcher first
@@ -74,10 +73,10 @@ export async function setupTypedRoutes({
     });
   }
 
-  if (await directoryExistsAsync(absoluteRouterDirectory)) {
+  if (await directoryExistsAsync(routerDirectory)) {
     // Do we need to walk the entire tree on startup?
     // Idea: Store the list of files in the last write, then simply check Git for what files have changed
-    await walk(absoluteRouterDirectory, addFilePath);
+    await walk(routerDirectory, addFilePath);
   }
 
   regenerateRouterDotTS(
@@ -506,6 +505,7 @@ declare module "expo-router" {
    * @param props.replace Should replace the current route without adding to the history.
    * @param props.asChild Forward props to child component. Useful for custom buttons.
    * @param props.children Child elements to render the content.
+   * @param props.className On web, this sets the HTML \`class\` directly. On native, this can be used with CSS interop tools like Nativewind.
    */
   export const Link: LinkComponent;
   

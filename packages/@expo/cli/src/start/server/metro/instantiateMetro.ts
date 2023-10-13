@@ -11,7 +11,7 @@ import { URL } from 'url';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importCliServerApiFromProject, importExpoMetroConfig } from './resolveFromProject';
-import { getRouterDirectory } from './router';
+import { getRouterDirectoryModuleIdWithManifest } from './router';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
@@ -54,7 +54,7 @@ export async function loadMetroConfigAsync(
   projectRoot: string,
   options: LoadOptions,
   {
-    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true }).exp,
+    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
     isExporting,
   }: { exp?: ExpoConfig; isExporting: boolean }
 ) {
@@ -102,11 +102,12 @@ export async function loadMetroConfigAsync(
   const platformBundlers = getPlatformBundlers(exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
-    routerDirectory: exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot),
+    routerDirectory: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     config,
     platformBundlers,
-    isTsconfigPathsEnabled: !!exp.experiments?.tsconfigPaths,
+    isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',
+    isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
   });
 
   logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
@@ -134,7 +135,6 @@ export async function instantiateMetroAsync(
   // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
   const { exp } = getConfig(projectRoot, {
     skipSDKVersionRequirement: true,
-    skipPlugins: true,
   });
 
   const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(

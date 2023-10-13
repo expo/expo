@@ -1,43 +1,20 @@
 package versioned.host.exp.exponent.modules.universal.notifications
 
-import android.content.Context
 import android.os.Bundle
-import android.os.ResultReceiver
-import expo.modules.core.Promise
+import expo.modules.kotlin.Promise
 import expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule
+import expo.modules.notifications.notifications.categories.NotificationActionRecord
 import expo.modules.notifications.notifications.model.NotificationCategory
-import expo.modules.notifications.service.NotificationsService
 import host.exp.exponent.kernel.ExperienceKey
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsIdUtils
-import java.util.*
 
 class ScopedExpoNotificationCategoriesModule(
-  context: Context,
   private val experienceKey: ExperienceKey
-) : ExpoNotificationCategoriesModule(context) {
-  override fun getNotificationCategoriesAsync(promise: Promise) {
-    NotificationsService.getCategories(
-      context,
-      object : ResultReceiver(null) {
-        override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-          val categories = resultData?.getParcelableArrayList<NotificationCategory>(NotificationsService.NOTIFICATION_CATEGORIES_KEY)
-          if (resultCode == NotificationsService.SUCCESS_CODE && categories != null) {
-            promise.resolve(serializeScopedCategories(categories))
-          } else {
-            promise.reject(
-              "ERR_CATEGORIES_FETCH_FAILED",
-              "A list of notification categories could not be fetched."
-            )
-          }
-        }
-      }
-    )
-  }
-
+) : ExpoNotificationCategoriesModule() {
   override fun setNotificationCategoryAsync(
     identifier: String,
-    actionArguments: List<HashMap<String, Any>>,
-    categoryOptions: HashMap<String, Any>?,
+    actionArguments: List<NotificationActionRecord>,
+    categoryOptions: Map<String, Any?>?,
     promise: Promise
   ) {
     val scopedCategoryIdentifier = ScopedNotificationsIdUtils.getScopedCategoryId(experienceKey, identifier)
@@ -54,13 +31,9 @@ class ScopedExpoNotificationCategoriesModule(
     super.deleteNotificationCategoryAsync(scopedCategoryIdentifier, promise)
   }
 
-  private fun serializeScopedCategories(categories: Collection<NotificationCategory>): ArrayList<Bundle?> {
-    val serializedCategories = arrayListOf<Bundle?>()
-    for (category in categories) {
-      if (ScopedNotificationsIdUtils.checkIfCategoryBelongsToExperience(experienceKey, category)) {
-        serializedCategories.add(mSerializer.toBundle(category))
-      }
-    }
-    return serializedCategories
+  override fun serializeCategories(categories: Collection<NotificationCategory>): List<Bundle?> {
+    return categories
+      .filter { ScopedNotificationsIdUtils.checkIfCategoryBelongsToExperience(experienceKey, it) }
+      .map(serializer::toBundle)
   }
 }

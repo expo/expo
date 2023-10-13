@@ -2,7 +2,6 @@
 #import "EXBuildConstants.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
-#import "EXUserNotificationManager.h"
 #import "EXKernel.h"
 #import "EXAbstractLoader.h"
 #import "EXKernelLinkingManager.h"
@@ -157,7 +156,7 @@
 - (NSDictionary *)extraParams
 {
   // we allow the vanilla RN dev menu in some circumstances.
-  BOOL isStandardDevMenuAllowed = [EXEnvironment sharedEnvironment].isDetached;
+  BOOL isStandardDevMenuAllowed = false;
   NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:@{
     @"manifest": _appRecord.appLoader.manifest.rawManifestJSON,
     @"constants": @{
@@ -271,12 +270,7 @@
 
 - (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull EXManifestsManifest *)manifest
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    NSLog(@"Standalone bundle remote url is %@", [EXEnvironment sharedEnvironment].standaloneManifestUrl);
-    return kEXEmbeddedBundleResourceName;
-  } else {
-    return manifest.legacyId;
-  }
+  return manifest.legacyId;
 }
 
 - (BOOL)appFetcherShouldInvalidateBundleCache:(EXAppFetcher *)appFetcher
@@ -541,11 +535,7 @@
 
 - (void)toggleDevMenu
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
-  } else {
-    [[EXKernel sharedInstance] switchTasks];
-  }
+  [[EXKernel sharedInstance] switchTasks];
 }
 
 - (void)setupWebSocketControls
@@ -631,18 +621,11 @@
 
 - (NSDictionary *)launchOptionsForBridge
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    // pass the native app's launch options to standalone bridge.
-    return [ExpoKit sharedInstance].launchOptions;
-  }
   return @{};
 }
 
 - (Class)moduleRegistryDelegateClass
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return [ExpoKit sharedInstance].moduleRegistryDelegateClass;
-  }
   return nil;
 }
 
@@ -682,14 +665,10 @@
     }
   }
 
-  expProps[@"shell"] = @(_appRecord == [EXKernel sharedInstance].appRegistry.standaloneAppRecord);
+  expProps[@"shell"] = @(_appRecord == nil);
   expProps[@"appOwnership"] = [self _appOwnership];
   if (_initialProps) {
     [expProps addEntriesFromDictionary:_initialProps];
-  }
-  EXPendingNotification *initialNotification = [[EXKernel sharedInstance].serviceRegistry.notificationsManager initialNotification];
-  if (initialNotification) {
-    expProps[@"notification"] = initialNotification.properties;
   }
 
   NSString *manifestString = nil;
@@ -714,19 +693,12 @@
 
 - (NSString *)_appOwnership
 {
-  if (_appRecord == [EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
-    return @"standalone";
-  }
   return @"expo";
 }
 
 - (NSString *)_executionEnvironment
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return EXConstantsExecutionEnvironmentStandalone;
-  } else {
-    return EXConstantsExecutionEnvironmentStoreClient;
-  }
+  return EXConstantsExecutionEnvironmentStoreClient;
 }
 
 - (NSString *)scopedDocumentDirectory

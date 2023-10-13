@@ -4,9 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Remove deprecated `makeUrl` function. ([#24300](https://github.com/expo/expo/pull/24300) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.1.0 — 2023-09-15
+
+### 🛠 Breaking changes
+
+- Remove deprecated `makeUrl` function. ([#24300](https://github.com/expo/expo/pull/24300) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

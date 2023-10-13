@@ -26,7 +26,7 @@ AppRegistry.registerComponent('App', () => ExpoRoot);
 
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options: any) {
-  const routeTree = getRoutes(ctx, options);
+  const routeTree = getRoutes(ctx, { preserveApiRoutes: true, ...options });
 
   if (!routeTree) {
     throw new Error('No routes found');

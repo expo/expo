@@ -8,7 +8,6 @@
 #import "EXKernelUtil.h"
 #import "EXKernelLinkingManager.h"
 #import "EXReactAppExceptionHandler.h"
-#import "EXRemoteNotificationManager.h"
 
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
