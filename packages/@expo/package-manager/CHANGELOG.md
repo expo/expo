@@ -6,8 +6,25 @@
 
 ### 🎉 New features
 
-- Added ability to generate a package add command without actually running it ([#24142](https://github.com/expo/expo/pull/24142) by [@keith-kurak](https://github.com/keith-kurak))
-- Add support for [Bun](https://bun.sh) package manager by [@colinhacks][https://github.com/colinhacks] ([#24168](https://github.com/expo/expo/pull/24168) by [@colinhacks](https://github.com/colinhacks))
+### 🐛 Bug fixes
+
+- Detect bun before yarn to allow bun install --yarn usage. ([#24360](https://github.com/expo/expo/pull/24360) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 1.1.2 — 2023-09-25
+
+### 🐛 Bug fixes
+
+- Detect bun before yarn to allow bun install --yarn usage. ([#24360](https://github.com/expo/expo/pull/24360) by [@byCedric](https://github.com/byCedric))
+
+## 1.2.0 — 2023-09-15
+
+### 🎉 New features
+
+- Add support for [Bun](https://bun.sh) package manager. ([#24168](https://github.com/expo/expo/pull/24168) by [@colinhacks](https://github.com/colinhacks))
 
 ### 🐛 Bug fixes
 
