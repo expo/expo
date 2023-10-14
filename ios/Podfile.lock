@@ -2885,7 +2885,7 @@ PODS:
     - React-Core
   - react-native-slider (4.4.2):
     - React-Core
-  - react-native-webview (13.2.2):
+  - react-native-webview (13.6.2):
     - React-Core
   - React-NativeModulesApple (0.72.5):
     - hermes-engine
@@ -4930,7 +4930,7 @@ SPEC CHECKSUMS:
   ExpoCellular: fcb9bc581cab254b63bfcffa60de0abd4e63550b
   ExpoClipboard: 6729cb7ff3f999bf555960a4f3b17dd6b0d919f2
   ExpoCrypto: 42485127a5968dda6f67ac5f2b42d3c0af31d7db
-  ExpoDevice: 3055a3229d414b8243323fddeb1ac2343548c2aa
+  ExpoDevice: 2b9831d480aaf5f361998dbed4ede8cd70bac245
   ExpoDocumentPicker: d3b6b0ed2dbbc2f05158e0294dd3f4673f386e5f
   ExpoFileSystem: 62cf8d5681581de1fb43b8af8ea6d7604eb786a6
   ExpoGL: 6aedfc52c13c1eea5728ec4504f96580bc4dee65
@@ -4942,7 +4942,7 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: df1cf76de3171cd57e7cc8a2547401404fcc0b31
   ExpoLinearGradient: 5d18293f89c063036121281175c4653d6a7c34a2
   ExpoLocalAuthentication: 2fed4b25cf8e54d36d5d1ebc9917e8325b3b5911
-  ExpoLocalization: 2d5f47577d67ce991ebdd951edf14fe1db85fa06
+  ExpoLocalization: ed5b03c44592ae8aa7c9103882082612f63c2aff
   ExpoMailComposer: f88bdf18939c94eb965db28c13ba2d85cba70112
   ExpoModulesCore: d8437d39da4407d3c6e7001535b9b6c940c62c1b
   ExpoModulesTestCore: 0287488fb9c7f189fcecd8e46ef6b995091aa5a3
@@ -5030,7 +5030,7 @@ SPEC CHECKSUMS:
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
   react-native-skia: 4753a9e236c5dfc73cfb98dccfff3496f12fd877
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
-  react-native-webview: b8ec89966713985111a14d6e4bf98d8b54bced0d
+  react-native-webview: 8fc09f66a1a5b16bbe37c3878fda27d5982bb776
   React-NativeModulesApple: 797bc6078d566eef3fb3f74127e6e1d2e945a15f
   React-perflogger: cd8886513f68e1c135a1e79d20575c6489641597
   React-RCTActionSheet: 726d2615ca62a77ce3e2c13d87f65379cdc73498
