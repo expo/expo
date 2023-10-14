@@ -6,8 +6,6 @@
 
 ### 🎉 New features
 
-- Add `android.manifestQueries` to allow adding and modifying the `<queries>` tag in the App Manifest. ([#24619](https://github.com/expo/expo/pull/24619) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
