@@ -26,7 +26,7 @@ function addFontsToTarget(config, fonts) {
 function addFontsToPlist(config, fonts) {
     return (0, config_plugins_1.withInfoPlist)(config, async (config) => {
         const resolvedFonts = await (0, utils_1.resolveFontPaths)(fonts, config.modRequest.projectRoot);
-        const existingFonts = config.modResults.UIAppFonts || [];
+        const existingFonts = getUIAppFonts(config.modResults);
         const fontList = resolvedFonts.map((font) => path_1.default.basename(font)) ?? [];
         const allFonts = [...existingFonts, ...fontList];
         config.modResults.UIAppFonts = Array.from(new Set(allFonts));
@@ -34,13 +34,21 @@ function addFontsToPlist(config, fonts) {
     });
 }
 function addResourceFile(project, platformRoot, f) {
-    return f
-        .map((font) => {
+    for (const font of f) {
         const fontPath = path_1.default.relative(platformRoot, font);
-        return project.addResourceFile(fontPath, {
-            target: project.getFirstTarget().uuid,
+        config_plugins_1.IOSConfig.XcodeUtils.addResourceFileToGroup({
+            filepath: fontPath,
+            groupName: 'Resources',
+            project,
+            isBuildFile: true,
+            verbose: true,
         });
-    })
-        .filter(Boolean)
-        .map((file) => file.basename);
+    }
+}
+function getUIAppFonts(infoPlist) {
+    const fonts = infoPlist['UIAppFonts'];
+    if (fonts != null && Array.isArray(fonts) && fonts.every((font) => typeof font === 'string')) {
+        return fonts;
+    }
+    return [];
 }

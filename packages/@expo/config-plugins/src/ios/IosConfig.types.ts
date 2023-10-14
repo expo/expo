@@ -27,7 +27,6 @@ export type InfoPlist = Record<string, JSONValue | undefined> & {
   ITSAppUsesNonExemptEncryption?: boolean;
   LSApplicationQueriesSchemes?: string[];
   UIBackgroundModes?: string[];
-  UIAppFonts?: string[];
   UISupportedInterfaceOrientations?: InterfaceOrientation[];
   GMSApiKey?: string;
   GADApplicationIdentifier?: string;

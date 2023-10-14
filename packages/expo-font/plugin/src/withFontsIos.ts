@@ -2,6 +2,7 @@ import { ExpoConfig } from '@expo/config-types';
 import {
   ConfigPlugin,
   IOSConfig,
+  InfoPlist,
   XcodeProject,
   withInfoPlist,
   withXcodeProject,
@@ -30,7 +31,7 @@ function addFontsToTarget(config: ExpoConfig, fonts: string[]) {
 function addFontsToPlist(config: ExpoConfig, fonts: string[]) {
   return withInfoPlist(config, async (config) => {
     const resolvedFonts = await resolveFontPaths(fonts, config.modRequest.projectRoot);
-    const existingFonts = config.modResults.UIAppFonts || [];
+    const existingFonts = getUIAppFonts(config.modResults);
 
     const fontList = resolvedFonts.map((font) => path.basename(font)) ?? [];
     const allFonts = [...existingFonts, ...fontList];
@@ -41,13 +42,22 @@ function addFontsToPlist(config: ExpoConfig, fonts: string[]) {
 }
 
 function addResourceFile(project: XcodeProject, platformRoot: string, f: string[]) {
-  return f
-    .map((font) => {
-      const fontPath = path.relative(platformRoot, font);
-      return project.addResourceFile(fontPath, {
-        target: project.getFirstTarget().uuid,
-      });
-    })
-    .filter(Boolean)
-    .map((file) => file.basename);
+  for (const font of f) {
+    const fontPath = path.relative(platformRoot, font);
+    IOSConfig.XcodeUtils.addResourceFileToGroup({
+      filepath: fontPath,
+      groupName: 'Resources',
+      project,
+      isBuildFile: true,
+      verbose: true,
+    });
+  }
+}
+
+function getUIAppFonts(infoPlist: InfoPlist): string[] {
+  const fonts = infoPlist['UIAppFonts'];
+  if (fonts != null && Array.isArray(fonts) && fonts.every((font) => typeof font === 'string')) {
+    return fonts as string[];
+  }
+  return [];
 }
