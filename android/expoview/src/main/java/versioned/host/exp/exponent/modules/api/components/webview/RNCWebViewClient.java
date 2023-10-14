@@ -71,7 +71,7 @@ public class RNCWebViewClient extends WebViewClient {
       ((RNCWebView) webView).dispatchEvent(
         webView,
         new TopLoadingStartEvent(
-          webView.getId(),
+          RNCWebViewWrapper.getReactTagFromWebView(webView),
           createWebViewEvent(webView, url)));
     }
 
@@ -125,7 +125,7 @@ public class RNCWebViewClient extends WebViewClient {
             FLog.w(TAG, "Couldn't use blocking synchronous call for onShouldStartLoadWithRequest due to debugging or missing Catalyst instance, falling back to old event-and-load.");
             progressChangedFilter.setWaitingForCommandLoadUrl(true);
 
-            int reactTag = view.getId();
+            int reactTag = RNCWebViewWrapper.getReactTagFromWebView(view);
             UIManagerHelper.getEventDispatcherForReactTag((ReactContext) view.getContext(), reactTag).dispatchEvent(new TopShouldStartLoadWithRequestEvent(
                     reactTag,
                     createWebViewEvent(view, url)));
@@ -240,8 +240,8 @@ public class RNCWebViewClient extends WebViewClient {
         eventData.putDouble("code", errorCode);
         eventData.putString("description", description);
 
-        int reactTag = webView.getId();
-        UIManagerHelper.getEventDispatcherForReactTag((ReactContext) webView.getContext(), reactTag).dispatchEvent(new TopLoadingErrorEvent(webView.getId(), eventData));
+        int reactTag = RNCWebViewWrapper.getReactTagFromWebView(webView);
+        UIManagerHelper.getEventDispatcherForReactTag((ReactContext) webView.getContext(), reactTag).dispatchEvent(new TopLoadingErrorEvent(reactTag, eventData));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -257,8 +257,8 @@ public class RNCWebViewClient extends WebViewClient {
             eventData.putInt("statusCode", errorResponse.getStatusCode());
             eventData.putString("description", errorResponse.getReasonPhrase());
 
-            int reactTag = webView.getId();
-            UIManagerHelper.getEventDispatcherForReactTag((ReactContext) webView.getContext(), reactTag).dispatchEvent(new TopHttpErrorEvent(webView.getId(), eventData));
+            int reactTag = RNCWebViewWrapper.getReactTagFromWebView(webView);
+            UIManagerHelper.getEventDispatcherForReactTag((ReactContext) webView.getContext(), reactTag).dispatchEvent(new TopHttpErrorEvent(reactTag, eventData));
         }
     }
 
@@ -287,21 +287,21 @@ public class RNCWebViewClient extends WebViewClient {
 
         WritableMap event = createWebViewEvent(webView, webView.getUrl());
         event.putBoolean("didCrash", detail.didCrash());
-        int reactTag = webView.getId();
-        UIManagerHelper.getEventDispatcherForReactTag((ReactContext) webView.getContext(), reactTag).dispatchEvent(new TopRenderProcessGoneEvent(webView.getId(), event));
+        int reactTag = RNCWebViewWrapper.getReactTagFromWebView(webView);
+        UIManagerHelper.getEventDispatcherForReactTag((ReactContext) webView.getContext(), reactTag).dispatchEvent(new TopRenderProcessGoneEvent(reactTag, event));
 
         // returning false would crash the app.
         return true;
     }
 
     protected void emitFinishEvent(WebView webView, String url) {
-        int reactTag = webView.getId();
-        UIManagerHelper.getEventDispatcherForReactTag((ReactContext) webView.getContext(), reactTag).dispatchEvent(new TopLoadingFinishEvent(webView.getId(), createWebViewEvent(webView, url)));
+        int reactTag = RNCWebViewWrapper.getReactTagFromWebView(webView);
+        UIManagerHelper.getEventDispatcherForReactTag((ReactContext) webView.getContext(), reactTag).dispatchEvent(new TopLoadingFinishEvent(reactTag, createWebViewEvent(webView, url)));
     }
 
     protected WritableMap createWebViewEvent(WebView webView, String url) {
         WritableMap event = Arguments.createMap();
-        event.putDouble("target", webView.getId());
+        event.putDouble("target", RNCWebViewWrapper.getReactTagFromWebView(webView));
         // Don't use webView.getUrl() here, the URL isn't updated to the new value yet in callbacks
         // like onPageFinished
         event.putString("url", url);

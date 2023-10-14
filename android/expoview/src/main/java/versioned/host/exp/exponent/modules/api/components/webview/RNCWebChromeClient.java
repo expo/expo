@@ -16,6 +16,7 @@ import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 import androidx.annotation.RequiresApi;
@@ -29,6 +30,7 @@ import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.uimanager.UIManagerHelper;
 import versioned.host.exp.exponent.modules.api.components.webview.events.TopLoadingProgressEvent;
+import versioned.host.exp.exponent.modules.api.components.webview.events.TopOpenWindowEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,6 +79,8 @@ public class RNCWebChromeClient extends WebChromeClient implements LifecycleEven
     protected RNCWebView.ProgressChangedFilter progressChangedFilter = null;
     protected boolean mAllowsProtectedMedia = false;
 
+    protected boolean mHasOnOpenWindowEvent = false;
+
     public RNCWebChromeClient(RNCWebView webView) {
         this.mWebView = webView;
     }
@@ -85,6 +89,24 @@ public class RNCWebChromeClient extends WebChromeClient implements LifecycleEven
     public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
 
         final WebView newWebView = new WebView(view.getContext());
+
+        if(mHasOnOpenWindowEvent) {
+            newWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading (WebView subview, String url) {
+                WritableMap event = Arguments.createMap();
+                event.putString("targetUrl", url);
+
+                ((RNCWebView) view).dispatchEvent(
+                    view,
+                    new TopOpenWindowEvent(RNCWebViewWrapper.getReactTagFromWebView(view), event)
+                );
+
+                return true;
+            }
+            });
+        }
+
         final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
         transport.setWebView(newWebView);
         resultMsg.sendToTarget();
@@ -108,15 +130,15 @@ public class RNCWebChromeClient extends WebChromeClient implements LifecycleEven
         if (progressChangedFilter.isWaitingForCommandLoadUrl()) {
             return;
         }
+        int reactTag = RNCWebViewWrapper.getReactTagFromWebView(webView);
         WritableMap event = Arguments.createMap();
-        event.putDouble("target", webView.getId());
+        event.putDouble("target", reactTag);
         event.putString("title", webView.getTitle());
         event.putString("url", url);
         event.putBoolean("canGoBack", webView.canGoBack());
         event.putBoolean("canGoForward", webView.canGoForward());
         event.putDouble("progress", (float) newProgress / 100);
 
-        int reactTag = webView.getId();
         UIManagerHelper.getEventDispatcherForReactTag(this.mWebView.getThemedReactContext(), reactTag).dispatchEvent(new TopLoadingProgressEvent(reactTag, event));
     }
 
@@ -342,5 +364,9 @@ public class RNCWebChromeClient extends WebChromeClient implements LifecycleEven
      */
     public void setAllowsProtectedMedia(boolean enabled) {
       mAllowsProtectedMedia = enabled;
+    }
+
+    public void setHasOnOpenWindowEvent(boolean hasEvent) {
+      mHasOnOpenWindowEvent = hasEvent;
     }
 }
