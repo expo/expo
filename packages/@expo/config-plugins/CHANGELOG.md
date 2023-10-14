@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added `ManifestQuery` type to represent top level `<queries>` tag in the android manifest. ([#24772](https://github.com/expo/expo/pull/24772) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 7.5.0 — 2023-09-15
 
 ### 🛠 Breaking changes
