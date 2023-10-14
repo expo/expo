@@ -1,1 +1,1 @@
-{"version":3,"file":"Application.types.js","sourceRoot":"","sources":["../src/Application.types.ts"],"names":[],"mappings":"","sourcesContent":[""]}
+{"version":3,"file":"Application.types.js","sourceRoot":"","sources":["../src/Application.types.ts"],"names":[],"mappings":"","sourcesContent":["// @docsMissing\nexport type ApplicationReleaseType =\n  | 'unknown'\n  | 'simulator'\n  | 'enterprise'\n  | 'dev'\n  | 'adHoc'\n  | 'appStore';\n\n// @docsMissing\nexport type PushNotificationServiceEnvironment = 'development' | 'production' | null;\n"]}
