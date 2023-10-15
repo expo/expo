@@ -18,13 +18,9 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 On iOS, _the Taptic engine will do nothing if any of the following conditions are true on a user's device:_
 
-- Low Power Mode is enabled ([Feature Request](https://expo.canny.io/feature-requests/p/expose-low-power-mode-ios-battery-saver-android))
-- User disabled the Taptic Engine in settings ([Feature Request](https://expo.canny.io/feature-requests/p/react-native-settings))
-- Haptic engine generation is too low (less than 2nd gen) - Private API
-  - Using private API will get your app rejected: `[[UIDevice currentDevice] valueForKey: @"_feedbackSupportLevel"]` so this is not added in Expo
-- iOS version is less than 10 (iPhone 7 is the first phone to support this)
-  - This could be found through: `Constants.platform.ios.systemVersion` or `Constants.platform.ios.platform`
-- iOS Camera is active (in order prevent destabilization)
+- Low Power Mode is enabled. This can be detected with [`expo-battery`](/versions/latest/sdk/battery/).
+- User disabled the Taptic Engine in settings.
+- iOS Camera is active (in order prevent destabilization).
 
 <PlatformsSection android emulator ios simulator />
 
