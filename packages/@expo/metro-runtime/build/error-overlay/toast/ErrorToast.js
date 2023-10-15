@@ -46,10 +46,11 @@ function useSymbolicatedLog(log) {
 function ErrorToast(props) {
     const { totalLogCount, level, log } = props;
     useSymbolicatedLog(log);
-    return (react_1.default.createElement(react_native_1.View, { style: toastStyles.container },
-        react_1.default.createElement(react_native_1.Pressable, { style: { flex: 1 }, onPress: props.onPressOpen }, ({ 
+    return (<react_native_1.View style={toastStyles.container}>
+      <react_native_1.Pressable style={{ flex: 1 }} onPress={props.onPressOpen}>
+        {({ 
         /** @ts-expect-error: react-native types are broken. */
-        hovered, pressed, }) => (react_1.default.createElement(react_native_1.View, { style: [
+        hovered, pressed, }) => (<react_native_1.View style={[
                 toastStyles.press,
                 {
                     // @ts-expect-error: web-only type
@@ -60,28 +61,35 @@ function ErrorToast(props) {
                             ? '#111111'
                             : LogBoxStyle.getBackgroundColor(),
                 },
-            ] },
-            react_1.default.createElement(Count, { count: totalLogCount, level: level }),
-            react_1.default.createElement(ErrorToastMessage_1.ErrorToastMessage, { message: log.message }),
-            react_1.default.createElement(Dismiss, { onPress: props.onPressDismiss }))))));
+            ]}>
+            <Count count={totalLogCount} level={level}/>
+            <ErrorToastMessage_1.ErrorToastMessage message={log.message}/>
+            <Dismiss onPress={props.onPressDismiss}/>
+          </react_native_1.View>)}
+      </react_native_1.Pressable>
+    </react_native_1.View>);
 }
 exports.ErrorToast = ErrorToast;
 function Count({ count, level }) {
-    return (react_1.default.createElement(react_native_1.View, { style: [countStyles.inside, countStyles[level]] },
-        react_1.default.createElement(react_native_1.Text, { style: countStyles.text }, count <= 1 ? '!' : count)));
+    return (<react_native_1.View style={[countStyles.inside, countStyles[level]]}>
+      <react_native_1.Text style={countStyles.text}>{count <= 1 ? '!' : count}</react_native_1.Text>
+    </react_native_1.View>);
 }
 function Dismiss({ onPress }) {
-    return (react_1.default.createElement(react_native_1.Pressable, { style: {
+    return (<react_native_1.Pressable style={{
             marginLeft: 5,
-        }, hitSlop: {
+        }} hitSlop={{
             top: 12,
             right: 10,
             bottom: 12,
             left: 10,
-        }, onPress: onPress }, ({ 
-    /** @ts-expect-error: react-native types are broken. */
-    hovered, pressed, }) => (react_1.default.createElement(react_native_1.View, { style: [dismissStyles.press, hovered && { opacity: 0.8 }, pressed && { opacity: 0.5 }] },
-        react_1.default.createElement(react_native_1.Image, { source: require('@expo/metro-runtime/assets/close.png'), style: dismissStyles.image })))));
+        }} onPress={onPress}>
+      {({ 
+        /** @ts-expect-error: react-native types are broken. */
+        hovered, pressed, }) => (<react_native_1.View style={[dismissStyles.press, hovered && { opacity: 0.8 }, pressed && { opacity: 0.5 }]}>
+          <react_native_1.Image source={require('@expo/metro-runtime/assets/close.png')} style={dismissStyles.image}/>
+        </react_native_1.View>)}
+    </react_native_1.Pressable>);
 }
 const countStyles = react_native_1.StyleSheet.create({
     warn: {

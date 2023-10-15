@@ -43,20 +43,26 @@ function LogBoxInspectorHeader(props) {
     const { selectedLogIndex: selectedIndex, logs } = (0, LogContext_1.useLogs)();
     const total = logs.length;
     if (props.level === 'syntax') {
-        return (react_1.default.createElement(react_native_1.View, { style: [styles.safeArea, styles[props.level]] },
-            react_1.default.createElement(react_native_1.View, { style: styles.header },
-                react_1.default.createElement(react_native_1.View, { style: styles.title },
-                    react_1.default.createElement(react_native_1.Text, { style: styles.titleText }, "Failed to compile")))));
+        return (<react_native_1.View style={[styles.safeArea, styles[props.level]]}>
+        <react_native_1.View style={styles.header}>
+          <react_native_1.View style={styles.title}>
+            <react_native_1.Text style={styles.titleText}>Failed to compile</react_native_1.Text>
+          </react_native_1.View>
+        </react_native_1.View>
+      </react_native_1.View>);
     }
     const prevIndex = selectedIndex - 1 < 0 ? total - 1 : selectedIndex - 1;
     const nextIndex = selectedIndex + 1 > total - 1 ? 0 : selectedIndex + 1;
     const titleText = `Log ${selectedIndex + 1} of ${total}`;
-    return (react_1.default.createElement(react_native_1.View, { style: [styles.safeArea, styles[props.level]] },
-        react_1.default.createElement(react_native_1.View, { style: styles.header },
-            react_1.default.createElement(LogBoxInspectorHeaderButton, { disabled: total <= 1, level: props.level, image: require('@expo/metro-runtime/assets/chevron-left.png'), onPress: () => props.onSelectIndex(prevIndex) }),
-            react_1.default.createElement(react_native_1.View, { style: styles.title },
-                react_1.default.createElement(react_native_1.Text, { style: styles.titleText }, titleText)),
-            react_1.default.createElement(LogBoxInspectorHeaderButton, { disabled: total <= 1, level: props.level, image: require('@expo/metro-runtime/assets/chevron-right.png'), onPress: () => props.onSelectIndex(nextIndex) }))));
+    return (<react_native_1.View style={[styles.safeArea, styles[props.level]]}>
+      <react_native_1.View style={styles.header}>
+        <LogBoxInspectorHeaderButton disabled={total <= 1} level={props.level} image={require('@expo/metro-runtime/assets/chevron-left.png')} onPress={() => props.onSelectIndex(prevIndex)}/>
+        <react_native_1.View style={styles.title}>
+          <react_native_1.Text style={styles.titleText}>{titleText}</react_native_1.Text>
+        </react_native_1.View>
+        <LogBoxInspectorHeaderButton disabled={total <= 1} level={props.level} image={require('@expo/metro-runtime/assets/chevron-right.png')} onPress={() => props.onSelectIndex(nextIndex)}/>
+      </react_native_1.View>
+    </react_native_1.View>);
 }
 exports.LogBoxInspectorHeader = LogBoxInspectorHeader;
 const backgroundForLevel = (level) => ({
@@ -82,7 +88,9 @@ const backgroundForLevel = (level) => ({
     },
 })[level];
 function LogBoxInspectorHeaderButton(props) {
-    return (react_1.default.createElement(LogBoxButton_1.LogBoxButton, { backgroundColor: backgroundForLevel(props.level), onPress: props.disabled ? undefined : props.onPress, style: headerStyles.button }, props.disabled ? null : (react_1.default.createElement(react_native_1.Image, { source: props.image, tintColor: LogBoxStyle.getTextColor(), style: headerStyles.buttonImage }))));
+    return (<LogBoxButton_1.LogBoxButton backgroundColor={backgroundForLevel(props.level)} onPress={props.disabled ? undefined : props.onPress} style={headerStyles.button}>
+      {props.disabled ? null : (<react_native_1.Image source={props.image} tintColor={LogBoxStyle.getTextColor()} style={headerStyles.buttonImage}/>)}
+    </LogBoxButton_1.LogBoxButton>);
 }
 const headerStyles = react_native_1.StyleSheet.create({
     button: {

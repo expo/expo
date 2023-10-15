@@ -43,13 +43,17 @@ const formatProjectFilePath_1 = require("../formatProjectFilePath");
 function LogBoxInspectorStackFrame(props) {
     const { frame, onPress } = props;
     const location = (0, formatProjectFilePath_1.getStackFormattedLocation)(process.env.EXPO_PROJECT_ROOT, frame);
-    return (react_1.default.createElement(react_native_1.View, { style: styles.frameContainer },
-        react_1.default.createElement(LogBoxButton_1.LogBoxButton, { backgroundColor: {
-                default: 'transparent',
-                pressed: onPress ? LogBoxStyle.getBackgroundColor(1) : 'transparent',
-            }, onPress: onPress, style: styles.frame },
-            react_1.default.createElement(react_native_1.Text, { style: [styles.name, frame.collapse === true && styles.dim] }, frame.methodName),
-            react_1.default.createElement(react_native_1.Text, { ellipsizeMode: "middle", numberOfLines: 1, style: [styles.location, frame.collapse === true && styles.dim] }, location))));
+    return (<react_native_1.View style={styles.frameContainer}>
+      <LogBoxButton_1.LogBoxButton backgroundColor={{
+            default: 'transparent',
+            pressed: onPress ? LogBoxStyle.getBackgroundColor(1) : 'transparent',
+        }} onPress={onPress} style={styles.frame}>
+        <react_native_1.Text style={[styles.name, frame.collapse === true && styles.dim]}>{frame.methodName}</react_native_1.Text>
+        <react_native_1.Text ellipsizeMode="middle" numberOfLines={1} style={[styles.location, frame.collapse === true && styles.dim]}>
+          {location}
+        </react_native_1.Text>
+      </LogBoxButton_1.LogBoxButton>
+    </react_native_1.View>);
 }
 exports.LogBoxInspectorStackFrame = LogBoxInspectorStackFrame;
 const styles = react_native_1.StyleSheet.create({

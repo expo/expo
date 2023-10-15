@@ -339,13 +339,14 @@ function withSubscription(WrappedComponent) {
                 // We can't show any fallback UI here, because the error may be with <View> or <Text>.
                 return null;
             }
-            return (React.createElement(LogContext_1.LogContext.Provider, { value: {
+            return (<LogContext_1.LogContext.Provider value={{
                     selectedLogIndex: this.state.selectedLogIndex,
                     isDisabled: this.state.isDisabled,
                     logs: Array.from(this.state.logs),
-                } },
-                this.props.children,
-                React.createElement(WrappedComponent, null)));
+                }}>
+          {this.props.children}
+          <WrappedComponent />
+        </LogContext_1.LogContext.Provider>);
         }
         componentDidMount() {
             this._subscription = observe((data) => {

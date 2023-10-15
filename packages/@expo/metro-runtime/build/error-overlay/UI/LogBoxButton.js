@@ -43,7 +43,7 @@ function LogBoxButton(props) {
             pressed: LogBoxStyle.getBackgroundColor(0.6),
         };
     }
-    const content = (react_1.default.createElement(react_native_1.View, { style: [
+    const content = (<react_native_1.View style={[
             {
                 backgroundColor: pressed ? backgroundColor.pressed : backgroundColor.default,
                 ...react_native_1.Platform.select({
@@ -53,8 +53,12 @@ function LogBoxButton(props) {
                 }),
             },
             props.style,
-        ] }, props.children));
-    return props.onPress == null ? (content) : (react_1.default.createElement(react_native_1.Pressable, { hitSlop: props.hitSlop, onPress: props.onPress, onPressIn: () => setPressed(true), onPressOut: () => setPressed(false) }, content));
+        ]}>
+      {props.children}
+    </react_native_1.View>);
+    return props.onPress == null ? (content) : (<react_native_1.Pressable hitSlop={props.hitSlop} onPress={props.onPress} onPressIn={() => setPressed(true)} onPressOut={() => setPressed(false)}>
+      {content}
+    </react_native_1.Pressable>);
 }
 exports.LogBoxButton = LogBoxButton;
 //# sourceMappingURL=LogBoxButton.js.map

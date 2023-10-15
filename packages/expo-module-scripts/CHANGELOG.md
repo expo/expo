@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Preserve JSX in production exports to support jsx/createElement interception.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

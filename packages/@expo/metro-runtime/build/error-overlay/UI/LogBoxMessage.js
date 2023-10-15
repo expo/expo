@@ -17,7 +17,7 @@ const cleanContent = (content) => content.replace(/^(TransformError |Warning: (W
 function LogBoxMessage(props) {
     const { content, substitutions } = props.message;
     if (props.plaintext === true) {
-        return react_1.default.createElement(react_native_1.Text, null, cleanContent(content));
+        return <react_native_1.Text>{cleanContent(content)}</react_native_1.Text>;
     }
     const maxLength = props.maxLength != null ? props.maxLength : Infinity;
     const substitutionStyle = props.style;
@@ -29,7 +29,9 @@ function LogBoxMessage(props) {
             cleanMessage = cleanMessage.slice(0, props.maxLength - length);
         }
         if (length < maxLength) {
-            elements.push(react_1.default.createElement(react_native_1.Text, { key: key, style: style }, cleanMessage));
+            elements.push(<react_native_1.Text key={key} style={style}>
+          {cleanMessage}
+        </react_native_1.Text>);
         }
         length += cleanMessage.length;
     };
@@ -47,7 +49,7 @@ function LogBoxMessage(props) {
         const lastPart = content.substr(lastOffset);
         createUnderLength('-1', lastPart);
     }
-    return react_1.default.createElement(react_1.default.Fragment, null, elements);
+    return <>{elements}</>;
 }
 exports.LogBoxMessage = LogBoxMessage;
 //# sourceMappingURL=LogBoxMessage.js.map

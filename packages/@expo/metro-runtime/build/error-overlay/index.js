@@ -24,8 +24,9 @@ function withErrorOverlay(Comp) {
         return Comp;
     }
     return function ErrorOverlay(props) {
-        return (react_1.default.createElement(ErrorToastContainer_1.default, null,
-            react_1.default.createElement(Comp, { ...props })));
+        return (<ErrorToastContainer_1.default>
+        <Comp {...props}/>
+      </ErrorToastContainer_1.default>);
     };
 }
 exports.withErrorOverlay = withErrorOverlay;

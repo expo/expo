@@ -32,7 +32,9 @@ const react_native_1 = require("react-native");
 const LogBoxMessage_1 = require("../UI/LogBoxMessage");
 const LogBoxStyle = __importStar(require("../UI/LogBoxStyle"));
 function ErrorToastMessage({ message }) {
-    return (react_1.default.createElement(react_native_1.Text, { numberOfLines: 1, style: styles.text }, message && react_1.default.createElement(LogBoxMessage_1.LogBoxMessage, { plaintext: true, message: message, style: styles.substitutionText })));
+    return (<react_native_1.Text numberOfLines={1} style={styles.text}>
+      {message && <LogBoxMessage_1.LogBoxMessage plaintext message={message} style={styles.substitutionText}/>}
+    </react_native_1.Text>);
 }
 exports.ErrorToastMessage = ErrorToastMessage;
 const styles = react_native_1.StyleSheet.create({

@@ -64,17 +64,23 @@ function Ansi({ text, style }) {
             return content;
         }
     };
-    return (react_1.default.createElement(react_native_1.View, null, parsedLines.map((items, i) => (react_1.default.createElement(react_native_1.View, { style: styles.line, key: i }, items.map((bundle, key) => {
-        const textStyle = bundle.fg && COLORS[bundle.fg]
-            ? {
-                backgroundColor: bundle.bg && COLORS[bundle.bg],
-                color: bundle.fg && COLORS[bundle.fg],
-            }
-            : {
-                backgroundColor: bundle.bg && COLORS[bundle.bg],
-            };
-        return (react_1.default.createElement(react_native_1.Text, { style: [style, textStyle], key: key }, getText(bundle.content, key)));
-    }))))));
+    return (<react_native_1.View>
+      {parsedLines.map((items, i) => (<react_native_1.View style={styles.line} key={i}>
+          {items.map((bundle, key) => {
+                const textStyle = bundle.fg && COLORS[bundle.fg]
+                    ? {
+                        backgroundColor: bundle.bg && COLORS[bundle.bg],
+                        color: bundle.fg && COLORS[bundle.fg],
+                    }
+                    : {
+                        backgroundColor: bundle.bg && COLORS[bundle.bg],
+                    };
+                return (<react_native_1.Text style={[style, textStyle]} key={key}>
+                {getText(bundle.content, key)}
+              </react_native_1.Text>);
+            })}
+        </react_native_1.View>))}
+    </react_native_1.View>);
 }
 exports.Ansi = Ansi;
 const styles = react_native_1.StyleSheet.create({

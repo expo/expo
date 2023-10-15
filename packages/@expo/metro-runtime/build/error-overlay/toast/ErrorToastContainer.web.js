@@ -43,7 +43,7 @@ function ErrorToastContainer() {
     if (!logs.length || isDisabled) {
         return null;
     }
-    return react_1.default.createElement(ErrorToastStack, { logs: logs });
+    return <ErrorToastStack logs={logs}/>;
 }
 exports.ErrorToastContainer = ErrorToastContainer;
 function ErrorToastStack({ logs }) {
@@ -66,9 +66,11 @@ function ErrorToastStack({ logs }) {
     }
     const warnings = (0, react_1.useMemo)(() => logs.filter((log) => log.level === 'warn'), [logs]);
     const errors = (0, react_1.useMemo)(() => logs.filter((log) => log.level === 'error' || log.level === 'fatal'), [logs]);
-    return (react_1.default.createElement(react_native_1.View, { style: styles.list },
-        warnings.length > 0 && (react_1.default.createElement(ErrorToast_1.ErrorToast, { log: warnings[warnings.length - 1], level: "warn", totalLogCount: warnings.length, onPressOpen: () => openLog(warnings[warnings.length - 1]), onPressDismiss: onDismissWarns })),
-        errors.length > 0 && (react_1.default.createElement(ErrorToast_1.ErrorToast, { log: errors[errors.length - 1], level: "error", totalLogCount: errors.length, onPressOpen: () => openLog(errors[errors.length - 1]), onPressDismiss: onDismissErrors }))));
+    return (<react_native_1.View style={styles.list}>
+      {warnings.length > 0 && (<ErrorToast_1.ErrorToast log={warnings[warnings.length - 1]} level="warn" totalLogCount={warnings.length} onPressOpen={() => openLog(warnings[warnings.length - 1])} onPressDismiss={onDismissWarns}/>)}
+
+      {errors.length > 0 && (<ErrorToast_1.ErrorToast log={errors[errors.length - 1]} level="error" totalLogCount={errors.length} onPressOpen={() => openLog(errors[errors.length - 1])} onPressDismiss={onDismissErrors}/>)}
+    </react_native_1.View>);
 }
 const styles = react_native_1.StyleSheet.create({
     list: {
