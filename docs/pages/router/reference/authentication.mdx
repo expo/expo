@@ -185,8 +185,7 @@ export default function Root() {
 Create a nested [Layout route](/routing/layouts) that checks whether users are authenticated before rendering the child route components. This layout route redirects users to the sign-in screen if they are not authenticated.
 
 ```jsx app/(app)/_layout.js
-import { Link, Redirect, Stack } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Redirect, Stack } from 'expo-router';
 
 import { useSession } from '../../ctx';
 
