@@ -7,7 +7,7 @@ import Text, { TextProps } from '../primitives/Text';
 function createHeadingComponent(level: number): ComponentType<TextProps> {
   const nativeProps: any = Platform.select({
     web: {
-      accessibilityLevel: level,
+      'aria-level': level,
     },
     default: {},
   });
@@ -15,7 +15,7 @@ function createHeadingComponent(level: number): ComponentType<TextProps> {
     return (
       <Text
         {...nativeProps}
-        accessibilityRole="header"
+        role="header"
         {...props}
         style={[styles[`h${level}`], props.style]}
         ref={ref}

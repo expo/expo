@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Replace deprecated `accessibilityLevel` and `accessibilityRole` props with `aira-level` and `role` props instead. ([#23343](https://github.com/expo/expo/pull/23343))
+
 ### 💡 Others
 
 ## 0.6.2 — 2023-09-04
