@@ -43,7 +43,7 @@ export async function installExpoPackageAsync(
     await packageManager.addAsync([...packageManagerArguments, expoPackageToInstall]);
   } catch (error) {
     Log.error(
-      chalk`Can't install the latest Expo package. Install {bold expo@latest} with ${packageManager.name} and then run {bold npx expo install} again.`
+      chalk`Cannot install the latest Expo package. Install {bold expo@latest} with ${packageManager.name} and then run {bold npx expo install} again.`
     );
     throw error;
   }
