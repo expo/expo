@@ -128,11 +128,11 @@ public class LocalizationModule: Module {
 
   static func getLocales() -> [[String: Any?]] {
     let userSettingsLocale = Locale.current
-    
+
     return (Locale.preferredLanguages.isEmpty ? [Locale.current.identifier] : Locale.preferredLanguages)
       .map { languageTag -> [String: Any?] in
         let languageLocale = Locale.init(identifier: languageTag)
-        
+
         if #available(iOS 16, *) {
           return [
             "languageTag": languageTag,
