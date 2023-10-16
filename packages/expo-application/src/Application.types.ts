@@ -1,11 +1,14 @@
 // @docsMissing
-export type ApplicationReleaseType =
-  | 'unknown'
-  | 'simulator'
-  | 'enterprise'
-  | 'dev'
-  | 'adHoc'
-  | 'appStore';
+export enum ApplicationReleaseType {
+  UNKNOWN = 0,
+  SIMULATOR = 1,
+  ENTERPRISE = 2,
+  DEVELOPMENT = 3,
+  AD_HOC = 4,
+  APP_STORE = 5,
+}
 
-// @docsMissing
+/**
+ * Maps to the [`aps-environment`](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment) key in the native target's registered entitlements.
+ */
 export type PushNotificationServiceEnvironment = 'development' | 'production' | null;

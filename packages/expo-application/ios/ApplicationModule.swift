@@ -32,9 +32,9 @@ public class ApplicationModule: Module {
       }
     }
 
-    AsyncFunction("getApplicationReleaseTypeAsync") { () -> String in
+    AsyncFunction("getApplicationReleaseTypeAsync") { () -> Int in
       let mainProvisioningProfile = ApplicationModuleProvisioningProfile.mainProvisioningProfile
-      return mainProvisioningProfile.appReleaseType()
+      return mainProvisioningProfile.appReleaseType().rawValue
     }
 
     AsyncFunction("getPushNotificationServiceEnvironmentAsync") { () -> String? in

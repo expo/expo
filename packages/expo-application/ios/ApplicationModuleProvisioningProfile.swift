@@ -2,16 +2,8 @@
 import ExpoModulesCore
 
 class ApplicationModuleProvisioningProfile {
-  private var plist: [String: Any]?
-
-  static let mainProvisioningProfile: ApplicationModuleProvisioningProfile = {
-    let plist = readProvisioningProfilePlist()
-    return ApplicationModuleProvisioningProfile(plist: plist)
-  }()
-
-  private init(plist: [String: Any]?) {
-    self.plist = plist
-  }
+  private let plist = readProvisioningProfilePlist()
+  static let mainProvisioningProfile = ApplicationModuleProvisioningProfile()
 
   func notificationServiceEnvironment() -> String? {
     guard let plist = plist else {
@@ -22,30 +14,30 @@ class ApplicationModuleProvisioningProfile {
     return entitlements?["aps-environment"] as? String
   }
 
-  func appReleaseType() -> String {
+  func appReleaseType() -> AppReleaseType {
     guard let provisioningPath = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") else {
       #if targetEnvironment(simulator)
-      return AppReleaseType.simulator.rawValue
+      return .simulator
       #else
-      return AppReleaseType.appStore.rawValue
+      return .appStore
       #endif
     }
 
     guard let mobileProvision = plist else {
-      return AppReleaseType.unknown.rawValue
+      return .unknown
     }
 
     if let provisionsAllDevices = mobileProvision["ProvisionsAllDevices"] as? Bool, provisionsAllDevices {
-      return AppReleaseType.enterprise.rawValue
+      return .enterprise
     }
     if let provisionedDevices = mobileProvision["ProvisionedDevices"] as? [String], !provisionedDevices.isEmpty {
       let entitlements = mobileProvision["Entitlements"] as? [String: Any]
       if let getTaskAllow = entitlements?["get-task-allow"] as? Bool, getTaskAllow {
-        return AppReleaseType.dev.rawValue
+        return .dev
       }
-      return AppReleaseType.adHoc.rawValue
+      return .adHoc
     }
-    return AppReleaseType.appStore.rawValue
+    return .appStore
   }
 
   private static func readProvisioningProfilePlist() -> [String: Any]? {
@@ -64,20 +56,20 @@ class ApplicationModuleProvisioningProfile {
       if let plistData = plistString.data(using: .utf8) {
         return try PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any]
       }
-      print("Failed to convert plistString to UTF-8 encoded data object.")
+      log.error("Failed to convert plistString to UTF-8 encoded data object.")
       return nil
     } catch {
-      print("Error reading provisioning profile: \(error.localizedDescription)")
+      log.error("Error reading provisioning profile: \(error.localizedDescription)")
       return nil
     }
   }
 }
 
-enum AppReleaseType: String, Enumerable {
-  case unknown
-  case simulator
-  case enterprise
-  case dev
-  case adHoc
-  case appStore
+enum AppReleaseType: Int, Enumerable {
+  case unknown = 0
+  case simulator = 1
+  case enterprise = 2
+  case dev = 3
+  case adHoc = 4
+  case appStore = 5
 }
