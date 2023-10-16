@@ -7,7 +7,7 @@ import * as Log from '../log';
  * This should be dropped in favor of autolinking in the future.
  */
 export async function applyPluginsAsync(projectRoot: string, packages: string[]) {
-  const { autoAddConfigPluginsAsync } = await import('./utils/autoAddConfigPlugins');
+  const { autoAddConfigPluginsAsync } = await import('./utils/autoAddConfigPlugins.js');
 
   try {
     const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
