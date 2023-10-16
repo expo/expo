@@ -9,7 +9,6 @@ import {
   GithubIcon,
   Image03DuotoneIcon,
   Mail01Icon,
-  MessageDotsSquareDuotoneIcon,
   NotificationMessageDuotoneIcon,
   RedditIcon,
   XLogoIcon,
