@@ -17,10 +17,16 @@ public class ApplicationModule: Module {
     }
 
     AsyncFunction("getInstallationTimeAsync") { () -> Double in
-      let urlToDocumentsFolder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last
+      guard let urlToDocumentsFolder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last else {
+        throw UrlDocumentDirectoryException()
+      }
+
       do {
-        let installDate = try FileManager.default.attributesOfItem(atPath: urlToDocumentsFolder!.path)[FileAttributeKey.creationDate] as! Date
-        return installDate.timeIntervalSince1970 * 1000
+        let fileAttributes = try FileManager.default.attributesOfItem(atPath: urlToDocumentsFolder.path)
+        if let installDate = fileAttributes[FileAttributeKey.creationDate] as? Date {
+          return installDate.timeIntervalSince1970 * 1000
+        }
+        throw DateCastException()
       } catch {
         throw InstallationTimeException()
       }

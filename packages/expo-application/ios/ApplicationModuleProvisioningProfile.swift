@@ -23,8 +23,7 @@ class ApplicationModuleProvisioningProfile {
   }
 
   func appReleaseType() -> String {
-    let provisioningPath = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision")
-    if provisioningPath == nil {
+    guard let provisioningPath = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") else {
       #if targetEnvironment(simulator)
       return AppReleaseType.simulator.rawValue
       #else
@@ -38,16 +37,15 @@ class ApplicationModuleProvisioningProfile {
 
     if let provisionsAllDevices = mobileProvision["ProvisionsAllDevices"] as? Bool, provisionsAllDevices {
       return AppReleaseType.enterprise.rawValue
-    } else if let provisionedDevices = mobileProvision["ProvisionedDevices"] as? [String], !provisionedDevices.isEmpty {
+    }
+    if let provisionedDevices = mobileProvision["ProvisionedDevices"] as? [String], !provisionedDevices.isEmpty {
       let entitlements = mobileProvision["Entitlements"] as? [String: Any]
       if let getTaskAllow = entitlements?["get-task-allow"] as? Bool, getTaskAllow {
         return AppReleaseType.dev.rawValue
-      } else {
-        return AppReleaseType.adHoc.rawValue
       }
-    } else {
-      return AppReleaseType.appStore.rawValue
+      return AppReleaseType.adHoc.rawValue
     }
+    return AppReleaseType.appStore.rawValue
   }
 
   private static func readProvisioningProfilePlist() -> [String: Any]? {
@@ -63,8 +61,11 @@ class ApplicationModuleProvisioningProfile {
       }
 
       let plistString = String(profileString[plistStart.lowerBound..<plistEnd.upperBound])
-      let plistData = plistString.data(using: .utf8)
-      return try PropertyListSerialization.propertyList(from: plistData!, options: [], format: nil) as? [String: Any]
+      if let plistData = plistString.data(using: .utf8) {
+        return try PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any]
+      }
+      print("Failed to convert plistString to UTF-8 encoded data object.")
+      return nil
     } catch {
       print("Error reading provisioning profile: \(error.localizedDescription)")
       return nil
