@@ -89,12 +89,24 @@ export function loadAsync(fontFamilyOrFontMap, source) {
     }
     return loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
 }
-async function loadFontInNamespaceAsync(fontFamily, source) {
+/**
+ * Flush all pending load promises in-memory.
+ * @returns `true` if no promises were pending, otherwise a `Promise` that resolves when all pending promises have resolved.
+ * @private
+ */
+export function _flushPending() {
+    const values = Object.values(loadPromises);
+    if (values.length) {
+        return Promise.all(Object.values(loadPromises));
+    }
+    return true;
+}
+function loadFontInNamespaceAsync(fontFamily, source) {
     if (!source) {
         throw new CodedError(`ERR_FONT_SOURCE`, `Cannot load null or undefined font source: { "${fontFamily}": ${source} }. Expected asset of type \`FontSource\` for fontFamily of name: "${fontFamily}"`);
     }
     if (loaded[fontFamily]) {
-        return;
+        return Promise.resolve();
     }
     if (loadPromises.hasOwnProperty(fontFamily)) {
         return loadPromises[fontFamily];
@@ -113,7 +125,7 @@ async function loadFontInNamespaceAsync(fontFamily, source) {
             delete loadPromises[fontFamily];
         }
     })();
-    await loadPromises[fontFamily];
+    return loadPromises[fontFamily];
 }
 // @needsAudit
 /**

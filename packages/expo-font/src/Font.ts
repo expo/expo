@@ -120,10 +120,20 @@ export function loadAsync(
   return loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
 }
 
-async function loadFontInNamespaceAsync(
-  fontFamily: string,
-  source?: FontSource | null
-): Promise<void> {
+/**
+ * Flush all pending load promises in-memory.
+ * @returns `true` if no promises were pending, otherwise a `Promise` that resolves when all pending promises have resolved.
+ * @private
+ */
+export function _flushPending() {
+  const values = Object.values(loadPromises);
+  if (values.length) {
+    return Promise.all(Object.values(loadPromises));
+  }
+  return true;
+}
+
+function loadFontInNamespaceAsync(fontFamily: string, source?: FontSource | null): Promise<void> {
   if (!source) {
     throw new CodedError(
       `ERR_FONT_SOURCE`,
@@ -132,7 +142,7 @@ async function loadFontInNamespaceAsync(
   }
 
   if (loaded[fontFamily]) {
-    return;
+    return Promise.resolve();
   }
 
   if (loadPromises.hasOwnProperty(fontFamily)) {
@@ -154,7 +164,7 @@ async function loadFontInNamespaceAsync(
     }
   })();
 
-  await loadPromises[fontFamily];
+  return loadPromises[fontFamily];
 }
 
 // @needsAudit

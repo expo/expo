@@ -36,6 +36,12 @@ export declare function isLoading(fontFamily: string): boolean;
  */
 export declare function loadAsync(fontFamilyOrFontMap: string | Record<string, FontSource>, source?: FontSource): Promise<void>;
 /**
+ * Flush all pending load promises in-memory.
+ * @returns `true` if no promises were pending, otherwise a `Promise` that resolves when all pending promises have resolved.
+ * @private
+ */
+export declare function _flushPending(): true | Promise<void[]>;
+/**
  * Unloads all the custom fonts. This is used for testing.
  */
 export declare function unloadAllAsync(): Promise<void>;

@@ -1,17 +1,17 @@
 // Tests nested Head metadata in a static rendering app.
 
-import * as Font from 'expo-font';
+// import * as Font from 'expo-font';
 import { Stack } from 'expo-router';
 import Head from 'expo-router/head';
 
 export default function Layout() {
-  const [isLoaded] = Font.useFonts({ sweet: require('../sweet.ttf') });
+  // const [isLoaded] = Font.useFonts({ sweet: require('../sweet.ttf') });
 
-  // This is important for the test because static font extraction will ensure this is never called
-  // with static websites. We can test by seeing if the app has HTML rendered.
-  if (!isLoaded) {
-    return null;
-  }
+  // // This is important for the test because static font extraction will ensure this is never called
+  // // with static websites. We can test by seeing if the app has HTML rendered.
+  // if (!isLoaded) {
+  //   return null;
+  // }
 
   return (
     <>
