@@ -128,38 +128,37 @@ public class LocalizationModule: Module {
 
   static func getLocales() -> [[String: Any?]] {
     let userSettingsLocale = Locale.current
-
+    
     return (Locale.preferredLanguages.isEmpty ? [Locale.current.identifier] : Locale.preferredLanguages)
       .map { languageTag -> [String: Any?] in
         let languageLocale = Locale.init(identifier: languageTag)
-
-          if #available(iOS 16, *) {
-              return [
-                "languageTag": languageTag,
-                "languageCode": languageLocale.language.languageCode?.identifier,
-                "regionCode": languageLocale.region?.identifier,
-                "textDirection": languageLocale.language.characterDirection,
-                "decimalSeparator": userSettingsLocale.decimalSeparator,
-                "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
-                "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
-                "currencyCode": languageLocale.currencyCode,
-                "currencySymbol": languageLocale.currencySymbol,
-                "temperatureUnit": getTemperatureUnit()
-              ]
-          } else {
-              return [
-                "languageTag": languageTag,
-                "languageCode": languageLocale.languageCode,
-                "regionCode": languageLocale.regionCode,
-                "textDirection": Locale.characterDirection(forLanguage: languageTag) == .rightToLeft ? "rtl" : "ltr",
-                "decimalSeparator": userSettingsLocale.decimalSeparator,
-                "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
-                "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
-                "currencyCode": languageLocale.currencyCode,
-                "currencySymbol": languageLocale.currencySymbol,
-                "temperatureUnit": getTemperatureUnit()
-              ]
-          }
+        
+        if #available(iOS 16, *) {
+          return [
+            "languageTag": languageTag,
+            "languageCode": languageLocale.language.languageCode?.identifier,
+            "regionCode": languageLocale.region?.identifier,
+            "textDirection": languageLocale.language.characterDirection,
+            "decimalSeparator": userSettingsLocale.decimalSeparator,
+            "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
+            "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
+            "currencyCode": languageLocale.currencyCode,
+            "currencySymbol": languageLocale.currencySymbol,
+            "temperatureUnit": getTemperatureUnit()
+          ]
+        }
+        return [
+          "languageTag": languageTag,
+          "languageCode": languageLocale.languageCode,
+          "regionCode": languageLocale.regionCode,
+          "textDirection": Locale.characterDirection(forLanguage: languageTag) == .rightToLeft ? "rtl" : "ltr",
+          "decimalSeparator": userSettingsLocale.decimalSeparator,
+          "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
+          "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
+          "currencyCode": languageLocale.currencyCode,
+          "currencySymbol": languageLocale.currencySymbol,
+          "temperatureUnit": getTemperatureUnit()
+        ]
       }
   }
 
