@@ -1,5 +1,6 @@
-import { spawnAsync } from '@expo/osascript';
 import * as PackageManager from '@expo/package-manager';
+import spawnAsync from '@expo/spawn-async';
+import chalk from 'chalk';
 
 import * as Log from '../log';
 import { getRunningProcess } from '../utils/getRunningProcess';
@@ -14,7 +15,7 @@ export async function installExpoPackageAsync(
     packageManager,
     packageManagerArguments,
     expoPackageToInstall,
-    followUpCommand,
+    followUpCommandArgs,
   }: {
     /** Package manager to use when installing the versioned packages. */
     packageManager: PackageManager.NodePackageManager;
@@ -24,7 +25,7 @@ export async function installExpoPackageAsync(
      */
     packageManagerArguments: string[];
     expoPackageToInstall: string;
-    followUpCommand: string | undefined;
+    followUpCommandArgs: string[];
   }
 ) {
   // Check if there's potentially a dev server running in the current folder and warn about it
@@ -38,15 +39,30 @@ export async function installExpoPackageAsync(
   }
 
   // Safe to use current process to upgrade Expo package- doesn't affect current process
-  await packageManager.addAsync([expoPackageToInstall]);
-
-  // TODO: error handling
-
-  // But, we need to spawn a new process to install the rest of the packages, as only then will the latest Expo package be used
-  if (followUpCommand) {
-    // TODO: need to split up follow-up command into arguments
-    await spawnAsync([followUpCommand]);
+  try {
+    await packageManager.addAsync([...packageManagerArguments, expoPackageToInstall]);
+  } catch (error) {
+    Log.error(
+      chalk`Can't install the latest Expo package. Install {bold expo@latest} with ${packageManager.name} and then run {bold npx expo install} again.`
+    );
+    throw error;
   }
 
-  // TODO: possible conclusion message
+  Log.log(chalk`\u203A Running {bold npx expo install} under the updated expo version`);
+
+  let commandSegments = ['expo', 'install', ...followUpCommandArgs];
+  if (packageManagerArguments.length) {
+    commandSegments = [...commandSegments, '--', ...packageManagerArguments];
+  }
+
+  Log.log('> ' + commandSegments.join(' '));
+
+  // Spawn a new process to install the rest of the packages, as only then will the latest Expo package be used
+  if (followUpCommandArgs.length) {
+    await spawnAsync('npx', commandSegments, {
+      stdio: 'inherit',
+      cwd: projectRoot,
+      env: { ...process.env },
+    });
+  }
 }

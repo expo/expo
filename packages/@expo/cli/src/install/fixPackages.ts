@@ -59,7 +59,7 @@ export async function fixPackagesAsync(
       packageManager,
       packageManagerArguments,
       expoPackageToInstall: `expo@${expoDep.expectedVersionOrRange}`,
-      followUpCommand: `npx expo install --fix`,
+      followUpCommandArgs: ['--fix'],
     });
     // follow-up commands will be spawned in a detached process, so return immediately
     return;

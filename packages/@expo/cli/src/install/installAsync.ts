@@ -140,9 +140,7 @@ export async function installPackagesAsync(
       packageManager,
       packageManagerArguments,
       expoPackageToInstall: versioning.packages.find((pkg) => pkg.startsWith('expo@'))!,
-      followUpCommand: packagesMinusExpo.length
-        ? `npx expo install ${packagesMinusExpo.join(' ')}`
-        : undefined,
+      followUpCommandArgs: packagesMinusExpo,
     });
 
     // follow-up commands will be spawned in a detached process, so return immediately
