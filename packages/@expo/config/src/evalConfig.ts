@@ -5,6 +5,7 @@ import { transform } from 'sucrase';
 import { AppJSONConfig, ConfigContext, ExpoConfig } from './Config.types';
 import { ConfigError } from './Errors';
 import { serializeSkippingMods } from './Serialize';
+import { NON_STANDARD_SYMBOL } from './environment';
 
 type RawDynamicConfig = AppJSONConfig | Partial<ExpoConfig> | null;
 
@@ -108,7 +109,7 @@ export function resolveConfigExport(
 ) {
   // add key to static config that we'll check for after the dynamic is evaluated
   // to see if the static config was used in determining the dynamic
-  const hasBaseStaticConfig = Symbol();
+  const hasBaseStaticConfig = NON_STANDARD_SYMBOL;
   if (request?.config) {
     // @ts-ignore
     request.config[hasBaseStaticConfig] = true;

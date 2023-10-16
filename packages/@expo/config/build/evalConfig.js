@@ -40,6 +40,13 @@ function _Serialize() {
   };
   return data;
 }
+function _environment() {
+  const data = require("./environment");
+  _environment = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * Transpile and evaluate the dynamic config object.
@@ -134,7 +141,7 @@ function resolveConfigExport(result, configFile, request) {
   var _request$config, _result, _result2;
   // add key to static config that we'll check for after the dynamic is evaluated
   // to see if the static config was used in determining the dynamic
-  const hasBaseStaticConfig = Symbol();
+  const hasBaseStaticConfig = _environment().NON_STANDARD_SYMBOL;
   if (request !== null && request !== void 0 && request.config) {
     // @ts-ignore
     request.config[hasBaseStaticConfig] = true;
