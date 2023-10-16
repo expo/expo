@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`.
+
 ## 0.2.0 — 2023-09-04
 
 ### 🎉 New features

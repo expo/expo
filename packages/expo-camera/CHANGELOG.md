@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`.
+
 ## 13.7.0 — 2023-09-15
 
 _This version does not introduce any user-facing changes._
