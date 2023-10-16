@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update jsx transpilation.
+
 ## 3.0.2 — 2023-09-15
 
 ### 🎉 New features

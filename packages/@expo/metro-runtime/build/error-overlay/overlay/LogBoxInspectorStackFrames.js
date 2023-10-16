@@ -86,35 +86,28 @@ function LogBoxInspectorStackFrames({ onRetry, type }) {
     if (log.getAvailableStack(type)?.length === 0) {
         return null;
     }
-    return (<LogBoxInspectorSection_1.LogBoxInspectorSection heading={type === 'component' ? 'Component Stack' : 'Call Stack'} action={<LogBoxInspectorSourceMapStatus_1.LogBoxInspectorSourceMapStatus onPress={log.symbolicated[type].status === 'FAILED' ? onRetry : null} status={log.symbolicated[type].status}/>}>
-      {log.symbolicated[type].status !== 'COMPLETE' && (<react_native_1.View style={stackStyles.hintBox}>
-          <react_native_1.Text style={stackStyles.hintText}>
-            This call stack is not symbolicated. Some features are unavailable such as viewing the
-            function name or tapping to open files.
-          </react_native_1.Text>
-        </react_native_1.View>)}
-      <StackFrameList list={getStackList()} status={log.symbolicated[type].status}/>
-      <StackFrameFooter onPress={() => setCollapsed(!collapsed)} message={getCollapseMessage(log.getAvailableStack(type), !!collapsed)}/>
-    </LogBoxInspectorSection_1.LogBoxInspectorSection>);
+    return (react_1.default.createElement(LogBoxInspectorSection_1.LogBoxInspectorSection, { heading: type === 'component' ? 'Component Stack' : 'Call Stack', action: react_1.default.createElement(LogBoxInspectorSourceMapStatus_1.LogBoxInspectorSourceMapStatus, { onPress: log.symbolicated[type].status === 'FAILED' ? onRetry : null, status: log.symbolicated[type].status }) },
+        log.symbolicated[type].status !== 'COMPLETE' && (react_1.default.createElement(react_native_1.View, { style: stackStyles.hintBox },
+            react_1.default.createElement(react_native_1.Text, { style: stackStyles.hintText }, "This call stack is not symbolicated. Some features are unavailable such as viewing the function name or tapping to open files."))),
+        react_1.default.createElement(StackFrameList, { list: getStackList(), status: log.symbolicated[type].status }),
+        react_1.default.createElement(StackFrameFooter, { onPress: () => setCollapsed(!collapsed), message: getCollapseMessage(log.getAvailableStack(type), !!collapsed) })));
 }
 exports.LogBoxInspectorStackFrames = LogBoxInspectorStackFrames;
 function StackFrameList({ list, status, }) {
     return list.map((frame, index) => {
         const { file, lineNumber } = frame;
-        return (<LogBoxInspectorStackFrame_1.LogBoxInspectorStackFrame key={index} frame={frame} onPress={status === 'COMPLETE' && file != null && lineNumber != null
+        return (react_1.default.createElement(LogBoxInspectorStackFrame_1.LogBoxInspectorStackFrame, { key: index, frame: frame, onPress: status === 'COMPLETE' && file != null && lineNumber != null
                 ? () => (0, openFileInEditor_1.default)(file, lineNumber)
-                : undefined}/>);
+                : undefined }));
     });
 }
 function StackFrameFooter({ message, onPress }) {
-    return (<react_native_1.View style={stackStyles.collapseContainer}>
-      <LogBoxButton_1.LogBoxButton backgroundColor={{
-            default: 'transparent',
-            pressed: LogBoxStyle.getBackgroundColor(1),
-        }} onPress={onPress} style={stackStyles.collapseButton}>
-        <react_native_1.Text style={stackStyles.collapse}>{message}</react_native_1.Text>
-      </LogBoxButton_1.LogBoxButton>
-    </react_native_1.View>);
+    return (react_1.default.createElement(react_native_1.View, { style: stackStyles.collapseContainer },
+        react_1.default.createElement(LogBoxButton_1.LogBoxButton, { backgroundColor: {
+                default: 'transparent',
+                pressed: LogBoxStyle.getBackgroundColor(1),
+            }, onPress: onPress, style: stackStyles.collapseButton },
+            react_1.default.createElement(react_native_1.Text, { style: stackStyles.collapse }, message))));
 }
 const stackStyles = react_native_1.StyleSheet.create({
     section: {

@@ -38,13 +38,11 @@ const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const LogBoxStyle = __importStar(require("../UI/LogBoxStyle"));
 function LogBoxInspectorSection(props) {
-    return (<react_native_1.View style={styles.section}>
-      <react_native_1.View style={styles.heading}>
-        <react_native_1.Text style={styles.headingText}>{props.heading}</react_native_1.Text>
-        {props.action}
-      </react_native_1.View>
-      <react_native_1.View style={styles.body}>{props.children}</react_native_1.View>
-    </react_native_1.View>);
+    return (react_1.default.createElement(react_native_1.View, { style: styles.section },
+        react_1.default.createElement(react_native_1.View, { style: styles.heading },
+            react_1.default.createElement(react_native_1.Text, { style: styles.headingText }, props.heading),
+            props.action),
+        react_1.default.createElement(react_native_1.View, { style: styles.body }, props.children)));
 }
 exports.LogBoxInspectorSection = LogBoxInspectorSection;
 const styles = react_native_1.StyleSheet.create({

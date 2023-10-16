@@ -90,18 +90,17 @@ function LogBoxInspectorSourceMapStatus(props) {
     if (props.status === 'COMPLETE' || image == null) {
         return null;
     }
-    return (<LogBoxButton_1.LogBoxButton backgroundColor={{
+    return (react_1.default.createElement(LogBoxButton_1.LogBoxButton, { backgroundColor: {
             default: 'transparent',
             pressed: LogBoxStyle.getBackgroundColor(1),
-        }} hitSlop={{ bottom: 8, left: 8, right: 8, top: 8 }} onPress={props.onPress} style={styles.root}>
-      <react_native_1.Animated.Image source={image} tintColor={color ?? LogBoxStyle.getTextColor(0.4)} style={[
-            styles.image,
-            state.rotate == null || props.status !== 'PENDING'
-                ? null
-                : { transform: [{ rotate: state.rotate }] },
-        ]}/>
-      <react_native_1.Text style={[styles.text, { color }]}>Source Map</react_native_1.Text>
-    </LogBoxButton_1.LogBoxButton>);
+        }, hitSlop: { bottom: 8, left: 8, right: 8, top: 8 }, onPress: props.onPress, style: styles.root },
+        react_1.default.createElement(react_native_1.Animated.Image, { source: image, tintColor: color ?? LogBoxStyle.getTextColor(0.4), style: [
+                styles.image,
+                state.rotate == null || props.status !== 'PENDING'
+                    ? null
+                    : { transform: [{ rotate: state.rotate }] },
+            ] }),
+        react_1.default.createElement(react_native_1.Text, { style: [styles.text, { color }] }, "Source Map")));
 }
 exports.LogBoxInspectorSourceMapStatus = LogBoxInspectorSourceMapStatus;
 const styles = react_native_1.StyleSheet.create({

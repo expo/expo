@@ -17,7 +17,7 @@ exports.default = {
         div.id = 'error-overlay';
         document.body.appendChild(div);
         currentRoot = client_1.default.createRoot(div);
-        currentRoot.render(<ErrorOverlay />);
+        currentRoot.render(react_1.default.createElement(ErrorOverlay, null));
     },
     hide() {
         // Remove div with ID `error-overlay`

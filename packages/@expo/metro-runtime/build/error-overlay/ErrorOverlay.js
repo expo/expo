@@ -55,7 +55,7 @@ function LogBoxInspectorContainer() {
     if (log == null) {
         return null;
     }
-    return <LogBoxInspector log={log} selectedLogIndex={selectedLogIndex} logs={logs}/>;
+    return react_1.default.createElement(LogBoxInspector, { log: log, selectedLogIndex: selectedLogIndex, logs: logs });
 }
 exports.LogBoxInspectorContainer = LogBoxInspectorContainer;
 function LogBoxInspector({ log, selectedLogIndex, logs, }) {
@@ -105,16 +105,15 @@ function LogBoxInspector({ log, selectedLogIndex, logs, }) {
     const _handleRetry = (0, react_1.useCallback)((type) => {
         LogBoxData.retrySymbolicateLogNow(type, log);
     }, [log]);
-    return (<react_native_1.View style={styles.container}>
-      <LogBoxInspectorHeader_1.LogBoxInspectorHeader onSelectIndex={onChangeSelectedIndex} level={log.level}/>
-      <ErrorOverlayBody onRetry={_handleRetry}/>
-      <LogBoxInspectorFooter_1.LogBoxInspectorFooter onDismiss={onDismiss} onMinimize={onMinimize}/>
-    </react_native_1.View>);
+    return (react_1.default.createElement(react_native_1.View, { style: styles.container },
+        react_1.default.createElement(LogBoxInspectorHeader_1.LogBoxInspectorHeader, { onSelectIndex: onChangeSelectedIndex, level: log.level }),
+        react_1.default.createElement(ErrorOverlayBody, { onRetry: _handleRetry }),
+        react_1.default.createElement(LogBoxInspectorFooter_1.LogBoxInspectorFooter, { onDismiss: onDismiss, onMinimize: onMinimize })));
 }
 exports.LogBoxInspector = LogBoxInspector;
 function ErrorOverlayBody({ onRetry }) {
     const log = (0, LogContext_1.useSelectedLog)();
-    return <ErrorOverlayBodyContents log={log} onRetry={onRetry}/>;
+    return react_1.default.createElement(ErrorOverlayBodyContents, { log: log, onRetry: onRetry });
 }
 exports.ErrorOverlayBody = ErrorOverlayBody;
 function ErrorOverlayBodyContents({ log, onRetry, }) {
@@ -123,23 +122,20 @@ function ErrorOverlayBodyContents({ log, onRetry, }) {
         setCollapsed(true);
     }, [log]);
     const headerTitle = HEADER_TITLE_MAP[log.isComponentError ? 'component' : log.level] ?? log.type;
-    const header = (<LogBoxInspectorMessageHeader_1.LogBoxInspectorMessageHeader collapsed={collapsed} onPress={() => setCollapsed(!collapsed)} message={log.message} level={log.level} title={headerTitle}/>);
+    const header = (react_1.default.createElement(LogBoxInspectorMessageHeader_1.LogBoxInspectorMessageHeader, { collapsed: collapsed, onPress: () => setCollapsed(!collapsed), message: log.message, level: log.level, title: headerTitle }));
     // Hide useless React stack.
     const needsStack = !log.message.content.match(/(Expected server HTML to contain a matching|Text content did not match\.)/);
-    return (<>
-      {collapsed && header}
-      <react_native_1.ScrollView style={styles.scrollBody}>
-        {!collapsed && header}
-
-        <LogBoxInspectorCodeFrame_1.LogBoxInspectorCodeFrame codeFrame={log.codeFrame}/>
-        {needsStack && (<LogBoxInspectorStackFrames_1.LogBoxInspectorStackFrames type="stack" 
-        // eslint-disable-next-line react/jsx-no-bind
-        onRetry={onRetry.bind(onRetry, 'stack')}/>)}
-        {!!log?.componentStack?.length && (<LogBoxInspectorStackFrames_1.LogBoxInspectorStackFrames type="component" 
-        // eslint-disable-next-line react/jsx-no-bind
-        onRetry={onRetry.bind(onRetry, 'component')}/>)}
-      </react_native_1.ScrollView>
-    </>);
+    return (react_1.default.createElement(react_1.default.Fragment, null,
+        collapsed && header,
+        react_1.default.createElement(react_native_1.ScrollView, { style: styles.scrollBody },
+            !collapsed && header,
+            react_1.default.createElement(LogBoxInspectorCodeFrame_1.LogBoxInspectorCodeFrame, { codeFrame: log.codeFrame }),
+            needsStack && (react_1.default.createElement(LogBoxInspectorStackFrames_1.LogBoxInspectorStackFrames, { type: "stack", 
+                // eslint-disable-next-line react/jsx-no-bind
+                onRetry: onRetry.bind(onRetry, 'stack') })),
+            !!log?.componentStack?.length && (react_1.default.createElement(LogBoxInspectorStackFrames_1.LogBoxInspectorStackFrames, { type: "component", 
+                // eslint-disable-next-line react/jsx-no-bind
+                onRetry: onRetry.bind(onRetry, 'component') })))));
 }
 exports.ErrorOverlayBodyContents = ErrorOverlayBodyContents;
 const styles = react_native_1.StyleSheet.create({

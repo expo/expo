@@ -43,20 +43,15 @@ function ShowMoreButton({ message, collapsed, onPress, }) {
     if (message.content.length < SHOW_MORE_MESSAGE_LENGTH || !collapsed) {
         return null;
     }
-    return (<react_native_1.Text style={styles.collapse} onPress={onPress}>
-      ... See More
-    </react_native_1.Text>);
+    return (react_1.default.createElement(react_native_1.Text, { style: styles.collapse, onPress: onPress }, "... See More"));
 }
 function LogBoxInspectorMessageHeader(props) {
-    return (<react_native_1.View style={styles.body}>
-      <react_native_1.View style={styles.heading}>
-        <react_native_1.Text style={[styles.headingText, styles[props.level]]}>{props.title}</react_native_1.Text>
-      </react_native_1.View>
-      <react_native_1.Text style={styles.bodyText}>
-        <LogBoxMessage_1.LogBoxMessage maxLength={props.collapsed ? SHOW_MORE_MESSAGE_LENGTH : Infinity} message={props.message} style={styles.messageText}/>
-        <ShowMoreButton {...props}/>
-      </react_native_1.Text>
-    </react_native_1.View>);
+    return (react_1.default.createElement(react_native_1.View, { style: styles.body },
+        react_1.default.createElement(react_native_1.View, { style: styles.heading },
+            react_1.default.createElement(react_native_1.Text, { style: [styles.headingText, styles[props.level]] }, props.title)),
+        react_1.default.createElement(react_native_1.Text, { style: styles.bodyText },
+            react_1.default.createElement(LogBoxMessage_1.LogBoxMessage, { maxLength: props.collapsed ? SHOW_MORE_MESSAGE_LENGTH : Infinity, message: props.message, style: styles.messageText }),
+            react_1.default.createElement(ShowMoreButton, { ...props }))));
 }
 exports.LogBoxInspectorMessageHeader = LogBoxInspectorMessageHeader;
 const styles = react_native_1.StyleSheet.create({

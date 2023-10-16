@@ -57,26 +57,20 @@ function LogBoxInspectorCodeFrame({ codeFrame }) {
         }
         return null;
     }
-    return (<LogBoxInspectorSection_1.LogBoxInspectorSection heading="Source">
-      <react_native_1.View style={styles.box}>
-        <react_native_1.View style={styles.frame}>
-          <react_native_1.ScrollView horizontal>
-            <AnsiHighlight_1.Ansi style={styles.content} text={codeFrame.content}/>
-          </react_native_1.ScrollView>
-        </react_native_1.View>
-        <LogBoxButton_1.LogBoxButton backgroundColor={{
-            default: 'transparent',
-            pressed: LogBoxStyle.getBackgroundDarkColor(1),
-        }} style={styles.button} onPress={() => {
-            (0, openFileInEditor_1.default)(codeFrame.fileName, codeFrame.location?.row ?? 0);
-        }}>
-          <react_native_1.Text style={styles.fileText}>
-            {getFileName()}
-            {getLocation()}
-          </react_native_1.Text>
-        </LogBoxButton_1.LogBoxButton>
-      </react_native_1.View>
-    </LogBoxInspectorSection_1.LogBoxInspectorSection>);
+    return (react_1.default.createElement(LogBoxInspectorSection_1.LogBoxInspectorSection, { heading: "Source" },
+        react_1.default.createElement(react_native_1.View, { style: styles.box },
+            react_1.default.createElement(react_native_1.View, { style: styles.frame },
+                react_1.default.createElement(react_native_1.ScrollView, { horizontal: true },
+                    react_1.default.createElement(AnsiHighlight_1.Ansi, { style: styles.content, text: codeFrame.content }))),
+            react_1.default.createElement(LogBoxButton_1.LogBoxButton, { backgroundColor: {
+                    default: 'transparent',
+                    pressed: LogBoxStyle.getBackgroundDarkColor(1),
+                }, style: styles.button, onPress: () => {
+                    (0, openFileInEditor_1.default)(codeFrame.fileName, codeFrame.location?.row ?? 0);
+                } },
+                react_1.default.createElement(react_native_1.Text, { style: styles.fileText },
+                    getFileName(),
+                    getLocation())))));
 }
 exports.LogBoxInspectorCodeFrame = LogBoxInspectorCodeFrame;
 const styles = react_native_1.StyleSheet.create({

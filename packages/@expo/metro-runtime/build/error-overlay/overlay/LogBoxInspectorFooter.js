@@ -41,39 +41,32 @@ const LogBoxStyle = __importStar(require("../UI/LogBoxStyle"));
 function LogBoxInspectorFooter(props) {
     const log = (0, LogContext_1.useSelectedLog)();
     if (['static', 'syntax'].includes(log.level)) {
-        return (<react_native_1.View style={styles.root}>
-        <react_native_1.View style={styles.button}>
-          <react_native_1.Text style={styles.syntaxErrorText}>This error cannot be dismissed.</react_native_1.Text>
-        </react_native_1.View>
-      </react_native_1.View>);
+        return (react_1.default.createElement(react_native_1.View, { style: styles.root },
+            react_1.default.createElement(react_native_1.View, { style: styles.button },
+                react_1.default.createElement(react_native_1.Text, { style: styles.syntaxErrorText }, "This error cannot be dismissed."))));
     }
-    return (<react_native_1.View style={styles.root}>
-      <FooterButton text="Dismiss" onPress={props.onDismiss}/>
-      <FooterButton text="Minimize" onPress={props.onMinimize}/>
-    </react_native_1.View>);
+    return (react_1.default.createElement(react_native_1.View, { style: styles.root },
+        react_1.default.createElement(FooterButton, { text: "Dismiss", onPress: props.onDismiss }),
+        react_1.default.createElement(FooterButton, { text: "Minimize", onPress: props.onMinimize })));
 }
 exports.LogBoxInspectorFooter = LogBoxInspectorFooter;
 function FooterButton({ text, onPress }) {
-    return (<react_native_1.Pressable onPress={onPress} style={{ flex: 1 }}>
-      {({ 
-        /** @ts-expect-error: react-native types are broken. */
-        hovered, pressed, }) => (<react_native_1.View style={[
-                buttonStyles.safeArea,
-                {
-                    // @ts-expect-error: web-only type
-                    transitionDuration: '150ms',
-                    backgroundColor: pressed
-                        ? '#323232'
-                        : hovered
-                            ? '#111111'
-                            : LogBoxStyle.getBackgroundColor(),
-                },
-            ]}>
-          <react_native_1.View style={buttonStyles.content}>
-            <react_native_1.Text style={buttonStyles.label}>{text}</react_native_1.Text>
-          </react_native_1.View>
-        </react_native_1.View>)}
-    </react_native_1.Pressable>);
+    return (react_1.default.createElement(react_native_1.Pressable, { onPress: onPress, style: { flex: 1 } }, ({ 
+    /** @ts-expect-error: react-native types are broken. */
+    hovered, pressed, }) => (react_1.default.createElement(react_native_1.View, { style: [
+            buttonStyles.safeArea,
+            {
+                // @ts-expect-error: web-only type
+                transitionDuration: '150ms',
+                backgroundColor: pressed
+                    ? '#323232'
+                    : hovered
+                        ? '#111111'
+                        : LogBoxStyle.getBackgroundColor(),
+            },
+        ] },
+        react_1.default.createElement(react_native_1.View, { style: buttonStyles.content },
+            react_1.default.createElement(react_native_1.Text, { style: buttonStyles.label }, text))))));
 }
 const buttonStyles = react_native_1.StyleSheet.create({
     safeArea: {
