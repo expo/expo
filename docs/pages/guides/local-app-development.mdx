@@ -197,7 +197,11 @@ To build your project locally you can use compile commands from Expo CLI which g
   ]}
 />
 
-The above commands compile your project into an app locally. You can also add the `--device` flag to create a debug build of your project and run it on a connected device. These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building.
+The above commands compile your project, using your locally installed Android SDK or Xcode, into a debug build of your app.
+
+- These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building, if they do not exist yet. If they already exist, this will be skipped.
+- You can also add the `--device` flag to select a device to run the app on — you can select a physically connected device or emulator/simulators.
+- You can pass in `--variant release` (Android) or `--configuration Release` (iOS) to build a production version of your app. [Learn more about production builds](/deploy/build-project/).
 
 To modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on the top of existing files. It may also produce different results after the build.
 
