@@ -74,9 +74,10 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
         }
         setRef(props.canvasRef, canvas);
     }, [_canvasRef]);
-    return (React.createElement(View, { ...props, pointerEvents: "box-none", ref: ref, onLayout: onLayout },
-        React.createElement(Canvas, { ref: _canvasRef, pointerEvents: pointerEvents, style: StyleSheet.absoluteFill }),
-        children));
+    return (<View {...props} pointerEvents="box-none" ref={ref} onLayout={onLayout}>
+      <Canvas ref={_canvasRef} pointerEvents={pointerEvents} style={StyleSheet.absoluteFill}/>
+      {children}
+    </View>);
 };
 export default CanvasWrapper;
 //# sourceMappingURL=Canvas.js.map

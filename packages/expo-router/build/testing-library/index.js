@@ -59,7 +59,7 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
     else if (initialUrl instanceof URL) {
         location = initialUrl;
     }
-    const result = (0, react_native_1.render)(react_1.default.createElement(ExpoRoot_1.ExpoRoot, { context: ctx, location: location }), {
+    const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={ctx} location={location}/>, {
         ...options,
     });
     return Object.assign(result, {
