@@ -1,17 +1,28 @@
+// This file can be bundled to a single file with minimal overlap to the main bundle.
+
 import { polyfillGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
 
-// Same as server polyfill with Remix
+// Same as server polyfill
 polyfillGlobal('ReadableStream', () => require('web-streams-polyfill/ponyfill/es6').ReadableStream);
+polyfillGlobal('WritableStream', () => require('web-streams-polyfill/ponyfill/es6').WritableStream);
 
 //
 polyfillGlobal('TextEncoder', () => require('text-encoding').TextEncoder);
 polyfillGlobal('TextDecoder', () => require('text-encoding').TextDecoder);
 
-// Fetch with streaming support.
-polyfillGlobal('fetch', () => require('react-native-fetch-api').fetch);
-polyfillGlobal('Headers', () => require('react-native-fetch-api').Headers);
-polyfillGlobal('Request', () => require('react-native-fetch-api').Request);
-polyfillGlobal('Response', () => require('react-native-fetch-api').Response);
+//
+polyfillGlobal(
+  'AbortController',
+  () => require('abort-controller/dist/abort-controller.js').AbortController
+);
+polyfillGlobal(
+  'AbortSignal',
+  () => require('abort-controller/dist/abort-controller.js').AbortSignal
+);
+
+//
+polyfillGlobal('atob', () => require('base-64').decode);
+polyfillGlobal('btoa', () => require('base-64').encode);
 
 // From `react-native-url-polyfill` but without dependence on `react-native`.
 // https://www.npmjs.com/package/react-native-url-polyfill

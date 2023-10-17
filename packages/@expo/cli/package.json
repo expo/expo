@@ -160,6 +160,7 @@
     "text-encoding": "0.7.0",
     "web-streams-polyfill": "3.2.1",
     "react-native-fetch-api": "3.0.0",
-    "whatwg-url-without-unicode": "8.0.0-3"
+    "whatwg-url-without-unicode": "8.0.0-3",
+    "base-64": "~1.0.0"
   }
 }
