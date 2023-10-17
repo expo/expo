@@ -90,13 +90,13 @@
     "tsd": "^0.28.1"
   },
   "dependencies": {
-    "@expo/metro-runtime": "3.0.2",
-    "@expo/server": "^0.1.0",
+    "@expo/metro-runtime": "3.0.3",
+    "@expo/server": "^0.2.0",
     "@radix-ui/react-slot": "1.0.1",
     "@react-navigation/bottom-tabs": "~6.5.7",
     "@react-navigation/native": "~6.1.6",
     "@react-navigation/native-stack": "~6.9.12",
-    "expo-splash-screen": "0.23.1",
+    "expo-splash-screen": "0.24.0",
     "query-string": "7.1.3",
     "react-helmet-async": "^1.3.0",
     "schema-utils": "^4.0.1",
