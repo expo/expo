@@ -102,7 +102,7 @@ function reducer<T>(state: State<T>, action?: NullableValue<T>): State<T> {
 function useAsyncState<T>(
   initialValue: State<T> = [true, null],
 ): UseStateHook<T> {
-  return React.useReducer(reducer<T>, initialValue) as UseStateHook<T>;
+  return React.useReducer(reducer<T>, initialValue);
 }
 
 export async function setStorageItemAsync(key: string, value: string | null) {
