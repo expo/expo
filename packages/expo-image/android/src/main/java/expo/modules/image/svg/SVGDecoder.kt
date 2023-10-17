@@ -23,6 +23,8 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
   override fun decode(source: InputStream, width: Int, height: Int, options: Options): Resource<SVG>? {
     return try {
       val svg: SVG = SVG.getFromInputStream(source)
+      svg.documentWidth = width.toFloat()
+      svg.documentHeight = height.toFloat()
       SimpleResource(svg)
     } catch (ex: SVGParseException) {
       throw IOException("Cannot load SVG from stream", ex)
