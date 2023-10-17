@@ -219,16 +219,16 @@ Implementing deep links on Android (without a custom URL scheme) is somewhat sim
 }
 ```
 
-### Android Asset Links
+### Android App Links
 
 It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS.
 
 Create a JSON file for the website verification (a.k.a. [digital asset links](https://developers.google.com/digital-asset-links/v1/getting-started) file) at **public/.well-known/assetlinks.json** (or **web/.well-known/assetlinks.json** for legacy Expo webpack websites), and collect the following information:
 
 - `package_name`: The Android [application ID](/versions/latest/config/app/#package) of your app (for example, `com.bacon.app`). This can be found in the **app.json** file under `expo.android.package`.
-- `sha256_cert_fingerprints`: The SHA256 fingerprints of your app’s signing certificate. This can be obtained in one of two ways:
+- `sha256_cert_fingerprints`: The SHA256 fingerprints of your app's signing certificate. This can be obtained in one of two ways:
   1. After building an Android app with EAS Build, run `eas credentials -p android` and select the profile you wish to obtain the fingerprint for. The fingerprint will be listed under `SHA256 Fingerprint`.
-  2. By visiting the [Play Console](https://play.google.com/console/) developer account under **Release > Setup > App Integrity > App Signing**. If you do, then you'll also find the correct Digital Asset Links JSON snippet for your app on the same page. The value will look like `14:6D:E9:83...`
+  2. By visiting the [Play Console](https://play.google.com/console/) developer account under **Release > Setup > App Signing**. If you do, then you'll also find the correct Digital Asset Links JSON snippet for your app on the same page. The value will look like `14:6D:E9:83...`
 
 ```json public/.well-known/assetlinks.json
 [
@@ -250,11 +250,9 @@ Installing the native app on a device will trigger the [Android app verification
 
 <ConfigReactNative title="Manual native configuration">
 
-If you're not using EAS to manage code signing, you can find the **sha256_cert_fingerprints** by building and submitting your app manually, then visiting the [Google Play Console](https://play.google.com/console/) developer account under **Release > Setup > App Integrity > App Signing**; if you do, then you'll also find the correct **Digital Asset Links JSON** snippet for your app on the same page. The value will look like `14:6D:E9:83...`. Copy this value into your `public/.well-known/assetlinks.json` file.
+If you're not using EAS to manage code signing, you can find the **sha256_cert_fingerprints** by building and submitting your app manually, then visiting the [Google Play Console](https://play.google.com/console/) developer account under **Release > Setup > App Signing**; if you do, then you'll also find the correct **Digital Asset Links JSON** snippet for your app on the same page. The value will look like `14:6D:E9:83...`. Copy this value into your `public/.well-known/assetlinks.json` file.
 
 </ConfigReactNative>
-
-It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS.
 
 <Collapsible summary={<>Handle App Links on Android for <CODE>expo-dev-client</CODE> version 1.2.1 and below</>}>
 
