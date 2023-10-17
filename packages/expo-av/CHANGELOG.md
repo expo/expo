@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Update pitch algorithm settings for iOS >= 17. ([#24678](https://github.com/expo/expo/pull/24678) by [@hromovp](https://github.com/hromovp))
+- [iOS] fix compilation on tvOS. ([#24864](https://github.com/expo/expo/pull/24864) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
