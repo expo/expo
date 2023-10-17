@@ -122,4 +122,5 @@ export declare function getInstallationTimeAsync(): Promise<Date>;
  * @platform android
  */
 export declare function getLastUpdateTimeAsync(): Promise<Date>;
+export { ApplicationReleaseType, PushNotificationServiceEnvironment };
 //# sourceMappingURL=Application.d.ts.map

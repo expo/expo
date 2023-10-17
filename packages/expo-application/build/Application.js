@@ -1,4 +1,5 @@
 import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { ApplicationReleaseType } from './Application.types';
 import ExpoApplication from './ExpoApplication';
 // @needsAudit
 /**
@@ -179,4 +180,5 @@ export async function getLastUpdateTimeAsync() {
     const lastUpdateTime = await ExpoApplication.getLastUpdateTimeAsync();
     return new Date(lastUpdateTime);
 }
+export { ApplicationReleaseType };
 //# sourceMappingURL=Application.js.map

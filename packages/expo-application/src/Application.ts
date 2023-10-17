@@ -192,3 +192,5 @@ export async function getLastUpdateTimeAsync(): Promise<Date> {
   const lastUpdateTime = await ExpoApplication.getLastUpdateTimeAsync();
   return new Date(lastUpdateTime);
 }
+
+export { ApplicationReleaseType, PushNotificationServiceEnvironment };
