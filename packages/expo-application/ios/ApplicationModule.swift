@@ -5,12 +5,15 @@ public class ApplicationModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoApplication")
 
-    Constants([
-      "applicationName": Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName"),
-      "applicationId": Bundle.main.object(forInfoDictionaryKey: "CFBundleIdentifier"),
-      "nativeApplicationVersion": Bundle.main.infoDictionary?["CFBundleShortVersionString"],
-      "nativeBuildVersion": Bundle.main.infoDictionary?["CFBundleVersion"]
-    ])
+    Constants {
+      let infoPlist = Bundle.main.infoDictionary
+      return [
+        "applicationName": infoPlist?["CFBundleDisplayName"],
+        "applicationId": infoPlist?["CFBundleIdentifier"],
+        "nativeApplicationVersion": infoPlist?["CFBundleShortVersionString"],
+        "nativeBuildVersion": infoPlist?["CFBundleVersion"]
+      ]
+    }
 
     AsyncFunction("getIosIdForVendorAsync") { () -> String? in
       return UIDevice.current.identifierForVendor?.uuidString
