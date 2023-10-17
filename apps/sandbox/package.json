@@ -1,17 +1,23 @@
 {
   "name": "@expo/sandbox",
   "version": "0.0.0",
-  "main": "expo-router/entry",
+  "main": "./index",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios"
   },
   "dependencies": {
+    "base-64": "^1.0.0",
     "expo": "~50.0.0-alpha.0",
     "expo-router": "^3.0.0",
     "react": "18.2.0",
-    "react-native": "0.72.5"
+    "react-native": "0.72.5",
+    "react-native-fetch-api": "^3.0.0",
+    "react-native-polyfill-globals": "^3.1.0",
+    "react-native-url-polyfill": "^2.0.0",
+    "text-encoding": "^0.7.0",
+    "web-streams-polyfill": "^3.2.1"
   },
   "devDependencies": {
     "babel-preset-expo": "~9.7.0",
