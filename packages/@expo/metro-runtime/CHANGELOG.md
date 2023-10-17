@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.0.3 — 2023-10-17
+
+### 💡 Others
+
 - Update jsx transpilation. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.0.2 — 2023-09-15

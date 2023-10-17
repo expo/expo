@@ -4,16 +4,22 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
 - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
 
 - On Android, support `fileName` and `filesize` in the returned assets. ([#24524](https://github.com/expo/expo/pull/24524) by [@alanjhughes](https://github.com/alanjhughes))
 - Support returning the mime type of the returned assets. ([#24659](https://github.com/expo/expo/pull/24659) by [@alanjhughes](https://github.com/alanjhughes))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 14.5.0 — 2023-09-04
 

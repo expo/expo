@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Read mocks for native code from individual modules. ([#24065](https://github.com/expo/expo/pull/24065) by [@aleqsio](https://github.com/aleqsio))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 50.0.0-alpha.3 — 2023-10-17
+
+### 🎉 New features
+
+- Read mocks for native code from individual modules. ([#24065](https://github.com/expo/expo/pull/24065) by [@aleqsio](https://github.com/aleqsio))
 
 ## 50.0.0-alpha.2 — 2023-09-15
 
