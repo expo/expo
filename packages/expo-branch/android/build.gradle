@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '6.4.0'
+version = '6.5.0'
 
 import groovy.json.JsonSlurper
 
@@ -105,7 +105,7 @@ android {
   namespace "expo.modules.branch"
   defaultConfig {
     versionCode 12
-    versionName '6.4.0'
+    versionName '6.5.0'
 
     buildConfigField("String", "RNBRANCH_VERSION", "\"${getNpmVersion()}\"")
   }
