@@ -2,16 +2,19 @@ import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
 import { Platform } from 'react-native';
 
-type UseStateHook<T> = [[boolean, T | null], (value?: T | null) => void];
+type NullableValue<T> = T | null;
+type State<T> = [boolean, NullableValue<T>];
+type SetValue<T> = (value: NullableValue<T>) => void;
+type UseStateHook<T> = [State<T>, SetValue<T>];
 
-function useAsyncState<T>(initialValue?: [boolean, T | null]): UseStateHook<T> {
-  return React.useReducer(
-    (state: [boolean, T | null], action?: T | null) => [
-      false,
-      action === undefined ? null : action,
-    ],
-    initialValue ?? [true, undefined]
-  ) as UseStateHook<T>;
+function reducer<T>(state: State<T>, action?: NullableValue<T>): State<T> {
+  return [false, action === undefined ? null : action];
+}
+
+function useAsyncState<T>(
+  initialValue: State<T> = [true, null],
+): UseStateHook<T> {
+  return React.useReducer(reducer<T>, initialValue) as UseStateHook<T>;
 }
 
 export async function setStorageItemAsync(key: string, value: string | null) {
