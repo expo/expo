@@ -14,6 +14,6 @@ internal class InstallationTimeException: Exception {
 
 internal class DateCastException: Exception {
   override var reason: String {
-    "Unable to cast string as a date."
+    "Invalid date format"
   }
 }
