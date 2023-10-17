@@ -151,16 +151,15 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
   for (size_t argIndex = 0; argIndex < count; argIndex++) {
     const jsi::Value &arg = getCurrentArg(argIndex);
     auto &type = argTypes[argIndex];
-    if (arg.isNull() || arg.isUndefined()) {
-      // If value is null or undefined, we just passes a null
-      // Kotlin code will check if expected type is nullable.
-      continue;
-    }
 
     if (type->converter->canConvert(rt, arg)) {
       auto converterValue = type->converter->convert(rt, env, moduleRegistry, arg);
       env->SetObjectArrayElement(argumentArray, argIndex, converterValue);
       env->DeleteLocalRef(converterValue);
+    } else if (arg.isNull() || arg.isUndefined()) {
+      // If value is null or undefined, we just passes a null
+      // Kotlin code will check if expected type is nullable.
+      continue;
     } else {
       auto stringRepresentation = arg.toString(rt).utf8(rt);
       throwNewJavaException(
