@@ -107,7 +107,7 @@
     "expo-network": "~5.7.0",
     "expo-notifications": "~0.25.0",
     "expo-print": "~12.7.0",
-    "expo-processing": "2.3.3",
+    "expo-processing": "2.3.4",
     "expo-progress": "^0.0.2",
     "expo-random": "^13.0.0",
     "expo-screen-capture": "~5.6.0",
