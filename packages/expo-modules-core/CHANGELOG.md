@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- [Android] `Set<T>` can now be passed as an argument to a module method.
+- [Android] `Set<T>` can now be passed as an argument to a module method. ([#24897](https://github.com/expo/expo/pull/24897) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
