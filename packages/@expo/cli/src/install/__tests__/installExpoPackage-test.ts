@@ -1,11 +1,8 @@
-import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import spawnAsync from '@expo/spawn-async';
 
 import { asMock } from '../../__tests__/asMock';
 import { Log } from '../../log';
-import { getRunningProcess } from '../../utils/getRunningProcess';
-import { checkPackagesAsync } from '../checkPackages';
 import { installExpoPackageAsync } from '../installExpoPackage';
 
 jest.mock('../../log');
