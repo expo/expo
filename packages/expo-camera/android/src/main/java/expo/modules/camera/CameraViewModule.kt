@@ -1,8 +1,12 @@
 package expo.modules.camera
 
 import android.Manifest
+import androidx.camera.camera2.internal.compat.CameraCharacteristicsCompat
+import androidx.camera.camera2.internal.compat.quirk.CamcorderProfileResolutionQuirk
+import androidx.camera.camera2.interop.Camera2CameraInfo
 import com.google.android.cameraview.AspectRatio
 import com.google.android.cameraview.Size
+import expo.modules.camera.records.CameraType
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.core.utilities.EmulatorUtilities
@@ -121,6 +125,7 @@ class CameraViewModule : Module() {
         throw CameraExceptions.CameraIsNotRunning()
       }
 
+
       val sizes = view.cameraView.getAvailablePictureSizes(AspectRatio.parse(ratio))
       return@AsyncFunction sizes.map { it.toString() }
     }.runOnQueue(Queues.MAIN)
@@ -189,64 +194,67 @@ class CameraViewModule : Module() {
         view.cameraView.stop()
       }
 
-      Prop("type") { view: ExpoCameraView, type: Int ->
-        view.cameraView.facing = type
+      Prop("type") { view, type: Int ->
+        view.cameraSelectorFacing = if (type == 1) {
+          CameraType.FRONT
+        } else {
+          CameraType.BACK
+        }
       }
 
-      Prop("ratio") { view: ExpoCameraView, ratio: String? ->
+      Prop("ratio") { view, ratio: String? ->
         if (ratio == null) {
           return@Prop
         }
         view.cameraView.setAspectRatio(AspectRatio.parse(ratio))
       }
 
-      Prop("flashMode") { view: ExpoCameraView, torchMode: Int ->
-        view.cameraView.flash = torchMode
+      Prop("flashMode") { view, torchMode: Int ->
+        view.flashMode = torchMode
       }
 
-      Prop("autoFocus") { view: ExpoCameraView, autoFocus: Boolean ->
+      Prop("autoFocus") { view, autoFocus: Boolean ->
         view.cameraView.autoFocus = autoFocus
       }
 
-      Prop("focusDepth") { view: ExpoCameraView, depth: Float ->
+      Prop("focusDepth") { view, depth: Float ->
         view.cameraView.focusDepth = depth
       }
 
-      Prop("zoom") { view: ExpoCameraView, zoom: Float ->
-        view.cameraView.zoom = zoom
+      Prop("zoom") { view, zoom: Float ->
+        view.zoom = zoom
       }
 
-      Prop("whiteBalance") { view: ExpoCameraView, whiteBalance: Int ->
+      Prop("whiteBalance") { view, whiteBalance: Int ->
         view.cameraView.whiteBalance = whiteBalance
       }
 
-      Prop("pictureSize") { view: ExpoCameraView, size: String? ->
+      Prop("pictureSize") { view, size: String? ->
         if (size == null) {
           return@Prop
         }
         view.cameraView.pictureSize = Size.parse(size)
       }
 
-      Prop("barCodeScannerSettings") { view: ExpoCameraView, settings: Map<String, Any?>? ->
+      Prop("barCodeScannerSettings") { view, settings: Map<String, Any?>? ->
         if (settings == null) {
           return@Prop
         }
         view.setBarCodeScannerSettings(BarCodeScannerSettings(settings))
       }
 
-      Prop("useCamera2Api") { view: ExpoCameraView, useCamera2Api: Boolean ->
-        view.cameraView.setUsingCamera2Api(useCamera2Api)
+      Prop("useCamera2Api") { _, _: Boolean ->
       }
 
-      Prop("barCodeScannerEnabled") { view: ExpoCameraView, barCodeScannerEnabled: Boolean? ->
+      Prop("barCodeScannerEnabled") { view, barCodeScannerEnabled: Boolean? ->
         view.setShouldScanBarCodes(barCodeScannerEnabled ?: false)
       }
 
-      Prop("faceDetectorEnabled") { view: ExpoCameraView, faceDetectorEnabled: Boolean? ->
+      Prop("faceDetectorEnabled") { view, faceDetectorEnabled: Boolean? ->
         view.setShouldDetectFaces(faceDetectorEnabled ?: false)
       }
 
-      Prop("faceDetectorSettings") { view: ExpoCameraView, settings: Map<String, Any>? ->
+      Prop("faceDetectorSettings") { view, settings: Map<String, Any>? ->
         view.setFaceDetectorSettings(settings)
       }
     }
