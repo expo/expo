@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- Migrate iOS module to Expo modules API. ([#24871](https://github.com/expo/expo/pull/24871) by [@reichhartd](https://github.com/reichhartd))
 - Android module is now written using the Sweet API. ([#22395](https://github.com/expo/expo/pull/22585) by [@fobos531](https://github.com/fobos531))
 
 ### 🐛 Bug fixes
