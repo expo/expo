@@ -3,6 +3,7 @@ type RawDynamicConfig = AppJSONConfig | Partial<ExpoConfig> | null;
 export type DynamicConfigResults = {
     config: RawDynamicConfig;
     exportedObjectType: string;
+    mayHaveUnusedStaticConfig: boolean;
 };
 /**
  * Transpile and evaluate the dynamic config object.
@@ -25,5 +26,6 @@ export declare function evalConfig(configFile: string, request: ConfigContext | 
 export declare function resolveConfigExport(result: any, configFile: string, request: ConfigContext | null): {
     config: any;
     exportedObjectType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
+    mayHaveUnusedStaticConfig: any;
 };
 export {};
