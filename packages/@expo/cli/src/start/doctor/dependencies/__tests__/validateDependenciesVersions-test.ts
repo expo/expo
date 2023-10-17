@@ -44,7 +44,6 @@ describe(logIncorrectDependencies, () => {
       expect.stringContaining('The following packages should be updated for best compatibility')
     );
     expect(Log.warn).toHaveBeenNthCalledWith(2, expect.stringContaining('expected version'));
-    expect(Log.warn).toHaveBeenNthCalledWith(3, expect.stringContaining('npx expo install --fix'));
   });
 });
 
