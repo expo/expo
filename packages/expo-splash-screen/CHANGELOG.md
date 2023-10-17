@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Automatically dismiss splash screen when an error is thrown to prevent blocking error information.
+- Automatically dismiss splash screen when an error is thrown to prevent blocking error information. ([#24893](https://github.com/expo/expo/pull/24893) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
@@ -16,7 +16,7 @@
 
 ### 💡 Others
 
-- Moved changes required for splash screen orchestration from `expo-router` to `expo-splash-screen`.
+- Moved changes required for splash screen orchestration from `expo-router` to `expo-splash-screen`. ([#24893](https://github.com/expo/expo/pull/24893) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.23.1 — 2023-09-18
 
