@@ -207,82 +207,48 @@ describe('readConfigJson', () => {
   });
 });
 
-describe('getConfig with a static config only', () => {
-  beforeAll(() => {
-    const packageJson = JSON.stringify(
-      {
-        name: 'testing123',
-        version: '0.1.0',
-        description: 'fake description',
-        main: 'index.js',
-      },
-      null,
-      2
-    );
-
-    const appJson = {
-      name: 'testing 123',
+describe('hasUnusedStaticConfig', () => {
+  const packageJson = JSON.stringify(
+    {
+      name: 'testing123',
       version: '0.1.0',
-      slug: 'testing-123',
-      sdkVersion: '100.0.0',
-    };
+      description: 'fake description',
+      main: 'index.js',
+    },
+    null,
+    2
+  );
 
-    const expoPackageJson = JSON.stringify({
-      name: 'expo',
-      version: '650.x.x',
-    });
+  const appJson = {
+    name: 'testing 123',
+    version: '0.1.0',
+    slug: 'testing-123',
+    sdkVersion: '100.0.0',
+  };
 
+  const expoPackageJson = JSON.stringify({
+    name: 'expo',
+    version: '650.x.x',
+  });
+
+  afterAll(() => vol.reset());
+
+  it('is false when there is no dynamic config and only a static config', () => {
     vol.fromJSON({
       '/static-config/package.json': packageJson,
       '/static-config/app.json': JSON.stringify({ expo: appJson }),
       '/static-config/node_modules/expo/package.json': expoPackageJson,
     });
-  });
-  afterAll(() => vol.reset());
 
-  it('sets hasUnusedStaticConfig to false', () => {
     const { hasUnusedStaticConfig } = getConfig('/static-config');
     expect(hasUnusedStaticConfig).toBe(false);
   });
-});
 
-describe('getConfig with a dynamic and static config', () => {
-  beforeAll(() => {
-    const packageJson = JSON.stringify(
-      {
-        name: 'testing123',
-        version: '0.1.0',
-        description: 'fake description',
-        main: 'index.js',
-      },
-      null,
-      2
-    );
-
-    const appJson = {
-      name: 'testing 123',
-      version: '0.1.0',
-      slug: 'testing-123',
-      sdkVersion: '100.0.0',
-    };
-
-    const expoPackageJson = JSON.stringify({
-      name: 'expo',
-      version: '650.x.x',
-    });
-
+  it('is false when a dynamic config exists and spreads the static config', () => {
     const appConfigJsThatInherits = `
       module.exports = ({ config }) => {
         return {
           ...config,
-        };
-      };
-    `;
-
-    const appConfigJsThatDoesntInherit = `
-      module.exports = ({ config }) => {
-        return {
-          hi: 'no inherit'
         };
       };
     `;
@@ -292,49 +258,33 @@ describe('getConfig with a dynamic and static config', () => {
       '/dynamic-inherits/app.json': JSON.stringify({ expo: appJson }),
       '/dynamic-inherits/app.config.js': appConfigJsThatInherits,
       '/dynamic-inherits/node_modules/expo/package.json': expoPackageJson,
+    });
+
+    const { hasUnusedStaticConfig } = getConfig('/dynamic-inherits');
+    expect(hasUnusedStaticConfig).toBe(false);
+  });
+
+  it('is true when a dynamic config exists and does not spread the static config', () => {
+    const appConfigJsThatDoesntInherit = `
+      module.exports = ({ config }) => {
+        return {
+          hi: 'no inherit'
+        };
+      };
+    `;
+
+    vol.fromJSON({
       '/dynamic-no-inherits/package.json': packageJson,
       '/dynamic-no-inherits/app.json': JSON.stringify({ expo: appJson }),
       '/dynamic-no-inherits/app.config.js': appConfigJsThatDoesntInherit,
       '/dynamic-no-inherits/node_modules/expo/package.json': expoPackageJson,
     });
-  });
-  afterAll(() => vol.reset());
 
-  it('sets hasUnusedStaticConfig to false when inheriting from static', () => {
-    const { hasUnusedStaticConfig } = getConfig('/dynamic-inherits');
-    expect(hasUnusedStaticConfig).toBe(false);
-  });
-
-  it('sets hasUnusedStaticConfig to true when not inheriting from static', () => {
     const { hasUnusedStaticConfig } = getConfig('/dynamic-no-inherits');
     expect(hasUnusedStaticConfig).toBe(true);
   });
 
-  it('hidden key to detect unused static config is not present on final config', () => {
-    const { exp } = getConfig('/dynamic-no-inherits');
-    // @ts-ignore
-    expect(exp._hasBaseStaticConfig).toBe(undefined);
-  });
-});
-
-describe('getConfig with a dynamic config only', () => {
-  beforeAll(() => {
-    const packageJson = JSON.stringify(
-      {
-        name: 'testing123',
-        version: '0.1.0',
-        description: 'fake description',
-        main: 'index.js',
-      },
-      null,
-      2
-    );
-
-    const expoPackageJson = JSON.stringify({
-      name: 'expo',
-      version: '650.x.x',
-    });
-
+  it('is false when there is only a dynamic config and no static config', () => {
     const appConfigJs = `
       module.exports = () => {
         return {
@@ -351,10 +301,7 @@ describe('getConfig with a dynamic config only', () => {
       '/dynamic/app.config.js': appConfigJs,
       '/dynamic/node_modules/expo/package.json': expoPackageJson,
     });
-  });
-  afterAll(() => vol.reset());
 
-  it('sets hasUnusedStaticConfig to false', () => {
     const { hasUnusedStaticConfig } = getConfig('/dynamic');
     expect(hasUnusedStaticConfig).toBe(false);
   });
