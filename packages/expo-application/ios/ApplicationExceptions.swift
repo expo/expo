@@ -8,7 +8,7 @@ internal class UrlDocumentDirectoryException: Exception {
 
 internal class InstallationTimeException: Exception {
   override var reason: String {
-    "Unable to get installation time of this application."
+    "Unable to get installation time of this application"
   }
 }
 
