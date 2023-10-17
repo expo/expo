@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 6.1.2 — 2023-09-04
 
 _This version does not introduce any user-facing changes._

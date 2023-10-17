@@ -2,9 +2,10 @@ import * as React from 'react';
 import DevLoadingView from '../environment/DevLoadingView';
 export function withDevTools(AppRootComponent) {
     function WithDevTools(props) {
-        return (React.createElement(React.Fragment, null,
-            React.createElement(AppRootComponent, { ...props }),
-            React.createElement(DevLoadingView, null)));
+        return (<>
+        <AppRootComponent {...props}/>
+        <DevLoadingView />
+      </>);
     }
     if (process.env.NODE_ENV !== 'production') {
         const name = AppRootComponent.displayName || AppRootComponent.name || 'Anonymous';

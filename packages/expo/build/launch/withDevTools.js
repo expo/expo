@@ -15,7 +15,7 @@ export function withDevTools(AppRootComponent) {
     })();
     function WithDevTools(props) {
         useOptionalKeepAwake();
-        return React.createElement(AppRootComponent, { ...props });
+        return <AppRootComponent {...props}/>;
     }
     if (process.env.NODE_ENV !== 'production') {
         const name = AppRootComponent.displayName || AppRootComponent.name || 'Anonymous';

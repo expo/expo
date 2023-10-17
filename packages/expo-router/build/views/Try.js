@@ -27,7 +27,7 @@ class Try extends react_1.default.Component {
         if (!error) {
             return children;
         }
-        return react_1.default.createElement(ErrorBoundary, { error: error, retry: this.retry });
+        return <ErrorBoundary error={error} retry={this.retry}/>;
     }
 }
 exports.Try = Try;
