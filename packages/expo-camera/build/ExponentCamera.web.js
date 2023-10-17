@@ -83,11 +83,12 @@ const ExponentCamera = React.forwardRef(({ type, pictureSize, poster, ...props }
             },
         ];
     }, [native.type]);
-    return (React.createElement(View, { pointerEvents: "box-none", style: [styles.videoWrapper, props.style] },
-        React.createElement(Video, { autoPlay: true, playsInline: true, muted: isMuted, poster: poster, 
-            // webkitPlaysinline
-            pointerEvents: props.pointerEvents, ref: video, style: style }),
-        props.children));
+    return (<View pointerEvents="box-none" style={[styles.videoWrapper, props.style]}>
+        <Video autoPlay playsInline muted={isMuted} poster={poster} 
+    // webkitPlaysinline
+    pointerEvents={props.pointerEvents} ref={video} style={style}/>
+        {props.children}
+      </View>);
 });
 export default ExponentCamera;
 const Video = React.forwardRef((props, ref) => createElement('video', { ...props, ref }));
