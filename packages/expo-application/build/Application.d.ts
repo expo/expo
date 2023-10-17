@@ -1,3 +1,4 @@
+import { ApplicationReleaseType, PushNotificationServiceEnvironment } from './Application.types';
 /**
  * The human-readable version of the native application that may be displayed in the app store.
  * This is the `Info.plist` value for `CFBundleShortVersionString` on iOS and the version name set
@@ -76,21 +77,12 @@ export declare function getInstallReferrerAsync(): Promise<string>;
  * @platform ios
  */
 export declare function getIosIdForVendorAsync(): Promise<string | null>;
-export declare enum ApplicationReleaseType {
-    UNKNOWN = 0,
-    SIMULATOR = 1,
-    ENTERPRISE = 2,
-    DEVELOPMENT = 3,
-    AD_HOC = 4,
-    APP_STORE = 5
-}
 /**
  * Gets the iOS application release type.
  * @return Returns a promise which fulfills with an [`ApplicationReleaseType`](#applicationreleasetype).
  * @platform ios
  */
 export declare function getIosApplicationReleaseTypeAsync(): Promise<ApplicationReleaseType>;
-export type PushNotificationServiceEnvironment = 'development' | 'production' | null;
 /**
  * Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
  * service environment.
@@ -130,4 +122,5 @@ export declare function getInstallationTimeAsync(): Promise<Date>;
  * @platform android
  */
 export declare function getLastUpdateTimeAsync(): Promise<Date>;
+export { ApplicationReleaseType, PushNotificationServiceEnvironment };
 //# sourceMappingURL=Application.d.ts.map
