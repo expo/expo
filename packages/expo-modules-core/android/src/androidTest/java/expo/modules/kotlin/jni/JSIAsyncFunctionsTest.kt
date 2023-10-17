@@ -104,6 +104,20 @@ class JSIAsyncFunctionsTest {
   }
 
   @Test
+  fun set_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("setF") { a: Set<String> -> a }
+    }
+  ) { methodQueue ->
+    val value = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.setF(['s1', 's2', 's1'])").getArray()
+    Truth.assertThat(value).hasLength(2)
+
+    val mappedValue = value.map { it.getString() }
+    Truth.assertThat(mappedValue).containsExactly("s1", "s2")
+  }
+
+  @Test
   fun enums_should_be_obtainable_as_function_argument() {
     var f1WasCalled = false
     var f2WasCalled = false

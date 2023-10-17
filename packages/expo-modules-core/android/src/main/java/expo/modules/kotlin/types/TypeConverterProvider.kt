@@ -112,6 +112,10 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return ArrayTypeConverter(this, type)
     }
 
+    if (kClass.isSubclassOf(Set::class)) {
+      return SetTypeConverter(this, type)
+    }
+
     if (kClass.java.isEnum) {
       @Suppress("UNCHECKED_CAST")
       return EnumTypeConverter(kClass as KClass<Enum<*>>, type.isMarkedNullable)
