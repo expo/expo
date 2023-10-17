@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Add `CommonExceptions.ModuleNotFound`.
+- Add `CommonExceptions.ModuleNotFound`. ([#24898](https://github.com/expo/expo/pull/24898) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
