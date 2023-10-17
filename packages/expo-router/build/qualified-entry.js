@@ -14,8 +14,9 @@ const head_1 = require("./head");
 const _ctx_1 = require("../_ctx");
 // Must be exported or Fast Refresh won't update the context
 function App() {
-    return (react_1.default.createElement(head_1.Head.Provider, null,
-        react_1.default.createElement(ExpoRoot_1.ExpoRoot, { context: _ctx_1.ctx })));
+    return (<head_1.Head.Provider>
+      <ExpoRoot_1.ExpoRoot context={_ctx_1.ctx}/>
+    </head_1.Head.Provider>);
 }
 exports.App = App;
 //# sourceMappingURL=qualified-entry.js.map

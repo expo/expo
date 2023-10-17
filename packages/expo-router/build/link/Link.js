@@ -102,11 +102,11 @@ asChild, ...rest }, ref) {
     };
     const Element = asChild ? react_slot_1.Slot : react_native_1.Text;
     // Avoid using createElement directly, favoring JSX, to allow tools like Nativewind to perform custom JSX handling on native.
-    return (React.createElement(Element, { ref: ref, ...props, ...rest, style: style, ...react_native_1.Platform.select({
-            web: {
-                onClick: onPress,
-            },
-            default: { onPress },
-        }) }));
+    return (<Element ref={ref} {...props} {...rest} style={style} {...react_native_1.Platform.select({
+        web: {
+            onClick: onPress,
+        },
+        default: { onPress },
+    })}/>);
 }
 //# sourceMappingURL=Link.js.map

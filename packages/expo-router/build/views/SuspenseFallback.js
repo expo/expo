@@ -7,8 +7,9 @@ exports.SuspenseFallback = void 0;
 const react_1 = __importDefault(require("react"));
 const Toast_1 = require("./Toast");
 function SuspenseFallback({ route }) {
-    return (react_1.default.createElement(Toast_1.ToastWrapper, null,
-        react_1.default.createElement(Toast_1.Toast, { filename: route?.contextKey }, "Bundling...")));
+    return (<Toast_1.ToastWrapper>
+      <Toast_1.Toast filename={route?.contextKey}>Bundling...</Toast_1.Toast>
+    </Toast_1.ToastWrapper>);
 }
 exports.SuspenseFallback = SuspenseFallback;
 //# sourceMappingURL=SuspenseFallback.js.map

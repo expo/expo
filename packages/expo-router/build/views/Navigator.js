@@ -49,7 +49,9 @@ function Navigator({ initialRouteName, screenOptions, children, router }) {
         console.warn(`Navigator at "${contextKey}" has no children.`);
         return null;
     }
-    return (React.createElement(QualifiedNavigator, { initialRouteName: initialRouteName, screenOptions: screenOptions, screens: sorted, contextKey: contextKey, router: router }, otherSlot));
+    return (<QualifiedNavigator initialRouteName={initialRouteName} screenOptions={screenOptions} screens={sorted} contextKey={contextKey} router={router}>
+      {otherSlot}
+    </QualifiedNavigator>);
 }
 exports.Navigator = Navigator;
 function QualifiedNavigator({ initialRouteName, screenOptions, children, screens, contextKey, router = native_1.StackRouter, }) {
@@ -60,14 +62,15 @@ function QualifiedNavigator({ initialRouteName, screenOptions, children, screens
         screenOptions,
         initialRouteName,
     });
-    return (React.createElement(exports.NavigatorContext.Provider, { value: {
+    return (<exports.NavigatorContext.Provider value={{
             contextKey,
             state,
             navigation,
             descriptors,
             router,
-        } },
-        React.createElement(NavigationContent, null, children)));
+        }}>
+      <NavigationContent>{children}</NavigationContent>
+    </exports.NavigatorContext.Provider>);
 }
 function useNavigatorContext() {
     const context = React.useContext(exports.NavigatorContext);
@@ -96,10 +99,11 @@ function Slot(props) {
     // Ensure the context is for the current contextKey
     if (context?.contextKey !== contextKey) {
         // Qualify the content and re-export.
-        return (React.createElement(Navigator, { ...props },
-            React.createElement(QualifiedSlot, null)));
+        return (<Navigator {...props}>
+        <QualifiedSlot />
+      </Navigator>);
     }
-    return React.createElement(QualifiedSlot, null);
+    return <QualifiedSlot />;
 }
 exports.Slot = Slot;
 function QualifiedSlot() {
@@ -107,9 +111,11 @@ function QualifiedSlot() {
 }
 exports.QualifiedSlot = QualifiedSlot;
 function DefaultNavigator() {
-    return (React.createElement(react_native_safe_area_context_1.SafeAreaView, { style: { flex: 1 } },
-        React.createElement(Navigator, null,
-            React.createElement(QualifiedSlot, null))));
+    return (<react_native_safe_area_context_1.SafeAreaView style={{ flex: 1 }}>
+      <Navigator>
+        <QualifiedSlot />
+      </Navigator>
+    </react_native_safe_area_context_1.SafeAreaView>);
 }
 exports.DefaultNavigator = DefaultNavigator;
 Navigator.Slot = Slot;

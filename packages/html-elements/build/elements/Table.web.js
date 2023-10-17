@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import View from '../primitives/RNWView';
 function createView(nativeProps) {
     return forwardRef((props, ref) => {
-        return React.createElement(View, { ...nativeProps, ...props, ref: ref });
+        return <View {...nativeProps} {...props} ref={ref}/>;
     });
 }
 export const Table = createView({ __element: 'table' });

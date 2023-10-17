@@ -5,6 +5,6 @@ import { View } from 'react-native';
 export default function NativeLinearGradient(props) {
     const { colors, locations, startPoint, endPoint, ...viewProps } = props;
     console.warn('LinearGradient is not available on this platform');
-    return React.createElement(View, { ...viewProps });
+    return <View {...viewProps}/>;
 }
 //# sourceMappingURL=NativeLinearGradient.js.map

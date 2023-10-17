@@ -50,7 +50,7 @@ export function requireNativeViewManager(viewName) {
             this.nativeTag = findNodeHandle(this);
         }
         render() {
-            return React.createElement(ReactNativeComponent, { ...this.props });
+            return <ReactNativeComponent {...this.props}/>;
         }
     }
     try {

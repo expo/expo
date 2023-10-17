@@ -51,16 +51,17 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
      * is a HTML document, we need to ensure its inside the <body>
      */
     const wrapper = ({ children }) => {
-        return (react_1.default.createElement(ParentWrapper, null,
-            react_1.default.createElement(react_native_safe_area_context_1.SafeAreaProvider
-            // SSR support
-            , { 
-                // SSR support
-                initialMetrics: INITIAL_METRICS },
-                children,
-                !hasViewControllerBasedStatusBarAppearance && react_1.default.createElement(expo_status_bar_1.StatusBar, { style: "auto" }))));
+        return (<ParentWrapper>
+        <react_native_safe_area_context_1.SafeAreaProvider 
+        // SSR support
+        initialMetrics={INITIAL_METRICS}>
+          {children}
+          {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+          {!hasViewControllerBasedStatusBarAppearance && <expo_status_bar_1.StatusBar style="auto"/>}
+        </react_native_safe_area_context_1.SafeAreaProvider>
+      </ParentWrapper>);
     };
-    return react_1.default.createElement(ContextNavigator, { ...props, wrapper: wrapper });
+    return <ContextNavigator {...props} wrapper={wrapper}/>;
 }
 exports.ExpoRoot = ExpoRoot;
 const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
@@ -72,8 +73,9 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         Splash_1.SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
             const Tutorial = require('./onboard/Tutorial').Tutorial;
-            return (react_1.default.createElement(WrapperComponent, null,
-                react_1.default.createElement(Tutorial, null)));
+            return (<WrapperComponent>
+          <Tutorial />
+        </WrapperComponent>);
         }
         else {
             // Ensure tutorial styles are stripped in production.
@@ -81,11 +83,13 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         }
     }
     const Component = store.rootComponent;
-    return (react_1.default.createElement(NavigationContainer_1.default, { ref: store.navigationRef, initialState: store.initialState, linking: store.linking, onUnhandledAction: onUnhandledAction, documentTitle: {
+    return (<NavigationContainer_1.default ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
             enabled: false,
-        } },
-        react_1.default.createElement(WrapperComponent, null,
-            react_1.default.createElement(Component, null))));
+        }}>
+      <WrapperComponent>
+        <Component />
+      </WrapperComponent>
+    </NavigationContainer_1.default>);
 }
 let onUnhandledAction;
 if (process.env.NODE_ENV !== 'production') {

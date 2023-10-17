@@ -27,8 +27,8 @@ exports.Tabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (s
                         if (href == null) {
                             return null;
                         }
-                        const children = react_native_1.Platform.OS === 'web' ? props.children : react_1.default.createElement(react_native_1.Pressable, null, props.children);
-                        return (react_1.default.createElement(Link_1.Link, { ...props, style: [{ display: 'flex' }, props.style], href: href, asChild: react_native_1.Platform.OS !== 'web', children: children }));
+                        const children = react_native_1.Platform.OS === 'web' ? props.children : <react_native_1.Pressable>{props.children}</react_native_1.Pressable>;
+                        return (<Link_1.Link {...props} style={[{ display: 'flex' }, props.style]} href={href} asChild={react_native_1.Platform.OS !== 'web'} children={children}/>);
                     },
                 },
             };

@@ -19,7 +19,7 @@ export class VideoView extends React.PureComponent {
     render() {
         const { player, ...props } = this.props;
         const playerId = getPlayerId(player);
-        return React.createElement(NativeVideoView, { ...props, player: playerId, ref: this.nativeRef });
+        return <NativeVideoView {...props} player={playerId} ref={this.nativeRef}/>;
     }
 }
 // Temporary solution to pass the shared object ID instead of the player object.
