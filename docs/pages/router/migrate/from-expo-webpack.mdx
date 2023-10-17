@@ -103,7 +103,7 @@ In Expo Router, this is done using Babel with the `expo-router/babel` in SDK 49 
 
 > Experimental functionality. It will be available from SDK 50.
 
-In `@expo/webpack-config`, you could bundle your website to be hosted from a subpath by using the `homepage` field in the project's `package.json` file like so:
+In `@expo/webpack-config`, you could bundle your website to be hosted from a subpath by using the `PUBLIC_URL` environment variable, or the `homepage` field in the project's `package.json` file like so:
 
 ```json package.json
 {
