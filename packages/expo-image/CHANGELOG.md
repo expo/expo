@@ -9,12 +9,14 @@
 ### 🎉 New features
 
 - Added support for the `headers` key in the `source` object on web. ([#24447](https://github.com/expo/expo/pull/24447) by [@aleqsio](https://github.com/aleqsio))
-- Add support for setting `tintColor` on SVGs on Android ([#24733](https://github.com/expo/expo/pull/24733) by [@alanjhughes](https://github.com/alanjhughes) and [@kadikraman](https://github.com/kadikraman))
+- Add support for setting `tintColor` on SVGs on Android (part 1) ([#24733](https://github.com/expo/expo/pull/24733) by [@alanjhughes](https://github.com/alanjhughes) and [@kadikraman](https://github.com/kadikraman))
+- Add support for setting `tintColor` on SVGs on Android (part 2) ([#24888](https://github.com/expo/expo/pull/24888) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🐛 Bug fixes
 
 - Remove `GlideWebpDecoder` until they update their `libwebp` dependency. ([#24656](https://github.com/expo/expo/pull/24656) by [@alanjhughes](https://github.com/alanjhughes))
 - [web] Fix content fit not being applied correctly when using hash placeholders. ([#24542](https://github.com/expo/expo/pull/24542) by [@aleqsio](https://github.com/aleqsio))
+- [macCatalyst] Fix build with `ImageAnalyzer` on macCatalyst below 17.0. ([#24880](https://github.com/expo/expo/pull/24880) by [@kesha-antonov](https://github.com/kesha-antonov))
 
 ### 💡 Others
 
