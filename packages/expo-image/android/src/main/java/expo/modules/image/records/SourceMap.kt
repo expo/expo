@@ -38,6 +38,8 @@ data class SourceMap(
 
   private fun isLocalFileUri() = parsedUri?.scheme?.startsWith("file") ?: false
 
+  private fun isSvg() = parsedUri?.toString()?.substring(parsedUri.toString().lastIndexOf('.'))?.startsWith(".svg") ?: false
+
   fun isBlurhash() = parsedUri?.scheme?.startsWith("blurhash") ?: false
 
   fun isThumbhash() = parsedUri?.scheme?.startsWith("thumbhash") ?: false
@@ -100,9 +102,9 @@ data class SourceMap(
           parsedUri = computeUri(context)
         }
 
-        // Override the size for local assets. This ensures that
+        // Override the size for local assets (apart from SVGs). This ensures that
         // resizeMode "center" displays the image in the correct size.
-        if (width != 0 && height != 0) {
+        if (width != 0 && height != 0 && !isSvg()) {
           override((width * scale).toInt(), (height * scale).toInt())
         }
 
