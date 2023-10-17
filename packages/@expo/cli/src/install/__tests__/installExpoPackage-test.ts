@@ -66,6 +66,7 @@ describe(installExpoPackageAsync, () => {
         expoPackageToInstall: 'expo@latest',
         followUpCommandArgs: ['--fix'],
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {}
     expect(packageManager.addAsync).toHaveBeenCalledWith(['expo@latest']);
     expect(Log.error).toHaveBeenCalledWith(
