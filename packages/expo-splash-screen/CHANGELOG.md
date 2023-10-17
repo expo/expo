@@ -8,11 +8,15 @@
 
 ### 🎉 New features
 
+- Automatically dismiss splash screen when an error is thrown to prevent blocking error information.
+
 ### 🐛 Bug fixes
 
 - On Android, remove `isClickable` on `SplashScreenView` that caused incorrect behaviour with `TalkBack`. ([#24601](https://github.com/expo/expo/pull/24601) by [@alanhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
+
+- Moved changes required for splash screen orchestration from `expo-router` to `expo-splash-screen`.
 
 ## 0.23.1 — 2023-09-18
 
