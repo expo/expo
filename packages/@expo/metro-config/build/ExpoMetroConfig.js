@@ -254,7 +254,7 @@ function getDefaultConfig(projectRoot, {
         }
         return preModules;
       },
-      getPolyfills: () => require(_path().default.join(reactNativePath, 'rn-get-polyfills'))()
+      getPolyfills: () => [...require(_path().default.join(reactNativePath, 'rn-get-polyfills'))(), require.resolve('@expo/cli/native-polyfills/build/index.js')]
     },
     server: {
       rewriteRequestUrl: (0, _rewriteRequestUrl().getRewriteRequestUrl)(projectRoot),

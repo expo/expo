@@ -8,7 +8,8 @@
   },
   "files": [
     "static",
-    "build"
+    "build",
+    "native-polyfills"
   ],
   "scripts": {
     "build": "taskr",

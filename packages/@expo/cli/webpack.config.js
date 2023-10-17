@@ -16,14 +16,13 @@ const config = {
   entry: {
     index: path.resolve(__dirname, './native-polyfills/src/standalone.js'),
   },
-  externals: {
-    // "@expo-system/babel": "@expo-system/babel",
-  },
+
   output: {
     path: path.resolve(__dirname, 'native-polyfills/build'),
     filename: 'index.js',
     // library: '[name]', // This causes a weird export
     libraryTarget: 'umd',
+    clean: true,
     globalObject: 'this',
   },
   plugins: [],
@@ -37,7 +36,7 @@ const config = {
         },
       },
       {
-        test: /\.(ts|js|mjs)$/u,
+        test: /\.(ts|js|mjs|jsx|tsx)$/u,
         exclude: [path.resolve(__dirname, 'node_modules')],
 
         use: {
@@ -49,6 +48,8 @@ const config = {
               platform: 'ios',
               bundler: 'webpack',
             },
+            configFile: false,
+            babelrc: false,
 
             // plugins: [
             //   [require("@babel/plugin-transform-block-scoping")],
@@ -87,8 +88,13 @@ const config = {
   },
 };
 
+config.externals = [
+  ({ context, request }, callback) => {
+    return callback();
+  },
+];
 // We want to optimize the bundle output to minimize the size of the bundle
-if (WEBPACK_PRODUCTION || WEBPACK_ANALYZE) {
+if (WEBPACK_PRODUCTION) {
   config.mode = 'production';
   // config.devtool = "inline-source-map";
   config.optimization = {

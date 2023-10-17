@@ -119,6 +119,10 @@ export function withExtendedResolver(
     // path.resolve(resolveFrom(projectRoot, '@react-native/assets-registry/registry.js'))
   );
 
+  const setUpXHRPath = fs.realpathSync(
+    path.resolve(resolveFrom(projectRoot, '@expo/cli/native-polyfills/setUpXHR.js'))
+  );
+
   let reactNativeWebAppContainer: string | null = null;
   try {
     reactNativeWebAppContainer = fs.realpathSync(
@@ -353,6 +357,9 @@ export function withExtendedResolver(
         if (shouldAliasAssetRegistryForWeb(platform, result)) {
           // @ts-expect-error: `readonly` for some reason.
           result.filePath = assetRegistryPath;
+        } else if (shouldAliasReactNativePolyfill(platform, result)) {
+          // @ts-expect-error: `readonly` for some reason.
+          result.filePath = setUpXHRPath;
         }
 
         // React Native Web adds a couple extra divs for no reason, these
@@ -407,6 +414,18 @@ export function shouldAliasAssetRegistryForWeb(
     )
   );
 }
+export function shouldAliasReactNativePolyfill(
+  platform: string | null,
+  result: Resolution
+): boolean {
+  return (
+    platform !== 'web' &&
+    result?.type === 'sourceFile' &&
+    typeof result?.filePath === 'string' &&
+    normalizeSlashes(result.filePath).endsWith('react-native/Libraries/Core/setUpXHR.js')
+  );
+}
+
 /** @returns `true` if the incoming resolution should be swapped. */
 export function shouldAliasModule(
   input: {

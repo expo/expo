@@ -21,3 +21,5 @@ polyfillGlobal('WebSocket', () => require('react-native/Libraries/WebSocket/WebS
 polyfillGlobal('Blob', () => require('react-native/Libraries/Blob/Blob'));
 polyfillGlobal('File', () => require('react-native/Libraries/Blob/File'));
 polyfillGlobal('FileReader', () => require('react-native/Libraries/Blob/FileReader'));
+
+import './src/standalone';

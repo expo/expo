@@ -3,8 +3,14 @@
 import { polyfillGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
 
 // Same as server polyfill
-polyfillGlobal('ReadableStream', () => require('web-streams-polyfill/ponyfill/es6').ReadableStream);
-polyfillGlobal('WritableStream', () => require('web-streams-polyfill/ponyfill/es6').WritableStream);
+polyfillGlobal(
+  'ReadableStream',
+  () => require('web-streams-polyfill/dist/ponyfill.es6.js').ReadableStream
+);
+polyfillGlobal(
+  'WritableStream',
+  () => require('web-streams-polyfill/dist/ponyfill.es6.js').WritableStream
+);
 
 //
 polyfillGlobal('TextEncoder', () => require('text-encoding').TextEncoder);
