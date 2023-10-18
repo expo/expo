@@ -121,6 +121,11 @@ export function DevMenuView({ uuid, task }: Props) {
     setIsLoaded(true);
   }
 
+  function onAppReload() {
+    collapse();
+    DevMenu.reloadAppAsync();
+  }
+
   function onGoToHome() {
     collapse();
     DevMenu.goToHomeAsync();
@@ -159,7 +164,7 @@ export function DevMenuView({ uuid, task }: Props) {
                 <DevMenuItem
                   buttonKey="reload"
                   label="Reload"
-                  onPress={onGoToHome}
+                  onPress={onAppReload}
                   icon={<RefreshIcon size={iconSize.small} color={theme.icon.default} />}
                 />
                 <Divider />
