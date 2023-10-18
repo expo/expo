@@ -4,6 +4,7 @@ public final class ModuleRegistry: Sequence {
   private weak var appContext: AppContext?
 
   private var registry: [String: ModuleHolder] = [:]
+  private var overrideDisallowModules = Set<String>()
 
   init(appContext: AppContext) {
     self.appContext = appContext
@@ -12,31 +13,41 @@ public final class ModuleRegistry: Sequence {
   /**
    Registers an instance of module holder.
    */
-  internal func register(holder: ModuleHolder) {
+  internal func register(holder: ModuleHolder, preventModuleOverriding: Bool = false) {
     log.info("Registering module '\(holder.name)'")
+
+    // if overriding is disallowed for this module and the module already registered, don't re-register
+    if overrideDisallowModules.contains(holder.name) && registry[holder.name] != nil {
+      log.info("Not re-registering module '\(holder.name)' since a previous registration specified preventModuleOverriding: true")
+      return
+    }
+
+    if preventModuleOverriding {
+      overrideDisallowModules.insert(holder.name)
+    }
     registry[holder.name] = holder
   }
 
   /**
    Registers an instance of the module.
    */
-  public func register(module: AnyModule) {
+  public func register(module: AnyModule, preventModuleOverriding: Bool = false) {
     guard let appContext else {
       log.error("Unable to register a module '\(module)', the app context is unavailable")
       return
     }
-    register(holder: ModuleHolder(appContext: appContext, module: module))
+    register(holder: ModuleHolder(appContext: appContext, module: module), preventModuleOverriding: preventModuleOverriding)
   }
 
   /**
    Registers a module by its type.
    */
-  public func register(moduleType: AnyModule.Type) {
+  public func register(moduleType: AnyModule.Type, preventModuleOverriding: Bool = false) {
     guard let appContext else {
       log.error("Unable to register a module '\(moduleType)', the app context is unavailable")
       return
     }
-    register(module: moduleType.init(appContext: appContext))
+    register(module: moduleType.init(appContext: appContext), preventModuleOverriding: preventModuleOverriding)
   }
 
   /**

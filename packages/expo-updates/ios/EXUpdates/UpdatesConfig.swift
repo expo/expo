@@ -11,7 +11,7 @@ public enum CheckAutomaticallyConfig: Int {
   case WifiOnly = 1
   case Never = 2
   case ErrorRecoveryOnly = 3
-  var asString: String {
+  public var asString: String {
     switch self {
     case .Always:
       return "ALWAYS"

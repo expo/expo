@@ -8,16 +8,18 @@ import ExpoModulesCore
 /**
  Class to read expo-updates logs using OSLogReader
  */
-internal final class UpdatesLogReader {
+public final class UpdatesLogReader {
   private let serialQueue = DispatchQueue(label: "dev.expo.updates.logging.reader")
   private let logPersistence = PersistentFileLog(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
+
+  public init() {}
 
   /**
    Get expo-updates logs newer than the given date
    Returns the log entries unpacked as dictionaries
    Maximum of one day lookback is allowed
    */
-  func getLogEntries(newerThan: Date) throws -> [[String: Any]] {
+  public func getLogEntries(newerThan: Date) throws -> [[String: Any]] {
     let epoch = epochFromDateOrOneDayAgo(date: newerThan)
     return logPersistence.readEntries()
       .compactMap { entryString in
@@ -30,7 +32,7 @@ internal final class UpdatesLogReader {
    Returned strings are all in the JSON format of UpdatesLogEntry
    Maximum of one day lookback is allowed
    */
-  func getLogEntries(newerThan: Date) -> [String] {
+  public func getLogEntries(newerThan: Date) -> [String] {
     let epoch = epochFromDateOrOneDayAgo(date: newerThan)
     return logPersistence.readEntries()
       .compactMap { entryString in
@@ -41,7 +43,7 @@ internal final class UpdatesLogReader {
   /**
    Purge all log entries written more than one day ago
    */
-  func purgeLogEntries(completion: @escaping (Error?) -> Void) {
+  public func purgeLogEntries(completion: @escaping (Error?) -> Void) {
     purgeLogEntries(
       olderThan: Date().addingTimeInterval(-UpdatesLogReader.MAXIMUM_LOOKBACK_INTERVAL),
       completion: completion
@@ -51,7 +53,7 @@ internal final class UpdatesLogReader {
   /**
    Purge all log entries written prior to the given date
    */
-  func purgeLogEntries(olderThan: Date, completion: @escaping (Error?) -> Void) {
+  public func purgeLogEntries(olderThan: Date, completion: @escaping (Error?) -> Void) {
     let epoch = epochFromDateOrOneDayAgo(date: olderThan)
     logPersistence.purgeEntriesNotMatchingFilter(filter: { entryString in
       self.logStringToFilteredLogEntry(entryString: entryString, epoch: epoch) != nil

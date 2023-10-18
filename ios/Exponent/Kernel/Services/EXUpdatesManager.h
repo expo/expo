@@ -1,11 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernelAppRecord.h"
-#import "EXUpdatesBinding.h"
+
+#import "Expo_Go-Swift.h"
 
 @class EXManifestsManifest;
 
 NS_ASSUME_NONNULL_BEGIN
+
+typedef void (^EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 
 @interface EXUpdatesManager : NSObject <EXUpdatesBindingDelegate>
 

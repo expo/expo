@@ -8,6 +8,8 @@
 import Foundation
 import SwiftUI
 
+public typealias AppRelaunchCompletionBlock = (Bool) -> Void
+
 @objc(EXUpdatesAppControllerDelegate)
 public protocol AppControllerDelegate: AnyObject {
   func appController(_ appController: AppController, didStartWithSuccess success: Bool)
@@ -314,7 +316,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
     start()
   }
 
-  public func requestRelaunch(completion: @escaping EXUpdatesAppRelaunchCompletionBlock) {
+  public func requestRelaunch(completion: @escaping AppRelaunchCompletionBlock) {
     stateMachine?.processEvent(UpdatesStateEventRestart())
     let launcherWithDatabase = AppLauncherWithDatabase(
       config: config,

@@ -12,7 +12,6 @@
 		07295CD920559E7300ED42D4 /* EXUpdatesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 07295CD820559E7300ED42D4 /* EXUpdatesManager.m */; };
 		0761342424DB63AC001375B6 /* EXUpdatesDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0761342324DB63AC001375B6 /* EXUpdatesDatabaseManager.m */; };
 		0799CFDA21839B520039E97C /* EXSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799CFD921839B520039E97C /* EXSession.m */; };
-		07C6733224D220A5003F3F5C /* EXUpdatesBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733024D220A4003F3F5C /* EXUpdatesBinding.m */; };
 		07C6733524D2310C003F3F5C /* EXAppLoaderExpoUpdates.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */; };
 		0CC6F95E225F5B1B00322635 /* EXStandaloneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6F95D225F5B1B00322635 /* EXStandaloneAppDelegate.m */; };
 		0CC6F961225F5C7700322635 /* ExpoKitAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6F960225F5C7700322635 /* ExpoKitAppDelegate.m */; };
@@ -214,6 +213,10 @@
 		B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */; };
 		B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */; };
 		B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */; };
+		B248B8812AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B248B8802AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift */; };
+		B248B8822AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B248B8802AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift */; };
+		B248B8842AD8888C003C9C10 /* UpdatesBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = B248B8832AD8888C003C9C10 /* UpdatesBinding.swift */; };
+		B248B8852AD8888C003C9C10 /* UpdatesBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = B248B8832AD8888C003C9C10 /* UpdatesBinding.swift */; };
 		B2641CB52AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B2641CB42AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m */; };
 		B2641CB62AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B2641CB42AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m */; };
 		B26DF25628048DB80071B0CD /* EXAppLoaderHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26DF25528048DB80071B0CD /* EXAppLoaderHelpers.swift */; };
@@ -731,8 +734,6 @@
 		0761342324DB63AC001375B6 /* EXUpdatesDatabaseManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUpdatesDatabaseManager.m; sourceTree = "<group>"; };
 		0799CFD821839B470039E97C /* EXSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSession.h; sourceTree = "<group>"; };
 		0799CFD921839B520039E97C /* EXSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSession.m; sourceTree = "<group>"; };
-		07C6733024D220A4003F3F5C /* EXUpdatesBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXUpdatesBinding.m; sourceTree = "<group>"; };
-		07C6733124D220A5003F3F5C /* EXUpdatesBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUpdatesBinding.h; sourceTree = "<group>"; };
 		07C6733324D230FB003F3F5C /* EXAppLoaderExpoUpdates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoaderExpoUpdates.h; sourceTree = "<group>"; };
 		07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderExpoUpdates.m; sourceTree = "<group>"; };
 		10B9AA823F57466698858869 /* RNDateTimePicker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePicker.h; sourceTree = "<group>"; };
@@ -1110,6 +1111,8 @@
 		B23D9AA124758C6600D09AC8 /* EXScopedNotificationPresentationModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationPresentationModule.h; sourceTree = "<group>"; };
 		B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationPresentationModule.m; sourceTree = "<group>"; };
 		B27236FEB631478AB1A6C384 /* RNSharedElementDelegate.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementDelegate.h; sourceTree = "<group>"; };
+		B248B8802AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpoGoExpoUpdatesModule.swift; sourceTree = "<group>"; };
+		B248B8832AD8888C003C9C10 /* UpdatesBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesBinding.swift; sourceTree = "<group>"; };
 		B2641CB32AB0E8B100ACB763 /* EXEmbeddedHomeLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXEmbeddedHomeLoader.h; sourceTree = "<group>"; };
 		B2641CB42AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXEmbeddedHomeLoader.m; sourceTree = "<group>"; };
 		B26DF25528048DB80071B0CD /* EXAppLoaderHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXAppLoaderHelpers.swift; sourceTree = "<group>"; };
@@ -1520,8 +1523,7 @@
 				319C949E22F80DE100063194 /* EXScopedBranch.m */,
 				2168B25B23E3058500A94C0D /* EXScopedFirebaseCore.h */,
 				2168B25A23E3058500A94C0D /* EXScopedFirebaseCore.m */,
-				07C6733124D220A5003F3F5C /* EXUpdatesBinding.h */,
-				07C6733024D220A4003F3F5C /* EXUpdatesBinding.m */,
+				B248B8832AD8888C003C9C10 /* UpdatesBinding.swift */,
 			);
 			path = UniversalModules;
 			sourceTree = "<group>";
@@ -2540,6 +2542,7 @@
 			isa = PBXGroup;
 			children = (
 				F138E0D52A5F2090002E15BC /* ExpoGoModule.swift */,
+				B248B8802AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -2993,6 +2996,8 @@
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Expo Go (versioned)/Pods-Expo Go-Expo Go (versioned)-frameworks.sh",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ExpoSQLite/crsqlite.framework/crsqlite",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ABI47_0_0hermes-engine/ABI47_0_0hermes.framework/ABI47_0_0hermes",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ABI48_0_0hermes-engine/Pre-built/ABI48_0_0hermes.framework/ABI48_0_0hermes",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ABI49_0_0hermes-engine/Pre-built/ABI49_0_0hermes.framework/ABI49_0_0hermes",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FBAEMKit/FBAEMKit.framework/FBAEMKit",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework/FBSDKCoreKit",
@@ -3002,6 +3007,8 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/crsqlite.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ABI47_0_0hermes.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ABI48_0_0hermes.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ABI49_0_0hermes.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBAEMKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
@@ -3399,6 +3406,7 @@
 				B5FB74E11FF6DADC001C764B /* EXDisabledDevLoadingView.m in Sources */,
 				B5A72C2020A0D13E00974CCE /* EXManifestResource.m in Sources */,
 				B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.mm in Sources */,
+				B248B8812AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */,
 				878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */,
 				B5576082204A41F90041D9C8 /* EXHomeModule.m in Sources */,
 				7043DF802283303800272D74 /* RNSVGSymbolManager.m in Sources */,
@@ -3485,6 +3493,7 @@
 				7043DF7A2283303800272D74 /* RNSVGUseManager.m in Sources */,
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,
 				7043DF8B2283303800272D74 /* RNSVGCircleManager.m in Sources */,
+				B248B8842AD8888C003C9C10 /* UpdatesBinding.swift in Sources */,
 				31AD9A3C2285B53100F19090 /* AIRMapCircleManager.m in Sources */,
 				B5FB74DE1FF6DADC001C764B /* EXVersionManagerObjC.m in Sources */,
 				31AD99E22285B51100F19090 /* AIRGoogleMapCallout.m in Sources */,
@@ -3679,6 +3688,7 @@
 				F14217EF262CB68600BB97E6 /* RNSVGEllipseManager.m in Sources */,
 				F14217F0262CB68600BB97E6 /* EXAnalytics.m in Sources */,
 				F14217F1262CB68600BB97E6 /* EXViewController.m in Sources */,
+				B248B8852AD8888C003C9C10 /* UpdatesBinding.swift in Sources */,
 				F14217F2262CB68600BB97E6 /* AIRWeakTimerReference.m in Sources */,
 				F14217F4262CB68600BB97E6 /* AIRMap.m in Sources */,
 				F14217F5262CB68600BB97E6 /* AIRGoogleMapURLTileManager.m in Sources */,
@@ -3732,6 +3742,7 @@
 				F142181C262CB68600BB97E6 /* EXAbstractLoader.m in Sources */,
 				F1421820262CB68600BB97E6 /* EXDevMenuWindow.m in Sources */,
 				F1421822262CB68600BB97E6 /* EXRootViewController.m in Sources */,
+				B248B8822AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */,
 				F1421823262CB68600BB97E6 /* EXScopedLocalAuthentication.m in Sources */,
 				F1421824262CB68600BB97E6 /* AIRGoogleMapManager.m in Sources */,
 				F1421825262CB68600BB97E6 /* RNSVGGlyphContext.m in Sources */,

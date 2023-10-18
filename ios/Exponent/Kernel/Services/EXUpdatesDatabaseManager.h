@@ -2,13 +2,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import "EXUpdatesBinding.h"
-
 @class EXUpdatesDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXUpdatesDatabaseManager : NSObject <EXUpdatesDatabaseBindingDelegate>
+@interface EXUpdatesDatabaseManager : NSObject
 
 @property (nonatomic, strong, readonly) NSURL *updatesDirectory;
 @property (nonatomic, strong, readonly) EXUpdatesDatabase *database;
