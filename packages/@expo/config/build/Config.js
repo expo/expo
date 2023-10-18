@@ -191,7 +191,7 @@ function getConfig(projectRoot, options = {}) {
 
   // Can only change the package.json location if an app.json or app.config.json exists
   const [packageJson, packageJsonPath] = getPackageJsonAndPath(projectRoot);
-  function fillAndReturnConfig(config, dynamicConfigObjectType) {
+  function fillAndReturnConfig(config, dynamicConfigObjectType, mayHaveUnusedStaticConfig = false) {
     const configWithDefaultValues = {
       ...ensureConfigHasDefaultValues({
         projectRoot,
@@ -205,7 +205,8 @@ function getConfig(projectRoot, options = {}) {
       dynamicConfigObjectType,
       rootConfig,
       dynamicConfigPath: paths.dynamicConfigPath,
-      staticConfigPath: paths.staticConfigPath
+      staticConfigPath: paths.staticConfigPath,
+      hasUnusedStaticConfig: !!paths.staticConfigPath && !!paths.dynamicConfigPath && mayHaveUnusedStaticConfig
     };
     if (options.isModdedConfig) {
       var _config$mods;
@@ -255,7 +256,8 @@ function getConfig(projectRoot, options = {}) {
     // No app.config.json or app.json but app.config.js
     const {
       exportedObjectType,
-      config: rawDynamicConfig
+      config: rawDynamicConfig,
+      mayHaveUnusedStaticConfig
     } = (0, _getConfig().getDynamicConfig)(paths.dynamicConfigPath, {
       projectRoot,
       staticConfigPath: paths.staticConfigPath,
@@ -265,7 +267,7 @@ function getConfig(projectRoot, options = {}) {
     // Allow for the app.config.js to `export default null;`
     // Use `dynamicConfigPath` to detect if a dynamic config exists.
     const dynamicConfig = reduceExpoObject(rawDynamicConfig) || {};
-    return fillAndReturnConfig(dynamicConfig, exportedObjectType);
+    return fillAndReturnConfig(dynamicConfig, exportedObjectType, mayHaveUnusedStaticConfig);
   }
 
   // No app.config.js but json or no config
