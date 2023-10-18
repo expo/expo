@@ -122,3 +122,26 @@ it('mixes registered styles with className', () => {
     </a>
   `);
 });
+
+it('uses web-only href attributes', () => {
+  const { getByTestId } = render(
+    <Link href="/foo" testID="link" download="file.png" rel="noopener" target="_blank">
+      Hello
+    </Link>
+  );
+  const node = getByTestId('link');
+  expect(node).toMatchInlineSnapshot(`
+    <a
+      class="css-text-146c3p1 r-cursor-1loqt21"
+      data-testid="link"
+      dir="auto"
+      download="file.png"
+      href="/foo"
+      rel="noopener"
+      role="link"
+      target="_blank"
+    >
+      Hello
+    </a>
+  `);
+});

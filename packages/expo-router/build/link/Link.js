@@ -82,11 +82,33 @@ function useInteropClassName(props) {
         return [props.style, cssStyle];
     }, [props.style, props.className]);
 }
+const useHrefAttrs = react_native_1.Platform.select({
+    web: function useHrefAttrs({ asChild, rel, target, download }) {
+        return React.useMemo(() => {
+            const hrefAttrs = {
+                rel,
+                target,
+                download,
+            };
+            if (asChild) {
+                return hrefAttrs;
+            }
+            return {
+                hrefAttrs,
+            };
+        }, [asChild, rel, target, download]);
+    },
+    default: function useHrefAttrs() {
+        return {};
+    },
+});
 function ExpoRouterLink({ href, replace, 
 // TODO: This does not prevent default on the anchor tag.
-asChild, ...rest }, ref) {
+asChild, rel, target, download, ...rest }, ref) {
     // Mutate the style prop to add the className on web.
     const style = useInteropClassName(rest);
+    // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
+    const hrefAttrs = useHrefAttrs({ asChild, rel, target, download });
     const resolvedHref = React.useMemo(() => {
         if (href == null) {
             throw new Error('Link: href is required');
@@ -102,7 +124,7 @@ asChild, ...rest }, ref) {
     };
     const Element = asChild ? react_slot_1.Slot : react_native_1.Text;
     // Avoid using createElement directly, favoring JSX, to allow tools like Nativewind to perform custom JSX handling on native.
-    return (<Element ref={ref} {...props} {...rest} style={style} {...react_native_1.Platform.select({
+    return (<Element ref={ref} {...props} {...hrefAttrs} {...rest} style={style} {...react_native_1.Platform.select({
         web: {
             onClick: onPress,
         },
