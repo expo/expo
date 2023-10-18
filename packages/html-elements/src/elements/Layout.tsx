@@ -14,48 +14,48 @@ export const Div = createView();
 export const Nav = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'navigation',
+      role: 'navigation',
     },
   })
 );
 export const Footer = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'contentinfo',
+      role: 'contentinfo',
     },
   })
 );
 export const Aside = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'complementary',
+      role: 'complementary',
     },
   })
 );
 export const Header = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'banner',
+      role: 'banner',
     },
     default: {
-      accessibilityRole: 'header',
+      role: 'header',
     },
   })
 );
 export const Main = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'main',
+      role: 'main',
     },
   })
 );
 export const Article = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'article',
+      role: 'article',
     },
   })
 );
 export const Section = createView({
-  accessibilityRole: 'summary', // region?
+  role: 'summary', // region?
 });

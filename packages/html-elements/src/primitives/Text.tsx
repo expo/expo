@@ -44,7 +44,6 @@ export type WebTextProps = {
   tabIndex?: number;
   /** @platform web */
   accessibilityLevel?: number;
-  accessibilityRole?: 'listitem' | 'heading' | AccessibilityRole;
   /** @platform web */
   href?: string;
   /** @deprecated use the prop `hrefAttrs={{ target: '...' }}` instead. */
@@ -62,7 +61,7 @@ export type WebTextProps = {
   lang?: string;
 };
 
-export type TextProps = Omit<NativeTextProps, 'style' | 'accessibilityRole'> & WebTextProps;
+export type TextProps = Omit<NativeTextProps, 'style'> & WebTextProps;
 
 const Text = NativeText as ComponentType<TextProps>;
 

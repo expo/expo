@@ -129,21 +129,9 @@ export type ViewStyle = Omit<NativeViewStyle, 'position'> & WebViewStyle;
 
 export type WebViewProps = {
   style?: StyleProp<ViewStyle>;
-
-  accessibilityRole?:
-    | 'list'
-    | 'listitem'
-    | 'complementary'
-    | 'contentinfo'
-    | 'region'
-    | 'navigation'
-    | 'main'
-    | 'article'
-    | 'banner'
-    | AccessibilityRole;
 };
 
-export type ViewProps = WebViewProps & Omit<NativeViewProps, 'style' | 'accessibilityRole'>;
+export type ViewProps = WebViewProps & Omit<NativeViewProps, 'style'>;
 
 let View = NativeView as ComponentType<ViewProps>;
 
