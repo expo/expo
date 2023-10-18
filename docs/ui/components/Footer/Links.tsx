@@ -24,18 +24,14 @@ export const IssuesLink = ({ title, repositoryUrl }: { title: string; repository
 export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: string }) =>
   isAPIPage ? (
     <LI>
-      <A
-        isStyled
-        openInNewTab
-        href={`https://forums.expo.dev/tag/${title}`}
-        className={LINK_CLASSES}>
+      <A isStyled openInNewTab href="https://chat.expo.dev/" className={LINK_CLASSES}>
         <MessageDotsSquareIcon className={ICON_CLASSES} />
         <CALLOUT theme="secondary">Ask a question on the forums about {title}</CALLOUT>
       </A>
     </LI>
   ) : (
     <LI>
-      <A isStyled openInNewTab href="https://forums.expo.dev/" className={LINK_CLASSES}>
+      <A isStyled openInNewTab href="https://chat.expo.dev/" className={LINK_CLASSES}>
         <MessageDotsSquareIcon className={ICON_CLASSES} />
         <CALLOUT theme="secondary">Ask a question on the forums</CALLOUT>
       </A>
