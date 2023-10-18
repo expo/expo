@@ -1,10 +1,5 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import {
-  AccessibilityRole,
-  StyleProp,
-  View as NativeView,
-  ViewStyle as NativeViewStyle,
-} from 'react-native';
+import { StyleProp, View as NativeView, ViewStyle as NativeViewStyle } from 'react-native';
 
 import { createDevView } from './createDevView';
 import { createSafeStyledView } from '../css/createSafeStyledView';

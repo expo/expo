@@ -8,18 +8,15 @@ function createHeadingComponent(level: number): ComponentType<TextProps> {
   const nativeProps: any = Platform.select({
     web: {
       'aria-level': level,
+      role: 'header',
     },
-    default: {},
+    default: {
+      accessibilityRole: 'header',
+    },
   });
   return forwardRef((props: TextProps, ref) => {
     return (
-      <Text
-        {...nativeProps}
-        role="header"
-        {...props}
-        style={[styles[`h${level}`], props.style]}
-        ref={ref}
-      />
+      <Text {...nativeProps} {...props} style={[styles[`h${level}`], props.style]} ref={ref} />
     );
   }) as ComponentType<TextProps>;
 }

@@ -6,11 +6,14 @@ function createHeadingComponent(level) {
     const nativeProps = Platform.select({
         web: {
             'aria-level': level,
+            role: 'header',
         },
-        default: {},
+        default: {
+            accessibilityRole: 'header',
+        },
     });
     return forwardRef((props, ref) => {
-        return (<Text {...nativeProps} role="header" {...props} style={[styles[`h${level}`], props.style]} ref={ref}/>);
+        return (<Text {...nativeProps} {...props} style={[styles[`h${level}`], props.style]} ref={ref}/>);
     });
 }
 export const H1 = createHeadingComponent(1);

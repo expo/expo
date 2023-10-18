@@ -1,10 +1,5 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import {
-  AccessibilityRole,
-  StyleProp,
-  Text as NativeText,
-  TextStyle as NativeTextStyle,
-} from 'react-native';
+import { StyleProp, Text as NativeText, TextStyle as NativeTextStyle } from 'react-native';
 
 import { WebViewStyle } from './View';
 import { createSafeStyledView } from '../css/createSafeStyledView';
