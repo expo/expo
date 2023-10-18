@@ -177,12 +177,9 @@ function getDefaultConfig(projectRoot, {
   const sourceExtsConfig = {
     isTS: true,
     isReact: true,
-    isModern: true
+    isModern: false
   };
   const sourceExts = (0, _paths().getBareExtensions)([], sourceExtsConfig);
-
-  // Add support for cjs (without platform extensions).
-  sourceExts.push('cjs');
   const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
   let sassVersion = null;
   if (isCSSEnabled) {
@@ -237,8 +234,9 @@ function getDefaultConfig(projectRoot, {
       nodeModulesPaths
     },
     watcher: {
+      additionalExts: ['cjs', 'mjs',
       // strip starting dot from env files
-      additionalExts: envFiles.map(file => file.replace(/^\./, ''))
+      ...envFiles.map(file => file.replace(/^\./, ''))]
     },
     serializer: {
       getModulesRunBeforeMainModule: () => {

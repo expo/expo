@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Imports must now explicitly include the extension `.mjs` or `.cjs` extensions. Platform extensions are not supported with `.mjs` and `.cjs` files.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

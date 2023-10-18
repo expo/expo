@@ -1,14 +1,9 @@
-import { getBareExtensions } from '@expo/config/paths';
 import { vol } from 'memfs';
 import { ConfigT } from 'metro-config';
 import { CustomResolutionContext } from 'metro-resolver/src';
 
 import { importMetroResolverFromProject } from '../resolveFromProject';
-import {
-  getNodejsExtensions,
-  shouldAliasAssetRegistryForWeb,
-  withExtendedResolver,
-} from '../withMetroMultiPlatform';
+import { shouldAliasAssetRegistryForWeb, withExtendedResolver } from '../withMetroMultiPlatform';
 
 const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => config as any;
 
@@ -25,7 +20,7 @@ function getDefaultRequestContext(): CustomResolutionContext {
     mainFields: ['react-native', 'browser', 'main'],
     nodeModulesPaths: ['/node_modules'],
     preferNativePlatform: true,
-    sourceExts: ['mjs', 'ts', 'tsx', 'js', 'jsx', 'json', 'css'],
+    sourceExts: ['ts', 'tsx', 'js', 'jsx', 'json', 'css'],
     customResolverOptions: {},
     originModulePath: '/index.js',
   } as any;
@@ -69,7 +64,7 @@ describe(withExtendedResolver, () => {
         mainFields: ['react-native', 'browser', 'main'],
         nodeModulesPaths: ['/node_modules'],
         preferNativePlatform: true,
-        sourceExts: ['mjs', 'ts', 'tsx', 'js', 'jsx', 'json', 'css'],
+        sourceExts: ['ts', 'tsx', 'js', 'jsx', 'json', 'css'],
         customResolverOptions: {},
         originModulePath: expect.anything(),
         getPackageMainPath: expect.any(Function),
@@ -167,31 +162,11 @@ describe(withExtendedResolver, () => {
         mainFields: ['main', 'module'],
         preferNativePlatform: false,
         // Moved mjs to the back
-        sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css'],
+        sourceExts: ['ts', 'tsx', 'js', 'jsx', 'json', 'css'],
       }),
       'react-native-web',
       platform
     );
-  });
-});
-
-describe(getNodejsExtensions, () => {
-  it(`should return the correct extensions for the node.js platform`, () => {
-    const sourceExts = getBareExtensions([], { isTS: true, isReact: true, isModern: true });
-
-    expect(getNodejsExtensions(sourceExts)).not.toEqual(sourceExts);
-
-    // Ensure mjs comes after js
-    expect(getNodejsExtensions(sourceExts)).toMatchInlineSnapshot(`
-      [
-        "ts",
-        "tsx",
-        "js",
-        "jsx",
-        "mjs",
-        "json",
-      ]
-    `);
   });
 });
 

@@ -68,20 +68,6 @@ function normalizeSlashes(p: string) {
   return p.replace(/\\/g, '/');
 }
 
-export function getNodejsExtensions(srcExts: readonly string[]): string[] {
-  const mjsExts = srcExts.filter((ext) => /mjs$/.test(ext));
-  const nodejsSourceExtensions = srcExts.filter((ext) => !/mjs$/.test(ext));
-  // find index of last `*.js` extension
-  const jsIndex = nodejsSourceExtensions.reduce((index, ext, i) => {
-    return /jsx?$/.test(ext) ? i : index;
-  }, -1);
-
-  // insert `*.mjs` extensions after `*.js` extensions
-  nodejsSourceExtensions.splice(jsIndex + 1, 0, ...mjsExts);
-
-  return nodejsSourceExtensions;
-}
-
 /**
  * Apply custom resolvers to do the following:
  * - Disable `.native.js` extensions on web.
@@ -194,8 +180,6 @@ export function withExtendedResolver(
     debug('Skipping tsconfig.json paths support');
   }
 
-  let nodejsSourceExtensions: string[] | null = null;
-
   const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '..', 'static/shims');
 
   return withMetroResolvers(config, projectRoot, [
@@ -219,12 +203,6 @@ export function withExtendedResolver(
           moduleName = getNodeExternalModuleId(context.originModulePath, moduleId);
           debug(`Redirecting Node.js external "${moduleId}" to "${moduleName}"`);
         }
-
-        // Adjust nodejs source extensions to sort mjs after js, including platform variants.
-        if (nodejsSourceExtensions === null) {
-          nodejsSourceExtensions = getNodejsExtensions(context.sourceExts);
-        }
-        context.sourceExts = nodejsSourceExtensions;
       }
 
       // Conditionally remap `react-native` to `react-native-web` on web in
@@ -302,17 +280,6 @@ export function withExtendedResolver(
       }
 
       let result: Resolution | null = null;
-
-      // React Native uses `event-target-shim` incorrectly and this causes the native runtime
-      // to fail to load. This is a temporary workaround until we can fix this upstream.
-      // https://github.com/facebook/react-native/pull/38628
-      if (
-        moduleName.includes('event-target-shim') &&
-        context.originModulePath.includes(path.sep + 'react-native' + path.sep)
-      ) {
-        context.sourceExts = context.sourceExts.filter((f) => !f.includes('mjs'));
-        debug('Skip mjs support for event-target-shim in:', context.originModulePath);
-      }
 
       if (tsConfigResolve) {
         result = tsConfigResolve(

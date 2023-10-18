@@ -19,7 +19,7 @@ const createContext = ({
   nodeModulesPaths?: string[];
 }): SupportedContext => {
   const preferNativePlatform = platform === 'ios' || platform === 'android';
-  const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
+  const sourceExtsConfig = { isTS: true, isReact: true, isModern: false };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 
   return {
