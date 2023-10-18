@@ -6,7 +6,6 @@ import {
   ArrowRightIcon,
   CameraPlusDuotoneIcon,
   DiscordIcon,
-  DiscourseIcon,
   GithubIcon,
   Image03DuotoneIcon,
   Mail01Icon,
@@ -275,8 +274,8 @@ export function JoinTheCommunity() {
             icon={<GithubIcon className="icon-lg text-palette-white" />}
           />
           <CommunityGridCell
-            title="Discord"
-            description="Join our Discord and chat with other Expo users."
+            title="Discord and Forums"
+            description="Join our Discord to chat with Expo users or ask questions."
             link="https://chat.expo.dev"
             icon={<DiscordIcon className="icon-lg text-palette-white" />}
             iconBackground="#3131E8"
@@ -291,10 +290,10 @@ export function JoinTheCommunity() {
             iconBackground="#000000"
           />
           <CommunityGridCell
-            title="Forums"
-            description="Ask or answer a question on the forums."
-            link="https://forums.expo.dev/"
-            icon={<DiscourseIcon className="icon-lg text-palette-white" />}
+            title="Newsletter"
+            description="Get the latest updates from monthly Expo newsletter."
+            link="http://eepurl.com/hk1tCn"
+            icon={<Mail01Icon className="icon-lg text-palette-white" />}
           />
         </Row>
         <Row>
@@ -304,12 +303,6 @@ export function JoinTheCommunity() {
             link="https://www.reddit.com/r/expo"
             icon={<RedditIcon className="icon-lg text-palette-white" />}
             iconBackground="#FC471E"
-          />
-          <CommunityGridCell
-            title="Newsletter"
-            description="Get the latest updates from monthly Expo newsletter."
-            link="http://eepurl.com/hk1tCn"
-            icon={<Mail01Icon className="icon-lg text-palette-white" />}
           />
         </Row>
       </CellContainer>
