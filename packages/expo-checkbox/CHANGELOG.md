@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use `pointerEvent` style instead of prop for components on web.
+
 ## 2.6.0 — 2023-10-17
 
 ### 💡 Others

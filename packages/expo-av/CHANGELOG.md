@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use `pointerEvent` style instead of prop for video component on web.
+
 ## 13.8.0 — 2023-10-17
 
 ### 🛠 Breaking changes
