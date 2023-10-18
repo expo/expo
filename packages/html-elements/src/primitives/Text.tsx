@@ -43,6 +43,11 @@ export type WebTextProps = {
   /** @platform web */
   tabIndex?: number;
   /** @platform web */
+  'aria-level'?: number;
+  /**
+   * @deprecated use `aria-level` instead.
+   * @platform web
+   */
   accessibilityLevel?: number;
   /** @platform web */
   href?: string;

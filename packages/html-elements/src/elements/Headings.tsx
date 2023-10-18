@@ -7,7 +7,7 @@ import Text, { TextProps } from '../primitives/Text';
 function createHeadingComponent(level: number): ComponentType<TextProps> {
   const nativeProps: any = Platform.select({
     web: {
-      accessibilityLevel: level,
+      'aria-level': level,
     },
     default: {},
   });
@@ -30,6 +30,15 @@ export const H3 = createHeadingComponent(3);
 export const H4 = createHeadingComponent(4);
 export const H5 = createHeadingComponent(5);
 export const H6 = createHeadingComponent(6);
+
+if (__DEV__) {
+  H1.displayName = 'H1';
+  H2.displayName = 'H2';
+  H3.displayName = 'H3';
+  H4.displayName = 'H4';
+  H5.displayName = 'H5';
+  H6.displayName = 'H6';
+}
 
 // Default web styles: http://trac.webkit.org/browser/trunk/Source/WebCore/css/html.css
 const styles = StyleSheet.create({

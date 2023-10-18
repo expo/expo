@@ -38,7 +38,7 @@ export const Header = createView(
       role: 'banner',
     },
     default: {
-      role: 'header',
+      accessibilityRole: 'header',
     },
   })
 );
