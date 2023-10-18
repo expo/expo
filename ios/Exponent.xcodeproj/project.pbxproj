@@ -12,7 +12,6 @@
 		07295CD920559E7300ED42D4 /* EXUpdatesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 07295CD820559E7300ED42D4 /* EXUpdatesManager.m */; };
 		0761342424DB63AC001375B6 /* EXUpdatesDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0761342324DB63AC001375B6 /* EXUpdatesDatabaseManager.m */; };
 		0799CFDA21839B520039E97C /* EXSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799CFD921839B520039E97C /* EXSession.m */; };
-		07C6733224D220A5003F3F5C /* EXUpdatesBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733024D220A4003F3F5C /* EXUpdatesBinding.m */; };
 		07C6733524D2310C003F3F5C /* EXAppLoaderExpoUpdates.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */; };
 		142BF7101AA740B69473EA27 /* AIRMapUrlTileCachedOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A35BDC646C64B7988CCD0CA /* AIRMapUrlTileCachedOverlay.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		19382BA91EC2EACC001ED4A1 /* EXScopedBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXScopedBranchManager.m */; };
@@ -139,6 +138,10 @@
 		B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */; };
 		B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */; };
 		B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */; };
+		B248B8812AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B248B8802AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift */; };
+		B248B8822AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B248B8802AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift */; };
+		B248B8842AD8888C003C9C10 /* UpdatesBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = B248B8832AD8888C003C9C10 /* UpdatesBinding.swift */; };
+		B248B8852AD8888C003C9C10 /* UpdatesBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = B248B8832AD8888C003C9C10 /* UpdatesBinding.swift */; };
 		B2641CB52AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B2641CB42AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m */; };
 		B2641CB62AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B2641CB42AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m */; };
 		B26DF25628048DB80071B0CD /* EXAppLoaderHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26DF25528048DB80071B0CD /* EXAppLoaderHelpers.swift */; };
@@ -368,7 +371,6 @@
 		F14218C4262CB68600BB97E6 /* AIRGoogleMapUrlTile.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99BE2285B50E00F19090 /* AIRGoogleMapUrlTile.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14218C6262CB68600BB97E6 /* EXHomeAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B56C65C4204768F2002B2424 /* EXHomeAppManager.m */; };
 		F14218C7262CB68600BB97E6 /* AIRMapCoordinate.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A0A2285B52D00F19090 /* AIRMapCoordinate.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		F14218C9262CB68600BB97E6 /* EXUpdatesBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733024D220A4003F3F5C /* EXUpdatesBinding.m */; };
 		F14218CA262CB68600BB97E6 /* AIRGoogleMapMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99CB2285B51000F19090 /* AIRGoogleMapMarker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14218CB262CB68600BB97E6 /* EXDevMenuMotionInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */; };
 		F14218CC262CB68600BB97E6 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
@@ -497,8 +499,6 @@
 		0761342324DB63AC001375B6 /* EXUpdatesDatabaseManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUpdatesDatabaseManager.m; sourceTree = "<group>"; };
 		0799CFD821839B470039E97C /* EXSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSession.h; sourceTree = "<group>"; };
 		0799CFD921839B520039E97C /* EXSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSession.m; sourceTree = "<group>"; };
-		07C6733024D220A4003F3F5C /* EXUpdatesBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXUpdatesBinding.m; sourceTree = "<group>"; };
-		07C6733124D220A5003F3F5C /* EXUpdatesBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUpdatesBinding.h; sourceTree = "<group>"; };
 		07C6733324D230FB003F3F5C /* EXAppLoaderExpoUpdates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoaderExpoUpdates.h; sourceTree = "<group>"; };
 		07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderExpoUpdates.m; sourceTree = "<group>"; };
 		10B9AA823F57466698858869 /* RNDateTimePicker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePicker.h; sourceTree = "<group>"; };
@@ -723,6 +723,8 @@
 		B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationSchedulerModule.m; sourceTree = "<group>"; };
 		B23D9AA124758C6600D09AC8 /* EXScopedNotificationPresentationModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationPresentationModule.h; sourceTree = "<group>"; };
 		B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationPresentationModule.m; sourceTree = "<group>"; };
+		B248B8802AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpoGoExpoUpdatesModule.swift; sourceTree = "<group>"; };
+		B248B8832AD8888C003C9C10 /* UpdatesBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesBinding.swift; sourceTree = "<group>"; };
 		B2641CB32AB0E8B100ACB763 /* EXEmbeddedHomeLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXEmbeddedHomeLoader.h; sourceTree = "<group>"; };
 		B2641CB42AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXEmbeddedHomeLoader.m; sourceTree = "<group>"; };
 		B26DF25528048DB80071B0CD /* EXAppLoaderHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXAppLoaderHelpers.swift; sourceTree = "<group>"; };
@@ -1069,8 +1071,7 @@
 				319C949E22F80DE100063194 /* EXScopedBranch.m */,
 				2168B25B23E3058500A94C0D /* EXScopedFirebaseCore.h */,
 				2168B25A23E3058500A94C0D /* EXScopedFirebaseCore.m */,
-				07C6733124D220A5003F3F5C /* EXUpdatesBinding.h */,
-				07C6733024D220A4003F3F5C /* EXUpdatesBinding.m */,
+				B248B8832AD8888C003C9C10 /* UpdatesBinding.swift */,
 			);
 			path = UniversalModules;
 			sourceTree = "<group>";
@@ -1849,6 +1850,7 @@
 			isa = PBXGroup;
 			children = (
 				F138E0D52A5F2090002E15BC /* ExpoGoModule.swift */,
+				B248B8802AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -2275,6 +2277,8 @@
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Expo Go (versioned)/Pods-Expo Go-Expo Go (versioned)-frameworks.sh",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ExpoSQLite/crsqlite.framework/crsqlite",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ABI47_0_0hermes-engine/ABI47_0_0hermes.framework/ABI47_0_0hermes",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ABI48_0_0hermes-engine/Pre-built/ABI48_0_0hermes.framework/ABI48_0_0hermes",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ABI49_0_0hermes-engine/Pre-built/ABI49_0_0hermes.framework/ABI49_0_0hermes",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FBAEMKit/FBAEMKit.framework/FBAEMKit",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework/FBSDKCoreKit",
@@ -2284,6 +2288,8 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/crsqlite.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ABI47_0_0hermes.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ABI48_0_0hermes.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ABI49_0_0hermes.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBAEMKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
@@ -2623,6 +2629,7 @@
 				B5FB74E11FF6DADC001C764B /* EXDisabledDevLoadingView.m in Sources */,
 				B5A72C2020A0D13E00974CCE /* EXManifestResource.m in Sources */,
 				B5FB74E31FF6DADC001C764B /* EXDisabledRedBox.mm in Sources */,
+				B248B8812AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */,
 				878B4AFE24C5B8CC00D23E0A /* EXAppLoadingProgressWindowController.m in Sources */,
 				B5576082204A41F90041D9C8 /* EXHomeModule.m in Sources */,
 				B5D0D65F204F4BF500DDFC99 /* EXLog.m in Sources */,
@@ -2675,6 +2682,7 @@
 				31AD99F32285B51100F19090 /* AIRDummyView.m in Sources */,
 				31AD9A4C2285B53100F19090 /* AIRWeakMapReference.m in Sources */,
 				31361A612261C65A00662769 /* EXPermissionsManager.m in Sources */,
+				B248B8842AD8888C003C9C10 /* UpdatesBinding.swift in Sources */,
 				31AD9A3C2285B53100F19090 /* AIRMapCircleManager.m in Sources */,
 				B5FB74DE1FF6DADC001C764B /* EXVersionManagerObjC.m in Sources */,
 				31AD99E22285B51100F19090 /* AIRGoogleMapCallout.m in Sources */,
@@ -2707,7 +2715,6 @@
 				31AD99E12285B51100F19090 /* AIRGoogleMapUrlTile.m in Sources */,
 				B56C65C8204768F3002B2424 /* EXHomeAppManager.m in Sources */,
 				31AD9A3E2285B53100F19090 /* AIRMapCoordinate.m in Sources */,
-				07C6733224D220A5003F3F5C /* EXUpdatesBinding.m in Sources */,
 				B2E2CCCA2AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift in Sources */,
 				31AD99EB2285B51100F19090 /* AIRGoogleMapMarker.m in Sources */,
 				F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */,
@@ -2798,6 +2805,7 @@
 				F14217E9262CB68600BB97E6 /* AIRMapLocalTileOverlay.m in Sources */,
 				F14217EA262CB68600BB97E6 /* EXScopedNotificationCategoriesModule.m in Sources */,
 				F14217F1262CB68600BB97E6 /* EXViewController.m in Sources */,
+				B248B8852AD8888C003C9C10 /* UpdatesBinding.swift in Sources */,
 				F14217F2262CB68600BB97E6 /* AIRWeakTimerReference.m in Sources */,
 				F14217F4262CB68600BB97E6 /* AIRMap.m in Sources */,
 				F14217F5262CB68600BB97E6 /* AIRGoogleMapURLTileManager.m in Sources */,
@@ -2827,6 +2835,7 @@
 				F142181C262CB68600BB97E6 /* EXAbstractLoader.m in Sources */,
 				F1421820262CB68600BB97E6 /* EXDevMenuWindow.m in Sources */,
 				F1421822262CB68600BB97E6 /* EXRootViewController.m in Sources */,
+				B248B8822AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */,
 				F1421823262CB68600BB97E6 /* EXScopedLocalAuthentication.m in Sources */,
 				F1421824262CB68600BB97E6 /* AIRGoogleMapManager.m in Sources */,
 				F1421827262CB68600BB97E6 /* AIRMapManager.m in Sources */,
@@ -2934,7 +2943,6 @@
 				F14218C4262CB68600BB97E6 /* AIRGoogleMapUrlTile.m in Sources */,
 				F14218C6262CB68600BB97E6 /* EXHomeAppManager.m in Sources */,
 				F14218C7262CB68600BB97E6 /* AIRMapCoordinate.m in Sources */,
-				F14218C9262CB68600BB97E6 /* EXUpdatesBinding.m in Sources */,
 				F14218CA262CB68600BB97E6 /* AIRGoogleMapMarker.m in Sources */,
 				F14218CB262CB68600BB97E6 /* EXDevMenuMotionInterceptor.m in Sources */,
 				83D25AE92A83ED5C00D8DAFA /* RNCPickerManager.m in Sources */,

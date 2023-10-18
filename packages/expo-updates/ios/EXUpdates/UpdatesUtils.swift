@@ -305,7 +305,7 @@ public final class UpdatesUtils: NSObject {
 
   // MARK: - Internal methods
 
-  internal static func defaultNativeStateMachineContextJson() -> [String: Any?] {
+  public static func defaultNativeStateMachineContextJson() -> [String: Any?] {
     return UpdatesStateContext().json
   }
 
