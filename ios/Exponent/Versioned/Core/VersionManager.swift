@@ -100,11 +100,12 @@ final class VersionManager: EXVersionManagerObjC {
       return
     }
 
+    // prevent override of this module with the UpdatesModule in the expo-updates package
     appContext.moduleRegistry.register(module: ExpoGoExpoUpdatesModule(
       appContext: appContext,
       updatesKernelService: updatesKernelService,
       scopeKey: manifest.scopeKey()
-    ))
+    ), preventModuleOverriding: true)
   }
 
   private func createAppContextConfig() -> AppContextConfig {
