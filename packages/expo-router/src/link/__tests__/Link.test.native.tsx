@@ -96,3 +96,27 @@ it('ignores className with slot on native', () => {
     })
   );
 });
+it('strips web-only href attributes', () => {
+  const { getByTestId } = render(
+    <Link
+      href="/foo"
+      testID="link"
+      style={{ color: 'red' }}
+      download="file.png"
+      rel="noopener"
+      target="_blank">
+      Link
+    </Link>
+  );
+  const node = getByTestId('link');
+  expect(node.props).toEqual(
+    expect.objectContaining({
+      children: 'Link',
+      href: '/foo',
+      role: 'link',
+      style: { color: 'red' },
+      testID: 'link',
+      onPress: expect.any(Function),
+    })
+  );
+});
