@@ -275,7 +275,7 @@ export function JoinTheCommunity() {
           />
           <CommunityGridCell
             title="Discord and Forums"
-            description="Join our Discord to chat with Expo users or ask questions on the forums."
+            description="Join our Discord to chat with Expo users or ask questions."
             link="https://chat.expo.dev"
             icon={<DiscordIcon className="icon-lg text-palette-white" />}
             iconBackground="#3131E8"
