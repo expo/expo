@@ -3,7 +3,6 @@ import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIc
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as Font from 'expo-font';
 import React, { Fragment, useContext, useEffect, useRef } from 'react';
-import { Clipboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
@@ -120,19 +119,6 @@ export function DevMenuView({ uuid, task }: Props) {
     setDevMenuItems(devMenuItems);
     setIsOnboardingFinished(isOnboardingFinished);
     setIsLoaded(true);
-  }
-
-  function onAppReload() {
-    collapse();
-    DevMenu.reloadAppAsync();
-  }
-
-  async function onCopyTaskUrl() {
-    const { manifestUrl } = task;
-
-    await collapseAndCloseDevMenuAsync();
-    Clipboard.setString(manifestUrl);
-    alert(`Copied "${manifestUrl}" to the clipboard!`);
   }
 
   function onGoToHome() {
