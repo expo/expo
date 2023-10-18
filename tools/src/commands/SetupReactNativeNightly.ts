@@ -229,6 +229,20 @@ async function updateBareExpoAsync(nightlyVersion: string) {
       find: /(platform :ios, )['"]13\.0['"]/g,
       replaceWith: "$1'13.4'",
     },
+    {
+      // __apply_Xcode_12_5_M1_post_install_workaround was removed in 0.73
+      find: '__apply_Xcode_12_5_M1_post_install_workaround(installer)',
+      replaceWith: '',
+    },
+    {
+      // Flipper was removed in 0.74
+      find: `flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled`,
+      replaceWith: '',
+    },
+    {
+      find: /:flipper_configuration => FlipperConfiguration.disabled,/g,
+      replaceWith: '',
+    },
   ]);
 
   // flipper-integration
