@@ -1,14 +1,11 @@
 import { HomeFilledIcon, iconSize, RefreshIcon } from '@expo/styleguide-native';
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import { Divider, Row, Spacer, useExpoTheme, View } from 'expo-dev-client-components';
+import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as Font from 'expo-font';
 import React, { Fragment, useContext, useEffect, useRef } from 'react';
-import { Clipboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ClipboardIcon } from './ClipboardIcon';
 import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
-import { DevMenuButton } from './DevMenuButton';
 import { DevMenuCloseButton } from './DevMenuCloseButton';
 import { DevMenuItem } from './DevMenuItem';
 import * as DevMenu from './DevMenuModule';
@@ -24,12 +21,12 @@ type Props = {
 // These are defined in EXVersionManager.m in a dictionary, ordering needs to be
 // done here.
 const DEV_MENU_ORDER = [
-  'dev-live-reload',
-  'dev-hmr',
-  'dev-remote-debug',
-  'dev-reload',
   'dev-perf-monitor',
   'dev-inspector',
+  'dev-remote-debug',
+  'dev-live-reload',
+  'dev-hmr',
+  'dev-reload',
 ];
 
 function ThemedMaterialIcon({
@@ -129,14 +126,6 @@ export function DevMenuView({ uuid, task }: Props) {
     DevMenu.reloadAppAsync();
   }
 
-  async function onCopyTaskUrl() {
-    const { manifestUrl } = task;
-
-    await collapseAndCloseDevMenuAsync();
-    Clipboard.setString(manifestUrl);
-    alert(`Copied "${manifestUrl}" to the clipboard!`);
-  }
-
   function onGoToHome() {
     collapse();
     DevMenu.goToHomeAsync();
@@ -170,32 +159,23 @@ export function DevMenuView({ uuid, task }: Props) {
           <View style={{ paddingBottom: insets.bottom }}>
             <DevMenuServerInfo task={task} />
             <Divider />
-            <Row align="center" padding="medium">
-              <DevMenuButton
-                buttonKey="reload"
-                label="Reload"
-                onPress={onAppReload}
-                icon={<RefreshIcon size={iconSize.small} color={theme.icon.default} />}
-              />
-              <Spacer.Horizontal size="medium" />
-              {task && task.manifestUrl && (
-                <>
-                  <DevMenuButton
-                    buttonKey="copy"
-                    label="Copy Link"
-                    onPress={onCopyTaskUrl}
-                    icon={<ClipboardIcon size={iconSize.regular} color={theme.icon.default} />}
-                  />
-                  <Spacer.Horizontal size="medium" />
-                </>
-              )}
-              <DevMenuButton
-                buttonKey="home"
-                label="Go Home"
-                onPress={onGoToHome}
-                icon={<HomeFilledIcon size={iconSize.regular} color={theme.icon.default} />}
-              />
-            </Row>
+            <View padding="medium">
+              <View bg="default" rounded="large">
+                <DevMenuItem
+                  buttonKey="reload"
+                  label="Reload"
+                  onPress={onAppReload}
+                  icon={<RefreshIcon size={iconSize.small} color={theme.icon.default} />}
+                />
+                <Divider />
+                <DevMenuItem
+                  buttonKey="home"
+                  label="Go Home"
+                  onPress={onGoToHome}
+                  icon={<HomeFilledIcon size={iconSize.small} color={theme.icon.default} />}
+                />
+              </View>
+            </View>
             {enableDevMenuTools && devMenuItems && (
               <View padding="medium" style={{ paddingTop: 0 }}>
                 <View bg="default" rounded="large">
