@@ -60,9 +60,15 @@ function isExpoDevelopmentClient(url) {
     return !!url.hostname.match(/^expo-development-client$/);
 }
 function fromDeepLink(url) {
-    // This is for all standard deep links, e.g. `foobar://` where everything
-    // after the `://` is the path.
-    const res = new URL(url);
+    let res;
+    try {
+        // This is for all standard deep links, e.g. `foobar://` where everything
+        // after the `://` is the path.
+        res = new URL(url);
+    }
+    catch {
+        return url;
+    }
     if (isExpoDevelopmentClient(res)) {
         if (!res.search || !res.searchParams.get('url')) {
             return '';

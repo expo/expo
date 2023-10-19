@@ -47,7 +47,17 @@ export function getUrlWithReactNavigationConcessions(
   path: string,
   basePath: string | undefined = Constants.expoConfig?.experiments?.basePath
 ) {
-  const parsed = new URL(path, 'https://acme.com');
+  let parsed: URL;
+  try {
+    parsed = new URL(path, 'https://acme.com');
+  } catch {
+    // Do nothing with invalid URLs.
+    return {
+      nonstandardPathname: '',
+      inputPathnameWithoutHash: '',
+    };
+  }
+
   const pathname = parsed.pathname;
 
   // Make sure there is a trailing slash
@@ -751,17 +761,21 @@ const createNestedStateObject = (
 
 const parseQueryParams = (path: string, parseConfig?: Record<string, (value: string) => any>) => {
   const query = path.split('?')[1];
-  const params = new URLSearchParams(query);
+  const searchParams = new URLSearchParams(query);
+  const params = Object.fromEntries(
+    // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+    searchParams
+  );
 
   if (parseConfig) {
-    params.forEach((value, name) => {
+    Object.keys(params).forEach((name) => {
       if (Object.hasOwnProperty.call(parseConfig, name) && typeof params[name] === 'string') {
         params[name] = parseConfig[name](params[name] as string);
       }
     });
   }
 
-  return params.size ? params : undefined;
+  return Object.keys(params).length ? params : undefined;
 };
 
 const basePathCache = new Map<string, RegExp>();

@@ -10,7 +10,17 @@ const findFocusedRoute_1 = require("./findFocusedRoute");
 const validatePathConfig_1 = __importDefault(require("./validatePathConfig"));
 const matchers_1 = require("../matchers");
 function getUrlWithReactNavigationConcessions(path, basePath = expo_constants_1.default.expoConfig?.experiments?.basePath) {
-    const parsed = new URL(path, 'https://acme.com');
+    let parsed;
+    try {
+        parsed = new URL(path, 'https://acme.com');
+    }
+    catch {
+        // Do nothing with invalid URLs.
+        return {
+            nonstandardPathname: '',
+            inputPathnameWithoutHash: '',
+        };
+    }
     const pathname = parsed.pathname;
     // Make sure there is a trailing slash
     return {
@@ -522,9 +532,12 @@ const createNestedStateObject = (path, routes, routeConfigs, initialRoutes) => {
 };
 const parseQueryParams = (path, parseConfig) => {
     const query = path.split('?')[1];
-    const params = new URLSearchParams(query);
+    const searchParams = new URLSearchParams(query);
+    const params = Object.fromEntries(
+    // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+    searchParams);
     if (parseConfig) {
-        params.forEach((value, name) => {
+        Object.keys(params).forEach((name) => {
             if (Object.hasOwnProperty.call(parseConfig, name) && typeof params[name] === 'string') {
                 params[name] = parseConfig[name](params[name]);
             }
