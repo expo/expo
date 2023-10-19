@@ -1,5 +1,5 @@
 // @docsMissing
-export type QueryParams = Record<string, string>;
+export type QueryParams = Record<string, undefined | string | string[]>;
 
 // @needsAudit @docsMissing
 export type ParsedURL = {

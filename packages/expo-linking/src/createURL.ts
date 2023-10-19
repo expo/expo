@@ -111,7 +111,12 @@ export function createURL(
       ...paramsFromHostUri,
     };
   }
-  queryString = new URLSearchParams(queryParams).toString();
+  queryString = new URLSearchParams(
+    // For legacy purposes, we'll strip out the nullish values before creating the URL.
+    Object.fromEntries(
+      Object.entries(queryParams).filter(([, value]) => value != null) as [string, string][]
+    )
+  ).toString();
   if (queryString) {
     queryString = `?${queryString}`;
   }
@@ -132,19 +137,26 @@ export function createURL(
 export function parse(url: string): ParsedURL {
   validateURL(url);
 
-  const parsed = new URL(url);
-
   const queryParams: Record<string, string> = {};
-  parsed.searchParams.forEach((value, key) => {
-    queryParams[key] = decodeURIComponent(value);
-  });
+  let path: string | null = null;
+  let hostname: string | null = null;
+  let scheme: string | null = null;
+
+  try {
+    const parsed = new URL(url);
+
+    parsed.searchParams.forEach((value, key) => {
+      queryParams[key] = decodeURIComponent(value);
+    });
+    path = parsed.pathname || null;
+    hostname = parsed.hostname || null;
+    scheme = parsed.protocol || null;
+  } catch {
+    path = url;
+  }
 
   const hostUri = getHostUri() || '';
   const hostUriStripped = removePort(removeTrailingSlashAndQueryString(hostUri));
-
-  let path = parsed.pathname || null;
-  let hostname = parsed.hostname || null;
-  let scheme = parsed.protocol || null;
 
   if (scheme) {
     // Remove colon at end
