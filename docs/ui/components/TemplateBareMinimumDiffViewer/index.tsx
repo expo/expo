@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 import { spacing } from '@expo/styleguide-base';
-import { useState, PropsWithChildren } from 'react';
+import { useRouter } from 'next/compat/router';
+import { PropsWithChildren, useEffect, useState, useCallback } from 'react';
 
 import { VersionSelector } from './VersionSelector';
 
@@ -16,11 +17,23 @@ type Props = PropsWithChildren<{
 }>;
 
 export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
-  const [fromVersion, setFromVersion] = useState<string>('48');
-  const [toVersion, setToVersion] = useState<string>('49');
+  const router = useRouter();
 
   let bareDiffVersions =
     require('~/public/static/diffs/template-bare-minimum/versions.json').slice();
+
+  const lastTwoProductionVersions = bareDiffVersions
+    .filter((d: string) => d !== 'unversioned')
+    .slice(-2);
+
+  const fromVersion = (router?.query.fromSdk as string) || lastTwoProductionVersions[0];
+  const toVersion = (router?.query.toSdk as string) || lastTwoProductionVersions[1];
+
+  useEffect(() => {
+    if (!router?.query.from) {
+      router?.push({ query: { fromSdk: fromVersion, toSdk: toVersion } });
+    }
+  }, []);
 
   // remove unversioned if this environment doesn't show it in the SDK reference
   if (!VERSIONS.find((version: string) => version === 'unversioned')) {
@@ -46,7 +59,9 @@ export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
           <RawH4>From SDK version:</RawH4>
           <VersionSelector
             version={fromVersion}
-            setVersion={setFromVersion}
+            setVersion={version => {
+              router?.push({ query: { fromSdk: version, toSdk: toVersion } });
+            }}
             availableVersions={bareDiffVersions.filter((version: string) => version !== maxVersion)}
           />
         </div>
@@ -54,7 +69,9 @@ export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
           <RawH4>To SDK version:</RawH4>
           <VersionSelector
             version={toVersion}
-            setVersion={setToVersion}
+            setVersion={version => {
+              router?.push({ query: { fromSdk: fromVersion, toSdk: version } });
+            }}
             availableVersions={bareDiffVersions.filter((version: string) => version >= fromVersion)}
           />
         </div>

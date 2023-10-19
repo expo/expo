@@ -24,7 +24,7 @@ const STYLES_SELECT = css({
 });
 
 export type VersionSelectorProps = {
-  version: string;
+  version?: string | null;
   setVersion: (version: string) => void;
   availableVersions: string[];
 };
