@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `Android`, add event to prevent the `new NativeEventEmitter()` warning.
+
 ### 💡 Others
 
 ## 11.7.0 — 2023-10-17
