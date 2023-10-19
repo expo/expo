@@ -1,6 +1,4 @@
 import Constants from 'expo-constants';
-import qs from 'qs';
-import URL from 'url-parse';
 import { hasCustomScheme, resolveScheme } from './Schemes';
 import { validateURL } from './validateURL';
 function getHostUri() {
@@ -90,10 +88,8 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
         queryString = queryStringMatchResult[2];
         let paramsFromHostUri = {};
         try {
-            const parsedParams = qs.parse(queryString);
-            if (typeof parsedParams === 'object') {
-                paramsFromHostUri = parsedParams;
-            }
+            // TODO: Validate that iterator works as expected.
+            paramsFromHostUri = toObj(new URLSearchParams(queryString));
         }
         catch { }
         queryParams = {
@@ -101,7 +97,7 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
             ...paramsFromHostUri,
         };
     }
-    queryString = qs.stringify(queryParams);
+    queryString = new URLSearchParams(queryParams).toString();
     if (queryString) {
         queryString = `?${queryString}`;
     }
@@ -116,11 +112,11 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
  */
 export function parse(url) {
     validateURL(url);
-    const parsed = URL(url, /* parseQueryString */ true);
-    for (const param in parsed.query) {
-        parsed.query[param] = decodeURIComponent(parsed.query[param]);
-    }
-    const queryParams = parsed.query;
+    const parsed = new URL(url);
+    const queryParams = {};
+    parsed.searchParams.forEach((value, key) => {
+        queryParams[key] = decodeURIComponent(value);
+    });
     const hostUri = getHostUri() || '';
     const hostUriStripped = removePort(removeTrailingSlashAndQueryString(hostUri));
     let path = parsed.pathname || null;
@@ -151,5 +147,12 @@ export function parse(url) {
         queryParams,
         scheme,
     };
+}
+function toObj(searchParams) {
+    const obj = {};
+    searchParams.forEach((value, key) => {
+        obj[key] = value;
+    });
+    return obj;
 }
 //# sourceMappingURL=createURL.js.map

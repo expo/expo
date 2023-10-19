@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // This MUST be first to ensure that `fetch` is defined in the React Native environment.
 require("react-native/Libraries/Core/InitializeCore");
 const expo_constants_1 = __importDefault(require("expo-constants"));
-const url_parse_1 = __importDefault(require("url-parse"));
 const Location_1 = require("./Location");
 const getDevServer_1 = __importDefault(require("../getDevServer"));
 let hasWarned = false;
@@ -47,14 +46,14 @@ function wrapFetchWithWindowLocation(fetch) {
             if (process.env.NODE_ENV !== 'production') {
                 warnProductionOriginNotConfigured(props[0]);
             }
-            props[0] = new url_parse_1.default(props[0], window.location?.origin).toString();
+            props[0] = new URL(props[0], window.location?.origin).toString();
         }
         else if (props[0] && typeof props[0] === 'object') {
             if (props[0].url && typeof props[0].url === 'string' && props[0].url.startsWith('/')) {
                 if (process.env.NODE_ENV !== 'production') {
                     warnProductionOriginNotConfigured(props[0]);
                 }
-                props[0].url = new url_parse_1.default(props[0].url, window.location?.origin).toString();
+                props[0].url = new URL(props[0].url, window.location?.origin).toString();
             }
         }
         return fetch(...props);

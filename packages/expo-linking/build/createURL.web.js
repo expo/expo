@@ -7,7 +7,6 @@ export function createURL(path, { queryParams = {} } = {}) {
             url.searchParams.set(key, encodeURIComponent(value));
         }
         else if (value != null) {
-            // @ts-expect-error
             url.searchParams.set(key, value);
         }
     });

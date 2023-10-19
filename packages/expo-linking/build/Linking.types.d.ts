@@ -1,5 +1,4 @@
-import type { ParsedQs } from 'qs';
-export type QueryParams = ParsedQs;
+export type QueryParams = Record<string, string>;
 export type ParsedURL = {
     scheme: string | null;
     hostname: string | null;

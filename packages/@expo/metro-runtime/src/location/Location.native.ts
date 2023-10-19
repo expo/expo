@@ -19,9 +19,9 @@ class Location {
       // @ts-expect-error
       href
     );
-    // @ts-expect-error
+
     url.username = '';
-    // @ts-expect-error
+
     url.password = '';
     Object.defineProperties(this, {
       hash: {
@@ -95,7 +95,6 @@ class Location {
       },
       search: {
         get() {
-          // @ts-expect-error
           return url.search;
         },
         set() {
