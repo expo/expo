@@ -6,11 +6,11 @@
 
 ### 🎉 New features
 
-- Enable package exports for server bundling.
+- Enable package exports for server bundling. ([#24937](https://github.com/expo/expo/pull/24937) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
-- Fix reloading API routes with `src/app` directory.
+- Fix reloading API routes with `src/app` directory. ([#24937](https://github.com/expo/expo/pull/24937) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
