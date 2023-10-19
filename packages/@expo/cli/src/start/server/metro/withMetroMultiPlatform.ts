@@ -14,9 +14,11 @@ import { createFastResolver } from './createExpoMetroResolver';
 import {
   EXTERNAL_REQUIRE_NATIVE_POLYFILL,
   EXTERNAL_REQUIRE_POLYFILL,
+  METRO_SHIMS_FOLDER,
   getNodeExternalModuleId,
   isNodeExternal,
   setupNodeExternals,
+  setupShimFiles,
 } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { importMetroResolverFromProject } from './resolveFromProject';
@@ -196,7 +198,7 @@ export function withExtendedResolver(
 
   let nodejsSourceExtensions: string[] | null = null;
 
-  const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '..', 'static/shims');
+  const shimsFolder = path.join(projectRoot, METRO_SHIMS_FOLDER);
 
   return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
@@ -473,6 +475,7 @@ export async function withMetroMultiPlatformAsync(
     tsconfig = await loadTsConfigPathsAsync(projectRoot);
   }
 
+  await setupShimFiles(projectRoot);
   await setupNodeExternals(projectRoot);
 
   return withMetroMultiPlatform(projectRoot, {
