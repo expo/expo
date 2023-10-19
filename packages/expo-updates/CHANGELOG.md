@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Android: Stub expo-updates in Expo Go and remove service pattern. ([#24890](https://github.com/expo/expo/pull/24890) by [@wschurman](https://github.com/wschurman))
+
 ## 0.22.0 — 2023-10-17
 
 ### 🐛 Bug fixes
@@ -22,7 +24,7 @@
 ### 💡 Others
 
 - Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
-- Stub expo-updates in Expo Go and remove service pattern. ([#24860](https://github.com/expo/expo/pull/24860) by [@wschurman](https://github.com/wschurman))
+- iOS: Stub expo-updates in Expo Go and remove service pattern. ([#24860](https://github.com/expo/expo/pull/24860) by [@wschurman](https://github.com/wschurman))
 
 ## 0.18.16 — 2023-10-05
 
