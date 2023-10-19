@@ -5,7 +5,6 @@ import android.content.Context
 import javax.inject.Inject
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.kernel.ExpoViewKernel
-import host.exp.exponent.kernel.KernelConstants
 import abi49_0_0.expo.modules.constants.ConstantsService
 import abi49_0_0.expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.manifests.core.Manifest
@@ -38,7 +37,7 @@ class ConstantsBinding(
           "versionCode" to if (appOwnership == "expo") null else Constants.ANDROID_VERSION_CODE
         )
       )
-      this["isDetached"] = Constants.isStandaloneApp()
+      this["isDetached"] = false
     }
   }
 
@@ -51,24 +50,11 @@ class ConstantsBinding(
   }
 
   override fun getAppOwnership(): String {
-    return if (experienceProperties.containsKey(KernelConstants.MANIFEST_URL_KEY)) {
-      val manifestUrl = experienceProperties[KernelConstants.MANIFEST_URL_KEY] as String?
-      when {
-        Constants.INITIAL_URL == null -> "expo"
-        manifestUrl == Constants.INITIAL_URL -> "standalone"
-        else -> "guest"
-      }
-    } else {
-      "expo"
-    }
+    return "expo"
   }
 
   private val executionEnvironment: ExecutionEnvironment
-    get() = if (Constants.isStandaloneApp()) {
-      ExecutionEnvironment.STANDALONE
-    } else {
-      ExecutionEnvironment.STORE_CLIENT
-    }
+    get() = ExecutionEnvironment.STORE_CLIENT
 
   override fun getOrCreateInstallationId(): String {
     // Override scoped installationId from ConstantsService with unscoped

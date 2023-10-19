@@ -20,10 +20,7 @@ public class Constants {
 
   public static class ExpoViewAppConstants {
     public String VERSION_NAME;
-    public String INITIAL_URL;
-    public String SHELL_APP_SCHEME;
     public String RELEASE_CHANNEL;
-    public boolean SHOW_LOADING_VIEW_IN_SHELL_APP;
     public boolean ARE_REMOTE_UPDATES_ENABLED;
     public boolean UPDATES_CHECK_AUTOMATICALLY;
     public int UPDATES_FALLBACK_TO_CACHE_TIMEOUT;
@@ -31,18 +28,11 @@ public class Constants {
     public int ANDROID_VERSION_CODE;
     public boolean FCM_ENABLED;
     public SplashScreenImageResizeMode SPLASH_SCREEN_IMAGE_RESIZE_MODE;
-    // no longer used, but we need to leave this here so that people's old detached apps don't break
-    public boolean ANALYTICS_ENABLED;
-    // same but since SDK32
-    public boolean IS_DETACHED;
   }
 
   private static final String TAG = Constants.class.getSimpleName();
 
   public static String VERSION_NAME = null;
-  public static String INITIAL_URL = null;
-  public static String SHELL_APP_SCHEME = null;
-  public static final String SHELL_APP_EMBEDDED_MANIFEST_PATH = "shell-app-manifest.json";
   public static final String API_HOST = "https://exp.host";
   public static String ABI_VERSIONS;
   public static String SDK_VERSIONS;
@@ -52,13 +42,11 @@ public class Constants {
   public static List<EmbeddedResponse> EMBEDDED_RESPONSES;
   public static boolean DISABLE_NUX = false;
   public static String RELEASE_CHANNEL = "default";
-  public static boolean SHOW_LOADING_VIEW_IN_SHELL_APP = false;
   public static boolean ARE_REMOTE_UPDATES_ENABLED = true;
   public static boolean UPDATES_CHECK_AUTOMATICALLY = true;
   public static int UPDATES_FALLBACK_TO_CACHE_TIMEOUT = 0;
   public static int ANDROID_VERSION_CODE;
   public static boolean FCM_ENABLED;
-  public static boolean ANALYTICS_ENABLED;
   public static SplashScreenImageResizeMode SPLASH_SCREEN_IMAGE_RESIZE_MODE;
 
   public static void setSdkVersions(List<String> sdkVersions) {
@@ -106,16 +94,12 @@ public class Constants {
       Class appConstantsClass = Class.forName("host.exp.exponent.generated.AppConstants");
       ExpoViewAppConstants appConstants = (ExpoViewAppConstants) appConstantsClass.getMethod("get").invoke(null);
       VERSION_NAME = appConstants.VERSION_NAME;
-      INITIAL_URL = appConstants.INITIAL_URL;
-      SHELL_APP_SCHEME = appConstants.SHELL_APP_SCHEME;
       RELEASE_CHANNEL = appConstants.RELEASE_CHANNEL;
-      SHOW_LOADING_VIEW_IN_SHELL_APP = appConstants.SHOW_LOADING_VIEW_IN_SHELL_APP;
       ARE_REMOTE_UPDATES_ENABLED = appConstants.ARE_REMOTE_UPDATES_ENABLED;
       UPDATES_CHECK_AUTOMATICALLY = appConstants.UPDATES_CHECK_AUTOMATICALLY;
       UPDATES_FALLBACK_TO_CACHE_TIMEOUT = appConstants.UPDATES_FALLBACK_TO_CACHE_TIMEOUT;
       ANDROID_VERSION_CODE = appConstants.ANDROID_VERSION_CODE;
       FCM_ENABLED = appConstants.FCM_ENABLED;
-      ANALYTICS_ENABLED = !isStandaloneApp();
 
       embeddedResponses.addAll(appConstants.EMBEDDED_RESPONSES);
       EMBEDDED_RESPONSES = embeddedResponses;
@@ -137,10 +121,6 @@ public class Constants {
   public static final boolean ENABLE_LEAK_CANARY = false;
   public static final boolean WRITE_BUNDLE_TO_LOG = false;
   public static final boolean WAIT_FOR_DEBUGGER = false;
-
-  public static boolean isStandaloneApp() {
-    return INITIAL_URL != null;
-  }
 
   public static class EmbeddedResponse {
     public final String url;
