@@ -276,9 +276,9 @@ PODS:
   - GoogleUtilitiesComponents (1.1.0):
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.7.2)
-  - hermes-engine (0.71.13):
-    - hermes-engine/Pre-built (= 0.71.13)
-  - hermes-engine/Pre-built (0.71.13)
+  - hermes-engine (0.71.14):
+    - hermes-engine/Pre-built (= 0.71.14)
+  - hermes-engine/Pre-built (0.71.14)
   - libaom (3.0.0):
     - libvmaf (>= 2.2.0)
   - libavif (0.11.1):
@@ -1291,7 +1291,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 1d20a6ad97ef46f67bbdec158ce00563a671ebb7
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
-  hermes-engine: 8b9dc37355d2e12879267382f4256afd356349a1
+  hermes-engine: d7cc127932c89c53374452d6f93473f1970d8e88
   libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
