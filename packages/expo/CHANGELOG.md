@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add support for standard `URL` API.
+- Add support for standard `URL` API. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
