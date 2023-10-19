@@ -25,6 +25,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useInitializeExpoRouter = exports.useStoreRouteInfo = exports.useStoreRootState = exports.useExpoRouter = exports.store = exports.RouterStore = void 0;
 const native_1 = require("@react-navigation/native");
+const SplashScreen = __importStar(require("expo-splash-screen"));
 const react_1 = require("react");
 const routing_1 = require("./routing");
 const sort_routes_1 = require("./sort-routes");
@@ -33,7 +34,6 @@ const getPathFromState_1 = require("../fork/getPathFromState");
 const getLinkingConfig_1 = require("../getLinkingConfig");
 const getRoutes_1 = require("../getRoutes");
 const useScreens_1 = require("../useScreens");
-const SplashScreen = __importStar(require("expo-splash-screen"));
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
  *
