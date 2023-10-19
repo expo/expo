@@ -34,28 +34,34 @@ export function selectAssetSource(meta) {
     }
     const fileScale = scale === 1 ? '' : `@${scale}x`;
     const fileExtension = meta.type ? `.${encodeURIComponent(meta.type)}` : '';
-    const suffix = `/${encodeURIComponent(meta.name)}${fileScale}${fileExtension}?platform=${encodeURIComponent(Platform.OS)}&hash=${encodeURIComponent(meta.hash)}`;
+    const suffix = `/${encodeURIComponent(meta.name)}${fileScale}${fileExtension}`;
+    const params = new URLSearchParams({
+        platform: Platform.OS,
+        hash: meta.hash,
+    });
     // For assets with a specified absolute URL, we use the existing origin instead of prepending the
     // development server or production CDN URL origin
     if (/^https?:\/\//.test(meta.httpServerLocation)) {
-        const uri = meta.httpServerLocation + suffix;
+        const uri = meta.httpServerLocation + suffix + '?' + params;
         return { uri, hash };
     }
     // For assets during development using manifest2, we use the development server's URL origin
     const manifest2 = getManifest2();
-    if (manifest2?.extra?.expoGo?.developer) {
-        const baseUrl = new URL(`http://${manifest2.extra.expoGo.debuggerHost}`);
+    const devServerUrl = manifest2?.extra?.expoGo?.developer
+        ? 'http://' + manifest2.extra.expoGo.debuggerHost
+        : // For assets during development, we use the development server's URL origin
+            getManifest().developer
+                ? getManifest().bundleUrl
+                : null;
+    if (devServerUrl) {
+        const baseUrl = new URL(devServerUrl);
         baseUrl.pathname = meta.httpServerLocation + suffix;
+        baseUrl.searchParams.append('platform', Platform.OS);
+        baseUrl.searchParams.append('hash', meta.hash);
         return {
             uri: baseUrl.href,
             hash,
         };
-    }
-    // For assets during development, we use the development server's URL origin
-    if (getManifest().developer) {
-        const baseUrl = new URL(getManifest().bundleUrl);
-        baseUrl.pathname = meta.httpServerLocation + suffix;
-        return { uri: baseUrl.href, hash };
     }
     // Production CDN URIs are based on each asset file hash
     return {
@@ -72,13 +78,13 @@ export function resolveUri(uri) {
     if (!manifestBaseUrl) {
         return uri;
     }
-    const { protocol } = new URL(uri);
-    if (protocol !== '') {
-        return uri;
+    try {
+        const { protocol } = new URL(uri);
+        if (protocol !== '') {
+            return uri;
+        }
     }
-    const baseUrl = new URL(manifestBaseUrl);
-    const resolvedPath = uri.startsWith('/') ? uri : path.join(baseUrl.pathname, uri);
-    baseUrl.pathname = resolvedPath;
-    return baseUrl.href;
+    catch { }
+    return new URL(uri, manifestBaseUrl).href;
 }
 //# sourceMappingURL=AssetSources.js.map

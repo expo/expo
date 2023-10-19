@@ -24,12 +24,14 @@ export function getFileExtension(url: string): string {
 export function getManifestBaseUrl(manifestUrl: string): string {
   const urlObject = new URL(manifestUrl);
 
+  let nextProtocol = urlObject.protocol;
   // Change the scheme to http(s) if it is exp(s)
-  if (urlObject.protocol === 'exp:') {
-    urlObject.protocol = 'http:';
-  } else if (urlObject.protocol === 'exps:') {
-    urlObject.protocol = 'https:';
+  if (nextProtocol === 'exp:') {
+    nextProtocol = 'http:';
+  } else if (nextProtocol === 'exps:') {
+    nextProtocol = 'https:';
   }
+  urlObject.protocol = nextProtocol;
 
   // Trim filename, query parameters, and fragment, if any
   const directory = urlObject.pathname.substring(0, urlObject.pathname.lastIndexOf('/') + 1);
@@ -37,5 +39,9 @@ export function getManifestBaseUrl(manifestUrl: string): string {
   urlObject.search = '';
   urlObject.hash = '';
 
-  return urlObject.href;
+  // The URL spec doesn't allow for changing the protocol to `http` or `https`
+  // without a port set so instead, we'll just swap the protocol manually.
+  return urlObject.protocol !== nextProtocol
+    ? urlObject.href.replace(urlObject.protocol, nextProtocol)
+    : urlObject.href;
 }
