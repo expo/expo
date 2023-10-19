@@ -116,7 +116,7 @@ class ExponentPackage : ReactPackage {
       // WHEN_VERSIONING_REMOVE_TO_HERE
     }
     if (!isKernel) {
-      // We need DevMenuModule only in non-home and non-standalone apps.
+      // We need DevMenuModule only in non-home apps.
       nativeModules.add(DevMenuModule(reactContext, experienceProperties, manifest))
     }
 

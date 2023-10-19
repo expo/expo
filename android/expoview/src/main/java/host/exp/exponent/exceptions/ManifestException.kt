@@ -40,7 +40,6 @@ class ManifestException : ExponentException {
 
   override fun toString(): String {
     val extraMessage = if (ExpoViewBuildConfig.DEBUG) {
-      // This will get hit in a detached app.
       " Are you sure expo-cli is running?"
     } else {
       ""

@@ -66,7 +66,7 @@ class DevMenuManager {
   }
 
   /**
-   * Shows dev menu in given experience activity. Ensures it never happens in standalone apps and is run on the UI thread.
+   * Shows dev menu in given experience activity. Ensures it is run on the UI thread.
    */
   @SuppressLint("SourceLockedOrientationActivity")
   fun showInActivity(activity: ExperienceActivity) {
@@ -94,7 +94,7 @@ class DevMenuManager {
   }
 
   /**
-   * Hides dev menu in given experience activity. Ensures it never happens in standalone apps and is run on the UI thread.
+   * Hides dev menu in given experience activity. Ensures it is run on the UI thread.
    */
   fun hideInActivity(activity: ExperienceActivity) {
     UiThreadUtil.runOnUiThread {
