@@ -11,7 +11,9 @@ export function getQueryParams(url) {
     invariant(typeof errorCode === 'string' || errorCode === null, `The "errorCode" parameter must be a string if specified`);
     parsedSearch.delete('errorCode');
     // Merge search and hash
-    const params = toObj(parsedSearch);
+    const params = Object.fromEntries(
+    // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+    parsedSearch);
     // Get hash (#abc=example)
     if (parts[1]) {
         new URLSearchParams(hash).forEach((value, key) => {
@@ -22,12 +24,5 @@ export function getQueryParams(url) {
         errorCode,
         params,
     };
-}
-function toObj(searchParams) {
-    const obj = {};
-    searchParams.forEach((value, key) => {
-        obj[key] = value;
-    });
-    return obj;
 }
 //# sourceMappingURL=QueryParams.js.map

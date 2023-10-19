@@ -21,7 +21,10 @@ export function getQueryParams(url: string): {
   parsedSearch.delete('errorCode');
 
   // Merge search and hash
-  const params = toObj(parsedSearch);
+  const params = Object.fromEntries(
+    // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+    parsedSearch
+  );
   // Get hash (#abc=example)
   if (parts[1]) {
     new URLSearchParams(hash).forEach((value, key) => {
@@ -33,12 +36,4 @@ export function getQueryParams(url: string): {
     errorCode,
     params,
   };
-}
-
-function toObj(searchParams: URLSearchParams) {
-  const obj: Record<string, string> = {};
-  searchParams.forEach((value, key) => {
-    obj[key] = value;
-  });
-  return obj;
 }

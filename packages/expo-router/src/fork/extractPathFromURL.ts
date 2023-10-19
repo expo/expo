@@ -66,7 +66,12 @@ function fromDeepLink(url: string): string {
 
   const qs = !res.search
     ? ''
-    : Object.entries(toObj(res.searchParams))
+    : Object.entries(
+        Object.fromEntries(
+          // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+          res.searchParams
+        )
+      )
         .map(([k, v]) => `${k}=${decodeURIComponent(v)}`)
         .join('&');
 
@@ -98,12 +103,4 @@ export function adjustPathname(url: { hostname?: string | null; pathname: string
     return url.pathname.split('/').slice(2).join('/');
   }
   return url.pathname;
-}
-
-function toObj(searchParams: URLSearchParams) {
-  const obj: Record<string, string> = {};
-  searchParams.forEach((value, key) => {
-    obj[key] = value;
-  });
-  return obj;
 }

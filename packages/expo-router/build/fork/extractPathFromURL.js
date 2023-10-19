@@ -78,7 +78,9 @@ function fromDeepLink(url) {
     }
     const qs = !res.search
         ? ''
-        : Object.entries(toObj(res.searchParams))
+        : Object.entries(Object.fromEntries(
+        // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+        res.searchParams))
             .map(([k, v]) => `${k}=${decodeURIComponent(v)}`)
             .join('&');
     let results = '';
@@ -106,11 +108,4 @@ function adjustPathname(url) {
     return url.pathname;
 }
 exports.adjustPathname = adjustPathname;
-function toObj(searchParams) {
-    const obj = {};
-    searchParams.forEach((value, key) => {
-        obj[key] = value;
-    });
-    return obj;
-}
 //# sourceMappingURL=extractPathFromURL.js.map

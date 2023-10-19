@@ -89,7 +89,9 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
         let paramsFromHostUri = {};
         try {
             // TODO: Validate that iterator works as expected.
-            paramsFromHostUri = toObj(new URLSearchParams(queryString));
+            paramsFromHostUri = Object.fromEntries(
+            // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+            new URLSearchParams(queryString));
         }
         catch { }
         queryParams = {
@@ -157,12 +159,5 @@ export function parse(url) {
         queryParams,
         scheme,
     };
-}
-function toObj(searchParams) {
-    const obj = {};
-    searchParams.forEach((value, key) => {
-        obj[key] = value;
-    });
-    return obj;
 }
 //# sourceMappingURL=createURL.js.map

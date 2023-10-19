@@ -104,7 +104,10 @@ export function createURL(
     let paramsFromHostUri = {};
     try {
       // TODO: Validate that iterator works as expected.
-      paramsFromHostUri = toObj(new URLSearchParams(queryString));
+      paramsFromHostUri = Object.fromEntries(
+        // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+        new URLSearchParams(queryString)
+      );
     } catch {}
     queryParams = {
       ...queryParams,
@@ -186,12 +189,4 @@ export function parse(url: string): ParsedURL {
     queryParams,
     scheme,
   };
-}
-
-function toObj(searchParams: URLSearchParams) {
-  const obj: Record<string, string> = {};
-  searchParams.forEach((value, key) => {
-    obj[key] = value;
-  });
-  return obj;
 }
