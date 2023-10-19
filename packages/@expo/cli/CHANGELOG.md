@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Enable package exports for server bundling.
+
 ### 🐛 Bug fixes
+
+- Fix reloading API routes with `src/app` directory.
 
 ### 💡 Others
 

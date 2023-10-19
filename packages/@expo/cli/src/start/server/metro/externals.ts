@@ -37,7 +37,7 @@ export function getNodeExternalModuleId(fromModule: string, moduleId: string) {
 export async function setupShimFiles(projectRoot: string) {
   await fs.promises.mkdir(path.join(projectRoot, METRO_SHIMS_FOLDER), { recursive: true });
   // Copy the shims to the project folder in case we're running in a monorepo.
-  const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '..', 'static/shims');
+  const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '../static/shims');
 
   await copyAsync(shimsFolder, path.join(projectRoot, METRO_SHIMS_FOLDER));
 }

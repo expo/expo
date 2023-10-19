@@ -112,10 +112,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push(expoRouterBabelPlugin);
   }
 
-  if (api.caller((caller) => caller?.isServer)) {
-    extraPlugins.push(require('@babel/plugin-transform-dotall-regex'));
-  }
-
   return {
     presets: [
       [
