@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- On `Android`, add event to module definition to prevent `new NativeEventEmitter()` warning.
+- On `Android`, add event to module definition to prevent `new NativeEventEmitter()` warning. ([#24943](https://github.com/expo/expo/pull/24943) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
