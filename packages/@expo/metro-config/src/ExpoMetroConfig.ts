@@ -30,6 +30,7 @@ export interface LoadOptions {
 }
 
 export interface DefaultConfigOptions {
+  /** @deprecated */
   mode?: 'exotic';
   /**
    * **Experimental:** Enable CSS support for Metro web, and shim on native.
@@ -63,9 +64,7 @@ export function getDefaultConfig(
   if (isExotic && !hasWarnedAboutExotic) {
     hasWarnedAboutExotic = true;
     console.log(
-      chalk.gray(
-        `\u203A Unstable feature ${chalk.bold`EXPO_USE_EXOTIC`} is enabled. Bundling may not work as expected, and is subject to breaking changes.`
-      )
+      chalk.gray(`\u203A Feature ${chalk.bold`EXPO_USE_EXOTIC`} is no longer supported.`)
     );
   }
 
@@ -113,7 +112,6 @@ export function getDefaultConfig(
     console.log(`- React Native: ${reactNativePath}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
-    console.log(`- Exotic: ${isExotic}`);
     console.log(`- Env Files: ${envFiles}`);
     console.log(`- Sass: ${sassVersion}`);
     console.log(`- Reanimated: ${reanimatedVersion}`);
@@ -195,10 +193,7 @@ export function getDefaultConfig(
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
-      babelTransformerPath: isExotic
-        ? // TODO: Combine these into one transformer.
-          require.resolve('./transformer/metro-expo-exotic-babel-transformer')
-        : require.resolve('./babel-transformer'),
+      babelTransformerPath: require.resolve('./babel-transformer'),
       assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
       assetPlugins: getAssetPlugins(projectRoot),
     },

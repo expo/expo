@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- "Exotic mode", `EXPO_USE_EXOTIC`, and `EXPO_USE_FB_SOURCES` have been deprecated and no longer enable any experimental functionality. ([#24927](https://github.com/expo/expo/pull/24927) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.14.0 — 2023-10-17
 
 ### 🛠 Breaking changes

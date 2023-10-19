@@ -5,10 +5,6 @@ import { getDefaultConfig, loadAsync } from '../ExpoMetroConfig';
 const projectRoot = '/';
 const consoleError = console.error;
 
-beforeEach(() => {
-  delete process.env.EXPO_USE_EXOTIC;
-});
-
 function mockProject() {
   vol.fromJSON(
     {
@@ -45,18 +41,6 @@ describe(getDefaultConfig, () => {
             expect.not.arrayContaining(['expo.ts', 'expo.tsx', 'expo.js', 'expo.jsx', 'jsx']) &&
             expect.arrayContaining(['json']),
           assetExts: expect.not.arrayContaining(['json']),
-        }),
-      })
-    );
-  });
-
-  it('loads exotic configuration', () => {
-    expect(getDefaultConfig(projectRoot, { mode: 'exotic' })).toEqual(
-      expect.objectContaining({
-        projectRoot,
-        resolver: expect.objectContaining({
-          resolverMainFields: ['react-native', 'browser', 'main'],
-          sourceExts: expect.arrayContaining(['cjs']),
         }),
       })
     );
