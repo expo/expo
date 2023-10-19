@@ -5259,10 +5259,10 @@ assign-symbols@^1.0.0:
   resolved "https://registry.yarnpkg.com/assign-symbols/-/assign-symbols-1.0.0.tgz#59667f41fadd4f20ccbc2bb96b8d4f7f78ec0367"
   integrity sha1-WWZ/QfrdTyDMvCu5a41Pf3jsA2c=
 
-ast-types@0.14.2:
-  version "0.14.2"
-  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.14.2.tgz#600b882df8583e3cd4f2df5fa20fa83759d4bdfd"
-  integrity sha512-O0yuUDnZeQDL+ncNGlJ78BiO4jnYI3bvMsD5prT0/nsgijG/LpNBIr63gTjVTNsiGkgQhiyCShTgxt8oXOrklA==
+ast-types@0.15.2:
+  version "0.15.2"
+  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.15.2.tgz#39ae4809393c4b16df751ee563411423e85fb49d"
+  integrity sha512-c27loCv9QkZinsa5ProX751khO9DJl/AcB5c2KNtA6NRvHKS0PgLfcftz72KVq504vB0Gku5s2kUZzDBvQWvHg==
   dependencies:
     tslib "^2.0.1"
 
@@ -12039,10 +12039,10 @@ jsc-safe-url@^0.2.2:
   resolved "https://registry.yarnpkg.com/jsc-safe-url/-/jsc-safe-url-0.2.4.tgz#141c14fbb43791e88d5dc64e85a374575a83477a"
   integrity sha512-0wM3YBWtYePOjfyXQH5MWQ8H7sdk5EXSwZvmSLKk2RboVQ2Bu239jycHDz5J/8Blf3K0Qnoy2b6xD+z10MFB+Q==
 
-jscodeshift@^0.13.1:
-  version "0.13.1"
-  resolved "https://registry.yarnpkg.com/jscodeshift/-/jscodeshift-0.13.1.tgz#69bfe51e54c831296380585c6d9e733512aecdef"
-  integrity sha512-lGyiEbGOvmMRKgWk4vf+lUrCWO/8YR8sUR3FKF1Cq5fovjZDlIcw3Hu5ppLHAnEXshVffvaM0eyuY/AbOeYpnQ==
+jscodeshift@^0.14.0:
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/jscodeshift/-/jscodeshift-0.14.0.tgz#7542e6715d6d2e8bde0b4e883f0ccea358b46881"
+  integrity sha512-7eCC1knD7bLUPuSCwXsMZUH51O8jIcoVyKtI6P0XM0IVzlGjckPy3FIwQlorzbN0Sg79oK+RlohN32Mqf/lrYA==
   dependencies:
     "@babel/core" "^7.13.16"
     "@babel/parser" "^7.13.16"
@@ -12057,10 +12057,10 @@ jscodeshift@^0.13.1:
     chalk "^4.1.2"
     flow-parser "0.*"
     graceful-fs "^4.2.4"
-    micromatch "^3.1.10"
+    micromatch "^4.0.4"
     neo-async "^2.5.0"
     node-dir "^0.1.17"
-    recast "^0.20.4"
+    recast "^0.21.0"
     temp "^0.8.4"
     write-file-atomic "^2.3.0"
 
@@ -15712,14 +15712,14 @@ react-native-bundle-visualizer@^3.0.0:
     open "^8.4.0"
     source-map-explorer "^2.5.2"
 
-react-native-codegen@^0.71.5:
-  version "0.71.5"
-  resolved "https://registry.yarnpkg.com/react-native-codegen/-/react-native-codegen-0.71.5.tgz#454a42a891cd4ca5fc436440d301044dc1349c14"
-  integrity sha512-rfsuc0zkuUuMjFnrT55I1mDZ+pBRp2zAiRwxck3m6qeGJBGK5OV5JH66eDQ4aa+3m0of316CqrJDRzVlYufzIg==
+react-native-codegen@^0.71.6:
+  version "0.71.6"
+  resolved "https://registry.yarnpkg.com/react-native-codegen/-/react-native-codegen-0.71.6.tgz#481a610c3af9135b09e1e031da032e7270e0cc1b"
+  integrity sha512-e5pR4VldIhEaFctfSAEgxbng0uG4gjBQxAHes3EKLdosH/Av90pQfSe9IDVdFIngvNPzt8Y14pNjrtqov/yNIg==
   dependencies:
     "@babel/parser" "^7.14.0"
     flow-parser "^0.185.0"
-    jscodeshift "^0.13.1"
+    jscodeshift "^0.14.0"
     nullthrows "^1.1.1"
 
 react-native-dropdown-picker@^5.3.0:
@@ -15879,10 +15879,10 @@ react-native-webview@11.26.0:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
-react-native@0.71.13:
-  version "0.71.13"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.71.13.tgz#e20007904f5f8a4b8b1faf1e60f0d7eb9f578ed6"
-  integrity sha512-zEa69YQNLdv8Sf5Pn0CNDB1K9eGuNy1KoMNxXlrZ89JZ8d02b5hihZIoOCCIwhH+iPgslYwr3ZoGd3AY6FMrgw==
+react-native@0.71.14:
+  version "0.71.14"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.71.14.tgz#df12b405a7913b736de01b0347af14e4be7bf324"
+  integrity sha512-7uhzas8aKpU2EARhlONt7yiclh+7PXEOJk469ewpQyId8Owq5WNtZvQm/z3k4mHUriMeQ37vgSGkOInSKcCazw==
   dependencies:
     "@jest/create-cache-key-function" "^29.2.1"
     "@react-native-community/cli" "10.2.4"
@@ -15909,7 +15909,7 @@ react-native@0.71.13:
     pretty-format "^26.5.2"
     promise "^8.3.0"
     react-devtools-core "^4.26.1"
-    react-native-codegen "^0.71.5"
+    react-native-codegen "^0.71.6"
     react-native-gradle-plugin "^0.71.19"
     react-refresh "^0.4.0"
     react-shallow-renderer "^16.15.0"
@@ -16053,12 +16053,12 @@ reanimated-bottom-sheet@^1.0.0-alpha.18:
   resolved "https://registry.yarnpkg.com/reanimated-bottom-sheet/-/reanimated-bottom-sheet-1.0.0-alpha.22.tgz#01a200946f1a461f01f1e773e5b4961c2df2e53b"
   integrity sha512-NxecCn+2iA4YzkFuRK5/b86GHHS2OhZ9VRgiM4q18AC20YE/psRilqxzXCKBEvkOjP5AaAvY0yfE7EkEFBjTvw==
 
-recast@^0.20.4:
-  version "0.20.5"
-  resolved "https://registry.yarnpkg.com/recast/-/recast-0.20.5.tgz#8e2c6c96827a1b339c634dd232957d230553ceae"
-  integrity sha512-E5qICoPoNL4yU0H0NoBDntNB0Q5oMSNh9usFctYniLBluTthi3RsQVBXIJNbApOlvSwW/RGxIuokPcAc59J5fQ==
+recast@^0.21.0:
+  version "0.21.5"
+  resolved "https://registry.yarnpkg.com/recast/-/recast-0.21.5.tgz#e8cd22bb51bcd6130e54f87955d33a2b2e57b495"
+  integrity sha512-hjMmLaUXAm1hIuTqOdeYObMslq/q+Xff6QE3Y2P+uoHAg2nmVlLBps2hzh1UJDdMtDTMXOFewK6ky51JQIeECg==
   dependencies:
-    ast-types "0.14.2"
+    ast-types "0.15.2"
     esprima "~4.0.0"
     source-map "~0.6.1"
     tslib "^2.0.1"
