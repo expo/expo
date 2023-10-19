@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrate to use non-deprecated `react-native-web` props. ([#24930](https://github.com/expo/expo/pull/24930) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.7.0 — 2023-10-17
 
 ### 💡 Others
