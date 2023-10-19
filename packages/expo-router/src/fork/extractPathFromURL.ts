@@ -1,6 +1,5 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
-import URL from 'url-parse';
 
 // This is only run on native.
 function extractExactPathFromURL(url: string): string {
@@ -43,26 +42,26 @@ function extractExactPathFromURL(url: string): string {
 }
 
 /** Major hack to support the makeshift expo-development-client system. */
-function isExpoDevelopmentClient(url: URL<Record<string, string | undefined>>): boolean {
+function isExpoDevelopmentClient(url: URL): boolean {
   return !!url.hostname.match(/^expo-development-client$/);
 }
 
 function fromDeepLink(url: string): string {
   // This is for all standard deep links, e.g. `foobar://` where everything
   // after the `://` is the path.
-  const res = new URL(url, true);
+  const res = new URL(url);
 
   if (isExpoDevelopmentClient(res)) {
-    if (!res.query || !res.query.url) {
+    if (!res.search || !res.searchParams.get('url')) {
       return '';
     }
-    const incomingUrl = res.query.url;
+    const incomingUrl = res.searchParams.get('url')!;
     return extractExactPathFromURL(decodeURI(incomingUrl));
   }
 
-  const qs = !res.query
+  const qs = !res.search
     ? ''
-    : Object.entries(res.query as Record<string, string>)
+    : Object.entries(toObj(res.searchParams))
         .map(([k, v]) => `${k}=${decodeURIComponent(v)}`)
         .join('&');
 
@@ -94,4 +93,12 @@ export function adjustPathname(url: { hostname?: string | null; pathname: string
     return url.pathname.split('/').slice(2).join('/');
   }
   return url.pathname;
+}
+
+function toObj(searchParams: URLSearchParams) {
+  const obj: Record<string, string> = {};
+  searchParams.forEach((value, key) => {
+    obj[key] = value;
+  });
+  return obj;
 }

@@ -2,8 +2,6 @@ import { PathConfigMap } from '@react-navigation/core';
 import type { InitialState, NavigationState, PartialState } from '@react-navigation/routers';
 import escape from 'escape-string-regexp';
 import Constants from 'expo-constants';
-import * as queryString from 'query-string';
-import URL from 'url-parse';
 
 import { findFocusedRoute } from './findFocusedRoute';
 import validatePathConfig from './validatePathConfig';
@@ -753,10 +751,10 @@ const createNestedStateObject = (
 
 const parseQueryParams = (path: string, parseConfig?: Record<string, (value: string) => any>) => {
   const query = path.split('?')[1];
-  const params = queryString.parse(query);
+  const params = new URLSearchParams(query);
 
   if (parseConfig) {
-    Object.keys(params).forEach((name) => {
+    params.forEach((value, name) => {
       if (Object.hasOwnProperty.call(parseConfig, name) && typeof params[name] === 'string') {
         params[name] = parseConfig[name](params[name] as string);
       }
