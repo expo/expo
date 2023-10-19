@@ -32,9 +32,6 @@
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
 #import <ABI48_0_0React/ABI48_0_0RCTAppearance.h>
 #endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
-#import <ABI47_0_0React/ABI47_0_0RCTAppearance.h>
-#endif
 
 #import "Expo_Go-Swift.h"
 
@@ -656,9 +653,6 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
   ABI48_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
-  ABI47_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
 
 }
