@@ -6,8 +6,10 @@ const emitter = new EventEmitter(ExpoSQLite);
  * A SQLite database.
  */
 export class Database {
+    dbName;
     nativeDatabase;
-    constructor(nativeDatabase) {
+    constructor(dbName, nativeDatabase) {
+        this.dbName = dbName;
         this.nativeDatabase = nativeDatabase;
     }
     /**
@@ -49,43 +51,106 @@ export class Database {
         return new Statement(this.nativeDatabase, nativeStatement);
     }
     /**
-     * Execute a transaction and automatically commit/rollback based on the `txn` success.
+     * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
-     * @param txn An async function to execute within a transaction.
+     * > **Note:** This transaction is not exclusive and can be interrupted by other async queries.
+     * @example
+     * ```ts
+     * db.transactionAsync(async () => {
+     *   await db.execAsync('UPDATE test SET name = "aaa"');
+     *
+     *   //
+     *   // We cannot control the order of async/await order, so order of execution is not guaranteed.
+     *   // The following UPDATE query out of transaction may be executed here and break the expectation.
+     *   //
+     *
+     *   const result = await db.getAsync<{ name: string }>('SELECT name FROM Users');
+     *   expect(result?.name).toBe('aaa');
+     * });
+     * db.execAsync('UPDATE test SET name = "bbb"');
+     * ```
+     * If you worry about the order of execution, use `transactionExclusiveAsync` instead.
+     *
+     * @param task An async function to execute within a transaction.
      */
-    async transactionAsync(txn) {
+    async transactionAsync(task) {
         try {
-            await this.nativeDatabase.execAsync('BEGIN');
-            await txn();
-            await this.nativeDatabase.execAsync('COMMIT');
+            await this.execAsync('BEGIN');
+            await task();
+            await this.execAsync('COMMIT');
         }
         catch (e) {
-            await this.nativeDatabase.execAsync('ROLLBACK');
+            await this.execAsync('ROLLBACK');
             throw e;
+        }
+    }
+    /**
+     * Execute a transaction and automatically commit/rollback based on the `task` result.
+     *
+     * The transaction may be exclusive.
+     * As long as the transaction is converted into a write transaction,
+     * the other async write queries will abort with `database is locked` error.
+     *
+     * @param task An async function to execute within a transaction. Any queries inside the transaction must be executed on the `txn` object.
+     * The `txn` object has the same interfaces as the `Database` object. You can use `txn` like a `Database` object.
+     *
+     * @example
+     * ```ts
+     * db.transactionExclusiveAsync(async (txn) => {
+     *   await txn.execAsync('UPDATE test SET name = "aaa"');
+     * });
+     * ```
+     */
+    async transactionExclusiveAsync(task) {
+        const transaction = await Transaction.createAsync(this);
+        try {
+            await transaction.execAsync('BEGIN');
+            await task(transaction);
+            await transaction.execAsync('COMMIT');
+        }
+        catch (e) {
+            await transaction.execAsync('ROLLBACK');
+            throw e;
+        }
+        finally {
+            await transaction.closeAsync();
         }
     }
     async runAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
-        const result = await statement.runAsync(...params);
-        await statement.finalizeAsync();
-        return result;
+        try {
+            return await statement.runAsync(...params);
+        }
+        finally {
+            await statement.finalizeAsync();
+        }
     }
     async getAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
-        const result = await statement.getAsync(...params);
-        await statement.finalizeAsync();
-        return result;
+        try {
+            return await statement.getAsync(...params);
+        }
+        finally {
+            await statement.finalizeAsync();
+        }
     }
     async *eachAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
-        yield* statement.eachAsync(...params);
-        await statement.finalizeAsync();
+        try {
+            yield* statement.eachAsync(...params);
+        }
+        finally {
+            await statement.finalizeAsync();
+        }
     }
     async allAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
-        const result = await statement.allAsync(...params);
-        await statement.finalizeAsync();
-        return result;
+        try {
+            return await statement.allAsync(...params);
+        }
+        finally {
+            await statement.finalizeAsync();
+        }
     }
 }
 /**
@@ -98,7 +163,7 @@ export class Database {
 export async function openDatabaseAsync(dbName, options) {
     const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, options ?? {});
     await nativeDatabase.initAsync();
-    return new Database(nativeDatabase);
+    return new Database(dbName, nativeDatabase);
 }
 /**
  * Delete a database file.
@@ -117,5 +182,15 @@ export async function deleteDatabaseAsync(dbName) {
  */
 export function addDatabaseChangeListener(listener) {
     return emitter.addListener('onDatabaseChange', listener);
+}
+/**
+ * A new connection specific for `transactionExclusiveAsync`.
+ */
+class Transaction extends Database {
+    static async createAsync(db) {
+        const nativeDatabase = new ExpoSQLite.NativeDatabase(db.dbName, { useNewConnection: true });
+        await nativeDatabase.initAsync();
+        return new Transaction(db.dbName, nativeDatabase);
+    }
 }
 //# sourceMappingURL=Database.js.map

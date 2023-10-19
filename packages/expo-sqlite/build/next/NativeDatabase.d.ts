@@ -25,5 +25,10 @@ export interface OpenOptions {
      * @default false
      */
     enableChangeListener?: boolean;
+    /**
+     * Whether to create new connection even if connection with the same database name exists in cache.
+     * @default false
+     */
+    useNewConnection?: boolean;
 }
 //# sourceMappingURL=NativeDatabase.d.ts.map

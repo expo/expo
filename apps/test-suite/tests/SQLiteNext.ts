@@ -334,18 +334,17 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
   describe('transactionAsync', () => {
     let db: SQLite.Database;
 
-    beforeEach(async () => {
-      db = await SQLite.openDatabaseAsync(':memory:');
-      await db.execAsync(`
-DROP TABLE IF EXISTS Users;
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
-`);
-    });
     afterEach(async () => {
       await db.closeAsync();
     });
 
     it('should support async transaction', async () => {
+      db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+DROP TABLE IF EXISTS Users;
+CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+`);
+
       async function fakeUserFetcher(userID) {
         switch (userID) {
           case 1: {
@@ -372,6 +371,12 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
     });
 
     it('should support Promise.all', async () => {
+      db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+DROP TABLE IF EXISTS Users;
+CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+`);
+
       await db.transactionAsync(async () => {
         const statement = await db.prepareAsync('INSERT INTO Users (name) VALUES (?)');
         await Promise.all([
@@ -386,6 +391,12 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
     });
 
     it('should rollback transaction when exception happens inside a transaction', async () => {
+      db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+DROP TABLE IF EXISTS Users;
+CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+`);
+
       await db.runAsync('INSERT INTO Users (name) VALUES (?)', ['aaa']);
       expect((await db.getAsync<any>('SELECT COUNT(*) FROM Users'))['COUNT(*)']).toBe(1);
 
@@ -403,6 +414,94 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       expect(error).not.toBeNull();
 
       expect((await db.getAsync<any>('SELECT COUNT(*) FROM Users'))['COUNT(*)']).toBe(1);
+    });
+
+    it('transactionAsync could possibly have other async queries interrupted inside the transaction', async () => {
+      db = await SQLite.openDatabaseAsync('test.db');
+      await db.execAsync(`
+DROP TABLE IF EXISTS Users;
+CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+INSERT INTO Users (name) VALUES ('aaa');
+  `);
+
+      const promise1 = db.transactionAsync(async () => {
+        for (let i = 0; i < 10; ++i) {
+          const result = await db?.getAsync<{ name: string }>('SELECT name FROM Users');
+          if (result?.name !== 'aaa') {
+            throw new Error(`Exception from promise1: Expected aaa but received ${result?.name}}`);
+          }
+          await db?.runAsync('UPDATE Users SET name = ?', 'aaa');
+          await delayAsync(200);
+        }
+      });
+
+      const promise2 = new Promise(async (resolve, reject) => {
+        try {
+          await delayAsync(100);
+          await db?.runAsync('UPDATE Users SET name = ?', 'bbb');
+          const result = await db?.getAsync<{ name: string }>('SELECT name FROM Users');
+          if (result?.name !== 'bbb') {
+            throw new Error(`Exception from promise2: Expected bbb but received ${result?.name}}`);
+          }
+          resolve(null);
+        } catch (e) {
+          reject(new Error(`Exception from promise2: ${e.toString()}`));
+        }
+      });
+
+      let error = null;
+      try {
+        await Promise.all([promise1, promise2]);
+      } catch (e) {
+        error = e;
+      }
+      expect(error.toString()).toMatch(/Exception from promise1: Expected aaa but received bbb/);
+    });
+
+    it('transactionExclusiveAsync should execute a transaction atomically and abort other write query', async () => {
+      db = await SQLite.openDatabaseAsync('test.db');
+      await db.execAsync(`
+DROP TABLE IF EXISTS Users;
+CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+INSERT INTO Users (name) VALUES ('aaa');
+  `);
+
+      const promise1 = db.transactionExclusiveAsync(async (txn) => {
+        for (let i = 0; i < 10; ++i) {
+          const result = await txn.getAsync<{ name: string }>('SELECT name FROM Users');
+          if (result?.name !== 'aaa') {
+            throw new Error(`Exception from promise1: Expected aaa but received ${result?.name}}`);
+          }
+          await txn.runAsync('UPDATE Users SET name = ?', 'aaa');
+          await delayAsync(200);
+        }
+      });
+
+      const promise2 = new Promise(async (resolve, reject) => {
+        try {
+          await delayAsync(100);
+          await db?.runAsync('UPDATE Users SET name = ?', 'bbb');
+          const result = await db?.getAsync<{ name: string }>('SELECT name FROM Users');
+          if (result?.name !== 'bbb') {
+            throw new Error(`Exception from promise2: Expected bbb but received ${result?.name}}`);
+          }
+          resolve(null);
+        } catch (e) {
+          reject(new Error(`Exception from promise2: ${e.toString()}`));
+        }
+      });
+
+      let error = null;
+      try {
+        await Promise.all([promise1, promise2]);
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error.toString()).toMatch(/Exception from promise2:[\s\S]*database is locked/);
+
+      // We still need to wait for promise1 to finish for promise1 to finalize the transaction.
+      await promise1;
     });
   });
 
@@ -452,4 +551,8 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       await db.closeAsync();
     }, 10000);
   });
+}
+
+async function delayAsync(timeMs: number) {
+  return new Promise((resolve) => setTimeout(resolve, timeMs));
 }

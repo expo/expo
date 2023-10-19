@@ -12,7 +12,10 @@ const emitter = new EventEmitter(ExpoSQLite);
  * A SQLite database.
  */
 export class Database {
-  constructor(private readonly nativeDatabase: NativeDatabase) {}
+  constructor(
+    public readonly dbName: string,
+    private readonly nativeDatabase: NativeDatabase
+  ) {}
 
   /**
    * Synchronous call to return whether the database is currently in a transaction.
@@ -58,18 +61,67 @@ export class Database {
   }
 
   /**
-   * Execute a transaction and automatically commit/rollback based on the `txn` success.
+   * Execute a transaction and automatically commit/rollback based on the `task` result.
    *
-   * @param txn An async function to execute within a transaction.
+   * > **Note:** This transaction is not exclusive and can be interrupted by other async queries.
+   * @example
+   * ```ts
+   * db.transactionAsync(async () => {
+   *   await db.execAsync('UPDATE test SET name = "aaa"');
+   *
+   *   //
+   *   // We cannot control the order of async/await order, so order of execution is not guaranteed.
+   *   // The following UPDATE query out of transaction may be executed here and break the expectation.
+   *   //
+   *
+   *   const result = await db.getAsync<{ name: string }>('SELECT name FROM Users');
+   *   expect(result?.name).toBe('aaa');
+   * });
+   * db.execAsync('UPDATE test SET name = "bbb"');
+   * ```
+   * If you worry about the order of execution, use `transactionExclusiveAsync` instead.
+   *
+   * @param task An async function to execute within a transaction.
    */
-  public async transactionAsync(txn: () => Promise<void>): Promise<void> {
+  public async transactionAsync(task: () => Promise<void>): Promise<void> {
     try {
-      await this.nativeDatabase.execAsync('BEGIN');
-      await txn();
-      await this.nativeDatabase.execAsync('COMMIT');
+      await this.execAsync('BEGIN');
+      await task();
+      await this.execAsync('COMMIT');
     } catch (e) {
-      await this.nativeDatabase.execAsync('ROLLBACK');
+      await this.execAsync('ROLLBACK');
       throw e;
+    }
+  }
+
+  /**
+   * Execute a transaction and automatically commit/rollback based on the `task` result.
+   *
+   * The transaction may be exclusive.
+   * As long as the transaction is converted into a write transaction,
+   * the other async write queries will abort with `database is locked` error.
+   *
+   * @param task An async function to execute within a transaction. Any queries inside the transaction must be executed on the `txn` object.
+   * The `txn` object has the same interfaces as the `Database` object. You can use `txn` like a `Database` object.
+   *
+   * @example
+   * ```ts
+   * db.transactionExclusiveAsync(async (txn) => {
+   *   await txn.execAsync('UPDATE test SET name = "aaa"');
+   * });
+   * ```
+   */
+  public async transactionExclusiveAsync(task: (txn: Transaction) => Promise<void>): Promise<void> {
+    const transaction = await Transaction.createAsync(this);
+    try {
+      await transaction.execAsync('BEGIN');
+      await task(transaction);
+      await transaction.execAsync('COMMIT');
+    } catch (e) {
+      await transaction.execAsync('ROLLBACK');
+      throw e;
+    } finally {
+      await transaction.closeAsync();
     }
   }
 
@@ -86,9 +138,11 @@ export class Database {
   public runAsync(source: string, params: BindParams): Promise<RunResult>;
   public async runAsync(source: string, ...params: any[]): Promise<RunResult> {
     const statement = await this.prepareAsync(source);
-    const result = await statement.runAsync(...params);
-    await statement.finalizeAsync();
-    return result;
+    try {
+      return await statement.runAsync(...params);
+    } finally {
+      await statement.finalizeAsync();
+    }
   }
 
   /**
@@ -102,9 +156,11 @@ export class Database {
   public getAsync<T>(source: string, params: BindParams): Promise<T | null>;
   public async getAsync<T>(source: string, ...params: any[]): Promise<T | null> {
     const statement = await this.prepareAsync(source);
-    const result = await statement.getAsync<T>(...params);
-    await statement.finalizeAsync();
-    return result;
+    try {
+      return await statement.getAsync<T>(...params);
+    } finally {
+      await statement.finalizeAsync();
+    }
   }
 
   /**
@@ -118,8 +174,11 @@ export class Database {
   public eachAsync<T>(source: string, params: BindParams): AsyncIterableIterator<T>;
   public async *eachAsync<T>(source: string, ...params: any[]): AsyncIterableIterator<T> {
     const statement = await this.prepareAsync(source);
-    yield* statement.eachAsync<T>(...params);
-    await statement.finalizeAsync();
+    try {
+      yield* statement.eachAsync<T>(...params);
+    } finally {
+      await statement.finalizeAsync();
+    }
   }
 
   /**
@@ -133,9 +192,11 @@ export class Database {
   public allAsync<T>(source: string, params: BindParams): Promise<T[]>;
   public async allAsync<T>(source: string, ...params: any[]): Promise<T[]> {
     const statement = await this.prepareAsync(source);
-    const result = await statement.allAsync<T>(...params);
-    await statement.finalizeAsync();
-    return result;
+    try {
+      return await statement.allAsync<T>(...params);
+    } finally {
+      await statement.finalizeAsync();
+    }
   }
 
   //#endregion
@@ -151,7 +212,7 @@ export class Database {
 export async function openDatabaseAsync(dbName: string, options?: OpenOptions): Promise<Database> {
   const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, options ?? {});
   await nativeDatabase.initAsync();
-  return new Database(nativeDatabase);
+  return new Database(dbName, nativeDatabase);
 }
 
 /**
@@ -174,4 +235,15 @@ export function addDatabaseChangeListener(
   listener: (event: { dbName: string; tableName: string; rowId: number }) => void
 ): Subscription {
   return emitter.addListener('onDatabaseChange', listener);
+}
+
+/**
+ * A new connection specific for `transactionExclusiveAsync`.
+ */
+class Transaction extends Database {
+  public static async createAsync(db: Database): Promise<Transaction> {
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.dbName, { useNewConnection: true });
+    await nativeDatabase.initAsync();
+    return new Transaction(db.dbName, nativeDatabase);
+  }
 }

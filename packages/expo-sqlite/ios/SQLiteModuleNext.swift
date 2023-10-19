@@ -68,7 +68,7 @@ public final class SQLiteModuleNext: Module {
         }
 
         // Try to find opened database for fast refresh
-        for database in cachedDatabases where database.dbName == dbName {
+        for database in cachedDatabases where database.dbName == dbName && database.openOptions == options {
           return database
         }
 

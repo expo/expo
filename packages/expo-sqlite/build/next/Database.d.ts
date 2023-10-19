@@ -6,8 +6,9 @@ export { OpenOptions };
  * A SQLite database.
  */
 export declare class Database {
+    readonly dbName: string;
     private readonly nativeDatabase;
-    constructor(nativeDatabase: NativeDatabase);
+    constructor(dbName: string, nativeDatabase: NativeDatabase);
     /**
      * Synchronous call to return whether the database is currently in a transaction.
      */
@@ -35,11 +36,47 @@ export declare class Database {
      */
     prepareAsync(source: string): Promise<Statement>;
     /**
-     * Execute a transaction and automatically commit/rollback based on the `txn` success.
+     * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
-     * @param txn An async function to execute within a transaction.
+     * > **Note:** This transaction is not exclusive and can be interrupted by other async queries.
+     * @example
+     * ```ts
+     * db.transactionAsync(async () => {
+     *   await db.execAsync('UPDATE test SET name = "aaa"');
+     *
+     *   //
+     *   // We cannot control the order of async/await order, so order of execution is not guaranteed.
+     *   // The following UPDATE query out of transaction may be executed here and break the expectation.
+     *   //
+     *
+     *   const result = await db.getAsync<{ name: string }>('SELECT name FROM Users');
+     *   expect(result?.name).toBe('aaa');
+     * });
+     * db.execAsync('UPDATE test SET name = "bbb"');
+     * ```
+     * If you worry about the order of execution, use `transactionExclusiveAsync` instead.
+     *
+     * @param task An async function to execute within a transaction.
      */
-    transactionAsync(txn: () => Promise<void>): Promise<void>;
+    transactionAsync(task: () => Promise<void>): Promise<void>;
+    /**
+     * Execute a transaction and automatically commit/rollback based on the `task` result.
+     *
+     * The transaction may be exclusive.
+     * As long as the transaction is converted into a write transaction,
+     * the other async write queries will abort with `database is locked` error.
+     *
+     * @param task An async function to execute within a transaction. Any queries inside the transaction must be executed on the `txn` object.
+     * The `txn` object has the same interfaces as the `Database` object. You can use `txn` like a `Database` object.
+     *
+     * @example
+     * ```ts
+     * db.transactionExclusiveAsync(async (txn) => {
+     *   await txn.execAsync('UPDATE test SET name = "aaa"');
+     * });
+     * ```
+     */
+    transactionExclusiveAsync(task: (txn: Transaction) => Promise<void>): Promise<void>;
     /**
      * Shorthand for `prepareAsync` and `Statement.runAsync`.
      * Unlike `Statement.runAsync`, this method finalizes the statement after execution.
@@ -103,4 +140,10 @@ export declare function addDatabaseChangeListener(listener: (event: {
     tableName: string;
     rowId: number;
 }) => void): Subscription;
+/**
+ * A new connection specific for `transactionExclusiveAsync`.
+ */
+declare class Transaction extends Database {
+    static createAsync(db: Database): Promise<Transaction>;
+}
 //# sourceMappingURL=Database.d.ts.map
