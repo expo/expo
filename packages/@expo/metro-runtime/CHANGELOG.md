@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrate to new standard `URL` support on native.
+
 ## 3.0.3 — 2023-10-17
 
 ### 💡 Others

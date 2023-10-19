@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Ignore stack traces from whatwg modules.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

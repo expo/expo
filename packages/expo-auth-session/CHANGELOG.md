@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrate to new standard `URL` support on native.
+
 ## 5.2.2 — 2023-10-17
 
 _This version does not introduce any user-facing changes._

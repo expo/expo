@@ -24,6 +24,7 @@
 
 - Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
 - Throw unhandled actions in tests. ([#24525](https://github.com/expo/expo/pull/24525) by [@EvanBacon](https://github.com/EvanBacon))
+- Migrate to new standard `URL` support on native.
 
 ## 3.1.2 — 2023-09-18
 

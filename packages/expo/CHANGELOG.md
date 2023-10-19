@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for standard `URL` API.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
