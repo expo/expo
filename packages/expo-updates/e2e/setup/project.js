@@ -300,35 +300,6 @@ async function prepareLocalUpdatesModule(repoRoot) {
     androidE2ETestModuleKTPath
   );
 
-  // export module from UpdatesPackage on Android
-  const updatesPackageFilePath = path.join(
-    repoRoot,
-    'packages',
-    'expo-updates',
-    'android',
-    'src',
-    'main',
-    'java',
-    'expo',
-    'modules',
-    'updates',
-    'UpdatesPackage.kt'
-  );
-  const originalUpdatesPackageFileContents = await fs.readFile(updatesPackageFilePath, 'utf8');
-  let updatesPackageFileContents = originalUpdatesPackageFileContents;
-  if (!updatesPackageFileContents) {
-    throw new Error('Failed to read UpdatesPackage.kt; was the file renamed or moved?');
-  }
-  updatesPackageFileContents = updatesPackageFileContents.replace(
-    'UpdatesModule(context) as ExportedModule',
-    'UpdatesModule(context) as ExportedModule, UpdatesE2ETestModule(context)'
-  );
-  // make sure the insertion worked
-  if (!updatesPackageFileContents.includes('UpdatesE2ETestModule(context)')) {
-    throw new Error('Failed to modify UpdatesPackage.kt to insert UpdatesE2ETestModule');
-  }
-  await fs.writeFile(updatesPackageFilePath, updatesPackageFileContents, 'utf8');
-
   // Add E2ETestModule to expo-module.config.json
   const expoModuleConfigFilePath = path.join(
     repoRoot,
@@ -342,14 +313,20 @@ async function prepareLocalUpdatesModule(repoRoot) {
     ...originalExpoModuleConfig,
     ios: {
       ...originalExpoModuleConfig.ios,
-      modules: ['UpdatesModule', 'E2ETestModule'],
+      modules: [...originalExpoModuleConfig.ios.modules, 'E2ETestModule'],
+    },
+    android: {
+      ...originalExpoModuleConfig.android,
+      modules: [
+        ...originalExpoModuleConfig.android.modules,
+        'expo.modules.updates.UpdatesE2ETestModule',
+      ],
     },
   };
   await fs.writeFile(expoModuleConfigFilePath, JSON.stringify(expoModuleConfig, null, 2), 'utf-8');
 
   // Return cleanup function
   return async () => {
-    await fs.writeFile(updatesPackageFilePath, originalUpdatesPackageFileContents, 'utf8');
     await fs.writeFile(expoModuleConfigFilePath, originalExpoModuleConfigJsonString, 'utf-8');
     await fs.rm(iosE2ETestModuleSwiftPath, { force: true });
     await fs.rm(androidE2ETestModuleKTPath, { force: true });
