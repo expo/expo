@@ -1,4 +1,4 @@
-export type QueryParams = Record<string, string>;
+export type QueryParams = Record<string, undefined | string | string[]>;
 export type ParsedURL = {
     scheme: string | null;
     hostname: string | null;

@@ -97,7 +97,9 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
             ...paramsFromHostUri,
         };
     }
-    queryString = new URLSearchParams(queryParams).toString();
+    queryString = new URLSearchParams(
+    // For legacy purposes, we'll strip out the nullish values before creating the URL.
+    Object.fromEntries(Object.entries(queryParams).filter(([, value]) => value != null))).toString();
     if (queryString) {
         queryString = `?${queryString}`;
     }
@@ -112,16 +114,24 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
  */
 export function parse(url) {
     validateURL(url);
-    const parsed = new URL(url);
     const queryParams = {};
-    parsed.searchParams.forEach((value, key) => {
-        queryParams[key] = decodeURIComponent(value);
-    });
+    let path = null;
+    let hostname = null;
+    let scheme = null;
+    try {
+        const parsed = new URL(url);
+        parsed.searchParams.forEach((value, key) => {
+            queryParams[key] = decodeURIComponent(value);
+        });
+        path = parsed.pathname || null;
+        hostname = parsed.hostname || null;
+        scheme = parsed.protocol || null;
+    }
+    catch {
+        path = url;
+    }
     const hostUri = getHostUri() || '';
     const hostUriStripped = removePort(removeTrailingSlashAndQueryString(hostUri));
-    let path = parsed.pathname || null;
-    let hostname = parsed.hostname || null;
-    let scheme = parsed.protocol || null;
     if (scheme) {
         // Remove colon at end
         scheme = scheme.substring(0, scheme.length - 1);
