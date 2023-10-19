@@ -1,7 +1,5 @@
-import URL from 'url-parse';
-
 export function getFilename(url: string): string {
-  const { pathname } = new URL(url, {});
+  const { pathname } = new URL(url);
   return pathname.substring(pathname.lastIndexOf('/') + 1);
 }
 
@@ -24,20 +22,20 @@ export function getFileExtension(url: string): string {
  * to tell the OS to open the URLs in the the Expo client.
  */
 export function getManifestBaseUrl(manifestUrl: string): string {
-  const urlObject = new URL(manifestUrl, {});
+  const urlObject = new URL(manifestUrl);
 
   // Change the scheme to http(s) if it is exp(s)
   if (urlObject.protocol === 'exp:') {
-    urlObject.set('protocol', 'http:');
+    urlObject.protocol = 'http:';
   } else if (urlObject.protocol === 'exps:') {
-    urlObject.set('protocol', 'https:');
+    urlObject.protocol = 'https:';
   }
 
   // Trim filename, query parameters, and fragment, if any
   const directory = urlObject.pathname.substring(0, urlObject.pathname.lastIndexOf('/') + 1);
-  urlObject.set('pathname', directory);
-  urlObject.set('query', '');
-  urlObject.set('hash', '');
+  urlObject.pathname = directory;
+  urlObject.search = '';
+  urlObject.hash = '';
 
   return urlObject.href;
 }

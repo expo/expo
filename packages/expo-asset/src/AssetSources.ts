@@ -2,7 +2,6 @@ import { Platform } from 'expo-modules-core';
 import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
 import { PackagerAsset } from 'react-native/Libraries/Image/AssetRegistry';
-import URL from 'url-parse';
 
 import AssetSourceResolver from './AssetSourceResolver';
 import { getManifest, getManifest2, manifestBaseUrl } from './PlatformUtils';

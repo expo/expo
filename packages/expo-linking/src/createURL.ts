@@ -1,6 +1,4 @@
 import Constants from 'expo-constants';
-import qs from 'qs';
-import URL from 'url-parse';
 
 import { CreateURLOptions, ParsedURL } from './Linking.types';
 import { hasCustomScheme, resolveScheme } from './Schemes';
@@ -105,17 +103,15 @@ export function createURL(
     queryString = queryStringMatchResult[2];
     let paramsFromHostUri = {};
     try {
-      const parsedParams = qs.parse(queryString);
-      if (typeof parsedParams === 'object') {
-        paramsFromHostUri = parsedParams;
-      }
+      // TODO: Validate that iterator works as expected.
+      paramsFromHostUri = toObj(new URLSearchParams(queryString));
     } catch {}
     queryParams = {
       ...queryParams,
       ...paramsFromHostUri,
     };
   }
-  queryString = qs.stringify(queryParams);
+  queryString = new URLSearchParams(queryParams).toString();
   if (queryString) {
     queryString = `?${queryString}`;
   }
@@ -136,12 +132,12 @@ export function createURL(
 export function parse(url: string): ParsedURL {
   validateURL(url);
 
-  const parsed = URL(url, /* parseQueryString */ true);
+  const parsed = new URL(url);
 
-  for (const param in parsed.query) {
-    parsed.query[param] = decodeURIComponent(parsed.query[param]!);
-  }
-  const queryParams = parsed.query;
+  const queryParams: Record<string, string> = {};
+  parsed.searchParams.forEach((value, key) => {
+    queryParams[key] = decodeURIComponent(value);
+  });
 
   const hostUri = getHostUri() || '';
   const hostUriStripped = removePort(removeTrailingSlashAndQueryString(hostUri));
@@ -178,4 +174,12 @@ export function parse(url: string): ParsedURL {
     queryParams,
     scheme,
   };
+}
+
+function toObj(searchParams: URLSearchParams) {
+  const obj: Record<string, string> = {};
+  searchParams.forEach((value, key) => {
+    obj[key] = value;
+  });
+  return obj;
 }
