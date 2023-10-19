@@ -45,14 +45,12 @@ You will not be able to use native UI components inside the editor. Any implemen
 
 There are a couple of existing React Native libraries to allow rich-text editing. These are the easiest options to get started if you need a basic rich text editor with limited configuration and don’t have strict performance or UX requirements:
 
-
 - [`react-native-rich-editor`](https://github.com/wxik/react-native-rich-editor)
 - [`react-native-cn-quill`](https://github.com/imnapo/react-native-cn-quill)
 
 ### Custom webview-based editor
 
 If you need more configurability, you can build a similar library with an existing web-only editor. However, you have to handle the message passing and web implementation yourself. This gives you all the options that the underlying editor offers and lets you implement more features.
-
 
 - [Quill](https://quilljs.com/)
 - [lexical](https://github.com/facebook/lexical)
@@ -68,27 +66,26 @@ React Native allows nested `<Text>` components and allows them to be used as chi
 
 Unfortunately, the `<TextInput>` component is built towards working with regular text, and it only returns a string in it’s `onTextChange` callback. This is a significant limitation.
 
-Here is a quick example. If you are rendering a text input with the following bold text:
-
+Here is a quick example. Let's start by rendering a text input with the following bold text:
 
 ```jsx
 <TextInput>
   <Text>
-    {/* The following will render a bold text in this format: **aa**aa */}	
+    {/* The following will render a bold text in this format: **aa**aa */}
     <Text style={{ fontWeight: 900 }}>aa</Text>aa
   </Text>
 </TextInput>
 ```
 
-Then, you append a fifth letter `a`, the position of your cursor should determine if the new letter is a part of the bold string or not. Unfortunately, the callback only returns `aaaaa`.
+Then, let's append a fifth letter `a` to the text input. The position of your cursor should determine if the new letter is a part of the bold string or not. Unfortunately, the callback only returns `aaaaa`.
 
-There is an additional `onSelectionChange` prop that can be used to get that information. However,  it makes the task significantly harder. Inserting additional characters (such as newlines for lists or bullet points) also desynchronizes the selection.
+There is an additional `onSelectionChange` prop that can be used to get that information. However, it makes the task significantly harder. Inserting additional characters (such as newlines for lists or bullet points) also desynchronizes the selection.
 
 There are some attempts to build such an editor, such as [`markdown-editor`](https://github.com/shakogegia/markdown-editor), but no widely used packages exist.
 
 ## Markdown editors with always visible styling markers
 
-If using a markdown to style text fulfills your requirement, you can render the markdown in a separate, non-editable view while editing. It is not complex to build on your own using any markdown renderer. You can also use a third-party library such as [`react-native-markdown-editor`](https://github.com/kunall17/react-native-markdown-editor). 
+If using a markdown to style text fulfills your requirement, you can render the markdown in a separate, non-editable view while editing. It is not complex to build on your own using any markdown renderer. You can also use a third-party library such as [`react-native-markdown-editor`](https://github.com/kunall17/react-native-markdown-editor).
 
 This editing experience suits power users or programming/tech applications. You can also explore rendering rich text while showing markdown only in the selected chunk of text or other hybrid approaches.
 
@@ -101,9 +98,7 @@ You can use a native Android or iOS rich text editor wrapped into a React Native
 
 You can also wrap any native rich text editor using [Expo Modules](/modules/overview/), but if you use different ones on each platform, you need to unify their APIs and input formats.
 
-> Rich text is usually represented using [abstract syntax trees](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
->
-> For example, a bullet list can be a node of type `bulleted-list` with several children of type `list-item`. You can convert both HTML and markdown to a suitable AST format.
+> Rich text is usually represented using [abstract syntax trees](https://en.wikipedia.org/wiki/Abstract_syntax_tree). For example, a bullet list can be a node of type `bulleted-list` with several children of type `list-item`. You can convert both HTML and markdown to a suitable AST format.
 
 There is also an effort to [port the lexical editor to Android and iOS and provide a React Native wrapper](track it here: https://github.com/facebook/lexical/discussions/2410)
 
