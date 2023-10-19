@@ -12,6 +12,8 @@ final class NativeDatabase: SharedRef<OpaquePointer?>, Equatable {
     super.init(pointer)
   }
 
+  // MARK: - Equatable
+
   static func == (lhs: NativeDatabase, rhs: NativeDatabase) -> Bool {
     return lhs.pointer == rhs.pointer
   }

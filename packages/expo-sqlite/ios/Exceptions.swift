@@ -54,7 +54,7 @@ internal class InvalidArgumentsException: Exception {
 
 internal class SQLiteErrorException: GenericException<String> {
   override var code: String {
-    "E_SQLITE"
+    "ERR_INTERNAL_SQLITE_ERROR"
   }
 
   override var reason: String {
