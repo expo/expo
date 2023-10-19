@@ -1,7 +1,6 @@
 import { Platform } from 'expo-modules-core';
 import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
-import URL from 'url-parse';
 import AssetSourceResolver from './AssetSourceResolver';
 import { getManifest, getManifest2, manifestBaseUrl } from './PlatformUtils';
 // Fast lookup check if asset map has any overrides in the manifest
@@ -46,7 +45,7 @@ export function selectAssetSource(meta) {
     const manifest2 = getManifest2();
     if (manifest2?.extra?.expoGo?.developer) {
         const baseUrl = new URL(`http://${manifest2.extra.expoGo.debuggerHost}`);
-        baseUrl.set('pathname', meta.httpServerLocation + suffix);
+        baseUrl.pathname = meta.httpServerLocation + suffix;
         return {
             uri: baseUrl.href,
             hash,
@@ -55,7 +54,7 @@ export function selectAssetSource(meta) {
     // For assets during development, we use the development server's URL origin
     if (getManifest().developer) {
         const baseUrl = new URL(getManifest().bundleUrl);
-        baseUrl.set('pathname', meta.httpServerLocation + suffix);
+        baseUrl.pathname = meta.httpServerLocation + suffix;
         return { uri: baseUrl.href, hash };
     }
     // Production CDN URIs are based on each asset file hash
@@ -79,7 +78,7 @@ export function resolveUri(uri) {
     }
     const baseUrl = new URL(manifestBaseUrl);
     const resolvedPath = uri.startsWith('/') ? uri : path.join(baseUrl.pathname, uri);
-    baseUrl.set('pathname', resolvedPath);
+    baseUrl.pathname = resolvedPath;
     return baseUrl.href;
 }
 //# sourceMappingURL=AssetSources.js.map

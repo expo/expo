@@ -75,7 +75,7 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
 
   if (manifest2?.extra?.expoGo?.developer) {
     const baseUrl = new URL(`http://${manifest2.extra.expoGo.debuggerHost}`);
-    baseUrl.set('pathname', meta.httpServerLocation + suffix);
+    baseUrl.pathname = meta.httpServerLocation + suffix;
 
     return {
       uri: baseUrl.href,
@@ -86,7 +86,7 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
   // For assets during development, we use the development server's URL origin
   if (getManifest().developer) {
     const baseUrl = new URL(getManifest().bundleUrl);
-    baseUrl.set('pathname', meta.httpServerLocation + suffix);
+    baseUrl.pathname = meta.httpServerLocation + suffix;
     return { uri: baseUrl.href, hash };
   }
 
@@ -114,6 +114,6 @@ export function resolveUri(uri: string): string {
 
   const baseUrl = new URL(manifestBaseUrl);
   const resolvedPath = uri.startsWith('/') ? uri : path.join(baseUrl.pathname, uri);
-  baseUrl.set('pathname', resolvedPath);
+  baseUrl.pathname = resolvedPath;
   return baseUrl.href;
 }
