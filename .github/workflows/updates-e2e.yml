@@ -4,7 +4,7 @@ on:
   workflow_dispatch: {}
   pull_request:
     paths:
-      - .github/workflows/updates-e2e-basic.yml
+      - .github/workflows/updates-e2e.yml
       - packages/@expo/cli/**
       - packages/@expo/config-plugins/**
       - packages/@expo/config-types/**
@@ -20,7 +20,7 @@ on:
   push:
     branches: [main, 'sdk-*']
     paths:
-      - .github/workflows/updates-e2e-basic.yml
+      - .github/workflows/updates-e2e.yml
       - packages/@expo/cli/**
       - packages/@expo/config-plugins/**
       - packages/@expo/config-types/**
@@ -43,7 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [android, tvos]
+        platform: [ios, android, tvos]
     runs-on: ubuntu-22.04
     timeout-minutes: 40
     env:
