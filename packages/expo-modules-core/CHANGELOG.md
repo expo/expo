@@ -4,14 +4,31 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Add `preventModuleOverriding` to `ModuleRegistry.register` method. ([#24860](https://github.com/expo/expo/pull/24860) by [@wschurman](https://github.com/wschurman))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.9.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
 - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
+
+- Add `CommonExceptions.ModuleNotFound`. ([#24898](https://github.com/expo/expo/pull/24898) by [@lukmccall](https://github.com/lukmccall))
+- [Android] `Set<T>` can now be passed as an argument to a module method. ([#24897](https://github.com/expo/expo/pull/24897) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
 - Fixed typed arrays couldn't be returned from synchronous functions. ([#24744](https://github.com/expo/expo/pull/24744) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fixed exception when deallocating shared objects. ([#24836](https://github.com/expo/expo/pull/24836) by [@kudo](https://github.com/kudo))
+- [Android] Fixed `null` or `undefined` wasn't converted to `JavaScriptValue`. ([#24899](https://github.com/expo/expo/pull/24899) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed `Either` converter not working with types that have common representation in JavaScript. ([#24903](https://github.com/expo/expo/pull/24903) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

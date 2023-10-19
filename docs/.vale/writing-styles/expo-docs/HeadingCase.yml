@@ -24,6 +24,7 @@ exceptions:
   - Android Studio
   - APNs
   - App
+  - App Links
   - AppDelegate
   - App Store Connect
   - Apple

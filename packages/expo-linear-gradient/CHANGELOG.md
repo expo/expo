@@ -4,13 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 12.5.0 — 2023-09-04
 
