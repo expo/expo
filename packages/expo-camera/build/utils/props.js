@@ -4,8 +4,6 @@ import CameraManager from '../ExponentCameraManager';
 export const ConversionTables = {
     type: CameraManager.Type,
     flashMode: CameraManager.FlashMode,
-    autoFocus: CameraManager.AutoFocus,
-    whiteBalance: CameraManager.WhiteBalance,
 };
 export function convertNativeProps(props) {
     if (!props || typeof props !== 'object') {
@@ -29,10 +27,6 @@ export function ensureNativeProps(props) {
     }
     if (newProps.onFacesDetected) {
         newProps.faceDetectorEnabled = true;
-    }
-    if (Platform.OS !== 'android') {
-        delete newProps.ratio;
-        delete newProps.useCamera2Api;
     }
     if (Platform.OS !== 'web') {
         delete newProps.poster;

@@ -2,7 +2,6 @@ import Ionicons from '@expo/vector-icons/build/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import {
-  AutoFocus,
   BarCodePoint,
   BarCodeScanningResult,
   Camera,
@@ -10,7 +9,6 @@ import {
   CameraType,
   FlashMode,
   PermissionStatus,
-  WhiteBalance,
 } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import React from 'react';
@@ -23,33 +21,13 @@ import { face, landmarks } from '../../components/Face';
 const flashModeOrder = {
   off: FlashMode.on,
   on: FlashMode.auto,
-  auto: FlashMode.torch,
-  torch: FlashMode.off,
+  auto: FlashMode.off,
 };
 
 const flashIcons: Record<string, string> = {
   off: 'flash-off',
   on: 'flash',
   auto: 'flash-outline',
-  torch: 'flashlight',
-};
-
-const wbOrder: Record<string, WhiteBalance> = {
-  auto: WhiteBalance.sunny,
-  sunny: WhiteBalance.cloudy,
-  cloudy: WhiteBalance.shadow,
-  shadow: WhiteBalance.fluorescent,
-  fluorescent: WhiteBalance.incandescent,
-  incandescent: WhiteBalance.auto,
-};
-
-const wbIcons: Record<string, string> = {
-  auto: 'white-balance-auto',
-  sunny: 'white-balance-sunny',
-  cloudy: 'cloud',
-  shadow: 'umbrella-beach',
-  fluorescent: 'white-balance-iridescent',
-  incandescent: 'white-balance-incandescent',
 };
 
 const photos: CameraCapturedPicture[] = [];
@@ -57,23 +35,16 @@ const photos: CameraCapturedPicture[] = [];
 interface State {
   flash: FlashMode;
   zoom: number;
-  autoFocus: AutoFocus;
   type: CameraType;
-  depth: number;
-  whiteBalance: WhiteBalance;
-  ratio: string;
-  ratios: any[];
   barcodeScanning: boolean;
   faceDetecting: boolean;
   faces: any[];
+  torchEnabled: boolean;
   cornerPoints?: BarCodePoint[];
   barcodeData: string;
   newPhotos: boolean;
   permissionsGranted: boolean;
   permission?: PermissionStatus;
-  pictureSize?: any;
-  pictureSizes: any[];
-  pictureSizeId: number;
   showGallery: boolean;
   showMoreOptions: boolean;
   mode: string;
@@ -84,21 +55,15 @@ export default class CameraScreen extends React.Component<object, State> {
   readonly state: State = {
     flash: FlashMode.off,
     zoom: 0,
-    autoFocus: AutoFocus.on,
     type: CameraType.back,
-    depth: 0,
-    whiteBalance: WhiteBalance.auto,
-    ratio: '16:9',
-    ratios: [],
     barcodeScanning: false,
     faceDetecting: false,
     faces: [],
+    torchEnabled: false,
     cornerPoints: undefined,
     barcodeData: '',
     newPhotos: false,
     permissionsGranted: false,
-    pictureSizes: [],
-    pictureSizeId: 0,
     showGallery: false,
     showMoreOptions: false,
     mode: 'picture',
@@ -124,8 +89,6 @@ export default class CameraScreen extends React.Component<object, State> {
     }
   }
 
-  getRatios = async () => this.camera!.getSupportedRatiosAsync();
-
   toggleView = () =>
     this.setState((state) => ({ showGallery: !state.showGallery, newPhotos: false }));
 
@@ -138,20 +101,11 @@ export default class CameraScreen extends React.Component<object, State> {
 
   toggleFlash = () => this.setState((state) => ({ flash: flashModeOrder[state.flash] }));
 
-  setRatio = (ratio: string) => this.setState({ ratio });
-
-  toggleWB = () => this.setState((state) => ({ whiteBalance: wbOrder[state.whiteBalance] }));
-
-  toggleFocus = () =>
-    this.setState((state) => ({
-      autoFocus: state.autoFocus === AutoFocus.on ? AutoFocus.off : AutoFocus.on,
-    }));
+  toggleTorch = () => this.setState((state) => ({ torchEnabled: !state.torchEnabled }));
 
   zoomOut = () => this.setState((state) => ({ zoom: state.zoom - 0.1 < 0 ? 0 : state.zoom - 0.1 }));
 
   zoomIn = () => this.setState((state) => ({ zoom: state.zoom + 0.1 > 1 ? 1 : state.zoom + 0.1 }));
-
-  setFocusDepth = (depth: number) => this.setState({ depth });
 
   toggleBarcodeScanning = () =>
     this.setState((state) => ({ barcodeScanning: !state.barcodeScanning }));
@@ -214,40 +168,6 @@ export default class CameraScreen extends React.Component<object, State> {
 
   onFacesDetected = ({ faces }: { faces: any }) => this.setState({ faces });
 
-  collectPictureSizes = async () => {
-    if (this.camera) {
-      const { ratio } = this.state;
-      const pictureSizes = (await this.camera.getAvailablePictureSizesAsync(ratio)) || [];
-      let pictureSizeId = 0;
-      if (Platform.OS === 'ios') {
-        pictureSizeId = pictureSizes.indexOf('High');
-      } else {
-        // returned array is sorted in ascending order - default size is the largest one
-        pictureSizeId = pictureSizes.length - 1;
-      }
-      this.setState({ pictureSizes, pictureSizeId, pictureSize: pictureSizes[pictureSizeId] });
-    }
-  };
-
-  previousPictureSize = () => this.changePictureSize(1);
-  nextPictureSize = () => this.changePictureSize(-1);
-
-  changePictureSize = (direction: number) => {
-    this.setState((state) => {
-      let newId = state.pictureSizeId + direction;
-      const length = state.pictureSizes.length;
-      if (newId >= length) {
-        newId = 0;
-      } else if (newId < 0) {
-        newId = length - 1;
-      }
-      return {
-        pictureSize: state.pictureSizes[newId],
-        pictureSizeId: newId,
-      };
-    });
-  };
-
   renderGallery() {
     return <GalleryScreen onPress={this.toggleView} />;
   }
@@ -287,21 +207,12 @@ export default class CameraScreen extends React.Component<object, State> {
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFlash}>
         <Ionicons name={flashIcons[this.state.flash] as any} size={28} color="white" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleWB}>
-        <MaterialCommunityIcons
-          name={wbIcons[this.state.whiteBalance] as any}
-          size={32}
-          color="white"
+      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleTorch}>
+        <Ionicons
+          name="flashlight"
+          size={28}
+          color={this.state.torchEnabled ? 'white' : '#858585'}
         />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFocus}>
-        <Text
-          style={[
-            styles.autoFocusLabel,
-            { color: this.state.autoFocus === 'on' ? 'white' : '#6b6b6b' },
-          ]}>
-          AF
-        </Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMoreOptions}>
         <MaterialCommunityIcons name="dots-horizontal" size={32} color="white" />
@@ -351,6 +262,7 @@ export default class CameraScreen extends React.Component<object, State> {
             size={32}
             color={this.state.faceDetecting ? 'white' : '#858585'}
           />
+          <Text style={{ color: this.state.faceDetecting ? 'white' : '#858585' }}>Face</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={this.toggleBarcodeScanning}>
           <MaterialCommunityIcons
@@ -358,22 +270,8 @@ export default class CameraScreen extends React.Component<object, State> {
             size={32}
             color={this.state.barcodeScanning ? 'white' : '#858585'}
           />
+          <Text style={{ color: this.state.barcodeScanning ? 'white' : '#858585' }}>Code</Text>
         </TouchableOpacity>
-      </View>
-
-      <View style={styles.pictureSizeContainer}>
-        <Text style={styles.pictureQualityLabel}>Picture quality</Text>
-        <View style={styles.pictureSizeChooser}>
-          <TouchableOpacity onPress={this.previousPictureSize} style={{ padding: 6 }}>
-            <Ionicons name="arrow-back" size={14} color="white" />
-          </TouchableOpacity>
-          <View style={styles.pictureSizeLabel}>
-            <Text style={{ color: 'white' }}>{this.state.pictureSize}</Text>
-          </View>
-          <TouchableOpacity onPress={this.nextPictureSize} style={{ padding: 6 }}>
-            <Ionicons name="arrow-forward" size={14} color="white" />
-          </TouchableOpacity>
-        </View>
       </View>
     </View>
   );
@@ -404,14 +302,13 @@ export default class CameraScreen extends React.Component<object, State> {
       <Camera
         ref={(ref) => (this.camera = ref!)}
         style={styles.camera}
-        onCameraReady={this.collectPictureSizes}
+        onCameraReady={() => {
+          console.log('ready');
+        }}
+        enableTorch={this.state.torchEnabled}
         type={this.state.type}
         flashMode={FlashMode[this.state.flash]}
-        autoFocus={AutoFocus[this.state.autoFocus]}
         zoom={this.state.zoom}
-        whiteBalance={WhiteBalance[this.state.whiteBalance]}
-        ratio={this.state.ratio}
-        pictureSize={this.state.pictureSize}
         onMountError={this.handleMountError}
         onFacesDetected={this.state.faceDetecting ? this.onFacesDetected : undefined}
         faceDetectorSettings={{

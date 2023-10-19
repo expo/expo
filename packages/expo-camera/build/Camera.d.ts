@@ -21,10 +21,8 @@ export default class Camera extends React.Component<CameraProps> {
     static getAvailableVideoCodecsAsync(): Promise<VideoCodec[]>;
     static Constants: ConstantsType;
     static ConversionTables: {
-        type: Record<"front" | "back", string | number | undefined>;
-        flashMode: Record<"on" | "off" | "auto" | "torch", string | number | undefined>;
-        autoFocus: Record<"on" | "off" | "auto" | "singleShot", string | number | boolean | undefined>;
-        whiteBalance: Record<"auto" | "sunny" | "cloudy" | "shadow" | "incandescent" | "fluorescent" | "continuous" | "manual", string | number | undefined>;
+        type: Record<"front" | "back", string | undefined>;
+        flashMode: Record<"on" | "off" | "auto", string | undefined>;
     };
     static defaultProps: CameraProps;
     /**
@@ -106,19 +104,6 @@ export default class Camera extends React.Component<CameraProps> {
      * > to make a permanent copy of the image.
      */
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
-    /**
-     * Get aspect ratios that are supported by the device and can be passed via `ratio` prop.
-     * @return Returns a Promise that resolves to an array of strings representing ratios, eg. `['4:3', '1:1']`.
-     * @platform android
-     */
-    getSupportedRatiosAsync(): Promise<string[]>;
-    /**
-     * Get picture sizes that are supported by the device for given `ratio`.
-     * @param ratio A string representing aspect ratio of sizes to be returned.
-     * @return Returns a Promise that resolves to an array of strings representing picture sizes that can be passed to `pictureSize` prop.
-     * The list varies across Android devices but is the same for every iOS.
-     */
-    getAvailablePictureSizesAsync(ratio: string): Promise<string[]>;
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.
      * Flipping camera during a recording results in stopping it.
