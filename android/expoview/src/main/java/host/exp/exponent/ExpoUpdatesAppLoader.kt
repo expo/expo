@@ -45,9 +45,8 @@ private const val UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable"
 private const val UPDATE_ERROR_EVENT = "error"
 
 /**
- * Entry point to expo-updates in Expo Go and legacy standalone builds. Fulfills many of the
- * purposes of [UpdatesController] along with serving as an interface to the rest of the ExpoKit
- * kernel.
+ * Entry point to expo-updates in Expo Go. Fulfills many of the
+ * purposes of [UpdatesController] along with serving as an interface to the rest of the kernel.
  *
  * Dynamically generates a configuration object with the correct scope key, and then, like
  * [UpdatesController], delegates to an instance of [LoaderTask] to start the process of loading and
@@ -123,20 +122,12 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     fileDownloader = FileDownloader(context)
     kernel.addAppLoaderForManifestUrl(manifestUrl, this)
     val httpManifestUrl = exponentManifest.httpManifestUrl(manifestUrl)
-    var releaseChannel = Constants.RELEASE_CHANNEL
-    // in Expo Go, the release channel can change at runtime depending on the URL we load
-    val releaseChannelQueryParam =
-      httpManifestUrl.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL)
-    if (releaseChannelQueryParam != null) {
-      releaseChannel = releaseChannelQueryParam
-    }
     val configMap = mutableMapOf<String, Any>()
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY] = httpManifestUrl
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY] = httpManifestUrl.toString()
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY] = Constants.SDK_VERSIONS
-    configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY] = releaseChannel
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY] = false
-    configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLED_KEY] = Constants.ARE_REMOTE_UPDATES_ENABLED
+    configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLED_KEY] = true
     if (useCacheOnly) {
       configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY] = "NEVER"
       configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY] = 0
@@ -154,7 +145,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     )
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN] = true
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS] = true
-    // in Expo Go, ignore directives in manifest responses and require a manifest. the current directives (no update available, roll back) don't have any practical use outside of standalone apps
+    // in Expo Go, ignore directives in manifest responses and require a manifest. the current directives (no update available, roll back) don't have any practical use outside of apps that use the library directly.
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE] = true
 
     val configuration = UpdatesConfiguration(null, configMap)
@@ -330,7 +321,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   private fun processManifestJson(manifestJson: JSONObject): JSONObject {
     val parsedManifestUrl = Uri.parse(manifestUrl)
 
-    // If legacy manifest is not yet verified, served by a third party, not standalone, and not an anonymous experience
+    // If legacy manifest is not yet verified, served by a third party, and not an anonymous experience
     // then scope it locally by using the manifest URL as a scopeKey (id) and consider it verified.
     if (!manifestJson.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
       isThirdPartyHosted(parsedManifestUrl) &&
