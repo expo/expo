@@ -155,7 +155,7 @@ export function getDefaultConfig(
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
         ];
 
-        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/build/std');
+        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/build/winter');
         if (stdRuntime) {
           preModules.push(stdRuntime);
         }
