@@ -61,13 +61,15 @@ export function logIncorrectDependencies(incorrectDeps: IncorrectDependency[]) {
     return true;
   }
 
-  Log.warn(chalk`Some dependencies are incompatible with the installed {bold expo} version:`);
+  Log.warn(
+    chalk`The following packages should be updated for best compatibility with the installed {bold expo} version:`
+  );
   incorrectDeps.forEach((dep) => logInvalidDependency(dep));
 
   Log.warn(
-    'Your project may not work correctly until you install the correct versions of the packages.\n' +
-      chalk`Fix with: {bold npx expo install --fix}`
+    'Your project may not work correctly until you install the correct versions of the packages.'
   );
+
   return false;
 }
 
@@ -203,10 +205,7 @@ function findIncorrectDependencies(
   for (const packageName of packages) {
     const expectedVersionOrRange = bundledNativeModules[packageName];
     const actualVersion = packageVersions[packageName];
-    if (
-      typeof expectedVersionOrRange === 'string' &&
-      !semver.intersects(expectedVersionOrRange, actualVersion)
-    ) {
+    if (isDependencyVersionIncorrect(packageName, expectedVersionOrRange, actualVersion)) {
       incorrectDeps.push({
         packageName,
         packageType: findDependencyType(pkg, packageName),
@@ -216,6 +215,31 @@ function findIncorrectDependencies(
     }
   }
   return incorrectDeps;
+}
+
+function isDependencyVersionIncorrect(
+  packageName: string,
+  expectedVersionOrRange: string | undefined,
+  actualVersion: string
+) {
+  if (typeof expectedVersionOrRange !== 'string') {
+    return false;
+  }
+
+  // we never want to go backwards with the expo patch version
+  if (packageName === 'expo') {
+    if (semver.ltr(actualVersion, expectedVersionOrRange)) {
+      return true;
+    }
+    return false;
+  }
+
+  // all other packages: version range is based on Expo SDK version, so we always want to match range
+  if (!semver.intersects(expectedVersionOrRange, actualVersion)) {
+    return true;
+  }
+
+  return false;
 }
 
 function findDependencyType(
