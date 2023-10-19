@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `Android`, add event to prevent the `new NativeEventEmitter()` warning. ([#24942](https://github.com/expo/expo/pull/24942) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 11.7.0 — 2023-10-17
