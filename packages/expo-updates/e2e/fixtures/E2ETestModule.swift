@@ -3,11 +3,9 @@
 import ExpoModulesCore
 
 public final class E2ETestModule: Module {
-  private let updatesService: EXUpdatesModuleInterface?
   private let methodQueue = DispatchQueue(label: "expo.modules.EXUpdatesQueue")
 
   public required init(appContext: AppContext) {
-    updatesService = appContext.legacyModule(implementing: EXUpdatesModuleInterface.self)
     super.init(appContext: appContext)
   }
 
