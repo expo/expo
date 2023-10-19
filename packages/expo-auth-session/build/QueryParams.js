@@ -12,7 +12,7 @@ export function getQueryParams(url) {
     parsedSearch.delete('errorCode');
     // Merge search and hash
     const params = Object.fromEntries(
-    // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+    // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
     parsedSearch);
     // Get hash (#abc=example)
     if (parts[1]) {

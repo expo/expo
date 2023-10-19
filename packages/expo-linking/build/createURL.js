@@ -90,7 +90,7 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
         try {
             // TODO: Validate that iterator works as expected.
             paramsFromHostUri = Object.fromEntries(
-            // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+            // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
             new URLSearchParams(queryString));
         }
         catch { }
