@@ -32,6 +32,8 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
   override fun definition() = ModuleDefinition {
     Name("ExpoScreenOrientation")
 
+    Events("expoDidUpdateDimensions")
+
     AsyncFunction("lockAsync") { orientationLock: OrientationLock ->
       try {
         currentActivity.requestedOrientation = orientationLock.toPlatformInt()

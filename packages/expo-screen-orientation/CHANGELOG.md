@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `Android`, add event to module definition to prevent `new NativeEventEmitter()` warning.
+
 ### 💡 Others
 
 ## 6.3.0 — 2023-10-17
