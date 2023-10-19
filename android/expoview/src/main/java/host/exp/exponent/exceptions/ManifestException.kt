@@ -47,7 +47,6 @@ class ManifestException : ExponentException {
     }
 
     return when (manifestUrl) {
-      Constants.INITIAL_URL -> "Could not load app.$extraMessage"
       else -> {
         var formattedMessage = "Could not load $manifestUrl.$extraMessage"
         val supportedSdks = Constants.SDK_VERSIONS_LIST.map {

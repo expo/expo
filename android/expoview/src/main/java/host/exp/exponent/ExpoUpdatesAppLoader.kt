@@ -124,47 +124,38 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     kernel.addAppLoaderForManifestUrl(manifestUrl, this)
     val httpManifestUrl = exponentManifest.httpManifestUrl(manifestUrl)
     var releaseChannel = Constants.RELEASE_CHANNEL
-    if (!Constants.isStandaloneApp()) {
-      // in Expo Go, the release channel can change at runtime depending on the URL we load
-      val releaseChannelQueryParam =
-        httpManifestUrl.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL)
-      if (releaseChannelQueryParam != null) {
-        releaseChannel = releaseChannelQueryParam
-      }
+    // in Expo Go, the release channel can change at runtime depending on the URL we load
+    val releaseChannelQueryParam =
+      httpManifestUrl.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL)
+    if (releaseChannelQueryParam != null) {
+      releaseChannel = releaseChannelQueryParam
     }
     val configMap = mutableMapOf<String, Any>()
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY] = httpManifestUrl
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY] = httpManifestUrl.toString()
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY] = Constants.SDK_VERSIONS
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY] = releaseChannel
-    configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY] = Constants.isStandaloneApp()
+    configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY] = false
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLED_KEY] = Constants.ARE_REMOTE_UPDATES_ENABLED
     if (useCacheOnly) {
       configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY] = "NEVER"
       configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY] = 0
     } else {
-      if (Constants.isStandaloneApp()) {
-        configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY] = if (Constants.UPDATES_CHECK_AUTOMATICALLY) "ALWAYS" else "NEVER"
-        configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY] = Constants.UPDATES_FALLBACK_TO_CACHE_TIMEOUT
-      } else {
-        configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY] = "ALWAYS"
-        configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY] = 60000
-      }
+      configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY] = "ALWAYS"
+      configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY] = 60000
     }
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders
     configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST] = true
-    if (!Constants.isStandaloneApp()) {
-      // in Expo Go, embed the Expo Root Certificate and get the Expo Go intermediate certificate and development certificates from the multipart manifest response part
-      configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE] = context.assets.open("expo-root.pem").readBytes().decodeToString()
-      configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA] = mapOf(
-        CODE_SIGNING_METADATA_KEY_ID_KEY to "expo-root",
-        CODE_SIGNING_METADATA_ALGORITHM_KEY to CodeSigningAlgorithm.RSA_SHA256.algorithmName,
-      )
-      configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN] = true
-      configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS] = true
-      // in Expo Go, ignore directives in manifest responses and require a manifest. the current directives (no update available, roll back) don't have any practical use outside of standalone apps
-      configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE] = true
-    }
+    // in Expo Go, embed the Expo Root Certificate and get the Expo Go intermediate certificate and development certificates from the multipart manifest response part
+    configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE] = context.assets.open("expo-root.pem").readBytes().decodeToString()
+    configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA] = mapOf(
+      CODE_SIGNING_METADATA_KEY_ID_KEY to "expo-root",
+      CODE_SIGNING_METADATA_ALGORITHM_KEY to CodeSigningAlgorithm.RSA_SHA256.algorithmName,
+    )
+    configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN] = true
+    configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS] = true
+    // in Expo Go, ignore directives in manifest responses and require a manifest. the current directives (no update available, roll back) don't have any practical use outside of standalone apps
+    configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE] = true
 
     val configuration = UpdatesConfiguration(null, configMap)
     val sdkVersionsList = mutableListOf<String>().apply {
@@ -209,22 +200,17 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       object : LoaderTaskCallback {
         private var didAbort = false
         override fun onFailure(e: Exception) {
-          if (Constants.isStandaloneApp()) {
-            isEmergencyLaunch = true
-            launchWithNoDatabase(context, e)
-          } else {
-            if (didAbort) {
-              return
-            }
-            var exception = e
-            try {
-              val errorJson = JSONObject(e.message!!)
-              exception = ManifestException(e, manifestUrl, errorJson)
-            } catch (ex: Exception) {
-              // do nothing, expected if the error payload does not come from a conformant server
-            }
-            callback.onError(exception)
+          if (didAbort) {
+            return
           }
+          var exception = e
+          try {
+            val errorJson = JSONObject(e.message!!)
+            exception = ManifestException(e, manifestUrl, errorJson)
+          } catch (ex: Exception) {
+            // do nothing, expected if the error payload does not come from a conformant server
+          }
+          callback.onError(exception)
         }
 
         override fun onCachedUpdateLoaded(update: UpdateEntity): Boolean {
@@ -348,7 +334,6 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     // then scope it locally by using the manifest URL as a scopeKey (id) and consider it verified.
     if (!manifestJson.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
       isThirdPartyHosted(parsedManifestUrl) &&
-      !Constants.isStandaloneApp() &&
       !exponentManifest.isAnonymousExperience(Manifest.fromManifestJson(manifestJson)) &&
       Manifest.fromManifestJson(manifestJson) is LegacyManifest
     ) {
@@ -360,11 +345,6 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       val slug = manifestJson.getNullable<String>(ExponentManifest.MANIFEST_SLUG) ?: ""
       val sandboxedId = securityPrefix + parsedManifestUrl.host + path + "-" + slug
       manifestJson.put(ExponentManifest.MANIFEST_ID_KEY, sandboxedId)
-      manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
-    }
-
-    // all standalone apps are considered verified
-    if (Constants.isStandaloneApp()) {
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
     }
 
@@ -430,9 +410,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     get() = EmulatorUtilities.isRunningOnEmulator()
 
   private val clientEnvironment: String
-    get() = if (Constants.isStandaloneApp()) {
-      "STANDALONE"
-    } else if (EmulatorUtilities.isRunningOnEmulator()) {
+    get() = if (EmulatorUtilities.isRunningOnEmulator()) {
       "EXPO_SIMULATOR"
     } else {
       "EXPO_DEVICE"

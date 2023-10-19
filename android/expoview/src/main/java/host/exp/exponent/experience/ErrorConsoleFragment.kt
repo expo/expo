@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import host.exp.exponent.Constants
 import host.exp.exponent.kernel.ExponentError
 import host.exp.expoview.databinding.ErrorConsoleFragmentBinding
 
@@ -43,7 +42,7 @@ class ErrorConsoleFragment : Fragment() {
     val bundle = arguments
     val manifestUrl = bundle!!.getString(ErrorActivity.MANIFEST_URL_KEY)
     val isHomeError = bundle.getBoolean(ErrorActivity.IS_HOME_KEY, false)
-    if (isHomeError || manifestUrl == null || manifestUrl == Constants.INITIAL_URL) {
+    if (isHomeError || manifestUrl == null) {
       // Cannot go home in any of these cases
       binding.consoleHomeButton.visibility = View.GONE
     }

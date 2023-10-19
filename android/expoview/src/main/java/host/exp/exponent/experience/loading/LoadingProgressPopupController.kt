@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
-import host.exp.exponent.Constants
 import host.exp.exponent.ExpoUpdatesAppLoader
 import host.exp.expoview.R
 import java.lang.ref.WeakReference
@@ -62,10 +61,6 @@ class LoadingProgressPopupController(activity: Activity) {
   }
 
   fun setLoadingProgressStatus(status: ExpoUpdatesAppLoader.AppLoaderStatus) {
-    if (Constants.isStandaloneApp()) {
-      return
-    }
-
     val text = when (status) {
       ExpoUpdatesAppLoader.AppLoaderStatus.CHECKING_FOR_UPDATE -> {
         "Checking for new update..."

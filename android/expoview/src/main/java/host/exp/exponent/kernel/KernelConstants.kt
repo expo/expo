@@ -1,8 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package host.exp.exponent.kernel
 
-import host.exp.exponent.analytics.EXL
-import host.exp.exponent.experience.DetachActivity
+import host.exp.exponent.LauncherActivity
 import host.exp.exponent.notifications.ExponentNotification
 
 object KernelConstants {
@@ -35,14 +34,7 @@ object KernelConstants {
   const val NOTIFICATION_ID_KEY = "notification_id"
   const val NOTIFICATION_OBJECT_KEY = "notification_object"
 
-  var MAIN_ACTIVITY_CLASS: Class<*> = DetachActivity::class.java
-  init {
-    try {
-      MAIN_ACTIVITY_CLASS = Class.forName("host.exp.exponent.MainActivity")
-    } catch (e: Exception) {
-      EXL.e(TAG, "Could not find MainActivity, falling back to DetachActivity: " + e.message)
-    }
-  }
+  var MAIN_ACTIVITY_CLASS: Class<*> = LauncherActivity::class.java
 
   class ExperienceOptions {
     val manifestUri: String
