@@ -211,7 +211,7 @@ Route parameters are used to match a route, while search parameters are used to 
   ]}
 />
 
-When the `app/[user]` route is matched, the `user` parameter is passed to the component and never a nullish value. Both search and route parameters can be used together and accessed with the `useLocalSearchParams` and `useGlobalSearchParams` hooks:
+When the `app/[user]` route is matched, the `user` parameter is passed to the component and never a nullish value. Both search and route parameters can be used together and are accessible with the `useLocalSearchParams` and `useGlobalSearchParams` hooks:
 
 ```tsx app/[user].tsx
 import { useLocalSearchParams } from 'expo-router';
@@ -236,7 +236,7 @@ export default function User() {
 
 When a route parameter is changed, the component will re-mount.
 
-```js app/[user].tsx
+```jsx app/[user].tsx
 import { Text } from 'react-native';
 import { router, useLocalSearchParams, Link } from 'expo-router';
 
