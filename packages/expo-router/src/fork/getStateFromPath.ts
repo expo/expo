@@ -761,7 +761,7 @@ const parseQueryParams = (path: string, parseConfig?: Record<string, (value: str
     });
   }
 
-  return Object.keys(params).length ? params : undefined;
+  return params.size ? params : undefined;
 };
 
 const basePathCache = new Map<string, RegExp>();
