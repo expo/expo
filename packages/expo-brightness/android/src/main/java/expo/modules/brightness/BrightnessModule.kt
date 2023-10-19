@@ -21,6 +21,7 @@ class BrightnessModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoBrightness")
 
+    // This is unused on Android. It is only here to suppress the native event emitter warning
     Events(brightnessChangeEvent)
 
     AsyncFunction("requestPermissionsAsync") { promise: Promise ->
