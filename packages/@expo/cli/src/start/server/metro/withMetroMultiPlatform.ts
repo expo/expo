@@ -97,7 +97,7 @@ export function withExtendedResolver(
     platforms,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
-    isExporting
+    isExporting,
   }: {
     projectRoot: string;
     tsconfig: TsConfigPaths | null;
@@ -167,36 +167,36 @@ export function withExtendedResolver(
       })
     : null;
 
-    if (!isExporting && isInteractive()) {
-      if (isTsconfigPathsEnabled) {
-        // TODO: We should track all the files that used imports and invalidate them
-        // currently the user will need to save all the files that use imports to
-        // use the new aliases.
-        const configWatcher = new FileNotifier(projectRoot, ['./tsconfig.json', './jsconfig.json']);
-        configWatcher.startObserving(() => {
-          debug('Reloading tsconfig.json');
-          loadTsConfigPathsAsync(projectRoot).then((tsConfigPaths) => {
-            if (tsConfigPaths?.paths && !!Object.keys(tsConfigPaths.paths).length) {
-              debug('Enabling tsconfig.json paths support');
-              tsConfigResolve = resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-                paths: tsConfigPaths.paths ?? {},
-                baseUrl: tsConfigPaths.baseUrl,
-              });
-            } else {
-              debug('Disabling tsconfig.json paths support');
-              tsConfigResolve = null;
-            }
-          });
+  if (!isExporting && isInteractive()) {
+    if (isTsconfigPathsEnabled) {
+      // TODO: We should track all the files that used imports and invalidate them
+      // currently the user will need to save all the files that use imports to
+      // use the new aliases.
+      const configWatcher = new FileNotifier(projectRoot, ['./tsconfig.json', './jsconfig.json']);
+      configWatcher.startObserving(() => {
+        debug('Reloading tsconfig.json');
+        loadTsConfigPathsAsync(projectRoot).then((tsConfigPaths) => {
+          if (tsConfigPaths?.paths && !!Object.keys(tsConfigPaths.paths).length) {
+            debug('Enabling tsconfig.json paths support');
+            tsConfigResolve = resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
+              paths: tsConfigPaths.paths ?? {},
+              baseUrl: tsConfigPaths.baseUrl,
+            });
+          } else {
+            debug('Disabling tsconfig.json paths support');
+            tsConfigResolve = null;
+          }
         });
-    
-        // TODO: This probably prevents the process from exiting.
-        installExitHooks(() => {
-          configWatcher.stopObserving();
-        });
-      } else {
-        debug('Skipping tsconfig.json paths support');
-      }
+      });
+
+      // TODO: This probably prevents the process from exiting.
+      installExitHooks(() => {
+        configWatcher.stopObserving();
+      });
+    } else {
+      debug('Skipping tsconfig.json paths support');
     }
+  }
 
   let nodejsSourceExtensions: string[] | null = null;
 
@@ -484,7 +484,7 @@ export async function withMetroMultiPlatformAsync(
     tsconfig,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
-    isExporting
+    isExporting,
   });
 }
 
@@ -496,7 +496,7 @@ function withMetroMultiPlatform(
     isTsconfigPathsEnabled,
     tsconfig,
     isFastResolverEnabled,
-    isExporting
+    isExporting,
   }: {
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
