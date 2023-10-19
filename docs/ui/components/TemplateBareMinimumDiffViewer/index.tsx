@@ -22,6 +22,7 @@ export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
   let bareDiffVersions =
     require('~/public/static/diffs/template-bare-minimum/versions.json').slice();
 
+  // default to from: last SDK, to: current SDK
   const lastTwoProductionVersions = bareDiffVersions
     .filter((d: string) => d !== 'unversioned')
     .slice(-2);
