@@ -1,9 +1,4 @@
 import invariant from 'invariant';
-import qs from 'qs';
-
-export function buildQueryString(input: Record<string, string>): string {
-  return qs.stringify(input);
-}
 
 export function getQueryParams(url: string): {
   errorCode: string | null;
@@ -15,30 +10,35 @@ export function getQueryParams(url: string): {
   const queryString = partsWithoutHash[partsWithoutHash.length - 1];
 
   // Get query string (?hello=world)
-  const parsedSearch = qs.parse(queryString, { parseArrays: false });
+  const parsedSearch = new URLSearchParams(queryString);
 
   // Pull errorCode off of params
-  const errorCode = (parsedSearch.errorCode ?? null) as string | null;
+  const errorCode = (parsedSearch.get('errorCode') ?? null) as string | null;
   invariant(
     typeof errorCode === 'string' || errorCode === null,
     `The "errorCode" parameter must be a string if specified`
   );
-  delete parsedSearch.errorCode;
-
-  // Get hash (#abc=example)
-  let parsedHash = {};
-  if (parts[1]) {
-    parsedHash = qs.parse(hash);
-  }
+  parsedSearch.delete('errorCode');
 
   // Merge search and hash
-  const params = {
-    ...parsedSearch,
-    ...parsedHash,
-  };
+  const params = toObj(parsedSearch);
+  // Get hash (#abc=example)
+  if (parts[1]) {
+    new URLSearchParams(hash).forEach((value, key) => {
+      params[key] = value;
+    });
+  }
 
   return {
     errorCode,
     params,
   };
+}
+
+function toObj(searchParams: URLSearchParams) {
+  const obj: Record<string, string> = {};
+  searchParams.forEach((value, key) => {
+    obj[key] = value;
+  });
+  return obj;
 }

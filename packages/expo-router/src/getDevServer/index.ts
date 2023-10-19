@@ -1,5 +1,4 @@
 import { Platform } from 'expo-modules-core';
-import qs from 'qs';
 
 export const getDevServer = () => {
   // Disable for SSR
@@ -21,15 +20,11 @@ export const getDevServer = () => {
         return document.currentScript.src;
       }
 
-      const url = window.location.toString();
-      const query = qs.parse(url);
+      const query = new URLSearchParams(location.search);
 
-      return (
-        location.origin +
-        location.pathname +
-        '?' +
-        qs.stringify({ ...query, platform: Platform.OS })
-      );
+      query.append('platform', Platform.OS);
+
+      return location.origin + location.pathname + '?' + query;
     },
 
     url: location.origin + '/',

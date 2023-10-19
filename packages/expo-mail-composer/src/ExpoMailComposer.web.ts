@@ -1,5 +1,3 @@
-import qs from 'query-string';
-
 import { MailComposerOptions, MailComposerResult, MailComposerStatus } from './MailComposer.types';
 
 function removeNullishValues(obj) {
@@ -32,7 +30,7 @@ export default {
       body: options.body,
     });
 
-    const query = qs.stringify(email);
+    const query = new URLSearchParams(email).toString();
     const queryComponent = query ? '?' + query : '';
     const to = checkValue(options.recipients) || '';
     const mailto = `mailto:${to}${queryComponent}`;

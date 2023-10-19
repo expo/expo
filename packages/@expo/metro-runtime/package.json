@@ -36,9 +36,6 @@
   "peerDependencies": {
     "react-native": "*"
   },
-  "dependencies": {
-    "qs": "^6.10.3"
-  },
   "jest": {
     "projects": [
       {

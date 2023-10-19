@@ -14,6 +14,6 @@ it(`parses an error from a query string`, () => {
 });
 
 it(`builds an encoded query string`, () => {
-  const results = QueryParams.buildQueryString({ foo: 'bar', git: 'hub , ' });
+  const results = new URLSearchParams({ foo: 'bar', git: 'hub , ' }).toString();
   expect(results).toBe('foo=bar&git=hub%20%2C%20');
 });

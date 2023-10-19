@@ -1,5 +1,3 @@
-import qs from 'qs';
-
 const getDevServer = () => {
   // Disable for SSR
   if (typeof window === 'undefined') {
@@ -20,12 +18,11 @@ const getDevServer = () => {
         return document.currentScript.src;
       }
 
-      const url = window.location.toString();
-      const query = qs.parse(url);
+      const query = new URLSearchParams(location.search);
 
-      return (
-        location.origin + location.pathname + '?' + qs.stringify({ ...query, platform: 'web' })
-      );
+      query.append('platform', 'web');
+
+      return location.origin + location.pathname + '?' + query;
     },
     url: location.origin + location.pathname,
   };

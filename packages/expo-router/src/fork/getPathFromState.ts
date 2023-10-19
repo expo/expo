@@ -1,7 +1,6 @@
 import { PathConfig, PathConfigMap, validatePathConfig } from '@react-navigation/core';
 import type { NavigationState, PartialState, Route } from '@react-navigation/routers';
 import Constants from 'expo-constants';
-import * as queryString from 'query-string';
 
 import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
 
@@ -394,7 +393,7 @@ function getPathFromResolvedState(
           }
         }
 
-        const query = queryString.stringify(focusedParams, { sort: false });
+        const query = new URLSearchParams(focusedParams).toString();
         if (query) {
           path += `?${query}`;
         }
