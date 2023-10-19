@@ -18,6 +18,6 @@ exports[`renders Nav 1`] = `<View />`;
 
 exports[`renders Section 1`] = `
 <View
-  accessibilityRole="summary"
+  role="summary"
 />
 `;

@@ -1,10 +1,5 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import {
-  AccessibilityRole,
-  StyleProp,
-  View as NativeView,
-  ViewStyle as NativeViewStyle,
-} from 'react-native';
+import { StyleProp, View as NativeView, ViewStyle as NativeViewStyle } from 'react-native';
 
 import { createDevView } from './createDevView';
 import { createSafeStyledView } from '../css/createSafeStyledView';
@@ -129,21 +124,9 @@ export type ViewStyle = Omit<NativeViewStyle, 'position'> & WebViewStyle;
 
 export type WebViewProps = {
   style?: StyleProp<ViewStyle>;
-
-  accessibilityRole?:
-    | 'list'
-    | 'listitem'
-    | 'complementary'
-    | 'contentinfo'
-    | 'region'
-    | 'navigation'
-    | 'main'
-    | 'article'
-    | 'banner'
-    | AccessibilityRole;
 };
 
-export type ViewProps = WebViewProps & Omit<NativeViewProps, 'style' | 'accessibilityRole'>;
+export type ViewProps = WebViewProps & Omit<NativeViewProps, 'style'>;
 
 let View = NativeView as ComponentType<ViewProps>;
 
