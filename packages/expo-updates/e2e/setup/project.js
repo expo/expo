@@ -123,7 +123,6 @@ async function copyCommonFixturesToProject(projectRoot, { appJsFileName, repoRoo
       projectFilesTarballPath,
       'tsconfig.json',
       '.detoxrc.json',
-      'detox.config.js',
       'eas.json',
       'eas-hooks',
       'e2e',

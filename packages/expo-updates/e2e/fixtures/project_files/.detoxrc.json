@@ -34,12 +34,14 @@
   "devices": {
     "simulator": {
       "type": "ios.simulator",
+      "headless": true,
       "device": {
-        "type": "iPhone 15"
+        "type": "iPhone 14"
       }
     },
     "emulator": {
       "type": "android.emulator",
+      "headless": true,
       "device": {
         "avdName": "pixel_4"
       }
