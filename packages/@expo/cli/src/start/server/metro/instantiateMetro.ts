@@ -108,6 +108,7 @@ export async function loadMetroConfigAsync(
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
+    isExporting,
   });
 
   logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
@@ -182,7 +183,7 @@ export async function instantiateMetroAsync(
     hmrEnabled: true,
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints,
-    watch: isWatchEnabled(),
+    watch: !isExporting && isWatchEnabled(),
   });
 
   prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {

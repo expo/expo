@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent `npx expo export` and `npx expo export:embed` from hanging with file watchers.
+
 ### 💡 Others
 
 ## 0.14.0 — 2023-10-17
