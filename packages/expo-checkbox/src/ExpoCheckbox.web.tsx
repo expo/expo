@@ -27,7 +27,6 @@ export default class ExpoCheckbox extends React.PureComponent<CheckboxProps> {
 
     const fakeControl = (
       <View
-        pointerEvents="none"
         style={[
           styles.fakeControl,
           value && styles.fakeControlChecked,
@@ -77,6 +76,7 @@ const styles = StyleSheet.create({
   },
   fakeControl: {
     ...StyleSheet.absoluteFillObject,
+    pointerEvents: 'none',
     alignItems: 'center',
     backgroundColor: '#fff',
     borderColor: '#657786',
