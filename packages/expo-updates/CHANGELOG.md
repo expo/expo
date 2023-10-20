@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Simplify UpdatesUtils.parseDateString, fix UpdatesLoggingTest. ([#24951](https://github.com/expo/expo/pull/24951) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.18.16 — 2023-10-05
