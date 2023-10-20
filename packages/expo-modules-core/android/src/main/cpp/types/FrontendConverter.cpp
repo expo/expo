@@ -545,11 +545,6 @@ jobject AnyFrontendConvert::convert(
     for (size_t i = 0; i < size; i++) {
       auto jsValue = jsArray.getValueAtIndex(rt, i);
 
-      if (jsValue.isNull() || jsValue.isUndefined()) {
-        arrayList->add(nullptr);
-        continue;
-      }
-
       auto convertedElement = this->convert(
         rt, env, moduleRegistry, jsValue
       );
@@ -570,13 +565,6 @@ jobject AnyFrontendConvert::convert(
     auto jsValue = obj.getProperty(rt, key);
 
     auto convertedKey = env->NewStringUTF(key.utf8(rt).c_str());
-
-    // TODO(@lukmccall): pass information to CPP if the underlying type is nullable or not.
-    if (jsValue.isNull() || jsValue.isUndefined()) {
-      map->put(convertedKey, nullptr);
-      continue;
-    }
-
     auto convertedValue = this->convert(
       rt, env, moduleRegistry, jsValue
     );
