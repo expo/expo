@@ -31,7 +31,7 @@ function getReleasedSdkVersionRange() {
   };
 }
 
-const executeDiffCommand = async (diffDirPath: string, sdkFrom: string, sdkTo: string) => {
+async function executeDiffCommand(diffDirPath: string, sdkFrom: string, sdkTo: string) {
   function sdkToBranch(sdkVersion: string) {
     if (sdkVersion === 'unversioned') {
       return 'main';
