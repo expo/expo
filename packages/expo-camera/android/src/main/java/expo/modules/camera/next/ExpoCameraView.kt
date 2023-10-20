@@ -8,22 +8,22 @@ import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraMetadata
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraState
-import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
+import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.FileOutputOptions
 import androidx.camera.video.Quality
@@ -34,28 +34,21 @@ import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions
-import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.mlkit.vision.common.InputImage
 import expo.modules.camera.BarCodeScannedEvent
 import expo.modules.camera.CameraMountErrorEvent
-import expo.modules.camera.next.CameraViewHelper.getCorrectCameraRotation
 import expo.modules.camera.PictureSavedEvent
+import expo.modules.camera.next.analyzers.BarcodeAnalyzer
 import expo.modules.camera.next.analyzers.toByteArray
+import expo.modules.camera.next.records.BarCodeSettings
 import expo.modules.camera.next.records.CameraMode
-import expo.modules.camera.next.records.FlashMode
 import expo.modules.camera.next.records.CameraType
-import expo.modules.camera.next.tasks.PictureSavedDelegate
+import expo.modules.camera.next.records.FlashMode
 import expo.modules.camera.next.tasks.ResolveTakenPictureAsyncTask
 import expo.modules.camera.next.utils.FileSystemUtils
-import expo.modules.camera.next.utils.mapX
-import expo.modules.camera.next.utils.mapY
-import expo.modules.core.interfaces.LifecycleEventListener
-import expo.modules.core.interfaces.services.UIManager
+import expo.modules.camera.utils.mapX
+import expo.modules.camera.utils.mapY
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult.BoundingBox
-import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
@@ -72,8 +65,6 @@ class ExpoCameraView(
   context: Context,
   appContext: AppContext,
 ) : ExpoView(context, appContext),
-  LifecycleEventListener,
-  PictureSavedDelegate,
   CameraViewInterface {
   private val currentActivity
     get() = appContext.currentActivity as? AppCompatActivity
@@ -174,7 +165,9 @@ class ExpoCameraView(
             promise.resolve(null)
           }
           cacheDirectory.let {
-            ResolveTakenPictureAsyncTask(data, promise, options, it, this@ExpoCameraView).execute()
+            ResolveTakenPictureAsyncTask(data, promise, options, it) { response: Bundle ->
+              onPictureSaved(response)
+            }.execute()
           }
           image.close()
         }
@@ -230,6 +223,9 @@ class ExpoCameraView(
       val cameraProvider: ProcessCameraProvider = providerFuture.get()
 
       val preview = Preview.Builder()
+        .setResolutionSelector(ResolutionSelector.Builder()
+          .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+          .build())
         .build()
         .also {
           it.setSurfaceProvider(previewView.surfaceProvider)
@@ -238,6 +234,9 @@ class ExpoCameraView(
       val cameraSelector = lenFacing.mapToSelector()
 
       imageCaptureUseCase = ImageCapture.Builder()
+        .setResolutionSelector(ResolutionSelector.Builder()
+          .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+          .build())
         .build()
 
       val cameraInfo = cameraProvider.availableCameraInfos.filter {
@@ -247,18 +246,30 @@ class ExpoCameraView(
       }
 
       val videoCapture = createVideoCapture(cameraInfo)
+      val viewPort = previewView.viewPort
 
       imageAnalysisUseCase = createImageAnalyzer()
 
-      val useCases = if (cameraMode == CameraMode.PICTURE) {
-        listOf(imageCaptureUseCase, imageAnalysisUseCase)
-      } else {
-        listOf(videoCapture)
-      }.toTypedArray()
+      val useCases = UseCaseGroup.Builder().apply {
+        viewPort?.let {
+          setViewPort(it)
+        }
+        addUseCase(preview)
+        if (cameraMode == CameraMode.PICTURE) {
+          imageCaptureUseCase?.let {
+            addUseCase(it)
+          }
+          imageAnalysisUseCase?.let {
+            addUseCase(it)
+          }
+        } else {
+          addUseCase(videoCapture)
+        }
+      }.build()
 
       try {
         cameraProvider.unbindAll()
-        camera = cameraProvider.bindToLifecycle(currentActivity, cameraSelector, preview, *useCases)
+        camera = cameraProvider.bindToLifecycle(currentActivity, cameraSelector, useCases)
         camera?.let {
           observeCameraState(it.cameraInfo)
         }
@@ -274,10 +285,15 @@ class ExpoCameraView(
   private fun createImageAnalyzer(): ImageAnalysis =
     ImageAnalysis.Builder()
       .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+      .setResolutionSelector(ResolutionSelector.Builder()
+        .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+        .build())
       .build()
       .also { image ->
         if (shouldScanBarCodes) {
-          image.setAnalyzer(ContextCompat.getMainExecutor(context), BarcodeAnalysis())
+          image.setAnalyzer(ContextCompat.getMainExecutor(context), BarcodeAnalyzer(lenFacing) {
+            onBarCodeScanned(it)
+          })
         }
       }
 
@@ -290,7 +306,7 @@ class ExpoCameraView(
 
     val recorder = Recorder.Builder()
       .setExecutor(ContextCompat.getMainExecutor(context))
-      .setAspectRatio(AspectRatio.RATIO_DEFAULT)
+      .setAspectRatio(AspectRatio.RATIO_16_9)
       .setQualitySelector(qualitySelector)
       .build()
       .also {
@@ -317,7 +333,7 @@ class ExpoCameraView(
     createCamera()
   }
 
-  fun setBarCodeScannerSettings(settings: BarCodeScannerSettings) {
+  fun setBarCodeScannerSettings(settings: BarCodeSettings) {
 
   }
 
@@ -328,9 +344,8 @@ class ExpoCameraView(
   private fun transformBarCodeScannerResultToViewCoordinates(barCode: BarCodeScannerResult) {
     val cornerPoints = barCode.cornerPoints
 
-    // For some reason they're swapped, I don't know anymore...
-    val cameraWidth = barCode.referenceImageWidth
-    val cameraHeight = barCode.referenceImageHeight
+    val cameraWidth = barCode.referenceImageHeight
+    val cameraHeight = barCode.referenceImageWidth
     val previewWidth = previewView.width
     val previewHeight = previewView.height
 
@@ -342,11 +357,19 @@ class ExpoCameraView(
       cornerPoints.mapY { barCode.referenceImageHeight - cornerPoints[it] }
     }
     if (facingFront && landscape) {
-      cornerPoints.mapX { barCode.referenceImageWidth  - cornerPoints[it] }
+      cornerPoints.mapX { barCode.referenceImageWidth - cornerPoints[it] }
     }
 
-    val scaleX = previewWidth / cameraWidth.toFloat()
-    val scaleY = previewHeight / cameraHeight.toFloat()
+    val scaleX = if (portrait) {
+      previewWidth / cameraHeight.toFloat()
+    } else {
+      previewWidth / cameraWidth.toFloat()
+    }
+    val scaleY = if (portrait) {
+      previewHeight / cameraWidth.toFloat()
+    } else {
+      previewHeight / cameraHeight.toFloat()
+    }
 
     cornerPoints.mapX {
       (cornerPoints[it] * scaleX)
@@ -357,8 +380,6 @@ class ExpoCameraView(
         .roundToInt()
     }
 
-    barCode.referenceImageHeight = height
-    barCode.referenceImageWidth = width
     barCode.cornerPoints = cornerPoints
   }
 
@@ -394,7 +415,7 @@ class ExpoCameraView(
     return convertedCornerPoints to boundingBoxBundle
   }
 
-  fun onBarCodeScanned(barCode: BarCodeScannerResult) {
+  private fun onBarCodeScanned(barCode: BarCodeScannerResult) {
     if (shouldScanBarCodes) {
       transformBarCodeScannerResultToViewCoordinates(barCode)
       val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(barCode.cornerPoints, barCode.boundingBox)
@@ -410,33 +431,13 @@ class ExpoCameraView(
     }
   }
 
-
   override fun setPreviewTexture(surfaceTexture: SurfaceTexture?) {
-//    cameraView.setPreviewTexture(surfaceTexture)
   }
 
   override fun getPreviewSizeAsArray() = intArrayOf(previewView.width, previewView.height)
 
-  override fun onHostResume() {
-
-  }
-
-  override fun onHostPause() {
-  }
-
-  override fun onHostDestroy() {
-  }
-
-  private fun hasCameraPermissions(): Boolean {
-    val permissionsManager = appContext.permissions ?: return false
-    return permissionsManager.hasGrantedPermissions(Manifest.permission.CAMERA)
-  }
-
   init {
     isChildrenDrawingOrderEnabled = true
-    val uIManager = appContext.legacyModule<UIManager>()
-    uIManager!!.registerLifecycleEventListener(this)
-
     previewView.setOnHierarchyChangeListener(object : OnHierarchyChangeListener {
       override fun onChildViewRemoved(parent: View?, child: View?) = Unit
       override fun onChildViewAdded(parent: View?, child: View?) {
@@ -451,49 +452,7 @@ class ExpoCameraView(
     createCamera()
   }
 
-  override fun onPictureSaved(response: Bundle) {
+  fun onPictureSaved(response: Bundle) {
     onPictureSaved(PictureSavedEvent(response.getInt("id"), response.getBundle("data")!!))
-  }
-
-  private inner class BarcodeAnalysis : ImageAnalysis.Analyzer {
-    @OptIn(ExperimentalGetImage::class)
-    override fun analyze(imageProxy: ImageProxy) {
-      val mediaImage = imageProxy.image
-      if (mediaImage != null) {
-        val rotation = getCorrectCameraRotation(imageProxy.imageInfo.rotationDegrees, lenFacing)
-        val image = InputImage.fromMediaImage(mediaImage, rotation)
-        val options = BarcodeScannerOptions.Builder()
-          .enableAllPotentialBarcodes()
-          .build()
-
-        val scanner = BarcodeScanning.getClient(options)
-        scanner.process(image)
-          .addOnSuccessListener { barcodes ->
-            if (barcodes.isEmpty()) {
-              return@addOnSuccessListener
-            }
-            val barcode = barcodes.first()
-            val value = if (barcode.valueType == Barcode.TYPE_CONTACT_INFO) {
-              barcode.rawValue ?: barcode.rawBytes?.let { String(it) }
-            } else {
-              barcode.displayValue
-            }
-            val cornerPoints = mutableListOf<Int>()
-            barcode.cornerPoints?.let { points ->
-              for (point in points) {
-                cornerPoints.addAll(listOf(point.x, point.y))
-              }
-            }
-
-            onBarCodeScanned(BarCodeScannerResult(barcode.format, value, cornerPoints, image.width, imageProxy.height))
-          }
-          .addOnFailureListener {
-            Log.d("SCANNER", it.cause?.message ?: "Barcode scanning failed")
-          }
-          .addOnCompleteListener {
-            imageProxy.close()
-          }
-      }
-    }
   }
 }

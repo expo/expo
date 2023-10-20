@@ -2,6 +2,7 @@ package expo.modules.camera.next.records
 
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
+import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 
 enum class CameraType(val value: String) : Enumerable {
@@ -30,3 +31,8 @@ enum class CameraMode(val value: String) : Enumerable {
   PICTURE("picture"),
   VIDEO("video")
 }
+
+class BarCodeSettings(
+  val barcodeTypes: List<String>,
+  val interval: Double?
+) : Record

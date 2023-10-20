@@ -6,11 +6,11 @@ import expo.modules.camera.VIDEO_2160P
 import expo.modules.camera.VIDEO_480P
 import expo.modules.camera.VIDEO_4x3
 import expo.modules.camera.VIDEO_720P
+import expo.modules.camera.next.records.BarCodeSettings
 import expo.modules.camera.next.records.CameraMode
+import expo.modules.camera.next.records.CameraType
 import expo.modules.camera.next.records.FlashMode
 import expo.modules.camera.next.tasks.ResolveTakenPictureAsyncTask
-import expo.modules.camera.next.records.CameraType
-import expo.modules.core.interfaces.services.UIManager
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import expo.modules.interfaces.permissions.Permissions
@@ -60,7 +60,9 @@ class CameraViewNextModule : Module() {
         view.takePicture(options, promise, cacheDirectory)
       } else {
         val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
-        ResolveTakenPictureAsyncTask(image, promise, options, cacheDirectory, view).execute()
+        ResolveTakenPictureAsyncTask(image, promise, options, cacheDirectory) { response ->
+          view.onPictureSaved(response)
+        }.execute()
       }
     }.runOnQueue(Queues.MAIN)
 
@@ -130,11 +132,6 @@ class CameraViewNextModule : Module() {
     View(ExpoCameraView::class) {
       Events(cameraEvents)
 
-      OnViewDestroys<ExpoCameraView> { view ->
-        val uiManager = appContext.legacyModule<UIManager>()
-        uiManager?.unregisterLifecycleEventListener(view)
-      }
-
       Prop("type") { view, type: CameraType ->
         view.lenFacing = type
       }
@@ -155,11 +152,11 @@ class CameraViewNextModule : Module() {
           view.cameraMode = mode
       }
 
-      Prop("barCodeScannerSettings") { view, settings: Map<String, Any?>? ->
+      Prop("barCodeScannerSettings") { view, settings: BarCodeSettings? ->
         if (settings == null) {
           return@Prop
         }
-        view.setBarCodeScannerSettings(BarCodeScannerSettings(settings))
+        view.setBarCodeScannerSettings(settings)
       }
 
       Prop("barCodeScannerEnabled") { view, barCodeScannerEnabled: Boolean? ->

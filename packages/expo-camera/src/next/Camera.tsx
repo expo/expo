@@ -126,32 +126,6 @@ export default class Camera extends React.Component<CameraProps> {
 
   // @needsAudit
   /**
-   * @deprecated Use `getCameraPermissionsAsync` or `getMicrophonePermissionsAsync` instead.
-   * Checks user's permissions for accessing camera.
-   */
-  static async getPermissionsAsync(): Promise<PermissionResponse> {
-    console.warn(
-      `"getPermissionsAsync()" is now deprecated. Please use "getCameraPermissionsAsync()" or "getMicrophonePermissionsAsync()" instead.`
-    );
-    return CameraManager.getPermissionsAsync();
-  }
-
-  // @needsAudit
-  /**
-   * Asks the user to grant permissions for accessing camera.
-   * On iOS this will require apps to specify both `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` entries in the **Info.plist**.
-   * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-   * @deprecated Use `requestCameraPermissionsAsync` or `requestMicrophonePermissionsAsync` instead.
-   */
-  static async requestPermissionsAsync(): Promise<PermissionResponse> {
-    console.warn(
-      `"requestPermissionsAsync()" is now deprecated. Please use "requestCameraPermissionsAsync()" or "requestMicrophonePermissionsAsync()" instead.`
-    );
-    return CameraManager.requestPermissionsAsync();
-  }
-
-  // @needsAudit
-  /**
    * Checks user's permissions for accessing camera.
    * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
    */
@@ -275,28 +249,6 @@ export default class Camera extends React.Component<CameraProps> {
     CameraManager.stopRecording(this._cameraHandle);
   }
 
-  /**
-   * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
-   */
-  pausePreview() {
-    if (!CameraManager.pausePreview) {
-      throw new UnavailabilityError('Camera', 'pausePreview');
-    }
-
-    CameraManager.pausePreview(this._cameraHandle);
-  }
-
-  /**
-   * Resumes the camera preview.
-   */
-  resumePreview() {
-    if (!CameraManager.resumePreview) {
-      throw new UnavailabilityError('Camera', 'resumePreview');
-    }
-
-    CameraManager.resumePreview(this._cameraHandle);
-  }
-
   _onCameraReady = () => {
     if (this.props.onCameraReady) {
       this.props.onCameraReady();
@@ -377,8 +329,6 @@ export default class Camera extends React.Component<CameraProps> {
 
 export const {
   Constants,
-  getPermissionsAsync,
-  requestPermissionsAsync,
   getCameraPermissionsAsync,
   requestCameraPermissionsAsync,
   getMicrophonePermissionsAsync,

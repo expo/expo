@@ -26,18 +26,6 @@ export default class Camera extends React.Component<CameraProps> {
     };
     static defaultProps: CameraProps;
     /**
-     * @deprecated Use `getCameraPermissionsAsync` or `getMicrophonePermissionsAsync` instead.
-     * Checks user's permissions for accessing camera.
-     */
-    static getPermissionsAsync(): Promise<PermissionResponse>;
-    /**
-     * Asks the user to grant permissions for accessing camera.
-     * On iOS this will require apps to specify both `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` entries in the **Info.plist**.
-     * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-     * @deprecated Use `requestCameraPermissionsAsync` or `requestMicrophonePermissionsAsync` instead.
-     */
-    static requestPermissionsAsync(): Promise<PermissionResponse>;
-    /**
      * Checks user's permissions for accessing camera.
      * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
      */
@@ -120,14 +108,6 @@ export default class Camera extends React.Component<CameraProps> {
      * Stops recording if any is in progress.
      */
     stopRecording(): void;
-    /**
-     * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
-     */
-    pausePreview(): void;
-    /**
-     * Resumes the camera preview.
-     */
-    resumePreview(): void;
     _onCameraReady: () => void;
     _onMountError: ({ nativeEvent }: {
         nativeEvent: {
@@ -145,5 +125,5 @@ export default class Camera extends React.Component<CameraProps> {
     _setReference: (ref?: React.Component) => void;
     render(): JSX.Element;
 }
-export declare const Constants: ConstantsType, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync, getCameraPermissionsAsync: typeof Camera.getCameraPermissionsAsync, requestCameraPermissionsAsync: typeof Camera.requestCameraPermissionsAsync, getMicrophonePermissionsAsync: typeof Camera.getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync: typeof Camera.requestMicrophonePermissionsAsync;
+export declare const Constants: ConstantsType, getCameraPermissionsAsync: typeof Camera.getCameraPermissionsAsync, requestCameraPermissionsAsync: typeof Camera.requestCameraPermissionsAsync, getMicrophonePermissionsAsync: typeof Camera.getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync: typeof Camera.requestMicrophonePermissionsAsync;
 //# sourceMappingURL=Camera.d.ts.map

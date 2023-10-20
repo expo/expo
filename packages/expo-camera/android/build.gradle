@@ -106,6 +106,8 @@ repositories {
 }
 
 dependencies {
+
+
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
     implementation project(':expo-modules-core')
@@ -124,6 +126,7 @@ dependencies {
   implementation "androidx.camera:camera-view:${camerax_version}"
   implementation "androidx.camera:camera-extensions:${camerax_version}"
   implementation "com.google.mlkit:barcode-scanning:17.2.0"
+  implementation 'androidx.camera:camera-mlkit-vision:1.4.0-alpha01'
 
   api 'com.google.android:cameraview:1.0.0'
 }
