@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.10.14 — 2023-10-20
+
+### 💡 Others
+
+- Add `expo customize tsconfig.json` command. ([#23642](https://github.com/expo/expo/pull/23642) by [@marklawlor](https://github.com/marklawlor))
+
 ## 0.14.0 — 2023-10-17
 
 ### 🛠 Breaking changes
@@ -176,7 +182,6 @@ _This version does not introduce any user-facing changes._
 - Use node server default port selection for SSO login server. ([#23505](https://github.com/expo/expo/pull/23505) by [@wschurman](https://github.com/wschurman))
 - Add styling to SSO auth redirect completion page. ([#23477](https://github.com/expo/expo/pull/23477) by [@wschurman](https://github.com/wschurman))
 - Allow multiple `--platform` flags in `expo export`. ([#23621](https://github.com/expo/expo/pull/23621) by [@byCedric](https://github.com/byCedric))
-- Add `expo customize tsconfig.json` command. ([#23642](https://github.com/expo/expo/pull/23642) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
