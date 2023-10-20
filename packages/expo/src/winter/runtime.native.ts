@@ -1,14 +1,14 @@
 // This file configures the runtime environment to increase compatibility with WinterCG.
 // https://wintercg.org/
-import { polyfillGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
+import { polyfillGlobal as installGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
 
 // Add a well-known shared symbol that doesn't show up in iteration or inspection
 // this can be used to detect if the global object abides by the Expo team's documented
-// polyfill requirements.
-const POLYFILL_SYMBOL = Symbol.for('expo.polyfill');
+// built-in requirements.
+const BUILTIN_SYMBOL = Symbol.for('expo.builtin');
 
-function addPolyfillSymbol(obj: object) {
-  Object.defineProperty(obj, POLYFILL_SYMBOL, {
+function addBuiltinSymbol(obj: object) {
+  Object.defineProperty(obj, BUILTIN_SYMBOL, {
     value: true,
     enumerable: false,
     configurable: false,
@@ -17,7 +17,7 @@ function addPolyfillSymbol(obj: object) {
 }
 
 function install(name: string, getValue: () => any) {
-  polyfillGlobal(name, () => addPolyfillSymbol(getValue()));
+  installGlobal(name, () => addBuiltinSymbol(getValue()));
 }
 
 // https://url.spec.whatwg.org/#url
