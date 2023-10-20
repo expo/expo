@@ -135,9 +135,10 @@ export function withExtendedResolver(
 
   const isWebEnabled = platforms.includes('web');
 
+  const defaultResolver = importMetroResolverFromProject(projectRoot).resolve;
   const resolver = isFastResolverEnabled
     ? createFastResolver({ preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false })
-    : importMetroResolverFromProject(projectRoot).resolve;
+    : defaultResolver;
 
   const extraNodeModules: { [key: string]: Record<string, string> } = {};
 
@@ -275,7 +276,10 @@ export function withExtendedResolver(
         mainFields = preferredMainFields[platform];
       }
       function doResolve(moduleName: string): Resolution | null {
-        return resolver(
+        // Workaround for Node.js having package exports enabled by default and
+        // the fast resolver not having package exports support yet.
+        const resolverToUse = isNode ? defaultResolver : resolver;
+        return resolverToUse(
           {
             ...context,
             resolveRequest: undefined,
