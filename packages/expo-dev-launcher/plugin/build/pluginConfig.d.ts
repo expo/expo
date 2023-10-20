@@ -32,6 +32,11 @@ export type PluginConfigOptions = {
      * @default 'launcher'
      */
     launchModeExperimental?: 'most-recent' | 'launcher';
+    /**
+     * Determines whether to add the generated default `exp+slug` URL scheme or not.
+     * @default 'true'
+     */
+    generatedSchemeEnabled?: boolean;
 };
 /**
  * @ignore
