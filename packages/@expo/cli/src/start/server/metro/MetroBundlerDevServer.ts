@@ -450,7 +450,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         if (exp.web?.output === 'server') {
           // Cache observation for API Routes...
           observeApiRouteChanges(
-            this.projectRoot,
+            appDir,
             {
               metro,
               server,

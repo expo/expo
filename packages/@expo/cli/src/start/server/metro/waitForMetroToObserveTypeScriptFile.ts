@@ -9,7 +9,7 @@ const debug = require('debug')('expo:start:server:metro:waitForTypescript') as t
  * TypeScript file is added to the project during development.
  */
 export function observeApiRouteChanges(
-  projectRoot: string,
+  appDir: string,
   runner: {
     metro: import('metro').Server;
     server: ServerLike;
@@ -18,7 +18,6 @@ export function observeApiRouteChanges(
 ): () => void {
   const watcher = runner.metro.getBundler().getBundler().getWatcher();
 
-  const appDir = path.join(projectRoot, 'app');
   const listener = ({
     eventsQueue,
   }: {
