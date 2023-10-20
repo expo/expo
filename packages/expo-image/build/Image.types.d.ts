@@ -56,6 +56,16 @@ export type ImageStyle = RNImageStyle;
  */
 export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 /**
+ * Determines downscale dimensions for the image.
+ * When only `height` is provided, the `width` will be calculated automatically to preserve the aspect ratio, similarly
+ * when only `width` is provided the `height` will be calculated automatically to preserve the aspect ratio.
+ * When both are provided `width` value will be ignored and the dimensions will be calculated based on the height value.
+ * */
+export type IntrinsicSize = {
+    width?: number;
+    height?: number;
+};
+/**
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
@@ -252,9 +262,18 @@ export interface ImageProps extends ViewProps {
      *
      * Downscaling is never used when the `contentFit` prop is set to `none` or `fill`.
      * @default true
-     * @platform android
      */
     allowDownscaling?: boolean;
+    /**
+     * Determines the render resolution of the image. When a size is assigned the image will be downscaled to that value before rendering.
+     * When an array is provided, the image will be downscaled to the smallest available resolution, which is greater than view dimensions.
+     * If the view dimensions are greater than the largest provided resolution, largest available size will be used.
+     *
+     * This prop is ignored when `allowDownscaling` is set to `false`.
+     * @default null
+     * @platform ios
+     * */
+    intrinsicSize?: IntrinsicSize | IntrinsicSize[] | null;
 }
 /**
  * It narrows down some props to types expected by the native/web side.

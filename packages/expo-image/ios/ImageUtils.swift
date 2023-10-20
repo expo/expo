@@ -3,6 +3,8 @@
 import SDWebImage
 import ExpoModulesCore
 
+private let MIN_RESOLUTION = CGFloat(10)
+
 func cacheTypeToString(_ cacheType: SDImageCacheType) -> String {
   switch cacheType {
   case .none:
@@ -73,10 +75,56 @@ func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double, c
   }
 }
 
+// Finds a smallest available image size that is bigger than the viewport
+func closestIntrinsicSize(intrinsicSizes: [IntrinsicSize]?, displaySize: CGSize, scale: Double, aspectRatio: Double) -> CGSize {
+  guard var intrinsicSize = intrinsicSizes else {
+    // Calculate resolution steps automatically
+    // We start with MIN_RESOLUTION, then each automatic resolution step doubles the value. We must find the nearest fitting step.
+    let width_factor = log2(max(displaySize.width, MIN_RESOLUTION) / MIN_RESOLUTION).rounded(.up)
+    let height_factor = log2(max(displaySize.height, MIN_RESOLUTION) / MIN_RESOLUTION).rounded(.up)
+
+    if width_factor >= height_factor {
+      return CGSize(width: MIN_RESOLUTION * pow(2, width_factor), height: MIN_RESOLUTION * pow(2, width_factor) / aspectRatio)
+    }
+    return CGSize(width: MIN_RESOLUTION * pow(2, height_factor) * aspectRatio, height: MIN_RESOLUTION * pow(2, height_factor))
+  }
+
+  var cgIntrinsicSize = intrinsicSize.map { size -> CGSize in
+    var newSize = CGSize(width: size.width ?? 0, height: size.height ?? 0)
+  
+    if let height = size.height {
+      newSize.width = height * aspectRatio
+    } else if let width = size.width {
+      newSize.height = width / aspectRatio
+    } else {
+      newSize = displaySize
+    }
+    return newSize
+  }
+
+  // Sort available sizes
+  cgIntrinsicSize = cgIntrinsicSize.sorted { lhs, rhs in
+    return lhs.height < rhs.height
+  }
+  // Leave only the sizes that are greater than the container - we don't want to have a visible loss of quality
+  let cgIntrinsicSizeFiltered = cgIntrinsicSize.filter { size in
+    size.height >= displaySize.height * scale &&
+    size.width >= displaySize.width * scale
+  }
+  // If there are no sizes greater than the container return the biggest available one
+  if cgIntrinsicSizeFiltered.isEmpty {
+    return cgIntrinsicSize.last ?? CGSize.zero
+  }
+  return cgIntrinsicSizeFiltered[0]
+}
+
 /**
  Returns a bool whether the image should be downscaled to the given size.
  */
-func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool {
+func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double, allowDownscaling: Bool) -> Bool {
+  if !allowDownscaling {
+    return false
+  }
   if size.width <= 0 || size.height <= 0 {
     // View is invisible, so no reason to keep the image in memory.
     // This already ensures that we won't be diving by zero in ratio calculations.

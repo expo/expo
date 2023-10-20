@@ -5,6 +5,7 @@ import {
   ImageContentPositionString,
   ImageProps,
   ImageTransition,
+  IntrinsicSize,
 } from './Image.types';
 
 let loggedResizeModeDeprecationWarning = false;
@@ -106,4 +107,18 @@ export function resolveTransition(
     return { duration: fadeDuration };
   }
   return transition ?? null;
+}
+
+export function resolveIntrinsicSize(intrinsicSize: IntrinsicSize | IntrinsicSize[]) {
+  const toFilter = Array.isArray(intrinsicSize) ? intrinsicSize : [intrinsicSize];
+  const filtered = toFilter.filter((size) => {
+    const isValid = (size.width && size.width > 0) || (size.height && size.height > 0);
+    if (!isValid) {
+      console.warn(
+        `[expo-image]: Intrinsic size ${JSON.stringify(size)} is invalid and will be ignored`
+      );
+    }
+    return isValid;
+  });
+  return filtered.length > 0 ? filtered : null;
 }

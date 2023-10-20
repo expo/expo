@@ -51,7 +51,7 @@ enum ImageTransitionEffect: String, Enumerable {
   }
 }
 
-struct ImageTransition: Record {
+struct ImageTransition: Record, Equatable {
   @Field
   var duration: Double = 100
 
@@ -63,5 +63,9 @@ struct ImageTransition: Record {
 
   func toAnimationOptions() -> UIView.AnimationOptions {
     return [timing.toAnimationOption(), effect.toAnimationOption()]
+  }
+
+  static func == (lhs: ImageTransition, rhs: ImageTransition) -> Bool {
+    return lhs.duration == rhs.duration && lhs.timing == rhs.timing && lhs.effect == rhs.effect
   }
 }

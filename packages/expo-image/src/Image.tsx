@@ -3,7 +3,12 @@ import { StyleSheet } from 'react-native';
 
 import ExpoImage, { ExpoImageModule } from './ExpoImage';
 import { ImageProps } from './Image.types';
-import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
+import {
+  resolveContentFit,
+  resolveContentPosition,
+  resolveTransition,
+  resolveIntrinsicSize,
+} from './utils';
 import { resolveSources } from './utils/resolveSources';
 
 let loggedDefaultSourceDeprecationWarning = false;
@@ -54,6 +59,7 @@ export class Image extends React.PureComponent<ImageProps> {
       resizeMode: resizeModeProp,
       defaultSource,
       loadingIndicatorSource,
+      intrinsicSize,
       ...restProps
     } = this.props;
 
@@ -76,6 +82,7 @@ export class Image extends React.PureComponent<ImageProps> {
         contentFit={resolveContentFit(contentFit, resizeMode)}
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
+        intrinsicSize={intrinsicSize && resolveIntrinsicSize(intrinsicSize)}
       />
     );
   }

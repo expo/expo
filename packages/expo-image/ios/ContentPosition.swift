@@ -9,7 +9,7 @@ typealias ContentPositionValue = Either<Double, String>
  Specifies the alignment of the image within the container's box.
  - Note: Its intention is to behave like the CSS [`object-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-position) property.
  */
-struct ContentPosition: Record {
+struct ContentPosition: Record, Equatable {
   static let center = Self()
 
   @Field
@@ -74,6 +74,31 @@ struct ContentPosition: Record {
       x: offsetX(contentWidth: contentSize.width, containerWidth: containerSize.width),
       y: offsetY(contentHeight: contentSize.height, containerHeight: containerSize.height)
     )
+  }
+
+  static func == (lhs: ContentPosition, rhs: ContentPosition) -> Bool {
+    return compareContentPositionValue(lhs.bottom, rhs.bottom) &&
+    compareContentPositionValue(lhs.top, rhs.top) &&
+    compareContentPositionValue(lhs.left, rhs.left) &&
+    compareContentPositionValue(lhs.right, rhs.right)
+  }
+
+  private static func compareContentPositionValue(_ lhs: ContentPositionValue?, _ rhs: ContentPositionValue?) -> Bool {
+    let lhsStringValue: String? = lhs?.get()
+    let rhsStringValue: String? = rhs?.get()
+    let lhsDoubleValue: Double? = lhs?.get()
+    let rhsDoubleValue: Double? = rhs?.get()
+
+    if let lhs = lhsStringValue, let rhs = rhsStringValue {
+      return lhs == rhs
+    }
+    if let lhs = lhsDoubleValue, let rhs = rhsDoubleValue {
+      return lhs == rhs
+    }
+    if lhs == nil && rhs == nil {
+      return true
+    }
+    return false
   }
 }
 

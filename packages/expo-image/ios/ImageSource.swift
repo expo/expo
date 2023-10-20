@@ -2,7 +2,7 @@
 
 import ExpoModulesCore
 
-struct ImageSource: Record {
+struct ImageSource: Record, Equatable {
   @Field
   var width: Double = 0.0
 
@@ -40,5 +40,14 @@ struct ImageSource: Record {
   var isCachingAllowed: Bool {
     // TODO: Don't cache other non-network requests (e.g. data URIs, local files)
     return !isPhotoLibraryAsset
+  }
+
+  static func == (lhs: ImageSource, rhs: ImageSource) -> Bool {
+    return lhs.width == rhs.width &&
+    lhs.height == rhs.height &&
+    lhs.uri == rhs.uri &&
+    lhs.scale == rhs.scale &&
+    lhs.headers == rhs.headers &&
+    lhs.cacheKey == rhs.cacheKey
   }
 }

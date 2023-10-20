@@ -3,10 +3,10 @@
 import SDWebImage
 import ExpoModulesCore
 import VisionKit
+import UIKit
 
 typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
-// swiftlint:disable:next type_body_length
 public final class ImageView: ExpoView {
   static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
   static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
@@ -24,28 +24,75 @@ public final class ImageView: ExpoView {
     .retryFailed, // Don't blacklist URLs that failed downloading
     .handleCookies // Handle cookies stored in the shared `HTTPCookieStore`
   ]
+  var unblurredImage: UIImage?
 
-  var sources: [ImageSource]?
+  var needsPartialReload = false
+  var needsFullReload = false
+  var needsBlurUpdate = false
+
+  var sources: [ImageSource]? {
+    didSet {
+      needsFullReload = needsFullReload || oldValue != sources
+    }
+  }
 
   var pendingOperation: SDWebImageCombinedOperation?
 
-  var contentFit: ContentFit = .cover
+  var contentFit: ContentFit = .cover {
+    didSet {
+      needsPartialReload = needsPartialReload || oldValue != contentFit
+    }
+  }
 
-  var contentPosition: ContentPosition = .center
+  var contentPosition: ContentPosition = .center {
+    didSet {
+      needsPartialReload = needsPartialReload || oldValue != contentPosition
+    }
+  }
 
-  var transition: ImageTransition?
+  var transition: ImageTransition? {
+    didSet {
+      needsFullReload = needsFullReload || oldValue != transition
+    }
+  }
 
-  var blurRadius: CGFloat = 0.0
+  var blurRadius: CGFloat = 0.0 {
+    didSet {
+      needsPartialReload = needsPartialReload || oldValue != blurRadius
+      needsBlurUpdate = needsBlurUpdate || oldValue != blurRadius
+    }
+  }
 
-  var imageTintColor: UIColor?
+  var imageTintColor: UIColor? {
+    didSet {
+      needsFullReload = needsFullReload || oldValue != imageTintColor
+    }
+  }
 
-  var cachePolicy: ImageCachePolicy = .disk
+  var cachePolicy: ImageCachePolicy = .disk {
+    didSet {
+      needsFullReload = needsFullReload || oldValue != cachePolicy
+    }
+  }
 
   var recyclingKey: String? {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
         sdImageView.image = nil
+        needsFullReload = needsFullReload || oldValue != recyclingKey
       }
+    }
+  }
+
+  var allowDownscaling: Bool = true {
+    didSet {
+      needsFullReload = needsFullReload || oldValue != allowDownscaling
+    }
+  }
+
+  var intrinsicSizes: [IntrinsicSize]? {
+    didSet {
+      needsFullReload = needsFullReload || oldValue != intrinsicSizes
     }
   }
 
@@ -63,8 +110,7 @@ public final class ImageView: ExpoView {
 
   public override var bounds: CGRect {
     didSet {
-      // Reload the image when the bounds size has changed and the view is mounted.
-      if oldValue.size != bounds.size && window != nil {
+      if shouldBlurAfterBoundsUpdate(oldValue: oldValue) {
         reload()
       }
     }
@@ -99,6 +145,17 @@ public final class ImageView: ExpoView {
 
   // MARK: - Implementation
 
+  func onPropsUpdated() {
+    if needsFullReload {
+      reload()
+    } else if needsPartialReload {
+      reloadCurrentImage()
+    }
+    needsPartialReload = false
+    needsFullReload = false
+    needsBlurUpdate = false
+  }
+
   func reload() {
     if isViewEmpty {
       displayPlaceholderIfNecessary()
@@ -121,7 +178,6 @@ public final class ImageView: ExpoView {
     }
 
     context[.cacheKeyFilter] = createCacheKeyFilter(source.cacheKey)
-    context[.imageTransformer] = createTransformPipeline()
 
     // Assets from the bundler have `scale` prop which needs to be passed to the context,
     // otherwise they would be saved in cache with scale = 1.0 which may result in
@@ -229,14 +285,50 @@ public final class ImageView: ExpoView {
         contentFit: contentFit
       ).rounded(.up)
 
+      let aspectRatio = idealSize.width / idealSize.height
+      // Find an intrinsic size greater than the display current size of the image.
+      // This allows us to keep the image without resizes for longer when the container size changes.
+      let intrinsicSize = closestIntrinsicSize(intrinsicSizes: intrinsicSizes, displaySize: frame.size, scale: image.scale, aspectRatio: aspectRatio)
       Task {
-        let image = await processImage(image, idealSize: idealSize, scale: scale)
+        var image = await processImage(image, idealSize: intrinsicSize, scale: scale)
 
+        if var imageToBlur = image, blurRadius > 0 {
+          unblurredImage = image
+          image = await blurImage(image: imageToBlur)
+        } else {
+          unblurredImage = nil
+        }
         applyContentPosition(contentSize: idealSize, containerSize: frame.size)
         renderImage(image)
       }
     } else {
       displayPlaceholderIfNecessary()
+    }
+  }
+
+  public func reloadCurrentImage() {
+    let scale = window?.screen.scale ?? UIScreen.main.scale
+
+    guard var currentImage = sdImageView.image else {
+      displayPlaceholderIfNecessary()
+      return
+    }
+    let idealSize = idealSize(
+      contentPixelSize: currentImage.size * currentImage.scale,
+      containerSize: frame.size,
+      scale: scale,
+      contentFit: contentFit
+    ).rounded(.up)
+
+    applyContentPosition(contentSize: idealSize, containerSize: frame.size)
+    if needsBlurUpdate {
+      Task {
+        unblurredImage = unblurredImage ?? currentImage
+        let blurredImage = await blurImage(image: unblurredImage ?? currentImage)
+        renderImage(blurredImage)
+      }
+    } else {
+      renderImage(currentImage)
     }
   }
 
@@ -332,7 +424,7 @@ public final class ImageView: ExpoView {
       return nil
     }
     // Downscale the image only when necessary
-    if shouldDownscale(image: image, toSize: idealSize, scale: scale) {
+    if shouldDownscale(image: image, toSize: idealSize, scale: scale, allowDownscaling: allowDownscaling) {
       return await resize(animatedImage: image, toSize: idealSize, scale: scale)
     }
     return image
@@ -413,6 +505,38 @@ public final class ImageView: ExpoView {
    */
   var hasAnySource: Bool {
     return sources?.isEmpty == false
+  }
+
+  func blurImage(image: UIImage) async -> UIImage {
+    return image.sd_blurredImage(withRadius: blurRadius) ?? image
+  }
+
+  private func shouldBlurAfterBoundsUpdate(oldValue: CGRect) -> Bool {
+    guard let source = bestSource else {
+      return false
+    }
+    let scale = window?.screen.scale ?? UIScreen.main.scale
+    var size = sdImageView.image?.size ?? bounds.size
+
+    let idealSizeOld = idealSize(
+      contentPixelSize: size * source.scale,
+      containerSize: oldValue.size,
+      scale: scale,
+      contentFit: contentFit
+    ).rounded(.up)
+
+    let idealSizeNew = idealSize(
+      contentPixelSize: size * source.scale,
+      containerSize: bounds.size,
+      scale: scale,
+      contentFit: contentFit
+    ).rounded(.up)
+
+    // Reload the image when the target resolution of the image has changed due to change of view dimensions.
+    let oldSize = closestIntrinsicSize(intrinsicSizes: intrinsicSizes, displaySize: idealSizeOld, scale: source.scale, aspectRatio: 1)
+    let newSize = closestIntrinsicSize(intrinsicSizes: intrinsicSizes, displaySize: idealSizeNew, scale: source.scale, aspectRatio: 1)
+
+    return  oldSize != newSize || (sdImageView.image == nil && pendingOperation == nil)
   }
 
   // MARK: - Live Text Interaction

@@ -82,4 +82,15 @@ export function resolveTransition(transition, fadeDuration) {
     }
     return transition ?? null;
 }
+export function resolveIntrinsicSize(intrinsicSize) {
+    const toFilter = Array.isArray(intrinsicSize) ? intrinsicSize : [intrinsicSize];
+    const filtered = toFilter.filter((size) => {
+        const isValid = (size.width && size.width > 0) || (size.height && size.height > 0);
+        if (!isValid) {
+            console.warn(`[expo-image]: Intrinsic size ${JSON.stringify(size)} is invalid and will be ignored`);
+        }
+        return isValid;
+    });
+    return filtered.length > 0 ? filtered : null;
+}
 //# sourceMappingURL=utils.js.map
