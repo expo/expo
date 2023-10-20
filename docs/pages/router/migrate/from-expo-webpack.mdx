@@ -7,27 +7,25 @@ description: Learn how to migrate a website using Expo Webpack to Expo Router.
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 
-The original version of "Expo for web" was based on Webpack 4 and focused primarily on building single-page applications (SPAs). This approach was based on [Create React App](https://create-react-app.dev/) and enabled simple web apps to be built with Expo SDK and React Native for web.
+The original **Expo for web** version was based on Webpack 4 and focused primarily on building single-page applications (SPAs). This approach was based on [Create React App](https://create-react-app.dev/) and enabled building simple web apps with Expo SDK and React Native for web.
 
 Expo Router is the new approach to building powerful universal apps that run on web and native. This guide will help you migrate your existing website to Expo Router.
 
-Both React Navigation and Expo Router are Expo frameworks for routing and navigation. Expo Router is a wrapper around React Navigation and many of the concepts are the same.
+Both React Navigation and Expo Router are Expo frameworks for routing and navigation. Expo Router is a wrapper around React Navigation and has many shared concepts.
 
 ## Pitch
 
-> `@expo/webpack-config` is in maintenance-mode and not receiving any new feature updates.
+> **warning** `@expo/webpack-config` is in maintenance-mode and not receiving any new feature updates.
 
-Unlike Expo Webpack, Expo Router supports [static rendering on web](/router/reference/static-rendering) which enables search engine optimization (SEO), social media previews, and faster loading times.
+Expo Router supports [static rendering on web](/router/reference/static-rendering), which enables search engine optimization (SEO), social media previews, and faster loading times, unlike Expo Webpack. Along with the benefits of React Navigation, it enables automatic deep linking,  [type safety](/router/reference/typed-routes), [deferred bundling](/router/reference/async-routes), [modular HTML templates](/router/reference/static-rendering#root-html), [static rendering on web](/router/reference/static-rendering), and more.
 
-Along with all the benefits of React Navigation, Expo Router also enables automatic deep linking, [type safety](/router/reference/typed-routes), [deferred bundling](/router/reference/async-routes), [modular HTML templates](/router/reference/static-rendering#root-html), [static rendering on web](/router/reference/static-rendering), and more.
-
-Expo Router is also designed to fix the main cross-platform issue with Expo Webpack; sharing navigation between web and native, without compromising on functionality or performance.
+Expo Router is also designed to fix the main cross-platform issue with Expo Webpack by sharing navigation between web and native without compromising functionality or performance.
 
 ## Anti-pitch
 
-Expo Router uses a custom bundler stack that is based on [Metro](https://facebook.github.io/metro/), which is the same bundler used by React Native. While this is great for ensuring maximum code reusability and solves many of the forked behavior issues that came from using different bundlers across platforms, this also means certain bundling features may not be available in Expo Router yet.
+Expo Router uses a custom bundler stack based on [Metro](https://facebook.github.io/metro/). It is the same bundler used by React Native. While this is great for ensuring maximum code reusability and solves many forked behavior issues from using different bundlers across platforms. This also means certain bundling features may not be available in Expo Router yet.
 
-Ultimately Expo Router, being a full universal framework, is a substantially more robust solution than `@expo/webpack-config`, a bundler integration, and should be used for all new projects Expo web projects.
+Ultimately as a full universal framework, Expo Router is a substantially more robust solution than `@expo/webpack-config`, which is a bundler integration. It should be used for all new Expo web projects.
 
 ## Expo CLI
 
@@ -53,26 +51,26 @@ Unlike `@expo/webpack-config`, Expo Router uses the same CLI commands and featur
 
 In `@expo/webpack-config` all routes shared a single HTML file. This file was based on the template in `web/index.html` which was then modified by the `@expo/webpack-config` to include the necessary scripts and stylesheets.
 
-In Expo Router there are two different rendering patterns:
+In Expo Router, there are two different rendering patterns:
 
-- Recommended: `web.output: "static"` which outputs a new HTML file for each route in the app. With this approach, you can dynamically generate the entire HTML template using the `app/+html.js` file. [Learn more](/router/reference/static-rendering#root-html).
-- Not recommended: `web.output: "single"` which outputs a single-page application. With this approach, you can use `public/index.html` as the template HTML file.
+- **Recommended**: `web.output: "static"` which outputs a new HTML file for each route in the app. This approach lets you [dynamically generate the entire HTML template using the **app/+html.js** file](/router/reference/static-rendering#root-html).
+- **Not recommended**: `web.output: "single"` which outputs a single-page application. This approach lets you use `public/index.html` as the template HTML file.
 
 ## Static resources
 
-In `@expo/webpack-config` you could host static files in the `web` directory and they would be served from the root of the website. For example, `web/favicon.ico` would be served from `https://example.com/favicon.ico`.
+In `@expo/webpack-config`, you could host static files in the `web` directory, which would be served from the website's root. For example, `web/favicon.ico` was served from `https://example.com/favicon.ico`.
 
-In Expo Router, you can use the `public` directory to host static files. For example, `public/favicon.ico` would be served from `https://example.com/favicon.ico`. Unlike Webpack, Expo Router's hosting works on native too, just ensure to host the files from a server before using them in production.
+In Expo Router, you can use the **public** directory to host static files. For example, **public/favicon.ico** is served from `https://example.com/favicon.ico`. Unlike Webpack, Expo Router's hosting works on native too. Make sure to host the files from a server before using them in production.
 
 ## Bundling for production
 
-In `@expo/webpack-config` you could bundle your website for production using `npx expo export:web`. This would output a bundle to the `web-build` directory.
+In `@expo/webpack-config`, you could bundle your website for production using `npx expo export:web`. This would output a bundle to the **web-build** directory.
 
-In Expo Router, use the `npx expo export --platform web` command to export to the `dist` directory. You can generate sourcemaps with the `--dump-sourcemap` flag. On build, the contents of the `public` directory will be copied to the `dist` directory.
+In Expo Router, use the `npx expo export --platform web` command to export to the **dist** directory. You can generate sourcemaps with the `--dump-sourcemap` flag. On build, the contents of the **public** directory will be copied to the **dist** directory.
 
 ## Babel configuration
 
-Just like before, the root `babel.config.js` file is used for both web and native. You can change the preset by using the `platform` property in the API caller:
+Like before, the root **babel.config.js** file is used for both web and native. You can change the preset by using the `platform` property in the API caller:
 
 ```js babel.config.js
 module.exports = api => {
@@ -91,21 +89,21 @@ module.exports = api => {
 
 ## Dev server
 
-In Expo Router, all platforms are hosted from the same dev server, on the same port. This is conveneient for emulating the production behavior of the app. All logs and hot module reloading goes through the same port as well.
+In Expo Router, all platforms are hosted from the same dev server on the same port. This is convenient for emulating the production behavior of the app. All logs and hot module reloading go through the same port as well.
 
-Due to limitations on native, hosting with fake https is not supported at the moment. This feature is less important now than it was in 2018 as you can test secure features like camera and location on localhost using Chrome now.
+Due to limitations on native, hosting with fake HTTPS is not currently supported. This feature is less important now than in 2018, as you can test secure features such as camera and location on localhost using a web browser like Chrome.
 
 ## Expo constants
 
-The `expo-constants` library can be used to access the `app.json` in-app. Behind the scenes, this is accomplished by setting `process.env.APP_MANIFEST` with the stringified contents of the `app.json` file.
+The [`expo-constants`](/versions/latest/sdk/constants/) library can be used to access the **app.json** in-app. Behind the scenes, this is accomplished by setting `process.env.APP_MANIFEST` with the stringified contents of the **app.json** file.
 
-In Expo Router, this is done using Babel with the `expo-router/babel` in SDK 49 and lower, and `babel-preset-expo` in SDK 50 and higher. If you modify the app.json, you will need to restart the Babel cache with `npx expo start --clear` in order to see the updates.
+In Expo Router, this is done using Babel with the `expo-router/babel` in SDK 49 and lower and `babel-preset-expo` in SDK 50 and higher. If you modify the **app.json**, restart the Babel cache with `npx expo start --clear` to see the updates.
 
 ## Base path and subpath hosting
 
 > Experimental functionality. It will be available from SDK 50.
 
-In `@expo/webpack-config`, you could bundle your website to be hosted from a subpath by using the `PUBLIC_URL` environment variable, or the `homepage` field in the project's `package.json` file like so:
+In `@expo/webpack-config`, you could bundle your website to be hosted from a subpath by using the `PUBLIC_URL` environment variable or the `homepage` field in the project's **package.json**:
 
 ```json package.json
 {
@@ -113,7 +111,7 @@ In `@expo/webpack-config`, you could bundle your website to be hosted from a sub
 }
 ```
 
-In Expo Router, you can use the experimental `basePath` field in the project's `app.json` file like so:
+In Expo Router, you can use the experimental `basePath` field in the project's **app.json**:
 
 ```json app.json
 {
@@ -127,11 +125,11 @@ In Expo Router, you can use the experimental `basePath` field in the project's `
 
 Unlike the previous system, this will also update the routing to account for the base path. For example, if you have a route `/profile` and you set the base path to `/evanbacon/my-website`, then the route will be `/evanbacon/my-website/profile`.
 
-Learn more: [Hosting with sub-paths](/more/expo-cli#hosting-with-sub-paths).
+See [hosting with sub-paths](/more/expo-cli#hosting-with-sub-paths) for more information.
 
 ## Fast refresh
 
-In `@expo/webpack-config` you could install `@pmmmwh/react-refresh-webpack-plugin` and add this to the `webpack.config.js`:
+In `@expo/webpack-config` you could install `@pmmmwh/react-refresh-webpack-plugin` and add the following to the **webpack.config.js**:
 
 ```js webpack.config.js
 const createExpoWebpackConfigAsync = require('@expo/webpack-config');
@@ -153,26 +151,27 @@ In Expo Router, **Fast Refresh is enabled by default** using the official Fast R
 
 ## Favicons
 
-Just like `@expo/webpack-config`, Expo Router supports generating the favicon.ico file based on the `web.favicon` field in the `app.json`.
+Like `@expo/webpack-config`, Expo Router supports generating the **favicon.ico** file based on the `web.favicon` field in the **app.json**.
 
 ## Service workers
 
-**Warning:** Be careful adding service workers as they are known to cause unexpected behavior on web. If you accidentally ship a service worker which aggressively caches your website, users will not be able to easily request updates. For the best offline mobile experience, create a native app with Expo. Unlike websites with service workers, native apps can be updated through the app store to clear the cached experience, this would be akin to resetting the user's native browser (which they may have to do if the service worker is aggressive enough). Learn more about [why service workers are suboptimal](https://github.com/facebook/create-react-app/issues/2398).
+> **warning:** Be careful adding service workers as they are known to cause unexpected behavior on web. If you accidentally ship a service worker who aggressively caches your website, users cannot request updates easily. For the best offline mobile experience, create a native app with Expo. Unlike websites with service workers, native apps can be updated through the app store to clear the cached experience. This would be similar to resetting the user's native browser (which they may have to do if the service worker is aggressive enough). See [why service workers are suboptimal](https://github.com/facebook/create-react-app/issues/2398) for more information.
 
-Expo Webpack didn't have built-in service worker support, but you could add it yourself by using the `workbox-webpack-plugin` and adding it to the `webpack.config.js`.
+Expo Webpack didn't have built-in service worker support. However, you could add it yourself by using the `workbox-webpack-plugin` and adding it to the **webpack.config.js**.
 
-Workbox doesn't have a Metro integration, but because Workbox doesn't require one of the core features of a bundler (transformation, resolution, serialization), it can easily be used as a post-build step.
+Workbox doesn't have a Metro integration, but because Workbox doesn't require one of the core features of a bundler (transformation, resolution, serialization), it can easily be used as a post-build step. Follow the guide for [using Workbox CLI](https://developer.chrome.com/docs/workbox/modules/workbox-cli/), and wherever it refers to a "build script" use `npx expo export -p web` instead.
 
-Simply follow the [guide for using Workbox CLI](https://developer.chrome.com/docs/workbox/modules/workbox-cli/), and wherever it refers to a "build script" use `npx expo export -p web`.
+For example, here's a possible flow for setting up Workbox. Create a new project with the following command:
 
-For example, here's a possible flow for setting up Workbox:
-
-- `bun create expo -t tabs my-app`
-- `cd my-app`
+<Terminal cmd={
+  "$ bun create expo -t tabs my-app",
+  "",
+  "$ cd my-app",
+]} cmdCopy="bun create expo -t tabs my-app && cd my-app" />
 
 Next, create a root HTML file for the app and add the service worker registration script:
 
-```js app/+html.tsx
+```tsx app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
 
@@ -243,9 +242,7 @@ Run the wizard command, selecting `dist` as the root of the app, and the default
   ]}
 />
 
-Finally, run `workbox generateSW workbox-config.js` to generate the service worker config.
-
-Going forward, you can add a build script to run both scripts in the correct order:
+Finally, run `workbox generateSW workbox-config.js` to generate the service worker config. Going forward, you can add a build script in **package.json** to run both scripts in the correct order:
 
 ```json package.json
 {
@@ -257,7 +254,7 @@ Going forward, you can add a build script to run both scripts in the correct ord
 
 ## PWA manifests
 
-Unlike `@expo/webpack-config`, Expo Router does not automatically attempt to generate the PWA manifest configuration. You can create one in your `public/manifest.json`:
+Unlike `@expo/webpack-config`, Expo Router does not automatically attempt to generate the PWA manifest configuration. You can create one in **public/manifest.json**:
 
 ```json
 {
@@ -289,7 +286,7 @@ Unlike `@expo/webpack-config`, Expo Router does not automatically attempt to gen
 
 You can link this in your HTML file using the `link` tag:
 
-```js app/+html.tsx
+```tsx app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
 
@@ -332,12 +329,12 @@ export default function Root({ children }: PropsWithChildren) {
 
 ## Bundler plugins
 
-If you were using custom bundler plugins, refer to the [Expo Metro config](/versions/latest/config/metro) to learn more about adding custom functionality to your bundler pipeline.
+If you were using custom bundler plugins, see [Expo Metro config](/versions/latest/config/metro) for adding custom functionality to your bundler pipeline.
 
 ## Navigation
 
-If you used React Navigation for navigating between screens in `@expo/webpack-config`, then refer to the migration guide for [React Navigation](/router/migrate/from-react-navigation).
+If you used React Navigation for navigating between screens in `@expo/webpack-config`, see the [migration guide for React Navigation](/router/migrate/from-react-navigation).
 
 ## Deployment
 
-Visit the [publishing websites documentation](/distribution/publishing-websites) and select "Expo Router" to learn how to deploy Expo Router websites to various hosting providers.
+See [publishing websites](/distribution/publishing-websites) and select "Expo Router" on how to deploy Expo Router websites to various hosting providers.
