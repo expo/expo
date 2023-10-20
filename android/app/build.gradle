@@ -29,13 +29,19 @@ if (expoModulesCorePlugin.exists()) {
 }
 
 android {
+  namespace "host.exp.exponent"
+
+  buildFeatures {
+    buildConfig true
+  }
+
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 34)
+    compileSdk safeExtGet("compileSdk", safeExtGet("compileSdkVersion", 34))
 
     defaultConfig {
-      minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 34)
+      minSdk safeExtGet("minSdk", safeExtGet("minSdkVersion", 23))
+      targetSdk safeExtGet("targetSdk", safeExtGet("targetSdkVersion", 34))
     }
 
     lintOptions {
@@ -147,6 +153,87 @@ android {
     pickFirst "**/libc++_shared.so"
   }
 }
+
+import com.android.build.api.variant.AndroidComponentsExtension
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
+import com.android.build.gradle.LibraryExtension
+import org.w3c.dom.Element
+
+// Based on RNGP's AgpConfiguratorPlugin
+class AgpConfiguratorPlugin implements Plugin<Project> {
+  @Override
+  void apply(org.gradle.api.Project project) {
+    configureBuildConfigFieldsForLibraries(project)
+    configureNamespaceForLibraries(project)
+  }
+
+  // Make sure buildConfig is turned on for all the 3rd party libraries
+  private void configureBuildConfigFieldsForLibraries(Project project) {
+    project.rootProject.allprojects { subproject ->
+      subproject.plugins.withId("com.android.library") {
+        AndroidComponentsExtension ext = subproject.extensions.getByType(AndroidComponentsExtension)
+        ext.finalizeDsl { androidComponentProperties ->
+          buildFeatures.buildConfig = true
+        }
+      }
+    }
+  }
+
+  // Ensure namespace is specified for all the 3rd party libraries
+  private void configureNamespaceForLibraries(Project project) {
+    project.rootProject.allprojects { subproject ->
+      subproject.plugins.withId("com.android.library") {
+        AndroidComponentsExtension ext = subproject.extensions.getByType(AndroidComponentsExtension)
+        ext.finalizeDsl { androidComponentProperties ->
+          if (androidComponentProperties.namespace == null) {
+            LibraryExtension android = subproject.extensions.getByType(LibraryExtension)
+            def manifestFile = android.sourceSets.getByName("main").manifest.srcFile
+
+             if (manifestFile.exists()) {
+               def packageName = getPackageNameFromManifest(manifestFile);
+               androidComponentProperties.namespace = packageName
+             }
+          }
+        }
+      }
+    }
+  }
+
+  private String getPackageNameFromManifest(File manifestFile) {
+    try {
+      // Use XmlPullParser to parse the AndroidManifest.xml
+      def xmlFactory = XmlPullParserFactory.newInstance()
+      def xmlParser = xmlFactory.newPullParser()
+
+      // Open the manifest file for parsing
+      def manifestReader = new FileReader(manifestFile)
+      xmlParser.setInput(manifestReader)
+
+      String packageName = null
+
+      // Iterate through the XML elements
+      while (xmlParser.getEventType() != XmlPullParser.END_DOCUMENT) {
+        if (xmlParser.getEventType() == XmlPullParser.START_TAG) {
+          if (xmlParser.getName() == "manifest") {
+            // Read the package attribute
+            packageName = xmlParser.getAttributeValue(null, "package")
+            break
+          }
+        }
+        xmlParser.next()
+      }
+
+      return packageName
+    } catch (Exception e) {
+      return null
+    }
+  }
+}
+
+// we need to apply this plugin here instead of inside expoview
+// for it to be applied when running the clean task as well
+apply plugin: AgpConfiguratorPlugin
 
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])

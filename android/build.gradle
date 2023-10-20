@@ -8,21 +8,19 @@ buildscript {
     compileSdkVersion = 34
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '33.0.0'
+    buildToolsVersion = '34.0.0'
     kotlinVersion = '1.8.10'
-    gradlePluginVersion = '7.4.2'
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
-    // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
-    ndkVersion = "23.1.7779620"
+    ndkVersion = "25.1.8937393"
   }
   repositories {
     google()
     mavenCentral()
   }
   dependencies {
-    classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
+    classpath libs.android.gradle.plugin
     classpath 'com.google.gms:google-services:4.3.5'
     classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.6'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
@@ -32,6 +30,13 @@ buildscript {
     classpath "com.facebook.react:react-native-gradle-plugin"
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
   }
+}
+
+plugins {
+   alias libs.plugins.android.application apply false
+   alias libs.plugins.android.library apply false
+   alias libs.plugins.kotlin.android apply false
+   alias libs.plugins.download apply false
 }
 
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
@@ -100,21 +105,20 @@ allprojects {
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
     resolutionStrategy.force(
-      "com.facebook.fresco:fbcore:${reactProperties.getProperty('FRESCO_VERSION')}",
-      "com.facebook.fresco:fresco:${reactProperties.getProperty('FRESCO_VERSION')}",
-      "com.facebook.fresco:imagepipeline-okhttp3:${reactProperties.getProperty('FRESCO_VERSION')}",
-      "com.facebook.fresco:ui-common:${reactProperties.getProperty('FRESCO_VERSION')}",
+      libs.fresco,
+      libs.fresco.imagepipeline.okhttp3,
+      libs.fresco.ui.common
     )
   }
 }
 
-// to prevent duplicated lib error, pick first of libc++_shared.so and libfbjni.so for instrumented tests
+// to prevent duplicated lib error, pick first of libc++_shared.so and libfbjni.so
 allprojects { subProject ->
   subProject.afterEvaluate {
     def androidComponents = subProject.extensions.findByType(AndroidComponentsExtension.class)
     androidComponents?.with {
       onVariants(selector().all()) {
-        getAndroidTest()?.packaging?.jniLibs?.pickFirsts?.addAll([
+        packaging?.jniLibs?.pickFirsts?.addAll([
           "**/libc++_shared.so",
           "**/libfbjni.so",
         ])
