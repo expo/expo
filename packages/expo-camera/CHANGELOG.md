@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use `pointerEvent` style instead of prop. ([#24931](https://github.com/expo/expo/pull/24931) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 13.8.0 — 2023-10-17
 
 ### 🛠 Breaking changes

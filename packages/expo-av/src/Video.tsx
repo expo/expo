@@ -30,6 +30,7 @@ import {
 const _STYLES = StyleSheet.create({
   base: {
     overflow: 'hidden',
+    pointerEvents: 'box-none',
   },
   poster: {
     position: 'absolute',
@@ -356,7 +357,7 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
     };
 
     return (
-      <View style={nativeProps.style} pointerEvents="box-none">
+      <View style={nativeProps.style}>
         <ExponentVideo ref={this._nativeRef} {...nativeProps} style={nativeProps.videoStyle} />
         {this._renderPoster()}
       </View>

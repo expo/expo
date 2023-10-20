@@ -3,6 +3,7 @@ import {
   getPathFromState,
   useNavigationContainerRef,
 } from '@react-navigation/native';
+import * as SplashScreen from 'expo-splash-screen';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 
 import { canGoBack, goBack, linkTo, push, replace, setParams } from './routing';
@@ -15,7 +16,6 @@ import { ExpoLinkingOptions, getLinkingConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
 import { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
-import { _internal_maybeHideAsync } from '../views/Splash';
 
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
@@ -116,7 +116,11 @@ export class RouterStore {
       if (!this.hasAttemptedToHideSplash) {
         this.hasAttemptedToHideSplash = true;
         // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
-        requestAnimationFrame(() => _internal_maybeHideAsync());
+        requestAnimationFrame(
+          () =>
+            // @ts-expect-error: This function is native-only and for internal-use only.
+            SplashScreen._internal_maybeHideAsync?.()
+        );
       }
 
       let shouldUpdateSubscribers = this.nextState === state;

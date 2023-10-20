@@ -159,9 +159,6 @@ class Kernel : KernelInterface() {
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
   fun startJSKernel(activity: Activity?) {
-    if (Constants.isStandaloneApp()) {
-      return
-    }
     activityContext = activity
     SoLoader.init(context, false)
     synchronized(this) {
@@ -501,19 +498,9 @@ class Kernel : KernelInterface() {
       }
     }
     if (uri != null && shouldOpenUrl(uri)) {
-      if (Constants.INITIAL_URL == null) {
-        // We got an "exp://", "exps://", "http://", or "https://" app link
-        openExperience(ExperienceOptions(uri.toString(), uri.toString(), null))
-        return
-      } else {
-        // We got a custom scheme link
-        // TODO: we still might want to parse this if we're running a different experience inside a
-        // shell app. For example, we are running Brighten in the List shell and go to Twitter login.
-        // We might want to set the return uri to thelistapp://exp.host/@brighten/brighten+deeplink
-        // But we also can't break thelistapp:// deep links that look like thelistapp://l/listid
-        openExperience(ExperienceOptions(Constants.INITIAL_URL, uri.toString(), null))
-        return
-      }
+      // We got an "exp://", "exps://", "http://", or "https://" app link
+      openExperience(ExperienceOptions(uri.toString(), uri.toString(), null))
+      return
     }
     openDefaultUrl()
   }
@@ -545,8 +532,7 @@ class Kernel : KernelInterface() {
   }
 
   private fun openDefaultUrl() {
-    val defaultUrl =
-      if (Constants.INITIAL_URL == null) KernelConstants.HOME_MANIFEST_URL else Constants.INITIAL_URL
+    val defaultUrl = KernelConstants.HOME_MANIFEST_URL
     openExperience(ExperienceOptions(defaultUrl, defaultUrl, null))
   }
 
@@ -641,10 +627,7 @@ class Kernel : KernelInterface() {
       openHomeActivity()
       return
     }
-    if (Constants.isStandaloneApp()) {
-      openShellAppActivity(forceCache)
-      return
-    }
+
     ErrorActivity.clearErrorList()
     val tasks: List<AppTask> = experienceActivityTasks
     var existingTask: AppTask? = run {

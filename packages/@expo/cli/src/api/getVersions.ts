@@ -22,6 +22,8 @@ export type SDKVersion = {
 
   facebookReactVersion?: string;
 
+  expoVersion?: string;
+
   beta?: boolean;
 };
 

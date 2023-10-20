@@ -8,7 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the E2E tests. ([#24865](https://github.com/expo/expo/pull/24865) by [@douglowder](https://github.com/douglowder))
+- [Android] Simplify UpdatesUtils.parseDateString, fix UpdatesLoggingTest. ([#24951](https://github.com/expo/expo/pull/24951) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
+
+- Android: Stub expo-updates in Expo Go and remove service pattern. ([#24890](https://github.com/expo/expo/pull/24890) by [@wschurman](https://github.com/wschurman))
 
 ## 0.22.0 — 2023-10-17
 
@@ -20,7 +25,7 @@
 ### 💡 Others
 
 - Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
-- Stub expo-updates in Expo Go and remove service pattern. ([#24860](https://github.com/expo/expo/pull/24860) by [@wschurman](https://github.com/wschurman))
+- iOS: Stub expo-updates in Expo Go and remove service pattern. ([#24860](https://github.com/expo/expo/pull/24860) by [@wschurman](https://github.com/wschurman))
 
 ## 0.18.16 — 2023-10-05
 
