@@ -8,6 +8,7 @@ import { ResizeMode, } from './Video.types';
 const _STYLES = StyleSheet.create({
     base: {
         overflow: 'hidden',
+        pointerEvents: 'box-none',
     },
     poster: {
         position: 'absolute',
@@ -261,7 +262,7 @@ class Video extends React.Component {
             onReadyForDisplay: this._nativeOnReadyForDisplay,
             onFullscreenUpdate: this._nativeOnFullscreenUpdate,
         };
-        return (<View style={nativeProps.style} pointerEvents="box-none">
+        return (<View style={nativeProps.style}>
         <ExponentVideo ref={this._nativeRef} {...nativeProps} style={nativeProps.videoStyle}/>
         {this._renderPoster()}
       </View>);

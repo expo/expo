@@ -21,6 +21,7 @@ import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.statemachine.UpdatesStateEvent
+import java.lang.Error
 import java.util.Date
 
 // these unused imports must stay because of versioning
@@ -513,38 +514,13 @@ class UpdatesModule : Module() {
 
     AsyncFunction("readLogEntriesAsync") { maxAge: Long, promise: Promise ->
       AsyncTask.execute {
-        val reader = UpdatesLogReader(context)
-        val date = Date()
-        val epoch = Date(date.time - maxAge)
-        val results = reader.getLogEntries(epoch)
-          .mapNotNull { UpdatesLogEntry.create(it) }
-          .map { entry ->
-            Bundle().apply {
-              putLong("timestamp", entry.timestamp)
-              putString("message", entry.message)
-              putString("code", entry.code)
-              putString("level", entry.level)
-              if (entry.updateId != null) {
-                putString("updateId", entry.updateId)
-              }
-              if (entry.assetId != null) {
-                putString("assetId", entry.assetId)
-              }
-              if (entry.stacktrace != null) {
-                putStringArray("stacktrace", entry.stacktrace.toTypedArray())
-              }
-            }
-          }
-        promise.resolve(results)
+        promise.resolve(readLogEntries(context, maxAge))
       }
     }
 
     AsyncFunction("clearLogEntriesAsync") { promise: Promise ->
       AsyncTask.execute {
-        val reader = UpdatesLogReader(context)
-        reader.purgeLogEntries(
-          olderThan = Date()
-        ) { error ->
+        clearLogEntries(context) { error ->
           if (error != null) {
             promise.reject(
               "ERR_UPDATES_READ_LOGS",
@@ -607,5 +583,38 @@ class UpdatesModule : Module() {
 
   companion object {
     private val TAG = UpdatesModule::class.java.simpleName
+
+    internal fun readLogEntries(context: Context, maxAge: Long): List<Bundle> {
+      val reader = UpdatesLogReader(context)
+      val date = Date()
+      val epoch = Date(date.time - maxAge)
+      return reader.getLogEntries(epoch)
+        .mapNotNull { UpdatesLogEntry.create(it) }
+        .map { entry ->
+          Bundle().apply {
+            putLong("timestamp", entry.timestamp)
+            putString("message", entry.message)
+            putString("code", entry.code)
+            putString("level", entry.level)
+            if (entry.updateId != null) {
+              putString("updateId", entry.updateId)
+            }
+            if (entry.assetId != null) {
+              putString("assetId", entry.assetId)
+            }
+            if (entry.stacktrace != null) {
+              putStringArray("stacktrace", entry.stacktrace.toTypedArray())
+            }
+          }
+        }
+    }
+
+    internal fun clearLogEntries(context: Context, completionHandler: (_: Error?) -> Unit) {
+      val reader = UpdatesLogReader(context)
+      reader.purgeLogEntries(
+        olderThan = Date(),
+        completionHandler
+      )
+    }
   }
 }
