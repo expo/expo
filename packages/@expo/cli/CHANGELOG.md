@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix API Routes not updating in `src/app` directory.
 - Prevent `npx expo export` and `npx expo export:embed` from hanging with file watchers. ([#24952](https://github.com/expo/expo/pull/24952) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
