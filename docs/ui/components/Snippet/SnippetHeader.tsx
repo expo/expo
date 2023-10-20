@@ -1,8 +1,11 @@
 import { css } from '@emotion/react';
-import { mergeClasses, theme } from '@expo/styleguide';
+import { LinkBase, mergeClasses, theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
-import { ReactNode, ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
+import React, { ReactNode, ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
 
+import withHeadingManager, {
+  HeadingManagerProps,
+} from '~/components/page-higher-order/withHeadingManager';
 import { LABEL } from '~/ui/components/Text';
 
 type SnippetHeaderProps = PropsWithChildren<{
@@ -14,34 +17,46 @@ type SnippetHeaderProps = PropsWithChildren<{
   showOperation?: boolean;
 }>;
 
-export const SnippetHeader = ({
-  title,
-  children,
-  Icon,
-  float,
-  alwaysDark = false,
-  operationType,
-  showOperation = false,
-}: SnippetHeaderProps) => (
-  <div
-    className={mergeClasses(
-      'flex pl-4 overflow-hidden justify-between bg-default border border-default min-h-[40px]',
-      !float && 'rounded-t-md border-b-0',
-      float && 'rounded-md my-4',
-      Icon && 'pl-3',
-      alwaysDark && 'dark-theme pr-2 dark:border-transparent !bg-palette-gray3'
-    )}>
-    <LABEL
-      className={mergeClasses(
-        'flex items-center gap-2 h-10 !leading-10 pr-4 select-none font-medium truncate',
-        alwaysDark && 'text-palette-white'
-      )}>
-      {Icon && <Icon className="icon-sm" />}
-      {title}
-      {showOperation && operationType ? <FileStatus type={operationType} /> : null}
-    </LABEL>
-    {!!children && <div className="flex justify-end items-center">{children}</div>}
-  </div>
+export const SnippetHeader = withHeadingManager(
+  (props: SnippetHeaderProps & HeadingManagerProps) => {
+    const {
+      title,
+      children,
+      Icon,
+      float,
+      alwaysDark = false,
+      operationType,
+      showOperation = false,
+    } = props;
+    const heading = React.useRef(props.headingManager.addHeading(title, 3, undefined));
+
+    return (
+      <div
+        className={mergeClasses(
+          'flex pl-4 overflow-hidden justify-between bg-default border border-default min-h-[40px]',
+          !float && 'rounded-t-md border-b-0',
+          float && 'rounded-md my-4',
+          Icon && 'pl-3',
+          alwaysDark && 'dark-theme pr-2 dark:border-transparent !bg-palette-gray3'
+        )}>
+        <LABEL
+          className={mergeClasses(
+            'flex items-center gap-2 h-10 !leading-10 pr-4 select-none font-medium truncate',
+            alwaysDark && 'text-palette-white'
+          )}>
+          {Icon && <Icon className="icon-sm" />}
+          <LinkBase
+            id={heading.current.slug}
+            href={'#' + heading.current.slug}
+            ref={heading.current.ref}>
+            {title}
+          </LinkBase>
+          {showOperation && operationType ? <FileStatus type={operationType} /> : null}
+        </LABEL>
+        {!!children && <div className="flex justify-end items-center">{children}</div>}
+      </div>
+    );
+  }
 );
 
 type FileStatusProps = {
