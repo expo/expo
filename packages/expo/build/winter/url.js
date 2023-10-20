@@ -1,11 +1,11 @@
 // This file should not import `react-native` in order to remain self-contained.
 import { URL, URLSearchParams } from 'whatwg-url-without-unicode';
-let setup = false;
+let isSetup = false;
 let BLOB_URL_PREFIX = null;
 function getBlobUrlPrefix() {
-    if (setup)
+    if (isSetup)
         return BLOB_URL_PREFIX;
-    setup = true;
+    isSetup = true;
     // if iOS: let BLOB_URL_PREFIX = 'blob:'
     // Pull the blob module without importing React Native.
     const BlobModule = global.RN$Bridgeless !== true
@@ -15,9 +15,9 @@ function getBlobUrlPrefix() {
             global.__turboModuleProxy('BlobModule');
     const constants = 'BLOB_URI_SCHEME' in BlobModule ? BlobModule : BlobModule.getConstants();
     if (constants && typeof constants.BLOB_URI_SCHEME === 'string') {
-        BLOB_URL_PREFIX = constants.BLOB_URI_SCHEME + ':';
+        BLOB_URL_PREFIX = encodeURIComponent(constants.BLOB_URI_SCHEME) + ':';
         if (typeof constants.BLOB_URI_HOST === 'string') {
-            BLOB_URL_PREFIX += `//${constants.BLOB_URI_HOST}/`;
+            BLOB_URL_PREFIX += `//${encodeURIComponent(constants.BLOB_URI_HOST)}/`;
         }
     }
     return BLOB_URL_PREFIX;
