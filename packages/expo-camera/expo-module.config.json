@@ -5,6 +5,9 @@
     "modules": ["CameraViewModule"]
   },
   "android": {
-    "modules": ["expo.modules.camera.CameraViewModule"]
+    "modules": [
+      "expo.modules.camera.CameraViewModule",
+      "expo.modules.camera.next.CameraViewNextModule"
+    ]
   }
 }

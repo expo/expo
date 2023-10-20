@@ -108,6 +108,8 @@ export default class Camera extends React.Component<CameraProps> {
   static Constants: ConstantsType = {
     Type: CameraManager.Type,
     FlashMode: CameraManager.FlashMode,
+    AutoFocus: CameraManager.AutoFocus,
+    WhiteBalance: CameraManager.WhiteBalance,
     VideoQuality: CameraManager.VideoQuality,
     VideoStabilization: CameraManager.VideoStabilization || {},
     VideoCodec: CameraManager.VideoCodec,
@@ -118,10 +120,13 @@ export default class Camera extends React.Component<CameraProps> {
 
   static defaultProps: CameraProps = {
     zoom: 0,
+    ratio: '4:3',
+    focusDepth: 0,
     faceDetectorSettings: {},
     type: CameraManager.Type.back,
-    enableTorch: false,
+    autoFocus: CameraManager.AutoFocus.on,
     flashMode: CameraManager.FlashMode.off,
+    whiteBalance: CameraManager.WhiteBalance.auto,
   };
 
   // @needsAudit
@@ -244,6 +249,32 @@ export default class Camera extends React.Component<CameraProps> {
     const pictureOptions = ensurePictureOptions(options);
 
     return await CameraManager.takePicture(pictureOptions, this._cameraHandle);
+  }
+
+  /**
+   * Get aspect ratios that are supported by the device and can be passed via `ratio` prop.
+   * @return Returns a Promise that resolves to an array of strings representing ratios, eg. `['4:3', '1:1']`.
+   * @platform android
+   */
+  async getSupportedRatiosAsync(): Promise<string[]> {
+    if (!CameraManager.getSupportedRatios) {
+      throw new UnavailabilityError('Camera', 'getSupportedRatiosAsync');
+    }
+
+    return await CameraManager.getSupportedRatios(this._cameraHandle);
+  }
+
+  /**
+   * Get picture sizes that are supported by the device for given `ratio`.
+   * @param ratio A string representing aspect ratio of sizes to be returned.
+   * @return Returns a Promise that resolves to an array of strings representing picture sizes that can be passed to `pictureSize` prop.
+   * The list varies across Android devices but is the same for every iOS.
+   */
+  async getAvailablePictureSizesAsync(ratio: string): Promise<string[]> {
+    if (!CameraManager.getAvailablePictureSizes) {
+      throw new UnavailabilityError('Camera', 'getAvailablePictureSizesAsync');
+    }
+    return await CameraManager.getAvailablePictureSizes(ratio, this._cameraHandle);
   }
 
   /**

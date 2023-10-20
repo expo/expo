@@ -1,66 +1,48 @@
 package expo.modules.camera
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.SurfaceTexture
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.AspectRatio
-import androidx.camera.core.Camera
-import androidx.camera.core.CameraInfo
-import androidx.camera.core.CameraState
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.video.VideoCapture
-import androidx.camera.video.VideoOutput
-import androidx.camera.view.PreviewView
-import androidx.core.content.ContextCompat
+import com.google.android.cameraview.CameraView
+import expo.modules.camera.CameraViewHelper.getCamcorderProfile
 import expo.modules.camera.CameraViewHelper.getCorrectCameraRotation
-import expo.modules.camera.analyzers.CameraAnalyzer
-import expo.modules.camera.analyzers.toByteArray
-import expo.modules.camera.records.CameraType
-import expo.modules.camera.records.FlashMode
 import expo.modules.camera.tasks.BarCodeScannerAsyncTask
 import expo.modules.camera.tasks.BarCodeScannerAsyncTaskDelegate
 import expo.modules.camera.tasks.FaceDetectorAsyncTaskDelegate
 import expo.modules.camera.tasks.FaceDetectorTask
 import expo.modules.camera.tasks.PictureSavedDelegate
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask
+import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.camera.utils.ImageDimensions
-import expo.modules.camera.utils.mapX
-import expo.modules.camera.utils.mapY
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
-import expo.modules.interfaces.barcodescanner.BarCodeScannerResult.BoundingBox
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.facedetector.FaceDetectorInterface
 import expo.modules.interfaces.facedetector.FaceDetectorProviderInterface
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import java.io.File
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
+import expo.modules.camera.utils.mapX
+import expo.modules.camera.utils.mapY
 import kotlin.math.roundToInt
+import android.view.WindowManager
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult.BoundingBox
+import expo.modules.kotlin.viewevent.EventDispatcher
 
-
-@SuppressLint("ViewConstructor")
 class ExpoCameraView(
   context: Context,
   appContext: AppContext,
@@ -70,38 +52,14 @@ class ExpoCameraView(
   FaceDetectorAsyncTaskDelegate,
   PictureSavedDelegate,
   CameraViewInterface {
-  private val currentActivity
-    get() = appContext.currentActivity as? AppCompatActivity
-      ?: throw Exceptions.MissingActivity()
+  internal val cameraView = CameraView(context, true)
 
-  var camera: Camera? = null
-  private var imageCaptureUseCase: ImageCapture? = null
-  private var videoCaptureUseCase: VideoCapture<VideoOutput>? = null
-  private var imageAnalysisUseCase: ImageAnalysis? = null
-
-  var previewView = PreviewView(context)
-
+  private val pictureTakenPromises: Queue<Promise> = ConcurrentLinkedQueue()
+  private val pictureTakenOptions: MutableMap<Promise, PictureOptions> = ConcurrentHashMap()
+  private val pictureTakenDirectories: MutableMap<Promise, File> = ConcurrentHashMap()
   private var videoRecordedPromise: Promise? = null
   private var isPaused = false
   private var isNew = true
-
-  var cameraSelectorFacing = CameraType.BACK
-    set(value) {
-      field = value
-      startCamera()
-    }
-
-  var torchEnabled: Boolean = false
-    set(value) {
-      field = value
-      camera?.cameraControl?.enableTorch(value)
-    }
-
-  var flashMode: FlashMode = FlashMode.OFF
-    set(value) {
-      field = value
-      imageCaptureUseCase?.flashMode = value.mapToLens()
-    }
 
   private val onCameraReady by EventDispatcher<Unit>()
   private val onMountError by EventDispatcher<CameraMountErrorEvent>()
@@ -148,8 +106,11 @@ class ExpoCameraView(
     val width = right - left
     val height = bottom - top
 
-    previewView.layout(0, 0, width, height)
-    previewView.setBackgroundColor(Color.BLACK)
+    cameraView.layout(0, 0, width, height)
+    cameraView.setBackgroundColor(Color.BLACK)
+
+    val preview = cameraView.view ?: return
+    preview.layout(0, 0, width, height)
   }
 
   override fun onViewAdded(child: View) {
@@ -158,7 +119,7 @@ class ExpoCameraView(
     // while we need this preview to be rendered last beneath all other children
 
     // child is not preview
-    if (previewView === child) {
+    if (cameraView === child) {
       return
     }
 
@@ -166,130 +127,51 @@ class ExpoCameraView(
     val childrenToBeReordered = mutableListOf<View>()
     for (i in 0 until this.childCount) {
       val childView = getChildAt(i)
-      if (i == 0 && childView === previewView) {
+      if (i == 0 && childView === cameraView) {
         // preview is already first in children list - do not reorder anything
         return
       }
-      if (childView !== previewView) {
+      if (childView !== cameraView) {
         childrenToBeReordered.add(childView)
       }
     }
     for (childView in childrenToBeReordered) {
       bringChildToFront(childView)
     }
-    previewView.requestLayout()
-    previewView.invalidate()
+    cameraView.requestLayout()
+    cameraView.invalidate()
   }
 
   fun takePicture(options: PictureOptions, promise: Promise, cacheDirectory: File) {
-    imageCaptureUseCase?.takePicture(
-      ContextCompat.getMainExecutor(context),
-      object : ImageCapture.OnImageCapturedCallback() {
-        override fun onCaptureSuccess(image: ImageProxy) {
-          val data = image.planes.toByteArray()
-
-          if (options.fastMode) {
-            promise.resolve(null)
-          }
-          cacheDirectory.let {
-            ResolveTakenPictureAsyncTask(data, promise, options, it, this@ExpoCameraView).execute()
-          }
-          image.close()
-        }
-
-        override fun onError(exception: ImageCaptureException) {
-          promise.reject(CameraExceptions.ImageCaptureFailed())
-        }
-      }
-    )
-  }
-
-  @Throws(IOException::class)
-  private fun readBytes(context: Context, uri: Uri): ByteArray? =
-    context.contentResolver.openInputStream(uri)?.use { it.buffered().readBytes() }
-
-  fun record(options: RecordingOptions, promise: Promise, cacheDirectory: File) {
+    pictureTakenPromises.add(promise)
+    pictureTakenOptions[promise] = options
+    pictureTakenDirectories[promise] = cacheDirectory
     try {
-//      val path = FileSystemUtils.generateOutputPath(cacheDirectory, "Camera", ".mp4")
-//      val profile = getCamcorderProfile(cameraView.cameraId, options.quality)
-//      options.videoBitrate?.let { profile.videoBitRate = it }
-//      if (cameraView.record(path, options.maxDuration * 1000, options.maxFileSize, !options.mute, profile)) {
-//        videoRecordedPromise = promise
-//      } else {
-//        promise.reject("E_RECORDING_FAILED", "Starting video recording failed. Another recording might be in progress.", null)
-//      }
-    } catch (e: IOException) {
-      promise.reject("E_RECORDING_FAILED", "Starting video recording failed - could not create video file.", null)
+      cameraView.takePicture()
+    } catch (e: Exception) {
+      pictureTakenPromises.remove(promise)
+      pictureTakenOptions.remove(promise)
+      pictureTakenDirectories.remove(promise)
+      throw e
     }
   }
 
-  private fun startCamera() {
-    val providerFuture = ProcessCameraProvider.getInstance(context)
-
-    providerFuture.addListener({
-      val cameraProvider: ProcessCameraProvider = providerFuture.get()
-
-      val preview = Preview.Builder()
-        .build()
-        .also {
-          it.setSurfaceProvider(previewView.surfaceProvider)
-        }
-
-      val cameraSelector = cameraSelectorFacing.mapToSelector()
-
-      imageCaptureUseCase = ImageCapture.Builder()
-        .setTargetAspectRatio(AspectRatio.RATIO_16_9)
-        .build()
-
-      imageAnalysisUseCase = createImageAnalyzer()
-
-      try {
-        cameraProvider.unbindAll()
-        camera = cameraProvider.bindToLifecycle(currentActivity, cameraSelector, preview, imageCaptureUseCase, imageAnalysisUseCase)
-        observeCameraState(camera!!.cameraInfo)
-      } catch (e: Exception) {
-        onMountError(
-          CameraMountErrorEvent("Camera component could not be rendered - is there any other instance running?")
-        )
-      }
-    }, ContextCompat.getMainExecutor(context))
+  override fun onPictureSaved(response: Bundle) {
+    onPictureSaved(PictureSavedEvent(response.getInt("id"), response.getBundle("data")!!))
   }
 
-
-  private fun createImageAnalyzer(): ImageAnalysis =
-    ImageAnalysis.Builder()
-      .build()
-      .also { image ->
-        image.setAnalyzer(ContextCompat.getMainExecutor(context), CameraAnalyzer { data, width, height, rotation ->
-          if (mShouldScanBarCodes && !barCodeScannerTaskLock) {
-            val lensFacing = cameraSelectorFacing
-            val correctRotation = getCorrectCameraRotation(rotation, lensFacing.ordinal)
-            barCodeScannerTaskLock = true
-            barCodeScanner?.let { BarCodeScannerAsyncTask(this@ExpoCameraView, it, data, width, height, correctRotation).execute() }
-          }
-          if (shouldDetectFaces && !faceDetectorTaskLock) {
-            faceDetectorTaskLock = true
-            val density = context.resources.displayMetrics.density
-            val dimensions = ImageDimensions(width, height, rotation, cameraSelectorFacing)
-            val scaleX = previewView.width.toDouble() / (dimensions.width * density)
-            val scaleY = previewView.height.toDouble() / (dimensions.height * density)
-            val task = faceDetector?.let { FaceDetectorTask(this@ExpoCameraView, it, data, width, height, rotation, cameraSelectorFacing == CameraType.FRONT, scaleX, scaleY) }
-            task?.execute()
-          }
-        })
+  fun record(options: RecordingOptions, promise: Promise, cacheDirectory: File) {
+    try {
+      val path = FileSystemUtils.generateOutputPath(cacheDirectory, "Camera", ".mp4")
+      val profile = getCamcorderProfile(cameraView.cameraId, options.quality)
+      options.videoBitrate?.let { profile.videoBitRate = it }
+      if (cameraView.record(path, options.maxDuration * 1000, options.maxFileSize, !options.mute, profile)) {
+        videoRecordedPromise = promise
+      } else {
+        promise.reject("E_RECORDING_FAILED", "Starting video recording failed. Another recording might be in progress.", null)
       }
-
-  private fun observeCameraState(cameraInfo: CameraInfo) {
-    cameraInfo.cameraState.observe(currentActivity) {
-      when (it.type) {
-        CameraState.Type.OPEN -> {
-          onCameraReady(Unit)
-        }
-
-        else -> {
-
-        }
-      }
+    } catch (e: IOException) {
+      promise.reject("E_RECORDING_FAILED", "Starting video recording failed - could not create video file.", null)
     }
   }
 
@@ -305,6 +187,7 @@ class ExpoCameraView(
 
   fun setShouldScanBarCodes(shouldScanBarCodes: Boolean) {
     mShouldScanBarCodes = shouldScanBarCodes
+    cameraView.scanning = mShouldScanBarCodes || shouldDetectFaces
   }
 
   fun setBarCodeScannerSettings(settings: BarCodeScannerSettings) {
@@ -322,8 +205,8 @@ class ExpoCameraView(
     val cameraWidth = barCode.referenceImageHeight
     val cameraHeight = barCode.referenceImageWidth
 
-    val facingBack = cameraSelectorFacing == CameraType.FRONT
-    val facingFront = cameraSelectorFacing == CameraType.BACK
+    val facingBack = cameraView.facing == CameraView.FACING_BACK
+    val facingFront = cameraView.facing == CameraView.FACING_FRONT
     val portrait = getDeviceOrientation() % 2 == 0
     val landscape = getDeviceOrientation() % 2 == 1
 
@@ -354,7 +237,7 @@ class ExpoCameraView(
   }
 
   private fun getCornerPointsAndBoundingBox(cornerPoints: List<Int>, boundingBox: BoundingBox): Pair<ArrayList<Bundle>, Bundle> {
-    val density = previewView.resources.displayMetrics.density
+    val density = cameraView.resources.displayMetrics.density
     val convertedCornerPoints = ArrayList<Bundle>()
     for (i in cornerPoints.indices step 2) {
       val y = cornerPoints[i].toFloat() / density
@@ -406,17 +289,18 @@ class ExpoCameraView(
   }
 
   override fun setPreviewTexture(surfaceTexture: SurfaceTexture?) {
-//    cameraView.setPreviewTexture(surfaceTexture)
+    cameraView.setPreviewTexture(surfaceTexture)
   }
 
-  override fun getPreviewSizeAsArray() = intArrayOf(previewView.width, previewView.height)
+  override fun getPreviewSizeAsArray() = intArrayOf(cameraView.previewSize.width, cameraView.previewSize.height)
 
   override fun onHostResume() {
     if (hasCameraPermissions()) {
-      if (isPaused || isNew) {
+      if (isPaused && !cameraView.isCameraOpened || isNew) {
         isPaused = false
         isNew = false
         if (!EmulatorUtilities.isRunningOnEmulator()) {
+          cameraView.start()
           val faceDetectorProvider = appContext.legacyModule<FaceDetectorProviderInterface>()
           faceDetector = faceDetectorProvider?.createFaceDetectorWithContext(context)
           pendingFaceDetectorSettings?.let {
@@ -431,14 +315,16 @@ class ExpoCameraView(
   }
 
   override fun onHostPause() {
-    if (!isPaused) {
+    if (!isPaused && cameraView.isCameraOpened) {
       faceDetector?.release()
       isPaused = true
+      cameraView.stop()
     }
   }
 
   override fun onHostDestroy() {
     faceDetector?.release()
+    cameraView.stop()
   }
 
   private fun hasCameraPermissions(): Boolean {
@@ -448,6 +334,7 @@ class ExpoCameraView(
 
   fun setShouldDetectFaces(shouldDetectFaces: Boolean) {
     this.shouldDetectFaces = shouldDetectFaces
+    cameraView.scanning = mShouldScanBarCodes || shouldDetectFaces
   }
 
   fun setFaceDetectorSettings(settings: Map<String, Any>?) {
@@ -484,54 +371,58 @@ class ExpoCameraView(
     isChildrenDrawingOrderEnabled = true
     val uIManager = appContext.legacyModule<UIManager>()
     uIManager!!.registerLifecycleEventListener(this)
-//
-//    cameraView.addCallback(object : CameraView.Callback() {
-//      override fun onVideoRecorded(cameraView: CameraView, path: String) {
-//        videoRecordedPromise?.let {
-//          it.resolve(
-//            Bundle().apply {
-//              putString("uri", Uri.fromFile(File(path)).toString())
-//            }
-//          )
-//          videoRecordedPromise = null
-//        }
-//      }
-//
-//      override fun onFramePreview(cameraView: CameraView, data: ByteArray, width: Int, height: Int, rotation: Int) {
-//        val correctRotation = getCorrectCameraRotation(rotation, cameraView.facing)
-//        if (mShouldScanBarCodes && !barCodeScannerTaskLock) {
-//          barCodeScannerTaskLock = true
-//          barCodeScanner?.let { BarCodeScannerAsyncTask(this@ExpoCameraView, it, data, width, height, rotation).execute() }
-//        }
-//        if (shouldDetectFaces && !faceDetectorTaskLock) {
-//          faceDetectorTaskLock = true
-//          val density = cameraView.resources.displayMetrics.density
-//          val dimensions = ImageDimensions(width, height, correctRotation, cameraView.facing)
-//          val scaleX = cameraView.width.toDouble() / (dimensions.width * density)
-//          val scaleY = cameraView.height.toDouble() / (dimensions.height * density)
-//          val task = faceDetector?.let { FaceDetectorTask(this@ExpoCameraView, it, data, width, height, correctRotation, cameraView.facing == CameraView.FACING_FRONT, scaleX, scaleY) }
-//          task?.execute()
-//        }
-//      }
-//    })
+    cameraView.addCallback(object : CameraView.Callback() {
+      override fun onCameraOpened(cameraView: CameraView) {
+        onCameraReady(Unit)
+      }
 
-    previewView.setOnHierarchyChangeListener(object : OnHierarchyChangeListener {
-      override fun onChildViewRemoved(parent: View?, child: View?) = Unit
-      override fun onChildViewAdded(parent: View?, child: View?) {
-        parent?.measure(
-          MeasureSpec.makeMeasureSpec(measuredWidth, MeasureSpec.EXACTLY),
-          MeasureSpec.makeMeasureSpec(measuredHeight, MeasureSpec.EXACTLY)
+      override fun onMountError(cameraView: CameraView) {
+        onMountError(
+          CameraMountErrorEvent("Camera component could not be rendered - is there any other instance running?")
         )
-        parent?.layout(0, 0, parent.measuredWidth, parent.measuredHeight)
+      }
+
+      override fun onPictureTaken(cameraView: CameraView, data: ByteArray) {
+        val promise = pictureTakenPromises.poll() ?: return
+        val cacheDirectory = pictureTakenDirectories.remove(promise)
+        val options = pictureTakenOptions.remove(promise)!!
+        if (options.fastMode) {
+          promise.resolve(null)
+        }
+        cacheDirectory?.let {
+          ResolveTakenPictureAsyncTask(data, promise, options, it, this@ExpoCameraView).execute()
+        }
+      }
+
+      override fun onVideoRecorded(cameraView: CameraView, path: String) {
+        videoRecordedPromise?.let {
+          it.resolve(
+            Bundle().apply {
+              putString("uri", Uri.fromFile(File(path)).toString())
+            }
+          )
+          videoRecordedPromise = null
+        }
+      }
+
+      override fun onFramePreview(cameraView: CameraView, data: ByteArray, width: Int, height: Int, rotation: Int) {
+        val correctRotation = getCorrectCameraRotation(rotation, cameraView.facing)
+        if (mShouldScanBarCodes && !barCodeScannerTaskLock) {
+          barCodeScannerTaskLock = true
+          barCodeScanner?.let { BarCodeScannerAsyncTask(this@ExpoCameraView, it, data, width, height, rotation).execute() }
+        }
+        if (shouldDetectFaces && !faceDetectorTaskLock) {
+          faceDetectorTaskLock = true
+          val density = cameraView.resources.displayMetrics.density
+          val dimensions = ImageDimensions(width, height, correctRotation, cameraView.facing)
+          val scaleX = cameraView.width.toDouble() / (dimensions.width * density)
+          val scaleY = cameraView.height.toDouble() / (dimensions.height * density)
+          val task = faceDetector?.let { FaceDetectorTask(this@ExpoCameraView, it, data, width, height, correctRotation, cameraView.facing == CameraView.FACING_FRONT, scaleX, scaleY) }
+          task?.execute()
+        }
       }
     })
-    addView(previewView)
-    startCamera()
-  }
 
-  override fun onPictureSaved(response: Bundle) {
-    onPictureSaved(PictureSavedEvent(response.getInt("id"), response.getBundle("data")!!))
+    addView(cameraView)
   }
 }
-
-

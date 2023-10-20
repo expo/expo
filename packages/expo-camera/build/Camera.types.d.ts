@@ -7,7 +7,56 @@ export declare enum CameraType {
 export declare enum FlashMode {
     on = "on",
     off = "off",
-    auto = "auto"
+    auto = "auto",
+    torch = "torch"
+}
+export declare enum AutoFocus {
+    on = "on",
+    off = "off",
+    /**
+     * @platform web
+     */
+    auto = "auto",
+    /**
+     * @platform web
+     */
+    singleShot = "singleShot"
+}
+export declare enum WhiteBalance {
+    auto = "auto",
+    /**
+     * @platform android
+     * @platform ios
+     */
+    sunny = "sunny",
+    /**
+     * @platform android
+     * @platform ios
+     */
+    cloudy = "cloudy",
+    /**
+     * @platform android
+     * @platform ios
+     */
+    shadow = "shadow",
+    /**
+     * @platform android
+     * @platform ios
+     */
+    incandescent = "incandescent",
+    /**
+     * @platform android
+     * @platform ios
+     */
+    fluorescent = "fluorescent",
+    /**
+     * @platform web
+     */
+    continuous = "continuous",
+    /**
+     * @platform web
+     */
+    manual = "manual"
 }
 export declare enum ImageType {
     png = "png",
@@ -292,6 +341,8 @@ export type FaceDetectionResult = {
 export type ConstantsType = {
     Type: CameraType;
     FlashMode: FlashMode;
+    AutoFocus: AutoFocus;
+    WhiteBalance: WhiteBalance;
     VideoQuality: VideoQuality;
     VideoStabilization: VideoStabilization;
     VideoCodec: VideoCodec;
@@ -302,28 +353,58 @@ export type CameraProps = ViewProps & {
      * When `CameraType.back`, use the back-facing camera.
      * @default CameraType.back
      */
-    type?: CameraType;
+    type?: number | CameraType;
     /**
      * Camera flash mode. Use one of [`FlashMode.<value>`](#flashmode-1). When `FlashMode.on`, the flash on your device will
      * turn on when taking a picture, when `FlashMode.off`, it won't. Setting to `FlashMode.auto` will fire flash if required,
      * `FlashMode.torch` turns on flash during the preview.
      * @default FlashMode.off
      */
-    flashMode?: FlashMode;
+    flashMode?: number | FlashMode;
+    /**
+     * Camera white balance. Use one of [`WhiteBalance.<value>`](#whitebalance). If a device does not support any of these values previous one is used.
+     * @default WhiteBalance.auto
+     */
+    whiteBalance?: number | WhiteBalance;
+    /**
+     * State of camera auto focus. Use one of [`AutoFocus.<value>`](#autofocus-1). When `AutoFocus.on`,
+     * auto focus will be enabled, when `AutoFocus.off`, it won't and focus will lock as it was in the moment of change,
+     * but it can be adjusted on some devices via `focusDepth` prop.
+     * @default AutoFocus.on
+     */
+    autoFocus?: boolean | number | AutoFocus;
     /**
      * A value between `0` and `1` being a percentage of device's max zoom. `0` - not zoomed, `1` - maximum zoom.
      * @default 0
      */
     zoom?: number;
     /**
-     * A boolean to enable or disable the torch
-     * @default false
+     * A string representing aspect ratio of the preview, eg. `4:3`, `16:9`, `1:1`. To check if a ratio is supported
+     * by the device use [`getSupportedRatiosAsync`](#getsupportedratiosasync).
+     * @default 4:3
+     * @platform android
      */
-    enableTorch?: boolean;
+    ratio?: string;
+    /**
+     * Distance to plane of the sharpest focus. A value between `0` and `1` where: `0` - infinity focus, `1` - focus as close as possible.
+     * For Android this is available only for some devices and when `useCamera2Api` is set to `true`.
+     * @default 0
+     */
+    focusDepth?: number;
     /**
      * Callback invoked when camera preview has been set.
      */
     onCameraReady?: () => void;
+    /**
+     * Whether to use Android's Camera2 API. See `Note` at the top of this page.
+     * @platform android
+     */
+    useCamera2Api?: boolean;
+    /**
+     * A string representing the size of pictures [`takePictureAsync`](#takepictureasyncoptions) will take.
+     * Available sizes can be fetched with [`getAvailablePictureSizesAsync`](#getavailablepicturesizesasyncratio).
+     */
+    pictureSize?: string;
     /**
      * The video stabilization mode used for a video recording. Use one of [`VideoStabilization.<value>`](#videostabilization).
      * You can read more about each stabilization type in [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
@@ -405,14 +486,19 @@ export type CameraNativeProps = {
     }) => void;
     onPictureSaved?: PictureSavedListener;
     onResponsiveOrientationChanged?: ResponsiveOrientationChangedListener;
-    type?: string;
-    flashMode?: string;
-    enableTorch?: boolean;
+    type?: number | string;
+    flashMode?: number | string;
+    autoFocus?: string | boolean | number;
+    focusDepth?: number;
     zoom?: number;
+    whiteBalance?: number | string;
+    pictureSize?: string;
     barCodeScannerSettings?: BarCodeSettings;
     faceDetectorSettings?: object;
     barCodeScannerEnabled?: boolean;
     faceDetectorEnabled?: boolean;
+    ratio?: string;
+    useCamera2Api?: boolean;
     poster?: string;
     responsiveOrientationWhenOrientationLocked?: boolean;
 };

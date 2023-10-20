@@ -9,7 +9,58 @@ export var FlashMode;
     FlashMode["on"] = "on";
     FlashMode["off"] = "off";
     FlashMode["auto"] = "auto";
+    FlashMode["torch"] = "torch";
 })(FlashMode || (FlashMode = {}));
+export var AutoFocus;
+(function (AutoFocus) {
+    AutoFocus["on"] = "on";
+    AutoFocus["off"] = "off";
+    /**
+     * @platform web
+     */
+    AutoFocus["auto"] = "auto";
+    /**
+     * @platform web
+     */
+    AutoFocus["singleShot"] = "singleShot";
+})(AutoFocus || (AutoFocus = {}));
+export var WhiteBalance;
+(function (WhiteBalance) {
+    WhiteBalance["auto"] = "auto";
+    /**
+     * @platform android
+     * @platform ios
+     */
+    WhiteBalance["sunny"] = "sunny";
+    /**
+     * @platform android
+     * @platform ios
+     */
+    WhiteBalance["cloudy"] = "cloudy";
+    /**
+     * @platform android
+     * @platform ios
+     */
+    WhiteBalance["shadow"] = "shadow";
+    /**
+     * @platform android
+     * @platform ios
+     */
+    WhiteBalance["incandescent"] = "incandescent";
+    /**
+     * @platform android
+     * @platform ios
+     */
+    WhiteBalance["fluorescent"] = "fluorescent";
+    /**
+     * @platform web
+     */
+    WhiteBalance["continuous"] = "continuous";
+    /**
+     * @platform web
+     */
+    WhiteBalance["manual"] = "manual";
+})(WhiteBalance || (WhiteBalance = {}));
 export var ImageType;
 (function (ImageType) {
     ImageType["png"] = "png";

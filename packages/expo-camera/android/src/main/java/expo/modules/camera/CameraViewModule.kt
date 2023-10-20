@@ -1,12 +1,8 @@
 package expo.modules.camera
 
 import android.Manifest
-import androidx.camera.core.ImageCapture.FLASH_MODE_AUTO
-import androidx.camera.core.ImageCapture.FLASH_MODE_OFF
-import androidx.camera.core.ImageCapture.FLASH_MODE_ON
 import com.google.android.cameraview.AspectRatio
-import expo.modules.camera.records.CameraType
-import expo.modules.camera.records.FlashMode
+import com.google.android.cameraview.Size
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.core.utilities.EmulatorUtilities
@@ -19,28 +15,32 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.io.File
 
-val cameraEvents = arrayOf(
-  "onCameraReady",
-  "onMountError",
-  "onBarCodeScanned",
-  "onFacesDetected",
-  "onFaceDetectionError",
-  "onPictureSaved"
-)
-
 class CameraViewModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoCamera")
 
     Constants(
       "Type" to mapOf(
-        "front" to CameraType.FRONT.value,
-        "back" to CameraType.BACK.value
+        "front" to com.google.android.cameraview.Constants.FACING_FRONT,
+        "back" to com.google.android.cameraview.Constants.FACING_BACK
       ),
       "FlashMode" to mapOf(
-        "off" to FlashMode.OFF.value,
-        "on" to FlashMode.ON.value,
-        "auto" to FlashMode.AUTO.value,
+        "off" to com.google.android.cameraview.Constants.FLASH_OFF,
+        "on" to com.google.android.cameraview.Constants.FLASH_ON,
+        "auto" to com.google.android.cameraview.Constants.FLASH_AUTO,
+        "torch" to com.google.android.cameraview.Constants.FLASH_TORCH
+      ),
+      "AutoFocus" to mapOf(
+        "on" to true,
+        "off" to false
+      ),
+      "WhiteBalance" to mapOf(
+        "auto" to com.google.android.cameraview.Constants.WB_AUTO,
+        "cloudy" to com.google.android.cameraview.Constants.WB_CLOUDY,
+        "sunny" to com.google.android.cameraview.Constants.WB_SUNNY,
+        "shadow" to com.google.android.cameraview.Constants.WB_SHADOW,
+        "fluorescent" to com.google.android.cameraview.Constants.WB_FLUORESCENT,
+        "incandescent" to com.google.android.cameraview.Constants.WB_INCANDESCENT
       ),
       "VideoQuality" to mapOf(
         "2160p" to VIDEO_2160P,
@@ -54,23 +54,27 @@ class CameraViewModule : Module() {
     AsyncFunction("pausePreview") { viewTag: Int ->
       val view = findView(viewTag)
 
-//      if (view.cameraView.isCameraOpened) {
-//        view.cameraView.pausePreview()
-//      }
+      if (view.cameraView.isCameraOpened) {
+        view.cameraView.pausePreview()
+      }
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("resumePreview") { viewTag: Int ->
       val view = findView(viewTag)
 
-//      if (view.cameraView.isCameraOpened) {
-//        view.cameraView.resumePreview()
-//      }
+      if (view.cameraView.isCameraOpened) {
+        view.cameraView.resumePreview()
+      }
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("takePicture") { options: PictureOptions, viewTag: Int, promise: Promise ->
       val view = findView(viewTag)
 
       if (!EmulatorUtilities.isRunningOnEmulator()) {
+        if (!view.cameraView.isCameraOpened) {
+          throw CameraExceptions.CameraIsNotRunning()
+        }
+
         view.takePicture(options, promise, cacheDirectory)
       } else {
         val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
@@ -85,16 +89,40 @@ class CameraViewModule : Module() {
 
       val view = findView(viewTag)
 
+      if (!view.cameraView.isCameraOpened) {
+        throw CameraExceptions.CameraIsNotRunning()
+      }
+
       view.record(options, promise, cacheDirectory)
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("stopRecording") { viewTag: Int ->
-//      val view = findView(viewTag)
-//
-//
-//      if (view.cameraView.isCameraOpened) {
-//        view.cameraView.stopRecording()
-//      }
+      val view = findView(viewTag)
+
+      if (view.cameraView.isCameraOpened) {
+        view.cameraView.stopRecording()
+      }
+    }.runOnQueue(Queues.MAIN)
+
+    AsyncFunction("getSupportedRatios") { viewTag: Int ->
+      val view = findView(viewTag)
+
+      if (!view.cameraView.isCameraOpened) {
+        throw CameraExceptions.CameraIsNotRunning()
+      }
+
+      return@AsyncFunction view.cameraView.supportedAspectRatios.map { it.toString() }
+    }.runOnQueue(Queues.MAIN)
+
+    AsyncFunction("getAvailablePictureSizes") { ratio: String, viewTag: Int ->
+      val view = findView(viewTag)
+
+      if (!view.cameraView.isCameraOpened) {
+        throw CameraExceptions.CameraIsNotRunning()
+      }
+
+      val sizes = view.cameraView.getAvailablePictureSizes(AspectRatio.parse(ratio))
+      return@AsyncFunction sizes.map { it.toString() }
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("requestPermissionsAsync") { promise: Promise ->
@@ -146,45 +174,79 @@ class CameraViewModule : Module() {
     }
 
     View(ExpoCameraView::class) {
-      Events(cameraEvents)
+      Events(
+        "onCameraReady",
+        "onMountError",
+        "onBarCodeScanned",
+        "onFacesDetected",
+        "onFaceDetectionError",
+        "onPictureSaved"
+      )
 
       OnViewDestroys<ExpoCameraView> { view ->
         val uiManager = appContext.legacyModule<UIManager>()
         uiManager?.unregisterLifecycleEventListener(view)
+        view.cameraView.stop()
       }
 
-      Prop("type") { view, type: CameraType ->
-        view.cameraSelectorFacing = type
+      Prop("type") { view: ExpoCameraView, type: Int ->
+        view.cameraView.facing = type
       }
 
-      Prop("flashMode") { view, torchMode: FlashMode ->
-        view.flashMode = torchMode
+      Prop("ratio") { view: ExpoCameraView, ratio: String? ->
+        if (ratio == null) {
+          return@Prop
+        }
+        view.cameraView.setAspectRatio(AspectRatio.parse(ratio))
       }
 
-      Prop("enableTorch") { view, enable: Boolean ->
-        view.torchEnabled = enable
+      Prop("flashMode") { view: ExpoCameraView, torchMode: Int ->
+        view.cameraView.flash = torchMode
       }
 
-      Prop("zoom") { view, zoom: Float ->
-        view.camera?.cameraControl?.setLinearZoom(zoom)
+      Prop("autoFocus") { view: ExpoCameraView, autoFocus: Boolean ->
+        view.cameraView.autoFocus = autoFocus
       }
 
-      Prop("barCodeScannerSettings") { view, settings: Map<String, Any?>? ->
+      Prop("focusDepth") { view: ExpoCameraView, depth: Float ->
+        view.cameraView.focusDepth = depth
+      }
+
+      Prop("zoom") { view: ExpoCameraView, zoom: Float ->
+        view.cameraView.zoom = zoom
+      }
+
+      Prop("whiteBalance") { view: ExpoCameraView, whiteBalance: Int ->
+        view.cameraView.whiteBalance = whiteBalance
+      }
+
+      Prop("pictureSize") { view: ExpoCameraView, size: String? ->
+        if (size == null) {
+          return@Prop
+        }
+        view.cameraView.pictureSize = Size.parse(size)
+      }
+
+      Prop("barCodeScannerSettings") { view: ExpoCameraView, settings: Map<String, Any?>? ->
         if (settings == null) {
           return@Prop
         }
         view.setBarCodeScannerSettings(BarCodeScannerSettings(settings))
       }
 
-      Prop("barCodeScannerEnabled") { view, barCodeScannerEnabled: Boolean? ->
+      Prop("useCamera2Api") { view: ExpoCameraView, useCamera2Api: Boolean ->
+        view.cameraView.setUsingCamera2Api(useCamera2Api)
+      }
+
+      Prop("barCodeScannerEnabled") { view: ExpoCameraView, barCodeScannerEnabled: Boolean? ->
         view.setShouldScanBarCodes(barCodeScannerEnabled ?: false)
       }
 
-      Prop("faceDetectorEnabled") { view, faceDetectorEnabled: Boolean? ->
+      Prop("faceDetectorEnabled") { view: ExpoCameraView, faceDetectorEnabled: Boolean? ->
         view.setShouldDetectFaces(faceDetectorEnabled ?: false)
       }
 
-      Prop("faceDetectorSettings") { view, settings: Map<String, Any>? ->
+      Prop("faceDetectorSettings") { view: ExpoCameraView, settings: Map<String, Any>? ->
         view.setFaceDetectorSettings(settings)
       }
     }

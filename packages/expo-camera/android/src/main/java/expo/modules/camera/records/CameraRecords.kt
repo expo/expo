@@ -25,3 +25,8 @@ enum class FlashMode(val value: String) : Enumerable {
     ON -> ImageCapture.FLASH_MODE_ON
   }
 }
+
+enum class CameraMode(val value: String) : Enumerable {
+  PICTURE("picture"),
+  VIDEO("video")
+}

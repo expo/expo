@@ -1,8 +1,6 @@
 package expo.modules.camera.utils
 
-import expo.modules.camera.records.CameraType
-
-data class ImageDimensions @JvmOverloads constructor(private val mWidth: Int, private val mHeight: Int, val rotation: Int = 0, val facing: CameraType = CameraType.BACK) {
+data class ImageDimensions @JvmOverloads constructor(private val mWidth: Int, private val mHeight: Int, val rotation: Int = 0, val facing: Int = -1) {
   private val isLandscape: Boolean
     get() = rotation % 180 == 90
   val width: Int

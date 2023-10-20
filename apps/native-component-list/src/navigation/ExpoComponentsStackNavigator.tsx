@@ -57,6 +57,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Camera/CameraScreenNext'));
+    },
+    name: 'Camera (next)',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/TextScreen'));
     },
     name: 'Text',

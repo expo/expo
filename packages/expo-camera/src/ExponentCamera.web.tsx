@@ -24,7 +24,7 @@ export interface ExponentCameraRef {
 
 const ExponentCamera = React.forwardRef(
   (
-    { type, poster, ...props }: CameraNativeProps & { children?: React.ReactNode },
+    { type, pictureSize, poster, ...props }: CameraNativeProps & { children?: React.ReactNode },
     ref: React.Ref<ExponentCameraRef>
   ) => {
     const video = React.useRef<HTMLVideoElement | null>(null);
