@@ -179,7 +179,7 @@ async function copyCommonFixturesToProject(projectRoot, { appJsFileName, repoRoo
 /**
  * Adds all the dependencies and other properties needed for the E2E test app
  */
-async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
+async function preparePackageJson(projectRoot, repoRoot, configureE2E, isTV) {
   // Create the project subfolder to hold NPM tarballs built from the current state of the repo
   const dependenciesPath = path.join(projectRoot, 'dependencies');
   await fs.mkdir(dependenciesPath);
@@ -260,6 +260,22 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
     },
   };
 
+  if (isTV) {
+    packageJson = {
+      ...packageJson,
+      dependencies: {
+        ...packageJson.dependencies,
+        'react-native': 'npm:react-native-tvos@0.72.6-0',
+        '@react-native-tvos/config-tv': '0.0.1',
+      },
+      expo: {
+        install: {
+          exclude: ['react-native'],
+        },
+      },
+    };
+  }
+
   const packageJsonString = JSON.stringify(packageJson, null, 2);
   await fs.writeFile(path.join(projectRoot, 'package.json'), packageJsonString, 'utf-8');
 }
@@ -336,7 +352,17 @@ async function prepareLocalUpdatesModule(repoRoot) {
 /**
  * Modifies app.json in the E2E test app to add the properties we need
  */
-function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
+function transformAppJsonForE2E(appJson, projectName, runtimeVersion, isTV) {
+  const plugins = ['expo-updates', '@config-plugins/detox'];
+  if (isTV) {
+    plugins.push([
+      '@react-native-tvos/config-tv',
+      {
+        isTV: true,
+        showVerboseWarnings: true,
+      },
+    ]);
+  }
   return {
     ...appJson,
     expo: {
@@ -344,7 +370,7 @@ function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
       name: projectName,
       owner: 'expo-ci',
       runtimeVersion,
-      plugins: ['expo-updates', '@config-plugins/detox'],
+      plugins,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
@@ -410,7 +436,7 @@ async function initAsync(
   const projectName = path.basename(projectRoot);
 
   // pack typescript template
-  const templateName = isTV ? 'expo-template-tv' : 'expo-template-blank-typescript';
+  const templateName = 'expo-template-blank-typescript';
   const localTSTemplatePath = path.join(repoRoot, 'templates', templateName);
   await spawnAsync('npm', ['pack', '--pack-destination', repoRoot], {
     cwd: localTSTemplatePath,
@@ -449,7 +475,7 @@ async function initAsync(
     cleanupLocalUpdatesModule = await prepareLocalUpdatesModule(repoRoot);
   }
 
-  await preparePackageJson(projectRoot, repoRoot, configureE2E);
+  await preparePackageJson(projectRoot, repoRoot, configureE2E, isTV);
 
   // Now we do NPM install
   await spawnAsync('yarn', [], {
@@ -459,7 +485,7 @@ async function initAsync(
 
   // configure app.json
   let appJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'app.json'), 'utf-8'));
-  appJson = transformAppJson(appJson, projectName, runtimeVersion);
+  appJson = transformAppJson(appJson, projectName, runtimeVersion, isTV);
   await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
 
   if (configureE2E) {
@@ -467,7 +493,7 @@ async function initAsync(
   }
 
   // pack local template and prebuild, but do not reinstall NPM
-  const prebuildTemplateName = isTV ? 'expo-template-tv' : 'expo-template-bare-minimum';
+  const prebuildTemplateName = 'expo-template-bare-minimum';
 
   const localTemplatePath = path.join(repoRoot, 'templates', prebuildTemplateName);
   await spawnAsync('npm', ['pack', '--pack-destination', projectRoot], {
