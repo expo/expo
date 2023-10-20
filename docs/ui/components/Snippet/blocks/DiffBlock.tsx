@@ -4,7 +4,7 @@ import { parseDiff, Diff, Hunk } from 'react-diff-view';
 
 import { Snippet } from '../Snippet';
 import { SnippetContent } from '../SnippetContent';
-import { SnippetHeader } from '../SnippetHeader';
+import { SnippetHeader, PermalinkedSnippetHeader } from '../SnippetHeader';
 
 const randomCommitHash = () => Math.random().toString(36).slice(2, 9);
 
@@ -24,6 +24,7 @@ type Props = PropsWithChildren<{
   filenameModifier?: (filename: string) => string;
   showOperation?: boolean;
   collapseDeletedFiles?: boolean;
+  SnippetHeaderComponent?: typeof SnippetHeader | typeof PermalinkedSnippetHeader;
 }>;
 
 export const DiffBlock = ({
@@ -32,6 +33,7 @@ export const DiffBlock = ({
   filenameModifier = str => str,
   showOperation = false,
   collapseDeletedFiles = false,
+  SnippetHeaderComponent = SnippetHeader,
 }: Props) => {
   const [diff, setDiff] = useState<RenderLine[] | null>(raw ? parseDiff(raw) : null);
   useEffect(() => {
@@ -65,13 +67,12 @@ export const DiffBlock = ({
     }
     return (
       <Snippet key={oldRevision + '-' + newRevision}>
-        <SnippetHeader
+        <SnippetHeaderComponent
           title={`${filenameModifier(type === 'delete' ? oldPath : newPath)}`}
           Icon={Copy07Icon}
           operationType={type}
           showOperation={showOperation}
         />
-
         <SnippetContent className="p-0" hideOverflow>
           {collapseDeletedFiles && type !== 'delete' ? (
             <Diff viewType="unified" diffType={type} hunks={hunks}>

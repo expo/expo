@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 import { LinkBase, mergeClasses, theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
+import path from 'path';
 import React, { ReactNode, ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
 
 import withHeadingManager, {
@@ -17,7 +18,37 @@ type SnippetHeaderProps = PropsWithChildren<{
   showOperation?: boolean;
 }>;
 
-export const SnippetHeader = withHeadingManager(
+export const SnippetHeader = ({
+  title,
+  children,
+  Icon,
+  float,
+  alwaysDark = false,
+  operationType,
+  showOperation = false,
+}: SnippetHeaderProps) => (
+  <div
+    className={mergeClasses(
+      'flex pl-4 overflow-hidden justify-between bg-default border border-default min-h-[40px]',
+      !float && 'rounded-t-md border-b-0',
+      float && 'rounded-md my-4',
+      Icon && 'pl-3',
+      alwaysDark && 'dark-theme pr-2 dark:border-transparent !bg-palette-gray3'
+    )}>
+    <LABEL
+      className={mergeClasses(
+        'flex items-center gap-2 h-10 !leading-10 pr-4 select-none font-medium truncate',
+        alwaysDark && 'text-palette-white'
+      )}>
+      {Icon && <Icon className="icon-sm" />}
+      {title}
+      {showOperation && operationType ? <FileStatus type={operationType} /> : null}
+    </LABEL>
+    {!!children && <div className="flex justify-end items-center">{children}</div>}
+  </div>
+);
+
+export const PermalinkedSnippetHeader = withHeadingManager(
   (props: SnippetHeaderProps & HeadingManagerProps) => {
     const {
       title,
@@ -28,33 +59,38 @@ export const SnippetHeader = withHeadingManager(
       operationType,
       showOperation = false,
     } = props;
-    const heading = React.useRef(props.headingManager.addHeading(title, 3, undefined));
+    let sidebarTitle;
+    if (typeof title === 'string') {
+      const pathSegments = title.split('/');
+      sidebarTitle =
+        pathSegments.length > 2
+          ? pathSegments[0] + '/../' + pathSegments[pathSegments.length - 1]
+          : title;
+    }
+    const heading = props.headingManager.addHeading(title, 3, { sidebarTitle });
 
     return (
-      <div
-        className={mergeClasses(
-          'flex pl-4 overflow-hidden justify-between bg-default border border-default min-h-[40px]',
-          !float && 'rounded-t-md border-b-0',
-          float && 'rounded-md my-4',
-          Icon && 'pl-3',
-          alwaysDark && 'dark-theme pr-2 dark:border-transparent !bg-palette-gray3'
-        )}>
-        <LABEL
+      <LinkBase id={heading.slug} href={'#' + heading.slug} ref={heading.ref}>
+        <div
           className={mergeClasses(
-            'flex items-center gap-2 h-10 !leading-10 pr-4 select-none font-medium truncate',
-            alwaysDark && 'text-palette-white'
+            'flex pl-4 overflow-hidden justify-between bg-default border border-default min-h-[40px]',
+            !float && 'rounded-t-md border-b-0',
+            float && 'rounded-md my-4',
+            Icon && 'pl-3',
+            alwaysDark && 'dark-theme pr-2 dark:border-transparent !bg-palette-gray3'
           )}>
-          {Icon && <Icon className="icon-sm" />}
-          <LinkBase
-            id={heading.current.slug}
-            href={'#' + heading.current.slug}
-            ref={heading.current.ref}>
+          <LABEL
+            className={mergeClasses(
+              'flex items-center gap-2 h-10 !leading-10 pr-4 select-none font-medium truncate',
+              alwaysDark && 'text-palette-white'
+            )}>
+            {Icon && <Icon className="icon-sm" />}
             {title}
-          </LinkBase>
-          {showOperation && operationType ? <FileStatus type={operationType} /> : null}
-        </LABEL>
-        {!!children && <div className="flex justify-end items-center">{children}</div>}
-      </div>
+            {showOperation && operationType ? <FileStatus type={operationType} /> : null}
+          </LABEL>
+          {!!children && <div className="flex justify-end items-center">{children}</div>}
+        </div>
+      </LinkBase>
     );
   }
 );

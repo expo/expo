@@ -7,6 +7,7 @@ import { VersionSelector } from './VersionSelector';
 
 import versions from '~/public/static/constants/versions.json';
 import { DiffBlock } from '~/ui/components/Snippet';
+import { PermalinkedSnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
 import { RawH3, RawH4 } from '~/ui/components/Text';
 
 const { VERSIONS } = versions;
@@ -89,6 +90,7 @@ export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
             filenameModifier={str => str.replace('templates/expo-template-bare-minimum/', '')}
             showOperation
             collapseDeletedFiles
+            SnippetHeaderComponent={PermalinkedSnippetHeader}
           />
         </>
       ) : null}
