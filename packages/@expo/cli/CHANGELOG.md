@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent `npx expo export` and `npx expo export:embed` from hanging with file watchers. ([#24952](https://github.com/expo/expo/pull/24952) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.10.14 — 2023-10-20
