@@ -366,7 +366,6 @@ export default function RootLayout() {
 ```js app/(app)/_layout.js
 export default function RootLayout() {
   React.useEffect(() => {
-    // This navigation event will trigger the error above.
     router.push('/about');
   }, []);
 
