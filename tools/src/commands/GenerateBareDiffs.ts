@@ -52,7 +52,7 @@ const executeDiffCommand = async (diffDirPath: string, sdkFrom: string, sdkTo: s
   );
 
   fs.writeFileSync(diffPath, diff.stdout);
-};
+}
 
 async function action() {
   const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);
