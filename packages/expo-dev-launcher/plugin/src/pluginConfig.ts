@@ -40,6 +40,11 @@ export type PluginConfigOptions = {
    * @deprecated use the `launchMode` property instead
    */
   launchModeExperimental?: 'most-recent' | 'launcher';
+  /**
+   * Determines whether to add the generated default `exp+slug` URL scheme or not.
+   * @default 'true'
+   */
+  generatedSchemeEnabled?: boolean;
 };
 
 const schema: JSONSchemaType<PluginConfigType> = {
@@ -55,6 +60,10 @@ const schema: JSONSchemaType<PluginConfigType> = {
       enum: ['most-recent', 'launcher'],
       nullable: true,
     },
+    generatedSchemeEnabled: {
+      type: 'boolean',
+      nullable: true,
+    },
     android: {
       type: 'object',
       properties: {
@@ -66,6 +75,10 @@ const schema: JSONSchemaType<PluginConfigType> = {
         launchModeExperimental: {
           type: 'string',
           enum: ['most-recent', 'launcher'],
+          nullable: true,
+        },
+        generatedSchemeEnabled: {
+          type: 'boolean',
           nullable: true,
         },
       },
@@ -82,6 +95,10 @@ const schema: JSONSchemaType<PluginConfigType> = {
         launchModeExperimental: {
           type: 'string',
           enum: ['most-recent', 'launcher'],
+          nullable: true,
+        },
+        generatedSchemeEnabled: {
+          type: 'boolean',
           nullable: true,
         },
       },

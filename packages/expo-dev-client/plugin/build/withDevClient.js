@@ -12,10 +12,13 @@ const withGeneratedAndroidScheme_1 = require("./withGeneratedAndroidScheme");
 const withGeneratedIosScheme_1 = require("./withGeneratedIosScheme");
 const pkg = require('expo-dev-client/package.json');
 function withDevClient(config, props) {
+    const { generatedSchemeEnabled = true } = props;
     config = (0, app_plugin_2.default)(config);
     config = (0, app_plugin_1.default)(config, props);
-    config = (0, withGeneratedAndroidScheme_1.withGeneratedAndroidScheme)(config);
-    config = (0, withGeneratedIosScheme_1.withGeneratedIosScheme)(config);
+    if (generatedSchemeEnabled) {
+        config = (0, withGeneratedAndroidScheme_1.withGeneratedAndroidScheme)(config);
+        config = (0, withGeneratedIosScheme_1.withGeneratedIosScheme)(config);
+    }
     return config;
 }
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withDevClient, pkg.name, pkg.version);

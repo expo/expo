@@ -18,6 +18,10 @@ const schema = {
             enum: ['most-recent', 'launcher'],
             nullable: true,
         },
+        generatedSchemeEnabled: {
+            type: 'boolean',
+            nullable: true,
+        },
         android: {
             type: 'object',
             properties: {
@@ -29,6 +33,10 @@ const schema = {
                 launchModeExperimental: {
                     type: 'string',
                     enum: ['most-recent', 'launcher'],
+                    nullable: true,
+                },
+                generatedSchemeEnabled: {
+                    type: 'boolean',
                     nullable: true,
                 },
             },
@@ -45,6 +53,10 @@ const schema = {
                 launchModeExperimental: {
                     type: 'string',
                     enum: ['most-recent', 'launcher'],
+                    nullable: true,
+                },
+                generatedSchemeEnabled: {
+                    type: 'boolean',
                     nullable: true,
                 },
             },
