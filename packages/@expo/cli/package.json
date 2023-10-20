@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "0.10.13",
+  "version": "0.10.14",
   "description": "The Expo CLI",
   "main": "build/bin/cli",
   "bin": {

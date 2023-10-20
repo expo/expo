@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.10.14 — 2023-10-20
+
+### 💡 Others
+
 - Add `expo customize tsconfig.json` command. ([#23642](https://github.com/expo/expo/pull/23642) by [@marklawlor](https://github.com/marklawlor))
 
 ## 0.10.13 — 2023-09-27
