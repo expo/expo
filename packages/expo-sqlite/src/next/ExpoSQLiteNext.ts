@@ -17,6 +17,10 @@ export default {
     throw new Error('Unimplemented');
   },
 
+  deleteDatabaseSync(dbName: string): void {
+    throw new Error('Unimplemented');
+  },
+
   //#region EventEmitter implementations
 
   addListener() {

@@ -5,7 +5,7 @@ export interface RunResult {
     /**
      * The last inserted row ID.
      */
-    lastID: number;
+    lastInsertRowid: number;
     /**
      * The number of rows affected.
      */
@@ -55,6 +55,14 @@ export declare class NativeStatement {
     objectGetAllAsync(database: AnyDatabase, params: BindParams): Promise<Row[]>;
     resetAsync(database: AnyDatabase): Promise<void>;
     finalizeAsync(database: AnyDatabase): Promise<void>;
+    arrayRunSync(database: AnyDatabase, params: BindParams): RunResult;
+    objectRunSync(database: AnyDatabase, params: BindParams): RunResult;
+    arrayGetSync(database: AnyDatabase, params: BindParams): Row | null;
+    objectGetSync(database: AnyDatabase, params: BindParams): Row | null;
+    arrayGetAllSync(database: AnyDatabase, params: BindParams): Row[];
+    objectGetAllSync(database: AnyDatabase, params: BindParams): Row[];
+    resetSync(database: AnyDatabase): void;
+    finalizeSync(database: AnyDatabase): void;
 }
 export {};
 //# sourceMappingURL=NativeStatement.d.ts.map

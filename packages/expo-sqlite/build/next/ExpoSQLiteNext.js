@@ -11,6 +11,9 @@ export default {
     async deleteDatabaseAsync(dbName) {
         throw new Error('Unimplemented');
     },
+    deleteDatabaseSync(dbName) {
+        throw new Error('Unimplemented');
+    },
     //#region EventEmitter implementations
     addListener() {
         throw new Error('Unimplemented');

@@ -18,13 +18,6 @@ export class Database {
   ) {}
 
   /**
-   * Synchronous call to return whether the database is currently in a transaction.
-   */
-  public isInTransaction(): boolean {
-    return this.nativeDatabase.isInTransaction();
-  }
-
-  /**
    * Asynchronous call to return whether the database is currently in a transaction.
    */
   public isInTransactionAsync(): Promise<boolean> {
@@ -125,11 +118,71 @@ export class Database {
     }
   }
 
+  /**
+   * Synchronous call to return whether the database is currently in a transaction.
+   */
+  public isInTransactionSync(): boolean {
+    return this.nativeDatabase.isInTransactionSync();
+  }
+
+  /**
+   * Close the database.
+   */
+  public closeSync(): void {
+    return this.nativeDatabase.closeSync();
+  }
+
+  /**
+   * Execute all SQL queries in the supplied string.
+   *
+   * > **Note:** The queries are not escaped for you! Be careful when constructing your queries.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   *
+   * @param source A string containing all the SQL queries.
+   */
+  public execSync(source: string): void {
+    return this.nativeDatabase.execSync(source);
+  }
+
+  /**
+   * Prepare a SQL statement.
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   *
+   * @param source A string containing the SQL query.
+   * @returns A `Statement` object.
+   */
+  public prepareSync(source: string): Statement {
+    const nativeStatement = new ExpoSQLite.NativeStatement();
+    this.nativeDatabase.prepareSync(nativeStatement, source);
+    return new Statement(this.nativeDatabase, nativeStatement);
+  }
+
+  /**
+   * Execute a transaction and automatically commit/rollback based on the `task` result.
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   *
+   * @param task An async function to execute within a transaction.
+   */
+  public transactionSync(task: () => void): void {
+    try {
+      this.execSync('BEGIN');
+      task();
+      this.execSync('COMMIT');
+    } catch (e) {
+      this.execSync('ROLLBACK');
+      throw e;
+    }
+  }
+
   //#region Statement API shorthands
 
   /**
    * Shorthand for `prepareAsync` and `Statement.runAsync`.
    * Unlike `Statement.runAsync`, this method finalizes the statement after execution.
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
    *
    * @param source A string containing the SQL query.
    * @param params Parameters to bind to the query.
@@ -149,6 +202,8 @@ export class Database {
    * Shorthand for `prepareAsync` and `Statement.getAsync`.
    * Unlike `Statement.getAsync`, this method finalizes the statement after execution.
    *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   *
    * @param source A string containing the SQL query.
    * @param params Parameters to bind to the query.
    */
@@ -166,6 +221,8 @@ export class Database {
   /**
    * Shorthand for `prepareAsync` and `Statement.eachAsync`.
    * Unlike `Statement.eachAsync`, this method finalizes the statement after execution.
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
    *
    * @param source A string containing the SQL query.
    * @param params Parameters to bind to the query.
@@ -185,6 +242,8 @@ export class Database {
    * Shorthand for `prepareAsync` and `Statement.allAsync`.
    * Unlike `Statement.allAsync`, this method finalizes the statement after execution.
    *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   *
    * @param source A string containing the SQL query.
    * @param params Parameters to bind to the query.
    */
@@ -196,6 +255,86 @@ export class Database {
       return await statement.allAsync<T>(...params);
     } finally {
       await statement.finalizeAsync();
+    }
+  }
+
+  /**
+   * Shorthand for `prepareSync` and `Statement.runSync`.
+   * Unlike `Statement.runSync`, this method finalizes the statement after execution.
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   *
+   * @param source A string containing the SQL query.
+   * @param params Parameters to bind to the query.
+   */
+  public runSync(source: string, ...params: VariadicBindParams): RunResult;
+  public runSync(source: string, params: BindParams): RunResult;
+  public runSync(source: string, ...params: any[]): RunResult {
+    const statement = this.prepareSync(source);
+    try {
+      return statement.runSync(...params);
+    } finally {
+      statement.finalizeSync();
+    }
+  }
+
+  /**
+   * Shorthand for `prepareSync` and `Statement.getSync`.
+   * Unlike `Statement.getSync`, this method finalizes the statement after execution.
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   *
+   * @param source A string containing the SQL query.
+   * @param params Parameters to bind to the query.
+   */
+  public getSync<T>(source: string, ...params: VariadicBindParams): T | null;
+  public getSync<T>(source: string, params: BindParams): T | null;
+  public getSync<T>(source: string, ...params: any[]): T | null {
+    const statement = this.prepareSync(source);
+    try {
+      return statement.getSync<T>(...params);
+    } finally {
+      statement.finalizeSync();
+    }
+  }
+
+  /**
+   * Shorthand for `prepareSync` and `Statement.eachSync`.
+   * Unlike `Statement.eachSync`, this method finalizes the statement after execution.
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   *
+   * @param source A string containing the SQL query.
+   * @param params Parameters to bind to the query.
+   */
+  public eachSync<T>(source: string, ...params: VariadicBindParams): IterableIterator<T>;
+  public eachSync<T>(source: string, params: BindParams): IterableIterator<T>;
+  public *eachSync<T>(source: string, ...params: any[]): IterableIterator<T> {
+    const statement = this.prepareSync(source);
+    try {
+      yield* statement.eachSync<T>(...params);
+    } finally {
+      statement.finalizeSync();
+    }
+  }
+
+  /**
+   * Shorthand for `prepareSync` and `Statement.allSync`.
+   * Unlike `Statement.allSync`, this method finalizes the statement after execution.
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   *
+   * @param source A string containing the SQL query.
+   * @param params Parameters to bind to the query.
+   */
+  public allSync<T>(source: string, ...params: VariadicBindParams): T[];
+  public allSync<T>(source: string, params: BindParams): T[];
+  public allSync<T>(source: string, ...params: any[]): T[] {
+    const statement = this.prepareSync(source);
+    try {
+      return statement.allSync<T>(...params);
+    } finally {
+      statement.finalizeSync();
     }
   }
 
@@ -216,12 +355,38 @@ export async function openDatabaseAsync(dbName: string, options?: OpenOptions): 
 }
 
 /**
+ * Open a database.
+ *
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+ *
+ * @param dbName The name of the database file to open.
+ * @param options Open options.
+ * @returns Database object.
+ */
+export function openDatabaseSync(dbName: string, options?: OpenOptions): Database {
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, options ?? {});
+  nativeDatabase.initSync();
+  return new Database(dbName, nativeDatabase);
+}
+
+/**
  * Delete a database file.
  *
  * @param dbName The name of the database file to delete.
  */
 export async function deleteDatabaseAsync(dbName: string): Promise<void> {
   return await ExpoSQLite.deleteDatabaseAsync(dbName);
+}
+
+/**
+ * Delete a database file.
+ *
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+ *
+ * @param dbName The name of the database file to delete.
+ */
+export function deleteDatabaseSync(dbName: string): void {
+  return ExpoSQLite.deleteDatabaseSync(dbName);
 }
 
 /**

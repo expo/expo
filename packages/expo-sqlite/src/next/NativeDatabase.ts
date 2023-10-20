@@ -6,12 +6,25 @@ import { NativeStatement } from './NativeStatement';
 export declare class NativeDatabase {
   constructor(dbName: string, options?: OpenOptions);
 
+  //#region Asynchronous API
+
   public initAsync(): Promise<void>;
-  public isInTransaction(): boolean;
   public isInTransactionAsync(): Promise<boolean>;
   public closeAsync(): Promise<void>;
   public execAsync(source: string): Promise<void>;
   public prepareAsync(nativeStatement: NativeStatement, source: string): Promise<NativeStatement>;
+
+  //#endregion
+
+  //#region Synchronous API
+
+  public initSync(): void;
+  public isInTransactionSync(): boolean;
+  public closeSync(): void;
+  public execSync(source: string): void;
+  public prepareSync(nativeStatement: NativeStatement, source: string): NativeStatement;
+
+  //#endregion
 }
 
 /**

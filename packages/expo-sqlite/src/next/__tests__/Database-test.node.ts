@@ -1,7 +1,7 @@
 // @ts-ignore-next-line: no @types/node
 import fs from 'fs/promises';
 
-import { openDatabaseAsync, Database } from '../Database';
+import { openDatabaseAsync, openDatabaseSync, Database } from '../Database';
 
 jest.mock('../ExpoSQLiteNext');
 
@@ -47,7 +47,7 @@ describe('Database', () => {
       'test',
       123
     );
-    expect(result.lastID).toBe(1);
+    expect(result.lastInsertRowid).toBe(1);
     expect(result.changes).toBe(1);
   });
 
@@ -91,6 +91,36 @@ describe('Database', () => {
     expect(results[0].intValue).toBe(789);
     expect(results[1].intValue).toBe(456);
     expect(results[2].intValue).toBe(123);
+  });
+
+  it('transactionAsync should commit changes', async () => {
+    db = await openDatabaseAsync(':memory:');
+    await db.execAsync(
+      'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
+    );
+
+    await db.transactionAsync(async () => {
+      await db?.runAsync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
+    });
+    const results = await db.allAsync<TestEntity>('SELECT * FROM test');
+    expect(results.length).toBe(1);
+  });
+
+  it('transactionAsync should rollback changes when exceptions happen', async () => {
+    db = await openDatabaseAsync(':memory:');
+    await db.execAsync(
+      'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
+    );
+
+    await expect(
+      db?.transactionAsync(async () => {
+        await db?.runAsync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
+        throw new Error('Exception inside transaction');
+      })
+    ).rejects.toThrow();
+
+    const results = await db.allAsync<TestEntity>('SELECT * FROM test');
+    expect(results.length).toBe(0);
   });
 
   it('transactionAsync could possibly have other async queries interrupted inside the transaction', async () => {
@@ -170,6 +200,80 @@ INSERT INTO Users (name) VALUES ('aaa');
 
     // We still need to wait for promise1 to finish for promise1 to finalize the transaction.
     await promise1;
+  }, 10000);
+});
+
+describe('Database - Synchronous calls', () => {
+  let db: Database | null = null;
+
+  afterEach(async () => {
+    db?.closeSync();
+    await fs.unlink('test.db').catch(() => {});
+  });
+
+  it('openDatabaseSync should return a database that could be closed', () => {
+    db = openDatabaseSync(':memory:');
+    expect(db).toBeDefined();
+    db.closeSync();
+    db = null;
+  });
+
+  it('getSync should return a row', () => {
+    db = openDatabaseSync(':memory:');
+    db.execSync(
+      'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
+    );
+    db.runSync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
+    const result = db.getSync<TestEntity>('SELECT * FROM test');
+    expect(result?.value).toBe('test');
+    expect(result?.intValue).toBe(123);
+  });
+
+  it('eachSync should return iterable', () => {
+    db = openDatabaseSync(':memory:');
+    db.execSync(`
+  CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER);
+  INSERT INTO test (value, intValue) VALUES ('test1', 123);
+  INSERT INTO test (value, intValue) VALUES ('test2', 456);
+  INSERT INTO test (value, intValue) VALUES ('test3', 789);
+  `);
+    const results: TestEntity[] = [];
+    for (const row of db.eachSync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC')) {
+      results.push(row);
+    }
+    expect(results[0].intValue).toBe(789);
+    expect(results[1].intValue).toBe(456);
+    expect(results[2].intValue).toBe(123);
+  });
+
+  it('transactionSync should commit changes', () => {
+    db = openDatabaseSync(':memory:');
+    db.execSync(
+      'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
+    );
+
+    db.transactionSync(() => {
+      db?.runSync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
+    });
+    const results = db.allSync<TestEntity>('SELECT * FROM test');
+    expect(results.length).toBe(1);
+  });
+
+  it('transactionSync should rollback changes when exceptions happen', () => {
+    db = openDatabaseSync(':memory:');
+    db.execAsync(
+      'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
+    );
+
+    expect(() => {
+      db?.transactionSync(() => {
+        db?.runSync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
+        throw new Error('Exception inside transaction');
+      });
+    }).toThrow();
+
+    const results = db.allSync<TestEntity>('SELECT * FROM test');
+    expect(results.length).toBe(0);
   });
 });
 

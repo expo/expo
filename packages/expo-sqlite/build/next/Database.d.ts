@@ -10,10 +10,6 @@ export declare class Database {
     private readonly nativeDatabase;
     constructor(dbName: string, nativeDatabase: NativeDatabase);
     /**
-     * Synchronous call to return whether the database is currently in a transaction.
-     */
-    isInTransaction(): boolean;
-    /**
      * Asynchronous call to return whether the database is currently in a transaction.
      */
     isInTransactionAsync(): Promise<boolean>;
@@ -78,8 +74,44 @@ export declare class Database {
      */
     transactionExclusiveAsync(task: (txn: Transaction) => Promise<void>): Promise<void>;
     /**
+     * Synchronous call to return whether the database is currently in a transaction.
+     */
+    isInTransactionSync(): boolean;
+    /**
+     * Close the database.
+     */
+    closeSync(): void;
+    /**
+     * Execute all SQL queries in the supplied string.
+     *
+     * > **Note:** The queries are not escaped for you! Be careful when constructing your queries.
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param source A string containing all the SQL queries.
+     */
+    execSync(source: string): void;
+    /**
+     * Prepare a SQL statement.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param source A string containing the SQL query.
+     * @returns A `Statement` object.
+     */
+    prepareSync(source: string): Statement;
+    /**
+     * Execute a transaction and automatically commit/rollback based on the `task` result.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param task An async function to execute within a transaction.
+     */
+    transactionSync(task: () => void): void;
+    /**
      * Shorthand for `prepareAsync` and `Statement.runAsync`.
      * Unlike `Statement.runAsync`, this method finalizes the statement after execution.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
      *
      * @param source A string containing the SQL query.
      * @param params Parameters to bind to the query.
@@ -90,6 +122,8 @@ export declare class Database {
      * Shorthand for `prepareAsync` and `Statement.getAsync`.
      * Unlike `Statement.getAsync`, this method finalizes the statement after execution.
      *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
      * @param source A string containing the SQL query.
      * @param params Parameters to bind to the query.
      */
@@ -98,6 +132,8 @@ export declare class Database {
     /**
      * Shorthand for `prepareAsync` and `Statement.eachAsync`.
      * Unlike `Statement.eachAsync`, this method finalizes the statement after execution.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
      *
      * @param source A string containing the SQL query.
      * @param params Parameters to bind to the query.
@@ -108,11 +144,57 @@ export declare class Database {
      * Shorthand for `prepareAsync` and `Statement.allAsync`.
      * Unlike `Statement.allAsync`, this method finalizes the statement after execution.
      *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
      * @param source A string containing the SQL query.
      * @param params Parameters to bind to the query.
      */
     allAsync<T>(source: string, ...params: VariadicBindParams): Promise<T[]>;
     allAsync<T>(source: string, params: BindParams): Promise<T[]>;
+    /**
+     * Shorthand for `prepareSync` and `Statement.runSync`.
+     * Unlike `Statement.runSync`, this method finalizes the statement after execution.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param source A string containing the SQL query.
+     * @param params Parameters to bind to the query.
+     */
+    runSync(source: string, ...params: VariadicBindParams): RunResult;
+    runSync(source: string, params: BindParams): RunResult;
+    /**
+     * Shorthand for `prepareSync` and `Statement.getSync`.
+     * Unlike `Statement.getSync`, this method finalizes the statement after execution.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param source A string containing the SQL query.
+     * @param params Parameters to bind to the query.
+     */
+    getSync<T>(source: string, ...params: VariadicBindParams): T | null;
+    getSync<T>(source: string, params: BindParams): T | null;
+    /**
+     * Shorthand for `prepareSync` and `Statement.eachSync`.
+     * Unlike `Statement.eachSync`, this method finalizes the statement after execution.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param source A string containing the SQL query.
+     * @param params Parameters to bind to the query.
+     */
+    eachSync<T>(source: string, ...params: VariadicBindParams): IterableIterator<T>;
+    eachSync<T>(source: string, params: BindParams): IterableIterator<T>;
+    /**
+     * Shorthand for `prepareSync` and `Statement.allSync`.
+     * Unlike `Statement.allSync`, this method finalizes the statement after execution.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param source A string containing the SQL query.
+     * @param params Parameters to bind to the query.
+     */
+    allSync<T>(source: string, ...params: VariadicBindParams): T[];
+    allSync<T>(source: string, params: BindParams): T[];
 }
 /**
  * Open a database.
@@ -123,11 +205,29 @@ export declare class Database {
  */
 export declare function openDatabaseAsync(dbName: string, options?: OpenOptions): Promise<Database>;
 /**
+ * Open a database.
+ *
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+ *
+ * @param dbName The name of the database file to open.
+ * @param options Open options.
+ * @returns Database object.
+ */
+export declare function openDatabaseSync(dbName: string, options?: OpenOptions): Database;
+/**
  * Delete a database file.
  *
  * @param dbName The name of the database file to delete.
  */
 export declare function deleteDatabaseAsync(dbName: string): Promise<void>;
+/**
+ * Delete a database file.
+ *
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+ *
+ * @param dbName The name of the database file to delete.
+ */
+export declare function deleteDatabaseSync(dbName: string): void;
 /**
  * Add a listener for database changes.
  * > Note: to enable this feature, you must set `enableChangeListener` to `true` when opening the database.

@@ -4,6 +4,7 @@ declare const _default: {
     NativeDatabase(dbName: string, options?: OpenOptions): void;
     NativeStatement(): void;
     deleteDatabaseAsync(dbName: string): Promise<void>;
+    deleteDatabaseSync(dbName: string): void;
     addListener(): never;
     removeListeners(): never;
 };

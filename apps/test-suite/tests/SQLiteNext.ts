@@ -505,6 +505,74 @@ INSERT INTO Users (name) VALUES ('aaa');
     });
   });
 
+  describe('Synchronous calls', () => {
+    let db: SQLite.Database | null = null;
+
+    beforeEach(() => {
+      db = SQLite.openDatabaseSync(':memory:');
+      db.execSync(`
+DROP TABLE IF EXISTS Users;
+CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+INSERT INTO Users (user_id, name, k, j) VALUES (1, 'Tim Duncan', 1, 23.4);
+INSERT INTO Users (user_id, name, k, j) VALUES (2, 'Manu Ginobili', 5, 72.8);
+INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.14);
+`);
+    });
+
+    afterEach(() => {
+      db?.closeSync();
+    });
+
+    it('Basic CRUD', () => {
+      const result = db.runSync('INSERT INTO Users (name, k, j) VALUES (?, ?, ?)', 'aaa', 1, 2.3);
+      expect(result.changes).toBe(1);
+      expect(result.lastInsertRowid > 0).toBeTruthy();
+      expect(db.allSync<UserEntity>('SELECT * FROM Users').length).toBe(4);
+      expect(db.getSync<UserEntity>('SELECT * FROM Users WHERE name = ?', 'aaa')).not.toBeNull();
+
+      db.runSync('UPDATE Users SET name = ? WHERE name = ?', 'bbb', 'aaa');
+      expect(db.getSync<UserEntity>('SELECT * FROM Users WHERE name = ?', 'aaa')).toBeNull();
+      expect(db.getSync<UserEntity>('SELECT * FROM Users WHERE name = ?', 'bbb')).not.toBeNull();
+
+      db.runSync('DELETE FROM Users WHERE name = ?', 'bbb');
+      expect(db.getSync<UserEntity>('SELECT * FROM Users WHERE name = ?', 'bbb')).toBeNull();
+      expect(db.allSync<UserEntity>('SELECT * FROM Users').length).toBe(3);
+    });
+
+    it('eachSync should return iterable', () => {
+      const results: UserEntity[] = [];
+      const statement = db.prepareSync('SELECT * FROM Users ORDER BY user_id DESC');
+      for (const row of statement.eachSync<UserEntity>()) {
+        results.push(row);
+      }
+      statement.finalizeSync();
+      expect(results.length).toBe(3);
+      expect(results[0].name).toBe('Nikhilesh Sigatapu');
+      expect(results[1].name).toBe('Manu Ginobili');
+      expect(results[2].name).toBe('Tim Duncan');
+    });
+
+    it('transactionSync should commit changes', () => {
+      db.transactionSync(() => {
+        db?.runSync('INSERT INTO Users (name, k, j) VALUES (?, ?, ?)', 'aaa', 1, 2.3);
+      });
+      const results = db.allSync<UserEntity>('SELECT * FROM Users');
+      expect(results.length).toBe(4);
+    });
+
+    it('transactionSync should rollback changes when exceptions happen', () => {
+      expect(() => {
+        db?.transactionSync(() => {
+          db?.runSync('DELETE FROM Users');
+          throw new Error('Exception inside transaction');
+        });
+      }).toThrow();
+
+      const results = db.allSync<UserEntity>('SELECT * FROM Users');
+      expect(results.length > 0).toBe(true);
+    });
+  });
+
   describe('CR-SQLite', () => {
     it('should load crsqlite extension correctly', async () => {
       const db = await SQLite.openDatabaseAsync('test.db', { enableCRSQLite: true });

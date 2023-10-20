@@ -5,7 +5,7 @@ export interface RunResult {
   /**
    * The last inserted row ID.
    */
-  lastID: number;
+  lastInsertRowid: number;
 
   /**
    * The number of rows affected.
@@ -51,6 +51,8 @@ type AnyDatabase = any;
  * A class that represents an instance of the SQLite statement.
  */
 export declare class NativeStatement {
+  //#region Asynchronous API
+
   public arrayRunAsync(database: AnyDatabase, params: BindParams): Promise<RunResult>;
   public objectRunAsync(database: AnyDatabase, params: BindParams): Promise<RunResult>;
 
@@ -62,4 +64,22 @@ export declare class NativeStatement {
 
   public resetAsync(database: AnyDatabase): Promise<void>;
   public finalizeAsync(database: AnyDatabase): Promise<void>;
+
+  //#endregion
+
+  //#region Synchronous API
+
+  public arrayRunSync(database: AnyDatabase, params: BindParams): RunResult;
+  public objectRunSync(database: AnyDatabase, params: BindParams): RunResult;
+
+  public arrayGetSync(database: AnyDatabase, params: BindParams): Row | null;
+  public objectGetSync(database: AnyDatabase, params: BindParams): Row | null;
+
+  public arrayGetAllSync(database: AnyDatabase, params: BindParams): Row[];
+  public objectGetAllSync(database: AnyDatabase, params: BindParams): Row[];
+
+  public resetSync(database: AnyDatabase): void;
+  public finalizeSync(database: AnyDatabase): void;
+
+  //#endregion
 }

@@ -53,6 +53,61 @@ export declare class Statement {
      * > **Note:** Remember to finalize the prepared statement whenever you call `prepareAsync()` to avoid resource leaks.
      */
     finalizeAsync(): Promise<void>;
+    /**
+     * Run the prepared statement and return the result.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param params @see `BindParams`
+     */
+    runSync(...params: VariadicBindParams): RunResult;
+    runSync(params: BindParams): RunResult;
+    /**
+     * Iterate the prepared statement and return results as an iterable.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param params @see `BindParams`
+     *
+     * @example
+     * ```ts
+     * const statement = await db.prepareSync('SELECT * FROM test');
+     * for (const row of statement.eachSync<any>()) {
+     *   console.log(row);
+     * }
+     * ```
+     */
+    eachSync<T>(...params: VariadicBindParams): IterableIterator<T>;
+    eachSync<T>(params: BindParams): IterableIterator<T>;
+    /**
+     * Get one row from the prepared statement.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param params @see `BindParams`
+     */
+    getSync<T>(...params: VariadicBindParams): T | null;
+    getSync<T>(params: BindParams): T | null;
+    /**
+     * Get all rows from the prepared statement.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param params @see `BindParams`
+     */
+    allSync<T>(...params: VariadicBindParams): T[];
+    allSync<T>(params: BindParams): T[];
+    /**
+     * Reset the prepared statement cursor.
+     */
+    resetSync(): void;
+    /**
+     * Finalize the prepared statement.
+     *
+     * > **Note:** Remember to finalize the prepared statement whenever you call `prepareSync()` to avoid resource leaks.
+     *
+     */
+    finalizeSync(): void;
 }
 /**
  * Normalize the bind params to an array or object.

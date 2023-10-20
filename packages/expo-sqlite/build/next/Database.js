@@ -13,12 +13,6 @@ export class Database {
         this.nativeDatabase = nativeDatabase;
     }
     /**
-     * Synchronous call to return whether the database is currently in a transaction.
-     */
-    isInTransaction() {
-        return this.nativeDatabase.isInTransaction();
-    }
-    /**
      * Asynchronous call to return whether the database is currently in a transaction.
      */
     isInTransactionAsync() {
@@ -116,6 +110,60 @@ export class Database {
             await transaction.closeAsync();
         }
     }
+    /**
+     * Synchronous call to return whether the database is currently in a transaction.
+     */
+    isInTransactionSync() {
+        return this.nativeDatabase.isInTransactionSync();
+    }
+    /**
+     * Close the database.
+     */
+    closeSync() {
+        return this.nativeDatabase.closeSync();
+    }
+    /**
+     * Execute all SQL queries in the supplied string.
+     *
+     * > **Note:** The queries are not escaped for you! Be careful when constructing your queries.
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param source A string containing all the SQL queries.
+     */
+    execSync(source) {
+        return this.nativeDatabase.execSync(source);
+    }
+    /**
+     * Prepare a SQL statement.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param source A string containing the SQL query.
+     * @returns A `Statement` object.
+     */
+    prepareSync(source) {
+        const nativeStatement = new ExpoSQLite.NativeStatement();
+        this.nativeDatabase.prepareSync(nativeStatement, source);
+        return new Statement(this.nativeDatabase, nativeStatement);
+    }
+    /**
+     * Execute a transaction and automatically commit/rollback based on the `task` result.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * @param task An async function to execute within a transaction.
+     */
+    transactionSync(task) {
+        try {
+            this.execSync('BEGIN');
+            task();
+            this.execSync('COMMIT');
+        }
+        catch (e) {
+            this.execSync('ROLLBACK');
+            throw e;
+        }
+    }
     async runAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
         try {
@@ -152,6 +200,42 @@ export class Database {
             await statement.finalizeAsync();
         }
     }
+    runSync(source, ...params) {
+        const statement = this.prepareSync(source);
+        try {
+            return statement.runSync(...params);
+        }
+        finally {
+            statement.finalizeSync();
+        }
+    }
+    getSync(source, ...params) {
+        const statement = this.prepareSync(source);
+        try {
+            return statement.getSync(...params);
+        }
+        finally {
+            statement.finalizeSync();
+        }
+    }
+    *eachSync(source, ...params) {
+        const statement = this.prepareSync(source);
+        try {
+            yield* statement.eachSync(...params);
+        }
+        finally {
+            statement.finalizeSync();
+        }
+    }
+    allSync(source, ...params) {
+        const statement = this.prepareSync(source);
+        try {
+            return statement.allSync(...params);
+        }
+        finally {
+            statement.finalizeSync();
+        }
+    }
 }
 /**
  * Open a database.
@@ -166,12 +250,36 @@ export async function openDatabaseAsync(dbName, options) {
     return new Database(dbName, nativeDatabase);
 }
 /**
+ * Open a database.
+ *
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+ *
+ * @param dbName The name of the database file to open.
+ * @param options Open options.
+ * @returns Database object.
+ */
+export function openDatabaseSync(dbName, options) {
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, options ?? {});
+    nativeDatabase.initSync();
+    return new Database(dbName, nativeDatabase);
+}
+/**
  * Delete a database file.
  *
  * @param dbName The name of the database file to delete.
  */
 export async function deleteDatabaseAsync(dbName) {
     return await ExpoSQLite.deleteDatabaseAsync(dbName);
+}
+/**
+ * Delete a database file.
+ *
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+ *
+ * @param dbName The name of the database file to delete.
+ */
+export function deleteDatabaseSync(dbName) {
+    return ExpoSQLite.deleteDatabaseSync(dbName);
 }
 /**
  * Add a listener for database changes.

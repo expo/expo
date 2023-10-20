@@ -1,11 +1,8 @@
 import assert from 'assert';
-import sqlite3 from 'sqlite3';
-import { promisify } from 'util';
+import sqlite3 from 'better-sqlite3';
 
 import { OpenOptions } from '../NativeDatabase';
-import { BindParams } from '../NativeStatement';
-
-type RunResult = Pick<sqlite3.RunResult, 'lastID' | 'changes'>;
+import { BindParams, RunResult } from '../NativeStatement';
 
 export default {
   get name(): string {
@@ -26,24 +23,44 @@ export default {
 /**
  * A sqlite3.Database wrapper with async methods and conforming to the NativeDatabase interface.
  */
-class NativeDatabase extends sqlite3.Database {
+class NativeDatabase {
+  private readonly sqlite3Db: sqlite3.Database;
+
+  constructor(dbName: string) {
+    this.sqlite3Db = new sqlite3(dbName);
+  }
+
+  //#region Asynchronous API
+
   initAsync = jest.fn().mockResolvedValue(null);
-  isInTransaction = jest.fn().mockReturnValue(false);
-  isInTransactionAsync = jest.fn().mockResolvedValue(false);
-
-  closeAsync = jest
-    .fn()
-    .mockImplementation(promisify(this.close.bind(this)) as () => Promise<void>);
-
-  execAsync = jest
-    .fn()
-    .mockImplementation(promisify(this.exec.bind(this)) as (sql: string) => Promise<void>);
-
+  isInTransactionAsync = jest.fn().mockImplementation(async () => {
+    return this.sqlite3Db.inTransaction;
+  });
+  closeAsync = jest.fn().mockImplementation(async () => {
+    return this.sqlite3Db.close();
+  });
+  execAsync = jest.fn().mockImplementation(async (source: string) => {
+    return this.sqlite3Db.exec(source);
+  });
   prepareAsync = jest
     .fn()
     .mockImplementation(async (nativeStatement: NativeStatement, source: string) => {
-      nativeStatement.sqlite3Stmt = this.prepare(source);
+      nativeStatement.sqlite3Stmt = this.sqlite3Db.prepare(source);
     });
+
+  //#endregion
+
+  //#region Synchronous API
+
+  initSync = jest.fn();
+  isInTransactionSync = jest.fn().mockImplementation(() => this.sqlite3Db.inTransaction);
+  closeSync = jest.fn().mockImplementation(() => this.sqlite3Db.close());
+  execSync = jest.fn().mockImplementation((source: string) => this.sqlite3Db.exec(source));
+  prepareSync = jest.fn().mockImplementation((nativeStatement: NativeStatement, source: string) => {
+    nativeStatement.sqlite3Stmt = this.sqlite3Db.prepare(source);
+  });
+
+  //#endregion
 }
 
 /**
@@ -51,137 +68,168 @@ class NativeDatabase extends sqlite3.Database {
  */
 class NativeStatement {
   public sqlite3Stmt: sqlite3.Statement | null = null;
-  public isInIteration = false;
+  private iterator: ReturnType<sqlite3.Statement['iterate']> | null = null;
+  private iteratorParams: BindParams = [];
+
+  //#region Asynchronous API
 
   public arrayRunAsync = jest
     .fn()
-    .mockImplementation((database: NativeDatabase, params: BindParams): Promise<RunResult> => {
-      return this._runAsync(params);
-    });
+    .mockImplementation(
+      (database: NativeDatabase, params: BindParams): Promise<RunResult> =>
+        Promise.resolve(this._run(normalizeParams(params)))
+    );
   public objectRunAsync = jest
     .fn()
-    .mockImplementation((database: NativeDatabase, params: BindParams): Promise<RunResult> => {
-      return this._runAsync(params);
-    });
-
+    .mockImplementation(
+      (database: NativeDatabase, params: BindParams): Promise<RunResult> =>
+        Promise.resolve(this._run(normalizeParams(params)))
+    );
   public arrayGetAsync = jest
     .fn()
     .mockImplementation((database: NativeDatabase, params: BindParams): Promise<any> => {
-      if (this.isInIteration) {
-        return this._iterGetAsync();
-      } else {
-        return this._getAsync(params);
+      assert(this.sqlite3Stmt);
+      if (this.iterator == null) {
+        this.iteratorParams = normalizeParams(params);
+        this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
       }
+      const result = this.iterator.next();
+      return Promise.resolve(result.done === false ? result.value : null);
     });
   public objectGetAsync = jest
     .fn()
     .mockImplementation((database: NativeDatabase, params: BindParams): Promise<any> => {
-      if (this.isInIteration) {
-        return this._iterGetAsync();
-      } else {
-        return this._getAsync(params);
+      assert(this.sqlite3Stmt);
+      if (this.iterator == null) {
+        this.iteratorParams = normalizeParams(params);
+        this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
       }
+      const result = this.iterator.next();
+      return Promise.resolve(result.done === false ? result.value : null);
     });
-
   public arrayGetAllAsync = jest
     .fn()
-    .mockImplementation((database: NativeDatabase, params: BindParams): Promise<any> => {
-      return this._allAsync(params);
-    });
+    .mockImplementation((database: NativeDatabase, params: BindParams) =>
+      Promise.resolve(this._all(normalizeParams(params)))
+    );
   public objectGetAllAsync = jest
     .fn()
-    .mockImplementation((database: NativeDatabase, params: BindParams): Promise<any> => {
-      return this._allAsync(params);
-    });
-
-  public resetAsync = jest.fn().mockImplementation((database: NativeDatabase): Promise<void> => {
-    return this._resetAsync();
+    .mockImplementation((database: NativeDatabase, params: BindParams) =>
+      Promise.resolve(this._all(normalizeParams(params)))
+    );
+  public resetAsync = jest.fn().mockImplementation(async (database: NativeDatabase) => {
+    this._reset();
   });
-  public finalizeAsync = jest.fn().mockImplementation((database: NativeDatabase): Promise<void> => {
-    return this._finalizeAsync();
+  public finalizeAsync = jest.fn().mockImplementation(async (database: NativeDatabase) => {
+    this._finalize();
   });
 
-  private _runAsync = (...params: any[]): Promise<RunResult> => {
-    return new Promise<RunResult>((resolve, reject) => {
+  //#endregion
+
+  //#region Synchronous API
+
+  public arrayRunSync = jest
+    .fn()
+    .mockImplementation(
+      (database: NativeDatabase, params: BindParams): RunResult =>
+        this._run(normalizeParams(params))
+    );
+  public objectRunSync = jest
+    .fn()
+    .mockImplementation(
+      (database: NativeDatabase, params: BindParams): RunResult =>
+        this._run(normalizeParams(params))
+    );
+  public arrayGetSync = jest
+    .fn()
+    .mockImplementation((database: NativeDatabase, params: BindParams): any => {
       assert(this.sqlite3Stmt);
-      this.sqlite3Stmt.run(...params, (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            // @ts-expect-error
-            lastID: this.sqlite3Stmt.lastID,
-            // @ts-expect-error
-            changes: this.sqlite3Stmt.changes,
-          });
-        }
-      });
+      if (this.iterator == null) {
+        this.iteratorParams = normalizeParams(params);
+        this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
+      }
+      const result = this.iterator.next();
+      return result.done === false ? result.value : null;
     });
+  public objectGetSync = jest
+    .fn()
+    .mockImplementation((database: NativeDatabase, params: BindParams): any => {
+      assert(this.sqlite3Stmt);
+      if (this.iterator == null) {
+        this.iteratorParams = normalizeParams(params);
+        this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
+      }
+      const result = this.iterator.next();
+      return result.done === false ? result.value : null;
+    });
+  public arrayGetAllSync = jest
+    .fn()
+    .mockImplementation((database: NativeDatabase, params: BindParams) =>
+      this._all(normalizeParams(params))
+    );
+  public objectGetAllSync = jest
+    .fn()
+    .mockImplementation((database: NativeDatabase, params: BindParams) =>
+      this._all(normalizeParams(params))
+    );
+  public resetSync = jest.fn().mockImplementation((database: NativeDatabase) => {
+    this._reset();
+  });
+  public finalizeSync = jest.fn().mockImplementation((database: NativeDatabase) => {
+    this._finalize();
+  });
+
+  //#endregion
+
+  private _run = (...params: any[]): RunResult => {
+    assert(this.sqlite3Stmt);
+    const result = this.sqlite3Stmt.run(...params);
+    return {
+      lastInsertRowid: Number(result.lastInsertRowid),
+      changes: result.changes,
+    };
   };
 
-  private _getAsync = <T>(...params: any[]) =>
-    new Promise<T | null>((resolve, reject) => {
-      assert(this.sqlite3Stmt);
-      this.sqlite3Stmt.get(...params, (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          this.isInIteration = true;
-          resolve(row ?? null);
-        }
-      });
-    });
+  private _get = <T>(...params: any[]) => {
+    assert(this.sqlite3Stmt);
+    return this.sqlite3Stmt.get(...params) as T | null;
+  };
 
-  private _iterGetAsync = <T>() =>
-    new Promise<T | null>((resolve, reject) => {
-      assert(this.sqlite3Stmt);
-      this.sqlite3Stmt.get((err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve((row ?? null) as T | null);
-        }
-      });
-    });
+  private _all = <T>(...params: any[]) => {
+    assert(this.sqlite3Stmt);
+    return this.sqlite3Stmt.all(...params) as T[];
+  };
 
-  private _allAsync = <T>(...params: any[]) =>
-    new Promise<T[]>((resolve, reject) => {
-      assert(this.sqlite3Stmt);
-      this.sqlite3Stmt.all(...params, (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          this.isInIteration = false;
-          resolve(rows);
-        }
-      });
-    });
+  private _reset = () => {
+    assert(this.sqlite3Stmt);
+    this.iterator?.return?.();
+    this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
+  };
 
-  private _resetAsync = () =>
-    new Promise<void>((resolve, reject) => {
-      assert(this.sqlite3Stmt);
-      this.sqlite3Stmt.reset((err) => {
-        if (err) {
-          reject(err);
-        } else {
-          this.isInIteration = false;
-          resolve();
-        }
-      });
-    });
-
-  private _finalizeAsync = () =>
-    new Promise<void>((resolve, reject) => {
-      assert(this.sqlite3Stmt);
-      this.sqlite3Stmt.finalize((err) => {
-        if (err) {
-          reject(err);
-        } else {
-          this.isInIteration = false;
-          resolve();
-        }
-      });
-    });
+  private _finalize = () => {
+    this.iterator?.return?.();
+    this.iterator = null;
+    this.iteratorParams = [];
+  };
 }
 
 //#endregion
+
+function normalizeParams(params: BindParams): BindParams {
+  const isArray = Array.isArray(params);
+
+  if (isArray && params.length === 1 && params[0] === undefined) {
+    return [];
+  }
+
+  if (!isArray && typeof params === 'object') {
+    const result: BindParams = {};
+    for (const [key, value] of Object.entries(params)) {
+      const normalizedKey = key.replace(/^[:@$]/, '');
+      result[normalizedKey] = value;
+    }
+    return result;
+  }
+
+  return params;
+}

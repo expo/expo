@@ -5,11 +5,15 @@ import { NativeStatement } from './NativeStatement';
 export declare class NativeDatabase {
     constructor(dbName: string, options?: OpenOptions);
     initAsync(): Promise<void>;
-    isInTransaction(): boolean;
     isInTransactionAsync(): Promise<boolean>;
     closeAsync(): Promise<void>;
     execAsync(source: string): Promise<void>;
     prepareAsync(nativeStatement: NativeStatement, source: string): Promise<NativeStatement>;
+    initSync(): void;
+    isInTransactionSync(): boolean;
+    closeSync(): void;
+    execSync(source: string): void;
+    prepareSync(nativeStatement: NativeStatement, source: string): NativeStatement;
 }
 /**
  * Options for opening a database.

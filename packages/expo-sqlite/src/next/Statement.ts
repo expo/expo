@@ -18,6 +18,8 @@ export class Statement {
     private readonly nativeStatement: NativeStatement
   ) {}
 
+  //#region Asynchronous API
+
   /**
    * Run the prepared statement and return the result.
    *
@@ -110,6 +112,115 @@ export class Statement {
   public async finalizeAsync(): Promise<void> {
     await this.nativeStatement.finalizeAsync(this.nativeDatabase);
   }
+
+  //#endregion
+
+  //#region Synchronous API
+
+  /**
+   * Run the prepared statement and return the result.
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   *
+   * @param params @see `BindParams`
+   */
+  public runSync(...params: VariadicBindParams): RunResult;
+  public runSync(params: BindParams): RunResult;
+  public runSync(...params: unknown[]): RunResult {
+    const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
+    if (shouldPassAsObject) {
+      return this.nativeStatement.objectRunSync(this.nativeDatabase, bindParams);
+    } else {
+      return this.nativeStatement.arrayRunSync(this.nativeDatabase, bindParams);
+    }
+  }
+
+  /**
+   * Iterate the prepared statement and return results as an iterable.
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   *
+   * @param params @see `BindParams`
+   *
+   * @example
+   * ```ts
+   * const statement = await db.prepareSync('SELECT * FROM test');
+   * for (const row of statement.eachSync<any>()) {
+   *   console.log(row);
+   * }
+   * ```
+   */
+  public eachSync<T>(...params: VariadicBindParams): IterableIterator<T>;
+  public eachSync<T>(params: BindParams): IterableIterator<T>;
+  public *eachSync<T>(...params: unknown[]): IterableIterator<T> {
+    const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
+    const func = shouldPassAsObject
+      ? this.nativeStatement.objectGetSync.bind(this.nativeStatement)
+      : this.nativeStatement.arrayGetSync.bind(this.nativeStatement);
+
+    let result: T | null = null;
+    do {
+      result = func(this.nativeDatabase, bindParams);
+      if (result != null) {
+        yield result;
+      }
+    } while (result != null);
+  }
+
+  /**
+   * Get one row from the prepared statement.
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   *
+   * @param params @see `BindParams`
+   */
+  public getSync<T>(...params: VariadicBindParams): T | null;
+  public getSync<T>(params: BindParams): T | null;
+  public getSync<T>(...params: unknown[]): T | null {
+    const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
+    if (shouldPassAsObject) {
+      return this.nativeStatement.objectGetSync(this.nativeDatabase, bindParams);
+    } else {
+      return this.nativeStatement.arrayGetSync(this.nativeDatabase, bindParams);
+    }
+  }
+
+  /**
+   * Get all rows from the prepared statement.
+   *
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   *
+   * @param params @see `BindParams`
+   */
+  public allSync<T>(...params: VariadicBindParams): T[];
+  public allSync<T>(params: BindParams): T[];
+  public allSync<T>(...params: unknown[]): T[] {
+    const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
+    if (shouldPassAsObject) {
+      return this.nativeStatement.objectGetAllSync(this.nativeDatabase, bindParams);
+    } else {
+      return this.nativeStatement.arrayGetAllSync(this.nativeDatabase, bindParams);
+    }
+  }
+
+  /**
+   * Reset the prepared statement cursor.
+   */
+  public resetSync(): void {
+    this.nativeStatement.resetSync(this.nativeDatabase);
+  }
+
+  /**
+   * Finalize the prepared statement.
+   *
+   * > **Note:** Remember to finalize the prepared statement whenever you call `prepareSync()` to avoid resource leaks.
+   *
+   */
+  public finalizeSync(): void {
+    this.nativeStatement.finalizeSync(this.nativeDatabase);
+  }
+
+  //#endregion
 }
 
 /**
