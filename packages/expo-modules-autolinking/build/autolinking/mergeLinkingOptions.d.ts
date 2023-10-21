@@ -1,8 +1,8 @@
 import { SearchOptions } from '../types';
 /**
- * Path to the `package.json` of the closest project in the current working dir.
+ * Find the path to the `package.json` of the closest project in the given project root.
  */
-export declare const projectPackageJsonPath: string;
+export declare function getProjectPackageJsonPathAsync(projectRoot: string): Promise<string>;
 /**
  * Merges autolinking options from different sources (the later the higher priority)
  * - options defined in package.json's `expo.autolinking` field
