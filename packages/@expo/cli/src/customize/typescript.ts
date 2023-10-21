@@ -20,9 +20,7 @@ export async function typescript(projectRoot: string) {
   }
 
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  await new MetroBundlerDevServer(
-    projectRoot,
-    getPlatformBundlers(exp),
-    true
-  ).startTypeScriptServices();
+  await new MetroBundlerDevServer(projectRoot, getPlatformBundlers(exp), {
+    isDevClient: true,
+  }).startTypeScriptServices();
 }

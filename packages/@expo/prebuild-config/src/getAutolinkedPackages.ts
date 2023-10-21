@@ -20,6 +20,7 @@ export async function getAutolinkedPackagesAsync(
   const platformPaths = await Promise.all(
     platforms.map((platform) =>
       autolinking.findModulesAsync({
+        projectRoot,
         platform,
         searchPaths,
         silent: true,
