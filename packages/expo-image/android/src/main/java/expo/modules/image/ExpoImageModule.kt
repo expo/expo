@@ -48,6 +48,26 @@ class ExpoImageModule : Module() {
       return@AsyncFunction true
     }
 
+    AsyncFunction("getCachePathAsync") { source: String ->
+      val context = appContext.reactContext ?: return@AsyncFunction false
+
+      val glideUrl = GlideUrl(source)
+      val target = Glide.with(context).asFile().load(glideUrl).submit()
+
+      try {
+        val file = target.get()
+        val path = file.absolutePath
+
+        if(path != null) {
+          return@AsyncFunction path
+        }
+      } catch(e: Exception) {
+        return@AsyncFunction false
+      }
+
+      return@AsyncFunction false
+    }
+
     View(ExpoImageViewWrapper::class) {
       Events(
         "onLoadStart",
