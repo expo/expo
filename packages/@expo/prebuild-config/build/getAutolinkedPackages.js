@@ -24,6 +24,7 @@ async function getAutolinkedPackagesAsync(projectRoot, platforms = ['ios', 'andr
   const autolinking = (0, _importExpoModulesAutolinking().importExpoModulesAutolinking)(projectRoot);
   const searchPaths = await autolinking.resolveSearchPathsAsync(null, projectRoot);
   const platformPaths = await Promise.all(platforms.map(platform => autolinking.findModulesAsync({
+    projectRoot,
     platform,
     searchPaths,
     silent: true
