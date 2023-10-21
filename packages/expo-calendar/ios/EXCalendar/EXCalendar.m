@@ -121,7 +121,11 @@ EX_EXPORT_METHOD_AS(saveCalendarAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  if (![self _checkCalendarPermissions:reject]) {
+  NSString *type = details[@"entityType"];
+  if ([type isEqualToString:@"event"] && ![self _checkCalendarPermissions:reject]) {
+    return;
+  }
+  if ([type isEqualToString:@"reminder"] && ![self _checkRemindersPermissions:reject]) {
     return;
   }
 
@@ -129,7 +133,6 @@ EX_EXPORT_METHOD_AS(saveCalendarAsync,
   NSString *title = details[@"title"];
   NSNumber *color = details[@"color"];
   NSString *sourceId = details[@"sourceId"];
-  NSString *type = details[@"entityType"];
   NSString *calendarId = details[@"id"];
 
   if (calendarId) {
