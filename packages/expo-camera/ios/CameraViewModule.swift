@@ -13,7 +13,7 @@ public final class CameraViewModule: Module {
       EXPermissionsMethodsDelegate.register(
         [
           CameraPermissionRequester(),
-          CameraCameraPermissionRequester(),
+          CameraOnlyPermissionRequester(),
           CameraMicrophonePermissionRequester()
         ],
         withPermissionsManager: permissionsManager
@@ -129,14 +129,12 @@ public final class CameraViewModule: Module {
       Prop("faceDetectorEnabled") { (view, detectFaces: Bool?) in
         if view.isDetectingFaces != detectFaces {
           view.isDetectingFaces = detectFaces ?? false
-          view.setIsDetectingFaces(detecting: detectFaces)
         }
       }
 
       Prop("barCodeScannerEnabled") { (view, scanBarCodes: Bool?) in
         if view.isScanningBarCodes != scanBarCodes {
           view.isScanningBarCodes = scanBarCodes ?? false
-          view.setIsScanningBarCodes(scanning: scanBarCodes)
         }
       }
 
@@ -237,7 +235,7 @@ public final class CameraViewModule: Module {
     AsyncFunction("getCameraPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
-        withRequester: CameraCameraPermissionRequester.self,
+        withRequester: CameraOnlyPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
@@ -246,7 +244,7 @@ public final class CameraViewModule: Module {
     AsyncFunction("requestCameraPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
-        withRequester: CameraCameraPermissionRequester.self,
+        withRequester: CameraOnlyPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )

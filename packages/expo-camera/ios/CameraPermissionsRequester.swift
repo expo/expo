@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import AVFoundation
 
-class CameraCameraPermissionRequester: NSObject, EXPermissionsRequester {
+class CameraOnlyPermissionRequester: NSObject, EXPermissionsRequester {
   static func permissionType() -> String {
     "camera"
   }

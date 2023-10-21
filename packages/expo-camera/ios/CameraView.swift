@@ -219,7 +219,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       log.info("Permissions module not found.")
       return
     }
-    if !manager.hasGrantedPermission(usingRequesterClass: CameraCameraPermissionRequester.self) {
+    if !manager.hasGrantedPermission(usingRequesterClass: CameraOnlyPermissionRequester.self) {
       onMountError(["message": "Camera permissions not granted - component could not be rendered."])
       return
     }
