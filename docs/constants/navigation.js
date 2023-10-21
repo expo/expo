@@ -399,6 +399,7 @@ const general = [
         makePage('guides/using-eslint.mdx'),
         makePage('guides/using-nextjs.mdx'),
         makePage('guides/using-sentry.mdx'),
+        makePage('guides/building-for-tv.mdx'),
         makePage('guides/typescript.mdx'),
       ]),
       makeSection('Expo accounts', [
