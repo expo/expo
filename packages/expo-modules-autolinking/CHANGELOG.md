@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added Expo CLI devtools plugins support. ([#24649](https://github.com/expo/expo/pull/24649) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
