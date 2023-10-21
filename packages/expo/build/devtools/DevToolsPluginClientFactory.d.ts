@@ -5,4 +5,12 @@ import type { ConnectionInfo } from './devtools.types';
  * @hidden
  */
 export declare function createDevToolsPluginClient(connectionInfo: ConnectionInfo): Promise<DevToolsPluginClient>;
+/**
+ * Public API to get the DevToolsPluginClient instance.
+ */
+export declare function getDevToolsPluginClientAsync(pluginName: string): Promise<DevToolsPluginClient>;
+/**
+ * Internal testing API to cleanup all DevToolsPluginClient instances.
+ */
+export declare function cleanupDevToolsPluginInstances(): void;
 //# sourceMappingURL=DevToolsPluginClientFactory.d.ts.map

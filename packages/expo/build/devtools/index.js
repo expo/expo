@@ -1,25 +1,6 @@
 import { useState, useEffect } from 'react';
-import { createDevToolsPluginClient } from './DevToolsPluginClientFactory';
-import { getConnectionInfo } from './getConnectionInfo';
-const instanceMap = {};
-/**
- * Public API to get the DevToolsPluginClient instance.
- */
-export async function getDevToolsPluginClientAsync(pluginName) {
-    const connectionInfo = getConnectionInfo();
-    let instance = instanceMap[pluginName];
-    if (instance != null &&
-        (instance.isConnected() === false ||
-            instance.connectionInfo.devServer !== connectionInfo.devServer)) {
-        await instance.closeAsync();
-        delete instanceMap[pluginName];
-    }
-    if (instance == null) {
-        instance = await createDevToolsPluginClient({ ...connectionInfo, pluginName });
-        instanceMap[pluginName] = instance;
-    }
-    return instance;
-}
+import { getDevToolsPluginClientAsync } from './DevToolsPluginClientFactory';
+export { getDevToolsPluginClientAsync };
 /**
  * A React hook to get the DevToolsPluginClient instance.
  */
