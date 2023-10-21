@@ -114,7 +114,7 @@ class CameraViewModule : Module() {
       return@AsyncFunction view.cameraView.supportedAspectRatios.map { it.toString() }
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getAvailablePictureSizes") { ratio: String?, viewTag: Int ->
+    AsyncFunction("getAvailablePictureSizes") { ratio: String, viewTag: Int ->
       val view = findView(viewTag)
 
       if (!view.cameraView.isCameraOpened) {

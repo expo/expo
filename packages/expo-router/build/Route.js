@@ -48,7 +48,7 @@ function useContextKey() {
 exports.useContextKey = useContextKey;
 /** Provides the matching routes and filename to the children. */
 function Route({ children, node }) {
-    return react_1.default.createElement(CurrentRouteContext.Provider, { value: node }, children);
+    return <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>;
 }
 exports.Route = Route;
 //# sourceMappingURL=Route.js.map

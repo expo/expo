@@ -27,10 +27,7 @@ function isApiRoute(route: RouteNode) {
 }
 
 function isNotFoundRoute(route: RouteNode) {
-  if (route.route === '404') {
-    return true;
-  }
-  return route.dynamic?.length && route.dynamic[0].name === '404';
+  return route.dynamic && route.dynamic[route.dynamic.length - 1].notFound;
 }
 
 // Given a nested route tree, return a flattened array of all routes that can be matched.
@@ -76,6 +73,7 @@ function getMatchableManifestForPaths(paths: [string, RouteNode][]) {
 export function getNamedRouteRegex(normalizedRoute: string, page: string) {
   const result = getNamedParametrizedRoute(normalizedRoute);
   return {
+    file: page,
     page: page.replace(/\.[jt]sx?$/, ''),
     namedRegex: `^${result.namedParameterizedRoute}(?:/)?$`,
     routeKeys: result.routeKeys,
@@ -128,7 +126,10 @@ function getNamedParametrizedRoute(route: string) {
   const routeKeys: { [named: string]: string } = {};
   return {
     namedParameterizedRoute: segments
-      .map((segment) => {
+      .map((segment, index) => {
+        if (segment === '+not-found' && index === segments.length - 1) {
+          segment = '[...not-found]';
+        }
         if (/^\[.*\]$/.test(segment)) {
           const { name, optional, repeat } = parseParameter(segment.slice(1, -1));
           // replace any non-word characters since they can break

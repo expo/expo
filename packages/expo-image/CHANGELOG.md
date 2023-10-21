@@ -4,15 +4,46 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
 - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
 
 - Added support for the `headers` key in the `source` object on web. ([#24447](https://github.com/expo/expo/pull/24447) by [@aleqsio](https://github.com/aleqsio))
+- Add support for setting `tintColor` on SVGs on Android (part 1) ([#24733](https://github.com/expo/expo/pull/24733) by [@alanjhughes](https://github.com/alanjhughes) and [@kadikraman](https://github.com/kadikraman))
+- Add support for setting `tintColor` on SVGs on Android (part 2) ([#24888](https://github.com/expo/expo/pull/24888) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🐛 Bug fixes
 
+- Remove `GlideWebpDecoder` until they update their `libwebp` dependency. ([#24656](https://github.com/expo/expo/pull/24656) by [@alanjhughes](https://github.com/alanjhughes))
+- [web] Fix content fit not being applied correctly when using hash placeholders. ([#24542](https://github.com/expo/expo/pull/24542) by [@aleqsio](https://github.com/aleqsio))
+- [macCatalyst] Fix build with `ImageAnalyzer` on macCatalyst below 17.0. ([#24880](https://github.com/expo/expo/pull/24880) by [@kesha-antonov](https://github.com/kesha-antonov))
+
 ### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+- Make `placeholderContentFit` visible in the docs. ([#24801](https://github.com/expo/expo/pull/24801) by [@behenate](https://github.com/behenate))
+
+## 1.0.2 — 2023-09-29
+
+### 🐛 Bug fixes
+
+- Remove `GlideWebpDecoder` until they update their `libwebp` dependency. ([#24656](https://github.com/expo/expo/pull/24656) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.3.4 — 2023-09-28
+
+### 🐛 Bug fixes
+
+- Remove `GlideWebpDecoder` until they update their `libwebp` dependency. ([#24656](https://github.com/expo/expo/pull/24656) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 1.5.2 — 2023-09-18
 

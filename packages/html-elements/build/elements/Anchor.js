@@ -20,6 +20,6 @@ export const A = forwardRef(({ href, target, download, rel, ...props }, ref) => 
             },
         },
     });
-    return React.createElement(Text, { accessibilityRole: "link", ...props, ...nativeProps, ref: ref });
+    return <Text role="link" {...props} {...nativeProps} ref={ref}/>;
 });
 //# sourceMappingURL=Anchor.js.map

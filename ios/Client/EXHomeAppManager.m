@@ -20,11 +20,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
 
-#if defined(EX_DETACHED)
-#import "ExpoKit-Swift.h"
-#else
 #import "Expo_Go-Swift.h"
-#endif // defined(EX_DETACHED)
 
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 

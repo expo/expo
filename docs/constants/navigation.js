@@ -373,6 +373,7 @@ const general = [
         makePage('guides/icons.mdx'),
         makePage('guides/localization.mdx'),
         makePage('guides/configuring-js-engines.mdx'),
+        makePage('guides/using-bun.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
@@ -449,6 +450,7 @@ const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
     makePage('preview/support.mdx'),
+    makePage('router/reference/not-found.mdx'),
     { expanded: true },
     makeSection('Expo Router', [makePage('preview/api-routes.mdx')]),
   ]),

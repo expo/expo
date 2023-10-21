@@ -44,7 +44,7 @@ function registerSearchCommand<OptionsType extends SearchOptions>(
     )
     .option(
       '--only-project-deps',
-      'For a monorepo, include all modules even if they are not in the project dependencies.',
+      'For a monorepo, include only modules that are the project dependencies.',
       true
     )
     .option('--no-only-project-deps', 'Opposite of --only-project-deps', false)
