@@ -17,14 +17,14 @@ You can run the same build process that we run on the EAS Build servers directly
 
 You need to be authenticated with Expo:
 
-- Run `eas login`,
-- or set `EXPO_TOKEN` ([learn more about token-based authentication](/accounts/programmatic-access)).
+- Run `eas login`
+- Alternatively, set `EXPO_TOKEN` [using token-based authentication](/accounts/programmatic-access)
 
 ## Use cases for local builds
 
 - Company policies that restrict the use of third-party CI/CD services. With local builds, the entire process runs on your infrastructure and the only communication with EAS servers is:
   - to make sure project `@account/slug` exists
-  - if you are using managed credentials to download them.
+  - if you are using managed credentials to download them
 - [Debugging](#using-local-builds-for-debugging) build failures on EAS servers.
 
 ## Use local builds for debugging
