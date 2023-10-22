@@ -112,7 +112,7 @@ export default function Details() {
 }
 ```
 
-It's sometimes useful to configure options using `navigation.setOptions()`, as an alternative to the `<Stack.Screen>` component.
+As an alternative to the `<Stack.Screen>` component, you can use [`navigation.setOptions()`](https://reactnavigation.org/docs/navigation-prop/#setoptions) to configure screen options from within the component.
 
 ```jsx app/home.js
 import { Stack, useNavigation } from 'expo-router';
@@ -124,6 +124,7 @@ export default function Home() {
   React.useEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
+  
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>Home Screen</Text>
