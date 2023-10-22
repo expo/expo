@@ -62,10 +62,9 @@ export default function Page() {
 You may want to navigate from a global store when a user logs in or out. You can use the `router` object or `useRouter` hook to navigate imperatively (outside of React).
 
 ```js
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 
 export function logout() {
-  const router = useRouter();
   /* @info Navigate to <b>/login</b> */
   router.replace('/login');
   /* @end */
