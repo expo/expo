@@ -63,7 +63,12 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
     const heading = React.useRef(props.headingManager.addHeading(summary, 1, undefined));
 
     return (
-      <details id={heading.current.slug} css={detailsStyle} open={open} data-testid={testID}>
+      <details
+        id={heading.current.slug}
+        css={detailsStyle}
+        open={open}
+        data-testid={testID}
+        >
         <summary css={summaryStyle} onClick={onToggle}>
           <div css={markerWrapperStyle}>
             <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
@@ -93,10 +98,6 @@ const detailsStyle = css({
 
   '&[open]': {
     boxShadow: shadows.xs,
-  },
-
-  'h4:first-child': {
-    marginTop: 0,
   },
 
   'h4 + &, p + &, li > &': {
