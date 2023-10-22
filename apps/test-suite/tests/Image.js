@@ -81,5 +81,44 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         await mountAndWaitFor(<Image source={REMOTE_SOURCE} style={{height: 100, width: 100}} />, 'onLoadEnd', setPortalChild);
       });
     });
+
+    t.describe('getCachePathAsync', async () => {
+      t.it('returns path to cached image when it does exist in the cache', async () => {
+        await mountAndWaitFor(<Image source={REMOTE_SOURCE} style={{height: 100, width: 100}} />, undefined, setPortalChild);
+
+        const result = await Image.getCachePathAsync(REMOTE_SOURCE.uri);
+
+        t.expect(typeof result).toBe('string');
+      });
+
+      t.it('returns a valid image path', async () => {
+        const result = await Image.getCachePathAsync(REMOTE_SOURCE.uri);
+
+        if(typeof result != 'string') {
+          throw new Error();
+        }
+
+        try {
+          // On Android, the path should start with file://
+          await mountAndWaitForWithTimeout(
+            <Image source={"file://" + result} style={{height: 100, width: 100}} />,
+            'onError',
+            setPortalChild,
+            3000
+          );
+        } catch (e) {
+          if (!(e instanceof TimeoutError)) {
+            throw e;
+          }
+        }
+      });
+
+      t.it('returns false when the image does not exist in the cache', async () => {
+        await Image.clearDiskCache();
+        const result = await Image.getCachePathAsync(REMOTE_SOURCE.uri);
+
+        t.expect(result).toBe(false);
+      });
+    });
   });
 }
