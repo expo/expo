@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `getCachePathAsync()` to retrieve the path of the cached image file if it exists
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
