@@ -18,12 +18,16 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
     t.describe('onLoadStart', () => {
       t.it('emits an event when the image starts to load (will load successfully)', async () => {
-        await mountAndWaitFor(<Image source={REMOTE_SOURCE} style={{height: 100, width: 100}} />, 'onLoadStart', setPortalChild);
+        await mountAndWaitFor(
+          <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
+          'onLoadStart',
+          setPortalChild
+        );
       });
 
       t.it('emits an event when the image starts to load (will error)', async () => {
         await mountAndWaitFor(
-          <Image source={NON_EXISTENT_SOURCE} style={{height: 100, width: 100}} />,
+          <Image source={NON_EXISTENT_SOURCE} style={{ height: 100, width: 100 }} />,
           'onLoadStart',
           setPortalChild
         );
@@ -32,13 +36,17 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
     t.describe('onLoad', () => {
       t.it('emits an event when the image loads successfully', async () => {
-        await mountAndWaitFor(<Image source={REMOTE_SOURCE} style={{height: 100, width: 100}} />, 'onLoad', setPortalChild);
+        await mountAndWaitFor(
+          <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
+          'onLoad',
+          setPortalChild
+        );
       });
 
       t.it('does not emit an event if the image errors', async () => {
         try {
           await mountAndWaitForWithTimeout(
-            <Image source={NON_EXISTENT_SOURCE} style={{height: 100, width: 100}} />,
+            <Image source={NON_EXISTENT_SOURCE} style={{ height: 100, width: 100 }} />,
             'onLoad',
             setPortalChild,
             3000
@@ -53,13 +61,17 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
     t.describe('onError', () => {
       t.it('emits an event when the image fails to load successfully', async () => {
-        await mountAndWaitFor(<Image source={NON_EXISTENT_SOURCE} style={{height: 100, width: 100}} />, 'onError', setPortalChild);
+        await mountAndWaitFor(
+          <Image source={NON_EXISTENT_SOURCE} style={{ height: 100, width: 100 }} />,
+          'onError',
+          setPortalChild
+        );
       });
 
       t.it('does not emit an event if the image loads successfully', async () => {
         try {
           await mountAndWaitForWithTimeout(
-            <Image source={REMOTE_SOURCE} style={{height: 100, width: 100}} />,
+            <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
             'onError',
             setPortalChild,
             3000
@@ -74,17 +86,29 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
     t.describe('onLoadEnd', () => {
       t.it('emits an event when the image loads successfully', async () => {
-        await mountAndWaitFor(<Image source={REMOTE_SOURCE} style={{height: 100, width: 100}} />, 'onLoadEnd', setPortalChild);
+        await mountAndWaitFor(
+          <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
+          'onLoadEnd',
+          setPortalChild
+        );
       });
 
       t.it('emits an event when the image errors', async () => {
-        await mountAndWaitFor(<Image source={REMOTE_SOURCE} style={{height: 100, width: 100}} />, 'onLoadEnd', setPortalChild);
+        await mountAndWaitFor(
+          <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
+          'onLoadEnd',
+          setPortalChild
+        );
       });
     });
 
     t.describe('getCachePathAsync', async () => {
       t.it('returns path to cached image when it does exist in the cache', async () => {
-        await mountAndWaitFor(<Image source={REMOTE_SOURCE} style={{height: 100, width: 100}} />, undefined, setPortalChild);
+        await mountAndWaitFor(
+          <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
+          undefined,
+          setPortalChild
+        );
 
         const result = await Image.getCachePathAsync(REMOTE_SOURCE.uri);
 
@@ -94,14 +118,14 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       t.it('returns a valid image path', async () => {
         const result = await Image.getCachePathAsync(REMOTE_SOURCE.uri);
 
-        if(typeof result != 'string') {
+        if (typeof result != 'string') {
           throw new Error();
         }
 
         try {
           // On Android, the path should start with file://
           await mountAndWaitForWithTimeout(
-            <Image source={"file://" + result} style={{height: 100, width: 100}} />,
+            <Image source={'file://' + result} style={{ height: 100, width: 100 }} />,
             'onError',
             setPortalChild,
             3000
