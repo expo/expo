@@ -108,7 +108,7 @@ export default function Page() {
 
 ## Replacing screens
 
-By default, links "push" routes onto the navigation stack. This means that the previous screen will be available when the user navigates back. You can use the `replace` prop to replace the current screen instead of pushing a new one.
+By default, links "push" routes onto the navigation stack. It follows the same rules as [`navigation.navigate()`](https://reactnavigation.org/docs/navigating/#navigate-to-a-route-multiple-times). This means that the previous screen will be available when the user navigates back. You can use the `replace` prop to replace the current screen instead of pushing a new one.
 
 {/* prettier-ignore */}
 ```js app/index.js
