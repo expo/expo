@@ -52,7 +52,7 @@ class ExpoImageModule : Module() {
       val context = appContext.reactContext ?: return@AsyncFunction false
 
       val glideUrl = GlideUrl(source)
-      val target = Glide.with(context).asFile().load(glideUrl).submit()
+      val target = Glide.with(context).asFile().load(glideUrl).onlyRetrieveFromCache(true).submit()
 
       try {
         val file = target.get()
