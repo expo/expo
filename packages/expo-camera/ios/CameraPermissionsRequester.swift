@@ -1,26 +1,34 @@
 import ExpoModulesCore
 import AVFoundation
 
-class CameraOnlyPermissionRequester: NSObject, EXPermissionsRequester {
-  static func permissionType() -> String {
-    "camera"
-  }
+let cameraKey = "NSCameraUsageDescription"
+let microphoneKey = "NSMicrophoneUsageDescription"
 
-  func getPermissions() -> [AnyHashable: Any] {
+protocol BaseCameraRequester {
+  func permissionWith(status systemStatus: AVAuthorizationStatus) -> [AnyHashable: Any]
+  func permissions(for key: String, mediaType: AVMediaType, service: String) -> [AnyHashable: Any]
+}
+
+extension BaseCameraRequester {
+  func permissions(for key: String, mediaType: AVMediaType, service: String) -> [AnyHashable: Any] {
     var systemStatus: AVAuthorizationStatus
-    var status: EXPermissionStatus
+    let description = Bundle.main.infoDictionary?[key] as? String
 
-    let cameraUsuageDescription = Bundle.main.infoDictionary?["NSCameraUsageDescription"] as? String
-
-    if let cameraUsuageDescription = cameraUsuageDescription {
-      systemStatus = AVCaptureDevice.authorizationStatus(for: .video)
+    if let description {
+      systemStatus = AVCaptureDevice.authorizationStatus(for: mediaType)
     } else {
       EXFatal(EXErrorWithMessage("""
-      This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription,
-      so audio/video services will fail. Add one of these entries to your bundle's Info.plist.
+      This app is missing \(key),
+      so \(service) services will fail. Add this entry to your bundle's Info.plist.
       """))
       systemStatus = .denied
     }
+
+    return permissionWith(status: systemStatus)
+  }
+
+  func permissionWith(status systemStatus: AVAuthorizationStatus) -> [AnyHashable: Any] {
+    var status: EXPermissionStatus
 
     switch systemStatus {
     case .authorized:
@@ -37,6 +45,16 @@ class CameraOnlyPermissionRequester: NSObject, EXPermissionsRequester {
       "status": status.rawValue
     ]
   }
+}
+
+class CameraOnlyPermissionRequester: NSObject, EXPermissionsRequester, BaseCameraRequester {
+  static func permissionType() -> String! {
+    "camera"
+  }
+
+  func getPermissions() -> [AnyHashable: Any] {
+    return permissions(for: cameraKey, mediaType: .video, service: "video")
+  }
 
   func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
     AVCaptureDevice.requestAccess(for: .video) { [weak self] _ in
@@ -45,7 +63,7 @@ class CameraOnlyPermissionRequester: NSObject, EXPermissionsRequester {
   }
 }
 
-class CameraPermissionRequester: NSObject, EXPermissionsRequester {
+class CameraPermissionRequester: NSObject, EXPermissionsRequester, BaseCameraRequester {
   static func permissionType() -> String {
     "camera"
   }
@@ -54,8 +72,8 @@ class CameraPermissionRequester: NSObject, EXPermissionsRequester {
     var systemStatus: AVAuthorizationStatus
     var status: EXPermissionStatus
 
-    let cameraUsuageDescription = Bundle.main.infoDictionary?["NSCameraUsageDescription"] as? String
-    let microphoneUsuageDescription = Bundle.main.infoDictionary?["NSMicrophoneUsageDescription"] as? String
+    let cameraUsuageDescription = Bundle.main.infoDictionary?[cameraKey] as? String
+    let microphoneUsuageDescription = Bundle.main.infoDictionary?[microphoneKey] as? String
 
     if let cameraUsuageDescription, let microphoneUsuageDescription {
       systemStatus = AVCaptureDevice.authorizationStatus(for: .video)
@@ -68,20 +86,7 @@ class CameraPermissionRequester: NSObject, EXPermissionsRequester {
       systemStatus = .denied
     }
 
-    switch systemStatus {
-    case .authorized:
-      status = EXPermissionStatusGranted
-    case .denied, .restricted:
-      status = EXPermissionStatusDenied
-    case .notDetermined:
-      fallthrough
-    @unknown default:
-      status = EXPermissionStatusUndetermined
-    }
-
-    return [
-      "status": status.rawValue
-    ]
+    return permissionWith(status: systemStatus)
   }
 
   func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
@@ -91,41 +96,13 @@ class CameraPermissionRequester: NSObject, EXPermissionsRequester {
   }
 }
 
-class CameraMicrophonePermissionRequester: NSObject, EXPermissionsRequester {
+class CameraMicrophonePermissionRequester: NSObject, EXPermissionsRequester, BaseCameraRequester {
   static func permissionType() -> String {
     "microphone"
   }
 
   func getPermissions() -> [AnyHashable: Any] {
-    var systemStatus: AVAuthorizationStatus
-    var status: EXPermissionStatus
-
-    let microphoneUsuageDescription = Bundle.main.infoDictionary?["NSMicrophoneUsageDescription"] as? String
-
-    if let microphoneUsuageDescription {
-      systemStatus = AVCaptureDevice.authorizationStatus(for: .audio)
-    } else {
-      EXFatal(EXErrorWithMessage("""
-      This app is missing NSMicrophoneUsageDescription, so audio services will fail.
-      Add this entry to your bundle's Info.plist.
-      """))
-      systemStatus = .denied
-    }
-
-    switch systemStatus {
-    case .authorized:
-      status = EXPermissionStatusGranted
-    case .denied, .restricted:
-      status = EXPermissionStatusDenied
-    case .notDetermined:
-      fallthrough
-    @unknown default:
-      status = EXPermissionStatusUndetermined
-    }
-
-    return [
-      "status": status.rawValue
-    ]
+    return permissions(for: microphoneKey, mediaType: .audio, service: "audio")
   }
 
   func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
