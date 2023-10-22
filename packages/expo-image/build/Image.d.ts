@@ -28,12 +28,13 @@ export declare class Image extends React.PureComponent<ImageProps> {
     /**
      * Asynchronously checks if an image exists in the disk cache and resolves to
      * the path of the cached image if it does.
+     * @param source - The source URL to retrieve the cached version's path for
+     * @platform android
      * @platform ios
      * @return A promise resolving to the path of the cached image. It will resolve
-     * to `false` if the image does not exist in the cache. Resolves to `false` on
-     * Web.
+     * to `false` if the image does not exist in the cache.
      */
-    static getCachePathAsync(url: string): Promise<string | false>;
+    static getCachePathAsync(source: string): Promise<string | false>;
     render(): JSX.Element;
 }
 //# sourceMappingURL=Image.d.ts.map
