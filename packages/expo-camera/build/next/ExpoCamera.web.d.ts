@@ -8,6 +8,6 @@ export interface ExponentCameraRef {
 }
 declare const ExponentCamera: React.ForwardRefExoticComponent<Pick<CameraNativeProps & {
     children?: React.ReactNode;
-}, "zoom" | "type" | "enableTorch" | "flashMode" | "children" | "pointerEvents" | "style" | "onCameraReady" | "onMountError" | "barCodeScannerSettings" | "onBarCodeScanned" | "poster" | "responsiveOrientationWhenOrientationLocked" | "onResponsiveOrientationChanged" | "onPictureSaved" | "barCodeScannerEnabled"> & React.RefAttributes<ExponentCameraRef>>;
+}, "type" | "poster" | "pointerEvents" | "style" | "onCameraReady" | "onMountError" | "onBarCodeScanned" | "onPictureSaved" | "onResponsiveOrientationChanged" | "flashMode" | "enableTorch" | "zoom" | "barCodeScannerSettings" | "barCodeScannerEnabled" | "responsiveOrientationWhenOrientationLocked" | "children"> & React.RefAttributes<ExponentCameraRef>>;
 export default ExponentCamera;
 //# sourceMappingURL=ExpoCamera.web.d.ts.map

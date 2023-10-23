@@ -10,24 +10,30 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import expo.modules.camera.next.CameraViewHelper
+import expo.modules.camera.next.records.BarcodeType
 import expo.modules.camera.next.records.CameraType
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
 import java.nio.ByteBuffer
 
 @OptIn(ExperimentalGetImage::class)
-class BarcodeAnalyzer(val lensFacing: CameraType, val onComplete: (BarCodeScannerResult) -> Unit) : ImageAnalysis.Analyzer {
+class BarcodeAnalyzer(private val lensFacing: CameraType, private val formats: List<BarcodeType>, val onComplete: (BarCodeScannerResult) -> Unit) : ImageAnalysis.Analyzer {
+  private val barcodeFormats = if (formats.isEmpty()) 0 else formats.map { it.mapToBarcode() }.reduce { acc, it ->
+    acc or it
+  }
+  private var barcodeScannerOptions =
+    BarcodeScannerOptions.Builder()
+      .setBarcodeFormats(barcodeFormats)
+      .build()
+  private var barcodeScanner = BarcodeScanning.getClient(barcodeScannerOptions)
+
   override fun analyze(imageProxy: ImageProxy) {
     val mediaImage = imageProxy.image
 
     if (mediaImage != null) {
       val rotation = CameraViewHelper.getCorrectCameraRotation(imageProxy.imageInfo.rotationDegrees, lensFacing)
       val image = InputImage.fromMediaImage(mediaImage, rotation)
-      val options = BarcodeScannerOptions.Builder()
-        .enableAllPotentialBarcodes()
-        .build()
 
-      val scanner = BarcodeScanning.getClient(options)
-      scanner.process(image)
+      barcodeScanner.process(image)
         .addOnSuccessListener { barcodes ->
           if (barcodes.isEmpty()) {
             return@addOnSuccessListener

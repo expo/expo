@@ -1,6 +1,5 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import { BarCodeScanner } from 'expo-barcode-scanner';
 import {
   BarCodePoint,
   BarCodeScanningResult,
@@ -284,14 +283,10 @@ export default class CameraScreen extends React.Component<object, State> {
         zoom={this.state.zoom}
         onMountError={this.handleMountError}
         barCodeScannerSettings={{
-          barCodeTypes: [
-            BarCodeScanner.Constants.BarCodeType.qr,
-            BarCodeScanner.Constants.BarCodeType.pdf417,
-          ],
+          barCodeTypes: ['qr', 'pdf417'],
         }}
         onBarCodeScanned={this.state.barcodeScanning ? this.onBarCodeScanned : undefined}>
         {this.renderTopBar()}
-
         {this.renderBottomBar()}
       </Camera>
       {this.state.barcodeScanning && this.renderBarCode()}

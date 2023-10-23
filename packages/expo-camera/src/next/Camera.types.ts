@@ -429,8 +429,23 @@ export type CameraNativeProps = {
 
 // @docsMissing
 export type BarCodeSettings = {
-  barCodeTypes: string[];
+  barCodeTypes: BarCodeType[];
   interval?: number;
 };
+
+export type BarCodeType =
+  | 'aztec'
+  | 'ean13'
+  | 'ean8'
+  | 'qr'
+  | 'pdf417'
+  | 'upc_e'
+  | 'datamatrix'
+  | 'code39'
+  | 'code93'
+  | 'itf14'
+  | 'codabar'
+  | 'code128'
+  | 'upc_a';
 
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };

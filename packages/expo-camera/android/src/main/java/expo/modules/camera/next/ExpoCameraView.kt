@@ -1,6 +1,5 @@
 package expo.modules.camera.next
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
@@ -12,7 +11,6 @@ import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.camera2.interop.Camera2CameraInfo
-import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraState
@@ -40,6 +38,7 @@ import expo.modules.camera.PictureSavedEvent
 import expo.modules.camera.next.analyzers.BarcodeAnalyzer
 import expo.modules.camera.next.analyzers.toByteArray
 import expo.modules.camera.next.records.BarCodeSettings
+import expo.modules.camera.next.records.BarcodeType
 import expo.modules.camera.next.records.CameraMode
 import expo.modules.camera.next.records.CameraType
 import expo.modules.camera.next.records.FlashMode
@@ -76,6 +75,7 @@ class ExpoCameraView(
   private var imageCaptureUseCase: ImageCapture? = null
   private var imageAnalysisUseCase: ImageAnalysis? = null
   private var recorder: Recorder? = null
+  private var barcodeFormats: List<BarcodeType> = emptyList()
 
   private var previewView = PreviewView(context)
 
@@ -246,14 +246,9 @@ class ExpoCameraView(
       }
 
       val videoCapture = createVideoCapture(cameraInfo)
-      val viewPort = previewView.viewPort
-
       imageAnalysisUseCase = createImageAnalyzer()
 
       val useCases = UseCaseGroup.Builder().apply {
-        viewPort?.let {
-          setViewPort(it)
-        }
         addUseCase(preview)
         if (cameraMode == CameraMode.PICTURE) {
           imageCaptureUseCase?.let {
@@ -289,9 +284,9 @@ class ExpoCameraView(
         .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
         .build())
       .build()
-      .also { image ->
+      .also { analyzer ->
         if (shouldScanBarCodes) {
-          image.setAnalyzer(ContextCompat.getMainExecutor(context), BarcodeAnalyzer(lenFacing) {
+          analyzer.setAnalyzer(ContextCompat.getMainExecutor(context), BarcodeAnalyzer(lenFacing, barcodeFormats) {
             onBarCodeScanned(it)
           })
         }
@@ -306,7 +301,6 @@ class ExpoCameraView(
 
     val recorder = Recorder.Builder()
       .setExecutor(ContextCompat.getMainExecutor(context))
-      .setAspectRatio(AspectRatio.RATIO_16_9)
       .setQualitySelector(qualitySelector)
       .build()
       .also {
@@ -333,11 +327,10 @@ class ExpoCameraView(
     createCamera()
   }
 
-  fun setBarCodeScannerSettings(settings: BarCodeSettings) {
-
+  fun setBarCodeScannerSettings(settings: BarCodeSettings?) {
+    barcodeFormats = settings?.barcodeTypes ?: emptyList()
   }
 
-  // Even = portrait, odd = landscape
   private fun getDeviceOrientation() =
     (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
 
