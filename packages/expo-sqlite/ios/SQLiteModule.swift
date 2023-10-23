@@ -12,7 +12,8 @@ public final class SQLiteModule: Module {
     Events("onDatabaseChange")
 
     OnCreate {
-      crsqlite_init_from_swift()
+      // TODO: Remove this integration from legacy SQLiteModule
+      crsqlite_auto_init_from_swift()
     }
 
     AsyncFunction("exec") { (dbName: String, queries: [[Any]], readOnly: Bool) -> [Any?] in
@@ -120,7 +121,7 @@ public final class SQLiteModule: Module {
             selfObj.sendEvent("onDatabaseChange", [
               "tableName": String(cString: UnsafePointer(tableName)),
               "rowId": rowId,
-              "typeId": SqlAction.fromCode(value: action)
+              "typeId": SQLAction.fromCode(value: action)
             ])
           }
         }
@@ -247,25 +248,5 @@ public final class SQLiteModule: Module {
     let code = sqlite3_errcode(db)
     let message = NSString(utf8String: sqlite3_errmsg(db)) ?? ""
     return NSString(format: "Error code %i: %@", code, message) as String
-  }
-}
-
-enum SqlAction: String, Enumerable {
-  case insert
-  case delete
-  case update
-  case unknown
-
-  static func fromCode(value: Int32) -> SqlAction {
-    switch value {
-    case 9:
-      return .delete
-    case 18:
-      return .insert
-    case 23:
-      return .update
-    default:
-      return .unknown
-    }
   }
 }
