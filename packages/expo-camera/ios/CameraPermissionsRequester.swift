@@ -5,12 +5,14 @@ let cameraKey = "NSCameraUsageDescription"
 let microphoneKey = "NSMicrophoneUsageDescription"
 
 protocol BaseCameraRequester {
+  var mediaType: AVMediaType { get set }
   func permissionWith(status systemStatus: AVAuthorizationStatus) -> [AnyHashable: Any]
-  func permissions(for key: String, mediaType: AVMediaType, service: String) -> [AnyHashable: Any]
+  func permissions(for key: String, service: String) -> [AnyHashable: Any]
+  func requestAccess(handler: @escaping (Bool) -> Void)
 }
 
 extension BaseCameraRequester {
-  func permissions(for key: String, mediaType: AVMediaType, service: String) -> [AnyHashable: Any] {
+  func permissions(for key: String, service: String) -> [AnyHashable: Any] {
     var systemStatus: AVAuthorizationStatus
     let description = Bundle.main.infoDictionary?[key] as? String
 
@@ -45,25 +47,33 @@ extension BaseCameraRequester {
       "status": status.rawValue
     ]
   }
+
+  func requestAccess(handler: @escaping (Bool) -> Void) {
+    AVCaptureDevice.requestAccess(for: mediaType, completionHandler: handler)
+  }
 }
 
 class CameraOnlyPermissionRequester: NSObject, EXPermissionsRequester, BaseCameraRequester {
-  static func permissionType() -> String! {
+  var mediaType: AVMediaType = .video
+
+  static func permissionType() -> String {
     "camera"
   }
 
   func getPermissions() -> [AnyHashable: Any] {
-    return permissions(for: cameraKey, mediaType: .video, service: "video")
+    return permissions(for: cameraKey, service: "video")
   }
 
   func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
-    AVCaptureDevice.requestAccess(for: .video) { [weak self] _ in
+    requestAccess { [weak self] _ in
       resolve(self?.getPermissions())
     }
   }
 }
 
 class CameraPermissionRequester: NSObject, EXPermissionsRequester, BaseCameraRequester {
+  var mediaType: AVMediaType = .video
+
   static func permissionType() -> String {
     "camera"
   }
@@ -76,7 +86,7 @@ class CameraPermissionRequester: NSObject, EXPermissionsRequester, BaseCameraReq
     let microphoneUsuageDescription = Bundle.main.infoDictionary?[microphoneKey] as? String
 
     if let cameraUsuageDescription, let microphoneUsuageDescription {
-      systemStatus = AVCaptureDevice.authorizationStatus(for: .video)
+      systemStatus = AVCaptureDevice.authorizationStatus(for: mediaType)
     } else {
       EXFatal(EXErrorWithMessage("""
       This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription,
@@ -90,23 +100,25 @@ class CameraPermissionRequester: NSObject, EXPermissionsRequester, BaseCameraReq
   }
 
   func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
-    AVCaptureDevice.requestAccess(for: .video) { [weak self] _ in
+    requestAccess { [weak self] _ in
       resolve(self?.getPermissions())
     }
   }
 }
 
 class CameraMicrophonePermissionRequester: NSObject, EXPermissionsRequester, BaseCameraRequester {
+  var mediaType: AVMediaType = .audio
+
   static func permissionType() -> String {
     "microphone"
   }
 
   func getPermissions() -> [AnyHashable: Any] {
-    return permissions(for: microphoneKey, mediaType: .audio, service: "audio")
+    return permissions(for: microphoneKey, service: "audio")
   }
 
   func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
-    AVCaptureDevice.requestAccess(for: .audio) { [weak self] _ in
+    requestAccess { [weak self] _ in
       resolve(self?.getPermissions())
     }
   }
