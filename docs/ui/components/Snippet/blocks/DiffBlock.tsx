@@ -74,7 +74,7 @@ export const DiffBlock = ({
           showOperation={showOperation}
         />
         <SnippetContent className="p-0" hideOverflow>
-          {collapseDeletedFiles && type !== 'delete' ? (
+          {!collapseDeletedFiles || type !== 'delete' ? (
             <Diff viewType="unified" diffType={type} hunks={hunks}>
               {(hunks: any[]) => hunks.map(hunk => <Hunk key={hunk.content} hunk={hunk} />)}
             </Diff>
