@@ -6,7 +6,7 @@ public class CalendarModule: Module {
   private var permittedEntities: EKEntityMask = .event
   private var eventStore = EKEventStore()
 
-  // swiftlint:disable:next cyclomatic_complexity function_body_length
+  // swiftlint:disable:next cyclomatic_complexity
   public func definition() -> ModuleDefinition {
     Name("ExpoCalendar")
 
@@ -100,7 +100,6 @@ public class CalendarModule: Module {
       return serializeCalendar(event: calendarEvent)
     }
 
-    // swiftlint:disable:next closure_body_length
     AsyncFunction("saveEventAsync") { (event: Event, options: RecurringEventOptions) -> String in
       try checkCalendarPermissions()
       let calendarEvent = try getCalendar(from: event)
