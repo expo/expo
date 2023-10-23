@@ -51,3 +51,13 @@ internal class InvalidArgumentsException: Exception {
     "args must be an array"
   }
 }
+
+internal class SQLiteErrorException: GenericException<String> {
+  override var code: String {
+    "ERR_INTERNAL_SQLITE_ERROR"
+  }
+
+  override var reason: String {
+    "\(param)"
+  }
+}
