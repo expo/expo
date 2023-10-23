@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Export generated expo router type. ([#24999](https://github.com/expo/expo/pull/24999) by [@hichemfantar](https://github.com/hichemfantar))
+
 ## 0.10.14 — 2023-10-20
 
 ### 💡 Others
