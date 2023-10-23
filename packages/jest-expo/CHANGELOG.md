@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Renamed `ExponentCamera` to `ExpoCamera`. ([#22604](https://github.com/expo/expo/pull/22604) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 50.0.0-alpha.3 — 2023-10-17
 
 ### 🎉 New features
