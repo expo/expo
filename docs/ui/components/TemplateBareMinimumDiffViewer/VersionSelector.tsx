@@ -3,8 +3,6 @@ import { theme, typography, shadows } from '@expo/styleguide';
 import { spacing, borderRadius } from '@expo/styleguide-base';
 import { ChevronDownIcon } from '@expo/styleguide-icons';
 
-import * as Utilities from '~/common/utilities';
-
 const STYLES_SELECT = css({
   ...typography.fontSizes[14],
   color: theme.text.default,
@@ -24,7 +22,7 @@ const STYLES_SELECT = css({
 });
 
 export type VersionSelectorProps = {
-  version?: string | null;
+  version?: string | undefined;
   setVersion: (version: string) => void;
   availableVersions: string[];
 };
