@@ -197,49 +197,34 @@ To build your project locally you can use compile commands from Expo CLI which g
   ]}
 />
 
-The above commands compile your project into an app locally. You can also add the `--device` flag to create a debug build of your project and run it on a connected device. These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building.
+The above commands compile your project, using your locally installed Android SDK or Xcode, into a debug build of your app.
 
-To modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on the top of existing files. It may also produce different results after the build.
+- These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building, if they do not exist yet. If they already exist, this will be skipped.
+- You can also add the `--device` flag to select a device to run the app on — you can select a physically connected device or emulator/simulator.
+- You can pass in `--variant release` (Android) or `--configuration Release` (iOS) to build a [production version of your app](/deploy/build-project/#production-builds-locally).
 
-To avoid this, add native directories to the project's **.gitignore** and use `npx expo pebuild --clean` command. This ensures that the project is always managed, and the [`--clean` flag](/workflow/prebuild/#clean) will delete existing directories before regenerating them. You can use [app config](/workflow/configuration/) or create a [config plugin](/config-plugins/introduction/) to modify your project's configuration or code inside the native directories.
+To modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on top of existing files. It may also produce different results after the build.
 
-To learn more about how prebuild works, see the following guide:
+To avoid this, add native directories to the project's **.gitignore** and use `npx expo prebuild --clean` command. This ensures that the project is always managed, and the [`--clean` flag](/workflow/prebuild/#clean) will delete existing directories before regenerating them. You can use [app config](/workflow/configuration/) or create a [config plugin](/config-plugins/introduction/) to modify your project's configuration or code inside the native directories.
+
+To learn more about how compilation and prebuild works, see the following guides:
+
+<BoxLink
+  title="Compiling with Expo CLI"
+  description={
+    <>
+      Learn how Expo CLI uses <CODE>run</CODE> commands to compile your app locally, arguments you
+      can pass to the CLI and more.
+    </>
+  }
+  href="/more/expo-cli/#compiling"
+  Icon={BookOpen02Icon}
+/>
 
 <BoxLink
   title="Prebuild"
   description="Learn how Expo CLI generates native code of your project before compiling it."
   href="/workflow/prebuild"
-  Icon={BookOpen02Icon}
-/>
-
-## Production build compilation for testing
-
-You can [compile](/more/expo-cli/#compiling) and run a production build on a device or a simulator using the commands from the following sections. This build type is not code-signed or ready to submit to the app stores. Compiling this type of build is useful to test for bugs that may show up in production.
-
-### Android
-
-To compile an Android app for production, use the `--variant` flag with `release` as its value:
-
-<Terminal cmd={['$ npx expo run:android --variant release']} />
-
-You can also add the `--device` flag to create and run the build on a connected device.
-
-### iOS
-
-To compile an iOS app for production, use the `--configuration` flag with `Release` as its value:
-
-<Terminal cmd={['$ npx expo run:ios --configuration Release']} />
-
-You can also add the `--device` flag to create and run the build on a connected device.
-
-## Production builds
-
-To learn how to natively code-sign and release your app, see Production builds:
-
-<BoxLink
-  title="Production builds"
-  description="Learn how to create a production build for your app that is ready to be submitted to app stores."
-  href="/deploy/build-project/#production-builds-locally"
   Icon={BookOpen02Icon}
 />
 
