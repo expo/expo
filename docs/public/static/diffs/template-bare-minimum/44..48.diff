@@ -2508,7 +2508,7 @@ index 0000000000..8beb344303
 +# CocoaPods
 +/Pods/
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 1ab76eb61e..7cff62ed1d 100644
+index 1ab76eb61e..d1fcd513cc 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -2516,7 +2516,7 @@ index 1ab76eb61e..7cff62ed1d 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "44.0.12",
-+  "version": "48.0.20",
++  "version": "48.0.21",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -2531,11 +2531,11 @@ index 1ab76eb61e..7cff62ed1d 100644
 -    "react-dom": "17.0.1",
 -    "react-native": "0.64.3",
 -    "react-native-web": "0.17.1"
-+    "expo": "~48.0.18",
++    "expo": "~48.0.21",
 +    "expo-splash-screen": "~0.18.2",
 +    "expo-status-bar": "~1.4.4",
 +    "react": "18.2.0",
-+    "react-native": "0.71.13"
++    "react-native": "0.71.14"
    },
    "devDependencies": {
 -    "@babel/core": "^7.12.9"
