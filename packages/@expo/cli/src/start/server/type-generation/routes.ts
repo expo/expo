@@ -314,7 +314,7 @@ declare module "expo-router" {
   type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;
   type ExternalPathString = \`http\${string}\`;
   type ExpoRouterRoutes = DynamicRouteTemplate | StaticRoutes | RelativePathString;
-  type AllRoutes = ExpoRouterRoutes | ExternalPathString;
+  export type AllRoutes = ExpoRouterRoutes | ExternalPathString;
 
   /****************
    * Route Utils  *
