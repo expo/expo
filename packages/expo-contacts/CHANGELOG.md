@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Renamed `unimodule.json` to `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+- Migrated codebase to use Expo Modules API.
 
 ## 12.6.0 — 2023-10-17
 
