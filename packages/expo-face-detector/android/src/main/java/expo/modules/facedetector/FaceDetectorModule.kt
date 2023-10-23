@@ -22,7 +22,6 @@ class FaceDetectorModule : Module() {
     )
 
     AsyncFunction("detectFaces") { options: HashMap<String, Any>, promise: Promise ->
-      // TODO: Check file scope
       val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
       val detector = detectorForOptions(options, context)
       FileFaceDetectionTask(
