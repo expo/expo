@@ -222,6 +222,9 @@ const transform: BabelTransformer['transform'] = ({
         // Pass the engine to babel so we can automatically transpile for the correct
         // target environment.
         engine: options.customTransformOptions?.engine,
+
+        // Provide the project root for accurately reading the Expo config.
+        projectRoot: options.projectRoot,
       },
       ast: true,
 

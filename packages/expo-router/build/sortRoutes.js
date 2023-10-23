@@ -2,6 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sortRoutesWithInitial = exports.sortRoutes = void 0;
 const matchers_1 = require("./matchers");
+function sortDynamicConvention(a, b) {
+    if (a.deep && !b.deep) {
+        return 1;
+    }
+    if (!a.deep && b.deep) {
+        return -1;
+    }
+    return 0;
+}
 function sortRoutes(a, b) {
     if (a.dynamic && !b.dynamic) {
         return 1;
@@ -16,11 +25,21 @@ function sortRoutes(a, b) {
         for (let i = 0; i < a.dynamic.length; i++) {
             const aDynamic = a.dynamic[i];
             const bDynamic = b.dynamic[i];
-            if (aDynamic.deep && !bDynamic.deep) {
+            if (aDynamic.notFound && bDynamic.notFound) {
+                const s = sortDynamicConvention(aDynamic, bDynamic);
+                if (s) {
+                    return s;
+                }
+            }
+            if (aDynamic.notFound && !bDynamic.notFound) {
                 return 1;
             }
-            if (!aDynamic.deep && bDynamic.deep) {
+            if (!aDynamic.notFound && bDynamic.notFound) {
                 return -1;
+            }
+            const s = sortDynamicConvention(aDynamic, bDynamic);
+            if (s) {
+                return s;
             }
         }
         return 0;

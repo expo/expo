@@ -12,11 +12,14 @@ export default function TintColorFilter({ tintColor }) {
     if (!tintColor) {
         return null;
     }
-    return (React.createElement("svg", { style: styles.svg },
-        React.createElement("defs", null,
-            React.createElement("filter", { id: `expo-image-tint-${tintColor}`, x: "0", y: "0", width: "0", height: "0" },
-                React.createElement("feFlood", { floodColor: tintColor, floodOpacity: "1", result: "flood" }),
-                React.createElement("feComposite", { in: "flood", in2: "SourceAlpha", operator: "in" })))));
+    return (<svg style={styles.svg}>
+      <defs>
+        <filter id={`expo-image-tint-${tintColor}`} x="0" y="0" width="0" height="0">
+          <feFlood floodColor={tintColor} floodOpacity="1" result="flood"/>
+          <feComposite in="flood" in2="SourceAlpha" operator="in"/>
+        </filter>
+      </defs>
+    </svg>);
 }
 const styles = StyleSheet.create({
     svg: {

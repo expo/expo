@@ -1,5 +1,7 @@
 package expo.modules.kotlin.exception
 
+import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
+import expo.modules.interfaces.permissions.Permissions
 import kotlin.reflect.KClass
 
 /**
@@ -25,19 +27,24 @@ class Exceptions {
   class ReactContextLost : CodedException(message = "The react context has been lost")
 
   /**
+   * An exception to throw when the native module was missing.
+   */
+  open class ModuleNotFound(clazz: KClass<*>) : CodedException(message = "$clazz module not found, make sure that everything is linked correctly")
+
+  /**
    * An exception to throw when there is no module implementing the [expo.modules.interfaces.permissions.Permissions] interface.
    */
-  class PermissionsModuleNotFound : CodedException(message = "Permissions module not found")
+  class PermissionsModuleNotFound : ModuleNotFound(Permissions::class)
+
+  /**
+   * An exception to throw when there is no module implementing the [expo.modules.interfaces.filesystem.FilePermissionModuleInterface] interface.
+   */
+  class FileSystemModuleNotFound : ModuleNotFound(FilePermissionModuleInterface::class)
 
   /**
    * An exception to throw when the operation is not supported on the simulator.
    */
   class SimulatorNotSupported : CodedException(message = "This operation is not supported on the simulator")
-
-  /**
-   * An exception to throw when there is no module implementing the [expo.modules.interfaces.filesystem.FilePermissionModuleInterface] interface.
-   */
-  class FileSystemModuleNotFound : CodedException(message = "FileSystem module not found, make sure 'expo-file-system' is linked correctly")
 
   /**
    * An exception to throw when Android permissions haven't been granted.

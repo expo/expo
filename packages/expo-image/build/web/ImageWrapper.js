@@ -26,18 +26,19 @@ const ImageWrapper = React.forwardRef(({ source, events, contentPosition, hashPl
     if (!sourceWithHeaders) {
         return null;
     }
-    return (React.createElement(React.Fragment, null,
-        React.createElement(ColorTintFilter, { tintColor: tintColor }),
-        React.createElement("img", { ref: ref, alt: accessibilityLabel, className: className, src: sourceWithHeaders?.uri || undefined, key: source?.uri, style: {
-                objectPosition,
-                ...absoluteFilledPosition,
-                ...getTintColorStyle(tintColor),
-                ...(isImageHash ? hashPlaceholderStyle : {}),
-                ...style,
-            }, 
-            // @ts-ignore
-            // eslint-disable-next-line react/no-unknown-property
-            fetchpriority: getFetchPriorityFromImagePriority(priority || 'normal'), ...getImageWrapperEventHandler(events, sourceWithHeaders), ...getImgPropsFromSource(source), ...props })));
+    return (<>
+        <ColorTintFilter tintColor={tintColor}/>
+        <img ref={ref} alt={accessibilityLabel} className={className} src={sourceWithHeaders?.uri || undefined} key={source?.uri} style={{
+            objectPosition,
+            ...absoluteFilledPosition,
+            ...getTintColorStyle(tintColor),
+            ...style,
+            ...(isImageHash ? hashPlaceholderStyle : {}),
+        }} 
+    // @ts-ignore
+    // eslint-disable-next-line react/no-unknown-property
+    fetchpriority={getFetchPriorityFromImagePriority(priority || 'normal')} {...getImageWrapperEventHandler(events, sourceWithHeaders)} {...getImgPropsFromSource(source)} {...props}/>
+      </>);
 });
 export default ImageWrapper;
 //# sourceMappingURL=ImageWrapper.js.map

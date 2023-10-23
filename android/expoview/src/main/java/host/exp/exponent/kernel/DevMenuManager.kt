@@ -66,14 +66,10 @@ class DevMenuManager {
   }
 
   /**
-   * Shows dev menu in given experience activity. Ensures it never happens in standalone apps and is run on the UI thread.
+   * Shows dev menu in given experience activity. Ensures it is run on the UI thread.
    */
   @SuppressLint("SourceLockedOrientationActivity")
   fun showInActivity(activity: ExperienceActivity) {
-    if (Constants.isStandaloneApp()) {
-      return
-    }
-
     UiThreadUtil.runOnUiThread {
       try {
         val devMenuModule = devMenuModulesRegistry[activity] ?: return@runOnUiThread
@@ -98,13 +94,9 @@ class DevMenuManager {
   }
 
   /**
-   * Hides dev menu in given experience activity. Ensures it never happens in standalone apps and is run on the UI thread.
+   * Hides dev menu in given experience activity. Ensures it is run on the UI thread.
    */
   fun hideInActivity(activity: ExperienceActivity) {
-    if (Constants.isStandaloneApp()) {
-      return
-    }
-
     UiThreadUtil.runOnUiThread {
       reactRootView?.let {
         val parentView = it.parent as ViewGroup?
@@ -146,10 +138,6 @@ class DevMenuManager {
    * Fully closes the dev menu once it receives a response from that event.
    */
   fun requestToClose(activity: ExperienceActivity) {
-    if (Constants.isStandaloneApp()) {
-      return
-    }
-
     ExponentKernelModule.queueEvent(
       "ExponentKernel.requestToCloseDevMenu", Arguments.createMap(),
       object : ExponentKernelModuleProvider.KernelEventCallback {
@@ -269,7 +257,7 @@ class DevMenuManager {
    * the user opens an experience, or he hasn't finished onboarding yet.
    */
   private fun shouldShowOnboarding(): Boolean {
-    return !Constants.isStandaloneApp() && !KernelConfig.HIDE_ONBOARDING && !isOnboardingFinished() && !Constants.DISABLE_NUX
+    return !KernelConfig.HIDE_ONBOARDING && !isOnboardingFinished() && !Constants.DISABLE_NUX
   }
 
   /**

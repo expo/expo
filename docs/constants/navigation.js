@@ -451,6 +451,7 @@ const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
     makePage('preview/support.mdx'),
+    makePage('router/reference/not-found.mdx'),
     { expanded: true },
     makeSection('Expo Router', [makePage('preview/api-routes.mdx')]),
   ]),

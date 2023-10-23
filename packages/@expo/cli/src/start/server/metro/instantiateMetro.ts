@@ -54,7 +54,7 @@ export async function loadMetroConfigAsync(
   projectRoot: string,
   options: LoadOptions,
   {
-    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true }).exp,
+    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
     isExporting,
   }: { exp?: ExpoConfig; isExporting: boolean }
 ) {
@@ -108,6 +108,7 @@ export async function loadMetroConfigAsync(
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
+    isExporting,
   });
 
   logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
@@ -135,7 +136,6 @@ export async function instantiateMetroAsync(
   // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
   const { exp } = getConfig(projectRoot, {
     skipSDKVersionRequirement: true,
-    skipPlugins: true,
   });
 
   const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(
@@ -183,7 +183,7 @@ export async function instantiateMetroAsync(
     hmrEnabled: true,
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints,
-    watch: isWatchEnabled(),
+    watch: !isExporting && isWatchEnabled(),
   });
 
   prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {

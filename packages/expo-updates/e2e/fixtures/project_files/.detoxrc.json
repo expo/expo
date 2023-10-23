@@ -12,12 +12,12 @@
   "apps": {
     "ios.debug": {
       "type": "ios.app",
-      "build": "xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build",
+      "build": "xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build",
       "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/updatese2e.app"
     },
     "ios.release": {
       "type": "ios.app",
-      "build": "xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Release -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build",
+      "build": "xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Release -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build",
       "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/updatese2e.app"
     },
     "android.debug": {
@@ -34,12 +34,14 @@
   "devices": {
     "simulator": {
       "type": "ios.simulator",
+      "headless": true,
       "device": {
         "type": "iPhone 14"
       }
     },
     "emulator": {
       "type": "android.emulator",
+      "headless": true,
       "device": {
         "avdName": "pixel_4"
       }

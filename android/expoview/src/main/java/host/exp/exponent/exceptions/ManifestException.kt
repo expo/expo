@@ -40,14 +40,12 @@ class ManifestException : ExponentException {
 
   override fun toString(): String {
     val extraMessage = if (ExpoViewBuildConfig.DEBUG) {
-      // This will get hit in a detached app.
       " Are you sure expo-cli is running?"
     } else {
       ""
     }
 
     return when (manifestUrl) {
-      Constants.INITIAL_URL -> "Could not load app.$extraMessage"
       else -> {
         var formattedMessage = "Could not load $manifestUrl.$extraMessage"
         val supportedSdks = Constants.SDK_VERSIONS_LIST.map {
