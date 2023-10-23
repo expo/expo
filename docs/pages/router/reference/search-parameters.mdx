@@ -194,3 +194,60 @@ export default function Page() {
   );
 }
 ```
+
+## Route parameters versus search parameters
+
+Route parameters are used to match a route, while search parameters are used to pass data between routes. Consider the following structure, where a route parameter is used to match the _user_ route:
+
+<FileTree
+  files={[
+    'app/index.tsx',
+    [
+      'app/[user].tsx',
+      <>
+        <code>user</code> is a <b>route parameter</b>
+      </>,
+    ],
+  ]}
+/>
+
+When the `app/[user]` route is matched, the `user` parameter is passed to the component and never a nullish value. Both search and route parameters can be used together and are accessible with the `useLocalSearchParams` and `useGlobalSearchParams` hooks:
+
+```tsx app/[user].tsx
+import { useLocalSearchParams } from 'expo-router';
+
+export default function User() {
+  const {
+    // The route parameter
+    user,
+    // An optional search parameter.
+    tab,
+  } = useLocalSearchParams<{ user: string; tab?: string }>();
+
+  console.log({ user, tab });
+
+  // Given the URL: `/bacon?tab=projects`, the following is printed:
+  // { user: 'bacon', tab: 'projects' }
+
+  // Given the URL: `/expo`, the following is printed:
+  // { user: 'expo', tab: undefined }
+}
+```
+
+When a route parameter is changed, the component will re-mount.
+
+```jsx app/[user].tsx
+import { Text } from 'react-native';
+import { router, useLocalSearchParams, Link } from 'expo-router';
+
+export default function User() {
+  // All three of these will change the route parameter `user`, and add a new user page.
+  return (
+    <>
+      <Text onPress={() => router.setParams({ user: 'evan' })}>Go to Evan</Text>
+      <Text onPress={() => router.push('/mark')}>Go to Mark</Text>
+      <Link href="/charlie">Go to Charlie</Link>
+    </>
+  );
+}
+```
