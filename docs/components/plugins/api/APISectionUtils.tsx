@@ -464,13 +464,14 @@ export const renderTypeOrSignatureType = (
     return (
       <CODE key={`signature-type-${signatures[0].name}`}>
         (
-        {signatures?.map(({ parameters }) =>
-          parameters?.map(param => (
-            <span key={`signature-param-${param.name}`}>
-              {param.name}
-              {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
-            </span>
-          ))
+        {signatures?.map(
+          ({ parameters }) =>
+            parameters?.map(param => (
+              <span key={`signature-param-${param.name}`}>
+                {param.name}
+                {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
+              </span>
+            ))
         )}
         ) =&gt; {signatures[0].type ? resolveTypeName(signatures[0].type) : 'void'}
       </CODE>

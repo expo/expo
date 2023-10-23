@@ -1,8 +1,8 @@
 import { Link04Icon } from '@expo/styleguide-icons';
 import React, { PropsWithChildren } from 'react';
 
-import { SnippetHeader } from '../Snippet/SnippetHeader';
 import { RuntimePopup } from './RuntimePopup';
+import { SnippetHeader } from '../Snippet/SnippetHeader';
 
 type ProtocolType = 'expo-go' | 'custom' | 'web';
 

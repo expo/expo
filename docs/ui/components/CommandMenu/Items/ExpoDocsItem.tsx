@@ -7,6 +7,9 @@ import {
   Hash02Icon,
 } from '@expo/styleguide-icons';
 
+import { CommandItemBase } from './CommandItemBase';
+import { FootnoteSection } from './FootnoteSection';
+import { FootnoteArrowIcon } from './icons';
 import type { AlgoliaItemType } from '../types';
 import {
   getContentHighlightHTML,
@@ -16,9 +19,6 @@ import {
   isHomePath,
   isLearnPath,
 } from '../utils';
-import { CommandItemBase } from './CommandItemBase';
-import { FootnoteSection } from './FootnoteSection';
-import { FootnoteArrowIcon } from './icons';
 
 import versions from '~/public/static/constants/versions.json';
 import { CALLOUT, CAPTION, FOOTNOTE } from '~/ui/components/Text';
