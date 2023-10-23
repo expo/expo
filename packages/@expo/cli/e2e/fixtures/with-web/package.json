@@ -10,6 +10,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
-    "@expo/webpack-config": "~18.0.1"
+    "@expo/webpack-config": "^18.1.3"
   }
 }
