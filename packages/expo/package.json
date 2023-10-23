@@ -27,6 +27,8 @@
     "config.d.ts",
     "config-plugins.js",
     "config-plugins.d.ts",
+    "devtools.js",
+    "devtools.d.ts",
     "react-native.config.js",
     "requiresExtraSetup.json",
     "tsconfig.base.json"
@@ -70,7 +72,7 @@
     "expo-keep-awake": "~12.7.0",
     "expo-modules-autolinking": "1.7.0",
     "expo-modules-core": "1.9.0",
-    "whatwg-url-without-unicode": "8.0.0-3"
+    "whatwg-url-without-unicode": "9.1.0-beta.0"
   },
   "devDependencies": {
     "@types/react": "~18.0.14",

@@ -13,12 +13,12 @@ Universal links are different from standard deep links as they use regular HTTPS
 
 > Deferred deep links can be implemented with [`react-native-branch`](https://github.com/expo/config-plugins/tree/main/packages/react-native-branch).
 
-Before you can use an app/universal links, you've to setup the two-way association between the website and app for both Android and iOS:
+Before you can use an app/universal links, you have to setup the two-way association between the website and app for both Android and iOS:
 
 1. **Native app verification:** This requires some form of code signing that references the target website domain (URL).
 2. **Website verification:** This requires a file to be hosted on the target website in the **/.well-known** directory.
 
-After the two-way association is setup, you've to setup the runtime routing of the link in your app. This is done in JavaScript and must be configured for every route, then coordinated between web and native. Expo offers a fully automated solution for this called [Expo Router](/routing/introduction/).
+After the two-way association is setup, you have to setup the runtime routing of the link in your app. This is done in JavaScript and must be configured for every route, then coordinated between web and native. Expo offers a fully automated solution for this called [Expo Router](/routing/introduction/).
 
 > Universal links cannot be tested in the Expo Go app. You need to create a [development build](/develop/development-builds/introduction).
 
@@ -63,7 +63,7 @@ If you enable through the [Apple Developer Console](/build-reference/ios-capabil
 
 ### AASA configuration
 
-On the web-side, you've to host a config file from **/.well-known/apple-app-site-association** (with no extension). This file JSON specifies your Apple Developer Team ID, Bundler ID, and a list of supported paths to redirect to the native app.
+On the web-side, you have to host a config file from **/.well-known/apple-app-site-association** (with no extension). This file JSON specifies your Apple Developer Team ID, Bundler ID, and a list of supported paths to redirect to the native app.
 
 > You can run the **experimental** CLI command `npx setup-safari` to automatically register a bundle identifier to your Apple account, assign entitlements to the ID, and create an iTunes app entry in the store. The local setup will be printed and you can skip most the following. This is the easiest way to get started with universal links on iOS.
 
@@ -98,7 +98,7 @@ This snippet tells iOS that any links to `https://www.myapp.io/records/*` (with 
 
 > The `activitycontinuation` and `webcredentials` objects are optional, but recommended.
 
-After you've setup the AASA file, deploy your website to a server that supports HTTPS (most modern web hosts).
+After you have setup the AASA file, deploy your website to a server that supports HTTPS (most modern web hosts).
 
 See [Apple's documentation](https://developer.apple.com/library/archive/documentation/General/Conceptual/AppSearch/UniversalLinks.html) for further details on the format of the AASA. Branch provides an [AASA validator](https://branch.io/resources/aasa-validator/) which can help you confirm that your AASA is correctly deployed and has a valid format.
 
@@ -152,7 +152,7 @@ To support all iOS versions, you can provide both the above formats in your `det
 
 Note that iOS will download your AASA when your app is first installed and when updates are installed from the App Store, but it will not refresh any more frequently. If you wish to change the paths in your AASA for a production app, you will need to issue a full update via the App Store so that all of your users' apps re-fetch your AASA and recognize the new paths.
 
-Now, a link to your website on your mobile device should open your app. If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the [Apple Developer Console](https://developer.apple.com/account/resources/identifiers/list). Once you've got your app opened, move to the [Handling links into your app](/guides/linking/#handling-links) section for details on how to handle the inbound link and show the user the content they requested.
+Now, a link to your website on your mobile device should open your app. If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the [Apple Developer Console](https://developer.apple.com/account/resources/identifiers/list). Once you have got your app opened, move to the [Handling links into your app](/guides/linking/#handling-links) section for details on how to handle the inbound link and show the user the content they requested.
 
 ### Apple Smart Banner
 
