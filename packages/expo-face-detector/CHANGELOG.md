@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrated codebase to use Expo Modules API.
+
 ## 12.5.0 — 2023-10-17
 
 ### 🛠 Breaking changes
