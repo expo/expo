@@ -31,14 +31,14 @@ function getReleasedSdkVersionRange() {
   };
 }
 
-async function executeDiffCommand(diffDirPath: string, sdkFrom: string, sdkTo: string) {
-  function sdkToBranch(sdkVersion: string) {
-    if (sdkVersion === 'unversioned') {
-      return 'main';
-    }
-    return `sdk-${sdkVersion}`;
+function sdkToBranch(sdkVersion: string) {
+  if (sdkVersion === 'unversioned') {
+    return 'main';
   }
+  return `sdk-${sdkVersion}`;
+}
 
+async function executeDiffCommand(diffDirPath: string, sdkFrom: string, sdkTo: string) {
   const diffPath = path.join(diffDirPath, `${sdkFrom}..${sdkTo}.diff`);
 
   const diffCommand = `origin/${sdkToBranch(sdkFrom)}..origin/${sdkToBranch(sdkTo)}`;
