@@ -13,7 +13,7 @@ import {
   PermissionResponse,
   VideoCodec,
 } from './Camera.types';
-import ExponentCamera from './ExponentCamera';
+import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExponentCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 
@@ -395,7 +395,7 @@ export default class Camera extends React.Component<CameraProps> {
     const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
 
     return (
-      <ExponentCamera
+      <ExpoCamera
         {...nativeProps}
         ref={this._setReference}
         onCameraReady={this._onCameraReady}

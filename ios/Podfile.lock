@@ -815,8 +815,6 @@ PODS:
     - React-Core
   - EXCalendar (12.1.0):
     - ExpoModulesCore
-  - EXCamera (13.8.0):
-    - ExpoModulesCore
   - EXConstants (15.2.0):
     - ExpoModulesCore
   - EXContacts (12.6.0):
@@ -854,6 +852,8 @@ PODS:
   - ExpoBlur (12.8.0):
     - ExpoModulesCore
   - ExpoBrightness (11.7.0):
+    - ExpoModulesCore
+  - ExpoCamera (13.8.0):
     - ExpoModulesCore
   - ExpoCellular (5.6.0):
     - ExpoModulesCore
@@ -1819,7 +1819,6 @@ DEPENDENCIES:
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
   - EXBranch (from `../packages/expo-branch/ios`)
   - EXCalendar (from `../packages/expo-calendar/ios`)
-  - EXCamera (from `../packages/expo-camera/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
   - EXFont (from `../packages/expo-font/ios`)
@@ -1838,6 +1837,7 @@ DEPENDENCIES:
   - ExpoBattery (from `../packages/expo-battery/ios`)
   - ExpoBlur (from `../packages/expo-blur/ios`)
   - ExpoBrightness (from `../packages/expo-brightness/ios`)
+  - ExpoCamera (from `../packages/expo-camera/ios`)
   - ExpoCellular (from `../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../packages/expo-clipboard/ios`)
@@ -2249,8 +2249,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-branch/ios"
   EXCalendar:
     :path: "../packages/expo-calendar/ios"
-  EXCamera:
-    :path: "../packages/expo-camera/ios"
   EXConstants:
     :path: "../packages/expo-constants/ios"
   EXContacts:
@@ -2283,6 +2281,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-blur/ios"
   ExpoBrightness:
     :path: "../packages/expo-brightness/ios"
+  ExpoCamera:
+    :path: "../packages/expo-camera/ios"
   ExpoCellular:
     :path: "../packages/expo-cellular/ios"
   ExpoClipboard:
@@ -2615,7 +2615,6 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: 9d23a7823c1dda81249aa8d494bae6130e312ab1
   EXBranch: 3abd983225b85532b79f257ca2c8f573b7d468c7
   EXCalendar: 3380176a50dac91328e80a1cf32b6819dc0f08f4
-  EXCamera: 89727fb1ba3f588d3556f3a51581ec22200e189b
   EXConstants: 1734e43270773c7e22c50492bcbd3c2557f4bf14
   EXContacts: 49cadf80e7f1019821dde4a536960717f474dbeb
   EXFont: f229885758944aad44348468d62a3493012decd6
@@ -2632,6 +2631,7 @@ SPEC CHECKSUMS:
   ExpoBattery: f7ecc6800108c14a1425d3e7ea49609a5e1cb013
   ExpoBlur: 2e733ec3aa76653040b29a833984f128a293295a
   ExpoBrightness: dfc8f9e9e936decbda6b1a332e7f7176f28377ab
+  ExpoCamera: 377b2a9759cd86e455d6fb46b65b3eb6f8e29446
   ExpoCellular: 1870591227bdb23b171490ea9ea06f504f2cb812
   ExpoClipboard: 8f04af2957214af1e45a056b2331327721cd7168
   ExpoCrypto: ebc31369538a8a56cc2a5d447c22318465e4f14f
@@ -2671,7 +2671,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 4823f5693944dedee7c4147567a548efb7100f2a
   EXStructuredHeaders: d16bfeda62ccfea69015df87cb4d1d92528b02d7
   EXTaskManager: 0f640aa791ebac6c38efd4842e54eb15cff06e28
-  EXUpdates: 312d2ac94d300d33880fad7363ca5f20ea465453
+  EXUpdates: c0d8e690e25027c3e9e02da7ff9e918979e21f53
   EXUpdatesInterface: 806249fbd771c72f015125166d756e1d71f3b905
   FBAEMKit: 5facf4292bff062963f563d68fd5c0cdd6c90d63
   FBAudienceNetwork: 03e273f66b70756be7d060927111af97b7641b06
