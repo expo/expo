@@ -6,7 +6,7 @@ import * as Log from '../../log';
 import { delayAsync } from '../../utils/delay';
 import { learnMore } from '../../utils/link';
 import { openBrowserAsync } from '../../utils/open';
-import { selectAsync } from '../../utils/prompts';
+import { ExpoChoice, selectAsync } from '../../utils/prompts';
 import { DevServerManager } from '../server/DevServerManager';
 import {
   addReactDevToolsReloadListener,
@@ -18,6 +18,10 @@ import {
 } from '../server/middleware/inspector/JsInspector';
 
 const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
+
+interface MoreToolMenuItem extends ExpoChoice<string> {
+  action?: () => unknown;
+}
 
 /** Wraps the DevServerManager and adds an interface for user actions. */
 export class DevServerManagerActions {
@@ -111,22 +115,43 @@ export class DevServerManagerActions {
   }
 
   async openMoreToolsAsync() {
+    // Options match: Chrome > View > Developer
     try {
-      // Options match: Chrome > View > Developer
-      const value = await selectAsync(chalk`Dev tools {dim (native only)}`, [
+      const defaultMenuItems: MoreToolMenuItem[] = [
         { title: 'Inspect elements', value: 'toggleElementInspector' },
         { title: 'Toggle performance monitor', value: 'togglePerformanceMonitor' },
         { title: 'Toggle developer menu', value: 'toggleDevMenu' },
         { title: 'Reload app', value: 'reload' },
-        { title: 'Start React devtools', value: 'startReactDevTools' },
+        {
+          title: 'Open React devtools',
+          value: 'openReactDevTools',
+          action: this.openReactDevToolsAsync,
+        },
         // TODO: Maybe a "View Source" option to open code.
-        // Toggling Remote JS Debugging is pretty rough, so leaving it disabled.
-        // { title: 'Toggle Remote Debugging', value: 'toggleRemoteDebugging' },
-      ]);
-      if (value === 'startReactDevTools') {
-        this.startReactDevToolsAsync();
-      } else {
-        this.devServerManager.broadcastMessage('sendDevCommand', { name: value });
+      ];
+      const pluginMenuItems = (
+        await this.devServerManager.devtoolsPluginManager.queryPluginsAsync()
+      ).map((plugin) => ({
+        title: chalk`Open devtools plugin - {bold ${plugin.packageName}}`,
+        value: `devtoolsPlugin:${plugin.packageName}`,
+        action: async () => {
+          const url = new URL(
+            plugin.webpageEndpoint,
+            this.devServerManager
+              .getDefaultDevServer()
+              .getUrlCreator()
+              .constructUrl({ scheme: 'http' })
+          );
+          await openBrowserAsync(url.toString());
+        },
+      }));
+      const menuItems = [...defaultMenuItems, ...pluginMenuItems];
+      const value = await selectAsync(chalk`Dev tools {dim (native only)}`, menuItems);
+      const menuItem = menuItems.find((item) => item.value === value);
+      if (menuItem?.action) {
+        menuItem.action();
+      } else if (menuItem?.value) {
+        this.devServerManager.broadcastMessage('sendDevCommand', { name: menuItem.value });
       }
     } catch (error: any) {
       debug(error);
@@ -136,7 +161,7 @@ export class DevServerManagerActions {
     }
   }
 
-  async startReactDevToolsAsync() {
+  async openReactDevToolsAsync() {
     await startReactDevToolsProxyAsync();
     const url = this.devServerManager.getDefaultDevServer().getReactDevToolsUrl();
     await openBrowserAsync(url);
