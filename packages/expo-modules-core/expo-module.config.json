@@ -2,8 +2,5 @@
   "platforms": ["ios", "android"],
   "ios": {
     "podspecPath": "./ExpoModulesCore.podspec"
-  },
-  "android": {
-    "modules": ["expo.modules.contacts.ContactsModule"]
   }
 }
