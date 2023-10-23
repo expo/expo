@@ -2,4 +2,8 @@
 
 #pragma once
 
-int crsqlite_init_from_swift(void);
+struct sqlite3;
+
+int crsqlite_auto_init_from_swift(void);
+
+int crsqlite_init_from_swift(struct sqlite3 *db);
