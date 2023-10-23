@@ -150,7 +150,7 @@ export const APIMethod = ({
         comment: {
           summary: [{ kind: 'text', text: param.comment }],
         },
-      } as MethodParamData)
+      }) as MethodParamData
   );
   return renderMethod(
     {

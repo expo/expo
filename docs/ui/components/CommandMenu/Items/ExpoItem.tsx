@@ -1,8 +1,8 @@
 import { BuildIcon } from '@expo/styleguide-icons';
 
+import { CommandItemBase } from './CommandItemBase';
 import type { ExpoItemType } from '../types';
 import { addHighlight } from '../utils';
-import { CommandItemBase } from './CommandItemBase';
 
 import { CALLOUT } from '~/ui/components/Text';
 
