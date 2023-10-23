@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Encode Blob components in `URL.createObjectURL`.
+
 ## 49.0.16 — 2023-10-20
 
 _This version does not introduce any user-facing changes._
