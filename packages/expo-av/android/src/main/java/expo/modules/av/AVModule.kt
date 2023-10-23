@@ -1,7 +1,6 @@
 package expo.modules.av
 
 import android.Manifest
-import expo.modules.core.arguments.MapArguments
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.exception.CodedException
