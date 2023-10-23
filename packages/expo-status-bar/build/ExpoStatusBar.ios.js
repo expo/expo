@@ -9,6 +9,6 @@ export default function ExpoStatusBar(props) {
     // locked to light mode we don't end up with a light status bar
     const colorScheme = useColorScheme();
     const barStyle = styleToBarStyle(style, colorScheme);
-    return (React.createElement(StatusBar, { barStyle: barStyle, animated: animated, hidden: hidden, networkActivityIndicatorVisible: networkActivityIndicatorVisible, showHideTransition: showHideTransition }));
+    return (<StatusBar barStyle={barStyle} animated={animated} hidden={hidden} networkActivityIndicatorVisible={networkActivityIndicatorVisible} showHideTransition={showHideTransition}/>);
 }
 //# sourceMappingURL=ExpoStatusBar.ios.js.map

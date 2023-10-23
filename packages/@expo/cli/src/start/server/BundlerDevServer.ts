@@ -2,6 +2,7 @@ import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
 import { AsyncNgrok } from './AsyncNgrok';
+import DevToolsPluginManager from './DevToolsPluginManager';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
 import { PlatformBundlers } from './platformBundlers';
@@ -101,15 +102,29 @@ export abstract class BundlerDevServer {
   protected urlCreator?: UrlCreator | null = null;
 
   private notifier: FileNotifier | null = null;
+  protected readonly devToolsPluginManager: DevToolsPluginManager;
+  public isDevClient: boolean;
 
   constructor(
     /** Project root folder. */
     public projectRoot: string,
     /** A mapping of bundlers to platforms. */
     public platformBundlers: PlatformBundlers,
-    // TODO: Replace with custom scheme maybe...
-    public isDevClient?: boolean
-  ) {}
+    /** Advanced options */
+    options?: {
+      /**
+       * The instance of DevToolsPluginManager
+       * @default new DevToolsPluginManager(projectRoot)
+       */
+      devToolsPluginManager?: DevToolsPluginManager;
+      // TODO: Replace with custom scheme maybe...
+      isDevClient?: boolean;
+    }
+  ) {
+    this.devToolsPluginManager =
+      options?.devToolsPluginManager ?? new DevToolsPluginManager(projectRoot);
+    this.isDevClient = options?.isDevClient ?? false;
+  }
 
   protected setInstance(instance: DevServerInstance) {
     this.instance = instance;

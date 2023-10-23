@@ -8,7 +8,6 @@ import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
 import expo.modules.manifests.core.Manifest
-import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExperienceKey
@@ -63,7 +62,7 @@ open class ScopedExpoNotificationBuilder(
   }
 
   override fun getIcon(): Int {
-    return if (Constants.isStandaloneApp()) R.drawable.shell_notification_icon else R.drawable.notification_icon
+    return R.drawable.notification_icon
   }
 
   override fun getColor(): Number? {
