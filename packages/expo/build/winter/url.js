@@ -47,7 +47,7 @@ function getBlobUrlPrefix() {
  * ```
  */
 URL.createObjectURL = function createObjectURL(blob) {
-    if (getBlobUrlPrefix() === null) {
+    if (getBlobUrlPrefix() == null) {
         throw new Error('Cannot create URL for blob');
     }
     return `${getBlobUrlPrefix()}${blob.data.blobId}?offset=${blob.data.offset}&size=${blob.size}`;
