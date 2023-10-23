@@ -5,7 +5,7 @@ let cameraKey = "NSCameraUsageDescription"
 let microphoneKey = "NSMicrophoneUsageDescription"
 
 protocol BaseCameraRequester {
-  var mediaType: AVMediaType { get set }
+  var mediaType: AVMediaType { get }
   func permissionWith(status systemStatus: AVAuthorizationStatus) -> [AnyHashable: Any]
   func permissions(for key: String, service: String) -> [AnyHashable: Any]
   func requestAccess(handler: @escaping (Bool) -> Void)
@@ -54,7 +54,7 @@ extension BaseCameraRequester {
 }
 
 class CameraOnlyPermissionRequester: NSObject, EXPermissionsRequester, BaseCameraRequester {
-  var mediaType: AVMediaType = .video
+  let mediaType: AVMediaType = .video
 
   static func permissionType() -> String {
     "camera"
@@ -72,7 +72,7 @@ class CameraOnlyPermissionRequester: NSObject, EXPermissionsRequester, BaseCamer
 }
 
 class CameraPermissionRequester: NSObject, EXPermissionsRequester, BaseCameraRequester {
-  var mediaType: AVMediaType = .video
+  let mediaType: AVMediaType = .video
 
   static func permissionType() -> String {
     "camera"
@@ -107,7 +107,7 @@ class CameraPermissionRequester: NSObject, EXPermissionsRequester, BaseCameraReq
 }
 
 class CameraMicrophonePermissionRequester: NSObject, EXPermissionsRequester, BaseCameraRequester {
-  var mediaType: AVMediaType = .audio
+  let mediaType: AVMediaType = .audio
 
   static func permissionType() -> String {
     "microphone"
