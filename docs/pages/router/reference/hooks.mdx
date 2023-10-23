@@ -113,6 +113,33 @@ export default function Route() {
 }
 ```
 
+For nested layouts, you can pass a secondary argument, denoting the layout route, to access higher-order layouts. For example:
+
+<FileTree
+  files={[
+    ['app/_layout.js', <code>useNavigation('/')</code>],
+    ['app/orders/_layout.js', <code>useNavigation('/orders')</code>],
+    ['app/orders/menu/_layout.js', <code>useNavigation('/orders/menu')</code>],
+  ]}
+/>
+
+```tsx app/orders/menu/index.tsx
+import { useNavigation } from 'expo-router';
+
+export default function MenuRoute() {
+  const rootLayout = useNavigation('/');
+
+  const ordersLayout = useNavigation('/orders');
+
+  // Same as the default results of `useNavigation()` when invoked in this route.
+  const parentLayout = useNavigation('/orders/menu');
+
+  // ...
+}
+```
+
+If you attempt to access a layout that doesn't exist, an error `Could not find parent navigation with route "/non-existent".` will be thrown.
+
 </APIBox>
 
 <APIBox header="usePathname">
