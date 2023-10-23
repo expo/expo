@@ -9,6 +9,10 @@ import path from 'path';
 import { EXPO_DIR } from '../Constants';
 import logger from '../Logger';
 
+type ActionOptions = {
+  check?: boolean;
+};
+
 function allVersions(min, max) {
   const versions: string[] = [];
   for (let i = min; i <= max; i++) {
@@ -54,7 +58,7 @@ async function executeDiffCommand(diffDirPath: string, sdkFrom: string, sdkTo: s
   fs.writeFileSync(diffPath, diff.stdout);
 }
 
-async function action() {
+async function action({ check = false }: ActionOptions) {
   const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);
 
   const diffDirPath = path.join(
@@ -96,6 +100,30 @@ async function action() {
     // write the list of SDK versions to a file to generate list of versions for which diffs can be viewed
     fs.writeFileSync(path.join(diffDirPath, 'versions.json'), JSON.stringify(sdkVersionsToDiff));
 
+    // see if diff regeneration changed the diff files from the last commit
+    // Used to fail package checks when diffs are not regenerated
+    if (check) {
+      const child = await spawnAsync(
+        'git',
+        ['status', '--porcelain', 'docs/public/static/diffs/template-bare-minimum**'],
+        {
+          stdio: 'pipe',
+        }
+      );
+
+      const lines = child.stdout ? child.stdout.trim().split(/\r\n?|\n/g) : [];
+
+      if (lines.length > 0) {
+        logger.log(
+          `expo-template-bare-minimum has changed. Run 'et generate-bare-diffs' to regenerate them.`
+        );
+        process.exit(1);
+      }
+
+      logger.success('🏁 No changes to expo-template-bare-minimum.');
+      return;
+    }
+
     logger.log(
       chalk.green(
         `\n🎉 Successfully generated diffs for template-bare-minimum for the last 6 SDK versions + main`
@@ -111,7 +139,11 @@ export default (program: Command) => {
     .command('generate-bare-diffs')
     .alias('gbd')
     .description(
-      `Generate diffs of template-bare-minimum for bare upgrade instructions for the last 6 versions.`
+      `Generate diffs of expo-template-bare-minimum for bare upgrade instructions for the last 6 versions.`
+    )
+    .option(
+      '-c, --check',
+      'Check for if expo-template-bare-minimum was changed but new diffs were not generated.'
     )
     .asyncAction(action);
 };
