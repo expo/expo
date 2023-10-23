@@ -56,6 +56,7 @@ jobs:
       #   run: yarn lint-links --quiet
       - name: ✅ Test links (legacy)
         run: |
+          node node_modules/puppeteer/install.mjs &
           yarn export-server &
           while ! nc -z localhost 8000; do
             sleep 1
