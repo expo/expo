@@ -9,7 +9,6 @@ const debug = require('debug')('expo:start:server:metro:waitForTypescript') as t
  * TypeScript file is added to the project during development.
  */
 export function observeApiRouteChanges(
-  projectRoot: string,
   appDir: string,
   runner: {
     metro: import('metro').Server;

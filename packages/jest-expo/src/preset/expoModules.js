@@ -370,7 +370,7 @@ module.exports = {
           { name: 'getCurrentInput', argumentsCount: 0, key: 21 },
           { name: 'startAudioRecording', argumentsCount: 0, key: 22 },
         ],
-        ExponentCamera: [
+        ExpoCamera: [
           { name: 'getAvailablePictureSizes', argumentsCount: 2, key: 'getAvailablePictureSizes' },
           {
             name: 'getAvailableVideoCodecsAsync',
@@ -702,7 +702,7 @@ module.exports = {
           SortBy: { type: 'object' },
         },
         ExponentAV: { Qualities: { type: 'object' } },
-        ExponentCamera: {
+        ExpoCamera: {
           AutoFocus: { type: 'object' },
           FlashMode: { type: 'object' },
           Type: { type: 'object' },
@@ -807,7 +807,7 @@ module.exports = {
           ],
         },
         ExpoLinearGradient: { propsNames: ['colors', 'endPoint', 'locations', 'startPoint'] },
-        ExponentCamera: {
+        ExpoCamera: {
           propsNames: [
             'autoFocus',
             'barCodeScannerEnabled',
