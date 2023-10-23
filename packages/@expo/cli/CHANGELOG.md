@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Memoize notice log about `src/app` directory to prevent spam.
+
 ## 0.10.14 — 2023-10-20
 
 ### 💡 Others
