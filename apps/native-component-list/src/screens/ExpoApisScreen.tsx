@@ -80,10 +80,6 @@ const screens = [
   'WebBrowser',
 ];
 
-if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient) {
-  screens.push('InAppPurchases');
-}
-
 export const ScreenItems = screens.map((name) => ({
   name,
   route: `/apis/${name.toLowerCase()}`,
