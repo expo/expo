@@ -124,7 +124,7 @@ export default function Home() {
   React.useEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
-  
+
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>Home Screen</Text>
@@ -228,6 +228,49 @@ export default function Layout() {
   );
 }
 ```
+
+## JavaScript Stack
+
+Expo Router uses the `@react-navigation/native-stack` package for the `<Stack />` layout, but you may want to use the JavaScript-powered `@react-navigation/stack` library instead. To do so, you can create a custom layout component that wraps the `@react-navigation/stack` library.
+
+```tsx layouts/js-stack.tsx
+import { ParamListBase, StackNavigationState } from '@react-navigation/native';
+import {
+  createStackNavigator,
+  StackNavigationEventMap,
+  StackNavigationOptions,
+} from '@react-navigation/stack';
+import { withLayoutContext } from 'expo-router';
+
+const { Navigator } = createStackNavigator();
+
+export const JsStack = withLayoutContext<
+  StackNavigationOptions,
+  typeof Navigator,
+  StackNavigationState<ParamListBase>,
+  StackNavigationEventMap
+>(Navigator);
+```
+
+You can then use the `JsStack` component in your app.
+
+```tsx app/_layout.js
+import { JsStack } from '../layouts/js-stack';
+
+export default function Layout() {
+  return (
+    <JsStack
+      screenOptions={
+        {
+          // Refer to the React Navigation docs https://reactnavigation.org/docs/stack-navigator
+        }
+      }
+    />
+  );
+}
+```
+
+For options and info about `@react-navigation/stack`, refer to the [React Navigation docs](https://reactnavigation.org/docs/stack-navigator).
 
 ## Next steps
 
