@@ -42,19 +42,15 @@ public class CalendarModule: Module {
 
     AsyncFunction("getDefaultCalendarAsync") { () -> [String: Any] in
       try checkCalendarPermissions()
-      guard let defaultcalendar = eventStore.defaultCalendarForNewEvents else {
+      guard let defaultCalendar = eventStore.defaultCalendarForNewEvents else {
         throw DefaultCalendarNotFoundException()
       }
-      return serializeCalendar(calendar: defaultcalendar)
+      return serializeCalendar(calendar: defaultCalendar)
     }
 
     AsyncFunction("saveCalendarAsync") { (details: CalendarRecord) -> String in
       try checkCalendarPermissions()
       let calendar = try getCalendar(from: details)
-
-      calendar.title = details.title
-      calendar.cgColor = EXUtilities.uiColor(details.color)?.cgColor
-
       try eventStore.saveCalendar(calendar, commit: true)
       return calendar.calendarIdentifier
     }
@@ -109,15 +105,12 @@ public class CalendarModule: Module {
       try checkCalendarPermissions()
       let calendarEvent = try getCalendar(from: event)
       let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
-      calendarEvent.title = event.title
-      calendarEvent.location = event.location
-      calendarEvent.notes = event.notes
 
       if let timeZone = event.timeZone {
         if let tz = TimeZone(identifier: timeZone) {
           calendarEvent.timeZone = tz
         } else {
-          throw InvalidTimeZoneException()
+          throw InvalidTimeZoneException(timeZone)
         }
       }
 
@@ -129,7 +122,7 @@ public class CalendarModule: Module {
         }
       }
 
-      if let urlString = event.url?.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed), let url = URL(string: urlString) {
+      if let url = maybeSetUrl(event.url) {
         calendarEvent.url = url
       }
 
@@ -142,6 +135,7 @@ public class CalendarModule: Module {
 
       calendarEvent.isAllDay = event.allDay
       calendarEvent.availability = getAvailability(availability: event.availability)
+
       try eventStore.save(calendarEvent, span: span, commit: true)
       return calendarEvent.calendarItemIdentifier
     }
@@ -178,20 +172,21 @@ public class CalendarModule: Module {
       return serialize(attendees: attendees)
     }
 
-    AsyncFunction("getRemindersAsync") { (startDateStr: String, endDateStr: String, calendarIds: [String], status: String?, promise: Promise) in
+    AsyncFunction("getRemindersAsync") { (startDateStr: String, endDateStr: String, calendarIds: [String?], status: String?, promise: Promise) in
       try checkRemindersPermissions()
       var reminderCalendars = [EKCalendar]()
       let startDate = parse(date: startDateStr)
       let endDate = parse(date: endDateStr)
 
-      if calendarIds.isEmpty {
-        promise.reject(CalendarIdRequiredException())
-        return
-      }
+      let ids = calendarIds.compactMap { $0 }
 
       let deviceCalendars = eventStore.calendars(for: .reminder)
-      for calendar in deviceCalendars where calendarIds.contains(calendar.calendarIdentifier) {
-        reminderCalendars.append(calendar)
+      if !ids.isEmpty {
+        for calendar in deviceCalendars where calendarIds.contains(calendar.calendarIdentifier) {
+          reminderCalendars.append(calendar)
+        }
+      } else {
+        reminderCalendars = deviceCalendars
       }
 
       let predicate = try createPredicate(for: reminderCalendars, start: startDate, end: endDate, status: status)
@@ -222,15 +217,11 @@ public class CalendarModule: Module {
       let dueDate = parse(date: details.dueDate)
       let completionDate = parse(date: details.completionDate)
 
-      reminder.title = details.title
-      reminder.location = details.location
-      reminder.notes = details.notes
-
       if let timeZone = details.timeZone {
         if let eventTimeZone = TimeZone(identifier: timeZone) {
           reminder.timeZone = eventTimeZone
         } else {
-          throw InvalidTimeZoneException()
+          throw InvalidTimeZoneException(timeZone)
         }
       }
 
@@ -244,7 +235,7 @@ public class CalendarModule: Module {
         }
       }
 
-      if let urlString = details.url?.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed), let url = URL(string: urlString) {
+      if let url = maybeSetUrl(details.url) {
         reminder.url = url
       }
 
@@ -377,11 +368,23 @@ public class CalendarModule: Module {
     permittedEntities.insert(entity == .event ? .event : .reminder)
   }
 
+  private func maybeSetUrl(_ url: String?) -> URL? {
+    if let urlString = url?.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed), let url = URL(string: urlString) {
+      return url
+    }
+    return nil
+  }
+
   private func getReminder(from details: Reminder) throws -> EKReminder {
     if let reminderId = details.id {
       guard let reminderWithId = eventStore.calendarItem(withIdentifier: reminderId) as? EKReminder else {
         throw ReminderNotFoundException(reminderId)
       }
+
+      reminderWithId.title = details.title
+      reminderWithId.location = details.location
+      reminderWithId.notes = details.notes
+
       return reminderWithId
     }
     let reminder = EKReminder(eventStore: eventStore)
@@ -398,6 +401,10 @@ public class CalendarModule: Module {
       }
       reminder.calendar = calendar
     }
+    reminder.title = details.title
+    reminder.location = details.location
+    reminder.notes = details.notes
+
     return reminder
   }
 
@@ -410,6 +417,8 @@ public class CalendarModule: Module {
       if calendar.isImmutable == true {
         throw CalendarNotSavedException(record.title)
       }
+      calendar.title = record.title
+      calendar.cgColor = EXUtilities.uiColor(record.color)?.cgColor
       return calendar
     }
     let calendar: EKCalendar
@@ -428,6 +437,8 @@ public class CalendarModule: Module {
       eventStore.defaultCalendarForNewEvents?.source :
       eventStore.defaultCalendarForNewReminders()?.source
     }
+
+    calendar.title = record.title
 
     return calendar
   }
@@ -452,6 +463,8 @@ public class CalendarModule: Module {
 
     let calendarEvent = EKEvent(eventStore: eventStore)
     calendarEvent.calendar = calendar
+    calendarEvent.location = event.location
+    calendarEvent.notes = event.notes
 
     return calendarEvent
   }

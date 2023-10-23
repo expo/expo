@@ -60,9 +60,9 @@ internal class InvalidCalendarEntityException: GenericException<String?> {
   }
 }
 
-internal class InvalidTimeZoneException: Exception {
+internal class InvalidTimeZoneException: GenericException<String> {
   override var reason: String {
-    "Invalid time zone"
+    "Invalid time zone: \(param)"
   }
 }
 
@@ -80,7 +80,7 @@ internal class PermissionsManagerNotFoundException: Exception {
 
 internal class InvalidDateFormatException: Exception {
   override var reason: String {
-    "JSON String could not be interpreted as a date Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ"
+    "JSON String could not be interpreted as a date. Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ"
   }
 }
 
