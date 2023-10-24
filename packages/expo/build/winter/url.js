@@ -50,7 +50,7 @@ URL.createObjectURL = function createObjectURL(blob) {
     if (getBlobUrlPrefix() == null) {
         throw new Error('Cannot create URL for blob');
     }
-    return `${getBlobUrlPrefix()}${blob.data.blobId}?offset=${blob.data.offset}&size=${blob.size}`;
+    return `${getBlobUrlPrefix()}${encodeURIComponent(blob.data.blobId)}?offset=${encodeURIComponent(blob.data.offset)}&size=${encodeURIComponent(blob.size)}`;
 };
 URL.revokeObjectURL = function revokeObjectURL(url) {
     // Do nothing.
