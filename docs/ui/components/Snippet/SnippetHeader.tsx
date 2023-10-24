@@ -1,7 +1,6 @@
 import { css } from '@emotion/react';
 import { LinkBase, mergeClasses, theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
-import path from 'path';
 import React, { ReactNode, ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
 
 import withHeadingManager, {
