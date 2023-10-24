@@ -10,12 +10,15 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.annotation.Nullable;
+
 import host.exp.expoview.BuildConfig;
 import abi49_0_0.expo.modules.adapters.react.views.SimpleViewManagerAdapter;
 import abi49_0_0.expo.modules.adapters.react.views.ViewGroupManagerAdapter;
 import abi49_0_0.expo.modules.core.ModuleRegistry;
+import abi49_0_0.expo.modules.core.interfaces.Consumer;
 import abi49_0_0.expo.modules.core.interfaces.InternalModule;
 import abi49_0_0.expo.modules.core.interfaces.Package;
+import abi49_0_0.expo.modules.kotlin.AppContext;
 import abi49_0_0.expo.modules.kotlin.CoreLoggerKt;
 import abi49_0_0.expo.modules.kotlin.KotlinInteropModuleRegistry;
 import abi49_0_0.expo.modules.kotlin.ModulesProvider;
@@ -31,6 +34,14 @@ public class ModuleRegistryAdapter implements ReactPackage {
   protected ModulesProvider mModulesProvider;
   protected ReactAdapterPackage mReactAdapterPackage = new ReactAdapterPackage();
   private NativeModulesProxy mModulesProxy;
+
+  private void setModulesProxy(@Nullable NativeModulesProxy newProxy) {
+    mModulesProxy = newProxy;
+    if (mModulesProxy != null) {
+      mModulesProxy.getKotlinInteropModuleRegistry().setLegacyModulesProxy(mModulesProxy);
+    }
+  }
+
   // We need to save all view holders to update them when the new kotlin module registry will be created.
   private List<ViewWrapperDelegateHolder> mWrapperDelegateHolders = null;
   private FabricComponentsRegistry mFabricComponentsRegistry = null;
@@ -57,7 +68,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
       moduleRegistry.registerInternalModule(internalModule);
     }
 
-    List<NativeModule> nativeModules = getNativeModulesFromModuleRegistry(reactContext, moduleRegistry);
+    List<NativeModule> nativeModules = getNativeModulesFromModuleRegistry(reactContext, moduleRegistry, null);
     if (mWrapperDelegateHolders != null) {
       KotlinInteropModuleRegistry kotlinInteropModuleRegistry = proxy.getKotlinInteropModuleRegistry();
       kotlinInteropModuleRegistry.updateModuleHoldersInViewManagers(mWrapperDelegateHolders);
@@ -66,10 +77,17 @@ public class ModuleRegistryAdapter implements ReactPackage {
     return nativeModules;
   }
 
-  protected List<NativeModule> getNativeModulesFromModuleRegistry(ReactApplicationContext reactContext, ModuleRegistry moduleRegistry) {
+  protected List<NativeModule> getNativeModulesFromModuleRegistry(
+          ReactApplicationContext reactContext,
+          ModuleRegistry moduleRegistry,
+          @Nullable Consumer<AppContext> appContextConsumer
+  ) {
     List<NativeModule> nativeModulesList = new ArrayList<>(2);
-
-    nativeModulesList.add(getOrCreateNativeModulesProxy(reactContext, moduleRegistry));
+    NativeModulesProxy nativeModulesProxy = getOrCreateNativeModulesProxy(reactContext, moduleRegistry);
+    if (appContextConsumer != null) {
+      appContextConsumer.apply(nativeModulesProxy.getKotlinInteropModuleRegistry().getAppContext());
+    }
+    nativeModulesList.add(nativeModulesProxy);
 
     // Add listener that will notify abi49_0_0.expo.modules.core.ModuleRegistry when all modules are ready
     nativeModulesList.add(new ModuleRegistryReadyNotifier(moduleRegistry));
@@ -117,14 +135,14 @@ public class ModuleRegistryAdapter implements ReactPackage {
     @Nullable ModuleRegistry moduleRegistry
   ) {
     if (mModulesProxy != null && mModulesProxy.getReactContext() != reactContext) {
-      mModulesProxy = null;
+      setModulesProxy(mModulesProxy);
     }
     if (mModulesProxy == null) {
       ModuleRegistry registry = moduleRegistry != null ? moduleRegistry : mModuleRegistryProvider.get(reactContext);
       if (mModulesProvider != null) {
-        mModulesProxy = new NativeModulesProxy(reactContext, registry, mModulesProvider);
+        setModulesProxy(new NativeModulesProxy(reactContext, registry, mModulesProvider));
       } else {
-        mModulesProxy = new NativeModulesProxy(reactContext, registry);
+        setModulesProxy(new NativeModulesProxy(reactContext, registry));
       }
 
       mModulesProxy.getKotlinInteropModuleRegistry().setLegacyModulesProxy(mModulesProxy);
