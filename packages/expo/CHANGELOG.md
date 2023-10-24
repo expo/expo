@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Migrate to `@expo/whatwg-url` to fix `SharedArrayBuffer` issue.
+
 ### 💡 Others
 
 ## 49.0.16 — 2023-10-20

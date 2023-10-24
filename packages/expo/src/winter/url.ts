@@ -1,6 +1,6 @@
 // This file should not import `react-native` in order to remain self-contained.
 
-import { URL, URLSearchParams } from 'whatwg-url-without-unicode';
+import { URL, URLSearchParams } from '@expo/whatwg-url';
 
 let isSetup = false;
 let BLOB_URL_PREFIX: string | null = null;
