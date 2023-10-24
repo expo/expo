@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Add `preventModuleOverriding` to `ModuleRegistry.register` method. ([#24860](https://github.com/expo/expo/pull/24860) by [@wschurman](https://github.com/wschurman))
-- Add `TextEncoder` on iOS. ([#25017](https://github.com/expo/expo/pull/25017) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `TextEncoder` and `TextDecoder` on iOS. ([#25017](https://github.com/expo/expo/pull/25017) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
