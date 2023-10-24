@@ -9,7 +9,7 @@ import ExpoModulesCore
 func createAnimatedIfNeeded(image: UIImage?, data: Data?) -> UIImage? {
   let isAnimated = image?.sd_isAnimated ?? false
 
-  if let data = data {
+  if isAnimated, let data = data {
     return SDAnimatedImage(data: data)
   }
 
