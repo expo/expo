@@ -22,6 +22,7 @@ import {
   getRouterDirectoryWithManifest,
 } from '../start/server/metro/router';
 import { learnMore } from '../utils/link';
+import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -114,7 +115,7 @@ export async function exportFromServerAsync(
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
-  const [resources, { manifest, renderAsync }] = await Promise.all([
+  const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
     devServer.getStaticResourcesAsync({ mode: 'production', minify, includeMaps }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
@@ -155,7 +156,12 @@ export async function exportFromServerAsync(
   });
 
   if (exportServer) {
-    const apiRoutes = await exportApiRoutesAsync({ outputDir, server: devServer, appDir });
+    const apiRoutes = await exportApiRoutesAsync({
+      outputDir,
+      server: devServer,
+      appDir,
+      manifest: serverManifest,
+    });
 
     // Add the api routes to the files to export.
     for (const [route, contents] of apiRoutes) {
@@ -319,10 +325,12 @@ async function exportApiRoutesAsync({
   outputDir,
   server,
   appDir,
+  ...props
 }: {
   outputDir: string;
   server: MetroBundlerDevServer;
   appDir: string;
+  manifest: ExpoRouterServerManifestV1;
 }): Promise<Map<string, string>> {
   const functionsDir = '_expo/functions';
   const funcDir = path.join(outputDir, functionsDir);
@@ -332,6 +340,7 @@ async function exportApiRoutesAsync({
     mode: 'production',
     appDir,
     outputDir: functionsDir,
+    prerenderManifest: props.manifest,
   });
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);

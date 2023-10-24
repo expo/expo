@@ -224,6 +224,56 @@ describe(loadStaticParamsAsync, () => {
     );
   });
 
+  it(`preserves API routes`, async () => {
+    const ctx = createMockContextModule({
+      './index.tsx': {
+        default() {},
+      },
+      './foo+api.tsx': {
+        GET() {},
+      },
+      './[post]+api.tsx': {
+        POST() {},
+      },
+    });
+
+    const route = getExactRoutes(ctx, { preserveApiRoutes: true })!;
+
+    expect(dropFunctions(route)).toEqual({
+      children: [
+        { children: [], contextKey: './index.tsx', dynamic: null, route: 'index' },
+        { children: [], contextKey: './foo+api.tsx', dynamic: null, route: 'foo' },
+        {
+          children: [],
+          contextKey: './[post]+api.tsx',
+          dynamic: [{ deep: false, name: 'post' }],
+          route: '[post]',
+        },
+      ],
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
+      route: '',
+    });
+
+    expect(dropFunctions(await loadStaticParamsAsync(route))).toEqual({
+      children: [
+        { children: [], contextKey: './index.tsx', dynamic: null, route: 'index' },
+        { children: [], contextKey: './foo+api.tsx', dynamic: null, route: 'foo' },
+        {
+          children: [],
+          contextKey: './[post]+api.tsx',
+          dynamic: [{ deep: false, name: 'post' }],
+          route: '[post]',
+        },
+      ],
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
+      route: '',
+    });
+  });
+
   it(`evaluates with nested deep dynamic segments`, async () => {
     const ctx = createMockContextModule({
       './post/[...post].tsx': {
