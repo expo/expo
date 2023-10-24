@@ -210,6 +210,17 @@ public final class ImageView: ExpoView {
       log.debug("Loading the image has been canceled")
       return
     }
+
+    // First we need to see if the image is animated. SDAnimatedImage might not properly render some image formats.
+    // If the image is animated, we want to use the data and create an SDAnimatedImage with that data.
+    // SDAnimatedImage extends UIImage so we should be able to do everything that we were doing before still.
+    var image = image
+
+    if image?.sd_isAnimated != nil, let data = data {
+      image = SDAnimatedImage(data: data)
+    }
+
+    // Now we can proceed to do whatever else we want to do to the image
     if let image = image {
       onLoad([
         "cacheType": cacheTypeToString(cacheType),
