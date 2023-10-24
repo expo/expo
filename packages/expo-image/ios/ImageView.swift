@@ -83,6 +83,8 @@ public final class ImageView: ExpoView {
     }
   }
 
+  var allowDownscaling: Bool = true
+
   var recyclingKey: String? {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
@@ -422,7 +424,7 @@ public final class ImageView: ExpoView {
       return nil
     }
     // Downscale the image only when necessary
-    if shouldDownscale(image: image, toSize: idealSize, scale: scale) {
+    if allowDownscaling && shouldDownscale(image: image, toSize: idealSize, scale: scale) {
       return await resize(animatedImage: image, toSize: idealSize, scale: scale)
     }
     return image
@@ -544,12 +546,12 @@ public final class ImageView: ExpoView {
 
   // MARK: - Live Text Interaction
 
-  @available(iOS 16.0, *)
+  @available(iOS 16.0, macCatalyst 17.0, *)
   static let imageAnalyzer = ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
 
   var enableLiveTextInteraction: Bool = false {
     didSet {
-      guard #available(iOS 16.0, *), oldValue != enableLiveTextInteraction, ImageAnalyzer.isSupported else {
+      guard #available(iOS 16.0, macCatalyst 17.0, *), oldValue != enableLiveTextInteraction, ImageAnalyzer.isSupported else {
         return
       }
       if enableLiveTextInteraction {
@@ -562,7 +564,7 @@ public final class ImageView: ExpoView {
   }
 
   private func analyzeImage() {
-    guard #available(iOS 16.0, *), ImageAnalyzer.isSupported, let image = sdImageView.image else {
+    guard #available(iOS 16.0, macCatalyst 17.0, *), ImageAnalyzer.isSupported, let image = sdImageView.image else {
       return
     }
 
@@ -586,7 +588,7 @@ public final class ImageView: ExpoView {
     }
   }
 
-  @available(iOS 16.0, *)
+  @available(iOS 16.0, macCatalyst 17.0, *)
   private func findImageAnalysisInteraction() -> ImageAnalysisInteraction? {
     let interaction = sdImageView.interactions.first {
       return $0 is ImageAnalysisInteraction

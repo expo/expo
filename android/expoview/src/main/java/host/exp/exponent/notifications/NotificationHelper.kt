@@ -385,7 +385,7 @@ object NotificationHelper {
                   NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID
                 )
               ).apply {
-                setSmallIcon(if (Constants.isStandaloneApp()) R.drawable.shell_notification_icon else R.drawable.notification_icon)
+                setSmallIcon(R.drawable.notification_icon)
                 setAutoCancel(true)
               }
 
