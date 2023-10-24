@@ -2,6 +2,9 @@
 
 import SDWebImage
 import ExpoModulesCore
+#if !os(tvOS)
+import VisionKit
+#endif
 
 typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
