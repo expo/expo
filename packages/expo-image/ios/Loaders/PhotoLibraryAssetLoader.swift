@@ -77,7 +77,7 @@ private func assetLocalIdentifier(fromUrl url: URL) -> String? {
  Checks whether the app is authorized to read the Photo Library.
  */
 private func isPhotoLibraryStatusAuthorized() -> Bool {
-  if #available(iOS 14, *) {
+  if #available(iOS 14, tvOS 14, *) {
     let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
     return status == .authorized || status == .limited
   } else {

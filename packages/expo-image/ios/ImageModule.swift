@@ -111,7 +111,7 @@ public final class ImageModule: Module {
   }
 
   static func registerCoders() {
-    if #available(iOS 14.0, *) {
+    if #available(iOS 14.0, tvOS 14.0, *) {
       // By default Animated WebP is not supported
       SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
     } else {
