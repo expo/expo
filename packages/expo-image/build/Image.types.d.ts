@@ -273,7 +273,7 @@ export interface ImageNativeProps extends ImageProps {
     placeholder?: ImageSource[];
     contentPosition?: ImageContentPositionObject;
     transition?: ImageTransition | null;
-    animated?: boolean;
+    autoplay?: boolean;
     nativeViewRef?: boolean;
 }
 /**
@@ -370,7 +370,7 @@ export type ImageLoadEventData = {
         width: number;
         height: number;
         mediaType: string | null;
-        animated?: boolean | undefined;
+        isAnimated?: boolean;
     };
 };
 export type ImageProgressEventData = {
