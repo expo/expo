@@ -710,7 +710,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
 
   // MARK: - JS API
 
-  public func checkForUpdate(_ block: @escaping ([String: Any]) -> Void) {
+  public func checkForUpdate(_ block: @escaping (_ remoteCheckResult: RemoteCheckResult) -> Void) {
     stateMachine.processEvent(UpdatesStateEventCheck())
 
     database.databaseQueue.async {
@@ -732,24 +732,18 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
           if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
             switch updateDirective {
             case is NoUpdateAvailableUpdateDirective:
-              block([:])
+              block(RemoteCheckResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.noUpdateAvailableOnServer))
               self.stateMachine.processEvent(UpdatesStateEventCheckComplete())
               return
             case let rollBackUpdateDirective as RollBackToEmbeddedUpdateDirective:
               if !self.config.hasEmbeddedUpdate {
-                let reason = RemoteCheckResultNotAvailableReason.rollbackNoEmbedded
-                block([
-                  "reason": "\(reason)"
-                ])
+                block(RemoteCheckResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.rollbackNoEmbedded))
                 self.stateMachine.processEvent(UpdatesStateEventCheckComplete())
                 return
               }
 
               guard let embeddedUpdate = embeddedUpdate else {
-                let reason = RemoteCheckResultNotAvailableReason.rollbackNoEmbedded
-                block([
-                  "reason": "\(reason)"
-                ])
+                block(RemoteCheckResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.rollbackNoEmbedded))
                 self.stateMachine.processEvent(UpdatesStateEventCheckComplete())
                 return
               }
@@ -760,37 +754,26 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
                 launchedUpdate: launchedUpdate,
                 filters: manifestFilters
               ) {
-                let reason = RemoteCheckResultNotAvailableReason.rollbackRejectedBySelectionPolicy
-                block([
-                  "reason": "\(reason)"
-                ])
+                block(RemoteCheckResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.rollbackRejectedBySelectionPolicy))
                 self.stateMachine.processEvent(UpdatesStateEventCheckComplete())
                 return
               }
 
-              block([
-                "isRollBackToEmbedded": true
-              ])
+              block(RemoteCheckResult.rollBackToEmbedded(commitTime: rollBackUpdateDirective.commitTime))
               self.stateMachine.processEvent(
-                UpdatesStateEventCheckCompleteWithRollback(
-                  rollbackCommitTime: RollBackToEmbeddedUpdateDirective.rollbackCommitTime(rollBackUpdateDirective)
-                )
+                UpdatesStateEventCheckCompleteWithRollback(rollbackCommitTime: rollBackUpdateDirective.commitTime)
               )
               return
             default:
               let error = UpdatesUnsupportedDirectiveException()
-              let body = ["message": error.localizedDescription]
               self.stateMachine.processEvent(UpdatesStateEventCheckError(message: error.localizedDescription))
-              block(body)
+              block(RemoteCheckResult.error(error: error))
               return
             }
           }
 
           guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
-            let reason = RemoteCheckResultNotAvailableReason.noUpdateAvailableOnServer
-            block([
-              "reason": "\(reason)"
-            ])
+            block(RemoteCheckResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.noUpdateAvailableOnServer))
             self.stateMachine.processEvent(UpdatesStateEventCheckComplete())
             return
           }
@@ -820,29 +803,31 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
             }
           }
           if shouldLaunch {
-            block([
-              "manifest": update.manifest.rawManifestJSON()
-            ])
+            block(RemoteCheckResult.updateAvailable(manifest: update.manifest.rawManifestJSON()))
             self.stateMachine.processEvent(UpdatesStateEventCheckCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
           } else {
             let reason = failedPreviously ?
               RemoteCheckResultNotAvailableReason.updatePreviouslyFailed :
               RemoteCheckResultNotAvailableReason.updateRejectedBySelectionPolicy
-            block([
-              "reason": "\(reason)"
-            ])
+            block(RemoteCheckResult.noUpdateAvailable(reason: reason))
             self.stateMachine.processEvent(UpdatesStateEventCheckComplete())
           }
         } errorBlock: { error in
-          let body = ["message": error.localizedDescription]
           self.stateMachine.processEvent(UpdatesStateEventCheckError(message: error.localizedDescription))
-          block(body)
+          block(RemoteCheckResult.error(error: error))
           return
       }
     }
   }
 
-  public func fetchUpdate(_ block: @escaping ([String: Any]) -> Void) {
+  public enum FetchUpdateResult {
+    case success(manifest: [String: Any])
+    case failure
+    case rollBackToEmbedded
+    case error(error: Error)
+  }
+
+  public func fetchUpdate(_ block: @escaping (_ fetchUpdateResult: FetchUpdateResult) -> Void) {
     self.stateMachine.processEvent(UpdatesStateEventDownload())
     let remoteAppLoader = RemoteAppLoader(
       config: self.config,
@@ -902,49 +887,37 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
         priorError: nil
       ) { updateToLaunch, error, didRollBackToEmbedded in
         if let error = error {
-          let body = ["message": error.localizedDescription]
           self.stateMachine.processEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
-          block(body)
+          block(FetchUpdateResult.error(error: error))
           return
         }
 
         if didRollBackToEmbedded {
-          block([
-            "isNew": false,
-            "isRollBackToEmbedded": true
-          ])
+          block(FetchUpdateResult.rollBackToEmbedded)
           self.stateMachine.processEvent(UpdatesStateEventDownloadCompleteWithRollback())
           return
         }
 
         if let update = updateToLaunch {
           AppController.sharedInstance.resetSelectionPolicyToDefault()
-          block([
-            "isNew": true,
-            "isRollBackToEmbedded": false,
-            "manifest": update.manifest.rawManifestJSON()
-          ] as [String: Any])
+          block(FetchUpdateResult.success(manifest: update.manifest.rawManifestJSON()))
           self.stateMachine.processEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
           return
         }
 
-        block([
-          "isNew": false,
-          "isRollBackToEmbedded": false
-        ])
+        block(FetchUpdateResult.failure)
         self.stateMachine.processEvent(UpdatesStateEventDownloadComplete())
         return
       }
     } error: { error in
-      let body = ["message": error.localizedDescription]
       self.stateMachine.processEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
-      block(body)
+      block(FetchUpdateResult.error(error: error))
       return
     }
   }
 
-  public func getNativeStateMachineContextJson(_ block: @escaping ([String: Any?]) -> Void) {
-    block(self.stateMachine.context.json)
+  internal func getNativeStateMachineContext(_ block: @escaping (_ stateMachineContext: UpdatesStateContext) -> Void) {
+    block(self.stateMachine.context)
   }
 
   public func getExtraParams(

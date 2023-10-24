@@ -88,42 +88,32 @@ public final class UpdatesModule: Module {
         throw UpdatesNotInitializedException()
       }
 
-      AppController.sharedInstance.checkForUpdate { result in
-        if result["message"] != nil {
-          guard let message = result["message"] as? String else {
-            promise.reject("ERR_UPDATES_CHECK", "")
-            return
-          }
-          promise.reject("ERR_UPDATES_CHECK", message)
-          return
-        }
-        if result["manifest"] != nil {
-          promise.resolve([
-            "isAvailable": true,
-            "manifest": result["manifest"],
-            "isRollBackToEmbedded": false
-          ])
-          return
-        }
-        if result["isRollBackToEmbedded"] != nil {
-          promise.resolve([
-            "isAvailable": false,
-            "isRollBackToEmbedded": result["isRollBackToEmbedded"]
-          ])
-          return
-        }
-        if result["reason"] != nil {
+      AppController.sharedInstance.checkForUpdate { remoteCheckResult in
+        switch remoteCheckResult {
+        case .noUpdateAvailable(let reason):
           promise.resolve([
             "isAvailable": false,
             "isRollBackToEmbedded": false,
-            "reason": result["reason"]
+            "reason": reason
           ])
           return
+        case .updateAvailable(let manifest):
+          promise.resolve([
+            "isAvailable": true,
+            "manifest": manifest,
+            "isRollBackToEmbedded": false
+          ])
+          return
+        case .rollBackToEmbedded:
+          promise.resolve([
+            "isAvailable": false,
+            "isRollBackToEmbedded": true
+          ])
+          return
+        case .error(let error):
+          promise.reject("ERR_UPDATES_CHECK", error.localizedDescription)
+          return
         }
-        promise.resolve([
-          "isAvailable": false,
-          "isRollBackToEmbedded": false
-        ])
       }
     }
 
@@ -187,16 +177,30 @@ public final class UpdatesModule: Module {
         throw UpdatesNotInitializedException()
       }
 
-      AppController.sharedInstance.fetchUpdate { result in
-        if result["message"] != nil {
-          guard let message = result["message"] as? String else {
-            promise.reject("ERR_UPDATES_FETCH", "")
-            return
-          }
-          promise.reject("ERR_UPDATES_FETCH", message)
+      AppController.sharedInstance.fetchUpdate { fetchUpdateResult in
+        switch fetchUpdateResult {
+        case .success(let manifest):
+          promise.resolve([
+            "isNew": true,
+            "isRollBackToEmbedded": false,
+            "manifest": manifest
+          ])
           return
-        } else {
-          promise.resolve(result)
+        case .failure:
+          promise.resolve([
+            "isNew": false,
+            "isRollBackToEmbedded": false
+          ])
+          return
+        case .rollBackToEmbedded:
+          promise.resolve([
+            "isNew": false,
+            "isRollBackToEmbedded": true
+          ])
+          return
+        case .error(let error):
+          promise.reject("ERR_UPDATES_FETCH", error.localizedDescription)
+          return
         }
       }
     }
@@ -212,17 +216,8 @@ public final class UpdatesModule: Module {
         throw UpdatesNotInitializedException()
       }
 
-      AppController.sharedInstance.getNativeStateMachineContextJson { result in
-        if result["message"] != nil {
-          guard let message = result["message"] as? String else {
-            promise.reject("ERR_UPDATES_CHECK", "")
-            return
-          }
-          promise.reject("ERR_UPDATES_CHECK", message)
-          return
-        } else {
-          promise.resolve(result)
-        }
+      AppController.sharedInstance.getNativeStateMachineContext { stateMachineContext in
+        promise.resolve(stateMachineContext.json)
       }
     }
   }
