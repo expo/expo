@@ -2,7 +2,6 @@ import FontAwesome from '@expo/vector-icons/build/FontAwesome';
 import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import * as React from 'react';
@@ -76,9 +75,10 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
   }
 
   didFocus = async () => {
-    const { status } = await Permissions.askAsync(Permissions.LOCATION);
+    const { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
+    const { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
 
-    if (status !== 'granted') {
+    if (foregroundStatus !== 'granted' || backgroundStatus !== 'granted') {
       this.appStateSubscription = AppState.addEventListener('change', this.handleAppStateChange);
       this.setState({
         error:

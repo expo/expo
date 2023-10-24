@@ -38,7 +38,11 @@ const Video = ({ controls, spaceAfter, url, file, loop = true }: VideoProps) => 
               className="react-player"
               width={PLAYER_WIDTH}
               height={PLAYER_HEIGHT}
-              style={playerStyle}
+              style={{
+                outline: 'none',
+                backgroundColor: '#000',
+                borderRadius: borderRadius.md,
+              }}
               muted
               playing={isVisible && !!file}
               controls={typeof controls === 'undefined' ? forceShowControls : controls}
@@ -81,12 +85,6 @@ const videoWrapperStyle = css({
   width: PLAYER_WIDTH,
   height: PLAYER_HEIGHT,
   backgroundColor: '#000',
-});
-
-const playerStyle = css({
-  outline: 'none',
-  backgroundColor: '#000',
-  borderRadius: borderRadius.md,
 });
 
 const dimmerStyle = css({

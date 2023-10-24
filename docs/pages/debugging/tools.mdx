@@ -107,7 +107,7 @@ This menu gives you access to several functions which are useful for debugging a
 
 <Collapsible summary="Or use any of the alternative options">
 
-- Android device (without USB): Shake the device verically.
+- Android device (without USB): Shake the device vertically.
 - Android Emulator or device (with USB):
 
   - Press <kbd>Cmd ⌘</kbd> + <kbd>m</kbd> or <kbd>Ctrl</kbd> + <kbd>m</kbd>
@@ -116,7 +116,7 @@ This menu gives you access to several functions which are useful for debugging a
 - iOS device (without USB):
   - Shake the device.
   - Touch 3 fingers to the screen.
-- iOS simulator or device (with USB):
+- iOS Simulator or device (with USB):
   - Press <kbd>Ctrl</kbd> + <kbd>Cmd ⌘</kbd> + <kbd>z</kbd> or <kbd>Cmd ⌘</kbd> + <kbd>d</kbd>
 
 </Collapsible>
@@ -214,6 +214,6 @@ There are however [some limitations](https://github.com/jhen0409/react-native-de
 
 ## Debugging production apps with Sentry
 
-In a perfect world, your app would ship without any bugs. However, that's usually not the case. So, it's a good idea to implement a crash and bug reporting system into your app. This way, if any user experiences a fatal JS error (or any event that you've configured to notify Sentry) you can see the details in your Sentry dashboard.
+In a perfect world, your app would ship without any bugs. However, that's usually not the case. So, it's a good idea to implement a crash and bug reporting system into your app. This way, if any user experiences a fatal JS error (or any event that you have configured to notify Sentry) you can see the details in your Sentry dashboard.
 
 Expo provides a wrapper called [`sentry-expo`](/guides/using-sentry) which allows you to get as much information as possible from crashes and other events. Plus, when running in the managed workflow, you can configure sourcemaps so that the stracktraces you see in Sentry will look much more like the code in your editor.

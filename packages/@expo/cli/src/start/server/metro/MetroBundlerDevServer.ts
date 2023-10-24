@@ -11,7 +11,7 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
 
-import { exportAllApiRoutesAsync, rebundleApiRoute } from './bundleApiRoutes';
+import { bundleApiRoute, rebundleApiRoute } from './bundleApiRoutes';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
@@ -27,6 +27,7 @@ import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../Bun
 import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
+import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
@@ -102,16 +103,36 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async exportExpoRouterApiRoutesAsync({
     mode,
     appDir,
+    outputDir,
   }: {
     mode: 'development' | 'production';
     appDir: string;
+    outputDir: string;
   }) {
-    return exportAllApiRoutesAsync(this.projectRoot, {
-      mode,
+    const manifest = await this.getExpoRouterRoutesManifestAsync({
       appDir,
-      port: this.getInstance()?.location.port,
-      shouldThrow: true,
     });
+
+    const files: Map<string, string> = new Map();
+
+    for (const route of manifest.apiRoutes) {
+      const filepath = path.join(appDir, route.file);
+      const contents = await bundleApiRoute(this.projectRoot, filepath, {
+        mode,
+        appDir,
+        port: this.getInstance()?.location.port,
+        shouldThrow: true,
+      });
+      const artifactFilename = path.join(
+        outputDir,
+        path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js'))
+      );
+      files.set(artifactFilename, contents!);
+      // Remap the manifest files to represent the output files.
+      route.file = artifactFilename;
+    }
+
+    return { manifest, files };
   }
 
   async composeResourcesWithHtml({
@@ -185,7 +206,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'client',
       serializerOutput: 'static',
       serializerIncludeMaps: includeMaps,
-      mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
+      mainModuleName: resolveMainModuleName(this.projectRoot, { platform: 'web' }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
     });
 
@@ -265,7 +286,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       platform: 'web',
       mode,
       environment: 'client',
-      mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
+      mainModuleName: resolveMainModuleName(this.projectRoot, { platform: 'web' }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
     });
 
@@ -380,6 +401,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }).getHandler()
     );
     middleware.use(new ReactDevToolsPageMiddleware(this.projectRoot).getHandler());
+    middleware.use(
+      new DevToolsPluginMiddleware(this.projectRoot, this.devToolsPluginManager).getHandler()
+    );
 
     const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
       onDeepLink: getDeepLinkHandler(this.projectRoot),
@@ -430,7 +454,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         if (exp.web?.output === 'server') {
           // Cache observation for API Routes...
           observeApiRouteChanges(
-            this.projectRoot,
+            appDir,
             {
               metro,
               server,

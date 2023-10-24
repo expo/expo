@@ -62,7 +62,7 @@ To do this, first make sure you are using the latest minor update of `expo` for 
 
 Next, plan out the notification channels your app will need. These may correspond to the different permutations of the `sound`, `vibrate` and `priority` settings you used on individual notifications.
 
-Once you've decided on a set of channels, you need to add logic to your app to create them. We recommend simply creating all channels in `componentDidMount` of your app's root component; this way all users will be sure to get all channels and not miss any notifications.
+Once you have decided on a set of channels, you need to add logic to your app to create them. We recommend simply creating all channels in `componentDidMount` of your app's root component; this way all users will be sure to get all channels and not miss any notifications.
 
 For example, if this is your code before:
 

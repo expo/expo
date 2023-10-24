@@ -13,7 +13,7 @@ import {
   PermissionResponse,
   VideoCodec,
 } from './Camera.types';
-import ExponentCamera from './ExponentCamera';
+import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExponentCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 
@@ -270,7 +270,7 @@ export default class Camera extends React.Component<CameraProps> {
    * @return Returns a Promise that resolves to an array of strings representing picture sizes that can be passed to `pictureSize` prop.
    * The list varies across Android devices but is the same for every iOS.
    */
-  async getAvailablePictureSizesAsync(ratio?: string): Promise<string[]> {
+  async getAvailablePictureSizesAsync(ratio: string): Promise<string[]> {
     if (!CameraManager.getAvailablePictureSizes) {
       throw new UnavailabilityError('Camera', 'getAvailablePictureSizesAsync');
     }
@@ -395,7 +395,7 @@ export default class Camera extends React.Component<CameraProps> {
     const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
 
     return (
-      <ExponentCamera
+      <ExpoCamera
         {...nativeProps}
         ref={this._setReference}
         onCameraReady={this._onCameraReady}

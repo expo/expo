@@ -643,7 +643,7 @@ open class FileSystemModule : Module() {
         }
       }
       val client = okHttpClient?.newBuilder()
-        ?.addNetworkInterceptor { chain ->
+        ?.addInterceptor { chain ->
           val originalResponse = chain.proceed(chain.request())
           originalResponse.newBuilder()
             .body(ProgressResponseBody(originalResponse.body, progressListener))

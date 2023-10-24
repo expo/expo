@@ -257,7 +257,9 @@ export function getHtmlFiles({
     const parts = value.split('/');
     // Replace `:foo` with `[foo]` and `*foo` with `[...foo]`
     const partsWithGroups = parts.map((part) => {
-      if (part.startsWith(':')) {
+      if (part === '*not-found') {
+        return `+not-found`;
+      } else if (part.startsWith(':')) {
         return `[${part.slice(1)}]`;
       } else if (part.startsWith('*')) {
         return `[...${part.slice(1)}]`;
@@ -271,29 +273,44 @@ export function getHtmlFiles({
 // Given a route like `(foo)/bar/(baz)`, return all possible variations of the route.
 // e.g. `(foo)/bar/(baz)`, `(foo)/bar/baz`, `foo/bar/(baz)`, `foo/bar/baz`,
 export function getPathVariations(routePath: string): string[] {
-  const variations = new Set<string>([routePath]);
+  const variations = new Set<string>();
   const segments = routePath.split('/');
 
-  function generateVariations(segments: string[], index: number): void {
-    if (index >= segments.length) {
+  function generateVariations(segments: string[], current = ''): void {
+    if (segments.length === 0) {
+      if (current) variations.add(current);
       return;
     }
 
-    const newSegments = [...segments];
-    while (
-      index < newSegments.length &&
-      matchGroupName(newSegments[index]) &&
-      newSegments.length > 1
-    ) {
-      newSegments.splice(index, 1);
-      variations.add(newSegments.join('/'));
-      generateVariations(newSegments, index + 1);
+    const [head, ...rest] = segments;
+
+    if (head.startsWith('(foo,foo')) {
     }
 
-    generateVariations(segments, index + 1);
+    if (matchGroupName(head)) {
+      const groups = head.slice(1, -1).split(',');
+
+      if (groups.length > 1) {
+        for (const group of groups) {
+          // If there are multiple groups, recurse on each group.
+          generateVariations([`(${group.trim()})`, ...rest], current);
+        }
+        return;
+      } else {
+        // Start a fork where this group is included
+        generateVariations(rest, current ? `${current}/(${groups[0]})` : `(${groups[0]})`);
+        // This code will continue and add paths without this group included`
+      }
+    } else if (current) {
+      current = `${current}/${head}`;
+    } else {
+      current = head;
+    }
+
+    generateVariations(rest, current);
   }
 
-  generateVariations(segments, 0);
+  generateVariations(segments);
 
   return Array.from(variations);
 }
@@ -307,26 +324,15 @@ async function exportApiRoutesAsync({
   server: MetroBundlerDevServer;
   appDir: string;
 }): Promise<Map<string, string>> {
-  const funcDir = path.join(outputDir, '_expo/functions');
+  const functionsDir = '_expo/functions';
+  const funcDir = path.join(outputDir, functionsDir);
   fs.mkdirSync(path.join(funcDir), { recursive: true });
 
-  const [manifest, files] = await Promise.all([
-    server.getExpoRouterRoutesManifestAsync({
-      appDir,
-    }),
-    server
-      .exportExpoRouterApiRoutesAsync({
-        mode: 'production',
-        appDir,
-      })
-      .then((routes) => {
-        const files = new Map<string, string>();
-        for (const [route, contents] of routes) {
-          files.set(path.join('_expo/functions', route), contents);
-        }
-        return files;
-      }),
-  ]);
+  const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
+    mode: 'production',
+    appDir,
+    outputDir: functionsDir,
+  });
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
 

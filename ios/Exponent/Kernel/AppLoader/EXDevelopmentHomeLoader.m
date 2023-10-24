@@ -14,11 +14,7 @@
 #import "EXVersions.h"
 #import "EXBuildConstants.h"
 
-#if defined(EX_DETACHED)
-#import "ExpoKit-Swift.h"
-#else
 #import "Expo_Go-Swift.h"
-#endif // defined(EX_DETACHED)
 
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
@@ -323,14 +319,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)_clientEnvironment
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return @"STANDALONE";
-  } else {
-    return @"EXPO_DEVICE";
+  return @"EXPO_DEVICE";
 #if TARGET_IPHONE_SIMULATOR
-    return @"EXPO_SIMULATOR";
+  return @"EXPO_SIMULATOR";
 #endif
-  }
 }
 
 - (NSString *)_sdkVersions
