@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Added support for `allowDownscaling` prop.
+
 ## 1.6.0 — 2023-10-17
 
 ### 🛠 Breaking changes
