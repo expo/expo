@@ -85,6 +85,10 @@ public final class ImageModule: Module {
         view.recyclingKey = key
       }
 
+      Prop("allowDownscaling") { (view, allowDownscaling: Bool?) in
+        view.allowDownscaling = allowDownscaling ?? true
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }
