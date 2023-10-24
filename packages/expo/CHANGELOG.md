@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- Migrate to `@expo/whatwg-url` to fix `SharedArrayBuffer` issue.
+- Migrate to `@expo/whatwg-url` to fix `SharedArrayBuffer` issue. ([#25005](https://github.com/expo/expo/pull/25005) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
