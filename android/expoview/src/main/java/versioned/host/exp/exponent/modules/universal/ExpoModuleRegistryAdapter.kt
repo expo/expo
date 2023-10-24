@@ -11,6 +11,7 @@ import expo.modules.manifests.core.Manifest
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.utils.ScopedContext
 import versioned.host.exp.exponent.core.modules.ExpoGoModule
+import versioned.host.exp.exponent.core.modules.ExpoGoUpdatesModule
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsCategoriesSerializer
 import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider
@@ -58,9 +59,6 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     // Overriding expo-permissions ScopedPermissionsService
     moduleRegistry.registerInternalModule(ScopedPermissionsService(scopedContext, experienceKey))
 
-    // Overriding expo-updates UpdatesService
-    moduleRegistry.registerInternalModule(UpdatesBinding(scopedContext, experienceProperties))
-
     // Overriding expo-notifications classes
     moduleRegistry.registerInternalModule(ScopedNotificationsChannelsProvider(scopedContext, experienceKey))
     moduleRegistry.registerInternalModule(ScopedNotificationsCategoriesSerializer())
@@ -88,6 +86,7 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
       with(appContext.registry) {
         register(
           ExpoGoModule(manifest),
+          ExpoGoUpdatesModule(experienceProperties),
           ScopedSecureStoreModule(scopedContext),
           object : FontLoaderModule() {
             override val prefix: String

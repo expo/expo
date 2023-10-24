@@ -27,7 +27,9 @@ const externalLinks = [
     const notFound = [];
     const redirectsFailed = [];
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      headless: 'new',
+    });
     const page = await browser.newPage();
 
     for (const link of externalLinks) {

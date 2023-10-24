@@ -15,28 +15,20 @@ import ExpoModulesCore
  * by EXUpdatesBinding, a scoped module, in Expo Go.
  */
 public final class UpdatesModule: Module {
-  private let updatesService: EXUpdatesModuleInterface?
-  private let methodQueue = UpdatesUtils.methodQueue
-
-  public required init(appContext: AppContext) {
-    updatesService = appContext.legacyModule(implementing: EXUpdatesModuleInterface.self)
-    super.init(appContext: appContext)
-  }
-
   // swiftlint:disable cyclomatic_complexity
   public func definition() -> ModuleDefinition {
     Name("ExpoUpdates")
 
     Constants {
-      let releaseChannel = updatesService?.config?.releaseChannel
-      let channel = updatesService?.config?.requestHeaders["expo-channel-name"] ?? ""
-      let runtimeVersion = updatesService?.config?.runtimeVersion ?? ""
-      let checkAutomatically = updatesService?.config?.checkOnLaunch.asString ?? CheckAutomaticallyConfig.Always.asString
-      let isMissingRuntimeVersion = updatesService?.config?.isMissingRuntimeVersion()
+      let config = AppController.sharedInstance.config
+      let releaseChannel = config.releaseChannel
+      let channel = config.requestHeaders["expo-channel-name"] ?? ""
+      let runtimeVersion = config.runtimeVersion ?? ""
+      let checkAutomatically = config.checkOnLaunch.asString
+      let isMissingRuntimeVersion = config.isMissingRuntimeVersion()
 
-      guard let updatesService = updatesService,
-        updatesService.isStarted,
-        let launchedUpdate = updatesService.launchedUpdate else {
+      guard AppController.sharedInstance.isStarted,
+        let launchedUpdate = AppController.sharedInstance.launchedUpdate() else {
         return [
           "isEnabled": false,
           "isEmbeddedLaunch": false,
@@ -48,15 +40,18 @@ public final class UpdatesModule: Module {
         ]
       }
 
+      let embeddedUpdate = AppController.sharedInstance.getEmbeddedUpdate()
+      let isEmbeddedLaunch = embeddedUpdate != nil && embeddedUpdate?.updateId == launchedUpdate.updateId
+
       let commitTime = UInt64(floor(launchedUpdate.commitTime.timeIntervalSince1970 * 1000))
       return [
         "isEnabled": true,
-        "isEmbeddedLaunch": updatesService.isEmbeddedLaunch,
-        "isUsingEmbeddedAssets": updatesService.isUsingEmbeddedAssets,
+        "isEmbeddedLaunch": isEmbeddedLaunch,
+        "isUsingEmbeddedAssets": AppController.sharedInstance.isUsingEmbeddedAssets,
         "updateId": launchedUpdate.updateId.uuidString,
         "manifest": launchedUpdate.manifest.rawManifestJSON(),
-        "localAssets": updatesService.assetFilesMap ?? [:],
-        "isEmergencyLaunch": updatesService.isEmergencyLaunch,
+        "localAssets": AppController.sharedInstance.assetFilesMap,
+        "isEmergencyLaunch": AppController.sharedInstance.isEmergencyLaunch,
         "isMissingRuntimeVersion": isMissingRuntimeVersion,
         "releaseChannel": releaseChannel,
         "runtimeVersion": runtimeVersion,
@@ -68,13 +63,14 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("reload") { (promise: Promise) in
-      guard let updatesService = updatesService, let config = updatesService.config, config.isEnabled else {
+      let config = AppController.sharedInstance.config
+      guard config.isEnabled else {
         throw UpdatesDisabledException()
       }
-      guard updatesService.canRelaunch else {
+      guard AppController.sharedInstance.isStarted else {
         throw UpdatesNotInitializedException()
       }
-      updatesService.requestRelaunch { success in
+      AppController.sharedInstance.requestRelaunch { success in
         if success {
           promise.resolve(nil)
         } else {
@@ -84,88 +80,72 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("checkForUpdateAsync") { (promise: Promise) in
-      let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true
-      guard maybeIsCheckForUpdateEnabled ?? false else {
-        promise.reject("ERR_UPDATES_CHECK", "checkForUpdateAsync() is not enabled")
-        return
+      let config = AppController.sharedInstance.config
+      guard config.isEnabled else {
+        throw UpdatesDisabledException()
       }
-      UpdatesUtils.checkForUpdate { result in
-        if result["message"] != nil {
-          guard let message = result["message"] as? String else {
-            promise.reject("ERR_UPDATES_CHECK", "")
-            return
-          }
-          promise.reject("ERR_UPDATES_CHECK", message)
-          return
-        }
-        if result["manifest"] != nil {
-          promise.resolve([
-            "isAvailable": true,
-            "manifest": result["manifest"],
-            "isRollBackToEmbedded": false
-          ])
-          return
-        }
-        if result["isRollBackToEmbedded"] != nil {
-          promise.resolve([
-            "isAvailable": false,
-            "isRollBackToEmbedded": result["isRollBackToEmbedded"]
-          ])
-          return
-        }
-        if result["reason"] != nil {
+      guard AppController.sharedInstance.isStarted else {
+        throw UpdatesNotInitializedException()
+      }
+
+      AppController.sharedInstance.checkForUpdate { remoteCheckResult in
+        switch remoteCheckResult {
+        case .noUpdateAvailable(let reason):
           promise.resolve([
             "isAvailable": false,
             "isRollBackToEmbedded": false,
-            "reason": result["reason"]
+            "reason": reason
           ])
           return
+        case .updateAvailable(let manifest):
+          promise.resolve([
+            "isAvailable": true,
+            "manifest": manifest,
+            "isRollBackToEmbedded": false
+          ])
+          return
+        case .rollBackToEmbedded:
+          promise.resolve([
+            "isAvailable": false,
+            "isRollBackToEmbedded": true
+          ])
+          return
+        case .error(let error):
+          promise.reject("ERR_UPDATES_CHECK", error.localizedDescription)
+          return
         }
-        promise.resolve([
-          "isAvailable": false,
-          "isRollBackToEmbedded": false
-        ])
       }
     }
 
     AsyncFunction("getExtraParamsAsync") { (promise: Promise) in
-      guard let updatesService = updatesService,
-        let config = updatesService.config,
-        config.isEnabled else {
+      let config = AppController.sharedInstance.config
+      guard config.isEnabled else {
         throw UpdatesDisabledException()
       }
-
-      guard let scopeKey = config.scopeKey else {
-        throw Exception(name: "ERR_UPDATES_SCOPE_KEY", description: "Muse have scopeKey in config")
+      guard AppController.sharedInstance.isStarted else {
+        throw UpdatesNotInitializedException()
       }
 
-      updatesService.database.databaseQueue.async {
-        do {
-          promise.resolve(try updatesService.database.extraParams(withScopeKey: scopeKey))
-        } catch {
-          promise.reject(error)
-        }
+      AppController.sharedInstance.getExtraParams { extraParams in
+        promise.resolve(extraParams)
+      } error: { error in
+        promise.reject(error)
       }
     }
 
     AsyncFunction("setExtraParamAsync") { (key: String, value: String?, promise: Promise) in
-      guard let updatesService = updatesService,
-        let config = updatesService.config,
-        config.isEnabled else {
+      let config = AppController.sharedInstance.config
+      guard config.isEnabled else {
         throw UpdatesDisabledException()
       }
-
-      guard let scopeKey = config.scopeKey else {
-        throw Exception(name: "ERR_UPDATES_SCOPE_KEY", description: "Muse have scopeKey in config")
+      guard AppController.sharedInstance.isStarted else {
+        throw UpdatesNotInitializedException()
       }
 
-      updatesService.database.databaseQueue.async {
-        do {
-          try updatesService.database.setExtraParam(key: key, value: value, withScopeKey: scopeKey)
-          promise.resolve(nil)
-        } catch {
-          promise.reject(error)
-        }
+      AppController.sharedInstance.setExtraParam(key: key, value: value) {
+        promise.resolve(nil)
+      } error: { error in
+        promise.reject(error)
       }
     }
 
@@ -189,21 +169,38 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("fetchUpdateAsync") { (promise: Promise) in
-      let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true
-      guard maybeIsCheckForUpdateEnabled ?? false else {
-        promise.reject("ERR_UPDATES_FETCH", "fetchUpdateAsync() is not enabled")
-        return
+      let config = AppController.sharedInstance.config
+      guard config.isEnabled else {
+        throw UpdatesDisabledException()
       }
-      UpdatesUtils.fetchUpdate { result in
-        if result["message"] != nil {
-          guard let message = result["message"] as? String else {
-            promise.reject("ERR_UPDATES_FETCH", "")
-            return
-          }
-          promise.reject("ERR_UPDATES_FETCH", message)
+      guard AppController.sharedInstance.isStarted else {
+        throw UpdatesNotInitializedException()
+      }
+
+      AppController.sharedInstance.fetchUpdate { fetchUpdateResult in
+        switch fetchUpdateResult {
+        case .success(let manifest):
+          promise.resolve([
+            "isNew": true,
+            "isRollBackToEmbedded": false,
+            "manifest": manifest
+          ])
           return
-        } else {
-          promise.resolve(result)
+        case .failure:
+          promise.resolve([
+            "isNew": false,
+            "isRollBackToEmbedded": false
+          ])
+          return
+        case .rollBackToEmbedded:
+          promise.resolve([
+            "isNew": false,
+            "isRollBackToEmbedded": true
+          ])
+          return
+        case .error(let error):
+          promise.reject("ERR_UPDATES_FETCH", error.localizedDescription)
+          return
         }
       }
     }
@@ -211,22 +208,16 @@ public final class UpdatesModule: Module {
     // Getter used internally by useUpdates()
     // to initialize its state
     AsyncFunction("getNativeStateMachineContextAsync") { (promise: Promise) in
-      let maybeIsCheckForUpdateEnabled: Bool? = updatesService?.canCheckForUpdateAndFetchUpdate ?? true
-      guard maybeIsCheckForUpdateEnabled ?? false else {
-        promise.resolve(UpdatesUtils.defaultNativeStateMachineContextJson())
-        return
+      let config = AppController.sharedInstance.config
+      guard config.isEnabled else {
+        throw UpdatesDisabledException()
       }
-      UpdatesUtils.getNativeStateMachineContextJson { result in
-        if result["message"] != nil {
-          guard let message = result["message"] as? String else {
-            promise.reject("ERR_UPDATES_CHECK", "")
-            return
-          }
-          promise.reject("ERR_UPDATES_CHECK", message)
-          return
-        } else {
-          promise.resolve(result)
-        }
+      guard AppController.sharedInstance.isStarted else {
+        throw UpdatesNotInitializedException()
+      }
+
+      AppController.sharedInstance.getNativeStateMachineContext { stateMachineContext in
+        promise.resolve(stateMachineContext.json)
       }
     }
   }

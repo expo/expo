@@ -8,7 +8,7 @@
 import { logMetroErrorAsync } from './metroErrorInterface';
 import { requireFileContentsWithMetro } from '../getStaticRenderFunctions';
 
-const debug = require('debug')('expo:server-routes') as typeof console.log;
+const debug = require('debug')('expo:api-routes') as typeof console.log;
 
 const pendingRouteOperations = new Map<string, Promise<string | null>>();
 
@@ -33,7 +33,7 @@ export async function bundleApiRoute(
 
   async function bundleAsync() {
     try {
-      debug('Check API route:', options.appDir, filepath);
+      debug('Bundle API route:', options.appDir, filepath);
 
       const middleware = await requireFileContentsWithMetro(projectRoot, devServerUrl, filepath, {
         minify: options.mode === 'production',
