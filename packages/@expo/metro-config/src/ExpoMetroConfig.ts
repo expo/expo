@@ -153,6 +153,11 @@ export function getDefaultConfig(
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
         ];
 
+        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/build/winter');
+        if (stdRuntime) {
+          preModules.push(stdRuntime);
+        }
+
         // We need to shift this to be the first module so web Fast Refresh works as expected.
         // This will only be applied if the module is installed and imported somewhere in the bundle already.
         const metroRuntime = resolveFrom.silent(projectRoot, '@expo/metro-runtime');
