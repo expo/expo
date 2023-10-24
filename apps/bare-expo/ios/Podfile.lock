@@ -1444,7 +1444,6 @@ DEPENDENCIES:
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
-  - EXCalendar (from `../../../packages/expo-calendar/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
@@ -1470,6 +1469,7 @@ DEPENDENCIES:
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
+  - ExpoCalendar (from `../../../packages/expo-calendar/ios`)
   - ExpoCamera (from `../../../packages/expo-camera/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
@@ -1621,9 +1621,6 @@ EXTERNAL SOURCES:
   EXBarCodeScanner:
     inhibit_warnings: false
     :path: "../../../packages/expo-barcode-scanner/ios"
-  EXCalendar:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-calendar/ios"
   EXConstants:
     inhibit_warnings: false
     :path: "../../../packages/expo-constants/ios"
@@ -1680,6 +1677,9 @@ EXTERNAL SOURCES:
   ExpoBrightness:
     inhibit_warnings: false
     :path: "../../../packages/expo-brightness/ios"
+  ExpoCalendar:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-calendar/ios"
   ExpoCamera:
     inhibit_warnings: false
     :path: "../../../packages/expo-camera/ios"
