@@ -1,4 +1,5 @@
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle } from 'react-native';
+import ExpoImage from './ExpoImage';
 
 export type ImageSource = {
   /**
@@ -312,7 +313,7 @@ export interface ImageNativeProps extends ImageProps {
   contentPosition?: ImageContentPositionObject;
   transition?: ImageTransition | null;
   autoplay?: boolean;
-  nativeViewRef?: boolean;
+  nativeViewRef?: React.RefObject<ExpoImage>;
 }
 
 /**
