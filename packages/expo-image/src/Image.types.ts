@@ -189,6 +189,14 @@ export interface ImageProps extends ViewProps {
   recyclingKey?: string | null;
 
   /**
+   * Determines if an image should automatically begin playing if it is an
+   * animated image.
+   * @default true
+   * @platform ios
+   */
+  autoplay?: boolean;
+
+  /**
    * Called when the image starts to load.
    */
   onLoadStart?: () => void;
@@ -303,6 +311,8 @@ export interface ImageNativeProps extends ImageProps {
   placeholder?: ImageSource[];
   contentPosition?: ImageContentPositionObject;
   transition?: ImageTransition | null;
+  animated?: boolean;
+  nativeViewRef?: boolean;
 }
 
 /**
@@ -437,6 +447,7 @@ export type ImageLoadEventData = {
     width: number;
     height: number;
     mediaType: string | null;
+    animated?: boolean | undefined;
   };
 };
 

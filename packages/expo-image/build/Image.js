@@ -5,6 +5,11 @@ import { resolveContentFit, resolveContentPosition, resolveTransition } from './
 import { resolveSources } from './utils/resolveSources';
 let loggedDefaultSourceDeprecationWarning = false;
 export class Image extends React.PureComponent {
+    nativeViewRef;
+    constructor(props) {
+        super(props);
+        this.nativeViewRef = React.createRef();
+    }
     /**
      * Preloads images at the given urls that can be later used in the image view.
      * Preloaded images are always cached on the disk, so make sure to use
@@ -35,15 +40,29 @@ export class Image extends React.PureComponent {
     static async clearDiskCache() {
         return await ExpoImageModule.clearDiskCache();
     }
+    /**
+     * Asynchronously starts playback of the view's image if it is animated.
+     * @platform ios
+     */
+    async startAnimating() {
+        await this.nativeViewRef.current.startAnimating();
+    }
+    /**
+     * Asynchronously stops the playback of the view's image if it is animated.
+     * @platform ios
+     */
+    async stopAnimating() {
+        await this.nativeViewRef.current.stopAnimating();
+    }
     render() {
-        const { style, source, placeholder, contentFit, contentPosition, transition, fadeDuration, resizeMode: resizeModeProp, defaultSource, loadingIndicatorSource, ...restProps } = this.props;
+        const { style, source, placeholder, contentFit, contentPosition, transition, fadeDuration, resizeMode: resizeModeProp, defaultSource, loadingIndicatorSource, autoplay, ...restProps } = this.props;
         const { resizeMode: resizeModeStyle, ...restStyle } = StyleSheet.flatten(style) || {};
         const resizeMode = resizeModeProp ?? resizeModeStyle;
         if ((defaultSource || loadingIndicatorSource) && !loggedDefaultSourceDeprecationWarning) {
             console.warn('[expo-image]: `defaultSource` and `loadingIndicatorSource` props are deprecated, use `placeholder` instead');
             loggedDefaultSourceDeprecationWarning = true;
         }
-        return (<ExpoImage {...restProps} style={restStyle} source={resolveSources(source)} placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)} contentFit={resolveContentFit(contentFit, resizeMode)} contentPosition={resolveContentPosition(contentPosition)} transition={resolveTransition(transition, fadeDuration)}/>);
+        return (<ExpoImage {...restProps} style={restStyle} source={resolveSources(source)} placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)} contentFit={resolveContentFit(contentFit, resizeMode)} contentPosition={resolveContentPosition(contentPosition)} transition={resolveTransition(transition, fadeDuration)} autoplay={autoplay ?? true} nativeViewRef={this.nativeViewRef}/>);
     }
 }
 //# sourceMappingURL=Image.js.map

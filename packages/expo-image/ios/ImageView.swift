@@ -214,9 +214,11 @@ public final class ImageView: ExpoView {
     // First we need to see if the image is animated. SDAnimatedImage might not properly render some image formats.
     // If the image is animated, we want to use the data and create an SDAnimatedImage with that data.
     // SDAnimatedImage extends UIImage so we should be able to do everything that we were doing before still.
+    var animated = false
     var image = image
 
     if image?.sd_isAnimated != nil, let data = data {
+      animated = true
       image = SDAnimatedImage(data: data)
     }
 
@@ -228,7 +230,8 @@ public final class ImageView: ExpoView {
           "url": imageUrl?.absoluteString,
           "width": image.size.width,
           "height": image.size.height,
-          "mediaType": imageFormatToMediaType(image.sd_imageFormat)
+          "mediaType": imageFormatToMediaType(image.sd_imageFormat),
+          "animated": animated
         ]
       ])
 

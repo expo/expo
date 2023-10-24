@@ -85,6 +85,18 @@ public final class ImageModule: Module {
         view.recyclingKey = key
       }
 
+      Prop("autoplay") { (view, autoplay: Bool) in
+        view.sdImageView.autoPlayAnimatedImage = autoplay
+      }
+
+      AsyncFunction("startAnimating") { (view: ImageView) in
+        view.sdImageView.startAnimating()
+      }
+
+      AsyncFunction("stopAnimating") { (view: ImageView) in
+        view.sdImageView.stopAnimating()
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }

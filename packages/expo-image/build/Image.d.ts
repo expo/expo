@@ -1,6 +1,8 @@
 import React from 'react';
 import { ImageProps } from './Image.types';
 export declare class Image extends React.PureComponent<ImageProps> {
+    nativeViewRef: any;
+    constructor(props: any);
     /**
      * Preloads images at the given urls that can be later used in the image view.
      * Preloaded images are always cached on the disk, so make sure to use
@@ -25,6 +27,16 @@ export declare class Image extends React.PureComponent<ImageProps> {
      * Resolves to `false` on Web.
      */
     static clearDiskCache(): Promise<boolean>;
+    /**
+     * Asynchronously starts playback of the view's image if it is animated.
+     * @platform ios
+     */
+    startAnimating(): Promise<void>;
+    /**
+     * Asynchronously stops the playback of the view's image if it is animated.
+     * @platform ios
+     */
+    stopAnimating(): Promise<void>;
     render(): JSX.Element;
 }
 //# sourceMappingURL=Image.d.ts.map

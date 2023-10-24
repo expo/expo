@@ -9,6 +9,13 @@ import { resolveSources } from './utils/resolveSources';
 let loggedDefaultSourceDeprecationWarning = false;
 
 export class Image extends React.PureComponent<ImageProps> {
+  nativeViewRef;
+
+  constructor(props) {
+    super(props);
+    this.nativeViewRef = React.createRef();
+  }
+
   /**
    * Preloads images at the given urls that can be later used in the image view.
    * Preloaded images are always cached on the disk, so make sure to use
@@ -42,6 +49,22 @@ export class Image extends React.PureComponent<ImageProps> {
     return await ExpoImageModule.clearDiskCache();
   }
 
+  /**
+   * Asynchronously starts playback of the view's image if it is animated.
+   * @platform ios
+   */
+  async startAnimating(): Promise<void> {
+    await this.nativeViewRef.current.startAnimating();
+  }
+
+  /**
+   * Asynchronously stops the playback of the view's image if it is animated.
+   * @platform ios
+   */
+  async stopAnimating(): Promise<void> {
+    await this.nativeViewRef.current.stopAnimating();
+  }
+
   render() {
     const {
       style,
@@ -54,6 +77,7 @@ export class Image extends React.PureComponent<ImageProps> {
       resizeMode: resizeModeProp,
       defaultSource,
       loadingIndicatorSource,
+      autoplay,
       ...restProps
     } = this.props;
 
@@ -76,6 +100,8 @@ export class Image extends React.PureComponent<ImageProps> {
         contentFit={resolveContentFit(contentFit, resizeMode)}
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
+        autoplay={autoplay ?? true}
+        nativeViewRef={this.nativeViewRef}
       />
     );
   }
