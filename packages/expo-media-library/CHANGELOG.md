@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 15.7.0 — 2023-10-17
 
 ### 🛠 Breaking changes

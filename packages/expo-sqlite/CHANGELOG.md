@@ -29,6 +29,7 @@
 ### 💡 Others
 
 - [Android] Removed the package included SQLite source and download in build time. ([#25186](https://github.com/expo/expo/pull/25186) by [@kudo](https://github.com/kudo))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 11.8.0 — 2023-10-17
 

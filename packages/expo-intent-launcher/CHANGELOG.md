@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 10.10.0 — 2023-10-17
 
 ### 🛠 Breaking changes
@@ -106,7 +108,7 @@ _This version does not introduce any user-facing changes._
 
 - Replace the stand-alone action constant strings with String Enum named `ActivityAction`. ([#14070](https://github.com/expo/expo/pull/14070) by [@Simek](https://github.com/Simek))
 
-```diff
+````diff
 - IntentLauncher.ACTION_* // ACTION_ACCESSIBILITY_SETTINGS
 + IntentLauncher.ActivityAction.* // ActivityAction.ACCESSIBILITY_SETTINGS
 ```## 9.1.0 — 2021-06-16
@@ -145,6 +147,8 @@ _This version does not introduce any user-facing changes._
 ## 8.2.0 — 2020-05-27
 
 *This version does not introduce any user-facing changes.*
-``````
+````
+
+```
 
 ```

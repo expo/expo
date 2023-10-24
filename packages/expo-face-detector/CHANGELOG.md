@@ -14,6 +14,7 @@
 
 - Migrated codebase to use Expo Modules API. ([#24994](https://github.com/expo/expo/pull/24994) by [@lukmccall](https://github.com/lukmccall))
 - Renamed `unimodule.json` to `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 12.5.0 — 2023-10-17
 

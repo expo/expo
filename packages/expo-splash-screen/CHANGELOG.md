@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Moved changes required for splash screen orchestration from `expo-router` to `expo-splash-screen`. ([#24893](https://github.com/expo/expo/pull/24893) by [@EvanBacon](https://github.com/EvanBacon))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.24.0 — 2023-10-17
 

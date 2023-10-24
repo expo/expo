@@ -31,6 +31,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Simplify UpdatesUtils.parseDateString, fix UpdatesLoggingTest. ([#24951](https://github.com/expo/expo/pull/24951) by [@douglowder](https://github.com/douglowder))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.22.0 — 2023-10-17
 
