@@ -91,7 +91,7 @@ func closestIntrinsicSize(intrinsicSizes: [IntrinsicSize]?, displaySize: CGSize,
 
   var cgIntrinsicSize = intrinsicSize.map { size -> CGSize in
     var newSize = CGSize(width: size.width ?? 0, height: size.height ?? 0)
-  
+
     if let height = size.height {
       newSize.width = height * aspectRatio
     } else if let width = size.width {

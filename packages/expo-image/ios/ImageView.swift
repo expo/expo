@@ -7,11 +7,11 @@ import UIKit
 
 typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
-internal enum ReloadType : Int, Comparable {
-  case none;
-  case partial;
-  case blur; // Blur update is used as partial + blur
-  case full;
+internal enum ReloadType: Int, Comparable {
+  case none
+  case partial
+  case blur // Blur update includes the partial updates
+  case full
 
   static func < (lhs: ReloadType, rhs: ReloadType) -> Bool {
     lhs.rawValue < rhs.rawValue
@@ -539,7 +539,7 @@ public final class ImageView: ExpoView {
 
   // The `condition` field is useful for reducing the amount of code in the didSet blocks
   private func increaseReloadComplexity(to: ReloadType, condition: Bool = true) {
-    reloadType = to > reloadType && condition ? to : reloadType;
+    reloadType = to > reloadType && condition ? to : reloadType
   }
 
   // MARK: - Live Text Interaction
