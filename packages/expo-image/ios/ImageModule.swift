@@ -86,7 +86,7 @@ public final class ImageModule: Module {
       }
 
       Prop("allowDownscaling") { (view, allowDownscaling: Bool?) in
-        view.allowDownscaling = (allowDownscaling ?? true)
+        view.allowDownscaling = allowDownscaling ?? true
       }
 
       OnViewDidUpdateProps { view in
