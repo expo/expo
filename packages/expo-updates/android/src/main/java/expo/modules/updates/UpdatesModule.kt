@@ -8,20 +8,14 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.updates.db.entity.AssetEntity
-import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.*
-import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.manifest.ManifestMetadata
-import expo.modules.updates.manifest.UpdateManifest
-import expo.modules.updates.statemachine.UpdatesStateEvent
-import java.lang.Error
 import java.util.Date
 
 // these unused imports must stay because of versioning
@@ -143,7 +137,7 @@ class UpdatesModule : Module() {
             null
           )
         } else {
-          val context = updatesController.stateMachine.context
+          val context = updatesController.getNativeStateMachineContext()
           promise.resolve(context.bundle)
         }
       } catch (e: IllegalStateException) {
@@ -167,134 +161,42 @@ class UpdatesModule : Module() {
           )
           return@AsyncFunction
         }
-        updatesController.stateMachine.processEvent(UpdatesStateEvent.Check())
-        AsyncTask.execute {
-          val databaseHolder = updatesController.databaseHolder
-          val embeddedUpdate = EmbeddedManifest.get(context, configuration)?.updateEntity
-          val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
-            databaseHolder.database,
-            configuration,
-            updatesController.launchedUpdate,
-            embeddedUpdate
-          )
-          databaseHolder.releaseDatabase()
-          updatesController.fileDownloader.downloadRemoteUpdate(
-            configuration,
-            extraHeaders,
-            context,
-            object : RemoteUpdateDownloadCallback {
-              override fun onFailure(message: String, e: Exception) {
-                promise.reject("ERR_UPDATES_CHECK", message, e)
-                Log.e(TAG, message, e)
-              }
-
-              override fun onSuccess(updateResponse: UpdateResponse) {
-                val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-                val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
-
-                val launchedUpdate = updatesController.launchedUpdate
-
-                if (updateDirective != null) {
-                  if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
-                    if (!configuration.hasEmbeddedUpdate) {
-                      promise.resolveWithCheckForUpdateAsyncResult(
-                        CheckForUpdateAsyncResult.NoUpdateAvailable(
-                          LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
-                        ),
-                        updatesController
-                      )
-                      return
-                    }
-
-                    if (embeddedUpdate == null) {
-                      promise.resolveWithCheckForUpdateAsyncResult(
-                        CheckForUpdateAsyncResult.NoUpdateAvailable(
-                          LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
-                        ),
-                        updatesController
-                      )
-                      return
-                    }
-
-                    if (!updatesController.selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
-                        updateDirective,
-                        embeddedUpdate,
-                        launchedUpdate,
-                        updateResponse.responseHeaderData?.manifestFilters
-                      )
-                    ) {
-                      promise.resolveWithCheckForUpdateAsyncResult(
-                        CheckForUpdateAsyncResult.NoUpdateAvailable(
-                          LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_REJECTED_BY_SELECTION_POLICY
-                        ),
-                        updatesController
-                      )
-                      return
-                    }
-
-                    promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.RollBackToEmbedded(updateDirective.commitTime), updatesController)
-                    return
-                  }
-                }
-
-                if (updateManifest == null) {
-                  promise.resolveWithCheckForUpdateAsyncResult(
-                    CheckForUpdateAsyncResult.NoUpdateAvailable(
-                      LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER
-                    ),
-                    updatesController
-                  )
-                  return
-                }
-
-                if (launchedUpdate == null) {
-                  // this shouldn't ever happen, but if we don't have anything to compare
-                  // the new manifest to, let the user know an update is available
-                  promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.UpdateAvailable(updateManifest), updatesController)
-                  return
-                }
-
-                var shouldLaunch = false
-                var failedPreviously = false
-                if (updatesController.selectionPolicy.shouldLoadNewUpdate(
-                    updateManifest.updateEntity,
-                    launchedUpdate,
-                    updateResponse.responseHeaderData?.manifestFilters
-                  )
-                ) {
-                  // If "update" has failed to launch previously, then
-                  // "launchedUpdate" will be an earlier update, and the test above
-                  // will return true (incorrectly).
-                  // We check to see if the new update is already in the DB, and if so,
-                  // only allow the update if it has had no launch failures.
-                  shouldLaunch = true
-                  updateManifest.updateEntity?.let { updateEntity ->
-                    val storedUpdateEntity = updatesController.databaseHolder.database.updateDao().loadUpdateWithId(
-                      updateEntity.id
-                    )
-                    updatesController.databaseHolder.releaseDatabase()
-                    storedUpdateEntity?.let { storedUpdateEntity ->
-                      shouldLaunch = storedUpdateEntity.failedLaunchCount == 0
-                      logger.info("Stored update found: ID = ${updateEntity.id}, failureCount = ${storedUpdateEntity.failedLaunchCount}")
-                      failedPreviously = !shouldLaunch
-                    }
-                  }
-                }
-                if (shouldLaunch) {
-                  promise.resolveWithCheckForUpdateAsyncResult(CheckForUpdateAsyncResult.UpdateAvailable(updateManifest), updatesController)
-                } else {
-                  val reason = when (failedPreviously) {
-                    true -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_PREVIOUSLY_FAILED
-                    else -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_REJECTED_BY_SELECTION_POLICY
-                  }
-                  promise.resolveWithCheckForUpdateAsyncResult(
-                    CheckForUpdateAsyncResult.NoUpdateAvailable(reason),
-                    updatesController
-                  )
-                }
-              }
+        updatesController.checkForUpdate(context) { result ->
+          when (result) {
+            is UpdatesController.CheckForUpdateResult.ErrorResult -> {
+              promise.reject("ERR_UPDATES_CHECK", result.message, result.error)
+              Log.e(TAG, result.message, result.error)
             }
-          )
+            is UpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
+              promise.resolve(
+                Bundle().apply {
+                  putBoolean("isRollBackToEmbedded", false)
+                  putBoolean("isAvailable", false)
+                  putString("reason", result.reason.value)
+                }
+              )
+            }
+            is UpdatesController.CheckForUpdateResult.RollBackToEmbedded -> {
+              promise.resolve(
+                Bundle().apply {
+                  putBoolean("isRollBackToEmbedded", true)
+                  putBoolean("isAvailable", false)
+                }
+              )
+            }
+            is UpdatesController.CheckForUpdateResult.UpdateAvailable -> {
+              promise.resolve(
+                Bundle().apply {
+                  putBoolean("isRollBackToEmbedded", false)
+                  putBoolean("isAvailable", true)
+                  putString(
+                    "manifestString",
+                    result.updateManifest.manifest.toString()
+                  )
+                }
+              )
+            }
+          }
         }
       } catch (e: IllegalStateException) {
         promise.reject(
@@ -317,116 +219,38 @@ class UpdatesModule : Module() {
           )
           return@AsyncFunction
         }
-        updatesController.stateMachine.processEvent(UpdatesStateEvent.Download())
-        AsyncTask.execute {
-          val databaseHolder = updatesController.databaseHolder
-          val database = databaseHolder.database
-          RemoteLoader(
-            context,
-            configuration,
-            database,
-            updatesController.fileDownloader,
-            updatesController.updatesDirectory,
-            updatesController.launchedUpdate
-          )
-            .start(
-              object : Loader.LoaderCallback {
-                override fun onFailure(e: Exception) {
-                  databaseHolder.releaseDatabase()
-                  promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", e)
-                  updatesController.stateMachine.processEvent(
-                    UpdatesStateEvent.DownloadError("Failed to download new update: ${e.message}")
-                  )
+
+        updatesController.fetchUpdate(context) { result ->
+          when (result) {
+            is UpdatesController.FetchUpdateResult.ErrorResult -> {
+              promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", result.error)
+            }
+            is UpdatesController.FetchUpdateResult.Failure -> {
+              promise.resolve(
+                Bundle().apply {
+                  putBoolean("isRollBackToEmbedded", false)
+                  putBoolean("isNew", false)
                 }
-
-                override fun onAssetLoaded(
-                  asset: AssetEntity,
-                  successfulAssetCount: Int,
-                  failedAssetCount: Int,
-                  totalAssetCount: Int
-                ) {
+              )
+            }
+            is UpdatesController.FetchUpdateResult.RollBackToEmbedded -> {
+              promise.resolve(
+                Bundle().apply {
+                  putBoolean("isRollBackToEmbedded", true)
+                  putBoolean("isNew", false)
                 }
-
-                override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
-                  val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-                  if (updateDirective != null) {
-                    return Loader.OnUpdateResponseLoadedResult(
-                      shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
-                        is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
-                        is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
-                      }
-                    )
-                  }
-
-                  val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
-                    ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-
-                  return Loader.OnUpdateResponseLoadedResult(
-                    shouldDownloadManifestIfPresentInResponse = updatesController.selectionPolicy.shouldLoadNewUpdate(
-                      updateManifest.updateEntity,
-                      updatesController.launchedUpdate,
-                      updateResponse.responseHeaderData?.manifestFilters
-                    )
-                  )
+              )
+            }
+            is UpdatesController.FetchUpdateResult.Success -> {
+              promise.resolve(
+                Bundle().apply {
+                  putBoolean("isRollBackToEmbedded", false)
+                  putBoolean("isNew", true)
+                  putString("manifestString", result.update.manifest.toString())
                 }
-
-                override fun onSuccess(loaderResult: Loader.LoaderResult) {
-                  RemoteLoader.processSuccessLoaderResult(
-                    context,
-                    configuration,
-                    database,
-                    updatesController.selectionPolicy,
-                    updatesController.updatesDirectory,
-                    updatesController.launchedUpdate,
-                    loaderResult
-                  ) { availableUpdate, didRollBackToEmbedded ->
-                    databaseHolder.releaseDatabase()
-
-                    if (didRollBackToEmbedded) {
-                      promise.resolve(
-                        Bundle().apply {
-                          putBoolean("isRollBackToEmbedded", true)
-                          putBoolean("isNew", false)
-                        }
-                      )
-                      updatesController.stateMachine.processEvent(
-                        UpdatesStateEvent.DownloadCompleteWithRollback()
-                      )
-                    } else {
-                      if (availableUpdate == null) {
-                        promise.resolve(
-                          Bundle().apply {
-                            putBoolean("isRollBackToEmbedded", false)
-                            putBoolean("isNew", false)
-                          }
-                        )
-                        updatesController.stateMachine.processEvent(
-                          UpdatesStateEvent.DownloadComplete()
-                        )
-                      } else {
-                        updatesController.resetSelectionPolicyToDefault()
-
-                        // We need the explicit casting here because when in versioned expo-updates,
-                        // the UpdateEntity and UpdatesModule are in different package namespace,
-                        // Kotlin cannot do the smart casting for that case.
-                        val updateEntity = loaderResult.updateEntity as UpdateEntity
-
-                        promise.resolve(
-                          Bundle().apply {
-                            putBoolean("isRollBackToEmbedded", false)
-                            putBoolean("isNew", true)
-                            putString("manifestString", updateEntity.manifest.toString())
-                          }
-                        )
-                        updatesController.stateMachine.processEvent(
-                          UpdatesStateEvent.DownloadCompleteWithUpdate(updateEntity.manifest)
-                        )
-                      }
-                    }
-                  }
-                }
-              }
-            )
+              )
+            }
+          }
         }
       } catch (e: IllegalStateException) {
         val message = "The updates module controller has not been properly initialized. If you're using a development client, you cannot fetch updates. Otherwise, make sure you have called the native method UpdatesController.initialize()."
@@ -533,52 +357,6 @@ class UpdatesModule : Module() {
         }
       }
     }
-  }
-
-  private sealed class CheckForUpdateAsyncResult(private val status: Status) {
-    private enum class Status {
-      NO_UPDATE_AVAILABLE,
-      UPDATE_AVAILABLE,
-      ROLL_BACK_TO_EMBEDDED
-    }
-
-    class NoUpdateAvailable(val reason: LoaderTask.RemoteCheckResultNotAvailableReason) : CheckForUpdateAsyncResult(Status.NO_UPDATE_AVAILABLE)
-    class UpdateAvailable(val updateManifest: UpdateManifest) : CheckForUpdateAsyncResult(Status.UPDATE_AVAILABLE)
-    class RollBackToEmbedded(val commitTime: Date) : CheckForUpdateAsyncResult(Status.ROLL_BACK_TO_EMBEDDED)
-  }
-
-  private fun Promise.resolveWithCheckForUpdateAsyncResult(checkForUpdateAsyncResult: CheckForUpdateAsyncResult, updatesController: UpdatesController) {
-    resolve(
-      Bundle().apply {
-        when (checkForUpdateAsyncResult) {
-          is CheckForUpdateAsyncResult.NoUpdateAvailable -> {
-            putBoolean("isRollBackToEmbedded", false)
-            putBoolean("isAvailable", false)
-            putString("reason", checkForUpdateAsyncResult.reason.value)
-          }
-
-          is CheckForUpdateAsyncResult.RollBackToEmbedded -> {
-            putBoolean("isRollBackToEmbedded", true)
-            putBoolean("isAvailable", false)
-          }
-
-          is CheckForUpdateAsyncResult.UpdateAvailable -> {
-            putBoolean("isRollBackToEmbedded", false)
-            putBoolean("isAvailable", true)
-            putString("manifestString", checkForUpdateAsyncResult.updateManifest.manifest.toString())
-          }
-        }
-      }
-    )
-    updatesController.stateMachine.processEvent(
-      when (checkForUpdateAsyncResult) {
-        is CheckForUpdateAsyncResult.NoUpdateAvailable -> UpdatesStateEvent.CheckCompleteUnavailable()
-        is CheckForUpdateAsyncResult.RollBackToEmbedded -> UpdatesStateEvent.CheckCompleteWithRollback(checkForUpdateAsyncResult.commitTime)
-        is CheckForUpdateAsyncResult.UpdateAvailable -> UpdatesStateEvent.CheckCompleteWithUpdate(
-          checkForUpdateAsyncResult.updateManifest.manifest.getRawJson()
-        )
-      }
-    )
   }
 
   companion object {
