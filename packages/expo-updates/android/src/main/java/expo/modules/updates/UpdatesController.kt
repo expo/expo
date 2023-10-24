@@ -31,6 +31,7 @@ import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
@@ -42,6 +43,7 @@ import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
 import java.lang.ref.WeakReference
+import java.util.Date
 
 /**
  * Main entry point to expo-updates in normal release builds (development clients, including Expo
@@ -74,7 +76,7 @@ class UpdatesController private constructor(
 
   var updatesDirectory: File? = null
   var updatesDirectoryException: Exception? = null
-  var stateMachine: UpdatesStateMachine = UpdatesStateMachine(context, this)
+  val stateMachine: UpdatesStateMachine = UpdatesStateMachine(context, this)
 
   private var launcher: Launcher? = null
   val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
@@ -567,6 +569,247 @@ class UpdatesController private constructor(
 
   private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
     UpdatesUtils.sendEventToReactNative(reactNativeHost, logger, eventName, eventType, params)
+  }
+
+  fun getNativeStateMachineContext(): UpdatesStateContext {
+    return stateMachine.context
+  }
+
+  sealed class CheckForUpdateResult(private val status: Status) {
+    private enum class Status {
+      NO_UPDATE_AVAILABLE,
+      UPDATE_AVAILABLE,
+      ROLL_BACK_TO_EMBEDDED,
+      ERROR
+    }
+
+    class NoUpdateAvailable(val reason: LoaderTask.RemoteCheckResultNotAvailableReason) : CheckForUpdateResult(Status.NO_UPDATE_AVAILABLE)
+    class UpdateAvailable(val updateManifest: UpdateManifest) : CheckForUpdateResult(Status.UPDATE_AVAILABLE)
+    class RollBackToEmbedded(val commitTime: Date) : CheckForUpdateResult(Status.ROLL_BACK_TO_EMBEDDED)
+    class ErrorResult(val error: Exception, val message: String) : CheckForUpdateResult(Status.ERROR)
+  }
+
+  fun checkForUpdate(context: Context, callback: (result: CheckForUpdateResult) -> Unit) {
+    stateMachine.processEvent(UpdatesStateEvent.Check())
+
+    AsyncTask.execute {
+      val embeddedUpdate = EmbeddedManifest.get(context, updatesConfiguration)?.updateEntity
+      val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
+        databaseHolder.database,
+        updatesConfiguration,
+        launchedUpdate,
+        embeddedUpdate
+      )
+      databaseHolder.releaseDatabase()
+      fileDownloader.downloadRemoteUpdate(
+        updatesConfiguration,
+        extraHeaders,
+        context,
+        object : FileDownloader.RemoteUpdateDownloadCallback {
+          override fun onFailure(message: String, e: Exception) {
+            stateMachine.processEvent(UpdatesStateEvent.CheckError(message))
+            callback(CheckForUpdateResult.ErrorResult(e, message))
+          }
+
+          override fun onSuccess(updateResponse: UpdateResponse) {
+            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+
+            if (updateDirective != null) {
+              if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
+                if (!updatesConfiguration.hasEmbeddedUpdate) {
+                  callback(CheckForUpdateResult.NoUpdateAvailable(LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED))
+                  stateMachine.processEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                  return
+                }
+
+                if (embeddedUpdate == null) {
+                  callback(CheckForUpdateResult.NoUpdateAvailable(LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED))
+                  stateMachine.processEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                  return
+                }
+
+                if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+                    updateDirective,
+                    embeddedUpdate,
+                    launchedUpdate,
+                    updateResponse.responseHeaderData?.manifestFilters
+                  )
+                ) {
+                  callback(CheckForUpdateResult.NoUpdateAvailable(LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_REJECTED_BY_SELECTION_POLICY))
+                  stateMachine.processEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                  return
+                }
+
+                callback(CheckForUpdateResult.RollBackToEmbedded(updateDirective.commitTime))
+                stateMachine.processEvent(UpdatesStateEvent.CheckCompleteWithRollback(updateDirective.commitTime))
+                return
+              }
+            }
+
+            if (updateManifest == null) {
+              callback(CheckForUpdateResult.NoUpdateAvailable(LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER))
+              UpdatesStateEvent.CheckCompleteUnavailable()
+              return
+            }
+
+            if (launchedUpdate == null) {
+              // this shouldn't ever happen, but if we don't have anything to compare
+              // the new manifest to, let the user know an update is available
+              callback(CheckForUpdateResult.UpdateAvailable(updateManifest))
+              stateMachine.processEvent(UpdatesStateEvent.CheckCompleteWithUpdate(updateManifest.manifest.getRawJson()))
+              return
+            }
+
+            var shouldLaunch = false
+            var failedPreviously = false
+            if (selectionPolicy.shouldLoadNewUpdate(
+                updateManifest.updateEntity,
+                launchedUpdate,
+                updateResponse.responseHeaderData?.manifestFilters
+              )
+            ) {
+              // If "update" has failed to launch previously, then
+              // "launchedUpdate" will be an earlier update, and the test above
+              // will return true (incorrectly).
+              // We check to see if the new update is already in the DB, and if so,
+              // only allow the update if it has had no launch failures.
+              shouldLaunch = true
+              updateManifest.updateEntity?.let { updateEntity ->
+                val storedUpdateEntity = databaseHolder.database.updateDao().loadUpdateWithId(
+                  updateEntity.id
+                )
+                databaseHolder.releaseDatabase()
+                storedUpdateEntity?.let { storedUpdateEntity ->
+                  shouldLaunch = storedUpdateEntity.failedLaunchCount == 0
+                  logger.info("Stored update found: ID = ${updateEntity.id}, failureCount = ${storedUpdateEntity.failedLaunchCount}")
+                  failedPreviously = !shouldLaunch
+                }
+              }
+            }
+            if (shouldLaunch) {
+              callback(CheckForUpdateResult.UpdateAvailable(updateManifest))
+              stateMachine.processEvent(UpdatesStateEvent.CheckCompleteWithUpdate(updateManifest.manifest.getRawJson()))
+              return
+            } else {
+              val reason = when (failedPreviously) {
+                true -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_PREVIOUSLY_FAILED
+                else -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_REJECTED_BY_SELECTION_POLICY
+              }
+              callback(CheckForUpdateResult.NoUpdateAvailable(reason))
+              stateMachine.processEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+              return
+            }
+          }
+        }
+      )
+    }
+  }
+
+  sealed class FetchUpdateResult(private val status: Status) {
+    private enum class Status {
+      SUCCESS,
+      FAILURE,
+      ROLL_BACK_TO_EMBEDDED,
+      ERROR
+    }
+
+    class Success(val update: UpdateEntity) : FetchUpdateResult(Status.SUCCESS)
+    class Failure : FetchUpdateResult(Status.FAILURE)
+    class RollBackToEmbedded : FetchUpdateResult(Status.ROLL_BACK_TO_EMBEDDED)
+    class ErrorResult(val error: Exception) : FetchUpdateResult(Status.ERROR)
+  }
+
+  fun fetchUpdate(context: Context, callback: (result: FetchUpdateResult) -> Unit) {
+    stateMachine.processEvent(UpdatesStateEvent.Download())
+
+    AsyncTask.execute {
+      val database = databaseHolder.database
+      RemoteLoader(
+        context,
+        updatesConfiguration,
+        database,
+        fileDownloader,
+        updatesDirectory,
+        launchedUpdate
+      )
+        .start(
+          object : Loader.LoaderCallback {
+            override fun onFailure(e: Exception) {
+              databaseHolder.releaseDatabase()
+              callback(FetchUpdateResult.ErrorResult(e))
+              stateMachine.processEvent(
+                UpdatesStateEvent.DownloadError("Failed to download new update: ${e.message}")
+              )
+            }
+
+            override fun onAssetLoaded(
+              asset: AssetEntity,
+              successfulAssetCount: Int,
+              failedAssetCount: Int,
+              totalAssetCount: Int
+            ) {
+            }
+
+            override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
+              val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+              if (updateDirective != null) {
+                return Loader.OnUpdateResponseLoadedResult(
+                  shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+                    is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
+                    is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
+                  }
+                )
+              }
+
+              val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+                ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+
+              return Loader.OnUpdateResponseLoadedResult(
+                shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(
+                  updateManifest.updateEntity,
+                  launchedUpdate,
+                  updateResponse.responseHeaderData?.manifestFilters
+                )
+              )
+            }
+
+            override fun onSuccess(loaderResult: Loader.LoaderResult) {
+              RemoteLoader.processSuccessLoaderResult(
+                context,
+                updatesConfiguration,
+                database,
+                selectionPolicy,
+                updatesDirectory,
+                launchedUpdate,
+                loaderResult
+              ) { availableUpdate, didRollBackToEmbedded ->
+                databaseHolder.releaseDatabase()
+
+                if (didRollBackToEmbedded) {
+                  callback(FetchUpdateResult.RollBackToEmbedded())
+                  stateMachine.processEvent(UpdatesStateEvent.DownloadCompleteWithRollback())
+                } else {
+                  if (availableUpdate == null) {
+                    callback(FetchUpdateResult.Failure())
+                    stateMachine.processEvent(UpdatesStateEvent.DownloadComplete())
+                  } else {
+                    resetSelectionPolicyToDefault()
+
+                    // We need the explicit casting here because when in versioned expo-updates,
+                    // the UpdateEntity and UpdatesModule are in different package namespace,
+                    // Kotlin cannot do the smart casting for that case.
+                    val updateEntity = loaderResult.updateEntity as UpdateEntity
+
+                    callback(FetchUpdateResult.Success(updateEntity))
+                    stateMachine.processEvent(UpdatesStateEvent.DownloadCompleteWithUpdate(updateEntity.manifest))
+                  }
+                }
+              }
+            }
+          }
+        )
+    }
   }
 
   companion object {
