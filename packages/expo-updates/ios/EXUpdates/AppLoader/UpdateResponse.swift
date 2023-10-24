@@ -63,11 +63,6 @@ public final class RollBackToEmbeddedUpdateDirective: UpdateDirective {
     self.commitTime = commitTime
     super.init(signingInfo: signingInfo)
   }
-
-  // Extract commit time from an UpdateDirective
-  internal static func rollbackCommitTime(_ updateDirective: RollBackToEmbeddedUpdateDirective) -> Date {
-    return updateDirective.commitTime
-  }
 }
 
 public class UpdateResponsePart {}

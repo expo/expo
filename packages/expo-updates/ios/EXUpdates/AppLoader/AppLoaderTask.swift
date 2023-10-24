@@ -390,7 +390,7 @@ public final class AppLoaderTask: NSObject {
             self.delegateQueue.async {
               swiftDelegate.appLoaderTask(
                 self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.rollBackToEmbedded(
-                  commitTime: RollBackToEmbeddedUpdateDirective.rollbackCommitTime(rollBackUpdateDirective)
+                  commitTime: rollBackUpdateDirective.commitTime
                 )
               )
             }
