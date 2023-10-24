@@ -14,6 +14,7 @@
 ### 💡 Others
 
 - Android: Stub expo-updates in Expo Go and remove service pattern. ([#24890](https://github.com/expo/expo/pull/24890) by [@wschurman](https://github.com/wschurman))
+- iOS: Refactor responsibility of app controller. ([#24934](https://github.com/expo/expo/pull/24934) by [@wschurman](https://github.com/wschurman))
 
 ## 0.22.0 — 2023-10-17
 

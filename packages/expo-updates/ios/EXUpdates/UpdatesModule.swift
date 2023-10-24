@@ -15,12 +15,6 @@ import ExpoModulesCore
  * by EXUpdatesBinding, a scoped module, in Expo Go.
  */
 public final class UpdatesModule: Module {
-  private let methodQueue = UpdatesUtils.methodQueue
-
-  public required init(appContext: AppContext) {
-    super.init(appContext: appContext)
-  }
-
   // swiftlint:disable cyclomatic_complexity
   public func definition() -> ModuleDefinition {
     Name("ExpoUpdates")
@@ -46,8 +40,7 @@ public final class UpdatesModule: Module {
         ]
       }
 
-      let database = AppController.sharedInstance.database
-      let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database)
+      let embeddedUpdate = AppController.sharedInstance.getEmbeddedUpdate()
       let isEmbeddedLaunch = embeddedUpdate != nil && embeddedUpdate?.updateId == launchedUpdate.updateId
 
       let commitTime = UInt64(floor(launchedUpdate.commitTime.timeIntervalSince1970 * 1000))
@@ -87,7 +80,15 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("checkForUpdateAsync") { (promise: Promise) in
-      UpdatesUtils.checkForUpdate { result in
+      let config = AppController.sharedInstance.config
+      guard config.isEnabled else {
+        throw UpdatesDisabledException()
+      }
+      guard AppController.sharedInstance.isStarted else {
+        throw UpdatesNotInitializedException()
+      }
+
+      AppController.sharedInstance.checkForUpdate { result in
         if result["message"] != nil {
           guard let message = result["message"] as? String else {
             promise.reject("ERR_UPDATES_CHECK", "")
@@ -131,17 +132,14 @@ public final class UpdatesModule: Module {
       guard config.isEnabled else {
         throw UpdatesDisabledException()
       }
-
-      guard let scopeKey = config.scopeKey else {
-        throw Exception(name: "ERR_UPDATES_SCOPE_KEY", description: "Muse have scopeKey in config")
+      guard AppController.sharedInstance.isStarted else {
+        throw UpdatesNotInitializedException()
       }
 
-      AppController.sharedInstance.database.databaseQueue.async {
-        do {
-          promise.resolve(try AppController.sharedInstance.database.extraParams(withScopeKey: scopeKey))
-        } catch {
-          promise.reject(error)
-        }
+      AppController.sharedInstance.getExtraParams { extraParams in
+        promise.resolve(extraParams)
+      } error: { error in
+        promise.reject(error)
       }
     }
 
@@ -150,18 +148,14 @@ public final class UpdatesModule: Module {
       guard config.isEnabled else {
         throw UpdatesDisabledException()
       }
-
-      guard let scopeKey = config.scopeKey else {
-        throw Exception(name: "ERR_UPDATES_SCOPE_KEY", description: "Muse have scopeKey in config")
+      guard AppController.sharedInstance.isStarted else {
+        throw UpdatesNotInitializedException()
       }
 
-      AppController.sharedInstance.database.databaseQueue.async {
-        do {
-          try AppController.sharedInstance.database.setExtraParam(key: key, value: value, withScopeKey: scopeKey)
-          promise.resolve(nil)
-        } catch {
-          promise.reject(error)
-        }
+      AppController.sharedInstance.setExtraParam(key: key, value: value) {
+        promise.resolve(nil)
+      } error: { error in
+        promise.reject(error)
       }
     }
 
@@ -185,7 +179,15 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("fetchUpdateAsync") { (promise: Promise) in
-      UpdatesUtils.fetchUpdate { result in
+      let config = AppController.sharedInstance.config
+      guard config.isEnabled else {
+        throw UpdatesDisabledException()
+      }
+      guard AppController.sharedInstance.isStarted else {
+        throw UpdatesNotInitializedException()
+      }
+
+      AppController.sharedInstance.fetchUpdate { result in
         if result["message"] != nil {
           guard let message = result["message"] as? String else {
             promise.reject("ERR_UPDATES_FETCH", "")
@@ -202,7 +204,15 @@ public final class UpdatesModule: Module {
     // Getter used internally by useUpdates()
     // to initialize its state
     AsyncFunction("getNativeStateMachineContextAsync") { (promise: Promise) in
-      UpdatesUtils.getNativeStateMachineContextJson { result in
+      let config = AppController.sharedInstance.config
+      guard config.isEnabled else {
+        throw UpdatesDisabledException()
+      }
+      guard AppController.sharedInstance.isStarted else {
+        throw UpdatesNotInitializedException()
+      }
+
+      AppController.sharedInstance.getNativeStateMachineContextJson { result in
         if result["message"] != nil {
           guard let message = result["message"] as? String else {
             promise.reject("ERR_UPDATES_CHECK", "")

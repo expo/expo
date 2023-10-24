@@ -1,12 +1,15 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable line_length
+// swiftlint:disable type_body_length
+// swiftlint:disable closure_body_length
 
 // this class used a bunch of implicit non-null patterns for member variables. not worth refactoring to appease lint.
 // swiftlint:disable force_unwrapping
 
 import Foundation
 import SwiftUI
+import EXUpdatesInterface
 
 public typealias AppRelaunchCompletionBlock = (Bool) -> Void
 
@@ -82,33 +85,29 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
     return launcher.isUsingEmbeddedAssets()
   }
 
-  /**
-   for internal use in EXUpdates
-   */
-  public var config: UpdatesConfig
-  internal var launcher: AppLauncher?
-  public let database: UpdatesDatabase
-  internal var defaultSelectionPolicy: SelectionPolicy
-  private let errorRecovery: ErrorRecovery
-  public internal(set) var updatesDirectory: URL?
-  internal let controllerQueue: DispatchQueue
-  internal let assetFilesQueue: DispatchQueue
-  public internal(set) var isStarted: Bool
+  public private(set) var config: UpdatesConfig
+  fileprivate var launcher: AppLauncher?
+  fileprivate let database = UpdatesDatabase()
+  fileprivate var defaultSelectionPolicy: SelectionPolicy
+  private let errorRecovery = ErrorRecovery()
+  internal private(set) var updatesDirectory: URL? // internal for E2E test
+  fileprivate let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
+  internal fileprivate(set) var isStarted: Bool = false
 
   private var eventsToSendToJS: [[String: Any?]] = []
 
-  internal var stateMachine: UpdatesStateMachine?
+  private let stateMachine = UpdatesStateMachine()
 
   private var loaderTask: AppLoaderTask?
   private var candidateLauncher: AppLauncher?
 
-  public internal(set) var isEmergencyLaunch: Bool
+  internal private(set) var isEmergencyLaunch: Bool = false
 
   private var _selectionPolicy: SelectionPolicy?
 
-  public var remoteLoadStatus: RemoteLoadStatus
+  internal private(set) var remoteLoadStatus: RemoteLoadStatus = .Idle
 
-  internal let logger: UpdatesLogger
+  fileprivate let logger = UpdatesLogger()
 
   public static let sharedInstance = AppController()
 
@@ -124,24 +123,16 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
       .raise()
     }
     self.config = configInit!
-    self.database = UpdatesDatabase()
     self.defaultSelectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
       withRuntimeVersion: UpdatesUtils.getRuntimeVersion(withConfig: self.config)
     )
-    self.errorRecovery = ErrorRecovery()
-    self.assetFilesQueue = DispatchQueue(label: "expo.controller.AssetFilesQueue")
-    self.controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
-    self.isStarted = false
-    self.remoteLoadStatus = .Idle
-    self.isEmergencyLaunch = false
-    self.logger = UpdatesLogger()
     self.logger.info(message: "AppController sharedInstance created")
 
     super.init()
 
     self.errorRecovery.delegate = self
-    self.stateMachine = UpdatesStateMachine(changeEventDelegate: self)
-    self.stateMachine?.reset()
+    self.stateMachine.changeEventDelegate = self
+    self.stateMachine.reset()
   }
 
   /**
@@ -317,7 +308,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
   }
 
   public func requestRelaunch(completion: @escaping AppRelaunchCompletionBlock) {
-    stateMachine?.processEvent(UpdatesStateEventRestart())
+    stateMachine.processEvent(UpdatesStateEventRestart())
     let launcherWithDatabase = AppLauncherWithDatabase(
       config: config,
       database: database,
@@ -334,7 +325,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
         RCTTriggerReloadCommandListeners("Requested by JavaScript - Updates.reloadAsync()")
         self.runReaper()
         // Reset the state machine
-        self.stateMachine?.reset()
+        self.stateMachine.reset()
       } else {
         NSLog("Failed to relaunch: %@", error!.localizedDescription)
         completion(false)
@@ -353,13 +344,13 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
   }
 
   public func appLoaderTaskDidStartCheckingForRemoteUpdate(_: AppLoaderTask) {
-    stateMachine?.processEvent(UpdatesStateEventCheck())
+    stateMachine.processEvent(UpdatesStateEventCheck())
   }
 
   public func appLoaderTask(_: AppLoaderTask, didFinishCheckingForRemoteUpdateWithRemoteCheckResult remoteCheckResult: RemoteCheckResult) {
     let event: UpdatesStateEvent
     switch remoteCheckResult {
-    case .noUpdateAvailable(let _): // Not using reason to update state yet
+    case .noUpdateAvailable: // Not using reason to update state yet
       event = UpdatesStateEventCheckComplete()
     case .updateAvailable(let manifest):
       event = UpdatesStateEventCheckCompleteWithUpdate(manifest: manifest)
@@ -368,12 +359,12 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
     case .error(let error):
       event = UpdatesStateEventCheckError(message: error.localizedDescription)
     }
-    stateMachine?.processEvent(event)
+    stateMachine.processEvent(event)
   }
 
   public func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update?) {
     logger.info(message: "AppController appLoaderTask didStartLoadingUpdate", code: .none, updateId: update?.loggingId(), assetId: nil)
-    stateMachine?.processEvent(UpdatesStateEventDownload())
+    stateMachine.processEvent(UpdatesStateEventDownload())
   }
 
   public func appLoaderTask(_: AppLoaderTask, didFinishWithLauncher launcher: AppLauncher, isUpToDate: Bool) {
@@ -421,7 +412,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
   public func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error) {
     let logMessage = String(format: "AppController appLoaderTask didFinishWithError: %@", error.localizedDescription)
     logger.error(message: logMessage, code: .updateFailedToLoad)
-    stateMachine?.processEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
+    stateMachine.processEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
     // Send legacy UpdateEvents to JS
     sendLegacyUpdateEventToBridge(AppController.ErrorEventName, body: [
       "message": error.localizedDescription
@@ -449,11 +440,11 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
       )
       // Since errors can happen through a number of paths, we do these checks
       // to make sure the state machine is valid
-      if stateMachine?.state == .checking {
-        stateMachine?.processEvent(UpdatesStateEventCheckError(message: error.localizedDescription))
-      } else if stateMachine?.state == .downloading {
+      if stateMachine.state == .checking {
+        stateMachine.processEvent(UpdatesStateEventCheckError(message: error.localizedDescription))
+      } else if stateMachine.state == .downloading {
         // .downloading
-        stateMachine?.processEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
+        stateMachine.processEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
       }
       // Send UpdateEvents to JS
       sendLegacyUpdateEventToBridge(AppController.ErrorEventName, body: [
@@ -470,7 +461,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
         updateId: update.loggingId(),
         assetId: nil
       )
-      stateMachine?.processEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
+      stateMachine.processEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
       // Send UpdateEvents to JS
       sendLegacyUpdateEventToBridge(AppController.UpdateAvailableEventName, body: [
         "manifest": update.manifest.rawManifestJSON()
@@ -484,8 +475,8 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
         assetId: nil
       )
       // TODO: handle rollbacks properly, but this works for now
-      if stateMachine?.state == .downloading {
-        stateMachine?.processEvent(UpdatesStateEventDownloadComplete())
+      if stateMachine.state == .downloading {
+        stateMachine.processEvent(UpdatesStateEventDownloadComplete())
       }
       // Otherwise, we don't need to call the state machine here, it already transitioned to .checkCompleteUnavailable
       // Send UpdateEvents to JS
@@ -716,7 +707,514 @@ public class AppController: NSObject, AppLoaderTaskDelegate, AppLoaderTaskSwiftD
   public func throwException(_ exception: NSException) {
     exception.raise()
   }
+
+  // MARK: - JS API
+
+  public func checkForUpdate(_ block: @escaping ([String: Any]) -> Void) {
+    stateMachine.processEvent(UpdatesStateEventCheck())
+
+    database.databaseQueue.async {
+      let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
+      let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
+        withDatabase: self.database,
+        config: self.config,
+        launchedUpdate: self.launchedUpdate(),
+        embeddedUpdate: embeddedUpdate
+      )
+
+      FileDownloader(config: self.config).downloadRemoteUpdate(
+        fromURL: self.config.updateUrl!,
+        withDatabase: self.database,
+        extraHeaders: extraHeaders) { updateResponse in
+          let launchedUpdate = self.launchedUpdate()
+          let manifestFilters = updateResponse.responseHeaderData?.manifestFilters
+
+          if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
+            switch updateDirective {
+            case is NoUpdateAvailableUpdateDirective:
+              block([:])
+              self.stateMachine.processEvent(UpdatesStateEventCheckComplete())
+              return
+            case let rollBackUpdateDirective as RollBackToEmbeddedUpdateDirective:
+              if !self.config.hasEmbeddedUpdate {
+                let reason = RemoteCheckResultNotAvailableReason.rollbackNoEmbedded
+                block([
+                  "reason": "\(reason)"
+                ])
+                self.stateMachine.processEvent(UpdatesStateEventCheckComplete())
+                return
+              }
+
+              guard let embeddedUpdate = embeddedUpdate else {
+                let reason = RemoteCheckResultNotAvailableReason.rollbackNoEmbedded
+                block([
+                  "reason": "\(reason)"
+                ])
+                self.stateMachine.processEvent(UpdatesStateEventCheckComplete())
+                return
+              }
+
+              if !self.selectionPolicy().shouldLoadRollBackToEmbeddedDirective(
+                rollBackUpdateDirective,
+                withEmbeddedUpdate: embeddedUpdate,
+                launchedUpdate: launchedUpdate,
+                filters: manifestFilters
+              ) {
+                let reason = RemoteCheckResultNotAvailableReason.rollbackRejectedBySelectionPolicy
+                block([
+                  "reason": "\(reason)"
+                ])
+                self.stateMachine.processEvent(UpdatesStateEventCheckComplete())
+                return
+              }
+
+              block([
+                "isRollBackToEmbedded": true
+              ])
+              self.stateMachine.processEvent(
+                UpdatesStateEventCheckCompleteWithRollback(
+                  rollbackCommitTime: RollBackToEmbeddedUpdateDirective.rollbackCommitTime(rollBackUpdateDirective)
+                )
+              )
+              return
+            default:
+              let error = UpdatesUnsupportedDirectiveException()
+              let body = ["message": error.localizedDescription]
+              self.stateMachine.processEvent(UpdatesStateEventCheckError(message: error.localizedDescription))
+              block(body)
+              return
+            }
+          }
+
+          guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+            let reason = RemoteCheckResultNotAvailableReason.noUpdateAvailableOnServer
+            block([
+              "reason": "\(reason)"
+            ])
+            self.stateMachine.processEvent(UpdatesStateEventCheckComplete())
+            return
+          }
+
+          var shouldLaunch = false
+          var failedPreviously = false
+          if self.selectionPolicy().shouldLoadNewUpdate(
+            update,
+            withLaunchedUpdate: launchedUpdate,
+            filters: manifestFilters
+          ) {
+            // If "update" has failed to launch previously, then
+            // "launchedUpdate" will be an earlier update, and the test above
+            // will return true (incorrectly).
+            // We check to see if the new update is already in the DB, and if so,
+            // only allow the update if it has had no launch failures.
+            shouldLaunch = true
+            self.database.databaseQueue.sync {
+              do {
+                let storedUpdate = try self.database.update(withId: update.updateId, config: self.config)
+                if let storedUpdate = storedUpdate {
+                  shouldLaunch = storedUpdate.failedLaunchCount == 0 || storedUpdate.successfulLaunchCount > 0
+                  failedPreviously = !shouldLaunch
+                  AppController.sharedInstance.logger.info(message: "Stored update found: ID = \(update.updateId), failureCount = \(storedUpdate.failedLaunchCount)")
+                }
+              } catch {}
+            }
+          }
+          if shouldLaunch {
+            block([
+              "manifest": update.manifest.rawManifestJSON()
+            ])
+            self.stateMachine.processEvent(UpdatesStateEventCheckCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
+          } else {
+            let reason = failedPreviously ?
+              RemoteCheckResultNotAvailableReason.updatePreviouslyFailed :
+              RemoteCheckResultNotAvailableReason.updateRejectedBySelectionPolicy
+            block([
+              "reason": "\(reason)"
+            ])
+            self.stateMachine.processEvent(UpdatesStateEventCheckComplete())
+          }
+        } errorBlock: { error in
+          let body = ["message": error.localizedDescription]
+          self.stateMachine.processEvent(UpdatesStateEventCheckError(message: error.localizedDescription))
+          block(body)
+          return
+      }
+    }
+  }
+
+  public func fetchUpdate(_ block: @escaping ([String: Any]) -> Void) {
+    self.stateMachine.processEvent(UpdatesStateEventDownload())
+    let remoteAppLoader = RemoteAppLoader(
+      config: self.config,
+      database: self.database,
+      directory: self.updatesDirectory!,
+      launchedUpdate: self.launchedUpdate(),
+      completionQueue: controllerQueue
+    )
+    remoteAppLoader.loadUpdate(
+      fromURL: self.config.updateUrl!
+    ) { updateResponse in
+      if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
+        switch updateDirective {
+        case is NoUpdateAvailableUpdateDirective:
+          return false
+        case is RollBackToEmbeddedUpdateDirective:
+          return true
+        default:
+          NSException(name: .internalInconsistencyException, reason: "Unhandled update directive type").raise()
+          return false
+        }
+      }
+
+      guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+        return false
+      }
+
+      return self.selectionPolicy().shouldLoadNewUpdate(
+        update,
+        withLaunchedUpdate: self.launchedUpdate(),
+        filters: updateResponse.responseHeaderData?.manifestFilters
+      )
+    } asset: { asset, successfulAssetCount, failedAssetCount, totalAssetCount in
+      let body = [
+        "assetInfo": [
+          "assetName": asset.filename,
+          "successfulAssetCount": successfulAssetCount,
+          "failedAssetCount": failedAssetCount,
+          "totalAssetCount": totalAssetCount
+        ] as [String: Any]
+      ] as [String: Any]
+      AppController.sharedInstance.logger.info(
+        message: "fetchUpdateAsync didLoadAsset: \(body)",
+        code: .none,
+        updateId: nil,
+        assetId: asset.contentHash
+      )
+    } success: { updateResponse in
+      RemoteAppLoader.processSuccessLoaderResult(
+        config: self.config,
+        database: self.database,
+        selectionPolicy: self.selectionPolicy(),
+        launchedUpdate: self.launchedUpdate(),
+        directory: self.updatesDirectory!,
+        loaderTaskQueue: DispatchQueue(label: "expo.loader.LoaderTaskQueue"),
+        updateResponse: updateResponse,
+        priorError: nil
+      ) { updateToLaunch, error, didRollBackToEmbedded in
+        if let error = error {
+          let body = ["message": error.localizedDescription]
+          self.stateMachine.processEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
+          block(body)
+          return
+        }
+
+        if didRollBackToEmbedded {
+          block([
+            "isNew": false,
+            "isRollBackToEmbedded": true
+          ])
+          self.stateMachine.processEvent(UpdatesStateEventDownloadCompleteWithRollback())
+          return
+        }
+
+        if let update = updateToLaunch {
+          AppController.sharedInstance.resetSelectionPolicyToDefault()
+          block([
+            "isNew": true,
+            "isRollBackToEmbedded": false,
+            "manifest": update.manifest.rawManifestJSON()
+          ] as [String: Any])
+          self.stateMachine.processEvent(UpdatesStateEventDownloadCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
+          return
+        }
+
+        block([
+          "isNew": false,
+          "isRollBackToEmbedded": false
+        ])
+        self.stateMachine.processEvent(UpdatesStateEventDownloadComplete())
+        return
+      }
+    } error: { error in
+      let body = ["message": error.localizedDescription]
+      self.stateMachine.processEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
+      block(body)
+      return
+    }
+  }
+
+  public func getNativeStateMachineContextJson(_ block: @escaping ([String: Any?]) -> Void) {
+    block(self.stateMachine.context.json)
+  }
+
+  public func getExtraParams(
+    success successBlockArg: @escaping (_ extraParams: [String: String]?) -> Void,
+    error errorBlockArg: @escaping (_ error: Error) -> Void
+  ) {
+    self.database.databaseQueue.async {
+      do {
+        successBlockArg(try self.database.extraParams(withScopeKey: self.config.scopeKey!))
+      } catch {
+        errorBlockArg(error)
+      }
+    }
+  }
+
+  public func setExtraParam(
+    key: String,
+    value: String?,
+    success successBlockArg: @escaping () -> Void,
+    error errorBlockArg: @escaping (_ error: Error) -> Void
+  ) {
+    self.database.databaseQueue.async {
+      do {
+        try self.database.setExtraParam(key: key, value: value, withScopeKey: self.config.scopeKey!)
+        successBlockArg()
+      } catch {
+        errorBlockArg(error)
+      }
+    }
+  }
+
+  public func getEmbeddedUpdate() -> Update? {
+    return EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
+  }
 }
 
-// swiftlint:enable line_length
+/**
+ * Main entry point to expo-updates in development builds with expo-dev-client. Singleton that still
+ * makes use of AppController for keeping track of updates state, but provides capabilities
+ * that are not usually exposed but that expo-dev-client needs (launching and downloading a specific
+ * update by URL, allowing dynamic configuration, introspecting the database).
+ *
+ * Implements the EXUpdatesExternalInterface from the expo-updates-interface package. This allows
+ * expo-dev-client to compile without needing expo-updates to be installed.
+ */
+@objc(EXUpdatesDevLauncherController)
+@objcMembers
+public final class DevLauncherController: NSObject, UpdatesExternalInterface {
+  private static let ErrorDomain = "EXUpdatesDevLauncherController"
+
+  enum ErrorCode: Int {
+    case invalidUpdateURL = 1
+    case updateLaunchFailed = 4
+    case configFailed = 5
+  }
+
+  private var tempConfig: UpdatesConfig?
+
+  private weak var _bridge: AnyObject?
+  public weak var bridge: AnyObject? {
+    get {
+      return _bridge
+    }
+    set(value) {
+      _bridge = value
+      if let value = value as? RCTBridge {
+        AppController.sharedInstance.bridge = value
+      }
+    }
+  }
+
+  public static let sharedInstance = DevLauncherController()
+
+  override init() {}
+
+  public var launchAssetURL: URL? {
+    return AppController.sharedInstance.launchAssetUrl()
+  }
+
+  public func reset() {
+    let controller = AppController.sharedInstance
+    controller.launcher = nil
+    controller.isStarted = true
+  }
+
+  public func fetchUpdate(
+    withConfiguration configuration: [String: Any],
+    onManifest manifestBlock: @escaping UpdatesManifestBlock,
+    progress progressBlock: @escaping UpdatesProgressBlock,
+    success successBlock: @escaping UpdatesUpdateSuccessBlock,
+    error errorBlock: @escaping UpdatesErrorBlock
+  ) {
+    guard let updatesConfiguration = setup(configuration: configuration, error: errorBlock) else {
+      return
+    }
+
+    let controller = AppController.sharedInstance
+
+    // since controller is a singleton, save its config so we can reset to it if our request fails
+    tempConfig = controller.config
+
+    setDevelopmentSelectionPolicy()
+    controller.setConfigurationInternal(config: updatesConfiguration)
+
+    let loader = RemoteAppLoader(
+      config: updatesConfiguration,
+      database: controller.database,
+      directory: controller.updatesDirectory!,
+      launchedUpdate: nil,
+      completionQueue: controller.controllerQueue
+    )
+    loader.loadUpdate(
+      fromURL: updatesConfiguration.updateUrl!
+    ) { updateResponse in
+      if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
+        switch updateDirective {
+        case is NoUpdateAvailableUpdateDirective:
+          return false
+        case is RollBackToEmbeddedUpdateDirective:
+          return false
+        default:
+          NSException(name: .internalInconsistencyException, reason: "Unhandled update directive type").raise()
+          return false
+        }
+      }
+
+      guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+        return false
+      }
+
+      return manifestBlock(update.manifest.rawManifestJSON())
+    } asset: { _, successfulAssetCount, failedAssetCount, totalAssetCount in
+      progressBlock(UInt(successfulAssetCount), UInt(failedAssetCount), UInt(totalAssetCount))
+    } success: { updateResponse in
+      guard let updateResponse = updateResponse,
+        let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+        successBlock(nil)
+        return
+      }
+      self.launch(update: update, withConfiguration: updatesConfiguration, success: successBlock, error: errorBlock)
+    } error: { error in
+      // reset controller's configuration to what it was before this request
+      controller.setConfigurationInternal(config: self.tempConfig!)
+      errorBlock(error)
+    }
+  }
+
+  public func storedUpdateIds(
+    withConfiguration configuration: [String: Any],
+    success successBlock: @escaping UpdatesQuerySuccessBlock,
+    error errorBlock: @escaping UpdatesErrorBlock
+  ) {
+    guard setup(configuration: configuration, error: errorBlock) != nil else {
+      successBlock([])
+      return
+    }
+
+    AppLauncherWithDatabase.storedUpdateIds(
+      inDatabase: AppController.sharedInstance.database
+    ) { error, storedUpdateIds in
+      if let error = error {
+        errorBlock(error)
+      } else {
+        successBlock(storedUpdateIds!)
+      }
+    }
+  }
+
+  /**
+   Common initialization for both fetchUpdateWithConfiguration: and storedUpdateIdsWithConfiguration:
+   Sets up EXUpdatesAppController shared instance
+   Returns the updatesConfiguration
+   */
+  private func setup(configuration: [AnyHashable: Any], error errorBlock: UpdatesErrorBlock) -> UpdatesConfig? {
+    let controller = AppController.sharedInstance
+    var updatesConfiguration: UpdatesConfig
+    do {
+      updatesConfiguration = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: configuration as? [String: Any] ?? [:])
+    } catch {
+      errorBlock(NSError(
+        domain: DevLauncherController.ErrorDomain,
+        code: ErrorCode.configFailed.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+        ]
+      ))
+      return nil
+    }
+
+    guard updatesConfiguration.updateUrl != nil && updatesConfiguration.scopeKey != nil else {
+      errorBlock(NSError(
+        domain: DevLauncherController.ErrorDomain,
+        code: ErrorCode.invalidUpdateURL.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object must include a valid update URL"
+        ]
+      ))
+      return nil
+    }
+
+    do {
+      try controller.initializeUpdatesDirectory()
+      try controller.initializeUpdatesDatabase()
+    } catch {
+      errorBlock(error)
+      return nil
+    }
+
+    return updatesConfiguration
+  }
+
+  private func setDevelopmentSelectionPolicy() {
+    let controller = AppController.sharedInstance
+    controller.resetSelectionPolicyToDefault()
+    let currentSelectionPolicy = controller.selectionPolicy()
+    controller.defaultSelectionPolicy = SelectionPolicy(
+      launcherSelectionPolicy: currentSelectionPolicy.launcherSelectionPolicy,
+      loaderSelectionPolicy: currentSelectionPolicy.loaderSelectionPolicy,
+      reaperSelectionPolicy: ReaperSelectionPolicyDevelopmentClient()
+    )
+    controller.resetSelectionPolicyToDefault()
+  }
+
+  private func launch(
+    update: Update,
+    withConfiguration configuration: UpdatesConfig,
+    success successBlock: @escaping UpdatesUpdateSuccessBlock,
+    error errorBlock: @escaping UpdatesErrorBlock
+  ) {
+    let controller = AppController.sharedInstance
+    // ensure that we launch the update we want, even if it isn't the latest one
+    let currentSelectionPolicy = controller.selectionPolicy()
+
+    // Calling `setNextSelectionPolicy` allows the Updates module's `reloadAsync` method to reload
+    // with a different (newer) update if one is downloaded, e.g. using `fetchUpdateAsync`. If we set
+    // the default selection policy here instead, the update we are launching here would keep being
+    // launched by `reloadAsync` even if a newer one is downloaded.
+    controller.setNextSelectionPolicy(SelectionPolicy(
+      launcherSelectionPolicy: LauncherSelectionPolicySingleUpdate(updateId: update.updateId),
+      loaderSelectionPolicy: currentSelectionPolicy.loaderSelectionPolicy,
+      reaperSelectionPolicy: currentSelectionPolicy.reaperSelectionPolicy
+    ))
+
+    let launcher = AppLauncherWithDatabase(
+      config: configuration,
+      database: controller.database,
+      directory: controller.updatesDirectory!,
+      completionQueue: controller.controllerQueue
+    )
+    launcher.launchUpdate(withSelectionPolicy: controller.selectionPolicy()) { error, success in
+      if !success {
+        // reset controller's configuration to what it was before this request
+        controller.setConfigurationInternal(config: self.tempConfig!)
+        errorBlock(error ?? NSError(
+          domain: DevLauncherController.ErrorDomain,
+          code: ErrorCode.updateLaunchFailed.rawValue,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to launch update with an unknown error"]
+        ))
+        return
+      }
+
+      controller.isStarted = true
+      controller.launcher = launcher
+      successBlock(launcher.launchedUpdate?.manifest.rawManifestJSON())
+      controller.runReaper()
+    }
+  }
+}
+
 // swiftlint:enable force_unwrapping
+// swiftlint:enable closure_body_length
+// swiftlint:enable line_length
+// swiftlint:enable type_body_length
