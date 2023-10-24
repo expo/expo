@@ -13,5 +13,40 @@ internal final class CoreModule: Module {
 
       return uuidv5(name: name, namespace: namespaceUuid).uuidString.lowercased()
     }
+
+    // TextEncoder API
+    // https://encoding.spec.whatwg.org/#textencoder
+    Class("TextEncoder") {
+      // TODO: This throws:  ERROR  Error: NativePropertyUnavailableException: Native property 'encoding' 
+      // is no longer available in memory (at ExpoModulesCore/PropertyComponent.swift:142)
+      Property("encoding") {
+        return "utf-8"
+      }
+
+      // https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder/encodeInto
+      Function("encodeInto") { (source: String, destination: Uint8Array) -> TextEncoderEncodeIntoResult in
+        let bytes = Array(source.utf8)
+        let count = min(bytes.count, destination.length)
+          
+        for i in 0..<count {
+            destination[i] = bytes[i]
+        }
+
+        return TextEncoderEncodeIntoResult(read: source.count, written: count)
+      }
+
+      Function("encode") { (input: String) -> [UInt8] in
+        // TODO: Return Uint8Array directly
+        return Array(input.utf8)
+      }
+    }
   }
+}
+
+struct TextEncoderEncodeIntoResult: Record {
+  @Field
+  var read: Int = 0
+
+  @Field
+  var written: Int = 0
 }

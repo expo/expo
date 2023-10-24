@@ -8,6 +8,7 @@ import Platform from './Platform';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 
+import './environment/TextEncoder';
 import './sweet/setUpErrorManager.fx';
 
 export { default as uuid } from './uuid';
