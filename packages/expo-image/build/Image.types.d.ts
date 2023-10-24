@@ -262,6 +262,7 @@ export interface ImageProps extends ViewProps {
      *
      * Downscaling is never used when the `contentFit` prop is set to `none` or `fill`.
      * @default true
+     * @platform android
      */
     allowDownscaling?: boolean;
     /**

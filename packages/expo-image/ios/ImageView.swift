@@ -7,6 +7,17 @@ import UIKit
 
 typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
+internal enum ReloadType : Int, Comparable {
+  case none;
+  case partial;
+  case blur; // Blur update is used as partial + blur
+  case full;
+
+  static func < (lhs: ReloadType, rhs: ReloadType) -> Bool {
+    lhs.rawValue < rhs.rawValue
+  }
+}
+
 public final class ImageView: ExpoView {
   static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
   static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
@@ -26,13 +37,11 @@ public final class ImageView: ExpoView {
   ]
   var unblurredImage: UIImage?
 
-  var needsPartialReload = false
-  var needsFullReload = false
-  var needsBlurUpdate = false
+  var reloadType = ReloadType.none
 
   var sources: [ImageSource]? {
     didSet {
-      needsFullReload = needsFullReload || oldValue != sources
+      increaseReloadComplexity(to: .full, condition: oldValue != sources)
     }
   }
 
@@ -40,38 +49,37 @@ public final class ImageView: ExpoView {
 
   var contentFit: ContentFit = .cover {
     didSet {
-      needsPartialReload = needsPartialReload || oldValue != contentFit
+      increaseReloadComplexity(to: .partial, condition: oldValue != contentFit)
     }
   }
 
   var contentPosition: ContentPosition = .center {
     didSet {
-      needsPartialReload = needsPartialReload || oldValue != contentPosition
+      increaseReloadComplexity(to: .partial, condition: oldValue != contentPosition)
     }
   }
 
   var transition: ImageTransition? {
     didSet {
-      needsFullReload = needsFullReload || oldValue != transition
+      increaseReloadComplexity(to: .full, condition: oldValue != transition)
     }
   }
 
   var blurRadius: CGFloat = 0.0 {
     didSet {
-      needsPartialReload = needsPartialReload || oldValue != blurRadius
-      needsBlurUpdate = needsBlurUpdate || oldValue != blurRadius
+      increaseReloadComplexity(to: .blur, condition: oldValue != blurRadius)
     }
   }
 
   var imageTintColor: UIColor? {
     didSet {
-      needsFullReload = needsFullReload || oldValue != imageTintColor
+      increaseReloadComplexity(to: .full, condition: oldValue != imageTintColor)
     }
   }
 
   var cachePolicy: ImageCachePolicy = .disk {
     didSet {
-      needsFullReload = needsFullReload || oldValue != cachePolicy
+      increaseReloadComplexity(to: .full, condition: oldValue != cachePolicy)
     }
   }
 
@@ -79,20 +87,14 @@ public final class ImageView: ExpoView {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
         sdImageView.image = nil
-        needsFullReload = needsFullReload || oldValue != recyclingKey
+        increaseReloadComplexity(to: .full, condition: oldValue != recyclingKey)
       }
-    }
-  }
-
-  var allowDownscaling: Bool = true {
-    didSet {
-      needsFullReload = needsFullReload || oldValue != allowDownscaling
     }
   }
 
   var intrinsicSizes: [IntrinsicSize]? {
     didSet {
-      needsFullReload = needsFullReload || oldValue != intrinsicSizes
+      increaseReloadComplexity(to: .full, condition: oldValue != intrinsicSizes)
     }
   }
 
@@ -146,14 +148,12 @@ public final class ImageView: ExpoView {
   // MARK: - Implementation
 
   func onPropsUpdated() {
-    if needsFullReload {
+    if reloadType == .full {
       reload()
-    } else if needsPartialReload {
+    } else if reloadType >= .partial {
       reloadCurrentImage()
     }
-    needsPartialReload = false
-    needsFullReload = false
-    needsBlurUpdate = false
+    reloadType = .none
   }
 
   func reload() {
@@ -308,7 +308,6 @@ public final class ImageView: ExpoView {
 
   public func reloadCurrentImage() {
     let scale = window?.screen.scale ?? UIScreen.main.scale
-
     guard var currentImage = sdImageView.image else {
       displayPlaceholderIfNecessary()
       return
@@ -321,9 +320,8 @@ public final class ImageView: ExpoView {
     ).rounded(.up)
 
     applyContentPosition(contentSize: idealSize, containerSize: frame.size)
-    if needsBlurUpdate {
+    if reloadType == .blur {
       Task {
-        unblurredImage = unblurredImage ?? currentImage
         let blurredImage = await blurImage(image: unblurredImage ?? currentImage)
         renderImage(blurredImage)
       }
@@ -424,7 +422,7 @@ public final class ImageView: ExpoView {
       return nil
     }
     // Downscale the image only when necessary
-    if shouldDownscale(image: image, toSize: idealSize, scale: scale, allowDownscaling: allowDownscaling) {
+    if shouldDownscale(image: image, toSize: idealSize, scale: scale) {
       return await resize(animatedImage: image, toSize: idealSize, scale: scale)
     }
     return image
@@ -537,6 +535,11 @@ public final class ImageView: ExpoView {
     let newSize = closestIntrinsicSize(intrinsicSizes: intrinsicSizes, displaySize: idealSizeNew, scale: source.scale, aspectRatio: 1)
 
     return  oldSize != newSize || (sdImageView.image == nil && pendingOperation == nil)
+  }
+
+  // The `condition` field is useful for reducing the amount of code in the didSet blocks
+  private func increaseReloadComplexity(to: ReloadType, condition: Bool = true) {
+    reloadType = to > reloadType && condition ? to : reloadType;
   }
 
   // MARK: - Live Text Interaction

@@ -121,10 +121,7 @@ func closestIntrinsicSize(intrinsicSizes: [IntrinsicSize]?, displaySize: CGSize,
 /**
  Returns a bool whether the image should be downscaled to the given size.
  */
-func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double, allowDownscaling: Bool) -> Bool {
-  if !allowDownscaling {
-    return false
-  }
+func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool {
   if size.width <= 0 || size.height <= 0 {
     // View is invisible, so no reason to keep the image in memory.
     // This already ensures that we won't be diving by zero in ratio calculations.

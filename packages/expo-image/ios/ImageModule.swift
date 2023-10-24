@@ -85,12 +85,7 @@ public final class ImageModule: Module {
         view.recyclingKey = key
       }
 
-      Prop("allowDownscaling") { (view, allowsDownsacling: Bool?) in
-        view.allowDownscaling = (allowsDownsacling ?? true)
-      }
-
       Prop("intrinsicSize") { (view, intrinsicSize: [IntrinsicSize]?) in
-        print("GOT INTRINSIC SIZE \(intrinsicSize?.first?.width)")
         view.intrinsicSizes = intrinsicSize
       }
 
