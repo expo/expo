@@ -231,7 +231,7 @@ public final class ImageView: ExpoView {
           "width": image.size.width,
           "height": image.size.height,
           "mediaType": imageFormatToMediaType(image.sd_imageFormat),
-          "animated": animated
+          "isAnimated": animated
         ]
       ])
 
