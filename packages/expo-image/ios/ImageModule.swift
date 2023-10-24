@@ -70,7 +70,9 @@ public final class ImageModule: Module {
       }
 
       Prop("enableLiveTextInteraction") { (view, enableLiveTextInteraction: Bool?) in
+        #if !os(tvOS)
         view.enableLiveTextInteraction = enableLiveTextInteraction ?? false
+        #endif
       }
 
       Prop("accessible") { (view, accessible: Bool?) in
