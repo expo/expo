@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added support for `allowDownscaling` prop. ([#25012](https://github.com/expo/expo/pull/25012) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
