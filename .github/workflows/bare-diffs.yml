@@ -1,4 +1,4 @@
-name: Check for Changes in Bare Diffs
+name: Check Tempalte Bare Minimum Diffs
 
 on:
   workflow_dispatch: {}
@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  docs:
+  bare-diffs:
     runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
