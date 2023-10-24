@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getManifest = exports.getStaticContent = void 0;
+exports.getBuildTimeServerManifestAsync = exports.getManifest = exports.getStaticContent = void 0;
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -44,12 +44,13 @@ const _ctx_1 = require("../../_ctx");
 const ExpoRoot_1 = require("../ExpoRoot");
 const getLinkingConfig_1 = require("../getLinkingConfig");
 const getRoutes_1 = require("../getRoutes");
+const getServerManifest_1 = require("../getServerManifest");
 const head_1 = require("../head");
 const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");
 const debug = require('debug')('expo:router:renderStaticContent');
 react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
 /** Get the linking manifest from a Node.js process. */
-async function getManifest(options) {
+async function getManifest(options = {}) {
     const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, { preserveApiRoutes: true, ...options });
     if (!routeTree) {
         throw new Error('No routes found');
@@ -59,6 +60,25 @@ async function getManifest(options) {
     return (0, getLinkingConfig_1.getNavigationConfig)(routeTree);
 }
 exports.getManifest = getManifest;
+/**
+ * Get the server manifest with all dynamic routes loaded with `generateStaticParams`.
+ * Unlike the `expo-router/src/routes-manifest.ts` method, this requires loading the entire app in-memory, which
+ * takes substantially longer and requires Metro bundling.
+ *
+ * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
+ */
+async function getBuildTimeServerManifestAsync(options = {}) {
+    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, {
+        ...options,
+    });
+    if (!routeTree) {
+        throw new Error('No routes found');
+    }
+    // Evaluate all static params
+    await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
+    return (0, getServerManifest_1.getServerManifest)(routeTree);
+}
+exports.getBuildTimeServerManifestAsync = getBuildTimeServerManifestAsync;
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
     // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1

@@ -17,6 +17,7 @@ import { ctx } from '../../_ctx';
 import { ExpoRoot } from '../ExpoRoot';
 import { getNavigationConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
+import { getServerManifest } from '../getServerManifest';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 
@@ -25,7 +26,7 @@ const debug = require('debug')('expo:router:renderStaticContent');
 AppRegistry.registerComponent('App', () => ExpoRoot);
 
 /** Get the linking manifest from a Node.js process. */
-async function getManifest(options: any) {
+async function getManifest(options: Parameters<typeof getRoutes>[1] = {}) {
   const routeTree = getRoutes(ctx, { preserveApiRoutes: true, ...options });
 
   if (!routeTree) {
@@ -36,6 +37,28 @@ async function getManifest(options: any) {
   await loadStaticParamsAsync(routeTree);
 
   return getNavigationConfig(routeTree);
+}
+
+/**
+ * Get the server manifest with all dynamic routes loaded with `generateStaticParams`.
+ * Unlike the `expo-router/src/routes-manifest.ts` method, this requires loading the entire app in-memory, which
+ * takes substantially longer and requires Metro bundling.
+ *
+ * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
+ */
+async function getBuildTimeServerManifestAsync(options: Parameters<typeof getRoutes>[1] = {}) {
+  const routeTree = getRoutes(ctx, {
+    ...options,
+  });
+
+  if (!routeTree) {
+    throw new Error('No routes found');
+  }
+
+  // Evaluate all static params
+  await loadStaticParamsAsync(routeTree);
+
+  return getServerManifest(routeTree);
 }
 
 function resetReactNavigationContexts() {
@@ -119,4 +142,4 @@ function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
 }
 
 // Re-export for use in server
-export { getManifest };
+export { getManifest, getBuildTimeServerManifestAsync };
