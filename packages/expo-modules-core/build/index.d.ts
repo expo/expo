@@ -6,6 +6,7 @@ import { requireNativeViewManager } from './NativeViewManagerAdapter';
 import Platform from './Platform';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
+import './environment/TextEncoder';
 import './sweet/setUpErrorManager.fx';
 export { default as uuid } from './uuid';
 export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, ProxyNativeModule, Platform, Subscription, requireNativeViewManager, CodedError, UnavailabilityError, };

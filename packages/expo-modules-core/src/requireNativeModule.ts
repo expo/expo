@@ -10,6 +10,9 @@ type ExpoObject = {
       };
   uuidv4: () => string;
   uuidv5: (name: string, namespace: string) => string;
+
+  TextEncoder: typeof TextEncoder;
+  TextDecoder: typeof TextDecoder;
 };
 
 declare global {
