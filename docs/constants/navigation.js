@@ -202,7 +202,10 @@ const general = [
       makePage('router/reference/troubleshooting.mdx'),
       makePage('router/reference/faq.mdx'),
     ]),
-    makeGroup('Migration', [makePage('router/migrate/from-react-navigation.mdx')]),
+    makeGroup('Migration', [
+      makePage('router/migrate/from-react-navigation.mdx'),
+      makePage('router/migrate/from-expo-webpack.mdx'),
+    ]),
   ]),
   makeSection(
     'Expo Modules API',
