@@ -6,8 +6,8 @@
 
 ### 🎉 New features
 
-- [ios] Added `autoplay` prop to control whether an animated image will automatically animate or not
-- [ios] Added `startAnimating()` and `stopAnimating()` functions to start or stop an image's animation
+- [ios] Added `autoplay` prop to control whether an animated image will automatically animate or not ([#25008](https://github.com/expo/expo/pull/25008) by [@gkasdorf](https://github.com/gkasdorf))
+- [ios] Added `startAnimating()` and `stopAnimating()` functions to start or stop an image's animation ([#25008](https://github.com/expo/expo/pull/25008) by [@gkasdorf](https://github.com/gkasdorf))
 
 ### 🐛 Bug fixes
 
