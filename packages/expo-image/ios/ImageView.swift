@@ -211,19 +211,8 @@ public final class ImageView: ExpoView {
       return
     }
 
-    // First we need to see if the image is animated. SDAnimatedImage might not properly render some image formats.
-    // If the image is animated, we want to use the data and create an SDAnimatedImage with that data.
-    // SDAnimatedImage extends UIImage so we should be able to do everything that we were doing before still.
-    var animated = false
-    var image = image
-
-    if image?.sd_isAnimated != nil, let data = data {
-      animated = true
-      image = SDAnimatedImage(data: data)
-    }
-
-    // Now we can proceed to do whatever else we want to do to the image
-    if let image = image {
+    // Create an SDAnimatedImage if needed then handle the image
+    if let image = createAnimatedIfNeeded(image: image, data: data) {
       onLoad([
         "cacheType": cacheTypeToString(cacheType),
         "source": [
@@ -231,7 +220,7 @@ public final class ImageView: ExpoView {
           "width": image.size.width,
           "height": image.size.height,
           "mediaType": imageFormatToMediaType(image.sd_imageFormat),
-          "isAnimated": animated
+          "isAnimated": image.sd_isAnimated ?? false
         ]
       ])
 
