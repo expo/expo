@@ -44,9 +44,9 @@ const _ctx_1 = require("../../_ctx");
 const ExpoRoot_1 = require("../ExpoRoot");
 const getLinkingConfig_1 = require("../getLinkingConfig");
 const getRoutes_1 = require("../getRoutes");
+const getServerManifest_1 = require("../getServerManifest");
 const head_1 = require("../head");
 const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");
-const getServerManifest_1 = require("../getServerManifest");
 const debug = require('debug')('expo:router:renderStaticContent');
 react_native_web_1.AppRegistry.registerComponent('App', () => ExpoRoot_1.ExpoRoot);
 /** Get the linking manifest from a Node.js process. */

@@ -17,9 +17,9 @@ import { ctx } from '../../_ctx';
 import { ExpoRoot } from '../ExpoRoot';
 import { getNavigationConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
+import { getServerManifest } from '../getServerManifest';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
-import { getServerManifest } from '../getServerManifest';
 
 const debug = require('debug')('expo:router:renderStaticContent');
 
