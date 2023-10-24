@@ -60,7 +60,7 @@ export function useSession() {
   return value;
 }
 
-export function SessionProvider(props) {
+export function SessionProvider(props: React.PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState('session');
 
   return (
