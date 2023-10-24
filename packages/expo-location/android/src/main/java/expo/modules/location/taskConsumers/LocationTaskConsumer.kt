@@ -34,7 +34,6 @@ import expo.modules.location.records.LocationResponse
 import expo.modules.location.services.LocationTaskService
 import expo.modules.location.services.LocationTaskService.ServiceBinder
 import kotlin.math.abs
-import kotlin.run
 
 class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsInterface?) : TaskConsumer(context, taskManagerUtils), TaskConsumerInterface, LifecycleEventListener {
   private var mTask: TaskInterface? = null

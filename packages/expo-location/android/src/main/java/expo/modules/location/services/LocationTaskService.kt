@@ -13,7 +13,6 @@ import android.os.Binder
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 
 class LocationTaskService : Service() {
   private var mChannelId: String? = null
@@ -27,8 +26,7 @@ class LocationTaskService : Service() {
       get() = this@LocationTaskService
   }
 
-  override fun onBind(intent: Intent): IBinder? {
-    Log.w(TAG, "onBind")
+  override fun onBind(intent: Intent): IBinder {
     return mBinder
   }
 
@@ -117,7 +115,6 @@ class LocationTaskService : Service() {
   } //endregion
 
   companion object {
-    private const val TAG = "LocationTaskService"
     private var sServiceId = 481756
   }
 }

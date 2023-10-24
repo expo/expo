@@ -58,7 +58,7 @@ class GeofencingTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtil
   }
 
   override fun didReceiveBroadcast(intent: Intent) {
-    val event = GeofencingEvent.fromIntent(intent) ?: kotlin.run {
+    val event = GeofencingEvent.fromIntent(intent) ?: run {
       Log.w(TAG, "Received a null geofencing event. Ignoring")
       return
     }

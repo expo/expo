@@ -85,7 +85,8 @@ class LocationHelpers {
 
     fun requestContinuousUpdates(locationModule: LocationModule, locationRequest: LocationRequest, watchId: Int, promise: Promise) {
       locationModule.requestLocationUpdates(
-        locationRequest, watchId,
+        locationRequest,
+        watchId,
         object : LocationRequestCallbacks {
           override fun onLocationChanged(location: Location) {
             locationModule.sendLocationResponse(watchId, LocationResponse(location))
@@ -165,8 +166,7 @@ class LocationHelpers {
     }
 
     fun isAnyProviderAvailable(context: Context?): Boolean {
-      context ?: return false
-      val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return false
+      val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return false
       return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
