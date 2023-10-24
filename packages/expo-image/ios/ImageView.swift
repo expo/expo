@@ -41,6 +41,8 @@ public final class ImageView: ExpoView {
 
   var cachePolicy: ImageCachePolicy = .disk
 
+  var allowDownscaling: Bool = true
+
   var recyclingKey: String? {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
@@ -332,7 +334,7 @@ public final class ImageView: ExpoView {
       return nil
     }
     // Downscale the image only when necessary
-    if shouldDownscale(image: image, toSize: idealSize, scale: scale) {
+    if allowDownscaling && shouldDownscale(image: image, toSize: idealSize, scale: scale) {
       return await resize(animatedImage: image, toSize: idealSize, scale: scale)
     }
     return image
