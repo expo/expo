@@ -5,8 +5,8 @@
 #include <unordered_set>
 
 #include "PlatformDepMethodsHolder.h"
-#include "RuntimeManager.h"
 #include "Shareables.h"
+#include "WorkletRuntime.h"
 
 namespace reanimated {
 
@@ -32,7 +32,7 @@ class AnimatedSensorModule {
 
   jsi::Value registerSensor(
       jsi::Runtime &rt,
-      const std::shared_ptr<JSRuntimeHelper> &runtimeHelper,
+      const std::shared_ptr<WorkletRuntime> &uiWorkletRuntime,
       const jsi::Value &sensorType,
       const jsi::Value &interval,
       const jsi::Value &iosReferenceFrame,
