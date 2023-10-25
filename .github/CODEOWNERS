@@ -55,6 +55,7 @@
 /packages/expo-module-template-local            @aleqsio @tsapeta
 /packages/expo-modules-autolinking              @tsapeta @kudo @lukmccall
 /packages/expo-modules-core                     @tsapeta @kudo @lukmccall
+/packages/expo-modules-test-core                @tsapeta @aleqsio
 /packages/expo-navigation-bar                   @EvanBacon
 /packages/expo-network                          @ide
 /packages/expo-notifications                    @tsapeta
@@ -82,6 +83,7 @@
 /packages/expo-updates                          @wschurman @douglowder
 /packages/expo-updates-interface                @wschurman @douglowder
 /packages/expo-video-thumbnails                 @tsapeta
+/packages/expo-video                            @tsapeta @aleqsio
 /packages/expo-web-browser                      @tsapeta
 /packages/expo-yarn-workspaces                  @ide
 /packages/expo                                  @ide @tsapeta @brentvatne
