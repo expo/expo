@@ -18,6 +18,12 @@
 - Android: Refactor responsibility of app controller. ([#24954](https://github.com/expo/expo/pull/24954), [#24975](https://github.com/expo/expo/pull/24975) by [@wschurman](https://github.com/wschurman))
 - Android: Backport ExpoGoUpdatesModule to SDK 49. ([#24974](https://github.com/expo/expo/pull/24974) by [@wschurman](https://github.com/wschurman))
 
+## 0.18.17 — 2023-10-25
+
+### 🐛 Bug fixes
+
+- [Android] Simplify UpdatesUtils.parseDateString, fix UpdatesLoggingTest. ([#24951](https://github.com/expo/expo/pull/24951) by [@douglowder](https://github.com/douglowder))
+
 ## 0.22.0 — 2023-10-17
 
 ### 🐛 Bug fixes
