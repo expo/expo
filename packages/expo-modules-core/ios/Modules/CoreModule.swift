@@ -41,39 +41,108 @@ internal final class CoreModule: Module {
       }
     }
 
-    // https://encoding.spec.whatwg.org/#textdecoder
-    Class("TextDecoder") {
-        var _options: TextDecoderOptions = TextDecoderOptions()
-        var _encoding: String = "utf-8"
-        
-        Constructor { (label: String?, options: TextDecoderOptions?) in
-            if let label = label {
-                _encoding = normalizeEncoding(input: label)
-            }
-            if let options = options {
-                _options = options
-            }
-        }
-        
-        Property("encoding") {
-            return _encoding
-        }
-        Property("fatal") {
-            return _options.fatal
-        }
-        Property("ignoreBOM") {
-            return _options.ignoreBOM
-        }
-        
-        Function("decode") { (input: Uint8Array, options: TextDecodeOptions?) -> String? in
-            let nativeEncoding = setEncoding(enc: _encoding)
+        // https://encoding.spec.whatwg.org/#textdecoder
+        Class("TextDecoder") {
+            var _data = Data()
+            var _options: TextDecoderOptions = TextDecoderOptions()
+            var _encoding: String = "utf-8"
+            var _nativeEncoding: String.Encoding = .utf8
             
-            // TODO: Support all the options, and _options.
-            // TODO: Support all input types: Uint8Array | Int8Array | Uint16Array | Int16Array | Int32Array
-            return String(bytes: input.buffer, encoding: nativeEncoding)
+            Constructor { (label: String?, options: TextDecoderOptions?) in
+                if let label = label {
+                    _encoding = normalizeEncoding(input: label)
+                    _nativeEncoding = setEncoding(enc: _encoding)
+                }
+                if let options = options {
+                    _options = options
+                }
+            }
+            
+            Property("encoding") {
+                return _encoding
+            }
+            Property("fatal") {
+                return _options.fatal
+            }
+            Property("ignoreBOM") {
+                return _options.ignoreBOM
+            }
+            
+            Function("decode") { (input: Uint8Array, options: TextDecodeOptions?) -> String? in
+                
+                if ((options?.stream) == true) {
+                    _data.append(contentsOf: input.buffer)
+                } else {
+                    _data = Data(buffer: input.buffer)
+                }
+                
+                var processedData = _data
+                
+                // If ignoreBOM is true, remove the BOM if present
+                if _options.ignoreBOM {
+                    switch _nativeEncoding {
+                    case .utf8:
+                        if _data.starts(with: [0xEF, 0xBB, 0xBF]) {
+                            processedData = Data(_data.dropFirst(3))
+                        }
+                    case .utf16BigEndian:
+                        if _data.starts(with: [0xFE, 0xFF]) {
+                            processedData = Data(_data.dropFirst(2))
+                        }
+                    case .utf16LittleEndian:
+                        if _data.starts(with: [0xFF, 0xFE]) {
+                            processedData = Data(_data.dropFirst(2))
+                        }
+                    case .utf32BigEndian:
+                        if _data.starts(with: [0x00, 0x00, 0xFE, 0xFF]) {
+                            processedData = Data(_data.dropFirst(4))
+                        }
+                    case .utf32LittleEndian:
+                        if _data.starts(with: [0xFF, 0xFE, 0x00, 0x00]) {
+                            processedData = Data(_data.dropFirst(4))
+                        }
+                    default:
+                        // TODO: Extend this for other encodings and their respective BOMs
+                        break
+                    }
+                    
+                }
+                
+                
+                // TODO: Support all input types: Uint8Array | Int8Array | Uint16Array | Int16Array | Int32Array
+                
+                if let text = String(data: processedData, encoding: _nativeEncoding) {
+                    // If not streaming, reset the data for the next decode
+                    if ((options?.stream) != true) {
+                        _data = Data()
+                    }
+                    return text
+                } else if !_options.fatal {
+                    // Replace invalid sequences with U+FFFD. This is a simple placeholder
+                    // A more complete solution would involve parsing the input and replacing each invalid sequence.
+                    processedData.append(contentsOf: [0xEF, 0xBF, 0xBD]) // U+FFFD in UTF-8
+                    if let text = String(data: processedData, encoding: _nativeEncoding) {
+                        if ((options?.stream) != true) {
+                            _data = Data()
+                        }
+                        return text
+                    } else {
+                        throw TextDecoderError("Failed to decode with replacement character.")
+                    }
+                } else {
+                    throw TextDecoderError("Invalid encoding sequence found.")
+                }
+                
+            }
         }
     }
-  }
+}
+
+class TextDecoderError: Error {
+    let description: String
+    init(_ description: String) {
+        self.description = description
+    }
 }
 
 // We only support encodings that are supported natively.
@@ -132,7 +201,7 @@ func normalizeEncoding(input: String) -> String {
 }
 
 func setEncoding(enc: String) -> String.Encoding {
-
+    
     let encodings: [String: String.Encoding] = [
         "utf-8": .utf8,
         "ibm866": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.dosRussian.rawValue)))),
@@ -175,7 +244,7 @@ func setEncoding(enc: String) -> String.Encoding {
         
         "x-user-defined": .windowsCP1252,
     ]
-
+    
     return encodings[enc] ?? .utf8
 }
 
