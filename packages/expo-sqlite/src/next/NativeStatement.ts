@@ -56,8 +56,8 @@ export declare class NativeStatement {
   public arrayRunAsync(database: AnyDatabase, params: BindParams): Promise<RunResult>;
   public objectRunAsync(database: AnyDatabase, params: BindParams): Promise<RunResult>;
 
-  public arrayGetAsync(database: AnyDatabase, params: BindParams): Promise<Row | null>;
-  public objectGetAsync(database: AnyDatabase, params: BindParams): Promise<Row | null>;
+  public arrayGetAsync(database: AnyDatabase, params: BindParams): Promise<Row | null | undefined>;
+  public objectGetAsync(database: AnyDatabase, params: BindParams): Promise<Row | null | undefined>;
 
   public arrayGetAllAsync(database: AnyDatabase, params: BindParams): Promise<Row[]>;
   public objectGetAllAsync(database: AnyDatabase, params: BindParams): Promise<Row[]>;
@@ -72,8 +72,8 @@ export declare class NativeStatement {
   public arrayRunSync(database: AnyDatabase, params: BindParams): RunResult;
   public objectRunSync(database: AnyDatabase, params: BindParams): RunResult;
 
-  public arrayGetSync(database: AnyDatabase, params: BindParams): Row | null;
-  public objectGetSync(database: AnyDatabase, params: BindParams): Row | null;
+  public arrayGetSync(database: AnyDatabase, params: BindParams): Row | null | undefined;
+  public objectGetSync(database: AnyDatabase, params: BindParams): Row | null | undefined;
 
   public arrayGetAllSync(database: AnyDatabase, params: BindParams): Row[];
   public objectGetAllSync(database: AnyDatabase, params: BindParams): Row[];
