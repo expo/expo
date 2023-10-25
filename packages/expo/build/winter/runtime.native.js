@@ -17,16 +17,18 @@ function install(name, getValue) {
     installGlobal(name, () => addBuiltinSymbol(getValue()));
 }
 // https://encoding.spec.whatwg.org/#textencoder
-install('TextEncoder', () => {
-    const TextEncoder = globalThis.expo.TextEncoder;
-    const originalEncode = TextEncoder.prototype.encode;
-    TextEncoder.prototype.encode = function () {
-        return new Uint8Array(originalEncode.apply(this, arguments));
-    };
-    return TextEncoder;
-});
+const TextEncoder = globalThis.expo.TextEncoder;
+const originalEncode = TextEncoder.prototype.encode;
+// TODO: Remove this once we can create `Uint8Array` from native code.
+TextEncoder.prototype.encode = function () {
+    return new Uint8Array(originalEncode.apply(this, arguments));
+};
+addBuiltinSymbol(TextEncoder);
+installGlobal('TextEncoder', () => TextEncoder);
 // https://encoding.spec.whatwg.org/#textdecoder
-install('TextDecoder', () => globalThis.expo.TextDecoder);
+const TextDecoder = globalThis.expo.TextDecoder;
+addBuiltinSymbol(TextDecoder);
+installGlobal('TextDecoder', () => TextDecoder);
 // // https://url.spec.whatwg.org/#url
 // install('URL', () => require('./url').URL);
 // // https://url.spec.whatwg.org/#urlsearchparams
