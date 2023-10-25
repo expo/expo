@@ -32,7 +32,7 @@ export interface RunResult {
  * @example
  * - A single object for [named parameters](https://www.sqlite.org/lang_expr.html)
  *
- *   Through we support multiple named parameter forms like `:VVV`, `@VVV`, and `$VVV`. We recommend using `$VVV` because JavaScript allows using `$` in identifiers without escaping.
+ * We support multiple named parameter forms such as `:VVV`, `@VVV`, and `$VVV`. We recommend using `$VVV` because JavaScript allows using `$` in identifiers without escaping.
  * ```ts
  * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = $value AND intValue = $intValue');
  * await statement.getAsync({ $value: 'test1', $intValue: 789 });
