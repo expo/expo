@@ -26,8 +26,10 @@ if(${IS_REANIMATED_EXAMPLE_APP})
     string(APPEND CMAKE_CXX_FLAGS " -DIS_REANIMATED_EXAMPLE_APP")
 endif()
 
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
     string(APPEND CMAKE_CXX_FLAGS " -DDEBUG")
+else()
+    string(APPEND CMAKE_CXX_FLAGS " -DNDEBUG")
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -51,24 +53,12 @@ if(${REACT_NATIVE_MINOR_VERSION} GREATER_EQUAL 71)
 else()
     # Consume shared libraries from found .so files
     if(${IS_NEW_ARCHITECTURE_ENABLED})
-        if(${CLIENT_SIDE_BUILD})
-            set (RN_SO_DIR "${CMAKE_SOURCE_DIR}/../../../android/app/build/react-ndk/exported")
-            set (FBJNI_HEADERS_DIR "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/first-party/fbjni/headers")
-        else()
-            # Reanimated Playground app
-            set (RN_SO_DIR "${CMAKE_SOURCE_DIR}/../${PLAYGROUND_APP_NAME}/android/app/build/react-ndk/exported")
-            set (FBJNI_HEADERS_DIR "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/first-party/fbjni/headers")
-        endif()
+        message(FATAL_ERROR "not supported")
     else()
         set (RN_SO_DIR "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/first-party/react/jni")
         set (FBJNI_HEADERS_DIR "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/first-party/fbjni/headers")
     endif()
     file (GLOB LIBRN_DIR "${RN_SO_DIR}/${ANDROID_ABI}")
-endif()
-
-if(${REACT_NATIVE_MINOR_VERSION} LESS 66)
-    set(INCLUDE_JSI_CPP "${REACT_NATIVE_DIR}/ReactCommon/jsi/jsi/jsi.cpp")
-    set(INCLUDE_JSIDYNAMIC_CPP "${REACT_NATIVE_DIR}/ReactCommon/jsi/jsi/JSIDynamic.cpp")
 endif()
 
 add_library(
@@ -85,16 +75,15 @@ add_library(
 target_include_directories(
         ${PACKAGE_NAME}
         PRIVATE
-        "${COMMON_SRC_DIR}/cpp/Tools"
-        "${COMMON_SRC_DIR}/cpp/SpecTools"
-        "${COMMON_SRC_DIR}/cpp/NativeModules"
-        "${COMMON_SRC_DIR}/cpp/SharedItems"
-        "${COMMON_SRC_DIR}/cpp/ReanimatedRuntime"
-        "${COMMON_SRC_DIR}/cpp/Registries"
-        "${COMMON_SRC_DIR}/cpp/LayoutAnimations"
         "${COMMON_SRC_DIR}/cpp/AnimatedSensor"
         "${COMMON_SRC_DIR}/cpp/Fabric"
         "${COMMON_SRC_DIR}/cpp/hidden_headers"
+        "${COMMON_SRC_DIR}/cpp/LayoutAnimations"
+        "${COMMON_SRC_DIR}/cpp/NativeModules"
+        "${COMMON_SRC_DIR}/cpp/ReanimatedRuntime"
+        "${COMMON_SRC_DIR}/cpp/Registries"
+        "${COMMON_SRC_DIR}/cpp/SharedItems"
+        "${COMMON_SRC_DIR}/cpp/Tools"
         "${SRC_DIR}/main/cpp"
 )
 
@@ -156,18 +145,13 @@ if(${REACT_NATIVE_MINOR_VERSION} GREATER_EQUAL 71)
         fbjni::fbjni
     )
 else()
-    if(${REACT_NATIVE_MINOR_VERSION} LESS 66)
-        set (JSI_LIB "")
-    else()
-        find_library(
-            JSI_LIB
-            jsi
-            PATHS ${LIBRN_DIR}
-            NO_DEFAULT_PATH
-            NO_CMAKE_FIND_ROOT_PATH
-        )
-    endif()
-
+    find_library(
+        JSI_LIB
+        jsi
+        PATHS ${LIBRN_DIR}
+        NO_DEFAULT_PATH
+        NO_CMAKE_FIND_ROOT_PATH
+    )
     find_library(
         GLOG_LIB
         glog
@@ -327,20 +311,7 @@ if(${IS_NEW_ARCHITECTURE_ENABLED})
     )
 endif()
 
-if(${REACT_NATIVE_MINOR_VERSION} LESS 64)
-    add_library(
-            turbomodulejsijni
-            # Sets the library as a shared library.
-            SHARED
-            # Provides a relative path to your source file(s).
-            ./empty.cpp
-    )
-endif()
-
 # Resolves "CMake Warning: Manually-specified variables were not used by the project"
 # when any of the following variables is not used in some build configuration.
-set (ignoreMe "${CLIENT_SIDE_BUILD}")
 set (ignoreMe "${JS_RUNTIME_DIR}")
-set (ignoreMe "${PLAYGROUND_APP_NAME}")
-set (ignoreMe "${REANIMATED_PACKAGE_BUILD}")
 set (ignoreMe "${BOOST_VERSION}")
