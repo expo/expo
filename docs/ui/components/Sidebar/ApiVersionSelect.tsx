@@ -1,3 +1,4 @@
+import { mergeClasses } from '@expo/styleguide';
 import { ChevronDownIcon } from '@expo/styleguide-icons';
 
 import { usePageApiVersion } from '~/providers/page-api-version';
@@ -16,7 +17,11 @@ export function ApiVersionSelect() {
   }
 
   return (
-    <div className="px-4 pt-3 pb-4 flex flex-col gap-1 border-b border-b-default bg-default">
+    <div
+      className={mergeClasses(
+        'px-4 pt-3 pb-4 flex flex-col gap-1 border-b border-b-default bg-default',
+        'max-lg-gutters:sticky max-lg-gutters:top-0 max-lg-gutters:z-10'
+      )}>
       <FOOTNOTE theme="tertiary">Reference version</FOOTNOTE>
       <div className="relative bg-default border border-default rounded-md shadow-xs py-2 px-3">
         <label className="flex flex-row items-center justify-between" htmlFor="api-version-select">
