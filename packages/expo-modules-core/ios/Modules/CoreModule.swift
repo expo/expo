@@ -79,30 +79,8 @@ internal final class CoreModule: Module {
 
                 // If ignoreBOM is true, remove the BOM if present
                 if _options.ignoreBOM {
-                    switch _nativeEncoding {
-                    case .utf8:
-                        if _data.starts(with: [0xEF, 0xBB, 0xBF]) {
-                            processedData = Data(_data.dropFirst(3))
-                        }
-                    case .utf16BigEndian:
-                        if _data.starts(with: [0xFE, 0xFF]) {
-                            processedData = Data(_data.dropFirst(2))
-                        }
-                    case .utf16LittleEndian:
-                        if _data.starts(with: [0xFF, 0xFE]) {
-                            processedData = Data(_data.dropFirst(2))
-                        }
-                    case .utf32BigEndian:
-                        if _data.starts(with: [0x00, 0x00, 0xFE, 0xFF]) {
-                            processedData = Data(_data.dropFirst(4))
-                        }
-                    case .utf32LittleEndian:
-                        if _data.starts(with: [0xFF, 0xFE, 0x00, 0x00]) {
-                            processedData = Data(_data.dropFirst(4))
-                        }
-                    default:
-                        // TODO: Extend this for other encodings and their respective BOMs
-                        break
+                    if let bomSequence = getBOMForEncoding(encoding: _encoding), _data.starts(with: bomSequence) {
+                        processedData = Data(_data.dropFirst(bomSequence.count))
                     }
                 }
 
@@ -197,50 +175,68 @@ func normalizeEncoding(input: String) -> String {
 }
 
 func setEncoding(enc: String) -> String.Encoding {
+    let cfEncodings: [String: CFStringEncodings] = [
+        "ibm866": .dosRussian,
+        "iso-8859-3": .isoLatin3,
+        "iso-8859-4": .isoLatin4,
+        "iso-8859-5": .isoLatinCyrillic,
+        "iso-8859-6": .isoLatinArabic,
+        "iso-8859-7": .isoLatinGreek,
+        "iso-8859-8": .isoLatinHebrew,
+        "iso-8859-8-i": .isoLatinHebrew,
+        "iso-8859-10": .isoLatin6,
+        "iso-8859-13": .isoLatin7,
+        "iso-8859-14": .isoLatin8,
+        "iso-8859-15": .isoLatin9,
+        "iso-8859-16": .isoLatin10,
+        "koi8-r": .KOI8_R,
+        "koi8-u": .KOI8_U,
+        "windows-874": .dosThai,
+        "windows-1255": .windowsHebrew,
+        "windows-1256": .windowsArabic,
+        "windows-1257": .windowsBalticRim,
+        "windows-1258": .windowsVietnamese,
+        "x-mac-cyrillic": .macCyrillic,
+        "gbk": .GBK_95,
+        "gb18030": .GB_18030_2000,
+        "big5": .big5,
+        "euc-kr": .EUC_KR
+    ]
+
+    if let cfEncoding = cfEncodings[enc] {
+        return String.Encoding(rawValue: CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(cfEncoding.rawValue)))
+    }
+
     let encodings: [String: String.Encoding] = [
         "utf-8": .utf8,
-        "ibm866": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.dosRussian.rawValue)))),
         "iso-8859-2": .isoLatin2,
-        "iso-8859-3": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.isoLatin3.rawValue)))),
-        "iso-8859-4": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.isoLatin4.rawValue)))),
-        "iso-8859-5": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.isoLatinCyrillic.rawValue)))),
-        "iso-8859-6": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.isoLatinArabic.rawValue)))),
-        "iso-8859-7": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.isoLatinGreek.rawValue)))),
-        "iso-8859-8": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.isoLatinHebrew.rawValue)))),
-        "iso-8859-8-i": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.isoLatinHebrew.rawValue)))),
-        "iso-8859-10": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.isoLatin6.rawValue)))),
-        "iso-8859-13": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.isoLatin7.rawValue)))),
-        "iso-8859-14": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.isoLatin8.rawValue)))),
-        "iso-8859-15": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.isoLatin9.rawValue)))),
-        "iso-8859-16": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.isoLatin10.rawValue)))),
-        "koi8-r": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.KOI8_R.rawValue)))),
-        "koi8-u": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.KOI8_U.rawValue)))),
         "macintosh": .macOSRoman,
-        "windows-874": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.dosThai.rawValue)))),
         "windows-1250": .windowsCP1250,
         "windows-1251": .windowsCP1251,
         "windows-1252": .windowsCP1252,
         "windows-1253": .windowsCP1253,
         "windows-1254": .windowsCP1254,
-        "windows-1255": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.windowsHebrew.rawValue)))),
-        "windows-1256": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.windowsArabic.rawValue)))),
-        "windows-1257": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.windowsBalticRim.rawValue)))),
-        "windows-1258": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.windowsVietnamese.rawValue)))),
-        "x-mac-cyrillic": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.macCyrillic.rawValue)))),
-        "gbk": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.GBK_95.rawValue)))),
-        "gb18030": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.GB_18030_2000.rawValue)))),
-        "big5": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.big5.rawValue)))),
         "euc-jp": .japaneseEUC,
         "iso-2022-jp": .iso2022JP,
         "shift_jis": .shiftJIS,
-        "euc-kr": convertToNSStringEncoding(CFStringEncoding(CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.EUC_KR.rawValue)))),
         "utf-16be": .utf16BigEndian,
         "utf-16le": .utf16LittleEndian,
-
         "x-user-defined": .windowsCP1252
     ]
 
     return encodings[enc] ?? .utf8
+}
+
+func getBOMForEncoding(encoding: String) -> [UInt8]? {
+    let bomTable: [String: [UInt8]] = [
+        "utf-8": [0xEF, 0xBB, 0xBF],
+        "utf-16be": [0xFE, 0xFF],
+        "utf-16le": [0xFF, 0xFE]
+        // Not all encodings have a BOM.
+        // https://encoding.spec.whatwg.org/#encodings
+    ]
+
+    return bomTable[encoding]
 }
 
 func convertToNSStringEncoding(_ cfEncoding: CFStringEncoding) -> String.Encoding {
