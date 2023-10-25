@@ -10,8 +10,6 @@ namespace reanimated {
 
 using RequestAnimationFrameFunction =
     std::function<void(jsi::Runtime &, const jsi::Value &)>;
-using UpdateDataSynchronouslyFunction =
-    std::function<void(jsi::Runtime &, const jsi::Value &, const jsi::Value &)>;
 
 class UIRuntimeDecorator {
  public:
@@ -26,8 +24,7 @@ class UIRuntimeDecorator {
       const MeasureFunction measure,
       const DispatchCommandFunction dispatchCommand,
       const RequestAnimationFrameFunction requestAnimationFrame,
-      const UpdateDataSynchronouslyFunction updateDataSynchronously,
-      const TimeProviderFunction getCurrentTime,
+      const GetAnimationTimestampFunction getAnimationTimestamp,
       const SetGestureStateFunction setGestureState,
       const ProgressLayoutAnimationFunction progressLayoutAnimation,
       const EndLayoutAnimationFunction endLayoutAnimation,

@@ -28,6 +28,20 @@ void LayoutAnimationsManager::configureAnimation(
   }
 }
 
+void LayoutAnimationsManager::setShouldAnimateExiting(int tag, bool value) {
+  auto lock = std::unique_lock<std::mutex>(animationsMutex_);
+  shouldAnimateExitingForTag_[tag] = value;
+}
+
+bool LayoutAnimationsManager::shouldAnimateExiting(
+    int tag,
+    bool shouldAnimate) {
+  auto lock = std::unique_lock<std::mutex>(animationsMutex_);
+  return collection::contains(shouldAnimateExitingForTag_, tag)
+      ? shouldAnimateExitingForTag_[tag]
+      : shouldAnimate;
+}
+
 bool LayoutAnimationsManager::hasLayoutAnimation(
     int tag,
     LayoutAnimationType type) {
@@ -44,6 +58,7 @@ void LayoutAnimationsManager::clearLayoutAnimationConfig(int tag) {
   enteringAnimations_.erase(tag);
   exitingAnimations_.erase(tag);
   layoutAnimations_.erase(tag);
+  shouldAnimateExitingForTag_.erase(tag);
 #ifdef DEBUG
   const auto &pair = viewsScreenSharedTagMap_[tag];
   screenSharedTagSet_.erase(pair);

@@ -34,6 +34,9 @@ public class NativeProxy extends NativeProxyCommon {
                         messageQueueThread);
         prepareLayoutAnimations(LayoutAnimations);
         installJSIBindings();
+        if (BuildConfig.DEBUG) {
+            checkCppVersion();
+        }
     }
 
     private native HybridData initHybrid(
@@ -70,6 +73,15 @@ public class NativeProxy extends NativeProxyCommon {
                     }
                     layoutAnimations.startAnimationForTag(tag, type, preparedValues);
                 }
+            }
+
+            @Override
+            public boolean shouldAnimateExiting(int tag, boolean shouldAnimate) {
+                LayoutAnimations layoutAnimations = weakLayoutAnimations.get();
+                if (layoutAnimations != null) {
+                    return layoutAnimations.shouldAnimateExiting(tag, shouldAnimate);
+                }
+                return false;
             }
 
             @Override

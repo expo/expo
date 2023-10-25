@@ -28,13 +28,22 @@
 #endif
 
 #if REACT_NATIVE_MINOR_VERSION >= 71
+#if __has_include(<hermes/inspector/chrome/Registration.h>)
 #include <hermes/inspector/chrome/Registration.h>
+#else
+#include <hermes/inspector-modern/chrome/Registration.h>
+#endif
 #endif
 
 namespace reanimated {
 
 using namespace facebook;
 using namespace react;
+#if REACT_NATIVE_MINOR_VERSION >= 73
+using namespace facebook::hermes::inspector_modern;
+#else
+using namespace facebook::hermes::inspector;
+#endif
 
 // ReentrancyCheck is copied from React Native
 // from ReactCommon/hermes/executor/HermesExecutorFactory.cpp
@@ -127,7 +136,7 @@ class ReanimatedHermesRuntime
   ReanimatedReentrancyCheck reentrancyCheck_;
 #if HERMES_ENABLE_DEBUGGER
 #if REACT_NATIVE_MINOR_VERSION >= 71
-  facebook::hermes::inspector::chrome::DebugSessionToken debugToken_;
+  chrome::DebugSessionToken debugToken_;
 #endif // REACT_NATIVE_MINOR_VERSION >= 71
 #endif // HERMES_ENABLE_DEBUGGER
 };

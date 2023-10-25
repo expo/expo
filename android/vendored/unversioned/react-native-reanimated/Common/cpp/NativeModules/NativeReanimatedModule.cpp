@@ -6,6 +6,9 @@
 #endif
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
+#if REACT_NATIVE_MINOR_VERSION >= 73 && defined(RCT_NEW_ARCH_ENABLED)
+#include <react/utils/CoreFeatures.h>
+#endif
 #endif
 
 #include <functional>
@@ -36,6 +39,11 @@
 #endif
 
 using namespace facebook;
+
+#if REACT_NATIVE_MINOR_VERSION >= 73 && defined(RCT_NEW_ARCH_ENABLED)
+// Android can't find the definition of this static field
+bool CoreFeatures::useNativeState;
+#endif
 
 namespace reanimated {
 
@@ -83,15 +91,6 @@ NativeReanimatedModule::NativeReanimatedModule(
         this->requestAnimationFrame(rt, callback);
       };
 
-  auto updateDataSynchronously =
-      [this](
-          jsi::Runtime &rt,
-          const jsi::Value &synchronizedDataHolderRef,
-          const jsi::Value &newData) {
-        return this->updateDataSynchronously(
-            rt, synchronizedDataHolderRef, newData);
-      };
-
 #ifdef RCT_NEW_ARCH_ENABLED
   auto updateProps = [this](jsi::Runtime &rt, const jsi::Value &operations) {
     this->updateProps(rt, operations);
@@ -130,8 +129,7 @@ NativeReanimatedModule::NativeReanimatedModule(
       platformDepMethodsHolder.dispatchCommandFunction,
 #endif
       requestAnimationFrame,
-      updateDataSynchronously,
-      platformDepMethodsHolder.getCurrentTime,
+      platformDepMethodsHolder.getAnimationTimestamp,
       platformDepMethodsHolder.setGestureStateFunction,
       platformDepMethodsHolder.progressLayoutAnimation,
       platformDepMethodsHolder.endLayoutAnimation,
@@ -196,9 +194,7 @@ void NativeReanimatedModule::updateDataSynchronously(
     jsi::Runtime &rt,
     const jsi::Value &synchronizedDataHolderRef,
     const jsi::Value &newData) {
-  auto dataHolder = extractShareableOrThrow<ShareableSynchronizedDataHolder>(
-      rt, synchronizedDataHolderRef);
-  dataHolder->set(rt, newData);
+  reanimated::updateDataSynchronously(rt, synchronizedDataHolderRef, newData);
 }
 
 jsi::Value NativeReanimatedModule::getDataSynchronously(
@@ -321,6 +317,14 @@ jsi::Value NativeReanimatedModule::configureLayoutAnimation(
   return jsi::Value::undefined();
 }
 
+void NativeReanimatedModule::setShouldAnimateExiting(
+    jsi::Runtime &rt,
+    const jsi::Value &viewTag,
+    const jsi::Value &shouldAnimate) {
+  layoutAnimationsManager_.setShouldAnimateExiting(
+      viewTag.asNumber(), shouldAnimate.asBool());
+}
+
 bool NativeReanimatedModule::isAnyHandlerWaitingForEvent(
     const std::string &eventName,
     const int emitterReactTag) {
@@ -421,16 +425,20 @@ bool NativeReanimatedModule::handleRawEvent(
     // just ignore this event, because it's an event on unmounted component
     return false;
   }
-  const std::string &type = rawEvent.type;
-  const ValueFactory &payloadFactory = rawEvent.payloadFactory;
 
   int tag = eventTarget->getTag();
-  std::string eventType = type;
+  auto eventType = rawEvent.type;
   if (eventType.rfind("top", 0) == 0) {
     eventType = "on" + eventType.substr(3);
   }
   jsi::Runtime &rt = uiWorkletRuntime_->getJSIRuntime();
+#if REACT_NATIVE_MINOR_VERSION >= 73
+  const SharedEventPayload &eventPayload = rawEvent.eventPayload;
+  jsi::Value payload = eventPayload->asJSIValue(rt);
+#else
+  const ValueFactory &payloadFactory = rawEvent.payloadFactory;
   jsi::Value payload = payloadFactory(rt);
+#endif
 
   auto res = handleEvent(eventType, tag, std::move(payload), currentTime);
   // TODO: we should call performOperations conditionally if event is handled
@@ -645,7 +653,8 @@ void NativeReanimatedModule::initializeFabric(
   commitHook_ =
       std::make_shared<ReanimatedCommitHook>(propsRegistry_, uiManager_);
 #if REACT_NATIVE_MINOR_VERSION >= 73
-  mountHook_ = std::make_shared<ReanimatedMountHook>(propsRegistry, uiManager_);
+  mountHook_ =
+      std::make_shared<ReanimatedMountHook>(propsRegistry_, uiManager_);
 #endif
 }
 #endif // RCT_NEW_ARCH_ENABLED

@@ -147,6 +147,11 @@ jsi::Value makeShareableClone(
     const jsi::Value &value,
     const jsi::Value &shouldRetainRemote);
 
+void updateDataSynchronously(
+    jsi::Runtime &rt,
+    const jsi::Value &synchronizedDataHolderRef,
+    const jsi::Value &newData);
+
 std::shared_ptr<Shareable> extractShareableOrThrow(
     jsi::Runtime &rt,
     const jsi::Value &maybeShareableValue,

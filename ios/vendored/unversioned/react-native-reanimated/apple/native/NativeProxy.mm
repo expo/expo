@@ -231,7 +231,7 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
   // Layout Animations end
 #endif
 
-  auto getCurrentTime = []() { return calculateTimestampWithSlowAnimations(CACurrentMediaTime()) * 1000; };
+  auto getAnimationTimestamp = []() { return calculateTimestampWithSlowAnimations(CACurrentMediaTime()) * 1000; };
 
   // sensors
   ReanimatedSensorContainer *reanimatedSensorContainer = [[ReanimatedSensorContainer alloc] init];
@@ -276,7 +276,7 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
       configurePropsFunction,
       obtainPropFunction,
 #endif
-      getCurrentTime,
+      getAnimationTimestamp,
       progressLayoutAnimation,
       endLayoutAnimation,
       registerSensorFunction,
@@ -337,6 +337,15 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
       bool hasLayoutAnimation =
           nativeReanimatedModule->layoutAnimationsManager().hasLayoutAnimation([tag intValue], type);
       return hasLayoutAnimation ? YES : NO;
+    }
+    return NO;
+  }];
+
+  [animationsManager setShouldAnimateExitingBlock:^(NSNumber *_Nonnull tag, BOOL shouldAnimate) {
+    if (auto nativeReanimatedModule = weakNativeReanimatedModule.lock()) {
+      bool shouldAnimateExiting =
+          nativeReanimatedModule->layoutAnimationsManager().shouldAnimateExiting([tag intValue], shouldAnimate);
+      return shouldAnimateExiting ? YES : NO;
     }
     return NO;
   }];

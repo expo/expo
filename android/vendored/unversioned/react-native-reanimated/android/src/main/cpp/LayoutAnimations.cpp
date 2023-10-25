@@ -47,6 +47,11 @@ void LayoutAnimations::setHasAnimationBlock(
   this->hasAnimationBlock_ = hasAnimationBlock;
 }
 
+void LayoutAnimations::setShouldAnimateExitingBlock(
+    ShouldAnimateExitingBlock shouldAnimateExitingBlock) {
+  this->shouldAnimateExitingBlock_ = shouldAnimateExitingBlock;
+}
+
 #ifdef DEBUG
 void LayoutAnimations::setCheckDuplicateSharedTag(
     CheckDuplicateSharedTag checkDuplicateSharedTag) {
@@ -60,6 +65,10 @@ void LayoutAnimations::checkDuplicateSharedTag(int viewTag, int screenTag) {
 
 bool LayoutAnimations::hasAnimationForTag(int tag, int type) {
   return hasAnimationBlock_(tag, type);
+}
+
+bool LayoutAnimations::shouldAnimateExiting(int tag, bool shouldAnimate) {
+  return shouldAnimateExitingBlock_(tag, shouldAnimate);
 }
 
 void LayoutAnimations::setClearAnimationConfigBlock(
@@ -102,6 +111,8 @@ void LayoutAnimations::registerNatives() {
           "startAnimationForTag", LayoutAnimations::startAnimationForTag),
       makeNativeMethod(
           "hasAnimationForTag", LayoutAnimations::hasAnimationForTag),
+      makeNativeMethod(
+          "shouldAnimateExiting", LayoutAnimations::shouldAnimateExiting),
       makeNativeMethod(
           "clearAnimationConfigForTag",
           LayoutAnimations::clearAnimationConfigForTag),

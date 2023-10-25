@@ -10,7 +10,7 @@ namespace reanimated {
 //
 // Copyright (c) 2013 Juan Palacios juan.palacios.puyana@gmail.com
 // Subject to the BSD 2-Clause License
-// - see < http://opensource.org/licenses/BSD-2-Clause>
+// - see < https://opensource.org/license/bsd-2-clause/ >
 //
 template <typename T>
 class ThreadSafeQueue {

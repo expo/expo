@@ -2,12 +2,14 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTFabricSurface.h>
-#import <React/RCTRuntimeExecutorFromBridge.h>
 #import <React/RCTScheduler.h>
 #import <React/RCTSurface.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTSurfaceView.h>
+#if REACT_NATIVE_MINOR_VERSION < 73
+#import <React/RCTRuntimeExecutorFromBridge.h>
+#endif
 #endif
 
 #ifdef RCT_NEW_ARCH_ENABLED

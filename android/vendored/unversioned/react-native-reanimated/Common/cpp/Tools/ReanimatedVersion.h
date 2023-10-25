@@ -1,11 +1,17 @@
 #pragma once
 
 #include <jsi/jsi.h>
+#include <string>
 
 using namespace facebook;
 
 namespace reanimated {
 
-jsi::String getReanimatedVersionString(jsi::Runtime &rt);
+std::string getReanimatedCppVersion();
 
-};
+#ifdef DEBUG
+bool matchVersion(const std::string &, const std::string &);
+void checkJSVersion(jsi::Runtime &);
+#endif // DEBUG
+
+}; // namespace reanimated

@@ -94,6 +94,10 @@ class NativeReanimatedModule : public NativeReanimatedModuleSpec {
       const jsi::Value &type,
       const jsi::Value &sharedTransitionTag,
       const jsi::Value &config) override;
+  void setShouldAnimateExiting(
+      jsi::Runtime &rt,
+      const jsi::Value &viewTag,
+      const jsi::Value &shouldAnimate) override;
 
   void onRender(double timestampMs);
 

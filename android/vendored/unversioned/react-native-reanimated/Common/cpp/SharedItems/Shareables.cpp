@@ -103,6 +103,15 @@ jsi::Value makeShareableClone(
   return ShareableJSRef::newHostObject(rt, shareable);
 }
 
+void updateDataSynchronously(
+    jsi::Runtime &rt,
+    const jsi::Value &synchronizedDataHolderRef,
+    const jsi::Value &newData) {
+  auto dataHolder = extractShareableOrThrow<ShareableSynchronizedDataHolder>(
+      rt, synchronizedDataHolderRef);
+  dataHolder->set(rt, newData);
+}
+
 std::shared_ptr<Shareable> extractShareableOrThrow(
     jsi::Runtime &rt,
     const jsi::Value &maybeShareableValue,
