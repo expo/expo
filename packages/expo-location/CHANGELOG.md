@@ -14,7 +14,7 @@
 
 ### 📚 3rd party library updates
 
-- Updated `com.google.android.gms:play-services-location` to `21.0.1`.
+- Updated `com.google.android.gms:play-services-location` to `21.0.1`. ([#25028](https://github.com/expo/expo/pull/25028) by [@behenate](https://github.com/behenate))
 
 ## 16.4.0 — 2023-10-17
 
