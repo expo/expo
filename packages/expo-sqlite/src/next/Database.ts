@@ -140,7 +140,7 @@ export class Database {
    * Execute all SQL queries in the supplied string.
    *
    * > **Note:** The queries are not escaped for you! Be careful when constructing your queries.
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param source A string containing all the SQL queries.
    */
@@ -151,7 +151,7 @@ export class Database {
   /**
    * Prepare a SQL statement.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param source A string containing the SQL query.
    * @returns A `Statement` object.
@@ -165,7 +165,7 @@ export class Database {
   /**
    * Execute a transaction and automatically commit/rollback based on the `task` result.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param task An async function to execute within a transaction.
    */
@@ -186,7 +186,7 @@ export class Database {
    * Shorthand for `prepareAsync` and `Statement.runAsync`.
    * Unlike `Statement.runAsync`, this method finalizes the statement after execution.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param source A string containing the SQL query.
    * @param params Parameters to bind to the query.
@@ -208,7 +208,7 @@ export class Database {
    * Shorthand for `prepareAsync` and `Statement.getAsync`.
    * Unlike `Statement.getAsync`, this method finalizes the statement after execution.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param source A string containing the SQL query.
    * @param params Parameters to bind to the query.
@@ -230,7 +230,7 @@ export class Database {
    * Shorthand for `prepareAsync` and `Statement.eachAsync`.
    * Unlike `Statement.eachAsync`, this method finalizes the statement after execution.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param source A string containing the SQL query.
    * @param params Parameters to bind to the query.
@@ -250,7 +250,7 @@ export class Database {
    * Shorthand for `prepareAsync` and `Statement.allAsync`.
    * Unlike `Statement.allAsync`, this method finalizes the statement after execution.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param source A string containing the SQL query.
    * @param params Parameters to bind to the query.
@@ -272,7 +272,7 @@ export class Database {
    * Shorthand for `prepareSync` and `Statement.runSync`.
    * Unlike `Statement.runSync`, this method finalizes the statement after execution.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param source A string containing the SQL query.
    * @param params Parameters to bind to the query.
@@ -294,7 +294,7 @@ export class Database {
    * Shorthand for `prepareSync` and `Statement.getSync`.
    * Unlike `Statement.getSync`, this method finalizes the statement after execution.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param source A string containing the SQL query.
    * @param params Parameters to bind to the query.
@@ -316,7 +316,7 @@ export class Database {
    * Shorthand for `prepareSync` and `Statement.eachSync`.
    * Unlike `Statement.eachSync`, this method finalizes the statement after execution.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param source A string containing the SQL query.
    * @param params Parameters to bind to the query.
@@ -336,7 +336,7 @@ export class Database {
    * Shorthand for `prepareSync` and `Statement.allSync`.
    * Unlike `Statement.allSync`, this method finalizes the statement after execution.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param source A string containing the SQL query.
    * @param params Parameters to bind to the query.
@@ -373,7 +373,7 @@ export async function openDatabaseAsync(dbName: string, options?: OpenOptions): 
 /**
  * Open a database.
  *
- * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param dbName The name of the database file to open.
  * @param options Open options.
@@ -397,7 +397,7 @@ export async function deleteDatabaseAsync(dbName: string): Promise<void> {
 /**
  * Delete a database file.
  *
- * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param dbName The name of the database file to delete.
  */
