@@ -116,7 +116,7 @@ public final class ImageModule: Module {
 
           promise.resolve(cachePath)
         } else {
-          promise.resolve(false)
+          promise.resolve(nil)
         }
       }
     }
