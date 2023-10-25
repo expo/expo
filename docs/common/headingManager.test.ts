@@ -3,6 +3,7 @@ import GithubSlugger from 'github-slugger';
 import { BASE_HEADING_LEVEL, HeadingManager, HeadingType } from './headingManager';
 
 const SluggerStub: GithubSlugger = {
+  occurrences: {},
   slug: str => str,
   reset: () => {},
 };

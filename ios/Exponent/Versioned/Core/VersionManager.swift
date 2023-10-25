@@ -88,11 +88,24 @@ final class VersionManager: EXVersionManagerObjC {
    Registers Expo modules that are not generated in ``ExpoModulesProvider``, but are necessary for Expo Go apps.
    */
   private func registerExpoModules() {
-    guard let appContext else {
-      log.error("Unable to register Expo modules, the app context is unavailable")
+    guard let appContext,
+      let kernelServices = params["services"] as? [AnyHashable: Any] else {
+      log.error("Unable to register Expo modules, the app context or kernel services is unavailable")
       return
     }
     appContext.moduleRegistry.register(module: ExpoGoModule(appContext: appContext, manifest: manifest))
+
+    guard let updatesKernelService = kernelServices["EXUpdatesManager"] as? UpdatesBindingDelegate else {
+      log.error("Unable to register Expo modules, the app context or kernel services is unavailable")
+      return
+    }
+
+    // prevent override of this module with the UpdatesModule in the expo-updates package
+    appContext.moduleRegistry.register(module: ExpoGoExpoUpdatesModule(
+      appContext: appContext,
+      updatesKernelService: updatesKernelService,
+      scopeKey: manifest.scopeKey()
+    ), preventModuleOverriding: true)
   }
 
   private func createAppContextConfig() -> AppContextConfig {

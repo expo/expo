@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.2.4 — 2023-10-17
+
+_This version does not introduce any user-facing changes._
+
 ## 2.2.3 — 2023-09-18
 
 _This version does not introduce any user-facing changes._

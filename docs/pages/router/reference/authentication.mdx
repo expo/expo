@@ -60,7 +60,7 @@ export function useSession() {
   return value;
 }
 
-export function SessionProvider(props) {
+export function SessionProvider(props: React.PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState('session');
 
   return (
@@ -185,8 +185,7 @@ export default function Root() {
 Create a nested [Layout route](/routing/layouts) that checks whether users are authenticated before rendering the child route components. This layout route redirects users to the sign-in screen if they are not authenticated.
 
 ```jsx app/(app)/_layout.js
-import { Link, Redirect, Stack } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Redirect, Stack } from 'expo-router';
 
 import { useSession } from '../../ctx';
 
@@ -367,7 +366,6 @@ export default function RootLayout() {
 ```js app/(app)/_layout.js
 export default function RootLayout() {
   React.useEffect(() => {
-    // This navigation event will trigger the error above.
     router.push('/about');
   }, []);
 

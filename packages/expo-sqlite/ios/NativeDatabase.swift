@@ -1,0 +1,20 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
+import ExpoModulesCore
+
+final class NativeDatabase: SharedRef<OpaquePointer?>, Equatable {
+  let dbName: String
+  let openOptions: OpenDatabaseOptions
+
+  init(_ pointer: OpaquePointer?, dbName: String, openOptions: OpenDatabaseOptions) {
+    self.dbName = dbName
+    self.openOptions = openOptions
+    super.init(pointer)
+  }
+
+  // MARK: - Equatable
+
+  static func == (lhs: NativeDatabase, rhs: NativeDatabase) -> Bool {
+    return lhs.pointer == rhs.pointer
+  }
+}

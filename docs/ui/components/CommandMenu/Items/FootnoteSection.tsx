@@ -1,6 +1,6 @@
+import { FootnoteArrowIcon } from './icons';
 import type { AlgoliaItemHierarchy, AlgoliaItemType } from '../types';
 import { getHighlightHTML } from '../utils';
-import { FootnoteArrowIcon } from './icons';
 
 export const FootnoteSection = ({
   item,

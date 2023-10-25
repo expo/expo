@@ -15,9 +15,6 @@ class ScopedServerRegistrationModule : ServerRegistrationModule() {
     //   which has previously been run on an older SDK
     //   (where it persisted an installation ID in
     //   the legacy storage) or
-    // - we're in a standalone app after update
-    //   from SDK where installation ID has been
-    //   persisted in legacy storage
     // we let the migration do its job of moving
     // expo-notifications-specific installation ID
     // from scoped SharedPreferences to scoped noBackupDir

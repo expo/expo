@@ -3,10 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidFlipper = exports.withAndroidBuildProperties = void 0;
+exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidFlipper = exports.withAndroidBuildProperties = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const androidQueryUtils_1 = require("./androidQueryUtils");
 const fileContentsUtils_1 = require("./fileContentsUtils");
 const { createBuildGradlePropsConfigPlugin } = config_plugins_1.AndroidConfig.BuildProperties;
 exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
@@ -191,3 +192,24 @@ function setUsesCleartextTraffic(androidManifest, value) {
     }
     return androidManifest;
 }
+const withAndroidQueries = (config, props) => {
+    return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+        if (props.android?.manifestQueries == null) {
+            return config;
+        }
+        const { manifestQueries } = props.android;
+        // Default template adds a single intent to the `queries` tag
+        const defaultIntents = config.modResults.manifest.queries.map((q) => q.intent ?? []).flat() ?? [];
+        const additionalQueries = {
+            package: (0, androidQueryUtils_1.renderQueryPackages)(manifestQueries.package),
+            intent: [...defaultIntents, ...(0, androidQueryUtils_1.renderQueryIntents)(manifestQueries.intent)],
+        };
+        const provider = (0, androidQueryUtils_1.renderQueryProviders)(manifestQueries.provider);
+        if (provider != null) {
+            additionalQueries.provider = provider;
+        }
+        config.modResults.manifest.queries = [additionalQueries];
+        return config;
+    });
+};
+exports.withAndroidQueries = withAndroidQueries;
