@@ -1,10 +1,11 @@
-import React from 'react';
+import { ReactNode, PureComponent } from 'react';
 import { VideoPlayer } from './VideoPlayer';
+import { VideoViewProps } from './VideoView.types';
 export declare function useVideoPlayer(source?: string | null): VideoPlayer;
-export declare class VideoView extends React.PureComponent<any> {
-    nativeRef: React.RefObject<unknown>;
+export declare class VideoView extends PureComponent<VideoViewProps> {
+    nativeRef: import("react").RefObject<any>;
     enterFullscreen(): void;
     exitFullscreen(): void;
-    render(): React.ReactNode;
+    render(): ReactNode;
 }
 //# sourceMappingURL=VideoView.d.ts.map
