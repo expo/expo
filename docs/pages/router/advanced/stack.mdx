@@ -229,6 +229,47 @@ export default function Layout() {
 }
 ```
 
+## `popToTop` action
+
+By default, the screens in a `Stack` are pushed or popped to the next or the previous screen. To return to the first screen in the existing stack, the [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action can be used from any screen.
+
+For example, a stack has three screens &mdash; `home`, `details`, and `settings`. The following layout describes the order of the screens in a stack.
+
+<FileTree files={['app/_layout.js', 'app/home.js', 'app/details.js', 'app/settings.js']} />
+
+The `home` screen is the first screen, and the `settings` is the last. To go from `settings` to `home` screen you'll have to go back to `details`. However, using the `popToTop` action, you can go from `settings` to `home` and dismiss any screen in between.
+
+It is accessible through [`StackActions`](https://reactnavigation.org/docs/stack-actions) from the React Navigation library and dispatched using [`navigation`](/router/reference/hooks/#usenavigation) prop.
+
+{/* prettier-ignore */}
+```jsx app/settings.js
+import { Button, View, Text } from "react-native";
+/* @info Import useNavigation from Expo Router and StackActions from React Navigation library. */
+import { useNavigation } from "expo-router";
+import { StackActions } from "@react-navigation/native";
+/* @end */
+
+export default function Settings() {
+  /* @info Access the underlying navigation prop from useNavigation hook. */
+  const navigation = useNavigation();
+  /* @end */
+
+  const handlePopToTop = () => {
+    /* @info In handle method, dispatch the Stack popToTop() to go back to the first screen in a stack. */
+    navigation.dispatch(StackActions.popToTop());
+    /* @end */
+  };
+
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      /* @info Trigger the handler method on a touchable/button component */
+      <Button title="Go to first screen" onPress={handlePopToTop} />
+      /* @end */
+    </View>
+  );
+}
+```
+
 ## Next steps
 
 <BoxLink
