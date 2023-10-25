@@ -229,9 +229,11 @@ export default function Layout() {
 }
 ```
 
-## JavaScript Stack
+## JavaScript stack with `@react-navigation/stack`
 
-Expo Router uses the `@react-navigation/native-stack` package for the `<Stack />` layout, but you may want to use the JavaScript-powered `@react-navigation/stack` library instead. To do so, you can create a custom layout component that wraps the `@react-navigation/stack` library.
+Expo Router uses the `@react-navigation/native-stack` package for the `<Stack />` layout. However, you can also use the JavaScript-powered `@react-navigation/stack` library instead to create a custom layout component that wraps the `@react-navigation/stack` library.
+
+In the following example, `JsStack` component is created using `@react-navigation/stack` library:
 
 ```tsx layouts/js-stack.tsx
 import { ParamListBase, StackNavigationState } from '@react-navigation/native';
@@ -270,7 +272,7 @@ export default function Layout() {
 }
 ```
 
-For options and info about `@react-navigation/stack`, refer to the [React Navigation docs](https://reactnavigation.org/docs/stack-navigator).
+For more information on available options, see [`@react-navigation/stack` documentation](https://reactnavigation.org/docs/stack-navigator).
 
 ## Next steps
 
