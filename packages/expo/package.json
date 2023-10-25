@@ -64,7 +64,6 @@
     "@expo/config": "8.4.0",
     "@expo/config-plugins": "7.6.0",
     "@expo/vector-icons": "^13.0.0",
-    "@expo/whatwg-url": "^1.0.1",
     "babel-preset-expo": "~9.8.0",
     "expo-application": "~5.6.0",
     "expo-asset": "~8.13.0",
@@ -72,7 +71,8 @@
     "expo-font": "~11.8.0",
     "expo-keep-awake": "~12.7.0",
     "expo-modules-autolinking": "1.7.0",
-    "expo-modules-core": "1.9.0"
+    "expo-modules-core": "1.9.0",
+    "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
     "@types/react": "~18.0.14",
