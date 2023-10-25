@@ -12,7 +12,7 @@ import java.io.File
 import java.io.IOException
 
 @Suppress("unused")
-class SQLiteModuleNext: Module() {
+class SQLiteModuleNext : Module() {
   private val cachedDatabases: MutableList<NativeDatabase> = mutableListOf()
   private val cachedStatements: MutableList<NativeStatement> = mutableListOf()
   private var hasListeners = false
