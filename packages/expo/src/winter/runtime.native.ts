@@ -20,7 +20,23 @@ function install(name: string, getValue: () => any) {
   installGlobal(name, () => addBuiltinSymbol(getValue()));
 }
 
-// https://url.spec.whatwg.org/#url
-install('URL', () => require('./url').URL);
-// https://url.spec.whatwg.org/#urlsearchparams
-install('URLSearchParams', () => require('./url').URLSearchParams);
+// https://encoding.spec.whatwg.org/#textencoder
+install('TextEncoder', () => {
+  const TextEncoder = globalThis.expo!.TextEncoder;
+
+  const originalEncode = TextEncoder.prototype.encode;
+
+  TextEncoder.prototype.encode = function () {
+    return new Uint8Array(originalEncode.apply(this, arguments));
+  };
+
+  return TextEncoder;
+});
+
+// https://encoding.spec.whatwg.org/#textdecoder
+install('TextDecoder', () => globalThis.expo!.TextDecoder);
+
+// // https://url.spec.whatwg.org/#url
+// install('URL', () => require('./url').URL);
+// // https://url.spec.whatwg.org/#urlsearchparams
+// install('URLSearchParams', () => require('./url').URLSearchParams);
