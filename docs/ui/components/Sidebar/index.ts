@@ -7,4 +7,4 @@ export { SidebarSingleEntry } from './SidebarSingleEntry';
 export { SidebarLink } from './SidebarLink';
 export { SidebarSection } from './SidebarSection';
 export { SidebarTitle } from './SidebarTitle';
-export { VersionSelector } from './VersionSelector';
+export { ApiVersionSelect } from './ApiVersionSelect';
