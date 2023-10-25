@@ -39,9 +39,9 @@ data class SourceMap(
   private fun isLocalFileUri() = parsedUri?.scheme?.startsWith("file") ?: false
 
   private fun isSvg(): Boolean {
-    var lastDotIndex = parsedUri.toString().lastIndexOf('.')
+    var lastDotIndex = parsedUri?.toString()?.lastIndexOf('.')
     // if the path has no file extension and no . at all (e.g. file://path/to/file) return false
-    if (lastDotIndex == -1) {
+    if (lastDotIndex == -1 || lastDotIndex == null) {
       return false
     }
     return parsedUri?.toString()?.substring(lastDotIndex)?.startsWith(".svg") ?: false
