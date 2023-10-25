@@ -18,6 +18,7 @@ const expoDependencyNames = [
   'expo-eas-client',
   'expo-file-system',
   'expo-font',
+  'expo-image',
   'expo-json-utils',
   'expo-keep-awake',
   'expo-localization',
