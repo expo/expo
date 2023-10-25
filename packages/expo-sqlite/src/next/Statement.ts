@@ -130,7 +130,7 @@ export class Statement {
   /**
    * Run the prepared statement and return the result.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param params @see `BindParams`
    */
@@ -148,7 +148,7 @@ export class Statement {
   /**
    * Iterate the prepared statement and return results as an iterable.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param params @see `BindParams`
    *
@@ -181,7 +181,7 @@ export class Statement {
   /**
    * Get one row from the prepared statement.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param params @see `BindParams`
    */
@@ -199,7 +199,7 @@ export class Statement {
   /**
    * Get all rows from the prepared statement.
    *
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    *
    * @param params @see `BindParams`
    */

@@ -23,12 +23,12 @@ import { GithubIcon } from '@expo/styleguide-icons';
 
 ## Usage
 
-### Importing an existing database
+### Import an existing database
 
-To open a new SQLite database using an existing `.db` file you already have, follow the steps below:
+To open a new SQLite database using an existing **.db** file you already have, follow the steps below:
 
 <Step label="1">
-Install `expo-file-system` and `expo-asset` modules:
+Install `expo-file-system` and `expo-asset` libraries:
 
 <Terminal cmd={['$ npx expo install expo-file-system expo-asset']} />
 
@@ -37,7 +37,7 @@ Install `expo-file-system` and `expo-asset` modules:
 <Step label="2">
 Create a **metro.config.js** file at the root of your project with the following contents to include [extra asset extensions](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts):
 
-```js
+```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
 
 const defaultConfig = getDefaultConfig(__dirname);
@@ -126,7 +126,7 @@ await db.transactionAsync(async () => {
 });
 ```
 
-> **Note:** Please note that due to the nature of the async/await, We can't ensure that the transaction will be executed in the same order as the statements are written. A query out of a transaction may be executed inside the transaction. If you care about the order of execution, you should use the [`transactionExclusiveAsync`](#transactionexclusiveasynctask) function.
+> **Note:** Due to the nature of the async/await, we can't ensure that the transaction will be executed in the same order as the statements are written. A query out of a transaction may be executed inside the transaction. If you care about the order of execution, use the [`transactionExclusiveAsync`](#transactionexclusiveasynctask) function.
 
 ### Executing PRAGMA queries
 
@@ -136,7 +136,7 @@ await db.execAsync('PRAGMA journal_mode = WAL');
 await db.execAsync('PRAGMA foreign_keys = ON');
 ```
 
-> **Tip:** Enable WAL journal mode when you create a new database to improve performance in general. [Learn more](https://www.sqlite.org/wal.html).
+> **info** **Tip:** Enable [WAL journal mode](https://www.sqlite.org/wal.html) when you create a new database to improve performance in general.
 
 ## API
 
