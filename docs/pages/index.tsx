@@ -19,6 +19,7 @@ import { Row, ScreenClassProvider } from 'react-grid-system';
 import DocumentationPage from '~/components/DocumentationPage';
 import TALKS from '~/public/static/talks';
 import { AppJSBanner } from '~/ui/components/AppJSBanner';
+import { FeedbackForm } from '~/ui/components/FeedbackForm';
 import {
   CellContainer,
   APIGridCell,
@@ -256,6 +257,7 @@ const Home = () => {
         </CellContainer>
         <RawH3>Join the community</RawH3>
         <JoinTheCommunity />
+        <FeedbackForm />
       </DocumentationPage>
     </ScreenClassProvider>
   );

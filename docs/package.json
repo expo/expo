@@ -38,6 +38,7 @@
     "front-matter": "^4.0.2",
     "fs-extra": "^11.1.1",
     "github-slugger": "^2.0.0",
+    "googleapis": "^128.0.0",
     "lodash": "^4.17.21",
     "next": "^13.5.6",
     "nprogress": "0.2.0",
