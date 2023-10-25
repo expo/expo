@@ -1,0 +1,7 @@
+{
+  "name": "ExpoLocation",
+  "platforms": ["android"],
+  "android": {
+    "modules": ["expo.modules.location.LocationModule"]
+  }
+}
