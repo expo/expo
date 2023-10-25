@@ -94,10 +94,14 @@ await db.runAsync('DELETE FROM test WHERE value = $value', { $value: 'aaa' }); /
 const statement = await db.prepareAsync(
   'INSERT INTO test (value, intValue) VALUES ($value, $intValue)'
 );
-await statement.runAsync({ $value: 'bbb', $intValue: 101 });
-await statement.runAsync({ $value: 'ccc', $intValue: 102 });
-await statement.runAsync({ $value: 'ddd', $intValue: 103 });
-await statement.finalizeAsync();
+try {
+  await statement.runAsync({ $value: 'bbb', $intValue: 101 });
+  await statement.runAsync({ $value: 'ccc', $intValue: 102 });
+  await statement.runAsync({ $value: 'ddd', $intValue: 103 });
+} finally {
+  // Best practice to finalize the statement with try-finally
+  await statement.finalizeAsync();
+}
 
 // `getAsync` is useful when you want to get a single row from the database.
 const oneRow = await db.getAsync('SELECT * FROM test');
