@@ -15,9 +15,11 @@ class LayoutAnimations : public jni::HybridClass<LayoutAnimations> {
   using AnimationStartingBlock =
       std::function<void(int, int, alias_ref<JMap<jstring, jstring>>)>;
   using HasAnimationBlock = std::function<bool(int, int)>;
+#ifdef DEBUG
+  using CheckDuplicateSharedTag = std::function<void(int, int)>;
+#endif
   using ClearAnimationConfigBlock = std::function<void(int)>;
-  using CancelAnimationBlock =
-      std::function<void(int, int, jboolean, jboolean)>;
+  using CancelAnimationBlock = std::function<void(int)>;
   using FindPrecedingViewTagForTransitionBlock = std::function<int(int)>;
 
  public:
@@ -36,6 +38,11 @@ class LayoutAnimations : public jni::HybridClass<LayoutAnimations> {
 
   void setAnimationStartingBlock(AnimationStartingBlock animationStartingBlock);
   void setHasAnimationBlock(HasAnimationBlock hasAnimationBlock);
+#ifdef DEBUG
+  void setCheckDuplicateSharedTag(
+      CheckDuplicateSharedTag checkDuplicateSharedTag);
+  void checkDuplicateSharedTag(int viewTag, int screenTag);
+#endif
   void setClearAnimationConfigBlock(
       ClearAnimationConfigBlock clearAnimationConfigBlock);
   void setCancelAnimationForTag(CancelAnimationBlock cancelAnimationBlock);
@@ -47,13 +54,9 @@ class LayoutAnimations : public jni::HybridClass<LayoutAnimations> {
       int tag,
       const jni::local_ref<JNIHelper::PropsMap> &updates,
       bool isSharedTransition);
-  void endLayoutAnimation(int tag, bool cancelled, bool removeView);
+  void endLayoutAnimation(int tag, bool removeView);
   void clearAnimationConfigForTag(int tag);
-  void cancelAnimationForTag(
-      int tag,
-      int type,
-      jboolean cancelled,
-      jboolean removeView);
+  void cancelAnimationForTag(int tag);
   int findPrecedingViewTagForTransition(int tag);
 
  private:
@@ -65,6 +68,9 @@ class LayoutAnimations : public jni::HybridClass<LayoutAnimations> {
   CancelAnimationBlock cancelAnimationBlock_;
   FindPrecedingViewTagForTransitionBlock
       findPrecedingViewTagForTransitionBlock_;
+#ifdef DEBUG
+  CheckDuplicateSharedTag checkDuplicateSharedTag_;
+#endif
 
   explicit LayoutAnimations(
       jni::alias_ref<LayoutAnimations::jhybridobject> jThis);

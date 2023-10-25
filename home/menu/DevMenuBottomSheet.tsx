@@ -5,6 +5,7 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
+import type { SharedValue } from 'react-native-reanimated';
 
 import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
 import * as DevMenu from './DevMenuModule';
@@ -77,7 +78,8 @@ function DevMenuBottomSheet({ children, uuid }: Props) {
         <BottomSheetBackdrop {...props} opacity={0.5} appearsOnIndex={0} disappearsOnIndex={-1} />
       )}
       handleComponent={null}
-      snapPoints={animatedSnapPoints}
+      // TODO: (gabrieldonadel) remove type assertion after upgrading @gorhom/bottom-sheet
+      snapPoints={animatedSnapPoints as (string | number)[] | SharedValue<(string | number)[]>}
       handleHeight={animatedHandleHeight}
       contentHeight={animatedContentHeight}
       backgroundStyle={styles.bottomSheetBackground}

@@ -1,21 +1,24 @@
 package com.swmansion.reanimated.nativeProxy;
 
+import android.content.ContentResolver;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.util.Log;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeArray;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.soloader.SoLoader;
 import com.swmansion.common.GestureHandlerStateManager;
+import com.swmansion.reanimated.AndroidUIScheduler;
 import com.swmansion.reanimated.NativeProxy;
 import com.swmansion.reanimated.NodesManager;
 import com.swmansion.reanimated.ReanimatedModule;
-import com.swmansion.reanimated.Scheduler;
 import com.swmansion.reanimated.Utils;
 import com.swmansion.reanimated.keyboardObserver.ReanimatedKeyboardEventListener;
 import com.swmansion.reanimated.layoutReanimation.AnimationsManager;
@@ -35,7 +38,7 @@ public abstract class NativeProxyCommon {
 
   protected NodesManager mNodesManager;
   protected final WeakReference<ReactApplicationContext> mContext;
-  protected Scheduler mScheduler;
+  protected AndroidUIScheduler mAndroidUIScheduler;
   private ReanimatedSensorContainer reanimatedSensorContainer;
   private final GestureHandlerStateManager gestureHandlerStateManager;
   private ReanimatedKeyboardEventListener reanimatedKeyboardEventListener;
@@ -43,7 +46,7 @@ public abstract class NativeProxyCommon {
   private boolean slowAnimationsEnabled = false;
 
   protected NativeProxyCommon(ReactApplicationContext context) {
-    mScheduler = new Scheduler(context);
+    mAndroidUIScheduler = new AndroidUIScheduler(context);
     mContext = new WeakReference<>(context);
     reanimatedSensorContainer = new ReanimatedSensorContainer(mContext);
     reanimatedKeyboardEventListener = new ReanimatedKeyboardEventListener(mContext);
@@ -62,8 +65,10 @@ public abstract class NativeProxyCommon {
     gestureHandlerStateManager = tempHandlerStateManager;
   }
 
-  public Scheduler getScheduler() {
-    return mScheduler;
+  protected native void installJSIBindings();
+
+  public AndroidUIScheduler getAndroidUIScheduler() {
+    return mAndroidUIScheduler;
   }
 
   private void toggleSlowAnimations() {
@@ -110,6 +115,11 @@ public abstract class NativeProxyCommon {
   @DoNotStrip
   public void scrollTo(int viewTag, double x, double y, boolean animated) {
     mNodesManager.scrollTo(viewTag, x, y, animated);
+  }
+
+  @DoNotStrip
+  public void dispatchCommand(int viewTag, String commandId, ReadableArray commandArgs) {
+    mNodesManager.dispatchCommand(viewTag, commandId, commandArgs);
   }
 
   @DoNotStrip
@@ -183,7 +193,7 @@ public abstract class NativeProxyCommon {
   protected abstract HybridData getHybridData();
 
   public void onCatalystInstanceDestroy() {
-    mScheduler.deactivate();
+    mAndroidUIScheduler.deactivate();
     getHybridData().resetNative();
   }
 
@@ -202,6 +212,15 @@ public abstract class NativeProxyCommon {
             .getAnimationsManager();
 
     animationsManager.setNativeMethods(NativeProxy.createNativeMethodsHolder(layoutAnimations));
+  }
+
+  @DoNotStrip
+  public boolean getIsReducedMotion() {
+    ContentResolver mContentResolver = mContext.get().getContentResolver();
+    String rawValue =
+        Settings.Global.getString(mContentResolver, Settings.Global.TRANSITION_ANIMATION_SCALE);
+    float parsedValue = rawValue != null ? Float.parseFloat(rawValue) : 1f;
+    return parsedValue == 0f;
   }
 
   @DoNotStrip

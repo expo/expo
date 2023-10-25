@@ -8,7 +8,7 @@ class ReaCompatibility {
     public ReaCompatibility(ReactApplicationContext reactApplicationContext) {
 
     }
-    public void registerFabricEventListener(NodesManager nodeManager) {
+    public void registerFabricEventListener(NodesManager nodesManager) {
 
     }
     public void synchronouslyUpdateUIProps(int viewTag, ReadableMap uiProps) {
