@@ -5,7 +5,7 @@ import ExpoModulesCore
 
 public final class CameraViewNextModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("ExpoCamera")
+    Name("ExpoCameraNext")
 
     OnCreate {
       let permissionsManager = self.appContext?.permissions
@@ -94,7 +94,7 @@ public final class CameraViewNextModule: Module {
 
     AsyncFunction("takePicture") { (options: TakePictureOptionsNext, viewTag: Int, promise: Promise) in
       guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraViewNext.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraView.self))
+        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraViewNext.self))
       }
       #if targetEnvironment(simulator)
       try takePictureForSimulator(self.appContext, view, options, promise)
@@ -109,7 +109,7 @@ public final class CameraViewNextModule: Module {
       throw Exceptions.SimulatorNotSupported()
       #else
       guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraViewNext.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraView.self))
+        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraViewNext.self))
       }
       view.record(options: options, promise: promise)
       #endif
@@ -121,7 +121,7 @@ public final class CameraViewNextModule: Module {
       throw Exceptions.SimulatorNotSupported()
       #else
       guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraViewNext.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraView.self))
+        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraViewNext.self))
       }
       view.stopRecording()
       #endif

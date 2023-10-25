@@ -534,50 +534,50 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   }
 
   func record(options: CameraRecordingOptionsNext, promise: Promise) {
-    if videoFileOutput == nil {
-      setupMovieFileCapture()
-    }
-
-    if let videoFileOutput, !videoFileOutput.isRecording && videoRecordedPromise == nil {
-      updateSessionAudioIsMuted(options.mute)
-
-      if let connection = videoFileOutput.connection(with: .video) {
-        if !connection.isVideoStabilizationSupported {
-          log.warn("\(#function): Video Stabilization is not supported on this device.")
-        } else {
-          if let videoStabilizationMode {
-            connection.preferredVideoStabilizationMode = videoStabilizationMode
+    sessionQueue.async { [weak self] in
+      guard let self else {
+        return
+      }
+    
+      if let videoFileOutput, !videoFileOutput.isRecording && videoRecordedPromise == nil {
+        updateSessionAudioIsMuted(options.mute)
+        
+        if let connection = videoFileOutput.connection(with: .video) {
+          if !connection.isVideoStabilizationSupported {
+            log.warn("\(#function): Video Stabilization is not supported on this device.")
+          } else {
+            if let videoStabilizationMode {
+              connection.preferredVideoStabilizationMode = videoStabilizationMode
+            }
           }
+          
+          let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
+          connection.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
+          setVideoOptions(options: options, for: connection, promise: promise)
+          
+          //        if connection.isVideoOrientationSupported && options.mirror {
+          //          connection.isVideoMirrored = options.mirror
+          //        }
         }
-
-        let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
-        connection.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
-        setVideoOptions(options: options, for: connection, promise: promise)
-
-//        if connection.isVideoOrientationSupported && options.mirror {
-//          connection.isVideoMirrored = options.mirror
-//        }
-      }
-
-      let preset = options.quality?.toPreset() ?? .high
-      updateSessionPreset(preset: preset)
-
-      guard let fileSystem = self.fileSystem else {
-        promise.reject(Exceptions.FileSystemModuleNotFound())
-        return
-      }
-
-      if !self.isValidVideoOptions {
-        return
-      }
-
-      sessionQueue.async {
-        let directory = fileSystem.cachesDirectory.appending("/Camera")
-        let path = fileSystem.generatePath(inDirectory: directory, withExtension: ".mov")
-        let fileUrl = URL(fileURLWithPath: path)
-        self.videoRecordedPromise = promise
-
-        videoFileOutput.startRecording(to: fileUrl, recordingDelegate: self)
+        
+        let preset = options.quality?.toPreset() ?? .high
+        updateSessionPreset(preset: preset)
+        
+        guard let fileSystem = self.fileSystem else {
+          promise.reject(Exceptions.FileSystemModuleNotFound())
+          return
+        }
+        
+        if !self.isValidVideoOptions {
+          return
+        }
+        
+          let directory = fileSystem.cachesDirectory.appending("/Camera")
+          let path = fileSystem.generatePath(inDirectory: directory, withExtension: ".mov")
+          let fileUrl = URL(fileURLWithPath: path)
+          self.videoRecordedPromise = promise
+          
+          videoFileOutput.startRecording(to: fileUrl, recordingDelegate: self)
       }
     }
   }
@@ -651,18 +651,25 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   }
 
   func setupMovieFileCapture() {
-    let output = AVCaptureMovieFileOutput()
-    if self.session.canAddOutput(output) {
-      self.session.addOutput(output)
-      self.videoFileOutput = output
+    sessionQueue.async {
+      let output = AVCaptureMovieFileOutput()
+      if self.session.canAddOutput(output) {
+        self.session.addOutput(output)
+        self.videoFileOutput = output
+      }
     }
   }
 
   func cleanupMovieFileCapture() {
     if let videoFileOutput {
-      if session.outputs.contains(videoFileOutput) {
-        session.removeOutput(videoFileOutput)
-        self.videoFileOutput = nil
+      sessionQueue.async { [weak self] in
+        guard let self else {
+          return
+        }
+        if session.outputs.contains(videoFileOutput) {
+          session.removeOutput(videoFileOutput)
+          self.videoFileOutput = nil
+        }
       }
     }
   }
@@ -718,7 +725,12 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   }
 
   func stopRecording() {
-    videoFileOutput?.stopRecording()
+    sessionQueue.async { [weak self] in
+      guard let self else {
+        return
+      }
+      videoFileOutput?.stopRecording()
+    }
   }
 
   func resumePreview() {

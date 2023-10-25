@@ -32,7 +32,7 @@ val cameraEvents = arrayOf(
 
 class CameraViewNextModule : Module() {
   override fun definition() = ModuleDefinition {
-    Name("ExpoCamera")
+    Name("ExpoCameraNext")
 
     Constants(
       "Type" to mapOf(
