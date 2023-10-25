@@ -2,7 +2,9 @@
 
 import SDWebImage
 import ExpoModulesCore
+#if !os(tvOS)
 import VisionKit
+#endif
 
 typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
@@ -379,9 +381,11 @@ public final class ImageView: ExpoView {
       sdImageView.image = image
     }
 
+    #if !os(tvOS)
     if enableLiveTextInteraction {
       analyzeImage()
     }
+    #endif
   }
 
   // MARK: - Helpers
@@ -421,7 +425,7 @@ public final class ImageView: ExpoView {
   }
 
   // MARK: - Live Text Interaction
-
+  #if !os(tvOS)
   @available(iOS 16.0, macCatalyst 17.0, *)
   static let imageAnalyzer = ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
 
@@ -471,4 +475,5 @@ public final class ImageView: ExpoView {
     }
     return interaction as? ImageAnalysisInteraction
   }
+  #endif
 }
