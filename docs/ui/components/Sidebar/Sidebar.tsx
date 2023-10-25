@@ -3,7 +3,7 @@ import { theme } from '@expo/styleguide';
 import { spacing, breakpoints } from '@expo/styleguide-base';
 import type { PropsWithChildren, ComponentType } from 'react';
 
-import { SidebarGroup, SidebarSection, VersionSelector } from './index';
+import { SidebarGroup, SidebarSection } from './index';
 
 import { NavigationType, NavigationRoute } from '~/types/common';
 
@@ -20,10 +20,10 @@ const STYLES_SIDEBAR = css`
 
 const STYLES_SIDEBAR_FADE = css`
   background: linear-gradient(${theme.background.default}, transparent);
-  height: 30px;
-  width: 274px;
+  height: 32px;
+  width: 273px;
   position: fixed;
-  margin-top: -${spacing[4]}px;
+  margin-top: -${spacing[5] + spacing[0.5]}px;
   left: 0;
   z-index: 10;
   pointer-events: none;
@@ -52,7 +52,6 @@ export const Sidebar = ({ routes = [] }: SidebarProps) => {
   return (
     <nav css={STYLES_SIDEBAR} data-sidebar>
       <div css={[STYLES_SIDEBAR_FADE]} />
-      <VersionSelector />
       {routes.map(route => {
         const Component = renderTypes[route.type];
         return !!Component && <Component key={`${route.type}-${route.name}`} route={route} />;
