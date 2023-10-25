@@ -6,11 +6,13 @@
 
 ### 🎉 New features
 
+- [iOS] Added support for `allowDownscaling` prop. ([#25012](https://github.com/expo/expo/pull/25012) by [@behenate](https://github.com/behenate))
 - [ios] Added `autoplay` prop to control whether an animated image will automatically animate or not ([#25008](https://github.com/expo/expo/pull/25008) by [@gkasdorf](https://github.com/gkasdorf))
 - [ios] Added `startAnimating()` and `stopAnimating()` functions to start or stop an image's animation ([#25008](https://github.com/expo/expo/pull/25008) by [@gkasdorf](https://github.com/gkasdorf))
 
 ### 🐛 Bug fixes
 
+- [Android] fix crash when loading local image files with no file extension ([#24201](https://github.com/expo/expo/pull/25032) by [@kadikraman](https://github.com/kadikraman))
 - [ios] Fixed issue where some animated images would cause the app to hang ([#25008](https://github.com/expo/expo/pull/25008) by [@gkasdorf](https://github.com/gkasdorf))
 
 ### 💡 Others

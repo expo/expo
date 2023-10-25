@@ -85,6 +85,10 @@ public final class ImageModule: Module {
         view.recyclingKey = key
       }
 
+      Prop("allowDownscaling") { (view, allowDownscaling: Bool?) in
+        view.allowDownscaling = allowDownscaling ?? true
+      }
+
       Prop("autoplay") { (view, autoplay: Bool?) in
         view.sdImageView.autoPlayAnimatedImage = autoplay ?? true
       }
