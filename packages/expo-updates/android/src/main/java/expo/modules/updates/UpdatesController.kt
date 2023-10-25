@@ -2,6 +2,7 @@ package expo.modules.updates
 
 import android.content.Context
 import android.os.AsyncTask
+import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
@@ -31,6 +32,7 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifest
+import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
@@ -59,7 +61,7 @@ import java.util.HashMap
  * launching an update, then responds appropriately depending on the callbacks that are invoked.
  *
  * This class also provides getter methods to access information about the updates state, which are
- * used by the exported [UpdatesModule] through [UpdatesService]. Such information includes
+ * used by the exported [UpdatesModule]. Such information includes
  * references to: the database, the [UpdatesConfiguration] object, the path on disk to the updates
  * directory, any currently active [LoaderTask], the current [SelectionPolicy], the error recovery
  * handler, and the current launched update. This class is intended to be the source of truth for
@@ -70,20 +72,23 @@ import java.util.HashMap
  */
 class UpdatesController private constructor(
   context: Context,
-  var updatesConfiguration: UpdatesConfiguration
+  updatesConfiguration: UpdatesConfiguration
 ) : UpdatesStateChangeEventSender {
+  var updatesConfiguration = updatesConfiguration
+    private set
+
   private var reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
-    WeakReference((context as ReactApplication).reactNativeHost)
+    WeakReference(context.reactNativeHost)
   } else {
     null
   }
 
   var updatesDirectory: File? = null
   private var updatesDirectoryException: Exception? = null
-  private val stateMachine: UpdatesStateMachine = UpdatesStateMachine(context, this)
+  private val stateMachine = UpdatesStateMachine(context, this)
 
   private var launcher: Launcher? = null
-  val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
+  private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
 
   // TODO: move away from DatabaseHolder pattern to Handler thread
   private val databaseHandlerThread = HandlerThread("expo-updates-database")
@@ -810,6 +815,60 @@ class UpdatesController private constructor(
             }
           }
         )
+    }
+  }
+
+  interface GetExtraParamsCallback {
+    fun onFailure(e: Exception)
+    fun onSuccess(paramsBundle: Bundle)
+  }
+
+  fun getExtraParams(callback: GetExtraParamsCallback) {
+    AsyncTask.execute {
+      try {
+        val result = ManifestMetadata.getExtraParams(
+          databaseHolder.database,
+          updatesConfiguration,
+        )
+        databaseHolder.releaseDatabase()
+        val resultMap = when (result) {
+          null -> Bundle()
+          else -> {
+            Bundle().apply {
+              result.forEach {
+                putString(it.key, it.value)
+              }
+            }
+          }
+        }
+        callback.onSuccess(resultMap)
+      } catch (e: Exception) {
+        databaseHolder.releaseDatabase()
+        callback.onFailure(e)
+      }
+    }
+  }
+
+  interface SetExtraParamsCallback {
+    fun onFailure(e: Exception)
+    fun onSuccess()
+  }
+
+  fun setExtraParam(key: String, value: String?, callback: SetExtraParamsCallback) {
+    AsyncTask.execute {
+      try {
+        ManifestMetadata.setExtraParam(
+          databaseHolder.database,
+          updatesConfiguration,
+          key,
+          value
+        )
+        databaseHolder.releaseDatabase()
+        callback.onSuccess()
+      } catch (e: Exception) {
+        databaseHolder.releaseDatabase()
+        callback.onFailure(e)
+      }
     }
   }
 
