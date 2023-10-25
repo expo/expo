@@ -54,7 +54,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         }
       });
 
-      if(Platform.OS === 'ios') {
+      if (Platform.OS === 'ios') {
         t.it('load animated image and emits animated is true', async () => {
           const event = await mountAndWaitFor(
             <Image source={ANIMATED_IMAGE_SOURCE} style={{ height: 100, width: 100 }} />,
