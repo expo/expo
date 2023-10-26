@@ -534,7 +534,7 @@ const parseQueryParams = (path, parseConfig) => {
     const query = path.split('?')[1];
     const searchParams = new URLSearchParams(query);
     const params = Object.fromEntries(
-    // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+    // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
     searchParams);
     if (parseConfig) {
         Object.keys(params).forEach((name) => {

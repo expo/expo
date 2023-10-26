@@ -79,7 +79,7 @@ function fromDeepLink(url) {
     const qs = !res.search
         ? ''
         : Object.entries(Object.fromEntries(
-        // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+        // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
         res.searchParams))
             .map(([k, v]) => `${k}=${decodeURIComponent(v)}`)
             .join('&');

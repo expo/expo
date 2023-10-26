@@ -68,7 +68,7 @@ function fromDeepLink(url: string): string {
     ? ''
     : Object.entries(
         Object.fromEntries(
-          // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+          // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
           res.searchParams
         )
       )

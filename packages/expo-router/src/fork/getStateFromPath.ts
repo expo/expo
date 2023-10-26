@@ -763,7 +763,7 @@ const parseQueryParams = (path: string, parseConfig?: Record<string, (value: str
   const query = path.split('?')[1];
   const searchParams = new URLSearchParams(query);
   const params = Object.fromEntries(
-    // @ts-expect-error: [Symbol.iterator] is indeed, available on every platform.
+    // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
     searchParams
   );
 
