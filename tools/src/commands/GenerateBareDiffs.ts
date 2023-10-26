@@ -5,8 +5,10 @@ import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
+import semver from 'semver';
 
 import { EXPO_DIR } from '../Constants';
+import Git from '../Git';
 import logger from '../Logger';
 
 type ActionOptions = {
@@ -24,7 +26,7 @@ function allVersions(min, max) {
 function getReleasedSdkVersionRange() {
   const packageJson = fs.readJSONSync(path.join(EXPO_DIR, 'packages', 'expo', 'package.json'));
   const expoPackageVersion = packageJson.version;
-  let maxSdk = parseInt(expoPackageVersion.split('.')[0], 10);
+  let maxSdk = semver.major(expoPackageVersion);
   // if current version is an alpha or beta, then one version behind is the latest stable release
   if (expoPackageVersion.includes('alpha') || expoPackageVersion.includes('beta')) {
     maxSdk--;
@@ -47,6 +49,8 @@ async function executeDiffCommand(diffDirPath: string, sdkFrom: string, sdkTo: s
 
   const diffCommand = `origin/${sdkToBranch(sdkFrom)}..origin/${sdkToBranch(sdkTo)}`;
 
+  await Git.fetchAsync();
+
   const diff = await spawnAsync(
     'git',
     ['diff', diffCommand, '--', 'templates/expo-template-bare-minimum'],
@@ -55,7 +59,7 @@ async function executeDiffCommand(diffDirPath: string, sdkFrom: string, sdkTo: s
     }
   );
 
-  fs.writeFileSync(diffPath, diff.stdout);
+  await fs.writeFile(diffPath, diff.stdout);
 }
 
 async function action({ check = false }: ActionOptions) {
@@ -81,8 +85,8 @@ async function action({ check = false }: ActionOptions) {
     sdkVersionsToDiff.push('unversioned');
 
     // clear all versions before regenerating
-    await spawnAsync('rm', ['-rf', diffDirPath]);
-    fs.mkdirSync(diffDirPath);
+    await fs.remove(diffDirPath);
+    await fs.ensureDir(diffDirPath);
 
     // start with the lowest SDK version and diff it with all other SDK versions equal to or lower than it
     sdkVersionsToDiff.forEach((toSdkVersion) => {
@@ -98,7 +102,7 @@ async function action({ check = false }: ActionOptions) {
     });
     await Promise.all(diffJobs);
     // write the list of SDK versions to a file to generate list of versions for which diffs can be viewed
-    fs.writeFileSync(path.join(diffDirPath, 'versions.json'), JSON.stringify(sdkVersionsToDiff));
+    await fs.writeFile(path.join(diffDirPath, 'versions.json'), JSON.stringify(sdkVersionsToDiff));
 
     // see if diff regeneration changed the diff files from the last commit
     // Used to fail package checks when diffs are not regenerated
