@@ -144,6 +144,8 @@ PODS:
     - ExpoModulesCore
   - ExpoCamera (13.8.0):
     - ExpoModulesCore
+    - ZXingObjC/OneD
+    - ZXingObjC/PDF417
   - ExpoCellular (5.6.0):
     - ExpoModulesCore
   - ExpoClipboard (4.7.0):
