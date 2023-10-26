@@ -11,6 +11,7 @@ import expo.modules.image.enums.ImageCacheType
 import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageSource
+import expo.modules.image.svg.SVGBitmapDrawable
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -47,13 +48,15 @@ class GlideRequestListener(
     dataSource: DataSource,
     isFirstResource: Boolean
   ): Boolean {
+    val intrinsicWidth = (resource as? SVGBitmapDrawable)?.svgIntrinsicWidth ?: resource.intrinsicWidth
+    val intrinsicHeight = (resource as? SVGBitmapDrawable)?.svgIntrinsicHeight ?: resource.intrinsicHeight
     expoImageViewWrapper.get()?.onLoad?.invoke(
       ImageLoadEvent(
         cacheType = ImageCacheType.fromNativeValue(dataSource).name.lowercase(Locale.getDefault()),
         source = ImageSource(
           url = model.toString(),
-          width = resource.intrinsicWidth,
-          height = resource.intrinsicHeight,
+          width = intrinsicWidth,
+          height = intrinsicHeight,
           mediaType = null // TODO(@lukmccall): add mediaType
         )
       )
