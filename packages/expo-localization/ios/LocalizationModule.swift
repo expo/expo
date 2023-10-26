@@ -138,7 +138,7 @@ public class LocalizationModule: Module {
             "languageTag": languageTag,
             "languageCode": languageLocale.language.languageCode?.identifier,
             "regionCode": languageLocale.region?.identifier,
-            "textDirection": languageLocale.language.characterDirection,
+            "textDirection": languageLocale.language.characterDirection == .rightToLeft ? "rtl" : "ltr",
             "decimalSeparator": userSettingsLocale.decimalSeparator,
             "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
             "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
