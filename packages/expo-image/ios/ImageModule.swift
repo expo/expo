@@ -70,7 +70,9 @@ public final class ImageModule: Module {
       }
 
       Prop("enableLiveTextInteraction") { (view, enableLiveTextInteraction: Bool?) in
+        #if !os(tvOS)
         view.enableLiveTextInteraction = enableLiveTextInteraction ?? false
+        #endif
       }
 
       Prop("accessible") { (view, accessible: Bool?) in
@@ -83,6 +85,10 @@ public final class ImageModule: Module {
 
       Prop("recyclingKey") { (view, key: String?) in
         view.recyclingKey = key
+      }
+
+      Prop("allowDownscaling") { (view, allowDownscaling: Bool?) in
+        view.allowDownscaling = allowDownscaling ?? true
       }
 
       OnViewDidUpdateProps { view in
@@ -107,7 +113,7 @@ public final class ImageModule: Module {
   }
 
   static func registerCoders() {
-    if #available(iOS 14.0, *) {
+    if #available(iOS 14.0, tvOS 14.0, *) {
       // By default Animated WebP is not supported
       SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
     } else {

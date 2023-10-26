@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Install `URL` API support on the global for native. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
+
+- Ensure `experienceUrl` is defined in `expo-constants`. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
