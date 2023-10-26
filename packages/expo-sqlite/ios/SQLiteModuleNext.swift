@@ -54,7 +54,7 @@ public final class SQLiteModuleNext: Module {
         }
 
         // Try to find opened database for fast refresh
-        for database in cachedDatabases where database.dbName == dbName && database.openOptions == options {
+        for database in cachedDatabases where database.dbName == dbName && database.openOptions == options && !options.useNewConnection {
           return database
         }
 
@@ -237,7 +237,7 @@ public final class SQLiteModuleNext: Module {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
     return [
-      "lastID": Int(sqlite3_last_insert_rowid(database.pointer)),
+      "lastInsertRowid": Int(sqlite3_last_insert_rowid(database.pointer)),
       "changes": Int(sqlite3_changes(database.pointer))
     ]
   }
@@ -377,7 +377,7 @@ public final class SQLiteModuleNext: Module {
     let contextPair = Unmanaged.passRetained(((self, database) as AnyObject))
     contextPairs.append(contextPair)
     // swiftlint:disable:next multiline_arguments
-    sqlite3_update_hook(database.pointer, { obj, action, _, tableName, rowId in
+    sqlite3_update_hook(database.pointer, { obj, action, dbName, tableName, rowId in
       guard let obj,
         let tableName,
         let pair = Unmanaged<AnyObject>.fromOpaque(obj).takeUnretainedValue() as? (SQLiteModuleNext, NativeDatabase) else {
@@ -385,9 +385,11 @@ public final class SQLiteModuleNext: Module {
       }
       let selfInstance = pair.0
       let database = pair.1
-      if selfInstance.hasListeners {
+      let dbFilePath = sqlite3_db_filename(database.pointer, dbName)
+      if selfInstance.hasListeners, let dbName, let dbFilePath {
         selfInstance.sendEvent("onDatabaseChange", [
-          "dbName": database.dbName,
+          "dbName": String(cString: UnsafePointer(dbName)),
+          "dbFilePath": String(cString: UnsafePointer(dbFilePath)),
           "tableName": String(cString: UnsafePointer(tableName)),
           "rowId": rowId,
           "typeId": SQLAction.fromCode(value: action)
@@ -418,19 +420,19 @@ public final class SQLiteModuleNext: Module {
       return sqlite3_column_double(instance, index)
     case SQLITE_TEXT:
       guard let text = sqlite3_column_text(instance, index) else {
-        throw Exception(name: "InvalidConvertibleException", description: "Null text")
+        throw InvalidConvertibleException("Null text")
       }
       return String(cString: text)
     case SQLITE_BLOB:
       guard let blob = sqlite3_column_blob(instance, index) else {
-        throw Exception(name: "InvalidConvertibleException", description: "Null blob")
+        throw InvalidConvertibleException("Null blob")
       }
       let size = sqlite3_column_bytes(instance, index)
       return Data(bytes: blob, count: Int(size))
     case SQLITE_NULL:
       return NSNull()
     default:
-      throw Exception(name: "InvalidConvertibleException", description: "Unsupported column type: \(type)")
+      throw InvalidConvertibleException("Unsupported column type: \(type)")
     }
   }
 
@@ -454,7 +456,7 @@ public final class SQLiteModuleNext: Module {
     case let param as Bool:
       sqlite3_bind_int(instance, index, param ? 1 : 0)
     default:
-      throw Exception(name: "InvalidConvertibleException", description: "Unsupported parameter type: \(type(of: param))")
+      throw InvalidConvertibleException("Unsupported parameter type: \(type(of: param))")
     }
   }
 }
