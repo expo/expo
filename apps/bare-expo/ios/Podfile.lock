@@ -1294,27 +1294,27 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  EASClient: 99abb96a57441290a5743001c75ebbe55e574960
-  EXAV: e838cf337bb48f6194a35f7deb513d9132adea0b
+  EASClient: b98df462964e03ad48a44615e0141d8d25bfc4d4
+  EXAV: 6e2524617053a4590b0ef46a4fcb9a13d97bac8a
   EXBarCodeScanner: da49272be74d5be70d0f5eab3dea576977b8d0cf
   EXCalendar: 31d366a7851700af2eca360a3673503b774a3304
-  EXConstants: 88d69a63259b99e91dfc0764f12c99e44634e246
+  EXConstants: 230de23b26974884686d49205e6822a02b6dd6d0
   EXContacts: 24e46f5cf1ba9776a2f301c4f3aa821848035a10
-  EXFont: 69aaec8ea32351dadd6f9b6a4a5ff9d475d01f29
+  EXFont: e5fa244ad8c8d6fcf3a215e1fdcaedbc9b580aad
   EXImageLoader: 6ffefe300f6f1a5be46f3722944d7f48a44f36bf
   EXInAppPurchases: 16897367eb7e5e04f3b1d4ccba4169187f1b0e00
-  EXJSONUtils: 5b8a424be4c2a6ed089a4495b0807e55215acfac
+  EXJSONUtils: d15120ce0e8967b0822880162039dd75e5867086
   EXLocation: db102a331d49b1f55a82409f9d53a22684093c0c
-  EXManifests: 42aa8b7c77af9206e525f04fdbb61189f0607522
+  EXManifests: b658c34011f90e3379b515fb50680acb49ba099a
   EXMediaLibrary: 13e742c3235b09d8ac7300f982b91b0ed72dee54
   EXNotifications: 492c39d8a09c6ea77bc9979a0b2ac9bdd4fe52c1
-  Expo: 25c45736891a4dbe6a73a51e11d6250897c95475
+  Expo: ec3dff9f00792f6a2a4ec9b867c8575ad48f919e
   expo-dev-client: 52d4f47611a8d584cd51dcab48c01c9b7cb974aa
   expo-dev-launcher: 7a385c386d234a3f89da44f26d7a9b55a738b424
   expo-dev-menu: 34540486be3c20631add98a06c13880e5b1b7a6b
   expo-dev-menu-interface: 38090d6fda00360c1d9bf28ee6f553e7c073774b
   ExpoAppleAuthentication: 7676bc4d7b02362d1127b2b264d3a0ca649e4b8c
-  ExpoApplication: 3e834f9916c4cace41816fb61fbef9c4f97d5d37
+  ExpoApplication: d181a88964679df7241ff101e7be1802758c5b9a
   ExpoBackgroundFetch: a30484f343fdecb7ff4e1e38368f33a59c7c7266
   ExpoBattery: 807b36eacbe112503a9a0ca0f862ee7a653a4639
   ExpoBlur: fd3aefb4b4f3acaaa1ca2406cf9a98351ec5ffc4
@@ -1323,22 +1323,22 @@ SPEC CHECKSUMS:
   ExpoCellular: 23176ea4488b3a69a43101a31857b84e2df71305
   ExpoClipboard: f0beee97ddfe5d3376d9e2d6ff72300be6a07d70
   ExpoCrypto: 5cd349fbd604e28dbc92fce97a587b4f0197f93d
-  ExpoDevice: 3265357c04cb2501b729e13797b87cf3c48858d4
+  ExpoDevice: 09c362d66308f0d7547ffc964ea19cf8e12c9b1d
   ExpoDocumentPicker: b33b9c68f55d282fca35f25a9f64ecec7e5e9bd1
-  ExpoFileSystem: cc9d94f9d584c763f62c6148c47d81be085276b7
+  ExpoFileSystem: 5014f25f212972b797ce29dbbae8dceb1f4fae31
   ExpoGL: 469c5c99b28bdaaff38ed9e913e3d3036e3976aa
   ExpoHaptics: 71f2315d201911bd75b94924c5f6a9aaa5220751
-  ExpoImage: 53465e63c9c7f3933ae9f843fcbeec6e5013a5e8
+  ExpoImage: a02f1b0c514f3521c8b442a93687f927ef2c0d8d
   ExpoImageManipulator: 858ad2f65e560ce5d2da65f6a625aa236563b23b
   ExpoImagePicker: ba4a77770995ca6512a8a63ebe13af0e29c46bbf
   ExpoInsights: fd2e84b31580f5589e24473e701afd8dd5527b02
-  ExpoKeepAwake: 5451e3fba988719b699b42596269acc91a199059
+  ExpoKeepAwake: 11a6adc67b21af7a520ee62fe9a014eca6871884
   ExpoLinearGradient: 04e65c5a1bc2eb79953a8636537ef2cbfa743b5b
   ExpoLocalAuthentication: 0323879e8592b859b55c12012874c60a831699c2
-  ExpoLocalization: 2d1d87d473dc51470ce36f7804df14f2c03ecd7d
+  ExpoLocalization: ebcdab1a3b0d025e6c4c7d7dbf87ab70d23bd5a7
   ExpoMailComposer: 142575dd638c48b3fabf5127bc6652548fdaac5f
   ExpoMaps: a0ba41dd83dfb2141e0776b56553cf3fa2566626
-  ExpoModulesCore: 276bcf07fd8711f2e586603a89e02de28ed3a44c
+  ExpoModulesCore: 15c995b49b4bd36ae1f3fb4d6c15d3b1b2c17d35
   ExpoModulesTestCore: e95cb44dbbfc57128993b1d8a15dd56f720f2756
   ExpoNetwork: 6bfaef1f062be33276b573379fdc09ea78d7aa05
   ExpoPrint: 5c1599952793b22a0261dcf1da8d601bc8c00c73
@@ -1357,10 +1357,10 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 5a579eac1d481891adad831f01acec09b2dbf7d2
   ExpoWebBrowser: 71200e00b0a3c3a78a00e60ef6e3577ad521b8bf
   EXScreenCapture: 0031ceb57d192ed1309ada12b43e6259a2e3c46c
-  EXSplashScreen: 865d3d8695890d0f4c8cb9c9980972945d012d50
-  EXStructuredHeaders: 1e7ed74ebaa8a46f568c4aa695d2878b07bf992a
+  EXSplashScreen: 9c781de1c78454f5f3dd2c6a0a381ee50822b037
+  EXStructuredHeaders: b88446922ba65b0c42defc5b409e0789b672d396
   EXTaskManager: 8bbe029b46e7e419a0429837ced467791fc6c806
-  EXUpdatesInterface: df9e5e67b4c1f2c50d15803af2de7a8ab9817424
+  EXUpdatesInterface: defbda79f841a0dec9588f2cbf9fdfed52583667
   FBLazyVector: 71803c074f6325f10b5ec891c443b6bbabef0ca7
   FBReactNativeSpec: 556ded527fc4354929dd12d0936a64cd95bde744
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
