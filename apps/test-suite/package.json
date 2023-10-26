@@ -44,7 +44,6 @@
     "expo-speech": "~11.5.0",
     "expo-sqlite": "~11.7.0",
     "expo-task-manager": "~11.5.0",
-    "expo-tracking-transparency": "~3.2.0",
     "expo-web-browser": "~12.6.0",
     "firebase": "^9.3.0",
     "i18n-js": "^3.1.0",

@@ -7,7 +7,6 @@
 ### 🎉 New features
 
 - Added function `getAdvertisingId`. ([#24777](https://github.com/expo/expo/pull/24777) by [@reichhartd](https://github.com/reichhartd))
-- Migrated `getAndroidId` and `getIosIdForVendor` functions from `expo-application`. ([#24777](https://github.com/expo/expo/pull/24777) by [@reichhartd](https://github.com/reichhartd))
 
 ### 🐛 Bug fixes
 

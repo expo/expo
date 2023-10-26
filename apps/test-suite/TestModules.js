@@ -125,8 +125,7 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/ScreenOrientation')),
     optionalRequire(() => require('./tests/Notifications')),
     optionalRequire(() => require('./tests/NavigationBar')),
-    optionalRequire(() => require('./tests/SystemUI')),
-    optionalRequire(() => require('./tests/TrackingTransparency'))
+    optionalRequire(() => require('./tests/SystemUI'))
   );
 
   if (!isDeviceFarm()) {

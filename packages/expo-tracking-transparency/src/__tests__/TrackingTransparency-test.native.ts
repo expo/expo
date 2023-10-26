@@ -5,14 +5,6 @@ describe('TrackingTransparency', () => {
     expect(TrackingTransparency.getAdvertisingId).toBeDefined();
   });
 
-  it('getAndroidId is defined', async () => {
-    expect(TrackingTransparency.getAndroidId).toBeDefined();
-  });
-
-  it('getIosIdForVendor is defined', async () => {
-    expect(TrackingTransparency.getIosIdForVendor).toBeDefined();
-  });
-
   it('requestPermissionsAsync is defined', async () => {
     expect(TrackingTransparency.requestTrackingPermissionsAsync).toBeDefined();
   });

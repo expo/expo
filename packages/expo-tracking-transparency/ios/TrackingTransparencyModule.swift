@@ -14,10 +14,6 @@ public class TrackingTransparencyModule: Module {
       return ASIdentifierManager.shared().advertisingIdentifier.uuidString
     }
 
-    Function("getIosIdForVendor") { () -> String? in
-      return UIDevice.current.identifierForVendor?.uuidString
-    }
-
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,

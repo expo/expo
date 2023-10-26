@@ -35,55 +35,10 @@ import ExpoTrackingTransparency from './ExpoTrackingTransparency';
  */
 export function getAdvertisingId() {
     const advertisingId = ExpoTrackingTransparency.getAdvertisingId();
-    if (advertisingId === '00000000-0000-0000-0000-000000000000')
+    if (advertisingId === '00000000-0000-0000-0000-000000000000') {
         return null;
+    }
     return advertisingId;
-}
-// @needsAudit
-/**
- * Gets the value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID).
- * This is a hexadecimal `string` unique to each combination of app-signing key, user, and device.
- * The value may change if a factory reset is performed on the device or if an APK signing key changes.
- * For more information about how the platform handles `ANDROID_ID` in Android 8.0 (API level 26)
- * and higher, see [Android 8.0 Behavior Changes](https://developer.android.com/about/versions/oreo/android-8.0-changes.html#privacy-all).
- * On iOS and web, this function is unavailable.
- * > In versions of the platform lower than Android 8.0 (API level 26), this value remains constant
- * > for the lifetime of the user's device. See the [ANDROID_ID](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID)
- * > official docs for more information.
- * @example `"dd96dec43fb81c97"`
- * @platform android
- */
-export function getAndroidId() {
-    if (Platform.OS !== 'android') {
-        throw new UnavailabilityError('TrackingTransparency', 'androidId');
-    }
-    return ExpoTrackingTransparency.androidId;
-}
-// @needsAudit
-/**
- * Gets the iOS "identifier for vendor" ([IDFV](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor))
- * value, a string ID that uniquely identifies a device to the app’s vendor. This method may
- * sometimes return `nil`, in which case wait and call the method again later. This might happen
- * when the device has been restarted before the user has unlocked the device.
- *
- * The OS will change the vendor identifier if all apps from the current app's vendor have been
- * uninstalled.
- *
- * @return A `string` specifying the app's vendor ID. Apps from the same vendor will return the
- * same ID. See Apple's documentation for more information about the vendor ID's semantics.
- *
- * @example
- * ```ts
- * TrackingTransparency.getIosIdForVendor();
- * // "68753A44-4D6F-1226-9C60-0050E4C00067"
- * ```
- * @platform ios
- */
-export function getIosIdForVendor() {
-    if (!ExpoTrackingTransparency.getIosIdForVendor) {
-        throw new UnavailabilityError('TrackingTransparency', 'getIosIdForVendor');
-    }
-    return ExpoTrackingTransparency.getIosIdForVendor();
 }
 const androidAndWebPermissionsResponse = {
     granted: true,

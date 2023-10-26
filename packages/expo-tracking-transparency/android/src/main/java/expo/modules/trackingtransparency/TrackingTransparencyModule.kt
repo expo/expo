@@ -5,7 +5,6 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
 import android.content.Context
 import expo.modules.kotlin.exception.Exceptions
-import android.provider.Settings
 
 class TrackingTransparencyModule : Module() {
   private val context: Context
@@ -14,10 +13,6 @@ class TrackingTransparencyModule : Module() {
   override fun definition() = ModuleDefinition {
     // TODO: Rename the package to 'ExpoTracking'
     Name("ExpoTrackingTransparency")
-
-    Property("androidId") {
-      Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
-    }
 
     Function("getAdvertisingId") {
       return@Function getAdvertisingId()

@@ -13,10 +13,6 @@
 
 ### 🐛 Bug fixes
 
-### ⚠️ Notices
-
-- Migrated `getAndroidId` and `getIosIdForVendorAsync` functions to `expo-tracking-transparency`. ([#24777](https://github.com/expo/expo/pull/24777) by [@reichhartd](https://github.com/reichhartd))
-
 ### 💡 Others
 
 ## 5.5.0 — 2023-09-15
