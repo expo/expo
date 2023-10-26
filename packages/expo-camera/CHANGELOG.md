@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a regression from ([#22604](https://github.com/expo/expo/pull/22604) that prevented the barcode scanner from starting.
+
 ### 💡 Others
 
 - Use `pointerEvent` style instead of prop. ([#24931](https://github.com/expo/expo/pull/24931) by [@EvanBacon](https://github.com/EvanBacon))
