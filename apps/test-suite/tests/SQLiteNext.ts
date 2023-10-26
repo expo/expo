@@ -1,6 +1,7 @@
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
 import * as SQLite from 'expo-sqlite/next';
+import path from 'path';
 
 export const name = 'SQLiteNext';
 
@@ -602,8 +603,9 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
 `);
 
       const waitChangePromise = new Promise((resolve) => {
-        SQLite.addDatabaseChangeListener(({ dbName, tableName, rowId }) => {
-          expect(dbName).toEqual('test.db');
+        SQLite.addDatabaseChangeListener(({ dbName, dbFilePath, tableName, rowId }) => {
+          expect(dbName).toEqual('main');
+          expect(path.basename(dbFilePath)).toEqual('test.db');
           expect(tableName).toEqual('foo');
           expect(rowId).toBeDefined();
           resolve(null);
