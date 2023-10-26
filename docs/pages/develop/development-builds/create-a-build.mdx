@@ -14,7 +14,9 @@ import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 Development builds can be created with [EAS Build](/build/introduction/) or [locally](/guides/local-app-development/) on your computer if you have Android Studio and Xcode installed.
 
-In this guide, you'll find information on creating a development build with EAS and installing it on an emulator/simulator or a physical device to continue developing your app. If you are looking to create a development build locally you can [create local builds with `expo-dev-client` library](/guides/local-app-development/#local-builds-with-expo-dev-client) or [with EAS](/build-reference/local-builds/).
+In this guide, you'll find information on creating a development build with EAS and installing it on an emulator/simulator or a physical device to continue developing your app.
+
+> If you are looking to create a development build **locally**, rather than remotely on EAS, you can [create local builds with `npx expo run:[android|ios]`](/guides/local-app-development/#local-builds-with-expo-dev-client) or [with `eas build --local`](/build-reference/local-builds/).
 
 ## Prerequisites
 
@@ -50,11 +52,9 @@ You can check whether you are logged in by running `eas whoami`.
 
 <Step label="3">
 
-## Initialize EAS Build
+## Link your project with EAS
 
-We recommend EAS Build to manage your native projects. It allows a smooth experience, especially if you do not have experience with Xcode and Android studio builds or do not have them installed locally on your computer.
-
-EAS Build is created by running the `eas build` command. It automatically creates an [**eas.json**](/build/eas-json/) file at the root of your project directory with three build profiles &mdash; `development`, `preview`, and `production`. A minimal configuration is shown below:
+When you run the `eas build` command, it will link your project to a new or existing project on EAS and create an [**eas.json**](/build/eas-json/) file at the root of your project directory. The **eas.json** includes with three default build profiles &mdash; `development`, `preview`, and `production`. A minimal configuration is shown below:
 
 ```json eas.json
 {
