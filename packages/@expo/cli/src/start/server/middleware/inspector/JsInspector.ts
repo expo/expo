@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import os from 'os';
 
 import { launchInspectorBrowserAsync, type LaunchBrowserInstance } from './LaunchBrowser';
 export interface MetroInspectorProxyApp {
@@ -13,6 +14,21 @@ export interface MetroInspectorProxyApp {
 }
 
 let openingBrowserInstance: LaunchBrowserInstance | null = null;
+
+const IS_WSL = require('is-wsl') && !require('is-docker')();
+
+function createBrowser() {
+  if (os.platform() === 'darwin') {
+    return new LaunchBrowserImplMacOS();
+  }
+  if (os.platform() === 'win32' || IS_WSL) {
+    return new LaunchBrowserImplWindows();
+  }
+  if (os.platform() === 'linux') {
+    return new LaunchBrowserImplLinux();
+  }
+  throw new Error('[LaunchBrowser] Unsupported host platform');
+}
 
 export async function openJsInspector(app: MetroInspectorProxyApp) {
   // To update devtoolsFrontendRev, find the full commit hash in the url:
