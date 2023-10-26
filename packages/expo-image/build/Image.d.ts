@@ -25,6 +25,17 @@ export declare class Image extends React.PureComponent<ImageProps> {
      * Resolves to `false` on Web.
      */
     static clearDiskCache(): Promise<boolean>;
+    /**
+     * Asynchronously checks if an image exists in the disk cache and resolves to
+     * the path of the cached image if it does.
+     * @param cacheKey - The cache key for the requested image. Unless you have set
+     * a custom cache key, this will be the source URL of the image.
+     * @platform android
+     * @platform ios
+     * @return A promise resolving to the path of the cached image. It will resolve
+     * to `null` if the image does not exist in the cache.
+     */
+    static getCachePathAsync(cacheKey: string): Promise<string | null>;
     render(): JSX.Element;
 }
 //# sourceMappingURL=Image.d.ts.map
