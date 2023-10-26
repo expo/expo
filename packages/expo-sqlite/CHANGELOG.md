@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Added Android implementation for `sqlite/next` APIs. ([#25021](https://github.com/expo/expo/pull/25021) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
+
+- [ios] Fix some issues for `sqlite/next`. ([#25022](https://github.com/expo/expo/pull/25022) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
