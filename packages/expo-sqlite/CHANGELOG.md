@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fix some issues for `sqlite/next`. ([#25022](https://github.com/expo/expo/pull/25022) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 11.8.0 — 2023-10-17
