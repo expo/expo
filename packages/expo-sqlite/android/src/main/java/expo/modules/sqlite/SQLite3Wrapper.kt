@@ -3,7 +3,7 @@ package expo.modules.sqlite
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 
-private typealias UpdateListener = (tableName: String, operationType: Int, rowID: Long) -> Unit
+private typealias UpdateListenerLegacy = (tableName: String, operationType: Int, rowID: Long) -> Unit
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
@@ -11,7 +11,7 @@ class SQLite3Wrapper private constructor() {
   @DoNotStrip
   private val mHybridData: HybridData
 
-  private var mUpdateListener: UpdateListener? = null
+  private var mUpdateListener: UpdateListenerLegacy? = null
 
   init {
     mHybridData = initHybrid()
@@ -25,7 +25,7 @@ class SQLite3Wrapper private constructor() {
   /**
    * Enable data change notifications
    */
-  fun enableUpdateHook(listener: UpdateListener) {
+  fun enableUpdateHook(listener: UpdateListenerLegacy) {
     sqlite3_update_hook(true)
     mUpdateListener = listener
   }
@@ -55,7 +55,7 @@ class SQLite3Wrapper private constructor() {
   private external fun initHybrid(): HybridData
 
   @DoNotStrip
-  private fun onUpdate(action: Int, dbName: String, tableName: String, rowId: Long) {
+  private fun onUpdate(action: Int, @Suppress("UNUSED_PARAMETER") dbName: String, tableName: String, rowId: Long) {
     mUpdateListener?.invoke(tableName, action, rowId)
   }
 
