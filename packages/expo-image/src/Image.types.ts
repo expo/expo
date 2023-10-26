@@ -1,4 +1,5 @@
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle } from 'react-native';
+
 import ExpoImage from './ExpoImage';
 
 export type ImageSource = {
