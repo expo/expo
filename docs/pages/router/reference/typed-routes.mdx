@@ -7,14 +7,14 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { FileTree } from '~/ui/components/FileTree';
 
-> Available from Expo SDK 49 and Expo Router v2. Expo Router supports standard TypeScript out of the box. See the [TypeScript](/guides/typescript/) guide for more information on how to set it up.
+> Available from Expo SDK 49 and Expo Router v2 when using TypeScript. Expo Router supports standard TypeScript out of the box. See the [TypeScript](/guides/typescript/) guide for more information on how to set it up.
 
 Expo Router supports generating TypeScript types automatically with Expo CLI. This enables `<Link>`, and the [hooks API](/router/reference/hooks) to be statically typed. This feature is currently in beta and is not enabled by default.
 
 ## Get started
 
 ### Quick start
-If you created your project using the template from our [Expo Router quick start guide](/routing/installation/#quick-start), then your project is already configured to use typed routes. Run `npx expo start` and you can start using autocomplete in the Expo Router `<Link>` component's `href` prop in your **.tsx** files.
+If you created your project using the [Expo Router quick start guide](/routing/installation/#quick-start) then your project is already configured to use typed routes. The Expo CLI will generate the needed type file the first time you run `npx expo start`. Then you can use autocomplete for `href` props whenever you use an Expo Router `<Link>` component in a **.tsx** file.
 
 ### Manual configuration
 
@@ -104,7 +104,7 @@ export function Button() {
 }
 ```
 
-Now, you can leverage `<Button />` from both **app/(feed)/feed.js** and **app/(search)/search.js** to push `./profile` while preserving the current tab.
+Now, you can leverage `<Button />` from both **app/(feed)/feed.tsx** and **app/(search)/search.tsx** to push `./profile` while preserving the current tab.
 
 ## Imperative navigation
 
