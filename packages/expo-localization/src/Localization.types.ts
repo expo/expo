@@ -76,7 +76,7 @@ export type Locale = {
    * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) without the region code.
    * @example `'en'`, `'es'`, `'pl'`.
    */
-  languageCode: string;
+  languageCode: string | null;
   /**
    * The region code for your device that comes from the Region setting under Language & Region on iOS, Region settings on Android and is parsed from locale on Web (can be `null` on Web).
    */
