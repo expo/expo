@@ -5,6 +5,6 @@
     "modules": ["SQLiteModule", "SQLiteModuleNext"]
   },
   "android": {
-    "modules": ["expo.modules.sqlite.SQLiteModule"]
+    "modules": ["expo.modules.sqlite.SQLiteModule", "expo.modules.sqlite.SQLiteModuleNext"]
   }
 }
