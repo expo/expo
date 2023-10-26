@@ -897,7 +897,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       if let barCodeScanner = self.barCodeScanner {
         barCodeScanner.stopBarCodeScanning()
       }
-      
+
       self.session.stopRunning()
       self.session.beginConfiguration()
       self.motionManager.stopAccelerometerUpdates()
