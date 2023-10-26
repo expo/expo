@@ -50,7 +50,7 @@ public final class CameraViewNextModule: Module {
       )
 
       Prop("type") { (view, type: CameraType) in
-        if view.presetCamera.rawValue != type.rawValue {
+        if view.presetCamera != type.toPosition() {
           view.presetCamera = type.toPosition()
         }
       }
@@ -82,7 +82,15 @@ public final class CameraViewNextModule: Module {
       }
       
       Prop("mode") { (view, mode: CameraModeNext) in
-        view.mode = mode
+        if view.mode != mode {
+          view.mode = mode
+        }
+      }
+      
+      Prop("mute") { (view, muted: Bool) in
+        if view.isMuted != muted {
+          view.isMuted = muted
+        }
       }
 
       Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool) in

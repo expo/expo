@@ -84,6 +84,27 @@ class LoadedGalleryScreen extends React.Component<
     }
   };
 
+  deletePhotos = async () => {
+    const photos = this.state.selected;
+
+    if (photos.length > 0) {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+
+      if (status !== 'granted') {
+        throw new Error('User has denied the MediaLibrary permissions!');
+      }
+
+      const promises = photos.map((photoUri) => {
+        return FileSystem.deleteAsync(photoUri);
+      });
+
+      await Promise.all(promises);
+      this.setState({ selected: [] });
+    } else {
+      alert('No photos to delete!');
+    }
+  };
+
   renderPhoto = (fileName: string) => (
     <Photo
       key={fileName}
@@ -101,6 +122,11 @@ class LoadedGalleryScreen extends React.Component<
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={this.saveToGallery}>
             <Text style={styles.whiteText}>Save selected to gallery</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <TouchableOpacity style={styles.button} onPress={this.deletePhotos}>
+            <Text style={styles.redText}>Delete selected photos</Text>
           </TouchableOpacity>
         </View>
         <ScrollView>
@@ -134,5 +160,8 @@ const styles = StyleSheet.create({
   },
   whiteText: {
     color: 'white',
+  },
+  redText: {
+    color: 'red',
   },
 });

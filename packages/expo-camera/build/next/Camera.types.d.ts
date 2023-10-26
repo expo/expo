@@ -177,10 +177,6 @@ export type CameraRecordingOptions = {
      */
     quality?: number | string;
     /**
-     * If present, video will be recorded with no sound.
-     */
-    mute?: boolean;
-    /**
      * If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default,
      * but you can reverse that back by setting this to `true`. On Android, this is handled in the user's device settings.
      * @platform ios
@@ -314,6 +310,11 @@ export type CameraProps = ViewProps & {
      * @default CameraMode.picture
      */
     mode?: CameraMode;
+    /**
+     * If present, video will be recorded with no sound.
+     * @default false
+     */
+    mute?: boolean;
     /**
      * A boolean to enable or disable the torch
      * @default false

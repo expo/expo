@@ -30,6 +30,11 @@ const flashIcons: Record<string, string> = {
   auto: 'flash-outline',
 };
 
+const volumeIcons: Record<string, string> = {
+  on: 'ios-volume-high',
+  off: 'ios-volume-mute',
+};
+
 const photos: CameraCapturedPicture[] = [];
 
 interface State {
@@ -37,6 +42,7 @@ interface State {
   zoom: number;
   type: CameraType;
   barcodeScanning: boolean;
+  mute: boolean;
   torchEnabled: boolean;
   cornerPoints?: BarCodePoint[];
   barcodeData: string;
@@ -57,6 +63,7 @@ export default class CameraScreen extends React.Component<object, State> {
     barcodeScanning: false,
     torchEnabled: false,
     cornerPoints: undefined,
+    mute: false,
     barcodeData: '',
     newPhotos: false,
     permissionsGranted: false,
@@ -98,6 +105,8 @@ export default class CameraScreen extends React.Component<object, State> {
   toggleFlash = () => this.setState((state) => ({ flash: flashModeOrder[state.flash] }));
 
   toggleTorch = () => this.setState((state) => ({ torchEnabled: !state.torchEnabled }));
+
+  toggleMute = () => this.setState((state) => ({ mute: !state.mute }));
 
   zoomOut = () => this.setState((state) => ({ zoom: state.zoom - 0.1 < 0 ? 0 : state.zoom - 0.1 }));
 
@@ -186,6 +195,13 @@ export default class CameraScreen extends React.Component<object, State> {
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFlash}>
         <Ionicons name={flashIcons[this.state.flash] as any} size={28} color="white" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMute}>
+        <Ionicons
+          name={volumeIcons[this.state.mute ? 'off' : 'on'] as any}
+          size={28}
+          color="white"
+        />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleTorch}>
         <Ionicons
@@ -281,6 +297,7 @@ export default class CameraScreen extends React.Component<object, State> {
         type={this.state.type}
         flashMode={FlashMode[this.state.flash]}
         mode={this.state.mode}
+        mute={this.state.mute}
         zoom={this.state.zoom}
         onMountError={this.handleMountError}
         barCodeScannerSettings={{
