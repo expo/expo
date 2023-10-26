@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix audio recording resetting when receiving a phone call.
+
 ### 💡 Others
 
 - Use `pointerEvent` style instead of prop for video component on web. ([#24931](https://github.com/expo/expo/pull/24931) by [@EvanBacon](https://github.com/EvanBacon))
