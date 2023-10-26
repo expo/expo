@@ -2641,7 +2641,7 @@ SPEC CHECKSUMS:
   ExpoGL: b0a5371872d1857fb6f154a0df7e41a72ed70465
   ExpoHaptics: acdfbe0450cf8c8ce97b5801326d0dddbddf7048
   ExpoHead: 625d2c4518d00ccc47cd7cbeb89975570ad57ba0
-  ExpoImage: 64cd716d10414edf59342de32043857a58e9a2a3
+  ExpoImage: a0db596f9f82dfa377305196d2c80770b20e2177
   ExpoImageManipulator: 6c30083e367e83eb7719db833c225bfc2ae53fe4
   ExpoImagePicker: d01668d6308e1b7bd50b530ee72187f62dcd1c48
   ExpoKeepAwake: 1ced2ebbeb594a66462568a7b7d9ac06f88abe89

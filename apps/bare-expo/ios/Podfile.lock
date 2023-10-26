@@ -1328,7 +1328,7 @@ SPEC CHECKSUMS:
   ExpoFileSystem: 9920645fb15201acac21ee631799ac9bfcad8479
   ExpoGL: b0a5371872d1857fb6f154a0df7e41a72ed70465
   ExpoHaptics: acdfbe0450cf8c8ce97b5801326d0dddbddf7048
-  ExpoImage: 64cd716d10414edf59342de32043857a58e9a2a3
+  ExpoImage: a0db596f9f82dfa377305196d2c80770b20e2177
   ExpoImageManipulator: 6c30083e367e83eb7719db833c225bfc2ae53fe4
   ExpoImagePicker: d01668d6308e1b7bd50b530ee72187f62dcd1c48
   ExpoInsights: 41b8aca205663111aa89aec17a65139cfa4545d9
