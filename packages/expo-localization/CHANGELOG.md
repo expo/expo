@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Use newer, non-deprecated platform APIs in `getLocales()`. ([#24884](https://github.com/expo/expo/pull/24884) by [@aleqsio](https://github.com/aleqsio))
+
 ## 14.6.0 — 2023-10-17
 
 ### 🛠 Breaking changes
