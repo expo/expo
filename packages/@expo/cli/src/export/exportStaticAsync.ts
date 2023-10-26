@@ -16,13 +16,13 @@ import { getVirtualFaviconAssetsAsync } from './favicon';
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
+import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import {
   getApiRoutesForDirectory,
   getRouterDirectoryWithManifest,
 } from '../start/server/metro/router';
 import { learnMore } from '../utils/link';
-import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
