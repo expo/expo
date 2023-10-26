@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <stdexcept>
+
 #include "./LoggerInterface.h"
 
 namespace reanimated {
@@ -10,7 +12,7 @@ class Logger {
   template <typename T>
   static void log(T value) {
     if (instance == nullptr) {
-      throw std::runtime_error("no logger specified");
+      throw std::runtime_error("[Reanimated] No logger specified.");
     }
     instance->log(value);
   }

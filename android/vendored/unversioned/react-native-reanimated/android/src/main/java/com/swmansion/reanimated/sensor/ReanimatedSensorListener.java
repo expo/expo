@@ -51,27 +51,43 @@ public class ReanimatedSensorListener implements SensorEventListener {
         break;
     }
 
-    if (sensorType == Sensor.TYPE_ROTATION_VECTOR) {
-      SensorManager.getQuaternionFromVector(quaternion, event.values);
-      SensorManager.getRotationMatrixFromVector(rotation, event.values);
-      SensorManager.getOrientation(rotation, orientation);
-      float[] data =
-          new float[] {
-            quaternion[1], // qx
-            quaternion[2], // qy
-            quaternion[3], // qz
-            quaternion[0], // qw
-            // make Android consistent with iOS, which is better documented here:
-            // https://developer.apple.com/documentation/coremotion/getting_processed_device-motion_data/understanding_reference_frames_and_device_attitude
-            -orientation[0], // yaw
-            -orientation[1], // pitch
-            orientation[2] // roll
-          };
-      setter.sensorSetter(data, orientationDegrees);
-    } else {
-      // Set the opposite values to be consistent with iOS
-      float[] data = new float[] {-event.values[0], -event.values[1], -event.values[2]};
-      setter.sensorSetter(data, orientationDegrees);
+    switch (sensorType) {
+      case Sensor.TYPE_ROTATION_VECTOR:
+        {
+          SensorManager.getQuaternionFromVector(quaternion, event.values);
+          SensorManager.getRotationMatrixFromVector(rotation, event.values);
+          SensorManager.getOrientation(rotation, orientation);
+          float[] data =
+              new float[] {
+                quaternion[1], // qx
+                quaternion[3], // qy -> we set qz to match iOS
+                -quaternion[2], // qz -> we set -qy to match iOS
+                quaternion[0], // qw
+                // make Android consistent with iOS, which is better documented here:
+                // https://developer.apple.com/documentation/coremotion/getting_processed_device-motion_data/
+                -orientation[0], // yaw
+                -orientation[1], // pitch
+                orientation[2] // roll
+              };
+          setter.sensorSetter(data, orientationDegrees);
+          break;
+        }
+      case Sensor.TYPE_GYROSCOPE:
+      case Sensor.TYPE_MAGNETIC_FIELD:
+        {
+          float[] data = new float[] {event.values[0], event.values[1], event.values[2]};
+          setter.sensorSetter(data, orientationDegrees);
+          break;
+        }
+      case Sensor.TYPE_GRAVITY:
+      case Sensor.TYPE_LINEAR_ACCELERATION:
+        {
+          float[] data = new float[] {-event.values[0], -event.values[1], -event.values[2]};
+          setter.sensorSetter(data, orientationDegrees);
+          break;
+        }
+      default:
+        throw new IllegalArgumentException("[Reanimated] Unknown sensor type.");
     }
   }
 

@@ -1,3 +1,11 @@
+/**
+ * Copyright © 2023-present 650 Industries, Inc. (aka Expo)
+ * Copyright © Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 // This file should not import `react-native` in order to remain self-contained.
 
 import { URL, URLSearchParams } from 'whatwg-url-without-unicode';
@@ -57,7 +65,9 @@ URL.createObjectURL = function createObjectURL(blob) {
   if (getBlobUrlPrefix() == null) {
     throw new Error('Cannot create URL for blob');
   }
-  return `${getBlobUrlPrefix()}${blob.data.blobId}?offset=${blob.data.offset}&size=${blob.size}`;
+  return `${getBlobUrlPrefix()}${encodeURIComponent(blob.data.blobId)}?offset=${encodeURIComponent(
+    blob.data.offset
+  )}&size=${encodeURIComponent(blob.size)}`;
 };
 
 URL.revokeObjectURL = function revokeObjectURL(url) {
