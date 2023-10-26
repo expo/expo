@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed the object identifier for shared object types.
+
 ### 💡 Others
 
 ## 1.9.0 — 2023-10-17
