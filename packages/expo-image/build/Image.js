@@ -35,6 +35,19 @@ export class Image extends React.PureComponent {
     static async clearDiskCache() {
         return await ExpoImageModule.clearDiskCache();
     }
+    /**
+     * Asynchronously checks if an image exists in the disk cache and resolves to
+     * the path of the cached image if it does.
+     * @param cacheKey - The cache key for the requested image. Unless you have set
+     * a custom cache key, this will be the source URL of the image.
+     * @platform android
+     * @platform ios
+     * @return A promise resolving to the path of the cached image. It will resolve
+     * to `null` if the image does not exist in the cache.
+     */
+    static async getCachePathAsync(cacheKey) {
+        return await ExpoImageModule.getCachePathAsync(cacheKey);
+    }
     render() {
         const { style, source, placeholder, contentFit, contentPosition, transition, fadeDuration, resizeMode: resizeModeProp, defaultSource, loadingIndicatorSource, ...restProps } = this.props;
         const { resizeMode: resizeModeStyle, ...restStyle } = StyleSheet.flatten(style) || {};
