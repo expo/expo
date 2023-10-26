@@ -12,8 +12,6 @@ import LaunchBrowserImplWindows from './LaunchBrowserImplWindows';
 
 export type { LaunchBrowserInstance };
 
-const IS_WSL = require('is-wsl') && !require('is-docker')();
-
 /**
  * A factory to create a LaunchBrowser instance based on the host platform
  */
