@@ -22,7 +22,7 @@ export default class MaskedViewScreen extends React.Component<{}, State> {
   _animatedTextValue: Animated.Value = new Animated.Value(0);
   _animatedScaleValue: Animated.Value = new Animated.Value(0);
 
-  _interval: any;
+  _interval?: ReturnType<typeof setInterval>;
 
   componentDidMount() {
     Animated.loop(

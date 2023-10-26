@@ -6,93 +6,60 @@
 #include <utility>
 #include <vector>
 
-#include "ReanimatedRuntime.h"
-#include "RuntimeManager.h"
-#include "Scheduler.h"
+#include "WorkletRuntimeRegistry.h"
 
 using namespace facebook;
 
 namespace reanimated {
 
-class JSRuntimeHelper;
+jsi::Function getValueUnpacker(jsi::Runtime &rt);
 
-// Core functions are not allowed to capture outside variables, otherwise they'd
-// try to access _closure variable which is something we want to avoid for
-// simplicity reasons.
-class CoreFunction {
- private:
-  std::unique_ptr<jsi::Function> rnFunction_;
-  std::unique_ptr<jsi::Function> uiFunction_;
-  std::string functionBody_;
-  std::string location_;
-  JSRuntimeHelper
-      *runtimeHelper_; // runtime helper holds core function references, so we
-                       // use normal pointer here to avoid ref cycles.
-  std::unique_ptr<jsi::Function> &getFunction(jsi::Runtime &rt);
-
- public:
-  CoreFunction(JSRuntimeHelper *runtimeHelper, const jsi::Value &workletObject);
-  template <typename... Args>
-  jsi::Value call(jsi::Runtime &rt, Args &&...args) {
-    return getFunction(rt)->call(rt, args...);
-  }
-};
-
-class JSRuntimeHelper {
- private:
-  jsi::Runtime *rnRuntime_; // React-Native's main JS runtime
-  jsi::Runtime *uiRuntime_; // UI runtime created by Reanimated
-  std::shared_ptr<Scheduler> scheduler_;
-
- public:
-  JSRuntimeHelper(
-      jsi::Runtime *rnRuntime,
-      jsi::Runtime *uiRuntime,
-      const std::shared_ptr<Scheduler> &scheduler)
-      : rnRuntime_(rnRuntime), uiRuntime_(uiRuntime), scheduler_(scheduler) {}
-
-  volatile bool uiRuntimeDestroyed = false;
-  std::unique_ptr<CoreFunction> callGuard;
-  std::unique_ptr<CoreFunction> valueUnpacker;
-
-  inline jsi::Runtime *uiRuntime() const {
-    return uiRuntime_;
-  }
-
-  inline jsi::Runtime *rnRuntime() const {
-    return rnRuntime_;
-  }
-
-  inline bool isUIRuntime(const jsi::Runtime &rt) const {
-    return &rt == uiRuntime_;
-  }
-
-  inline bool isRNRuntime(const jsi::Runtime &rt) const {
-    return &rt == rnRuntime_;
-  }
-
-  void scheduleOnUI(std::function<void()> job) {
-    scheduler_->scheduleOnUI(job);
-  }
-
-  void scheduleOnJS(std::function<void()> job) {
-    scheduler_->scheduleOnJS(job);
-  }
-
-  template <typename... Args>
-  inline void runOnUIGuarded(const jsi::Value &function, Args &&...args) {
-    // We only use callGuard in debug mode, otherwise we call the provided
-    // function directly. CallGuard provides a way of capturing exceptions in
-    // JavaScript and propagating them to the main React Native thread such that
-    // they can be presented using RN's LogBox.
-    jsi::Runtime &rt = *uiRuntime_;
 #ifdef DEBUG
-    callGuard->call(rt, function, args...);
+jsi::Function getCallGuard(jsi::Runtime &rt);
+#endif // DEBUG
+
+// If possible, please use `WorkletRuntime::runGuarded` instead.
+template <typename... Args>
+inline void runOnRuntimeGuarded(
+    jsi::Runtime &rt,
+    const jsi::Value &function,
+    Args &&...args) {
+  // We only use callGuard in debug mode, otherwise we call the provided
+  // function directly. CallGuard provides a way of capturing exceptions in
+  // JavaScript and propagating them to the main React Native thread such that
+  // they can be presented using RN's LogBox.
+#ifdef DEBUG
+  getCallGuard(rt).call(rt, function, args...);
 #else
-    function.asObject(rt).asFunction(rt).call(rt, args...);
+  function.asObject(rt).asFunction(rt).call(rt, args...);
 #endif
+}
+
+inline void cleanupIfRuntimeExists(
+    jsi::Runtime *rt,
+    std::unique_ptr<jsi::Value> &value) {
+  if (rt != nullptr && !WorkletRuntimeRegistry::isRuntimeAlive(rt)) {
+    // The below use of unique_ptr.release prevents the smart pointer from
+    // calling the destructor of the kept object. This effectively results in
+    // leaking some memory. We do this on purpose, as sometimes we would keep
+    // references to JSI objects past the lifetime of its runtime (e.g.,
+    // shared values references from the RN VM holds reference to JSI objects
+    // on the UI runtime). When the UI runtime is terminated, the orphaned JSI
+    // objects would crash the app when their destructors are called, because
+    // they call into a memory that's managed by the terminated runtime. We
+    // accept the tradeoff of leaking memory here, as it has a limited impact.
+    // This scenario can only occur when the React instance is torn down which
+    // happens in development mode during app reloads, or in production when
+    // the app is being shut down gracefully by the system. An alternative
+    // solution would require us to keep track of all JSI values that are in
+    // use which would require additional data structure and compute spent on
+    // bookkeeping that only for the sake of destroying the values in time
+    // before the runtime is terminated. Note that the underlying memory that
+    // jsi::Value refers to is managed by the VM and gets freed along with the
+    // runtime.
+    value.release();
   }
-};
+}
 
 class Shareable {
  protected:
@@ -120,6 +87,7 @@ class Shareable {
   };
 
   explicit Shareable(ValueType valueType) : valueType_(valueType) {}
+
   virtual jsi::Value getJSValue(jsi::Runtime &rt) {
     return toJSValue(rt);
   }
@@ -137,53 +105,19 @@ class Shareable {
 template <typename BaseClass>
 class RetainingShareable : virtual public BaseClass {
  private:
-  std::shared_ptr<JSRuntimeHelper> runtimeHelper_;
-  std::unique_ptr<jsi::Value> remoteValue_;
+  jsi::Runtime *primaryRuntime_;
+  jsi::Runtime *secondaryRuntime_;
+  std::unique_ptr<jsi::Value> secondaryValue_;
 
  public:
   template <typename... Args>
-  RetainingShareable(
-      const std::shared_ptr<JSRuntimeHelper> &runtimeHelper,
-      Args &&...args)
-      : BaseClass(std::forward<Args>(args)...), runtimeHelper_(runtimeHelper) {}
-  jsi::Value getJSValue(jsi::Runtime &rt) {
-    if (runtimeHelper_->isRNRuntime(rt)) {
-      // TODO: it is suboptimal to generate new object every time getJS is
-      // called on host runtime – the objects we are generating already exists
-      // and we should possibly just grab a hold of such object and use it here
-      // instead of creating a new JS representation. As far as I understand the
-      // only case where it can be realistically called this way is when a
-      // shared value is created and then accessed on the same runtime
-      return BaseClass::toJSValue(rt);
-    } else if (remoteValue_ == nullptr) {
-      auto value = BaseClass::toJSValue(rt);
-      remoteValue_ = std::make_unique<jsi::Value>(rt, value);
-      return value;
-    }
-    return jsi::Value(rt, *remoteValue_);
-  }
+  explicit RetainingShareable(jsi::Runtime &rt, Args &&...args)
+      : BaseClass(rt, std::forward<Args>(args)...), primaryRuntime_(&rt) {}
+
+  jsi::Value getJSValue(jsi::Runtime &rt);
+
   ~RetainingShareable() {
-    if (runtimeHelper_->uiRuntimeDestroyed) {
-      // The below use of unique_ptr.release prevents the smart pointer from
-      // calling the destructor of the kept object. This effectively results in
-      // leaking some memory. We do this on purpose, as sometimes we would keep
-      // references to JSI objects past the lifetime of its runtime (e.g.,
-      // shared values references from the RN VM holds reference to JSI objects
-      // on the UI runtime). When the UI runtime is terminated, the orphaned JSI
-      // objects would crash the app when their destructors are called, because
-      // they call into a memory that's managed by the terminated runtime. We
-      // accept the tradeoff of leaking memory here, as it has a limited impact.
-      // This scenario can only occur when the React instance is torn down which
-      // happens in development mode during app reloads, or in production when
-      // the app is being shut down gracefully by the system. An alternative
-      // solution would require us to keep track of all JSI values that are in
-      // use which would require additional data structure and compute spent on
-      // bookkeeping that only for the sake of destroying the values in time
-      // before the runtime is terminated. Note that the underlying memory that
-      // jsi::Value refers to is managed by the VM and gets freed along with the
-      // runtime.
-      remoteValue_.release();
-    }
+    cleanupIfRuntimeExists(secondaryRuntime_, secondaryValue_);
   }
 };
 
@@ -193,6 +127,9 @@ class ShareableJSRef : public jsi::HostObject {
 
  public:
   explicit ShareableJSRef(std::shared_ptr<Shareable> value) : value_(value) {}
+
+  virtual ~ShareableJSRef();
+
   std::shared_ptr<Shareable> value() const {
     return value_;
   }
@@ -205,23 +142,27 @@ class ShareableJSRef : public jsi::HostObject {
   }
 };
 
+jsi::Value makeShareableClone(
+    jsi::Runtime &rt,
+    const jsi::Value &value,
+    const jsi::Value &shouldRetainRemote);
+
 std::shared_ptr<Shareable> extractShareableOrThrow(
     jsi::Runtime &rt,
     const jsi::Value &maybeShareableValue,
-    const char *errorMessage = nullptr);
+    const std::string &errorMessage =
+        "[Reanimated] Expecting the object to be of type ShareableJSRef.");
 
 template <typename T>
 std::shared_ptr<T> extractShareableOrThrow(
     jsi::Runtime &rt,
     const jsi::Value &shareableRef,
-    const char *errorMessage = nullptr) {
+    const std::string &errorMessage =
+        "[Reanimated] Provided shareable object is of an incompatible type.") {
   auto res = std::dynamic_pointer_cast<T>(
       extractShareableOrThrow(rt, shareableRef, errorMessage));
   if (!res) {
-    throw new std::runtime_error(
-        errorMessage != nullptr
-            ? errorMessage
-            : "provided shareable object is of an incompatible type");
+    throw std::runtime_error(errorMessage);
   }
   return res;
 }
@@ -230,14 +171,7 @@ class ShareableArray : public Shareable {
  public:
   ShareableArray(jsi::Runtime &rt, const jsi::Array &array);
 
-  jsi::Value toJSValue(jsi::Runtime &rt) override {
-    auto size = data_.size();
-    auto ary = jsi::Array(rt, size);
-    for (size_t i = 0; i < size; i++) {
-      ary.setValueAtIndex(rt, i, data_[i]->getJSValue(rt));
-    }
-    return ary;
-  }
+  jsi::Value toJSValue(jsi::Runtime &rt) override;
 
  protected:
   std::vector<std::shared_ptr<Shareable>> data_;
@@ -246,14 +180,8 @@ class ShareableArray : public Shareable {
 class ShareableObject : public Shareable {
  public:
   ShareableObject(jsi::Runtime &rt, const jsi::Object &object);
-  jsi::Value toJSValue(jsi::Runtime &rt) override {
-    auto obj = jsi::Object(rt);
-    for (size_t i = 0, size = data_.size(); i < size; i++) {
-      obj.setProperty(
-          rt, data_[i].first.c_str(), data_[i].second->getJSValue(rt));
-    }
-    return obj;
-  }
+
+  jsi::Value toJSValue(jsi::Runtime &rt) override;
 
  protected:
   std::vector<std::pair<std::string, std::shared_ptr<Shareable>>> data_;
@@ -262,13 +190,11 @@ class ShareableObject : public Shareable {
 class ShareableHostObject : public Shareable {
  public:
   ShareableHostObject(
-      const std::shared_ptr<JSRuntimeHelper> &runtimeHelper,
-      jsi::Runtime &rt,
+      jsi::Runtime &,
       const std::shared_ptr<jsi::HostObject> &hostObject)
       : Shareable(HostObjectType), hostObject_(hostObject) {}
-  jsi::Value toJSValue(jsi::Runtime &rt) override {
-    return jsi::Object::createFromHostObject(rt, hostObject_);
-  }
+
+  jsi::Value toJSValue(jsi::Runtime &rt) override;
 
  protected:
   std::shared_ptr<jsi::HostObject> hostObject_;
@@ -284,10 +210,7 @@ class ShareableHostFunction : public Shareable {
         name_(function.getProperty(rt, "name").asString(rt).utf8(rt)),
         paramCount_(function.getProperty(rt, "length").asNumber()) {}
 
-  jsi::Value toJSValue(jsi::Runtime &rt) override {
-    return jsi::Function::createFromHostFunction(
-        rt, jsi::PropNameID::forUtf8(rt, name_), paramCount_, hostFunction_);
-  }
+  jsi::Value toJSValue(jsi::Runtime &rt) override;
 
  protected:
   jsi::HostFunctionType hostFunction_;
@@ -296,162 +219,91 @@ class ShareableHostFunction : public Shareable {
 };
 
 class ShareableWorklet : public ShareableObject {
- private:
-  std::shared_ptr<JSRuntimeHelper> runtimeHelper_;
-
  public:
-  ShareableWorklet(
-      const std::shared_ptr<JSRuntimeHelper> &runtimeHelper,
-      jsi::Runtime &rt,
-      const jsi::Object &worklet)
-      : ShareableObject(rt, worklet), runtimeHelper_(runtimeHelper) {
+  ShareableWorklet(jsi::Runtime &rt, const jsi::Object &worklet)
+      : ShareableObject(rt, worklet) {
     valueType_ = WorkletType;
   }
-  jsi::Value toJSValue(jsi::Runtime &rt) override {
-    jsi::Value obj = ShareableObject::toJSValue(rt);
-    return runtimeHelper_->valueUnpacker->call(rt, obj);
-  }
+
+  jsi::Value toJSValue(jsi::Runtime &rt) override;
 };
 
 class ShareableRemoteFunction
     : public Shareable,
       public std::enable_shared_from_this<ShareableRemoteFunction> {
  private:
-  jsi::Function function_;
-  std::shared_ptr<JSRuntimeHelper> runtimeHelper_;
+  jsi::Runtime *runtime_;
+  std::unique_ptr<jsi::Value> function_;
 
  public:
-  ShareableRemoteFunction(
-      const std::shared_ptr<JSRuntimeHelper> &runtimeHelper,
-      jsi::Runtime &rt,
-      jsi::Function &&function)
+  ShareableRemoteFunction(jsi::Runtime &rt, jsi::Function &&function)
       : Shareable(RemoteFunctionType),
-        function_(std::move(function)),
-        runtimeHelper_(runtimeHelper) {}
-  jsi::Value toJSValue(jsi::Runtime &rt) override {
-    if (runtimeHelper_->isUIRuntime(rt)) {
-#ifdef DEBUG
-      return runtimeHelper_->valueUnpacker->call(
-          rt,
-          ShareableJSRef::newHostObject(rt, shared_from_this()),
-          jsi::String::createFromAscii(rt, "RemoteFunction"));
-#else
-      return ShareableJSRef::newHostObject(rt, shared_from_this());
-#endif
-    } else {
-      return jsi::Value(rt, function_);
-    }
+        runtime_(&rt),
+        function_(std::make_unique<jsi::Value>(rt, std::move(function))) {}
+
+  ~ShareableRemoteFunction() {
+    cleanupIfRuntimeExists(runtime_, function_);
   }
+
+  jsi::Value toJSValue(jsi::Runtime &rt) override;
 };
 
 class ShareableHandle : public Shareable {
  private:
-  std::shared_ptr<JSRuntimeHelper> runtimeHelper_;
   std::unique_ptr<ShareableObject> initializer_;
   std::unique_ptr<jsi::Value> remoteValue_;
+  jsi::Runtime *remoteRuntime_;
 
  public:
-  ShareableHandle(
-      const std::shared_ptr<JSRuntimeHelper> runtimeHelper,
-      jsi::Runtime &rt,
-      const jsi::Object &initializerObject)
-      : Shareable(HandleType), runtimeHelper_(runtimeHelper) {
-    initializer_ = std::make_unique<ShareableObject>(rt, initializerObject);
+  ShareableHandle(jsi::Runtime &rt, const jsi::Object &initializerObject)
+      : Shareable(HandleType),
+        initializer_(std::make_unique<ShareableObject>(rt, initializerObject)) {
   }
+
   ~ShareableHandle() {
-    if (runtimeHelper_->uiRuntimeDestroyed) {
-      // The below use of unique_ptr.release prevents the smart pointer from
-      // calling the destructor of the kept object. This effectively results in
-      // leaking some memory. We do this on purpose, as sometimes we would keep
-      // references to JSI objects past the lifetime of its runtime (e.g.,
-      // shared values references from the RN VM holds reference to JSI objects
-      // on the UI runtime). When the UI runtime is terminated, the orphaned JSI
-      // objects would crash the app when their destructors are called, because
-      // they call into a memory that's managed by the terminated runtime. We
-      // accept the tradeoff of leaking memory here, as it has a limited impact.
-      // This scenario can only occur when the React instance is torn down which
-      // happens in development mode during app reloads, or in production when
-      // the app is being shut down gracefully by the system. An alternative
-      // solution would require us to keep track of all JSI values that are in
-      // use which would require additional data structure and compute spent on
-      // bookkeeping that only for the sake of destroying the values in time
-      // before the runtime is terminated. Note that the underlying memory that
-      // jsi::Value refers to is managed by the VM and gets freed along with the
-      // runtime.
-      remoteValue_.release();
-    }
+    cleanupIfRuntimeExists(remoteRuntime_, remoteValue_);
   }
-  jsi::Value toJSValue(jsi::Runtime &rt) override {
-    if (initializer_ != nullptr) {
-      auto initObj = initializer_->getJSValue(rt);
-      remoteValue_ = std::make_unique<jsi::Value>(
-          runtimeHelper_->valueUnpacker->call(rt, initObj));
-      initializer_ = nullptr; // we can release ref to initializer as this
-                              // method should be called at most once
-    }
-    return jsi::Value(rt, *remoteValue_);
-  }
+
+  jsi::Value toJSValue(jsi::Runtime &rt) override;
 };
 
 class ShareableSynchronizedDataHolder
     : public Shareable,
       public std::enable_shared_from_this<ShareableSynchronizedDataHolder> {
  private:
-  std::shared_ptr<JSRuntimeHelper> runtimeHelper_;
   std::shared_ptr<Shareable> data_;
-  std::shared_ptr<jsi::Value> uiValue_;
-  std::shared_ptr<jsi::Value> rnValue_;
   std::mutex dataAccessMutex_; // Protects `data_`.
+  jsi::Runtime *primaryRuntime_;
+  jsi::Runtime *secondaryRuntime_;
+  std::unique_ptr<jsi::Value> primaryValue_;
+  std::unique_ptr<jsi::Value> secondaryValue_;
 
  public:
   ShareableSynchronizedDataHolder(
-      std::shared_ptr<JSRuntimeHelper> runtimeHelper,
       jsi::Runtime &rt,
       const jsi::Value &initialValue)
       : Shareable(SynchronizedDataHolder),
-        runtimeHelper_(runtimeHelper),
-        data_(extractShareableOrThrow(rt, initialValue)) {}
+        data_(extractShareableOrThrow(rt, initialValue)),
+        primaryRuntime_(&rt) {}
 
-  jsi::Value get(jsi::Runtime &rt) {
-    std::unique_lock<std::mutex> read_lock(dataAccessMutex_);
-    if (runtimeHelper_->isUIRuntime(rt)) {
-      if (uiValue_ == nullptr) {
-        auto value = data_->getJSValue(rt);
-        uiValue_ = std::make_shared<jsi::Value>(rt, value);
-        return value;
-      } else {
-        return jsi::Value(rt, *uiValue_);
-      }
-    } else {
-      if (rnValue_ == nullptr) {
-        auto value = data_->getJSValue(rt);
-        rnValue_ = std::make_shared<jsi::Value>(rt, value);
-        return value;
-      } else {
-        return jsi::Value(rt, *rnValue_);
-      }
-    }
+  ~ShareableSynchronizedDataHolder() {
+    cleanupIfRuntimeExists(primaryRuntime_, primaryValue_);
+    cleanupIfRuntimeExists(secondaryRuntime_, secondaryValue_);
   }
 
-  void set(jsi::Runtime &rt, const jsi::Value &data) {
-    std::unique_lock<std::mutex> write_lock(dataAccessMutex_);
-    data_ = extractShareableOrThrow(rt, data);
-    uiValue_.reset();
-    rnValue_.reset();
-  }
+  jsi::Value get(jsi::Runtime &rt);
 
-  jsi::Value toJSValue(jsi::Runtime &rt) override {
-    return ShareableJSRef::newHostObject(rt, shared_from_this());
-  };
+  void set(jsi::Runtime &rt, const jsi::Value &data);
+
+  jsi::Value toJSValue(jsi::Runtime &rt) override;
 };
 
 class ShareableString : public Shareable {
  public:
   explicit ShareableString(const std::string &string)
       : Shareable(StringType), data_(string) {}
-  jsi::Value toJSValue(jsi::Runtime &rt) override {
-    return jsi::String::createFromUtf8(rt, data_);
-  }
+
+  jsi::Value toJSValue(jsi::Runtime &rt) override;
 
  protected:
   std::string data_;
@@ -468,21 +320,7 @@ class ShareableScalar : public Shareable {
   ShareableScalar() : Shareable(UndefinedType) {}
   explicit ShareableScalar(std::nullptr_t) : Shareable(NullType) {}
 
-  jsi::Value toJSValue(jsi::Runtime &rt) override {
-    switch (valueType_) {
-      case Shareable::UndefinedType:
-        return jsi::Value();
-      case Shareable::NullType:
-        return jsi::Value(nullptr);
-      case Shareable::BooleanType:
-        return jsi::Value(data_.boolean);
-      case Shareable::NumberType:
-        return jsi::Value(data_.number);
-      default:
-        throw std::runtime_error(
-            "attempted to convert object that's not of a scalar type");
-    }
-  }
+  jsi::Value toJSValue(jsi::Runtime &);
 
  protected:
   union Data {
