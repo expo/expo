@@ -1,6 +1,7 @@
 package expo.modules.camera.next
 
 import android.Manifest
+import android.util.Log
 import expo.modules.camera.VIDEO_1080P
 import expo.modules.camera.VIDEO_2160P
 import expo.modules.camera.VIDEO_480P
@@ -10,15 +11,19 @@ import expo.modules.camera.next.records.BarCodeSettings
 import expo.modules.camera.next.records.CameraMode
 import expo.modules.camera.next.records.CameraType
 import expo.modules.camera.next.records.FlashMode
-import expo.modules.camera.next.tasks.ResolveTakenPictureAsyncTask
+import expo.modules.camera.next.tasks.ResolveTakePicture
+import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.EmulatorUtilities
-import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import java.io.File
 
 val cameraEvents = arrayOf(
@@ -31,6 +36,7 @@ val cameraEvents = arrayOf(
 )
 
 class CameraViewNextModule : Module() {
+  private val moduleScope = CoroutineScope(Dispatchers.Main)
   override fun definition() = ModuleDefinition {
     Name("ExpoCameraNext")
 
@@ -60,18 +66,20 @@ class CameraViewNextModule : Module() {
         view.takePicture(options, promise, cacheDirectory)
       } else {
         val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
-        ResolveTakenPictureAsyncTask(image, promise, options, cacheDirectory) { response ->
-          view.onPictureSaved(response)
-        }.execute()
+        moduleScope.launch {
+          ResolveTakePicture(image, promise, options, cacheDirectory) { response ->
+            view.onPictureSaved(response)
+          }.resolve()
+        }
       }
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("record") { options: RecordingOptions, viewTag: Int, promise: Promise ->
-      if (!options.mute && !permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
+      val view = findView(viewTag)
+
+      if (!view.mute && !permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
         throw Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO)
       }
-
-      val view = findView(viewTag)
 
       view.record(options, promise, cacheDirectory)
     }.runOnQueue(Queues.MAIN)
@@ -129,6 +137,14 @@ class CameraViewNextModule : Module() {
       )
     }
 
+    OnDestroy {
+      try {
+        moduleScope.cancel(ModuleDestroyedException())
+      } catch (e: IllegalStateException) {
+        Log.e(TAG, "The scope does not have a job in it")
+      }
+    }
+
     View(ExpoCameraView::class) {
       Events(cameraEvents)
 
@@ -149,7 +165,11 @@ class CameraViewNextModule : Module() {
       }
 
       Prop("mode") { view, mode: CameraMode ->
-          view.cameraMode = mode
+        view.cameraMode = mode
+      }
+
+      Prop("mute") { view, muted: Boolean? ->
+        view.mute = muted ?: false
       }
 
       Prop("barCodeScannerSettings") { view, settings: BarCodeSettings? ->
@@ -161,6 +181,10 @@ class CameraViewNextModule : Module() {
 
       Prop("barCodeScannerEnabled") { view, barCodeScannerEnabled: Boolean? ->
         view.setShouldScanBarCodes(barCodeScannerEnabled ?: false)
+      }
+
+      OnViewDestroys { view ->
+        view.cancelCoroutineScope()
       }
     }
   }
@@ -174,5 +198,9 @@ class CameraViewNextModule : Module() {
   private fun findView(viewTag: Int): ExpoCameraView {
     return appContext.findView(viewTag)
       ?: throw Exceptions.ViewNotFound(ExpoCameraView::class, viewTag)
+  }
+
+  companion object {
+    internal val TAG = CameraViewNextModule::class.java.simpleName
   }
 }

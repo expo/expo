@@ -56,18 +56,24 @@ public final class CameraViewNextModule: Module {
       }
 
       Prop("flashMode") { (view, flashMode: CameraFlashModeNext) in
-        if view.flashMode.rawValue != flashMode.rawValue {
+        if view.flashMode != flashMode {
           view.flashMode = flashMode
         }
       }
-
-      Prop("barCodeScannerSettings") { (view, settings: [String: Any]) in
-        view.setBarCodeScannerSettings(settings: settings)
+      
+      Prop("enableTorch") { (view, enabled: Bool) in
+        view.torchEnabled = enabled
       }
 
       Prop("zoom") { (view, zoom: Double) in
         if fabs(view.zoom - zoom) > Double.ulpOfOne {
           view.zoom = zoom
+        }
+      }
+      
+      Prop("mode") { (view, mode: CameraModeNext) in
+        if view.mode != mode {
+          view.mode = mode
         }
       }
 
@@ -77,14 +83,8 @@ public final class CameraViewNextModule: Module {
         }
       }
       
-      Prop("enableTorch") { (view, enabled: Bool) in
-        view.torchEnabled = enabled
-      }
-      
-      Prop("mode") { (view, mode: CameraModeNext) in
-        if view.mode != mode {
-          view.mode = mode
-        }
+      Prop("barCodeScannerSettings") { (view, settings: [String: Any]) in
+        view.setBarCodeScannerSettings(settings: settings)
       }
       
       Prop("mute") { (view, muted: Bool) in

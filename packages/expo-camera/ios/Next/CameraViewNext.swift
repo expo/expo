@@ -18,7 +18,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   // MARK: - Properties
 
-  private var previewLayer = PreviewView(frame: CGRect.zero)
+  private var previewLayer = PreviewView()
   private var isSessionRunning = false
   private var isValidVideoOptions = true
   private var videoCodecType: AVVideoCodecType?
@@ -675,7 +675,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     super.removeFromSuperview()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
   }
-
+  
   func ensureSessionConfiguration() {
     sessionQueue.async {
       self.updateFlashMode()

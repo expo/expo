@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Base64
 import androidx.exifinterface.media.ExifInterface
@@ -15,6 +14,8 @@ import expo.modules.camera.CameraViewHelper.getExifData
 import expo.modules.camera.CameraViewHelper.setExifData
 import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.kotlin.Promise
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -38,21 +39,26 @@ private const val DATA_KEY = "data"
 private const val URI_KEY = "uri"
 private const val ID_KEY = "id"
 
-class ResolveTakenPictureAsyncTask(
+class ResolveTakePicture(
   private var imageData: ByteArray,
   private var promise: Promise,
   private var options: PictureOptions,
   private val directory: File,
   private var pictureSavedDelegate: PictureSavedDelegate
-) : AsyncTask<Void?, Void?, Bundle?>() {
+) {
 
   private val quality: Int
     get() = (options.quality * 100).toInt()
 
-  override fun doInBackground(vararg params: Void?): Bundle? {
+  suspend fun resolve() = withContext(Dispatchers.IO) {
+    val bundle = processImage()
+    onComplete(bundle)
+  }
+
+  private fun processImage(): Bundle? {
     // handle SkipProcessing
     if (options.skipProcessing) {
-      return handleSkipProcessing()
+      return skipProcessing()
     }
 
     // set, read, and apply EXIF data
@@ -144,7 +150,7 @@ class ResolveTakenPictureAsyncTask(
     return null
   }
 
-  private fun handleSkipProcessing(): Bundle? {
+  private fun skipProcessing(): Bundle? {
     try {
       // save byte array (it's already a JPEG)
       ByteArrayOutputStream().use { imageStream ->
@@ -152,7 +158,7 @@ class ResolveTakenPictureAsyncTask(
 
         // write compressed image to file in cache directory
         val filePath = writeStreamToFile(imageStream)
-        val imageFile = File(filePath)
+        val imageFile = filePath?.let { File(it) }
 
         // handle image uri
         val fileUri = Uri.fromFile(imageFile).toString()
@@ -187,9 +193,7 @@ class ResolveTakenPictureAsyncTask(
     return null
   }
 
-  override fun onPostExecute(response: Bundle?) {
-    super.onPostExecute(response)
-
+  private fun onComplete(response: Bundle?) {
     // If the response is not null everything went well and we can resolve the promise.
     if (response != null) {
       if (options.fastMode) {

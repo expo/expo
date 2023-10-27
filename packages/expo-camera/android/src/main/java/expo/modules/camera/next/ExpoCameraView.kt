@@ -7,6 +7,7 @@ import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraMetadata
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
@@ -42,10 +43,11 @@ import expo.modules.camera.next.records.BarcodeType
 import expo.modules.camera.next.records.CameraMode
 import expo.modules.camera.next.records.CameraType
 import expo.modules.camera.next.records.FlashMode
-import expo.modules.camera.next.tasks.ResolveTakenPictureAsyncTask
+import expo.modules.camera.next.tasks.ResolveTakePicture
 import expo.modules.camera.next.utils.FileSystemUtils
 import expo.modules.camera.utils.mapX
 import expo.modules.camera.utils.mapY
+import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult.BoundingBox
 import expo.modules.interfaces.camera.CameraViewInterface
@@ -54,6 +56,10 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
 import kotlin.math.roundToInt
@@ -78,6 +84,7 @@ class ExpoCameraView(
   private var barcodeFormats: List<BarcodeType> = emptyList()
 
   private var previewView = PreviewView(context)
+  private val scope = CoroutineScope(Dispatchers.Main)
 
   var lenFacing = CameraType.BACK
     set(value) {
@@ -90,6 +97,8 @@ class ExpoCameraView(
       field = value
       createCamera()
     }
+
+  var mute: Boolean = false
 
   private val onCameraReady by EventDispatcher<Unit>()
   private val onMountError by EventDispatcher<CameraMountErrorEvent>()
@@ -165,9 +174,11 @@ class ExpoCameraView(
             promise.resolve(null)
           }
           cacheDirectory.let {
-            ResolveTakenPictureAsyncTask(data, promise, options, it) { response: Bundle ->
-              onPictureSaved(response)
-            }.execute()
+            scope.launch {
+              ResolveTakePicture(data, promise, options, it) { response: Bundle ->
+                onPictureSaved(response)
+              }.resolve()
+            }
           }
           image.close()
         }
@@ -209,7 +220,7 @@ class ExpoCameraView(
           }
         }
       }.also { recording ->
-        recording.mute(options.mute)
+        recording.mute(mute)
       }
     }
       ?: promise.reject("E_RECORDING_FAILED", "Starting video recording failed - could not create video file.", null)
@@ -275,7 +286,6 @@ class ExpoCameraView(
       }
     }, ContextCompat.getMainExecutor(context))
   }
-
 
   private fun createImageAnalyzer(): ImageAnalysis =
     ImageAnalysis.Builder()
@@ -447,5 +457,13 @@ class ExpoCameraView(
 
   fun onPictureSaved(response: Bundle) {
     onPictureSaved(PictureSavedEvent(response.getInt("id"), response.getBundle("data")!!))
+  }
+
+  fun cancelCoroutineScope() {
+    try {
+      scope.cancel(ModuleDestroyedException())
+    } catch (e: Exception) {
+      Log.e(CameraViewNextModule.TAG, "The scope does not have a job in it")
+    }
   }
 }
