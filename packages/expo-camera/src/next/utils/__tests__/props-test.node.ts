@@ -12,10 +12,8 @@ describe(convertNativeProps, () => {
         flashMode: FlashMode.on,
       })
     ).toStrictEqual({
-      autoFocus: 'auto',
       flashMode: 'torch',
       type: 'front',
-      whiteBalance: 'continuous',
     });
   });
   it(`converts unknown properties to undefined values`, () => {
