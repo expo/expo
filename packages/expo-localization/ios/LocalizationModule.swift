@@ -133,7 +133,7 @@ public class LocalizationModule: Module {
       .map { languageTag -> [String: Any?] in
         let languageLocale = Locale.init(identifier: languageTag)
 
-        if #available(iOS 16, *) {
+        if #available(iOS 16, tvOS 16, *) {
           return [
             "languageTag": languageTag,
             "languageCode": languageLocale.language.languageCode?.identifier,

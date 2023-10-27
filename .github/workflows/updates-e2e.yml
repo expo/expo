@@ -8,7 +8,10 @@ on:
       - packages/@expo/cli/**
       - packages/@expo/config-plugins/**
       - packages/@expo/config-types/**
+      - packages/expo-av/**
+      - packages/expo-image/**
       - packages/expo-json-utils/**
+      - packages/expo-localization/**
       - packages/expo-manifests/**
       - packages/expo-modules-core/**
       - packages/expo-structured-headers/**
