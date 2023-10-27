@@ -168,7 +168,7 @@ internal final class Conversions {
       }
 
       // If the returned value is a native shared object, create its JS representation and add the pair to the registry of shared objects.
-      if let value = value as? SharedObject, let dynamicType = dynamicType as? DynamicSharedObjectType {
+      if let value = value as? SharedObject, let dynamicType = asDynamicSharedObjectType(dynamicType) {
         guard let object = try? appContext.newObject(nativeClassId: dynamicType.typeIdentifier) else {
           log.warn("Unable to create a JS object for \(dynamicType.description)")
           return Optional<Any>.none
@@ -264,4 +264,14 @@ internal final class Conversions {
       "Provided hex color '\(param)' would result in an overflow"
     }
   }
+}
+
+/**
+ Unwraps the dynamic optional type and returns as a dynamic shared object type if possible.
+ */
+private func asDynamicSharedObjectType(_ dynamicType: AnyDynamicType?) -> DynamicSharedObjectType? {
+  if let dynamicType = dynamicType as? DynamicOptionalType {
+    return dynamicType.wrappedType as? DynamicSharedObjectType
+  }
+  return dynamicType as? DynamicSharedObjectType
 }
