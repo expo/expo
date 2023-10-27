@@ -58,11 +58,12 @@ function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
  * Helper method for constructing a deep link into your app, given an optional path and set of query
  * parameters. Creates a URI scheme with two slashes by default.
  *
- * The scheme must be defined in the Expo config (`app.config.js` or `app.json`) under `expo.scheme`.
+ * The scheme must be defined in the Expo config (`app.config.js` or `app.json`) under `expo.scheme`
+ * or `expo.{android,ios}.scheme`. Platform-specific schemes defined under `expo.{android,ios}.scheme`
+ * take precedence over universal schemes defined under `expo.scheme`.
  *
  * # Examples
- * - Bare: `<scheme>://path` - uses provided scheme or scheme from Expo config `scheme`.
- * - Standalone, Custom: `yourscheme://path`
+ * - Development and production builds: `<scheme>://path` - uses the optional `scheme` property if provided, and otherwise uses the first scheme defined by your Expo config
  * - Web (dev): `https://localhost:19006/path`
  * - Web (prod): `https://myapp.com/path`
  * - Expo Go (dev): `exp://128.0.0.1:8081/--/path`
