@@ -2,12 +2,14 @@ import sha1 from './lib/sha1';
 import v35 from './lib/v35';
 import { UUID, Uuidv5Namespace } from './uuid.types';
 
+// A hack to prevent metro web from attempting to bundle `crypto` module.
+const requireDynamic = require;
+
 function uuidv4(): string {
   // Crypto needs to be required when run in Node.js environment.
   const cryptoObject =
     typeof crypto === 'undefined' || typeof crypto.randomUUID === 'undefined'
-      ? // A hack to prevent metro web from attempting to bundle `crypto` module.
-        require(['cry', 'pto'].join(''))
+      ? requireDynamic('crypto')
       : crypto;
 
   if (!cryptoObject?.randomUUID) {
