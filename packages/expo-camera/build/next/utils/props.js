@@ -28,6 +28,7 @@ export function ensureNativeProps(props) {
     if (Platform.OS !== 'web') {
         delete newProps.poster;
     }
+    console.log(newProps);
     return newProps;
 }
 //# sourceMappingURL=props.js.map

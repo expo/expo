@@ -41,5 +41,7 @@ export function ensureNativeProps(props?: CameraProps): CameraNativeProps {
     delete newProps.poster;
   }
 
+  console.log(newProps);
+
   return newProps;
 }
