@@ -1,9 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const getenv_1 = require("getenv");
 const common_1 = require("./common");
 const expo_inline_manifest_plugin_1 = require("./expo-inline-manifest-plugin");
 const expo_router_plugin_1 = require("./expo-router-plugin");
 const lazyImports_1 = require("./lazyImports");
+const EXPO_USE_METRO_IMPORT_SUPPORT = (0, getenv_1.boolish)('EXPO_USE_METRO_IMPORT_SUPPORT', false);
 function babelPresetExpo(api, options = {}) {
     const { web = {}, native = {}, reanimated } = options;
     const bundler = api.caller(common_1.getBundler);
@@ -19,12 +21,12 @@ function babelPresetExpo(api, options = {}) {
         ? {
             // Only disable import/export transform when Webpack is used because
             // Metro does not support tree-shaking.
-            disableImportExportTransform: isWebpack,
+            disableImportExportTransform: isWebpack || EXPO_USE_METRO_IMPORT_SUPPORT,
             unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
             ...web,
         }
         : {
-            disableImportExportTransform: false,
+            disableImportExportTransform: EXPO_USE_METRO_IMPORT_SUPPORT,
             unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
             ...native,
         };
@@ -101,6 +103,7 @@ function babelPresetExpo(api, options = {}) {
                     // TransformError App.js: /path/to/App.js: Duplicate __self prop found. You are most likely using the deprecated transform-react-jsx-self Babel plugin.
                     // Both __source and __self are automatically set when using the automatic jsxRuntime. Please remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
                     useTransformReactJSXExperimental: true,
+                    //
                     disableImportExportTransform: platformOptions.disableImportExportTransform,
                     lazyImportExportTransform: lazyImportsOption === true
                         ? (importModuleSpecifier) => {

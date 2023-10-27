@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `EXPO_USE_METRO_IMPORT_SUPPORT` environment variable for enabling import support (platform shaking).
 - Ignore stack traces from whatwg modules. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes

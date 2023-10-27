@@ -285,7 +285,13 @@ function getDefaultConfig(projectRoot, {
       allowOptionalDependencies: true,
       babelTransformerPath: require.resolve('./babel-transformer'),
       assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
-      assetPlugins: getAssetPlugins(projectRoot)
+      assetPlugins: getAssetPlugins(projectRoot),
+      getTransformOptions: async () => ({
+        transform: {
+          experimentalImportSupport: _env2().env.EXPO_USE_METRO_IMPORT_SUPPORT,
+          inlineRequires: false
+        }
+      })
     }
   });
   return (0, _withExpoSerializers().withExpoSerializers)(metroConfig);

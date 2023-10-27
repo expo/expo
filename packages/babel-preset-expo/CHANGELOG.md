@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `EXPO_USE_METRO_IMPORT_SUPPORT` environment variable for enabling import support (platform shaking).
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

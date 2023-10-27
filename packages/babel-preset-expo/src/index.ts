@@ -1,4 +1,5 @@
 import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
+import { boolish } from 'getenv';
 
 import { getBundler, hasModule } from './common';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
@@ -27,6 +28,8 @@ export type BabelPresetExpoOptions = {
   native?: BabelPresetExpoPlatformOptions;
 };
 
+const EXPO_USE_METRO_IMPORT_SUPPORT = boolish('EXPO_USE_METRO_IMPORT_SUPPORT', false);
+
 function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): TransformOptions {
   const { web = {}, native = {}, reanimated } = options;
 
@@ -46,12 +49,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       ? {
           // Only disable import/export transform when Webpack is used because
           // Metro does not support tree-shaking.
-          disableImportExportTransform: isWebpack,
+          disableImportExportTransform: isWebpack || EXPO_USE_METRO_IMPORT_SUPPORT,
           unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
           ...web,
         }
       : {
-          disableImportExportTransform: false,
+          disableImportExportTransform: EXPO_USE_METRO_IMPORT_SUPPORT,
           unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
           ...native,
         };
@@ -138,7 +141,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           // Both __source and __self are automatically set when using the automatic jsxRuntime. Please remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
           useTransformReactJSXExperimental: true,
 
+          //
           disableImportExportTransform: platformOptions.disableImportExportTransform,
+
           lazyImportExportTransform:
             lazyImportsOption === true
               ? (importModuleSpecifier: string) => {

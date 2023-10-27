@@ -7,6 +7,8 @@ declare class Env {
     get RCT_METRO_PORT(): number;
     /** Enable auto server root detection for Metro. This will change the server root to the workspace root. */
     get EXPO_USE_METRO_WORKSPACE_ROOT(): boolean;
+    /** **Internal**: Enables Metro's `experimentalImportSupport` and disables the Babel import/export transformation. */
+    get EXPO_USE_METRO_IMPORT_SUPPORT(): boolean;
     /** Disable Environment Variable injection in client bundles. */
     get EXPO_NO_CLIENT_ENV_VARS(): boolean;
 }

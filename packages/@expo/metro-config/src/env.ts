@@ -21,6 +21,11 @@ class Env {
     return boolish('EXPO_USE_METRO_WORKSPACE_ROOT', false);
   }
 
+  /** **Internal**: Enables Metro's `experimentalImportSupport` and disables the Babel import/export transformation. */
+  get EXPO_USE_METRO_IMPORT_SUPPORT(): boolean {
+    return boolish('EXPO_USE_METRO_IMPORT_SUPPORT', false);
+  }
+
   /** Disable Environment Variable injection in client bundles. */
   get EXPO_NO_CLIENT_ENV_VARS(): boolean {
     return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
