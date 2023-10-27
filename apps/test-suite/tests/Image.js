@@ -2,6 +2,7 @@
 
 import { Image } from 'expo-image';
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { mountAndWaitFor, mountAndWaitForWithTimeout, TimeoutError } from './helpers';
 
@@ -9,6 +10,9 @@ export const name = 'Image';
 
 const REMOTE_SOURCE = { uri: 'http://source.unsplash.com/random' };
 const NON_EXISTENT_SOURCE = { uri: 'file://non_existent_path.jpg' };
+const ANIMATED_IMAGE_SOURCE = {
+  uri: 'https://bafybeidoycivu5if7a3gu3uxozztrdbxe3udjp6jvmit2jub3fjtkxfuoi.ipfs.nftstorage.link/38.webp',
+};
 
 export async function test(t, { setPortalChild, cleanupPortal }) {
   t.describe('Image', () => {
@@ -57,6 +61,18 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
           }
         }
       });
+
+      if (Platform.OS === 'ios') {
+        t.it('load animated image and emits animated is true', async () => {
+          const event = await mountAndWaitFor(
+            <Image source={ANIMATED_IMAGE_SOURCE} style={{ height: 100, width: 100 }} />,
+            'onLoad',
+            setPortalChild
+          );
+
+          t.expect(event.source.isAnimated).toBe(true);
+        });
+      }
     });
 
     t.describe('onError', () => {
