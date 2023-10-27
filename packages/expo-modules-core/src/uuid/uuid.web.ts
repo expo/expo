@@ -6,7 +6,8 @@ function uuidv4(): string {
   // Crypto needs to be required when run in Node.js environment.
   const cryptoObject =
     typeof crypto === 'undefined' || typeof crypto.randomUUID === 'undefined'
-      ? require('crypto')
+      ? // A hack to prevent metro web from attempting to bundle `crypto` module.
+        require(['cry', 'pto'].join(''))
       : crypto;
 
   if (!cryptoObject?.randomUUID) {
