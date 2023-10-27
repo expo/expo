@@ -65,7 +65,6 @@ public final class CameraViewModule: Module {
       ]
     ])
 
-    // swiftlint:disable:next closure_body_length
     View(CameraView.self) {
       Events(
         "onCameraReady",
