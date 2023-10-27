@@ -72,7 +72,10 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
         result = .failure(UnexpectedException(error))
       }
 
-      callback(result)
+      // Go back to the JS thread to execute the callback
+      appContext.executeOnJavaScriptThread {
+        callback(result)
+      }
     }
   }
 
@@ -92,10 +95,12 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
       }
       self.call(by: this, withArguments: args, appContext: appContext) { result in
         switch result {
-          case .failure(let error):
-            reject(error.code, error.description, nil)
-          case .success(let value):
-            resolve(value)
+        case .failure(let error):
+          reject(error.code, error.description, nil)
+        case .success(let value):
+          // Convert some results to primitive types (e.g. records) or JS values (e.g. shared objects)
+          let convertedResult = Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: ~ReturnType.self)
+          resolve(convertedResult)
         }
       }
     }
