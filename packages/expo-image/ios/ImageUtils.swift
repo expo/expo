@@ -3,6 +3,19 @@
 import SDWebImage
 import ExpoModulesCore
 
+/**
+ Checks if the image is animated and returns an SDAnimatedImage if it does. Otherwise returns the UIImage.
+ */
+func createAnimatedIfNeeded(image: UIImage?, data: Data?) -> UIImage? {
+  let isAnimated = image?.sd_isAnimated ?? false
+
+  if isAnimated, let data = data {
+    return SDAnimatedImage(data: data)
+  }
+
+  return image
+}
+
 func cacheTypeToString(_ cacheType: SDImageCacheType) -> String {
   switch cacheType {
   case .none:
