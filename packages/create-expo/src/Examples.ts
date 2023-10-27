@@ -25,8 +25,60 @@ export type GithubContent = {
   type: 'file' | 'dir';
 };
 
+const localExamplesPath = process.env.EXPO_LOCAL_EXAMPLES_PATH ?? '';
+
+const localExamplesShouldBeUsed = localExamplesPath.length > 0 ?? false;
+
+/** List all existing examples in local directory */
+async function listLocalExamplesAsync() {
+  const response = await fs.promises.readdir(localExamplesPath, { encoding: 'utf-8' });
+  return response.map((name) => ({
+    name: path.basename(name),
+    path: path.join(localExamplesPath, name),
+  }));
+}
+
+async function hasLocalExampleAsync(name: string) {
+  try {
+    path.resolve(localExamplesPath, name, 'package.json');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function downloadAndExtractLocalExampleAsync(root: string, name: string) {
+  const projectName = path.basename(root);
+  const tarFilePath = '/tmp/examples.tgz';
+
+  await tar.create(
+    {
+      cwd: path.join(localExamplesPath, '..'),
+      file: tarFilePath,
+    },
+    ['examples']
+  );
+  await tar.extract(
+    {
+      cwd: root,
+      file: tarFilePath,
+      transform: createFileTransform(projectName),
+      onentry: createEntryResolver(projectName),
+      strip: 2,
+    },
+    [`examples/${name}`]
+  );
+  await fs.promises.rm(tarFilePath);
+
+  await sanitizeTemplateAsync(root);
+  await sanitizeScriptsAsync(root);
+}
+
 /** List all existing examples directory from https://github.com/expo/examples. */
 async function listExamplesAsync() {
+  if (localExamplesShouldBeUsed) {
+    return await listLocalExamplesAsync();
+  }
   const response = await fetch('https://api.github.com/repos/expo/examples/contents');
   if (!response.ok) {
     throw new Error('Unexpected GitHub API response: https://github.com/expo/examples');
@@ -38,6 +90,9 @@ async function listExamplesAsync() {
 
 /** Determine if an example exists, using only its name */
 async function hasExampleAsync(name: string) {
+  if (localExamplesShouldBeUsed) {
+    return hasLocalExampleAsync(name);
+  }
   const response = await fetch(
     `https://api.github.com/repos/expo/examples/contents/${encodeURIComponent(name)}/package.json`
   );
@@ -85,6 +140,10 @@ export async function promptExamplesAsync() {
 
 /** Download and move the selected example from https://github.com/expo/examples. */
 export async function downloadAndExtractExampleAsync(root: string, name: string) {
+  debug(`download: root = ${root}, name = ${name}`);
+  if (localExamplesShouldBeUsed) {
+    return await downloadAndExtractLocalExampleAsync(root, name);
+  }
   const projectName = path.basename(root);
   const response = await fetch('https://codeload.github.com/expo/examples/tar.gz/master');
   if (!response.ok) {
