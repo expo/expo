@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🎉 New features
 
 - [iOS] Added support for `allowDownscaling` prop. ([#25012](https://github.com/expo/expo/pull/25012) by [@behenate](https://github.com/behenate))

@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.0'
+  s.platform       = :ios, '13.4'
   s.swift_version  = '5.4'
   s.source         = { git: '<%- repo %>' }
   s.static_framework = true
@@ -22,6 +22,6 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
-  
+
   s.source_files = "**/*.{h,m,swift}"
 end
