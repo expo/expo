@@ -70,7 +70,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
             setPortalChild
           );
 
-          t.expect(event.source.animated).toBe(true);
+          t.expect(event.source.isAnimated).toBe(true);
         });
       }
     });
