@@ -4,6 +4,8 @@ import { DevToolsPluginClient } from './DevToolsPluginClient';
 import { getDevToolsPluginClientAsync } from './DevToolsPluginClientFactory';
 
 export { getDevToolsPluginClientAsync };
+// Export the EventSubscription type if people need to use explicit type from `addMessageListener`
+export type { EventSubscription } from 'fbemitter';
 
 /**
  * A React hook to get the DevToolsPluginClient instance.

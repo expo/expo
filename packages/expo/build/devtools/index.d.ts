@@ -1,6 +1,7 @@
 import { DevToolsPluginClient } from './DevToolsPluginClient';
 import { getDevToolsPluginClientAsync } from './DevToolsPluginClientFactory';
 export { getDevToolsPluginClientAsync };
+export type { EventSubscription } from 'fbemitter';
 /**
  * A React hook to get the DevToolsPluginClient instance.
  */
