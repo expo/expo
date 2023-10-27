@@ -53,7 +53,7 @@ enum class BarcodeType(val value: String) : Enumerable {
   CODE128("code128"),
   UPCA("upc_a");
 
-  fun mapToBarcode() = when(this) {
+  fun mapToBarcode() = when (this) {
     AZTEC -> Barcode.FORMAT_AZTEC
     EAN13 -> Barcode.FORMAT_EAN_13
     EAN8 -> Barcode.FORMAT_EAN_8

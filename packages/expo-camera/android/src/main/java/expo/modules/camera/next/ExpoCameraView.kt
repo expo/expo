@@ -64,7 +64,6 @@ import java.io.File
 import java.util.*
 import kotlin.math.roundToInt
 
-
 @SuppressLint("ViewConstructor")
 class ExpoCameraView(
   context: Context,
@@ -210,13 +209,19 @@ class ExpoCameraView(
         when (event) {
           is VideoRecordEvent.Finalize -> {
             if (event.error > 0) {
-              promise.reject(CameraExceptions.VideoRecordingFailed(event.cause?.message
-                ?: "Video recording Failed: Unknown error"))
+              promise.reject(
+                CameraExceptions.VideoRecordingFailed(
+                  event.cause?.message
+                    ?: "Video recording Failed: Unknown error"
+                )
+              )
               return@start
             }
-            promise.resolve(Bundle().apply {
-              putString("uri", event.outputResults.outputUri.toString())
-            })
+            promise.resolve(
+              Bundle().apply {
+                putString("uri", event.outputResults.outputUri.toString())
+              }
+            )
           }
         }
       }.also { recording ->
@@ -230,75 +235,87 @@ class ExpoCameraView(
   private fun createCamera() {
     val providerFuture = ProcessCameraProvider.getInstance(context)
 
-    providerFuture.addListener({
-      val cameraProvider: ProcessCameraProvider = providerFuture.get()
+    providerFuture.addListener(
+      {
+        val cameraProvider: ProcessCameraProvider = providerFuture.get()
 
-      val preview = Preview.Builder()
-        .setResolutionSelector(ResolutionSelector.Builder()
-          .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
-          .build())
-        .build()
-        .also {
-          it.setSurfaceProvider(previewView.surfaceProvider)
-        }
-
-      val cameraSelector = lenFacing.mapToSelector()
-
-      imageCaptureUseCase = ImageCapture.Builder()
-        .setResolutionSelector(ResolutionSelector.Builder()
-          .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
-          .build())
-        .build()
-
-      val cameraInfo = cameraProvider.availableCameraInfos.filter {
-        Camera2CameraInfo
-          .from(it)
-          .getCameraCharacteristic(CameraCharacteristics.LENS_FACING) == CameraMetadata.LENS_FACING_BACK
-      }
-
-      val videoCapture = createVideoCapture(cameraInfo)
-      imageAnalysisUseCase = createImageAnalyzer()
-
-      val useCases = UseCaseGroup.Builder().apply {
-        addUseCase(preview)
-        if (cameraMode == CameraMode.PICTURE) {
-          imageCaptureUseCase?.let {
-            addUseCase(it)
+        val preview = Preview.Builder()
+          .setResolutionSelector(
+            ResolutionSelector.Builder()
+              .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+              .build()
+          )
+          .build()
+          .also {
+            it.setSurfaceProvider(previewView.surfaceProvider)
           }
-          imageAnalysisUseCase?.let {
-            addUseCase(it)
-          }
-        } else {
-          addUseCase(videoCapture)
-        }
-      }.build()
 
-      try {
-        cameraProvider.unbindAll()
-        camera = cameraProvider.bindToLifecycle(currentActivity, cameraSelector, useCases)
-        camera?.let {
-          observeCameraState(it.cameraInfo)
+        val cameraSelector = lenFacing.mapToSelector()
+
+        imageCaptureUseCase = ImageCapture.Builder()
+          .setResolutionSelector(
+            ResolutionSelector.Builder()
+              .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+              .build()
+          )
+          .build()
+
+        val cameraInfo = cameraProvider.availableCameraInfos.filter {
+          Camera2CameraInfo
+            .from(it)
+            .getCameraCharacteristic(CameraCharacteristics.LENS_FACING) == CameraMetadata.LENS_FACING_BACK
         }
-      } catch (e: Exception) {
-        onMountError(
-          CameraMountErrorEvent("Camera component could not be rendered - is there any other instance running?")
-        )
-      }
-    }, ContextCompat.getMainExecutor(context))
+
+        val videoCapture = createVideoCapture(cameraInfo)
+        imageAnalysisUseCase = createImageAnalyzer()
+
+        val useCases = UseCaseGroup.Builder().apply {
+          addUseCase(preview)
+          if (cameraMode == CameraMode.PICTURE) {
+            imageCaptureUseCase?.let {
+              addUseCase(it)
+            }
+            imageAnalysisUseCase?.let {
+              addUseCase(it)
+            }
+          } else {
+            addUseCase(videoCapture)
+          }
+        }.build()
+
+        try {
+          cameraProvider.unbindAll()
+          camera = cameraProvider.bindToLifecycle(currentActivity, cameraSelector, useCases)
+          camera?.let {
+            observeCameraState(it.cameraInfo)
+          }
+        } catch (e: Exception) {
+          onMountError(
+            CameraMountErrorEvent("Camera component could not be rendered - is there any other instance running?")
+          )
+        }
+      },
+      ContextCompat.getMainExecutor(context)
+    )
   }
 
   private fun createImageAnalyzer(): ImageAnalysis =
     ImageAnalysis.Builder()
       .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-      .setResolutionSelector(ResolutionSelector.Builder()
-        .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
-        .build())
+      .setResolutionSelector(
+        ResolutionSelector.Builder()
+          .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+          .build()
+      )
       .build()
       .also { analyzer ->
         if (shouldScanBarCodes) {
-          analyzer.setAnalyzer(ContextCompat.getMainExecutor(context), BarcodeAnalyzer(lenFacing, barcodeFormats) {
-            onBarCodeScanned(it)
-          })
+          analyzer.setAnalyzer(
+            ContextCompat.getMainExecutor(context),
+            BarcodeAnalyzer(lenFacing, barcodeFormats) {
+              onBarCodeScanned(it)
+            }
+          )
         }
       }
 
@@ -339,6 +356,7 @@ class ExpoCameraView(
 
   fun setBarCodeScannerSettings(settings: BarCodeSettings?) {
     barcodeFormats = settings?.barcodeTypes ?: emptyList()
+    createCamera()
   }
 
   private fun getDeviceOrientation() =
