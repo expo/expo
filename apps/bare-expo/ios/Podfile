@@ -3,7 +3,7 @@ install! 'cocoapods',
          :incremental_installation => true,
          :deterministic_uuids => false
 source 'https://cdn.cocoapods.org/'
-platform :ios, '13.0'
+platform :ios, '13.4'
 inhibit_all_warnings!
 
 # Import the auto-linking packages
