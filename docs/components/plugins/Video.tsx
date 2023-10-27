@@ -1,8 +1,10 @@
 import { css } from '@emotion/react';
 import { borderRadius, breakpoints } from '@expo/styleguide-base';
+import dynamic from 'next/dynamic';
 import { PropsWithChildren, useState } from 'react';
-import ReactPlayer from 'react-player';
 import VisibilitySensor from 'react-visibility-sensor';
+
+const ReactPlayer = dynamic(() => import('react-player/lazy'), { ssr: false });
 
 const PLAYER_WIDTH = '100%' as const;
 const PLAYER_HEIGHT = 400 as const;
