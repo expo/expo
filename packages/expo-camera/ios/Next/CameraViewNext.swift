@@ -55,19 +55,19 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       updateFlashMode()
     }
   }
-  
+
   var torchEnabled = false {
     didSet {
       enableTorch()
     }
   }
-  
+
   var mode = CameraModeNext.picture {
     didSet {
       setCameraMode()
     }
   }
-  
+
   var isMuted = false {
     didSet {
       updateSessionAudioIsMuted(isMuted)
@@ -125,13 +125,13 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     motionManager.accelerometerUpdateInterval = 0.2
     motionManager.gyroUpdateInterval = 0.2
   }
-  
+
   private func setupPreview() {
     previewLayer.videoPreviewLayer.session = session
     previewLayer.videoPreviewLayer.videoGravity = .resizeAspectFill
     previewLayer.videoPreviewLayer.needsDisplayOnBoundsChange = true
   }
-  
+
   private func updateType() {
     sessionQueue.async {
       self.initializeCaptureSessionInput()
@@ -159,7 +159,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       }
     }
   }
-  
+
   private func enableTorch() {
     guard let device = captureDeviceInput?.device else {
       return
@@ -168,12 +168,12 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     if !device.hasTorch {
       return
     }
-    
+
     do {
       try device.lockForConfiguration()
       if device.hasTorch && device.isTorchModeSupported(.on) {
         device.torchMode = torchEnabled ? .on : .off
-      }  
+      }
     } catch {
       log.info("\(#function): \(error.localizedDescription)")
       return
@@ -188,7 +188,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     if !device.hasFlash {
       return
     }
-    
+
     do {
       try device.lockForConfiguration()
       if device.isTorchModeSupported(.off) {
@@ -198,10 +198,10 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       log.info("\(#function): \(error.localizedDescription)")
       return
     }
-    
+
     device.unlockForConfiguration()
   }
-  
+
   private func setCameraMode() {
     sessionQueue.async {
       if self.mode == .video {
@@ -231,7 +231,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       if self.presetCamera == .unspecified {
         return
       }
-      
+
       self.session.beginConfiguration()
 
       let photoOutput = AVCapturePhotoOutput()
@@ -247,7 +247,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
         if let barCodeScanner = self.barCodeScanner {
           barCodeScanner.maybeStartBarCodeScanning()
         }
-   
+
         self.ensureSessionConfiguration()
         self.session.commitConfiguration()
         self.session.startRunning()
@@ -558,33 +558,33 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
               connection.preferredVideoStabilizationMode = videoStabilizationMode
             }
           }
-          
+
           let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
           connection.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
           self.setVideoOptions(options: options, for: connection, promise: promise)
-          
+
           if connection.isVideoOrientationSupported && options.mirror {
             connection.isVideoMirrored = options.mirror
           }
         }
-        
+
         let preset = options.quality?.toPreset() ?? .high
         self.updateSessionPreset(preset: preset)
-                
+
         guard let fileSystem = self.fileSystem else {
           promise.reject(Exceptions.FileSystemModuleNotFound())
           return
         }
-        
+
         if !self.isValidVideoOptions {
           return
         }
-        
+
         let directory = fileSystem.cachesDirectory.appending("/Camera")
         let path = fileSystem.generatePath(inDirectory: directory, withExtension: ".mov")
         let fileUrl = URL(fileURLWithPath: path)
         self.videoRecordedPromise = promise
-        
+
         videoFileOutput.startRecording(to: fileUrl, recordingDelegate: self)
       }
     }
@@ -592,15 +592,15 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   func setVideoOptions(options: CameraRecordingOptionsNext, for connection: AVCaptureConnection, promise: Promise) {
     self.isValidVideoOptions = true
-    
+
     guard let videoFileOutput = self.videoFileOutput else {
       return
     }
-    
+
     if let maxDuration = options.maxDuration {
       videoFileOutput.maxRecordedDuration = CMTime(seconds: maxDuration, preferredTimescale: 30)
     }
-    
+
     if let maxFileSize = options.maxFileSize {
       videoFileOutput.maxRecordedFileSize = Int64(maxFileSize)
     }
@@ -622,12 +622,12 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
           }
         }
       }
-      
+
       if !isMuted {
         if let audioCapturedevice = AVCaptureDevice.default(for: .audio) {
           do {
             let audioDeviceInput = try AVCaptureDeviceInput(device: audioCapturedevice)
-            
+
             if self.session.canAddInput(audioDeviceInput) {
               self.session.addInput(audioDeviceInput)
             }
@@ -675,7 +675,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     super.removeFromSuperview()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
   }
-  
+
   func ensureSessionConfiguration() {
     sessionQueue.async {
       self.updateFlashMode()
@@ -714,7 +714,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   }
 
   func stopRecording() {
-    sessionQueue.async { 
+    sessionQueue.async {
       self.videoFileOutput?.stopRecording()
     }
   }
@@ -773,7 +773,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     return
     #endif
     self.previewLayer.videoPreviewLayer.removeFromSuperlayer()
-    
+
     sessionQueue.async {
       self.session.beginConfiguration()
       for input in self.session.inputs {
@@ -784,7 +784,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
         self.session.removeOutput(output)
       }
       self.session.commitConfiguration()
-      
+
       if let barCodeScanner = self.barCodeScanner {
         barCodeScanner.stopBarCodeScanning()
       }

@@ -60,7 +60,7 @@ public final class CameraViewNextModule: Module {
           view.flashMode = flashMode
         }
       }
-      
+
       Prop("enableTorch") { (view, enabled: Bool) in
         view.torchEnabled = enabled
       }
@@ -70,7 +70,7 @@ public final class CameraViewNextModule: Module {
           view.zoom = zoom
         }
       }
-      
+
       Prop("mode") { (view, mode: CameraModeNext) in
         if view.mode != mode {
           view.mode = mode
@@ -82,11 +82,11 @@ public final class CameraViewNextModule: Module {
           view.isScanningBarCodes = scanBarCodes ?? false
         }
       }
-      
+
       Prop("barCodeScannerSettings") { (view, settings: [String: Any]) in
         view.setBarCodeScannerSettings(settings: settings)
       }
-      
+
       Prop("mute") { (view, muted: Bool) in
         if view.isMuted != muted {
           view.isMuted = muted

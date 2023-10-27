@@ -1,7 +1,6 @@
 import AVFoundation
 import ExpoModulesCore
 
-
 enum CameraTypeNext: Int, Enumerable {
   case front = 0
   case back = 1

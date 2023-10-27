@@ -8,7 +8,7 @@ class PreviewView: UIView {
     }
     return layer
   }
-  
+
   var session: AVCaptureSession? {
     get {
       return videoPreviewLayer.session
@@ -17,7 +17,7 @@ class PreviewView: UIView {
       videoPreviewLayer.session = newValue
     }
   }
-  
+
   override class var layerClass: AnyClass {
     return AVCaptureVideoPreviewLayer.self
   }
