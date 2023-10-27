@@ -9,11 +9,12 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
   /**
    A unique identifier of the wrapped type.
    */
-  let typeIdentifier: ObjectIdentifier
+  var typeIdentifier: ObjectIdentifier {
+    return ObjectIdentifier(innerType)
+  }
 
-  init<SharedObjectType: SharedObject>(innerType: SharedObjectType.Type) {
+  init(innerType: SharedObject.Type) {
     self.innerType = innerType
-    self.typeIdentifier = ObjectIdentifier(SharedObjectType.self)
   }
 
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
