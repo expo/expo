@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `EXPO_USE_METRO_IMPORT_SUPPORT` environment variable for enabling import support (platform shaking).
+- Add `EXPO_USE_METRO_IMPORT_SUPPORT` environment variable for enabling import support (platform shaking). ([#25088](https://github.com/expo/expo/pull/25088) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
