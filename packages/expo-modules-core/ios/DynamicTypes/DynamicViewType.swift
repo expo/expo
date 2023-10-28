@@ -46,11 +46,14 @@ internal struct DynamicViewType: AnyDynamicType {
 }
 
 private func findViewTag(_ value: JavaScriptValue) -> Int? {
-  if let viewTag = value as? Int {
-    return viewTag
+  if value.isNumber() {
+    return value.getInt()
   }
-  if let value = value as? JavaScriptValue, value.isObject() {
-    return value.getObject().getProperty("nativeTag").getInt()
+  if value.isObject() {
+    let nativeTag = value.getObject().getProperty("nativeTag")
+    if nativeTag.isNumber() {
+      return nativeTag.getInt()
+    }
   }
   return nil
 }
