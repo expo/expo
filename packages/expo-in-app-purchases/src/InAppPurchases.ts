@@ -220,10 +220,12 @@ export async function purchaseItemAsync(
  * });
  * ```
  * @param callback The callback function you want to run when there is an update to the purchases.
+ *
+ * @return Returns a function to unsubscribe the listener.
  */
 export function setPurchaseListener(
   callback: (result: IAPQueryResponse<InAppPurchase>) => void
-): void {
+): () => void {
   if (purchaseUpdatedSubscription) {
     purchaseUpdatedSubscription.remove();
   }
@@ -234,6 +236,7 @@ export function setPurchaseListener(
       callback(result);
     }
   );
+  return () => purchaseUpdatedSubscription.remove();
 }
 
 // @needsAudit
