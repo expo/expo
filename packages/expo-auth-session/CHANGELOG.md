@@ -87,6 +87,10 @@ _This version does not introduce any user-facing changes._
 
 - Update docs to remove mentions of `expo start:web`. ([#18419](https://github.com/expo/expo/pull/18419) by [@EvanBacon](https://github.com/EvanBacon))
 
+## 3.7.2 — 2023-02-02
+
+- Handle more generic issuer / discovery urls for the likes of Azure B2C ([#21059](https://github.com/expo/expo/pull/21059) by [@kerrpeter](https://github.com/kerrpeter))
+
 ## 3.7.1 — 2022-07-16
 
 _This version does not introduce any user-facing changes._

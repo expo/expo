@@ -274,7 +274,8 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
 
     const query = QueryParams.buildQueryString(params);
     // Store the URL for later
-    this.url = `${discovery.authorizationEndpoint}?${query}`;
+    const querySeparator = discovery.authorizationEndpoint.includes('?') ? '&' : '?';
+    this.url = `${discovery.authorizationEndpoint}${querySeparator}${query}`;
     return this.url;
   }
 
