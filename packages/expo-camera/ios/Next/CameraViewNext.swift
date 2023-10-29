@@ -51,12 +51,8 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  var flashMode = CameraFlashModeNext.auto {
-    didSet {
-      updateFlashMode()
-    }
-  }
-
+  var flashMode = CameraFlashModeNext.auto
+  
   var torchEnabled = false {
     didSet {
       enableTorch()
@@ -142,8 +138,8 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     if !session.isRunning && isSessionRunning {
       isSessionRunning = false
       sessionQueue.async {
-        self.session.startRunning()
         self.ensureSessionConfiguration()
+        self.session.startRunning()
       }
     }
   }
@@ -158,11 +154,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   }
 
   private func enableTorch() {
-    guard let device = captureDeviceInput?.device else {
-      return
-    }
-
-    if !device.hasTorch {
+    guard let device = captureDeviceInput?.device, device.hasTorch else {
       return
     }
 
@@ -175,28 +167,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       log.info("\(#function): \(error.localizedDescription)")
       return
     }
-  }
-
-  private func updateFlashMode() {
-    guard let device = captureDeviceInput?.device else {
-      return
-    }
-
-    if !device.hasFlash {
-      return
-    }
-
-    do {
-      try device.lockForConfiguration()
-      if device.isTorchModeSupported(.off) {
-        device.torchMode = .off
-      }
-    } catch {
-      log.info("\(#function): \(error.localizedDescription)")
-      return
-    }
-
-    device.unlockForConfiguration()
   }
 
   private func setCameraMode() {
@@ -242,7 +212,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
       self.sessionQueue.asyncAfter(deadline: .now() + round(50 / 1_000_000)) {
         self.barCodeScanner.maybeStartBarCodeScanning()
-
         self.ensureSessionConfiguration()
         self.session.commitConfiguration()
         self.session.startRunning()
@@ -664,14 +633,13 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   public override func removeFromSuperview() {
     lifecycleManager?.unregisterAppLifecycleListener(self)
-//    self.stopSession()
     super.removeFromSuperview()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
   }
 
   func ensureSessionConfiguration() {
     sessionQueue.async {
-      self.updateFlashMode()
+      self.updateSessionAudioIsMuted(self.isMuted)
     }
   }
 
