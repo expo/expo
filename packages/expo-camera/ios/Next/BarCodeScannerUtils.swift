@@ -2,8 +2,6 @@ import AVFoundation
 import ZXingObjC
 
 class BarCodeScannerUtils {
-  static let BARCODE_TYPES_KEY = "barCodeTypes"
-
   static func getDefaultSettings() -> [String: [AVMetadataObject.ObjectType]] {
     var validTypes = [
       "upc_e": AVMetadataObject.ObjectType.upce,

@@ -6,17 +6,16 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
-  private var motionManager = CMMotionManager()
-  private var physicalOrientation: UIDeviceOrientation = .unknown
 
   // MARK: - Legacy Modules
+  
   private var lifecycleManager: EXAppLifecycleService?
-  private lazy var barCodeScanner = createBarCodeScanner()
   private var fileSystem: EXFileSystemInterface?
   private var permissionsManager: EXPermissionsInterface?
 
   // MARK: - Properties
-
+  
+  private lazy var barCodeScanner = createBarCodeScanner()
   private var previewLayer = PreviewView()
   private var isSessionRunning = false
   private var isValidVideoOptions = true
@@ -24,8 +23,16 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   private var photoCaptureOptions: TakePictureOptionsNext?
   private var videoStabilizationMode: AVCaptureVideoStabilizationMode?
   private var errorNotification: NSObjectProtocol?
+  private var motionManager: CMMotionManager = {
+    let mm = CMMotionManager()
+    mm.accelerometerUpdateInterval = 0.2
+    mm.gyroUpdateInterval = 0.2
+    return mm
+  }()
+  private var physicalOrientation: UIDeviceOrientation = .unknown
 
   // MARK: Property Observers
+  
   var responsiveWhenOrientationLocked = false {
     didSet {
       updateResponsiveOrientation()
@@ -107,7 +114,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     #endif
     self.changePreviewOrientation(orientation: UIApplication.shared.statusBarOrientation)
     self.initializeCaptureSessionInput()
-    self.updateSessionAudioIsMuted(self.isMuted)
     self.startSession()
     NotificationCenter.default.addObserver(
       self,
@@ -115,8 +121,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       name: UIDevice.orientationDidChangeNotification,
       object: nil)
     lifecycleManager?.register(self)
-    motionManager.accelerometerUpdateInterval = 0.2
-    motionManager.gyroUpdateInterval = 0.2
   }
 
   private func setupPreview() {
@@ -290,7 +294,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   }
 
   func setBarCodeScannerSettings(settings: BarcodeSettings) {
-    barCodeScanner.setSettings([BarCodeScannerUtils.BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
+    barCodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
   }
 
   func updateResponsiveOrientation() {

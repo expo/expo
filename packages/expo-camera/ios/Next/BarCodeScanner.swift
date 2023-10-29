@@ -1,22 +1,25 @@
 import ZXingObjC
 import AVFoundation
 
-class BarCodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
-  var session: AVCaptureSession
-  var sessionQueue: DispatchQueue
+let BARCODE_TYPES_KEY = "barCodeTypes"
+
+class BarCodeScanner: NSObject {
   var onBarCodeScanned: (([String: Any]?) -> Void)?
   var isScanningBarcodes = false
 
+  // MARK: - Properties
+  
+  private var session: AVCaptureSession
+  private var sessionQueue: DispatchQueue
   private var metadataOutput: AVCaptureMetadataOutput?
   private var videoDataOutput: AVCaptureVideoDataOutput?
 
-  private var settings: [String: [AVMetadataObject.ObjectType]] = BarCodeScannerUtils.getDefaultSettings()
+  private var settings = BarCodeScannerUtils.getDefaultSettings()
   private var zxingBarcodeReaders: [AVMetadataObject.ObjectType: ZXReader] = [
     AVMetadataObject.ObjectType.pdf417: ZXPDF417Reader(),
     AVMetadataObject.ObjectType.code39: ZXCode39Reader()
   ]
 
-  private let BARCODE_TYPES_KEY = "barCodeTypes"
   private var zxingFPSProcessed =  6.0
   private var zxingCaptureQueue = DispatchQueue(label: "com.zxing.captureQueue")
   private var zxingEnabled = true
@@ -67,12 +70,8 @@ class BarCodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
   }
 
   func setConnection(enabled: Bool) {
-    guard let metadataOutput else {
-      return
-    }
-
-    for connection in metadataOutput.connections {
-      connection.isEnabled = enabled
+    metadataOutput?.connections.forEach {
+      $0.isEnabled = enabled
     }
   }
 
@@ -83,27 +82,7 @@ class BarCodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
 
     if metadataOutput == nil || videoDataOutput == nil {
       session.beginConfiguration()
-
-      if metadataOutput == nil {
-        let output = AVCaptureMetadataOutput()
-        output.setMetadataObjectsDelegate(self, queue: sessionQueue)
-        if session.canAddOutput(output) {
-          session.addOutput(output)
-          metadataOutput = output
-        }
-      }
-
-      if videoDataOutput == nil {
-        let output = AVCaptureVideoDataOutput()
-        output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
-        output.alwaysDiscardsLateVideoFrames = true
-        output.setSampleBufferDelegate(self, queue: zxingCaptureQueue)
-        if session.canAddOutput(output) {
-          session.addOutput(output)
-          videoDataOutput = output
-        }
-      }
-
+      addOutputs()
       session.commitConfiguration()
 
       if metadataOutput == nil {
@@ -124,7 +103,67 @@ class BarCodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
 
   func stopBarCodeScanning() {
     session.beginConfiguration()
+    removeOutputs()
+    session.commitConfiguration()
 
+    if isScanningBarcodes {
+      onBarCodeScanned?(nil)
+    }
+  }
+
+  func scanBarcodes(from image: CGImage, completion: @escaping (ZXResult) -> Void) {
+    let source = ZXCGImageLuminanceSource(cgImage: image)
+    let binarizer = ZXHybridBinarizer(source: source)
+    let bitmap = ZXBinaryBitmap(binarizer: binarizer)
+
+    var result: ZXResult?
+
+    for reader in zxingBarcodeReaders.values {
+      result = try? reader.decode(bitmap, hints: nil)
+      if result != nil {
+        break
+      }
+    }
+
+    if result == nil && bitmap?.rotateSupported == true {
+      if let rotatedBitmap = bitmap?.rotateCounterClockwise() {
+        for reader in zxingBarcodeReaders.values {
+          result = try? reader.decode(rotatedBitmap, hints: nil)
+          if result != nil {
+            break
+          }
+        }
+      }
+    }
+
+    if let result {
+      completion(result)
+    }
+  }
+  
+  private func addOutputs() {
+    if metadataOutput == nil {
+      let output = AVCaptureMetadataOutput()
+      output.setMetadataObjectsDelegate(self, queue: sessionQueue)
+      if session.canAddOutput(output) {
+        session.addOutput(output)
+        metadataOutput = output
+      }
+    }
+
+    if videoDataOutput == nil {
+      let output = AVCaptureVideoDataOutput()
+      output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
+      output.alwaysDiscardsLateVideoFrames = true
+      output.setSampleBufferDelegate(self, queue: zxingCaptureQueue)
+      if session.canAddOutput(output) {
+        session.addOutput(output)
+        videoDataOutput = output
+      }
+    }
+  }
+  
+  private func removeOutputs() {
     if let metadataOutput {
       if session.outputs.contains(metadataOutput) {
         session.removeOutput(metadataOutput)
@@ -138,14 +177,12 @@ class BarCodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
         self.videoDataOutput = nil
       }
     }
-
-    session.commitConfiguration()
-
-    if isScanningBarcodes {
-      onBarCodeScanned?(nil)
-    }
   }
+}
 
+// MARK: - Delegates
+
+extension BarCodeScanner: AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
   func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
     guard let settings = settings[BARCODE_TYPES_KEY], let metadataOutput else {
       return
@@ -192,40 +229,5 @@ class BarCodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
         }
       }
     }
-  }
-
-  func scanBarcodes(from image: CGImage, completion: @escaping (ZXResult) -> Void) {
-    let source = ZXCGImageLuminanceSource(cgImage: image)
-
-    let binarizer = ZXHybridBinarizer(source: source)
-    let bitmap = ZXBinaryBitmap(binarizer: binarizer)
-
-    var result: ZXResult?
-
-    for reader in zxingBarcodeReaders.values {
-      result = try? reader.decode(bitmap, hints: nil)
-      if result != nil {
-        break
-      }
-    }
-
-    if result == nil && bitmap?.rotateSupported == true {
-      if let rotatedBitmap = bitmap?.rotateCounterClockwise() {
-        for reader in zxingBarcodeReaders.values {
-          result = try? reader.decode(rotatedBitmap, hints: nil)
-          if result != nil {
-            break
-          }
-        }
-      }
-    }
-
-    if let result {
-      completion(result)
-    }
-  }
-  
-  deinit {
-    print("Scanner deallocating")
   }
 }
