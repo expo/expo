@@ -2,7 +2,6 @@ import UIKit
 import ExpoModulesCore
 import CoreMotion
 
-// swiftlint:disable:next type_body_length
 public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
   public var session = AVCaptureSession()

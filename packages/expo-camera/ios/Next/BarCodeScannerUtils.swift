@@ -94,9 +94,8 @@ class BarCodeScannerUtils {
     case kBarcodeFormatCodabar:
       if #available(iOS 15.4, *) {
         return AVMetadataObject.ObjectType.codabar.rawValue
-      } else {
-        return "unknown"
       }
+      return "unknown"
     default:
       return "unknown"
     }

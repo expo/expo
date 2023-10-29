@@ -2,7 +2,6 @@ import ZXingObjC
 import AVFoundation
 
 class BarCodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
-
   var session: AVCaptureSession
   var sessionQueue: DispatchQueue
   var onBarCodeScanned: (([String: Any]?) -> Void)?
@@ -34,17 +33,15 @@ class BarCodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
   }
 
   func setSettings(_ newSettings: [String: [AVMetadataObject.ObjectType]]) {
-    for (key, value) in newSettings {
-      if key == BARCODE_TYPES_KEY {
-        let previousTypes = Set(settings[BARCODE_TYPES_KEY] ?? [])
-        let newTypes = Set(value)
-        if previousTypes != newTypes {
-          settings[BARCODE_TYPES_KEY] = value
-          let zxingCoveredTypes = Set(zxingBarcodeReaders.keys)
-          zxingEnabled = !zxingCoveredTypes.isDisjoint(with: newTypes)
-          sessionQueue.async {
-            self.maybeStartBarCodeScanning()
-          }
+    for (key, value) in newSettings where key == BARCODE_TYPES_KEY {
+      let previousTypes = Set(settings[BARCODE_TYPES_KEY] ?? [])
+      let newTypes = Set(value)
+      if previousTypes != newTypes {
+        settings[BARCODE_TYPES_KEY] = value
+        let zxingCoveredTypes = Set(zxingBarcodeReaders.keys)
+        zxingEnabled = !zxingCoveredTypes.isDisjoint(with: newTypes)
+        sessionQueue.async {
+          self.maybeStartBarCodeScanning()
         }
       }
     }
@@ -118,10 +115,8 @@ class BarCodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     let requestedObjectTypes = settings[BARCODE_TYPES_KEY] ?? []
     let availableObjectTypes: [AVMetadataObject.ObjectType] = metadataOutput?.availableMetadataObjectTypes ?? []
 
-    for type in requestedObjectTypes {
-      if availableObjectTypes.contains(type) {
-        availableRequestedObjectTypes.append(type)
-      }
+    for type in requestedObjectTypes where availableObjectTypes.contains(type) {
+      availableRequestedObjectTypes.append(type)
     }
 
     metadataOutput?.metadataObjectTypes = availableRequestedObjectTypes
@@ -174,8 +169,8 @@ class BarCodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
 
   func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
     guard let barCodeTypes = settings[BARCODE_TYPES_KEY],
-          let metadataOutput,
-          zxingEnabled else {
+      let metadataOutput,
+      zxingEnabled else {
       return
     }
 
@@ -191,7 +186,7 @@ class BarCodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
       lastFrameTimeStamp = curFrameTimeStamp
 
       if let videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer),
-         let videoFrameImage = ZXCGImageLuminanceSource.createImage(from: videoFrame) {
+       let videoFrameImage = ZXCGImageLuminanceSource.createImage(from: videoFrame) {
         self.scanBarcodes(from: videoFrameImage) { barCodeScannerResult in
           self.onBarCodeScanned?(BarCodeScannerUtils.zxResultToDictionary(barCodeScannerResult))
         }
@@ -228,5 +223,9 @@ class BarCodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     if let result {
       completion(result)
     }
+  }
+  
+  deinit {
+    print("Scanner deallocating")
   }
 }
