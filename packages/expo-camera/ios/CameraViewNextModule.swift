@@ -136,24 +136,6 @@ public final class CameraViewNextModule: Module {
     }
     .runOnQueue(.main)
 
-    AsyncFunction("getPermissionsAsync") { (promise: Promise) in
-      EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
-        self.appContext?.permissions,
-        withRequester: CameraPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
-    }
-
-    AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
-      EXPermissionsMethodsDelegate.askForPermission(
-        withPermissionsManager: self.appContext?.permissions,
-        withRequester: CameraPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
-    }
-
     AsyncFunction("getCameraPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,

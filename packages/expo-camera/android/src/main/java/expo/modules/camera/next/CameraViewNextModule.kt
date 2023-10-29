@@ -88,15 +88,7 @@ class CameraViewNextModule : Module() {
       val view = findView(viewTag)
       view.activeRecording?.close()
     }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
-      Permissions.askForPermissionsWithPermissionsManager(
-        permissionsManager,
-        promise,
-        Manifest.permission.CAMERA
-      )
-    }
-
+    
     AsyncFunction("requestCameraPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(
         permissionsManager,
@@ -110,14 +102,6 @@ class CameraViewNextModule : Module() {
         permissionsManager,
         promise,
         Manifest.permission.RECORD_AUDIO
-      )
-    }
-
-    AsyncFunction("getPermissionsAsync") { promise: Promise ->
-      Permissions.getPermissionsWithPermissionsManager(
-        permissionsManager,
-        promise,
-        Manifest.permission.CAMERA
       )
     }
 
