@@ -12,7 +12,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   // MARK: - Legacy Modules
   private var lifecycleManager: EXAppLifecycleService?
-  private var barCodeScanner: EXBarCodeScannerInterface?
+  private lazy var barCodeScanner = createBarCodeScanner()
   private var fileSystem: EXFileSystemInterface?
   private var permissionsManager: EXPermissionsInterface?
 
@@ -35,12 +35,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   var isScanningBarCodes = false {
     didSet {
-      if let barCodeScanner {
-        barCodeScanner.setIsEnabled(isScanningBarCodes)
-      } else if isScanningBarCodes {
-        log.error("BarCodeScanner module not found. Make sure "
-        + "`expo-barcode-scanner` is installed and linked correctly.")
-      }
+      barCodeScanner.setIsEnabled(isScanningBarCodes)
     }
   }
 
@@ -105,7 +100,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
-    barCodeScanner = createBarCodeScanner()
     lifecycleManager = appContext?.legacyModule(implementing: EXAppLifecycleService.self)
     fileSystem = appContext?.legacyModule(implementing: EXFileSystemInterface.self)
     permissionsManager = appContext?.legacyModule(implementing: EXPermissionsInterface.self)
@@ -244,9 +238,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       self.addErrorNotification()
 
       self.sessionQueue.asyncAfter(deadline: .now() + round(50 / 1_000_000)) {
-        if let barCodeScanner = self.barCodeScanner {
-          barCodeScanner.maybeStartBarCodeScanning()
-        }
+        self.barCodeScanner.maybeStartBarCodeScanning()
 
         self.ensureSessionConfiguration()
         self.session.commitConfiguration()
@@ -298,10 +290,8 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  func setBarCodeScannerSettings(settings: [String: Any]) {
-    if let barCodeScanner {
-      barCodeScanner.setSettings(settings)
-    }
+  func setBarCodeScannerSettings(settings: BarcodeSettings) {
+    barCodeScanner.setSettings([BarCodeScannerUtils.BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
   }
 
   func updateResponsiveOrientation() {
@@ -785,9 +775,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       }
       self.session.commitConfiguration()
 
-      if let barCodeScanner = self.barCodeScanner {
-        barCodeScanner.stopBarCodeScanning()
-      }
+      self.barCodeScanner.stopBarCodeScanning()
       self.motionManager.stopAccelerometerUpdates()
       self.session.stopRunning()
     }
@@ -807,20 +795,9 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  private func createBarCodeScanner() -> EXBarCodeScannerInterface? {
-    guard let barCodeScnnerProvider: EXBarCodeScannerProviderInterface? =
-      appContext?.legacyModule(implementing: EXBarCodeScannerProviderInterface.self) else {
-      return nil
-    }
-
-    guard let scanner = barCodeScnnerProvider?.createBarCodeScanner() else {
-      return nil
-    }
-
-    scanner.setSession(session)
-    scanner.setSessionQueue(sessionQueue)
-    scanner.setOnBarCodeScanned { [weak self] body in
-      print(body)
+  private func createBarCodeScanner() -> BarCodeScanner {
+    let scanner = BarCodeScanner(session: session, sessionQueue: sessionQueue)
+    scanner.onBarCodeScanned = { [weak self] body in
       if let body = body as? [String: Any] {
         self?.onBarCodeScanned(body)
       }

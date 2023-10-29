@@ -963,7 +963,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     scanner.setSessionQueue(sessionQueue)
     scanner.setOnBarCodeScanned { [weak self] body in
       if let body = body as? [String: Any] {
-        print(body)
         self?.onBarCodeScanned(body)
       }
     }

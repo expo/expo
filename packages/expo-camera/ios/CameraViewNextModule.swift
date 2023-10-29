@@ -83,7 +83,7 @@ public final class CameraViewNextModule: Module {
         }
       }
 
-      Prop("barCodeScannerSettings") { (view, settings: [String: Any]) in
+      Prop("barCodeScannerSettings") { (view, settings: BarcodeSettings) in
         view.setBarCodeScannerSettings(settings: settings)
       }
 
