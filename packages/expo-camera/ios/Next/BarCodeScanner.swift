@@ -8,7 +8,7 @@ class BarCodeScanner: NSObject {
   var isScanningBarcodes = false
 
   // MARK: - Properties
-  
+
   private var session: AVCaptureSession
   private var sessionQueue: DispatchQueue
   private var metadataOutput: AVCaptureMetadataOutput?
@@ -20,7 +20,7 @@ class BarCodeScanner: NSObject {
     AVMetadataObject.ObjectType.code39: ZXCode39Reader()
   ]
 
-  private var zxingFPSProcessed =  6.0
+  private var zxingFPSProcessed = 6.0
   private var zxingCaptureQueue = DispatchQueue(label: "com.zxing.captureQueue")
   private var zxingEnabled = true
 
@@ -140,7 +140,7 @@ class BarCodeScanner: NSObject {
       completion(result)
     }
   }
-  
+
   private func addOutputs() {
     if metadataOutput == nil {
       let output = AVCaptureMetadataOutput()
@@ -162,7 +162,7 @@ class BarCodeScanner: NSObject {
       }
     }
   }
-  
+
   private func removeOutputs() {
     if let metadataOutput {
       if session.outputs.contains(metadataOutput) {

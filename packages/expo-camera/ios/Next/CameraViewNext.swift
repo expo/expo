@@ -8,13 +8,13 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
 
   // MARK: - Legacy Modules
-  
+
   private var lifecycleManager: EXAppLifecycleService?
   private var fileSystem: EXFileSystemInterface?
   private var permissionsManager: EXPermissionsInterface?
 
   // MARK: - Properties
-  
+
   private lazy var barCodeScanner = createBarCodeScanner()
   private var previewLayer = PreviewView()
   private var isSessionRunning = false
@@ -32,7 +32,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   private var physicalOrientation: UIDeviceOrientation = .unknown
 
   // MARK: Property Observers
-  
+
   var responsiveWhenOrientationLocked = false {
     didSet {
       updateResponsiveOrientation()
