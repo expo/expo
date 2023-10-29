@@ -1,4 +1,5 @@
 import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
+import { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 export declare enum CameraType {
     front = "front",
@@ -374,13 +375,20 @@ export type CameraProps = ViewProps & {
      */
     onResponsiveOrientationChanged?: (event: ResponsiveOrientationChanged) => void;
 };
+export interface CameraViewRef {
+    readonly takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
+    readonly record: (options?: CameraRecordingOptions) => Promise<{
+        uri: string;
+    }>;
+    readonly stopRecording: () => Promise<void>;
+}
 /**
  * @hidden
  */
 export type CameraNativeProps = {
     pointerEvents?: any;
     style?: any;
-    ref?: Function;
+    ref?: Ref<CameraViewRef>;
     onCameraReady?: CameraReadyListener;
     onMountError?: MountErrorListener;
     onBarCodeScanned?: (event: {

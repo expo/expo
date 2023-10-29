@@ -98,43 +98,31 @@ public final class CameraViewNextModule: Module {
           view.responsiveWhenOrientationLocked = responsiveOrientation
         }
       }
+      
+      AsyncFunction("takePicture") { (view, options: TakePictureOptionsNext, promise: Promise) in
+        #if targetEnvironment(simulator)
+        try takePictureForSimulator(self.appContext, view, options, promise)
+        #else // simulator
+        view.takePicture(options: options, promise: promise)
+        #endif // not simulator
+      }.runOnQueue(.main)
+      
+      AsyncFunction("record") { (view, options: CameraRecordingOptionsNext, promise: Promise) in
+        #if targetEnvironment(simulator)
+        throw Exceptions.SimulatorNotSupported()
+        #else
+        view.record(options: options, promise: promise)
+        #endif
+      }.runOnQueue(.main)
+      
+      AsyncFunction("stopRecording") { view in
+        #if targetEnvironment(simulator)
+        throw Exceptions.SimulatorNotSupported()
+        #else
+        view.stopRecording()
+        #endif
+      }.runOnQueue(.main)
     }
-
-    AsyncFunction("takePicture") { (options: TakePictureOptionsNext, viewTag: Int, promise: Promise) in
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraViewNext.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraViewNext.self))
-      }
-      #if targetEnvironment(simulator)
-      try takePictureForSimulator(self.appContext, view, options, promise)
-      #else // simulator
-      view.takePicture(options: options, promise: promise)
-      #endif // not simulator
-    }
-    .runOnQueue(.main)
-
-    AsyncFunction("record") { (options: CameraRecordingOptionsNext, viewTag: Int, promise: Promise) in
-      #if targetEnvironment(simulator)
-      throw Exceptions.SimulatorNotSupported()
-      #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraViewNext.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraViewNext.self))
-      }
-      view.record(options: options, promise: promise)
-      #endif
-    }
-    .runOnQueue(.main)
-
-    AsyncFunction("stopRecording") { (viewTag: Int) in
-      #if targetEnvironment(simulator)
-      throw Exceptions.SimulatorNotSupported()
-      #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraViewNext.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraViewNext.self))
-      }
-      view.stopRecording()
-      #endif
-    }
-    .runOnQueue(.main)
 
     AsyncFunction("getCameraPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(

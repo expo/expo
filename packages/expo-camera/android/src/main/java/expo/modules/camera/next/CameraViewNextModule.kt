@@ -58,36 +58,6 @@ class CameraViewNextModule : Module() {
         "4:3" to VIDEO_4x3
       ),
     )
-
-    AsyncFunction("takePicture") { options: PictureOptions, viewTag: Int, promise: Promise ->
-      val view = findView(viewTag)
-
-      if (!EmulatorUtilities.isRunningOnEmulator()) {
-        view.takePicture(options, promise, cacheDirectory)
-      } else {
-        val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
-        moduleScope.launch {
-          ResolveTakePicture(image, promise, options, cacheDirectory) { response ->
-            view.onPictureSaved(response)
-          }.resolve()
-        }
-      }
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction("record") { options: RecordingOptions, viewTag: Int, promise: Promise ->
-      val view = findView(viewTag)
-
-      if (!view.mute && !permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
-        throw Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO)
-      }
-
-      view.record(options, promise, cacheDirectory)
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction("stopRecording") { viewTag: Int ->
-      val view = findView(viewTag)
-      view.activeRecording?.close()
-    }.runOnQueue(Queues.MAIN)
     
     AsyncFunction("requestCameraPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(
@@ -167,6 +137,31 @@ class CameraViewNextModule : Module() {
         view.setShouldScanBarCodes(barCodeScannerEnabled ?: false)
       }
 
+      AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->
+        if (!EmulatorUtilities.isRunningOnEmulator()) {
+          view.takePicture(options, promise, cacheDirectory)
+        } else {
+          val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
+          moduleScope.launch {
+            ResolveTakePicture(image, promise, options, cacheDirectory) { response ->
+              view.onPictureSaved(response)
+            }.resolve()
+          }
+        }
+      }.runOnQueue(Queues.MAIN)
+
+      AsyncFunction("record") { view: ExpoCameraView, options: RecordingOptions, promise: Promise ->
+        if (!view.mute && !permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
+          throw Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO)
+        }
+
+        view.record(options, promise, cacheDirectory)
+      }.runOnQueue(Queues.MAIN)
+
+      AsyncFunction("stopRecording") { view: ExpoCameraView ->
+        view.activeRecording?.close()
+      }.runOnQueue(Queues.MAIN)
+
       OnViewDestroys { view ->
         view.cancelCoroutineScope()
       }
@@ -178,11 +173,6 @@ class CameraViewNextModule : Module() {
 
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
-
-  private fun findView(viewTag: Int): ExpoCameraView {
-    return appContext.findView(viewTag)
-      ?: throw Exceptions.ViewNotFound(ExpoCameraView::class, viewTag)
-  }
 
   companion object {
     internal val TAG = CameraViewNextModule::class.java.simpleName

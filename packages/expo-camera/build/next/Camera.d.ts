@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraType, ConstantsType, PermissionResponse, VideoCodec } from './Camera.types';
+import { Ref } from 'react';
+import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraType, CameraViewRef, ConstantsType, PermissionResponse, VideoCodec } from './Camera.types';
 export default class Camera extends React.Component<CameraProps> {
     /**
      * Check whether the current device has a camera. This is useful for web and simulators cases.
@@ -22,7 +23,7 @@ export default class Camera extends React.Component<CameraProps> {
     static Constants: ConstantsType;
     static ConversionTables: {
         type: Record<"front" | "back", string | undefined>;
-        flashMode: Record<"on" | "off" | "auto", string | undefined>;
+        flashMode: Record<"auto" | "off" | "on", string | undefined>;
     };
     static defaultProps: CameraProps;
     /**
@@ -68,7 +69,7 @@ export default class Camera extends React.Component<CameraProps> {
      */
     static useMicrophonePermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
     _cameraHandle?: number | null;
-    _cameraRef?: React.Component | null;
+    _cameraRef: React.RefObject<CameraViewRef>;
     _lastEvents: {
         [eventName: string]: string;
     };
@@ -91,7 +92,7 @@ export default class Camera extends React.Component<CameraProps> {
      * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#filesystemcopyasyncoptions)
      * > to make a permanent copy of the image.
      */
-    takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
+    takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture | undefined>;
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.
      * Flipping camera during a recording results in stopping it.
@@ -103,7 +104,7 @@ export default class Camera extends React.Component<CameraProps> {
      */
     recordAsync(options?: CameraRecordingOptions): Promise<{
         uri: string;
-    }>;
+    } | undefined>;
     /**
      * Stops recording if any is in progress.
      */
@@ -122,7 +123,7 @@ export default class Camera extends React.Component<CameraProps> {
     _onObjectDetected: (callback?: Function) => ({ nativeEvent }: {
         nativeEvent: any;
     }) => void;
-    _setReference: (ref?: React.Component) => void;
+    _setReference: (ref: Ref<CameraViewRef>) => void;
     render(): JSX.Element;
 }
 export declare const Constants: ConstantsType, getCameraPermissionsAsync: typeof Camera.getCameraPermissionsAsync, requestCameraPermissionsAsync: typeof Camera.requestCameraPermissionsAsync, getMicrophonePermissionsAsync: typeof Camera.getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync: typeof Camera.requestMicrophonePermissionsAsync;

@@ -1,6 +1,6 @@
-import { createPermissionHook, Platform, UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import * as React from 'react';
-import { findNodeHandle } from 'react-native';
+import { Ref } from 'react';
 
 import {
   CameraCapturedPicture,
@@ -9,6 +9,7 @@ import {
   CameraProps,
   CameraRecordingOptions,
   CameraType,
+  CameraViewRef,
   ConstantsType,
   PermissionResponse,
   VideoCodec,
@@ -193,7 +194,7 @@ export default class Camera extends React.Component<CameraProps> {
   });
 
   _cameraHandle?: number | null;
-  _cameraRef?: React.Component | null;
+  _cameraRef = React.createRef<CameraViewRef>();
   _lastEvents: { [eventName: string]: string } = {};
   _lastEventsTimes: { [eventName: string]: Date } = {};
 
@@ -214,10 +215,12 @@ export default class Camera extends React.Component<CameraProps> {
    * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#filesystemcopyasyncoptions)
    * > to make a permanent copy of the image.
    */
-  async takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture> {
+  async takePictureAsync(
+    options?: CameraPictureOptions
+  ): Promise<CameraCapturedPicture | undefined> {
     const pictureOptions = ensurePictureOptions(options);
 
-    return await CameraManager.takePicture(pictureOptions, this._cameraHandle);
+    return await this._cameraRef.current?.takePicture(pictureOptions);
   }
 
   /**
@@ -229,24 +232,16 @@ export default class Camera extends React.Component<CameraProps> {
    * @platform android
    * @platform ios
    */
-  async recordAsync(options?: CameraRecordingOptions): Promise<{ uri: string }> {
-    if (!CameraManager.record) {
-      throw new UnavailabilityError('Camera', 'recordAsync');
-    }
-
+  async recordAsync(options?: CameraRecordingOptions): Promise<{ uri: string } | undefined> {
     const recordingOptions = ensureRecordingOptions(options);
-    return await CameraManager.record(recordingOptions, this._cameraHandle);
+    return await this._cameraRef.current?.record(recordingOptions);
   }
 
   /**
    * Stops recording if any is in progress.
    */
   stopRecording() {
-    if (!CameraManager.stopRecording) {
-      throw new UnavailabilityError('Camera', 'stopRecording');
-    }
-
-    CameraManager.stopRecording(this._cameraHandle);
+    this._cameraRef.current?.stopRecording();
   }
 
   _onCameraReady = () => {
@@ -291,19 +286,17 @@ export default class Camera extends React.Component<CameraProps> {
       }
     };
 
-  _setReference = (ref?: React.Component) => {
-    if (ref) {
-      this._cameraRef = ref;
-      // TODO(Bacon): Unify these - perhaps with hooks?
-      if (Platform.OS === 'web') {
-        this._cameraHandle = ref as any;
-      } else {
-        this._cameraHandle = findNodeHandle(ref);
-      }
-    } else {
-      this._cameraRef = null;
-      this._cameraHandle = null;
-    }
+  _setReference = (ref: Ref<CameraViewRef>) => {
+    // if (ref) {
+    //   this._cameraRef
+    //   // TODO(Bacon): Unify these - perhaps with hooks?
+    //   if (Platform.OS === 'web') {
+    //     this._cameraHandle = ref as any;
+    //   }
+    // } else {
+    //   this._cameraRef = null;
+    //   this._cameraHandle = null;
+    // }
   };
 
   render() {
@@ -316,7 +309,7 @@ export default class Camera extends React.Component<CameraProps> {
     return (
       <ExponentCamera
         {...nativeProps}
-        ref={this._setReference}
+        ref={this._cameraRef}
         onCameraReady={this._onCameraReady}
         onMountError={this._onMountError}
         onBarCodeScanned={onBarCodeScanned}

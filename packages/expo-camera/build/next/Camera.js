@@ -1,6 +1,5 @@
-import { createPermissionHook, Platform, UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import * as React from 'react';
-import { findNodeHandle } from 'react-native';
 import ExponentCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
@@ -152,7 +151,7 @@ export default class Camera extends React.Component {
         requestMethod: Camera.requestMicrophonePermissionsAsync,
     });
     _cameraHandle;
-    _cameraRef;
+    _cameraRef = React.createRef();
     _lastEvents = {};
     _lastEventsTimes = {};
     // @needsAudit
@@ -174,7 +173,7 @@ export default class Camera extends React.Component {
      */
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);
-        return await CameraManager.takePicture(pictureOptions, this._cameraHandle);
+        return await this._cameraRef.current?.takePicture(pictureOptions);
     }
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.
@@ -186,20 +185,14 @@ export default class Camera extends React.Component {
      * @platform ios
      */
     async recordAsync(options) {
-        if (!CameraManager.record) {
-            throw new UnavailabilityError('Camera', 'recordAsync');
-        }
         const recordingOptions = ensureRecordingOptions(options);
-        return await CameraManager.record(recordingOptions, this._cameraHandle);
+        return await this._cameraRef.current?.record(recordingOptions);
     }
     /**
      * Stops recording if any is in progress.
      */
     stopRecording() {
-        if (!CameraManager.stopRecording) {
-            throw new UnavailabilityError('Camera', 'stopRecording');
-        }
-        CameraManager.stopRecording(this._cameraHandle);
+        this._cameraRef.current?.stopRecording();
     }
     _onCameraReady = () => {
         if (this.props.onCameraReady) {
@@ -231,27 +224,23 @@ export default class Camera extends React.Component {
         }
     };
     _setReference = (ref) => {
-        if (ref) {
-            this._cameraRef = ref;
-            // TODO(Bacon): Unify these - perhaps with hooks?
-            if (Platform.OS === 'web') {
-                this._cameraHandle = ref;
-            }
-            else {
-                this._cameraHandle = findNodeHandle(ref);
-            }
-        }
-        else {
-            this._cameraRef = null;
-            this._cameraHandle = null;
-        }
+        // if (ref) {
+        //   this._cameraRef
+        //   // TODO(Bacon): Unify these - perhaps with hooks?
+        //   if (Platform.OS === 'web') {
+        //     this._cameraHandle = ref as any;
+        //   }
+        // } else {
+        //   this._cameraRef = null;
+        //   this._cameraHandle = null;
+        // }
     };
     render() {
         const nativeProps = ensureNativeProps(this.props);
         const onBarCodeScanned = this.props.onBarCodeScanned
             ? this._onObjectDetected(this.props.onBarCodeScanned)
             : undefined;
-        return (<ExponentCamera {...nativeProps} ref={this._setReference} onCameraReady={this._onCameraReady} onMountError={this._onMountError} onBarCodeScanned={onBarCodeScanned} onPictureSaved={_onPictureSaved} onResponsiveOrientationChanged={this._onResponsiveOrientationChanged}/>);
+        return (<ExponentCamera {...nativeProps} ref={this._cameraRef} onCameraReady={this._onCameraReady} onMountError={this._onMountError} onBarCodeScanned={onBarCodeScanned} onPictureSaved={_onPictureSaved} onResponsiveOrientationChanged={this._onResponsiveOrientationChanged}/>);
     }
 }
 export const { Constants, getCameraPermissionsAsync, requestCameraPermissionsAsync, getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync, } = Camera;
