@@ -53,7 +53,7 @@ it(`transforms React display name`, () => {
     ...DEF_OPTIONS,
     caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true }),
   };
-  
+
   // Ensure no duplication
   const sourceCode = `
   var bar = createReactClass({});
@@ -124,7 +124,7 @@ describe('classic runtime', () => {
         presets: [[preset, { jsxRuntime: 'classic' }]],
         caller: getCaller({
           name: 'metro',
-          platform: platform,
+          platform,
           isDev: true,
         }),
       };
@@ -142,7 +142,7 @@ describe('classic runtime', () => {
         presets: [[preset, { jsxRuntime: 'classic' }]],
         caller: getCaller({
           name: 'metro',
-          platform: platform,
+          platform,
           isDev: false,
         }),
       };
@@ -217,7 +217,7 @@ describe('auto runtime (default)', () => {
         presets: [[preset, { jsxRuntime: 'automatic' }]],
         caller: getCaller({
           name: 'metro',
-          platform: platform,
+          platform,
           isDev: true,
         }),
       };
@@ -235,7 +235,7 @@ describe('auto runtime (default)', () => {
         presets: [[preset, { jsxRuntime: 'automatic' }]],
         caller: getCaller({
           name: 'metro',
-          platform: platform,
+          platform,
           isDev: false,
         }),
       };
