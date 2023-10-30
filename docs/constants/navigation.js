@@ -139,7 +139,6 @@ const general = [
     makePage('guides/environment-variables.mdx'),
     makePage('guides/linking.mdx'),
     makePage('guides/deep-linking.mdx'),
-    makePage('guides/editing-richtext.mdx'),
     makeGroup(
       'Custom native code',
       [
@@ -375,6 +374,7 @@ const general = [
         makePage('guides/localization.mdx'),
         makePage('guides/configuring-js-engines.mdx'),
         makePage('guides/using-bun.mdx'),
+        makePage('guides/editing-richtext.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
