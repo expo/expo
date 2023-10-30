@@ -8,11 +8,11 @@ import { Terminal } from '~/ui/components/Snippet'
 import { BoxLink } from '~/ui/components/BoxLink'
 import { Step } from '~/ui/components/Step'
 
-[Supabase](https://supabase.com/?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) is a Backend-as-a-Service (BaaS) app development platform that provides hosted backend services such as a Postgres database, user authentication, file storage, edge functions, realtime syncing, and a vector and AI toolkit. It's an open source alternative to Google's Firebase.
+[Supabase](https://supabase.com/?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) is a Backend-as-a-Service (BaaS) app development platform that provides hosted backend services such as a Postgres database, user authentication, file storage, edge functions, realtime syncing, and a vector and AI toolkit. It's an open-source alternative to Google's Firebase.
 
 Supabase automatically [generates a REST API](https://supabase.com/docs/guides/api?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) from your database and employs a concept called [row level security (RLS)](https://supabase.com/docs/guides/auth/row-level-security?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) to secure your data, making it possible to directly interact with your database from your React Native application without needing to go through a server!
 
-Supabase provides a TypeScript client library called [supabase-js](https://supabase.com/docs/reference/javascript/introduction?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) to interact with the REST API. Alternatively, Supabase also exposes a [GraphQL API](https://supabase.com/docs/guides/database/extensions/pg_graphql?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) allowing you to use your favourite GraphQL client (e.g. [Apollo Client](https://supabase.github.io/pg_graphql/usage_with_apollo/)) should you wish to.
+Supabase provides a TypeScript client library called [`supabase-js`](https://supabase.com/docs/reference/javascript/introduction?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) to interact with the REST API. Alternatively, Supabase also exposes a [GraphQL API](https://supabase.com/docs/guides/database/extensions/pg_graphql?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) allowing you to use your favorite GraphQL client (e.g. [Apollo Client](https://supabase.github.io/pg_graphql/usage_with_apollo/)) should you wish to.
 
 ## Prerequisites
 
@@ -27,33 +27,30 @@ Get the Project URL and `anon` key from the API settings.
 
 ## Using the Supabase TypeScript SDK
 
-Using [supabase-js](https://supabase.com/docs/reference/javascript/introduction?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) is the most convenient way of leveraging the full power of the Supabase stack as it conveniently combines all the different services (database, auth, realtime, storage, edge functions) together.
+Using [`supabase-js`](https://supabase.com/docs/reference/javascript/introduction?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) is the most convenient way of leveraging the full power of the Supabase stack as it conveniently combines all the different services (database, auth, realtime, storage, edge functions) together.
 
 ### Install and initialize the Supabase TypeScript SDK
 
 <Step label="1">
 #### Install supabase-js and dependencies
 
-After you have created your [Expo project](/get-started/create-a-project/), you can install supabase-js and dependencies using the following command:
+After you have created your [Expo project](/get-started/create-a-project/), you can install `supabase-js` and the required dependencies using the following command:
 
 <Terminal cmd={['$ npx expo install @supabase/supabase-js @react-native-async-storage/async-storage react-native-url-polyfill']} />
 </Step>
 
 <Step label="2">
-#### Initialize supabase-js in your project
+#### Initialize `supabase-js` in your project
 
-Simply create a helper file to initialize the Supabase client.
-We need the API URL and the `anon` key that you copied [earlier](#get-the-api-keys).
-These variables are safe to expose in your Expo app since we have
-[Row Level Security](https://supabase.com/docs/guides/auth/row-level-security?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) enabled on our Database.
+Create a helper file to initialize the Supabase client. We need the API URL and the `anon` key you copied [earlier](#get-the-api-keys). These variables are safe to expose in your Expo app since Supabase has [Row Level Security](https://supabase.com/docs/guides/auth/row-level-security?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) enabled on our Database.
 
-```js utils/supabase.ts
-import 'react-native-url-polyfill/auto'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createClient } from '@supabase/supabase-js'
+```ts utils/supabase.ts
+import 'react-native-url-polyfill/auto';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = YOUR_REACT_NATIVE_SUPABASE_URL
-const supabaseAnonKey = YOUR_REACT_NATIVE_SUPABASE_ANON_KEY
+const supabaseUrl = YOUR_REACT_NATIVE_SUPABASE_URL;
+const supabaseAnonKey = YOUR_REACT_NATIVE_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -62,14 +59,14 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     detectSessionInUrl: false,
   },
-})
+});
 ```
 
-That's it, now you can `import { supabase } from '/utils/supabase'` throughout your application to leverage the full power of Supabase!
+Now you can `import { supabase } from '/utils/supabase'` throughout your application to leverage the full power of Supabase!
 
 </Step>
 
-### Next steps
+## Next steps
 
 <BoxLink
   title="Build a User Management App"
@@ -85,19 +82,19 @@ That's it, now you can `import { supabase } from '/utils/supabase'` throughout y
 
 <BoxLink
   title="Sign in with Google"
-  description="Supabase Auth supports Sign in with Google on the web, native Android applications and Chrome extensions."
+  description="Supabase Auth supports Sign in with Google on the web, native Android applications, and Chrome extensions."
   href="https://supabase.com/docs/guides/auth/social-login/auth-google?platform=react-native&utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
 />
 
 <BoxLink
-  title="Deep Linking for OAuth & Magic Links"
-  description="When performing OAuth or sending magic link emails from native mobile applications we need to configure deep linking for our iOS and Android applications."
+  title="Deep Linking for OAuth and Magic Links"
+  description="When performing OAuth or sending magic link emails from native mobile applications, learn how to configure deep linking for Android and iOS applications."
   href="https://supabase.com/docs/guides/auth/native-mobile-deep-linking?utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
 />
 
 <BoxLink
   title="Offline-first React Native Apps with WatermelonDB"
-  description="Store your data locally and sync it with Postgres using WatermelonDB!"
+  description="Learn how to store your data locally and sync it with Postgres using WatermelonDB."
   href="https://supabase.com/blog/react-native-offline-first-watermelon-db?utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
 />
 
