@@ -121,9 +121,10 @@ class DevLauncherDevSupportManager(
       object : CallbackWithBundleLoader {
         override fun onSuccess(bundleLoader: JSBundleLoader) {
           bundleLoader.loadScript(currentContext!!.catalystInstance)
+          var bundleURL = controller.manifest?.getBundleURL() ?: devServerHelper.getDevServerSplitBundleURL(bundlePath)
           currentContext!!
             .getJSModule(HMRClient::class.java)
-            .registerBundle(devServerHelper.getDevServerSplitBundleURL(bundlePath))
+            .registerBundle(bundleURL)
           callback.onSuccess()
         }
 
@@ -213,7 +214,7 @@ class DevLauncherDevSupportManager(
     } else {
       PrinterHolder.getPrinter()
         .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server")
-      val bundleURL = devServerHelper
+      val bundleURL = controller.manifest?.getBundleURL() ?: devServerHelper
         .getDevServerBundleURL(Assertions.assertNotNull(jsAppBundleName))
       reloadJSFromServer(bundleURL)
     }
