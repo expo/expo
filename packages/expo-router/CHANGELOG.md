@@ -18,6 +18,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix duplicated `NSUserActivityTypes` strings on prebuilt. ([#25114](https://github.com/expo/expo/pull/25114) by [@yjose](https://github.com/yjose))
 - Prevent circular navigation references. ([#24548](https://github.com/expo/expo/pull/24548) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix navigating to shared routes. ([#24218](https://github.com/expo/expo/pull/24218) by [@marklawlor](https://github.com/marklawlor))
 - Fix navigation target for nested layouts ([#24598](https://github.com/expo/expo/pull/24598) by [@marklawlor](https://github.com/marklawlor))
