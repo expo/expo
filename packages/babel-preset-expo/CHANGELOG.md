@@ -4,12 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- Remove support for `native.useTransformReactJSXExperimental` and `web.useTransformReactJSXExperimental` option in favor of `jsxRuntime: 'classic'`. React support can no longer be removed.
+
 ### 🎉 New features
+
+- Use the standard `@babel/preset-react` for all React transformations.
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+- Drop unused `native.withDevTools` and `web.withDevTools` options.
 - Update reanimated tests. ([#25126](https://github.com/expo/expo/pull/25126) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.8.0 — 2023-10-17
