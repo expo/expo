@@ -1,29 +1,36 @@
 import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
 /**
- * Gets the advertising ID, a UUID string which you only use for advertising. Use this string for frequency capping,
- * attribution, conversion events, estimating the number of unique users, advertising fraud detection, and debugging.
+ * Gets the advertising ID, a UUID string intended only for advertising. Use this string for
+ * frequency capping, attribution, conversion events, estimating the number of unique users,
+ * advertising fraud detection, and debugging.
  *
- * As a best practice, don't store the advertising identifier value, call this function each time your app needs to
- * check the value of the ID instead. Users can change their authorization for tracking or reset their advertising ID at
- * any time in settings. Check your app's authorization using `getTrackingPermissionsAsync()` to determine the user's
- * intent.
+ * As a best practice, don't store the advertising ID. Instead, call this function each time your
+ * app needs to use the advertising ID. Users can change whether they allow app tracking and can
+ * reset their advertising ID at any time in their system settings. Check your app's authorization
+ * using `getTrackingPermissionsAsync()` to determine the user's intent.
  *
- * On Android, it returns the "Android Advertising ID" ([AAID](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)).
- * On Android devices that support multiple users, including guest users, it's possible for your app to obtain different
- * advertising IDs on the same device. These different IDs correspond to different users who could be signed in on that
- * device.
- * See Google's documentation for more information: [Get a user-resettable advertising ID](https://developer.android.com/training/articles/ad-id)
+ * On Android, this function returns the "Android Advertising ID"
+ * ([AAID](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)).
+ * On Android devices that support multiple users, including guest users, it's possible for your app
+ * to obtain different advertising IDs on the same device. These different IDs correspond to
+ * different users who could be signed in on that device. See Google's documentation for more
+ * information: [Get a user-resettable advertising
+ * ID](https://developer.android.com/training/articles/ad-id).
  *
- * On iOS, it returns the "Identifier for Advertisers" ([IDFA](https://developer.apple.com/documentation/adsupport/asidentifiermanager/advertisingidentifier)),
- * a string that's unique to each device. On devices running iOS 14.5, your app must request tracking authorization
- * using `requestTrackingPermissionsAsync()` before it can get the advertising identifier.
+ * On iOS, this function returns the "Identifier for Advertisers"
+ * ([IDFA](https://developer.apple.com/documentation/adsupport/asidentifiermanager/advertisingidentifier)),
+ * a string that's unique to each device. On devices running iOS 14.5 and newer, your app must
+ * request tracking authorization using `requestTrackingPermissionsAsync()` before it can get the
+ * advertising identifier.
  *
- * @return It returns either UUID `string`, or `null`. It returns null in the following cases:
- * - In iOS simulator, regardless of any settings
- * - On devices running iOS 14.5 and later, if you haven't requested authorization using `requestTrackingPermissionsAsync()`
- * - On iOS, if you've requested authorization and the user declines
- * - On iOS, when a profile or configuration restricts access to the advertising identifier
+ * @return Returns either a UUID `string` or `null`. It returns null in the following cases:
  * - On Android, when `isLimitAdTrackingEnabled()` is `true`
+ * - In the iOS simulator, regardless of any settings
+ * - On devices running iOS 14.5 and later if you haven't received permission using
+ *   `requestTrackingPermissionsAsync()`
+ * - On iOS, if you've requested permission and the user declines
+ * - On iOS, when a profile or configuration restricts access to the advertising identifier, such as
+ *   when the user has turned off the system-wide "Allow Apps to Request to Track" setting
  *
  * @example
  * ```ts
