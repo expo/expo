@@ -48,6 +48,22 @@ function App() {
   `);
 });
 
+it(`transforms React display name`, () => {
+  const options = {
+    ...DEF_OPTIONS,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true }),
+  };
+  
+  // Ensure no duplication
+  const sourceCode = `
+  var bar = createReactClass({});
+  `;
+  expect(babel.transform(sourceCode, options)!.code).toMatchInlineSnapshot(`
+    "
+    var bar = createReactClass({ displayName: "bar" });"
+  `);
+});
+
 describe('classic runtime', () => {
   // No React import...
   const sourceCode = `
