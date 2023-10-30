@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update reanimated tests. ([#25126](https://github.com/expo/expo/pull/25126) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 9.8.0 — 2023-10-17
 
 ### 🎉 New features
