@@ -1,3 +1,6 @@
 {
-  "platforms": ["ios", "android"]
+  "platforms": ["ios", "android"],
+  "android": {
+    "modules": ["expo.modules.contacts.ContactsModule"]
+  }
 }
