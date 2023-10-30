@@ -1,17 +1,15 @@
-import { resolveAssetPatternsToBeBundledAsync } from '../exportAssets';
+import { resolveAssetPatternsToBeBundled } from '../exportAssets';
 
-describe(resolveAssetPatternsToBeBundledAsync, () => {
-  it(`does nothing with empty bundle patterns`, async () => {
+describe(resolveAssetPatternsToBeBundled, () => {
+  it(`does nothing with empty bundle patterns`, () => {
     const exp = {
       name: 'Foo',
       slug: 'Foo',
     };
-    expect(await resolveAssetPatternsToBeBundledAsync('/', exp, [])).toEqual({
-      name: 'Foo',
-      slug: 'Foo',
-    });
+    const assetPatterns = resolveAssetPatternsToBeBundled('/', exp, []);
+    expect(assetPatterns).toBeUndefined();
   });
-  it(`expands bundle patterns`, async () => {
+  it(`expands bundle patterns`, () => {
     const exp: any = {
       name: 'Foo',
       slug: 'Foo',
@@ -19,7 +17,7 @@ describe(resolveAssetPatternsToBeBundledAsync, () => {
         assetPatternsToBeBundled: ['**/*'],
       },
     };
-    await resolveAssetPatternsToBeBundledAsync('/', exp, [
+    const resultSet = resolveAssetPatternsToBeBundled('/', exp, [
       {
         __packager_asset: true,
         files: ['/Users/evanbacon/Documents/GitHub/lab/yolo87/assets/icon.png'],
@@ -49,7 +47,7 @@ describe(resolveAssetPatternsToBeBundledAsync, () => {
         fileHashes: ['foobar3'],
       },
     ]);
-    const result = [...exp.bundledAssets];
+    const result = [...(resultSet ?? new Set())];
     result.sort();
     expect(result).toEqual([
       'asset_4e3f888fc8475f69fd5fa32f1ad5216a.png',
