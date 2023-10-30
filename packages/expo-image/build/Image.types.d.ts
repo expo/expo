@@ -46,6 +46,12 @@ export type ImageSource = {
      * @platform web
      */
     webMaxViewportWidth?: number;
+    /**
+     * Whether the image is animated (i.e. an animated GIF or WEBP).
+     * @platform android
+     * @platform ios
+     */
+    isAnimated?: boolean;
 };
 /**
  * @hidden
