@@ -160,6 +160,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       shouldRerender = true
     }
 
+  internal var autoplay: Boolean = true
+
   internal var priority: Priority = Priority.NORMAL
   internal var cachePolicy: CachePolicy = CachePolicy.DISK
 
@@ -332,6 +334,13 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
             alpha(1f)
           }
         }
+      }
+
+      // If our image is animated, we want to see if autoplay is disabled. If it is, we should
+      // stop the animation as soon as the resource is ready. Placeholders should not follow this
+      // value since the intention is almost certainly to display the animation (i.e. a spinner)
+      if(resource is Animatable && !isPlaceholder && !autoplay) {
+        resource.stop()
       }
     }
 
