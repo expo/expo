@@ -34,12 +34,16 @@ export type Closure = {
     name: string;
     types: ClosureTypes | null;
 };
+export type Prop = {
+    name: string;
+    types: Omit<ClosureTypes, 'returnType'>;
+};
 export type OutputModuleDefinition = {
     name: string;
     view: OutputViewDefinition | null;
     events: {
         name: string;
     }[];
-} & Record<'asyncFunctions' | 'functions' | 'properties', Closure[]>;
+} & Record<'asyncFunctions' | 'functions' | 'properties', Closure[]> & Record<'props', Prop[]>;
 export type OutputViewDefinition = Omit<OutputModuleDefinition, 'view'>;
 //# sourceMappingURL=types.d.ts.map
