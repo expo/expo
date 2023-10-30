@@ -151,7 +151,6 @@ describe.each([
   ['metro+hermes', getCaller({ name: 'metro', engine: 'hermes', isDev: true })],
   ['webpack', getCaller({ name: 'babel-loader', isDev: true })],
 ])('%s', (_name, caller) => {
-  const isMetro = _name.includes('metro');
   it(`compiles sample files`, () => {
     const options = {
       babelrc: false,
