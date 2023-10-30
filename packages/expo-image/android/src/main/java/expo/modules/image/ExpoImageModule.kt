@@ -191,6 +191,14 @@ class ExpoImageModule : Module() {
         view.autoplay = autoplay ?: true
       }
 
+      AsyncFunction("startAnimating") { view: ExpoImageViewWrapper ->
+        view.setIsAnimating(true)
+      }
+
+      AsyncFunction("stopAnimating") { view: ExpoImageViewWrapper ->
+        view.setIsAnimating(false)
+      }
+
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->
         view.rerenderIfNeeded()
       }

@@ -184,6 +184,18 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     activeView.setBorderColor(index, rgb, alpha)
   }
 
+  fun setIsAnimating(isAnimating: Boolean) {
+    val resource = activeView.drawable
+
+    if (resource is Animatable) {
+      if (isAnimating) {
+        resource.start()
+      } else {
+        resource.stop()
+      }
+    }
+  }
+
   /**
    * Whether the image should be loaded again
    */
@@ -339,7 +351,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       // If our image is animated, we want to see if autoplay is disabled. If it is, we should
       // stop the animation as soon as the resource is ready. Placeholders should not follow this
       // value since the intention is almost certainly to display the animation (i.e. a spinner)
-      if(resource is Animatable && !isPlaceholder && !autoplay) {
+      if (resource is Animatable && !isPlaceholder && !autoplay) {
         resource.stop()
       }
     }
