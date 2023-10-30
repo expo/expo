@@ -16468,11 +16468,6 @@ react-mixin@^3.0.5:
     object-assign "^4.0.1"
     smart-mixin "^2.0.0"
 
-react-native-branch@5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-5.0.0.tgz#9d2102abb3c9a577ce4327e434151ece2b4c7c78"
-  integrity sha512-6VInx3bvWOfEJ916zdA1yzJhcjB26N0oMUJInW3reFIijsk6KOjyM46UH3/MixdNUOV/nZn1JoRZM+wpLffDWQ==
-
 react-native-bundle-visualizer@^3.0.0:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/react-native-bundle-visualizer/-/react-native-bundle-visualizer-3.1.1.tgz#cf8eaf7035cd92000dbcf8c2f2434f6f5accc050"

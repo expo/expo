@@ -44,7 +44,7 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE"      => "YES",
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
   }
-  
+
 
   s.subspec "Expo" do |ss|
     ss.source_files     = "Core/**/*.{h,m,mm,cpp}"
@@ -62,7 +62,6 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI49_0_0EXBarCodeScanner"
     ss.dependency         "ABI49_0_0ExpoBattery"
     ss.dependency         "ABI49_0_0ExpoBlur"
-    ss.dependency         "EXBranch"
     ss.dependency         "ABI49_0_0ExpoBrightness"
     ss.dependency         "ABI49_0_0EXCalendar"
     ss.dependency         "ABI49_0_0EXCamera"

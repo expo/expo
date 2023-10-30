@@ -35,7 +35,6 @@
   "expo": {
     "autolinking": {
       "exclude": [
-        "expo-branch",
         "expo-ads-facebook",
         "expo-ads-admob",
         "expo-updates",
