@@ -100,9 +100,11 @@ function NavigationContainerInner({ theme = native_1.DefaultTheme, linking, fall
         // Then the fallback will be handled by a parent `Suspense` component
         return fallback;
     }
-    return (React.createElement(native_1.LinkingContext.Provider, { value: linkingContext },
-        React.createElement(native_1.ThemeProvider, { value: theme },
-            React.createElement(core_1.BaseNavigationContainer, { ...rest, initialState: rest.initialState == null ? initialState : rest.initialState, ref: refContainer }))));
+    return (<native_1.LinkingContext.Provider value={linkingContext}>
+      <native_1.ThemeProvider value={theme}>
+        <core_1.BaseNavigationContainer {...rest} initialState={rest.initialState == null ? initialState : rest.initialState} ref={refContainer}/>
+      </native_1.ThemeProvider>
+    </native_1.LinkingContext.Provider>);
 }
 const NavigationContainer = React.forwardRef(NavigationContainerInner);
 exports.default = NavigationContainer;

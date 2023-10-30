@@ -14,9 +14,10 @@ export default class BlurView extends React.Component {
     }
     render() {
         const { tint = 'default', intensity = 50, blurReductionFactor = 4, experimentalBlurMethod = 'none', style, children, ...props } = this.props;
-        return (React.createElement(View, { ...props, style: [styles.container, style] },
-            React.createElement(NativeBlurView, { ref: this.blurViewRef, tint: tint, intensity: intensity, blurReductionFactor: blurReductionFactor, experimentalBlurMethod: experimentalBlurMethod, style: StyleSheet.absoluteFill }),
-            children));
+        return (<View {...props} style={[styles.container, style]}>
+        <NativeBlurView ref={this.blurViewRef} tint={tint} intensity={intensity} blurReductionFactor={blurReductionFactor} experimentalBlurMethod={experimentalBlurMethod} style={StyleSheet.absoluteFill}/>
+        {children}
+      </View>);
     }
 }
 const styles = StyleSheet.create({

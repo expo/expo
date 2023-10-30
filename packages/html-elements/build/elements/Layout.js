@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import View from '../primitives/View';
 function createView(nativeProps = {}) {
     return forwardRef((props, ref) => {
-        return React.createElement(View, { ...nativeProps, ...props, ref: ref });
+        return <View {...nativeProps} {...props} ref={ref}/>;
     });
 }
 export const Div = createView();

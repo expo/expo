@@ -54,44 +54,59 @@ if (process.env.NODE_ENV === 'development') {
         if (!logData?.symbolicated?.stack?.stack) {
             return null;
         }
-        return (react_1.default.createElement(react_native_1.ScrollView, { style: { flex: 1 } },
-            react_1.default.createElement(LogContext.Provider, { value: {
-                    isDisabled: false,
-                    logs: [logData],
-                    selectedLogIndex: 0,
-                } },
-                react_1.default.createElement(LogBoxInspectorStackFrames, { onRetry: function () { }, type: "stack" }))));
+        return (<react_native_1.ScrollView style={{ flex: 1 }}>
+        <LogContext.Provider value={{
+                isDisabled: false,
+                logs: [logData],
+                selectedLogIndex: 0,
+            }}>
+          <LogBoxInspectorStackFrames onRetry={function () { }} type="stack"/>
+        </LogContext.Provider>
+      </react_native_1.ScrollView>);
     };
 }
 else {
     StackTrace = function () {
-        return react_1.default.createElement(react_native_1.View, { style: { flex: 1 } });
+        return <react_native_1.View style={{ flex: 1 }}/>;
     };
 }
 function ErrorBoundary({ error, retry }) {
     const logBoxLog = useMetroSymbolication(error);
     const inTabBar = react_1.default.useContext(bottom_tabs_1.BottomTabBarHeightContext);
     const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
-    return (react_1.default.createElement(react_native_1.View, { style: styles.container },
-        react_1.default.createElement(Wrapper, { style: { flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' } },
-            react_1.default.createElement(react_native_1.View, { style: {
-                    marginBottom: 12,
-                    gap: 4,
-                    flexWrap: 'wrap',
-                } },
-                react_1.default.createElement(react_native_1.Text, { role: "heading", "aria-level": 1, style: styles.title }, "Something went wrong"),
-                react_1.default.createElement(react_native_1.Text, { role: "heading", "aria-level": 2, style: styles.errorMessage },
-                    "Error: ",
-                    error.message)),
-            react_1.default.createElement(StackTrace, { logData: logBoxLog }),
-            process.env.NODE_ENV === 'development' && (react_1.default.createElement(Link_1.Link, { href: "/_sitemap", style: styles.link }, "Sitemap")),
-            react_1.default.createElement(Pressable_1.Pressable, { onPress: retry }, ({ hovered, pressed }) => (react_1.default.createElement(react_native_1.View, { style: [styles.buttonInner, (hovered || pressed) && { backgroundColor: 'white' }] },
-                react_1.default.createElement(react_native_1.Text, { style: [
-                        styles.buttonText,
-                        {
-                            color: hovered || pressed ? 'black' : 'white',
-                        },
-                    ] }, "Retry")))))));
+    return (<react_native_1.View style={styles.container}>
+      <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
+        <react_native_1.View style={{
+            marginBottom: 12,
+            gap: 4,
+            flexWrap: 'wrap',
+        }}>
+          <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
+            Something went wrong
+          </react_native_1.Text>
+          <react_native_1.Text role="heading" aria-level={2} style={styles.errorMessage}>
+            Error: {error.message}
+          </react_native_1.Text>
+        </react_native_1.View>
+
+        <StackTrace logData={logBoxLog}/>
+        {process.env.NODE_ENV === 'development' && (<Link_1.Link href="/_sitemap" style={styles.link}>
+            Sitemap
+          </Link_1.Link>)}
+        <Pressable_1.Pressable onPress={retry}>
+          {({ hovered, pressed }) => (<react_native_1.View style={[styles.buttonInner, (hovered || pressed) && { backgroundColor: 'white' }]}>
+              <react_native_1.Text style={[
+                styles.buttonText,
+                {
+                    color: hovered || pressed ? 'black' : 'white',
+                },
+            ]}>
+                Retry
+              </react_native_1.Text>
+            </react_native_1.View>)}
+        </Pressable_1.Pressable>
+      </Wrapper>
+    </react_native_1.View>);
 }
 exports.ErrorBoundary = ErrorBoundary;
 const styles = react_native_1.StyleSheet.create({

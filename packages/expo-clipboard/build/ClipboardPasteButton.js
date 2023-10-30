@@ -28,6 +28,6 @@ export function ClipboardPasteButton({ onPress, ...restProps }) {
     const onPastePressed = ({ nativeEvent }) => {
         onPress(nativeEvent);
     };
-    return React.createElement(ExpoClipboardPasteButton, { onPastePressed: onPastePressed, ...restProps });
+    return <ExpoClipboardPasteButton onPastePressed={onPastePressed} {...restProps}/>;
 }
 //# sourceMappingURL=ClipboardPasteButton.js.map
