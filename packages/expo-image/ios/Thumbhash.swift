@@ -456,7 +456,7 @@ func thumbHashToApproximateAspectRatio(hash: Data) -> Float32 {
   return Float32(lx) / Float32(ly)
 }
 
-#if os(iOS)
+#if os(iOS) || os(tvOS)
 import UIKit
 
 func thumbHash(fromImage: UIImage) -> Data {

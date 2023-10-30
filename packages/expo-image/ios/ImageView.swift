@@ -2,7 +2,9 @@
 
 import SDWebImage
 import ExpoModulesCore
+#if !os(tvOS)
 import VisionKit
+#endif
 
 typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
@@ -40,6 +42,8 @@ public final class ImageView: ExpoView {
   var imageTintColor: UIColor?
 
   var cachePolicy: ImageCachePolicy = .disk
+
+  var allowDownscaling: Bool = true
 
   var recyclingKey: String? {
     didSet {
@@ -210,14 +214,17 @@ public final class ImageView: ExpoView {
       log.debug("Loading the image has been canceled")
       return
     }
-    if let image = image {
+
+    // Create an SDAnimatedImage if needed then handle the image
+    if let image = createAnimatedIfNeeded(image: image, data: data) {
       onLoad([
         "cacheType": cacheTypeToString(cacheType),
         "source": [
           "url": imageUrl?.absoluteString,
           "width": image.size.width,
           "height": image.size.height,
-          "mediaType": imageFormatToMediaType(image.sd_imageFormat)
+          "mediaType": imageFormatToMediaType(image.sd_imageFormat),
+          "isAnimated": image.sd_isAnimated ?? false
         ]
       ])
 
@@ -332,7 +339,7 @@ public final class ImageView: ExpoView {
       return nil
     }
     // Downscale the image only when necessary
-    if shouldDownscale(image: image, toSize: idealSize, scale: scale) {
+    if allowDownscaling && shouldDownscale(image: image, toSize: idealSize, scale: scale) {
       return await resize(animatedImage: image, toSize: idealSize, scale: scale)
     }
     return image
@@ -374,9 +381,11 @@ public final class ImageView: ExpoView {
       sdImageView.image = image
     }
 
+    #if !os(tvOS)
     if enableLiveTextInteraction {
       analyzeImage()
     }
+    #endif
   }
 
   // MARK: - Helpers
@@ -416,7 +425,7 @@ public final class ImageView: ExpoView {
   }
 
   // MARK: - Live Text Interaction
-
+  #if !os(tvOS)
   @available(iOS 16.0, macCatalyst 17.0, *)
   static let imageAnalyzer = ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
 
@@ -466,4 +475,5 @@ public final class ImageView: ExpoView {
     }
     return interaction as? ImageAnalysisInteraction
   }
+  #endif
 }

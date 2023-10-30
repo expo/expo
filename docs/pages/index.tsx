@@ -191,7 +191,7 @@ const Home = () => {
               </div>
               <RawH3 css={css({ color: palette.purple11 })}>Chat with the community</RawH3>
               <P css={{ color: palette.purple11, ...typography.fontSizes[14] }}>
-                Join over 15,000 other developers
+                Join over 20,000 other developers
                 <br />
                 on the Expo Community Discord.
               </P>

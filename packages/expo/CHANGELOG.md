@@ -4,13 +4,21 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🎉 New features
 
+- Add support for standard `URL` API. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
 - Added Expo CLI devtools plugins support. ([#24667](https://github.com/expo/expo/pull/24667) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
+- Migrate to `whatwg-url-without-unicode` to fix `SharedArrayBuffer` issue. ([#25005](https://github.com/expo/expo/pull/25005) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+- Revert `URL` support. ([#25006](https://github.com/expo/expo/pull/25006) by [@EvanBacon](https://github.com/EvanBacon))
+- Encode Blob components in `URL.createObjectURL`. ([#25004](https://github.com/expo/expo/pull/25004) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 49.0.16 — 2023-10-20
 

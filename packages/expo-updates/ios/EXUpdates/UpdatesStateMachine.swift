@@ -289,16 +289,12 @@ extension UpdatesStateContext {
 internal class UpdatesStateMachine {
   private let logger = UpdatesLogger()
 
-  init(changeEventDelegate: (any UpdatesStateChangeDelegate)) {
-    self.changeEventDelegate = changeEventDelegate
-  }
-
   // MARK: - Public methods and properties
 
   /**
    In production, this is the AppController instance.
    */
-  private weak var changeEventDelegate: (any UpdatesStateChangeDelegate)?
+  internal weak var changeEventDelegate: (any UpdatesStateChangeDelegate)?
 
   /**
    The current state

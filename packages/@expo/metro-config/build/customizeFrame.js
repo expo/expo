@@ -41,7 +41,9 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(['/Libraries/Renderer/implementation
 // Block expo's metro-runtime
 '@expo/metro-runtime/.+\\.ts',
 // Block upstream metro-runtime
-'/metro-runtime/.+\\.js$'].join('|'));
+'/metro-runtime/.+\\.js$',
+// Block all whatwg polyfills
+'node_modules/whatwg-.+\\.js$'].join('|'));
 exports.INTERNAL_CALLSITES_REGEX = INTERNAL_CALLSITES_REGEX;
 function isUrl(value) {
   try {

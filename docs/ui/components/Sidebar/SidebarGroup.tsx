@@ -24,7 +24,9 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   const Icon = getIconElement(title);
   return (
     <div className="mb-5">
-      {!shouldSkipTitle(route, parentRoute) && <SidebarTitle Icon={Icon}>{title}</SidebarTitle>}
+      {!shouldSkipTitle(route, parentRoute) && title && (
+        <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
+      )}
       {(route.children || []).map(child =>
         child.type === 'page' ? (
           <SidebarLink key={`${route.name}-${child.name}`} info={child}>
