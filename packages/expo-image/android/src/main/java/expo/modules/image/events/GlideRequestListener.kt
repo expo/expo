@@ -1,5 +1,6 @@
 package expo.modules.image.events
 
+import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.util.Log
 import com.bumptech.glide.load.DataSource
@@ -54,7 +55,8 @@ class GlideRequestListener(
           url = model.toString(),
           width = resource.intrinsicWidth,
           height = resource.intrinsicHeight,
-          mediaType = null // TODO(@lukmccall): add mediaType
+          mediaType = null, // TODO(@lukmccall): add mediaType
+          isAnimated = resource is Animatable,
         )
       )
     )
