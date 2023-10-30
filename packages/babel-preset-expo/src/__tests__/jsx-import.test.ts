@@ -57,7 +57,7 @@ describe('classic runtime', () => {
   }`;
 
   it(`compiles for Webpack in dev`, () => {
-    const webpackDevOptions = {
+    const options = {
       ...DEF_OPTIONS,
       presets: [[preset, { jsxRuntime: 'classic' }]],
       caller: getCaller({
@@ -66,11 +66,11 @@ describe('classic runtime', () => {
       }),
     };
 
-    const webpackDevCode = babel.transform(sourceCode, webpackDevOptions)!.code;
+    const code = babel.transform(sourceCode, options)!.code;
 
-    expect(webpackDevCode).not.toMatch(/"react\/jsx-runtime"/);
-    expect(webpackDevCode).not.toMatch(/_jsx\(View/);
-    expect(webpackDevCode).toMatchInlineSnapshot(`
+    expect(code).not.toMatch(/"react\/jsx-runtime"/);
+    expect(code).not.toMatch(/_jsx\(View/);
+    expect(code).toMatchInlineSnapshot(`
       "var _jsxFileName = "/unknown";import View from "react-native-web/dist/exports/View";
 
       export default function App() {
@@ -150,7 +150,7 @@ describe('auto runtime (default)', () => {
   }`;
 
   it(`compiles for Webpack in dev`, () => {
-    const webpackDevOptions = {
+    const options = {
       ...DEF_OPTIONS,
       presets: [[preset, { jsxRuntime: 'automatic' }]],
       caller: getCaller({
@@ -159,11 +159,11 @@ describe('auto runtime (default)', () => {
       }),
     };
 
-    const webpackDevCode = babel.transform(sourceCode, webpackDevOptions)!.code;
+    const code = babel.transform(sourceCode, options)!.code;
 
-    expect(webpackDevCode).toMatch(/"react\/jsx-dev-runtime"/);
-    expect(webpackDevCode).not.toMatch(/_jsx\(View/);
-    expect(webpackDevCode).toMatchInlineSnapshot(`
+    expect(code).toMatch(/"react\/jsx-dev-runtime"/);
+    expect(code).not.toMatch(/_jsx\(View/);
+    expect(code).toMatchInlineSnapshot(`
       "var _jsxFileName = "/unknown";import View from "react-native-web/dist/exports/View";import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
 
       export default function App() {
