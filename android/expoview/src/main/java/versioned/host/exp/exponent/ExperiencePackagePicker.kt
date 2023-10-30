@@ -22,6 +22,7 @@ import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
+import expo.modules.facedetector.FaceDetectorModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
@@ -151,6 +152,7 @@ object ExperiencePackagePicker : ModulesProvider {
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
     FileSystemModule::class.java,
+    FaceDetectorModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,
     GLObjectManagerModule::class.java,
