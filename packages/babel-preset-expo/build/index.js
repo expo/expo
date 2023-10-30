@@ -10,6 +10,7 @@ function babelPresetExpo(api, options = {}) {
     const isWebpack = bundler === 'webpack';
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
+    const isDev = api.caller(common_1.getIsDev);
     // If the `platform` prop is not defined then this must be a custom config that isn't
     // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
     if (!platform && isWebpack) {
@@ -48,7 +49,9 @@ function babelPresetExpo(api, options = {}) {
     // then this block should be updated to reflect those changes.
     if (!platformOptions.useTransformReactJSXExperimental) {
         extraPlugins.push([
-            require('@babel/plugin-transform-react-jsx'),
+            isDev
+                ? require('@babel/plugin-transform-react-jsx-development')
+                : require('@babel/plugin-transform-react-jsx'),
             {
                 // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
                 runtime: (options && options.jsxRuntime) || 'automatic',
@@ -86,7 +89,7 @@ function babelPresetExpo(api, options = {}) {
                 require('metro-react-native-babel-preset'),
                 {
                     // Defaults to undefined, set to something truthy to disable `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`.
-                    withDevTools: platformOptions.withDevTools,
+                    withDevTools: platformOptions.withDevTools ?? isDev,
                     // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
                     disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
                     // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`

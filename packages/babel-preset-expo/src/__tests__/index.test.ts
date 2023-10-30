@@ -83,6 +83,33 @@ var foo = obj2.foo ?? "default";`;
   expect(withHermes.code).toEqual(sourceCode);
 });
 
+describe('react jsx import', () => {
+  const DEF_OPTIONS = {
+    babelrc: false,
+    presets: [preset],
+    sourceMaps: true,
+    filename: 'unknown',
+    configFile: false,
+    compact: false,
+    comments: true,
+    retainLines: true,
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios' }),
+  };
+
+  it(`compiles React jsx for development`, () => {
+    const options = {
+      ...DEF_OPTIONS,
+      caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios' }),
+    };
+
+    const sourceCode = `
+    function App() {
+      return <div />
+    }`;
+    expect(babel.transform(sourceCode, options)!.code).toMatchInlineSnapshot();
+  });
+});
+
 it(`compiles sample file with Metro targeting Hermes`, () => {
   const options = {
     babelrc: false,
