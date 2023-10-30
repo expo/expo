@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Migrated codebase to use Expo Modules API.
+- Migrated codebase to use Expo Modules API. ([#24994](https://github.com/expo/expo/pull/24994) by [@lukmccall](https://github.com/lukmccall))
 
 ## 12.5.0 — 2023-10-17
 
