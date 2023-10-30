@@ -381,6 +381,7 @@ const general = [
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
         makePage('guides/facebook-authentication.mdx'),
+        makePage('guides/using-supabase.mdx'),
         makePage('guides/using-firebase.mdx'),
         makePage('guides/using-flipper.mdx'),
         makePage('guides/google-authentication.mdx'),
