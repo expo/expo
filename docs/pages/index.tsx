@@ -279,6 +279,7 @@ export function JoinTheCommunity() {
             link="https://chat.expo.dev"
             icon={<DiscordIcon className="icon-lg text-palette-white" />}
             iconBackground="#3131E8"
+            shouldLeakReferrer
           />
         </Row>
         <Row>
