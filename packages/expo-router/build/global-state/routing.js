@@ -82,10 +82,7 @@ function linkTo(href, event) {
     }
     const rootState = navigationRef.getRootState();
     if (href.startsWith('.')) {
-        let base = this.linking.getPathFromState?.(rootState, {
-            screens: [],
-            preserveGroups: true,
-        }) ?? '';
+        let base = this.routeInfo?.pathname ?? '/';
         if (base && !base.endsWith('/')) {
             base += '/..';
         }

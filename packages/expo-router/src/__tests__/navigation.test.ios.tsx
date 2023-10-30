@@ -766,3 +766,31 @@ it('can push & replace with nested Slots', async () => {
   expect(screen).toHavePathname('/');
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
+
+it('can navigation to a relative router without losing path params', async () => {
+  renderRouter(
+    {
+      _layout: () => <Slot />,
+      '(group)/[value]/one': () => <Text testID="one" />,
+      '(group)/[value]/two': () => <Text testID="two" />,
+    },
+    {
+      initialUrl: '/test/one',
+    }
+  );
+
+  expect(screen).toHavePathname('/test/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.push('./two'));
+  expect(screen).toHavePathname('/test/two');
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+
+  act(() => router.push('../apple/one?orange=1'));
+  expect(screen).toHavePathname('/apple/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.push('./two'));
+  expect(screen).toHavePathname('/apple/two');
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+});
