@@ -2,57 +2,48 @@ package expo.modules.facedetector
 
 import android.content.Context
 import android.os.Bundle
-
-import expo.modules.core.ExportedModule
-import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.ModuleRegistryDelegate
-import expo.modules.core.Promise
+import expo.modules.facedetector.tasks.FileFaceDetectionCompletionListener
+import expo.modules.facedetector.tasks.FileFaceDetectionTask
 import expo.modules.interfaces.facedetector.FaceDetectorInterface
 import expo.modules.interfaces.facedetector.FaceDetectorProviderInterface
-import expo.modules.facedetector.tasks.FileFaceDetectionTask
-import expo.modules.facedetector.tasks.FileFaceDetectionCompletionListener
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
-import java.util.*
+class FaceDetectorModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("ExpoFaceDetector")
 
-private const val TAG = "ExpoFaceDetector"
-private const val MODE_OPTION_KEY = "Mode"
-private const val DETECT_LANDMARKS_OPTION_KEY = "Landmarks"
-private const val RUN_CLASSIFICATIONS_OPTION_KEY = "Classifications"
+    Constants(
+      "Mode" to faceDetectionModeConstants,
+      "Landmarks" to faceDetectionLandmarksConstants,
+      "Classifications" to faceDetectionClassificationsConstants
+    )
 
-class FaceDetectorModule(
-  context: Context?,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
-) : ExportedModule(context) {
-  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
-  override fun getName() = TAG
-
-  override fun getConstants() = mapOf(
-    MODE_OPTION_KEY to faceDetectionModeConstants,
-    DETECT_LANDMARKS_OPTION_KEY to faceDetectionLandmarksConstants,
-    RUN_CLASSIFICATIONS_OPTION_KEY to faceDetectionClassificationsConstants
-  )
-
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    moduleRegistryDelegate.onCreate(moduleRegistry)
+    AsyncFunction("detectFaces") { options: HashMap<String, Any>, promise: Promise ->
+      val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+      val detector = detectorForOptions(options, context)
+      FileFaceDetectionTask(
+        detector,
+        options,
+        object : FileFaceDetectionCompletionListener {
+          override fun resolve(result: Bundle) = promise.resolve(result)
+          override fun reject(tag: String, message: String) = promise.reject(tag, message, null)
+        }
+      ).execute()
+    }
   }
 
-  @ExpoMethod
-  fun detectFaces(options: HashMap<String, Any>, promise: Promise) {
-    // TODO: Check file scope
-    FileFaceDetectionTask(
-      detectorForOptions(options, context), options,
-      object : FileFaceDetectionCompletionListener {
-        override fun resolve(result: Bundle) = promise.resolve(result)
-        override fun reject(tag: String, message: String) = promise.reject(tag, message, null)
-      }
-    ).execute()
-  }
+  private fun detectorForOptions(
+    options: HashMap<String, Any>,
+    context: Context
+  ): FaceDetectorInterface {
+    val faceDetectorProvider = appContext.legacyModule<FaceDetectorProviderInterface>()
+      ?: throw Exceptions.ModuleNotFound(FaceDetectorProviderInterface::class)
 
-  private fun detectorForOptions(options: HashMap<String, Any>, context: Context): FaceDetectorInterface {
-    val faceDetectorProvider: FaceDetectorProviderInterface by moduleRegistry()
-    val faceDetector = faceDetectorProvider.createFaceDetectorWithContext(context)
-    faceDetector.setSettings(options)
-    return faceDetector
+    return faceDetectorProvider.createFaceDetectorWithContext(context).apply {
+      setSettings(options)
+    }
   }
 }
