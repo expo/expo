@@ -17,13 +17,11 @@ class HapticsModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val vibrator: Vibrator
-    get() {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-          (context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
-        } else {
-          @Suppress("DEPRECATION")
-          context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        }
+    get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      (context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
+    } else {
+      @Suppress("DEPRECATION")
+      context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     }
 
   override fun definition() = ModuleDefinition {
