@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update reanimated tests.
+
 ## 9.8.0 — 2023-10-17
 
 ### 🎉 New features
