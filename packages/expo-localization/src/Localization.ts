@@ -68,7 +68,7 @@ export const isRTL = ExpoLocalization.isRTL;
 
 // @needsAudit
 /**
- * @deprecated Use Localization.getLocales() instead.
+ * @deprecated Use [`Localization.getLocales()`](#localizationgetlocales) instead.
  * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag),
  * consisting of a two-character language code and optional script, region and variant codes.
  *
