@@ -1,4 +1,3 @@
 {
-  "name": "expo-face-detector",
   "platforms": ["ios", "android"]
 }

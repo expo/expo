@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Renamed `unimodule.json` to `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+
 ## 8.13.0 — 2023-10-17
 
 ### 🐛 Bug fixes
