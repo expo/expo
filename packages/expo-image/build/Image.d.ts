@@ -40,11 +40,13 @@ export declare class Image extends React.PureComponent<ImageProps> {
     static getCachePathAsync(cacheKey: string): Promise<string | null>;
     /**
      * Asynchronously starts playback of the view's image if it is animated.
+     * @platform android
      * @platform ios
      */
     startAnimating(): Promise<void>;
     /**
      * Asynchronously stops the playback of the view's image if it is animated.
+     * @platform android
      * @platform ios
      */
     stopAnimating(): Promise<void>;

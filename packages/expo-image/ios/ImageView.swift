@@ -53,6 +53,8 @@ public final class ImageView: ExpoView {
     }
   }
 
+  var autoplay: Bool = true
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -372,6 +374,12 @@ public final class ImageView: ExpoView {
 
   private func setImage(_ image: UIImage?, contentFit: ContentFit, isPlaceholder: Bool) {
     sdImageView.contentMode = contentFit.toContentMode()
+
+    if isPlaceholder {
+      sdImageView.autoPlayAnimatedImage = true
+    } else {
+      sdImageView.autoPlayAnimatedImage = autoplay
+    }
 
     if let imageTintColor, !isPlaceholder {
       sdImageView.tintColor = imageTintColor

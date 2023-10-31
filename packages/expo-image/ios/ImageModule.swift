@@ -92,7 +92,7 @@ public final class ImageModule: Module {
       }
 
       Prop("autoplay") { (view, autoplay: Bool?) in
-        view.sdImageView.autoPlayAnimatedImage = autoplay ?? true
+        view.autoplay = autoplay ?? true
       }
 
       AsyncFunction("startAnimating") { (view: ImageView) in
