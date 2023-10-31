@@ -110,7 +110,6 @@ export function withMetroResolvers(
 
 export function withMetroMutatedResolverContext(
   config: MetroConfig,
-  projectRoot: string,
   getContext: (
     ctx: ResolutionContext,
     moduleName: string,
@@ -118,7 +117,7 @@ export function withMetroMutatedResolverContext(
   ) => ResolutionContext
 ): MetroConfig {
   // const hasUserDefinedResolver = !!config.resolver?.resolveRequest;
-  const defaultResolveRequest = getDefaultMetroResolver(projectRoot);
+  const defaultResolveRequest = getDefaultMetroResolver(config.projectRoot);
   const originalResolveRequest = config.resolver?.resolveRequest;
 
   return {
@@ -145,10 +144,7 @@ export function withMetroMutatedResolverContext(
   };
 }
 
-export function withMetroErrorReportingResolver(
-  config: MetroConfig,
-  projectRoot: string
-): MetroConfig {
+export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfig {
   const originalResolveRequest = config.resolver?.resolveRequest;
 
   function mutateResolutionError(
@@ -198,7 +194,7 @@ export function withMetroErrorReportingResolver(
       return new Array(num).fill(' ').join('');
     };
 
-    const root = config.server?.unstable_serverRoot ?? config.projectRoot ?? projectRoot;
+    const root = config.server?.unstable_serverRoot ?? config.projectRoot;
 
     type InverseDepResult = {
       origin: string;

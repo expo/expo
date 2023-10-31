@@ -42,7 +42,7 @@ type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
-function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
+function withWebPolyfills(config: ConfigT): ConfigT {
   const originalGetPolyfills = config.serializer.getPolyfills
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
@@ -51,7 +51,7 @@ function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
     if (ctx.platform === 'web') {
       return [
         // NOTE: We might need this for all platforms
-        path.join(projectRoot, EXTERNAL_REQUIRE_POLYFILL),
+        path.join(config.projectRoot, EXTERNAL_REQUIRE_POLYFILL),
         // TODO: runtime polyfills, i.e. Fast Refresh, error overlay, React Dev Tools...
       ];
     }
@@ -98,14 +98,12 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
 export function withExtendedResolver(
   config: ConfigT,
   {
-    projectRoot,
     tsconfig,
     platforms,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isExporting,
   }: {
-    projectRoot: string;
     tsconfig: TsConfigPaths | null;
     platforms: string[];
     isTsconfigPathsEnabled?: boolean;
@@ -122,12 +120,12 @@ export function withExtendedResolver(
   // swap out the transformer based on platform.
   const assetRegistryPath = fs.realpathSync(
     // This is the native asset registry alias for native.
-    path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
+    path.resolve(resolveFrom(config.projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
     // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
     // path.resolve(resolveFrom(projectRoot, '@react-native/assets-registry/registry.js'))
   );
 
-  const defaultResolver = importMetroResolverFromProject(projectRoot).resolve;
+  const defaultResolver = importMetroResolverFromProject(config.projectRoot).resolve;
   const resolver = isFastResolverEnabled
     ? createFastResolver({ preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false })
     : defaultResolver;
@@ -170,10 +168,13 @@ export function withExtendedResolver(
       // TODO: We should track all the files that used imports and invalidate them
       // currently the user will need to save all the files that use imports to
       // use the new aliases.
-      const configWatcher = new FileNotifier(projectRoot, ['./tsconfig.json', './jsconfig.json']);
+      const configWatcher = new FileNotifier(config.projectRoot, [
+        './tsconfig.json',
+        './jsconfig.json',
+      ]);
       configWatcher.startObserving(() => {
         debug('Reloading tsconfig.json');
-        loadTsConfigPathsAsync(projectRoot).then((tsConfigPaths) => {
+        loadTsConfigPathsAsync(config.projectRoot).then((tsConfigPaths) => {
           if (tsConfigPaths?.paths && !!Object.keys(tsConfigPaths.paths).length) {
             debug('Enabling tsconfig.json paths support');
             tsConfigResolve = resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
@@ -198,7 +199,7 @@ export function withExtendedResolver(
 
   let nodejsSourceExtensions: string[] | null = null;
 
-  const shimsFolder = path.join(projectRoot, METRO_SHIMS_FOLDER);
+  const shimsFolder = path.join(config.projectRoot, METRO_SHIMS_FOLDER);
 
   function getStrictResolver(context: ResolutionContext, platform: string | null) {
     const isNode = context.customResolverOptions?.environment === 'node';
@@ -372,7 +373,6 @@ export function withExtendedResolver(
   // Ensure we mutate the resolution context to include the custom resolver options for server and web.
   const metroConfigWithCustomContext = withMetroMutatedResolverContext(
     metroConfigWithCustomResolver,
-    projectRoot,
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
       console.log('mutate resolver context');
       let context = {
@@ -382,17 +382,28 @@ export function withExtendedResolver(
         customResolverOptions?: Record<string, string>;
       };
 
-      const environment = context.customResolverOptions?.environment;
-      const isNode = environment === 'node';
+      const isServer = context.customResolverOptions?.environment === 'node';
 
       // TODO: We need to prevent the require.context from including API routes as these use externals.
       // Should be fine after async routes lands.
-      if (isNode) {
+      if (isServer) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
         if (nodejsSourceExtensions === null) {
           nodejsSourceExtensions = getNodejsExtensions(context.sourceExts);
         }
         context.sourceExts = nodejsSourceExtensions;
+
+        context.unstable_enablePackageExports = true;
+        context.unstable_conditionNames = ['node', 'require'];
+        // Node.js runtimes should only be importing main at the moment.
+        // This is a temporary fix until we can support the package.json exports.
+        context.mainFields = ['main', 'module'];
+      } else {
+        // Non-server changes
+
+        if (!env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE && platform && platform in preferredMainFields) {
+          context.mainFields = preferredMainFields[platform];
+        }
       }
 
       // TODO: We may be able to remove this in the future, it's doing no harm
@@ -409,7 +420,7 @@ export function withExtendedResolver(
         const nodeModulesPaths: string[] = [...immutableContext.nodeModulesPaths];
 
         if (!nodeModulesPaths.length) {
-          nodeModulesPaths.push(path.join(projectRoot, 'node_modules'));
+          nodeModulesPaths.push(path.join(config.projectRoot, 'node_modules'));
         }
 
         // add last to ensure node modules are resolved first
@@ -418,26 +429,12 @@ export function withExtendedResolver(
         context.nodeModulesPaths = nodeModulesPaths;
       }
 
-      let mainFields: string[] = context.mainFields;
-
-      if (isNode) {
-        context.unstable_enablePackageExports = true;
-        context.unstable_conditionNames = ['node', 'require'];
-
-        // Node.js runtimes should only be importing main at the moment.
-        // This is a temporary fix until we can support the package.json exports.
-        mainFields = ['main', 'module'];
-      } else if (env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE) {
-        mainFields = context.mainFields;
-      } else if (platform && platform in preferredMainFields) {
-        mainFields = preferredMainFields[platform];
-      }
+      // TODO: We can drop this in the next version upgrade (SDK 50).
+      const mainFields: string[] = context.mainFields;
 
       return {
         ...context,
-
         preferNativePlatform: platform !== 'web',
-        mainFields,
         // Passing `mainFields` directly won't be considered (in certain version of Metro)
         // we need to extend the `getPackageMainPath` directly to
         // use platform specific `mainFields`.
@@ -451,7 +448,7 @@ export function withExtendedResolver(
     }
   );
 
-  return withMetroErrorReportingResolver(metroConfigWithCustomContext, projectRoot);
+  return withMetroErrorReportingResolver(metroConfigWithCustomContext);
 }
 
 /** @returns `true` if the incoming resolution should be swapped on web. */
@@ -505,6 +502,10 @@ export async function withMetroMultiPlatformAsync(
     isExporting?: boolean;
   }
 ) {
+  if (!config.projectRoot) {
+    // @ts-expect-error: read-only types
+    config.projectRoot = projectRoot;
+  }
   // Auto pick app entry for router.
   process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot, routerDirectory);
 
@@ -536,34 +537,6 @@ export async function withMetroMultiPlatformAsync(
   await setupShimFiles(projectRoot);
   await setupNodeExternals(projectRoot);
 
-  return withMetroMultiPlatform(projectRoot, {
-    config,
-    platformBundlers,
-    tsconfig,
-    isTsconfigPathsEnabled,
-    isFastResolverEnabled,
-    isExporting,
-  });
-}
-
-function withMetroMultiPlatform(
-  projectRoot: string,
-  {
-    config,
-    platformBundlers,
-    isTsconfigPathsEnabled,
-    tsconfig,
-    isFastResolverEnabled,
-    isExporting,
-  }: {
-    config: ConfigT;
-    isTsconfigPathsEnabled: boolean;
-    platformBundlers: PlatformBundlers;
-    tsconfig: TsConfigPaths | null;
-    isFastResolverEnabled?: boolean;
-    isExporting?: boolean;
-  }
-) {
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(([, bundler]) => bundler === 'metro')
     .map(([platform]) => platform);
@@ -575,10 +548,9 @@ function withMetroMultiPlatform(
   // @ts-expect-error: typed as `readonly`.
   config.resolver.platforms = expoConfigPlatforms;
 
-  config = withWebPolyfills(config, projectRoot);
+  config = withWebPolyfills(config);
 
   return withExtendedResolver(config, {
-    projectRoot,
     tsconfig,
     isExporting,
     isTsconfigPathsEnabled,
