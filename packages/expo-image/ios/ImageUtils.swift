@@ -3,7 +3,7 @@
 import SDWebImage
 import ExpoModulesCore
 
-private let MIN_RESOLUTION = CGFloat(10)
+private let MIN_RESOLUTION = CGFloat(64)
 
 /**
  Checks if the image is animated and returns an SDAnimatedImage if it does. Otherwise returns the UIImage.
@@ -89,7 +89,7 @@ func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double, c
 }
 
 // Finds a smallest available image size that is bigger than the viewport
-func closestIntrinsicSize(intrinsicSizes: [IntrinsicSize]?, displaySize: CGSize, scale: Double, aspectRatio: Double) -> CGSize {
+func closestIntrinsicSize(intrinsicSizes: [IntrinsicSize]?, displaySize: CGSize, aspectRatio: Double) -> CGSize {
   guard var intrinsicSize = intrinsicSizes else {
     // Calculate resolution steps automatically
     // We start with MIN_RESOLUTION, then each automatic resolution step doubles the value. We must find the nearest fitting step.
@@ -121,8 +121,7 @@ func closestIntrinsicSize(intrinsicSizes: [IntrinsicSize]?, displaySize: CGSize,
   }
   // Leave only the sizes that are greater than the container - we don't want to have a visible loss of quality
   let cgIntrinsicSizeFiltered = cgIntrinsicSize.filter { size in
-    size.height >= displaySize.height * scale &&
-    size.width >= displaySize.width * scale
+    size.height >= displaySize.height && size.width >= displaySize.width
   }
   // If there are no sizes greater than the container return the biggest available one
   if cgIntrinsicSizeFiltered.isEmpty {

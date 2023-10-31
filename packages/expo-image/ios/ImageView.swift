@@ -116,7 +116,7 @@ public final class ImageView: ExpoView {
 
   public override var bounds: CGRect {
     didSet {
-      if shouldBlurAfterBoundsUpdate(oldValue: oldValue) {
+      if shouldResizeAfterBoundsUpdate(oldValue: oldValue) {
         reload()
       }
     }
@@ -292,13 +292,13 @@ public final class ImageView: ExpoView {
         contentFit: contentFit
       ).rounded(.up)
 
-      let aspectRatio = idealSize.width / idealSize.height
+      let aspectRatio = image.size.width / image.size.height
       // Find an intrinsic size greater than the display current size of the image.
       // This allows us to keep the image without resizes for longer when the container size changes.
-      let intrinsicSize = closestIntrinsicSize(intrinsicSizes: intrinsicSizes, displaySize: frame.size, scale: image.scale, aspectRatio: aspectRatio)
+      let intrinsicSize = closestIntrinsicSize(intrinsicSizes: intrinsicSizes, displaySize: idealSize, aspectRatio: aspectRatio)
+
       Task {
         var image = await processImage(image, idealSize: intrinsicSize, scale: scale)
-
         if var imageToBlur = image, blurRadius > 0 {
           unblurredImage = image
           image = await blurImage(image: imageToBlur)
@@ -518,7 +518,7 @@ public final class ImageView: ExpoView {
     return image.sd_blurredImage(withRadius: blurRadius) ?? image
   }
 
-  private func shouldBlurAfterBoundsUpdate(oldValue: CGRect) -> Bool {
+  private func shouldResizeAfterBoundsUpdate(oldValue: CGRect) -> Bool {
     guard let source = bestSource else {
       return false
     }
@@ -540,9 +540,8 @@ public final class ImageView: ExpoView {
     ).rounded(.up)
 
     // Reload the image when the target resolution of the image has changed due to change of view dimensions.
-    let oldSize = closestIntrinsicSize(intrinsicSizes: intrinsicSizes, displaySize: idealSizeOld, scale: source.scale, aspectRatio: 1)
-    let newSize = closestIntrinsicSize(intrinsicSizes: intrinsicSizes, displaySize: idealSizeNew, scale: source.scale, aspectRatio: 1)
-
+    let oldSize = closestIntrinsicSize(intrinsicSizes: intrinsicSizes, displaySize: idealSizeOld, aspectRatio: size.width / size.height)
+    let newSize = closestIntrinsicSize(intrinsicSizes: intrinsicSizes, displaySize: idealSizeNew, aspectRatio: size.width / size.height)
     return  oldSize != newSize || (sdImageView.image == nil && pendingOperation == nil)
   }
 
