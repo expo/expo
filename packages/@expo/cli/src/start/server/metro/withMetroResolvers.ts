@@ -6,7 +6,7 @@
  */
 import chalk from 'chalk';
 import { ConfigT as MetroConfig } from 'metro-config';
-import { ResolutionContext } from 'metro-resolver';
+import { ResolutionContext, CustomResolutionContext } from 'metro-resolver';
 import path from 'path';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
@@ -67,7 +67,11 @@ export function withMetroResolvers(
 
         const universalContext = {
           ...context,
-          resolveRequest(ctx: ResolutionContext, moduleName: string, platform: string | null) {
+          resolveRequest(
+            ctx: CustomResolutionContext,
+            moduleName: string,
+            platform: string | null
+          ) {
             for (const resolver of resolvers) {
               try {
                 const res = resolver(ctx, moduleName, platform);
@@ -114,7 +118,7 @@ export function withMetroMutatedResolverContext(
     ctx: ResolutionContext,
     moduleName: string,
     platform: string | null
-  ) => ResolutionContext
+  ) => CustomResolutionContext
 ): MetroConfig {
   // const hasUserDefinedResolver = !!config.resolver?.resolveRequest;
   const defaultResolveRequest = getDefaultMetroResolver(config.projectRoot);
