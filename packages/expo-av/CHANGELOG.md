@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix audio recording resetting when receiving a phone call.
+- Fix audio recording resetting when receiving a phone call. ([#25054](https://github.com/expo/expo/pull/25054) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
