@@ -55,6 +55,7 @@ export class Image extends React.PureComponent {
     }
     /**
      * Asynchronously starts playback of the view's image if it is animated.
+     * @platform android
      * @platform ios
      */
     async startAnimating() {
@@ -62,6 +63,7 @@ export class Image extends React.PureComponent {
     }
     /**
      * Asynchronously stops the playback of the view's image if it is animated.
+     * @platform android
      * @platform ios
      */
     async stopAnimating() {
@@ -75,7 +77,7 @@ export class Image extends React.PureComponent {
             console.warn('[expo-image]: `defaultSource` and `loadingIndicatorSource` props are deprecated, use `placeholder` instead');
             loggedDefaultSourceDeprecationWarning = true;
         }
-        return (<ExpoImage {...restProps} style={restStyle} source={resolveSources(source)} placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)} contentFit={resolveContentFit(contentFit, resizeMode)} contentPosition={resolveContentPosition(contentPosition)} transition={resolveTransition(transition, fadeDuration)}/>);
+        return (<ExpoImage {...restProps} style={restStyle} source={resolveSources(source)} placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)} contentFit={resolveContentFit(contentFit, resizeMode)} contentPosition={resolveContentPosition(contentPosition)} transition={resolveTransition(transition, fadeDuration)} nativeViewRef={this.nativeViewRef}/>);
     }
 }
 //# sourceMappingURL=Image.js.map
