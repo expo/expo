@@ -13,6 +13,7 @@ import { ensureDirectory } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { AbortCommandError, CommandError } from '../../utils/errors';
 import { getUserTerminal } from '../../utils/terminal';
+import G from 'glob';
 export function logPrettyItem(message: string) {
   Log.log(chalk`{whiteBright \u203A} ${message}`);
 }
@@ -287,6 +288,7 @@ export async function buildAsync(props: BuildProps): Promise<string> {
   );
 
   const logFilePath = writeBuildLogs(projectRoot, results, error);
+  console.log(logFilePath);
   checkForBundlingErrors(results.split('\n'));
 
   if (code !== 0) {
@@ -350,7 +352,7 @@ function getErrorLogFilePath(projectRoot: string): [string, string] {
   return [path.join(folder, 'xcodebuild.log'), path.join(folder, 'xcodebuild-error.log')];
 }
 
-function checkForBundlingErrors(lines: string[]) {
+export function checkForBundlingErrors(lines: string[]) {
   // Find the last line beginning with `Error:` in the logs
   const lastErrorIndex = lines.findLastIndex((line) => line.startsWith('Error:'));
 

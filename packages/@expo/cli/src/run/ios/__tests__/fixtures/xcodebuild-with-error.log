@@ -1,0 +1,91 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -workspace /Users/alanhughes/Work/issues/bundle-crash/ios/bundlecrash.xcworkspace -configuration Release -scheme bundlecrash -destination id=05C0A06B-C820-40F9-AA60-0D0B8BDB28F5
+
+User defaults from command line:
+    IDEPackageSupportUseBuiltinSCM = YES
+
+CreateBuildDescription
+
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+Error: Unable to resolve module does-not-exist from /Users/alanhughes/Work/issues/bundle-crash/App.js: does-not-exist could not be found within the project or in these directories:
+  node_modules
+[0m [90m 1 |[39m [36mimport[39m { [33mStatusBar[39m } [36mfrom[39m [32m"expo-status-bar"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m { [33mStyleSheet[39m[33m,[39m [33mText[39m[33m,[39m [33mView[39m } [36mfrom[39m [32m"react-native"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m abc [36mfrom[39m [32m"does-not-exist"[39m[33m;[39m[0m
+[0m [90m   |[39m                  [31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mApp[39m() {[0m
+[0m [90m 6 |[39m   [36mreturn[39m ([0m
+Error: Unable to resolve module does-not-exist from /Users/alanhughes/Work/issues/bundle-crash/App.js: does-not-exist could not be found within the project or in these directories:
+  node_modules
+[0m [90m 1 |[39m [36mimport[39m { [33mStatusBar[39m } [36mfrom[39m [32m"expo-status-bar"[39m[33m;[39m[0m
+[0m [90m 2 |[39m [36mimport[39m { [33mStyleSheet[39m[33m,[39m [33mText[39m[33m,[39m [33mView[39m } [36mfrom[39m [32m"react-native"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m abc [36mfrom[39m [32m"does-not-exist"[39m[33m;[39m[0m
+[0m [90m   |[39m                  [31m[1m^[22m[39m[0m
+[0m [90m 4 |[39m[0m
+[0m [90m 5 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mApp[39m() {[0m
+[0m [90m 6 |[39m   [36mreturn[39m ([0m
+    at ModuleResolver.resolveDependency (/Users/alanhughes/Work/issues/bundle-crash/node_modules/metro/src/node-haste/DependencyGraph/ModuleResolution.js:139:15)
+    at DependencyGraph.resolveDependency (/Users/alanhughes/Work/issues/bundle-crash/node_modules/metro/src/node-haste/DependencyGraph.js:277:43)
+    at Object.resolve (/Users/alanhughes/Work/issues/bundle-crash/node_modules/metro/src/lib/transformHelpers.js:169:21)
+    at Graph._resolveDependencies (/Users/alanhughes/Work/issues/bundle-crash/node_modules/metro/src/DeltaBundler/Graph.js:473:35)
+    at Graph._processModule (/Users/alanhughes/Work/issues/bundle-crash/node_modules/metro/src/DeltaBundler/Graph.js:261:38)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Graph._addDependency (/Users/alanhughes/Work/issues/bundle-crash/node_modules/metro/src/DeltaBundler/Graph.js:372:20)
+    at async Promise.all (index 2)
+    at async Graph._processModule (/Users/alanhughes/Work/issues/bundle-crash/node_modules/metro/src/DeltaBundler/Graph.js:322:5)
+    at async Graph._traverseDependenciesForSingleFile (/Users/alanhughes/Work/issues/bundle-crash/node_modules/metro/src/DeltaBundler/Graph.js:249:5)
+
+PhaseScriptExecution [CP]\ Copy\ Pods\ Resources /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Intermediates.noindex/bundlecrash.build/Release-iphonesimulator/bundlecrash.build/Script-800E24972A6A228C8D4807E9.sh (in target 'bundlecrash' from project 'bundlecrash')
+    cd /Users/alanhughes/Work/issues/bundle-crash/ios
+    /bin/sh -c /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Intermediates.noindex/bundlecrash.build/Release-iphonesimulator/bundlecrash.build/Script-800E24972A6A228C8D4807E9.sh
+/Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/EXConstants/EXConstants.bundle
+/Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/React-Core/AccessibilityResources.bundle
+building file list ... done
+EXConstants.bundle/app.config
+
+sent 853 bytes  received 42 bytes  1790.00 bytes/sec
+total size is 2583  speedup is 2.89
+
+PhaseScriptExecution [CP]\ Embed\ Pods\ Frameworks /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Intermediates.noindex/bundlecrash.build/Release-iphonesimulator/bundlecrash.build/Script-EEDBE5A6831B14459ABC250E.sh (in target 'bundlecrash' from project 'bundlecrash')
+    cd /Users/alanhughes/Work/issues/bundle-crash/ios
+    /bin/sh -c /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Intermediates.noindex/bundlecrash.build/Release-iphonesimulator/bundlecrash.build/Script-EEDBE5A6831B14459ABC250E.sh
+mkdir -p /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/Frameworks
+rsync --delete -av --filter P .*.?????? --links --filter "- CVS/" --filter "- .svn/" --filter "- .git/" --filter "- .hg/" --filter "- Headers" --filter "- PrivateHeaders" --filter "- Modules" "/Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/XCFrameworkIntermediates/hermes-engine/Pre-built/hermes.framework" "/Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/Frameworks"
+building file list ... done
+deleting hermes.framework/_CodeSignature/CodeResources
+deleting hermes.framework/_CodeSignature/
+hermes.framework/
+hermes.framework/hermes
+
+sent 6696399 bytes  received 48 bytes  13392894.00 bytes/sec
+total size is 6696222  speedup is 1.00
+Code Signing /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/Frameworks/hermes.framework with Identity -
+/usr/bin/codesign --force --sign -  --preserve-metadata=identifier,entitlements '/Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/Frameworks/hermes.framework'
+/Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/Frameworks/hermes.framework: replacing existing signature
+
+GenerateDSYMFile /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app.dSYM /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/bundlecrash (in target 'bundlecrash' from project 'bundlecrash')
+    cd /Users/alanhughes/Work/issues/bundle-crash/ios
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/dsymutil /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/bundlecrash -o /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app.dSYM
+
+CopySwiftLibs /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app (in target 'bundlecrash' from project 'bundlecrash')
+    cd /Users/alanhughes/Work/issues/bundle-crash/ios
+    builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/bundlecrash --scan-folder /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/Frameworks --scan-folder /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/PlugIns --scan-folder /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/SystemExtensions --scan-folder /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/Extensions --platform iphonesimulator --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Intermediates.noindex/bundlecrash.build/Release-iphonesimulator/bundlecrash.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+
+ExtractAppIntentsMetadata (in target 'bundlecrash' from project 'bundlecrash')
+    cd /Users/alanhughes/Work/issues/bundle-crash/ios
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --output /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name bundlecrash --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator17.0.sdk --target-triple arm64-apple-ios13.0-simulator --target-triple x86_64-apple-ios13.0-simulator --source-files /Users/alanhughes/Work/issues/bundle-crash/ios/Pods/Target\ Support\ Files/Pods-bundlecrash/ExpoModulesProvider.swift --source-files /Users/alanhughes/Work/issues/bundle-crash/ios/bundlecrash/noop-file.swift --binary-file /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app/bundlecrash --dependency-file /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Intermediates.noindex/bundlecrash.build/Release-iphonesimulator/bundlecrash.build/Objects-normal/arm64/bundlecrash_dependency_info.dat --dependency-file /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Intermediates.noindex/bundlecrash.build/Release-iphonesimulator/bundlecrash.build/Objects-normal/x86_64/bundlecrash_dependency_info.dat --swift-const-vals /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Intermediates.noindex/bundlecrash.build/Release-iphonesimulator/bundlecrash.build/Objects-normal/arm64/ExpoModulesProvider.swiftconstvalues --swift-const-vals /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Intermediates.noindex/bundlecrash.build/Release-iphonesimulator/bundlecrash.build/Objects-normal/arm64/noop-file.swiftconstvalues --swift-const-vals /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Intermediates.noindex/bundlecrash.build/Release-iphonesimulator/bundlecrash.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues --stringsdata-file /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Intermediates.noindex/bundlecrash.build/Release-iphonesimulator/bundlecrash.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --stringsdata-file /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Intermediates.noindex/bundlecrash.build/Release-iphonesimulator/bundlecrash.build/Objects-normal/x86_64/ExtractedAppShortcutsMetadata.stringsdata --compile-time-extraction
+note: Metadata extraction skipped. No AppIntents.framework dependency found. (in target 'bundlecrash' from project 'bundlecrash')
+
+CodeSign /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app (in target 'bundlecrash' from project 'bundlecrash')
+    cd /Users/alanhughes/Work/issues/bundle-crash/ios
+    
+    Signing Identity:     "-"
+    
+    /usr/bin/codesign --force --sign - --entitlements /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Intermediates.noindex/bundlecrash.build/Release-iphonesimulator/bundlecrash.build/bundlecrash.app.xcent --timestamp\=none --generate-entitlement-der /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app
+
+Validate /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app (in target 'bundlecrash' from project 'bundlecrash')
+    cd /Users/alanhughes/Work/issues/bundle-crash/ios
+    builtin-validationUtility /Users/alanhughes/Library/Developer/Xcode/DerivedData/bundlecrash-eqccwpsifcvwdxgsqgoresghotel/Build/Products/Release-iphonesimulator/bundlecrash.app -validate-for-store
+
+** BUILD SUCCEEDED **

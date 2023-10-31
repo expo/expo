@@ -1,6 +1,7 @@
 import path from 'path';
 
 import {
+  checkForBundlingErrors,
   extractEnvVariableFromBuild,
   getProcessOptions,
   getXcodeBuildArgsAsync,
@@ -126,3 +127,14 @@ describe(_assertXcodeBuildResults, () => {
     );
   });
 });
+
+describe(checkForBundlingErrors, () => {
+  it(`asserts checkForBundlingErrors throws correctly`, () => {
+    const fixture = fs.readFileSync(path.join(__dirname, 'fixtures/xcodebuild-with-error.log'), 'utf8');
+    expect(() => checkForBundlingErrors(fixture.split('\n'))).toThrow(/Bundling failed./);
+  })
+  it(`asserts checkForBundlingErrors should not throw`, () => {
+    const fixture = fs.readFileSync(path.join(__dirname, 'fixtures/xcodebuild.log'), 'utf8');
+    expect(() => checkForBundlingErrors(fixture.split('\n'))).not.toThrow();
+  })
+})
