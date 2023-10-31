@@ -28,6 +28,7 @@ import { remoteDevtoolsSecurityHeadersMiddleware } from '../middleware/remoteDev
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { suppressRemoteDebuggingErrorMiddleware } from '../middleware/suppressErrorMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
+import resolveFrom from 'resolve-from';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -101,6 +102,8 @@ export async function loadMetroConfigAsync(
 
   const platformBundlers = getPlatformBundlers(exp);
 
+  const useWinter = !!resolveFrom.silent(projectRoot, 'expo-winter');
+
   config = await withMetroMultiPlatformAsync(projectRoot, {
     routerDirectory: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     config,
@@ -109,6 +112,12 @@ export async function loadMetroConfigAsync(
     webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
+    supportsWinterCG: useWinter
+      ? {
+          ios: exp.experiments?.winter,
+          android: exp.experiments?.winter,
+        }
+      : undefined,
   });
 
   logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));

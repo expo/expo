@@ -24,9 +24,7 @@
       }
     },
     "android": {
-      "scheme": [
-        "com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"
-      ],
+      "scheme": ["com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000020"
@@ -41,11 +39,13 @@
       "bundleIdentifier": "dev.expo.Payments",
       "supportsTablet": true,
       "requireFullScreen": false
-
     },
     "notification": {
       "serviceWorkerPath": "/expo-service-worker.js",
       "vapidPublicKey": "BNHvR05XkY5LH9GdN0GreLx2wZnK9IwNJGVmo3jujIkFni4of26E3U3fnt9nUrZfM7h0omdIHKM0eshkzTSFOWQ"
+    },
+    "experiments": {
+      "winter": true
     },
     "extra": {
       "eas": {

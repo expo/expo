@@ -38,7 +38,13 @@ type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
-function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
+function withWebPolyfills(
+  config: ConfigT,
+  {
+    projectRoot,
+    supportsWinterCG,
+  }: { projectRoot: string; supportsWinterCG?: Record<string, boolean> }
+): ConfigT {
   const originalGetPolyfills = config.serializer.getPolyfills
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
@@ -53,6 +59,16 @@ function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
     }
     // Generally uses `rn-get-polyfills`
     const polyfills = originalGetPolyfills(ctx);
+
+    if (supportsWinterCG?.[ctx.platform ?? '']) {
+      const _polyfills = [
+        // The React Native polyfills are included in WinterCG support.
+        ...polyfills.filter((polyfill) => !polyfill.includes('@react-native/js-polyfills')),
+
+        EXTERNAL_REQUIRE_NATIVE_POLYFILL,
+      ];
+      return _polyfills;
+    }
 
     return [...polyfills, EXTERNAL_REQUIRE_NATIVE_POLYFILL];
   };
@@ -100,6 +116,7 @@ export function withExtendedResolver(
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isExporting,
+    supportsWinterCG,
   }: {
     projectRoot: string;
     tsconfig: TsConfigPaths | null;
@@ -107,6 +124,7 @@ export function withExtendedResolver(
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
+    supportsWinterCG?: Record<string, boolean>;
   }
 ) {
   if (isFastResolverEnabled) {
@@ -367,6 +385,7 @@ export function withExtendedResolver(
           // @ts-expect-error: `readonly` for some reason.
           result.filePath = assetRegistryPath;
         }
+        const isWinterCg = platform && supportsWinterCG?.[platform];
 
         // React Native Web adds a couple extra divs for no reason, these
         // make static rendering much harder as we expect the root element to be `<html>`.
@@ -387,7 +406,7 @@ export function withExtendedResolver(
         ) {
           // @ts-expect-error: `readonly` for some reason.
           result.filePath = reactNativeWebAppContainer;
-        } else if (platform === 'web' && result.filePath.includes('node_modules')) {
+        } else if ((platform === 'web' || isWinterCg) && result.filePath.includes('node_modules')) {
           // Replace with static shims
 
           const normalName = normalizeSlashes(result.filePath)
@@ -396,6 +415,7 @@ export function withExtendedResolver(
 
           const shimPath = path.join(shimsFolder, normalName);
           if (fs.existsSync(shimPath)) {
+            debug(`Shimming ${result.filePath} with ${shimPath}`);
             // @ts-expect-error: `readonly` for some reason.
             result.filePath = shimPath;
           }
@@ -447,6 +467,7 @@ export async function withMetroMultiPlatformAsync(
     routerDirectory,
     isFastResolverEnabled,
     isExporting,
+    supportsWinterCG,
   }: {
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
@@ -455,6 +476,7 @@ export async function withMetroMultiPlatformAsync(
     routerDirectory: string;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
+    supportsWinterCG?: Record<string, boolean>;
   }
 ) {
   // Auto pick app entry for router.
@@ -495,6 +517,7 @@ export async function withMetroMultiPlatformAsync(
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isExporting,
+    supportsWinterCG,
   });
 }
 
@@ -507,6 +530,7 @@ function withMetroMultiPlatform(
     tsconfig,
     isFastResolverEnabled,
     isExporting,
+    supportsWinterCG,
   }: {
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
@@ -514,6 +538,7 @@ function withMetroMultiPlatform(
     tsconfig: TsConfigPaths | null;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
+    supportsWinterCG?: Record<string, boolean>;
   }
 ) {
   let expoConfigPlatforms = Object.entries(platformBundlers)
@@ -527,9 +552,7 @@ function withMetroMultiPlatform(
   // @ts-expect-error: typed as `readonly`.
   config.resolver.platforms = expoConfigPlatforms;
 
-  if (expoConfigPlatforms.includes('web')) {
-    config = withWebPolyfills(config, projectRoot);
-  }
+  config = withWebPolyfills(config, { projectRoot, supportsWinterCG });
 
   return withExtendedResolver(config, {
     projectRoot,
@@ -538,5 +561,6 @@ function withMetroMultiPlatform(
     isTsconfigPathsEnabled,
     platforms: expoConfigPlatforms,
     isFastResolverEnabled,
+    supportsWinterCG,
   });
 }
