@@ -20,25 +20,9 @@ class ThreadSafeQueue {
     while (queue_.empty()) {
       cond_.wait(mlock);
     }
-    auto item = queue_.front();
+    const auto item = queue_.front();
     queue_.pop();
     return item;
-  }
-
-  void pop(T &item) {
-    std::unique_lock<std::mutex> mlock(mutex_);
-    while (queue_.empty()) {
-      cond_.wait(mlock);
-    }
-    item = queue_.front();
-    queue_.pop();
-  }
-
-  void push(const T &item) {
-    std::unique_lock<std::mutex> mlock(mutex_);
-    queue_.push(item);
-    mlock.unlock();
-    cond_.notify_one();
   }
 
   void push(T &&item) {
@@ -48,9 +32,9 @@ class ThreadSafeQueue {
     cond_.notify_one();
   }
 
-  size_t getSize() {
+  bool empty() const {
     std::unique_lock<std::mutex> mlock(mutex_);
-    const size_t res = queue_.size();
+    const auto res = queue_.empty();
     mlock.unlock();
     cond_.notify_one();
     return res;
@@ -58,8 +42,8 @@ class ThreadSafeQueue {
 
  private:
   std::queue<T> queue_;
-  std::mutex mutex_;
-  std::condition_variable cond_;
+  mutable std::mutex mutex_;
+  mutable std::condition_variable cond_;
 };
 
 } // namespace reanimated

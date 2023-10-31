@@ -9,9 +9,9 @@ namespace reanimated {
 
 std::string getReanimatedCppVersion();
 
-#ifdef DEBUG
+#ifndef NDEBUG
 bool matchVersion(const std::string &, const std::string &);
 void checkJSVersion(jsi::Runtime &);
-#endif // DEBUG
+#endif // NDEBUG
 
 }; // namespace reanimated

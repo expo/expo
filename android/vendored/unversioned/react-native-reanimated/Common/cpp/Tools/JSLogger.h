@@ -1,4 +1,4 @@
-#ifdef DEBUG
+#ifndef NDEBUG
 
 #pragma once
 
@@ -21,4 +21,4 @@ class JSLogger {
 
 } // namespace reanimated
 
-#endif // DEBUG
+#endif // NDEBUG

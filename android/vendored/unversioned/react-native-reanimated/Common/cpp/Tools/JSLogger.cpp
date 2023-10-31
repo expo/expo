@@ -1,4 +1,4 @@
-#ifdef DEBUG
+#ifndef NDEBUG
 
 #include "JSLogger.h"
 #include <memory>
@@ -15,4 +15,4 @@ void JSLogger::warnOnJS(const std::string &warning) const {
 
 } // namespace reanimated
 
-#endif // DEBUG
+#endif // NDEBUG

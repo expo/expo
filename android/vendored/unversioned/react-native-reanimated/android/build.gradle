@@ -137,7 +137,7 @@ file("$reactNativeRootDir/ReactAndroid/gradle.properties").withInputStream { rea
 
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.startsWith("0.0.0-") ? 1000 : REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
-def REANIMATED_VERSION = "3.5.4"
+def REANIMATED_VERSION = "3.6.0-nightly-20231031-c56d44fd9"
 def REANIMATED_MAJOR_VERSION = 3
 def IS_NEW_ARCHITECTURE_ENABLED = isNewArchitectureEnabled()
 

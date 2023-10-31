@@ -27,12 +27,11 @@
 #include <hermes/hermes.h>
 #endif
 
-#if REACT_NATIVE_MINOR_VERSION >= 71
-#if __has_include(<hermes/inspector/chrome/Registration.h>)
-#include <hermes/inspector/chrome/Registration.h>
-#else
+#if REACT_NATIVE_MINOR_VERSION >= 73
 #include <hermes/inspector-modern/chrome/Registration.h>
-#endif
+#else
+#include <hermes/inspector/RuntimeAdapter.h>
+#include <hermes/inspector/chrome/Registration.h>
 #endif
 
 namespace reanimated {

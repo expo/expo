@@ -37,28 +37,24 @@ RootShadowNode::Unshared ReanimatedCommitHook::shadowTreeWillCommit(
 
   // ShadowTree not commited by Reanimated, apply updates from PropsRegistry
 
-  auto surfaceId = newRootShadowNode->getSurfaceId();
-
   auto rootNode = newRootShadowNode->ShadowNode::clone(ShadowNodeFragment{});
-
-  ShadowTreeCloner shadowTreeCloner{*uiManager_, surfaceId};
 
   {
     auto lock = propsRegistry_->createLock();
 
-    propsRegistry_->for_each([&](const ShadowNodeFamily &family,
-                                 const folly::dynamic &props) {
-      auto newRootNode =
-          shadowTreeCloner.cloneWithNewProps(rootNode, family, RawProps(props));
+    propsRegistry_->for_each(
+        [&](const ShadowNodeFamily &family, const folly::dynamic &props) {
+          auto newRootNode =
+              cloneShadowTreeWithNewProps(rootNode, family, RawProps(props));
 
-      if (newRootNode == nullptr) {
-        // this happens when React removed the component but Reanimated
-        // still tries to animate it, let's skip update for this specific
-        // component
-        return;
-      }
-      rootNode = newRootNode;
-    });
+          if (newRootNode == nullptr) {
+            // this happens when React removed the component but Reanimated
+            // still tries to animate it, let's skip update for this specific
+            // component
+            return;
+          }
+          rootNode = newRootNode;
+        });
   }
 
   // If the commit comes from React Native then skip one commit from Reanimated

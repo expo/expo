@@ -52,7 +52,7 @@ void LayoutAnimations::setShouldAnimateExitingBlock(
   this->shouldAnimateExitingBlock_ = shouldAnimateExitingBlock;
 }
 
-#ifdef DEBUG
+#ifndef NDEBUG
 void LayoutAnimations::setCheckDuplicateSharedTag(
     CheckDuplicateSharedTag checkDuplicateSharedTag) {
   checkDuplicateSharedTag_ = checkDuplicateSharedTag;
@@ -124,7 +124,7 @@ void LayoutAnimations::registerNatives() {
       makeNativeMethod(
           "findPrecedingViewTagForTransition",
           LayoutAnimations::findPrecedingViewTagForTransition),
-#ifdef DEBUG
+#ifndef NDEBUG
       makeNativeMethod(
           "checkDuplicateSharedTag", LayoutAnimations::checkDuplicateSharedTag),
 #endif

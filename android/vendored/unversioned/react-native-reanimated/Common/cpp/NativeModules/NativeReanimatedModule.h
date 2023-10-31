@@ -210,7 +210,7 @@ class NativeReanimatedModule : public NativeReanimatedModuleSpec {
   const KeyboardEventSubscribeFunction subscribeForKeyboardEventsFunction_;
   const KeyboardEventUnsubscribeFunction unsubscribeFromKeyboardEventsFunction_;
 
-#ifdef DEBUG
+#ifndef NDEBUG
   SingleInstanceChecker<NativeReanimatedModule> singleInstanceChecker_;
 #endif
 };

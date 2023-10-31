@@ -92,7 +92,7 @@ ReanimatedHermesRuntime::ReanimatedHermesRuntime(
   jsQueue->quitSynchronous();
 #endif // HERMES_ENABLE_DEBUGGER
 
-#ifdef DEBUG
+#ifndef NDEBUG
   facebook::hermes::HermesRuntime *wrappedRuntime = runtime_.get();
   jsi::Value evalWithSourceMap = jsi::Function::createFromHostFunction(
       *runtime_,
@@ -119,7 +119,7 @@ ReanimatedHermesRuntime::ReanimatedHermesRuntime(
       });
   runtime_->global().setProperty(
       *runtime_, "evalWithSourceMap", evalWithSourceMap);
-#endif // DEBUG
+#endif // NDEBUG
 }
 
 ReanimatedHermesRuntime::~ReanimatedHermesRuntime() {
