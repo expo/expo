@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Handle the case where no argument is passed to the plugin. ([#25138](https://github.com/expo/expo/pull/25138) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 11.8.0 — 2023-10-17
