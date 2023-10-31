@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix dev server not using query params from manifest when loading the JS bundle. ([#25061](https://github.com/expo/expo/pull/25061) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fix dev server not using query params from manifest when loading the JS bundle. ([#25061](https://github.com/expo/expo/pull/25061), [#25147](https://github.com/expo/expo/pull/25147) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
