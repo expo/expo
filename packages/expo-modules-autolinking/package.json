@@ -13,7 +13,9 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
-  "bin": "bin/expo-modules-autolinking.js",
+  "bin": {
+    "expo-modules-autolinking": "bin/expo-modules-autolinking.js"
+  },
   "keywords": [
     "expo",
     "expo-module",

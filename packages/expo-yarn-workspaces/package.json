@@ -5,7 +5,9 @@
   "author": "Expo",
   "license": "MIT",
   "main": "index.js",
-  "bin": "./bin/expo-yarn-workspaces.js",
+  "bin": {
+    "expo-yarn-workspaces": "./bin/expo-yarn-workspaces.js"
+  },
   "files": [
     "index.js",
     "webpack.js",
