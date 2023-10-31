@@ -12,7 +12,7 @@
 
 ### 🐛 Bug fixes
 
-- Add default node modules for resolving when using `baseUrl` outside of a monorepo.
+- Add default node modules for resolving when using `baseUrl` outside of a monorepo. ([#25134](https://github.com/expo/expo/pull/25134) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix API Routes not updating in `src/app` directory. ([#24968](https://github.com/expo/expo/pull/24968) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent `npx expo export` and `npx expo export:embed` from hanging with file watchers. ([#24952](https://github.com/expo/expo/pull/24952) by [@EvanBacon](https://github.com/EvanBacon))
 
