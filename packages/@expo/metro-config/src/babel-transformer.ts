@@ -114,8 +114,6 @@ const getBabelRC = (function () {
       const platformOptions = {
         // @ts-expect-error: This is how Metro works by default
         unstable_transformProfile: presetOptions.unstable_transformProfile,
-        // @ts-expect-error: This is how Metro works by default
-        withDevTools: presetOptions.withDevTools,
         disableImportExportTransform: experimentalImportSupport,
         dev: presetOptions.dev,
         enableBabelRuntime: presetOptions.enableBabelRuntime,

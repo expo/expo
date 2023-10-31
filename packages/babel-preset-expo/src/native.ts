@@ -33,28 +33,6 @@ export function babelPresetExpoNative(
     ...native,
   };
 
-  // Set true to disable `@babel/plugin-transform-react-jsx`
-  // we override this logic outside of the metro preset so we can add support for
-  // React 17 automatic JSX transformations.
-  // If the logic for `useTransformReactJSXExperimental` ever changes in `metro-react-native-babel-preset`
-  // then this block should be updated to reflect those changes.
-  if (!platformOptions.useTransformReactJSXExperimental) {
-    extraPlugins.push([
-      require('@babel/plugin-transform-react-jsx'),
-      {
-        // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
-        runtime: (options && options.jsxRuntime) || 'automatic',
-        ...(options &&
-          options.jsxRuntime !== 'classic' && {
-            importSource: (options && options.jsxImportSource) || 'react',
-          }),
-      },
-    ]);
-    // Purposefully not adding the deprecated packages:
-    // `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`
-    // back to the preset.
-  }
-
   return {
     presets: [
       [
@@ -64,8 +42,6 @@ export function babelPresetExpoNative(
         // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
         require('metro-react-native-babel-preset'),
         {
-          // Defaults to undefined, set to something truthy to disable `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`.
-          withDevTools: platformOptions.withDevTools,
           // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
           enableBabelRuntime: platformOptions.enableBabelRuntime,
           // This reduces the amount of transforms required, as Hermes supports many modern language features.
@@ -78,6 +54,9 @@ export function babelPresetExpoNative(
           // TransformError App.js: /path/to/App.js: Duplicate __self prop found. You are most likely using the deprecated transform-react-jsx-self Babel plugin.
           // Both __source and __self are automatically set when using the automatic jsxRuntime. Please remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
           useTransformReactJSXExperimental: true,
+          // This will never be used regardless because `useTransformReactJSXExperimental` is set to `true`.
+          // https://github.com/facebook/react-native/blob/a4a8695cec640e5cf12be36a0c871115fbce9c87/packages/react-native-babel-preset/src/configs/main.js#L151
+          withDevTools: false,
 
           disableImportExportTransform: platformOptions.disableImportExportTransform,
           lazyImportExportTransform:

@@ -2,15 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.babelPresetExpoWeb = void 0;
 const common_1 = require("./common");
+const expo_inline_manifest_plugin_1 = require("./expo-inline-manifest-plugin");
 function babelPresetExpoWeb(api, options = {}) {
-    const isDev = api.caller(common_1.getIsDev);
     const bundler = api.caller(common_1.getBundler);
     const isWebpack = bundler === 'webpack';
     const platformOptions = {
         // Only disable import/export transform when Webpack is used because
         // Metro does not support tree-shaking.
         disableImportExportTransform: isWebpack,
-        unstable_transformProfile: 'default',
         ...options.web,
     };
     const metroOptions = options.web;
@@ -18,6 +17,10 @@ function babelPresetExpoWeb(api, options = {}) {
         require('babel-plugin-react-native-web'),
         require('@babel/plugin-syntax-export-default-from'),
     ];
+    // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
+    if (bundler !== 'webpack') {
+        extraPlugins.push(expo_inline_manifest_plugin_1.expoInlineManifestPlugin);
+    }
     if (metroOptions?.enableBabelRuntime !== false) {
         // Allows configuring a specific runtime version to optimize output
         const isVersion = typeof metroOptions?.enableBabelRuntime === 'string';
@@ -44,19 +47,6 @@ function babelPresetExpoWeb(api, options = {}) {
                     exclude: ['transform-typeof-symbol'],
                 },
             ],
-            // React support with similar options to Metro.
-            [
-                require('@babel/preset-react'),
-                {
-                    // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
-                    runtime: options?.jsxRuntime || 'automatic',
-                    ...(options &&
-                        options.jsxRuntime !== 'classic' && {
-                        importSource: (options && options.jsxImportSource) || 'react',
-                    }),
-                    development: isDev,
-                },
-            ],
             // TypeScript support
             [require('@babel/preset-typescript'), { allowNamespaces: true }],
         ],
@@ -65,7 +55,8 @@ function babelPresetExpoWeb(api, options = {}) {
             // the flow strip types plugin must go BEFORE class properties!
             // there'll be a test case that fails if you don't.
             {
-                test: (filename) => filename == null || !/\.tsx?$/.test(filename),
+                test: (filename) => !platformOptions.disableFlowStripTypesTransform &&
+                    (filename == null || !/\.tsx?$/.test(filename)),
                 plugins: [
                     require('@babel/plugin-transform-flow-strip-types'),
                     require('babel-plugin-transform-flow-enums'),
