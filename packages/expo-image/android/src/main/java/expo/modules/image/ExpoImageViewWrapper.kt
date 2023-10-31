@@ -184,11 +184,11 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     activeView.setBorderColor(index, rgb, alpha)
   }
 
-  fun setIsAnimating(isAnimating: Boolean) {
+  fun setIsAnimating(setAnimating: Boolean) {
     val resource = activeView.drawable
 
     if (resource is Animatable) {
-      if (isAnimating) {
+      if (setAnimating) {
         resource.start()
       } else {
         resource.stop()
