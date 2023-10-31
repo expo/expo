@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Added function `getAdvertisingId`. ([#24777](https://github.com/expo/expo/pull/24777) by [@reichhartd](https://github.com/reichhartd))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
