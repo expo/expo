@@ -76,13 +76,6 @@ function fromDeepLink(url) {
         const incomingUrl = res.searchParams.get('url');
         return extractExactPathFromURL(decodeURI(incomingUrl));
     }
-    const qs = !res.search
-        ? ''
-        : Object.entries(Object.fromEntries(
-        // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
-        res.searchParams))
-            .map(([k, v]) => `${k}=${decodeURIComponent(v)}`)
-            .join('&');
     let results = '';
     if (res.host) {
         results += res.host;
@@ -90,6 +83,7 @@ function fromDeepLink(url) {
     if (res.pathname) {
         results += res.pathname;
     }
+    const qs = res.searchParams.toString();
     if (qs) {
         results += '?' + qs;
     }
