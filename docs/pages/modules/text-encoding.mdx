@@ -1,0 +1,41 @@
+---
+title: Text Encoding
+description: An API reference for the TextEncoder and TextDecoder built-in APIs
+---
+
+The Expo runtime for iOS and Android includes whatwg spec-compliant, native implementations of [`TextDecoder`](https://encoding.spec.whatwg.org/#textdecoder) and [`TextEncoder`](https://encoding.spec.whatwg.org/#textencoder).
+
+JavaScript polyfills for `TextDecoder` and `TextEncoder` can be very heavy and should be avoided if possible. The native built-ins reuse the native platform encoding/decoding implementations and are much more performant.
+
+## Usage
+
+```js
+// TextEncoder and TextDecoder are globally available and do not need to be imported.
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
+// Prints "Hello Expo"
+console.log(decoder.decode(encoder.encode('Hello Expo')));
+```
+
+## Supported Encodings
+
+https://encoding.spec.whatwg.org/#encoding
+
+While `utf-8` is the only non-legacy encoding method left, we additionally support the native encoding formats of the underlying platforms.
+
+### iOS
+
+[All encodings](https://encoding.spec.whatwg.org/#encoding) in the specification are supported.
+
+### Android
+
+TBD
+
+### Web
+
+Refer to the [caniuse](https://caniuse.com/?search=TextEncoder) page to see which encodings are supported on which web browsers.
+
+### Server
+
+Refer to the [Node.js docs](https://nodejs.org/api/util.html#class-utiltextdecoder) to see which encodings are supported on the server.

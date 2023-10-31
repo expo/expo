@@ -16,8 +16,21 @@ function addBuiltinSymbol(obj) {
 function install(name, getValue) {
     installGlobal(name, () => addBuiltinSymbol(getValue()));
 }
-// https://url.spec.whatwg.org/#url
-install('URL', () => require('./url').URL);
-// https://url.spec.whatwg.org/#urlsearchparams
-install('URLSearchParams', () => require('./url').URLSearchParams);
+// https://encoding.spec.whatwg.org/#textencoder
+const TextEncoder = globalThis.expo.TextEncoder;
+const originalEncode = TextEncoder.prototype.encode;
+// TODO: Remove this once we can create `Uint8Array` from native code.
+TextEncoder.prototype.encode = function () {
+    return new Uint8Array(originalEncode.apply(this, arguments));
+};
+addBuiltinSymbol(TextEncoder);
+installGlobal('TextEncoder', () => TextEncoder);
+// https://encoding.spec.whatwg.org/#textdecoder
+const TextDecoder = globalThis.expo.TextDecoder;
+addBuiltinSymbol(TextDecoder);
+installGlobal('TextDecoder', () => TextDecoder);
+// // https://url.spec.whatwg.org/#url
+// install('URL', () => require('./url').URL);
+// // https://url.spec.whatwg.org/#urlsearchparams
+// install('URLSearchParams', () => require('./url').URLSearchParams);
 //# sourceMappingURL=runtime.native.js.map
