@@ -250,6 +250,8 @@ PODS:
     - ExpoModulesCore
   - ExpoWebBrowser (12.7.0):
     - ExpoModulesCore
+  - ExpoWinter (1.0.0):
+    - ExpoModulesCore
   - EXScreenCapture (5.6.0):
     - ExpoModulesCore
   - EXSplashScreen (0.24.0):
@@ -890,6 +892,7 @@ DEPENDENCIES:
   - ExpoVideo (from `../../../packages/expo-video/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
+  - ExpoWinter (from `../../../packages/expo-winter/ios`)
   - EXScreenCapture (from `../../../packages/expo-screen-capture/ios`)
   - EXSplashScreen (from `../../../packages/expo-splash-screen/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
@@ -1163,6 +1166,9 @@ EXTERNAL SOURCES:
   ExpoWebBrowser:
     inhibit_warnings: false
     :path: "../../../packages/expo-web-browser/ios"
+  ExpoWinter:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-winter/ios"
   EXScreenCapture:
     inhibit_warnings: false
     :path: "../../../packages/expo-screen-capture/ios"
@@ -1356,6 +1362,7 @@ SPEC CHECKSUMS:
   ExpoVideo: 24287b18e9aa1b79cce3159d58a5aef1909fd4bd
   ExpoVideoThumbnails: 5a579eac1d481891adad831f01acec09b2dbf7d2
   ExpoWebBrowser: 71200e00b0a3c3a78a00e60ef6e3577ad521b8bf
+  ExpoWinter: 259e382741af6b332a52c0322402065677c05b96
   EXScreenCapture: 0031ceb57d192ed1309ada12b43e6259a2e3c46c
   EXSplashScreen: 9c781de1c78454f5f3dd2c6a0a381ee50822b037
   EXStructuredHeaders: b88446922ba65b0c42defc5b409e0789b672d396
