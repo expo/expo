@@ -9,10 +9,10 @@
 ### 🎉 New features
 
 - [iOS] Added support for `allowDownscaling` prop. ([#25012](https://github.com/expo/expo/pull/25012) by [@behenate](https://github.com/behenate))
-- Added `getCachePathAsync()` to retrieve the path of the cached image file if it exists ([#24980](https://github.com/expo/expo/pull/24980) by [@gkasdorf](https://github.com/gkasdorf))
-- [iOS] Added `autoplay` prop to control whether an animated image will automatically animate or not ([#25008](https://github.com/expo/expo/pull/25008) by [@gkasdorf](https://github.com/gkasdorf))
-- [iOS] Added `startAnimating()` and `stopAnimating()` functions to start or stop an image's animation ([#25008](https://github.com/expo/expo/pull/25008) by [@gkasdorf](https://github.com/gkasdorf))
-- [Android] Added `autoplay` prop and `startAnimating()` and `stopAnimating()` functions to reflect changes made to iOS in ([#25008](https://github.com/expo/expo/pull/25008)
+- Added `getCachePathAsync()` to retrieve the path of the cached image file if it exists. ([#24980](https://github.com/expo/expo/pull/24980) by [@gkasdorf](https://github.com/gkasdorf))
+- [iOS] Added `autoplay` prop to control whether an animated image will automatically animate or not. ([#25008](https://github.com/expo/expo/pull/25008) by [@gkasdorf](https://github.com/gkasdorf))
+- [iOS] Added `startAnimating()` and `stopAnimating()` functions to start or stop an image's animation. ([#25008](https://github.com/expo/expo/pull/25008) by [@gkasdorf](https://github.com/gkasdorf))
+- [Android] Added `autoplay` prop and `startAnimating()` and `stopAnimating()` functions to reflect changes made to iOS in [#25008](https://github.com/expo/expo/pull/25008). ([#25124](https://github.com/expo/expo/pull/25124) by [@gkasdorf](https://github.com/gkasdorf))
 
 ### 🐛 Bug fixes
 
