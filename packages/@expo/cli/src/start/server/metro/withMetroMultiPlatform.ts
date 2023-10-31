@@ -251,13 +251,18 @@ export function withExtendedResolver(
       }
 
       if (tsconfig?.baseUrl && isTsconfigPathsEnabled) {
+        let nodeModulesPaths: string[] = [...immutableContext.nodeModulesPaths];
+
+        if (!nodeModulesPaths.length) {
+          nodeModulesPaths.push(path.join(projectRoot, 'node_modules'));
+        }
+
+        // add last to ensure node modules are resolved first
+        nodeModulesPaths.push(tsconfig.baseUrl);
+
         context = {
           ...context,
-          nodeModulesPaths: [
-            ...immutableContext.nodeModulesPaths,
-            // add last to ensure node modules are resolved first
-            tsconfig.baseUrl,
-          ],
+          nodeModulesPaths,
         };
       }
 
