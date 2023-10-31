@@ -57,7 +57,7 @@ function extractExactPathFromURL(url) {
 }
 /** Major hack to support the makeshift expo-development-client system. */
 function isExpoDevelopmentClient(url) {
-    return !!url.hostname.match(/^expo-development-client$/);
+    return url.hostname === 'expo-development-client';
 }
 function fromDeepLink(url) {
     let res;
@@ -70,7 +70,7 @@ function fromDeepLink(url) {
         return url;
     }
     if (isExpoDevelopmentClient(res)) {
-        if (!res.search || !res.searchParams.get('url')) {
+        if (!res.searchParams.get('url')) {
             return '';
         }
         const incomingUrl = res.searchParams.get('url');

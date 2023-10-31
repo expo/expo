@@ -12,7 +12,7 @@ const matchers_1 = require("../matchers");
 function getUrlWithReactNavigationConcessions(path, basePath = expo_constants_1.default.expoConfig?.experiments?.basePath) {
     let parsed;
     try {
-        parsed = new URL(path, 'https://acme.com');
+        parsed = new URL(path, 'https://phony.example');
     }
     catch {
         // Do nothing with invalid URLs.

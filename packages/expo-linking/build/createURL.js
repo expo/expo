@@ -88,7 +88,6 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
         queryString = queryStringMatchResult[2];
         let paramsFromHostUri = {};
         try {
-            // TODO: Validate that iterator works as expected.
             paramsFromHostUri = Object.fromEntries(
             // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
             new URLSearchParams(queryString));

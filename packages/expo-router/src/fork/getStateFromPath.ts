@@ -49,7 +49,7 @@ export function getUrlWithReactNavigationConcessions(
 ) {
   let parsed: URL;
   try {
-    parsed = new URL(path, 'https://acme.com');
+    parsed = new URL(path, 'https://phony.example');
   } catch {
     // Do nothing with invalid URLs.
     return {

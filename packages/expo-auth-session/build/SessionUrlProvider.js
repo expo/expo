@@ -84,11 +84,9 @@ export class SessionUrlProvider {
         }
         const uriParts = hostUri?.split('?');
         try {
-            const obj = {};
-            new URLSearchParams(uriParts?.[1]).forEach((value, key) => {
-                obj[key] = value;
-            });
-            return obj;
+            return Object.fromEntries(
+            // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
+            new URLSearchParams(uriParts?.[1]));
         }
         catch { }
         return undefined;

@@ -56,8 +56,8 @@ export function selectAssetSource(meta) {
     if (devServerUrl) {
         const baseUrl = new URL(devServerUrl);
         baseUrl.pathname = meta.httpServerLocation + suffix;
-        baseUrl.searchParams.append('platform', Platform.OS);
-        baseUrl.searchParams.append('hash', meta.hash);
+        baseUrl.searchParams.set('platform', Platform.OS);
+        baseUrl.searchParams.set('hash', meta.hash);
         return {
             uri: baseUrl.href,
             hash,

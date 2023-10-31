@@ -43,7 +43,7 @@ function extractExactPathFromURL(url: string): string {
 
 /** Major hack to support the makeshift expo-development-client system. */
 function isExpoDevelopmentClient(url: URL): boolean {
-  return !!url.hostname.match(/^expo-development-client$/);
+  return url.hostname === 'expo-development-client';
 }
 
 function fromDeepLink(url: string): string {
@@ -57,7 +57,7 @@ function fromDeepLink(url: string): string {
   }
 
   if (isExpoDevelopmentClient(res)) {
-    if (!res.search || !res.searchParams.get('url')) {
+    if (!res.searchParams.get('url')) {
       return '';
     }
     const incomingUrl = res.searchParams.get('url')!;
