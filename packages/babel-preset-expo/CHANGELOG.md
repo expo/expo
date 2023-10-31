@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `Platform.OS` shaking without needing to enable experimental ESM transforms.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -34,7 +34,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isWebpack = bundler === 'webpack';
   let platform = api.caller((caller) => (caller as any)?.platform);
   const engine = api.caller((caller) => (caller as any)?.engine) ?? 'default';
-
+  const isDev = process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
   // If the `platform` prop is not defined then this must be a custom config that isn't
   // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
   if (!platform && isWebpack) {
@@ -69,6 +69,21 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push([
       require.resolve('@babel/plugin-proposal-object-rest-spread'),
       { loose: false },
+    ]);
+  }
+
+  if (!isDev) {
+    // Metro applies this plugin too but it does it after the imports have been transformed which breaks
+    // the transform. Here, we'll apply it before the commonjs transform in production to ensure Platform.OS
+    // is replaced with a string literal.
+    // Applying early also means that web can be transformed before the react-native-web transform.
+    extraPlugins.push([
+      require('metro-transform-plugins/src/inline-plugin.js'),
+      {
+        dev: isDev,
+        inlinePlatform: true,
+        platform,
+      },
     ]);
   }
 
