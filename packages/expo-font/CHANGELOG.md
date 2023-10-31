@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Handle the case where no argument is passed to the plugin.
+
 ### 💡 Others
 
 ## 11.8.0 — 2023-10-17
