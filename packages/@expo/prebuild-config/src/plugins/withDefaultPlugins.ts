@@ -16,7 +16,6 @@ import { withAndroidIcons } from './icons/withAndroidIcons';
 import { withIosIcons } from './icons/withIosIcons';
 import withAdMob from './unversioned/expo-ads-admob/expo-ads-admob';
 import withAppleAuthentication from './unversioned/expo-apple-authentication';
-import withBranch from './unversioned/expo-branch/expo-branch';
 import withContacts from './unversioned/expo-contacts';
 import withDocumentPicker from './unversioned/expo-document-picker';
 import withNavigationBar from './unversioned/expo-navigation-bar/expo-navigation-bar';
@@ -128,7 +127,6 @@ const versionedExpoSDKPackages: string[] = [
   'expo-contacts',
   'expo-notifications',
   'expo-updates',
-  'expo-branch',
   'expo-navigation-bar',
   'expo-document-picker',
   'expo-splash-screen',
@@ -143,7 +141,6 @@ export const withVersionedExpoSDKPlugins: ConfigPlugin = (config) => {
     withContacts,
     withNotifications,
     withUpdates,
-    withBranch,
     withDocumentPicker,
     // System UI must come before splash screen as they overlap
     // and splash screen will warn about conflicting rules.

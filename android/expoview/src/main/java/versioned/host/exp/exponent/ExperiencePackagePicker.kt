@@ -16,7 +16,7 @@ import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
 import expo.modules.constants.ConstantsPackage
-import expo.modules.contacts.ContactsPackage
+import expo.modules.contacts.ContactsModule
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
@@ -88,7 +88,6 @@ object ExperiencePackagePicker : ModulesProvider {
     AVPackage(),
     BarCodeScannerPackage(),
     ConstantsPackage(),
-    ContactsPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
     ImageLoaderPackage(),
@@ -148,6 +147,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ClipboardModule::class.java,
     CryptoModule::class.java,
     ConstantsModule::class.java,
+    ContactsModule::class.java,
     DeviceModule::class.java,
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
