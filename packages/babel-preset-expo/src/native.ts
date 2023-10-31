@@ -21,10 +21,7 @@ export function babelPresetExpoNative(
     // `metro-react-native-babel-preset` configures this plugin with `{ loose: true }`, which breaks all
     // getters and setters in spread objects. We need to add this plugin ourself without that option.
     // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
-    extraPlugins.push([
-      require.resolve('@babel/plugin-proposal-object-rest-spread'),
-      { loose: false },
-    ]);
+    extraPlugins.push([require('@babel/plugin-proposal-object-rest-spread'), { loose: false }]);
   }
 
   const platformOptions: BabelPresetExpoPlatformOptions = {

@@ -13,7 +13,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const plugins: PluginItem[] = [
     // TODO: Remove decorators
     [require('@babel/plugin-proposal-decorators'), { legacy: true }],
-    require('@babel/plugin-proposal-export-namespace-from'),
+    require('@babel/plugin-transform-export-namespace-from'),
   ];
 
   const aliasPlugin = getAliasPlugin();
@@ -54,11 +54,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           development: isDev,
 
           // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
-          runtime: options?.jsxRuntime || 'automatic',
-          ...(options &&
-            options.jsxRuntime !== 'classic' && {
-              importSource: (options && options.jsxImportSource) || 'react',
-            }),
+          runtime: options.jsxRuntime ?? 'automatic',
+          ...(options.jsxRuntime !== 'classic'
+            ? {
+                importSource: options.jsxImportSource ?? 'react',
+              }
+            : {}),
 
           // NOTE: Unexposed props:
 
@@ -80,7 +81,7 @@ function getAliasPlugin(): PluginItem | null {
     return null;
   }
   return [
-    require.resolve('babel-plugin-module-resolver'),
+    require('babel-plugin-module-resolver'),
     {
       alias: {
         'react-native-vector-icons': '@expo/vector-icons',

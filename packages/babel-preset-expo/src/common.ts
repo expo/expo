@@ -48,7 +48,7 @@ export function getBundler(caller: any) {
   return 'metro';
 }
 
-export function getPlatform(caller: any) {
+export function getPlatform(caller: any): string | null {
   if (!caller) return null;
   if (caller.platform) return caller.platform;
   const bundler = getBundler(caller);
@@ -56,15 +56,14 @@ export function getPlatform(caller: any) {
     return 'web';
   }
 
-  // unknown
-  return caller.platform;
+  return null;
 }
 
-export function getPossibleProjectRoot(caller: any) {
+export function getPossibleProjectRoot(caller: any): string | null {
   if (!caller) return null;
   if (caller.projectRoot) return caller.projectRoot;
   // unknown
-  return process.env.EXPO_PROJECT_ROOT;
+  return process.env.EXPO_PROJECT_ROOT ?? null;
 }
 
 export function getIsDev(caller: any) {

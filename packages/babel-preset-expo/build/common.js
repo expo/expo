@@ -39,8 +39,7 @@ function getPlatform(caller) {
     if (bundler === 'webpack') {
         return 'web';
     }
-    // unknown
-    return caller.platform;
+    return null;
 }
 exports.getPlatform = getPlatform;
 function getPossibleProjectRoot(caller) {
@@ -49,7 +48,7 @@ function getPossibleProjectRoot(caller) {
     if (caller.projectRoot)
         return caller.projectRoot;
     // unknown
-    return process.env.EXPO_PROJECT_ROOT;
+    return process.env.EXPO_PROJECT_ROOT ?? null;
 }
 exports.getPossibleProjectRoot = getPossibleProjectRoot;
 function getIsDev(caller) {
