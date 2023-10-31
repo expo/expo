@@ -1,5 +1,4 @@
 {
-  "name": "expo-modules-core",
   "platforms": ["ios", "android"],
   "ios": {
     "podspecPath": "./ExpoModulesCore.podspec"

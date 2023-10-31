@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -11,6 +13,7 @@
 ### 💡 Others
 
 - [Android] Moved to the new Modules API. ([#24737](https://github.com/expo/expo/pull/24737) by [@behenate](https://github.com/behenate))
+- Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
 
 ## 16.4.0 — 2023-10-17
 

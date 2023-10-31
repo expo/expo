@@ -110,6 +110,7 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
         borderStartColor={borderStartColor}
         borderEndColor={borderEndColor}
         backgroundColor={backgroundColor}
+        ref={props.nativeViewRef}
       />
     );
   }
