@@ -17,6 +17,9 @@ function convertDynamicRouteToReactNavigation(segment: string): string {
   if (segment === 'index') {
     return '';
   }
+  if (segment === '+not-found') {
+    return '*not-found';
+  }
 
   const rest = matchDeepDynamicRouteName(segment);
   if (rest != null) {

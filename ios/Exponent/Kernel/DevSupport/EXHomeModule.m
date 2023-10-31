@@ -7,9 +7,7 @@
 #import "EXClientReleaseType.h"
 #import "EXKernelDevKeyCommands.h"
 
-#ifndef EX_DETACHED
 #import "EXDevMenuManager.h"
-#endif
 
 #import <React/RCTEventDispatcher.h>
 
@@ -99,12 +97,10 @@
  */
 - (void)requestToCloseDevMenu
 {
-#ifndef EX_DETACHED
   void (^callback)(id) = ^(id arg){
     [[EXDevMenuManager sharedInstance] closeWithoutAnimation];
   };
   [self dispatchJSEvent:@"requestToCloseDevMenu" body:nil onSuccess:callback onFailure:callback];
-#endif
 }
 
 /**
@@ -182,9 +178,7 @@ RCT_EXPORT_METHOD(reloadAppAsync)
  */
 RCT_EXPORT_METHOD(closeDevMenuAsync)
 {
-#ifndef EX_DETACHED
   [[EXDevMenuManager sharedInstance] closeWithoutAnimation];
-#endif
 }
 
 /**
@@ -211,16 +205,12 @@ RCT_REMAP_METHOD(getDevMenuSettingsAsync,
                  getDevMenuSettingsAsync:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-#ifndef EX_DETACHED
   EXDevMenuManager *manager = [EXDevMenuManager sharedInstance];
 
   resolve(@{
     @"motionGestureEnabled": @(manager.interceptMotionGesture),
     @"touchGestureEnabled": @(manager.interceptTouchGesture),
   });
-#else
-  resolve(@{});
-#endif
 }
 
 RCT_REMAP_METHOD(setDevMenuSettingAsync,
@@ -229,7 +219,6 @@ RCT_REMAP_METHOD(setDevMenuSettingAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-#ifndef EX_DETACHED
   EXDevMenuManager *manager = [EXDevMenuManager sharedInstance];
 
   if ([key isEqualToString:@"motionGestureEnabled"]) {
@@ -239,8 +228,6 @@ RCT_REMAP_METHOD(setDevMenuSettingAsync,
   } else {
     return reject(@"ERR_DEV_MENU_SETTING_NOT_EXISTS", @"Specified dev menu setting doesn't exist.", nil);
   }
-#endif
-  resolve(nil);
 }
 
 RCT_REMAP_METHOD(getSessionAsync,

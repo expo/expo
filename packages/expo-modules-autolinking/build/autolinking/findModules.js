@@ -71,10 +71,10 @@ async function findModulesAsync(providedOptions) {
     // (excluding custom native modules path)
     // Workspace root usually doesn't specify all its dependencies (see Expo Go),
     // so in this case we should link everything.
-    if (options.searchPaths.length <= 1) {
+    if (options.searchPaths.length <= 1 || options.onlyProjectDeps === false) {
         return searchResults;
     }
-    return filterToProjectDependencies(searchResults, {
+    return await filterToProjectDependenciesAsync(searchResults, {
         ...providedOptions,
         // Custom native modules are not filtered out
         // when they're not specified in package.json dependencies.
@@ -163,7 +163,7 @@ function resolvePackageNameAndVersion(packagePath, { fallbackToDirName } = {}) {
 /**
  * Filters out packages that are not the dependencies of the project.
  */
-function filterToProjectDependencies(results, options = {}) {
+async function filterToProjectDependenciesAsync(results, options) {
     const filteredResults = {};
     const visitedPackages = new Set();
     // iterate through always included package names and add them to the visited packages
@@ -216,7 +216,8 @@ function filterToProjectDependencies(results, options = {}) {
         }
     }
     // Visit project's package.
-    visitPackage(mergeLinkingOptions_1.projectPackageJsonPath);
+    const projectPackageJsonPath = await (0, mergeLinkingOptions_1.getProjectPackageJsonPathAsync)(options.projectRoot);
+    visitPackage(projectPackageJsonPath);
     return filteredResults;
 }
 //# sourceMappingURL=findModules.js.map

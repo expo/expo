@@ -28,6 +28,7 @@ import { ScreenContainer } from '../components/ScreenContainer';
 import { Toasts } from '../components/Toasts';
 import { UrlDropdown } from '../components/UrlDropdown';
 import { formatUpdateUrl } from '../functions/formatUpdateUrl';
+import { getServerUrlFromDevSession } from '../functions/getServerUrlFromDevSession';
 import { loadApp, loadUpdate } from '../native-modules/DevLauncherInternal';
 import { useCrashReport } from '../providers/CrashReportProvider';
 import { useDevSessions } from '../providers/DevSessionsProvider';
@@ -250,6 +251,8 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
   return (
     <View>
       {devSessions.map((devSession) => {
+        const showUrl = devSession.url && devSession.description !== devSession.url;
+
         return (
           <View key={devSession.url}>
             <Button.FadeOnPressContainer
@@ -264,6 +267,11 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
                   <Button.Text color="default" numberOfLines={1}>
                     {devSession.description}
                   </Button.Text>
+                  {showUrl ? (
+                    <Text size="small" color="secondary" numberOfLines={1}>
+                      {getServerUrlFromDevSession(devSession)}
+                    </Text>
+                  ) : null}
                 </View>
                 <Spacer.Horizontal size="small" />
                 <ChevronRightIcon />

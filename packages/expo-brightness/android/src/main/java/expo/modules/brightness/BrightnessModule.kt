@@ -12,12 +12,17 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlin.math.roundToInt
 
+const val brightnessChangeEvent = "Expo.brightnessDidChange"
+
 class BrightnessModule : Module() {
   private val currentActivity
     get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
 
   override fun definition() = ModuleDefinition {
     Name("ExpoBrightness")
+
+    // This is unused on Android. It is only here to suppress the native event emitter warning
+    Events(brightnessChangeEvent)
 
     AsyncFunction("requestPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.WRITE_SETTINGS)

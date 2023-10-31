@@ -11,9 +11,9 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 import path from 'path';
 
-import { exportAllApiRoutesAsync, rebundleApiRoute } from './bundleApiRoutes';
+import { bundleApiRoute, rebundleApiRoute } from './bundleApiRoutes';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
-import { fetchManifest } from './fetchRouterManifest';
+import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { getRouterDirectoryWithManifest, isApiRouteConvention } from './router';
@@ -27,6 +27,7 @@ import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../Bun
 import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
+import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
@@ -83,35 +84,46 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return port;
   }
 
-  async getExpoRouterRoutesManifestAsync({ appDir }: { appDir: string }) {
-    const manifest = await fetchManifest(this.projectRoot, {
-      asJson: true,
-      appDir,
-    });
-
-    if (!manifest) {
-      throw new CommandError(
-        'EXPO_ROUTER_SERVER_MANIFEST',
-        'Unexpected error: server manifest could not be fetched.'
-      );
-    }
-
-    return manifest;
-  }
-
   async exportExpoRouterApiRoutesAsync({
     mode,
     appDir,
+    outputDir,
+    prerenderManifest,
   }: {
     mode: 'development' | 'production';
     appDir: string;
+    outputDir: string;
+    // This does not contain the API routes info.
+    prerenderManifest: ExpoRouterServerManifestV1;
   }) {
-    return exportAllApiRoutesAsync(this.projectRoot, {
-      mode,
-      appDir,
-      port: this.getInstance()?.location.port,
-      shouldThrow: true,
-    });
+    const manifest = await this.getExpoRouterRoutesManifestAsync({ appDir });
+
+    const files: Map<string, string> = new Map();
+
+    for (const route of manifest.apiRoutes) {
+      const filepath = path.join(appDir, route.file);
+      const contents = await bundleApiRoute(this.projectRoot, filepath, {
+        mode,
+        appDir,
+        port: this.getInstance()?.location.port,
+        shouldThrow: true,
+      });
+      const artifactFilename = path.join(
+        outputDir,
+        path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js'))
+      );
+      files.set(artifactFilename, contents!);
+      // Remap the manifest files to represent the output files.
+      route.file = artifactFilename;
+    }
+
+    return {
+      manifest: {
+        ...manifest,
+        htmlRoutes: prerenderManifest.htmlRoutes,
+      },
+      files,
+    };
   }
 
   async composeResourcesWithHtml({
@@ -140,6 +152,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
   }
 
+  async getExpoRouterRoutesManifestAsync({ appDir }: { appDir: string }) {
+    // getBuiltTimeServerManifest
+    const manifest = await fetchManifest(this.projectRoot, {
+      asJson: true,
+      appDir,
+    });
+
+    if (!manifest) {
+      throw new CommandError(
+        'EXPO_ROUTER_SERVER_MANIFEST',
+        'Unexpected error: server manifest could not be fetched.'
+      );
+    }
+
+    return manifest;
+  }
+
   async getStaticRenderFunctionAsync({
     mode,
     minify = mode !== 'development',
@@ -149,17 +178,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }) {
     const url = this.getDevServerUrl()!;
 
-    const { getStaticContent, getManifest } = await getStaticRenderFunctions(
-      this.projectRoot,
-      url,
-      {
+    const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
+      await getStaticRenderFunctions(this.projectRoot, url, {
         minify,
         dev: mode !== 'production',
         // Ensure the API Routes are included
         environment: 'node',
-      }
-    );
+      });
+
     return {
+      serverManifest: await getBuildTimeServerManifestAsync(),
       // Get routes from Expo Router.
       manifest: await getManifest({ fetchData: true, preserveApiRoutes: false }),
       // Get route generating function
@@ -380,6 +408,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }).getHandler()
     );
     middleware.use(new ReactDevToolsPageMiddleware(this.projectRoot).getHandler());
+    middleware.use(
+      new DevToolsPluginMiddleware(this.projectRoot, this.devToolsPluginManager).getHandler()
+    );
 
     const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
       onDeepLink: getDeepLinkHandler(this.projectRoot),
@@ -430,7 +461,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         if (exp.web?.output === 'server') {
           // Cache observation for API Routes...
           observeApiRouteChanges(
-            this.projectRoot,
+            appDir,
             {
               metro,
               server,

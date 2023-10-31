@@ -44,7 +44,7 @@ func getDeviceType() -> Int {
   }
 
   // if it's built for iPad running on a Mac
-  if #available(iOS 14.0, *) {
+  if #available(iOS 14.0, tvOS 14.0, *) {
     if ProcessInfo.processInfo.isiOSAppOnMac {
       return DeviceType.desktop.rawValue
     }

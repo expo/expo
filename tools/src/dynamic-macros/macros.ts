@@ -226,8 +226,4 @@ export default {
   async TEMPORARY_SDK_VERSION(): Promise<string> {
     return await getHomeSDKVersionAsync();
   },
-
-  INITIAL_URL() {
-    return null;
-  },
 };

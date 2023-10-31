@@ -83,9 +83,9 @@ Then, remove your lockfile and re-install the dependencies:
 
 <Terminal cmd={['$ rm -rf node_modules', '$ rm bun.lockb', '$ bun install']} />
 
-## Common Errors
+## Common errors
 
-### EAS build fails when using Sentry and Bun
+### EAS Build fails when using Sentry and Bun
 
 If you're using `sentry-expo` or `@sentry/react-native`, these depend on `@sentry/cli`, which updates source maps to Sentry during your build. The `@sentry/cli` package has a `postinstall` script which needs to run for the "upload source maps" script to become available.
 

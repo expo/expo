@@ -48,6 +48,26 @@ class ExpoImageModule : Module() {
       return@AsyncFunction true
     }
 
+    AsyncFunction("getCachePathAsync") { cacheKey: String ->
+      val context = appContext.reactContext ?: return@AsyncFunction null
+
+      val glideUrl = GlideUrl(cacheKey)
+      val target = Glide.with(context).asFile().load(glideUrl).onlyRetrieveFromCache(true).submit()
+
+      try {
+        val file = target.get()
+        val path = file.absolutePath
+
+        if (path != null) {
+          return@AsyncFunction path
+        }
+      } catch (e: Exception) {
+        return@AsyncFunction null
+      }
+
+      return@AsyncFunction null
+    }
+
     View(ExpoImageViewWrapper::class) {
       Events(
         "onLoadStart",
@@ -165,6 +185,18 @@ class ExpoImageModule : Module() {
 
       Prop("allowDownscaling") { view: ExpoImageViewWrapper, allowDownscaling: Boolean? ->
         view.allowDownscaling = allowDownscaling ?: true
+      }
+
+      Prop("autoplay") { view: ExpoImageViewWrapper, autoplay: Boolean? ->
+        view.autoplay = autoplay ?: true
+      }
+
+      AsyncFunction("startAnimating") { view: ExpoImageViewWrapper ->
+        view.setIsAnimating(true)
+      }
+
+      AsyncFunction("stopAnimating") { view: ExpoImageViewWrapper ->
+        view.setIsAnimating(false)
       }
 
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->

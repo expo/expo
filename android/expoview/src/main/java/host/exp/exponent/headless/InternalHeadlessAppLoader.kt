@@ -7,8 +7,6 @@ import android.util.SparseArray
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.soloader.SoLoader
-import expo.modules.adapters.react.ReactModuleRegistryProvider
-import expo.modules.apploader.AppLoaderPackagesProviderInterface
 import expo.modules.apploader.AppLoaderProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
@@ -19,7 +17,6 @@ import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.RNObject
-import host.exp.exponent.experience.DetachedModuleRegistryAdapter
 import host.exp.exponent.kernel.ExponentUrls
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.storage.ExponentDB
@@ -117,7 +114,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
       sdkVersion = RNObject.UNVERSIONED
     }
 
-    detachSdkVersion = if (Constants.isStandaloneApp()) RNObject.UNVERSIONED else sdkVersion
+    detachSdkVersion = sdkVersion
 
     if (RNObject.UNVERSIONED != sdkVersion) {
       var isValidVersion = false
@@ -180,28 +177,14 @@ class InternalHeadlessAppLoader(private val context: Context) :
 
   // Override
   private fun reactPackages(): List<ReactPackage?>? {
-    return if (!Constants.isStandaloneApp()) {
-      // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
-      null
-    } else try {
-      (context.applicationContext as AppLoaderPackagesProviderInterface<ReactPackage?>).packages
-    } catch (e: ClassCastException) {
-      e.printStackTrace()
-      null
-    }
+    // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
+    return null
   }
 
   // Override
   fun expoPackages(): List<Package>? {
-    return if (!Constants.isStandaloneApp()) {
-      // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
-      null
-    } else try {
-      (context.applicationContext as AppLoaderPackagesProviderInterface<*>).expoPackages
-    } catch (e: ClassCastException) {
-      e.printStackTrace()
-      null
-    }
+    // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
+    return null
   }
 
   //region StartReactInstanceDelegate
@@ -301,12 +284,10 @@ class InternalHeadlessAppLoader(private val context: Context) :
   // deprecated in favor of Expo.Linking.makeUrl
   // TODO: remove this
   private val linkingUri: String?
-    get() = if (Constants.SHELL_APP_SCHEME != null) {
-      Constants.SHELL_APP_SCHEME + "://"
-    } else {
+    get() {
       val uri = Uri.parse(manifestUrl)
       val host = uri.host
-      if (host != null && (
+      return if (host != null && (
         host == "exp.host" || host == "expo.io" || host == "exp.direct" || host == "expo.test" ||
           host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(
             ".expo.test"
@@ -333,16 +314,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
     packages: List<Package>,
     singletonModules: List<SingletonModule>
   ): ExpoModuleRegistryAdapter? {
-    return if (Constants.isStandaloneApp()) {
-      DetachedModuleRegistryAdapter(
-        ReactModuleRegistryProvider(
-          packages,
-          singletonModules
-        )
-      )
-    } else {
-      null
-    }
+    return null
   }
 
   companion object {

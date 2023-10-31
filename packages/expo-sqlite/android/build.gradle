@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '11.7.1'
+version = '11.8.0'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -14,6 +14,11 @@ if (expoModulesCorePlugin.exists()) {
     useExpoPublishing()
     useCoreDependencies()
   }
+}
+
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
 buildscript {
@@ -94,7 +99,22 @@ android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
-    versionName "11.7.1"
+    versionName "11.8.0"
+
+    externalNativeBuild {
+      cmake {
+        abiFilters (*reactNativeArchitectures())
+        arguments "-DANDROID_STL=c++_shared"
+      }
+    }
+  }
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
+  }
+  buildFeatures {
+    prefab true
   }
 }
 
@@ -105,6 +125,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   }
 
-  implementation 'com.github.alanjhughes:sqlite-android:0.0.3'
-  implementation "androidx.sqlite:sqlite-ktx:2.3.1"
+  compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 }

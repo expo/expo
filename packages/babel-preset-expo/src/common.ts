@@ -1,12 +1,14 @@
 export type BabelPresetExpoPlatformOptions = {
-  useTransformReactJSXExperimental?: boolean;
+  // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
+  disableFlowStripTypesTransform?: boolean;
+
   disableImportExportTransform?: boolean;
-  // Defaults to undefined, set to something truthy to disable `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`.
-  withDevTools?: boolean;
   // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
   enableBabelRuntime?: boolean;
   // Defaults to `'default'`, can also use `'hermes-canary'`
   unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
+  /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
+  useTransformReactJSXExperimental?: boolean;
 };
 
 export type BabelPresetExpoOptions = {
@@ -58,8 +60,16 @@ export function getPlatform(caller: any) {
   return caller.platform;
 }
 
+export function getPossibleProjectRoot(caller: any) {
+  if (!caller) return null;
+  if (caller.projectRoot) return caller.projectRoot;
+  // unknown
+  return process.env.EXPO_PROJECT_ROOT;
+}
+
 export function getIsDev(caller: any) {
   if (caller?.isDev != null) return caller.isDev;
 
+  // https://babeljs.io/docs/options#envname
   return process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
 }

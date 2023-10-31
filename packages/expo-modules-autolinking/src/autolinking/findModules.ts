@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import { createRequire } from 'module';
 import path from 'path';
 
-import { mergeLinkingOptionsAsync, projectPackageJsonPath } from './mergeLinkingOptions';
+import { getProjectPackageJsonPathAsync, mergeLinkingOptionsAsync } from './mergeLinkingOptions';
 import { requireAndResolveExpoModuleConfig } from '../ExpoModuleConfig';
 import { PackageRevision, SearchOptions, SearchResults } from '../types';
 
@@ -89,11 +89,11 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
   // (excluding custom native modules path)
   // Workspace root usually doesn't specify all its dependencies (see Expo Go),
   // so in this case we should link everything.
-  if (options.searchPaths.length <= 1) {
+  if (options.searchPaths.length <= 1 || options.onlyProjectDeps === false) {
     return searchResults;
   }
 
-  return filterToProjectDependencies(searchResults, {
+  return await filterToProjectDependenciesAsync(searchResults, {
     ...providedOptions,
     // Custom native modules are not filtered out
     // when they're not specified in package.json dependencies.
@@ -199,10 +199,12 @@ function resolvePackageNameAndVersion(
 /**
  * Filters out packages that are not the dependencies of the project.
  */
-function filterToProjectDependencies(
+async function filterToProjectDependenciesAsync(
   results: SearchResults,
-  options: Pick<SearchOptions, 'silent'> & { alwaysIncludedPackagesNames?: Set<string> } = {}
-) {
+  options: Pick<SearchOptions, 'projectRoot' | 'silent'> & {
+    alwaysIncludedPackagesNames?: Set<string>;
+  }
+): Promise<SearchResults> {
   const filteredResults: SearchResults = {};
   const visitedPackages = new Set<string>();
 
@@ -263,6 +265,7 @@ function filterToProjectDependencies(
   }
 
   // Visit project's package.
+  const projectPackageJsonPath = await getProjectPackageJsonPathAsync(options.projectRoot);
   visitPackage(projectPackageJsonPath);
 
   return filteredResults;

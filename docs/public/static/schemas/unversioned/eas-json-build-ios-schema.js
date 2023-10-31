@@ -47,8 +47,8 @@ export default [
     enum: ['default', 'medium', ...iosResourceClasses],
     description: [
       'The iOS-specific resource class that will be used to run this build.',
-      '- For SDK version >= 45 or React Native version >= 0.71.0 `default` maps to `m-medium`, otherwise it maps to `intel-medium`',
-      '- For SDK version >= 45 or React Native version >= 0.71.0 `medium` maps to `m-medium`, otherwise it maps to `intel-medium`',
+      '`m-medium`',
+      '`m-medium`',
       '',
       'Build resources:',
       ...iosResourcesList,

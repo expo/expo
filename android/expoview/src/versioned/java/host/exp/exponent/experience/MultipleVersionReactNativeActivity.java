@@ -7,14 +7,6 @@ public class MultipleVersionReactNativeActivity extends ReactNativeActivity impl
     // The 4-space indentation is used by android-build-aar.sh.
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-    // BEGIN_SDK_47
-    abi47_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
-    abi47_0_0.com.facebook.react.modules.core.PermissionAwareActivity,
-    // END_SDK_47
-    // BEGIN_SDK_48
-    abi48_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
-    abi48_0_0.com.facebook.react.modules.core.PermissionAwareActivity,
-    // END_SDK_48
     // BEGIN_SDK_49
     abi49_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
     abi49_0_0.com.facebook.react.modules.core.PermissionAwareActivity,
@@ -26,18 +18,6 @@ public class MultipleVersionReactNativeActivity extends ReactNativeActivity impl
 
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-    // BEGIN_SDK_47
-    @Override
-    public void requestPermissions(String[] strings, int i, abi47_0_0.com.facebook.react.modules.core.PermissionListener permissionListener) {
-      super.requestPermissions(strings, i, permissionListener::onRequestPermissionsResult);
-    }
-    // END_SDK_47
-    // BEGIN_SDK_48
-    @Override
-    public void requestPermissions(String[] strings, int i, abi48_0_0.com.facebook.react.modules.core.PermissionListener permissionListener) {
-      super.requestPermissions(strings, i, permissionListener::onRequestPermissionsResult);
-    }
-    // END_SDK_48
     // BEGIN_SDK_49
     @Override
     public void requestPermissions(String[] strings, int i, abi49_0_0.com.facebook.react.modules.core.PermissionListener permissionListener) {

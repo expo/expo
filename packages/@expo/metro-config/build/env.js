@@ -17,11 +17,6 @@ class Env {
     return (0, _getenv().boolish)('EXPO_DEBUG', false);
   }
 
-  /** Prevent disabling the `x_facebook_sources` non-standard sourcemap extension when `EXPO_USE_EXOTIC` is enabled. */
-  get EXPO_USE_FB_SOURCES() {
-    return (0, _getenv().boolish)('EXPO_USE_FB_SOURCES', false);
-  }
-
   /** Enable the experimental "exotic" mode. [Learn more](https://blog.expo.dev/drastically-faster-bundling-in-react-native-a54f268e0ed1). */
   get EXPO_USE_EXOTIC() {
     return (0, _getenv().boolish)('EXPO_USE_EXOTIC', false);

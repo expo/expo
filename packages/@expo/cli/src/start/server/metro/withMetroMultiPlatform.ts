@@ -14,9 +14,11 @@ import { createFastResolver } from './createExpoMetroResolver';
 import {
   EXTERNAL_REQUIRE_NATIVE_POLYFILL,
   EXTERNAL_REQUIRE_POLYFILL,
+  METRO_SHIMS_FOLDER,
   getNodeExternalModuleId,
   isNodeExternal,
   setupNodeExternals,
+  setupShimFiles,
 } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { importMetroResolverFromProject } from './resolveFromProject';
@@ -97,12 +99,14 @@ export function withExtendedResolver(
     platforms,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
+    isExporting,
   }: {
     projectRoot: string;
     tsconfig: TsConfigPaths | null;
     platforms: string[];
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
+    isExporting?: boolean;
   }
 ) {
   if (isFastResolverEnabled) {
@@ -131,9 +135,10 @@ export function withExtendedResolver(
 
   const isWebEnabled = platforms.includes('web');
 
+  const defaultResolver = importMetroResolverFromProject(projectRoot).resolve;
   const resolver = isFastResolverEnabled
     ? createFastResolver({ preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false })
-    : importMetroResolverFromProject(projectRoot).resolve;
+    : defaultResolver;
 
   const extraNodeModules: { [key: string]: Record<string, string> } = {};
 
@@ -165,36 +170,40 @@ export function withExtendedResolver(
       })
     : null;
 
-  if (isTsconfigPathsEnabled && isInteractive()) {
-    // TODO: We should track all the files that used imports and invalidate them
-    // currently the user will need to save all the files that use imports to
-    // use the new aliases.
-    const configWatcher = new FileNotifier(projectRoot, ['./tsconfig.json', './jsconfig.json']);
-    configWatcher.startObserving(() => {
-      debug('Reloading tsconfig.json');
-      loadTsConfigPathsAsync(projectRoot).then((tsConfigPaths) => {
-        if (tsConfigPaths?.paths && !!Object.keys(tsConfigPaths.paths).length) {
-          debug('Enabling tsconfig.json paths support');
-          tsConfigResolve = resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-            paths: tsConfigPaths.paths ?? {},
-            baseUrl: tsConfigPaths.baseUrl,
-          });
-        } else {
-          debug('Disabling tsconfig.json paths support');
-          tsConfigResolve = null;
-        }
+  if (!isExporting && isInteractive()) {
+    if (isTsconfigPathsEnabled) {
+      // TODO: We should track all the files that used imports and invalidate them
+      // currently the user will need to save all the files that use imports to
+      // use the new aliases.
+      const configWatcher = new FileNotifier(projectRoot, ['./tsconfig.json', './jsconfig.json']);
+      configWatcher.startObserving(() => {
+        debug('Reloading tsconfig.json');
+        loadTsConfigPathsAsync(projectRoot).then((tsConfigPaths) => {
+          if (tsConfigPaths?.paths && !!Object.keys(tsConfigPaths.paths).length) {
+            debug('Enabling tsconfig.json paths support');
+            tsConfigResolve = resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
+              paths: tsConfigPaths.paths ?? {},
+              baseUrl: tsConfigPaths.baseUrl,
+            });
+          } else {
+            debug('Disabling tsconfig.json paths support');
+            tsConfigResolve = null;
+          }
+        });
       });
-    });
 
-    // TODO: This probably prevents the process from exiting.
-    installExitHooks(() => {
-      configWatcher.stopObserving();
-    });
-  } else {
-    debug('Skipping tsconfig.json paths support');
+      // TODO: This probably prevents the process from exiting.
+      installExitHooks(() => {
+        configWatcher.stopObserving();
+      });
+    } else {
+      debug('Skipping tsconfig.json paths support');
+    }
   }
 
   let nodejsSourceExtensions: string[] | null = null;
+
+  const shimsFolder = path.join(projectRoot, METRO_SHIMS_FOLDER);
 
   return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
@@ -255,6 +264,9 @@ export function withExtendedResolver(
       let mainFields: string[] = context.mainFields;
 
       if (isNode) {
+        context.unstable_enablePackageExports = true;
+        context.unstable_conditionNames = ['node', 'require'];
+
         // Node.js runtimes should only be importing main at the moment.
         // This is a temporary fix until we can support the package.json exports.
         mainFields = ['main', 'module'];
@@ -264,7 +276,10 @@ export function withExtendedResolver(
         mainFields = preferredMainFields[platform];
       }
       function doResolve(moduleName: string): Resolution | null {
-        return resolver(
+        // Workaround for Node.js having package exports enabled by default and
+        // the fast resolver not having package exports support yet.
+        const resolverToUse = isNode ? defaultResolver : resolver;
+        return resolverToUse(
           {
             ...context,
             resolveRequest: undefined,
@@ -372,6 +387,18 @@ export function withExtendedResolver(
         ) {
           // @ts-expect-error: `readonly` for some reason.
           result.filePath = reactNativeWebAppContainer;
+        } else if (platform === 'web' && result.filePath.includes('node_modules')) {
+          // Replace with static shims
+
+          const normalName = normalizeSlashes(result.filePath)
+            // Drop everything up until the `node_modules` folder.
+            .replace(/.*node_modules\//, '');
+
+          const shimPath = path.join(shimsFolder, normalName);
+          if (fs.existsSync(shimPath)) {
+            // @ts-expect-error: `readonly` for some reason.
+            result.filePath = shimPath;
+          }
         }
       }
       return result;
@@ -419,6 +446,7 @@ export async function withMetroMultiPlatformAsync(
     webOutput,
     routerDirectory,
     isFastResolverEnabled,
+    isExporting,
   }: {
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
@@ -426,6 +454,7 @@ export async function withMetroMultiPlatformAsync(
     webOutput?: 'single' | 'static' | 'server';
     routerDirectory: string;
     isFastResolverEnabled?: boolean;
+    isExporting?: boolean;
   }
 ) {
   // Auto pick app entry for router.
@@ -456,6 +485,7 @@ export async function withMetroMultiPlatformAsync(
     tsconfig = await loadTsConfigPathsAsync(projectRoot);
   }
 
+  await setupShimFiles(projectRoot);
   await setupNodeExternals(projectRoot);
 
   return withMetroMultiPlatform(projectRoot, {
@@ -464,6 +494,7 @@ export async function withMetroMultiPlatformAsync(
     tsconfig,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
+    isExporting,
   });
 }
 
@@ -475,12 +506,14 @@ function withMetroMultiPlatform(
     isTsconfigPathsEnabled,
     tsconfig,
     isFastResolverEnabled,
+    isExporting,
   }: {
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     tsconfig: TsConfigPaths | null;
     isFastResolverEnabled?: boolean;
+    isExporting?: boolean;
   }
 ) {
   let expoConfigPlatforms = Object.entries(platformBundlers)
@@ -501,6 +534,7 @@ function withMetroMultiPlatform(
   return withExtendedResolver(config, {
     projectRoot,
     tsconfig,
+    isExporting,
     isTsconfigPathsEnabled,
     platforms: expoConfigPlatforms,
     isFastResolverEnabled,

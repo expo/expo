@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIsDev = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
+exports.getIsDev = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
 function hasModule(name) {
     try {
         return !!require.resolve(name);
@@ -43,9 +43,19 @@ function getPlatform(caller) {
     return caller.platform;
 }
 exports.getPlatform = getPlatform;
+function getPossibleProjectRoot(caller) {
+    if (!caller)
+        return null;
+    if (caller.projectRoot)
+        return caller.projectRoot;
+    // unknown
+    return process.env.EXPO_PROJECT_ROOT;
+}
+exports.getPossibleProjectRoot = getPossibleProjectRoot;
 function getIsDev(caller) {
     if (caller?.isDev != null)
         return caller.isDev;
+    // https://babeljs.io/docs/options#envname
     return process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
 }
 exports.getIsDev = getIsDev;

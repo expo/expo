@@ -33,8 +33,11 @@ const STYLES_CODE_BLOCK = css`
   .code-annotation {
     transition: 200ms ease all;
     transition-property: text-shadow, opacity;
-    text-shadow: ${theme.palette.yellow7} 0 0 10px, ${theme.palette.yellow7} 0 0 10px,
-      ${theme.palette.yellow7} 0 0 10px, ${theme.palette.yellow7} 0 0 10px;
+    text-shadow:
+      ${theme.palette.yellow7} 0 0 10px,
+      ${theme.palette.yellow7} 0 0 10px,
+      ${theme.palette.yellow7} 0 0 10px,
+      ${theme.palette.yellow7} 0 0 10px;
   }
 
   .code-annotation.with-tooltip:hover {

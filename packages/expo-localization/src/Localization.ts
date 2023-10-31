@@ -10,6 +10,7 @@ export * from './Localization.types';
 
 // @needsAudit
 /**
+ * @hidden
  * @deprecated Use Localization.getLocales() instead.
  * Three-character ISO 4217 currency code. Returns `null` on web.
  *
@@ -19,6 +20,7 @@ export const currency = ExpoLocalization.currency;
 
 // @needsAudit
 /**
+ * @hidden
  * @deprecated Use Localization.getLocales() instead.
  * Decimal separator used for formatting numbers.
  *
@@ -28,6 +30,7 @@ export const decimalSeparator = ExpoLocalization.decimalSeparator;
 
 // @needsAudit
 /**
+ * @hidden
  * @deprecated Use Localization.getLocales() instead.
  * Digit grouping separator used when formatting numbers larger than 1000.
  *
@@ -37,6 +40,7 @@ export const digitGroupingSeparator = ExpoLocalization.digitGroupingSeparator;
 
 // @needsAudit
 /**
+ * @hidden
  * @deprecated Use Localization.getLocales() instead.
  * A list of all the supported language ISO codes.
  */
@@ -44,6 +48,7 @@ export const isoCurrencyCodes = ExpoLocalization.isoCurrencyCodes;
 
 // @needsAudit
 /**
+ * @hidden
  * @deprecated Use Localization.getLocales() instead.
  * Boolean value that indicates whether the system uses the metric system.
  * On Android and web, this is inferred from the current region.
@@ -52,6 +57,7 @@ export const isMetric = ExpoLocalization.isMetric;
 
 // @needsAudit
 /**
+ * @hidden
  * @deprecated Use Localization.getLocales() instead.
  * Returns if the system's language is written from Right-to-Left.
  * This can be used to build features like [bidirectional icons](https://material.io/design/usability/bidirectionality.html).
@@ -62,7 +68,7 @@ export const isRTL = ExpoLocalization.isRTL;
 
 // @needsAudit
 /**
- * Consider using Localization.getLocales() for a list of user preferred locales instead.
+ * @deprecated Use [`Localization.getLocales()`](#localizationgetlocales) instead.
  * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag),
  * consisting of a two-character language code and optional script, region and variant codes.
  *
@@ -72,6 +78,7 @@ export const locale = ExpoLocalization.locale;
 
 // @needsAudit
 /**
+ * @hidden
  * @deprecated Use Localization.getLocales() instead.
  * List of all the native languages provided by the user settings.
  * These are returned in the order the user defines in their device settings.
@@ -82,6 +89,7 @@ export const locales = ExpoLocalization.locales;
 
 // @needsAudit
 /**
+ * @hidden
  * @deprecated Use Localization.getCalendars() instead.
  * The current time zone in display format.
  * On Web time zone is calculated with Intl.DateTimeFormat().resolvedOptions().timeZone. For a
@@ -94,6 +102,7 @@ export const timezone = ExpoLocalization.timezone;
 
 // @needsAudit
 /**
+ * @hidden
  * @deprecated Use Localization.getLocales() instead.
  * The region code for your device that comes from the Region setting under Language & Region on iOS.
  * This value is always available on iOS, but might return `null` on Android or web.
@@ -198,6 +207,7 @@ export function useCalendars() {
 
 // @needsAudit
 /**
+ * @hidden
  * Get the latest native values from the device. Locale can be changed on some Android devices
  * without resetting the app.
  * > On iOS, changing the locale will cause the device to reset meaning the constants will always be

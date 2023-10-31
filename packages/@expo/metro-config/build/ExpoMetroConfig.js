@@ -162,7 +162,7 @@ function getDefaultConfig(projectRoot, {
   const isExotic = mode === 'exotic' || _env2().env.EXPO_USE_EXOTIC;
   if (isExotic && !hasWarnedAboutExotic) {
     hasWarnedAboutExotic = true;
-    console.log(_chalk().default.gray(`\u203A Unstable feature ${_chalk().default.bold`EXPO_USE_EXOTIC`} is enabled. Bundling may not work as expected, and is subject to breaking changes.`));
+    console.log(_chalk().default.gray(`\u203A Feature ${_chalk().default.bold`EXPO_USE_EXOTIC`} is no longer supported.`));
   }
   const reactNativePath = _path().default.dirname((0, _resolveFrom().default)(projectRoot, 'react-native/package.json'));
   try {
@@ -208,7 +208,6 @@ function getDefaultConfig(projectRoot, {
     console.log(`- React Native: ${reactNativePath}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
-    console.log(`- Exotic: ${isExotic}`);
     console.log(`- Env Files: ${envFiles}`);
     console.log(`- Sass: ${sassVersion}`);
     console.log(`- Reanimated: ${reanimatedVersion}`);
@@ -245,6 +244,10 @@ function getDefaultConfig(projectRoot, {
         const preModules = [
         // MUST be first
         require.resolve(_path().default.join(reactNativePath, 'Libraries/Core/InitializeCore'))];
+        const stdRuntime = _resolveFrom().default.silent(projectRoot, 'expo/build/winter');
+        if (stdRuntime) {
+          preModules.push(stdRuntime);
+        }
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
         // This will only be applied if the module is installed and imported somewhere in the bundle already.
@@ -280,9 +283,7 @@ function getDefaultConfig(projectRoot, {
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
-      babelTransformerPath: isExotic ?
-      // TODO: Combine these into one transformer.
-      require.resolve('./transformer/metro-expo-exotic-babel-transformer') : require.resolve('./babel-transformer'),
+      babelTransformerPath: require.resolve('./babel-transformer'),
       assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
       assetPlugins: getAssetPlugins(projectRoot)
     }

@@ -7,6 +7,7 @@
 /packages/@expo/metro-runtime                   @EvanBacon @bycedric @marklawlor
 /packages/@expo/package-manager                 @EvanBacon @bycedric
 /packages/babel-preset-expo                     @brentvatne @ide @EvanBacon
+/packages/expo-*                                @alanjhughes
 /packages/expo-app-loader-provider              @tsapeta
 /packages/expo-apple-authentication             @tsapeta
 /packages/expo-application                      @ide
@@ -54,6 +55,7 @@
 /packages/expo-module-template-local            @aleqsio @tsapeta
 /packages/expo-modules-autolinking              @tsapeta @kudo @lukmccall
 /packages/expo-modules-core                     @tsapeta @kudo @lukmccall
+/packages/expo-modules-test-core                @tsapeta @aleqsio
 /packages/expo-navigation-bar                   @EvanBacon
 /packages/expo-network                          @ide
 /packages/expo-notifications                    @tsapeta
@@ -81,10 +83,10 @@
 /packages/expo-updates                          @wschurman @douglowder
 /packages/expo-updates-interface                @wschurman @douglowder
 /packages/expo-video-thumbnails                 @tsapeta
+/packages/expo-video                            @tsapeta @aleqsio
 /packages/expo-web-browser                      @tsapeta
 /packages/expo-yarn-workspaces                  @ide
 /packages/expo                                  @ide @tsapeta @brentvatne
-/packages/expo-*                                @alanjhughes
 /packages/jest-expo-enzyme                      @ide @EvanBacon
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne @EvanBacon

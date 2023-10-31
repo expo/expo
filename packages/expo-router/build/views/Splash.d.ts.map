@@ -1,1 +1,1 @@
-{"version":3,"file":"Splash.d.ts","sourceRoot":"","sources":["../../src/views/Splash.tsx"],"names":[],"mappings":"AASA;;;;;;;;;;;;;;;;;GAiBG;AACH,wBAAgB,YAAY,SAM3B;yBANe,YAAY;;;;;;AAmC5B,eAAO,MAAM,8BAA8B,YAe1C,CAAC;AAEF,eAAO,MAAM,wBAAwB,YAOpC,CAAC"}
+{"version":3,"file":"Splash.d.ts","sourceRoot":"","sources":["../../src/views/Splash.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,YAAY,MAAM,oBAAoB,CAAC"}

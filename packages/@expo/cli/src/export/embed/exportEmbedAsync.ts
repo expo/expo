@@ -1,3 +1,4 @@
+import { getConfig } from '@expo/config';
 import fs from 'fs';
 import Server from 'metro/src/Server';
 import output from 'metro/src/shared/output/bundle';
@@ -9,11 +10,14 @@ import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { importCliSaveAssetsFromProject } from '../../start/server/metro/resolveFromProject';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { isEnableHermesManaged } from '../exportHermes';
 import { getAssets } from '../fork-bundleAsync';
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
+
+  const exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp;
 
   const { config } = await loadMetroConfigAsync(
     projectRoot,
@@ -23,9 +27,11 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
       config: options.config,
     },
     {
+      exp,
       isExporting: true,
     }
   );
+  const isHermes = isEnableHermesManaged(exp, options.platform);
 
   // NOTE(EvanBacon): This may need to be adjusted in the future if want to support basePath on native
   // platforms when doing production embeds (unlikely).
@@ -43,8 +49,8 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     dev: options.dev,
     minify: !!options.minify,
     platform: options.platform,
-    unstable_transformProfile:
-      options.unstableTransformProfile as BundleOptions['unstable_transformProfile'],
+    unstable_transformProfile: (options.unstableTransformProfile ||
+      (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
   };
 
   const server = new Server(config, {

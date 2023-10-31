@@ -8,13 +8,13 @@ import {
 } from '../../start/doctor/dependencies/validateDependenciesVersions';
 import { confirmAsync } from '../../utils/prompts';
 import { checkPackagesAsync } from '../checkPackages';
-import { fixPackagesAsync } from '../installAsync';
+import { fixPackagesAsync } from '../fixPackages';
 
 jest.mock('../../log');
 
 jest.mock('../../utils/prompts');
 
-jest.mock('../installAsync', () => ({
+jest.mock('../fixPackages', () => ({
   fixPackagesAsync: jest.fn(),
 }));
 

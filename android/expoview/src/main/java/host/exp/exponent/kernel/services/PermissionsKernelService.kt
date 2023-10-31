@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
 import expo.modules.jsonutils.getNullable
-import host.exp.exponent.Constants
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.storage.ExponentSharedPreferences
 import org.json.JSONException
@@ -49,10 +48,6 @@ class PermissionsKernelService(
   }
 
   fun hasGrantedPermissions(permission: String, experienceKey: ExperienceKey): Boolean {
-    // we don't want to worry about per-experience permissions for shell apps
-    if (Constants.isStandaloneApp()) {
-      return true
-    }
     val metadata = exponentSharedPreferences.getExperienceMetadata(experienceKey) ?: return false
     try {
       if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_PERMISSIONS)) {
@@ -81,7 +76,7 @@ class PermissionsKernelService(
     } catch (e: PackageManager.NameNotFoundException) {
       return PackageManager.PERMISSION_DENIED
     }
-    if (Constants.isStandaloneApp() || !isDangerousPermission) {
+    if (!isDangerousPermission) {
       return globalPermissionStatus
     }
     return if (globalPermissionStatus == PackageManager.PERMISSION_GRANTED &&

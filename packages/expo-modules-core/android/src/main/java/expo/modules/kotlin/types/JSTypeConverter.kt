@@ -6,6 +6,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.typedarray.RawTypedArrayHolder
 import java.io.File
 import java.net.URI
 import java.net.URL
@@ -25,7 +26,6 @@ object JSTypeConverter {
     return when (value) {
       null, is Unit -> null
       is Bundle -> value.toJSValue(containerProvider)
-      is Iterable<*> -> value.toJSValue(containerProvider)
       is Array<*> -> value.toJSValue(containerProvider)
       is IntArray -> value.toJSValue(containerProvider)
       is FloatArray -> value.toJSValue(containerProvider)
@@ -40,6 +40,8 @@ object JSTypeConverter {
       is File -> value.toJSValue()
       is Pair<*, *> -> value.toJSValue(containerProvider)
       is Long -> value.toDouble()
+      is RawTypedArrayHolder -> value.rawArray
+      is Iterable<*> -> value.toJSValue(containerProvider)
       else -> value
     }
   }

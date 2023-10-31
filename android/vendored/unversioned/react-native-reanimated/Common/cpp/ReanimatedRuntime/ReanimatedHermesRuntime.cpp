@@ -31,9 +31,9 @@ using namespace react;
 class HermesExecutorRuntimeAdapter
     : public facebook::hermes::inspector::RuntimeAdapter {
  public:
-  HermesExecutorRuntimeAdapter(
+  explicit HermesExecutorRuntimeAdapter(
       facebook::hermes::HermesRuntime &hermesRuntime,
-      std::shared_ptr<MessageQueueThread> thread)
+      const std::shared_ptr<MessageQueueThread> &thread)
       : hermesRuntime_(hermesRuntime), thread_(std::move(thread)) {}
 
   virtual ~HermesExecutorRuntimeAdapter() {
@@ -71,7 +71,8 @@ class HermesExecutorRuntimeAdapter
 
 ReanimatedHermesRuntime::ReanimatedHermesRuntime(
     std::unique_ptr<facebook::hermes::HermesRuntime> runtime,
-    std::shared_ptr<MessageQueueThread> jsQueue)
+    const std::shared_ptr<MessageQueueThread> &jsQueue,
+    const std::string &name)
     : jsi::WithRuntimeDecorator<ReanimatedReentrancyCheck>(
           *runtime,
           reentrancyCheck_),
@@ -81,16 +82,16 @@ ReanimatedHermesRuntime::ReanimatedHermesRuntime(
       std::make_unique<HermesExecutorRuntimeAdapter>(*runtime_, jsQueue);
 #if REACT_NATIVE_MINOR_VERSION >= 71
   debugToken_ = facebook::hermes::inspector::chrome::enableDebugging(
-      std::move(adapter), "Reanimated Runtime");
+      std::move(adapter), name);
 #else
   facebook::hermes::inspector::chrome::enableDebugging(
-      std::move(adapter), "Reanimated Runtime");
+      std::move(adapter), name);
 #endif // REACT_NATIVE_MINOR_VERSION
 #else
   // This is required by iOS, because there is an assertion in the destructor
   // that the thread was indeed `quit` before
   jsQueue->quitSynchronous();
-#endif
+#endif // HERMES_ENABLE_DEBUGGER
 
 #ifdef DEBUG
   facebook::hermes::HermesRuntime *wrappedRuntime = runtime_.get();
@@ -114,12 +115,8 @@ ReanimatedHermesRuntime::ReanimatedHermesRuntime(
           sourceMap = std::make_shared<const jsi::StringBuffer>(
               args[2].asString(rt).utf8(rt));
         }
-#if REACT_NATIVE_MINOR_VERSION >= 65
         return wrappedRuntime->evaluateJavaScriptWithSourceMap(
             code, sourceMap, sourceURL);
-#else
-        return wrappedRuntime->evaluateJavaScript(code, sourceURL);
-#endif
       });
   runtime_->global().setProperty(
       *runtime_, "evalWithSourceMap", evalWithSourceMap);

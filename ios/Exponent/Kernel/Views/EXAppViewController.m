@@ -29,18 +29,8 @@
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI49_0_0React/ABI49_0_0RCTAppearance.h>)
 #import <ABI49_0_0React/ABI49_0_0RCTAppearance.h>
 #endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
-#import <ABI48_0_0React/ABI48_0_0RCTAppearance.h>
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
-#import <ABI47_0_0React/ABI47_0_0RCTAppearance.h>
-#endif
 
-#if defined(EX_DETACHED)
-#import "ExpoKit-Swift.h"
-#else
 #import "Expo_Go-Swift.h"
-#endif // defined(EX_DETACHED)
 
 @import EXManifests;
 
@@ -77,7 +67,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSDate *dtmLastFatalErrorShown;
 @property (nonatomic, strong) NSMutableArray<UIViewController *> *backgroundedControllers;
 
-@property (nonatomic, assign) BOOL isStandalone;
 @property (nonatomic, assign) BOOL isHomeApp;
 @property (nonatomic, assign) UIInterfaceOrientation previousInterfaceOrientation;
 
@@ -113,7 +102,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (self = [super init]) {
     _appRecord = record;
-    _isStandalone = [EXEnvironment sharedEnvironment].isDetached;
     // For iPads traitCollectionDidChange will not be called (it's always in the same size class). It is necessary
     // to init it in here, so it's possible to return it in the didUpdateDimensionsEvent of the module
     if (ScreenOrientationRegistry.shared.currentTraitCollection == nil) {
@@ -138,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
   _isHomeApp = _appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord;
 
   // show LoadingCancelView in managed apps only
-  if (!self.isStandalone && !self.isHomeApp) {
+  if (!self.isHomeApp) {
     self.appLoadingCancelView = [EXAppLoadingCancelView new];
     // if home app is available then LoadingCancelView can show `go to home` button
     if ([EXKernel sharedInstance].appRegistry.homeAppRecord) {
@@ -150,15 +138,13 @@ NS_ASSUME_NONNULL_BEGIN
 
   // show LoadingProgressWindow in the development client for all apps other than production home
   BOOL isProductionHomeApp = self.isHomeApp && ![EXEnvironment sharedEnvironment].isDebugXCodeScheme;
-  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!self.isStandalone && !isProductionHomeApp];
+  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!isProductionHomeApp];
 
   // show SplashScreen in standalone apps and home app only
   // SplashScreen for managed is shown once the manifest is available
   if (self.isHomeApp) {
     EXHomeAppSplashScreenViewProvider *homeAppSplashScreenViewProvider = [EXHomeAppSplashScreenViewProvider new];
     [self _showSplashScreenWithProvider:homeAppSplashScreenViewProvider];
-  } else if (self.isStandalone) {
-    [self _showSplashScreenWithProvider:[EXSplashScreenViewNativeProvider new]];
   }
 
   self.view.backgroundColor = [UIColor whiteColor];
@@ -229,14 +215,6 @@ NS_ASSUME_NONNULL_BEGIN
     NSAssert(NO, @"AppViewController error handler was called on an object that isn't an NSError");
 #endif
     return;
-  }
-
-  // we don't ever want to show any Expo UI in a production standalone app, so hard crash
-  if ([EXEnvironment sharedEnvironment].isDetached && ![_appRecord.appManager enablesDeveloperTools]) {
-    NSException *e = [NSException exceptionWithName:@"ExpoFatalError"
-                                             reason:[NSString stringWithFormat:@"Expo encountered a fatal error: %@", [error localizedDescription]]
-                                           userInfo:@{NSUnderlyingErrorKey: error}];
-    @throw e;
   }
 
   NSString *domain = (error && error.domain) ? error.domain : @"";
@@ -349,7 +327,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)_showOrReconfigureManagedAppSplashScreen:(EXManifestsManifest *)manifest
 {
-  if (_isStandalone || _isHomeApp) {
+  if ( _isHomeApp) {
     return;
   }
   if (!_managedAppSplashScreenViewProvider) {
@@ -363,7 +341,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_showCachedExperienceAlert
 {
-  if (self.isStandalone || self.isHomeApp) {
+  if (self.isHomeApp) {
     return;
   }
 
@@ -669,12 +647,6 @@ NS_ASSUME_NONNULL_BEGIN
   RCTOverrideAppearancePreference(appearancePreference);
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI49_0_0React/ABI49_0_0RCTAppearance.h>)
   ABI49_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
-  ABI48_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
-  ABI47_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
 
 }

@@ -4,11 +4,26 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- [Android] Fix dev server not using query params from manifest when loading the JS bundle. ([#25061](https://github.com/expo/expo/pull/25061), [#25147](https://github.com/expo/expo/pull/25147) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+## 3.3.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
 - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
 
-- Add support for skipping the launcher screen and launching directly into a previously opened project. ([#24614](https://github.com/expo/expo/pull/24614), [#24646](https://github.com/expo/expo/pull/24646) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Improve 'Development servers' and 'Recently opened' UX. ([#24665](https://github.com/expo/expo/pull/24665) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add support for skipping the launcher screen and launching directly into a previously opened project. ([#24614](https://github.com/expo/expo/pull/24614), [#24646](https://github.com/expo/expo/pull/24646), [#24758](https://github.com/expo/expo/pull/24758) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
@@ -18,6 +33,7 @@
 
 ### 💡 Others
 
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
 - Drop support for configuring SDK 44 and below with Prebuild. ([#24504](https://github.com/expo/expo/pull/24504) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.4.13 — 2023-09-25

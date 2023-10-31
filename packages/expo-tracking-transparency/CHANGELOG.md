@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🎉 New features
+
+- Added function `getAdvertisingId`. ([#24777](https://github.com/expo/expo/pull/24777) by [@reichhartd](https://github.com/reichhartd))
 
 ### 🐛 Bug fixes
 

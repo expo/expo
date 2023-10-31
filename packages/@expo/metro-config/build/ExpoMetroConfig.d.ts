@@ -9,6 +9,7 @@ export interface LoadOptions {
     resetCache?: boolean;
 }
 export interface DefaultConfigOptions {
+    /** @deprecated */
     mode?: 'exotic';
     /**
      * **Experimental:** Enable CSS support for Metro web, and shim on native.

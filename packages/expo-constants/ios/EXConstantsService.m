@@ -9,7 +9,6 @@
 #import <EXConstants/EXConstantsInstallationIdProvider.h>
 
 NSString * const EXConstantsExecutionEnvironmentBare = @"bare";
-NSString * const EXConstantsExecutionEnvironmentStandalone = @"standalone";
 NSString * const EXConstantsExecutionEnvironmentStoreClient = @"storeClient";
 
 @interface EXConstantsService ()
