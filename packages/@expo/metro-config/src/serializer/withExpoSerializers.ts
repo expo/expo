@@ -56,6 +56,10 @@ export function withSerializerPlugins(
   };
 }
 
+import { transformFromAstSync, traverse } from '@babel/core';
+const generateImportNames = require('metro/src/ModuleGraph/worker/generateImportNames');
+const JsFileWrapping = require('metro/src/ModuleGraph/worker/JsFileWrapping');
+
 function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer {
   const defaultSerializer =
     fallbackSerializer ??
@@ -69,7 +73,162 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
   ): Promise<string | { code: string; map: string }> => {
     const [entryPoint, preModules, graph, options] = props;
 
+    for (const value of graph.dependencies.values()) {
+      console.log('inverseDependencies', value.inverseDependencies.values());
+
+      for (const index in value.output) {
+        const outputItem = value.output[index];
+        // modules: {
+        //   imports: [],
+        //   exports: [
+        //     { specifiers: [ 'add' ] },
+        //     { specifiers: [ 'subtract' ] }
+        //   ]
+        // },
+
+        let exports = outputItem.data.modules?.exports;
+        let usedExports: string[] = [];
+        // Collect a list of all the unused exports by traversing inverse
+        // dependencies.
+        for (const inverseDepId of value.inverseDependencies.values()) {
+          const inverseDep = graph.dependencies.get(inverseDepId);
+          if (!inverseDep) {
+            continue;
+          }
+
+          inverseDep.output.forEach((outputItem) => {
+            if (outputItem.type === 'js/module') {
+              // imports: [
+              //   {
+              //     source: './math',
+              //     specifiers: [
+              //       {
+              //         type: 'ImportSpecifier',
+              //         importedName: 'add',
+              //         localName: 'add'
+              //       }
+              //     ]
+              //   }
+              // ],
+
+              const imports = outputItem.data.modules?.imports;
+              if (imports) {
+                imports.forEach((importItem) => {
+                  console.log('importItem', importItem);
+                  // TODO: Use proper keys for identifying the import.
+                  if (
+                    // '/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/math.js'
+                    value.path.includes(
+                      // './math'
+                      importItem.source.replace('./', '')
+                    )
+                  ) {
+                    importItem.specifiers.forEach((specifier) => {
+                      usedExports.push(specifier.importedName);
+                    });
+                  }
+                });
+              }
+            }
+          });
+
+          // TODO: This probably breaks source maps.
+          // const code = transformFromAstSync(value.output[index].data.ast);
+          // replaceEnvironmentVariables(value.output[index].data.code, process.env);
+          // value.output[index].data.code = code;
+        }
+
+        // Remove the unused exports from the list of ast exports.
+        let ast = outputItem.data.ast!;
+        if (usedExports.length > 0) {
+          console.log('has used exports:', usedExports);
+          traverse(ast, {
+            ExportNamedDeclaration(path) {
+              // If the export is not used, remove it.
+              if (!usedExports.includes(path.node.declaration.id.name)) {
+                console.log('drop export:', path.node.declaration.id.name, usedExports);
+                path.remove();
+                // TODO: Determine if additional code needs to be removed based on the export.
+              }
+            },
+          });
+        }
+        const { importDefault, importAll } = generateImportNames(ast);
+
+        const babelPluginOpts = {
+          // ...options,
+          inlineableCalls: [importDefault, importAll],
+          importDefault,
+          importAll,
+        };
+
+        ast = transformFromAstSync(ast, undefined, {
+          ast: true,
+          babelrc: false,
+          code: false,
+          configFile: false,
+          comments: false,
+          compact: true,
+          filename: value.path,
+          plugins: [
+            [require('metro-transform-plugins/src/import-export-plugin'), babelPluginOpts],
+            [require('metro-transform-plugins/src/inline-plugin'), babelPluginOpts],
+          ],
+          sourceMaps: false,
+          // Not-Cloning the input AST here should be safe because other code paths above this call
+          // are mutating the AST as well and no code is depending on the original AST.
+          // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
+          // either because one of the plugins is doing something funky or Babel messes up some caches.
+          // Make sure to test the above mentioned case before flipping the flag back to false.
+          cloneInputAst: true,
+        })?.ast!;
+
+        let dependencyMapName = '';
+        let globalPrefix = '';
+
+        let { ast: wrappedAst } = JsFileWrapping.wrapModule(
+          ast,
+          importDefault,
+          importAll,
+          dependencyMapName,
+          globalPrefix
+        );
+
+        outputItem.data.code = transformFromAstSync(wrappedAst, undefined, {
+          ast: false,
+          babelrc: false,
+          code: true,
+          configFile: false,
+          comments: false,
+          compact: true,
+          filename: value.path,
+          plugins: [],
+          sourceMaps: false,
+          // Not-Cloning the input AST here should be safe because other code paths above this call
+          // are mutating the AST as well and no code is depending on the original AST.
+          // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
+          // either because one of the plugins is doing something funky or Babel messes up some caches.
+          // Make sure to test the above mentioned case before flipping the flag back to false.
+          cloneInputAst: true,
+        })?.code;
+
+        outputItem.data.lineCount = outputItem.data.code.split('\n').length;
+        outputItem.data.map = null;
+        outputItem.data.functionMap = null;
+
+        // TODO: minify the code to fold anything that was dropped above.
+
+        console.log('output code', outputItem.data.code);
+      }
+    }
+
+    console.log(
+      require('util').inspect({ entryPoint, graph, options }, { depth: 20, colors: true })
+    );
+
     const jsCode = await defaultSerializer(entryPoint, preModules, graph, options);
+
+    console.log('OUTPUT CODE', jsCode);
 
     if (!options.sourceUrl) {
       return jsCode;

@@ -1,5 +1,5 @@
 {
-  "name": "@expo/sandbox",
+  "name": "@expo/treeshake",
   "version": "0.0.0",
   "main": "./index",
   "scripts": {
@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "expo": "~50.0.0-alpha.0",
-    "expo-router": "^3.0.0",
     "react": "18.2.0",
     "react-native": "0.72.5"
   },

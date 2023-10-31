@@ -157,6 +157,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
     plugins: [
       ...extraPlugins,
+      require('./metadata-plugin'),
       // TODO: Remove
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
       require.resolve('@babel/plugin-transform-export-namespace-from'),
