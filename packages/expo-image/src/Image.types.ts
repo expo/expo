@@ -66,10 +66,10 @@ export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-dow
 
 /**
  * Determines downscale dimensions for the image.
- * When only `height` is provided, the `width` will be calculated automatically to preserve the aspect ratio, similarly
- * when only `width` is provided the `height` will be calculated automatically to preserve the aspect ratio.
- * When both are provided `width` value will be ignored and the dimensions will be calculated based on the height value.
- * */
+ * When only `height` is provided, the `width` will be calculated automatically to preserve the aspect ratio. Similarly,
+ * when only `width` is provided, the `height` will be calculated automatically to preserve the aspect ratio.
+ * When both are provided, the `width` value will be ignored, and the dimensions will be calculated based on the `height` value.
+ */
 export type IntrinsicSize = {
   width?: number;
   height?: number;
@@ -313,9 +313,9 @@ export interface ImageProps extends ViewProps {
   allowDownscaling?: boolean;
 
   /**
-   * Determines the render resolution of the image. When a size is assigned the image will be downscaled to that value before rendering.
-   * When an array is provided, the image will be downscaled to the smallest available resolution, which is greater than view dimensions.
-   * If the view dimensions are greater than the largest provided resolution, largest available size will be used.
+   * Determines the render resolution of the image. When a size is assigned, the image will be downscaled to that value before rendering.
+   * When an array is provided, the image will be downscaled to the smallest available resolution, which is greater than the view dimensions.
+   * If the view dimensions are greater than the largest provided resolution, the largest available size will be used.
    *
    * This prop is ignored when `allowDownscaling` is set to `false`.
    * @default null
