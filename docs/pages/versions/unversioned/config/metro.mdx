@@ -502,6 +502,10 @@ Always try to implement custom logic in the resolver if possible, caching is muc
 
 Always use `babel-preset-expo` as the default Babel preset, this ensures the transformation is always compatible with Expo runtimes. `babel-preset-expo` uses all of the caller inputs internally to optimize for a given platform, engine, and environment.
 
+## Node.js built-ins
+
+When bundling for a server environment, Expo's Metro config automatically supports externalizing Node.js built-in modules (`fs`, `path`, `node:crypto`, etc.) based on the current Node.js version. If the CLI is bundling for a browser environment, then built-ins will first check if the module is installed locally, then fallback on an empty shim. For example, if you install `path` for use in the browser, this can be used, otherwise the module will automatically be skipped.
+
 ## Bare workflow setup
 
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.
