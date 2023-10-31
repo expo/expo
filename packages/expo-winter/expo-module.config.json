@@ -1,0 +1,10 @@
+{
+  "name": "expo-winter",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["WinterModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.winter.WinterModule"]
+  }
+}
