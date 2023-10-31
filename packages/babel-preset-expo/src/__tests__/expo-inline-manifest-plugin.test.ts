@@ -26,7 +26,7 @@ it(`inlines app manifest on web`, () => {
     presets: [],
     plugins: [expoInlineManifestPlugin],
     sourceMaps: true,
-    filename: 'unknown',
+    filename: '/unknown',
     configFile: false,
     compact: false,
     comments: true,

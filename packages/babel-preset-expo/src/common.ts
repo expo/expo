@@ -44,3 +44,10 @@ export function getPossibleProjectRoot(caller: any) {
   // unknown
   return process.env.EXPO_PROJECT_ROOT;
 }
+
+export function getIsDev(caller: any) {
+  if (caller?.isDev != null) return caller.isDev;
+
+  // https://babeljs.io/docs/options#envname
+  return process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
+}

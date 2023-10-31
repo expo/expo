@@ -244,6 +244,7 @@ const transform = ({
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
         isServer: ((_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment) === 'node',
+        isDev: options.dev,
         // Pass the engine to babel so we can automatically transpile for the correct
         // target environment.
         engine: (_options$customTransf2 = options.customTransformOptions) === null || _options$customTransf2 === void 0 ? void 0 : _options$customTransf2.engine,

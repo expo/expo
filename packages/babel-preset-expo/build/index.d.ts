@@ -1,8 +1,8 @@
 import { ConfigAPI, TransformOptions } from '@babel/core';
 type BabelPresetExpoPlatformOptions = {
+    /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
     useTransformReactJSXExperimental?: boolean;
     disableImportExportTransform?: boolean;
-    withDevTools?: boolean;
     disableFlowStripTypesTransform?: boolean;
     enableBabelRuntime?: boolean;
     unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';

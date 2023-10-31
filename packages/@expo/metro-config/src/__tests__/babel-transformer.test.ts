@@ -75,6 +75,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
       caller: {
         // HERE IS THE MAGIC
         isServer: true,
+        isDev: true,
         bundler: 'metro',
         name: 'metro',
         platform: 'ios',
