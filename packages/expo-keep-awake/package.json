@@ -31,7 +31,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/keep-awake/",
-  "dependencies": {},
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",
     "expo-module-scripts": "^3.0.0"

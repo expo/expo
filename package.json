@@ -24,8 +24,7 @@
     "react-native": "0.72.5",
     "react-refresh": "^0.14.0",
     "@react-navigation/native": "^6.1.6",
-    "@react-navigation/core": "^6.4.9",
-    "**/util": "~0.12.4"
+    "@react-navigation/core": "^6.4.9"
   },
   "dependencies": {
     "eslint": "^8.45.0",

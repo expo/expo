@@ -49,11 +49,11 @@
     "sudo-prompt": "9.1.1"
   },
   "devDependencies": {
+    "@types/js-yaml": "^3.12.5",
+    "@types/micromatch": "^4.0.2",
     "@types/npm-package-arg": "^6.1.0",
     "@types/rimraf": "^3.0.0",
-    "@types/split": "^1.0.0",
-    "@types/js-yaml": "^3.12.5",
-    "@types/micromatch": "^4.0.2"
+    "@types/split": "^1.0.0"
   },
   "publishConfig": {
     "access": "public"

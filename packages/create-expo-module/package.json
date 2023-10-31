@@ -10,9 +10,7 @@
     "lint": "expo-module lint",
     "expo-module": "expo-module"
   },
-  "bin": {
-    "create-expo-module": "./bin/create-expo-module"
-  },
+  "bin": "./bin/create-expo-module",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
@@ -35,8 +33,8 @@
   "dependencies": {
     "@expo/config": "~8.4.0",
     "@expo/json-file": "^8.2.37",
-    "@expo/spawn-async": "^1.5.0",
     "@expo/rudder-sdk-node": "^1.1.1",
+    "@expo/spawn-async": "^1.5.0",
     "chalk": "^4.1.2",
     "commander": "^8.3.0",
     "cross-spawn": "^7.0.3",

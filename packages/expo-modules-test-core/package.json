@@ -13,9 +13,7 @@
   "scripts": {
     "build": "tsc"
   },
-  "bin": {
-    "expo-modules-test-core": "./bin/cli.js"
-  },
+  "bin": "./bin/cli.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",

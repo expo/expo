@@ -5,9 +5,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
-  "bin": {
-    "expo-updates": "bin/cli.js"
-  },
+  "bin": "bin/cli.js",
   "scripts": {
     "build:cli": "tsc -p tsconfig.cli.json",
     "test:cli": "jest --config jest.cli.config.js",

@@ -13,9 +13,7 @@
     "test": "jest",
     "test:e2e": "yarn prepare && jest --config e2e/jest.config.js"
   },
-  "bin": {
-    "fingerprint": "bin/cli.js"
-  },
+  "bin": "bin/cli.js",
   "keywords": [
     "expo",
     "react-native",
