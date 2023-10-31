@@ -4,6 +4,12 @@ it(`parses a query string`, () => {
   const results = QueryParams.getQueryParams('https://demo.io?foo=bar&git=hub');
   expect(results.params).toStrictEqual({ foo: 'bar', git: 'hub' });
 });
+it(`parses a query string with arrays`, () => {
+  expect(QueryParams.getQueryParams('/?git=hub,other').params).toStrictEqual({ git: 'hub,other' });
+  expect(QueryParams.getQueryParams('/?git=[hub,other]').params).toStrictEqual({
+    git: '[hub,other]',
+  });
+});
 
 it(`parses a query string with hash`, () => {
   expect(
