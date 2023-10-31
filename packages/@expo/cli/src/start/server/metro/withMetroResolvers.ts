@@ -56,8 +56,9 @@ export function withMetroResolvers(
       resolvers.length
     } custom resolvers to Metro config. (has custom resolver: ${!!config.resolver?.resolveRequest})`
   );
-  const originalResolveRequest =
-    config.resolver?.resolveRequest || getDefaultMetroResolver(projectRoot);
+  // const hasUserDefinedResolver = !!config.resolver?.resolveRequest;
+  // const defaultResolveRequest = getDefaultMetroResolver(projectRoot);
+  const originalResolveRequest = config.resolver?.resolveRequest;
 
   function mutateResolutionError(
     error: Error,
@@ -243,40 +244,49 @@ export function withMetroResolvers(
           setForModule.add({ path: qualifiedModuleName, request: moduleName });
         };
 
+        const upstreamResolveRequest = context.resolveRequest;
         const universalContext = {
           ...context,
+
           preferNativePlatform: platform !== 'web',
+
+          resolveRequest(ctx: ResolutionContext, moduleName: string, platform: string | null) {
+            for (const resolver of resolvers) {
+              try {
+                const res = resolver(ctx, moduleName, platform);
+                if (res) {
+                  return res;
+                }
+              } catch (error: any) {
+                // If the error is directly related to a resolver not being able to resolve a module, then
+                // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
+                const isResolutionError =
+                  isFailedToResolveNameError(error) || isFailedToResolvePathError(error);
+                if (!isResolutionError) {
+                  throw error;
+                }
+                debug(
+                  `Custom resolver threw: ${error.constructor.name}. (module: ${moduleName}, platform: ${platform})`
+                );
+              }
+            }
+            // If we haven't returned by now, use the original resolver or upstream resolver.
+            return upstreamResolveRequest(ctx, moduleName, platform);
+          },
         };
 
+        // If the user defined a resolver, run it first and depend on the documented
+        // chaining logic: https://facebook.github.io/metro/docs/resolution/#resolution-algorithm
+        //
+        // config.resolver.resolveRequest = (context, moduleName, platform) => {
+        //
+        //  // Do work...
+        //
+        //  return context.resolveRequest(context, moduleName, platform);
+        // };
         try {
-          for (const resolver of resolvers) {
-            try {
-              const resolution = resolver(universalContext, moduleName, platform);
-              if (resolution) {
-                storeResult(resolution);
-                return resolution;
-              }
-            } catch (error: any) {
-              // If no user-defined resolver, use Expo's default behavior.
-              // This prevents extraneous resolution attempts on failure.
-              if (!config.resolver.resolveRequest) {
-                throw error;
-              }
-
-              // If the error is directly related to a resolver not being able to resolve a module, then
-              // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
-              const isResolutionError =
-                isFailedToResolveNameError(error) || isFailedToResolvePathError(error);
-              if (!isResolutionError) {
-                throw error;
-              }
-              debug(
-                `Custom resolver threw: ${error.constructor.name}. (module: ${moduleName}, platform: ${platform})`
-              );
-            }
-          }
-          // If we haven't returned by now, use the original resolver or upstream resolver.
-          const res = originalResolveRequest(universalContext, moduleName, platform);
+          const firstResolver = originalResolveRequest ?? universalContext.resolveRequest;
+          const res = firstResolver(universalContext, moduleName, platform);
           storeResult(res);
           return res;
         } catch (error: any) {
