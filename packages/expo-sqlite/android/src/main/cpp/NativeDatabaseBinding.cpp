@@ -43,9 +43,9 @@ void NativeDatabaseBinding::registerNatives() {
 int NativeDatabaseBinding::sqlite3_changes() { return ::sqlite3_changes(db); }
 
 int NativeDatabaseBinding::sqlite3_close() {
-  int ret = ::sqlite3_close(db);
-  db = nullptr;
-  return ret;
+  // Not setting `db = nullptr` here because we may need the db pointer to get
+  // error messages if sqlite3_close has errors.
+  return ::sqlite3_close(db);
 }
 
 std::string

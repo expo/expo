@@ -34,5 +34,11 @@ export interface OpenOptions {
      * @default false
      */
     useNewConnection?: boolean;
+    /**
+     * Finalized unclosed statements automatically when the database is closed.
+     * @default true
+     * @hidden
+     */
+    finalizeUnusedStatementsBeforeClosing?: boolean;
 }
 //# sourceMappingURL=NativeDatabase.d.ts.map

@@ -97,6 +97,7 @@ export class Database {
      */
     async transactionExclusiveAsync(task) {
         const transaction = await Transaction.createAsync(this);
+        let error;
         try {
             await transaction.execAsync('BEGIN');
             await task(transaction);
@@ -104,10 +105,13 @@ export class Database {
         }
         catch (e) {
             await transaction.execAsync('ROLLBACK');
-            throw e;
+            error = e;
         }
         finally {
             await transaction.closeAsync();
+        }
+        if (error) {
+            throw error;
         }
     }
     /**
@@ -166,75 +170,91 @@ export class Database {
     }
     async runAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
+        let result;
         try {
-            return await statement.runAsync(...params);
+            result = await statement.runAsync(...params);
         }
         finally {
             await statement.finalizeAsync();
         }
+        return result;
     }
     async getAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
+        let result;
         try {
-            return await statement.getAsync(...params);
+            result = await statement.getAsync(...params);
         }
         finally {
             await statement.finalizeAsync();
         }
+        return result;
     }
     async *eachAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
+        let result;
         try {
-            yield* statement.eachAsync(...params);
+            result = await statement.eachAsync(...params);
         }
         finally {
             await statement.finalizeAsync();
         }
+        yield* result;
     }
     async allAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
+        let result;
         try {
-            return await statement.allAsync(...params);
+            result = await statement.allAsync(...params);
         }
         finally {
             await statement.finalizeAsync();
         }
+        return result;
     }
     runSync(source, ...params) {
         const statement = this.prepareSync(source);
+        let result;
         try {
-            return statement.runSync(...params);
+            result = statement.runSync(...params);
         }
         finally {
             statement.finalizeSync();
         }
+        return result;
     }
     getSync(source, ...params) {
         const statement = this.prepareSync(source);
+        let result;
         try {
-            return statement.getSync(...params);
+            result = statement.getSync(...params);
         }
         finally {
             statement.finalizeSync();
         }
+        return result;
     }
     *eachSync(source, ...params) {
         const statement = this.prepareSync(source);
+        let result;
         try {
-            yield* statement.eachSync(...params);
+            result = statement.eachSync(...params);
         }
         finally {
             statement.finalizeSync();
         }
+        yield* result;
     }
     allSync(source, ...params) {
         const statement = this.prepareSync(source);
+        let result;
         try {
-            return statement.allSync(...params);
+            result = statement.allSync(...params);
         }
         finally {
             statement.finalizeSync();
         }
+        return result;
     }
 }
 /**
