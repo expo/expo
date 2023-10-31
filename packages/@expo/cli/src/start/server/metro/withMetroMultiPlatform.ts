@@ -374,7 +374,6 @@ export function withExtendedResolver(
   const metroConfigWithCustomContext = withMetroMutatedResolverContext(
     metroConfigWithCustomResolver,
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
-      console.log('mutate resolver context');
       let context = {
         ...immutableContext,
       } as Mutable<ResolutionContext> & {
