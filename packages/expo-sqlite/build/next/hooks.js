@@ -3,7 +3,7 @@ import { openDatabaseAsync } from './Database';
 // Create a context for the SQLite database
 const SQLiteContext = createContext(null);
 // Create a provider component
-export function SQLiteProvider({ dbName, options, children, initHandler, errorHandler, }) {
+export function SQLiteProvider({ dbName, options, children, initHandler, loadingFallback, errorHandler, }) {
     const [database, setDatabase] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -42,7 +42,7 @@ export function SQLiteProvider({ dbName, options, children, initHandler, errorHa
         handler(error);
     }
     if (loading) {
-        return null;
+        return loadingFallback != null ? <>{loadingFallback}</> : null;
     }
     return <SQLiteContext.Provider value={database}>{children}</SQLiteContext.Provider>;
 }

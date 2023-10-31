@@ -20,11 +20,16 @@ export interface SQLiteProviderProps {
      */
     initHandler?: (db: Database) => Promise<void>;
     /**
+     * A custom loading fallback to render before the database is ready.
+     * @default null
+     */
+    loadingFallback?: React.ReactNode;
+    /**
      * Handle errors from SQLiteProvider.
      * @default rethrow the error
      */
     errorHandler?: (error: Error) => void;
 }
-export declare function SQLiteProvider({ dbName, options, children, initHandler, errorHandler, }: SQLiteProviderProps): JSX.Element | null;
+export declare function SQLiteProvider({ dbName, options, children, initHandler, loadingFallback, errorHandler, }: SQLiteProviderProps): JSX.Element | null;
 export declare function useSQLiteContext(): Database;
 //# sourceMappingURL=hooks.d.ts.map

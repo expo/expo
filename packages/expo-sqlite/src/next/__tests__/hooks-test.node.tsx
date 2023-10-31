@@ -1,6 +1,6 @@
-import { act, render, renderHook, waitFor } from '@testing-library/react-native';
+import { act, render, renderHook, screen, waitFor } from '@testing-library/react-native';
 import React from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { useSQLiteContext, SQLiteProvider } from '../hooks';
 
@@ -47,6 +47,36 @@ describe(useSQLiteContext, () => {
     });
     expect(mockInitHandler).toHaveBeenCalled();
     expect(mockInitHandler.mock.calls[0][0]).toBe(result.current);
+  });
+
+  it('should render custom loading fallback before database is ready', async () => {
+    const loadingText = 'Loading database...';
+    function LoadingFallback() {
+      return (
+        <View>
+          <Text>{loadingText}</Text>
+        </View>
+      );
+    }
+    const wrapper = ({ children }) => (
+      <SQLiteProvider dbName=":memory:" loadingFallback={<LoadingFallback />}>
+        <View />
+      </SQLiteProvider>
+    );
+    const { result } = renderHook(() => useSQLiteContext(), { wrapper });
+    await act(async () => {
+      await waitFor(() => {
+        expect(screen.queryByText(loadingText)).not.toBeNull();
+      });
+    });
+
+    // Ensure that the loading fallback is removed after the database is ready
+    await act(async () => {
+      await waitFor(() => {
+        expect(result).not.toBeNull();
+      });
+    });
+    expect(screen.queryByText(loadingText)).toBeNull();
   });
 
   it('should call errorHandler from SQLiteProvider if failed to open database', async () => {

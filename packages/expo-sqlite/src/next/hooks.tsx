@@ -26,6 +26,12 @@ export interface SQLiteProviderProps {
   initHandler?: (db: Database) => Promise<void>;
 
   /**
+   * A custom loading fallback to render before the database is ready.
+   * @default null
+   */
+  loadingFallback?: React.ReactNode;
+
+  /**
    * Handle errors from SQLiteProvider.
    * @default rethrow the error
    */
@@ -41,6 +47,7 @@ export function SQLiteProvider({
   options,
   children,
   initHandler,
+  loadingFallback,
   errorHandler,
 }: SQLiteProviderProps) {
   const [database, setDatabase] = useState<Database | null>(null);
@@ -86,7 +93,7 @@ export function SQLiteProvider({
   }
 
   if (loading) {
-    return null;
+    return loadingFallback != null ? <>{loadingFallback}</> : null;
   }
   return <SQLiteContext.Provider value={database}>{children}</SQLiteContext.Provider>;
 }
