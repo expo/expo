@@ -404,33 +404,29 @@ In your `ios/<Project>.xcodeproj/project.pbxproj` file, replace the following sc
 
 #### `"Start Packager"`
 
-```diff
-+			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\nexport RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > `$NODE_BINARY --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/.packager.env'\"`\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open `$NODE_BINARY --print \"require('path').dirname(require.resolve('expo/package.json')) + '/scripts/launchPackager.command'\"` || echo \"Can't start packager automatically\"\n  fi\nfi\n";
-```
-
-**Alternatively**, in the Xcode project, select the "Start Packager" build phase and add the following modifications:
+Remove the "Start Packager" script in SDK 50 and higher. The dev server must be started with `npx expo` before/after running the app.
 
 ```diff
-+ if [[ -f "$PODS_ROOT/../.xcode.env" ]]; then
-+   source "$PODS_ROOT/../.xcode.env"
-+ fi
-+ if [[ -f "$PODS_ROOT/../.xcode.env.local" ]]; then
-+   source "$PODS_ROOT/../.xcode.env.local"
-+ fi
-
-export RCT_METRO_PORT="${RCT_METRO_PORT:=8081}"
-echo "export RCT_METRO_PORT=${RCT_METRO_PORT}" > `$NODE_BINARY --print "require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/.packager.env'"`
-if [ -z "${RCT_NO_LAUNCH_PACKAGER+xxx}" ] ; then
-  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then
-    if ! curl -s "http://localhost:${RCT_METRO_PORT}/status" | grep -q "packager-status:running" ; then
-      echo "Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly"
-      exit 2
-    fi
-  else
--     open `$NODE_BINARY --print "require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/launchPackager.command'"` || echo "Can't start packager automatically"
-+     open `$NODE_BINARY --print "require('path').dirname(require.resolve('expo/package.json')) + '/scripts/launchPackager.command'"` || echo "Can't start packager automatically"
-  fi
-fi
+-    FD10A7F022414F080027D42C /* Start Packager */ = {
+-			isa = PBXShellScriptBuildPhase;
+-			alwaysOutOfDate = 1;
+-			buildActionMask = 2147483647;
+-			files = (
+-			);
+-			inputFileListPaths = (
+-			);
+-			inputPaths = (
+-			);
+-			name = "Start Packager";
+-			outputFileListPaths = (
+-			);
+-			outputPaths = (
+-			);
+-			runOnlyForDeploymentPostprocessing = 0;
+-			shellPath = /bin/sh;
+-			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\nexport RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > `$NODE_BINARY --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/.packager.env'\"`\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open `$NODE_BINARY --print \"require('path').dirname(require.resolve('expo/package.json')) + '/scripts/launchPackager.command'\"` || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+-			showEnvVarsInLog = 0;
+-		};
 ```
 
 #### "Bundle React Native code and images"
