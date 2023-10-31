@@ -2,11 +2,13 @@
 
 Native [WinterCG](https://wintercg.org/work)-compliant runtime for Expo apps. This project is currently focused at enabling the ["Common Minimum API"](https://common-min-api.proposal.wintercg.org/) and ["Fetch"](https://fetch.spec.wintercg.org/) specifications.
 
+> ⚠️ = from React Native and potentially not WinterCG compliant.
+
 | API                                | iOS | Android | Web | Server |
 | ---------------------------------- | --- | ------- | --- | ------ |
-| `AbortController`                  | ❌  | ❌      | ✅  | ✅     |
-| `AbortSignal`                      | ❌  | ❌      | ✅  | ✅     |
-| `Blob`                             | ❌  | ❌      | ✅  | ✅     |
+| `AbortController`                  | ✅  | ✅      | ✅  | ✅     |
+| `AbortSignal`                      | ✅  | ✅      | ✅  | ✅     |
+| `Blob`                             | ⚠️  | ⚠️      | ✅  | ✅     |
 | `ByteLengthQueuingStrategy`        | ❌  | ❌      | ✅  | ✅     |
 | `CompressionStream`                | ❌  | ❌      | ✅  | ✅     |
 | `CountQueuingStrategy`             | ❌  | ❌      | ✅  | ✅     |
@@ -16,26 +18,26 @@ Native [WinterCG](https://wintercg.org/work)-compliant runtime for Expo apps. Th
 | `DOMException`                     | ❌  | ❌      | ✅  | ✅     |
 | `Event`                            | ❌  | ❌      | ✅  | ✅     |
 | `EventTarget`                      | ❌  | ❌      | ✅  | ✅     |
-| `File`                             | ❌  | ❌      | ✅  | ✅     |
-| `FormData`                         | ❌  | ❌      | ✅  | ✅     |
-| `Headers`                          | ✅  | ❌      | ✅  | ✅     |
+| `File`                             | ⚠️  | ⚠️      | ✅  | ✅     |
+| `FormData`                         | ⚠️  | ⚠️      | ✅  | ✅     |
+| `Headers`                          | ✅  | ✅      | ✅  | ✅     |
 | `ReadableByteStreamController`     | ❌  | ❌      | ✅  | ✅     |
-| `ReadableStream`                   | ✅  | ❌      | ✅  | ✅     |
+| `ReadableStream`                   | ✅  | ✅      | ✅  | ✅     |
 | `ReadableStreamBYOBReader`         | ❌  | ❌      | ✅  | ✅     |
 | `ReadableStreamBYOBRequest`        | ❌  | ❌      | ✅  | ✅     |
 | `ReadableStreamDefaultController`  | ❌  | ❌      | ✅  | ✅     |
 | `ReadableStreamDefaultReader`      | ❌  | ❌      | ✅  | ✅     |
-| `Request`                          | ✅  | ❌      | ✅  | ✅     |
-| `Response`                         | ✅  | ❌      | ✅  | ✅     |
+| `Request`                          | ✅  | ✅      | ✅  | ✅     |
+| `Response`                         | ✅  | ✅      | ✅  | ✅     |
 | `SubtleCrypto`                     | ❌  | ❌      | ✅  | ✅     |
-| `TextDecoder`                      | ✅  | ❌      | ✅  | ✅     |
+| `TextDecoder`                      | ✅  | ✅      | ✅  | ✅     |
 | `TextDecoderStream`                | ❌  | ❌      | ✅  | ✅     |
-| `TextEncoder`                      | ✅  | ❌      | ✅  | ✅     |
+| `TextEncoder`                      | ✅  | ✅      | ✅  | ✅     |
 | `TextEncoderStream`                | ❌  | ❌      | ✅  | ✅     |
 | `TransformStream`                  | ❌  | ❌      | ✅  | ✅     |
 | `TransformStreamDefaultController` | ❌  | ❌      | ✅  | ✅     |
-| `URL`                              | ✅  | ❌      | ✅  | ✅     |
-| `URLSearchParams`                  | ✅  | ❌      | ✅  | ✅     |
+| `URL`                              | ✅  | ✅      | ✅  | ✅     |
+| `URLSearchParams`                  | ✅  | ✅      | ✅  | ✅     |
 | `WebAssembly.Global`               | ❌  | ❌      | ✅  | ✅     |
 | `WebAssembly.Instance`             | ❌  | ❌      | ✅  | ✅     |
 | `WebAssembly.Memory`               | ❌  | ❌      | ✅  | ✅     |
@@ -46,8 +48,8 @@ Native [WinterCG](https://wintercg.org/work)-compliant runtime for Expo apps. Th
 
 | Global Methods                     | iOS | Android | Web | Server |
 | ---------------------------------- | --- | ------- | --- | ------ |
-| `atob`                             | ✅  | ❌      | ✅  | ✅     |
-| `btoa`                             | ✅  | ❌      | ✅  | ✅     |
+| `atob`                             | ✅  | ✅      | ✅  | ✅     |
+| `btoa`                             | ✅  | ✅      | ✅  | ✅     |
 | `fetch`                            | ✅  | ✅      | ✅  | ✅     |
 | `console`                          | ✅  | ✅      | ✅  | ✅     |
 | `setTimeout`                       | ✅  | ✅      | ✅  | ✅     |
@@ -69,3 +71,9 @@ Native [WinterCG](https://wintercg.org/work)-compliant runtime for Expo apps. Th
 Expo WinterCG works similar to Node.js, installing precompiled built-ins via native code rather than the traditional approach of bundling them with the JavaScript bundle. This allows for a smaller bundle size and faster startup time.
 
 WinterCG compliance on native is designed to provide a solid interface for apps that require advanced networking capabilities.
+
+This module has no effect on web as most browsers are already WinterCG compliant.
+
+## Further work
+
+The bundler should be configured to remove the shims in `react-native` in favor of the native built-ins in this package.

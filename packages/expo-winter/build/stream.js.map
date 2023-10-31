@@ -1,0 +1,1 @@
+{"version":3,"file":"stream.js","sourceRoot":"","sources":["../src/stream.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,cAAc,EAAE,MAAM,mCAAmC,CAAC;AAEnE,UAAU,CAAC,cAAc,GAAG,cAAc,CAAC","sourcesContent":["import { ReadableStream } from 'web-streams-polyfill/ponyfill/es6';\n\nglobalThis.ReadableStream = ReadableStream;\n"]}

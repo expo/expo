@@ -6,3 +6,4 @@ import './b64';
 import './fetch';
 import './stream';
 import './text-encoding';
+import './abort';

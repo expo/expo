@@ -4,7 +4,6 @@
   "description": "Native WinterCG runtime for Expo apps.",
   "main": "build/winter",
   "sideEffects": false,
-  
   "scripts": {
     "build:android": "metro build ./src/winter.ts -O build/winter.android.js -p android --minify",
     "build:ios": "metro build ./src/winter.ts -O build/winter.ios.js -p ios --minify && cp build/winter.ios.js ios/js/winter.js && npm run hbc:ios",
@@ -36,11 +35,12 @@
     "preset": "expo-module-scripts"
   },
   "devDependencies": {
+    "abort-controller": "^3.0.0",
+    "base-64": "^1.0.0",
     "expo-module-scripts": "^3.0.0",
     "text-encoding": "^0.7.0",
-    "whatwg-fetch": "^3.6.19",
-    "base-64": "^1.0.0",
-    "web-streams-polyfill": "^3.2.1"
+    "web-streams-polyfill": "^3.2.1",
+    "whatwg-fetch": "^3.6.19"
   },
   "peerDependencies": {
     "expo": "*"

@@ -1,0 +1,1 @@
+{"version":3,"file":"fetch.js","sourceRoot":"","sources":["../src/fetch.ts"],"names":[],"mappings":"AAAA,OAAO,cAAc,CAAC","sourcesContent":["import 'whatwg-fetch';\n"]}
