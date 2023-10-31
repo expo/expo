@@ -19,6 +19,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
+import androidx.camera.core.MirrorMode
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
@@ -29,6 +30,7 @@ import androidx.camera.video.Quality
 import androidx.camera.video.QualitySelector
 import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
+import androidx.camera.video.VideoCapabilities
 import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
@@ -240,11 +242,6 @@ class ExpoCameraView(
         val cameraProvider: ProcessCameraProvider = providerFuture.get()
 
         val preview = Preview.Builder()
-          .setResolutionSelector(
-            ResolutionSelector.Builder()
-              .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
-              .build()
-          )
           .build()
           .also {
             it.setSurfaceProvider(previewView.surfaceProvider)
@@ -253,11 +250,6 @@ class ExpoCameraView(
         val cameraSelector = lenFacing.mapToSelector()
 
         imageCaptureUseCase = ImageCapture.Builder()
-          .setResolutionSelector(
-            ResolutionSelector.Builder()
-              .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
-              .build()
-          )
           .build()
 
         val cameraInfo = cameraProvider.availableCameraInfos.filter {
@@ -334,7 +326,9 @@ class ExpoCameraView(
         this.recorder = it
       }
 
-    return VideoCapture.withOutput(recorder)
+    return VideoCapture.Builder(recorder)
+      .setMirrorMode(MirrorMode.MIRROR_MODE_ON_FRONT_ONLY)
+      .build()
   }
 
   private fun observeCameraState(cameraInfo: CameraInfo) {

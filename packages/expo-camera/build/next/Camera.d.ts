@@ -3,6 +3,10 @@ import { Ref } from 'react';
 import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraType, CameraViewRef, ConstantsType, PermissionResponse, VideoCodec } from './Camera.types';
 export default class Camera extends React.Component<CameraProps> {
     /**
+     * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
+     */
+    static modernBarcodeScannerAvailable: boolean;
+    /**
      * Check whether the current device has a camera. This is useful for web and simulators cases.
      * This isn't influenced by the Permissions API (all platforms), or HTTP usage (in the browser).
      * You will still need to check if the native permission has been accepted.
@@ -93,6 +97,10 @@ export default class Camera extends React.Component<CameraProps> {
      * > to make a permanent copy of the image.
      */
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture | undefined>;
+    /**
+     * Presents a modal view controller that uses the `DataScannerViewController` available on iOS 16+.
+     */
+    launchModernScanner(): Promise<void>;
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.
      * Flipping camera during a recording results in stopping it.

@@ -1,4 +1,4 @@
-import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook, Platform, UnavailabilityError } from 'expo-modules-core';
 import * as React from 'react';
 import { Ref } from 'react';
 
@@ -66,6 +66,10 @@ function _onPictureSaved({
 }
 
 export default class Camera extends React.Component<CameraProps> {
+  /**
+   * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
+   */
+  static modernBarcodeScannerAvailable: boolean = CameraManager.modernBarcodeScannerAvailable;
   /**
    * Check whether the current device has a camera. This is useful for web and simulators cases.
    * This isn't influenced by the Permissions API (all platforms), or HTTP usage (in the browser).
@@ -221,6 +225,15 @@ export default class Camera extends React.Component<CameraProps> {
     const pictureOptions = ensurePictureOptions(options);
 
     return await this._cameraRef.current?.takePicture(pictureOptions);
+  }
+
+  /**
+   * Presents a modal view controller that uses the `DataScannerViewController` available on iOS 16+.
+   */
+  async launchModernScanner(): Promise<void> {
+    if (Platform.OS === 'ios') {
+      await this._cameraRef.current?.launchModernScanner();
+    }
   }
 
   /**

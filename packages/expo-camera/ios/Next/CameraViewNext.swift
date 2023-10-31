@@ -17,7 +17,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   private lazy var barCodeScanner = createBarCodeScanner()
   private var previewLayer = PreviewView()
-  private var isSessionRunning = false
   private var isValidVideoOptions = true
   private var videoCodecType: AVVideoCodecType?
   private var photoCaptureOptions: TakePictureOptionsNext?
@@ -67,7 +66,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   var isMuted = false {
     didSet {
-      updateSessionAudioIsMuted(isMuted)
+      updateSessionAudioIsMuted()
     }
   }
 
@@ -135,8 +134,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   }
 
   public func onAppForegrounded() {
-    if !session.isRunning && isSessionRunning {
-      isSessionRunning = false
+    if !session.isRunning {
       sessionQueue.async {
         self.ensureSessionConfiguration()
         self.session.startRunning()
@@ -145,8 +143,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   }
 
   public func onAppBackgrounded() {
-    if session.isRunning && !isSessionRunning {
-      isSessionRunning = true
+    if session.isRunning {
       sessionQueue.async {
         self.session.stopRunning()
       }
@@ -252,9 +249,8 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       }
 
       if error.code == .mediaServicesWereReset {
-        if self.isSessionRunning {
+        if self.session.isRunning {
           self.session.startRunning()
-          self.isSessionRunning = self.session.isRunning
           self.ensureSessionConfiguration()
           self.onCameraReady()
         }
@@ -568,16 +564,19 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  func updateSessionAudioIsMuted(_ isMuted: Bool) {
-    if !session.isRunning && !isSessionRunning {
-      return
-    }
+  func updateSessionAudioIsMuted() {
+    print("updateSessionAudioIsMuted")
+//    if !session.isRunning {
+//      return
+//    }
+    
+    print("Muting: \(isMuted)")
     sessionQueue.async {
       self.session.beginConfiguration()
       for input in self.session.inputs {
         if let deviceInput = input as? AVCaptureDeviceInput {
           if deviceInput.device.hasMediaType(.audio) {
-            if isMuted {
+            if self.isMuted {
               self.session.removeInput(input)
             }
             return
@@ -585,11 +584,10 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
         }
       }
 
-      if !isMuted {
+      if !self.isMuted {
         if let audioCapturedevice = AVCaptureDevice.default(for: .audio) {
           do {
             let audioDeviceInput = try AVCaptureDeviceInput(device: audioCapturedevice)
-
             if self.session.canAddInput(audioDeviceInput) {
               self.session.addInput(audioDeviceInput)
             }
@@ -639,7 +637,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   func ensureSessionConfiguration() {
     sessionQueue.async {
-      self.updateSessionAudioIsMuted(self.isMuted)
+//      self.updateSessionAudioIsMuted()
     }
   }
 
@@ -664,10 +662,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
     videoRecordedPromise = nil
     videoCodecType = nil
-
-    sessionQueue.async {
-      self.cleanupMovieFileCapture()
-    }
   }
 
   func setPresetCamera(presetCamera: AVCaptureDevice.Position) {

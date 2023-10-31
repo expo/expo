@@ -38,16 +38,18 @@ public final class CameraViewNextModule: Module {
         "4:3": VideoQualityNext.video4x3.rawValue
       ]
     ])
+    
+    Property("modernBarcodeScannerAvailable")
+      .get { () -> Bool in
+        if #available(iOS 16.0, *) {
+          return true
+        }
+        return false
+      }
 
     // swiftlint:disable:next closure_body_length
     View(CameraViewNext.self) {
-      Events(
-        "onCameraReady",
-        "onMountError",
-        "onPictureSaved",
-        "onBarCodeScanned",
-        "onResponsiveOrientationChanged"
-      )
+      Events(cameraEvents)
 
       Prop("type") { (view, type: CameraType) in
         if view.presetCamera != type.toPosition() {
@@ -88,9 +90,7 @@ public final class CameraViewNextModule: Module {
       }
 
       Prop("mute") { (view, muted: Bool) in
-        if view.isMuted != muted {
-          view.isMuted = muted
-        }
+        view.isMuted = muted
       }
 
       Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool) in
@@ -122,6 +122,10 @@ public final class CameraViewNextModule: Module {
         view.stopRecording()
         #endif
       }.runOnQueue(.main)
+      
+      AsyncFunction("launchModernScanner") { view in
+          
+      }
     }
 
     AsyncFunction("getCameraPermissionsAsync") { (promise: Promise) in

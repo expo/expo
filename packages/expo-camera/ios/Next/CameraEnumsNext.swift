@@ -17,10 +17,10 @@ enum CameraTypeNext: Int, Enumerable {
   }
 }
 
-enum CameraFlashModeNext: Int, Enumerable {
-  case off = 0
-  case on = 1
-  case auto = 2
+enum CameraFlashModeNext: String, Enumerable {
+  case off
+  case on
+  case auto
 }
 
 enum CameraModeNext: String, Enumerable {

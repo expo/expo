@@ -20,6 +20,12 @@ PODS:
     - ExpoModulesCore
   - EXContacts (12.6.0):
     - ExpoModulesCore
+  - EXFaceDetector (12.5.0):
+    - ExpoModulesCore
+    - GoogleMLKit/FaceDetection (= 2.6.0)
+    - MLKitCommon (= 5.0.0)
+    - MLKitFaceDetection (= 1.5.0)
+    - MLKitVision (= 3.0.0)
   - EXFont (11.8.0):
     - ExpoModulesCore
   - EXImageLoader (4.5.0):
@@ -272,12 +278,42 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.72.5)
   - fmt (6.2.1)
   - glog (0.3.5)
+  - GoogleDataTransport (9.2.5):
+    - GoogleUtilities/Environment (~> 7.7)
+    - nanopb (< 2.30910.0, >= 2.30908.0)
+    - PromisesObjC (< 3.0, >= 1.2)
   - GoogleMaps (7.3.0):
     - GoogleMaps/Maps (= 7.3.0)
   - GoogleMaps/Base (7.3.0)
   - GoogleMaps/Maps (7.3.0):
     - GoogleMaps/Base
+  - GoogleMLKit/FaceDetection (2.6.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitFaceDetection (~> 1.5.0)
+  - GoogleMLKit/MLKitCore (2.6.0):
+    - MLKitCommon (~> 5.0.0)
   - GooglePlaces (7.3.0)
+  - GoogleToolboxForMac/DebugUtils (2.3.2):
+    - GoogleToolboxForMac/Defines (= 2.3.2)
+  - GoogleToolboxForMac/Defines (2.3.2)
+  - GoogleToolboxForMac/Logger (2.3.2):
+    - GoogleToolboxForMac/Defines (= 2.3.2)
+  - "GoogleToolboxForMac/NSData+zlib (2.3.2)":
+    - GoogleToolboxForMac/Defines (= 2.3.2)
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.3.2)":
+    - GoogleToolboxForMac/DebugUtils (= 2.3.2)
+    - GoogleToolboxForMac/Defines (= 2.3.2)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.3.2)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.3.2)"
+  - GoogleUtilities/Environment (7.11.5):
+    - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleUtilities/Logger (7.11.5):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/UserDefaults (7.11.5):
+    - GoogleUtilities/Logger
+  - GoogleUtilitiesComponents (1.1.0):
+    - GoogleUtilities/Logger
+  - GTMSessionFetcher/Core (1.7.2)
   - hermes-engine (0.72.5):
     - hermes-engine/Pre-built (= 0.72.5)
   - hermes-engine/Pre-built (0.72.5)
@@ -303,6 +339,31 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
+  - MLImage (1.0.0-beta2)
+  - MLKitCommon (5.0.0):
+    - GoogleDataTransport (~> 9.0)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
+    - GoogleUtilities/UserDefaults (~> 7.0)
+    - GoogleUtilitiesComponents (~> 1.0)
+    - GTMSessionFetcher/Core (~> 1.1)
+    - Protobuf (~> 3.12)
+  - MLKitFaceDetection (1.5.0):
+    - MLKitCommon (~> 5.0)
+    - MLKitVision (~> 3.0)
+  - MLKitVision (3.0.0):
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - GTMSessionFetcher/Core (~> 1.1)
+    - MLImage (= 1.0.0-beta2)
+    - MLKitCommon (~> 5.0)
+    - Protobuf (~> 3.12)
+  - nanopb (2.30909.0):
+    - nanopb/decode (= 2.30909.0)
+    - nanopb/encode (= 2.30909.0)
+  - nanopb/decode (2.30909.0)
+  - nanopb/encode (2.30909.0)
   - Nimble (9.2.1)
   - OHHTTPStubs (9.1.0):
     - OHHTTPStubs/Default (= 9.1.0)
@@ -317,6 +378,8 @@ PODS:
   - OHHTTPStubs/NSURLSession (9.1.0):
     - OHHTTPStubs/Core
   - OHHTTPStubs/OHPathHelpers (9.1.0)
+  - PromisesObjC (2.3.1)
+  - Protobuf (3.24.4)
   - Quick (5.0.1)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -825,6 +888,7 @@ DEPENDENCIES:
   - EXCalendar (from `../../../packages/expo-calendar/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
+  - EXFaceDetector (from `../../../packages/expo-face-detector/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
@@ -956,14 +1020,27 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - fmt
+    - GoogleDataTransport
     - GoogleMaps
+    - GoogleMLKit
     - GooglePlaces
+    - GoogleToolboxForMac
+    - GoogleUtilities
+    - GoogleUtilitiesComponents
+    - GTMSessionFetcher
     - libaom
     - libavif
     - libevent
     - libvmaf
     - libwebp
+    - MLImage
+    - MLKitCommon
+    - MLKitFaceDetection
+    - MLKitVision
+    - nanopb
     - OHHTTPStubs
+    - PromisesObjC
+    - Protobuf
     - Quick
     - SDWebImage
     - SDWebImageAVIFCoder
@@ -996,6 +1073,9 @@ EXTERNAL SOURCES:
   EXContacts:
     inhibit_warnings: false
     :path: "../../../packages/expo-contacts/ios"
+  EXFaceDetector:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-face-detector/ios"
   EXFont:
     inhibit_warnings: false
     :path: "../../../packages/expo-font/ios"
@@ -1296,6 +1376,7 @@ SPEC CHECKSUMS:
   EXCalendar: 31d366a7851700af2eca360a3673503b774a3304
   EXConstants: 230de23b26974884686d49205e6822a02b6dd6d0
   EXContacts: 24e46f5cf1ba9776a2f301c4f3aa821848035a10
+  EXFaceDetector: 2e249939bf437ae2ddc8a6b695133ab18ce615cd
   EXFont: e5fa244ad8c8d6fcf3a215e1fdcaedbc9b580aad
   EXImageLoader: 6ffefe300f6f1a5be46f3722944d7f48a44f36bf
   EXJSONUtils: d15120ce0e8967b0822880162039dd75e5867086
@@ -1314,7 +1395,7 @@ SPEC CHECKSUMS:
   ExpoBattery: 807b36eacbe112503a9a0ca0f862ee7a653a4639
   ExpoBlur: fd3aefb4b4f3acaaa1ca2406cf9a98351ec5ffc4
   ExpoBrightness: f521d33b9a5211ba9c4d1749b4ec7ca3d9aa3cd3
-  ExpoCamera: e7f55f4baad8f8934bf57a606919d2fd66953f23
+  ExpoCamera: ca563f22e6418a63ae420424e94d032ec1b7b7d1
   ExpoCellular: 23176ea4488b3a69a43101a31857b84e2df71305
   ExpoClipboard: f0beee97ddfe5d3376d9e2d6ff72300be6a07d70
   ExpoCrypto: 5cd349fbd604e28dbc92fce97a587b4f0197f93d
@@ -1360,16 +1441,29 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 556ded527fc4354929dd12d0936a64cd95bde744
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
+  GoogleMLKit: 755661c46990a85e42278015f26400286d98ad95
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
+  GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
+  GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
+  GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
+  GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   hermes-engine: f6cf92a471053245614d9d8097736f6337d5b86c
   libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libvmaf: 27f523f1e63c694d14d534cd0fddd2fab0ae8711
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
+  MLImage: a454f9f8ecfd537783a12f9488f5be1a68820829
+  MLKitCommon: 3bc17c6f7d25ce3660f030350b46ae7ec9ebca6e
+  MLKitFaceDetection: 617cb847441868a8bfd4b48d751c9b33c1104948
+  MLKitVision: e87dc3f2e456a6ab32361ebd985e078dd2746143
+  nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   Nimble: d954d0accfd082f2225e62d71008440493e318f4
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
+  PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
+  Protobuf: 351e9022fe13a6e2af00e9aefc22077cb88520f8
   Quick: 749aa754fd1e7d984f2000fe051e18a3a9809179
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: df81ab637d35fac9e6eb94611cfd20f0feb05455
