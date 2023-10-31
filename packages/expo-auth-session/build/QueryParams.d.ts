@@ -1,4 +1,4 @@
-export declare function getQueryParams(url: string): {
+export declare function getQueryParams(input: string): {
     errorCode: string | null;
     params: {
         [key: string]: string;

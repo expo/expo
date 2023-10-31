@@ -5,6 +5,29 @@ it(`parses a query string`, () => {
   expect(results.params).toStrictEqual({ foo: 'bar', git: 'hub' });
 });
 
+it(`parses a query string with hash`, () => {
+  expect(
+    QueryParams.getQueryParams(
+      'https://www.example.com:8080/path/to/resource?query=string#fragment'
+    ).params
+  ).toEqual({ fragment: '', query: 'string' });
+  expect(
+    QueryParams.getQueryParams(
+      'https://www.example.com:8080/path/to/resource?query=string#access_token=1234'
+    ).params
+  ).toEqual({ access_token: '1234', query: 'string' });
+
+  expect(
+    QueryParams.getQueryParams('https://www.example.com:8080/path/to/resource#access_token=1234')
+      .params
+  ).toEqual({ access_token: '1234' });
+});
+it(`parses a query string without baseUrl`, () => {
+  expect(
+    QueryParams.getQueryParams('/path/to/resource?query=string#access_token=1234').params
+  ).toEqual({ access_token: '1234', query: 'string' });
+});
+
 it(`parses an error from a query string`, () => {
   const results = QueryParams.getQueryParams(
     'https://demo.io?foo=bar&git=hub&errorCode=invalid_prompt'
