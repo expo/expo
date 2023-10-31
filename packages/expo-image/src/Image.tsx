@@ -70,6 +70,7 @@ export class Image extends React.PureComponent<ImageProps> {
 
   /**
    * Asynchronously starts playback of the view's image if it is animated.
+   * @platform android
    * @platform ios
    */
   async startAnimating(): Promise<void> {
@@ -78,6 +79,7 @@ export class Image extends React.PureComponent<ImageProps> {
 
   /**
    * Asynchronously stops the playback of the view's image if it is animated.
+   * @platform android
    * @platform ios
    */
   async stopAnimating(): Promise<void> {
@@ -119,6 +121,7 @@ export class Image extends React.PureComponent<ImageProps> {
         contentFit={resolveContentFit(contentFit, resizeMode)}
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
+        nativeViewRef={this.nativeViewRef}
         intrinsicSize={intrinsicSize && resolveIntrinsicSize(intrinsicSize)}
       />
     );

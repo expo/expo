@@ -7,7 +7,8 @@ data class ImageSource(
   @Field val url: String,
   @Field val width: Int,
   @Field val height: Int,
-  @Field val mediaType: String?
+  @Field val mediaType: String?,
+  @Field val isAnimated: Boolean
 ) : Record
 
 data class ImageLoadEvent(
