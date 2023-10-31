@@ -53,7 +53,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   var isScanningBarCodes = false {
     didSet {
       if let barCodeScanner {
-        barCodeScanner.maybeStartBarCodeScanning()
+        barCodeScanner.setIsEnabled(isScanningBarCodes)
       } else if isScanningBarCodes {
         log.error("BarCodeScanner module not found. Make sure "
         + "`expo-barcode-scanner` is installed and linked correctly.")
@@ -898,10 +898,10 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         barCodeScanner.stopBarCodeScanning()
       }
 
+      self.session.stopRunning()
+      self.session.beginConfiguration()
       self.motionManager.stopAccelerometerUpdates()
       self.previewLayer?.removeFromSuperlayer()
-      self.session.commitConfiguration()
-      self.session.stopRunning()
 
       for input in self.session.inputs {
         self.session.removeInput(input)
@@ -910,6 +910,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       for output in self.session.outputs {
         self.session.removeOutput(output)
       }
+      self.session.commitConfiguration()
     }
   }
 

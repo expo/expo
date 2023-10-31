@@ -133,6 +133,20 @@ public class LocalizationModule: Module {
       .map { languageTag -> [String: Any?] in
         let languageLocale = Locale.init(identifier: languageTag)
 
+        if #available(iOS 16, tvOS 16, *) {
+          return [
+            "languageTag": languageTag,
+            "languageCode": languageLocale.language.languageCode?.identifier,
+            "regionCode": languageLocale.region?.identifier,
+            "textDirection": languageLocale.language.characterDirection == .rightToLeft ? "rtl" : "ltr",
+            "decimalSeparator": userSettingsLocale.decimalSeparator,
+            "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
+            "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
+            "currencyCode": languageLocale.currencyCode,
+            "currencySymbol": languageLocale.currencySymbol,
+            "temperatureUnit": getTemperatureUnit()
+          ]
+        }
         return [
           "languageTag": languageTag,
           "languageCode": languageLocale.languageCode,

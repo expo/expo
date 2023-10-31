@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.0'
+  s.platform       = :ios, '13.4'
   s.swift_version  = '5.2'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
 
   s.test_spec 'Tests' do |test_spec|
-    test_spec.platform     = :ios, '13.0'
+    test_spec.platform     = :ios, '13.4'
     test_spec.source_files = 'Tests/**/*.{h,m,swift}'
     test_spec.dependency 'Quick'
     test_spec.dependency 'Nimble'

@@ -91,6 +91,18 @@ public final class ImageModule: Module {
         view.allowDownscaling = allowDownscaling ?? true
       }
 
+      Prop("autoplay") { (view, autoplay: Bool?) in
+        view.autoplay = autoplay ?? true
+      }
+
+      AsyncFunction("startAnimating") { (view: ImageView) in
+        view.sdImageView.startAnimating()
+      }
+
+      AsyncFunction("stopAnimating") { (view: ImageView) in
+        view.sdImageView.stopAnimating()
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }
@@ -108,6 +120,22 @@ public final class ImageModule: Module {
     AsyncFunction("clearDiskCache") { (promise: Promise) in
       SDImageCache.shared.clearDisk {
         promise.resolve(true)
+      }
+    }
+
+    AsyncFunction("getCachePathAsync") { (cacheKey: String, promise: Promise) in
+      /*
+       We need to check if the image exists in the cache first since `cachePath` will
+       return a path regardless of whether or not the image exists.
+       */
+      SDImageCache.shared.diskImageExists(withKey: cacheKey) { exists in
+        if exists {
+          let cachePath = SDImageCache.shared.cachePath(forKey: cacheKey)
+
+          promise.resolve(cachePath)
+        } else {
+          promise.resolve(nil)
+        }
       }
     }
   }

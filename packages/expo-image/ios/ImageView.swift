@@ -53,6 +53,8 @@ public final class ImageView: ExpoView {
     }
   }
 
+  var autoplay: Bool = true
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -214,14 +216,17 @@ public final class ImageView: ExpoView {
       log.debug("Loading the image has been canceled")
       return
     }
-    if let image = image {
+
+    // Create an SDAnimatedImage if needed then handle the image
+    if let image = createAnimatedIfNeeded(image: image, data: data) {
       onLoad([
         "cacheType": cacheTypeToString(cacheType),
         "source": [
           "url": imageUrl?.absoluteString,
           "width": image.size.width,
           "height": image.size.height,
-          "mediaType": imageFormatToMediaType(image.sd_imageFormat)
+          "mediaType": imageFormatToMediaType(image.sd_imageFormat),
+          "isAnimated": image.sd_isAnimated ?? false
         ]
       ])
 
@@ -369,6 +374,12 @@ public final class ImageView: ExpoView {
 
   private func setImage(_ image: UIImage?, contentFit: ContentFit, isPlaceholder: Bool) {
     sdImageView.contentMode = contentFit.toContentMode()
+
+    if isPlaceholder {
+      sdImageView.autoPlayAnimatedImage = true
+    } else {
+      sdImageView.autoPlayAnimatedImage = autoplay
+    }
 
     if let imageTintColor, !isPlaceholder {
       sdImageView.tintColor = imageTintColor

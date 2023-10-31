@@ -14,9 +14,11 @@ import { createFastResolver } from './createExpoMetroResolver';
 import {
   EXTERNAL_REQUIRE_NATIVE_POLYFILL,
   EXTERNAL_REQUIRE_POLYFILL,
+  METRO_SHIMS_FOLDER,
   getNodeExternalModuleId,
   isNodeExternal,
   setupNodeExternals,
+  setupShimFiles,
 } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { importMetroResolverFromProject } from './resolveFromProject';
@@ -133,9 +135,10 @@ export function withExtendedResolver(
 
   const isWebEnabled = platforms.includes('web');
 
+  const defaultResolver = importMetroResolverFromProject(projectRoot).resolve;
   const resolver = isFastResolverEnabled
     ? createFastResolver({ preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false })
-    : importMetroResolverFromProject(projectRoot).resolve;
+    : defaultResolver;
 
   const extraNodeModules: { [key: string]: Record<string, string> } = {};
 
@@ -200,7 +203,7 @@ export function withExtendedResolver(
 
   let nodejsSourceExtensions: string[] | null = null;
 
-  const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '..', 'static/shims');
+  const shimsFolder = path.join(projectRoot, METRO_SHIMS_FOLDER);
 
   return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
@@ -261,6 +264,9 @@ export function withExtendedResolver(
       let mainFields: string[] = context.mainFields;
 
       if (isNode) {
+        context.unstable_enablePackageExports = true;
+        context.unstable_conditionNames = ['node', 'require'];
+
         // Node.js runtimes should only be importing main at the moment.
         // This is a temporary fix until we can support the package.json exports.
         mainFields = ['main', 'module'];
@@ -270,7 +276,10 @@ export function withExtendedResolver(
         mainFields = preferredMainFields[platform];
       }
       function doResolve(moduleName: string): Resolution | null {
-        return resolver(
+        // Workaround for Node.js having package exports enabled by default and
+        // the fast resolver not having package exports support yet.
+        const resolverToUse = isNode ? defaultResolver : resolver;
+        return resolverToUse(
           {
             ...context,
             resolveRequest: undefined,
@@ -476,6 +485,7 @@ export async function withMetroMultiPlatformAsync(
     tsconfig = await loadTsConfigPathsAsync(projectRoot);
   }
 
+  await setupShimFiles(projectRoot);
   await setupNodeExternals(projectRoot);
 
   return withMetroMultiPlatform(projectRoot, {

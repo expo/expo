@@ -4,6 +4,9 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Remove `expo/scripts/launchPackager.command` script for launching Expo CLI when building iOS apps for development in Xcode. ([#25130](https://github.com/expo/expo/pull/25130) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - Add support for standard `URL` API. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
