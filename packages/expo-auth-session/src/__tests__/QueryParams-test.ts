@@ -4,7 +4,12 @@ it(`parses a query string`, () => {
   const results = QueryParams.getQueryParams('https://demo.io?foo=bar&git=hub');
   expect(results.params).toStrictEqual({ foo: 'bar', git: 'hub' });
 });
+
 it(`parses a query string with arrays`, () => {
+  expect(QueryParams.getQueryParams('/?a.b=c').params).toStrictEqual({ 'a.b': 'c' });
+  expect(QueryParams.getQueryParams('/?a=b&c=d').params).toStrictEqual({ a: 'b', c: 'd' });
+  expect(QueryParams.getQueryParams('/?a%5Bb%5D=c').params).toStrictEqual({ 'a[b]': 'c' });
+  expect(QueryParams.getQueryParams('/?foo[bar]=baz').params).toStrictEqual({ 'foo[bar]': 'baz' });
   expect(QueryParams.getQueryParams('/?git=hub,other').params).toStrictEqual({ git: 'hub,other' });
   expect(QueryParams.getQueryParams('/?git=[hub,other]').params).toStrictEqual({
     git: '[hub,other]',
