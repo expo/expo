@@ -18,11 +18,14 @@ const getDevServer = () => {
         return document.currentScript.src;
       }
 
-      const query = new URLSearchParams(location.search);
+      const bundleUrl = new URL(
+        // @ts-ignore: Location can be passed to URL on web.
+        location
+      );
 
-      query.append('platform', 'web');
+      bundleUrl.searchParams.set('platform', 'web');
 
-      return location.origin + location.pathname + '?' + query;
+      return bundleUrl.toString();
     },
     url: location.origin + location.pathname,
   };

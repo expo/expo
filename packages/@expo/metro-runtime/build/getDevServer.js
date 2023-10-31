@@ -17,9 +17,11 @@ const getDevServer = () => {
             if (document?.currentScript && 'src' in document.currentScript) {
                 return document.currentScript.src;
             }
-            const query = new URLSearchParams(location.search);
-            query.append('platform', 'web');
-            return location.origin + location.pathname + '?' + query;
+            const bundleUrl = new URL(
+            // @ts-ignore: Location can be passed to URL on web.
+            location);
+            bundleUrl.searchParams.set('platform', 'web');
+            return bundleUrl.toString();
         },
         url: location.origin + location.pathname,
     };
