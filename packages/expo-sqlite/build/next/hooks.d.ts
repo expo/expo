@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database } from './Database';
+import { type Database } from './Database';
 import type { OpenOptions } from './NativeDatabase';
 export interface SQLiteProviderProps {
     /**
@@ -15,11 +15,16 @@ export interface SQLiteProviderProps {
      */
     children: React.ReactNode;
     /**
+     * A custom initialization handler to run before rendering the children.
+     * You can use this to run database migrations or other setup tasks.
+     */
+    initHandler?: (db: Database) => Promise<void>;
+    /**
      * Handle errors from SQLiteProvider.
-     * @default throw
+     * @default rethrow the error
      */
     errorHandler?: (error: Error) => void;
 }
-export declare function SQLiteProvider({ dbName, options, children, errorHandler }: SQLiteProviderProps): JSX.Element | null;
+export declare function SQLiteProvider({ dbName, options, children, initHandler, errorHandler, }: SQLiteProviderProps): JSX.Element | null;
 export declare function useSQLiteContext(): Database;
 //# sourceMappingURL=hooks.d.ts.map

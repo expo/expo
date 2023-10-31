@@ -3,14 +3,19 @@ import { openDatabaseAsync } from './Database';
 // Create a context for the SQLite database
 const SQLiteContext = createContext(null);
 // Create a provider component
-export function SQLiteProvider({ dbName, options, children, errorHandler }) {
+export function SQLiteProvider({ dbName, options, children, initHandler, errorHandler, }) {
     const [database, setDatabase] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     useEffect(() => {
         async function setup() {
             try {
                 const db = await openDatabaseAsync(dbName, options);
                 setDatabase(db);
+                if (initHandler != null) {
+                    await initHandler(db);
+                }
+                setLoading(false);
             }
             catch (e) {
                 setError(e);
@@ -28,7 +33,7 @@ export function SQLiteProvider({ dbName, options, children, errorHandler }) {
         return () => {
             teardown();
         };
-    }, [dbName, options]);
+    }, [dbName, options, initHandler]);
     if (error != null) {
         const handler = errorHandler ??
             ((e) => {
@@ -36,7 +41,7 @@ export function SQLiteProvider({ dbName, options, children, errorHandler }) {
             });
         handler(error);
     }
-    if (database == null) {
+    if (loading) {
         return null;
     }
     return <SQLiteContext.Provider value={database}>{children}</SQLiteContext.Provider>;

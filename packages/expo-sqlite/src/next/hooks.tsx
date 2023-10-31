@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { openDatabaseAsync, Database } from './Database';
+import { openDatabaseAsync, type Database } from './Database';
 import type { OpenOptions } from './NativeDatabase';
 
 export interface SQLiteProviderProps {
@@ -20,8 +20,14 @@ export interface SQLiteProviderProps {
   children: React.ReactNode;
 
   /**
+   * A custom initialization handler to run before rendering the children.
+   * You can use this to run database migrations or other setup tasks.
+   */
+  initHandler?: (db: Database) => Promise<void>;
+
+  /**
    * Handle errors from SQLiteProvider.
-   * @default throw
+   * @default rethrow the error
    */
   errorHandler?: (error: Error) => void;
 }
@@ -30,8 +36,15 @@ export interface SQLiteProviderProps {
 const SQLiteContext = createContext<Database | null>(null);
 
 // Create a provider component
-export function SQLiteProvider({ dbName, options, children, errorHandler }: SQLiteProviderProps) {
+export function SQLiteProvider({
+  dbName,
+  options,
+  children,
+  initHandler,
+  errorHandler,
+}: SQLiteProviderProps) {
   const [database, setDatabase] = useState<Database | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -39,6 +52,10 @@ export function SQLiteProvider({ dbName, options, children, errorHandler }: SQLi
       try {
         const db = await openDatabaseAsync(dbName, options);
         setDatabase(db);
+        if (initHandler != null) {
+          await initHandler(db);
+        }
+        setLoading(false);
       } catch (e) {
         setError(e);
       }
@@ -57,7 +74,7 @@ export function SQLiteProvider({ dbName, options, children, errorHandler }: SQLi
     return () => {
       teardown();
     };
-  }, [dbName, options]);
+  }, [dbName, options, initHandler]);
 
   if (error != null) {
     const handler =
@@ -68,7 +85,7 @@ export function SQLiteProvider({ dbName, options, children, errorHandler }: SQLi
     handler(error);
   }
 
-  if (database == null) {
+  if (loading) {
     return null;
   }
   return <SQLiteContext.Provider value={database}>{children}</SQLiteContext.Provider>;
