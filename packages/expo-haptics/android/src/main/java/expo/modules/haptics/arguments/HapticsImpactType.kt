@@ -4,17 +4,17 @@ object HapticsImpactType {
   private val types = mapOf(
     "light" to HapticsVibrationType(
       longArrayOf(0, 50),
-      intArrayOf(0, 110),
+      intArrayOf(0, 30),
       longArrayOf(0, 20)
     ),
     "medium" to HapticsVibrationType(
       longArrayOf(0, 43),
-      intArrayOf(0, 180),
+      intArrayOf(0, 50),
       longArrayOf(0, 43)
     ),
     "heavy" to HapticsVibrationType(
       longArrayOf(0, 60),
-      intArrayOf(0, 255),
+      intArrayOf(0, 70),
       longArrayOf(0, 61)
     )
   )
