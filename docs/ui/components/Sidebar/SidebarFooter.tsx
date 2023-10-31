@@ -32,6 +32,7 @@ export const SidebarFooter = () => {
         title="Discord and Forums"
         Icon={DiscordIcon}
         isExternal
+        shouldLeakReferrer
       />
       <SidebarSingleEntry
         secondary

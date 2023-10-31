@@ -31,7 +31,12 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
     </LI>
   ) : (
     <LI>
-      <A isStyled openInNewTab href="https://chat.expo.dev/" className={LINK_CLASSES}>
+      <A
+        isStyled
+        openInNewTab
+        href="https://chat.expo.dev/"
+        className={LINK_CLASSES}
+        shouldLeakReferrer>
         <MessageDotsSquareIcon className={ICON_CLASSES} />
         <CALLOUT theme="secondary">Ask a question on the forums</CALLOUT>
       </A>
