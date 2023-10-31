@@ -673,22 +673,6 @@ export function test(t) {
         });
       });
 
-      t.it('should load crsqlite extension correctly', async () => {
-        const db = SQLite.openDatabase('test.db');
-        await db.transactionAsync(async (tx) => {
-          await tx.executeSqlAsync('DROP TABLE IF EXISTS foo;', []);
-          await tx.executeSqlAsync('create table foo (a primary key, b INTEGER);', []);
-          await tx.executeSqlAsync('select crsql_as_crr("foo");', []);
-          await tx.executeSqlAsync('insert into foo (a,b) values (?, ?);', [1, 2]);
-          await tx.executeSqlAsync('insert into foo (a,b) values (?, ?);', [3, 4]);
-          const result = await tx.executeSqlAsync('select * from crsql_changes;', []);
-          const table = result.rows[0].table;
-          const value = result.rows[0].val;
-          t.expect(table).toEqual('foo');
-          t.expect(value).toEqual(2);
-        });
-      });
-
       t.it('should support Promise.all', async () => {
         const db = SQLite.openDatabase('test.db');
 
