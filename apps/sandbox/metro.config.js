@@ -9,21 +9,6 @@ const path = require('path');
 
 const root = path.join(__dirname, '../..');
 
-config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (moduleName.startsWith('my-custom-resolver:')) {
-    // Logic to resolve the module name to a file path...
-    // NOTE: Throw an error if there is no resolution.
-    console.log('custom', moduleName);
-    return {
-      type: 'empty',
-      // filePath: 'path/to/file',
-      // type: 'sourceFile',
-    };
-  }
-  // Optionally, chain to the standard Metro resolver.
-  return context.resolveRequest(context, moduleName, platform);
-};
-
 config.watchFolders = [__dirname, ...['packages', 'node_modules'].map((v) => path.join(root, v))];
 
 config.resolver.blockList = [
