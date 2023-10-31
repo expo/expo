@@ -377,6 +377,7 @@ const general = [
         makePage('guides/localization.mdx'),
         makePage('guides/configuring-js-engines.mdx'),
         makePage('guides/using-bun.mdx'),
+        makePage('guides/editing-richtext.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
