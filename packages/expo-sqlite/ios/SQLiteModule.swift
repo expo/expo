@@ -3,18 +3,9 @@ import sqlite3
 
 public final class SQLiteModule: Module {
   private var cachedDatabases = [String: OpaquePointer]()
-  private var hasListeners = false
-  private lazy var selfPointer = Unmanaged.passRetained(self).toOpaque()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLite")
-
-    Events("onDatabaseChange")
-
-    OnCreate {
-      // TODO: Remove this integration from legacy SQLiteModule
-      crsqlite_auto_init_from_swift()
-    }
 
     AsyncFunction("exec") { (dbName: String, queries: [[Any]], readOnly: Bool) -> [Any?] in
       guard let db = openDatabase(dbName: dbName) else {
@@ -64,17 +55,8 @@ public final class SQLiteModule: Module {
       }
     }
 
-    OnStartObserving {
-      hasListeners = true
-    }
-
-    OnStopObserving {
-      hasListeners = false
-    }
-
     OnDestroy {
       cachedDatabases.values.forEach {
-        executeSql(sql: "SELECT crsql_finalize()", with: [], for: $0, readOnly: false)
         sqlite3_close($0)
       }
     }
@@ -112,22 +94,6 @@ public final class SQLiteModule: Module {
     if sqlite3_open(path.absoluteString, &db) != SQLITE_OK {
       return nil
     }
-
-    sqlite3_update_hook(
-      db, { (obj, action, _, tableName, rowId) in
-        if let obj, let tableName {
-          let selfObj = Unmanaged<SQLiteModule>.fromOpaque(obj).takeUnretainedValue()
-          if selfObj.hasListeners {
-            selfObj.sendEvent("onDatabaseChange", [
-              "tableName": String(cString: UnsafePointer(tableName)),
-              "rowId": rowId,
-              "typeId": SQLAction.fromCode(value: action)
-            ])
-          }
-        }
-      },
-      selfPointer
-    )
 
     cachedDatabases[dbName] = db
     return db

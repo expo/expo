@@ -3,15 +3,6 @@
 #import <ExpoSQLite/CRSQLiteLoader.h>
 #import <sqlite3/sqlite3.h>
 
-// This comes from the crsqlite.xcframework
-int sqlite3_crsqlite_init(sqlite3 *db, char **pzErrMsg,
-                          const sqlite3_api_routines *pApi);
-
-int crsqlite_auto_init_from_swift() {
-  int result = sqlite3_auto_extension((void *)sqlite3_crsqlite_init);
-  return result;
-}
-
 int crsqlite_init_from_swift(sqlite3 *db) {
   sqlite3_enable_load_extension(db, 1);
   char *errorMessage;
