@@ -18,6 +18,7 @@ const expoDependencyNames = [
   'expo-eas-client',
   'expo-file-system',
   'expo-font',
+  'expo-image',
   'expo-json-utils',
   'expo-keep-awake',
   'expo-localization',
@@ -265,8 +266,8 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E, isTV) {
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@0.72.6-0',
-        '@react-native-tvos/config-tv': '0.0.1',
+        'react-native': 'npm:react-native-tvos@~0.72.6-0',
+        '@react-native-tvos/config-tv': '~0.0.2',
       },
       expo: {
         install: {

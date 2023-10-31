@@ -226,7 +226,10 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
         <div css={STYLES_CONTENT}>
           <div css={[STYLES_SIDEBAR, STYLES_LEFT]}>
             <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
-            <ScrollContainer ref={this.sidebarRef} scrollPosition={sidebarScrollPosition}>
+            <ScrollContainer
+              ref={this.sidebarRef}
+              scrollPosition={sidebarScrollPosition}
+              className="pt-1.5">
               {sidebar}
               <SidebarFooter />
             </ScrollContainer>

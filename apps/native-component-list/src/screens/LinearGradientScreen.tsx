@@ -32,7 +32,7 @@ export default class LinearGradientScreen extends React.Component<{}, State> {
     colorBottom: '#cccccc',
   };
 
-  _interval?: number;
+  _interval?: ReturnType<typeof setInterval>;
 
   componentDidMount() {
     this._interval = setInterval(() => {

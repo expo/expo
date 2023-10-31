@@ -118,7 +118,7 @@ function babelPresetExpo(api, options = {}) {
             ...extraPlugins,
             // TODO: Remove
             [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
-            require.resolve('@babel/plugin-proposal-export-namespace-from'),
+            require.resolve('@babel/plugin-transform-export-namespace-from'),
             // Automatically add `react-native-reanimated/plugin` when the package is installed.
             // TODO: Move to be a customTransformOption.
             (0, common_1.hasModule)('react-native-reanimated') &&

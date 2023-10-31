@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -19,6 +21,8 @@
 ### 🎉 New features
 
 - Added config plugin to allow fonts to be linked at build time. ([#24772](https://github.com/expo/expo/pull/24772) by [@alanjhughes](https://github.com/alanjhughes))
+
+- Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25099](https://github.com/expo/expo/pull/25099) by [@reichhartd](https://github.com/reichhartd))
 
 ## 11.7.0 — 2023-09-15
 

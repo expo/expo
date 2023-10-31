@@ -202,7 +202,10 @@ const general = [
       makePage('router/reference/troubleshooting.mdx'),
       makePage('router/reference/faq.mdx'),
     ]),
-    makeGroup('Migration', [makePage('router/migrate/from-react-navigation.mdx')]),
+    makeGroup('Migration', [
+      makePage('router/migrate/from-react-navigation.mdx'),
+      makePage('router/migrate/from-expo-webpack.mdx'),
+    ]),
   ]),
   makeSection(
     'Expo Modules API',
@@ -378,6 +381,7 @@ const general = [
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
         makePage('guides/facebook-authentication.mdx'),
+        makePage('guides/using-supabase.mdx'),
         makePage('guides/using-firebase.mdx'),
         makePage('guides/using-flipper.mdx'),
         makePage('guides/google-authentication.mdx'),

@@ -33,10 +33,10 @@ export class Statement {
     async getAsync(...params) {
         const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
         if (shouldPassAsObject) {
-            return await this.nativeStatement.objectGetAsync(this.nativeDatabase, bindParams);
+            return (await this.nativeStatement.objectGetAsync(this.nativeDatabase, bindParams)) ?? null;
         }
         else {
-            return await this.nativeStatement.arrayGetAsync(this.nativeDatabase, bindParams);
+            return (await this.nativeStatement.arrayGetAsync(this.nativeDatabase, bindParams)) ?? null;
         }
     }
     async allAsync(...params) {
@@ -86,10 +86,10 @@ export class Statement {
     getSync(...params) {
         const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
         if (shouldPassAsObject) {
-            return this.nativeStatement.objectGetSync(this.nativeDatabase, bindParams);
+            return this.nativeStatement.objectGetSync(this.nativeDatabase, bindParams) ?? null;
         }
         else {
-            return this.nativeStatement.arrayGetSync(this.nativeDatabase, bindParams);
+            return this.nativeStatement.arrayGetSync(this.nativeDatabase, bindParams) ?? null;
         }
     }
     allSync(...params) {

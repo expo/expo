@@ -21,19 +21,18 @@ public enum RemoteLoadStatus: Int {
 }
 // swiftlint:enable identifier_name
 
-@objc(EXUpdatesErrorRecoveryDelegate)
-public protocol ErrorRecoveryDelegate: AnyObject {
-  @objc var config: UpdatesConfig { get }
-  @objc var remoteLoadStatus: RemoteLoadStatus { get }
+internal protocol ErrorRecoveryDelegate: AnyObject {
+  var config: UpdatesConfig { get }
+  var remoteLoadStatus: RemoteLoadStatus { get }
 
-  @objc func launchedUpdate() -> Update?
-  @objc func relaunch(completion: @escaping (_ error: Error?, _ success: Bool) -> Void)
-  @objc func loadRemoteUpdate()
+  func launchedUpdate() -> Update?
+  func relaunch(completion: @escaping (_ error: Error?, _ success: Bool) -> Void)
+  func loadRemoteUpdate()
 
-  @objc func markFailedLaunchForLaunchedUpdate()
-  @objc func markSuccessfulLaunchForLaunchedUpdate()
+  func markFailedLaunchForLaunchedUpdate()
+  func markSuccessfulLaunchForLaunchedUpdate()
 
-  @objc func throwException(_ exception: NSException)
+  func throwException(_ exception: NSException)
 }
 
 /**
@@ -83,7 +82,7 @@ public final class ErrorRecovery: NSObject {
   private static let ErrorLogFile = "expo-error.log"
   private static let RemoteLoadTimeoutMs = 5000
 
-  public weak var delegate: ErrorRecoveryDelegate?
+  internal weak var delegate: (any ErrorRecoveryDelegate)?
 
   private var pipeline: [ErrorRecoveryTask]
   private var isRunning: Bool

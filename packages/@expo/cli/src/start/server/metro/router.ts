@@ -6,6 +6,7 @@ import resolveFrom from 'resolve-from';
 
 import { Log } from '../../../log';
 import { directoryExistsSync } from '../../../utils/dir';
+import { memoize } from '../../../utils/fn';
 
 const debug = require('debug')('expo:start:server:metro:router') as typeof console.log;
 
@@ -50,10 +51,14 @@ export function getRouterDirectoryWithManifest(projectRoot: string, exp: ExpoCon
   return path.join(projectRoot, getRouterDirectoryModuleIdWithManifest(projectRoot, exp));
 }
 
+const logSrcDir = memoize(() =>
+  Log.log(chalk.gray('Using src/app as the root directory for Expo Router.'))
+);
+
 export function getRouterDirectory(projectRoot: string): string {
   // more specific directories first
   if (directoryExistsSync(path.join(projectRoot, 'src/app'))) {
-    Log.log(chalk.gray('Using src/app as the root directory for Expo Router.'));
+    logSrcDir();
     return 'src/app';
   }
 

@@ -32,6 +32,6 @@ public enum ReanimatedSensorType {
       case 5:
         return ReanimatedSensorType.ROTATION_VECTOR;
     }
-    throw new IllegalArgumentException("[Reanimated] Unknown sensor type");
+    throw new IllegalArgumentException("[Reanimated] Unknown sensor type.");
   }
 }

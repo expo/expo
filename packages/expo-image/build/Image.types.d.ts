@@ -1,4 +1,5 @@
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle } from 'react-native';
+import ExpoImage from './ExpoImage';
 export type ImageSource = {
     /**
      * A string representing the resource identifier for the image,
@@ -179,6 +180,13 @@ export interface ImageProps extends ViewProps {
      */
     recyclingKey?: string | null;
     /**
+     * Determines if an image should automatically begin playing if it is an
+     * animated image.
+     * @default true
+     * @platform ios
+     */
+    autoplay?: boolean;
+    /**
      * Called when the image starts to load.
      */
     onLoadStart?: () => void;
@@ -285,6 +293,8 @@ export interface ImageNativeProps extends ImageProps {
     placeholder?: ImageSource[];
     contentPosition?: ImageContentPositionObject;
     transition?: ImageTransition | null;
+    autoplay?: boolean;
+    nativeViewRef?: React.RefObject<ExpoImage>;
 }
 /**
  * A value that represents the relative position of a single axis.
@@ -380,6 +390,7 @@ export type ImageLoadEventData = {
         width: number;
         height: number;
         mediaType: string | null;
+        isAnimated?: boolean;
     };
 };
 export type ImageProgressEventData = {

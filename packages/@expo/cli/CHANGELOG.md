@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Enable package exports for server bundling. ([#24937](https://github.com/expo/expo/pull/24937) by [@EvanBacon](https://github.com/EvanBacon))
+- Include static routes from `generateStaticParams` in server manifest. ([#25003](https://github.com/expo/expo/pull/25003) by [@EvanBacon](https://github.com/EvanBacon))
 - Added Expo CLI devtools plugins support. ([#24650](https://github.com/expo/expo/pull/24650) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
@@ -14,6 +16,8 @@
 - Prevent `npx expo export` and `npx expo export:embed` from hanging with file watchers. ([#24952](https://github.com/expo/expo/pull/24952) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
+
+- Memoize notice log about `src/app` directory to prevent spam. ([#25000](https://github.com/expo/expo/pull/25000) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.10.14 — 2023-10-20
 

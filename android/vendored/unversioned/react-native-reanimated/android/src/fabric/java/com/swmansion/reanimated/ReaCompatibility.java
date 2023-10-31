@@ -13,9 +13,9 @@ class ReaCompatibility {
         fabricUIManager = (FabricUIManager) UIManagerHelper.getUIManager(reactApplicationContext, UIManagerType.FABRIC);
     }
 
-    public void registerFabricEventListener(NodesManager nodeManager) {
+    public void registerFabricEventListener(NodesManager nodesManager) {
         if (fabricUIManager != null) {
-            fabricUIManager.getEventDispatcher().addListener(nodeManager);
+            fabricUIManager.getEventDispatcher().addListener(nodesManager);
         }
     }
 

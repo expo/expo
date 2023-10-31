@@ -16,12 +16,13 @@ import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
 import expo.modules.constants.ConstantsPackage
-import expo.modules.contacts.ContactsPackage
+import expo.modules.contacts.ContactsModule
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
+import expo.modules.facedetector.FaceDetectorModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
@@ -40,7 +41,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.localauthentication.LocalAuthenticationModule
 import expo.modules.localization.LocalizationModule
-import expo.modules.location.LocationPackage
+import expo.modules.location.LocationModule
 import expo.modules.mailcomposer.MailComposerModule
 import expo.modules.manifests.core.Manifest
 import expo.modules.medialibrary.MediaLibraryModule
@@ -87,12 +88,10 @@ object ExperiencePackagePicker : ModulesProvider {
     AVPackage(),
     BarCodeScannerPackage(),
     ConstantsPackage(),
-    ContactsPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
     ImageLoaderPackage(),
     KeepAwakePackage(),
-    LocationPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     SensorsPackage(),
@@ -148,10 +147,12 @@ object ExperiencePackagePicker : ModulesProvider {
     ClipboardModule::class.java,
     CryptoModule::class.java,
     ConstantsModule::class.java,
+    ContactsModule::class.java,
     DeviceModule::class.java,
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
     FileSystemModule::class.java,
+    FaceDetectorModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,
     GLObjectManagerModule::class.java,
@@ -164,6 +165,7 @@ object ExperiencePackagePicker : ModulesProvider {
     LinearGradientModule::class.java,
     LocalAuthenticationModule::class.java,
     LocalizationModule::class.java,
+    LocationModule::class.java,
     MailComposerModule::class.java,
     MediaLibraryModule::class.java,
     NavigationBarModule::class.java,

@@ -269,6 +269,9 @@ module.exports = {
           { name: 'clearDiskCache', argumentsCount: 0, key: 'clearDiskCache' },
           { name: 'clearMemoryCache', argumentsCount: 0, key: 'clearMemoryCache' },
           { name: 'prefetch', argumentsCount: 1, key: 'prefetch' },
+          { name: 'getCachePathAsync', argumentsCount: 1, key: 'getCachePathAsync' },
+          { name: 'startAnimating', argumentsCount: 0, key: 'startAnimating' },
+          { name: 'stopAnimating', argumentsCount: 0, key: 'stopAnimating' },
         ],
         ExpoImageManipulator: [
           { name: 'manipulateAsync', argumentsCount: 3, key: 'manipulateAsync' },

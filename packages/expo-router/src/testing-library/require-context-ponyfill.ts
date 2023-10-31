@@ -1,6 +1,6 @@
-// @ts-expect-error: types node
+// @ts-ignore: types node
 import fs from 'node:fs';
-// @ts-expect-error: types node
+// @ts-ignore: types node
 import path from 'node:path';
 
 import { RequireContext } from '../types';

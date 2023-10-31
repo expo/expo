@@ -1,3 +1,4 @@
+.cache
 .next
 node_modules
 out/

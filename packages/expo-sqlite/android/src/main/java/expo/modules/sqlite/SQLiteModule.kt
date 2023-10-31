@@ -46,14 +46,14 @@ class SQLiteModule : Module() {
 
     AsyncFunction("deleteAsync") { dbName: String ->
       if (cachedDatabase[dbName] != null) {
-        throw OpenDatabaseException(dbName)
+        throw DeleteDatabaseException(dbName)
       }
       val dbFile = File(pathForDatabaseName(dbName))
       if (!dbFile.exists()) {
         throw DatabaseNotFoundException(dbName)
       }
       if (!dbFile.delete()) {
-        throw DeleteDatabaseException(dbName)
+        throw DeleteDatabaseFileException(dbName)
       }
     }
 
@@ -130,10 +130,10 @@ class SQLiteModule : Module() {
           "tableName" to tableName,
           "rowId" to rowID,
           "typeId" to when (operationType) {
-            9 -> SqlAction.DELETE.value
-            18 -> SqlAction.INSERT.value
-            23 -> SqlAction.UPDATE.value
-            else -> SqlAction.UNKNOWN.value
+            9 -> SQLAction.DELETE.value
+            18 -> SQLAction.INSERT.value
+            23 -> SQLAction.UPDATE.value
+            else -> SQLAction.UNKNOWN.value
           }
         )
       )
