@@ -12,7 +12,7 @@ class BarCodeScanner: NSObject {
   private let session: AVCaptureSession
   private let sessionQueue: DispatchQueue
   private let zxingCaptureQueue = DispatchQueue(label: "com.zxing.captureQueue")
-  
+
   internal var metadataOutput: AVCaptureMetadataOutput?
   internal var videoDataOutput: AVCaptureVideoDataOutput?
   internal var settings = BarCodeScannerUtils.getDefaultSettings()
@@ -156,13 +156,13 @@ class BarCodeScanner: NSObject {
         videoDataOutput = output
       }
     }
-    
+
     session.commitConfiguration()
   }
 
   private func removeOutputs() {
     session.beginConfiguration()
-  
+
     if let metadataOutput {
       if session.outputs.contains(metadataOutput) {
         session.removeOutput(metadataOutput)
@@ -176,7 +176,7 @@ class BarCodeScanner: NSObject {
         self.videoDataOutput = nil
       }
     }
-    
+
     session.commitConfiguration()
   }
 }

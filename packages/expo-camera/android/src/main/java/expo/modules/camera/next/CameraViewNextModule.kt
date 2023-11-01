@@ -39,25 +39,6 @@ class CameraViewNextModule : Module() {
   private val moduleScope = CoroutineScope(Dispatchers.Main)
   override fun definition() = ModuleDefinition {
     Name("ExpoCameraNext")
-
-    Constants(
-      "Type" to mapOf(
-        "front" to CameraType.FRONT.value,
-        "back" to CameraType.BACK.value
-      ),
-      "FlashMode" to mapOf(
-        "off" to FlashMode.OFF.value,
-        "on" to FlashMode.ON.value,
-        "auto" to FlashMode.AUTO.value,
-      ),
-      "VideoQuality" to mapOf(
-        "2160p" to VIDEO_2160P,
-        "1080p" to VIDEO_1080P,
-        "720p" to VIDEO_720P,
-        "480p" to VIDEO_480P,
-        "4:3" to VIDEO_4x3
-      ),
-    )
     
     AsyncFunction("requestCameraPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(

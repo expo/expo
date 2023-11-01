@@ -20,25 +20,6 @@ public final class CameraViewNextModule: Module {
       )
     }
 
-    Constants([
-      "Type": [
-        "front": CameraTypeNext.front.rawValue,
-        "back": CameraTypeNext.back.rawValue
-      ],
-      "FlashMode": [
-        "off": CameraFlashModeNext.off.rawValue,
-        "on": CameraFlashModeNext.on.rawValue,
-        "auto": CameraFlashModeNext.auto.rawValue
-      ],
-      "VideoQuality": [
-        "2160p": VideoQualityNext.video2160p.rawValue,
-        "1080p": VideoQualityNext.video1080p.rawValue,
-        "720p": VideoQualityNext.video720p.rawValue,
-        "480p": VideoQualityNext.video4x3.rawValue,
-        "4:3": VideoQualityNext.video4x3.rawValue
-      ]
-    ])
-    
     Property("modernBarcodeScannerAvailable")
       .get { () -> Bool in
         if #available(iOS 16.0, *) {
@@ -98,7 +79,7 @@ public final class CameraViewNextModule: Module {
           view.responsiveWhenOrientationLocked = responsiveOrientation
         }
       }
-      
+
       AsyncFunction("takePicture") { (view, options: TakePictureOptionsNext, promise: Promise) in
         #if targetEnvironment(simulator)
         try takePictureForSimulator(self.appContext, view, options, promise)
@@ -106,7 +87,7 @@ public final class CameraViewNextModule: Module {
         view.takePicture(options: options, promise: promise)
         #endif // not simulator
       }.runOnQueue(.main)
-      
+
       AsyncFunction("record") { (view, options: CameraRecordingOptionsNext, promise: Promise) in
         #if targetEnvironment(simulator)
         throw Exceptions.SimulatorNotSupported()
@@ -114,7 +95,7 @@ public final class CameraViewNextModule: Module {
         view.record(options: options, promise: promise)
         #endif
       }.runOnQueue(.main)
-      
+
       AsyncFunction("stopRecording") { view in
         #if targetEnvironment(simulator)
         throw Exceptions.SimulatorNotSupported()
@@ -122,9 +103,9 @@ public final class CameraViewNextModule: Module {
         view.stopRecording()
         #endif
       }.runOnQueue(.main)
-      
-      AsyncFunction("launchModernScanner") { view in
-          
+
+      AsyncFunction("launchModernScanner") { _ in
+
       }
     }
 

@@ -31,28 +31,16 @@ export enum VideoCodec {
  * This option specifies the stabilization mode to use when recording a video.
  * @platform ios
  */
-export enum VideoStabilization {
-  off = 'off',
-  standard = 'standard',
-  cinematic = 'cinematic',
-  auto = 'auto',
-}
+export type VideoStabilization = 'off' | 'standard' | 'cinematic' | 'auto';
 
 // @docsMissing
-export enum VideoQuality {
-  '2160p' = '2160p',
-  '1080p' = '1080p',
-  '720p' = '720p',
-  '480p' = '480p',
-  '4:3' = '4:3',
-}
+export type VideoQuality = '2160p' | '1080p' | '720p' | '480p' | '4:3';
 
-export enum CameraOrientation {
-  portrait = 1,
-  portraitUpsideDown = 2,
-  landscapeLeft = 3,
-  landscapeRight = 4,
-}
+export type CameraOrientation =
+  | 'portrait'
+  | 'portraitUpsideDown'
+  | 'landscapeLeft'
+  | 'landscapeRight';
 
 // @docsMissing
 /**
@@ -189,7 +177,7 @@ export type CameraRecordingOptions = {
    * Possible values: for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480).
    * If the chosen quality is not available for a device, the highest available is chosen.
    */
-  quality?: number | string;
+  quality?: VideoQuality;
   /**
    * If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default,
    * but you can reverse that back by setting this to `true`. On Android, this is handled in the user's device settings.
@@ -310,9 +298,9 @@ export type ConstantsType = {
 // @needsAudit
 export type CameraProps = ViewProps & {
   /**
-   * Camera facing. Use one of `CameraType`. When `CameraType.front`, use the front-facing camera.
-   * When `CameraType.back`, use the back-facing camera.
-   * @default CameraType.back
+   * Camera facing. Use one of `CameraType`. When `front`, use the front-facing camera.
+   * When `back`, use the back-facing camera.
+   * @default 'back'
    */
   type?: CameraType;
   /**
@@ -329,7 +317,7 @@ export type CameraProps = ViewProps & {
   zoom?: number;
   /**
    * Used to select image or video output
-   * @default CameraMode.picture
+   * @default 'picture'
    */
   mode?: CameraMode;
   /**

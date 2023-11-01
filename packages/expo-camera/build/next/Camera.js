@@ -24,9 +24,6 @@ function ensureRecordingOptions(options) {
     if (!recordingOptions || typeof recordingOptions !== 'object') {
         recordingOptions = {};
     }
-    else if (typeof recordingOptions.quality === 'string') {
-        recordingOptions.quality = Camera.Constants.VideoQuality[recordingOptions.quality];
-    }
     return recordingOptions;
 }
 function _onPictureSaved({ nativeEvent, }) {
@@ -76,21 +73,14 @@ export default class Camera extends React.Component {
         }
         return await CameraManager.getAvailableVideoCodecsAsync();
     }
-    static Constants = {
-        Type: CameraManager.Type,
-        FlashMode: CameraManager.FlashMode,
-        VideoQuality: CameraManager.VideoQuality,
-        VideoStabilization: CameraManager.VideoStabilization || {},
-        VideoCodec: CameraManager.VideoCodec,
-    };
     // Values under keys from this object will be transformed to native options
     static ConversionTables = ConversionTables;
     static defaultProps = {
         zoom: 0,
-        type: CameraManager.Type.back,
+        type: 'back',
         enableTorch: false,
         mode: 'picture',
-        flashMode: CameraManager.FlashMode.off,
+        flashMode: 'off',
     };
     // @needsAudit
     /**
@@ -255,5 +245,5 @@ export default class Camera extends React.Component {
         return (<ExponentCamera {...nativeProps} ref={this._cameraRef} onCameraReady={this._onCameraReady} onMountError={this._onMountError} onBarCodeScanned={onBarCodeScanned} onPictureSaved={_onPictureSaved} onResponsiveOrientationChanged={this._onResponsiveOrientationChanged}/>);
     }
 }
-export const { Constants, getCameraPermissionsAsync, requestCameraPermissionsAsync, getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync, } = Camera;
+export const { getCameraPermissionsAsync, requestCameraPermissionsAsync, getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync, } = Camera;
 //# sourceMappingURL=Camera.js.map

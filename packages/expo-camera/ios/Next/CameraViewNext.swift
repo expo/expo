@@ -51,7 +51,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   }
 
   var flashMode = CameraFlashModeNext.auto
-  
+
   var torchEnabled = false {
     didSet {
       enableTorch()
@@ -569,7 +569,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 //    if !session.isRunning {
 //      return
 //    }
-    
+
     print("Muting: \(isMuted)")
     sessionQueue.async {
       self.session.beginConfiguration()

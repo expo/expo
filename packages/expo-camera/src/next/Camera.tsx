@@ -10,7 +10,6 @@ import {
   CameraRecordingOptions,
   CameraType,
   CameraViewRef,
-  ConstantsType,
   PermissionResponse,
   VideoCodec,
 } from './Camera.types';
@@ -45,8 +44,6 @@ function ensureRecordingOptions(options?: CameraRecordingOptions): CameraRecordi
 
   if (!recordingOptions || typeof recordingOptions !== 'object') {
     recordingOptions = {};
-  } else if (typeof recordingOptions.quality === 'string') {
-    recordingOptions.quality = Camera.Constants.VideoQuality[recordingOptions.quality];
   }
 
   return recordingOptions;
@@ -110,23 +107,15 @@ export default class Camera extends React.Component<CameraProps> {
     return await CameraManager.getAvailableVideoCodecsAsync();
   }
 
-  static Constants: ConstantsType = {
-    Type: CameraManager.Type,
-    FlashMode: CameraManager.FlashMode,
-    VideoQuality: CameraManager.VideoQuality,
-    VideoStabilization: CameraManager.VideoStabilization || {},
-    VideoCodec: CameraManager.VideoCodec,
-  };
-
   // Values under keys from this object will be transformed to native options
   static ConversionTables = ConversionTables;
 
   static defaultProps: CameraProps = {
     zoom: 0,
-    type: CameraManager.Type.back,
+    type: 'back',
     enableTorch: false,
     mode: 'picture',
-    flashMode: CameraManager.FlashMode.off,
+    flashMode: 'off',
   };
 
   // @needsAudit
@@ -334,7 +323,6 @@ export default class Camera extends React.Component<CameraProps> {
 }
 
 export const {
-  Constants,
   getCameraPermissionsAsync,
   requestCameraPermissionsAsync,
   getMicrophonePermissionsAsync,

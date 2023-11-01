@@ -1,6 +1,5 @@
 export { default as Camera } from './Camera';
 export {
-  Constants,
   getCameraPermissionsAsync,
   requestCameraPermissionsAsync,
   getMicrophonePermissionsAsync,
