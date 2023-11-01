@@ -19,8 +19,7 @@ const getDevServer = () => {
       }
 
       const bundleUrl = new URL(
-        // @ts-ignore: Location can be passed to URL on web.
-        location
+        location.href
       );
 
       bundleUrl.searchParams.set('platform', 'web');

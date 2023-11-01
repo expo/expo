@@ -17,9 +17,7 @@ const getDevServer = () => {
             if (document?.currentScript && 'src' in document.currentScript) {
                 return document.currentScript.src;
             }
-            const bundleUrl = new URL(
-            // @ts-ignore: Location can be passed to URL on web.
-            location);
+            const bundleUrl = new URL(location.href);
             bundleUrl.searchParams.set('platform', 'web');
             return bundleUrl.toString();
         },
