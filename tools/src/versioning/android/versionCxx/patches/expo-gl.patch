@@ -3,7 +3,7 @@ index 32784fe8a6..bbbea44599 100644
 --- a/packages/expo-gl/android/build.gradle
 +++ b/packages/expo-gl/android/build.gradle
 @@ -21,6 +21,10 @@ file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { react
- def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
+ def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
  def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
 +REACT_NATIVE_DIR = "${rootDir}/versioned-react-native/packages/react-native"
