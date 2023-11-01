@@ -1,5 +1,4 @@
 import Constants from 'expo-constants';
-import URL from 'url-parse';
 
 const protocolWarningString = `{ plugins: [["expo-router", { origin: "...<URL>..." }]] }`;
 
@@ -30,10 +29,10 @@ function sanitizeUrl(url: string): string {
     );
   }
 
-  parsed.set('pathname', '');
-  parsed.set('query', {});
-  parsed.set('hash', undefined);
-  parsed.set('protocol', parsed.protocol ?? 'https:');
+  parsed.pathname = '';
+  parsed.search = '';
+  parsed.hash = '';
+  parsed.protocol ??= 'https:';
 
   return parsed.toString().replace(/\/$/, '');
 }

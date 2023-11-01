@@ -2,8 +2,6 @@ import { PathConfigMap } from '@react-navigation/core';
 import type { InitialState, NavigationState, PartialState } from '@react-navigation/routers';
 import escape from 'escape-string-regexp';
 import Constants from 'expo-constants';
-import * as queryString from 'query-string';
-import URL from 'url-parse';
 
 import { findFocusedRoute } from './findFocusedRoute';
 import validatePathConfig from './validatePathConfig';
@@ -49,7 +47,17 @@ export function getUrlWithReactNavigationConcessions(
   path: string,
   basePath: string | undefined = Constants.expoConfig?.experiments?.basePath
 ) {
-  const parsed = new URL(path, 'https://acme.com');
+  let parsed: URL;
+  try {
+    parsed = new URL(path, 'https://phony.example');
+  } catch {
+    // Do nothing with invalid URLs.
+    return {
+      nonstandardPathname: '',
+      inputPathnameWithoutHash: '',
+    };
+  }
+
   const pathname = parsed.pathname;
 
   // Make sure there is a trailing slash
@@ -753,7 +761,11 @@ const createNestedStateObject = (
 
 const parseQueryParams = (path: string, parseConfig?: Record<string, (value: string) => any>) => {
   const query = path.split('?')[1];
-  const params = queryString.parse(query);
+  const searchParams = new URLSearchParams(query);
+  const params = Object.fromEntries(
+    // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
+    searchParams
+  );
 
   if (parseConfig) {
     Object.keys(params).forEach((name) => {

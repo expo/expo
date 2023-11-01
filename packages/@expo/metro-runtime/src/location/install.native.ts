@@ -2,7 +2,6 @@
 import 'react-native/Libraries/Core/InitializeCore';
 
 import Constants from 'expo-constants';
-import URL from 'url-parse';
 
 import { install, setLocationHref } from './Location';
 import getDevServer from '../getDevServer';
