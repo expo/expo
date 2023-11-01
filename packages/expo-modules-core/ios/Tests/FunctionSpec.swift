@@ -269,6 +269,10 @@ class FunctionSpec: ExpoSpec {
           Function("withFunction") { (fn: JavaScriptFunction<String>) -> String in
             return try fn.call("foo", "bar")
           }
+
+          Function("withCGFloat") { (f: CGFloat) in
+            return "\(f)"
+          }
         })
       }
 
@@ -300,6 +304,10 @@ class FunctionSpec: ExpoSpec {
 
         expect(value.kind) == .string
         expect(value.getString()) == "foobar"
+      }
+
+      it("accepts CGFloat argument") {
+        expect(try runtime.eval("expo.modules.TestModule.withCGFloat(20.23)").asString()) == "20.23"
       }
     }
   }
