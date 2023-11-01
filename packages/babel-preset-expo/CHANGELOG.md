@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Support all options in top-level object and in `native` and `web` sub-objects.
 - Use the standard `@babel/preset-react` for all React transformations. ([#25125](https://github.com/expo/expo/pull/25125) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
