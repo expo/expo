@@ -62,7 +62,7 @@ If the `bundler` is not defined, it will default to checking if a `babel-loader`
 ];
 ```
 
-This property is passed down to [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx). This flag does nothing when `native.useTransformReactJSXExperimental` is set to `true` because `@babel/plugin-transform-react-jsx` is omitted.
+This property is passed down to [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx). This flag does nothing when `useTransformReactJSXExperimental` is set to `true` because `@babel/plugin-transform-react-jsx` is omitted.
 
 ### [`jsxImportSource`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx#importsource)
 
@@ -115,7 +115,7 @@ The value of `lazyImports` has a few possible effects:
 ],
 ```
 
-### `web.disableImportExportTransform`
+### `disableImportExportTransform`
 
 Enabling this option will allow your project to run with older JavaScript syntax (i.e. `module.exports`). This option will break tree shaking and increase your bundle size, but will eliminate the following error when `module.exports` is used:
 
@@ -127,7 +127,40 @@ Enabling this option will allow your project to run with older JavaScript syntax
 [
     'babel-preset-expo',
     {
-        web: { disableImportExportTransform: true }
+        disableImportExportTransform: true
     }
 ],
 ```
+
+### `unstable_transformProfile`
+
+Changes the engine preset in `metro-react-native-babel-preset` based on the JavaScript engine that is being targeted. In Expo SDK 50 and greater, this is automatically set based on the [`jsEngine`](https://docs.expo.dev/versions/latest/config/app/#jsengine) option in your `app.json`.
+
+### `enableBabelRuntime`
+
+Passed to `metro-react-native-babel-preset`.
+
+### `disableFlowStripTypesTransform`
+
+Passed to `metro-react-native-babel-preset`.
+
+## Platform-specific options
+
+All options can be passed in the platform-specific objects `native` and `web` to provide different settings on different platforms. For example, if you'd like to only apply `disableImportExportTransform` on web, use the following:
+
+```js
+[
+  'babel-preset-expo',
+  {
+    // Default value:
+    disableImportExportTransform: false,
+
+    web: {
+      // Web-specific value:
+      disableImportExportTransform: true,
+    },
+  },
+];
+```
+
+Platform-specific options have higher priority over top-level options.

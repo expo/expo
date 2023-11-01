@@ -6,9 +6,19 @@ import { expoRouterBabelPlugin } from './expo-router-plugin';
 import { lazyImports } from './lazyImports';
 
 type BabelPresetExpoPlatformOptions = {
+  /** Enable or disable adding the Reanimated plugin by default. @default `true` */
+  reanimated?: boolean;
   /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
   useTransformReactJSXExperimental?: boolean;
+  /** Change the policy for handling JSX in a file. Passed to `plugin-transform-react-jsx`. @default `'automatic'` */
+  jsxRuntime?: 'classic' | 'automatic';
+  /** Change the source module ID to use when importing an automatic JSX import. Only applied when `jsxRuntime` is `'automatic'` (default). Passed to `plugin-transform-react-jsx`. @default `'react'` */
+  jsxImportSource?: string;
+
+  lazyImports?: boolean;
+
   disableImportExportTransform?: boolean;
+
   // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
   disableFlowStripTypesTransform?: boolean;
   // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
@@ -17,18 +27,26 @@ type BabelPresetExpoPlatformOptions = {
   unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
 };
 
-export type BabelPresetExpoOptions = {
-  lazyImports?: boolean;
-  reanimated?: boolean;
-  jsxRuntime?: 'classic' | 'automatic';
-  jsxImportSource?: string;
+export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
+  /** Web-specific settings. */
   web?: BabelPresetExpoPlatformOptions;
+  /** Native-specific settings. */
   native?: BabelPresetExpoPlatformOptions;
 };
 
-function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): TransformOptions {
-  const { web = {}, native = {}, reanimated } = options;
+function getOptions(
+  options: BabelPresetExpoOptions,
+  platform?: string
+): BabelPresetExpoPlatformOptions {
+  const tag = platform === 'web' ? 'web' : 'native';
 
+  return {
+    ...options,
+    ...options[tag],
+  };
+}
+
+function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): TransformOptions {
   const bundler = api.caller(getBundler);
   const isWebpack = bundler === 'webpack';
   let platform = api.caller((caller) => (caller as any)?.platform);
@@ -41,24 +59,25 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     platform = 'web';
   }
 
-  const platformOptions: BabelPresetExpoPlatformOptions =
-    platform === 'web'
-      ? {
-          // Only disable import/export transform when Webpack is used because
-          // Metro does not support tree-shaking.
-          disableImportExportTransform: isWebpack,
-          unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
-          ...web,
-        }
-      : {
-          disableImportExportTransform: false,
-          unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
-          ...native,
-        };
+  const platformOptions = getOptions(options, platform);
+
+  if (platformOptions.disableImportExportTransform == null) {
+    if (platform === 'web') {
+      // Only disable import/export transform when Webpack is used because
+      // Metro does not support tree-shaking.
+      platformOptions.disableImportExportTransform = isWebpack;
+    } else {
+      platformOptions.disableImportExportTransform = false;
+    }
+  }
+
+  if (platformOptions.unstable_transformProfile == null) {
+    platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-stable' : 'default';
+  }
 
   // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
   // `metro-react-native-babel-preset` will handle it.
-  const lazyImportsOption = options?.lazyImports;
+  const lazyImportsOption = platformOptions?.lazyImports;
 
   const extraPlugins: PluginItem[] = [];
 
@@ -150,10 +169,10 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           development: isDev,
 
           // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
-          runtime: options?.jsxRuntime || 'automatic',
-          ...(options &&
-            options.jsxRuntime !== 'classic' && {
-              importSource: (options && options.jsxImportSource) || 'react',
+          runtime: platformOptions?.jsxRuntime || 'automatic',
+          ...(platformOptions &&
+            platformOptions.jsxRuntime !== 'classic' && {
+              importSource: (platformOptions && platformOptions.jsxImportSource) || 'react',
             }),
 
           // NOTE: Unexposed props:
@@ -176,7 +195,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       // Automatically add `react-native-reanimated/plugin` when the package is installed.
       // TODO: Move to be a customTransformOption.
       hasModule('react-native-reanimated') &&
-        reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
+        platformOptions.reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
     ].filter(Boolean) as PluginItem[],
   };
 }
