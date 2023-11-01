@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] fix crash when loading local image files with no file extension ([#24201](https://github.com/expo/expo/pull/25032) by [@kadikraman](https://github.com/kadikraman))
-
 ### 💡 Others
+
+## 1.3.5 — 2023-11-01
+
+### 🐛 Bug fixes
+
+- [Android] fix crash when loading local image files with no file extension ([#24201](https://github.com/expo/expo/pull/25032) by [@kadikraman](https://github.com/kadikraman))
 
 ## 1.3.4 — 2023-09-28
 
