@@ -4,7 +4,7 @@ import { hashElement } from 'folder-hash';
 import path from 'path';
 import process from 'process';
 
-import { podInstallAsync } from '../CocoaPods';
+import { npxPodInstallAsync } from '../CocoaPods';
 import { EXPO_DIR } from '../Constants';
 import logger from '../Logger';
 
@@ -27,9 +27,7 @@ async function action(options: ActionOptions) {
       logger.info(`🥥 Installing pods in ${chalk.yellow(relativeProjectPath)} directory`);
 
       try {
-        await podInstallAsync(absoluteProjectPath, {
-          stdio: options.verbose ? 'inherit' : 'pipe',
-        });
+        await npxPodInstallAsync(absoluteProjectPath, !!options.verbose);
       } catch (e) {
         if (!options.verbose) {
           // In this case, the output has already been printed.
