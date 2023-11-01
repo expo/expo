@@ -53,19 +53,19 @@ class BarCodeScannerUtils {
     }
     return result
   }
-  
+
   @available(iOS 16.0, *)
   static func visionDataScannerObjectToDictionary(item: RecognizedItem.Barcode) -> [String: Any] {
     var result = [String: Any]()
     result["type"] = item.observation.symbology.rawValue
     result["data"] = item.payloadStringValue
-    
+
     let bounds = item.bounds
     let cornerPoints: [[String: Any]] = [bounds.bottomLeft, bounds.bottomRight, bounds.topLeft, bounds.topRight].map { point in
       ["x": point.x, "y": point.y]
     }
     result["cornerPoints"] = cornerPoints
-        
+
     return result
   }
 

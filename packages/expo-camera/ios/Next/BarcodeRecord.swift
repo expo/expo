@@ -26,7 +26,7 @@ enum VNBarcodeType: String, Enumerable {
   case codabar
   case code128
   case upca
-  
+
   @available(iOS 16.0, *)
   func toSymbology() -> VNBarcodeSymbology {
     switch self {
@@ -65,7 +65,7 @@ struct VisionScannerOptions: Record {
   @Field var isPinchToZoomEnabled: Bool = false
   @Field var isGuidanceEnabled: Bool = true
   @Field var isHighlightingEnabled: Bool = false
-  
+
   @available(iOS 16.0, *)
   func toSymbology() -> [VNBarcodeSymbology] {
     barCodeTypes.map {

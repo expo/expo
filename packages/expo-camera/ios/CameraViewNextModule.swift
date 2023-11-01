@@ -12,10 +12,10 @@ struct ScannerContext {
 public final class CameraViewNextModule: Module, ScannerResultHandler {
 
   private var scannerContext: ScannerContext?
-  
+
   public func definition() -> ModuleDefinition {
     Name("ExpoCameraNext")
-    
+
     Events("onModernBarcodeScanned")
 
     OnCreate {
@@ -115,7 +115,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
         #endif
       }.runOnQueue(.main)
     }
-    
+
     AsyncFunction("launchModernScanner") { (options: VisionScannerOptions?, promise: Promise) in
       if #available(iOS 16.0, *) {
         Task {
@@ -164,7 +164,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
       )
     }
   }
-  
+
   @available(iOS 16.0, *)
   @MainActor private func launchModernScanner(with options: VisionScannerOptions?) {
     let symbologies = options?.toSymbology()
@@ -174,7 +174,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
       isGuidanceEnabled: options?.isGuidanceEnabled ?? false,
       isHighlightingEnabled: options?.isHighlightingEnabled ?? false
     )
-    
+
     if let delegate = scannerContext?.delegate as? VisionScannerDelegate {
       controller.delegate = delegate
     }
@@ -183,7 +183,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
       try? controller.startScanning()
     }
   }
-  
+
   func onItemScanned(result: [String: Any]) {
     sendEvent("onModernBarcodeScanned", result)
   }
