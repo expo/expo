@@ -1,0 +1,156 @@
+[
+  "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js",
+  [
+    {
+      "dependencies": {},
+      "getSource": "[MOCK_FUNCTION]",
+      "inverseDependencies": [],
+      "path": "__prelude__",
+      "output": [
+        {
+          "type": "js/script/virtual",
+          "data": {
+            "code": "...",
+            "lineCount": 1,
+            "map": [],
+            "functionMap": {}
+          }
+        }
+      ]
+    },
+    {
+      "dependencies": {},
+      "getSource": "[MOCK_FUNCTION]",
+      "inverseDependencies": [],
+      "path": "/Users/evanbacon/Documents/GitHub/expo/node_modules/metro-runtime/src/polyfills/require.js",
+      "output": [
+        {
+          "type": "js/script",
+          "data": {
+            "code": "...",
+            "lineCount": 226,
+            "map": [],
+            "functionMap": {}
+          }
+        }
+      ]
+    },
+    {
+      "dependencies": {},
+      "getSource": "[MOCK_FUNCTION]",
+      "inverseDependencies": [],
+      "path": ".expo/metro/polyfill.native.js",
+      "output": [
+        {
+          "type": "js/script",
+          "data": {
+            "code": "...",
+            "lineCount": 5,
+            "map": [],
+            "functionMap": {}
+          }
+        }
+      ]
+    }
+  ],
+  {
+    "dependencies": {
+      "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js": {
+        "dependencies": {
+          "qeWOywuB+im/SuPYU1NRFSVmgcY=": {
+            "absolutePath": "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/math.js",
+            "data": {
+              "name": "./math",
+              "data": {
+                "asyncType": null,
+                "locs": [
+                  {
+                    "start": {
+                      "line": 1,
+                      "column": 0,
+                      "index": 0
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 29,
+                      "index": 29
+                    }
+                  }
+                ],
+                "key": "qeWOywuB+im/SuPYU1NRFSVmgcY="
+              }
+            }
+          }
+        },
+        "getSource": "[MOCK_FUNCTION]",
+        "inverseDependencies": [],
+        "path": "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js",
+        "output": [
+          {
+            "type": "js/module",
+            "data": {
+              "code": "...",
+              "lineCount": 4,
+              "map": [],
+              "functionMap": {}
+            }
+          }
+        ]
+      },
+      "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/math.js": {
+        "dependencies": {},
+        "getSource": "[MOCK_FUNCTION]",
+        "inverseDependencies": [
+          "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js"
+        ],
+        "path": "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/math.js",
+        "output": [
+          {
+            "type": "js/module",
+            "data": {
+              "code": "...",
+              "lineCount": 8,
+              "map": [],
+              "functionMap": {}
+            }
+          }
+        ]
+      }
+    },
+    "entryPoints": [
+      [
+        "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js",
+        "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js"
+      ]
+    ],
+    "transformOptions": {
+      "customTransformOptions": {},
+      "dev": false,
+      "hot": false,
+      "minify": false,
+      "platform": "ios",
+      "type": "module",
+      "unstable_transformProfile": "default"
+    }
+  },
+  {
+    "asyncRequireModulePath": "/Users/evanbacon/Documents/GitHub/expo/node_modules/metro-runtime/src/modules/asyncRequire.js",
+    "processModuleFilter": "[Function: processModuleFilter]",
+    "createModuleId": "[Function (anonymous)]",
+    "getRunModuleStatement": "[Function: getRunModuleStatement]",
+    "dev": false,
+    "includeAsyncPaths": false,
+    "projectRoot": "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox",
+    "modulesOnly": false,
+    "runBeforeMainModule": [
+      "/Users/evanbacon/Documents/GitHub/expo/node_modules/react-native/Libraries/Core/InitializeCore.js",
+      "/Users/evanbacon/Documents/GitHub/expo/packages/expo/build/winter/index.js",
+      "/Users/evanbacon/Documents/GitHub/expo/packages/@expo/metro-runtime/build/index.js"
+    ],
+    "runModule": true,
+    "sourceUrl": null,
+    "inlineSourceMap": false,
+    "serverRoot": "/Users/evanbacon/Documents/GitHub/expo",
+    "shouldAddToIgnoreList": "[Function: shouldAddToIgnoreList]"
+  }
+]

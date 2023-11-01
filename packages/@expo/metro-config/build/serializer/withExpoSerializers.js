@@ -10,15 +10,20 @@ exports.createSerializerFromSerialProcessors = exports.withSerializerPlugins = e
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+const core_1 = require("@babel/core");
 const jsc_safe_url_1 = require("jsc-safe-url");
 const baseJSBundle_1 = __importDefault(require("metro/src/DeltaBundler/Serializers/baseJSBundle"));
 // @ts-expect-error
 const sourceMapString_1 = __importDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
 const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString"));
 const path_1 = __importDefault(require("path"));
+const toFixture_1 = require("./__tests__/fixtures/toFixture");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const getCssDeps_1 = require("./getCssDeps");
 const env_1 = require("../env");
+const countLines = require('metro/src/lib/countLines');
+const metro_source_map_1 = require("metro-source-map");
+const babylon = require('@babel/parser');
 function withExpoSerializers(config) {
     const processors = [];
     processors.push(environmentVariableSerializerPlugin_1.serverPreludeSerializerPlugin);
@@ -41,9 +46,8 @@ function withSerializerPlugins(config, processors) {
     };
 }
 exports.withSerializerPlugins = withSerializerPlugins;
-const core_1 = require("@babel/core");
-const generateImportNames = require('metro/src/ModuleGraph/worker/generateImportNames');
 const JsFileWrapping = require('metro/src/ModuleGraph/worker/JsFileWrapping');
+const generateImportNames = require('metro/src/ModuleGraph/worker/generateImportNames');
 function getDefaultSerializer(fallbackSerializer) {
     const defaultSerializer = fallbackSerializer ??
         (async (...params) => {
@@ -53,6 +57,11 @@ function getDefaultSerializer(fallbackSerializer) {
         });
     return async (...props) => {
         const [entryPoint, preModules, graph, options] = props;
+        (0, toFixture_1.toFixture)(...props);
+        // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
+        const minify = graph.transformOptions.minify &&
+            graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
+            graph.transformOptions.unstable_transformProfile !== 'hermes-stable';
         for (const value of graph.dependencies.values()) {
             console.log('inverseDependencies', value.inverseDependencies.values());
             for (const index in value.output) {
@@ -64,54 +73,57 @@ function getDefaultSerializer(fallbackSerializer) {
                 //     { specifiers: [ 'subtract' ] }
                 //   ]
                 // },
-                let exports = outputItem.data.modules?.exports;
-                let usedExports = [];
+                const exports = outputItem.data.modules?.exports;
+                const usedExports = [];
                 // Collect a list of all the unused exports by traversing inverse
                 // dependencies.
-                for (const inverseDepId of value.inverseDependencies.values()) {
-                    const inverseDep = graph.dependencies.get(inverseDepId);
-                    if (!inverseDep) {
-                        continue;
-                    }
-                    inverseDep.output.forEach((outputItem) => {
-                        if (outputItem.type === 'js/module') {
-                            // imports: [
-                            //   {
-                            //     source: './math',
-                            //     specifiers: [
-                            //       {
-                            //         type: 'ImportSpecifier',
-                            //         importedName: 'add',
-                            //         localName: 'add'
-                            //       }
-                            //     ]
-                            //   }
-                            // ],
-                            const imports = outputItem.data.modules?.imports;
-                            if (imports) {
-                                imports.forEach((importItem) => {
-                                    console.log('importItem', importItem);
-                                    // TODO: Use proper keys for identifying the import.
-                                    if (
-                                    // '/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/math.js'
-                                    value.path.includes(
-                                    // './math'
-                                    importItem.source.replace('./', ''))) {
-                                        importItem.specifiers.forEach((specifier) => {
-                                            usedExports.push(specifier.importedName);
-                                        });
-                                    }
-                                });
-                            }
-                        }
-                    });
-                    // TODO: This probably breaks source maps.
-                    // const code = transformFromAstSync(value.output[index].data.ast);
-                    // replaceEnvironmentVariables(value.output[index].data.code, process.env);
-                    // value.output[index].data.code = code;
-                }
+                // for (const inverseDepId of value.inverseDependencies.values()) {
+                //   const inverseDep = graph.dependencies.get(inverseDepId);
+                //   if (!inverseDep) {
+                //     continue;
+                //   }
+                //   inverseDep.output.forEach((outputItem) => {
+                //     if (outputItem.type === 'js/module') {
+                //       // imports: [
+                //       //   {
+                //       //     source: './math',
+                //       //     specifiers: [
+                //       //       {
+                //       //         type: 'ImportSpecifier',
+                //       //         importedName: 'add',
+                //       //         localName: 'add'
+                //       //       }
+                //       //     ]
+                //       //   }
+                //       // ],
+                //       const imports = outputItem.data.modules?.imports;
+                //       if (imports) {
+                //         imports.forEach((importItem) => {
+                //           console.log('importItem', importItem);
+                //           // TODO: Use proper keys for identifying the import.
+                //           if (
+                //             // '/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/math.js'
+                //             value.path.includes(
+                //               // './math'
+                //               importItem.source.replace('./', '')
+                //             )
+                //           ) {
+                //             importItem.specifiers.forEach((specifier) => {
+                //               usedExports.push(specifier.importedName);
+                //             });
+                //           }
+                //         });
+                //       }
+                //     }
+                //   });
+                //   // TODO: This probably breaks source maps.
+                //   // const code = transformFromAstSync(value.output[index].data.ast);
+                //   // replaceEnvironmentVariables(value.output[index].data.code, process.env);
+                //   // value.output[index].data.code = code;
+                // }
+                // let ast = outputItem.data.ast!;
+                let ast = outputItem.data.ast ?? babylon.parse(outputItem.data.code, { sourceType: 'unambiguous' });
                 // Remove the unused exports from the list of ast exports.
-                let ast = outputItem.data.ast;
                 if (usedExports.length > 0) {
                     console.log('has used exports:', usedExports);
                     (0, core_1.traverse)(ast, {
@@ -141,6 +153,7 @@ function getDefaultSerializer(fallbackSerializer) {
                     compact: true,
                     filename: value.path,
                     plugins: [
+                        metro_source_map_1.functionMapBabelPlugin,
                         [require('metro-transform-plugins/src/import-export-plugin'), babelPluginOpts],
                         [require('metro-transform-plugins/src/inline-plugin'), babelPluginOpts],
                     ],
@@ -152,10 +165,10 @@ function getDefaultSerializer(fallbackSerializer) {
                     // Make sure to test the above mentioned case before flipping the flag back to false.
                     cloneInputAst: true,
                 })?.ast;
-                let dependencyMapName = '';
-                let globalPrefix = '';
-                let { ast: wrappedAst } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, globalPrefix);
-                outputItem.data.code = (0, core_1.transformFromAstSync)(wrappedAst, undefined, {
+                const dependencyMapName = '';
+                const globalPrefix = '';
+                const { ast: wrappedAst } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, globalPrefix);
+                const outputCode = (0, core_1.transformFromAstSync)(wrappedAst, undefined, {
                     ast: false,
                     babelrc: false,
                     code: true,
@@ -171,10 +184,26 @@ function getDefaultSerializer(fallbackSerializer) {
                     // either because one of the plugins is doing something funky or Babel messes up some caches.
                     // Make sure to test the above mentioned case before flipping the flag back to false.
                     cloneInputAst: true,
-                })?.code;
-                outputItem.data.lineCount = outputItem.data.code.split('\n').length;
-                outputItem.data.map = null;
-                outputItem.data.functionMap = null;
+                }).code;
+                let map = [];
+                if (minify) {
+                    // ({ map, code } = await minifyCode(
+                    //   config,
+                    //   projectRoot,
+                    //   file.filename,
+                    //   code,
+                    //   file.code,
+                    //   map
+                    // ));
+                }
+                outputItem.data.code = outputCode;
+                outputItem.data.lineCount = countLines(outputItem.data.code);
+                outputItem.data.map = map;
+                outputItem.data.functionMap =
+                    ast.metadata?.metro?.functionMap ??
+                        // Fallback to deprecated explicitly-generated `functionMap`
+                        ast.functionMap ??
+                        null;
                 // TODO: minify the code to fold anything that was dropped above.
                 console.log('output code', outputItem.data.code);
             }
