@@ -13,6 +13,7 @@
 
 ### 💡 Others
 
+- Update tests. ([#25149](https://github.com/expo/expo/pull/25149) by [@EvanBacon](https://github.com/EvanBacon))
 - Unrevert `URL` support. ([#25005](https://github.com/expo/expo/pull/25005) by [@EvanBacon](https://github.com/EvanBacon))
 - Revert `URL` support. ([#25006](https://github.com/expo/expo/pull/25006) by [@EvanBacon](https://github.com/EvanBacon))
 - "Exotic mode", `EXPO_USE_EXOTIC`, and `EXPO_USE_FB_SOURCES` have been deprecated and no longer enable any experimental functionality. ([#24927](https://github.com/expo/expo/pull/24927) by [@EvanBacon](https://github.com/EvanBacon))
