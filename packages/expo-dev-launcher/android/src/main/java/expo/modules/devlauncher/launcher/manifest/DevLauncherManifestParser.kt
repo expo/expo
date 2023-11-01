@@ -5,6 +5,7 @@ import expo.modules.devlauncher.helpers.await
 import expo.modules.devlauncher.helpers.fetch
 import expo.modules.manifests.core.Manifest
 import okhttp3.Headers
+import okhttp3.Headers.Companion.toHeaders
 import okhttp3.OkHttpClient
 import org.json.JSONObject
 import java.io.Reader
@@ -46,6 +47,6 @@ class DevLauncherManifestParser(
     if (installationID != null) {
       headersMap["expo-dev-client-id"] = installationID
     }
-    return Headers.of(headersMap)
+    return headersMap.toHeaders()
   }
 }

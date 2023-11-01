@@ -11,6 +11,7 @@ type SidebarSingleEntryProps = {
   isActive?: boolean;
   isExternal?: boolean;
   secondary?: boolean;
+  shouldLeakReferrer?: boolean;
 };
 
 export const SidebarSingleEntry = ({
@@ -20,6 +21,7 @@ export const SidebarSingleEntry = ({
   isActive = false,
   isExternal = false,
   secondary = false,
+  shouldLeakReferrer,
 }: SidebarSingleEntryProps) => {
   return (
     <A
@@ -31,6 +33,7 @@ export const SidebarSingleEntry = ({
         secondary && 'text-xs',
         isActive && 'bg-palette-blue3 text-link font-medium hocus:text-link hocus:bg-palette-blue4'
       )}
+      shouldLeakReferrer={shouldLeakReferrer}
       isStyled>
       <Icon
         className={mergeClasses(

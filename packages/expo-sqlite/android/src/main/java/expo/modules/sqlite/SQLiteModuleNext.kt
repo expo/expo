@@ -14,7 +14,7 @@ import java.io.IOException
 @Suppress("unused")
 class SQLiteModuleNext : Module() {
   private val cachedDatabases: MutableList<NativeDatabase> = mutableListOf()
-  private val cachedStatements: MutableList<NativeStatement> = mutableListOf()
+  private val cachedStatements: MutableMap<NativeDatabase, MutableList<NativeStatement>> = mutableMapOf()
   private var hasListeners = false
 
   private val context: Context
@@ -34,14 +34,11 @@ class SQLiteModuleNext : Module() {
     }
 
     OnDestroy {
-      cachedStatements.forEach {
-        it.ref.sqlite3_finalize()
-      }
-      cachedStatements.clear()
-      cachedDatabases.forEach {
-        closeDatabase(it)
-      }
-      cachedDatabases.clear()
+      try {
+        removeAllCachedDatabases().forEach {
+          closeDatabase(it)
+        }
+      } catch (_: Throwable) {}
     }
 
     AsyncFunction("deleteDatabaseAsync") { dbName: String ->
@@ -56,17 +53,15 @@ class SQLiteModuleNext : Module() {
         val dbPath = pathForDatabaseName(dbName)
 
         // Try to find opened database for fast refresh
-        for (database in cachedDatabases) {
-          if (database.dbName == dbName && database.openOptions == options && !options.useNewConnection) {
-            return@Constructor database
-          }
+        findCachedDatabase { it.dbName == dbName && it.openOptions == options && !options.useNewConnection }?.let {
+          return@Constructor it
         }
 
         val database = NativeDatabase(dbName, options)
         if (database.ref.sqlite3_open(dbPath) != NativeDatabaseBinding.SQLITE_OK) {
           throw OpenDatabaseException(dbName)
         }
-        cachedDatabases.add(database)
+        addCachedDatabase(database)
         return@Constructor database
       }
 
@@ -85,12 +80,12 @@ class SQLiteModuleNext : Module() {
       }
 
       AsyncFunction("closeAsync") { database: NativeDatabase ->
+        removeCachedDatabase(database)
         closeDatabase(database)
-        cachedDatabases.remove(database)
       }
       Function("closeSync") { database: NativeDatabase ->
+        removeCachedDatabase(database)
         closeDatabase(database)
-        cachedDatabases.remove(database)
       }
 
       AsyncFunction("execAsync") { database: NativeDatabase, source: String ->
@@ -199,7 +194,7 @@ class SQLiteModuleNext : Module() {
   @Throws(SQLiteErrorException::class)
   private fun prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) {
     database.ref.sqlite3_prepare_v2(source, statement.ref)
-    cachedStatements.add(statement)
+    maybeAddCachedStatement(database, statement)
   }
 
   @Throws(SQLiteErrorException::class)
@@ -318,10 +313,10 @@ class SQLiteModuleNext : Module() {
 
   @Throws(SQLiteErrorException::class)
   private fun finalize(statement: NativeStatement, database: NativeDatabase) {
+    maybeRemoveCachedStatement(database, statement)
     if (statement.ref.sqlite3_finalize() != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
-    cachedStatements.remove(statement)
   }
 
   private fun loadCRSQLiteExtension(database: NativeDatabase) {
@@ -355,15 +350,22 @@ class SQLiteModuleNext : Module() {
     }
   }
 
+  @Throws(SQLiteErrorException::class)
   private fun closeDatabase(database: NativeDatabase) {
+    maybeRemoveAllCachedStatements(database).forEach {
+      it.ref.sqlite3_finalize()
+    }
     if (database.openOptions.enableCRSQLite) {
       database.ref.sqlite3_exec("SELECT crsql_finalize()")
     }
-    database.ref.sqlite3_close()
+    val ret = database.ref.sqlite3_close()
+    if (ret != NativeDatabaseBinding.SQLITE_OK) {
+      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+    }
   }
 
   private fun deleteDatabase(dbName: String) {
-    cachedDatabases.find { it.dbName == dbName }?.let {
+    findCachedDatabase { it.dbName == dbName }?.let {
       throw DeleteDatabaseException(dbName)
     }
 
@@ -375,6 +377,69 @@ class SQLiteModuleNext : Module() {
       throw DeleteDatabaseFileException(dbName)
     }
   }
+
+  // region cachedDatabases managements
+
+  @Synchronized
+  private fun addCachedDatabase(database: NativeDatabase) {
+    cachedDatabases.add(database)
+  }
+
+  @Synchronized
+  private fun removeCachedDatabase(database: NativeDatabase): NativeDatabase? {
+    return if (cachedDatabases.remove(database)) {
+      database
+    } else {
+      null
+    }
+  }
+
+  @Synchronized
+  private fun findCachedDatabase(predicate: (NativeDatabase) -> Boolean): NativeDatabase? {
+    return cachedDatabases.find(predicate)
+  }
+
+  @Synchronized
+  private fun removeAllCachedDatabases(): List<NativeDatabase> {
+    val databases = cachedDatabases
+    cachedDatabases.clear()
+    return databases
+  }
+
+  // endregion
+
+  // region cachedStatements managements
+
+  @Synchronized
+  private fun maybeAddCachedStatement(database: NativeDatabase, statement: NativeStatement) {
+    if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
+      return
+    }
+    val statements = cachedStatements[database]
+    if (statements != null) {
+      statements.add(statement)
+    } else {
+      cachedStatements[database] = mutableListOf(statement)
+    }
+  }
+
+  @Synchronized
+  private fun maybeRemoveCachedStatement(database: NativeDatabase, statement: NativeStatement) {
+    if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
+      return
+    }
+    cachedStatements[database]?.remove(statement)
+  }
+
+  @Synchronized
+  private fun maybeRemoveAllCachedStatements(database: NativeDatabase): List<NativeStatement> {
+    if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
+      return emptyList()
+    }
+    return cachedStatements.remove(database) ?: emptyList()
+  }
+
+  // endregion
 
   companion object {
     private val TAG = SQLiteModuleNext::class.java.simpleName
