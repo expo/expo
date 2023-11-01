@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -29,13 +6,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.stripBasePath = exports.getMatchableRouteConfigs = exports.getUrlWithReactNavigationConcessions = void 0;
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
 const expo_constants_1 = __importDefault(require("expo-constants"));
-const queryString = __importStar(require("query-string"));
-const url_parse_1 = __importDefault(require("url-parse"));
 const findFocusedRoute_1 = require("./findFocusedRoute");
 const validatePathConfig_1 = __importDefault(require("./validatePathConfig"));
 const matchers_1 = require("../matchers");
 function getUrlWithReactNavigationConcessions(path, basePath = expo_constants_1.default.expoConfig?.experiments?.basePath) {
-    const parsed = new url_parse_1.default(path, 'https://acme.com');
+    let parsed;
+    try {
+        parsed = new URL(path, 'https://phony.example');
+    }
+    catch {
+        // Do nothing with invalid URLs.
+        return {
+            nonstandardPathname: '',
+            inputPathnameWithoutHash: '',
+        };
+    }
     const pathname = parsed.pathname;
     // Make sure there is a trailing slash
     return {
@@ -547,7 +532,10 @@ const createNestedStateObject = (path, routes, routeConfigs, initialRoutes) => {
 };
 const parseQueryParams = (path, parseConfig) => {
     const query = path.split('?')[1];
-    const params = queryString.parse(query);
+    const searchParams = new URLSearchParams(query);
+    const params = Object.fromEntries(
+    // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
+    searchParams);
     if (parseConfig) {
         Object.keys(params).forEach((name) => {
             if (Object.hasOwnProperty.call(parseConfig, name) && typeof params[name] === 'string') {
