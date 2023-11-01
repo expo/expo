@@ -33,7 +33,7 @@ export function logConfig(config: ExpoConfig | ProjectConfig) {
 }
 
 export async function configAsync(projectRoot: string, options: Options) {
-  console.log(getRouterFixtureFromProject(projectRoot));
+  console.log(await getRouterFixtureFromProject(projectRoot));
   process.exit(0);
 
   const loggingFunctions = {
