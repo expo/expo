@@ -41,11 +41,13 @@ export function babelPresetExpoWeb(
     // Allows configuring a specific runtime version to optimize output
     const isVersion = typeof metroOptions?.enableBabelRuntime === 'string';
     extraPlugins.push([
+      // https://babeljs.io/docs/babel-plugin-transform-runtime
       require('@babel/plugin-transform-runtime'),
       {
         corejs: false,
         helpers: true,
-        regenerator: true,
+        regenerator: false,
+
         ...(isVersion && {
           version: metroOptions.enableBabelRuntime,
         }),

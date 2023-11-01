@@ -43,10 +43,10 @@ return(
 
 function unusedFunction(){
 (0,_inlineFuncWithSideEffectsFx().default)();
-}}]);return Lazy;}(_react.default.Component);var _default=
+}}]);return Lazy;}(_react.default.Component);var _default=exports.default=
 
 
-(0,_reactRedux.connect)()(Lazy);exports.default=_default;"
+(0,_reactRedux.connect)()(Lazy);"
 `;
 
 exports[`"lazyImports" option accepts [Function anonymous] 1`] = `
@@ -92,10 +92,10 @@ return(
 
 function unusedFunction(){
 (0,_inlineFuncWithSideEffectsFx.default)();
-}}]);return Lazy;}(_react().default.Component);var _default=
+}}]);return Lazy;}(_react().default.Component);var _default=exports.default=
 
 
-(0,_reactRedux().connect)()(Lazy);exports.default=_default;"
+(0,_reactRedux().connect)()(Lazy);"
 `;
 
 exports[`"lazyImports" option accepts false 1`] = `
@@ -141,10 +141,10 @@ return(
 
 function unusedFunction(){
 (0,_inlineFuncWithSideEffectsFx.default)();
-}}]);return Lazy;}(_react.default.Component);var _default=
+}}]);return Lazy;}(_react.default.Component);var _default=exports.default=
 
 
-(0,_reactRedux.connect)()(Lazy);exports.default=_default;"
+(0,_reactRedux.connect)()(Lazy);"
 `;
 
 exports[`"lazyImports" option accepts null 1`] = `
@@ -190,10 +190,10 @@ return(
 
 function unusedFunction(){
 (0,_inlineFuncWithSideEffectsFx.default)();
-}}]);return Lazy;}(_react.default.Component);var _default=
+}}]);return Lazy;}(_react.default.Component);var _default=exports.default=
 
 
-(0,_reactRedux.connect)()(Lazy);exports.default=_default;"
+(0,_reactRedux.connect)()(Lazy);"
 `;
 
 exports[`"lazyImports" option accepts true 1`] = `
@@ -239,10 +239,10 @@ return(
 
 function unusedFunction(){
 (0,_inlineFuncWithSideEffectsFx.default)();
-}}]);return Lazy;}(_react().default.Component);var _default=
+}}]);return Lazy;}(_react().default.Component);var _default=exports.default=
 
 
-(0,_reactRedux().connect)()(Lazy);exports.default=_default;"
+(0,_reactRedux().connect)()(Lazy);"
 `;
 
 exports[`metro aliases @expo/vector-icons 1`] = `

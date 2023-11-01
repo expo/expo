@@ -17,18 +17,18 @@ function App() {
 `;
 
 exports[`auto runtime (default) compiles for Metro web in dev 1`] = `
-"var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.default = App;var _View = _interopRequireDefault(require("react-native-web/dist/exports/View"));var _jsxDevRuntime = require("react/jsx-dev-runtime");var _jsxFileName = "/unknown";
+""use strict";var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports["default"] = App;var _View = _interopRequireDefault(require("react-native-web/dist/exports/View"));var _jsxDevRuntime = require("react/jsx-dev-runtime");var _jsxFileName = "/unknown";
 
 function App() {
-  return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)(_View.default, {}, void 0, false, { fileName: _jsxFileName, lineNumber: 4, columnNumber: 12 }, this);
+  return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)(_View["default"], {}, void 0, false, { fileName: _jsxFileName, lineNumber: 4, columnNumber: 12 }, this);
 }"
 `;
 
 exports[`auto runtime (default) compiles for Metro web in prod 1`] = `
-"var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.default = App;var _View = _interopRequireDefault(require("react-native-web/dist/exports/View"));var _jsxRuntime = require("react/jsx-runtime");
+""use strict";var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports["default"] = App;var _View = _interopRequireDefault(require("react-native-web/dist/exports/View"));var _jsxRuntime = require("react/jsx-runtime");
 
 function App() {
-  return /*#__PURE__*/(0, _jsxRuntime.jsx)(_View.default, {});
+  return /*#__PURE__*/(0, _jsxRuntime.jsx)(_View["default"], {});
 }"
 `;
 
@@ -49,17 +49,17 @@ function App() {
 `;
 
 exports[`classic runtime compiles for Metro web in dev 1`] = `
-"var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.default = App;var _View = _interopRequireDefault(require("react-native-web/dist/exports/View"));var _jsxFileName = "/unknown";
+""use strict";var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports["default"] = App;var _View = _interopRequireDefault(require("react-native-web/dist/exports/View"));var _jsxFileName = "/unknown";
 
 function App() {
-  return /*#__PURE__*/React.createElement(_View.default, { __self: this, __source: { fileName: _jsxFileName, lineNumber: 4, columnNumber: 12 } });
+  return /*#__PURE__*/React.createElement(_View["default"], { __self: this, __source: { fileName: _jsxFileName, lineNumber: 4, columnNumber: 12 } });
 }"
 `;
 
 exports[`classic runtime compiles for Metro web in prod 1`] = `
-"var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.default = App;var _View = _interopRequireDefault(require("react-native-web/dist/exports/View"));
+""use strict";var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports["default"] = App;var _View = _interopRequireDefault(require("react-native-web/dist/exports/View"));
 
 function App() {
-  return /*#__PURE__*/React.createElement(_View.default, null);
+  return /*#__PURE__*/React.createElement(_View["default"], null);
 }"
 `;
