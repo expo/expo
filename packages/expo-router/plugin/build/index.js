@@ -14,7 +14,9 @@ const withExpoHeadIos = (config) => {
         // This ensures that stored `NSUserActivityType`s can be opened in-app.
         // This is important for moving between native devices or from opening a link that was saved
         // in a Quick Note or Siri Reminder.
-        config.modResults.NSUserActivityTypes.push('$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route');
+        if (!config.modResults.NSUserActivityTypes.includes('$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route')) {
+            config.modResults.NSUserActivityTypes.push('$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route');
+        }
         return config;
     });
 };
