@@ -1,15 +1,14 @@
 import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
-import { getBundler, hasModule } from './common';
+import { getBundler, getIsDev, hasModule } from './common';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
 import { expoRouterBabelPlugin } from './expo-router-plugin';
 import { lazyImports } from './lazyImports';
 
 type BabelPresetExpoPlatformOptions = {
+  /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
   useTransformReactJSXExperimental?: boolean;
   disableImportExportTransform?: boolean;
-  // Defaults to undefined, set to something truthy to disable `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`.
-  withDevTools?: boolean;
   // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
   disableFlowStripTypesTransform?: boolean;
   // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
@@ -34,6 +33,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isWebpack = bundler === 'webpack';
   let platform = api.caller((caller) => (caller as any)?.platform);
   const engine = api.caller((caller) => (caller as any)?.engine) ?? 'default';
+  const isDev = api.caller(getIsDev);
 
   // If the `platform` prop is not defined then this must be a custom config that isn't
   // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
@@ -72,26 +72,10 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     ]);
   }
 
-  // Set true to disable `@babel/plugin-transform-react-jsx`
-  // we override this logic outside of the metro preset so we can add support for
-  // React 17 automatic JSX transformations.
-  // If the logic for `useTransformReactJSXExperimental` ever changes in `metro-react-native-babel-preset`
-  // then this block should be updated to reflect those changes.
-  if (!platformOptions.useTransformReactJSXExperimental) {
-    extraPlugins.push([
-      require('@babel/plugin-transform-react-jsx'),
-      {
-        // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
-        runtime: (options && options.jsxRuntime) || 'automatic',
-        ...(options &&
-          options.jsxRuntime !== 'classic' && {
-            importSource: (options && options.jsxImportSource) || 'react',
-          }),
-      },
-    ]);
-    // Purposefully not adding the deprecated packages:
-    // `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`
-    // back to the preset.
+  if (platformOptions.useTransformReactJSXExperimental != null) {
+    throw new Error(
+      `babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`
+    );
   }
 
   const aliasPlugin = getAliasPlugin();
@@ -121,8 +105,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
         require('metro-react-native-babel-preset'),
         {
-          // Defaults to undefined, set to something truthy to disable `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`.
-          withDevTools: platformOptions.withDevTools,
           // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
           disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
           // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
@@ -137,6 +119,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           // TransformError App.js: /path/to/App.js: Duplicate __self prop found. You are most likely using the deprecated transform-react-jsx-self Babel plugin.
           // Both __source and __self are automatically set when using the automatic jsxRuntime. Please remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
           useTransformReactJSXExperimental: true,
+          // This will never be used regardless because `useTransformReactJSXExperimental` is set to `true`.
+          // https://github.com/facebook/react-native/blob/a4a8695cec640e5cf12be36a0c871115fbce9c87/packages/react-native-babel-preset/src/configs/main.js#L151
+          withDevTools: false,
 
           disableImportExportTransform: platformOptions.disableImportExportTransform,
           lazyImportExportTransform:
@@ -151,6 +136,34 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
               : // Pass the option directly to `metro-react-native-babel-preset`, which in turn
                 // passes it to `babel-plugin-transform-modules-commonjs`
                 lazyImportsOption,
+        },
+      ],
+
+      // React support with similar options to Metro.
+      // We override this logic outside of the metro preset so we can add support for
+      // React 17 automatic JSX transformations.
+      // The only known issue is the plugin `@babel/plugin-transform-react-display-name` will be run twice,
+      // once in the Metro plugin, and another time here.
+      [
+        require('@babel/preset-react'),
+        {
+          development: isDev,
+
+          // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
+          runtime: options?.jsxRuntime || 'automatic',
+          ...(options &&
+            options.jsxRuntime !== 'classic' && {
+              importSource: (options && options.jsxImportSource) || 'react',
+            }),
+
+          // NOTE: Unexposed props:
+
+          // pragma?: string;
+          // pragmaFrag?: string;
+          // pure?: string;
+          // throwIfNamespace?: boolean;
+          // useBuiltIns?: boolean;
+          // useSpread?: boolean;
         },
       ],
     ],

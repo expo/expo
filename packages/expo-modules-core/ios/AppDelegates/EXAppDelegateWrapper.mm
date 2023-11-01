@@ -44,30 +44,10 @@
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>) || __has_include(<React_RCTAppDelegate/RCTAppDelegate.h>)
 
-- (UIView *)findRootView:(UIApplication *)application
-{
-  UIWindow *mainWindow = application.delegate.window;
-  if (mainWindow == nil) {
-    return nil;
-  }
-  UIViewController *rootViewController = mainWindow.rootViewController;
-  if (rootViewController == nil) {
-    return nil;
-  }
-  UIView *rootView = rootViewController.view;
-  return rootView;
-}
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  UIView *rootView = [self findRootView:application];
-  // Backward compatible with react-native 0.71 running with legacy template,
-  // i.e. still creating bridge, rootView in AppDelegate.mm.
-  // In this case, we don't go through RCTAppDelegate's setup.
-  if (rootView == nil || ![rootView isKindOfClass:[RCTRootView class]]) {
-    [super application:application didFinishLaunchingWithOptions:launchOptions];
-    [_expoAppDelegate application:application didFinishLaunchingWithOptions:launchOptions];
-  }
+  [super application:application didFinishLaunchingWithOptions:launchOptions];
+  [_expoAppDelegate application:application didFinishLaunchingWithOptions:launchOptions];
   return YES;
 }
 
