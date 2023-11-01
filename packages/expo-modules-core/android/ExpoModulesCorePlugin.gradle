@@ -156,7 +156,7 @@ class LegacyReactNativeLibsExtractionPlugin implements Plugin<Project> {
     new File("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
     def FOLLY_VERSION = reactProperties.getProperty("FOLLY_VERSION")
     def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_VERSION")
-    def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
+    def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
     def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
     def isNewArchitectureEnabled = project.findProperty("newArchEnabled") == "true"
