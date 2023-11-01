@@ -6,7 +6,7 @@
  */
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
-import { Resolution, ResolutionContext } from 'metro-resolver';
+import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -373,7 +373,11 @@ export function withExtendedResolver(
   // Ensure we mutate the resolution context to include the custom resolver options for server and web.
   const metroConfigWithCustomContext = withMetroMutatedResolverContext(
     metroConfigWithCustomResolver,
-    (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
+    (
+      immutableContext: CustomResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ): CustomResolutionContext => {
       const context = {
         ...immutableContext,
       } as Mutable<ResolutionContext> & {

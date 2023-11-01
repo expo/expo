@@ -115,7 +115,7 @@ export function withMetroResolvers(
 export function withMetroMutatedResolverContext(
   config: MetroConfig,
   getContext: (
-    ctx: ResolutionContext,
+    ctx: CustomResolutionContext,
     moduleName: string,
     platform: string | null
   ) => CustomResolutionContext
