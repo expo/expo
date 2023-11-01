@@ -97,7 +97,6 @@ export async function getRemoteVersionsForSdkAsync({
 type ExcludedNativeModules = {
   name: string;
   bundledNativeVersion: string;
-  hasSpecifiedExactVersion: boolean;
   isExcludedFromValidation: boolean;
   specifiedVersion?: string; // e.g. 1.2.3, latest
 };
@@ -150,7 +149,6 @@ export async function getVersionedPackagesAsync(
         excludedNativeModules.push({
           name,
           bundledNativeVersion: versionsForSdk[name],
-          hasSpecifiedExactVersion,
           isExcludedFromValidation,
           specifiedVersion: rawSpec,
         });
