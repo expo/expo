@@ -192,17 +192,6 @@ def getNodeModulesPackageVersion(packageName, overridePropName) {
 }
 
 def getRNVersion() {
-  if (System.getenv("REACT_NATIVE_OVERRIDE_VERSION")) {
-    def version = System.getenv("REACT_NATIVE_OVERRIDE_VERSION")
-    def coreVersion = version.split("-")[0]
-    def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
-    return versionToNumber(
-        major,
-        minor,
-        patch
-    )
-  }
-
   return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
 }
 

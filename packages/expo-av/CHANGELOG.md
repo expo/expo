@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Use `pointerEvent` style instead of prop for video component on web. ([#24931](https://github.com/expo/expo/pull/24931) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove deprecated `REACT_NATIVE_OVERRIDE_VERSION` for React Native nightly testing. ([#25151](https://github.com/expo/expo/pull/25151) by [@kudo](https://github.com/kudo))
 
 ## 13.8.0 — 2023-10-17
 

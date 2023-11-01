@@ -71,7 +71,7 @@ file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { react
 
 // TODO: Remove react-native < 0.71 support
 def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION") ?: "1_76_0"
-def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
+def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
 def reactNativeThirdParty = new File("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/third-party")

@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Remove deprecated `REACT_NATIVE_OVERRIDE_VERSION` for React Native nightly testing. ([#25151](https://github.com/expo/expo/pull/25151) by [@kudo](https://github.com/kudo))
+
 ## 3.3.0 — 2023-10-17
 
 ### 🛠 Breaking changes

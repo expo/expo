@@ -30,7 +30,7 @@ def getRNVersion() {
       .text
       .trim()
 
-  def version = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: safeExtGet("reactNativeVersion", nodeModulesVersion)
+  def version = safeExtGet("reactNativeVersion", nodeModulesVersion)
   def coreVersion = version.split("-")[0]
   def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
 

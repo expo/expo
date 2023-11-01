@@ -18,7 +18,7 @@ def RN_SO_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
 
 def reactProperties = new Properties()
 file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
-def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
+def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
 def reactNativeArchitectures() {

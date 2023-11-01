@@ -8,9 +8,6 @@ begin
 rescue
   reactNativeVersion = '0.0.0'
 end
-if ENV["REACT_NATIVE_OVERRIDE_VERSION"]
-  reactNativeVersion = ENV["REACT_NATIVE_OVERRIDE_VERSION"]
-end
 reactNativeTargetVersion = reactNativeVersion.split('.')[1].to_i
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
