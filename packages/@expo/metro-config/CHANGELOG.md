@@ -13,6 +13,7 @@
 
 ### 💡 Others
 
+- Stop passing `withDevTools` to `babel-preset-expo`. ([#24725](https://github.com/expo/expo/pull/24725) by [@EvanBacon](https://github.com/EvanBacon))
 - Unrevert `URL` support. ([#25005](https://github.com/expo/expo/pull/25005) by [@EvanBacon](https://github.com/EvanBacon))
 - Revert `URL` support. ([#25006](https://github.com/expo/expo/pull/25006) by [@EvanBacon](https://github.com/EvanBacon))
 - "Exotic mode", `EXPO_USE_EXOTIC`, and `EXPO_USE_FB_SOURCES` have been deprecated and no longer enable any experimental functionality. ([#24927](https://github.com/expo/expo/pull/24927) by [@EvanBacon](https://github.com/EvanBacon))
@@ -25,7 +26,6 @@
 
 ### 🎉 New features
 
-- Pass `isDev` to the Babel caller. ([#24725](https://github.com/expo/expo/pull/24725) by [@EvanBacon](https://github.com/EvanBacon))
 - Pass `projectRoot` to the Babel caller. ([#24779](https://github.com/expo/expo/pull/24779) by [@EvanBacon](https://github.com/EvanBacon))
 - Automatically optimize transformations based on Hermes usage. ([#24672](https://github.com/expo/expo/pull/24672) by [@EvanBacon](https://github.com/EvanBacon))
 
