@@ -17,7 +17,7 @@ fun injectReactInterceptor(
   reactNativeHost: ReactNativeHost,
   url: Uri
 ): Boolean {
-  val port = if (url.port != -1) url.port else HttpUrl.defaultPort(url.scheme)
+  val port = if (url.port != -1) url.port else HttpUrl.defaultPort(url.scheme ?: "http")
   val debugServerHost = url.host + ":" + port
   // We need to remove "/" which is added to begin of the path by the Uri
   // and the bundle type

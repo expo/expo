@@ -40,10 +40,6 @@ Pod::Spec.new do |s|
 
     # EXAppDelegateWrapper -> RCTAppDelegate -> RCTCxxBridgeDelegate
     '"${PODS_ROOT}/Headers/Private/React-Core"',
-
-    # similar to https://github.com/facebook/react-native/commit/c4b51e8d7, review this when we drop SDK 47
-    '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging"',
-    '"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"',
   ]
 
   # Swift/Objective-C compatibility

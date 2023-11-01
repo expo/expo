@@ -12,12 +12,10 @@ jest.mock('react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo
     removeEventListener: jest.fn(),
     setAccessibilityFocus: jest.fn(),
   };
-
-  // workaround to be compatible with modern `Accessibility` in RN 0.66 which has ESM export
-  // Use `return { default: MockAccessibility };` when we drop support for SDK 44
-  MockA11y.default = MockA11y;
-
-  return MockA11y;
+  return {
+    __esModule: true,
+    default: MockA11y,
+  };
 });
 
 jest.mock('react-native/Libraries/Utilities/Appearance', () => {
@@ -26,10 +24,8 @@ jest.mock('react-native/Libraries/Utilities/Appearance', () => {
     removeChangeListener: jest.fn(),
     getColorScheme: jest.fn(() => 'light'),
   };
-
-  // workaround to be compatible with modern `Appearance` in RN 0.66 which has ESM export
-  // Use `return { default: MockAppearance };` when we drop support for SDK 44
-  MockAppearance.default = MockAppearance;
-
-  return MockAppearance;
+  return {
+    __esModule: true,
+    default: MockAppearance,
+  };
 });

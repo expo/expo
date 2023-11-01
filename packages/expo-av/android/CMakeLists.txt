@@ -7,7 +7,6 @@ set (CMAKE_CXX_STANDARD 14)
 
 set (PACKAGE_NAME "expo-av")
 set (BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
-set (ignoreMe "${RN_SO_DIR}")
 
 # shared
 

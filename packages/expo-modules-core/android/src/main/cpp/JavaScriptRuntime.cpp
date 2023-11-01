@@ -17,11 +17,7 @@
 
 #else
 
-#if REACT_NATIVE_TARGET_VERSION >= 71
 #include <jsc/JSCRuntime.h>
-#else
-#include <jsi/JSCRuntime.h>
-#endif // REACT_NATIVE_TARGET_VERSION >= 71
 
 #endif
 

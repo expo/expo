@@ -9,7 +9,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-gl")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common)
-set(ignoreMe "${REACT_NATIVE_DIR} ${RN_SO_DIR}")
 
 add_library(
     ${PACKAGE_NAME} SHARED
