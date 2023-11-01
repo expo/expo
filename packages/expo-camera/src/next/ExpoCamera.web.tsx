@@ -3,13 +3,13 @@ import * as React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
+import CameraManager from './ExpoCameraManager.web';
 import {
   CameraCapturedPicture,
   CameraNativeProps,
   CameraPictureOptions,
   CameraType,
-} from './Camera.types';
-import CameraManager from './ExpoCameraManager.web';
+} from '../Camera.types';
 import { capture } from '../WebCameraUtils';
 import { PictureSizes } from '../WebConstants';
 import { useWebCameraStream } from '../useWebCameraStream';

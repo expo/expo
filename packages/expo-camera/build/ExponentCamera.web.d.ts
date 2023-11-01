@@ -8,6 +8,6 @@ export interface ExponentCameraRef {
 }
 declare const ExponentCamera: React.ForwardRefExoticComponent<Pick<CameraNativeProps & {
     children?: React.ReactNode;
-}, "type" | "flashMode" | "autoFocus" | "whiteBalance" | "children" | "pointerEvents" | "style" | "zoom" | "ratio" | "focusDepth" | "onCameraReady" | "useCamera2Api" | "pictureSize" | "onMountError" | "barCodeScannerSettings" | "onBarCodeScanned" | "faceDetectorSettings" | "onFacesDetected" | "poster" | "responsiveOrientationWhenOrientationLocked" | "onResponsiveOrientationChanged" | "onFaceDetectionError" | "onPictureSaved" | "barCodeScannerEnabled" | "faceDetectorEnabled"> & React.RefAttributes<ExponentCameraRef>>;
+}, "autoFocus" | "flashMode" | "whiteBalance" | "zoom" | "onCameraReady" | "onMountError" | "type" | "poster" | "pointerEvents" | "style" | "onBarCodeScanned" | "onPictureSaved" | "onResponsiveOrientationChanged" | "barCodeScannerSettings" | "barCodeScannerEnabled" | "responsiveOrientationWhenOrientationLocked" | "children" | "pictureSize" | "onFacesDetected" | "onFaceDetectionError" | "focusDepth" | "faceDetectorSettings" | "faceDetectorEnabled" | "ratio" | "useCamera2Api"> & React.RefAttributes<ExponentCameraRef>>;
 export default ExponentCamera;
 //# sourceMappingURL=ExponentCamera.web.d.ts.map

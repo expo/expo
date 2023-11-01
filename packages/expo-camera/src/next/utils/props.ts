@@ -5,8 +5,8 @@ import CameraManager from '../ExpoCameraManager';
 
 // Values under keys from this object will be transformed to native options
 export const ConversionTables: {
-  type: Record<keyof typeof CameraType, CameraNativeProps['type']>;
-  flashMode: Record<keyof typeof FlashMode, CameraNativeProps['flashMode']>;
+  type: Record<keyof CameraType, CameraNativeProps['type']>;
+  flashMode: Record<keyof FlashMode, CameraNativeProps['flashMode']>;
 } = {
   type: CameraManager.Type,
   flashMode: CameraManager.FlashMode,

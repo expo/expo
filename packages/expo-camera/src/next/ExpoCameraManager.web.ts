@@ -6,8 +6,8 @@ import {
   CameraType,
   PermissionResponse,
   PermissionStatus,
-} from './Camera.types';
-import { ExponentCameraRef } from './ExpoCamera.web';
+} from '../Camera.types';
+import { ExponentCameraRef } from '../ExponentCamera.web';
 import {
   canGetUserMedia,
   isBackCameraAvailableAsync,

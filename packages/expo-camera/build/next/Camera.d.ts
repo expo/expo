@@ -26,8 +26,8 @@ export default class Camera extends React.Component<CameraProps> {
     static getAvailableVideoCodecsAsync(): Promise<VideoCodec[]>;
     static Constants: ConstantsType;
     static ConversionTables: {
-        type: Record<string | number | symbol, string | undefined>;
-        flashMode: Record<string | number | symbol, string | undefined>;
+        type: Record<number | "big" | "link" | "small" | "sub" | "sup" | typeof Symbol.iterator | "length" | "toString" | "concat" | "slice" | "indexOf" | "lastIndexOf" | "includes" | "at" | "charAt" | "charCodeAt" | "localeCompare" | "match" | "replace" | "search" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "substr" | "codePointAt" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "strike" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "valueOf", string | undefined>;
+        flashMode: Record<number | "big" | "link" | "small" | "sub" | "sup" | typeof Symbol.iterator | "length" | "toString" | "concat" | "slice" | "indexOf" | "lastIndexOf" | "includes" | "at" | "charAt" | "charCodeAt" | "localeCompare" | "match" | "replace" | "search" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "substr" | "codePointAt" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "strike" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "valueOf", string | undefined>;
     };
     static defaultProps: CameraProps;
     /**
