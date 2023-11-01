@@ -1,6 +1,7 @@
+import { Subscription } from 'expo-modules-core';
 import * as React from 'react';
 import { Ref } from 'react';
-import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraType, CameraViewRef, PermissionResponse, VideoCodec } from './Camera.types';
+import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraType, CameraViewRef, ModernScanningOptions, ModernBarCodeScanningResult, PermissionResponse, VideoCodec } from './Camera.types';
 export default class Camera extends React.Component<CameraProps> {
     /**
      * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
@@ -99,7 +100,8 @@ export default class Camera extends React.Component<CameraProps> {
     /**
      * Presents a modal view controller that uses the `DataScannerViewController` available on iOS 16+.
      */
-    launchModernScanner(): Promise<void>;
+    static launchModernScanner(options?: ModernScanningOptions): Promise<void>;
+    static onModernBarcodeScanned(listener: (event: ModernBarCodeScanningResult) => void): Subscription;
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.
      * Flipping camera during a recording results in stopping it.

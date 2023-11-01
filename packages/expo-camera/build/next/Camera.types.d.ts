@@ -251,6 +251,7 @@ export type BarCodeScanningResult = {
      */
     bounds: BarCodeBounds;
 };
+export type ModernBarCodeScanningResult = Omit<BarCodeScanningResult, 'bounds'>;
 /**
  * @hidden
  */
@@ -383,6 +384,12 @@ export type CameraNativeProps = {
 export type BarCodeSettings = {
     barCodeTypes: BarCodeType[];
     interval?: number;
+};
+export type ModernScanningOptions = {
+    barCodeTypes: BarCodeType[];
+    isPinchToZoomEnabled?: boolean;
+    isGuidanceEnabled?: boolean;
+    isHighlightingEnabled?: boolean;
 };
 export type BarCodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };

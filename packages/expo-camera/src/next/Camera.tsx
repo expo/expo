@@ -1,4 +1,10 @@
-import { createPermissionHook, Platform, UnavailabilityError } from 'expo-modules-core';
+import {
+  createPermissionHook,
+  Platform,
+  UnavailabilityError,
+  EventEmitter,
+  Subscription,
+} from 'expo-modules-core';
 import * as React from 'react';
 import { Ref } from 'react';
 
@@ -10,12 +16,16 @@ import {
   CameraRecordingOptions,
   CameraType,
   CameraViewRef,
+  ModernScanningOptions,
+  ModernBarCodeScanningResult,
   PermissionResponse,
   VideoCodec,
 } from './Camera.types';
 import ExponentCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
+
+const emitter = new EventEmitter(CameraManager);
 
 const EventThrottleMs = 500;
 
@@ -219,10 +229,19 @@ export default class Camera extends React.Component<CameraProps> {
   /**
    * Presents a modal view controller that uses the `DataScannerViewController` available on iOS 16+.
    */
-  async launchModernScanner(): Promise<void> {
-    if (Platform.OS === 'ios') {
-      await this._cameraRef.current?.launchModernScanner();
+  static async launchModernScanner(options?: ModernScanningOptions): Promise<void> {
+    if (!options) {
+      options = { barCodeTypes: [] };
     }
+    if (Platform.OS === 'ios') {
+      await CameraManager.launchModernScanner(options);
+    }
+  }
+
+  static onModernBarcodeScanned(
+    listener: (event: ModernBarCodeScanningResult) => void
+  ): Subscription {
+    return emitter.addListener<ModernBarCodeScanningResult>('onModernBarcodeScanned', listener);
   }
 
   /**

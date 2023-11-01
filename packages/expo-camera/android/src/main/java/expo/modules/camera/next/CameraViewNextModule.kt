@@ -39,7 +39,9 @@ class CameraViewNextModule : Module() {
   private val moduleScope = CoroutineScope(Dispatchers.Main)
   override fun definition() = ModuleDefinition {
     Name("ExpoCameraNext")
-    
+
+    Events("onModernBarcodeScanned")
+
     AsyncFunction("requestCameraPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(
         permissionsManager,

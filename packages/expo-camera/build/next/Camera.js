@@ -1,8 +1,9 @@
-import { createPermissionHook, Platform, UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook, Platform, UnavailabilityError, EventEmitter, } from 'expo-modules-core';
 import * as React from 'react';
 import ExponentCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
+const emitter = new EventEmitter(CameraManager);
 const EventThrottleMs = 500;
 const _PICTURE_SAVED_CALLBACKS = {};
 let _GLOBAL_PICTURE_ID = 1;
@@ -172,10 +173,16 @@ export default class Camera extends React.Component {
     /**
      * Presents a modal view controller that uses the `DataScannerViewController` available on iOS 16+.
      */
-    async launchModernScanner() {
-        if (Platform.OS === 'ios') {
-            await this._cameraRef.current?.launchModernScanner();
+    static async launchModernScanner(options) {
+        if (!options) {
+            options = { barCodeTypes: [] };
         }
+        if (Platform.OS === 'ios') {
+            await CameraManager.launchModernScanner(options);
+        }
+    }
+    static onModernBarcodeScanned(listener) {
+        return emitter.addListener('onModernBarcodeScanned', listener);
     }
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.

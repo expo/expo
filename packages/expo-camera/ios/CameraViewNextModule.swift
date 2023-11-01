@@ -2,10 +2,21 @@
 
 import AVFoundation
 import ExpoModulesCore
+import VisionKit
 
-public final class CameraViewNextModule: Module {
+struct ScannerContext {
+  var promise: Promise?
+  var delegate: Any?
+}
+
+public final class CameraViewNextModule: Module, ScannerResultHandler {
+
+  private var scannerContext: ScannerContext?
+  
   public func definition() -> ModuleDefinition {
     Name("ExpoCameraNext")
+    
+    Events("onModernBarcodeScanned")
 
     OnCreate {
       let permissionsManager = self.appContext?.permissions
@@ -103,9 +114,17 @@ public final class CameraViewNextModule: Module {
         view.stopRecording()
         #endif
       }.runOnQueue(.main)
-
-      AsyncFunction("launchModernScanner") { _ in
-
+    }
+    
+    AsyncFunction("launchModernScanner") { (options: VisionScannerOptions?, promise: Promise) in
+      if #available(iOS 16.0, *) {
+        Task {
+          try await MainActor.run {
+            let delegate = VisionScannerDelegate(handler: self)
+            scannerContext = ScannerContext(promise: promise, delegate: delegate)
+            launchModernScanner(with: options)
+          }
+        }
       }
     }
 
@@ -144,6 +163,29 @@ public final class CameraViewNextModule: Module {
         reject: promise.legacyRejecter
       )
     }
+  }
+  
+  @available(iOS 16.0, *)
+  @MainActor private func launchModernScanner(with options: VisionScannerOptions?) {
+    let symbologies = options?.toSymbology()
+    let controller = DataScannerViewController(
+      recognizedDataTypes: [.barcode(symbologies: symbologies ?? [.qr, .dataMatrix])],
+      isPinchToZoomEnabled: options?.isPinchToZoomEnabled ?? false,
+      isGuidanceEnabled: options?.isGuidanceEnabled ?? false,
+      isHighlightingEnabled: options?.isHighlightingEnabled ?? false
+    )
+    
+    if let delegate = scannerContext?.delegate as? VisionScannerDelegate {
+      controller.delegate = delegate
+    }
+
+    appContext?.utilities?.currentViewController()?.present(controller, animated: true) {
+      try? controller.startScanning()
+    }
+  }
+  
+  func onItemScanned(result: [String: Any]) {
+    sendEvent("onModernBarcodeScanned", result)
   }
 }
 

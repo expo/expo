@@ -10,6 +10,7 @@ const screens = [
   'Button',
   'Camera',
   'Camera (next)',
+  'Camera (next barcode)',
   'Checkbox',
   'ClipboardPasteButton',
   'DateTimePicker',

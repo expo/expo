@@ -565,12 +565,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   }
 
   func updateSessionAudioIsMuted() {
-    print("updateSessionAudioIsMuted")
-//    if !session.isRunning {
-//      return
-//    }
-
-    print("Muting: \(isMuted)")
     sessionQueue.async {
       self.session.beginConfiguration()
       for input in self.session.inputs {
