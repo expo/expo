@@ -153,7 +153,7 @@ export default class Photo extends React.Component<Props, State> {
         onLongPress={this.detectFace}
         onPress={this.toggleSelection}
         activeOpacity={1}>
-        <Image style={styles.picture} source={{ uri }} />
+        {uri && <Image style={styles.picture} source={{ uri }} />}
         {this.state.isVideo && (
           <Ionicons name="videocam" size={24} color="#ffffffbb" style={styles.videoIcon} />
         )}

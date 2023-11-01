@@ -27,7 +27,7 @@ export default class Camera extends React.Component<CameraProps> {
     static Constants: ConstantsType;
     static ConversionTables: {
         type: Record<"front" | "back", string | undefined>;
-        flashMode: Record<"auto" | "off" | "on", string | undefined>;
+        flashMode: Record<"on" | "off" | "auto", string | undefined>;
     };
     static defaultProps: CameraProps;
     /**

@@ -125,9 +125,11 @@ class LoadedGalleryScreen extends React.Component<
           </TouchableOpacity>
         </View>
         <View style={{ alignItems: 'center' }}>
-          <TouchableOpacity style={styles.button} onPress={this.deletePhotos}>
-            <Text style={styles.redText}>Delete selected photos</Text>
-          </TouchableOpacity>
+          {this.state.selected.length > 0 && (
+            <TouchableOpacity style={styles.button} onPress={this.deletePhotos}>
+              <Text style={styles.redText}>Delete selected photos</Text>
+            </TouchableOpacity>
+          )}
         </View>
         <ScrollView>
           <View style={styles.pictures}>{this.props.photos.map(this.renderPhoto)}</View>
@@ -163,5 +165,6 @@ const styles = StyleSheet.create({
   },
   redText: {
     color: 'red',
+    fontWeight: '700',
   },
 });
