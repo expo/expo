@@ -7,21 +7,11 @@ import {
 import { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 
-export enum CameraType {
-  front = 'front',
-  back = 'back',
-}
+export type CameraType = 'front' | 'back';
 
-export enum FlashMode {
-  on = 'on',
-  off = 'off',
-  auto = 'auto',
-}
+export type FlashMode = 'off' | 'on' | 'auto';
 
-export enum ImageType {
-  png = 'png',
-  jpg = 'jpg',
-}
+export type ImageType = 'png' | 'jpg';
 
 export type CameraMode = 'picture' | 'video';
 
@@ -329,7 +319,7 @@ export type CameraProps = ViewProps & {
    * Camera flash mode. Use one of [`FlashMode.<value>`](#flashmode-1). When `FlashMode.on`, the flash on your device will
    * turn on when taking a picture, when `FlashMode.off`, it won't. Setting to `FlashMode.auto` will fire flash if required,
    * `FlashMode.torch` turns on flash during the preview.
-   * @default FlashMode.off
+   * @default 'off'
    */
   flashMode?: FlashMode;
   /**

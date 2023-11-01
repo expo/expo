@@ -1,20 +1,4 @@
 import { PermissionStatus, } from 'expo-modules-core';
-export var CameraType;
-(function (CameraType) {
-    CameraType["front"] = "front";
-    CameraType["back"] = "back";
-})(CameraType || (CameraType = {}));
-export var FlashMode;
-(function (FlashMode) {
-    FlashMode["on"] = "on";
-    FlashMode["off"] = "off";
-    FlashMode["auto"] = "auto";
-})(FlashMode || (FlashMode = {}));
-export var ImageType;
-(function (ImageType) {
-    ImageType["png"] = "png";
-    ImageType["jpg"] = "jpg";
-})(ImageType || (ImageType = {}));
 /**
  * This option specifies what codec to use when recording a video.
  * @platform ios

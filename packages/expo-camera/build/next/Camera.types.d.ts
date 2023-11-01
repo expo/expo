@@ -1,19 +1,9 @@
 import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
 import { Ref } from 'react';
 import type { ViewProps } from 'react-native';
-export declare enum CameraType {
-    front = "front",
-    back = "back"
-}
-export declare enum FlashMode {
-    on = "on",
-    off = "off",
-    auto = "auto"
-}
-export declare enum ImageType {
-    png = "png",
-    jpg = "jpg"
-}
+export type CameraType = 'front' | 'back';
+export type FlashMode = 'off' | 'on' | 'auto';
+export type ImageType = 'png' | 'jpg';
 export type CameraMode = 'picture' | 'video';
 /**
  * This option specifies what codec to use when recording a video.
@@ -298,7 +288,7 @@ export type CameraProps = ViewProps & {
      * Camera flash mode. Use one of [`FlashMode.<value>`](#flashmode-1). When `FlashMode.on`, the flash on your device will
      * turn on when taking a picture, when `FlashMode.off`, it won't. Setting to `FlashMode.auto` will fire flash if required,
      * `FlashMode.torch` turns on flash during the preview.
-     * @default FlashMode.off
+     * @default 'off'
      */
     flashMode?: FlashMode;
     /**

@@ -1,9 +1,9 @@
 import AVFoundation
 import ExpoModulesCore
 
-enum CameraTypeNext: Int, Enumerable {
-  case front = 0
-  case back = 1
+enum CameraTypeNext: String, Enumerable {
+  case front
+  case back
 
   func toPosition() -> AVCaptureDevice.Position {
     switch self {

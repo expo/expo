@@ -18,10 +18,10 @@ import * as Svg from 'react-native-svg';
 
 import GalleryScreen from './GalleryScreen';
 
-const flashModeOrder = {
-  off: FlashMode.on,
-  on: FlashMode.auto,
-  auto: FlashMode.off,
+const flashModeOrder: Record<string, FlashMode> = {
+  off: 'on',
+  on: 'auto',
+  auto: 'off',
 };
 
 const flashIcons: Record<string, string> = {
@@ -57,9 +57,9 @@ interface State {
 
 export default class CameraScreen extends React.Component<object, State> {
   readonly state: State = {
-    flash: FlashMode.off,
+    flash: 'off',
     zoom: 0,
-    type: CameraType.back,
+    type: 'back',
     barcodeScanning: false,
     torchEnabled: false,
     cornerPoints: undefined,
@@ -99,7 +99,7 @@ export default class CameraScreen extends React.Component<object, State> {
 
   toggleFacing = () =>
     this.setState((state) => ({
-      type: state.type === CameraType.back ? CameraType.front : CameraType.back,
+      type: state.type === 'back' ? 'front' : 'back',
     }));
 
   toggleFlash = () => this.setState((state) => ({ flash: flashModeOrder[state.flash] }));
@@ -295,7 +295,7 @@ export default class CameraScreen extends React.Component<object, State> {
         }}
         enableTorch={this.state.torchEnabled}
         type={this.state.type}
-        flashMode={FlashMode[this.state.flash]}
+        flashMode={this.state.flash}
         mode={this.state.mode}
         mute={this.state.mute}
         zoom={this.state.zoom}

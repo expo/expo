@@ -207,28 +207,29 @@ class ExpoCameraView(
       .build()
 
     recorder?.let {
-      activeRecording = it.prepareRecording(context, fileOutputOptions).start(ContextCompat.getMainExecutor(context)) { event ->
-        when (event) {
-          is VideoRecordEvent.Finalize -> {
-            if (event.error > 0) {
-              promise.reject(
-                CameraExceptions.VideoRecordingFailed(
-                  event.cause?.message
-                    ?: "Video recording Failed: Unknown error"
+      activeRecording = it.prepareRecording(context, fileOutputOptions)
+        .start(ContextCompat.getMainExecutor(context)) { event ->
+          when (event) {
+            is VideoRecordEvent.Finalize -> {
+              if (event.error > 0) {
+                promise.reject(
+                  CameraExceptions.VideoRecordingFailed(
+                    event.cause?.message
+                      ?: "Video recording Failed: Unknown error"
+                  )
                 )
-              )
-              return@start
-            }
-            promise.resolve(
-              Bundle().apply {
-                putString("uri", event.outputResults.outputUri.toString())
+                return@start
               }
-            )
+              promise.resolve(
+                Bundle().apply {
+                  putString("uri", event.outputResults.outputUri.toString())
+                }
+              )
+            }
           }
+        }.also { recording ->
+          recording.mute(mute)
         }
-      }.also { recording ->
-        recording.mute(mute)
-      }
     }
       ?: promise.reject("E_RECORDING_FAILED", "Starting video recording failed - could not create video file.", null)
   }
@@ -337,7 +338,6 @@ class ExpoCameraView(
         CameraState.Type.OPEN -> {
           onCameraReady(Unit)
         }
-
         else -> {}
       }
     }

@@ -26,8 +26,8 @@ export default class Camera extends React.Component<CameraProps> {
     static getAvailableVideoCodecsAsync(): Promise<VideoCodec[]>;
     static Constants: ConstantsType;
     static ConversionTables: {
-        type: Record<"front" | "back", string | undefined>;
-        flashMode: Record<"on" | "off" | "auto", string | undefined>;
+        type: Record<string | number | symbol, string | undefined>;
+        flashMode: Record<string | number | symbol, string | undefined>;
     };
     static defaultProps: CameraProps;
     /**

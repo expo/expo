@@ -51,7 +51,7 @@ public final class CameraViewNextModule: Module {
     View(CameraViewNext.self) {
       Events(cameraEvents)
 
-      Prop("type") { (view, type: CameraType) in
+      Prop("type") { (view, type: CameraTypeNext) in
         if view.presetCamera != type.toPosition() {
           view.presetCamera = type.toPosition()
         }
