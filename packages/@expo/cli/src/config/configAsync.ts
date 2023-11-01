@@ -6,6 +6,7 @@ import * as Log from '../log';
 import { CommandError } from '../utils/errors';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { profile } from '../utils/profile';
+import { getRouterFixtureFromProject } from '../export/embed/routerFixture';
 
 type Options = {
   type?: string;
@@ -32,6 +33,9 @@ export function logConfig(config: ExpoConfig | ProjectConfig) {
 }
 
 export async function configAsync(projectRoot: string, options: Options) {
+  console.log(getRouterFixtureFromProject(projectRoot));
+  process.exit(0);
+
   const loggingFunctions = {
     log: console.log,
     warn: console.warn,
