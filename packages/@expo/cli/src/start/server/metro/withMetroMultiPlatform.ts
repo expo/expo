@@ -385,11 +385,7 @@ export function withExtendedResolver(
         customResolverOptions?: Record<string, string>;
       };
 
-      const isServer = context.customResolverOptions?.environment === 'node';
-
-      // TODO: We need to prevent the require.context from including API routes as these use externals.
-      // Should be fine after async routes lands.
-      if (isServer) {
+      if (context.customResolverOptions?.environment === 'node') {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
         if (nodejsSourceExtensions === null) {
           nodejsSourceExtensions = getNodejsExtensions(context.sourceExts);

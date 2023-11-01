@@ -112,6 +112,10 @@ export function withMetroResolvers(
   };
 }
 
+/**
+ * Hook into the Metro resolver chain and mutate the context so users can resolve against our custom assumptions.
+ * For example, this will set `preferNativePlatform` to false when bundling for web.
+ * */
 export function withMetroMutatedResolverContext(
   config: MetroConfig,
   getContext: (
@@ -120,7 +124,6 @@ export function withMetroMutatedResolverContext(
     platform: string | null
   ) => CustomResolutionContext
 ): MetroConfig {
-  // const hasUserDefinedResolver = !!config.resolver?.resolveRequest;
   const defaultResolveRequest = getDefaultMetroResolver(config.projectRoot);
   const originalResolveRequest = config.resolver?.resolveRequest;
 
@@ -130,16 +133,6 @@ export function withMetroMutatedResolverContext(
       ...config.resolver,
       resolveRequest(context, moduleName, platform) {
         const universalContext = getContext(context, moduleName, platform);
-
-        // If the user defined a resolver, run it first and depend on the documented
-        // chaining logic: https://facebook.github.io/metro/docs/resolution/#resolution-algorithm
-        //
-        // config.resolver.resolveRequest = (context, moduleName, platform) => {
-        //
-        //  // Do work...
-        //
-        //  return context.resolveRequest(context, moduleName, platform);
-        // };
         const firstResolver =
           originalResolveRequest ?? universalContext.resolveRequest ?? defaultResolveRequest;
         return firstResolver(universalContext, moduleName, platform);
@@ -149,6 +142,10 @@ export function withMetroMutatedResolverContext(
 }
 
 export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfig {
+  if (!env.EXPO_METRO_UNSTABLE_ERRORS) {
+    return config;
+  }
+
   const originalResolveRequest = config.resolver?.resolveRequest;
 
   function mutateResolutionError(
@@ -157,7 +154,7 @@ export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfi
     moduleName: string,
     platform: string | null
   ) {
-    if (!env.EXPO_METRO_UNSTABLE_ERRORS || !platform) {
+    if (!platform) {
       debug('Cannot mutate resolution error');
       return error;
     }
@@ -320,7 +317,7 @@ export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfi
       ...config.resolver,
       resolveRequest(context, moduleName, platform) {
         const storeResult = (res: NonNullable<ReturnType<ExpoCustomMetroResolver>>) => {
-          if (!env.EXPO_METRO_UNSTABLE_ERRORS || !platform) return;
+          if (!platform) return;
 
           const key = optionsKeyForContext(context);
           if (!depGraph.has(key)) depGraph.set(key, new Map());
