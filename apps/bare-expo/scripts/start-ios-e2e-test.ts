@@ -9,6 +9,7 @@ const TARGET_DEVICE = 'iPhone 14 Pro';
 const TARGET_DEVICE_IOS_VERSION = 16;
 const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
 const OUTPUT_APP_PATH = 'ios/build/Bare Expo.app';
+const MAESTRO_DRIVER_STARTUP_TIMEOUT = '120000'; // Wait 2 minutes for Maestro driver to start
 
 enum StartMode {
   BUILD,
@@ -83,7 +84,13 @@ async function testAsync(
   const maestroFlowFilePath = path.join(projectRoot, MAESTRO_GENERATED_FLOW);
   await createMaestroFlowAsync(projectRoot, maestroFlowFilePath);
   console.log(`\n📷 Starting Maestro tests - maestroFlowFilePath[${maestroFlowFilePath}]`);
-  await spawnAsync('maestro', ['--device', deviceId, 'test', maestroFlowFilePath], { stdio: 'inherit' });
+  await spawnAsync('maestro', ['--device', deviceId, 'test', maestroFlowFilePath], {
+    stdio: 'inherit',
+    env: {
+      ...process.env,
+      MAESTRO_DRIVER_STARTUP_TIMEOUT,
+    },
+  });
 }
 
 /**
