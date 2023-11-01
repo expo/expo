@@ -1,5 +1,4 @@
 import { Platform } from 'expo-modules-core';
-import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
 import { PackagerAsset } from 'react-native/Libraries/Image/AssetRegistry';
 
@@ -51,7 +50,7 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
   // Check if the assetUrl was overridden in the manifest
   const assetUrlOverride = getManifest().assetUrlOverride;
   if (assetUrlOverride) {
-    const uri = path.join(assetUrlOverride, hash);
+    const uri = pathJoin(assetUrlOverride, hash);
     return { uri: resolveUri(uri), hash };
   }
 
@@ -115,4 +114,31 @@ export function resolveUri(uri: string): string {
   } catch {}
 
   return new URL(uri, manifestBaseUrl).href;
+}
+
+// A very cheap path canonicalization like path.join but without depending on a `path` polyfill.
+export function pathJoin(...paths: string[]): string {
+  // Start by simply combining paths, without worrying about ".." or "."
+  const combined = paths
+    .map((part, index) => {
+      if (index === 0) {
+        return part.trim().replace(/[\/]*$/, '');
+      }
+      return part.trim().replace(/(^[\/]*|[\/]*$)/g, '');
+    })
+    .filter((part) => part.length > 0)
+    .join('/')
+    .split('/');
+
+  // Handle ".." and "." in paths
+  const resolved: string[] = [];
+  for (let part of combined) {
+    if (part === '..') {
+      resolved.pop(); // Remove the last element from the result
+    } else if (part !== '.') {
+      resolved.push(part);
+    }
+  }
+
+  return resolved.join('/');
 }
