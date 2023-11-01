@@ -8,9 +8,6 @@ begin
 rescue
   reactNativeVersion = '0.0.0'
 end
-if ENV["REACT_NATIVE_OVERRIDE_VERSION"]
-  reactNativeVersion = ENV["REACT_NATIVE_OVERRIDE_VERSION"]
-end
 
 reactNativeMinorVersion = reactNativeVersion.split('.')[1].to_i
 

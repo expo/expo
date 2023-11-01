@@ -21,8 +21,6 @@ concurrency:
 jobs:
   ios-build:
     runs-on: macos-13
-    env:
-      REACT_NATIVE_OVERRIDE_VERSION: 9999.9999.9999
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -85,8 +83,6 @@ jobs:
   ios-test:
     needs: ios-build
     runs-on: macos-12
-    env:
-      REACT_NATIVE_OVERRIDE_VERSION: 9999.9999.9999
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -141,7 +137,6 @@ jobs:
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
-      REACT_NATIVE_OVERRIDE_VERSION: 9999.9999.9999
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
