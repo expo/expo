@@ -13,7 +13,7 @@ public final class SecureStoreModule: Module {
       "WHEN_PASSCODE_SET_THIS_DEVICE_ONLY": SecureStoreAccessible.whenPasscodeSetThisDeviceOnly.rawValue,
       "ALWAYS_THIS_DEVICE_ONLY": SecureStoreAccessible.alwaysThisDeviceOnly.rawValue,
       "WHEN_UNLOCKED": SecureStoreAccessible.whenUnlocked.rawValue,
-      "WHEN_UNLOCKED_THIS_DEVICE_ONLY": SecureStoreAccessible.whenPasscodeSetThisDeviceOnly.rawValue
+      "WHEN_UNLOCKED_THIS_DEVICE_ONLY": SecureStoreAccessible.whenUnlockedThisDeviceOnly.rawValue
     ])
 
     AsyncFunction("getValueWithKeyAsync") { (key: String, options: SecureStoreOptions) -> String? in

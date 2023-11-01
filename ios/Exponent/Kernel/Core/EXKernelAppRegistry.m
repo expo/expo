@@ -75,20 +75,6 @@
   return _homeAppRecord;
 }
 
-- (EXKernelAppRecord *)standaloneAppRecord
-{
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    for (NSString *recordId in self.appEnumerator) {
-      EXKernelAppRecord *record = [self recordForId:recordId];
-      if (record.appLoader.manifestUrl
-          && [record.appLoader.manifestUrl.absoluteString isEqualToString:[EXEnvironment sharedEnvironment].standaloneManifestUrl]) {
-        return record;
-      }
-    }
-  }
-  return nil;
-}
-
 - (EXKernelAppRecord *)recordForId:(NSString *)recordId
 {
   return [_appRegistry objectForKey:recordId];

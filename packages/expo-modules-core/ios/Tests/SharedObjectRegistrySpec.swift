@@ -70,12 +70,6 @@ final class SharedObjectRegistrySpec: ExpoSpec {
         SharedObjectRegistry.delete(id)
         expect(nativeObject.sharedObjectId) == 0
       }
-      it("resets id on JS object") {
-        let jsObject = runtime.createObject()
-        let id = SharedObjectRegistry.add(native: TestSharedObject(), javaScript: jsObject)
-        SharedObjectRegistry.delete(id)
-        expect(try! jsObject.getProperty(sharedObjectIdPropertyName).asInt()) == 0
-      }
     }
 
     describe("toNativeObject") {

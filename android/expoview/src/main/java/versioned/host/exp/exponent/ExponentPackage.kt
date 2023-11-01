@@ -21,7 +21,6 @@ import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.manifests.core.Manifest
-import host.exp.exponent.Constants
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.kernel.ExperienceKey
 // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -116,8 +115,8 @@ class ExponentPackage : ReactPackage {
       nativeModules.add((ExponentKernelModuleProvider.newInstance(reactContext) as NativeModule?)!!)
       // WHEN_VERSIONING_REMOVE_TO_HERE
     }
-    if (!isKernel && !Constants.isStandaloneApp()) {
-      // We need DevMenuModule only in non-home and non-standalone apps.
+    if (!isKernel) {
+      // We need DevMenuModule only in non-home apps.
       nativeModules.add(DevMenuModule(reactContext, experienceProperties, manifest))
     }
 

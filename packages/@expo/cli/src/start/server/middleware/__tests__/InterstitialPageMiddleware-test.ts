@@ -38,7 +38,7 @@ afterAll(() => {
   process.chdir(originalCwd);
 });
 
-describe('_shouldHandleRequest', () => {
+describe('shouldHandleRequest', () => {
   const middleware = new InterstitialPageMiddleware('/');
   it(`returns false when the middleware should not handle`, () => {
     for (const req of [
@@ -46,12 +46,12 @@ describe('_shouldHandleRequest', () => {
       asReq({ url: 'http://localhost:8081' }),
       asReq({ url: 'http://localhost:8081/' }),
     ]) {
-      expect(middleware._shouldHandleRequest(req)).toBe(false);
+      expect(middleware.shouldHandleRequest(req)).toBe(false);
     }
   });
   it(`returns true when the middleware should handle`, () => {
     for (const req of [asReq({ url: 'http://localhost:8081/_expo/loading' })]) {
-      expect(middleware._shouldHandleRequest(req)).toBe(true);
+      expect(middleware.shouldHandleRequest(req)).toBe(true);
     }
   });
 });

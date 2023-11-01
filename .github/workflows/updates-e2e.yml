@@ -8,7 +8,10 @@ on:
       - packages/@expo/cli/**
       - packages/@expo/config-plugins/**
       - packages/@expo/config-types/**
+      - packages/expo-av/**
+      - packages/expo-image/**
       - packages/expo-json-utils/**
+      - packages/expo-localization/**
       - packages/expo-manifests/**
       - packages/expo-modules-core/**
       - packages/expo-structured-headers/**
@@ -43,7 +46,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [android, tvos]
+        platform: [ios, android, tvos]
     runs-on: ubuntu-22.04
     timeout-minutes: 40
     env:

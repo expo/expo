@@ -12,12 +12,16 @@ const expoDependencyNames = [
   '@expo/config-types',
   '@expo/prebuild-config',
   'expo-application',
+  'expo-av',
   'expo-constants',
+  'expo-device',
   'expo-eas-client',
   'expo-file-system',
   'expo-font',
+  'expo-image',
   'expo-json-utils',
   'expo-keep-awake',
+  'expo-localization',
   'expo-manifests',
   'expo-modules-autolinking',
   'expo-modules-core',
@@ -120,7 +124,6 @@ async function copyCommonFixturesToProject(projectRoot, { appJsFileName, repoRoo
       projectFilesTarballPath,
       'tsconfig.json',
       '.detoxrc.json',
-      'detox.config.js',
       'eas.json',
       'eas-hooks',
       'e2e',
@@ -177,7 +180,7 @@ async function copyCommonFixturesToProject(projectRoot, { appJsFileName, repoRoo
 /**
  * Adds all the dependencies and other properties needed for the E2E test app
  */
-async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
+async function preparePackageJson(projectRoot, repoRoot, configureE2E, isTV) {
   // Create the project subfolder to hold NPM tarballs built from the current state of the repo
   const dependenciesPath = path.join(projectRoot, 'dependencies');
   await fs.mkdir(dependenciesPath);
@@ -258,6 +261,22 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
     },
   };
 
+  if (isTV) {
+    packageJson = {
+      ...packageJson,
+      dependencies: {
+        ...packageJson.dependencies,
+        'react-native': 'npm:react-native-tvos@~0.72.6-0',
+        '@react-native-tvos/config-tv': '~0.0.2',
+      },
+      expo: {
+        install: {
+          exclude: ['react-native'],
+        },
+      },
+    };
+  }
+
   const packageJsonString = JSON.stringify(packageJson, null, 2);
   await fs.writeFile(path.join(projectRoot, 'package.json'), packageJsonString, 'utf-8');
 }
@@ -298,35 +317,6 @@ async function prepareLocalUpdatesModule(repoRoot) {
     androidE2ETestModuleKTPath
   );
 
-  // export module from UpdatesPackage on Android
-  const updatesPackageFilePath = path.join(
-    repoRoot,
-    'packages',
-    'expo-updates',
-    'android',
-    'src',
-    'main',
-    'java',
-    'expo',
-    'modules',
-    'updates',
-    'UpdatesPackage.kt'
-  );
-  const originalUpdatesPackageFileContents = await fs.readFile(updatesPackageFilePath, 'utf8');
-  let updatesPackageFileContents = originalUpdatesPackageFileContents;
-  if (!updatesPackageFileContents) {
-    throw new Error('Failed to read UpdatesPackage.kt; was the file renamed or moved?');
-  }
-  updatesPackageFileContents = updatesPackageFileContents.replace(
-    'UpdatesModule(context) as ExportedModule',
-    'UpdatesModule(context) as ExportedModule, UpdatesE2ETestModule(context)'
-  );
-  // make sure the insertion worked
-  if (!updatesPackageFileContents.includes('UpdatesE2ETestModule(context)')) {
-    throw new Error('Failed to modify UpdatesPackage.kt to insert UpdatesE2ETestModule');
-  }
-  await fs.writeFile(updatesPackageFilePath, updatesPackageFileContents, 'utf8');
-
   // Add E2ETestModule to expo-module.config.json
   const expoModuleConfigFilePath = path.join(
     repoRoot,
@@ -340,14 +330,20 @@ async function prepareLocalUpdatesModule(repoRoot) {
     ...originalExpoModuleConfig,
     ios: {
       ...originalExpoModuleConfig.ios,
-      modules: ['UpdatesModule', 'E2ETestModule'],
+      modules: [...originalExpoModuleConfig.ios.modules, 'E2ETestModule'],
+    },
+    android: {
+      ...originalExpoModuleConfig.android,
+      modules: [
+        ...originalExpoModuleConfig.android.modules,
+        'expo.modules.updates.UpdatesE2ETestModule',
+      ],
     },
   };
   await fs.writeFile(expoModuleConfigFilePath, JSON.stringify(expoModuleConfig, null, 2), 'utf-8');
 
   // Return cleanup function
   return async () => {
-    await fs.writeFile(updatesPackageFilePath, originalUpdatesPackageFileContents, 'utf8');
     await fs.writeFile(expoModuleConfigFilePath, originalExpoModuleConfigJsonString, 'utf-8');
     await fs.rm(iosE2ETestModuleSwiftPath, { force: true });
     await fs.rm(androidE2ETestModuleKTPath, { force: true });
@@ -357,7 +353,17 @@ async function prepareLocalUpdatesModule(repoRoot) {
 /**
  * Modifies app.json in the E2E test app to add the properties we need
  */
-function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
+function transformAppJsonForE2E(appJson, projectName, runtimeVersion, isTV) {
+  const plugins = ['expo-updates', '@config-plugins/detox'];
+  if (isTV) {
+    plugins.push([
+      '@react-native-tvos/config-tv',
+      {
+        isTV: true,
+        showVerboseWarnings: true,
+      },
+    ]);
+  }
   return {
     ...appJson,
     expo: {
@@ -365,7 +371,7 @@ function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
       name: projectName,
       owner: 'expo-ci',
       runtimeVersion,
-      plugins: ['expo-updates', '@config-plugins/detox'],
+      plugins,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
@@ -431,7 +437,7 @@ async function initAsync(
   const projectName = path.basename(projectRoot);
 
   // pack typescript template
-  const templateName = isTV ? 'expo-template-tv' : 'expo-template-blank-typescript';
+  const templateName = 'expo-template-blank-typescript';
   const localTSTemplatePath = path.join(repoRoot, 'templates', templateName);
   await spawnAsync('npm', ['pack', '--pack-destination', repoRoot], {
     cwd: localTSTemplatePath,
@@ -470,7 +476,7 @@ async function initAsync(
     cleanupLocalUpdatesModule = await prepareLocalUpdatesModule(repoRoot);
   }
 
-  await preparePackageJson(projectRoot, repoRoot, configureE2E);
+  await preparePackageJson(projectRoot, repoRoot, configureE2E, isTV);
 
   // Now we do NPM install
   await spawnAsync('yarn', [], {
@@ -480,7 +486,7 @@ async function initAsync(
 
   // configure app.json
   let appJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'app.json'), 'utf-8'));
-  appJson = transformAppJson(appJson, projectName, runtimeVersion);
+  appJson = transformAppJson(appJson, projectName, runtimeVersion, isTV);
   await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
 
   if (configureE2E) {
@@ -488,7 +494,7 @@ async function initAsync(
   }
 
   // pack local template and prebuild, but do not reinstall NPM
-  const prebuildTemplateName = isTV ? 'expo-template-tv' : 'expo-template-bare-minimum';
+  const prebuildTemplateName = 'expo-template-bare-minimum';
 
   const localTemplatePath = path.join(repoRoot, 'templates', prebuildTemplateName);
   await spawnAsync('npm', ['pack', '--pack-destination', projectRoot], {

@@ -75,9 +75,11 @@ it(`passes the environment as isServer to the babel preset`, () => {
       caller: {
         // HERE IS THE MAGIC
         isServer: true,
+        isDev: true,
         bundler: 'metro',
         name: 'metro',
         platform: 'ios',
+        projectRoot: expect.any(String),
       },
       cloneInputAst: false,
       code: false,

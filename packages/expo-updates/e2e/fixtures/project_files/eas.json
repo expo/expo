@@ -25,6 +25,7 @@
       "ios": {
         "simulator": true,
         "resourceClass": "m-medium",
+        "image": "macos-ventura-13.3-xcode-14.3",
         "buildConfiguration": "Debug",
         "cache": {
           "cacheDefaultPaths": false

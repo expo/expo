@@ -4,13 +4,33 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Remove `expo/scripts/launchPackager.command` script for launching Expo CLI when building iOS apps for development in Xcode. ([#25130](https://github.com/expo/expo/pull/25130) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
+- Add support for standard `URL` API. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
+- Added Expo CLI devtools plugins support. ([#24667](https://github.com/expo/expo/pull/24667) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
+
+- Migrate to `whatwg-url-without-unicode` to fix `SharedArrayBuffer` issue. ([#25005](https://github.com/expo/expo/pull/25005) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Revert `URL` support. ([#25006](https://github.com/expo/expo/pull/25006) by [@EvanBacon](https://github.com/EvanBacon))
+- Encode Blob components in `URL.createObjectURL`. ([#25004](https://github.com/expo/expo/pull/25004) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 49.0.16 — 2023-10-20
+
+_This version does not introduce any user-facing changes._
+
+## 50.0.0-alpha.6 — 2023-10-17
 
 ### 💡 Others
 
 - Export `requireOptionalNativeModule` and `requireNativeModule`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 49.0.14 — 2023-10-05
 

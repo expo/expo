@@ -73,6 +73,10 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/SQLite'))
   );
 
+  if (['android', 'ios'].includes(Platform.OS)) {
+    modules.push(require('./tests/SQLiteNext'));
+  }
+
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));
     modules.push(require('./tests/Hermes'));

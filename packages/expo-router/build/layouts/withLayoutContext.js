@@ -62,7 +62,7 @@ function withLayoutContext(Nav, processor) {
         }
         return (
         // @ts-expect-error
-        react_1.default.createElement(Nav, { ...props, id: contextKey, ref: ref, children: sorted }));
+        <Nav {...props} id={contextKey} ref={ref} children={sorted}/>);
     });
     // @ts-expect-error
     Navigator.Screen = Screen_1.Screen;

@@ -1,12 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const common_1 = require("./common");
+const expo_inline_manifest_plugin_1 = require("./expo-inline-manifest-plugin");
+const expo_router_plugin_1 = require("./expo-router-plugin");
 const lazyImports_1 = require("./lazyImports");
 function babelPresetExpo(api, options = {}) {
     const { web = {}, native = {}, reanimated } = options;
-    const bundler = api.caller(getBundler);
+    const bundler = api.caller(common_1.getBundler);
     const isWebpack = bundler === 'webpack';
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
+    const isDev = api.caller(common_1.getIsDev);
     // If the `platform` prop is not defined then this must be a custom config that isn't
     // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
     if (!platform && isWebpack) {
@@ -38,26 +42,8 @@ function babelPresetExpo(api, options = {}) {
             { loose: false },
         ]);
     }
-    // Set true to disable `@babel/plugin-transform-react-jsx`
-    // we override this logic outside of the metro preset so we can add support for
-    // React 17 automatic JSX transformations.
-    // If the logic for `useTransformReactJSXExperimental` ever changes in `metro-react-native-babel-preset`
-    // then this block should be updated to reflect those changes.
-    if (!platformOptions.useTransformReactJSXExperimental) {
-        extraPlugins.push([
-            require('@babel/plugin-transform-react-jsx'),
-            {
-                // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
-                runtime: (options && options.jsxRuntime) || 'automatic',
-                ...(options &&
-                    options.jsxRuntime !== 'classic' && {
-                    importSource: (options && options.jsxImportSource) || 'react',
-                }),
-            },
-        ]);
-        // Purposefully not adding the deprecated packages:
-        // `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`
-        // back to the preset.
+    if (platformOptions.useTransformReactJSXExperimental != null) {
+        throw new Error(`babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`);
     }
     const aliasPlugin = getAliasPlugin();
     if (aliasPlugin) {
@@ -65,6 +51,13 @@ function babelPresetExpo(api, options = {}) {
     }
     if (platform === 'web') {
         extraPlugins.push(require.resolve('babel-plugin-react-native-web'));
+        // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
+        if (bundler !== 'webpack') {
+            extraPlugins.push(expo_inline_manifest_plugin_1.expoInlineManifestPlugin);
+        }
+    }
+    if ((0, common_1.hasModule)('expo-router')) {
+        extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
     }
     return {
         presets: [
@@ -75,8 +68,6 @@ function babelPresetExpo(api, options = {}) {
                 // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
                 require('metro-react-native-babel-preset'),
                 {
-                    // Defaults to undefined, set to something truthy to disable `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`.
-                    withDevTools: platformOptions.withDevTools,
                     // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
                     disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
                     // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
@@ -91,6 +82,9 @@ function babelPresetExpo(api, options = {}) {
                     // TransformError App.js: /path/to/App.js: Duplicate __self prop found. You are most likely using the deprecated transform-react-jsx-self Babel plugin.
                     // Both __source and __self are automatically set when using the automatic jsxRuntime. Please remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
                     useTransformReactJSXExperimental: true,
+                    // This will never be used regardless because `useTransformReactJSXExperimental` is set to `true`.
+                    // https://github.com/facebook/react-native/blob/a4a8695cec640e5cf12be36a0c871115fbce9c87/packages/react-native-babel-preset/src/configs/main.js#L151
+                    withDevTools: false,
                     disableImportExportTransform: platformOptions.disableImportExportTransform,
                     lazyImportExportTransform: lazyImportsOption === true
                         ? (importModuleSpecifier) => {
@@ -103,21 +97,45 @@ function babelPresetExpo(api, options = {}) {
                             lazyImportsOption,
                 },
             ],
+            // React support with similar options to Metro.
+            // We override this logic outside of the metro preset so we can add support for
+            // React 17 automatic JSX transformations.
+            // The only known issue is the plugin `@babel/plugin-transform-react-display-name` will be run twice,
+            // once in the Metro plugin, and another time here.
+            [
+                require('@babel/preset-react'),
+                {
+                    development: isDev,
+                    // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
+                    runtime: options?.jsxRuntime || 'automatic',
+                    ...(options &&
+                        options.jsxRuntime !== 'classic' && {
+                        importSource: (options && options.jsxImportSource) || 'react',
+                    }),
+                    // NOTE: Unexposed props:
+                    // pragma?: string;
+                    // pragmaFrag?: string;
+                    // pure?: string;
+                    // throwIfNamespace?: boolean;
+                    // useBuiltIns?: boolean;
+                    // useSpread?: boolean;
+                },
+            ],
         ],
         plugins: [
             ...extraPlugins,
             // TODO: Remove
             [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
-            require.resolve('@babel/plugin-proposal-export-namespace-from'),
+            require.resolve('@babel/plugin-transform-export-namespace-from'),
             // Automatically add `react-native-reanimated/plugin` when the package is installed.
             // TODO: Move to be a customTransformOption.
-            hasModule('react-native-reanimated') &&
+            (0, common_1.hasModule)('react-native-reanimated') &&
                 reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
         ].filter(Boolean),
     };
 }
 function getAliasPlugin() {
-    if (!hasModule('@expo/vector-icons')) {
+    if (!(0, common_1.hasModule)('@expo/vector-icons')) {
         return null;
     }
     return [
@@ -128,33 +146,6 @@ function getAliasPlugin() {
             },
         },
     ];
-}
-function hasModule(name) {
-    try {
-        return !!require.resolve(name);
-    }
-    catch (error) {
-        if (error.code === 'MODULE_NOT_FOUND' && error.message.includes(name)) {
-            return false;
-        }
-        throw error;
-    }
-}
-/** Determine which bundler is being used. */
-function getBundler(caller) {
-    if (!caller)
-        return null;
-    if (caller.bundler)
-        return caller.bundler;
-    if (
-    // Known tools that use `webpack`-mode via `babel-loader`: `@expo/webpack-config`, Next.js <10
-    caller.name === 'babel-loader' ||
-        // NextJS 11 uses this custom caller name.
-        caller.name === 'next-babel-turbo-loader') {
-        return 'webpack';
-    }
-    // Assume anything else is Metro.
-    return 'metro';
 }
 exports.default = babelPresetExpo;
 module.exports = babelPresetExpo;

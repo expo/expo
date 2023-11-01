@@ -1,8 +1,8 @@
-import type { AlgoliaItemType } from '../types';
-import { getContentHighlightHTML, getHighlightHTML } from '../utils';
 import { CommandItemBase } from './CommandItemBase';
 import { FootnoteSection } from './FootnoteSection';
 import { ExternalLinkIcon, ReactIcon } from './icons';
+import type { AlgoliaItemType } from '../types';
+import { getContentHighlightHTML, getHighlightHTML } from '../utils';
 
 import { CALLOUT, CAPTION, FOOTNOTE } from '~/ui/components/Text';
 

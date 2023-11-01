@@ -83,7 +83,7 @@ export class BarCodeScanner extends React.Component {
     render() {
         const nativeProps = this.convertNativeProps(this.props);
         const { onBarCodeScanned } = this.props;
-        return (React.createElement(ExpoBarCodeScannerView, { ...nativeProps, onBarCodeScanned: this.onObjectDetected(onBarCodeScanned) }));
+        return (<ExpoBarCodeScannerView {...nativeProps} onBarCodeScanned={this.onObjectDetected(onBarCodeScanned)}/>);
     }
     /**
      * @hidden

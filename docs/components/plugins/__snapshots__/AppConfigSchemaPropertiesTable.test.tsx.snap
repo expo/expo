@@ -76,7 +76,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Name of your app.
     </p>
     <details
-      class="css-834wmb"
+      class="css-xpa10j"
       id="bare-workflow"
     >
       <summary
@@ -229,7 +229,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Configuration for the bottom navigation bar on Android.
     </p>
     <details
-      class="css-834wmb"
+      class="css-xpa10j"
       id="expokit"
     >
       <summary
@@ -307,7 +307,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </details>
     <details
-      class="css-834wmb"
+      class="css-xpa10j"
       id="bare-workflow-1"
     >
       <summary
@@ -468,7 +468,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Determines how and when the navigation bar is shown.
         </p>
         <details
-          class="css-834wmb"
+          class="css-xpa10j"
           id="expokit-1"
         >
           <summary
@@ -806,7 +806,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Configuration for setting an array of custom intent filters in Android manifest.
     </p>
     <details
-      class="css-834wmb"
+      class="css-xpa10j"
       id="bare-workflow-2"
     >
       <summary

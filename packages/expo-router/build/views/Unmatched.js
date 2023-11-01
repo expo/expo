@@ -19,7 +19,7 @@ function NoSSR({ children }) {
     if (!render) {
         return null;
     }
-    return react_1.default.createElement(react_1.default.Fragment, null, children);
+    return <>{children}</>;
 }
 /** Default screen for unmatched routes. */
 function Unmatched() {
@@ -32,22 +32,34 @@ function Unmatched() {
             title: 'Not Found',
         });
     }, [navigation]);
-    return (react_1.default.createElement(react_native_1.View, { style: styles.container },
-        react_1.default.createElement(react_native_1.Text, { role: "heading", "aria-level": 1, style: styles.title }, "Unmatched Route"),
-        react_1.default.createElement(react_native_1.Text, { role: "heading", "aria-level": 2, style: styles.subtitle },
-            "Page could not be found.",
-            ' ',
-            react_1.default.createElement(react_native_1.Text, { onPress: () => {
-                    if (router.canGoBack()) {
-                        router.back();
-                    }
-                    else {
-                        router.replace('/');
-                    }
-                }, style: styles.link }, "Go back.")),
-        react_1.default.createElement(NoSSR, null,
-            react_1.default.createElement(Link_1.Link, { href: pathname, replace: true, style: styles.link }, url)),
-        react_1.default.createElement(Link_1.Link, { href: "/_sitemap", replace: true, style: [styles.link, { marginTop: 8 }] }, "Sitemap")));
+    return (<react_native_1.View style={styles.container}>
+      <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
+        Unmatched Route
+      </react_native_1.Text>
+      <react_native_1.Text role="heading" aria-level={2} style={styles.subtitle}>
+        Page could not be found.{' '}
+        <react_native_1.Text onPress={() => {
+            if (router.canGoBack()) {
+                router.back();
+            }
+            else {
+                router.replace('/');
+            }
+        }} style={styles.link}>
+          Go back.
+        </react_native_1.Text>
+      </react_native_1.Text>
+
+      <NoSSR>
+        <Link_1.Link href={pathname} replace style={styles.link}>
+          {url}
+        </Link_1.Link>
+      </NoSSR>
+
+      <Link_1.Link href="/_sitemap" replace style={[styles.link, { marginTop: 8 }]}>
+        Sitemap
+      </Link_1.Link>
+    </react_native_1.View>);
 }
 exports.Unmatched = Unmatched;
 const styles = react_native_1.StyleSheet.create({

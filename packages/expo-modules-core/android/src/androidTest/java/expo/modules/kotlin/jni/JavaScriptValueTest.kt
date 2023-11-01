@@ -89,4 +89,15 @@ class JavaScriptValueTest {
       Truth.assertThat(receivedObject!!.getProperty("expo").getInt()).isEqualTo(123)
     }
   }
+
+  @Test
+  fun null_should_be_pass_as_js_value() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { a: JavaScriptValue -> a.isNull() }
+    }
+  ) {
+    val value = evaluateScript("expo.modules.TestModule.f(null)").getBool()
+    Truth.assertThat(value).isTrue()
+  }
 }

@@ -9,7 +9,6 @@
 #import <ABI49_0_0EXConstants/ABI49_0_0EXConstantsInstallationIdProvider.h>
 
 NSString * const ABI49_0_0EXConstantsExecutionEnvironmentBare = @"bare";
-NSString * const ABI49_0_0EXConstantsExecutionEnvironmentStandalone = @"standalone";
 NSString * const ABI49_0_0EXConstantsExecutionEnvironmentStoreClient = @"storeClient";
 
 @interface ABI49_0_0EXConstantsService ()

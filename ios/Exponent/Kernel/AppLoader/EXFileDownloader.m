@@ -90,14 +90,10 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
     releaseChannel = @"default";
   }
   NSString *clientEnvironment;
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    clientEnvironment = @"STANDALONE";
-  } else {
-    clientEnvironment = @"EXPO_DEVICE";
+  clientEnvironment = @"EXPO_DEVICE";
 #if TARGET_IPHONE_SIMULATOR
-    clientEnvironment = @"EXPO_SIMULATOR";
+  clientEnvironment = @"EXPO_SIMULATOR";
 #endif
-  }
   
   [request setValue:releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];

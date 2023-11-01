@@ -58,10 +58,6 @@ class ExpoFirebaseMessagingDelegate(context: Context) : FirebaseMessagingDelegat
     content: NotificationContent,
     notificationTrigger: FirebaseNotificationTrigger
   ): NotificationRequest {
-    if (Constants.isStandaloneApp()) {
-      return super.createNotificationRequest(identifier, content, notificationTrigger)
-    }
-
     val data = notificationTrigger.remoteMessage.data
     return ScopedNotificationRequest(
       identifier,

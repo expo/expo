@@ -4,7 +4,30 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+- [iOS] Fix the E2E tests. ([#24865](https://github.com/expo/expo/pull/24865) by [@douglowder](https://github.com/douglowder))
+- [Android] Simplify UpdatesUtils.parseDateString, fix UpdatesLoggingTest. ([#24951](https://github.com/expo/expo/pull/24951) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix expo-localization tvOS compile, add CI. ([#25082](https://github.com/expo/expo/pull/25082) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Android: Stub expo-updates in Expo Go and remove service pattern. ([#24890](https://github.com/expo/expo/pull/24890) by [@wschurman](https://github.com/wschurman))
+- iOS: Refactor responsibility of app controller. ([#24934](https://github.com/expo/expo/pull/24934), [#24949](https://github.com/expo/expo/pull/24949) by [@wschurman](https://github.com/wschurman))
+- Android: Refactor responsibility of app controller. ([#24954](https://github.com/expo/expo/pull/24954), [#24975](https://github.com/expo/expo/pull/24975) by [@wschurman](https://github.com/wschurman))
+- Android: Backport ExpoGoUpdatesModule to SDK 49. ([#24974](https://github.com/expo/expo/pull/24974) by [@wschurman](https://github.com/wschurman))
+
+## 0.18.17 — 2023-10-25
+
+### 🐛 Bug fixes
+
+- [Android] Simplify UpdatesUtils.parseDateString, fix UpdatesLoggingTest. ([#24951](https://github.com/expo/expo/pull/24951) by [@douglowder](https://github.com/douglowder))
+
+## 0.22.0 — 2023-10-17
 
 ### 🐛 Bug fixes
 
@@ -14,6 +37,7 @@
 ### 💡 Others
 
 - Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+- iOS: Stub expo-updates in Expo Go and remove service pattern. ([#24860](https://github.com/expo/expo/pull/24860) by [@wschurman](https://github.com/wschurman))
 
 ## 0.18.16 — 2023-10-05
 

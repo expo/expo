@@ -2,7 +2,7 @@ import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
-import { fixPackagesAsync } from './installAsync';
+import { fixPackagesAsync } from './fixPackages';
 import { Options } from './resolveOptions';
 import * as Log from '../log';
 import {
@@ -16,7 +16,12 @@ import { joinWithCommasAnd } from '../utils/strings';
 
 const debug = require('debug')('expo:install:check') as typeof console.log;
 
-// Exposed for testing.
+/**
+ * Handles `expo install --fix|check'.
+ * Checks installed dependencies against bundledNativeModules and versions endpoints to find any incompatibilities.
+ * If `--fix` is passed, it will install the correct versions of the dependencies.
+ * If `--check` is passed, it will prompt the user to install the correct versions of the dependencies (on interactive terminal).
+ */
 export async function checkPackagesAsync(
   projectRoot: string,
   {

@@ -22,6 +22,7 @@ export interface RouteRegex {
 export declare function getServerManifest(route: RouteNode): {
     apiRoutes: {
         generated: boolean | undefined;
+        file: string;
         page: string;
         namedRegex: string;
         routeKeys: {
@@ -30,6 +31,7 @@ export declare function getServerManifest(route: RouteNode): {
     }[];
     htmlRoutes: {
         generated: boolean | undefined;
+        file: string;
         page: string;
         namedRegex: string;
         routeKeys: {
@@ -38,6 +40,7 @@ export declare function getServerManifest(route: RouteNode): {
     }[];
     notFoundRoutes: {
         generated: boolean | undefined;
+        file: string;
         page: string;
         namedRegex: string;
         routeKeys: {
@@ -46,6 +49,7 @@ export declare function getServerManifest(route: RouteNode): {
     }[];
 };
 export declare function getNamedRouteRegex(normalizedRoute: string, page: string): {
+    file: string;
     page: string;
     namedRegex: string;
     routeKeys: {
