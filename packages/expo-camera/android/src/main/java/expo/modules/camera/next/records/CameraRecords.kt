@@ -33,7 +33,7 @@ enum class CameraMode(val value: String) : Enumerable {
   VIDEO("video")
 }
 
-class BarCodeSettings(
+data class BarCodeSettings(
   val barcodeTypes: List<BarcodeType>,
   val interval: Double?
 ) : Record
