@@ -766,3 +766,71 @@ it('can push & replace with nested Slots', async () => {
   expect(screen).toHavePathname('/');
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
+
+// This test block covers the Twitter case where the tabs have stacks with parallel routes.
+describe('shared routes with tabs', () => {
+  function renderSharedTabs() {
+    renderRouter({
+      '(tabs)/(one,two)/_layout': () => <Stack />,
+      '(tabs)/(one,two)/one': () => <Text />,
+      '(tabs)/(one,two)/post': () => <Text />,
+      '(tabs)/(one,two)/two': () => <Text />,
+      '(tabs)/_layout': () => <Tabs />,
+      _layout: {
+        unstable_settings: {
+          initialRouteName: '(tabs)',
+        },
+        default: () => <Stack />,
+      },
+      index: () => <Redirect href="/one" />,
+    });
+
+    expect(screen).toHavePathname('/one');
+  }
+
+  describe('tab one (default)', () => {
+    it('pushes post in tab one using absolute /post', async () => {
+      renderSharedTabs();
+      act(() => router.push('/post'));
+      expect(screen).toHavePathname('/post');
+      expect(screen).toHaveSegments(['(tabs)', '(one)', 'post']);
+    });
+    it('pushes post in tab one using absolute /(tabs)/(one)/post', async () => {
+      renderSharedTabs();
+      act(() => router.push('/(tabs)/(one)/post'));
+      expect(screen).toHavePathname('/post');
+      expect(screen).toHaveSegments(['(tabs)', '(one)', 'post']);
+    });
+    it('pushes post in tab one using relative ./post', async () => {
+      renderSharedTabs();
+      act(() => router.push('./post'));
+      expect(screen).toHavePathname('/post');
+      expect(screen).toHaveSegments(['(tabs)', '(one)', 'post']);
+    });
+  });
+  describe('tab two', () => {
+    // Navigate to tab two before each case here.
+    beforeEach(() => {
+      renderSharedTabs();
+      act(() => router.push('/two'));
+      expect(screen).toHavePathname('/two');
+    });
+
+    it('pushes post in tab two with absolute `/post` goes to default tab', async () => {
+      act(() => router.push('/post'));
+      expect(screen).toHavePathname('/post');
+      expect(screen).toHaveSegments(['(tabs)', '(one)', 'post']);
+    });
+    it('pushes post in tab two using absolute /(tabs)/(two)/post', async () => {
+      act(() => router.push('/(tabs)/(two)/post'));
+      expect(screen).toHavePathname('/post');
+      expect(screen).toHaveSegments(['(tabs)', '(two)', 'post']);
+    });
+    it('pushes post in tab two using relative ./post', async () => {
+      // Pushing `./post` should preserve the relative position in tab two and NOT swap to the default tab one variation of the `/post` route.
+      act(() => router.push('./post'));
+      expect(screen).toHavePathname('/post');
+      expect(screen).toHaveSegments(['(tabs)', '(two)', 'post']);
+    });
+  });
+});
