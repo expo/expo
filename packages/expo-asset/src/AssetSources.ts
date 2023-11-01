@@ -20,7 +20,8 @@ export type AssetSource = {
   hash: string;
 };
 
-// Fast lookup check if asset map has any overrides in the manifest
+// Fast lookup check if asset map has any overrides in the manifest.
+// This value will always be either null or an absolute URL, e.g. `https://expo.dev/`
 const assetMapOverride = getManifest().assetMapOverride;
 
 /**
@@ -102,18 +103,8 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
  * base URI.
  */
 export function resolveUri(uri: string): string {
-  if (!manifestBaseUrl) {
-    return uri;
-  }
-
-  try {
-    const { protocol } = new URL(uri);
-    if (protocol !== '') {
-      return uri;
-    }
-  } catch {}
-
-  return new URL(uri, manifestBaseUrl).href;
+  // `manifestBaseUrl` is always an absolute URL or `null`.
+  return manifestBaseUrl ? new URL(uri, manifestBaseUrl).href : uri;
 }
 
 // A very cheap path canonicalization like path.join but without depending on a `path` polyfill.
@@ -122,9 +113,9 @@ export function pathJoin(...paths: string[]): string {
   const combined = paths
     .map((part, index) => {
       if (index === 0) {
-        return part.trim().replace(/[\/]*$/, '');
+        return part.trim().replace(/\/*$/, '');
       }
-      return part.trim().replace(/(^[\/]*|[\/]*$)/g, '');
+      return part.trim().replace(/(^\/*|\/*$)/g, '');
     })
     .filter((part) => part.length > 0)
     .join('/')
@@ -132,7 +123,7 @@ export function pathJoin(...paths: string[]): string {
 
   // Handle ".." and "." in paths
   const resolved: string[] = [];
-  for (let part of combined) {
+  for (const part of combined) {
     if (part === '..') {
       resolved.pop(); // Remove the last element from the result
     } else if (part !== '.') {

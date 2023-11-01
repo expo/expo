@@ -18,9 +18,7 @@ const getDevServer = () => {
         return document.currentScript.src;
       }
 
-      const bundleUrl = new URL(
-        location.href
-      );
+      const bundleUrl = new URL(location.href);
 
       bundleUrl.searchParams.set('platform', 'web');
 
