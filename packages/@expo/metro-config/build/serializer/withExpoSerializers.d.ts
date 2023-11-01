@@ -5,5 +5,6 @@ export type SerializerParameters = Parameters<Serializer>;
 export type SerializerPlugin = (...props: SerializerParameters) => SerializerParameters;
 export declare function withExpoSerializers(config: InputConfigT): InputConfigT;
 export declare function withSerializerPlugins(config: InputConfigT, processors: SerializerPlugin[]): InputConfigT;
+export declare function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer;
 export declare function createSerializerFromSerialProcessors(processors: (SerializerPlugin | undefined)[], originalSerializer?: Serializer | null): Serializer;
 export { SerialAsset };

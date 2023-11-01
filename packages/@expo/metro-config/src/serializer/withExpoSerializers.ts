@@ -64,7 +64,7 @@ export function withSerializerPlugins(
 const JsFileWrapping = require('metro/src/ModuleGraph/worker/JsFileWrapping');
 const generateImportNames = require('metro/src/ModuleGraph/worker/generateImportNames');
 
-function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer {
+export function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer {
   const defaultSerializer =
     fallbackSerializer ??
     (async (...params: SerializerParameters) => {
@@ -77,7 +77,7 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
   ): Promise<string | { code: string; map: string }> => {
     const [entryPoint, preModules, graph, options] = props;
 
-    toFixture(...props);
+    // toFixture(...props);
 
     // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
     const minify =

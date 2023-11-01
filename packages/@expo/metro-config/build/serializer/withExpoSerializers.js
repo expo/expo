@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSerializerFromSerialProcessors = exports.withSerializerPlugins = exports.withExpoSerializers = void 0;
+exports.createSerializerFromSerialProcessors = exports.getDefaultSerializer = exports.withSerializerPlugins = exports.withExpoSerializers = void 0;
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -17,7 +17,6 @@ const baseJSBundle_1 = __importDefault(require("metro/src/DeltaBundler/Serialize
 const sourceMapString_1 = __importDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
 const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString"));
 const path_1 = __importDefault(require("path"));
-const toFixture_1 = require("./__tests__/fixtures/toFixture");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const getCssDeps_1 = require("./getCssDeps");
 const env_1 = require("../env");
@@ -57,7 +56,7 @@ function getDefaultSerializer(fallbackSerializer) {
         });
     return async (...props) => {
         const [entryPoint, preModules, graph, options] = props;
-        (0, toFixture_1.toFixture)(...props);
+        // toFixture(...props);
         // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
         const minify = graph.transformOptions.minify &&
             graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
@@ -271,6 +270,7 @@ function getDefaultSerializer(fallbackSerializer) {
         return JSON.stringify([...jsAssets, ...cssDeps]);
     };
 }
+exports.getDefaultSerializer = getDefaultSerializer;
 function getSortedModules(graph, { createModuleId, }) {
     const modules = [...graph.dependencies.values()];
     // Assign IDs to modules in a consistent order
