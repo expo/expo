@@ -25,6 +25,7 @@ extension UInt64: AnyArgument {}
 
 extension Float32: AnyArgument {}
 extension Double: AnyArgument {}
+extension CGFloat: AnyArgument {}
 
 extension String: AnyArgument {}
 extension Array: AnyArgument {}
