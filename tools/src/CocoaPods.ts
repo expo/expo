@@ -71,7 +71,7 @@ export async function npxPodInstallAsync(
   projectPath: string,
   verbose: boolean = false
 ): Promise<void> {
-  const args = ['pod-install'];
+  const args = ['pod-install@latest'];
 
   if (!verbose) {
     args.push('--quiet');
