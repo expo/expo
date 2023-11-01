@@ -26,6 +26,10 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
 
   let dynamicArgumentTypes: [AnyDynamicType]
 
+  var argumentsCount: Int {
+    return dynamicArgumentTypes.count - (takesOwner ? 1 : 0)
+  }
+
   var takesOwner: Bool = false
 
   func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void) {
@@ -43,7 +47,7 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
       )
 
       // All `JavaScriptValue` args must be preliminarly converted on the JS thread, before we jump to the function's queue.
-      arguments = try cast(jsValues: args, forFunction: self, appContext: appContext)
+      arguments = try cast(jsValues: arguments, forFunction: self, appContext: appContext)
     } catch let error as Exception {
       callback(.failure(error))
       return
