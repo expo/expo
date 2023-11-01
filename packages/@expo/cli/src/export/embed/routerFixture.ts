@@ -33,7 +33,6 @@ ${routePaths
     const routeFilePath = path.join(appDir, routePath);
     const contents = fs.readFileSync(routeFilePath, 'utf8');
     const routerModules = getRouterImports(contents);
-    // console.log('imports:', keyId, routerModules);
 
     const possibleLayout =
       routerModules.imports.filter((m) => knownNavigators.includes(m))[0] ?? 'Stack';
