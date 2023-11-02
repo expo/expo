@@ -36,8 +36,8 @@ function assetShouldBeIncludedInExport(asset: Asset, bundledAssetsSet: Set<strin
     return true;
   }
   return (
-    asset.fileHashes.filter((hash) => bundledAssetsSet?.has(mapAssetHashToAssetString(asset, hash)))
-      .length > 0 ?? false
+    asset.fileHashes.filter((hash) => bundledAssetsSet.has(mapAssetHashToAssetString(asset, hash)))
+      .length > 0
   );
 }
 
@@ -51,7 +51,7 @@ function assetShouldBeIncludedInExport(asset: Asset, bundledAssetsSet: Set<strin
  */
 function setOfAssetsToBeBundled(
   assets: Asset[],
-  assetPatternsToBeBundled: string[] | undefined,
+  assetPatternsToBeBundled: string[],
   projectRoot: string
 ): Set<string> | undefined {
   // Convert asset patterns to a list of asset strings that match them.
@@ -59,11 +59,7 @@ function setOfAssetsToBeBundled(
   // the name that the file will have in the app bundle. The `asset_` prefix is
   // needed because android doesn't support assets that start with numbers.
 
-  if (!assetPatternsToBeBundled) {
-    return undefined;
-  }
-
-  const fullPatterns: string[] = (assetPatternsToBeBundled ?? ['**/*']).map((p: string) =>
+  const fullPatterns: string[] = assetPatternsToBeBundled.map((p: string) =>
     path.join(projectRoot, p)
   );
 
