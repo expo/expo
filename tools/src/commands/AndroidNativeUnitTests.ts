@@ -14,7 +14,6 @@ const excludedInTests = [
   'expo-module-template',
   'expo-module-template-local',
   'expo-notifications',
-  'expo-in-app-purchases',
   'expo-splash-screen',
   'expo-modules-test-core',
   'expo-dev-client',

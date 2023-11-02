@@ -39,7 +39,6 @@ useExpoModules([
     exclude : [
         'expo-module-template',
         'expo-module-template-local',
-        'expo-in-app-purchases',
         'react-native-reanimated',
         'expo-dev-menu-interface',
         'expo-dev-menu',
