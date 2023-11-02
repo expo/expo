@@ -143,6 +143,10 @@ async function bundleProductionMetroClientAsync(
       sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
       unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
+      customTransformOptions: {
+        __proto__: null,
+        engine: isHermes ? 'hermes' : undefined,
+      },
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
         reporter.update({
           buildID,

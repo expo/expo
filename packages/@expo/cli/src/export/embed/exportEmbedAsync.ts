@@ -51,6 +51,10 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     platform: options.platform,
     unstable_transformProfile: (options.unstableTransformProfile ||
       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
+    customTransformOptions: {
+      __proto__: null,
+      engine: isHermes ? 'hermes' : undefined,
+    },
   };
 
   const server = new Server(config, {
