@@ -167,18 +167,6 @@ android {
     }
   }
 
-  sourceSets {
-    main {
-      java {
-        if (REACT_NATIVE_TARGET_VERSION >= 73) {
-          srcDirs += "src/reactnative"
-        } else {
-          srcDirs += "src/reactnative72"
-        }
-      }
-    }
-  }
-
   buildFeatures {
     buildConfig true
     prefab true
