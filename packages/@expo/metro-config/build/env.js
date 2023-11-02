@@ -23,5 +23,9 @@ class Env {
     get EXPO_NO_CLIENT_ENV_VARS() {
         return (0, getenv_1.boolish)('EXPO_NO_CLIENT_ENV_VARS', false);
     }
+    /** Enable unstable tree-shaking support to remove unused code. */
+    get EXPO_USE_TREE_SHAKING() {
+        return (0, getenv_1.boolish)('EXPO_USE_TREE_SHAKING', false);
+    }
 }
 exports.env = new Env();

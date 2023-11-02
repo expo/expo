@@ -25,6 +25,11 @@ class Env {
   get EXPO_NO_CLIENT_ENV_VARS(): boolean {
     return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
   }
+
+  /** Enable unstable tree-shaking support to remove unused code. */
+  get EXPO_USE_TREE_SHAKING(): boolean {
+    return boolish('EXPO_USE_TREE_SHAKING', false);
+  }
 }
 
 export const env = new Env();
