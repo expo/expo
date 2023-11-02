@@ -6,6 +6,7 @@ import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import { ConfigT } from 'metro-config';
+import Server from 'metro/src/Server';
 
 import {
   buildHermesBundleAsync,
@@ -14,7 +15,6 @@ import {
 } from './exportHermes';
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
-import { importMetroServerFromProject } from '../start/server/metro/resolveFromProject';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 
 export type MetroDevServerOptions = LoadOptions;
@@ -113,8 +113,6 @@ async function bundleProductionMetroClientAsync(
   await Promise.all(
     bundles.map(({ platform }) => assertEngineMismatchAsync(projectRoot, expoConfig, platform))
   );
-
-  const Server = importMetroServerFromProject(projectRoot);
 
   const { config, reporter } = await loadMetroConfigAsync(projectRoot, metroOptions, {
     exp: expoConfig,
