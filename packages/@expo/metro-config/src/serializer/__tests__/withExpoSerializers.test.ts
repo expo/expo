@@ -21,9 +21,11 @@ function getSerializer() {
 describe('tree-shaking', () => {
   beforeAll(() => {
     process.env.EXPO_USE_TREE_SHAKING = '1';
+    jest.unmock('fs');
   });
   afterAll(() => {
     delete process.env.EXPO_USE_TREE_SHAKING;
+    jest.mock('fs');
   });
   xit(`removes unused export`, async () => {
     const serializer = getSerializer();

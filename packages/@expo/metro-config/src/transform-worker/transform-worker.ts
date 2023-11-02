@@ -16,6 +16,7 @@ import { wrapDevelopmentCSS } from './css';
 import { matchCssModule, transformCssModuleWeb } from './css-modules';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
+import { env } from '../env';
 
 const countLines = require('metro/src/lib/countLines') as (string: string) => number;
 
@@ -38,31 +39,47 @@ export async function transform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
-  const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
+  const nextConfig = {
+    ...config,
+  };
+
+  const nextOptions = {
+    ...options,
+  };
+  // Preserve the original format as much as we can for tree-shaking.
+  if (env.EXPO_USE_TREE_SHAKING && !nextOptions.dev) {
+    nextConfig.unstable_disableModuleWrapping = true;
+    nextOptions.experimentalImportSupport = false;
+    nextOptions.minify = false;
+  }
+
+  const isCss = nextOptions.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {
-    const environment = options.customTransformOptions?.environment;
+    const environment = nextOptions.customTransformOptions?.environment;
 
     if (
       environment !== 'node' &&
       // TODO: Ensure this works with windows.
-      (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
+      (filename.match(
+        new RegExp(`^app/\\+html(\\.${nextOptions.platform})?\\.([tj]sx?|[cm]js)?$`)
+      ) ||
         // Strip +api files.
         filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))
     ) {
       // Remove the server-only +html file and API Routes from the bundle when bundling for a client environment.
       return worker.transform(
-        config,
+        nextConfig,
         projectRoot,
         filename,
-        !options.minify
+        !nextOptions.minify
           ? Buffer.from(
               // Use a string so this notice is visible in the bundle if the user is
               // looking for it.
               '"> The server-only file was removed from the client JS bundle by Expo CLI."'
             )
           : Buffer.from(''),
-        options
+        nextOptions
       );
     }
 
@@ -73,22 +90,22 @@ export async function transform(
     ) {
       // Clear the contents of +api files when bundling for the client.
       // This ensures that the client doesn't accidentally use the server-only +api files.
-      return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
+      return worker.transform(nextConfig, projectRoot, filename, Buffer.from(''), nextOptions);
     }
 
-    return worker.transform(config, projectRoot, filename, data, options);
+    return worker.transform(nextConfig, projectRoot, filename, data, nextOptions);
   }
 
   // If the platform is not web, then return an empty module.
-  if (options.platform !== 'web') {
+  if (nextOptions.platform !== 'web') {
     const code = matchCssModule(filename) ? 'module.exports={ unstable_styles: {} };' : '';
     return worker.transform(
-      config,
+      nextConfig,
       projectRoot,
       filename,
       // TODO: Native CSS Modules
       Buffer.from(code),
-      options
+      nextOptions
     );
   }
 
@@ -114,18 +131,18 @@ export async function transform(
       src: code,
       options: {
         projectRoot,
-        dev: options.dev,
-        minify: options.minify,
+        dev: nextOptions.dev,
+        minify: nextOptions.minify,
         sourceMap: false,
       },
     });
 
     const jsModuleResults = await worker.transform(
-      config,
+      nextConfig,
       projectRoot,
       filename,
       Buffer.from(results.output),
-      options
+      nextOptions
     );
 
     const cssCode = results.css.toString();
@@ -166,7 +183,7 @@ export async function transform(
     sourceMap: false,
     cssModules: false,
     projectRoot,
-    minify: options.minify,
+    minify: nextOptions.minify,
   });
 
   // TODO: Warnings:
@@ -176,11 +193,11 @@ export async function transform(
   // Create a mock JS module that exports an empty object,
   // this ensures Metro dependency graph is correct.
   const jsModuleResults = await worker.transform(
-    config,
+    nextConfig,
     projectRoot,
     filename,
-    options.dev ? Buffer.from(wrapDevelopmentCSS({ src: code, filename })) : Buffer.from(''),
-    options
+    nextOptions.dev ? Buffer.from(wrapDevelopmentCSS({ src: code, filename })) : Buffer.from(''),
+    nextOptions
   );
 
   const cssCode = cssResults.code.toString();

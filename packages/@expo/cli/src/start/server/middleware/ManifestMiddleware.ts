@@ -95,6 +95,7 @@ export function createBundleUrlPath({
   serializerIncludeMaps,
   lazy,
   engine,
+  treeshake = env.EXPO_USE_TREE_SHAKING,
 }: {
   platform: string;
   mainModuleName: string;
@@ -105,6 +106,7 @@ export function createBundleUrlPath({
   serializerIncludeMaps?: boolean;
   lazy?: boolean;
   engine?: 'hermes';
+  treeshake?: boolean;
 }): string {
   const queryParams = new URLSearchParams({
     platform: encodeURIComponent(platform),
@@ -128,6 +130,9 @@ export function createBundleUrlPath({
   if (environment) {
     queryParams.append('resolver.environment', environment);
     queryParams.append('transform.environment', environment);
+  }
+  if (treeshake) {
+    queryParams.append('transform.treeshake', String(true));
   }
   if (serializerOutput) {
     queryParams.append('serializer.output', serializerOutput);

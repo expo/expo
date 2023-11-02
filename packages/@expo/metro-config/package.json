@@ -43,7 +43,8 @@
     "lightningcss": "~1.19.0",
     "postcss": "~8.4.21",
     "resolve-from": "^5.0.0",
-    "sucrase": "^3.20.0"
+    "sucrase": "^3.20.0",
+    "minimatch": "^9.0.3"
   },
   "peerDependencies": {
     "@babel/core": "*",

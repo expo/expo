@@ -13,6 +13,8 @@ import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString'
 import bundleToString from 'metro/src/lib/bundleToString';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
+import fs from 'fs';
+import minimatch from 'minimatch';
 
 import { toFixture } from './__tests__/fixtures/toFixture';
 import {
@@ -22,6 +24,7 @@ import {
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
+import { sync as globSync } from 'glob';
 
 const countLines = require('metro/src/lib/countLines');
 import { MetroSourceMapSegmentTuple, functionMapBabelPlugin } from 'metro-source-map';
@@ -335,26 +338,55 @@ export function treeShakeSerializerPlugin(
           const dep = value.dependencies.get(depId)!;
 
           const graphDep = graph.dependencies.get(dep.absolutePath);
-
-          // Remove inverse link to this dependency
-          graphDep!.inverseDependencies.delete(value.path);
-
-          if (graphDep!.inverseDependencies.size === 0) {
-            // Remove the dependency from the graph as no other modules are using it anymore.
-            graph.dependencies.delete(dep.absolutePath);
+          // Should never happen but we're playing with fire here.
+          if (!graphDep) {
+            throw new Error(
+              `Failed to find graph key for import "${importModuleId}" from "${importModuleId}"`
+            );
           }
 
-          // Remove dependency from this module in the graph
-          value.dependencies.delete(depId);
+          //
+          if (!hasSideEffect(graphDep)) {
+            // Remove inverse link to this dependency
+            graphDep.inverseDependencies.delete(value.path);
 
-          // Delete the AST
-          path.remove();
-          removed = true;
+            if (graphDep.inverseDependencies.size === 0) {
+              // Remove the dependency from the graph as no other modules are using it anymore.
+              graph.dependencies.delete(dep.absolutePath);
+            }
+
+            // Remove dependency from this module in the graph
+            value.dependencies.delete(depId);
+
+            // Delete the AST
+            path.remove();
+
+            // Mark the module as removed so we know to traverse again.
+            removed = true;
+          }
         }
       },
     });
 
     return removed;
+  }
+
+  function hasSideEffect(value: Module<MixedOutput>, checked: Set<string> = new Set()): boolean {
+    if (value.sideEffects) {
+      return true;
+    }
+    // Recursively check if any of the dependencies have side effects.
+    for (const depReference of value.dependencies.values()) {
+      if (checked.has(depReference.absolutePath)) {
+        continue;
+      }
+      checked.add(depReference.absolutePath);
+      const dep = graph.dependencies.get(depReference.absolutePath)!;
+      if (hasSideEffect(dep, checked)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   function treeShakeAll() {
@@ -380,8 +412,83 @@ export function treeShakeSerializerPlugin(
     }
   }
 
+  function markSideEffects() {
+    const findUpPackageJsonPath = (dir: string): string | null => {
+      if (dir === path.sep || dir.length < options.projectRoot.length) {
+        return null;
+      }
+      const packageJsonPath = path.join(dir, 'package.json');
+      if (fs.existsSync(packageJsonPath)) {
+        return packageJsonPath;
+      }
+      return findUpPackageJsonPath(path.dirname(dir));
+    };
+
+    const pkgJsonCache = new Map<string, any>();
+
+    const getPackageJsonMatcher = (dir: string): any => {
+      const cached = pkgJsonCache.get(dir);
+      if (cached) {
+        return cached;
+      }
+      const packageJsonPath = findUpPackageJsonPath(dir);
+      if (!packageJsonPath) {
+        return null;
+      }
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+
+      // TODO: Split out and unit test.
+      const dirRoot = path.dirname(packageJsonPath);
+      const isSideEffect = (fp: string): boolean => {
+        if (typeof packageJson.sideEffects === 'boolean') {
+          return packageJson.sideEffects;
+        } else if (Array.isArray(packageJson.sideEffects)) {
+          const relativeName = path.relative(dirRoot, fp);
+          return packageJson.sideEffects.some((sideEffect: any) => {
+            if (typeof sideEffect === 'string') {
+              return minimatch(relativeName, sideEffect.replace(/^\.\//, ''), { matchBase: true });
+            }
+            return false;
+          });
+        }
+        return false;
+      };
+
+      pkgJsonCache.set(dir, isSideEffect);
+      return isSideEffect;
+    };
+
+    // This pass will traverse all dependencies and mark them as side-effect-ful if they are marked as such
+    // in the package.json, according to Webpack: https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free
+    for (const value of graph.dependencies.values()) {
+      const isSideEffect = getPackageJsonMatcher(value.path);
+      if (!isSideEffect) {
+        continue;
+      }
+
+      // @ts-expect-error: Not on type. This logic should probably be upstreamed.
+      value.sideEffects = isSideEffect(value.path);
+    }
+
+    // This pass will surface all recursive dependencies that are side-effect-ful and mark them early
+    // so we aren't redoing recursive checks later.
+    // e.g. `./index.js` -> `./foo.js` -> `./bar.js` -> `./baz.js` (side-effect)
+    // All modules will be marked as side-effect-ful.
+    for (const value of graph.dependencies.values()) {
+      if (hasSideEffect(value)) {
+        value.sideEffects = true;
+      }
+    }
+  }
+
+  // Iterate the graph and mark dependencies as side-effect-ful if they are marked as such in the package.json.
+  markSideEffects();
+
+  // Tree shake the graph.
   treeShakeAll();
 
+  // Convert all remaining AST and dependencies to standard output that Metro expects.
+  // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
   for (const value of graph.dependencies.values()) {
     // console.log('inverseDependencies', value.inverseDependencies.values());
 
@@ -487,10 +594,6 @@ export function treeShakeSerializerPlugin(
       // console.log('output code', outputItem.data.code);
     }
   }
-
-  // console.log(
-  //   require('util').inspect({ entryPoint, graph, options }, { depth: 20, colors: true })
-  // );
 
   return [entryPoint, preModules, graph, options];
 }

@@ -168,6 +168,7 @@ const transform = ({ filename, options, src, plugins, }) => {
                 // @ts-expect-error: Custom values passed to the caller.
                 bundler: 'metro',
                 platform: options.platform,
+                treeshake: options.customTransformOptions?.treeshake === 'true' && !options.dev,
                 // Empower the babel preset to know the env it's bundling for.
                 // Metro automatically updates the cache to account for the custom transform options.
                 isServer: options.customTransformOptions?.environment === 'node',

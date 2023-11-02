@@ -161,6 +161,11 @@ class Env {
   get EXPO_USE_FAST_RESOLVER() {
     return boolish('EXPO_USE_FAST_RESOLVER', false);
   }
+
+  /** Enable unstable tree shaking feature. */
+  get EXPO_USE_TREE_SHAKING() {
+    return boolish('EXPO_USE_TREE_SHAKING', false);
+  }
 }
 
 export const env = new Env();

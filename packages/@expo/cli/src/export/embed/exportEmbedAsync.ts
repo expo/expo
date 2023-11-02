@@ -8,6 +8,7 @@ import { Options } from './resolveOptions';
 import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { importCliSaveAssetsFromProject } from '../../start/server/metro/resolveFromProject';
+import { env } from '../../utils/env';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { getAssets } from '../fork-bundleAsync';
 
@@ -45,6 +46,10 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     platform: options.platform,
     unstable_transformProfile:
       options.unstableTransformProfile as BundleOptions['unstable_transformProfile'],
+    customTransformOptions: Object.create({
+      // engine: isHermes ? 'hermes' : undefined,
+      treeshake: String(env.EXPO_USE_TREE_SHAKING),
+    }),
   };
 
   const server = new Server(config, {

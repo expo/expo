@@ -19,12 +19,12 @@ config.resolver.blockList = [
   /node_modules\/pretty-format\/node_modules\/react-is/,
 ];
 
-config.transformer.unstable_disableModuleWrapping = true;
-config.transformer.getTransformOptions = async () => ({
-  transform: {
-    experimentalImportSupport: false,
-    inlineRequires: true,
-  },
-});
+// config.transformer.unstable_disableModuleWrapping = true;
+// config.transformer.getTransformOptions = async () => ({
+//   transform: {
+//     experimentalImportSupport: false,
+//     inlineRequires: true,
+//   },
+// });
 
 module.exports = config;

@@ -9,40 +9,53 @@ const css_1 = require("./css");
 const css_modules_1 = require("./css-modules");
 const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
+const env_1 = require("../env");
 const countLines = require('metro/src/lib/countLines');
 async function transform(config, projectRoot, filename, data, options) {
-    const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
+    const nextConfig = {
+        ...config,
+    };
+    const nextOptions = {
+        ...options,
+    };
+    // Preserve the original format as much as we can for tree-shaking.
+    if (env_1.env.EXPO_USE_TREE_SHAKING && !nextOptions.dev) {
+        nextConfig.unstable_disableModuleWrapping = true;
+        nextOptions.experimentalImportSupport = false;
+        nextOptions.minify = false;
+    }
+    const isCss = nextOptions.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
     // If the file is not CSS, then use the default behavior.
     if (!isCss) {
-        const environment = options.customTransformOptions?.environment;
+        const environment = nextOptions.customTransformOptions?.environment;
         if (environment !== 'node' &&
             // TODO: Ensure this works with windows.
-            (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
+            (filename.match(new RegExp(`^app/\\+html(\\.${nextOptions.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
                 // Strip +api files.
                 filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))) {
             // Remove the server-only +html file and API Routes from the bundle when bundling for a client environment.
-            return metro_transform_worker_1.default.transform(config, projectRoot, filename, !options.minify
+            return metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, !nextOptions.minify
                 ? Buffer.from(
                 // Use a string so this notice is visible in the bundle if the user is
                 // looking for it.
                 '"> The server-only file was removed from the client JS bundle by Expo CLI."')
-                : Buffer.from(''), options);
+                : Buffer.from(''), nextOptions);
         }
         if (environment !== 'node' &&
             !filename.match(/\/node_modules\//) &&
             filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/)) {
             // Clear the contents of +api files when bundling for the client.
             // This ensures that the client doesn't accidentally use the server-only +api files.
-            return metro_transform_worker_1.default.transform(config, projectRoot, filename, Buffer.from(''), options);
+            return metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, Buffer.from(''), nextOptions);
         }
-        return metro_transform_worker_1.default.transform(config, projectRoot, filename, data, options);
+        return metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, data, nextOptions);
     }
     // If the platform is not web, then return an empty module.
-    if (options.platform !== 'web') {
+    if (nextOptions.platform !== 'web') {
         const code = (0, css_modules_1.matchCssModule)(filename) ? 'module.exports={ unstable_styles: {} };' : '';
-        return metro_transform_worker_1.default.transform(config, projectRoot, filename, 
+        return metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, 
         // TODO: Native CSS Modules
-        Buffer.from(code), options);
+        Buffer.from(code), nextOptions);
     }
     let code = data.toString('utf8');
     // Apply postcss transforms
@@ -63,12 +76,12 @@ async function transform(config, projectRoot, filename, data, options) {
             src: code,
             options: {
                 projectRoot,
-                dev: options.dev,
-                minify: options.minify,
+                dev: nextOptions.dev,
+                minify: nextOptions.minify,
                 sourceMap: false,
             },
         });
-        const jsModuleResults = await metro_transform_worker_1.default.transform(config, projectRoot, filename, Buffer.from(results.output), options);
+        const jsModuleResults = await metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, Buffer.from(results.output), nextOptions);
         const cssCode = results.css.toString();
         const output = [
             {
@@ -101,14 +114,14 @@ async function transform(config, projectRoot, filename, data, options) {
         sourceMap: false,
         cssModules: false,
         projectRoot,
-        minify: options.minify,
+        minify: nextOptions.minify,
     });
     // TODO: Warnings:
     // cssResults.warnings.forEach((warning) => {
     // });
     // Create a mock JS module that exports an empty object,
     // this ensures Metro dependency graph is correct.
-    const jsModuleResults = await metro_transform_worker_1.default.transform(config, projectRoot, filename, options.dev ? Buffer.from((0, css_1.wrapDevelopmentCSS)({ src: code, filename })) : Buffer.from(''), options);
+    const jsModuleResults = await metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, nextOptions.dev ? Buffer.from((0, css_1.wrapDevelopmentCSS)({ src: code, filename })) : Buffer.from(''), nextOptions);
     const cssCode = cssResults.code.toString();
     // In production, we export the CSS as a string and use a special type to prevent
     // it from being included in the JS bundle. We'll extract the CSS like an asset later

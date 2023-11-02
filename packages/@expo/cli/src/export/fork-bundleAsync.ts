@@ -19,6 +19,7 @@ import {
   importMetroServerFromProject,
 } from '../start/server/metro/resolveFromProject';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
+import { env } from '../utils/env';
 
 export type MetroDevServerOptions = LoadOptions;
 
@@ -141,6 +142,10 @@ async function bundleProductionMetroClientAsync(
       minify: !isHermes && (bundle.minify ?? !bundle.dev),
       inlineSourceMap: false,
       sourceMapUrl: bundle.sourceMapUrl,
+      customTransformOptions: Object.create({
+        engine: isHermes ? 'hermes' : undefined,
+        treeshake: String(env.EXPO_USE_TREE_SHAKING),
+      }),
       createModuleIdFactory: config.serializer.createModuleIdFactory,
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
         reporter.update({
