@@ -81,7 +81,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     graph: ReadOnlyGraph,
     options: SerializerOptions
   ): Promise<SerializerParameters> {
-    console.log('treeshake:', graph.transformOptions);
+    // console.log('treeshake:', graph.transformOptions);
     if (graph.transformOptions.customTransformOptions?.treeshake !== 'true' || options.dev) {
       return [entryPoint, preModules, graph, options];
     }
@@ -186,7 +186,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
             }
           },
         });
-        inspect('imports', outputItem.data.modules.imports);
+        // inspect('imports', outputItem.data.modules.imports);
       }
     }
 
@@ -248,7 +248,6 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                   if (importItem.cjs || importItem.star) {
                     return true;
                   }
-                  console.log('i>', importName);
 
                   return importItem.specifiers.some((specifier) => {
                     if (specifier.type === 'ImportDefaultSpecifier') {
@@ -320,12 +319,12 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                   }
                 });
               } else {
-                console.log(
-                  'check:',
-                  declaration.type,
-                  declaration.id?.name,
-                  isExportUsed(declaration.id.name)
-                );
+                // console.log(
+                //   'check:',
+                //   declaration.type,
+                //   declaration.id?.name,
+                //   isExportUsed(declaration.id.name)
+                // );
                 // if (declaration.type === 'FunctionDeclaration' || declaration.type === 'ClassDeclaration')
                 if (!isExportUsed(declaration.id.name)) {
                   markUnused(path, declaration);
@@ -429,6 +428,13 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                 );
               }
 
+              // inspect(
+              //   'remove',
+              //   depId,
+              //   dep.absolutePath,
+              //   hasSideEffect(graphDep),
+              //   isEmptyModule(graphDep)
+              // );
               if (
                 // Don't remove the module if it has side effects.
                 !hasSideEffect(graphDep) ||
@@ -478,7 +484,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
 
     function isEmptyModule(value: Module<MixedOutput>): boolean {
       function isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast) {
-        if (ast.program.body.length > 0) {
+        if (!ast.program.body.length) {
           return true;
         }
 
@@ -593,6 +599,11 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         // TODO: Split out and unit test.
         const dirRoot = path.dirname(packageJsonPath);
         const isSideEffect = (fp: string): boolean => {
+          // Default is that everything is a side-effect unless explicitly marked as not.
+          if (packageJson.sideEffects == null) {
+            return true;
+          }
+
           if (typeof packageJson.sideEffects === 'boolean') {
             return packageJson.sideEffects;
           } else if (Array.isArray(packageJson.sideEffects)) {

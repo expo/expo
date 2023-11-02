@@ -76,7 +76,7 @@ const generateImportNames = require('metro/src/ModuleGraph/worker/generateImport
 const inspect = (...props) => console.log(...props.map((prop) => require('util').inspect(prop, { depth: 20, colors: true })));
 function treeShakeSerializerPlugin(config) {
     return async function treeShakeSerializer(entryPoint, preModules, graph, options) {
-        console.log('treeshake:', graph.transformOptions);
+        // console.log('treeshake:', graph.transformOptions);
         if (graph.transformOptions.customTransformOptions?.treeshake !== 'true' || options.dev) {
             return [entryPoint, preModules, graph, options];
         }
@@ -166,7 +166,7 @@ function treeShakeSerializerPlugin(config) {
                         }
                     },
                 });
-                inspect('imports', outputItem.data.modules.imports);
+                // inspect('imports', outputItem.data.modules.imports);
             }
         }
         // const detectCommonJsExportsUsage = (ast: Parameters<typeof traverse>[0]): boolean => {
@@ -223,7 +223,6 @@ function treeShakeSerializerPlugin(config) {
                                     if (importItem.cjs || importItem.star) {
                                         return true;
                                     }
-                                    console.log('i>', importName);
                                     return importItem.specifiers.some((specifier) => {
                                         if (specifier.type === 'ImportDefaultSpecifier') {
                                             return importName === 'default';
@@ -288,7 +287,12 @@ function treeShakeSerializerPlugin(config) {
                                 });
                             }
                             else {
-                                console.log('check:', declaration.type, declaration.id?.name, isExportUsed(declaration.id.name));
+                                // console.log(
+                                //   'check:',
+                                //   declaration.type,
+                                //   declaration.id?.name,
+                                //   isExportUsed(declaration.id.name)
+                                // );
                                 // if (declaration.type === 'FunctionDeclaration' || declaration.type === 'ClassDeclaration')
                                 if (!isExportUsed(declaration.id.name)) {
                                     markUnused(path, declaration);
@@ -378,6 +382,13 @@ function treeShakeSerializerPlugin(config) {
                             if (!graphDep) {
                                 throw new Error(`Failed to find graph key for import "${importModuleId}" while optimizing ${value.path}. Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`);
                             }
+                            // inspect(
+                            //   'remove',
+                            //   depId,
+                            //   dep.absolutePath,
+                            //   hasSideEffect(graphDep),
+                            //   isEmptyModule(graphDep)
+                            // );
                             if (
                             // Don't remove the module if it has side effects.
                             !hasSideEffect(graphDep) ||
@@ -420,7 +431,7 @@ function treeShakeSerializerPlugin(config) {
         }
         function isEmptyModule(value) {
             function isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast) {
-                if (ast.program.body.length > 0) {
+                if (!ast.program.body.length) {
                     return true;
                 }
                 let isEmptyOrCommentsAndUseStrict = true; // Assume true until proven otherwise
@@ -518,6 +529,10 @@ function treeShakeSerializerPlugin(config) {
                 // TODO: Split out and unit test.
                 const dirRoot = path_1.default.dirname(packageJsonPath);
                 const isSideEffect = (fp) => {
+                    // Default is that everything is a side-effect unless explicitly marked as not.
+                    if (packageJson.sideEffects == null) {
+                        return true;
+                    }
                     if (typeof packageJson.sideEffects === 'boolean') {
                         return packageJson.sideEffects;
                     }

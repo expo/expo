@@ -3,6 +3,7 @@
   "version": "3.0.3",
   "description": "Tools for making advanced Metro bundler features work",
   "types": "build",
+  "sideEffects": true,
   "main": "build",
   "browser": "src",
   "react-native": "src",
