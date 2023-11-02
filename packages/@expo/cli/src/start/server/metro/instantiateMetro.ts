@@ -111,7 +111,9 @@ export async function loadMetroConfigAsync(
     isExporting,
   });
 
-  logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
+  if (process.env.NODE_ENV !== 'test') {
+    logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
+  }
 
   return {
     config,

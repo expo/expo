@@ -6,7 +6,8 @@
  */
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
-import { Resolution, ResolutionContext } from 'metro-resolver';
+import type { Resolution, ResolutionContext } from 'metro-resolver';
+import * as metroResolver from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -21,7 +22,6 @@ import {
   setupShimFiles,
 } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
-import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
 import { withMetroResolvers } from './withMetroResolvers';
 import { Log } from '../../../log';
@@ -135,7 +135,7 @@ export function withExtendedResolver(
 
   const isWebEnabled = platforms.includes('web');
 
-  const defaultResolver = importMetroResolverFromProject(projectRoot).resolve;
+  const defaultResolver = metroResolver.resolve;
   const resolver = isFastResolverEnabled
     ? createFastResolver({ preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false })
     : defaultResolver;

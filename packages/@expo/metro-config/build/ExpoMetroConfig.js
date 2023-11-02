@@ -257,7 +257,7 @@ function getDefaultConfig(projectRoot, {
         }
         return preModules;
       },
-      getPolyfills: () => require(_path().default.join(reactNativePath, 'rn-get-polyfills'))()
+      getPolyfills: () => require('@react-native/js-polyfills')()
     },
     server: {
       rewriteRequestUrl: (0, _rewriteRequestUrl().getRewriteRequestUrl)(projectRoot),

@@ -3,7 +3,6 @@ import { vol } from 'memfs';
 import { ConfigT } from 'metro-config';
 import { CustomResolutionContext } from 'metro-resolver/src';
 
-import { importMetroResolverFromProject } from '../resolveFromProject';
 import {
   getNodejsExtensions,
   shouldAliasAssetRegistryForWeb,
@@ -12,10 +11,10 @@ import {
 
 const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => config as any;
 
-jest.mock('../resolveFromProject', () => {
+jest.mock('metro-resolver', () => {
   const resolve = jest.fn(() => ({ type: 'empty' }));
   return {
-    importMetroResolverFromProject: jest.fn(() => ({ resolve })),
+    resolve,
   };
 });
 
@@ -32,7 +31,7 @@ function getDefaultRequestContext(): CustomResolutionContext {
 }
 
 function getResolveFunc() {
-  return importMetroResolverFromProject('/').resolve;
+  return require('metro-resolver').resolve;
 }
 
 describe(withExtendedResolver, () => {

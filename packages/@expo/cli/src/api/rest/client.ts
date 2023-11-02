@@ -3,7 +3,6 @@ import { JSONValue } from '@expo/json-file';
 import fetchInstance from 'node-fetch';
 import path from 'path';
 
-import { FileSystemCache } from './cache/FileSystemCache';
 import { wrapFetchWithCache } from './cache/wrapFetchWithCache';
 import { FetchLike } from './client.types';
 import { wrapFetchWithBaseUrl } from './wrapFetchWithBaseUrl';
@@ -134,6 +133,9 @@ export function createCachedFetch({
   if (skipCache || env.EXPO_BETA || env.EXPO_NO_CACHE) {
     return fetch;
   }
+
+  const { FileSystemCache } =
+    require('./cache/FileSystemCache') as typeof import('./cache/FileSystemCache');
 
   return wrapFetchWithCache(
     fetch,

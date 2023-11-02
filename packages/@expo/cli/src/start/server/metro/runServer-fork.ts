@@ -6,7 +6,7 @@
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
-import { RunServerOptions, Server } from 'metro';
+import Metro, { RunServerOptions, Server } from 'metro';
 import { ConfigT } from 'metro-config';
 import type { InspectorProxy } from 'metro-inspector-proxy';
 import { parse } from 'url';
@@ -15,7 +15,6 @@ import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { createInspectorProxy, ExpoInspectorProxy } from './inspector-proxy';
 import {
   importMetroCreateWebsocketServerFromProject,
-  importMetroFromProject,
   importMetroHmrServerFromProject,
   importMetroInspectorProxyFromProject,
 } from './resolveFromProject';
@@ -37,8 +36,6 @@ export const runServer = async (
   }: RunServerOptions
 ): Promise<{ server: http.Server | https.Server; metro: Server }> => {
   const projectRoot = metroBundler.projectRoot;
-
-  const Metro = importMetroFromProject(projectRoot);
 
   const createWebsocketServer = importMetroCreateWebsocketServerFromProject(projectRoot);
 

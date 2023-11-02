@@ -40,10 +40,6 @@ function importFromProject(projectRoot: string, moduleId: string) {
   return require(resolveFromProject(projectRoot, moduleId));
 }
 
-/** Import `metro` from the project. */
-export function importMetroFromProject(projectRoot: string): typeof import('metro') {
-  return importFromProject(projectRoot, 'metro');
-}
 export function importMetroServerFromProject(projectRoot: string): typeof import('metro').Server {
   return importFromProject(projectRoot, 'metro/src/Server');
 }
@@ -82,13 +78,6 @@ export function importFromProjectOrFallback<TModule>(
   return require(resolvedPath);
 }
 
-/** Import `metro-resolver` from the project. */
-export function importMetroResolverFromProject(
-  projectRoot: string
-): typeof import('metro-resolver') {
-  return importFromProject(projectRoot, 'metro-resolver');
-}
-
 /** Import `metro-inspector-proxy` from the project. */
 export function importMetroInspectorProxyFromProject(
   projectRoot: string
@@ -101,19 +90,6 @@ export function importMetroInspectorDeviceFromProject(
   projectRoot: string
 ): typeof import('metro-inspector-proxy/src/Device') {
   return importFromProject(projectRoot, 'metro-inspector-proxy/src/Device');
-}
-
-/**
- * Import the internal `saveAssets()` function from `react-native` for the purpose
- * of saving production assets as-is instead of converting them to a hash.
- */
-export function importCliSaveAssetsFromProject(
-  projectRoot: string
-): typeof import('@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets').default {
-  return importFromProject(
-    projectRoot,
-    '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets'
-  ).default;
 }
 
 /** Resolve the installed Metro version from project */
