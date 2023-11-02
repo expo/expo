@@ -137,17 +137,15 @@ class ClipboardPasteButton: ExpoView {
       "text": attributedString?.htmlString ?? ""
     ])
   }
-  
   private func unmountChild() {
     childView?.removeFromSuperview()
     childView = nil
   }
-  
   private func imageToData(_ image: UIImage) -> Data? {
     switch imageOptions.imageFormat {
-      case .jpeg: return image.jpegData(compressionQuality: imageOptions.jpegQuality)
-      case .png: return image.pngData()
-      case .gif: return image.gifData()
+    case .jpeg: return image.jpegData(compressionQuality: imageOptions.jpegQuality)
+    case .png: return image.pngData()
+    case .gif: return image.gifData()
     }
   }
 }
