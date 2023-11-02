@@ -315,19 +315,10 @@ export function withExtendedResolver(
     // to fail to load. This is a temporary workaround until we can fix this upstream.
     // https://github.com/facebook/react-native/pull/38628
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      if (
-        moduleName.includes('event-target-shim') &&
-        context.originModulePath.includes(path.sep + 'react-native' + path.sep)
-      ) {
-        debug('Skip mjs support for event-target-shim in:', context.originModulePath);
-        const doResolve = getStrictResolver(
-          {
-            ...context,
-            sourceExts: context.sourceExts.filter((f) => !f.includes('mjs')),
-          },
-          platform
-        );
-        return doResolve(moduleName);
+      if (platform !== 'web' && moduleName === 'event-target-shim') {
+        debug('For event-target-shim to use js:', context.originModulePath);
+        const doResolve = getStrictResolver(context, platform);
+        return doResolve('event-target-shim/dist/event-target-shim.js');
       }
 
       return null;
