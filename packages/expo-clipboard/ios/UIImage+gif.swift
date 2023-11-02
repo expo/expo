@@ -51,7 +51,7 @@ extension UIImage {
             CGImageDestinationAddImage(destination, cgImage, frameProperties as CFDictionary)
         }
         if !CGImageDestinationFinalize(destination) {
-            return nil
+          return nil
         }
     }
     return data as Data
