@@ -86,7 +86,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
       return [entryPoint, preModules, graph, options];
     }
     const includeDebugInfo = true;
-    const preserveEsm = true;
+    const preserveEsm = false;
 
     // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
     const minify =
@@ -102,7 +102,9 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
 
         if (!key) {
           throw new Error(
-            `Failed to find graph key for import "${moduleId}" in module "${value.path}"`
+            `Failed to find graph key for import "${moduleId}" in module "${
+              value.path
+            }". Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`
           );
         }
         return key;
@@ -152,7 +154,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
             }
           },
         });
-        inspect('imports', outputItem.data.modules.imports);
+        // inspect('imports', outputItem.data.modules.imports);
       }
     }
 
@@ -383,6 +385,11 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
 
               //
               if (!hasSideEffect(graphDep)) {
+                // if (value.path.includes('/Libraries/Utilities/PerformanceLoggerContext.js')) {
+                //   // if (dep.absolutePath.includes('/react/index.js')) {
+                //   // console.log('Remove:', dep.absolutePath, 'from', value.path);
+                //   // inspect(value.dependencies);
+                // }
                 // Remove inverse link to this dependency
                 graphDep.inverseDependencies.delete(value.path);
 
@@ -391,8 +398,13 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                   graph.dependencies.delete(dep.absolutePath);
                 }
 
-                // Remove dependency from this module in the graph
-                value.dependencies.delete(depId);
+                // Remove a random instance of the dep count to track if there are multiple imports.
+                dep.data.data.locs.pop();
+
+                if (!dep.data.data.locs.length) {
+                  // Remove dependency from this module in the graph
+                  value.dependencies.delete(depId);
+                }
 
                 // Delete the AST
                 path.remove();
@@ -433,7 +445,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     }
 
     function treeShakeAll(depth: number = 0) {
-      if (depth > 5) {
+      if (depth > 10) {
         return;
       }
       // This pass will parse all modules back to AST and include the import/export statements.
@@ -645,23 +657,29 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
 
         let map: Array<MetroSourceMapSegmentTuple> = [];
         let code = outputCode;
-        if (minify) {
+        if (minify && !preserveEsm) {
           const minifyCode = require('metro-minify-terser');
-          ({ map, code } = await minifyCode({
-            //           code: string;
-            // map?: BasicSourceMap;
-            // filename: string;
-            // reserved: ReadonlyArray<string>;
-            // config: MinifierConfig;
-            // projectRoot,
-            filename: value.path,
-            code,
-            // file.code,
-            // map,
-            config: {},
-            reserved: [],
-            // config,
-          }));
+          try {
+            ({ map, code } = await minifyCode({
+              //           code: string;
+              // map?: BasicSourceMap;
+              // filename: string;
+              // reserved: ReadonlyArray<string>;
+              // config: MinifierConfig;
+              // projectRoot,
+              filename: value.path,
+              code,
+              // file.code,
+              // map,
+              config: {},
+              reserved: [],
+              // config,
+            }));
+          } catch (error) {
+            console.error('Error minifying: ' + value.path);
+            console.error(code);
+            throw error;
+          }
         }
 
         outputItem.data.code = (includeDebugInfo ? `\n// ${value.path}\n` : '') + code;

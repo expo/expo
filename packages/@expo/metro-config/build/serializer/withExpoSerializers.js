@@ -81,7 +81,7 @@ function treeShakeSerializerPlugin(config) {
             return [entryPoint, preModules, graph, options];
         }
         const includeDebugInfo = true;
-        const preserveEsm = true;
+        const preserveEsm = false;
         // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
         const minify = graph.transformOptions.minify &&
             graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
@@ -92,7 +92,7 @@ function treeShakeSerializerPlugin(config) {
                     return dep.data.name === moduleId;
                 })?.absolutePath;
                 if (!key) {
-                    throw new Error(`Failed to find graph key for import "${moduleId}" in module "${value.path}"`);
+                    throw new Error(`Failed to find graph key for import "${moduleId}" in module "${value.path}". Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`);
                 }
                 return key;
             }
@@ -136,7 +136,7 @@ function treeShakeSerializerPlugin(config) {
                         }
                     },
                 });
-                inspect('imports', outputItem.data.modules.imports);
+                // inspect('imports', outputItem.data.modules.imports);
             }
         }
         // const detectCommonJsExportsUsage = (ast: Parameters<typeof traverse>[0]): boolean => {
@@ -342,14 +342,23 @@ function treeShakeSerializerPlugin(config) {
                             }
                             //
                             if (!hasSideEffect(graphDep)) {
+                                // if (value.path.includes('/Libraries/Utilities/PerformanceLoggerContext.js')) {
+                                //   // if (dep.absolutePath.includes('/react/index.js')) {
+                                //   // console.log('Remove:', dep.absolutePath, 'from', value.path);
+                                //   // inspect(value.dependencies);
+                                // }
                                 // Remove inverse link to this dependency
                                 graphDep.inverseDependencies.delete(value.path);
                                 if (graphDep.inverseDependencies.size === 0) {
                                     // Remove the dependency from the graph as no other modules are using it anymore.
                                     graph.dependencies.delete(dep.absolutePath);
                                 }
-                                // Remove dependency from this module in the graph
-                                value.dependencies.delete(depId);
+                                // Remove a random instance of the dep count to track if there are multiple imports.
+                                dep.data.data.locs.pop();
+                                if (!dep.data.data.locs.length) {
+                                    // Remove dependency from this module in the graph
+                                    value.dependencies.delete(depId);
+                                }
                                 // Delete the AST
                                 path.remove();
                                 // Mark the module as removed so we know to traverse again.
@@ -385,7 +394,7 @@ function treeShakeSerializerPlugin(config) {
             return false;
         }
         function treeShakeAll(depth = 0) {
-            if (depth > 5) {
+            if (depth > 10) {
                 return;
             }
             // This pass will parse all modules back to AST and include the import/export statements.
@@ -559,23 +568,30 @@ function treeShakeSerializerPlugin(config) {
                 }).code;
                 let map = [];
                 let code = outputCode;
-                if (minify) {
+                if (minify && !preserveEsm) {
                     const minifyCode = require('metro-minify-terser');
-                    ({ map, code } = await minifyCode({
-                        //           code: string;
-                        // map?: BasicSourceMap;
-                        // filename: string;
-                        // reserved: ReadonlyArray<string>;
-                        // config: MinifierConfig;
-                        // projectRoot,
-                        filename: value.path,
-                        code,
-                        // file.code,
-                        // map,
-                        config: {},
-                        reserved: [],
-                        // config,
-                    }));
+                    try {
+                        ({ map, code } = await minifyCode({
+                            //           code: string;
+                            // map?: BasicSourceMap;
+                            // filename: string;
+                            // reserved: ReadonlyArray<string>;
+                            // config: MinifierConfig;
+                            // projectRoot,
+                            filename: value.path,
+                            code,
+                            // file.code,
+                            // map,
+                            config: {},
+                            reserved: [],
+                            // config,
+                        }));
+                    }
+                    catch (error) {
+                        console.error('Error minifying: ' + value.path);
+                        console.error(code);
+                        throw error;
+                    }
                 }
                 outputItem.data.code = (includeDebugInfo ? `\n// ${value.path}\n` : '') + code;
                 outputItem.data.lineCount = countLines(outputItem.data.code);
