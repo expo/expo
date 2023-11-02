@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- Update tests. ([#25089](https://github.com/expo/expo/pull/25089) by [@EvanBacon](https://github.com/EvanBacon))
 - Memoize notice log about `src/app` directory to prevent spam. ([#25000](https://github.com/expo/expo/pull/25000) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.10.14 — 2023-10-20
