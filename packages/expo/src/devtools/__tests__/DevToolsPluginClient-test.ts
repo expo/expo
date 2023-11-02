@@ -5,9 +5,6 @@ import { createDevToolsPluginClient } from '../DevToolsPluginClientFactory';
 // @ts-expect-error - We don't mock all properties from WebSocket
 globalThis.WebSocket = MockWebSocket;
 
-// Hide debug logs
-globalThis.console.debug = jest.fn();
-
 describe(`DevToolsPluginClient`, () => {
   let appClient: DevToolsPluginClient;
   let testCaseCounter = 0;
