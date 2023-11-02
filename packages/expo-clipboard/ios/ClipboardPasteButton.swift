@@ -3,18 +3,14 @@ import UniformTypeIdentifiers
 
 class ClipboardPasteButton: ExpoView {
   let onPastePressed = EventDispatcher()
-  
   // MARK: - Properties
-  
   var baseBackgroundColor: UIColor?
   var baseForegroundColor: UIColor?
   var cornerStyle: CornerStyle = .capsule
   var displayMode: DisplayMode = .iconAndLabel
   var acceptedContentTypes: [AcceptedTypes] = []
   var imageOptions = GetImageOptions()
-  
   private var childView: UIView?
-  
   func update() {
     unmountChild()
     if #available(iOS 16.0, *) {
@@ -23,7 +19,6 @@ class ClipboardPasteButton: ExpoView {
       log.error("ClipboardPasteButton is only supported on iOS 16 and above")
     }
   }
-  
   @available(iOS 16.0, *)
   private func mountView() {
     let configuration = UIPasteControl.Configuration()
@@ -31,20 +26,17 @@ class ClipboardPasteButton: ExpoView {
     configuration.baseForegroundColor = baseForegroundColor
     configuration.cornerStyle = cornerStyle.toCornerStyle()
     configuration.displayMode = displayMode.toUIDisplayMode()
-    
     let control = UIPasteControl(configuration: configuration)
     control.translatesAutoresizingMaskIntoConstraints = false
     control.target = self
     setContentTypes()
-    
     addSubview(control)
     childView = control
-    
     NSLayoutConstraint.activate([
       control.topAnchor.constraint(equalTo: topAnchor),
       control.bottomAnchor.constraint(equalTo: bottomAnchor),
       control.leadingAnchor.constraint(equalTo: leadingAnchor),
-      control.trailingAnchor.constraint(equalTo: trailingAnchor),
+      control.trailingAnchor.constraint(equalTo: trailingAnchor)
     ])
   }
   
