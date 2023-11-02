@@ -59,31 +59,31 @@ public class ClipboardModule: Module {
                 throw InvalidImageException(content)
             }
             if utType == "image/gif" {
-                    if #available(iOS 14, *) {
-                        // For iOS 14 and later
-                        let gifType = UTType.gif.identifier
-                        UIPasteboard.general.setData(data, forPasteboardType: gifType)
-                    } else {
-                        // For iOS 13 and earlier
-                        let gifUTI = kUTTypeGIF as String
-                        UIPasteboard.general.setData(data, forPasteboardType: gifUTI)
-                    }
+                if #available(iOS 14, *) {
+                    // For iOS 14 and later
+                    let gifType = UTType.gif.identifier
+                    UIPasteboard.general.setData(data, forPasteboardType: gifType)
+                } else {
+                    // For iOS 13 and earlier
+                    let gifUTI = kUTTypeGIF as String
+                    UIPasteboard.general.setData(data, forPasteboardType: gifUTI)
+                }
             } else {
                 guard let image = UIImage(data: data) else {
                     throw InvalidImageException(content)
                 }
                 UIPasteboard.general.image = image
             }
-//            if #available(iOS 14, *) {
-//                if utType == .gif {
-//                    UIPasteboard.general.setData(data, forPasteboardType: utType.identifier)
-//                } else {
-//                    guard let image = UIImage(data: data) else {
-//                        throw InvalidImageException(content)
-//                    }
-//                    UIPasteboard.general.image = image
-//                }
-//            }
+            //            if #available(iOS 14, *) {
+            //                if utType == .gif {
+            //                    UIPasteboard.general.setData(data, forPasteboardType: utType.identifier)
+            //                } else {
+            //                    guard let image = UIImage(data: data) else {
+            //                        throw InvalidImageException(content)
+            //                    }
+            //                    UIPasteboard.general.image = image
+            //                }
+            //            }
         }
 
         AsyncFunction("hasImageAsync") { () -> Bool in

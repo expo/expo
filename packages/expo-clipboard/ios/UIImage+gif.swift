@@ -3,7 +3,6 @@ import ImageIO
 import MobileCoreServices
 
 extension UIImage {
-
     static func gif(data: Data) -> UIImage? {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
             return nil
@@ -17,7 +16,7 @@ extension UIImage {
             if let cgImage = CGImageSourceCreateImageAtIndex(source, i, nil) {
                 let image = UIImage(cgImage: cgImage)
                 images.append(image)
-                
+
                 let delaySeconds = UIImage.delayForImageAtIndex(index: Int(i), source: source)
                 totalDuration += delaySeconds
             }
@@ -35,7 +34,7 @@ extension UIImage {
         if let gifProperties = gifProperties {
             var delayTime: Double = 0
             if let properties = CGImageSourceCopyPropertiesAtIndex(source, index, nil) as? [String: Any],
-            let gifProperties = properties[kCGImagePropertyGIFDictionary as String] as? [String: Any] {
+               let gifProperties = properties[kCGImagePropertyGIFDictionary as String] as? [String: Any] {
                 if let delayTimeUnclampedProp = gifProperties[kCGImagePropertyGIFUnclampedDelayTime as String] as? NSNumber {
                     delayTime = delayTimeUnclampedProp.doubleValue
                 } else if let delayTimeProp = gifProperties[kCGImagePropertyGIFDelayTime as String] as? NSNumber {
@@ -55,33 +54,33 @@ extension UIImage {
         return delay
     }
     var isAnimated: Bool {
-            return images != nil
-        }
-      
+        return images != nil
+    }
+
     func gifData(loopCount: Int = 0) -> Data? {
-            let imagesToUse = self.images ?? [self]
-            let gifLoopCount = [kCGImagePropertyGIFLoopCount as String: loopCount]
-            let gifProperties = [kCGImagePropertyGIFDictionary as String: gifLoopCount]
+        let imagesToUse = self.images ?? [self]
+        let gifLoopCount = [kCGImagePropertyGIFLoopCount as String: loopCount]
+        let gifProperties = [kCGImagePropertyGIFDictionary as String: gifLoopCount]
 
-            // Assuming a default frame delay for single frame if not animated.
-            let defaultFrameDelay = 0.1
-            let frameDelay = self.duration.isZero ? defaultFrameDelay : self.duration / Double(imagesToUse.count)
-            let frameProperties = [kCGImagePropertyGIFDictionary as String: [kCGImagePropertyGIFDelayTime as String: frameDelay]]
+        // Assuming a default frame delay for single frame if not animated.
+        let defaultFrameDelay = 0.1
+        let frameDelay = self.duration.isZero ? defaultFrameDelay : self.duration / Double(imagesToUse.count)
+        let frameProperties = [kCGImagePropertyGIFDictionary as String: [kCGImagePropertyGIFDelayTime as String: frameDelay]]
 
-            let data = NSMutableData()
-            if let destination = CGImageDestinationCreateWithData(data as CFMutableData, kUTTypeGIF, imagesToUse.count, nil) {
-                CGImageDestinationSetProperties(destination, gifProperties as CFDictionary)
-                
-                for image in imagesToUse {
-                    guard let cgImage = image.cgImage else { continue }
-                    CGImageDestinationAddImage(destination, cgImage, frameProperties as CFDictionary)
-                }
-                
-                if !CGImageDestinationFinalize(destination) {
-                    return nil
-                }
+        let data = NSMutableData()
+        if let destination = CGImageDestinationCreateWithData(data as CFMutableData, kUTTypeGIF, imagesToUse.count, nil) {
+            CGImageDestinationSetProperties(destination, gifProperties as CFDictionary)
+
+            for image in imagesToUse {
+                guard let cgImage = image.cgImage else { continue }
+                CGImageDestinationAddImage(destination, cgImage, frameProperties as CFDictionary)
             }
-            
-            return data as Data
+
+            if !CGImageDestinationFinalize(destination) {
+                return nil
+            }
         }
+
+        return data as Data
+    }
 }
