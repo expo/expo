@@ -54,9 +54,7 @@ function withExpoSerializers(config) {
     if (!env_1.env.EXPO_NO_CLIENT_ENV_VARS) {
         processors.push(environmentVariableSerializerPlugin_1.environmentVariableSerializerPlugin);
     }
-    if (env_1.env.EXPO_USE_TREE_SHAKING) {
-        processors.push(treeShakeSerializerPlugin);
-    }
+    processors.push(treeShakeSerializerPlugin);
     return withSerializerPlugins(config, processors);
 }
 exports.withExpoSerializers = withExpoSerializers;
@@ -76,7 +74,11 @@ exports.withSerializerPlugins = withSerializerPlugins;
 const JsFileWrapping = require('metro/src/ModuleGraph/worker/JsFileWrapping');
 const generateImportNames = require('metro/src/ModuleGraph/worker/generateImportNames');
 const inspect = (...props) => console.log(...props.map((prop) => require('util').inspect(prop, { depth: 20, colors: true })));
-function treeShakeSerializerPlugin(entryPoint, preModules, graph, options) {
+async function treeShakeSerializerPlugin(entryPoint, preModules, graph, options) {
+    console.log('treeshake:', graph.transformOptions);
+    if (!graph.transformOptions.customTransformOptions?.treeshake || options.dev) {
+        return [entryPoint, preModules, graph, options];
+    }
     const includeDebugInfo = false;
     const preserveEsm = false;
     // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
@@ -485,17 +487,26 @@ function treeShakeSerializerPlugin(entryPoint, preModules, graph, options) {
                 cloneInputAst: true,
             }).code;
             let map = [];
+            let code = outputCode;
             if (minify) {
-                // ({ map, code } = await minifyCode(
-                //   config,
-                //   projectRoot,
-                //   file.filename,
+                // const minifyCode = require('metro-minify-terser');
+                // ({ map, code } = await minifyCode({
+                //   //           code: string;
+                //   // map?: BasicSourceMap;
+                //   // filename: string;
+                //   // reserved: ReadonlyArray<string>;
+                //   // config: MinifierConfig;
+                //   // projectRoot,
+                //   filename: value.path,
                 //   code,
-                //   file.code,
-                //   map
-                // ));
+                //   // file.code,
+                //   // map,
+                //   config: {},
+                //   reserved: [],
+                //   // config,
+                // }));
             }
-            outputItem.data.code = (includeDebugInfo ? `\n// ${value.path}\n` : '') + outputCode;
+            outputItem.data.code = (includeDebugInfo ? `\n// ${value.path}\n` : '') + code;
             outputItem.data.lineCount = countLines(outputItem.data.code);
             outputItem.data.map = map;
             outputItem.data.functionMap =
@@ -606,10 +617,10 @@ function serializeToSourceMap(...props) {
 }
 function createSerializerFromSerialProcessors(processors, originalSerializer) {
     const finalSerializer = getDefaultSerializer(originalSerializer);
-    return (...props) => {
+    return async (...props) => {
         for (const processor of processors) {
             if (processor) {
-                props = processor(...props);
+                props = await processor(...props);
             }
         }
         return finalSerializer(...props);

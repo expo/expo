@@ -142,10 +142,11 @@ async function bundleProductionMetroClientAsync(
       minify: !isHermes && (bundle.minify ?? !bundle.dev),
       inlineSourceMap: false,
       sourceMapUrl: bundle.sourceMapUrl,
-      customTransformOptions: Object.create({
+      customTransformOptions: {
         engine: isHermes ? 'hermes' : undefined,
         treeshake: String(env.EXPO_USE_TREE_SHAKING),
-      }),
+      },
+      unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
       createModuleIdFactory: config.serializer.createModuleIdFactory,
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
         reporter.update({

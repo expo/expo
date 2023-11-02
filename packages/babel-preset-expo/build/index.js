@@ -10,6 +10,7 @@ function babelPresetExpo(api, options = {}) {
     const isWebpack = bundler === 'webpack';
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
+    const treeshake = api.caller((caller) => caller?.treeshake) ?? false;
     // If the `platform` prop is not defined then this must be a custom config that isn't
     // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
     if (!platform && isWebpack) {
@@ -24,7 +25,7 @@ function babelPresetExpo(api, options = {}) {
             ...web,
         }
         : {
-            disableImportExportTransform: false,
+            disableImportExportTransform: treeshake,
             unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
             ...native,
         };

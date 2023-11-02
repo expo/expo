@@ -36,7 +36,9 @@ export type SerializerParameters = Parameters<Serializer>;
 
 // A serializer that processes the input and returns a modified version.
 // Unlike a serializer, these can be chained together.
-export type SerializerPlugin = (...props: SerializerParameters) => SerializerParameters;
+export type SerializerPlugin = (
+  ...props: SerializerParameters
+) => SerializerParameters | Promise<SerializerParameters>;
 
 export function withExpoSerializers(config: InputConfigT): InputConfigT {
   const processors: SerializerPlugin[] = [];
@@ -44,9 +46,8 @@ export function withExpoSerializers(config: InputConfigT): InputConfigT {
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(environmentVariableSerializerPlugin);
   }
-  if (env.EXPO_USE_TREE_SHAKING) {
-    processors.push(treeShakeSerializerPlugin);
-  }
+
+  processors.push(treeShakeSerializerPlugin);
 
   return withSerializerPlugins(config, processors);
 }
@@ -73,12 +74,16 @@ const generateImportNames = require('metro/src/ModuleGraph/worker/generateImport
 const inspect = (...props) =>
   console.log(...props.map((prop) => require('util').inspect(prop, { depth: 20, colors: true })));
 
-export function treeShakeSerializerPlugin(
+export async function treeShakeSerializerPlugin(
   entryPoint: string,
   preModules: readonly Module<MixedOutput>[],
   graph: ReadOnlyGraph,
   options: SerializerOptions
-): SerializerParameters {
+): Promise<SerializerParameters> {
+  console.log('treeshake:', graph.transformOptions);
+  if (!graph.transformOptions.customTransformOptions?.treeshake || options.dev) {
+    return [entryPoint, preModules, graph, options];
+  }
   const includeDebugInfo = false;
   const preserveEsm = false;
 
@@ -569,19 +574,27 @@ export function treeShakeSerializerPlugin(
       })!.code!;
 
       let map: Array<MetroSourceMapSegmentTuple> = [];
-
+      let code = outputCode;
       if (minify) {
-        // ({ map, code } = await minifyCode(
-        //   config,
-        //   projectRoot,
-        //   file.filename,
+        // const minifyCode = require('metro-minify-terser');
+        // ({ map, code } = await minifyCode({
+        //   //           code: string;
+        //   // map?: BasicSourceMap;
+        //   // filename: string;
+        //   // reserved: ReadonlyArray<string>;
+        //   // config: MinifierConfig;
+        //   // projectRoot,
+        //   filename: value.path,
         //   code,
-        //   file.code,
-        //   map
-        // ));
+        //   // file.code,
+        //   // map,
+        //   config: {},
+        //   reserved: [],
+        //   // config,
+        // }));
       }
 
-      outputItem.data.code = (includeDebugInfo ? `\n// ${value.path}\n` : '') + outputCode;
+      outputItem.data.code = (includeDebugInfo ? `\n// ${value.path}\n` : '') + code;
       outputItem.data.lineCount = countLines(outputItem.data.code);
       outputItem.data.map = map;
       outputItem.data.functionMap =
@@ -729,10 +742,10 @@ export function createSerializerFromSerialProcessors(
   originalSerializer?: Serializer | null
 ): Serializer {
   const finalSerializer = getDefaultSerializer(originalSerializer);
-  return (...props: SerializerParameters): ReturnType<Serializer> => {
+  return async (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {
-        props = processor(...props);
+        props = await processor(...props);
       }
     }
 
