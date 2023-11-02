@@ -9,39 +9,33 @@ let onClipboardChanged = "onClipboardChanged"
 public class ClipboardModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoClipboard")
-    
     // MARK: - Strings
-    
     AsyncFunction("getStringAsync") { (options: GetStringOptions) -> String in
       switch options.preferredFormat {
-        case .plainText:
-          return UIPasteboard.general.string ?? ""
-        case .html:
-          return UIPasteboard.general.html ?? ""
+      case .plainText:
+        return UIPasteboard.general.string ?? ""
+      case .html:
+        return UIPasteboard.general.html ?? ""
       }
     }
-    
     AsyncFunction("setStringAsync") { (content: String?, options: SetStringOptions) -> Bool in
       switch options.inputFormat {
-        case .plainText:
-          UIPasteboard.general.string = content
-        case .html:
-          UIPasteboard.general.html = content
+      case .plainText:
+        UIPasteboard.general.string = content
+      case .html:
+        UIPasteboard.general.html = content
       }
       
       return true
     }
-    
     AsyncFunction("hasStringAsync") { () -> Bool in
       UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML
     }
-    
     // MARK: - URLs
     
     AsyncFunction("getUrlAsync") { () -> String? in
       UIPasteboard.general.url?.absoluteString
     }
-    
     AsyncFunction("setUrlAsync") { (url: URL) in
       UIPasteboard.general.url = url
     }
