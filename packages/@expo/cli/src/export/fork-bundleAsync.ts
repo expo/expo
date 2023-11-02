@@ -144,7 +144,7 @@ async function bundleProductionMetroClientAsync(
       sourceMapUrl: bundle.sourceMapUrl,
       customTransformOptions: {
         engine: isHermes ? 'hermes' : undefined,
-        treeshake: String(env.EXPO_USE_TREE_SHAKING),
+        treeshake: env.EXPO_USE_TREE_SHAKING ? String(env.EXPO_USE_TREE_SHAKING) : undefined,
       },
       unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
       createModuleIdFactory: config.serializer.createModuleIdFactory,

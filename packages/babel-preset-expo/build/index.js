@@ -10,7 +10,10 @@ function babelPresetExpo(api, options = {}) {
     const isWebpack = bundler === 'webpack';
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
-    const treeshake = api.caller((caller) => caller?.treeshake) ?? false;
+    const treeshake = api.caller((caller) => {
+        const value = caller?.treeshake;
+        return value === true || value === 'true';
+    });
     // If the `platform` prop is not defined then this must be a custom config that isn't
     // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
     if (!platform && isWebpack) {
@@ -20,7 +23,7 @@ function babelPresetExpo(api, options = {}) {
         ? {
             // Only disable import/export transform when Webpack is used because
             // Metro does not support tree-shaking.
-            disableImportExportTransform: isWebpack,
+            disableImportExportTransform: isWebpack || treeshake,
             unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
             ...web,
         }
@@ -117,7 +120,6 @@ function babelPresetExpo(api, options = {}) {
         ],
         plugins: [
             ...extraPlugins,
-            require('./metadata-plugin'),
             // TODO: Remove
             [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
             require.resolve('@babel/plugin-transform-export-namespace-from'),

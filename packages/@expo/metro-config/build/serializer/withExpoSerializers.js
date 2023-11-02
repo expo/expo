@@ -135,6 +135,36 @@ function treeShakeSerializerPlugin(config) {
                             }
                         }
                     },
+                    // export from
+                    ExportNamedDeclaration(path) {
+                        if (path.node.source) {
+                            const source = path.node.source.value;
+                            const specifiers = path.node.specifiers.map((specifier) => {
+                                return {
+                                    type: specifier.type,
+                                    exportedName: specifier.exported.name,
+                                    localName: specifier.local.name,
+                                };
+                            });
+                            outputItem.data.modules.imports.push({
+                                source,
+                                key: getGraphId(source),
+                                specifiers,
+                            });
+                        }
+                    },
+                    // export * from
+                    ExportAllDeclaration(path) {
+                        if (path.node.source) {
+                            const source = path.node.source.value;
+                            outputItem.data.modules.imports.push({
+                                source,
+                                key: getGraphId(source),
+                                specifiers: [],
+                                star: true,
+                            });
+                        }
+                    },
                 });
                 // inspect('imports', outputItem.data.modules.imports);
             }
@@ -190,7 +220,7 @@ function treeShakeSerializerPlugin(config) {
                                         return false;
                                     }
                                     // If the import is CommonJS, then we can't tree-shake it.
-                                    if (importItem.cjs) {
+                                    if (importItem.cjs || importItem.star) {
                                         return true;
                                     }
                                     return importItem.specifiers.some((specifier) => {
@@ -201,7 +231,7 @@ function treeShakeSerializerPlugin(config) {
                                         if (specifier.type === 'ImportNamespaceSpecifier') {
                                             return true;
                                         }
-                                        return specifier.importedName === importName;
+                                        return (specifier.importedName === importName || specifier.exportedName === importName);
                                     });
                                 });
                             }
@@ -253,6 +283,7 @@ function treeShakeSerializerPlugin(config) {
                                 });
                             }
                             else {
+                                console.log('check:', declaration.type, declaration.id?.name, isExportUsed(declaration.id.name));
                                 // if (declaration.type === 'FunctionDeclaration' || declaration.type === 'ClassDeclaration')
                                 if (!isExportUsed(declaration.id.name)) {
                                     markUnused(path, declaration);
@@ -294,7 +325,7 @@ function treeShakeSerializerPlugin(config) {
             });
             // Determine unused identifiers by subtracting the used from the imported
             const unusedImports = [...importedIdentifiers].filter((identifier) => !usedIdentifiers.has(identifier));
-            // console.log('usedIdentifiers', unusedImports, usedIdentifiers);
+            // inspect(ast);
             let removed = false; //unusedImports.length > 0;
             // Remove the unused imports from the AST
             (0, core_1.traverse)(ast, {
@@ -342,8 +373,11 @@ function treeShakeSerializerPlugin(config) {
                             if (!graphDep) {
                                 throw new Error(`Failed to find graph key for import "${importModuleId}" while optimizing ${value.path}. Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`);
                             }
-                            //
-                            if (!hasSideEffect(graphDep)) {
+                            if (
+                            // Don't remove the module if it has side effects.
+                            !hasSideEffect(graphDep) ||
+                                // Unless it's an empty module.
+                                isEmptyModule(graphDep)) {
                                 // if (value.path.includes('/Libraries/Utilities/PerformanceLoggerContext.js')) {
                                 //   // if (dep.absolutePath.includes('/react/index.js')) {
                                 //   // console.log('Remove:', dep.absolutePath, 'from', value.path);
@@ -379,6 +413,44 @@ function treeShakeSerializerPlugin(config) {
             });
             return removed;
         }
+        function isEmptyModule(value) {
+            function isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast) {
+                if (ast.program.body.length > 0) {
+                    return true;
+                }
+                let isEmptyOrCommentsAndUseStrict = true; // Assume true until proven otherwise
+                (0, core_1.traverse)(ast, {
+                    enter(path) {
+                        const { node } = path;
+                        // If it's not a Directive, ExpressionStatement, or empty body,
+                        // it means we have actual code
+                        if (node.type !== 'Directive' &&
+                            node.type !== 'ExpressionStatement' &&
+                            !(node.type === 'Program' && node.body.length === 0)) {
+                            isEmptyOrCommentsAndUseStrict = false;
+                            path.stop(); // No need to traverse further
+                            return;
+                        }
+                        // If it's an ExpressionStatement, check if it is "use strict"
+                        if (node.type === 'ExpressionStatement' && node.expression) {
+                            // Check if it's a Literal with value "use strict"
+                            const expression = node.expression;
+                            if (expression.type !== 'Literal' || expression.value !== 'use strict') {
+                                isEmptyOrCommentsAndUseStrict = false;
+                                path.stop(); // No need to traverse further
+                            }
+                        }
+                    },
+                    // If we encounter any non-comment nodes, it's not empty
+                    noScope: true,
+                });
+                return isEmptyOrCommentsAndUseStrict;
+            }
+            return value.output.every((outputItem) => {
+                const ast = outputItem.data.ast;
+                return isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast);
+            });
+        }
         function hasSideEffect(value, checked = new Set()) {
             if (value.sideEffects) {
                 return true;
@@ -407,14 +479,14 @@ function treeShakeSerializerPlugin(config) {
             // This pass will annotate the AST with the used and unused exports.
             for (const [depId, value] of graph.dependencies.entries()) {
                 treeShakeExports(depId, value);
-                for (const index in value.output) {
-                    const outputItem = value.output[index];
+                console.log('treeShakeExports', value.path, value.output.length);
+                value.output.forEach((outputItem) => {
                     const ast = outputItem.data.ast;
                     if (removeUnusedImports(value, ast)) {
                         // TODO: haha this is slow
                         treeShakeAll(depth + 1);
                     }
-                }
+                });
             }
         }
         function markSideEffects() {
@@ -605,7 +677,7 @@ function treeShakeSerializerPlugin(config) {
                         ast.functionMap ??
                         null;
                 // TODO: minify the code to fold anything that was dropped above.
-                console.log('output code', outputItem.data.code);
+                // console.log('output code', outputItem.data.code);
             }
         }
         return [entryPoint, preModules, graph, options];

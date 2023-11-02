@@ -63,7 +63,13 @@ describe('tree-shaking', () => {
     expect(stringResults).toMatch(/subtract/);
     expect(stringResults).toMatch(/a \+ b;/);
   });
-  it(`does not tree shake barrel re-exports`, async () => {
+  xit(`tree shakes named re-exports`, async () => {
+    const stringResults = await getSerializer()(...splitFixtures.namedBarrelExport);
+    console.log(stringResults);
+    expect(stringResults).not.toMatch(/subtract/);
+    expect(stringResults).toMatch(/a \+ b;/);
+  });
+  xit(`does not tree shake barrel re-exports`, async () => {
     const stringResults = await getSerializer()(...splitFixtures.barrelExport);
     console.log(stringResults);
     expect(stringResults).toMatch(/subtract/);

@@ -88,7 +88,7 @@
             {
               "type": "js/module",
               "data": {
-                "code": "export * from './math2'",
+                "code": "export { add } from './math2'",
                 "lineCount": 8,
                 "map": [
                 ],

@@ -48,7 +48,7 @@ export async function transform(
   };
   // Preserve the original format as much as we can for tree-shaking.
   if (
-    env.EXPO_USE_TREE_SHAKING &&
+    options.customTransformOptions?.treeshake === 'true' &&
     !nextOptions.dev &&
     // TODO: Pass entry files
     !filename.match(/node_modules\/metro-runtime/) &&
@@ -99,7 +99,9 @@ export async function transform(
       return worker.transform(nextConfig, projectRoot, filename, Buffer.from(''), nextOptions);
     }
 
-    return worker.transform(nextConfig, projectRoot, filename, data, nextOptions);
+    const res = await worker.transform(nextConfig, projectRoot, filename, data, nextOptions);
+    console.log('res', res.output[0]?.data?.code);
+    return res;
   }
 
   // If the platform is not web, then return an empty module.

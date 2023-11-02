@@ -9,7 +9,6 @@ const css_1 = require("./css");
 const css_modules_1 = require("./css-modules");
 const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
-const env_1 = require("../env");
 const countLines = require('metro/src/lib/countLines');
 async function transform(config, projectRoot, filename, data, options) {
     const nextConfig = {
@@ -19,7 +18,7 @@ async function transform(config, projectRoot, filename, data, options) {
         ...options,
     };
     // Preserve the original format as much as we can for tree-shaking.
-    if (env_1.env.EXPO_USE_TREE_SHAKING &&
+    if (options.customTransformOptions?.treeshake === 'true' &&
         !nextOptions.dev &&
         // TODO: Pass entry files
         !filename.match(/node_modules\/metro-runtime/) &&
@@ -52,7 +51,9 @@ async function transform(config, projectRoot, filename, data, options) {
             // This ensures that the client doesn't accidentally use the server-only +api files.
             return metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, Buffer.from(''), nextOptions);
         }
-        return metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, data, nextOptions);
+        const res = await metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, data, nextOptions);
+        console.log('res', res.output[0]?.data?.code);
+        return res;
     }
     // If the platform is not web, then return an empty module.
     if (nextOptions.platform !== 'web') {
