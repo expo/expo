@@ -154,7 +154,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
             }
           },
         });
-        inspect('imports', outputItem.data.modules.imports);
+        // inspect('imports', outputItem.data.modules.imports);
       }
     }
 
@@ -713,7 +713,7 @@ export function getDefaultSerializer(fallbackSerializer?: Serializer | null): Se
   ): Promise<string | { code: string; map: string }> => {
     const [entryPoint, preModules, graph, options] = props;
 
-    if (process.env.NODE_ENV !== 'test') toFixture(...props);
+    // if (process.env.NODE_ENV !== 'test') toFixture(...props);
 
     const jsCode = await defaultSerializer(entryPoint, preModules, graph, options);
 

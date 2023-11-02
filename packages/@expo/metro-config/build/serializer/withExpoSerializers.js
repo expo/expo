@@ -42,7 +42,6 @@ const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString")
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const minimatch_1 = __importDefault(require("minimatch"));
-const toFixture_1 = require("./__tests__/fixtures/toFixture");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const getCssDeps_1 = require("./getCssDeps");
 const env_1 = require("../env");
@@ -137,7 +136,7 @@ function treeShakeSerializerPlugin(config) {
                         }
                     },
                 });
-                inspect('imports', outputItem.data.modules.imports);
+                // inspect('imports', outputItem.data.modules.imports);
             }
         }
         // const detectCommonJsExportsUsage = (ast: Parameters<typeof traverse>[0]): boolean => {
@@ -622,8 +621,7 @@ function getDefaultSerializer(fallbackSerializer) {
         });
     return async (...props) => {
         const [entryPoint, preModules, graph, options] = props;
-        if (process.env.NODE_ENV !== 'test')
-            (0, toFixture_1.toFixture)(...props);
+        // if (process.env.NODE_ENV !== 'test') toFixture(...props);
         const jsCode = await defaultSerializer(entryPoint, preModules, graph, options);
         // console.log('OUTPUT CODE', jsCode);
         if (!options.sourceUrl) {
