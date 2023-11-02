@@ -1,4 +1,4 @@
-name: Check Tempalte Bare Minimum Diffs
+name: Check Template Bare Minimum Diffs
 
 on:
   workflow_dispatch: {}
