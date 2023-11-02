@@ -81,7 +81,7 @@ function treeShakeSerializerPlugin(config) {
             return [entryPoint, preModules, graph, options];
         }
         const includeDebugInfo = true;
-        const preserveEsm = true;
+        const preserveEsm = false;
         // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
         const minify = graph.transformOptions.minify &&
             graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
@@ -213,7 +213,7 @@ function treeShakeSerializerPlugin(config) {
                         }
                     },
                 });
-                inspect('imports', outputItem.data.modules.imports);
+                // inspect('imports', outputItem.data.modules.imports);
             }
         }
         // const detectCommonJsExportsUsage = (ast: Parameters<typeof traverse>[0]): boolean => {
@@ -329,7 +329,13 @@ function treeShakeSerializerPlugin(config) {
                                 });
                             }
                             else {
-                                console.log('check:', declaration.type, declaration.id?.name, isExportUsed(declaration.id.name), unusedExports);
+                                // console.log(
+                                //   'check:',
+                                //   declaration.type,
+                                //   declaration.id?.name,
+                                //   isExportUsed(declaration.id.name),
+                                //   unusedExports
+                                // );
                                 // if (declaration.type === 'FunctionDeclaration' || declaration.type === 'ClassDeclaration')
                                 if (unusedExports.includes(declaration.id.name) &&
                                     !isExportUsed(declaration.id.name)) {
