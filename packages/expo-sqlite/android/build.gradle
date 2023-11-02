@@ -151,8 +151,12 @@ def downloadSQLite = tasks.create('downloadSQLite', Download) {
 
 def prepareSQLite = tasks.register('prepareSQLite', Copy) {
   dependsOn(downloadSQLite)
-  from(zipTree(downloadSQLite.dest).files)
+  from(zipTree(downloadSQLite.dest))
   into(SQLITE3_SRC_DIR)
+  eachFile {
+    // flatten files
+    path = name
+  }
 }
 
 void nativeBuildDependsOn(project, dependsOnTask) {
