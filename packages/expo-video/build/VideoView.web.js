@@ -1,9 +1,14 @@
 import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
-class VideoPlayerImpl {
+import { StyleSheet } from 'react-native';
+class VideoPlayerWeb {
+    constructor(source = null) {
+        this.src = source;
+    }
     src = null;
     mountedVideos = new Set();
     isPlaying = false;
     _isMuted = false;
+    timestamp = 0;
     set isMuted(value) {
         this.mountedVideos.forEach((video) => {
             video.muted = value;
@@ -13,7 +18,6 @@ class VideoPlayerImpl {
     get isMuted() {
         return this._isMuted;
     }
-    timestamp = 0;
     play() {
         this.mountedVideos.forEach((video) => {
             video.play();
@@ -47,13 +51,15 @@ class VideoPlayerImpl {
         });
         this.isPlaying = true;
     }
-    constructor(source = null) {
-        this.src = source;
-    }
+}
+function mapStyles(style) {
+    const flattenedStyles = StyleSheet.flatten(style);
+    // Looking through react-native-web source code they also just pass styles directly without further conversions, so it's just a cast.
+    return flattenedStyles;
 }
 export function useVideoPlayer(source = null) {
     return React.useMemo(() => {
-        return new VideoPlayerImpl(source);
+        return new VideoPlayerWeb(source);
         // should this not include source?
     }, []);
 }
@@ -71,8 +77,9 @@ export const VideoView = forwardRef((props, ref) => {
         },
     }));
     useEffect(() => {
-        if (!props.player || !videoRef.current)
+        if (!props.player || !videoRef.current) {
             return;
+        }
         props.player.mountedVideos.add(videoRef.current);
         return () => {
             if (videoRef.current) {
@@ -80,7 +87,10 @@ export const VideoView = forwardRef((props, ref) => {
             }
         };
     }, [props.player]);
-    return (<video {...props} controls={props.nativeControls} controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'} ref={videoRef} src={props.player?.src ?? ''}/>);
+    return (<video controls={props.nativeControls} controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'} style={{
+            ...mapStyles(props.style),
+            objectFit: props.contentFit,
+        }} ref={videoRef} src={props.player?.src ?? ''}/>);
 });
 export default VideoView;
 //# sourceMappingURL=VideoView.web.js.map
