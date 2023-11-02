@@ -8,7 +8,11 @@ export declare class Image extends React.PureComponent<ImageProps> {
      * Preloaded images are always cached on the disk, so make sure to use
      * `disk` (default) or `memory-disk` cache policy.
      */
-    static prefetch(urls: string | string[]): void;
+    static prefetch(urls: string | string[]): Promise<boolean>;
+    /**
+     * Cancels in progress prefetch requests.
+     */
+    static cancelPrefetch(): void;
     /**
      * Asynchronously clears all images stored in memory.
      * @platform android

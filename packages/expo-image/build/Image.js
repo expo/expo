@@ -15,8 +15,14 @@ export class Image extends React.PureComponent {
      * Preloaded images are always cached on the disk, so make sure to use
      * `disk` (default) or `memory-disk` cache policy.
      */
-    static prefetch(urls) {
+    static async prefetch(urls) {
         return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls]);
+    }
+    /**
+     * Cancels in progress prefetch requests.
+     */
+    static cancelPrefetch() {
+        return ExpoImageModule.cancelPrefetch();
     }
     /**
      * Asynchronously clears all images stored in memory.
