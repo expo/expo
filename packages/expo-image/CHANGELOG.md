@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `contentFit` not forking for `SVG` images.
+
 ### 💡 Others
 
 ## 1.7.0 — 2023-11-01
