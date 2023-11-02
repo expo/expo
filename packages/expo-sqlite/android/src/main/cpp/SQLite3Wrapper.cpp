@@ -21,12 +21,6 @@ void SQLite3Wrapper::registerNatives() {
       makeNativeMethod("executeSql", SQLite3Wrapper::executeSql),
       makeNativeMethod("sqlite3_open", SQLite3Wrapper::sqlite3_open),
       makeNativeMethod("sqlite3_close", SQLite3Wrapper::sqlite3_close),
-      makeNativeMethod("sqlite3_enable_load_extension",
-                       SQLite3Wrapper::sqlite3_enable_load_extension),
-      makeNativeMethod("sqlite3_load_extension",
-                       SQLite3Wrapper::sqlite3_load_extension),
-      makeNativeMethod("sqlite3_update_hook",
-                       SQLite3Wrapper::sqlite3_update_hook),
   });
 }
 
@@ -134,30 +128,6 @@ int SQLite3Wrapper::sqlite3_close() {
   int ret = ::sqlite3_close(db);
   db = nullptr;
   return ret;
-}
-
-int SQLite3Wrapper::sqlite3_enable_load_extension(int onoff) {
-  return ::sqlite3_enable_load_extension(db, onoff);
-}
-
-int SQLite3Wrapper::sqlite3_load_extension(const std::string &libPath,
-                                           const std::string &entryProc) {
-  char *errorMessage;
-  int ret = ::sqlite3_load_extension(db, libPath.c_str(), entryProc.c_str(),
-                                     &errorMessage);
-  if (errorMessage) {
-    __android_log_write(ANDROID_LOG_ERROR, TAG, errorMessage);
-    ::sqlite3_free(errorMessage);
-  }
-  return ret;
-}
-
-void SQLite3Wrapper::sqlite3_update_hook(bool enabled) {
-  if (enabled) {
-    ::sqlite3_update_hook(db, SQLite3Wrapper::OnUpdateHook, this);
-  } else {
-    ::sqlite3_update_hook(db, nullptr, nullptr);
-  }
 }
 
 // static

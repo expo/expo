@@ -2,7 +2,6 @@
 
 import { Image } from 'expo-image';
 import React from 'react';
-import { Platform } from 'react-native';
 
 import { mountAndWaitFor, mountAndWaitForWithTimeout, TimeoutError } from './helpers';
 
@@ -11,7 +10,7 @@ export const name = 'Image';
 const REMOTE_SOURCE = { uri: 'http://source.unsplash.com/random' };
 const NON_EXISTENT_SOURCE = { uri: 'file://non_existent_path.jpg' };
 const ANIMATED_IMAGE_SOURCE = {
-  uri: 'https://bafybeidoycivu5if7a3gu3uxozztrdbxe3udjp6jvmit2jub3fjtkxfuoi.ipfs.nftstorage.link/38.webp',
+  uri: 'https://media1.giphy.com/media/gZEBpuOkPuydi/giphy.gif?cid=ecf05e47fc23hje74g3ryyry6xnui81pej12o4eojtd9ruax&ep=v1_gifs_search&rid=giphy.gif&ct=g',
 };
 
 export async function test(t, { setPortalChild, cleanupPortal }) {
@@ -62,17 +61,15 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         }
       });
 
-      if (Platform.OS === 'ios') {
-        t.it('load animated image and emits animated is true', async () => {
-          const event = await mountAndWaitFor(
-            <Image source={ANIMATED_IMAGE_SOURCE} style={{ height: 100, width: 100 }} />,
-            'onLoad',
-            setPortalChild
-          );
+      t.it('load animated image and emits animated is true', async () => {
+        const event = await mountAndWaitFor(
+          <Image source={ANIMATED_IMAGE_SOURCE} style={{ height: 100, width: 100 }} />,
+          'onLoad',
+          setPortalChild
+        );
 
-          t.expect(event.source.isAnimated).toBe(true);
-        });
-      }
+        t.expect(event.source.isAnimated).toBe(true);
+      });
     });
 
     t.describe('onError', () => {
@@ -153,11 +150,11 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         }
       });
 
-      t.it('returns false when the image does not exist in the cache', async () => {
+      t.it('returns null when the image does not exist in the cache', async () => {
         await Image.clearDiskCache();
         const result = await Image.getCachePathAsync(REMOTE_SOURCE.uri);
 
-        t.expect(result).toBe(false);
+        t.expect(result).toBe(null);
       });
     });
   });

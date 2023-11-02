@@ -57,7 +57,7 @@ Consider the following project:
   ]}
 />
 
-For example, the designs require you to build different `about` screens for each platform. In that case, you can create a component for each platform in the **components** directory using platform extensions. When imported, Metro will ensure the correct component version is used based on the current platform. You can then re-export the the component as a screen in the **app** directory.
+For example, the designs require you to build different `about` screens for each platform. In that case, you can create a component for each platform in the **components** directory using platform extensions. When imported, Metro will ensure the correct component version is used based on the current platform. You can then re-export the component as a screen in the **app** directory.
 
 ```js app/about.js
 export { default } from '../components/about';

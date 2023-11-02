@@ -11,8 +11,9 @@ public final class SQLiteModuleNext: Module {
   // will release the pair when `closeDatabase` is called.
   private var contextPairs = [Unmanaged<AnyObject>]()
 
+  private static let lockQueue = DispatchQueue(label: "expo.modules.sqlite.lockQueue")
   private var cachedDatabases = [NativeDatabase]()
-  private var cachedStatements = [NativeStatement]()
+  private var cachedStatements = [NativeDatabase: [NativeStatement]]()
   private var hasListeners = false
 
   public func definition() -> ModuleDefinition {
@@ -29,14 +30,11 @@ public final class SQLiteModuleNext: Module {
     }
 
     OnDestroy {
-      cachedStatements.forEach {
-        sqlite3_finalize($0.pointer)
+      removeAllCachedDatabases().forEach {
+        do {
+          try closeDatabase($0)
+        } catch {}
       }
-      cachedStatements.removeAll()
-      cachedDatabases.forEach {
-        closeDatabase($0)
-      }
-      cachedDatabases.removeAll()
     }
 
     AsyncFunction("deleteDatabaseAsync") { (dbName: String) in
@@ -54,8 +52,8 @@ public final class SQLiteModuleNext: Module {
         }
 
         // Try to find opened database for fast refresh
-        for database in cachedDatabases where database.dbName == dbName && database.openOptions == options && !options.useNewConnection {
-          return database
+        if let cachedDb = findCachedDatabase(where: { $0.dbName == dbName && $0.openOptions == options && !options.useNewConnection }) {
+          return cachedDb
         }
 
         var db: OpaquePointer?
@@ -64,7 +62,7 @@ public final class SQLiteModuleNext: Module {
         }
 
         let database = NativeDatabase(db, dbName: dbName, openOptions: options)
-        cachedDatabases.append(database)
+        addCachedDatabase(database)
         return database
       }
 
@@ -83,16 +81,12 @@ public final class SQLiteModuleNext: Module {
       }
 
       AsyncFunction("closeAsync") { (database: NativeDatabase) in
-        closeDatabase(database)
-        if let index = cachedDatabases.firstIndex(of: database) {
-          cachedDatabases.remove(at: index)
-        }
+        removeCachedDatabase(of: database)
+        try closeDatabase(database)
       }
       Function("closeSync") { (database: NativeDatabase) in
-        closeDatabase(database)
-        if let index = cachedDatabases.firstIndex(of: database) {
-          cachedDatabases.remove(at: index)
-        }
+        removeCachedDatabase(of: database)
+        try closeDatabase(database)
       }
 
       AsyncFunction("execAsync") { (database: NativeDatabase, source: String) in
@@ -208,7 +202,7 @@ public final class SQLiteModuleNext: Module {
     if sqlite3_prepare_v2(database.pointer, source, Int32(source.count), &statement.pointer, nil) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
-    cachedStatements.append(statement)
+    maybeAddCachedStatement(database: database, statement: statement)
   }
 
   private func arrayRun(statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) throws -> [String: Int] {
@@ -319,11 +313,9 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func finalize(statement: NativeStatement, database: NativeDatabase) throws {
+    maybeRemoveCachedStatement(database: database, statement: statement)
     if sqlite3_finalize(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-    if let index = cachedStatements.firstIndex(of: statement) {
-      cachedStatements.remove(at: index)
     }
   }
 
@@ -333,11 +325,15 @@ public final class SQLiteModuleNext: Module {
     return "Error code \(code): \(message)"
   }
 
-  private func closeDatabase(_ db: NativeDatabase) {
+  private func closeDatabase(_ db: NativeDatabase) throws {
+    for removedStatement in maybeRemoveAllCachedStatements(database: db) {
+      sqlite3_finalize(removedStatement.pointer)
+    }
+
     if db.openOptions.enableCRSQLite {
       sqlite3_exec(db.pointer, "SELECT crsql_finalize()", nil, nil, nil)
     }
-    sqlite3_close(db.pointer)
+    let ret = sqlite3_close(db.pointer)
 
     if let index = contextPairs.firstIndex(where: {
       guard let pair = $0.takeUnretainedValue() as? (SQLiteModuleNext, NativeDatabase) else {
@@ -351,10 +347,14 @@ public final class SQLiteModuleNext: Module {
     }) {
       contextPairs.remove(at: index)
     }
+
+    if ret != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(db))
+    }
   }
 
   private func deleteDatabase(dbName: String) throws {
-    for database in cachedDatabases where database.dbName == dbName {
+    if let _ = findCachedDatabase(where: { $0.dbName == dbName }) {
       throw DeleteDatabaseException(dbName)
     }
 
@@ -457,6 +457,82 @@ public final class SQLiteModuleNext: Module {
       sqlite3_bind_int(instance, index, param ? 1 : 0)
     default:
       throw InvalidConvertibleException("Unsupported parameter type: \(type(of: param))")
+    }
+  }
+
+  // MARK: - cachedDatabases managements
+
+  private func addCachedDatabase(_ database: NativeDatabase) {
+    Self.lockQueue.sync {
+      cachedDatabases.append(database)
+    }
+  }
+
+  private func removeCachedDatabase(of database: NativeDatabase) -> NativeDatabase? {
+    return Self.lockQueue.sync {
+      if let index = cachedDatabases.firstIndex(of: database) {
+        let database = cachedDatabases[index]
+        cachedDatabases.remove(at: index)
+        return database
+      }
+      return nil
+    }
+  }
+
+  private func findCachedDatabase(where predicate: (NativeDatabase) -> Bool) -> NativeDatabase? {
+    return Self.lockQueue.sync {
+      if let database = cachedDatabases.first(where: predicate) {
+        return database
+      }
+      return nil
+    }
+  }
+
+  private func removeAllCachedDatabases() -> [NativeDatabase] {
+    return Self.lockQueue.sync {
+      let databases = cachedDatabases
+      cachedDatabases.removeAll()
+      return databases
+    }
+  }
+
+  // MARK: - cachedStatements managements
+
+  private func maybeAddCachedStatement(database: NativeDatabase, statement: NativeStatement) {
+    if !database.openOptions.finalizeUnusedStatementsBeforeClosing {
+      return
+    }
+    Self.lockQueue.sync {
+      if var statements = cachedStatements[database] {
+        statements.append(statement)
+      } else {
+        cachedStatements[database] = [statement]
+      }
+    }
+  }
+
+  private func maybeRemoveCachedStatement(database: NativeDatabase, statement: NativeStatement) {
+    if !database.openOptions.finalizeUnusedStatementsBeforeClosing {
+      return
+    }
+    Self.lockQueue.sync {
+      if let index = cachedStatements[database]?.firstIndex(of: statement) {
+        cachedStatements[database]?.remove(at: index)
+      }
+    }
+  }
+
+  private func maybeRemoveAllCachedStatements(database: NativeDatabase) -> [NativeStatement] {
+    if !database.openOptions.finalizeUnusedStatementsBeforeClosing {
+      return []
+    }
+    return Self.lockQueue.sync {
+      if let statements = cachedStatements[database] {
+        cachedStatements.removeValue(forKey: database)
+        return statements
+      } else {
+        return []
+      }
     }
   }
 }

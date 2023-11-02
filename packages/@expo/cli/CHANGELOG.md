@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Pass engine to transformer for production bundling. ([#25175](https://github.com/expo/expo/pull/25175) by [@EvanBacon](https://github.com/EvanBacon))
+- Skip extraneous minification when exporting for hermes engine. ([#25132](https://github.com/expo/expo/pull/25132) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable package exports for server bundling. ([#24937](https://github.com/expo/expo/pull/24937) by [@EvanBacon](https://github.com/EvanBacon))
 - Include static routes from `generateStaticParams` in server manifest. ([#25003](https://github.com/expo/expo/pull/25003) by [@EvanBacon](https://github.com/EvanBacon))
 - Added Expo CLI devtools plugins support. ([#24650](https://github.com/expo/expo/pull/24650) by [@kudo](https://github.com/kudo))
@@ -19,6 +21,8 @@
 
 - Update tests. ([#25089](https://github.com/expo/expo/pull/25089) by [@EvanBacon](https://github.com/EvanBacon))
 - Memoize notice log about `src/app` directory to prevent spam. ([#25000](https://github.com/expo/expo/pull/25000) by [@EvanBacon](https://github.com/EvanBacon))
+- Link to [upgrading sdk docs](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/) instead of `expo-cli` when the `upgrade` subcommand is used. ([#25168](https://github.com/expo/expo/pull/25168) by [@alanjhughes](https://github.com/alanjhughes))
+- Improve DevTools Plugins API. ([#25167](https://github.com/expo/expo/pull/25167) by [@kudo](https://github.com/kudo))
 
 ## 0.10.14 — 2023-10-20
 

@@ -1,4 +1,4 @@
-import type { ExpoConfig, Platform } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import os from 'os';
@@ -51,7 +51,7 @@ function getHermesCommandPlatform(): string {
 
 export function isEnableHermesManaged(
   expoConfig: Partial<Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>>,
-  platform: Platform
+  platform: string
 ): boolean {
   switch (platform) {
     case 'android': {

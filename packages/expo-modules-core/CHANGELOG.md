@@ -9,16 +9,20 @@
 ### 🎉 New features
 
 - Add `preventModuleOverriding` to `ModuleRegistry.register` method. ([#24860](https://github.com/expo/expo/pull/24860) by [@wschurman](https://github.com/wschurman))
+- [iOS] `CGFloat` can now be used as an argument type. ([#25140](https://github.com/expo/expo/pull/25140) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 - [iOS] Fixed the object identifier for shared object types. ([#25060](https://github.com/expo/expo/pull/25060) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed concurrent functions (async/await) not converting results such as records and shared objects. ([#25075](https://github.com/expo/expo/pull/25075) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed concurrent functions (async/await) not supporting an owner argument (view and class functions). ([#25141](https://github.com/expo/expo/pull/25141) by [@tsapeta](https://github.com/tsapeta))
 - Fixed UIView arguments not being resolved correctly when passed in with findNodeHandle ([#24703](https://github.com/expo/expo/pull/24703) by [@javache](https://github.com/javache))
 
 ### 💡 Others
 
 - Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+- Remove deprecated `REACT_NATIVE_OVERRIDE_VERSION` for React Native nightly testing. ([#25151](https://github.com/expo/expo/pull/25151) by [@kudo](https://github.com/kudo))
+- Removed backward compatible code for deprecated SDKs. ([#25154](https://github.com/expo/expo/pull/25154) by [@kudo](https://github.com/kudo))
 
 ## 1.9.0 — 2023-10-17
 

@@ -91,7 +91,6 @@
     "expo-image-loader": "^4.0.0",
     "expo-image-manipulator": "~11.6.0",
     "expo-image-picker": "~14.6.0",
-    "expo-in-app-purchases": "~14.6.0",
     "expo-intent-launcher": "~10.10.0",
     "expo-keep-awake": "~12.7.0",
     "expo-linear-gradient": "~12.6.0",
