@@ -5,7 +5,7 @@ import UIKit
 extension UIImage {
   static func gif(data: Data) -> UIImage? {
     guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
-        return nil
+      return nil
     }
     var images = [UIImage]()
     var totalDuration: TimeInterval = 0.0
@@ -28,13 +28,13 @@ extension UIImage {
       let delayTime = gifProperties[kCGImagePropertyGIFDelayTime as String] as? Double
       delay = unclampedDelayTime ?? delayTime ?? delay
       if delay < 0.011 {
-          delay = 0.100 // Make sure they're not too fast
+        delay = 0.100 // Make sure they're not too fast
       }
     }
     return delay
   }
   var isAnimated: Bool {
-      return images != nil
+    return images != nil
   }
   func gifData(loopCount: Int = 0) -> Data? {
     let imagesToUse = images ?? [self]
@@ -45,9 +45,9 @@ extension UIImage {
     let frameProperties: [String: Any] = [kCGImagePropertyGIFDictionary as String: [kCGImagePropertyGIFDelayTime as String: frameDelay]]
     let data = NSMutableData()
     if let destination = CGImageDestinationCreateWithData(data, kUTTypeGIF, imagesToUse.count, nil) {
-        CGImageDestinationSetProperties(destination, gifProperties as CFDictionary)
+      CGImageDestinationSetProperties(destination, gifProperties as CFDictionary)
         for image in imagesToUse {
-            guard let cgImage = image.cgImage else { continue }
+          guard let cgImage = image.cgImage else { continue }
             CGImageDestinationAddImage(destination, cgImage, frameProperties as CFDictionary)
         }
         if !CGImageDestinationFinalize(destination) {
