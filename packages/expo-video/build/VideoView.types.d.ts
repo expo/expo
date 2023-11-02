@@ -41,39 +41,39 @@ export declare class VideoPlayer {
 type VideoContentFit = 'contain' | 'cover' | 'fill';
 export interface VideoViewProps extends ViewProps {
     /**
-     * @platform ios, web
      * A player instance – use `useVideoPlayer()` to create one.
+     * @platform ios, web
      */
     player: VideoPlayer;
     /**
-     * @platform ios, web
      * Determines whether native controls should be displayed or not.
+     * @platform ios, web
      */
     nativeControls: boolean | undefined;
     /**
-     * @platform ios, web
      * Describes how the video should be scaled to fit in the container.
      * Options are 'contain', 'cover', and 'fill'.
+     * @platform ios, web
      */
     contentFit: VideoContentFit | undefined;
     /**
-     * @platform ios, web
      * Determines whether fullscreen mode is allowed or not.
+     * @platform ios, web
      */
     allowsFullscreen: boolean | undefined;
     /**
-     * @platform ios
      * Determines whether the timecodes should be displayed or not.
+     * @platform ios
      */
     showsTimecodes: boolean | undefined;
     /**
-     * @platform ios
      * Determines whether the player allows the user to skip media content.
+     * @platform ios
      */
     requiresLinearPlayback: boolean | undefined;
     /**
-     * @platform ios
      * Determines the position offset of the video inside the container.
+     * @platform ios
      */
     contentPosition: {
         dx?: number;
