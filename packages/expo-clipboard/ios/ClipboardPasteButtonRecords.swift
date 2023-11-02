@@ -30,7 +30,6 @@ enum DisplayMode: String, Enumerable {
   case iconAndLabel
   case iconOnly
   case labelOnly
-  
   @available(iOS 16.0, *)
   func toUIDisplayMode() -> UIPasteControl.DisplayMode {
     switch self {
@@ -49,7 +48,6 @@ enum AcceptedTypes: String, Enumerable {
   case url
   case html
   case image
-  
   @available(iOS 14.0, *)
   func typeIdentifier() -> String {
     switch self {

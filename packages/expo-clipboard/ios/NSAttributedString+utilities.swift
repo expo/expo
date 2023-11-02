@@ -10,7 +10,6 @@ extension NSAttributedString {
     ]
     try self.init(data: Data(htmlString.utf8), options: initOptions, documentAttributes: nil)
   }
-  
   @objc
   var rtfData: Data? {
     let range = NSRange(location: 0, length: self.length)
@@ -20,7 +19,6 @@ extension NSAttributedString {
     ]
     return try? self.data(from: range, documentAttributes: attributes)
   }
-  
   @objc
   var htmlString: String? {
     do {

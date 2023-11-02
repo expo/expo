@@ -7,7 +7,6 @@ extension UIImage {
     guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
       return nil
     }
-    
     var images = [UIImage]()
     var totalDuration: TimeInterval = 0.0
     
