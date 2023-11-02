@@ -1,4 +1,5 @@
 import { DevToolsPluginClient, DevToolsPluginMethod, MESSAGE_PROTOCOL_VERSION, } from './DevToolsPluginClient';
+import * as logger from './logger';
 /**
  * The DevToolsPluginClient for the app -> browser communication.
  */
@@ -81,7 +82,7 @@ export class DevToolsPluginClientImplApp extends DevToolsPluginClient {
                 reject(e);
             });
             ws.addEventListener('close', (e) => {
-                console.debug('WebSocket closed', e.code, e.reason);
+                logger.info('WebSocket closed', e.code, e.reason);
                 DevToolsPluginClientImplApp.ws = null;
             });
         });
@@ -90,7 +91,7 @@ export class DevToolsPluginClientImplApp extends DevToolsPluginClient {
         this.addMessageListener('handshake', (params) => {
             const previousBrowserClientId = this.browserClientMap[params.pluginName];
             if (previousBrowserClientId != null && previousBrowserClientId !== params.browserClientId) {
-                console.debug(`Terminate the previous browser client connection - previousBrowserClientId[${previousBrowserClientId}]`);
+                logger.info(`Terminate the previous browser client connection - previousBrowserClientId[${previousBrowserClientId}]`);
                 this.sendMessage('terminateBrowserClient', { browserClientId: previousBrowserClientId });
             }
             this.browserClientMap[params.pluginName] = params.browserClientId;
