@@ -160,11 +160,9 @@ jobs:
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🧪 Run tests
-        uses: nick-fields/retry@v2
-        with:
-          timeout_minutes: 30
-          max_attempts: 3
-          command: cd apps/bare-expo && ./scripts/start-ios-e2e-test.ts --test
+        run: ./scripts/start-ios-e2e-test.ts --test
+        working-directory: apps/bare-expo
+        timeout-minutes: 30
       - name: Store testing artifacts
         if: always()
         uses: actions/upload-artifact@v3
