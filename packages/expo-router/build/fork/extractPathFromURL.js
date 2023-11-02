@@ -22,21 +22,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.adjustPathname = exports.extractExpoPathFromURL = void 0;
 const expo_constants_1 = __importStar(require("expo-constants"));
 const Linking = __importStar(require("expo-linking"));
-const url_parse_1 = __importDefault(require("url-parse"));
 // This is only run on native.
 function extractExactPathFromURL(url) {
     if (
     // If a universal link / app link / web URL is used, we should use the path
     // from the URL, while stripping the origin.
     url.match(/^https?:\/\//)) {
-        const { origin, href } = new url_parse_1.default(url);
+        const { origin, href } = new URL(url);
         return href.replace(origin, '');
     }
     // Handle special URLs used in Expo Go: `/--/pathname` -> `pathname`
@@ -61,24 +57,25 @@ function extractExactPathFromURL(url) {
 }
 /** Major hack to support the makeshift expo-development-client system. */
 function isExpoDevelopmentClient(url) {
-    return !!url.hostname.match(/^expo-development-client$/);
+    return url.hostname === 'expo-development-client';
 }
 function fromDeepLink(url) {
-    // This is for all standard deep links, e.g. `foobar://` where everything
-    // after the `://` is the path.
-    const res = new url_parse_1.default(url, true);
+    let res;
+    try {
+        // This is for all standard deep links, e.g. `foobar://` where everything
+        // after the `://` is the path.
+        res = new URL(url);
+    }
+    catch {
+        return url;
+    }
     if (isExpoDevelopmentClient(res)) {
-        if (!res.query || !res.query.url) {
+        if (!res.searchParams.get('url')) {
             return '';
         }
-        const incomingUrl = res.query.url;
+        const incomingUrl = res.searchParams.get('url');
         return extractExactPathFromURL(decodeURI(incomingUrl));
     }
-    const qs = !res.query
-        ? ''
-        : Object.entries(res.query)
-            .map(([k, v]) => `${k}=${decodeURIComponent(v)}`)
-            .join('&');
     let results = '';
     if (res.host) {
         results += res.host;
@@ -86,6 +83,7 @@ function fromDeepLink(url) {
     if (res.pathname) {
         results += res.pathname;
     }
+    const qs = res.searchParams.toString();
     if (qs) {
         results += '?' + qs;
     }

@@ -1477,27 +1477,27 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  EXAV: e838cf337bb48f6194a35f7deb513d9132adea0b
-  EXConstants: 88d69a63259b99e91dfc0764f12c99e44634e246
-  EXFont: 69aaec8ea32351dadd6f9b6a4a5ff9d475d01f29
-  EXJSONUtils: 5b8a424be4c2a6ed089a4495b0807e55215acfac
-  EXManifests: 42aa8b7c77af9206e525f04fdbb61189f0607522
-  Expo: 25c45736891a4dbe6a73a51e11d6250897c95475
+  EXAV: 6e2524617053a4590b0ef46a4fcb9a13d97bac8a
+  EXConstants: 230de23b26974884686d49205e6822a02b6dd6d0
+  EXFont: e5fa244ad8c8d6fcf3a215e1fdcaedbc9b580aad
+  EXJSONUtils: d15120ce0e8967b0822880162039dd75e5867086
+  EXManifests: b658c34011f90e3379b515fb50680acb49ba099a
+  Expo: ec3dff9f00792f6a2a4ec9b867c8575ad48f919e
   expo-dev-client: 52d4f47611a8d584cd51dcab48c01c9b7cb974aa
   expo-dev-launcher: e237bb24b6f8a62de2eb5f80845f21adea6f0777
   expo-dev-menu: f6381776dade419e368269fdc321b58f9761bd01
   expo-dev-menu-interface: 38090d6fda00360c1d9bf28ee6f553e7c073774b
   ExpoAppleAuthentication: 7676bc4d7b02362d1127b2b264d3a0ca649e4b8c
-  ExpoApplication: 3e834f9916c4cace41816fb61fbef9c4f97d5d37
+  ExpoApplication: d181a88964679df7241ff101e7be1802758c5b9a
   ExpoBlur: fd3aefb4b4f3acaaa1ca2406cf9a98351ec5ffc4
   ExpoCamera: e7f55f4baad8f8934bf57a606919d2fd66953f23
-  ExpoFileSystem: cc9d94f9d584c763f62c6148c47d81be085276b7
-  ExpoImage: 53465e63c9c7f3933ae9f843fcbeec6e5013a5e8
-  ExpoKeepAwake: 5451e3fba988719b699b42596269acc91a199059
+  ExpoFileSystem: 5014f25f212972b797ce29dbbae8dceb1f4fae31
+  ExpoImage: a02f1b0c514f3521c8b442a93687f927ef2c0d8d
+  ExpoKeepAwake: 11a6adc67b21af7a520ee62fe9a014eca6871884
   ExpoLinearGradient: 04e65c5a1bc2eb79953a8636537ef2cbfa743b5b
-  ExpoModulesCore: 61b7780d074d37eabf6b6c5eeb9b55d4f8ab8c09
-  EXSplashScreen: d324e81a690a58c30ad4de6df35137c673088d84
-  EXUpdatesInterface: df9e5e67b4c1f2c50d15803af2de7a8ab9817424
+  ExpoModulesCore: ed05dcd391d071fa2b56fff8c78c30ebbc1e57b7
+  EXSplashScreen: 6f109a5fbb15d0cae6890845000e9d3ec4470879
+  EXUpdatesInterface: defbda79f841a0dec9588f2cbf9fdfed52583667
   FBLazyVector: 71803c074f6325f10b5ec891c443b6bbabef0ca7
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
@@ -1529,7 +1529,7 @@ SPEC CHECKSUMS:
   React-perflogger: cd8886513f68e1c135a1e79d20575c6489641597
   React-RCTActionSheet: 726d2615ca62a77ce3e2c13d87f65379cdc73498
   React-RCTAnimation: 8f2716b881c37c64858e4ecee0f58bfa57ff9afd
-  React-RCTAppDelegate: 9ec04d231a32dfaa7904cdc215deb7c565f6e2ef
+  React-RCTAppDelegate: b20ac934c511b8f7a5ec30e789e6ac8102c40de8
   React-RCTBlob: dfaa933231c3497915bbcc9d98fcff7b6b60582c
   React-RCTFabric: a7c36529eb41d7ba14751c30ddbc35732e74a5c1
   React-RCTImage: 747e3d7b656a67470f9c234baedb8d41bbc4e745
