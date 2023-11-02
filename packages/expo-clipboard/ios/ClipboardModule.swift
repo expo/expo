@@ -40,7 +40,6 @@ public class ClipboardModule: Module {
     AsyncFunction("hasUrlAsync") { () -> Bool in
       UIPasteboard.general.hasURLs
     }
-    
     // MARK: - Images
     AsyncFunction("setImageAsync") { (content: String) in
       guard let data = Data(base64Encoded: content),
@@ -74,11 +73,9 @@ public class ClipboardModule: Module {
       //                }
       //            }
     }
-    
     AsyncFunction("hasImageAsync") { () -> Bool in
       UIPasteboard.general.hasImages
     }
-    
     AsyncFunction("getImageAsync") { (options: GetImageOptions) -> [String: Any]? in
       guard let image = UIPasteboard.general.image else {
         return nil
@@ -92,8 +89,7 @@ public class ClipboardModule: Module {
         // TODO: (barthap): Use CGSize when returning Records is possible
         "size": [
           "width": image.size.width,
-          "height": image.size.height,
-        ],
+          "height": image.size.height],
       ]
     }
     Property("isPasteButtonAvailable") { () -> Bool in
@@ -103,9 +99,7 @@ public class ClipboardModule: Module {
       return false
     }
     // MARK: - Events
-    
     Events(onClipboardChanged)
-    
     OnStartObserving {
       NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
       NotificationCenter.default.addObserver(
@@ -115,13 +109,10 @@ public class ClipboardModule: Module {
         object: nil
       )
     }
-    
     OnStopObserving {
       NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
     }
-    
     // MARK: - View
-    
     View(ClipboardPasteButton.self) {
       Events("onPastePressed")
       
