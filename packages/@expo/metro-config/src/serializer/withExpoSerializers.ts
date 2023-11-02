@@ -5,16 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { transformFromAstSync, traverse } from '@babel/core';
+import * as babylon from '@babel/parser';
+import fs from 'fs';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import { Module, MixedOutput, ReadOnlyGraph, SerializerOptions } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 // @ts-expect-error
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
+import type { DynamicRequiresBehavior } from 'metro/src/ModuleGraph/worker/collectDependencies';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
-import path from 'path';
-import fs from 'fs';
+import { MetroSourceMapSegmentTuple, functionMapBabelPlugin } from 'metro-source-map';
 import minimatch from 'minimatch';
+import path from 'path';
 
 import { toFixture } from './__tests__/fixtures/toFixture';
 import {
@@ -24,11 +27,8 @@ import {
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
-import { sync as globSync } from 'glob';
 
 const countLines = require('metro/src/lib/countLines');
-import { MetroSourceMapSegmentTuple, functionMapBabelPlugin } from 'metro-source-map';
-import * as babylon from '@babel/parser';
 
 export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
@@ -85,7 +85,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     if (graph.transformOptions.customTransformOptions?.treeshake !== 'true' || options.dev) {
       return [entryPoint, preModules, graph, options];
     }
-    const includeDebugInfo = true;
+    const includeDebugInfo = false;
     const preserveEsm = false;
 
     // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
@@ -497,11 +497,6 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                 // Unless it's an empty module.
                 isEmptyModule(graphDep)
               ) {
-                // if (value.path.includes('/Libraries/Utilities/PerformanceLoggerContext.js')) {
-                //   // if (dep.absolutePath.includes('/react/index.js')) {
-                //   // console.log('Remove:', dep.absolutePath, 'from', value.path);
-                //   // inspect(value.dependencies);
-                // }
                 // Remove inverse link to this dependency
                 graphDep.inverseDependencies.delete(value.path);
 
@@ -817,7 +812,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
           cloneInputAst: true,
         })!.code!;
 
-        let map: Array<MetroSourceMapSegmentTuple> = [];
+        let map: MetroSourceMapSegmentTuple[] = [];
         let code = outputCode;
         if (minify && !preserveEsm) {
           const minifyCode = require('metro-minify-terser');
@@ -1022,7 +1017,5 @@ function getDynamicDepsBehavior(
       throw new Error(`invalid value for dynamic deps behavior: \`${inPackages}\``);
   }
 }
-
-import type { DynamicRequiresBehavior } from 'metro/src/ModuleGraph/worker/collectDependencies';
 
 const collectDependencies = require('metro/src/ModuleGraph/worker/collectDependencies');

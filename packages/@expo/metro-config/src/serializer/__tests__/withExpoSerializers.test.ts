@@ -1,5 +1,5 @@
-import { createModuleIdFactory } from './fixtures/fromFixture';
 import * as splitFixtures from './fixtures/basic-treeshaking';
+import { createModuleIdFactory } from './fixtures/fromFixture';
 import { simplifyGraph } from './fixtures/toFixture';
 import { baseJSBundle } from '../fork/baseJSBundle';
 import {

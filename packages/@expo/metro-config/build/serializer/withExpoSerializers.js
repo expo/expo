@@ -34,20 +34,20 @@ exports.createSerializerFromSerialProcessors = exports.getDefaultSerializer = ex
  * LICENSE file in the root directory of this source tree.
  */
 const core_1 = require("@babel/core");
+const babylon = __importStar(require("@babel/parser"));
+const fs_1 = __importDefault(require("fs"));
 const jsc_safe_url_1 = require("jsc-safe-url");
 const baseJSBundle_1 = __importDefault(require("metro/src/DeltaBundler/Serializers/baseJSBundle"));
 // @ts-expect-error
 const sourceMapString_1 = __importDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
 const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString"));
-const path_1 = __importDefault(require("path"));
-const fs_1 = __importDefault(require("fs"));
+const metro_source_map_1 = require("metro-source-map");
 const minimatch_1 = __importDefault(require("minimatch"));
+const path_1 = __importDefault(require("path"));
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const getCssDeps_1 = require("./getCssDeps");
 const env_1 = require("../env");
 const countLines = require('metro/src/lib/countLines');
-const metro_source_map_1 = require("metro-source-map");
-const babylon = __importStar(require("@babel/parser"));
 function withExpoSerializers(config) {
     const processors = [];
     processors.push(environmentVariableSerializerPlugin_1.serverPreludeSerializerPlugin);
@@ -80,7 +80,7 @@ function treeShakeSerializerPlugin(config) {
         if (graph.transformOptions.customTransformOptions?.treeshake !== 'true' || options.dev) {
             return [entryPoint, preModules, graph, options];
         }
-        const includeDebugInfo = true;
+        const includeDebugInfo = false;
         const preserveEsm = false;
         // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
         const minify = graph.transformOptions.minify &&
@@ -439,11 +439,6 @@ function treeShakeSerializerPlugin(config) {
                             !hasSideEffect(graphDep) ||
                                 // Unless it's an empty module.
                                 isEmptyModule(graphDep)) {
-                                // if (value.path.includes('/Libraries/Utilities/PerformanceLoggerContext.js')) {
-                                //   // if (dep.absolutePath.includes('/react/index.js')) {
-                                //   // console.log('Remove:', dep.absolutePath, 'from', value.path);
-                                //   // inspect(value.dependencies);
-                                // }
                                 // Remove inverse link to this dependency
                                 graphDep.inverseDependencies.delete(value.path);
                                 if (graphDep.inverseDependencies.size === 0) {

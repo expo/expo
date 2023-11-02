@@ -51,9 +51,7 @@ async function transform(config, projectRoot, filename, data, options) {
             // This ensures that the client doesn't accidentally use the server-only +api files.
             return metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, Buffer.from(''), nextOptions);
         }
-        const res = await metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, data, nextOptions);
-        console.log('res', res.output[0]?.data?.code);
-        return res;
+        return metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, data, nextOptions);
     }
     // If the platform is not web, then return an empty module.
     if (nextOptions.platform !== 'web') {

@@ -99,9 +99,7 @@ export async function transform(
       return worker.transform(nextConfig, projectRoot, filename, Buffer.from(''), nextOptions);
     }
 
-    const res = await worker.transform(nextConfig, projectRoot, filename, data, nextOptions);
-    console.log('res', res.output[0]?.data?.code);
-    return res;
+    return worker.transform(nextConfig, projectRoot, filename, data, nextOptions);
   }
 
   // If the platform is not web, then return an empty module.
