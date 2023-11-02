@@ -243,7 +243,7 @@ class UpdatesController private constructor(
     isStarted = true
 
     if (!updatesConfiguration.isEnabled) {
-      launcher = NoDatabaseLauncher(context, updatesConfiguration)
+      launcher = NoDatabaseLauncher(context)
       notifyController()
       return
     }
@@ -251,7 +251,7 @@ class UpdatesController private constructor(
       throw AssertionError("expo-updates is enabled, but no valid URL is configured in AndroidManifest.xml. If you are making a release build for the first time, make sure you have run `expo publish` at least once.")
     }
     if (updatesDirectory == null) {
-      launcher = NoDatabaseLauncher(context, updatesConfiguration, updatesDirectoryException)
+      launcher = NoDatabaseLauncher(context, updatesDirectoryException)
       isEmergencyLaunch = true
       notifyController()
       return
@@ -275,7 +275,7 @@ class UpdatesController private constructor(
       object : LoaderTaskCallback {
         override fun onFailure(e: Exception) {
           logger.error("UpdatesController loaderTask onFailure: ${e.localizedMessage}", UpdatesErrorCode.None)
-          launcher = NoDatabaseLauncher(context, updatesConfiguration, e)
+          launcher = NoDatabaseLauncher(context, e)
           isEmergencyLaunch = true
           notifyController()
         }
