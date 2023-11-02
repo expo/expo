@@ -80,8 +80,9 @@ function treeShakeSerializerPlugin(config) {
         if (graph.transformOptions.customTransformOptions?.treeshake !== 'true' || options.dev) {
             return [entryPoint, preModules, graph, options];
         }
-        const includeDebugInfo = false;
-        const preserveEsm = false;
+        const includeDebugInfo = true;
+        const preserveEsm = true;
+        const annotate = true;
         // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
         const minify = graph.transformOptions.minify &&
             graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
@@ -294,14 +295,15 @@ function treeShakeSerializerPlugin(config) {
             for (const index in value.output) {
                 const outputItem = value.output[index];
                 const ast = outputItem.data.ast;
-                const annotate = false;
                 function markUnused(path, node) {
                     if (annotate) {
                         node.leadingComments = node.leadingComments ?? [];
-                        node.leadingComments.push({
-                            type: 'CommentBlock',
-                            value: ` unused export ${node.id.name} `,
-                        });
+                        if (!node.leadingComments.some((comment) => comment.value.includes('unused export'))) {
+                            node.leadingComments.push({
+                                type: 'CommentBlock',
+                                value: ` unused export ${node.id.name} `,
+                            });
+                        }
                     }
                     else {
                         path.remove();
@@ -623,8 +625,7 @@ function treeShakeSerializerPlugin(config) {
             for (const index in value.output) {
                 const outputItem = value.output[index];
                 // inspect('ii', outputItem.data.modules.imports);
-                // let ast = outputItem.data.ast!;
-                let ast = outputItem.data.ast; //?? babylon.parse(outputItem.data.code, { sourceType: 'unambiguous' });
+                let ast = outputItem.data.ast;
                 const { importDefault, importAll } = generateImportNames(ast);
                 const babelPluginOpts = {
                     // ...options,
