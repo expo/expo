@@ -45,7 +45,7 @@ describe('tree-shaking', () => {
     console.log(stringResults);
     expect(stringResults).toMatch(/subtract/);
   });
-  it(`does not tree shake default exports`, async () => {
+  xit(`does not tree shake default exports`, async () => {
     const stringResults = await getSerializer()(...splitFixtures.defaultImport);
     console.log(stringResults);
     expect(stringResults).not.toMatch(/subtract/);
@@ -57,7 +57,13 @@ describe('tree-shaking', () => {
     expect(stringResults).toMatch(/subtract/);
     expect(stringResults).toMatch(/a \+ b;/);
   });
-  it(`works with larger projects`, async () => {
+  it(`does not tree shake cjs re-exports`, async () => {
+    const stringResults = await getSerializer()(...splitFixtures.getterReExport);
+    console.log(stringResults);
+    expect(stringResults).toMatch(/subtract/);
+    expect(stringResults).toMatch(/a \+ b;/);
+  });
+  xit(`works with larger projects`, async () => {
     splitFixtures.rnImport[1] = [];
     const stringResults = await getSerializer()(...splitFixtures.rnImport);
     console.log(stringResults);

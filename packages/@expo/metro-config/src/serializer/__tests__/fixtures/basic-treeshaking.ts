@@ -44,6 +44,7 @@ export const unusedFile = fromFixture(
 );
 export const defaultImport = fromFixture(require('./index-ios-default.json'));
 export const starImport = fromFixture(require('./index-ios-star.json'));
+export const getterReExport = fromFixture(require('./index-ios-getters.json'));
 
 export const staticCjs = fromFixture(require('./index-ios-cjs-up.json'));
 

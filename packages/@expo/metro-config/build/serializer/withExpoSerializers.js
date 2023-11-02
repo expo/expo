@@ -42,6 +42,7 @@ const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString")
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const minimatch_1 = __importDefault(require("minimatch"));
+const toFixture_1 = require("./__tests__/fixtures/toFixture");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const getCssDeps_1 = require("./getCssDeps");
 const env_1 = require("../env");
@@ -136,7 +137,7 @@ function treeShakeSerializerPlugin(config) {
                         }
                     },
                 });
-                // inspect('imports', outputItem.data.modules.imports);
+                inspect('imports', outputItem.data.modules.imports);
             }
         }
         // const detectCommonJsExportsUsage = (ast: Parameters<typeof traverse>[0]): boolean => {
@@ -186,10 +187,12 @@ function treeShakeSerializerPlugin(config) {
                             const imports = outputItem.data.modules?.imports;
                             if (imports) {
                                 return imports.some((importItem) => {
-                                    if (importItem.key !== depId ||
-                                        // If the import is CommonJS, then we can't tree-shake it.
-                                        importItem.cjs) {
+                                    if (importItem.key !== depId) {
                                         return false;
+                                    }
+                                    // If the import is CommonJS, then we can't tree-shake it.
+                                    if (importItem.cjs) {
+                                        return true;
                                     }
                                     return importItem.specifiers.some((specifier) => {
                                         if (specifier.type === 'ImportDefaultSpecifier') {
@@ -366,10 +369,11 @@ function treeShakeSerializerPlugin(config) {
                             }
                         }
                         else {
+                            // TODO: I'm not sure what to do here?
                             // Delete the AST
-                            path.remove();
-                            // Mark the module as removed so we know to traverse again.
-                            removed = true;
+                            // path.remove();
+                            // // Mark the module as removed so we know to traverse again.
+                            // removed = true;
                         }
                     }
                 },
@@ -394,7 +398,7 @@ function treeShakeSerializerPlugin(config) {
             return false;
         }
         function treeShakeAll(depth = 0) {
-            if (depth > 10) {
+            if (depth > 5) {
                 return;
             }
             // This pass will parse all modules back to AST and include the import/export statements.
@@ -618,7 +622,8 @@ function getDefaultSerializer(fallbackSerializer) {
         });
     return async (...props) => {
         const [entryPoint, preModules, graph, options] = props;
-        // toFixture(...props);
+        if (process.env.NODE_ENV !== 'test')
+            (0, toFixture_1.toFixture)(...props);
         const jsCode = await defaultSerializer(entryPoint, preModules, graph, options);
         // console.log('OUTPUT CODE', jsCode);
         if (!options.sourceUrl) {

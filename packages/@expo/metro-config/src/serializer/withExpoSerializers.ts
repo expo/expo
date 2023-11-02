@@ -154,7 +154,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
             }
           },
         });
-        // inspect('imports', outputItem.data.modules.imports);
+        inspect('imports', outputItem.data.modules.imports);
       }
     }
 
@@ -209,12 +209,12 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
               const imports = outputItem.data.modules?.imports;
               if (imports) {
                 return imports.some((importItem) => {
-                  if (
-                    importItem.key !== depId ||
-                    // If the import is CommonJS, then we can't tree-shake it.
-                    importItem.cjs
-                  ) {
+                  if (importItem.key !== depId) {
                     return false;
+                  }
+                  // If the import is CommonJS, then we can't tree-shake it.
+                  if (importItem.cjs) {
+                    return true;
                   }
 
                   return importItem.specifiers.some((specifier) => {
@@ -413,11 +413,11 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                 removed = true;
               }
             } else {
+              // TODO: I'm not sure what to do here?
               // Delete the AST
-              path.remove();
-
-              // Mark the module as removed so we know to traverse again.
-              removed = true;
+              // path.remove();
+              // // Mark the module as removed so we know to traverse again.
+              // removed = true;
             }
           }
         },
@@ -445,7 +445,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     }
 
     function treeShakeAll(depth: number = 0) {
-      if (depth > 10) {
+      if (depth > 5) {
         return;
       }
       // This pass will parse all modules back to AST and include the import/export statements.
@@ -713,7 +713,7 @@ export function getDefaultSerializer(fallbackSerializer?: Serializer | null): Se
   ): Promise<string | { code: string; map: string }> => {
     const [entryPoint, preModules, graph, options] = props;
 
-    // toFixture(...props);
+    if (process.env.NODE_ENV !== 'test') toFixture(...props);
 
     const jsCode = await defaultSerializer(entryPoint, preModules, graph, options);
 
