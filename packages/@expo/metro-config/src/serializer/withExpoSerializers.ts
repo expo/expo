@@ -169,39 +169,107 @@ export function getDefaultSerializer(fallbackSerializer?: Serializer | null): Se
 
         const annotate = false;
 
+        function markUnused(path, node) {
+          if (annotate) {
+            node.leadingComments = node.leadingComments ?? [];
+            node.leadingComments.push({
+              type: 'CommentBlock',
+              value: ` unused export ${node.id.name} `,
+            });
+          } else {
+            path.remove();
+          }
+        }
+
+        const remainingExports = new Set();
+
+        const detectCommonJsExportsUsage = (ast: Parameters<typeof traverse>[0]): boolean => {
+          let usesCommonJsExports = false;
+
+          traverse(ast, {
+            MemberExpression(path) {
+              if (
+                (path.node.object.name === 'module' && path.node.property.name === 'exports') ||
+                path.node.object.name === 'exports'
+              ) {
+                usesCommonJsExports = true;
+                console.log(`Found usage of ${path.node.object.name}.${path.node.property.name}`);
+              }
+            },
+            CallExpression(path) {
+              // Check for Object.assign or Object.defineProperties
+              if (
+                path.node.callee.type === 'MemberExpression' &&
+                path.node.callee.object.name === 'Object' &&
+                (path.node.callee.property.name === 'assign' ||
+                  path.node.callee.property.name === 'defineProperties')
+              ) {
+                // Check if the first argument is module.exports
+                const firstArg = path.node.arguments[0];
+                if (
+                  firstArg.type === 'MemberExpression' &&
+                  firstArg.object.name === 'module' &&
+                  firstArg.property.name === 'exports'
+                ) {
+                  usesCommonJsExports = true;
+                } else if (firstArg.type === 'Identifier' && firstArg.name === 'exports') {
+                  usesCommonJsExports = true;
+                }
+              }
+            },
+          });
+
+          return usesCommonJsExports;
+        };
+
         // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
         traverse(ast, {
-          ExportNamedDeclaration(path) {
-            function markUnused(node) {
-              if (annotate) {
-                node.leadingComments = node.leadingComments ?? [];
-                node.leadingComments.push({
-                  type: 'CommentBlock',
-                  value: ` unused export ${node.id.name} `,
-                });
-              } else {
-                path.remove();
-              }
+          ExportDefaultDeclaration(path) {
+            if (!isExportUsed('default')) {
+              markUnused(path, path.node);
+            } else {
+              remainingExports.add('default');
             }
-
+          },
+          ExportNamedDeclaration(path) {
             const declaration = path.node.declaration;
             if (declaration) {
               if (declaration.type === 'VariableDeclaration') {
                 declaration.declarations.forEach((decl) => {
                   if (decl.id.type === 'Identifier') {
                     if (!isExportUsed(decl.id.name)) {
-                      markUnused(decl);
+                      markUnused(path, decl);
+                    } else {
+                      remainingExports.add(decl.id.name);
                     }
                   }
                 });
-              } else if (declaration.type === 'FunctionDeclaration') {
+              } else {
+                // if (declaration.type === 'FunctionDeclaration' || declaration.type === 'ClassDeclaration')
                 if (!isExportUsed(declaration.id.name)) {
-                  markUnused(declaration);
+                  markUnused(path, declaration);
+                } else {
+                  remainingExports.add(declaration.id.name);
                 }
               }
             }
           },
         });
+
+        console.log(outputItem.data.code, remainingExports);
+
+        if (
+          // If no ESM exports are left
+          remainingExports.size === 0 &&
+          // If the file doesn't use CommonJS exports
+          !detectCommonJsExportsUsage(ast) &&
+          value.path !== entryPoint
+          // TODO: Support marking files as having side-effects in package.json
+          // - TODO: Also track that the file isn't importing a module with side-effects
+        ) {
+          // Remove file from graph
+          graph.dependencies.delete(depId);
+        }
       }
     }
 
@@ -211,83 +279,10 @@ export function getDefaultSerializer(fallbackSerializer?: Serializer | null): Se
       for (const index in value.output) {
         const outputItem = value.output[index];
         inspect('ii', outputItem.data.modules.imports);
-        // modules: {
-        //   imports: [],
-        //   exports: [
-        //     { specifiers: [ 'add' ] },
-        //     { specifiers: [ 'subtract' ] }
-        //   ]
-        // },
-
-        const exports = outputItem.data.modules?.exports;
-        const usedExports: string[] = [];
-        // Collect a list of all the unused exports by traversing inverse
-        // dependencies.
-        // for (const inverseDepId of value.inverseDependencies.values()) {
-        //   const inverseDep = graph.dependencies.get(inverseDepId);
-        //   if (!inverseDep) {
-        //     continue;
-        //   }
-
-        //   inverseDep.output.forEach((outputItem) => {
-        //     if (outputItem.type === 'js/module') {
-        //       // imports: [
-        //       //   {
-        //       //     source: './math',
-        //       //     specifiers: [
-        //       //       {
-        //       //         type: 'ImportSpecifier',
-        //       //         importedName: 'add',
-        //       //         localName: 'add'
-        //       //       }
-        //       //     ]
-        //       //   }
-        //       // ],
-
-        //       const imports = outputItem.data.modules?.imports;
-        //       if (imports) {
-        //         imports.forEach((importItem) => {
-        //           console.log('importItem', importItem);
-        //           // TODO: Use proper keys for identifying the import.
-        //           if (
-        //             // '/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/math.js'
-        //             value.path.includes(
-        //               // './math'
-        //               importItem.source.replace('./', '')
-        //             )
-        //           ) {
-        //             importItem.specifiers.forEach((specifier) => {
-        //               usedExports.push(specifier.importedName);
-        //             });
-        //           }
-        //         });
-        //       }
-        //     }
-        //   });
-
-        //   // TODO: This probably breaks source maps.
-        //   // const code = transformFromAstSync(value.output[index].data.ast);
-        //   // replaceEnvironmentVariables(value.output[index].data.code, process.env);
-        //   // value.output[index].data.code = code;
-        // }
 
         // let ast = outputItem.data.ast!;
         let ast = outputItem.data.ast; //?? babylon.parse(outputItem.data.code, { sourceType: 'unambiguous' });
 
-        // Remove the unused exports from the list of ast exports.
-        if (usedExports.length > 0) {
-          console.log('has used exports:', usedExports);
-          traverse(ast, {
-            ExportNamedDeclaration(path) {
-              // If the export is not used, remove it.
-              if (!usedExports.includes(path.node.declaration.id.name)) {
-                console.log('drop export:', path.node.declaration.id.name, usedExports);
-                path.remove();
-                // TODO: Determine if additional code needs to be removed based on the export.
-              }
-            },
-          });
-        }
         const { importDefault, importAll } = generateImportNames(ast);
 
         const babelPluginOpts = {
