@@ -39,7 +39,6 @@ class ClipboardPasteButton: ExpoView {
       control.trailingAnchor.constraint(equalTo: trailingAnchor)
     ])
   }
-  
   override func paste(itemProviders: [NSItemProvider]) {
     guard #available(iOS 14.0, *) else {
       return
@@ -59,10 +58,9 @@ class ClipboardPasteButton: ExpoView {
             log.error("Error loading pasted content")
             return
           }
-          
           self.onPastePressed([
             "type": "text",
-            "text": data?.absoluteString,
+            "text": data?.absoluteString
           ])
         }
       } else if provider.hasItemConformingToTypeIdentifier(UTType.html.identifier) && acceptedContentTypes.contains(.html) {
@@ -79,12 +77,10 @@ class ClipboardPasteButton: ExpoView {
             log.error("Error loading pasted content")
             return
           }
-          
           guard let data = data as? String else {
             log.error("Failed to read text data")
             return
           }
-          
           self.onPastePressed([
             "type": "text",
             "text": data,
@@ -93,13 +89,13 @@ class ClipboardPasteButton: ExpoView {
       }
     }
   }
-  
   @available(iOS 14.0, *)
   private func setContentTypes() {
     if acceptedContentTypes.isEmpty {
       pasteConfiguration = UIPasteConfiguration(acceptableTypeIdentifiers: [
         UTType.utf8PlainText.identifier,
         UTType.image.identifier,
+        UTType.gif.identifier
       ])
     } else {
       pasteConfiguration = UIPasteConfiguration(acceptableTypeIdentifiers: acceptedContentTypes.map {
@@ -107,13 +103,11 @@ class ClipboardPasteButton: ExpoView {
       })
     }
   }
-  
   private func processImage(item: NSItemProviderReading?) {
     guard let image = item as? UIImage else {
       log.error("Failed to read image data")
       return
     }
-    
     guard let data = imageToData(image) else {
       log.error("Failed to process image data")
       return
