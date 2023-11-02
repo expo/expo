@@ -11,14 +11,22 @@ import logger from '../Logger';
 type ActionOptions = {
   force: boolean;
   verbose: boolean;
+  all: boolean;
 };
+
+const importantProjects = ['ios', 'apps/bare-expo/ios'];
+const otherProjects = ['apps/fabric-tester/ios', 'apps/native-tests/ios'];
 
 async function action(options: ActionOptions) {
   if (process.platform !== 'darwin') {
     throw new Error('This command is not supported on this platform.');
   }
 
-  for (const relativeProjectPath of ['ios', 'apps/bare-expo/ios']) {
+  const projectsToInstall = options.all
+    ? importantProjects.concat(otherProjects)
+    : importantProjects;
+
+  for (const relativeProjectPath of projectsToInstall) {
     const absoluteProjectPath = path.join(EXPO_DIR, relativeProjectPath);
     const podfileLockHash = await md5(path.join(absoluteProjectPath, 'Podfile.lock'));
     const manifestLockHash = await md5(path.join(absoluteProjectPath, 'Pods/Manifest.lock'));
@@ -61,7 +69,16 @@ export default (program: Command) => {
     .command('pod-install')
     .alias('pods')
     .description('Installs pods in the directories where they are not in-sync')
-    .option('-f, --force', 'Whether to force installing pods in all projects.', false)
+    .option(
+      '-f, --force',
+      'Whether to force installing pods even if lockfiles are up-to-date',
+      false
+    )
     .option('-v, --verbose', 'Whether to inherit logs from `pod install` command.', false)
+    .option(
+      '-a, --all',
+      'Whether to install pods in all apps (e.g. fabric-tester, native-tests)',
+      false
+    )
     .asyncAction(action);
 };
