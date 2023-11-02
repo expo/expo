@@ -37,7 +37,6 @@ extension UIImage {
       }
       if let delayTime = delayTime as? NSNumber {
         delay = delayTime.doubleValue
-        
         if delay < 0.011 {
           delay = 0.100 // Make sure they're not too fast
         }
