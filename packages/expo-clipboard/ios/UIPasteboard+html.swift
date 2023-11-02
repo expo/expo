@@ -10,7 +10,7 @@ extension UIPasteboard {
         return htmlString
       }
       if let rtfData = data(forPasteboardType: kUTTypeRTF as String) as? Data {
-        let attributedString = try? NSAttributedString(data: rtfData, options: [.documentType: NSAttributedString.DocumentType.rtf],documentAttributes: nil)
+        let attributedString = try? NSAttributedString(data: rtfData, options: [.documentType: NSAttributedString.DocumentType.rtf], documentAttributes: nil)
         if let htmlString = attributedString?.htmlString {
           return htmlString
         }
