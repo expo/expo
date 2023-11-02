@@ -25,31 +25,26 @@ public class ClipboardModule: Module {
       case .html:
         UIPasteboard.general.html = content
       }
-      
       return true
     }
     AsyncFunction("hasStringAsync") { () -> Bool in
       UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML
     }
     // MARK: - URLs
-    
     AsyncFunction("getUrlAsync") { () -> String? in
       UIPasteboard.general.url?.absoluteString
     }
     AsyncFunction("setUrlAsync") { (url: URL) in
       UIPasteboard.general.url = url
     }
-    
     AsyncFunction("hasUrlAsync") { () -> Bool in
       UIPasteboard.general.hasURLs
     }
     
     // MARK: - Images
-    
     AsyncFunction("setImageAsync") { (content: String) in
       guard let data = Data(base64Encoded: content),
-            let utType = data.mimeType
-      else {
+        let image = UIImage(data: data) else {
         throw InvalidImageException(content)
       }
       if utType == "image/gif" {
@@ -91,7 +86,6 @@ public class ClipboardModule: Module {
       guard let data = imageToData(image, options: options) else {
         throw PasteFailureException()
       }
-      
       let imgData = "data:\(options.imageFormat.getMimeType());base64,\(data.base64EncodedString())"
       return [
         "data": imgData,
@@ -102,14 +96,12 @@ public class ClipboardModule: Module {
         ],
       ]
     }
-    
     Property("isPasteButtonAvailable") { () -> Bool in
       if #available(iOS 16.0, *) {
         return true
       }
       return false
     }
-    
     // MARK: - Events
     
     Events(onClipboardChanged)
