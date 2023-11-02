@@ -25,7 +25,7 @@ import { env } from '../env';
 
 const countLines = require('metro/src/lib/countLines');
 import { MetroSourceMapSegmentTuple, functionMapBabelPlugin } from 'metro-source-map';
-const babylon = require('@babel/parser');
+import * as babylon from '@babel/parser';
 
 export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
@@ -64,6 +64,9 @@ export function withSerializerPlugins(
 const JsFileWrapping = require('metro/src/ModuleGraph/worker/JsFileWrapping');
 const generateImportNames = require('metro/src/ModuleGraph/worker/generateImportNames');
 
+const inspect = (...props) =>
+  console.log(...props.map((prop) => require('util').inspect(prop, { depth: 20, colors: true })));
+
 export function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer {
   const defaultSerializer =
     fallbackSerializer ??
@@ -85,11 +88,129 @@ export function getDefaultSerializer(fallbackSerializer?: Serializer | null): Se
       graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
       graph.transformOptions.unstable_transformProfile !== 'hermes-stable';
 
+    // This pass will parse all modules back to AST and include the import/export statements.
+    for (const value of graph.dependencies.values()) {
+      function getGraphId(moduleId: string) {
+        const key = [...value.dependencies.values()].find((dep) => {
+          return dep.data.name === moduleId;
+        })?.absolutePath;
+
+        if (!key) {
+          throw new Error(
+            `Failed to find graph key for import "${moduleId}" in module "${value.path}"`
+          );
+        }
+        return key;
+      }
+      for (const index in value.output) {
+        const outputItem = value.output[index];
+
+        const ast = babylon.parse(outputItem.data.code, { sourceType: 'unambiguous' });
+
+        outputItem.data.ast = ast;
+        outputItem.data.modules = {
+          imports: [],
+          exports: [],
+        };
+
+        traverse(ast, {
+          // Traverse and collect import/export statements.
+          ImportDeclaration(path) {
+            const source = path.node.source.value;
+            const specifiers = path.node.specifiers.map((specifier) => {
+              return {
+                type: specifier.type,
+                importedName: specifier.type === 'ImportSpecifier' ? specifier.imported.name : null,
+                localName: specifier.local.name,
+              };
+            });
+
+            outputItem.data.modules.imports.push({
+              source,
+              key: getGraphId(source),
+              specifiers,
+            });
+          },
+        });
+      }
+    }
+
+    // This pass will annotate the AST with the used and unused exports.
+    for (const [depId, value] of graph.dependencies.entries()) {
+      const inverseDeps = [...value.inverseDependencies.values()].map((id) => {
+        return graph.dependencies.get(id);
+      });
+
+      const isExportUsed = (importName: string) => {
+        return inverseDeps.some((dep) => {
+          return dep?.output.some((outputItem) => {
+            if (outputItem.type === 'js/module') {
+              const imports = outputItem.data.modules?.imports;
+              if (imports) {
+                return imports.some((importItem) => {
+                  return (
+                    importItem.key === depId &&
+                    importItem.specifiers.some((specifier) => {
+                      return specifier.importedName === importName;
+                    })
+                  );
+                });
+              }
+            }
+            return false;
+          });
+        });
+      };
+
+      for (const index in value.output) {
+        const outputItem = value.output[index];
+
+        const ast = outputItem.data.ast;
+
+        const annotate = false;
+
+        // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
+        traverse(ast, {
+          ExportNamedDeclaration(path) {
+            function markUnused(node) {
+              if (annotate) {
+                node.leadingComments = node.leadingComments ?? [];
+                node.leadingComments.push({
+                  type: 'CommentBlock',
+                  value: ` unused export ${node.id.name} `,
+                });
+              } else {
+                path.remove();
+              }
+            }
+
+            const declaration = path.node.declaration;
+            if (declaration) {
+              if (declaration.type === 'VariableDeclaration') {
+                declaration.declarations.forEach((decl) => {
+                  if (decl.id.type === 'Identifier') {
+                    if (!isExportUsed(decl.id.name)) {
+                      markUnused(decl);
+                    }
+                  }
+                });
+              } else if (declaration.type === 'FunctionDeclaration') {
+                if (!isExportUsed(declaration.id.name)) {
+                  markUnused(declaration);
+                }
+              }
+            }
+          },
+        });
+      }
+    }
+
     for (const value of graph.dependencies.values()) {
       console.log('inverseDependencies', value.inverseDependencies.values());
 
       for (const index in value.output) {
         const outputItem = value.output[index];
+        inspect('ii', outputItem.data.modules.imports);
         // modules: {
         //   imports: [],
         //   exports: [
@@ -151,8 +272,7 @@ export function getDefaultSerializer(fallbackSerializer?: Serializer | null): Se
         // }
 
         // let ast = outputItem.data.ast!;
-        let ast =
-          outputItem.data.ast ?? babylon.parse(outputItem.data.code, { sourceType: 'unambiguous' });
+        let ast = outputItem.data.ast; //?? babylon.parse(outputItem.data.code, { sourceType: 'unambiguous' });
 
         // Remove the unused exports from the list of ast exports.
         if (usedExports.length > 0) {
@@ -182,8 +302,9 @@ export function getDefaultSerializer(fallbackSerializer?: Serializer | null): Se
           babelrc: false,
           code: false,
           configFile: false,
-          comments: false,
-          compact: true,
+          comments: true,
+          compact: false,
+
           filename: value.path,
           plugins: [
             functionMapBabelPlugin,
@@ -215,8 +336,10 @@ export function getDefaultSerializer(fallbackSerializer?: Serializer | null): Se
           babelrc: false,
           code: true,
           configFile: false,
-          comments: false,
-          compact: true,
+          // comments: false,
+          // compact: true,
+          comments: true,
+          compact: false,
           filename: value.path,
           plugins: [],
           sourceMaps: false,
@@ -255,13 +378,13 @@ export function getDefaultSerializer(fallbackSerializer?: Serializer | null): Se
       }
     }
 
-    console.log(
-      require('util').inspect({ entryPoint, graph, options }, { depth: 20, colors: true })
-    );
+    // console.log(
+    //   require('util').inspect({ entryPoint, graph, options }, { depth: 20, colors: true })
+    // );
 
     const jsCode = await defaultSerializer(entryPoint, preModules, graph, options);
 
-    console.log('OUTPUT CODE', jsCode);
+    // console.log('OUTPUT CODE', jsCode);
 
     if (!options.sourceUrl) {
       return jsCode;

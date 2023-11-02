@@ -22,6 +22,7 @@ describe(getDefaultSerializer, () => {
     expect(typeof stringResults).toBe('string');
 
     console.log(stringResults);
+    expect(stringResults).not.toMatch(/subtract/);
 
     // const parts = JSON.parse(stringResults);
     // expect(parts.length).toBe(3);
