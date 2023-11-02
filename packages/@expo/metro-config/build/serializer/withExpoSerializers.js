@@ -81,11 +81,58 @@ function treeShakeSerializerPlugin(config) {
             return [entryPoint, preModules, graph, options];
         }
         const includeDebugInfo = true;
-        const preserveEsm = false;
+        const preserveEsm = true;
         // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
         const minify = graph.transformOptions.minify &&
             graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
             graph.transformOptions.unstable_transformProfile !== 'hermes-stable';
+        // Collect a list of exports that are not used within the module.
+        function findUnusedExports(ast) {
+            const exportedIdentifiers = new Set();
+            const usedIdentifiers = new Set();
+            const unusedExports = [];
+            // First pass: collect all export identifiers
+            (0, core_1.traverse)(ast, {
+                ExportNamedDeclaration(path) {
+                    const { declaration, specifiers } = path.node;
+                    if (declaration) {
+                        if (declaration.declarations) {
+                            declaration.declarations.forEach((decl) => {
+                                exportedIdentifiers.add(decl.id.name);
+                            });
+                        }
+                        else {
+                            exportedIdentifiers.add(declaration.id.name);
+                        }
+                    }
+                    specifiers.forEach((spec) => {
+                        exportedIdentifiers.add(spec.exported.name);
+                    });
+                },
+                ExportDefaultDeclaration(path) {
+                    // Default exports need to be handled separately
+                    // Assuming the default export is a function or class declaration:
+                    if (path.node.declaration.id) {
+                        exportedIdentifiers.add(path.node.declaration.id.name);
+                    }
+                },
+            });
+            // Second pass: find all used identifiers
+            (0, core_1.traverse)(ast, {
+                Identifier(path) {
+                    if (path.isReferencedIdentifier()) {
+                        usedIdentifiers.add(path.node.name);
+                    }
+                },
+            });
+            // Determine which exports are unused
+            exportedIdentifiers.forEach((exported) => {
+                if (!usedIdentifiers.has(exported)) {
+                    unusedExports.push(exported);
+                }
+            });
+            return unusedExports;
+        }
         function collectImportExports(value) {
             function getGraphId(moduleId) {
                 const key = [...value.dependencies.values()].find((dep) => {
@@ -166,7 +213,7 @@ function treeShakeSerializerPlugin(config) {
                         }
                     },
                 });
-                // inspect('imports', outputItem.data.modules.imports);
+                inspect('imports', outputItem.data.modules.imports);
             }
         }
         // const detectCommonJsExportsUsage = (ast: Parameters<typeof traverse>[0]): boolean => {
@@ -260,15 +307,13 @@ function treeShakeSerializerPlugin(config) {
                         path.remove();
                     }
                 }
-                const remainingExports = new Set();
+                // Collect a list of exports that are not used within the module.
+                const unusedExports = findUnusedExports(ast);
                 // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
                 (0, core_1.traverse)(ast, {
                     ExportDefaultDeclaration(path) {
-                        if (!isExportUsed('default')) {
+                        if (unusedExports.includes('default') && !isExportUsed('default')) {
                             markUnused(path, path.node);
-                        }
-                        else {
-                            remainingExports.add('default');
                         }
                     },
                     ExportNamedDeclaration(path) {
@@ -277,28 +322,18 @@ function treeShakeSerializerPlugin(config) {
                             if (declaration.type === 'VariableDeclaration') {
                                 declaration.declarations.forEach((decl) => {
                                     if (decl.id.type === 'Identifier') {
-                                        if (!isExportUsed(decl.id.name)) {
+                                        if (unusedExports.includes(decl.id.name) && !isExportUsed(decl.id.name)) {
                                             markUnused(path, decl);
-                                        }
-                                        else {
-                                            remainingExports.add(decl.id.name);
                                         }
                                     }
                                 });
                             }
                             else {
-                                // console.log(
-                                //   'check:',
-                                //   declaration.type,
-                                //   declaration.id?.name,
-                                //   isExportUsed(declaration.id.name)
-                                // );
+                                console.log('check:', declaration.type, declaration.id?.name, isExportUsed(declaration.id.name), unusedExports);
                                 // if (declaration.type === 'FunctionDeclaration' || declaration.type === 'ClassDeclaration')
-                                if (!isExportUsed(declaration.id.name)) {
+                                if (unusedExports.includes(declaration.id.name) &&
+                                    !isExportUsed(declaration.id.name)) {
                                     markUnused(path, declaration);
-                                }
-                                else {
-                                    remainingExports.add(declaration.id.name);
                                 }
                             }
                         }
@@ -314,7 +349,11 @@ function treeShakeSerializerPlugin(config) {
             const usedIdentifiers = new Set();
             (0, core_1.traverse)(ast, {
                 ImportSpecifier(path) {
-                    importedIdentifiers.add(path.node.imported.name);
+                    importedIdentifiers.add(
+                    // Support `import { foo as bar } from './foo'`
+                    path.node.local.name ??
+                        // Support `import { foo } from './foo'`
+                        path.node.imported.name);
                 },
                 ImportDefaultSpecifier(path) {
                     importedIdentifiers.add(path.node.local.name);
