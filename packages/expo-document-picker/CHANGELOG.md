@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Added default mimetype (`application/octet-stream`) to avoid quiet failure when mimetype is null on iOS ([#24764](https://github.com/expo/expo/pull/24764) by [@OzymandiasTheGreat](https://github.com/OzymandiasTheGreat))
+
 ### 💡 Others
 
 ## 11.8.0 — 2023-10-17
