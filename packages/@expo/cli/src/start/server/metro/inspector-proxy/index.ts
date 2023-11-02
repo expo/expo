@@ -1,9 +1,9 @@
 import { InspectorProxy as MetroInspectorProxy } from 'metro-inspector-proxy';
 import Device from 'metro-inspector-proxy/src/Device';
 
-import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { createInspectorDeviceClass } from './device';
 import { ExpoInspectorProxy } from './proxy';
+import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 
 export { ExpoInspectorProxy } from './proxy';
 

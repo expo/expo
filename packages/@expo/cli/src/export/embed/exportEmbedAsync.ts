@@ -10,9 +10,9 @@ import { Options } from './resolveOptions';
 import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { profile } from '../../utils/profile';
 import { isEnableHermesManaged } from '../exportHermes';
 import { getAssets } from '../fork-bundleAsync';
-import { profile } from '../../utils/profile';
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');

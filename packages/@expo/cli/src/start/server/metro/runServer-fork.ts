@@ -7,16 +7,15 @@ import assert from 'assert';
 import http from 'http';
 import https from 'https';
 import Metro, { RunServerOptions, Server } from 'metro';
-import { ConfigT } from 'metro-config';
-import { InspectorProxy } from 'metro-inspector-proxy';
 import MetroHmrServer from 'metro/src/HmrServer';
 import createWebsocketServer from 'metro/src/lib/createWebsocketServer';
+import { ConfigT } from 'metro-config';
+import { InspectorProxy } from 'metro-inspector-proxy';
 import { parse } from 'url';
 
-import { env } from '../../../utils/env';
-import { createInspectorProxy, ExpoInspectorProxy } from './inspector-proxy';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
-
+import { createInspectorProxy, ExpoInspectorProxy } from './inspector-proxy';
+import { env } from '../../../utils/env';
 import type { ConnectAppType } from '../middleware/server.types';
 
 export const runServer = async (
@@ -33,8 +32,6 @@ export const runServer = async (
     watch,
   }: RunServerOptions
 ): Promise<{ server: http.Server | https.Server; metro: Server }> => {
-  const projectRoot = metroBundler.projectRoot;
-
   // await earlyPortCheck(host, config.server.port);
 
   // if (secure != null || secureCert != null || secureKey != null) {
@@ -86,6 +83,7 @@ export const runServer = async (
 
       Object.assign(websocketEndpoints, {
         ...(inspectorProxy ? { ...inspectorProxy.createWebSocketListeners(httpServer) } : {}),
+        // @ts-expect-error: incorrect types
         '/hot': createWebsocketServer({
           websocketServer: new MetroHmrServer(
             metroServer.getBundler(),

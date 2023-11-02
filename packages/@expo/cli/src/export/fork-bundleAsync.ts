@@ -3,10 +3,10 @@ import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro, { AssetData } from 'metro';
 import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
+import Server from 'metro/src/Server';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import { ConfigT } from 'metro-config';
-import Server from 'metro/src/Server';
 
 import {
   buildHermesBundleAsync,
