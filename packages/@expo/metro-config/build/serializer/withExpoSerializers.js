@@ -166,7 +166,7 @@ function treeShakeSerializerPlugin(config) {
                         }
                     },
                 });
-                // inspect('imports', outputItem.data.modules.imports);
+                inspect('imports', outputItem.data.modules.imports);
             }
         }
         // const detectCommonJsExportsUsage = (ast: Parameters<typeof traverse>[0]): boolean => {
@@ -223,6 +223,7 @@ function treeShakeSerializerPlugin(config) {
                                     if (importItem.cjs || importItem.star) {
                                         return true;
                                     }
+                                    console.log('i>', importName);
                                     return importItem.specifiers.some((specifier) => {
                                         if (specifier.type === 'ImportDefaultSpecifier') {
                                             return importName === 'default';
@@ -230,6 +231,10 @@ function treeShakeSerializerPlugin(config) {
                                         // Star imports are always used.
                                         if (specifier.type === 'ImportNamespaceSpecifier') {
                                             return true;
+                                        }
+                                        // `export { default as add } from './add'`
+                                        if (specifier.type === 'ExportSpecifier') {
+                                            return specifier.localName === importName;
                                         }
                                         return (specifier.importedName === importName || specifier.exportedName === importName);
                                     });
@@ -469,7 +474,7 @@ function treeShakeSerializerPlugin(config) {
             return false;
         }
         function treeShakeAll(depth = 0) {
-            if (depth > 5) {
+            if (depth > 10) {
                 return;
             }
             // This pass will parse all modules back to AST and include the import/export statements.
@@ -479,7 +484,6 @@ function treeShakeSerializerPlugin(config) {
             // This pass will annotate the AST with the used and unused exports.
             for (const [depId, value] of graph.dependencies.entries()) {
                 treeShakeExports(depId, value);
-                console.log('treeShakeExports', value.path, value.output.length);
                 value.output.forEach((outputItem) => {
                     const ast = outputItem.data.ast;
                     if (removeUnusedImports(value, ast)) {

@@ -47,6 +47,7 @@ export const starImport = fromFixture(require('./index-ios-star.json'));
 export const getterReExport = fromFixture(require('./index-ios-getters.json'));
 export const barrelExport = fromFixture(require('./index-ios-barrel.json'));
 export const namedBarrelExport = fromFixture(require('./index-ios-partial-barrel.json'));
+export const exportDefaultAs = fromFixture(require('./index-ios-export-default-as.json'));
 
 export const staticCjs = fromFixture(require('./index-ios-cjs-up.json'));
 

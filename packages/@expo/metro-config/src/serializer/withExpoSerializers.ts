@@ -186,7 +186,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
             }
           },
         });
-        // inspect('imports', outputItem.data.modules.imports);
+        inspect('imports', outputItem.data.modules.imports);
       }
     }
 
@@ -248,6 +248,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                   if (importItem.cjs || importItem.star) {
                     return true;
                   }
+                  console.log('i>', importName);
 
                   return importItem.specifiers.some((specifier) => {
                     if (specifier.type === 'ImportDefaultSpecifier') {
@@ -257,6 +258,11 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
                     if (specifier.type === 'ImportNamespaceSpecifier') {
                       return true;
                     }
+                    // `export { default as add } from './add'`
+                    if (specifier.type === 'ExportSpecifier') {
+                      return specifier.localName === importName;
+                    }
+
                     return (
                       specifier.importedName === importName || specifier.exportedName === importName
                     );
@@ -536,7 +542,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     }
 
     function treeShakeAll(depth: number = 0) {
-      if (depth > 5) {
+      if (depth > 10) {
         return;
       }
       // This pass will parse all modules back to AST and include the import/export statements.
@@ -548,7 +554,6 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
       for (const [depId, value] of graph.dependencies.entries()) {
         treeShakeExports(depId, value);
 
-        console.log('treeShakeExports', value.path, value.output.length);
         value.output.forEach((outputItem) => {
           const ast = outputItem.data.ast;
 
