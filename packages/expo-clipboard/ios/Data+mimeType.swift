@@ -10,10 +10,8 @@ extension Data {
       ([0x47, 0x49, 0x46, 0x38], "image/gif")// GIF
       // Add more patterns here if needed
     ]
-    for pattern in patterns {
-      if bytes.starts(with: pattern.bytes) {
-        return pattern.mimeType
-      }
+    for pattern in patterns where bytes.starts(with: pattern.bytes) {
+      return pattern.mimeType
     }
     return nil
   }
