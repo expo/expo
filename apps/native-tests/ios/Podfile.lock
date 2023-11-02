@@ -765,7 +765,7 @@ SPEC CHECKSUMS:
   expo-dev-menu-interface: 38090d6fda00360c1d9bf28ee6f553e7c073774b
   ExpoClipboard: f0beee97ddfe5d3376d9e2d6ff72300be6a07d70
   ExpoFileSystem: 5014f25f212972b797ce29dbbae8dceb1f4fae31
-  ExpoModulesCore: 15c995b49b4bd36ae1f3fb4d6c15d3b1b2c17d35
+  ExpoModulesCore: d712760b77977a3454bf310c7b97e90bd00ae16d
   ExpoModulesTestCore: 8770f86c0229785aeea49317bc0854836bf8e484
   EXStructuredHeaders: b88446922ba65b0c42defc5b409e0789b672d396
   EXUpdates: 099aa69757127697453372c53ed121ac973a97ce

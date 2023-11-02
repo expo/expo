@@ -2640,7 +2640,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: 0323879e8592b859b55c12012874c60a831699c2
   ExpoLocalization: ebcdab1a3b0d025e6c4c7d7dbf87ab70d23bd5a7
   ExpoMailComposer: 142575dd638c48b3fabf5127bc6652548fdaac5f
-  ExpoModulesCore: 15c995b49b4bd36ae1f3fb4d6c15d3b1b2c17d35
+  ExpoModulesCore: d712760b77977a3454bf310c7b97e90bd00ae16d
   ExpoModulesTestCore: e95cb44dbbfc57128993b1d8a15dd56f720f2756
   ExpoNetwork: 6bfaef1f062be33276b573379fdc09ea78d7aa05
   ExpoPrint: 5c1599952793b22a0261dcf1da8d601bc8c00c73
@@ -2665,7 +2665,7 @@ SPEC CHECKSUMS:
   EXUpdates: 131dc5d0a58711e43eead0a785f863e810e55ee1
   EXUpdatesInterface: defbda79f841a0dec9588f2cbf9fdfed52583667
   FBAEMKit: 5facf4292bff062963f563d68fd5c0cdd6c90d63
-  FBAudienceNetwork: 4d6223a9a88a22e9dca8c9e6c1829a8745b86228
+  FBAudienceNetwork: 03e273f66b70756be7d060927111af97b7641b06
   FBLazyVector: 71803c074f6325f10b5ec891c443b6bbabef0ca7
   FBReactNativeSpec: 91188c438ac0700baec9b0722333884f5986f347
   FBSDKCoreKit: f94e107ae84a6f4c0d9edfd06ed989b084bfa5bb
