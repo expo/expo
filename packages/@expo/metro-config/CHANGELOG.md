@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Drop support for running arbitrary Metro packages.
 - Enable `inlineRequires` by default. ([#25089](https://github.com/expo/expo/pull/25089) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
