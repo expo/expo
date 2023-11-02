@@ -42,3 +42,5 @@ export function unused() {
 export const unusedFile = fromFixture(
   require('./index-ios-72eca9dff484fb1a7194ae4fde7746e8f0b47a502fa8df9b1bcea3fe4832c781.json')
 );
+
+export const staticCjs = fromFixture(require('./index-ios-cjs-up.json'));

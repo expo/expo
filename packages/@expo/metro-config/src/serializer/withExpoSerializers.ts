@@ -78,7 +78,6 @@ export function treeShakeSerializerPlugin(
 ): SerializerParameters {
   const includeDebugInfo = false;
   const preserveEsm = false;
-  // toFixture(...props);
 
   // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
   const minify =
@@ -128,6 +127,20 @@ export function treeShakeSerializerPlugin(
             key: getGraphId(source),
             specifiers,
           });
+        },
+        // Track require calls
+        CallExpression(path) {
+          if (path.node.callee.type === 'Identifier' && path.node.callee.name === 'require') {
+            const arg = path.node.arguments[0];
+            if (arg.type === 'StringLiteral') {
+              outputItem.data.modules.imports.push({
+                source: arg.value,
+                key: getGraphId(arg.value),
+                specifiers: [],
+                cjs: true,
+              });
+            }
+          }
         },
       });
     }
@@ -186,9 +199,11 @@ export function treeShakeSerializerPlugin(
               return imports.some((importItem) => {
                 return (
                   importItem.key === depId &&
-                  importItem.specifiers.some((specifier) => {
-                    return specifier.importedName === importName;
-                  })
+                  // If the import is CommonJS, then we can't tree-shake it.
+                  (importItem.cjs ||
+                    importItem.specifiers.some((specifier) => {
+                      return specifier.importedName === importName;
+                    }))
                 );
               });
             }
@@ -368,11 +383,11 @@ export function treeShakeSerializerPlugin(
   treeShakeAll();
 
   for (const value of graph.dependencies.values()) {
-    console.log('inverseDependencies', value.inverseDependencies.values());
+    // console.log('inverseDependencies', value.inverseDependencies.values());
 
     for (const index in value.output) {
       const outputItem = value.output[index];
-      inspect('ii', outputItem.data.modules.imports);
+      // inspect('ii', outputItem.data.modules.imports);
 
       // let ast = outputItem.data.ast!;
       let ast = outputItem.data.ast; //?? babylon.parse(outputItem.data.code, { sourceType: 'unambiguous' });
@@ -469,7 +484,7 @@ export function treeShakeSerializerPlugin(
         null;
       // TODO: minify the code to fold anything that was dropped above.
 
-      console.log('output code', outputItem.data.code);
+      // console.log('output code', outputItem.data.code);
     }
   }
 

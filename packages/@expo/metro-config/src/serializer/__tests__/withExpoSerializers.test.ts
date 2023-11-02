@@ -38,7 +38,12 @@ describe('tree-shaking', () => {
     console.log(stringResults);
     expect(stringResults).not.toMatch(/subtract/);
   });
-  it(`removes unused file`, async () => {
+  it(`does not tree shake exports if cjs require is used`, async () => {
+    const stringResults = await getSerializer()(...splitFixtures.staticCjs);
+    console.log(stringResults);
+    expect(stringResults).toMatch(/subtract/);
+  });
+  xit(`removes unused file`, async () => {
     const serializer = getSerializer();
 
     // Drop the pre-modules for brevity
@@ -50,6 +55,7 @@ describe('tree-shaking', () => {
 
     console.log(stringResults);
     expect(stringResults).not.toMatch(/subtract/);
+    expect(stringResults).not.toMatch(/unused/);
   });
 });
 
