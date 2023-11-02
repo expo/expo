@@ -9,7 +9,7 @@ import https from 'https';
 import Metro, { RunServerOptions, Server } from 'metro';
 import { ConfigT } from 'metro-config';
 import { InspectorProxy } from 'metro-inspector-proxy';
-import MetroHmrServer from 'metro/src/HmrServer';
+import { MetroHmrServer } from 'metro/src/HmrServer';
 import { createWebsocketServer } from 'metro/src/lib/createWebsocketServer';
 import { parse } from 'url';
 
