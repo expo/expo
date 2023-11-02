@@ -1,12 +1,18 @@
 import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import { StyleSheet } from 'react-native';
 
-import { VideoPlayer } from './VideoPlayer';
-import { VideoViewProps } from './VideoView.types';
-class VideoPlayerImpl implements VideoPlayer {
+import { VideoPlayer, VideoViewProps } from './VideoView.types';
+class VideoPlayerWeb implements VideoPlayer {
+  constructor(source: string | null = null) {
+    this.src = source;
+  }
+
   src: string | null = null;
   mountedVideos: Set<HTMLVideoElement> = new Set();
   isPlaying: boolean = false;
   _isMuted: boolean = false;
+  timestamp: number = 0;
+
   set isMuted(value: boolean) {
     this.mountedVideos.forEach((video) => {
       video.muted = value;
@@ -16,7 +22,6 @@ class VideoPlayerImpl implements VideoPlayer {
   get isMuted(): boolean {
     return this._isMuted;
   }
-  timestamp: number = 0;
   play(): void {
     this.mountedVideos.forEach((video) => {
       video.play();
@@ -50,19 +55,22 @@ class VideoPlayerImpl implements VideoPlayer {
     });
     this.isPlaying = true;
   }
-  constructor(source: string | null = null) {
-    this.src = source;
-  }
+}
+
+function mapStyles(style: VideoViewProps['style']): React.CSSProperties {
+  const flattenedStyles = StyleSheet.flatten(style);
+  // Looking through react-native-web source code they also just pass styles directly without further conversions, so it's just a cast.
+  return flattenedStyles as React.CSSProperties;
 }
 
 export function useVideoPlayer(source: string | null = null): VideoPlayer {
   return React.useMemo(() => {
-    return new VideoPlayerImpl(source);
+    return new VideoPlayerWeb(source);
     // should this not include source?
   }, []);
 }
 
-export const VideoView = forwardRef((props: { player?: VideoPlayerImpl } & VideoViewProps, ref) => {
+export const VideoView = forwardRef((props: { player?: VideoPlayerWeb } & VideoViewProps, ref) => {
   const videoRef = useRef<null | HTMLVideoElement>(null);
   useImperativeHandle(ref, () => ({
     enterFullscreen: () => {
@@ -77,7 +85,9 @@ export const VideoView = forwardRef((props: { player?: VideoPlayerImpl } & Video
   }));
 
   useEffect(() => {
-    if (!props.player || !videoRef.current) return;
+    if (!props.player || !videoRef.current) {
+      return;
+    }
     props.player.mountedVideos.add(videoRef.current);
     return () => {
       if (videoRef.current) {
@@ -85,11 +95,15 @@ export const VideoView = forwardRef((props: { player?: VideoPlayerImpl } & Video
       }
     };
   }, [props.player]);
+
   return (
     <video
-      {...props}
       controls={props.nativeControls}
       controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'}
+      style={{
+        ...mapStyles(props.style),
+        objectFit: props.contentFit,
+      }}
       ref={videoRef}
       src={props.player?.src ?? ''}
     />

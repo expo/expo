@@ -2,8 +2,7 @@ import { ReactNode, PureComponent, useMemo, createRef } from 'react';
 
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
-import { VideoPlayer } from './VideoPlayer';
-import { VideoViewProps } from './VideoView.types';
+import { VideoPlayer, VideoViewProps } from './VideoView.types';
 
 export function useVideoPlayer(source: string | null = null): VideoPlayer {
   return useMemo(() => {
