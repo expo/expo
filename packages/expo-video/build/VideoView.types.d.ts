@@ -71,6 +71,14 @@ export interface VideoViewProps extends ViewProps {
      * Determines whether the player allows the user to skip media content.
      */
     requiresLinearPlayback: boolean | undefined;
+    /**
+     * @platform ios
+     * Determines the position offset of the video inside the container.
+     */
+    contentPosition: {
+        dx?: number;
+        dy?: number;
+    } | undefined;
 }
 export {};
 //# sourceMappingURL=VideoView.types.d.ts.map
