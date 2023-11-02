@@ -47,7 +47,7 @@ export function withExpoSerializers(config: InputConfigT): InputConfigT {
     processors.push(environmentVariableSerializerPlugin);
   }
 
-  processors.push(treeShakeSerializerPlugin);
+  processors.push(treeShakeSerializerPlugin(config));
 
   return withSerializerPlugins(config, processors);
 }
@@ -74,541 +74,612 @@ const generateImportNames = require('metro/src/ModuleGraph/worker/generateImport
 const inspect = (...props) =>
   console.log(...props.map((prop) => require('util').inspect(prop, { depth: 20, colors: true })));
 
-export async function treeShakeSerializerPlugin(
-  entryPoint: string,
-  preModules: readonly Module<MixedOutput>[],
-  graph: ReadOnlyGraph,
-  options: SerializerOptions
-): Promise<SerializerParameters> {
-  console.log('treeshake:', graph.transformOptions);
-  if (!graph.transformOptions.customTransformOptions?.treeshake || options.dev) {
-    return [entryPoint, preModules, graph, options];
-  }
-  const includeDebugInfo = false;
-  const preserveEsm = false;
-
-  // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
-  const minify =
-    graph.transformOptions.minify &&
-    graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
-    graph.transformOptions.unstable_transformProfile !== 'hermes-stable';
-
-  function collectImportExports(value: Module<MixedOutput>) {
-    function getGraphId(moduleId: string) {
-      const key = [...value.dependencies.values()].find((dep) => {
-        return dep.data.name === moduleId;
-      })?.absolutePath;
-
-      if (!key) {
-        throw new Error(
-          `Failed to find graph key for import "${moduleId}" in module "${value.path}"`
-        );
-      }
-      return key;
+export function treeShakeSerializerPlugin(config: InputConfigT) {
+  return async function treeShakeSerializer(
+    entryPoint: string,
+    preModules: readonly Module<MixedOutput>[],
+    graph: ReadOnlyGraph,
+    options: SerializerOptions
+  ): Promise<SerializerParameters> {
+    console.log('treeshake:', graph.transformOptions);
+    if (graph.transformOptions.customTransformOptions?.treeshake !== 'true' || options.dev) {
+      return [entryPoint, preModules, graph, options];
     }
-    for (const index in value.output) {
-      const outputItem = value.output[index];
+    const includeDebugInfo = true;
+    const preserveEsm = true;
 
-      const ast =
-        outputItem.data.ast ?? babylon.parse(outputItem.data.code, { sourceType: 'unambiguous' });
+    // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
+    const minify =
+      graph.transformOptions.minify &&
+      graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
+      graph.transformOptions.unstable_transformProfile !== 'hermes-stable';
 
-      outputItem.data.ast = ast;
-      outputItem.data.modules = {
-        imports: [],
-        exports: [],
-      };
+    function collectImportExports(value: Module<MixedOutput>) {
+      function getGraphId(moduleId: string) {
+        const key = [...value.dependencies.values()].find((dep) => {
+          return dep.data.name === moduleId;
+        })?.absolutePath;
 
-      traverse(ast, {
-        // Traverse and collect import/export statements.
-        ImportDeclaration(path) {
-          const source = path.node.source.value;
-          const specifiers = path.node.specifiers.map((specifier) => {
-            return {
-              type: specifier.type,
-              importedName: specifier.type === 'ImportSpecifier' ? specifier.imported.name : null,
-              localName: specifier.local.name,
-            };
-          });
-
-          outputItem.data.modules.imports.push({
-            source,
-            key: getGraphId(source),
-            specifiers,
-          });
-        },
-        // Track require calls
-        CallExpression(path) {
-          if (path.node.callee.type === 'Identifier' && path.node.callee.name === 'require') {
-            const arg = path.node.arguments[0];
-            if (arg.type === 'StringLiteral') {
-              outputItem.data.modules.imports.push({
-                source: arg.value,
-                key: getGraphId(arg.value),
-                specifiers: [],
-                cjs: true,
-              });
-            }
-          }
-        },
-      });
-    }
-  }
-
-  const detectCommonJsExportsUsage = (ast: Parameters<typeof traverse>[0]): boolean => {
-    let usesCommonJsExports = false;
-
-    traverse(ast, {
-      MemberExpression(path) {
-        if (
-          (path.node.object.name === 'module' && path.node.property.name === 'exports') ||
-          path.node.object.name === 'exports'
-        ) {
-          usesCommonJsExports = true;
-          console.log(`Found usage of ${path.node.object.name}.${path.node.property.name}`);
+        if (!key) {
+          throw new Error(
+            `Failed to find graph key for import "${moduleId}" in module "${value.path}"`
+          );
         }
-      },
-      CallExpression(path) {
-        // Check for Object.assign or Object.defineProperties
-        if (
-          path.node.callee.type === 'MemberExpression' &&
-          path.node.callee.object.name === 'Object' &&
-          (path.node.callee.property.name === 'assign' ||
-            path.node.callee.property.name === 'defineProperties')
-        ) {
-          // Check if the first argument is module.exports
-          const firstArg = path.node.arguments[0];
-          if (
-            firstArg.type === 'MemberExpression' &&
-            firstArg.object.name === 'module' &&
-            firstArg.property.name === 'exports'
-          ) {
-            usesCommonJsExports = true;
-          } else if (firstArg.type === 'Identifier' && firstArg.name === 'exports') {
-            usesCommonJsExports = true;
-          }
-        }
-      },
-    });
-
-    return usesCommonJsExports;
-  };
-
-  function treeShakeExports(depId: string, value: Module<MixedOutput>) {
-    const inverseDeps = [...value.inverseDependencies.values()].map((id) => {
-      return graph.dependencies.get(id);
-    });
-
-    const isExportUsed = (importName: string) => {
-      return inverseDeps.some((dep) => {
-        return dep?.output.some((outputItem) => {
-          if (outputItem.type === 'js/module') {
-            const imports = outputItem.data.modules?.imports;
-            if (imports) {
-              return imports.some((importItem) => {
-                return (
-                  importItem.key === depId &&
-                  // If the import is CommonJS, then we can't tree-shake it.
-                  (importItem.cjs ||
-                    importItem.specifiers.some((specifier) => {
-                      return specifier.importedName === importName;
-                    }))
-                );
-              });
-            }
-          }
-          return false;
-        });
-      });
-    };
-
-    for (const index in value.output) {
-      const outputItem = value.output[index];
-
-      const ast = outputItem.data.ast;
-
-      const annotate = false;
-
-      function markUnused(path, node) {
-        if (annotate) {
-          node.leadingComments = node.leadingComments ?? [];
-          node.leadingComments.push({
-            type: 'CommentBlock',
-            value: ` unused export ${node.id.name} `,
-          });
-        } else {
-          path.remove();
-        }
+        return key;
       }
+      for (const index in value.output) {
+        const outputItem = value.output[index];
 
-      const remainingExports = new Set();
+        const ast =
+          outputItem.data.ast ?? babylon.parse(outputItem.data.code, { sourceType: 'unambiguous' });
 
-      // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
-      traverse(ast, {
-        ExportDefaultDeclaration(path) {
-          if (!isExportUsed('default')) {
-            markUnused(path, path.node);
-          } else {
-            remainingExports.add('default');
-          }
-        },
-        ExportNamedDeclaration(path) {
-          const declaration = path.node.declaration;
-          if (declaration) {
-            if (declaration.type === 'VariableDeclaration') {
-              declaration.declarations.forEach((decl) => {
-                if (decl.id.type === 'Identifier') {
-                  if (!isExportUsed(decl.id.name)) {
-                    markUnused(path, decl);
-                  } else {
-                    remainingExports.add(decl.id.name);
-                  }
-                }
-              });
-            } else {
-              // if (declaration.type === 'FunctionDeclaration' || declaration.type === 'ClassDeclaration')
-              if (!isExportUsed(declaration.id.name)) {
-                markUnused(path, declaration);
-              } else {
-                remainingExports.add(declaration.id.name);
+        outputItem.data.ast = ast;
+        outputItem.data.modules = {
+          imports: [],
+          exports: [],
+        };
+
+        traverse(ast, {
+          // Traverse and collect import/export statements.
+          ImportDeclaration(path) {
+            const source = path.node.source.value;
+            const specifiers = path.node.specifiers.map((specifier) => {
+              return {
+                type: specifier.type,
+                importedName: specifier.type === 'ImportSpecifier' ? specifier.imported.name : null,
+                localName: specifier.local.name,
+              };
+            });
+
+            outputItem.data.modules.imports.push({
+              source,
+              key: getGraphId(source),
+              specifiers,
+            });
+          },
+          // Track require calls
+          CallExpression(path) {
+            if (path.node.callee.type === 'Identifier' && path.node.callee.name === 'require') {
+              const arg = path.node.arguments[0];
+              if (arg.type === 'StringLiteral') {
+                outputItem.data.modules.imports.push({
+                  source: arg.value,
+                  key: getGraphId(arg.value),
+                  specifiers: [],
+                  cjs: true,
+                });
               }
             }
-          }
-        },
-      });
-    }
-  }
-
-  function removeUnusedImports(value: Module<MixedOutput>, ast: Parameters<typeof traverse>[0]) {
-    // Traverse imports and remove unused imports.
-
-    // Keep track of all the imported identifiers
-    const importedIdentifiers = new Set();
-
-    // Keep track of all used identifiers
-    const usedIdentifiers = new Set();
-
-    traverse(ast, {
-      ImportSpecifier(path) {
-        importedIdentifiers.add(path.node.imported.name);
-      },
-      ImportDefaultSpecifier(path) {
-        importedIdentifiers.add(path.node.local.name);
-      },
-      ImportNamespaceSpecifier(path) {
-        importedIdentifiers.add(path.node.local.name);
-      },
-      Identifier(path) {
-        // Make sure this identifier isn't coming from an import specifier
-        if (path.findParent((path) => path.isImportSpecifier())) {
-          return;
-        }
-        if (!path.scope.bindingIdentifierEquals(path.node.name, path.node)) {
-          usedIdentifiers.add(path.node.name);
-        }
-      },
-    });
-
-    // Determine unused identifiers by subtracting the used from the imported
-    const unusedImports = [...importedIdentifiers].filter(
-      (identifier) => !usedIdentifiers.has(identifier)
-    );
-
-    // console.log('usedIdentifiers', unusedImports, usedIdentifiers);
-
-    let removed = unusedImports.length > 0;
-    // Remove the unused imports from the AST
-    traverse(ast, {
-      ImportDeclaration(path) {
-        path.node.specifiers = path.node.specifiers.filter((specifier) => {
-          return !unusedImports.includes(specifier.imported.name);
+          },
         });
+        inspect('imports', outputItem.data.modules.imports);
+      }
+    }
 
-        // If no specifiers are left after filtering, remove the whole import declaration
-        // e.g. `import './unused'` or `import {} from './unused'` -> remove.
-        if (path.node.specifiers.length === 0) {
-          // TODO: Ensure the module isn't side-effect-ful or importing a module that is side-effect-ful.
-          const importModuleId = path.node.source.value;
-          // Unlink the module in the graph
-          const depId = [...value.dependencies.entries()].find(([key, dep]) => {
-            return dep.data.name === importModuleId;
-          })?.[0];
+    // const detectCommonJsExportsUsage = (ast: Parameters<typeof traverse>[0]): boolean => {
+    //   let usesCommonJsExports = false;
 
-          // Should never happen but we're playing with fire here.
-          if (!depId) {
-            throw new Error(
-              `Failed to find graph key for import "${importModuleId}" from "${importModuleId}"`
-            );
-          }
+    //   traverse(ast, {
+    //     MemberExpression(path) {
+    //       if (
+    //         (path.node.object.name === 'module' && path.node.property.name === 'exports') ||
+    //         path.node.object.name === 'exports'
+    //       ) {
+    //         usesCommonJsExports = true;
+    //         console.log(`Found usage of ${path.node.object.name}.${path.node.property.name}`);
+    //       }
+    //     },
+    //     CallExpression(path) {
+    //       // Check for Object.assign or Object.defineProperties
+    //       if (
+    //         path.node.callee.type === 'MemberExpression' &&
+    //         path.node.callee.object.name === 'Object' &&
+    //         (path.node.callee.property.name === 'assign' ||
+    //           path.node.callee.property.name === 'defineProperties')
+    //       ) {
+    //         // Check if the first argument is module.exports
+    //         const firstArg = path.node.arguments[0];
+    //         if (
+    //           firstArg.type === 'MemberExpression' &&
+    //           firstArg.object.name === 'module' &&
+    //           firstArg.property.name === 'exports'
+    //         ) {
+    //           usesCommonJsExports = true;
+    //         } else if (firstArg.type === 'Identifier' && firstArg.name === 'exports') {
+    //           usesCommonJsExports = true;
+    //         }
+    //       }
+    //     },
+    //   });
 
-          const dep = value.dependencies.get(depId)!;
+    //   return usesCommonJsExports;
+    // };
 
-          const graphDep = graph.dependencies.get(dep.absolutePath);
-          // Should never happen but we're playing with fire here.
-          if (!graphDep) {
-            throw new Error(
-              `Failed to find graph key for import "${importModuleId}" from "${importModuleId}"`
-            );
-          }
+    function treeShakeExports(depId: string, value: Module<MixedOutput>) {
+      const inverseDeps = [...value.inverseDependencies.values()].map((id) => {
+        return graph.dependencies.get(id);
+      });
 
-          //
-          if (!hasSideEffect(graphDep)) {
-            // Remove inverse link to this dependency
-            graphDep.inverseDependencies.delete(value.path);
+      const isExportUsed = (importName: string) => {
+        return inverseDeps.some((dep) => {
+          return dep?.output.some((outputItem) => {
+            if (outputItem.type === 'js/module') {
+              const imports = outputItem.data.modules?.imports;
+              if (imports) {
+                return imports.some((importItem) => {
+                  if (
+                    importItem.key !== depId ||
+                    // If the import is CommonJS, then we can't tree-shake it.
+                    importItem.cjs
+                  ) {
+                    return false;
+                  }
 
-            if (graphDep.inverseDependencies.size === 0) {
-              // Remove the dependency from the graph as no other modules are using it anymore.
-              graph.dependencies.delete(dep.absolutePath);
+                  return importItem.specifiers.some((specifier) => {
+                    if (specifier.type === 'ImportDefaultSpecifier') {
+                      return importName === 'default';
+                    }
+                    // Star imports are always used.
+                    if (specifier.type === 'ImportNamespaceSpecifier') {
+                      return true;
+                    }
+                    return specifier.importedName === importName;
+                  });
+                });
+              }
             }
-
-            // Remove dependency from this module in the graph
-            value.dependencies.delete(depId);
-
-            // Delete the AST
-            path.remove();
-
-            // Mark the module as removed so we know to traverse again.
-            removed = true;
-          }
-        }
-      },
-    });
-
-    return removed;
-  }
-
-  function hasSideEffect(value: Module<MixedOutput>, checked: Set<string> = new Set()): boolean {
-    if (value.sideEffects) {
-      return true;
-    }
-    // Recursively check if any of the dependencies have side effects.
-    for (const depReference of value.dependencies.values()) {
-      if (checked.has(depReference.absolutePath)) {
-        continue;
-      }
-      checked.add(depReference.absolutePath);
-      const dep = graph.dependencies.get(depReference.absolutePath)!;
-      if (hasSideEffect(dep, checked)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  function treeShakeAll() {
-    // This pass will parse all modules back to AST and include the import/export statements.
-    for (const value of graph.dependencies.values()) {
-      collectImportExports(value);
-    }
-
-    // This pass will annotate the AST with the used and unused exports.
-    for (const [depId, value] of graph.dependencies.entries()) {
-      treeShakeExports(depId, value);
+            return false;
+          });
+        });
+      };
 
       for (const index in value.output) {
         const outputItem = value.output[index];
 
         const ast = outputItem.data.ast;
 
-        if (removeUnusedImports(value, ast)) {
-          // TODO: haha this is slow
-          treeShakeAll();
+        const annotate = false;
+
+        function markUnused(path, node) {
+          if (annotate) {
+            node.leadingComments = node.leadingComments ?? [];
+            node.leadingComments.push({
+              type: 'CommentBlock',
+              value: ` unused export ${node.id.name} `,
+            });
+          } else {
+            path.remove();
+          }
         }
-      }
-    }
-  }
 
-  function markSideEffects() {
-    const findUpPackageJsonPath = (dir: string): string | null => {
-      if (dir === path.sep || dir.length < options.projectRoot.length) {
-        return null;
-      }
-      const packageJsonPath = path.join(dir, 'package.json');
-      if (fs.existsSync(packageJsonPath)) {
-        return packageJsonPath;
-      }
-      return findUpPackageJsonPath(path.dirname(dir));
-    };
+        const remainingExports = new Set();
 
-    const pkgJsonCache = new Map<string, any>();
-
-    const getPackageJsonMatcher = (dir: string): any => {
-      const cached = pkgJsonCache.get(dir);
-      if (cached) {
-        return cached;
-      }
-      const packageJsonPath = findUpPackageJsonPath(dir);
-      if (!packageJsonPath) {
-        return null;
-      }
-      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-
-      // TODO: Split out and unit test.
-      const dirRoot = path.dirname(packageJsonPath);
-      const isSideEffect = (fp: string): boolean => {
-        if (typeof packageJson.sideEffects === 'boolean') {
-          return packageJson.sideEffects;
-        } else if (Array.isArray(packageJson.sideEffects)) {
-          const relativeName = path.relative(dirRoot, fp);
-          return packageJson.sideEffects.some((sideEffect: any) => {
-            if (typeof sideEffect === 'string') {
-              return minimatch(relativeName, sideEffect.replace(/^\.\//, ''), { matchBase: true });
+        // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
+        traverse(ast, {
+          ExportDefaultDeclaration(path) {
+            if (!isExportUsed('default')) {
+              markUnused(path, path.node);
+            } else {
+              remainingExports.add('default');
             }
-            return false;
-          });
-        }
-        return false;
-      };
-
-      pkgJsonCache.set(dir, isSideEffect);
-      return isSideEffect;
-    };
-
-    // This pass will traverse all dependencies and mark them as side-effect-ful if they are marked as such
-    // in the package.json, according to Webpack: https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free
-    for (const value of graph.dependencies.values()) {
-      const isSideEffect = getPackageJsonMatcher(value.path);
-      if (!isSideEffect) {
-        continue;
-      }
-
-      // @ts-expect-error: Not on type. This logic should probably be upstreamed.
-      value.sideEffects = isSideEffect(value.path);
-    }
-
-    // This pass will surface all recursive dependencies that are side-effect-ful and mark them early
-    // so we aren't redoing recursive checks later.
-    // e.g. `./index.js` -> `./foo.js` -> `./bar.js` -> `./baz.js` (side-effect)
-    // All modules will be marked as side-effect-ful.
-    for (const value of graph.dependencies.values()) {
-      if (hasSideEffect(value)) {
-        value.sideEffects = true;
+          },
+          ExportNamedDeclaration(path) {
+            const declaration = path.node.declaration;
+            if (declaration) {
+              if (declaration.type === 'VariableDeclaration') {
+                declaration.declarations.forEach((decl) => {
+                  if (decl.id.type === 'Identifier') {
+                    if (!isExportUsed(decl.id.name)) {
+                      markUnused(path, decl);
+                    } else {
+                      remainingExports.add(decl.id.name);
+                    }
+                  }
+                });
+              } else {
+                // if (declaration.type === 'FunctionDeclaration' || declaration.type === 'ClassDeclaration')
+                if (!isExportUsed(declaration.id.name)) {
+                  markUnused(path, declaration);
+                } else {
+                  remainingExports.add(declaration.id.name);
+                }
+              }
+            }
+          },
+        });
       }
     }
-  }
 
-  // Iterate the graph and mark dependencies as side-effect-ful if they are marked as such in the package.json.
-  markSideEffects();
+    function removeUnusedImports(value: Module<MixedOutput>, ast: Parameters<typeof traverse>[0]) {
+      // Traverse imports and remove unused imports.
 
-  // Tree shake the graph.
-  treeShakeAll();
+      // Keep track of all the imported identifiers
+      const importedIdentifiers = new Set();
 
-  // Convert all remaining AST and dependencies to standard output that Metro expects.
-  // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
-  for (const value of graph.dependencies.values()) {
-    // console.log('inverseDependencies', value.inverseDependencies.values());
+      // Keep track of all used identifiers
+      const usedIdentifiers = new Set();
 
-    for (const index in value.output) {
-      const outputItem = value.output[index];
-      // inspect('ii', outputItem.data.modules.imports);
+      traverse(ast, {
+        ImportSpecifier(path) {
+          importedIdentifiers.add(path.node.imported.name);
+        },
+        ImportDefaultSpecifier(path) {
+          importedIdentifiers.add(path.node.local.name);
+        },
+        ImportNamespaceSpecifier(path) {
+          importedIdentifiers.add(path.node.local.name);
+        },
+        Identifier(path) {
+          // Make sure this identifier isn't coming from an import specifier
+          if (path.findParent((path) => path.isImportSpecifier())) {
+            return;
+          }
+          if (!path.scope.bindingIdentifierEquals(path.node.name, path.node)) {
+            usedIdentifiers.add(path.node.name);
+          }
+        },
+      });
 
-      // let ast = outputItem.data.ast!;
-      let ast = outputItem.data.ast; //?? babylon.parse(outputItem.data.code, { sourceType: 'unambiguous' });
-
-      const { importDefault, importAll } = generateImportNames(ast);
-
-      const babelPluginOpts = {
-        // ...options,
-        inlineableCalls: [importDefault, importAll],
-        importDefault,
-        importAll,
-      };
-
-      ast = transformFromAstSync(ast, undefined, {
-        ast: true,
-        babelrc: false,
-        code: false,
-        configFile: false,
-        comments: includeDebugInfo,
-        compact: false,
-
-        filename: value.path,
-        plugins: [
-          functionMapBabelPlugin,
-          !preserveEsm && [
-            require('metro-transform-plugins/src/import-export-plugin'),
-            babelPluginOpts,
-          ],
-          !preserveEsm && [require('metro-transform-plugins/src/inline-plugin'), babelPluginOpts],
-        ].filter(Boolean),
-        sourceMaps: false,
-        // Not-Cloning the input AST here should be safe because other code paths above this call
-        // are mutating the AST as well and no code is depending on the original AST.
-        // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
-        // either because one of the plugins is doing something funky or Babel messes up some caches.
-        // Make sure to test the above mentioned case before flipping the flag back to false.
-        cloneInputAst: true,
-      })?.ast!;
-
-      const dependencyMapName = '';
-      const globalPrefix = '';
-
-      const { ast: wrappedAst } = JsFileWrapping.wrapModule(
-        ast,
-        importDefault,
-        importAll,
-        dependencyMapName,
-        globalPrefix
+      // Determine unused identifiers by subtracting the used from the imported
+      const unusedImports = [...importedIdentifiers].filter(
+        (identifier) => !usedIdentifiers.has(identifier)
       );
 
-      const outputCode = transformFromAstSync(wrappedAst, undefined, {
-        ast: false,
-        babelrc: false,
-        code: true,
-        configFile: false,
+      // console.log('usedIdentifiers', unusedImports, usedIdentifiers);
 
-        // comments: true,
-        // compact: false,
+      let removed = false; //unusedImports.length > 0;
+      // Remove the unused imports from the AST
+      traverse(ast, {
+        ImportDeclaration(path) {
+          const originalSize = path.node.specifiers.length;
+          path.node.specifiers = path.node.specifiers.filter((specifier) => {
+            if (specifier.type === 'ImportDefaultSpecifier') {
+              return !unusedImports.includes(specifier.local.name);
+            } else if (specifier.type === 'ImportNamespaceSpecifier') {
+              return !unusedImports.includes(specifier.local.name);
+            } else {
+              return !unusedImports.includes(specifier.imported.name);
+            }
+            // if (!specifier.imported) {
+            // }
+            // return !unusedImports.includes(specifier.imported.name);
+          });
+          if (originalSize !== path.node.specifiers.length) {
+            removed = true;
+          }
 
-        comments: includeDebugInfo,
-        compact: !includeDebugInfo,
+          // If no specifiers are left after filtering, remove the whole import declaration
+          // e.g. `import './unused'` or `import {} from './unused'` -> remove.
+          if (path.node.specifiers.length === 0) {
+            // TODO: Ensure the module isn't side-effect-ful or importing a module that is side-effect-ful.
+            const importModuleId = path.node.source.value;
+            // Unlink the module in the graph
+            const depId = [...value.dependencies.entries()].find(([key, dep]) => {
+              return dep.data.name === importModuleId;
+            })?.[0];
 
-        filename: value.path,
-        plugins: [],
-        sourceMaps: false,
-        // Not-Cloning the input AST here should be safe because other code paths above this call
-        // are mutating the AST as well and no code is depending on the original AST.
-        // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
-        // either because one of the plugins is doing something funky or Babel messes up some caches.
-        // Make sure to test the above mentioned case before flipping the flag back to false.
-        cloneInputAst: true,
-      })!.code!;
+            // // Should never happen but we're playing with fire here.
+            // if (!depId) {
+            //   throw new Error(
+            //     `Failed to find graph key for import "${importModuleId}" from "${importModuleId}" while optimizing ${
+            //       value.path
+            //     }. Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`
+            //   );
+            // }
 
-      let map: Array<MetroSourceMapSegmentTuple> = [];
-      let code = outputCode;
-      if (minify) {
-        // const minifyCode = require('metro-minify-terser');
-        // ({ map, code } = await minifyCode({
-        //   //           code: string;
-        //   // map?: BasicSourceMap;
-        //   // filename: string;
-        //   // reserved: ReadonlyArray<string>;
-        //   // config: MinifierConfig;
-        //   // projectRoot,
-        //   filename: value.path,
-        //   code,
-        //   // file.code,
-        //   // map,
-        //   config: {},
-        //   reserved: [],
-        //   // config,
-        // }));
+            // If the dependency was already removed, then we don't need to do anything.
+            if (depId) {
+              const dep = value.dependencies.get(depId)!;
+
+              const graphDep = graph.dependencies.get(dep.absolutePath);
+              // Should never happen but we're playing with fire here.
+              if (!graphDep) {
+                throw new Error(
+                  `Failed to find graph key for import "${importModuleId}" while optimizing ${
+                    value.path
+                  }. Options: ${[...value.dependencies.values()].map((v) => v.data.name)}`
+                );
+              }
+
+              //
+              if (!hasSideEffect(graphDep)) {
+                // Remove inverse link to this dependency
+                graphDep.inverseDependencies.delete(value.path);
+
+                if (graphDep.inverseDependencies.size === 0) {
+                  // Remove the dependency from the graph as no other modules are using it anymore.
+                  graph.dependencies.delete(dep.absolutePath);
+                }
+
+                // Remove dependency from this module in the graph
+                value.dependencies.delete(depId);
+
+                // Delete the AST
+                path.remove();
+
+                // Mark the module as removed so we know to traverse again.
+                removed = true;
+              }
+            } else {
+              // Delete the AST
+              path.remove();
+
+              // Mark the module as removed so we know to traverse again.
+              removed = true;
+            }
+          }
+        },
+      });
+
+      return removed;
+    }
+
+    function hasSideEffect(value: Module<MixedOutput>, checked: Set<string> = new Set()): boolean {
+      if (value.sideEffects) {
+        return true;
+      }
+      // Recursively check if any of the dependencies have side effects.
+      for (const depReference of value.dependencies.values()) {
+        if (checked.has(depReference.absolutePath)) {
+          continue;
+        }
+        checked.add(depReference.absolutePath);
+        const dep = graph.dependencies.get(depReference.absolutePath)!;
+        if (hasSideEffect(dep, checked)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function treeShakeAll(depth: number = 0) {
+      if (depth > 5) {
+        return;
+      }
+      // This pass will parse all modules back to AST and include the import/export statements.
+      for (const value of graph.dependencies.values()) {
+        collectImportExports(value);
       }
 
-      outputItem.data.code = (includeDebugInfo ? `\n// ${value.path}\n` : '') + code;
-      outputItem.data.lineCount = countLines(outputItem.data.code);
-      outputItem.data.map = map;
-      outputItem.data.functionMap =
-        ast.metadata?.metro?.functionMap ??
-        // Fallback to deprecated explicitly-generated `functionMap`
-        ast.functionMap ??
-        null;
-      // TODO: minify the code to fold anything that was dropped above.
+      // This pass will annotate the AST with the used and unused exports.
+      for (const [depId, value] of graph.dependencies.entries()) {
+        treeShakeExports(depId, value);
 
-      // console.log('output code', outputItem.data.code);
+        for (const index in value.output) {
+          const outputItem = value.output[index];
+
+          const ast = outputItem.data.ast;
+
+          if (removeUnusedImports(value, ast)) {
+            // TODO: haha this is slow
+            treeShakeAll(depth + 1);
+          }
+        }
+      }
     }
-  }
 
-  return [entryPoint, preModules, graph, options];
+    function markSideEffects() {
+      const findUpPackageJsonPath = (dir: string): string | null => {
+        if (dir === path.sep || dir.length < options.projectRoot.length) {
+          return null;
+        }
+        const packageJsonPath = path.join(dir, 'package.json');
+        if (fs.existsSync(packageJsonPath)) {
+          return packageJsonPath;
+        }
+        return findUpPackageJsonPath(path.dirname(dir));
+      };
+
+      const pkgJsonCache = new Map<string, any>();
+
+      const getPackageJsonMatcher = (dir: string): any => {
+        const cached = pkgJsonCache.get(dir);
+        if (cached) {
+          return cached;
+        }
+        const packageJsonPath = findUpPackageJsonPath(dir);
+        if (!packageJsonPath) {
+          return null;
+        }
+        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+
+        // TODO: Split out and unit test.
+        const dirRoot = path.dirname(packageJsonPath);
+        const isSideEffect = (fp: string): boolean => {
+          if (typeof packageJson.sideEffects === 'boolean') {
+            return packageJson.sideEffects;
+          } else if (Array.isArray(packageJson.sideEffects)) {
+            const relativeName = path.relative(dirRoot, fp);
+            return packageJson.sideEffects.some((sideEffect: any) => {
+              if (typeof sideEffect === 'string') {
+                return minimatch(relativeName, sideEffect.replace(/^\.\//, ''), {
+                  matchBase: true,
+                });
+              }
+              return false;
+            });
+          }
+          return false;
+        };
+
+        pkgJsonCache.set(dir, isSideEffect);
+        return isSideEffect;
+      };
+
+      // This pass will traverse all dependencies and mark them as side-effect-ful if they are marked as such
+      // in the package.json, according to Webpack: https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free
+      for (const value of graph.dependencies.values()) {
+        const isSideEffect = getPackageJsonMatcher(value.path);
+        if (!isSideEffect) {
+          continue;
+        }
+
+        // @ts-expect-error: Not on type. This logic should probably be upstreamed.
+        value.sideEffects = isSideEffect(value.path);
+      }
+
+      // This pass will surface all recursive dependencies that are side-effect-ful and mark them early
+      // so we aren't redoing recursive checks later.
+      // e.g. `./index.js` -> `./foo.js` -> `./bar.js` -> `./baz.js` (side-effect)
+      // All modules will be marked as side-effect-ful.
+      for (const value of graph.dependencies.values()) {
+        if (hasSideEffect(value)) {
+          value.sideEffects = true;
+        }
+      }
+    }
+
+    // Iterate the graph and mark dependencies as side-effect-ful if they are marked as such in the package.json.
+    markSideEffects();
+
+    // Tree shake the graph.
+    treeShakeAll();
+
+    // Convert all remaining AST and dependencies to standard output that Metro expects.
+    // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
+    for (const value of graph.dependencies.values()) {
+      // console.log('inverseDependencies', value.inverseDependencies.values());
+
+      for (const index in value.output) {
+        const outputItem = value.output[index];
+        // inspect('ii', outputItem.data.modules.imports);
+
+        // let ast = outputItem.data.ast!;
+        let ast = outputItem.data.ast; //?? babylon.parse(outputItem.data.code, { sourceType: 'unambiguous' });
+
+        const { importDefault, importAll } = generateImportNames(ast);
+
+        const babelPluginOpts = {
+          // ...options,
+          inlineableCalls: [importDefault, importAll],
+          importDefault,
+          importAll,
+        };
+
+        ast = transformFromAstSync(ast, undefined, {
+          ast: true,
+          babelrc: false,
+          code: false,
+          configFile: false,
+          comments: includeDebugInfo,
+          compact: false,
+
+          filename: value.path,
+          plugins: [
+            functionMapBabelPlugin,
+            !preserveEsm && [
+              require('metro-transform-plugins/src/import-export-plugin'),
+              babelPluginOpts,
+            ],
+            !preserveEsm && [require('metro-transform-plugins/src/inline-plugin'), babelPluginOpts],
+          ].filter(Boolean),
+          sourceMaps: false,
+          // Not-Cloning the input AST here should be safe because other code paths above this call
+          // are mutating the AST as well and no code is depending on the original AST.
+          // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
+          // either because one of the plugins is doing something funky or Babel messes up some caches.
+          // Make sure to test the above mentioned case before flipping the flag back to false.
+          cloneInputAst: true,
+        })?.ast!;
+
+        let dependencyMapName = '';
+        // This pass converts the modules to use the generated import names.
+        try {
+          const opts = {
+            asyncRequireModulePath:
+              config.transformer?.asyncRequireModulePath ??
+              require.resolve('metro-runtime/src/modules/asyncRequire'),
+            dependencyTransformer: undefined,
+            dynamicRequires: getDynamicDepsBehavior(
+              config.transformer?.dynamicDepsInPackages ?? 'reject',
+              value.path
+            ),
+            inlineableCalls: [importDefault, importAll],
+            keepRequireNames: options.dev,
+            allowOptionalDependencies: config.transformer?.allowOptionalDependencies ?? true,
+            dependencyMapName: config.transformer?.unstable_dependencyMapReservedName,
+            unstable_allowRequireContext: config.transformer?.unstable_allowRequireContext,
+          };
+
+          ({ ast, dependencyMapName } = collectDependencies(ast, opts));
+          // ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, opts));
+        } catch (error) {
+          // if (error instanceof InternalInvalidRequireCallError) {
+          //   throw new InvalidRequireCallError(error, file.filename);
+          // }
+          throw error;
+        }
+
+        const globalPrefix = '';
+
+        const { ast: wrappedAst } = JsFileWrapping.wrapModule(
+          ast,
+          importDefault,
+          importAll,
+          dependencyMapName,
+          globalPrefix
+        );
+
+        const outputCode = transformFromAstSync(wrappedAst, undefined, {
+          ast: false,
+          babelrc: false,
+          code: true,
+          configFile: false,
+
+          // comments: true,
+          // compact: false,
+
+          comments: includeDebugInfo,
+          compact: !includeDebugInfo,
+
+          filename: value.path,
+          plugins: [],
+          sourceMaps: false,
+          // Not-Cloning the input AST here should be safe because other code paths above this call
+          // are mutating the AST as well and no code is depending on the original AST.
+          // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
+          // either because one of the plugins is doing something funky or Babel messes up some caches.
+          // Make sure to test the above mentioned case before flipping the flag back to false.
+          cloneInputAst: true,
+        })!.code!;
+
+        let map: Array<MetroSourceMapSegmentTuple> = [];
+        let code = outputCode;
+        if (minify) {
+          const minifyCode = require('metro-minify-terser');
+          ({ map, code } = await minifyCode({
+            //           code: string;
+            // map?: BasicSourceMap;
+            // filename: string;
+            // reserved: ReadonlyArray<string>;
+            // config: MinifierConfig;
+            // projectRoot,
+            filename: value.path,
+            code,
+            // file.code,
+            // map,
+            config: {},
+            reserved: [],
+            // config,
+          }));
+        }
+
+        outputItem.data.code = (includeDebugInfo ? `\n// ${value.path}\n` : '') + code;
+        outputItem.data.lineCount = countLines(outputItem.data.code);
+        outputItem.data.map = map;
+        outputItem.data.functionMap =
+          ast.metadata?.metro?.functionMap ??
+          // Fallback to deprecated explicitly-generated `functionMap`
+          ast.functionMap ??
+          null;
+        // TODO: minify the code to fold anything that was dropped above.
+
+        console.log('output code', outputItem.data.code);
+      }
+    }
+
+    return [entryPoint, preModules, graph, options];
+  };
 }
 
 export function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer {
@@ -743,6 +814,8 @@ export function createSerializerFromSerialProcessors(
 ): Serializer {
   const finalSerializer = getDefaultSerializer(originalSerializer);
   return async (...props: SerializerParameters): ReturnType<Serializer> => {
+    // toFixture(...props);
+
     for (const processor of processors) {
       if (processor) {
         props = await processor(...props);
@@ -754,3 +827,22 @@ export function createSerializerFromSerialProcessors(
 }
 
 export { SerialAsset };
+
+function getDynamicDepsBehavior(
+  inPackages: DynamicRequiresBehavior | undefined,
+  filename: string
+): DynamicRequiresBehavior {
+  switch (inPackages) {
+    case 'reject':
+      return 'reject';
+    case 'throwAtRuntime':
+      const isPackage = /(?:^|[/\\])node_modules[/\\]/.test(filename);
+      return isPackage ? inPackages : 'reject';
+    default:
+      throw new Error(`invalid value for dynamic deps behavior: \`${inPackages}\``);
+  }
+}
+
+import type { DynamicRequiresBehavior } from 'metro/src/ModuleGraph/worker/collectDependencies';
+
+const collectDependencies = require('metro/src/ModuleGraph/worker/collectDependencies');

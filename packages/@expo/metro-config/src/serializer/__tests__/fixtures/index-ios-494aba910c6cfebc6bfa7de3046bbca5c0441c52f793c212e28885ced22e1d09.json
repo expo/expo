@@ -6928,7 +6928,9 @@
       ]
     ],
     "transformOptions": {
-      "customTransformOptions": {},
+      "customTransformOptions": {
+        "treeshake": "true"
+      },
       "dev": false,
       "hot": false,
       "minify": false,

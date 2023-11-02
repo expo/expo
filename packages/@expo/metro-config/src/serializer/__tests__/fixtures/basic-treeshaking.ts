@@ -42,5 +42,11 @@ export function unused() {
 export const unusedFile = fromFixture(
   require('./index-ios-72eca9dff484fb1a7194ae4fde7746e8f0b47a502fa8df9b1bcea3fe4832c781.json')
 );
+export const defaultImport = fromFixture(require('./index-ios-default.json'));
+export const starImport = fromFixture(require('./index-ios-star.json'));
 
 export const staticCjs = fromFixture(require('./index-ios-cjs-up.json'));
+
+export const rnImport = fromFixture(
+  require('./index-ios-11dc19b35c52ec01cb62651db72245bf8e1cb4dbaff08c0bd754c38646414259.json')
+);

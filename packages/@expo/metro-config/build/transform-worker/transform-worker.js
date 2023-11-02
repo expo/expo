@@ -19,7 +19,11 @@ async function transform(config, projectRoot, filename, data, options) {
         ...options,
     };
     // Preserve the original format as much as we can for tree-shaking.
-    if (env_1.env.EXPO_USE_TREE_SHAKING && !nextOptions.dev) {
+    if (env_1.env.EXPO_USE_TREE_SHAKING &&
+        !nextOptions.dev &&
+        // TODO: Pass entry files
+        !filename.match(/node_modules\/metro-runtime/) &&
+        !filename.match(/\.expo\/metro\/polyfill/)) {
         nextConfig.unstable_disableModuleWrapping = true;
         nextOptions.experimentalImportSupport = false;
         nextOptions.minify = false;

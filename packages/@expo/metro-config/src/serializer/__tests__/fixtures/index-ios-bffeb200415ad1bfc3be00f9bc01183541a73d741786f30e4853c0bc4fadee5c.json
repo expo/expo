@@ -1,0 +1,124 @@
+[
+  "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js",
+  [],
+  {
+    "dependencies": {
+      "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js": {
+        "dependencies": {
+          "abc=": {
+            "absolutePath": "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/math.js",
+            "data": {
+              "name": "./math",
+              "data": {
+                "asyncType": null,
+                "locs": [
+                  {
+                    "start": {
+                      "line": 1,
+                      "column": 0,
+                      "index": 0
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 29,
+                      "index": 29
+                    }
+                  }
+                ],
+                "key": "abc="
+              }
+            }
+          }
+        },
+        "getSource": "[MOCK_FUNCTION]",
+        "inverseDependencies": [],
+        "path": "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js",
+        "output": [
+          {
+            "type": "js/module",
+            "data": {
+              "code": "\"use strict\";\n\nconst { add } = require(\"./math\");\nconsole.log('add', add(1, 2));",
+              "lineCount": 4,
+              "map": [],
+              "functionMap": {
+                "names": [
+                  "<global>"
+                ],
+                "mappings": "AAA"
+              }
+            }
+          }
+        ]
+      },
+      "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/math.js": {
+        "dependencies": {},
+        "getSource": "[MOCK_FUNCTION]",
+        "inverseDependencies": [
+          "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js"
+        ],
+        "path": "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/math.js",
+        "output": [
+          {
+            "type": "js/module",
+            "data": {
+              "code": "\"use strict\";\n\nexport function add(a, b) {\n  return a + b;\n}\nexport function subtract(a, b) {\n  return a - b;\n}",
+              "lineCount": 8,
+              "map": [],
+              "functionMap": {
+                "names": [
+                  "<global>",
+                  "add",
+                  "subtract"
+                ],
+                "mappings": "AAA,OC;CDE;OEE;CFE"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "entryPoints": [
+      [
+        [
+          "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js",
+          "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js"
+        ],
+        [
+          "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js",
+          "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox/index.js"
+        ]
+      ]
+    ],
+    "transformOptions": {
+      "customTransformOptions": {
+        "treeshake": "true"
+      },
+      "dev": false,
+      "hot": false,
+      "minify": false,
+      "platform": "ios",
+      "type": "module",
+      "unstable_transformProfile": "default"
+    }
+  },
+  {
+    "asyncRequireModulePath": "/Users/evanbacon/Documents/GitHub/expo/node_modules/metro-runtime/src/modules/asyncRequire.js",
+    "processModuleFilter": "[Function: processModuleFilter]",
+    "createModuleId": "[Function (anonymous)]",
+    "getRunModuleStatement": "[Function: getRunModuleStatement]",
+    "dev": false,
+    "includeAsyncPaths": false,
+    "projectRoot": "/Users/evanbacon/Documents/GitHub/expo/apps/sandbox",
+    "modulesOnly": false,
+    "runBeforeMainModule": [
+      "/Users/evanbacon/Documents/GitHub/expo/node_modules/react-native/Libraries/Core/InitializeCore.js",
+      "/Users/evanbacon/Documents/GitHub/expo/packages/expo/build/winter/index.js",
+      "/Users/evanbacon/Documents/GitHub/expo/packages/@expo/metro-runtime/build/index.js"
+    ],
+    "runModule": true,
+    "sourceUrl": null,
+    "inlineSourceMap": false,
+    "serverRoot": "/Users/evanbacon/Documents/GitHub/expo",
+    "shouldAddToIgnoreList": "[Function: shouldAddToIgnoreList]"
+  }
+]

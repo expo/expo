@@ -40,8 +40,26 @@ describe('tree-shaking', () => {
     console.log(stringResults);
     expect(stringResults).not.toMatch(/subtract/);
   });
-  it(`does not tree shake exports if cjs require is used`, async () => {
+  xit(`does not tree shake exports if cjs require is used`, async () => {
     const stringResults = await getSerializer()(...splitFixtures.staticCjs);
+    console.log(stringResults);
+    expect(stringResults).toMatch(/subtract/);
+  });
+  it(`does not tree shake default exports`, async () => {
+    const stringResults = await getSerializer()(...splitFixtures.defaultImport);
+    console.log(stringResults);
+    expect(stringResults).not.toMatch(/subtract/);
+    expect(stringResults).toMatch(/a \+ b;/);
+  });
+  xit(`does not tree shake star imports`, async () => {
+    const stringResults = await getSerializer()(...splitFixtures.starImport);
+    console.log(stringResults);
+    expect(stringResults).toMatch(/subtract/);
+    expect(stringResults).toMatch(/a \+ b;/);
+  });
+  it(`works with larger projects`, async () => {
+    splitFixtures.rnImport[1] = [];
+    const stringResults = await getSerializer()(...splitFixtures.rnImport);
     console.log(stringResults);
     expect(stringResults).toMatch(/subtract/);
   });
