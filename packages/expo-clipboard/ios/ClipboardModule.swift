@@ -89,7 +89,7 @@ public class ClipboardModule: Module {
         // TODO: (barthap): Use CGSize when returning Records is possible
         "size": [
           "width": image.size.width,
-          "height": image.size.height,
+          "height": image.size.height
         ]
       ]
     }
@@ -152,9 +152,9 @@ public class ClipboardModule: Module {
 }
 private func imageToData(_ image: UIImage, options: GetImageOptions) -> Data? {
   switch options.imageFormat {
-    case .jpeg: return image.jpegData(compressionQuality: options.jpegQuality)
-    case .png: return image.pngData()
-    case .gif: return image.gifData()
+  case .jpeg: return image.jpegData(compressionQuality: options.jpegQuality)
+  case .png: return image.pngData()
+  case .gif: return image.gifData()
   }
 }
 
@@ -164,7 +164,7 @@ private func availableContentTypes() -> [String] {
     .plainText: UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML,
     .html: UIPasteboard.general.hasHTML,
     .image: UIPasteboard.general.hasImages,
-    .url: UIPasteboard.general.hasURLs,
+    .url: UIPasteboard.general.hasURLs
   ]
   let availableTypes = predicateDict.filter { $0.value }.keys.map { $0.rawValue }
   return Array(availableTypes)

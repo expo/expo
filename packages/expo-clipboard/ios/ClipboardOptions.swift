@@ -5,7 +5,6 @@ import ExpoModulesCore
 struct GetImageOptions: Record {
   @Field("format")
   var imageFormat: ImageFormat = .jpeg
-  
   @Field
   var jpegQuality: Double = 1.0
 }
@@ -16,12 +15,12 @@ enum ImageFormat: String, EnumArgument {
   case gif
   func getMimeType() -> String {
     switch self {
-      case .jpeg:
-        return "image/jpeg"
-      case .png:
-        return "image/png"
-      case .gif:
-        return "image/gif"
+    case .jpeg:
+      return "image/jpeg"
+    case .png:
+      return "image/png"
+    case .gif:
+      return "image/gif"
     }
   }
 }
