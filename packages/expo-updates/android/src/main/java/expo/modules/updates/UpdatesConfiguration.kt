@@ -100,10 +100,6 @@ data class UpdatesConfiguration(
     enableExpoUpdatesProtocolV0CompatibilityMode = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE) ?: context?.getMetadataValue("expo.modules.updates.ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE") ?: false,
   )
 
-  val isMissingRuntimeVersion: Boolean
-    get() = (runtimeVersion == null || runtimeVersion.isEmpty()) &&
-      (sdkVersion == null || sdkVersion.isEmpty())
-
   val codeSigningConfiguration: CodeSigningConfiguration? by lazy {
     codeSigningCertificate?.let {
       CodeSigningConfiguration(it, codeSigningMetadata, codeSigningIncludeManifestResponseCertificateChain, codeSigningAllowUnsignedManifests)

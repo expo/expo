@@ -25,14 +25,12 @@ public final class UpdatesModule: Module {
       let channel = config.requestHeaders["expo-channel-name"] ?? ""
       let runtimeVersion = config.runtimeVersion ?? ""
       let checkAutomatically = config.checkOnLaunch.asString
-      let isMissingRuntimeVersion = config.isMissingRuntimeVersion()
 
       guard AppController.sharedInstance.isStarted,
         let launchedUpdate = AppController.sharedInstance.launchedUpdate() else {
         return [
           "isEnabled": false,
           "isEmbeddedLaunch": false,
-          "isMissingRuntimeVersion": isMissingRuntimeVersion,
           "releaseChannel": releaseChannel,
           "runtimeVersion": runtimeVersion,
           "checkAutomatically": checkAutomatically,
@@ -52,7 +50,6 @@ public final class UpdatesModule: Module {
         "manifest": launchedUpdate.manifest.rawManifestJSON(),
         "localAssets": AppController.sharedInstance.assetFilesMap,
         "isEmergencyLaunch": AppController.sharedInstance.isEmergencyLaunch,
-        "isMissingRuntimeVersion": isMissingRuntimeVersion,
         "releaseChannel": releaseChannel,
         "runtimeVersion": runtimeVersion,
         "checkAutomatically": checkAutomatically,

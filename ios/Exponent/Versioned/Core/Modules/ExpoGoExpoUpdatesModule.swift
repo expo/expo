@@ -40,14 +40,12 @@ final class ExpoGoExpoUpdatesModule: Module {
       let channel = config?.requestHeaders["expo-channel-name"] ?? ""
       let runtimeVersion = config?.runtimeVersion ?? ""
       let checkAutomatically = config?.checkOnLaunch.asString ?? CheckAutomaticallyConfig.Always.asString
-      let isMissingRuntimeVersion = config?.isMissingRuntimeVersion()
 
       guard updatesKernelService.isStartedForScopeKey(scopeKey),
         let launchedUpdate = updatesKernelService.launchedUpdateForScopeKey(scopeKey) else {
         return [
           "isEnabled": false,
           "isEmbeddedLaunch": false,
-          "isMissingRuntimeVersion": isMissingRuntimeVersion,
           "releaseChannel": releaseChannel,
           "runtimeVersion": runtimeVersion,
           "checkAutomatically": checkAutomatically,
@@ -64,7 +62,6 @@ final class ExpoGoExpoUpdatesModule: Module {
         "manifest": launchedUpdate.manifest.rawManifestJSON(),
         "localAssets": updatesKernelService.assetFilesMapForScopeKey(scopeKey) ?? [:],
         "isEmergencyLaunch": updatesKernelService.isEmergencyLaunchForScopeKey(scopeKey),
-        "isMissingRuntimeVersion": isMissingRuntimeVersion,
         "releaseChannel": releaseChannel,
         "runtimeVersion": runtimeVersion,
         "checkAutomatically": checkAutomatically,

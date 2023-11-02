@@ -32,7 +32,6 @@ public final class UpdatesModule: Module {
       let channel = updatesService?.config?.requestHeaders["expo-channel-name"] ?? ""
       let runtimeVersion = updatesService?.config?.runtimeVersion ?? ""
       let checkAutomatically = updatesService?.config?.checkOnLaunch.asString ?? CheckAutomaticallyConfig.Always.asString
-      let isMissingRuntimeVersion = updatesService?.config?.isMissingRuntimeVersion()
 
       guard let updatesService = updatesService,
         updatesService.isStarted,
@@ -40,7 +39,6 @@ public final class UpdatesModule: Module {
         return [
           "isEnabled": false,
           "isEmbeddedLaunch": false,
-          "isMissingRuntimeVersion": isMissingRuntimeVersion,
           "releaseChannel": releaseChannel,
           "runtimeVersion": runtimeVersion,
           "checkAutomatically": checkAutomatically,
@@ -57,7 +55,6 @@ public final class UpdatesModule: Module {
         "manifest": launchedUpdate.manifest.rawManifestJSON(),
         "localAssets": updatesService.assetFilesMap ?? [:],
         "isEmergencyLaunch": updatesService.isEmergencyLaunch,
-        "isMissingRuntimeVersion": isMissingRuntimeVersion,
         "releaseChannel": releaseChannel,
         "runtimeVersion": runtimeVersion,
         "checkAutomatically": checkAutomatically,

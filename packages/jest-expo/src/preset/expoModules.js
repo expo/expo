@@ -771,7 +771,6 @@ module.exports = {
           checkAutomatically: { type: 'string' },
           isEmbeddedLaunch: { type: 'boolean', mock: false },
           isEnabled: { type: 'boolean', mock: false },
-          isMissingRuntimeVersion: { type: 'boolean', mock: false },
           releaseChannel: { type: 'string' },
           runtimeVersion: { type: 'string' },
         },

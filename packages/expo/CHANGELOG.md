@@ -22,6 +22,7 @@
 - Encode Blob components in `URL.createObjectURL`. ([#25004](https://github.com/expo/expo/pull/25004) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove deprecated `REACT_NATIVE_OVERRIDE_VERSION` for React Native nightly testing. ([#25151](https://github.com/expo/expo/pull/25151) by [@kudo](https://github.com/kudo))
 - Improve DevTools Plugins API. ([#25167](https://github.com/expo/expo/pull/25167) by [@kudo](https://github.com/kudo))
+- Remove isMissingRuntimeVersion module constant frome expo-updates. ([#25193](https://github.com/expo/expo/pull/25193) by [@wschurman](https://github.com/wschurman))
 
 ## 49.0.16 — 2023-10-20
 

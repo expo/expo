@@ -119,10 +119,6 @@ public final class UpdatesConfig: NSObject {
     self.enableExpoUpdatesProtocolV0CompatibilityMode = enableExpoUpdatesProtocolV0CompatibilityMode
   }
 
-  public func isMissingRuntimeVersion() -> Bool {
-    return (runtimeVersion?.isEmpty ?? true) && (sdkVersion?.isEmpty ?? true)
-  }
-
   public static func configWithExpoPlist(mergingOtherDictionary: [String: Any]?) throws -> UpdatesConfig {
     guard let configPath = Bundle.main.path(forResource: PlistName, ofType: "plist") else {
       throw UpdatesConfigError.ExpoUpdatesConfigPlistError

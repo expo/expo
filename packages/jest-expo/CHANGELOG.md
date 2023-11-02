@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Renamed `ExponentCamera` to `ExpoCamera`. ([#22604](https://github.com/expo/expo/pull/22604) by [@alanjhughes](https://github.com/alanjhughes))
+- Remove isMissingRuntimeVersion module constant frome expo-updates. ([#25193](https://github.com/expo/expo/pull/25193) by [@wschurman](https://github.com/wschurman))
 
 ## 50.0.0-alpha.3 — 2023-10-17
 
