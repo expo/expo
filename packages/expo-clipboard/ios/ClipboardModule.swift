@@ -89,7 +89,8 @@ public class ClipboardModule: Module {
         // TODO: (barthap): Use CGSize when returning Records is possible
         "size": [
           "width": image.size.width,
-          "height": image.size.height],
+          "height": image.size.height,
+        ]
       ]
     }
     Property("isPasteButtonAvailable") { () -> Bool in
@@ -115,49 +116,40 @@ public class ClipboardModule: Module {
     // MARK: - View
     View(ClipboardPasteButton.self) {
       Events("onPastePressed")
-      
       Prop("backgroundColor") { (view, color: UIColor?) in
         if view.baseBackgroundColor != color {
           view.baseBackgroundColor = color
         }
       }
-      
       Prop("foregroundColor") { (view, color: UIColor?) in
         if view.baseForegroundColor != color {
           view.baseForegroundColor = color
         }
       }
-      
       Prop("acceptedContentTypes") { (view, types: [AcceptedTypes]?) in
         view.acceptedContentTypes = types ?? []
       }
-      
       Prop("cornerStyle") { (view, style: CornerStyle?) in
         view.cornerStyle = style ?? .capsule
       }
-      
       Prop("displayMode") { (view, mode: DisplayMode?) in
         view.displayMode = mode ?? .iconAndLabel
       }
-      
       Prop("imageOptions") { (view, options: GetImageOptions?) in
         view.imageOptions = options ?? GetImageOptions()
       }
-      
       OnViewDidUpdateProps { view in
         view.update()
       }
     }
   }
-  
   @objc
   func clipboardChangedListener() {
     sendEvent(onClipboardChanged, [
-      "contentTypes": availableContentTypes(),
+      "contentTypes": availableContentTypes()
     ])
   }
 }
-
 private func imageToData(_ image: UIImage, options: GetImageOptions) -> Data? {
   switch options.imageFormat {
     case .jpeg: return image.jpegData(compressionQuality: options.jpegQuality)
