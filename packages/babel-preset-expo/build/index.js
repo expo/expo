@@ -4,8 +4,14 @@ const common_1 = require("./common");
 const expo_inline_manifest_plugin_1 = require("./expo-inline-manifest-plugin");
 const expo_router_plugin_1 = require("./expo-router-plugin");
 const lazyImports_1 = require("./lazyImports");
+function getOptions(options, platform) {
+    const tag = platform === 'web' ? 'web' : 'native';
+    return {
+        ...options,
+        ...options[tag],
+    };
+}
 function babelPresetExpo(api, options = {}) {
-    const { web = {}, native = {}, reanimated } = options;
     const bundler = api.caller(common_1.getBundler);
     const isWebpack = bundler === 'webpack';
     let platform = api.caller((caller) => caller?.platform);
@@ -16,22 +22,23 @@ function babelPresetExpo(api, options = {}) {
     if (!platform && isWebpack) {
         platform = 'web';
     }
-    const platformOptions = platform === 'web'
-        ? {
+    const platformOptions = getOptions(options, platform);
+    if (platformOptions.disableImportExportTransform == null) {
+        if (platform === 'web') {
             // Only disable import/export transform when Webpack is used because
             // Metro does not support tree-shaking.
-            disableImportExportTransform: isWebpack,
-            unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
-            ...web,
+            platformOptions.disableImportExportTransform = isWebpack;
         }
-        : {
-            disableImportExportTransform: false,
-            unstable_transformProfile: engine === 'hermes' ? 'hermes-stable' : 'default',
-            ...native,
-        };
+        else {
+            platformOptions.disableImportExportTransform = false;
+        }
+    }
+    if (platformOptions.unstable_transformProfile == null) {
+        platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-stable' : 'default';
+    }
     // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
     // `metro-react-native-babel-preset` will handle it.
-    const lazyImportsOption = options?.lazyImports;
+    const lazyImportsOption = platformOptions?.lazyImports;
     const extraPlugins = [];
     if (engine !== 'hermes') {
         // `metro-react-native-babel-preset` configures this plugin with `{ loose: true }`, which breaks all
@@ -107,10 +114,10 @@ function babelPresetExpo(api, options = {}) {
                 {
                     development: isDev,
                     // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
-                    runtime: options?.jsxRuntime || 'automatic',
-                    ...(options &&
-                        options.jsxRuntime !== 'classic' && {
-                        importSource: (options && options.jsxImportSource) || 'react',
+                    runtime: platformOptions?.jsxRuntime || 'automatic',
+                    ...(platformOptions &&
+                        platformOptions.jsxRuntime !== 'classic' && {
+                        importSource: (platformOptions && platformOptions.jsxImportSource) || 'react',
                     }),
                     // NOTE: Unexposed props:
                     // pragma?: string;
@@ -130,7 +137,7 @@ function babelPresetExpo(api, options = {}) {
             // Automatically add `react-native-reanimated/plugin` when the package is installed.
             // TODO: Move to be a customTransformOption.
             (0, common_1.hasModule)('react-native-reanimated') &&
-                reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
+                platformOptions.reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
         ].filter(Boolean),
     };
 }
