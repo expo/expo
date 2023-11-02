@@ -227,7 +227,7 @@ public final class FileDownloader: NSObject, URLSessionDataDelegate {
     launchedUpdate: Update?,
     embeddedUpdate: Update?
   ) -> [String: Any] {
-    let scopeKey = config.scopeKey.require("Must have scopeKey in config")
+    let scopeKey = config.scopeKey
 
     var extraHeaders: [String: Any] = [:]
     do {
@@ -861,7 +861,7 @@ public final class FileDownloader: NSObject, URLSessionDataDelegate {
       userInfo: [
         NSLocalizedDescriptionKey: String(
           format: "No compatible update found at %@. Only %@ are supported.",
-          config.updateUrl?.absoluteString ?? "(missing config updateUrl)",
+          config.updateUrl.absoluteString,
           config.sdkVersion ?? "(missing sdkVersion field)"
         )
       ]

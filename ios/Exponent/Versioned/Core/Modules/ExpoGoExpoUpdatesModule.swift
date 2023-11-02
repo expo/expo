@@ -40,7 +40,7 @@ final class ExpoGoExpoUpdatesModule: Module {
       let channel = config?.requestHeaders["expo-channel-name"] ?? ""
       let runtimeVersion = config?.runtimeVersion ?? ""
       let checkAutomatically = config?.checkOnLaunch.asString ?? CheckAutomaticallyConfig.Always.asString
-      let isMissingRuntimeVersion = config?.isMissingRuntimeVersion()
+      let isMissingRuntimeVersion = false
 
       guard updatesKernelService.isStartedForScopeKey(scopeKey),
         let launchedUpdate = updatesKernelService.launchedUpdateForScopeKey(scopeKey) else {
@@ -75,8 +75,7 @@ final class ExpoGoExpoUpdatesModule: Module {
     }
 
     AsyncFunction("reload") { (promise: Promise) in
-      guard let config = updatesKernelService.configForScopeKey(scopeKey),
-        config.isEnabled else {
+      guard let config = updatesKernelService.configForScopeKey(scopeKey) else {
         throw UpdatesDisabledException()
       }
 
