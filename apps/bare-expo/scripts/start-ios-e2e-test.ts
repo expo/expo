@@ -152,7 +152,7 @@ appId: dev.expo.Payments
 - extendedWaitUntil:
     visible:
       id: "test_suite_container"
-    timeout: 5000
+    timeout: 30000
 - scrollUntilVisible:
     element:
       id: "test_suite_text_results"
