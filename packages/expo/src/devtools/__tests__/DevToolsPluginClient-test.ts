@@ -123,6 +123,8 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     });
 
     browserClient = await createDevToolsPluginClient({ devServer, sender: 'browser', pluginName });
+
+    await delayAsync(100);
     const browserClient2 = await createDevToolsPluginClient({
       devServer,
       sender: 'browser',
