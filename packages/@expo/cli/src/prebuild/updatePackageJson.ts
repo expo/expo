@@ -31,9 +31,7 @@ export async function updatePackageJSONAsync(
     skipDependencyUpdate?: string[];
   }
 ): Promise<DependenciesModificationResults> {
-  const updatingPackageJsonStep = logNewSection(
-    'Updating your package.json scripts, dependencies, and main file'
-  );
+  const updatingPackageJsonStep = logNewSection('Updating package.json scripts, and dependencies');
 
   const templatePkg = getPackageJson(templateDirectory);
 
@@ -50,9 +48,7 @@ export async function updatePackageJSONAsync(
     JSON.stringify(pkg, null, 2) + '\n'
   );
 
-  updatingPackageJsonStep.succeed(
-    'Updated package.json and added index.js entry point for iOS and Android'
-  );
+  updatingPackageJsonStep.succeed('Updated package.json');
 
   return results;
 }
@@ -131,7 +127,7 @@ export function updatePkgDependencies(
   });
 
   // These dependencies are only added, not overwritten from the project
-  const requiredDependencies = ['expo', 'expo-splash-screen', 'react', 'react-native'].filter(
+  const requiredDependencies = ['expo', 'react-native'].filter(
     (depKey) => !!defaultDependencies[depKey]
   );
 
