@@ -54,7 +54,7 @@ export function selectAssetSource(meta) {
                 ? getManifest().bundleUrl
                 : null;
     if (devServerUrl) {
-        const baseUrl = new globalThis.URL(
+        const baseUrl = new URL(
         // `meta.httpServerLocation` could contain a `?` with query parameters so
         // we need to parse it as the entire URL and not just as a path.
         devServerUrl.replace(/\/+$/, '') + '/' + meta.httpServerLocation.replace(/$\/+/, '') + suffix);
