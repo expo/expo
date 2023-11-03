@@ -44,7 +44,7 @@ export function createCopyFilesSuccessMessage(
     );
   }
   if (!gitignore) {
-    message += chalk.dim(` | gitignore skipped`);
+    // Add no additional message...
   } else if (!gitignore.didMerge) {
     message += chalk.dim(` | gitignore already synced`);
   } else if (gitignore.didMerge && gitignore.didClear) {
