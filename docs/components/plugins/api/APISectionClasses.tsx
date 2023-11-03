@@ -143,7 +143,6 @@ const renderClass = (
           {methods.map(method =>
             renderMethod(method, {
               exposeInSidebar: exposeAllClassPropsInSidebar,
-              apiName: name,
             })
           )}
         </>
