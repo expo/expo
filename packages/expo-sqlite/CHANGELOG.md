@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- [Android] Removed the package included SQLite source and download in build time. ([#25186](https://github.com/expo/expo/pull/25186) by [@kudo](https://github.com/kudo))
+
 ## 11.8.0 — 2023-10-17
 
 ### 🛠 Breaking changes
