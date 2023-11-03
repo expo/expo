@@ -1,4 +1,5 @@
 import { DevToolsPluginClient, DevToolsPluginMethod, MESSAGE_PROTOCOL_VERSION, } from './DevToolsPluginClient';
+import * as logger from './logger';
 /**
  * The DevToolsPluginClient for the browser -> app communication.
  */
@@ -57,7 +58,7 @@ export class DevToolsPluginClientImplBrowser extends DevToolsPluginClient {
             if (this.browserClientId !== params.browserClientId) {
                 return;
             }
-            console.debug('Received terminateBrowserClient messages and terminate the current connection');
+            logger.info('Received terminateBrowserClient messages and terminate the current connection');
             this.closeAsync();
         });
         this.sendMessage('handshake', {
@@ -75,7 +76,7 @@ export class DevToolsPluginClientImplBrowser extends DevToolsPluginClient {
                 reject(e);
             });
             ws.addEventListener('close', (e) => {
-                console.debug('WebSocket closed', e.code, e.reason);
+                logger.info('WebSocket closed', e.code, e.reason);
                 this.ws = null;
             });
         });

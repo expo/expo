@@ -1,6 +1,4 @@
 import Constants from 'expo-constants';
-import qs from 'qs';
-import URL from 'url-parse';
 import { hasCustomScheme, resolveScheme } from './Schemes';
 import { validateURL } from './validateURL';
 function getHostUri() {
@@ -94,10 +92,9 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
         queryString = queryStringMatchResult[2];
         let paramsFromHostUri = {};
         try {
-            const parsedParams = qs.parse(queryString);
-            if (typeof parsedParams === 'object') {
-                paramsFromHostUri = parsedParams;
-            }
+            paramsFromHostUri = Object.fromEntries(
+            // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
+            new URLSearchParams(queryString));
         }
         catch { }
         queryParams = {
@@ -105,7 +102,9 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
             ...paramsFromHostUri,
         };
     }
-    queryString = qs.stringify(queryParams);
+    queryString = new URLSearchParams(
+    // For legacy purposes, we'll strip out the nullish values before creating the URL.
+    Object.fromEntries(Object.entries(queryParams).filter(([, value]) => value != null))).toString();
     if (queryString) {
         queryString = `?${queryString}`;
     }
@@ -120,16 +119,24 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
  */
 export function parse(url) {
     validateURL(url);
-    const parsed = URL(url, /* parseQueryString */ true);
-    for (const param in parsed.query) {
-        parsed.query[param] = decodeURIComponent(parsed.query[param]);
+    const queryParams = {};
+    let path = null;
+    let hostname = null;
+    let scheme = null;
+    try {
+        const parsed = new URL(url);
+        parsed.searchParams.forEach((value, key) => {
+            queryParams[key] = decodeURIComponent(value);
+        });
+        path = parsed.pathname || null;
+        hostname = parsed.hostname || null;
+        scheme = parsed.protocol || null;
     }
-    const queryParams = parsed.query;
+    catch {
+        path = url;
+    }
     const hostUri = getHostUri() || '';
     const hostUriStripped = removePort(removeTrailingSlashAndQueryString(hostUri));
-    let path = parsed.pathname || null;
-    let hostname = parsed.hostname || null;
-    let scheme = parsed.protocol || null;
     if (scheme) {
         // Remove colon at end
         scheme = scheme.substring(0, scheme.length - 1);
