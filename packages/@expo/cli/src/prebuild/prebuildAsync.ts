@@ -131,6 +131,7 @@ export async function prebuildAsync(
   try {
     await profile(configureProjectAsync)(projectRoot, {
       platforms: options.platforms,
+      exp,
     });
     configSyncingStep.succeed('Finished prebuild');
   } catch (error) {
