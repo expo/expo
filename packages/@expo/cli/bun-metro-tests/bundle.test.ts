@@ -75,19 +75,19 @@ function patchMetro() {
   };
 }
 
-async function bundleProject(name: string) {
+async function bundleProject(entry: string) {
   const projectRoot = path.join(__dirname, 'fixtures/one');
   console.time('metro');
-
+  const clear = false;
   const output = path.join(projectRoot, './dist/output.js');
   const { bundle } = await exportEmbedBundleAsync(projectRoot, {
-    entryFile: path.join(projectRoot, name, 'index.js'),
+    entryFile: path.join(projectRoot, entry),
     bundleOutput: output,
     assetsDest: path.join(projectRoot, 'dist'),
     platform: 'ios',
     dev: false,
-    resetCache: true,
-    resetGlobalCache: true,
+    resetCache: clear,
+    resetGlobalCache: clear,
     maxWorkers: 1,
     minify: false,
     sourcemapUseAbsolutePath: false,
@@ -102,8 +102,47 @@ async function bundleProject(name: string) {
 }
 
 it(`bundles a virtual fixture`, async () => {
-  const output = await bundleProject('01-import');
-
+  const output = await bundleProject('01-import/index.js');
+  expect(output).not.toMatch('subtract');
   console.log('output', output);
-  expect(output).toMatch(`console.log('add', (0, _$$_REQUIRE(_dependencyMap[0]).add)(1, 2));`);
+});
+it(`does not tree shake cjs imports`, async () => {
+  const output = await bundleProject('01-import/index-require.js');
+  expect(output).toMatch('subtract');
+  console.log('output', output);
+});
+it(`does not tree shake barrel imports`, async () => {
+  const output = await bundleProject('01-import/index-barrel-star.js');
+  expect(output).toMatch('subtract');
+  console.log('output', output);
+});
+it(`does not tree shake star imports`, async () => {
+  const output = await bundleProject('01-import/index-star.js');
+  expect(output).toMatch('subtract');
+  console.log('output', output);
+});
+it(`does not tree shake barrel getters`, async () => {
+  const output = await bundleProject('01-import/index-barrel-getters.js');
+  expect(output).toMatch('subtract');
+  console.log('output', output);
+});
+it(`does not tree shake barrel with default`, async () => {
+  const output = await bundleProject('01-import/index-barrel-default-as.js');
+  expect(output).not.toMatch('subtract');
+  console.log('output', output);
+});
+it(`does tree shake partial barrel imports`, async () => {
+  const output = await bundleProject('01-import/index-barrel-partial.js');
+  expect(output).not.toMatch('subtract');
+  console.log('output', output);
+});
+it(`does tree shake default`, async () => {
+  const output = await bundleProject('01-import/index-default.js');
+  expect(output).not.toMatch('subtract');
+  console.log('output', output);
+});
+it(`does tree shake import as`, async () => {
+  const output = await bundleProject('01-import/index-import-as.js');
+  expect(output).not.toMatch('subtract');
+  console.log('output', output);
 });

@@ -510,8 +510,8 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
         if (!isShakingEnabled(graph, options)) {
             return [entryPoint, preModules, graph, options];
         }
-        const includeDebugInfo = true;
-        const preserveEsm = true;
+        const includeDebugInfo = false;
+        const preserveEsm = false;
         // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
         const minify = graph.transformOptions.minify &&
             graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
