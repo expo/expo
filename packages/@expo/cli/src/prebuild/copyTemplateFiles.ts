@@ -36,19 +36,21 @@ export function createCopyFilesSuccessMessage(
   platforms: ModPlatform[],
   { skippedPaths, gitignore }: CopyFilesResults
 ): string {
-  let message = `Created native project${platforms.length > 1 ? 's' : ''}`;
+  const pluralized = platforms.length > 1 ? 'directories' : 'directory';
+  let message = `Created native ${pluralized}`;
 
   if (skippedPaths.length) {
     message += chalk.dim(
-      ` | ${skippedPaths.map((path) => chalk.bold(`/${path}`)).join(', ')} already created`
+      ` | reusing ${skippedPaths.map((path) => chalk.bold(`/${path}`)).join(', ')}`
     );
   }
   if (!gitignore) {
     // Add no additional message...
   } else if (!gitignore.didMerge) {
-    message += chalk.dim(` | gitignore already synced`);
+    message += chalk.dim(` | reusing gitignore`);
   } else if (gitignore.didMerge && gitignore.didClear) {
-    message += chalk.dim(` | synced gitignore`);
+    // This is legacy and for non-standard templates. The Expo template adds gitignores to the platform folders.
+    message += chalk.dim(` | updated gitignore`);
   }
   return message;
 }

@@ -98,9 +98,7 @@ async function cloneTemplateAndCopyToProjectAsync({
     .join(' and ');
 
   const pluralized = unknownPlatforms.length > 1 ? 'directories' : 'directory';
-  const ora = logNewSection(
-    `Creating native project ${pluralized} (${platformDirectories}) and updating .gitignore`
-  );
+  const ora = logNewSection(`Creating native ${pluralized} (${platformDirectories})`);
 
   try {
     await cloneTemplateAsync({ templateDirectory, template, exp, ora });
@@ -122,10 +120,10 @@ async function cloneTemplateAndCopyToProjectAsync({
     if (!(e instanceof AbortCommandError)) {
       Log.error(e.message);
     }
-    ora.fail('Failed to create the native project.');
+    ora.fail(`Failed to create the native ${pluralized}`);
     Log.log(
       chalk.yellow(
-        'You may want to delete the `./ios` and/or `./android` directories before trying again.'
+        chalk`You may want to delete the {bold ./ios} and/or {bold ./android} directories before trying again.`
       )
     );
     throw new SilentError(e);
