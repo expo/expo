@@ -10,6 +10,7 @@ import minimatch from 'minimatch';
 import path from 'path';
 
 import { SerializerParameters } from './withExpoSerializers';
+import { isShakingEnabled } from './treeShakeSerializerPlugin';
 
 // const debug = require('debug')('expo:metro-config:serializer:side-effects') as typeof console.log;
 
@@ -43,6 +44,10 @@ export function sideEffectsSerializerPlugin(
   graph: ReadOnlyGraph,
   options: SerializerOptions
 ): SerializerParameters {
+  if (!isShakingEnabled(graph, options)) {
+    return [entryPoint, preModules, graph, options];
+  }
+
   const findUpPackageJsonPath = (dir: string): string | null => {
     if (dir === path.sep || dir.length < options.projectRoot.length) {
       return null;
