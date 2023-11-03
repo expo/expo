@@ -69,6 +69,8 @@ android {
     versionCode 1
     versionName "1.6.0"
     consumerProguardFiles("proguard-rules.pro")
+
+    buildConfigField("boolean", "ALLOW_GLIDE_LOGS", project.properties.get("EXPO_ALLOW_GLIDE_LOGS", "false"))
   }
   publishing {
     singleVariant("release") {
