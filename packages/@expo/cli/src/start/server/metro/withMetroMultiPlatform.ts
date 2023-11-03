@@ -507,6 +507,16 @@ export async function withMetroMultiPlatformAsync(
     process.env.EXPO_PUBLIC_USE_STATIC = '1';
   }
 
+  // This is used for running Expo CLI in development against projects outside the monorepo.
+  if (!isDirectoryIn(__dirname, projectRoot)) {
+    if (!config.watchFolders) {
+      // @ts-expect-error: watchFolders is readonly
+      config.watchFolders = [];
+    }
+    // @ts-expect-error: watchFolders is readonly
+    config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+  }
+
   // Ensure the cache is invalidated if these values change.
   // @ts-expect-error
   config.transformer._expoRouterRootDirectory = process.env.EXPO_ROUTER_APP_ROOT;
@@ -547,4 +557,8 @@ export async function withMetroMultiPlatformAsync(
     platforms: expoConfigPlatforms,
     isFastResolverEnabled,
   });
+}
+
+function isDirectoryIn(a: string, b: string) {
+  return b.startsWith(a) && b.length > a.length;
 }

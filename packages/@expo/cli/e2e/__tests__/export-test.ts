@@ -83,7 +83,6 @@ describe('server', () => {
         env: {
           NODE_ENV: 'production',
           EXPO_USE_FAST_RESOLVER: 'false',
-          _EXPO_ROOT_DIR_FOR_TESTS: path.join(require.resolve('metro/package.json'), '../..'),
         },
       });
 
