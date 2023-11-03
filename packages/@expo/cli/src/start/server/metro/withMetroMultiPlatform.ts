@@ -58,7 +58,7 @@ function withWebPolyfills(config: ConfigT): ConfigT {
     // Generally uses `rn-get-polyfills`
     const polyfills = originalGetPolyfills(ctx);
 
-    return [...polyfills, EXTERNAL_REQUIRE_NATIVE_POLYFILL];
+    return [...polyfills, path.join(config.projectRoot, EXTERNAL_REQUIRE_NATIVE_POLYFILL)];
   };
 
   return {
