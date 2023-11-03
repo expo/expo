@@ -38,11 +38,10 @@ export function createMetadataJson({
             bundle: path.join('bundles', fileNames[platform]!),
             // Collect all of the assets and convert them to the serial format.
             assets: bundle.assets
-              .filter((asset: any) => !asset.embedded)
               .map(
-                (asset: any) =>
+                (asset) =>
                   // Each asset has multiple hashes which we convert and then flatten.
-                  asset.fileHashes?.map((hash: string) => ({
+                  asset.fileHashes?.map((hash) => ({
                     path: path.join('assets', hash),
                     ext: asset.type,
                   }))
