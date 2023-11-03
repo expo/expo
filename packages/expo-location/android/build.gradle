@@ -105,7 +105,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   }
 
-  api 'com.google.android.gms:play-services-location:20.0.0'
+  api 'com.google.android.gms:play-services-location:21.0.1'
 
   api('io.nlopez.smartlocation:library:3.3.3') {
     transitive = false

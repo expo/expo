@@ -82,9 +82,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private var mLastUpdate: Long = 0
   private var mGeocoderPaused = false
 
-  private val DEGREE_DELTA = 0.0355 // in radians, about 2 degrees
-  private val TIME_DELTA = 50f // in milliseconds
-
   override fun definition() = ModuleDefinition {
     Name("ExpoLocation")
 
@@ -776,6 +773,9 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
     const val GEOFENCING_EVENT_ENTER = 1
     const val GEOFENCING_EVENT_EXIT = 2
+
+    const val DEGREE_DELTA = 0.0355 // in radians, about 2 degrees
+    const val TIME_DELTA = 50f // in milliseconds
   }
 
   override fun onHostResume() {
