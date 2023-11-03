@@ -24,12 +24,14 @@ const debug = require('debug')('expo:metro-config:serializer:annotate');
 function annotateModule(projectRoot, mod) {
   const filePath = _path().default.relative(projectRoot, mod.path);
   mod.output.forEach(outputItem => {
-    outputItem.data.code = ['', `// ${filePath}`, outputItem.data.code].join('\n');
-    if ('lineCount' in outputItem.data && typeof outputItem.data.lineCount === 'number') {
-      outputItem.data.lineCount = outputItem.data.lineCount + 2;
+    // Prevent double annotations
+    if (!outputItem.data.code.startsWith('\n// ')) {
+      outputItem.data.code = ['', `// ${filePath}`, outputItem.data.code].join('\n');
+      if ('lineCount' in outputItem.data && typeof outputItem.data.lineCount === 'number') {
+        outputItem.data.lineCount = outputItem.data.lineCount + 2;
+      }
+      // TODO: Probably need to update sourcemaps here.
     }
-
-    // TODO: Probably need to update sourcemaps here.
   });
 
   return mod;
