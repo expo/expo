@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import { copySync, directoryExistsAsync } from '../utils/dir';
+import { copySync } from '../utils/dir';
 import { mergeGitIgnorePaths } from '../utils/mergeGitIgnorePaths';
 
 const debug = require('debug')('expo:prebuild:copyTemplateFiles') as typeof console.log;
@@ -56,7 +56,7 @@ export function createCopyFilesSuccessMessage(
 }
 
 /** Copy template files into the project and possibly merge the `.gitignore` files.  */
-export async function copyTemplateFilesAsync(
+export function copyTemplateFiles(
   projectRoot: string,
   {
     templateDirectory,
@@ -67,10 +67,18 @@ export async function copyTemplateFilesAsync(
     /** List of platforms to copy against. */
     platforms: ModPlatform[];
   }
-): Promise<CopyFilesResults> {
-  const copyResults = await copyPathsFromTemplateAsync(projectRoot, {
-    templateDirectory,
-    copyFilePaths: platforms,
+): CopyFilesResults {
+  const copiedPaths: string[] = [];
+  const skippedPaths: string[] = [];
+
+  platforms.forEach((copyFilePath) => {
+    const projectPath = path.join(projectRoot, copyFilePath);
+    if (fs.existsSync(projectPath)) {
+      skippedPaths.push(copyFilePath);
+    } else {
+      copiedPaths.push(copyFilePath);
+      copySync(path.join(templateDirectory, copyFilePath), projectPath);
+    }
   });
 
   const hasPlatformSpecificGitIgnores = hasAllPlatformSpecificGitIgnores(
@@ -87,34 +95,5 @@ export async function copyTemplateFilesAsync(
         path.join(templateDirectory, '.gitignore')
       );
 
-  return { ...copyResults, gitignore };
-}
-
-async function copyPathsFromTemplateAsync(
-  /** File path to the project. */
-  projectRoot: string,
-  {
-    templateDirectory,
-    copyFilePaths,
-  }: {
-    /** File path to the template project. */
-    templateDirectory: string;
-    /** List of relative paths to copy from the template to the project. */
-    copyFilePaths: string[];
-  }
-): Promise<Pick<CopyFilesResults, 'copiedPaths' | 'skippedPaths'>> {
-  const copiedPaths = [];
-  const skippedPaths = [];
-  for (const copyFilePath of copyFilePaths) {
-    const projectPath = path.join(projectRoot, copyFilePath);
-    if (!(await directoryExistsAsync(projectPath))) {
-      copiedPaths.push(copyFilePath);
-      copySync(path.join(templateDirectory, copyFilePath), projectPath);
-    } else {
-      skippedPaths.push(copyFilePath);
-    }
-  }
-  debug(`Copied files:`, copiedPaths);
-  debug(`Skipped files:`, copiedPaths);
-  return { copiedPaths, skippedPaths };
+  return { copiedPaths, skippedPaths, gitignore };
 }

@@ -2,7 +2,7 @@ import { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
-import { copyTemplateFilesAsync, createCopyFilesSuccessMessage } from './copyTemplateFiles';
+import { copyTemplateFiles, createCopyFilesSuccessMessage } from './copyTemplateFiles';
 import { cloneTemplateAsync } from './resolveTemplate';
 import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
 import { validateTemplatePlatforms } from './validateTemplatePlatforms';
@@ -103,12 +103,12 @@ async function cloneTemplateAndCopyToProjectAsync({
   try {
     await cloneTemplateAsync({ templateDirectory, template, exp, ora });
 
-    const platforms = await validateTemplatePlatforms({
+    const platforms = validateTemplatePlatforms({
       templateDirectory,
       platforms: unknownPlatforms,
     });
 
-    const results = await copyTemplateFilesAsync(projectRoot, {
+    const results = copyTemplateFiles(projectRoot, {
       templateDirectory,
       platforms,
     });
