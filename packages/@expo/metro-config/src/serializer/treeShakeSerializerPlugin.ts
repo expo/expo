@@ -6,6 +6,7 @@
  */
 import { transformFromAstSync, traverse } from '@babel/core';
 import * as babylon from '@babel/parser';
+import * as types from '@babel/types';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 import { functionMapBabelPlugin, MetroSourceMapSegmentTuple } from 'metro-source-map';
@@ -25,6 +26,60 @@ const generateImportNames = require('metro/src/ModuleGraph/worker/generateImport
 const inspect = (...props) =>
   console.log(...props.map((prop) => require('util').inspect(prop, { depth: 20, colors: true })));
 
+type Ast = babylon.ParseResult<types.File>;
+
+// Collect a list of exports that are not used within the module.
+function findUnusedExports(ast: Ast) {
+  const exportedIdentifiers = new Set<string>();
+  const usedIdentifiers = new Set<string>();
+  const unusedExports: string[] = [];
+
+  // First pass: collect all export identifiers
+  traverse(ast, {
+    ExportNamedDeclaration(path) {
+      const { declaration, specifiers } = path.node;
+      if (declaration) {
+        if (declaration.declarations) {
+          declaration.declarations.forEach((decl) => {
+            exportedIdentifiers.add(decl.id.name);
+          });
+        } else {
+          exportedIdentifiers.add(declaration.id.name);
+        }
+      }
+      specifiers.forEach((spec) => {
+        exportedIdentifiers.add(spec.exported.name);
+      });
+    },
+
+    ExportDefaultDeclaration(path) {
+      // Default exports need to be handled separately
+      // Assuming the default export is a function or class declaration:
+      if (path.node.declaration.id) {
+        exportedIdentifiers.add(path.node.declaration.id.name);
+      }
+    },
+  });
+
+  // Second pass: find all used identifiers
+  traverse(ast, {
+    Identifier(path) {
+      if (path.isReferencedIdentifier()) {
+        usedIdentifiers.add(path.node.name);
+      }
+    },
+  });
+
+  // Determine which exports are unused
+  exportedIdentifiers.forEach((exported) => {
+    if (!usedIdentifiers.has(exported)) {
+      unusedExports.push(exported);
+    }
+  });
+
+  return unusedExports;
+}
+
 export function treeShakeSerializerPlugin(config: InputConfigT) {
   return async function treeShakeSerializer(
     entryPoint: string,
@@ -38,58 +93,6 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     }
 
     const annotate = true;
-
-    // Collect a list of exports that are not used within the module.
-    function findUnusedExports(ast) {
-      const exportedIdentifiers = new Set();
-      const usedIdentifiers = new Set();
-      const unusedExports = [];
-
-      // First pass: collect all export identifiers
-      traverse(ast, {
-        ExportNamedDeclaration(path) {
-          const { declaration, specifiers } = path.node;
-          if (declaration) {
-            if (declaration.declarations) {
-              declaration.declarations.forEach((decl) => {
-                exportedIdentifiers.add(decl.id.name);
-              });
-            } else {
-              exportedIdentifiers.add(declaration.id.name);
-            }
-          }
-          specifiers.forEach((spec) => {
-            exportedIdentifiers.add(spec.exported.name);
-          });
-        },
-
-        ExportDefaultDeclaration(path) {
-          // Default exports need to be handled separately
-          // Assuming the default export is a function or class declaration:
-          if (path.node.declaration.id) {
-            exportedIdentifiers.add(path.node.declaration.id.name);
-          }
-        },
-      });
-
-      // Second pass: find all used identifiers
-      traverse(ast, {
-        Identifier(path) {
-          if (path.isReferencedIdentifier()) {
-            usedIdentifiers.add(path.node.name);
-          }
-        },
-      });
-
-      // Determine which exports are unused
-      exportedIdentifiers.forEach((exported) => {
-        if (!usedIdentifiers.has(exported)) {
-          unusedExports.push(exported);
-        }
-      });
-
-      return unusedExports;
-    }
 
     function collectImportExports(value: Module<MixedOutput>) {
       function getGraphId(moduleId: string) {
@@ -479,7 +482,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     }
 
     function isEmptyModule(value: Module<MixedOutput>): boolean {
-      function isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast) {
+      function isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast: Ast) {
         if (!ast.program.body.length) {
           return true;
         }
@@ -539,7 +542,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         treeShakeExports(depId, value);
 
         value.output.forEach((outputItem) => {
-          const ast = outputItem.data.ast;
+          const ast = accessAst(outputItem);
 
           if (removeUnusedImports(value, ast)) {
             // TODO: haha this is slow
@@ -554,6 +557,11 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
 
     return [entryPoint, preModules, graph, options];
   };
+}
+
+function accessAst(output: MixedOutput): Ast | undefined {
+  // @ts-expect-error
+  return output.data.ast;
 }
 
 export function isShakingEnabled(graph: ReadOnlyGraph, options: SerializerOptions) {
