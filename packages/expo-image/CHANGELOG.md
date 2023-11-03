@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `contentFit` not forking for `SVG` images. ([#25187](https://github.com/expo/expo/pull/25187) by [@behenate](https://github.com/behenate))
+- [Android] Fix `contentFit` not working for `SVG` images. ([#25187](https://github.com/expo/expo/pull/25187) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
