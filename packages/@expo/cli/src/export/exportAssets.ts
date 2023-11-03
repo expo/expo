@@ -17,10 +17,10 @@ function mapAssetHashToAssetString(asset: Asset, hash: string) {
 }
 
 export function assetPatternsToBeBundled(
-  exp: ExpoConfig & { extra?: { updates?: { assetPatternsToBeBundled?: string[] } } }
+  exp: ExpoConfig & { extra?: { assetPatternsToBeBundled?: string[] } }
 ): string[] | undefined {
-  return exp?.extra?.updates?.assetPatternsToBeBundled?.length
-    ? exp?.extra?.updates?.assetPatternsToBeBundled
+  return exp?.extra?.assetPatternsToBeBundled?.length
+    ? exp?.extra?.assetPatternsToBeBundled
     : undefined;
 }
 
