@@ -14,9 +14,7 @@ describe(resolveAssetPatternsToBeBundled, () => {
       name: 'Foo',
       slug: 'Foo',
       extra: {
-        updates: {
-          assetPatternsToBeBundled: ['**/*'],
-        },
+        assetPatternsToBeBundled: ['**/*'],
       },
     };
     const resultSet = resolveAssetPatternsToBeBundled('/', exp, [
