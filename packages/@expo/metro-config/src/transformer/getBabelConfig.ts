@@ -63,28 +63,9 @@ const getBabelRC = (function () {
     }
 
     // If a babel config file doesn't exist in the project then
-    // the default preset for react-native will be used instead.
+    // the default preset for expo will be used instead.
     if (!babelRC.extends) {
-      const { experimentalImportSupport, ...presetOptions } = options;
-
-      // Use `babel-preset-expo` instead of `metro-react-native-babel-preset`.
-      const presetPath =
-        resolveFrom.silent(projectRoot, 'babel-preset-expo') ??
-        resolveFrom.silent(projectRoot, 'metro-react-native-babel-preset') ??
-        require.resolve('babel-preset-expo');
-
-      babelRC.presets = [
-        [
-          require(presetPath),
-          {
-            // Default to React 17 automatic JSX transform.
-            jsxRuntime: 'automatic',
-            ...presetOptions,
-            disableImportExportTransform: experimentalImportSupport,
-            enableBabelRuntime: options.enableBabelRuntime,
-          },
-        ],
-      ];
+      babelRC.presets = [require('babel-preset-expo')];
     }
 
     return babelRC;

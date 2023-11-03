@@ -108,17 +108,11 @@ const getBabelRC = (function () {
     // If a babel config file doesn't exist in the project then
     // the default preset for react-native will be used instead.
     if (!babelRC.extends) {
-      const { experimentalImportSupport, ...presetOptions } = options;
-
       // Convert the options into the format expected by the Expo preset.
       const platformOptions = {
         // @ts-expect-error: This is how Metro works by default
-        unstable_transformProfile: presetOptions.unstable_transformProfile,
-        // @ts-expect-error: This is how Metro works by default
-        withDevTools: presetOptions.withDevTools,
-        disableImportExportTransform: experimentalImportSupport,
-        dev: presetOptions.dev,
-        enableBabelRuntime: presetOptions.enableBabelRuntime,
+        unstable_transformProfile: options.unstable_transformProfile,
+        enableBabelRuntime: options.enableBabelRuntime,
       };
 
       babelRC.presets = [

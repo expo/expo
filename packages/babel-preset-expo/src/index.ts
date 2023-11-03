@@ -55,6 +55,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     const value = (caller as any)?.treeshake;
     return value === true || value === 'true';
   });
+
   const isDev = api.caller(getIsDev);
 
   // If the `platform` prop is not defined then this must be a custom config that isn't

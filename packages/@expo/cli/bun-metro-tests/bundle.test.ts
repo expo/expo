@@ -86,22 +86,24 @@ async function bundleProject(name: string) {
     assetsDest: path.join(projectRoot, 'dist'),
     platform: 'ios',
     dev: false,
-    resetCache: false,
-    resetGlobalCache: false,
+    resetCache: true,
+    resetGlobalCache: true,
     maxWorkers: 1,
-    minify: true,
+    minify: false,
     sourcemapUseAbsolutePath: false,
     verbose: true,
   });
   console.timeEnd('metro');
-  return bundle.code.replace(
-    `(function (global) {})(typeof globalThis !== 'undefined' ? globalThis : typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : this);`,
-    ''
-  );
+  return bundle.code;
+  // return bundle.code.replace(
+  //   `(function (global) {})(typeof globalThis !== 'undefined' ? globalThis : typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : this);`,
+  //   ''
+  // );
 }
 
 it(`bundles a virtual fixture`, async () => {
   const output = await bundleProject('01-import');
 
+  console.log('output', output);
   expect(output).toMatch(`console.log('add', (0, _$$_REQUIRE(_dependencyMap[0]).add)(1, 2));`);
 });
