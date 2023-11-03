@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- fix URLs in development.
+- fix URLs in development. ([#25202](https://github.com/expo/expo/pull/25202) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
