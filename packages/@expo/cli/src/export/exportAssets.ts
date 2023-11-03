@@ -31,7 +31,10 @@ export function assetPatternsToBeBundled(
  * @param bundledAssetsSet Set of strings
  * @returns true if the asset should be bundled
  */
-function assetShouldBeIncludedInExport(asset: Asset, bundledAssetsSet: Set<string> | undefined) {
+export function assetShouldBeIncludedInExport(
+  asset: Asset,
+  bundledAssetsSet: Set<string> | undefined
+) {
   if (!bundledAssetsSet) {
     return true;
   }
@@ -49,21 +52,17 @@ function assetShouldBeIncludedInExport(asset: Asset, bundledAssetsSet: Set<strin
  * @param projectRoot The project root
  * @returns A set of asset strings
  */
-function setOfAssetsToBeBundled(
+export function setOfAssetsToBeBundled(
   assets: Asset[],
-  assetPatternsToBeBundled: string[] | undefined,
+  assetPatternsToBeBundled: string[],
   projectRoot: string
-): Set<string> | undefined {
+): Set<string> {
   // Convert asset patterns to a list of asset strings that match them.
   // Assets strings are formatted as `asset_<hash>.<type>` and represent
   // the name that the file will have in the app bundle. The `asset_` prefix is
   // needed because android doesn't support assets that start with numbers.
 
-  if (!assetPatternsToBeBundled) {
-    return undefined;
-  }
-
-  const fullPatterns: string[] = (assetPatternsToBeBundled ?? ['**/*']).map((p: string) =>
+  const fullPatterns: string[] = assetPatternsToBeBundled.map((p: string) =>
     path.join(projectRoot, p)
   );
 
@@ -86,24 +85,26 @@ function setOfAssetsToBeBundled(
 }
 
 /**
- * Resolves the assetBundlePatterns from the manifest and returns the set of assets to bundle.
+ * Resolves the assetBundlePatterns from the manifest and returns a list of assets to bundle.
  *
  * @modifies {exp}
  */
-export function resolveAssetPatternsToBeBundled<T extends ExpoConfig>(
+export async function resolveAssetPatternsToBeBundledAsync<T extends ExpoConfig>(
   projectRoot: string,
   exp: T,
   assets: Asset[]
-): Set<string> | undefined {
+): Promise<T & { bundledAssets?: Set<string> }> {
   if (!assetPatternsToBeBundled(exp)) {
-    return undefined;
+    return exp;
   }
-  const bundledAssets = setOfAssetsToBeBundled(
+  (exp as any).bundledAssets = setOfAssetsToBeBundled(
     assets,
     assetPatternsToBeBundled(exp) ?? ['**/*'],
     projectRoot
   );
-  return bundledAssets;
+  delete exp.assetBundlePatterns;
+
+  return exp;
 }
 
 function logPatterns(patterns: string[]) {
@@ -139,17 +140,16 @@ export async function exportAssetsAsync(
     (asset) => asset.hash
   );
 
-  let bundledAssetsSet: Set<string> | undefined = undefined;
-
   if (assets[0]?.fileHashes) {
     debug(`Assets = ${JSON.stringify(assets, null, 2)}`);
     // Updates the manifest to reflect additional asset bundling + configs
     // Get only asset strings for assets we will save
-    bundledAssetsSet = resolveAssetPatternsToBeBundled(projectRoot, exp, assets);
+    await resolveAssetPatternsToBeBundledAsync(projectRoot, exp, assets);
+    const bundledAssetsSet = (exp as any).bundledAssets;
     let filteredAssets = assets;
     if (bundledAssetsSet) {
       debug(`Bundled assets = ${JSON.stringify([...bundledAssetsSet], null, 2)}`);
-      // Filter asset objects to only ones that include assetPatternsToBeBundled matches
+      // Filter asset objects to only ones that include assetBundlePatterns matches
       filteredAssets = assets.filter((asset) =>
         assetShouldBeIncludedInExport(asset, bundledAssetsSet)
       );
@@ -162,15 +162,15 @@ export async function exportAssetsAsync(
   // Add google services file if it exists
   await resolveGoogleServicesFile(projectRoot, exp);
 
-  bundles.ios?.assets.forEach((asset: Asset & { embedded?: true }) => {
+  bundles.ios?.assets.forEach((asset: any) => {
     // Mark assets to be removed from metadata
-    if (!assetShouldBeIncludedInExport(asset, bundledAssetsSet)) {
+    if (!assetShouldBeIncludedInExport(asset, (exp as any).bundledAssets)) {
       asset.embedded = true;
     }
   });
-  bundles.android?.assets.forEach((asset: Asset & { embedded?: true }) => {
+  bundles.android?.assets.forEach((asset: any) => {
     // Mark assets to be removed from metadata
-    if (!assetShouldBeIncludedInExport(asset, bundledAssetsSet)) {
+    if (!assetShouldBeIncludedInExport(asset, (exp as any).bundledAssets)) {
       asset.embedded = true;
     }
   });
