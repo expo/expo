@@ -29,7 +29,6 @@ export type BundleOptions = {
 };
 export type BundleAssetWithFileHashes = Metro.AssetData & {
   fileHashes: string[]; // added by the hashAssets asset plugin
-  embedded?: boolean; // added by exportAssets to allow assets to be excluded from metadata
 };
 export type BundleOutput = {
   code: string;
