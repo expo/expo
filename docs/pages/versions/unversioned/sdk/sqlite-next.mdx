@@ -23,51 +23,6 @@ import { GithubIcon } from '@expo/styleguide-icons';
 
 ## Usage
 
-### Import an existing database
-
-To open a new SQLite database using an existing **.db** file you already have, follow the steps below:
-
-<Step label="1">
-Install `expo-file-system` and `expo-asset` libraries:
-
-<Terminal cmd={['$ npx expo install expo-file-system expo-asset']} />
-
-</Step>
-
-<Step label="2">
-Create a **metro.config.js** file at the root of your project with the following contents to include [extra asset extensions](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts):
-
-```js metro.config.js
-const { getDefaultConfig } = require('expo/metro-config');
-
-const defaultConfig = getDefaultConfig(__dirname);
-
-defaultConfig.resolver.assetExts.push('db');
-
-module.exports = defaultConfig;
-```
-
-</Step>
-
-<Step label="3">
-
-Use the following function (or similar) to open your database:
-
-```ts
-async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.Database> {
-  if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
-    await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
-  }
-  await FileSystem.downloadAsync(
-    Asset.fromModule(require(pathToDatabaseFile)).uri,
-    FileSystem.documentDirectory + 'SQLite/myDatabaseName.db'
-  );
-  return await SQLite.openDatabaseAsync('myDatabaseName.db');
-}
-```
-
-</Step>
-
 ### Basic CRUD operations
 
 ```js
@@ -119,6 +74,97 @@ for await (const row of db.eachAsync('SELECT * FROM test')) {
 }
 ```
 
+### [`useSQLiteContext()`](#usesqlitecontext) hook
+
+```tsx
+import { SQLiteProvider, useSQLiteContext, type Database } from 'expo-sqlite/next';
+import { useEffect, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <SQLiteProvider dbName="test.db" initHandler={migrateDbIfNeeded}>
+        <Header />
+        <Content />
+      </SQLiteProvider>
+    </View>
+  );
+}
+
+export function Header() {
+  const db = useSQLiteContext();
+  const [version, setVersion] = useState('');
+  useEffect(() => {
+    async function setup() {
+      const result = await db.getAsync<{ 'sqlite_version()': string }>('SELECT sqlite_version()');
+      setVersion(result['sqlite_version()']);
+    }
+    setup();
+  }, []);
+  return (
+    <View style={styles.headerContainer}>
+      <Text style={styles.headerText}>SQLite version: {version}</Text>
+    </View>
+  );
+}
+
+interface Todo {
+  value: string;
+  intValue: number;
+}
+
+export function Content() {
+  const db = useSQLiteContext();
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  useEffect(() => {
+    async function setup() {
+      const result = await db.allAsync<Todo>('SELECT * FROM todos');
+      setTodos(result);
+    }
+    setup();
+  }, []);
+
+  return (
+    <View style={styles.contentContainer}>
+      {todos.map((todo, index) => (
+        <View style={styles.todoItemContainer} key={index}>
+          <Text>{`${todo.intValue} - ${todo.value}`}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+async function migrateDbIfNeeded(db: Database) {
+  const DATABASE_VERSION = 1;
+  let { user_version: currentDbVersion } = await db.getAsync<{ user_version: number }>(
+    'PRAGMA user_version'
+  );
+  if (currentDbVersion >= DATABASE_VERSION) {
+    return;
+  }
+  if (currentDbVersion === 0) {
+    await db.execAsync(`
+PRAGMA journal_mode = 'wal';
+CREATE TABLE todos (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER);
+`);
+    await db.runAsync('INSERT INTO todos (value, intValue) VALUES (?, ?)', 'hello', 1);
+    await db.runAsync('INSERT INTO todos (value, intValue) VALUES (?, ?)', 'world', 2);
+    currentDbVersion = 1;
+  }
+  // if (currentDbVersion === 1) {
+  //   Add more migrations
+  // }
+  await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
+}
+
+const styles = StyleSheet.create({
+  // Your styles...
+});
+```
+
 ### Executing queries within an async transaction
 
 ```js
@@ -141,6 +187,51 @@ await db.execAsync('PRAGMA foreign_keys = ON');
 ```
 
 > **info** **Tip:** Enable [WAL journal mode](https://www.sqlite.org/wal.html) when you create a new database to improve performance in general.
+
+### Import an existing database
+
+To open a new SQLite database using an existing **.db** file you already have, follow the steps below:
+
+<Step label="1">
+Install `expo-file-system` and `expo-asset` libraries:
+
+<Terminal cmd={['$ npx expo install expo-file-system expo-asset']} />
+
+</Step>
+
+<Step label="2">
+Create a **metro.config.js** file at the root of your project with the following contents to include [extra asset extensions](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts):
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const defaultConfig = getDefaultConfig(__dirname);
+
+defaultConfig.resolver.assetExts.push('db');
+
+module.exports = defaultConfig;
+```
+
+</Step>
+
+<Step label="3">
+
+Use the following function (or similar) to open your database:
+
+```ts
+async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.Database> {
+  if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
+    await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
+  }
+  await FileSystem.downloadAsync(
+    Asset.fromModule(require(pathToDatabaseFile)).uri,
+    FileSystem.documentDirectory + 'SQLite/myDatabaseName.db'
+  );
+  return await SQLite.openDatabaseAsync('myDatabaseName.db');
+}
+```
+
+</Step>
 
 ## API
 
