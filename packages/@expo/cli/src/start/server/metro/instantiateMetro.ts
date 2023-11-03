@@ -1,4 +1,5 @@
 import { ExpoConfig, getConfig } from '@expo/config';
+import * as ExpoMetroConfig from '@expo/metro-config';
 import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import { Server as ConnectServer } from 'connect';
@@ -10,7 +11,6 @@ import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { importCliServerApiFromProject, importExpoMetroConfig } from './resolveFromProject';
 import { getRouterDirectoryModuleIdWithManifest } from './router';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
@@ -73,7 +73,6 @@ export async function loadMetroConfigAsync(
     },
   };
 
-  const ExpoMetroConfig = importExpoMetroConfig(projectRoot);
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
   if (
@@ -111,7 +110,9 @@ export async function loadMetroConfigAsync(
     isExporting,
   });
 
-  logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
+  if (process.env.NODE_ENV !== 'test') {
+    logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
+  }
 
   return {
     config,
@@ -145,7 +146,7 @@ export async function instantiateMetroAsync(
   );
 
   const { createDevServerMiddleware, securityHeadersMiddleware } =
-    importCliServerApiFromProject(projectRoot);
+    require('@react-native-community/cli-server-api') as typeof import('@react-native-community/cli-server-api');
 
   const { middleware, messageSocketEndpoint, eventsSocketEndpoint, websocketEndpoints } =
     createDevServerMiddleware({

@@ -6,11 +6,11 @@
  */
 import chalk from 'chalk';
 import { ConfigT as MetroConfig } from 'metro-config';
-import { ResolutionContext, CustomResolutionContext } from 'metro-resolver';
+import type { ResolutionContext, CustomResolutionContext } from 'metro-resolver';
+import * as metroResolver from 'metro-resolver';
 import path from 'path';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
-import { importMetroResolverFromProject } from './resolveFromProject';
 import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:metro:withMetroResolvers') as typeof console.log;
@@ -24,9 +24,8 @@ export type ExpoCustomMetroResolver = (
 
 /** @returns `MetroResolver` utilizing the upstream `resolve` method. */
 export function getDefaultMetroResolver(projectRoot: string): MetroResolver {
-  const { resolve } = importMetroResolverFromProject(projectRoot);
   return (context: ResolutionContext, moduleName: string, platform: string | null) => {
-    return resolve(context, moduleName, platform);
+    return metroResolver.resolve(context, moduleName, platform);
   };
 }
 

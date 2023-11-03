@@ -21,7 +21,7 @@ declare module 'metro/src/HmrServer' {
     constructor(...args: any[]);
   }
 
-  module.exports = MetroHmrServer;
+  export default MetroHmrServer;
 }
 
 declare module 'metro/src/ModuleGraph/worker/collectDependencies' {

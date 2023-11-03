@@ -1,5 +1,5 @@
 import assert from 'assert';
-import prompts, { Choice, Options, PromptObject, PromptType } from 'prompts';
+import prompts, { Choice, Options, PromptObject } from 'prompts';
 
 import { AbortCommandError, CommandError } from './errors';
 import { isInteractive } from './interactive';
@@ -13,8 +13,6 @@ export type Question<V extends string = string> = PromptObject<V> & {
 export interface ExpoChoice<T> extends Choice {
   value: T;
 }
-
-export { PromptType };
 
 type PromptOptions = { nonInteractiveHelp?: string } & Options;
 

@@ -101,7 +101,7 @@ it(
 it(
   'runs `npx expo customize tsconfig.json`',
   async () => {
-    const projectRoot = await setupTestProjectAsync('expo-typescript', 'with-router', '48.0.0');
+    const projectRoot = await setupTestProjectAsync('expo-typescript', 'with-router', '49.0.0');
 
     // `npx expo typescript
     await execa('node', [bin, 'customize', 'tsconfig.json'], {
@@ -123,7 +123,7 @@ it(
 it(
   'runs `npx expo customize tsconfig.json` on a partially setup project',
   async () => {
-    const projectRoot = await setupTestProjectAsync('expo-typescript', 'with-router', '48.0.0');
+    const projectRoot = await setupTestProjectAsync('expo-typescript', 'with-router', '49.0.0');
 
     const existingTsConfig = {
       extends: 'custom-package',
