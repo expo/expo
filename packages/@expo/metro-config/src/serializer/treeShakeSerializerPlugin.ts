@@ -1,5 +1,5 @@
 /**
- * Copyright © 2022 650 Industries.
+ * Copyright © 2023 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -482,8 +482,8 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     }
 
     function isEmptyModule(value: Module<MixedOutput>): boolean {
-      function isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast: Ast) {
-        if (!ast.program.body.length) {
+      function isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast?: Ast) {
+        if (!ast?.program.body.length) {
           return true;
         }
 
@@ -523,8 +523,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
       }
 
       return value.output.every((outputItem) => {
-        const ast = outputItem.data.ast;
-        return isASTEmptyOrContainsOnlyCommentsAndUseStrict(ast);
+        return isASTEmptyOrContainsOnlyCommentsAndUseStrict(accessAst(outputItem));
       });
     }
 
