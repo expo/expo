@@ -4,8 +4,6 @@
 // swiftlint:disable unavailable_function
 
 // swiftlint:disable closure_body_length
-// swiftlint:disable function_body_length
-// swiftlint:disable type_body_length
 
 // this class uses a lot of implicit non-null stuff across function calls. not worth refactoring to just satisfy lint
 // swiftlint:disable force_unwrapping
@@ -325,13 +323,24 @@ open class AppLoader: NSObject {
           // the database and filesystem have gotten out of sync
           // do our best to create a new entry for this file even though it already existed on disk
           // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
-
-          // this has always force-tried implicitly, could probably do some better error handling
-          // swiftlint:disable:next force_try
-          let contents = try! Data(contentsOf: self.directory.appendingPathComponent(existingAsset.filename))
-          existingAsset.contentHash = UpdatesUtils.hexEncodedSHA256WithData(contents)
-          existingAsset.downloadTime = Date()
-          self.finishedAssets.append(existingAsset)
+          var contents: Data?
+          do {
+            contents = try Data(contentsOf: self.directory.appendingPathComponent(existingAsset.filename))
+          } catch {}
+          if contents == nil {
+            do {
+              if let embeddedUrl = UpdatesUtils.url(forBundledAsset: existingAsset) {
+                contents = try Data(contentsOf: embeddedUrl)
+              }
+            } catch {}
+          }
+          // This replaces the old force try
+          assert(contents != nil)
+          if let contents = contents {
+            existingAsset.contentHash = UpdatesUtils.hexEncodedSHA256WithData(contents)
+            existingAsset.downloadTime = Date()
+            self.finishedAssets.append(existingAsset)
+          }
         }
       }
 
@@ -387,3 +396,7 @@ open class AppLoader: NSObject {
     }
   }
 }
+
+// swiftlint:enable unavailable_function
+// swiftlint:enable closure_body_length
+// swiftlint:enable force_unwrapping
