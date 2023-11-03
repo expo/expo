@@ -80,6 +80,8 @@ function findUnusedExports(ast: Ast) {
   return unusedExports;
 }
 
+const annotate = false;
+
 export function treeShakeSerializerPlugin(config: InputConfigT) {
   return async function treeShakeSerializer(
     entryPoint: string,
@@ -91,8 +93,6 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     if (!isShakingEnabled(graph, options)) {
       return [entryPoint, preModules, graph, options];
     }
-
-    const annotate = true;
 
     function collectImportExports(value: Module<MixedOutput>) {
       function getGraphId(moduleId: string) {
@@ -593,11 +593,11 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
     for (const value of graph.dependencies.values()) {
       for (const index in value.output) {
         const outputItem = value.output[index];
-        if (!outputItem.data.ast) {
+        let ast = accessAst(outputItem);
+        if (!ast) {
           continue;
         }
 
-        let ast = outputItem.data.ast;
         delete outputItem.data.ast;
 
         const { importDefault, importAll } = generateImportNames(ast);
@@ -724,8 +724,11 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
         }
 
         outputItem.data.code = (includeDebugInfo ? `\n// ${value.path}\n` : '') + code;
+        // @ts-expect-error
         outputItem.data.lineCount = countLines(outputItem.data.code);
+        // @ts-expect-error
         outputItem.data.map = map;
+        // @ts-expect-error
         outputItem.data.functionMap =
           ast.metadata?.metro?.functionMap ??
           // Fallback to deprecated explicitly-generated `functionMap`

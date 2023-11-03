@@ -27,7 +27,7 @@ describe('tree-shaking', () => {
     delete process.env.EXPO_USE_TREE_SHAKING;
     jest.mock('fs');
   });
-  xit(`removes unused export`, async () => {
+  it(`removes unused export`, async () => {
     const serializer = getSerializer();
 
     // Drop the pre-modules for brevity
@@ -40,30 +40,30 @@ describe('tree-shaking', () => {
     console.log(stringResults);
     expect(stringResults).not.toMatch(/subtract/);
   });
-  xit(`does not tree shake exports if cjs require is used`, async () => {
+  it(`does not tree shake exports if cjs require is used`, async () => {
     const stringResults = await getSerializer()(...splitFixtures.staticCjs);
     console.log(stringResults);
     expect(stringResults).toMatch(/subtract/);
   });
-  xit(`does not tree shake default exports`, async () => {
+  it(`does not tree shake default exports`, async () => {
     const stringResults = await getSerializer()(...splitFixtures.defaultImport);
     console.log(stringResults);
     expect(stringResults).not.toMatch(/subtract/);
     expect(stringResults).toMatch(/a \+ b;/);
   });
-  xit(`does not tree shake star imports`, async () => {
+  it(`does not tree shake star imports`, async () => {
     const stringResults = await getSerializer()(...splitFixtures.starImport);
     console.log(stringResults);
     expect(stringResults).toMatch(/subtract/);
     expect(stringResults).toMatch(/a \+ b;/);
   });
-  xit(`does not tree shake cjs re-exports`, async () => {
+  it(`does not tree shake cjs re-exports`, async () => {
     const stringResults = await getSerializer()(...splitFixtures.getterReExport);
     console.log(stringResults);
     expect(stringResults).toMatch(/subtract/);
     expect(stringResults).toMatch(/a \+ b;/);
   });
-  xit(`tree shakes named re-exports`, async () => {
+  it(`tree shakes named re-exports`, async () => {
     const stringResults = await getSerializer()(...splitFixtures.namedBarrelExport);
     console.log(stringResults);
     expect(stringResults).not.toMatch(/subtract/);
@@ -75,13 +75,13 @@ describe('tree-shaking', () => {
     expect(stringResults).not.toMatch(/subtract/);
     expect(stringResults).toMatch(/a \+ b;/);
   });
-  xit(`tree shakes named re-exports`, async () => {
+  it(`tree shakes named re-exports`, async () => {
     const stringResults = await getSerializer()(...splitFixtures.exportDefaultAs);
     console.log(stringResults);
     expect(stringResults).not.toMatch(/subtract/);
     expect(stringResults).toMatch(/a \+ b;/);
   });
-  xit(`does not tree shake barrel re-exports`, async () => {
+  it(`does not tree shake barrel re-exports`, async () => {
     const stringResults = await getSerializer()(...splitFixtures.barrelExport);
     console.log(stringResults);
     expect(stringResults).toMatch(/subtract/);
