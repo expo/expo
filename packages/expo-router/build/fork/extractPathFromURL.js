@@ -83,7 +83,9 @@ function fromDeepLink(url) {
     if (res.pathname) {
         results += res.pathname;
     }
-    const qs = res.searchParams.toString();
+    const qs = !res.search
+        ? ''
+        : [...res.searchParams.entries()].map(([k, v]) => `${k}=${decodeURIComponent(v)}`).join('&');
     if (qs) {
         results += '?' + qs;
     }
