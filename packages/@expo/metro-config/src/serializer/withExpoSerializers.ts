@@ -6,14 +6,13 @@
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import { MixedOutput, Module } from 'metro';
-import { InputConfigT, SerializerConfigT } from 'metro-config';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 // @ts-expect-error
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
+import { InputConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
 
-import { env } from '../env';
 import {
   environmentVariableSerializerPlugin,
   serverPreludeSerializerPlugin,
@@ -25,6 +24,7 @@ import {
   createPostTreeShakeTransformSerializerPlugin,
   treeShakeSerializerPlugin,
 } from './treeShakeSerializerPlugin';
+import { env } from '../env';
 
 export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 

@@ -8,21 +8,21 @@ import { transformFromAstSync, traverse } from '@babel/core';
 import * as babylon from '@babel/parser';
 import * as types from '@babel/types';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+import type { DynamicRequiresBehavior } from 'metro/src/ModuleGraph/worker/collectDependencies';
+import countLines from 'metro/src/lib/countLines';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 import { functionMapBabelPlugin, MetroSourceMapSegmentTuple } from 'metro-source-map';
-import countLines from 'metro/src/lib/countLines';
 import path from 'path';
 
 import { hasSideEffect } from './sideEffectsSerializerPlugin';
 
-import type { DynamicRequiresBehavior } from 'metro/src/ModuleGraph/worker/collectDependencies';
 export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
 export type SerializerParameters = Parameters<Serializer>;
 
 const JsFileWrapping = require('metro/src/ModuleGraph/worker/JsFileWrapping');
-const generateImportNames = require('metro/src/ModuleGraph/worker/generateImportNames');
 const collectDependencies = require('metro/src/ModuleGraph/worker/collectDependencies');
+const generateImportNames = require('metro/src/ModuleGraph/worker/generateImportNames');
 const inspect = (...props) =>
   console.log(...props.map((prop) => require('util').inspect(prop, { depth: 20, colors: true })));
 

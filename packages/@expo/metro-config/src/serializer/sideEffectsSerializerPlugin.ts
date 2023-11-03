@@ -9,8 +9,8 @@ import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import minimatch from 'minimatch';
 import path from 'path';
 
-import { SerializerParameters } from './withExpoSerializers';
 import { isShakingEnabled } from './treeShakeSerializerPlugin';
+import { SerializerParameters } from './withExpoSerializers';
 
 // const debug = require('debug')('expo:metro-config:serializer:side-effects') as typeof console.log;
 
