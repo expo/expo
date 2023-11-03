@@ -3,6 +3,7 @@ import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro, { AssetData } from 'metro';
 import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
+import Server from 'metro/src/Server';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import { ConfigT } from 'metro-config';
@@ -14,10 +15,6 @@ import {
 } from './exportHermes';
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
-import {
-  importMetroFromProject,
-  importMetroServerFromProject,
-} from '../start/server/metro/resolveFromProject';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import { env } from '../utils/env';
 
@@ -118,15 +115,12 @@ async function bundleProductionMetroClientAsync(
     bundles.map(({ platform }) => assertEngineMismatchAsync(projectRoot, expoConfig, platform))
   );
 
-  const metro = importMetroFromProject(projectRoot);
-  const Server = importMetroServerFromProject(projectRoot);
-
   const { config, reporter } = await loadMetroConfigAsync(projectRoot, metroOptions, {
     exp: expoConfig,
     isExporting: true,
   });
 
-  const metroServer = await metro.runMetro(config, {
+  const metroServer = await Metro.runMetro(config, {
     watch: false,
   });
 
@@ -148,6 +142,11 @@ async function bundleProductionMetroClientAsync(
       },
       unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
       createModuleIdFactory: config.serializer.createModuleIdFactory,
+      unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
+      customTransformOptions: {
+        __proto__: null,
+        engine: isHermes ? 'hermes' : undefined,
+      },
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
         reporter.update({
           buildID,

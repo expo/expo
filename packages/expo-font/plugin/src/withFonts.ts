@@ -10,6 +10,10 @@ export type FontProps = {
 };
 
 const withFonts: ConfigPlugin<FontProps> = (config, props) => {
+  if (!props) {
+    return config;
+  }
+
   if (props.fonts && props.fonts.length === 0) {
     return config;
   }

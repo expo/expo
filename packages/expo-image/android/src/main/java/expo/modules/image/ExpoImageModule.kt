@@ -187,6 +187,18 @@ class ExpoImageModule : Module() {
         view.allowDownscaling = allowDownscaling ?: true
       }
 
+      Prop("autoplay") { view: ExpoImageViewWrapper, autoplay: Boolean? ->
+        view.autoplay = autoplay ?: true
+      }
+
+      AsyncFunction("startAnimating") { view: ExpoImageViewWrapper ->
+        view.setIsAnimating(true)
+      }
+
+      AsyncFunction("stopAnimating") { view: ExpoImageViewWrapper ->
+        view.setIsAnimating(false)
+      }
+
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->
         view.rerenderIfNeeded()
       }

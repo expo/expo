@@ -62,3 +62,22 @@ export async function podInstallAsync(
     stdio: options.stdio ?? 'pipe',
   });
 }
+
+/**
+ * An alternative version of `podInstallAsync` that uses `npx pod-install` command.
+ * See https://github.com/expo/expo-cli/tree/main/packages/pod-install
+ */
+export async function npxPodInstallAsync(
+  projectPath: string,
+  verbose: boolean = false
+): Promise<void> {
+  const args = ['pod-install@latest'];
+
+  if (!verbose) {
+    args.push('--quiet');
+  }
+  await spawnAsync('npx', args, {
+    cwd: projectPath,
+    stdio: verbose ? 'inherit' : 'pipe',
+  });
+}

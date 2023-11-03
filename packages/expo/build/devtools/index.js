@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getDevToolsPluginClientAsync } from './DevToolsPluginClientFactory';
 export { getDevToolsPluginClientAsync };
+export { setEnableLogging } from './logger';
 /**
  * A React hook to get the DevToolsPluginClient instance.
  */
