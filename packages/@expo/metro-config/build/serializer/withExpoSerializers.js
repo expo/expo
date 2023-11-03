@@ -47,6 +47,13 @@ function _path() {
   };
   return data;
 }
+function _annotateModulesSerializerPlugin() {
+  const data = require("./annotateModulesSerializerPlugin");
+  _annotateModulesSerializerPlugin = function () {
+    return data;
+  };
+  return data;
+}
 function _environmentVariableSerializerPlugin() {
   const data = require("./environmentVariableSerializerPlugin");
   _environmentVariableSerializerPlugin = function () {
@@ -85,12 +92,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // @ts-expect-error
 
-function withExpoSerializers(config) {
+function withExpoSerializers(config, {
+  annotate
+} = {}) {
   const processors = [];
   processors.push(_environmentVariableSerializerPlugin().serverPreludeSerializerPlugin);
   if (!_env().env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(_environmentVariableSerializerPlugin().environmentVariableSerializerPlugin);
   }
+  processors.push((0, _annotateModulesSerializerPlugin().createAnnotateModulesSerializerPlugin)({
+    force: annotate
+  }));
   return withSerializerPlugins(config, processors);
 }
 

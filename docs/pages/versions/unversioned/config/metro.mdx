@@ -362,6 +362,23 @@ module.exports.transform = async ({ src, filename, options }) => {
 };
 ```
 
+## Debugging output
+
+To debug the production bundle, you can pass the `--no-minify` flag to the `expo export` command. This will generate a bundle that is easier to debug.
+
+You can also pass the `annotate: true` option to `getDefaultConfig` to preserve module file path comments in production.
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname, {
+  // Preserve module file path comments in production.
+  annotate: true,
+});
+```
+
+For native, you may want to set `engine: 'jsc'` in the app.json to prevent emitting the bundle in bytecode format.
+
 ## Custom resolving
 
 Expo CLI extends the default Metro resolver to add features like Web, Server, and tsconfig aliases support. You can similarly customize the default resolution behavior of Metro by chaining the `config.resolver.resolveRequest` function.

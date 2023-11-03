@@ -13,6 +13,7 @@ import bundleToString from 'metro/src/lib/bundleToString';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
 
+import { createAnnotateModulesSerializerPlugin } from './annotateModulesSerializerPlugin';
 import {
   serverPreludeSerializerPlugin,
   environmentVariableSerializerPlugin,
@@ -29,12 +30,17 @@ export type SerializerParameters = Parameters<Serializer>;
 // Unlike a serializer, these can be chained together.
 export type SerializerPlugin = (...props: SerializerParameters) => SerializerParameters;
 
-export function withExpoSerializers(config: InputConfigT): InputConfigT {
+export function withExpoSerializers(
+  config: InputConfigT,
+  { annotate }: { annotate?: boolean } = {}
+): InputConfigT {
   const processors: SerializerPlugin[] = [];
   processors.push(serverPreludeSerializerPlugin);
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(environmentVariableSerializerPlugin);
   }
+
+  processors.push(createAnnotateModulesSerializerPlugin({ force: annotate }));
 
   return withSerializerPlugins(config, processors);
 }

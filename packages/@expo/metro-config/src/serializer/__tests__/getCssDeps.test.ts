@@ -23,6 +23,7 @@ const fooModule: JSModule = {
       },
     ],
   ]),
+  // @ts-expect-error
   inverseDependencies: new Set(),
   output: [
     {
@@ -46,6 +47,7 @@ const fooModule: JSModule = {
 const barModule: JSModule = {
   path: '/root/bar',
   dependencies: new Map(),
+  // @ts-expect-error
   inverseDependencies: new Set(['/root/foo']),
   output: [
     {

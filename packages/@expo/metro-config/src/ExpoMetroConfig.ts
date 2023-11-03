@@ -30,8 +30,6 @@ export interface LoadOptions {
 }
 
 export interface DefaultConfigOptions {
-  /** @deprecated */
-  mode?: 'exotic';
   /**
    * **Experimental:** Enable CSS support for Metro web, and shim on native.
    *
@@ -39,6 +37,12 @@ export interface DefaultConfigOptions {
    * is subject to change, and native support for CSS Modules may be added in the future during a non-major SDK release.
    */
   isCSSEnabled?: boolean;
+
+  /** Set to `true` to add comments above each module with the file path. Defaults to `false` in production. */
+  annotate?: boolean;
+
+  /** @deprecated */
+  mode?: 'exotic';
 }
 
 function getAssetPlugins(projectRoot: string): string[] {
@@ -55,7 +59,7 @@ let hasWarnedAboutExotic = false;
 
 export function getDefaultConfig(
   projectRoot: string,
-  { mode, isCSSEnabled = true }: DefaultConfigOptions = {}
+  { mode, isCSSEnabled = true, annotate }: DefaultConfigOptions = {}
 ): InputConfigT {
   const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = importMetroConfig(projectRoot);
 
@@ -210,7 +214,9 @@ export function getDefaultConfig(
     },
   });
 
-  return withExpoSerializers(metroConfig);
+  return withExpoSerializers(metroConfig, {
+    annotate,
+  });
 }
 
 export async function loadAsync(

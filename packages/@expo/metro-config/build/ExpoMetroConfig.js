@@ -153,7 +153,8 @@ function getAssetPlugins(projectRoot) {
 let hasWarnedAboutExotic = false;
 function getDefaultConfig(projectRoot, {
   mode,
-  isCSSEnabled = true
+  isCSSEnabled = true,
+  annotate
 } = {}) {
   const {
     getDefaultConfig: getDefaultMetroConfig,
@@ -294,7 +295,9 @@ function getDefaultConfig(projectRoot, {
       })
     }
   });
-  return (0, _withExpoSerializers().withExpoSerializers)(metroConfig);
+  return (0, _withExpoSerializers().withExpoSerializers)(metroConfig, {
+    annotate
+  });
 }
 async function loadAsync(projectRoot, {
   reporter,
