@@ -6,7 +6,6 @@
  */
 import { transformFromAstSync, traverse } from '@babel/core';
 import * as babylon from '@babel/parser';
-import fs from 'fs';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import { Module, MixedOutput, ReadOnlyGraph, SerializerOptions } from 'metro';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
@@ -16,7 +15,6 @@ import type { DynamicRequiresBehavior } from 'metro/src/ModuleGraph/worker/colle
 import bundleToString from 'metro/src/lib/bundleToString';
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 import { MetroSourceMapSegmentTuple, functionMapBabelPlugin } from 'metro-source-map';
-import minimatch from 'minimatch';
 import path from 'path';
 
 import { toFixture } from './__tests__/fixtures/toFixture';
@@ -27,8 +25,9 @@ import {
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
+import { hasSideEffect, sideEffectsSerializerPlugin } from './sideEffectsSerializerPlugin';
 
-const countLines = require('metro/src/lib/countLines');
+import countLines from 'metro/src/lib/countLines';
 
 export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
@@ -47,6 +46,7 @@ export function withExpoSerializers(config: InputConfigT): InputConfigT {
     processors.push(environmentVariableSerializerPlugin);
   }
 
+  processors.push(sideEffectsSerializerPlugin);
   processors.push(treeShakeSerializerPlugin(config));
 
   return withSerializerPlugins(config, processors);
@@ -494,7 +494,7 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
               // );
               if (
                 // Don't remove the module if it has side effects.
-                !hasSideEffect(graphDep) ||
+                !hasSideEffect(graph, graphDep) ||
                 // Unless it's an empty module.
                 isEmptyModule(graphDep)
               ) {
@@ -581,24 +581,6 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
       });
     }
 
-    function hasSideEffect(value: Module<MixedOutput>, checked: Set<string> = new Set()): boolean {
-      if (value.sideEffects) {
-        return true;
-      }
-      // Recursively check if any of the dependencies have side effects.
-      for (const depReference of value.dependencies.values()) {
-        if (checked.has(depReference.absolutePath)) {
-          continue;
-        }
-        checked.add(depReference.absolutePath);
-        const dep = graph.dependencies.get(depReference.absolutePath)!;
-        if (hasSideEffect(dep, checked)) {
-          return true;
-        }
-      }
-      return false;
-    }
-
     function treeShakeAll(depth: number = 0) {
       if (depth > 10) {
         return;
@@ -622,85 +604,6 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
         });
       }
     }
-
-    function markSideEffects() {
-      const findUpPackageJsonPath = (dir: string): string | null => {
-        if (dir === path.sep || dir.length < options.projectRoot.length) {
-          return null;
-        }
-        const packageJsonPath = path.join(dir, 'package.json');
-        if (fs.existsSync(packageJsonPath)) {
-          return packageJsonPath;
-        }
-        return findUpPackageJsonPath(path.dirname(dir));
-      };
-
-      const pkgJsonCache = new Map<string, any>();
-
-      const getPackageJsonMatcher = (dir: string): any => {
-        const cached = pkgJsonCache.get(dir);
-        if (cached) {
-          return cached;
-        }
-        const packageJsonPath = findUpPackageJsonPath(dir);
-        if (!packageJsonPath) {
-          return null;
-        }
-        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-
-        // TODO: Split out and unit test.
-        const dirRoot = path.dirname(packageJsonPath);
-        const isSideEffect = (fp: string): boolean => {
-          // Default is that everything is a side-effect unless explicitly marked as not.
-          if (packageJson.sideEffects == null) {
-            return true;
-          }
-
-          if (typeof packageJson.sideEffects === 'boolean') {
-            return packageJson.sideEffects;
-          } else if (Array.isArray(packageJson.sideEffects)) {
-            const relativeName = path.relative(dirRoot, fp);
-            return packageJson.sideEffects.some((sideEffect: any) => {
-              if (typeof sideEffect === 'string') {
-                return minimatch(relativeName, sideEffect.replace(/^\.\//, ''), {
-                  matchBase: true,
-                });
-              }
-              return false;
-            });
-          }
-          return false;
-        };
-
-        pkgJsonCache.set(dir, isSideEffect);
-        return isSideEffect;
-      };
-
-      // This pass will traverse all dependencies and mark them as side-effect-ful if they are marked as such
-      // in the package.json, according to Webpack: https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free
-      for (const value of graph.dependencies.values()) {
-        const isSideEffect = getPackageJsonMatcher(value.path);
-        if (!isSideEffect) {
-          continue;
-        }
-
-        // @ts-expect-error: Not on type. This logic should probably be upstreamed.
-        value.sideEffects = isSideEffect(value.path);
-      }
-
-      // This pass will surface all recursive dependencies that are side-effect-ful and mark them early
-      // so we aren't redoing recursive checks later.
-      // e.g. `./index.js` -> `./foo.js` -> `./bar.js` -> `./baz.js` (side-effect)
-      // All modules will be marked as side-effect-ful.
-      for (const value of graph.dependencies.values()) {
-        if (hasSideEffect(value)) {
-          value.sideEffects = true;
-        }
-      }
-    }
-
-    // Iterate the graph and mark dependencies as side-effect-ful if they are marked as such in the package.json.
-    markSideEffects();
 
     // Tree shake the graph.
     treeShakeAll();
