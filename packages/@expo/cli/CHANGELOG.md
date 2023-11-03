@@ -53,6 +53,7 @@
 - Resolve browser shims with mismatched extensions. ([#24671](https://github.com/expo/expo/pull/24671) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure a unique static path is generated for each group during static extraction ([#24218](https://github.com/expo/expo/pull/24218) by [@marklawlor](https://github.com/marklawlor))
 - Fallback to `xcrun devicectl` for iOS 17 to launch the app. ([#24635](https://github.com/expo/expo/pull/24635) by [@byCedric](https://github.com/byCedric))
+- Support installing fixed versions of packages that have an SDK compatible version (apart from React and React Native). ([#24642](https://github.com/expo/expo/pull/24642) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others
 
