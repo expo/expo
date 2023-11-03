@@ -3,6 +3,7 @@ title: Use third-party native libraries in Expo
 description: Learn how to create a simple wrapper around two separate native libraries using Expo Modules.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -93,6 +94,46 @@ dependencies {
 
     # Swift/Objective-C compatibility
 ```
+
+<Collapsible summary="Are you trying to use a .framework dependency?">
+
+On iOS you can also use dependencies bundled as a framework by using the `vendored_framework` config option.
+
+```diff ios/ExpoRadialChart.podspec
+    s.static_framework = true
+    s.dependency 'ExpoModulesCore'
++   s.vendored_frameworks 'Frameworks/MyFramework.framework'
+    # Swift/Objective-C compatibility
+```
+
+</Collapsible>
+
+<Collapsible summary="Are you trying to use a .aar dependency?">
+
+Create a `libs` folder in the `android` folder of your Expo module. Place your `aar` file there.
+
+Next add the folder as a repository like so:
+
+```diff android/build.grade
+  repositories {
+    mavenCentral()
++   flatDir {
++       dirs 'libs'
++   }
+  }
+```
+
+Last, add the dependency to the `dependencies` list (using a package path, not a filename, but note the `@aar` at the end):
+
+```diff android/build.grade
+dependencies {
+  implementation project(':expo-modules-core')
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
++ implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0@aar'
+}
+```
+
+</Collapsible>
 
 </Step>
 
