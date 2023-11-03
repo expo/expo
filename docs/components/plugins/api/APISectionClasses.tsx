@@ -26,6 +26,12 @@ import { H2, BOLD, P, CODE, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
+
+  /**
+   * Whether to expose all classes props in the sidebar.
+   * @default true when `data` has only one class, false otherwise.
+   */
+  exposeAllClassPropsInSidebar?: boolean;
 };
 
 const classNamesMap: Record<string, string> = {
@@ -63,7 +69,10 @@ const remapClass = (clx: ClassDefinitionData) => {
   return clx;
 };
 
-const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
+const renderClass = (
+  clx: ClassDefinitionData,
+  exposeAllClassPropsInSidebar: boolean
+): JSX.Element => {
   const { name, comment, type, extendedTypes, children, implementedTypes, isSensor } = clx;
 
   const properties = children?.filter(isProp);
@@ -114,31 +123,42 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
       )}
       {properties?.length ? (
         <>
-          <BoxSectionHeader text={`${name} Properties`} exposeInSidebar={exposeInSidebar} />
+          <BoxSectionHeader
+            text={`${name} Properties`}
+            exposeInSidebar={exposeAllClassPropsInSidebar}
+          />
           <div>
             {properties.map(property =>
-              renderProp(property, property?.defaultValue, exposeInSidebar)
+              renderProp(property, property?.defaultValue, exposeAllClassPropsInSidebar)
             )}
           </div>
         </>
       ) : null}
       {methods?.length > 0 && (
         <>
-          <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={exposeInSidebar} />
-          {methods.map(method => renderMethod(method, { exposeInSidebar }))}
+          <BoxSectionHeader
+            text={`${name} Methods`}
+            exposeInSidebar={exposeAllClassPropsInSidebar}
+          />
+          {methods.map(method =>
+            renderMethod(method, {
+              exposeInSidebar: exposeAllClassPropsInSidebar,
+              apiName: name,
+            })
+          )}
         </>
       )}
     </div>
   );
 };
 
-const APISectionClasses = ({ data }: APISectionClassesProps) => {
+const APISectionClasses = ({ data, ...props }: APISectionClassesProps) => {
   if (data?.length) {
-    const exposeInSidebar = data.length < 2;
+    const exposeAllClassPropsInSidebar = props.exposeAllClassPropsInSidebar ?? data.length < 2;
     return (
       <>
         <H2>Classes</H2>
-        {data.map(clx => renderClass(remapClass(clx), exposeInSidebar))}
+        {data.map(clx => renderClass(remapClass(clx), exposeAllClassPropsInSidebar))}
       </>
     );
   }
