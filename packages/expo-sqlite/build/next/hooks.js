@@ -1,8 +1,13 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { openDatabaseAsync } from './Database';
-// Create a context for the SQLite database
+/**
+ * Create a context for the SQLite database
+ */
 const SQLiteContext = createContext(null);
-// Create a provider component
+/**
+ * Context.Provider component that provides a SQLite database to all children.
+ * All descendants of this component will be able to access the database using the [`useSQLiteContext`](#usesqlitecontext) hook.
+ */
 export function SQLiteProvider({ dbName, options, children, initHandler, loadingFallback, errorHandler, }) {
     const databaseRef = useRef(null);
     const [loading, setLoading] = useState(true);
@@ -49,7 +54,27 @@ export function SQLiteProvider({ dbName, options, children, initHandler, loading
     }
     return <SQLiteContext.Provider value={databaseRef.current}>{children}</SQLiteContext.Provider>;
 }
-// Create a hook for accessing the SQLite database context
+/**
+ * A global hook for accessing the SQLite database across components.
+ * This hook should only be used within a [`<SQLiteProvider>`](#sqliteprovider) component.
+ *
+ * @example
+ * ```tsx
+ * export default function App() {
+ *   return (
+ *     <SQLiteProvider dbName="test.db">
+ *       <Main />
+ *     </SQLiteProvider>
+ *   );
+ * }
+ *
+ * export function Main() {
+ *  const db = useSQLiteContext();
+ *  console.log('sqlite version', db.getSync('SELECT sqlite_version()'));
+ *  return <View />
+ * }
+ * ```
+ */
 export function useSQLiteContext() {
     const context = useContext(SQLiteContext);
     if (context == null) {
