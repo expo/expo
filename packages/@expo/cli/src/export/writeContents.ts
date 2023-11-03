@@ -135,14 +135,17 @@ export async function writeMetadataJsonAsync({
   outputDir,
   bundles,
   fileNames,
+  embeddedHashSet,
 }: {
   outputDir: string;
   bundles: Record<string, Pick<BundleOutput, 'assets'> | undefined>;
   fileNames: Record<string, string | undefined>;
+  embeddedHashSet?: Set<string>;
 }) {
   const contents = createMetadataJson({
     bundles,
     fileNames,
+    embeddedHashSet,
   });
   const metadataPath = path.join(outputDir, 'metadata.json');
   debug(`Writing metadata.json to ${metadataPath}`);

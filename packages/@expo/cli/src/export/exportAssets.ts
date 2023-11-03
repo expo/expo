@@ -136,19 +136,24 @@ export async function exportAssetsAsync(
   );
 
   let bundledAssetsSet: Set<string> | undefined = undefined;
+  let filteredAssets = assets;
+  const embeddedHashSet: Set<string> = new Set();
 
   if (assets[0]?.fileHashes) {
     debug(`Assets = ${JSON.stringify(assets, null, 2)}`);
     // Updates the manifest to reflect additional asset bundling + configs
     // Get only asset strings for assets we will save
     bundledAssetsSet = resolveAssetPatternsToBeBundled(projectRoot, exp, assets);
-    let filteredAssets = assets;
     if (bundledAssetsSet) {
       debug(`Bundled assets = ${JSON.stringify([...bundledAssetsSet], null, 2)}`);
       // Filter asset objects to only ones that include assetPatternsToBeBundled matches
-      filteredAssets = assets.filter((asset) =>
-        assetShouldBeIncludedInExport(asset, bundledAssetsSet)
-      );
+      filteredAssets = assets.filter((asset) => {
+        const shouldInclude = assetShouldBeIncludedInExport(asset, bundledAssetsSet);
+        if (!shouldInclude) {
+          embeddedHashSet.add(asset.hash);
+        }
+        return shouldInclude;
+      });
       debug(`Filtered assets count = ${filteredAssets.length}`);
     }
     Log.log('Saving assets');
@@ -158,19 +163,7 @@ export async function exportAssetsAsync(
   // Add google services file if it exists
   await resolveGoogleServicesFile(projectRoot, exp);
 
-  bundles.ios?.assets.forEach((asset: Asset) => {
-    // Mark assets to be removed from metadata
-    if (!assetShouldBeIncludedInExport(asset, bundledAssetsSet)) {
-      asset.embedded = true;
-    }
-  });
-  bundles.android?.assets.forEach((asset: Asset) => {
-    // Mark assets to be removed from metadata
-    if (!assetShouldBeIncludedInExport(asset, bundledAssetsSet)) {
-      asset.embedded = true;
-    }
-  });
-  return { exp, assets };
+  return { exp, assets, embeddedHashSet };
 }
 
 export async function exportCssAssetsAsync({
