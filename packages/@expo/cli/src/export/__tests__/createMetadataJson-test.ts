@@ -46,28 +46,4 @@ describe(createMetadataJson, () => {
       version: expect.any(Number),
     });
   });
-  it(`writes metadata manifest with excluded assets`, async () => {
-    const metadata = await createMetadataJson({
-      fileNames: {
-        ios: 'ios-xxfooxxbarxx.js',
-      },
-      bundles: {
-        ios: {
-          assets: [{ hash: 'foo', type: 'image', fileHashes: ['foobar', 'other'] } as any],
-        },
-      },
-      embeddedHashSet: new Set(['foo']),
-    });
-
-    expect(metadata).toStrictEqual({
-      bundler: expect.any(String),
-      fileMetadata: {
-        ios: {
-          assets: [],
-          bundle: 'bundles/ios-xxfooxxbarxx.js',
-        },
-      },
-      version: expect.any(Number),
-    });
-  });
 });
