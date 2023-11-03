@@ -1,4 +1,5 @@
 import { getConfig } from '@expo/config';
+import saveAssets from '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets';
 import fs from 'fs';
 import Server from 'metro/src/Server';
 import output from 'metro/src/shared/output/bundle';
@@ -8,8 +9,8 @@ import path from 'path';
 import { Options } from './resolveOptions';
 import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
-import { importCliSaveAssetsFromProject } from '../../start/server/metro/resolveFromProject';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { profile } from '../../utils/profile';
 import { isEnableHermesManaged } from '../exportHermes';
 import { getAssets } from '../fork-bundleAsync';
 
@@ -17,8 +18,23 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
+  const { bundle, assets } = await exportEmbedBundleAsync(projectRoot, options);
+
+  fs.mkdirSync(path.dirname(options.bundleOutput), { recursive: true, mode: 0o755 });
+
+  // Persist bundle and source maps.
+  await Promise.all([
+    output.save(bundle, options, Log.log),
+    // NOTE(EvanBacon): This may need to be adjusted in the future if want to support basePath on native
+    // platforms when doing production embeds (unlikely).
+    saveAssets(assets, options.platform, options.assetsDest, options.assetCatalogDest),
+  ]);
+}
+
+export async function exportEmbedBundleAsync(projectRoot: string, options: Options) {
   const exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp;
 
+  // TODO: This is slow ~40ms
   const { config } = await loadMetroConfigAsync(
     projectRoot,
     {
@@ -31,11 +47,8 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
       isExporting: true,
     }
   );
-  const isHermes = isEnableHermesManaged(exp, options.platform);
 
-  // NOTE(EvanBacon): This may need to be adjusted in the future if want to support basePath on native
-  // platforms when doing production embeds (unlikely).
-  const saveAssets = importCliSaveAssetsFromProject(projectRoot);
+  const isHermes = isEnableHermesManaged(exp, options.platform);
 
   let sourceMapUrl = options.sourcemapOutput;
   if (sourceMapUrl && !options.sourcemapUseAbsolutePath) {
@@ -62,15 +75,13 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   });
 
   try {
-    const bundle = await server.build({
+    const bundle = await profile(
+      server.build.bind(server),
+      'metro-bundle'
+    )({
       ...bundleRequest,
       bundleType: 'bundle',
     });
-
-    fs.mkdirSync(path.dirname(options.bundleOutput), { recursive: true, mode: 0o755 });
-
-    // Persist bundle and source maps.
-    await output.save(bundle, options, Log.log);
 
     // Save the assets of the bundle
     const outputAssets = await getAssets(server, {
@@ -78,7 +89,10 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
       bundleType: 'todo',
     });
 
-    await saveAssets(outputAssets, options.platform, options.assetsDest, options.assetCatalogDest);
+    return {
+      bundle,
+      assets: outputAssets,
+    };
   } finally {
     server.end();
   }

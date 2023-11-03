@@ -1,14 +1,11 @@
-import type { ExpoConfig } from '@expo/config';
+import { ExpoConfig } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
+import { composeSourceMaps } from 'metro-source-map';
 import os from 'os';
 import path from 'path';
 import process from 'process';
-
-import {
-  importMetroSourceMapComposeSourceMapsFromProject,
-  resolveFromProject,
-} from '../start/server/metro/resolveFromProject';
+import resolveFrom from 'resolve-from';
 
 export function importHermesCommandFromProject(projectRoot: string): string {
   const platformExecutable = getHermesCommandPlatform();
@@ -30,7 +27,7 @@ export function importHermesCommandFromProject(projectRoot: string): string {
 
   for (const location of hermescLocations) {
     try {
-      return resolveFromProject(projectRoot, location);
+      return resolveFrom(projectRoot, location);
     } catch {}
   }
   throw new Error('Cannot find the hermesc executable.');
@@ -128,7 +125,6 @@ export async function createHermesSourcemapAsync(
   sourcemap: string,
   hermesMapFile: string
 ): Promise<string> {
-  const composeSourceMaps = importMetroSourceMapComposeSourceMapsFromProject(projectRoot);
   const bundlerSourcemap = JSON.parse(sourcemap);
   const hermesSourcemap = await fs.readJSON(hermesMapFile);
   return JSON.stringify(composeSourceMaps([bundlerSourcemap, hermesSourcemap]));

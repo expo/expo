@@ -7,6 +7,7 @@
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
 import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
+import * as metroResolver from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -21,7 +22,6 @@ import {
   setupShimFiles,
 } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
-import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
 import {
   withMetroErrorReportingResolver,
@@ -125,7 +125,7 @@ export function withExtendedResolver(
     // path.resolve(resolveFrom(projectRoot, '@react-native/assets-registry/registry.js'))
   );
 
-  const defaultResolver = importMetroResolverFromProject(config.projectRoot).resolve;
+  const defaultResolver = metroResolver.resolve;
   const resolver = isFastResolverEnabled
     ? createFastResolver({ preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false })
     : defaultResolver;
@@ -507,6 +507,16 @@ export async function withMetroMultiPlatformAsync(
     process.env.EXPO_PUBLIC_USE_STATIC = '1';
   }
 
+  // This is used for running Expo CLI in development against projects outside the monorepo.
+  if (!isDirectoryIn(__dirname, projectRoot)) {
+    if (!config.watchFolders) {
+      // @ts-expect-error: watchFolders is readonly
+      config.watchFolders = [];
+    }
+    // @ts-expect-error: watchFolders is readonly
+    config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+  }
+
   // Ensure the cache is invalidated if these values change.
   // @ts-expect-error
   config.transformer._expoRouterRootDirectory = process.env.EXPO_ROUTER_APP_ROOT;
@@ -547,4 +557,8 @@ export async function withMetroMultiPlatformAsync(
     platforms: expoConfigPlatforms,
     isFastResolverEnabled,
   });
+}
+
+function isDirectoryIn(a: string, b: string) {
+  return b.startsWith(a) && b.length > a.length;
 }
