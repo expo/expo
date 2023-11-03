@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update snapshot tests.
+
 ## 6.5.0 — 2023-10-17
 
 ### 💡 Others
