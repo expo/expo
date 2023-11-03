@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add support for chaining the Metro resolver locally. ([#25148](https://github.com/expo/expo/pull/25148) by [@EvanBacon](https://github.com/EvanBacon))
 - Pass engine to transformer for production bundling. ([#25175](https://github.com/expo/expo/pull/25175) by [@EvanBacon](https://github.com/EvanBacon))
 - Skip extraneous minification when exporting for hermes engine. ([#25132](https://github.com/expo/expo/pull/25132) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable package exports for server bundling. ([#24937](https://github.com/expo/expo/pull/24937) by [@EvanBacon](https://github.com/EvanBacon))
