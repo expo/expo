@@ -158,13 +158,13 @@ export async function exportAssetsAsync(
   // Add google services file if it exists
   await resolveGoogleServicesFile(projectRoot, exp);
 
-  bundles.ios?.assets.forEach((asset: Asset & { embedded?: true }) => {
+  bundles.ios?.assets.forEach((asset: Asset) => {
     // Mark assets to be removed from metadata
     if (!assetShouldBeIncludedInExport(asset, bundledAssetsSet)) {
       asset.embedded = true;
     }
   });
-  bundles.android?.assets.forEach((asset: Asset & { embedded?: true }) => {
+  bundles.android?.assets.forEach((asset: Asset) => {
     // Mark assets to be removed from metadata
     if (!assetShouldBeIncludedInExport(asset, bundledAssetsSet)) {
       asset.embedded = true;
