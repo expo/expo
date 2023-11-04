@@ -1,15 +1,17 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import MobileCoreServices
 import UIKit
+import MobileCoreServices
 
 let onClipboardChanged = "onClipboardChanged"
 
 public class ClipboardModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoClipboard")
+
     // MARK: - Strings
+
     AsyncFunction("getStringAsync") { (options: GetStringOptions) -> String in
       switch options.preferredFormat {
       case .plainText:
@@ -18,6 +20,7 @@ public class ClipboardModule: Module {
         return UIPasteboard.general.html ?? ""
       }
     }
+
     AsyncFunction("setStringAsync") { (content: String?, options: SetStringOptions) -> Bool in
       switch options.inputFormat {
       case .plainText:
@@ -25,28 +28,35 @@ public class ClipboardModule: Module {
       case .html:
         UIPasteboard.general.html = content
       }
+
       return true
     }
+
     AsyncFunction("hasStringAsync") { () -> Bool in
-      UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML
+      return UIPasteboard.general.hasStrings || UIPasteboard.general.hasHTML
     }
+
     // MARK: - URLs
+
     AsyncFunction("getUrlAsync") { () -> String? in
-      UIPasteboard.general.url?.absoluteString
+      return UIPasteboard.general.url?.absoluteString
     }
+
     AsyncFunction("setUrlAsync") { (url: URL) in
       UIPasteboard.general.url = url
     }
+
     AsyncFunction("hasUrlAsync") { () -> Bool in
-      UIPasteboard.general.hasURLs
+      return UIPasteboard.general.hasURLs
     }
+
     // MARK: - Images
+
     AsyncFunction("setImageAsync") { (content: String) in
-      guard let data = Data(base64Encoded: content),
-        let image = UIImage(data: data) else {
-        throw InvalidImageException(content)
+      guard let data = Data(base64Encoded: content) else {
+          throw InvalidImageException(content)
       }
-      if utType == "image/gif" {
+      if data.mimeType == "image/gif" {
         if #available(iOS 14, *) {
           // For iOS 14 and later
           let gifType = UTType.gif.identifier
@@ -58,24 +68,16 @@ public class ClipboardModule: Module {
         }
       } else {
         guard let image = UIImage(data: data) else {
-          throw InvalidImageException(content)
+            throw InvalidImageException(content)
         }
         UIPasteboard.general.image = image
       }
-      //            if #available(iOS 14, *) {
-      //                if utType == .gif {
-      //                    UIPasteboard.general.setData(data, forPasteboardType: utType.identifier)
-      //                } else {
-      //                    guard let image = UIImage(data: data) else {
-      //                        throw InvalidImageException(content)
-      //                    }
-      //                    UIPasteboard.general.image = image
-      //                }
-      //            }
     }
+
     AsyncFunction("hasImageAsync") { () -> Bool in
-      UIPasteboard.general.hasImages
+      return UIPasteboard.general.hasImages
     }
+
     AsyncFunction("getImageAsync") { (options: GetImageOptions) -> [String: Any]? in
       guard let image = UIPasteboard.general.image else {
         return nil
@@ -83,24 +85,29 @@ public class ClipboardModule: Module {
       guard let data = imageToData(image, options: options) else {
         throw PasteFailureException()
       }
+
       let imgData = "data:\(options.imageFormat.getMimeType());base64,\(data.base64EncodedString())"
       return [
         "data": imgData,
-        // TODO: (barthap): Use CGSize when returning Records is possible
+        // TODO (barthap): Use CGSize when returning Records is possible
         "size": [
           "width": image.size.width,
           "height": image.size.height
         ]
       ]
     }
+
     Property("isPasteButtonAvailable") { () -> Bool in
       if #available(iOS 16.0, *) {
         return true
       }
       return false
     }
+
     // MARK: - Events
+
     Events(onClipboardChanged)
+
     OnStartObserving {
       NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
       NotificationCenter.default.addObserver(
@@ -110,39 +117,50 @@ public class ClipboardModule: Module {
         object: nil
       )
     }
+
     OnStopObserving {
       NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
     }
+
     // MARK: - View
+
     View(ClipboardPasteButton.self) {
       Events("onPastePressed")
+
       Prop("backgroundColor") { (view, color: UIColor?) in
         if view.baseBackgroundColor != color {
           view.baseBackgroundColor = color
         }
       }
+
       Prop("foregroundColor") { (view, color: UIColor?) in
         if view.baseForegroundColor != color {
           view.baseForegroundColor = color
         }
       }
+
       Prop("acceptedContentTypes") { (view, types: [AcceptedTypes]?) in
         view.acceptedContentTypes = types ?? []
       }
+
       Prop("cornerStyle") { (view, style: CornerStyle?) in
         view.cornerStyle = style ?? .capsule
       }
+
       Prop("displayMode") { (view, mode: DisplayMode?) in
         view.displayMode = mode ?? .iconAndLabel
       }
+
       Prop("imageOptions") { (view, options: GetImageOptions?) in
         view.imageOptions = options ?? GetImageOptions()
       }
+
       OnViewDidUpdateProps { view in
         view.update()
       }
     }
   }
+
   @objc
   func clipboardChangedListener() {
     sendEvent(onClipboardChanged, [
@@ -150,11 +168,12 @@ public class ClipboardModule: Module {
     ])
   }
 }
+
 private func imageToData(_ image: UIImage, options: GetImageOptions) -> Data? {
   switch options.imageFormat {
-  case .jpeg: return image.jpegData(compressionQuality: options.jpegQuality)
-  case .png: return image.pngData()
-  case .gif: return image.gifData()
+    case .jpeg: return image.jpegData(compressionQuality: options.jpegQuality)
+    case .png: return image.pngData()
+    case .gif: return image.gifData()
   }
 }
 
@@ -172,7 +191,7 @@ private func availableContentTypes() -> [String] {
 
 private enum ContentType: String {
   case plainText = "plain-text"
-  case html
-  case image
-  case url
+  case html = "html"
+  case image = "image"
+  case url = "url"
 }

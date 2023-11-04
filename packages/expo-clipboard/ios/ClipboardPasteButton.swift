@@ -3,6 +3,7 @@ import UniformTypeIdentifiers
 
 class ClipboardPasteButton: ExpoView {
   let onPastePressed = EventDispatcher()
+
   // MARK: - Properties
   var baseBackgroundColor: UIColor?
   var baseForegroundColor: UIColor?
@@ -10,7 +11,9 @@ class ClipboardPasteButton: ExpoView {
   var displayMode: DisplayMode = .iconAndLabel
   var acceptedContentTypes: [AcceptedTypes] = []
   var imageOptions = GetImageOptions()
+
   private var childView: UIView?
+
   func update() {
     unmountChild()
     if #available(iOS 16.0, *) {
@@ -19,6 +22,7 @@ class ClipboardPasteButton: ExpoView {
       log.error("ClipboardPasteButton is only supported on iOS 16 and above")
     }
   }
+
   @available(iOS 16.0, *)
   private func mountView() {
     let configuration = UIPasteControl.Configuration()
@@ -26,12 +30,15 @@ class ClipboardPasteButton: ExpoView {
     configuration.baseForegroundColor = baseForegroundColor
     configuration.cornerStyle = cornerStyle.toCornerStyle()
     configuration.displayMode = displayMode.toUIDisplayMode()
+
     let control = UIPasteControl(configuration: configuration)
     control.translatesAutoresizingMaskIntoConstraints = false
     control.target = self
     setContentTypes()
-    addSubview(control)
+
+    self.addSubview(control)
     childView = control
+
     NSLayoutConstraint.activate([
       control.topAnchor.constraint(equalTo: topAnchor),
       control.bottomAnchor.constraint(equalTo: bottomAnchor),
@@ -39,6 +46,7 @@ class ClipboardPasteButton: ExpoView {
       control.trailingAnchor.constraint(equalTo: trailingAnchor)
     ])
   }
+
   override func paste(itemProviders: [NSItemProvider]) {
     guard #available(iOS 14.0, *) else {
       return
@@ -58,6 +66,7 @@ class ClipboardPasteButton: ExpoView {
             log.error("Error loading pasted content")
             return
           }
+
           self.onPastePressed([
             "type": "text",
             "text": data?.absoluteString
@@ -77,10 +86,12 @@ class ClipboardPasteButton: ExpoView {
             log.error("Error loading pasted content")
             return
           }
+
           guard let data = data as? String else {
             log.error("Failed to read text data")
             return
           }
+
           self.onPastePressed([
             "type": "text",
             "text": data
@@ -89,6 +100,7 @@ class ClipboardPasteButton: ExpoView {
       }
     }
   }
+
   @available(iOS 14.0, *)
   private func setContentTypes() {
     if acceptedContentTypes.isEmpty {
@@ -103,21 +115,25 @@ class ClipboardPasteButton: ExpoView {
       })
     }
   }
+
   private func processImage(item: NSItemProviderReading?) {
     guard let image = item as? UIImage else {
       log.error("Failed to read image data")
       return
     }
+
     guard let data = imageToData(image) else {
       log.error("Failed to process image data")
       return
     }
+
     guard let fileSystem = appContext?.fileSystem else {
       log.error("Failed to access FileSystem")
       return
     }
+
     let imageData = "data:\(imageOptions.imageFormat.getMimeType());base64,\(data.base64EncodedString())"
-    onPastePressed([
+    self.onPastePressed([
       "type": "image",
       "data": imageData,
       "size": [
@@ -126,21 +142,26 @@ class ClipboardPasteButton: ExpoView {
       ]
     ])
   }
+
   private func processHtml(data: String?) {
     guard let htmlString = data as? String else {
       log.error("Failed to read html data")
       return
     }
+
     let attributedString = try? NSAttributedString(htmlString: htmlString)
-    onPastePressed([
+
+    self.onPastePressed([
       "type": "text",
       "text": attributedString?.htmlString ?? ""
     ])
   }
+
   private func unmountChild() {
     childView?.removeFromSuperview()
     childView = nil
   }
+
   private func imageToData(_ image: UIImage) -> Data? {
     switch imageOptions.imageFormat {
     case .jpeg: return image.jpegData(compressionQuality: imageOptions.jpegQuality)

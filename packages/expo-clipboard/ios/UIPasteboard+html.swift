@@ -1,27 +1,34 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-import MobileCoreServices
 import UIKit
+import MobileCoreServices
 
 extension UIPasteboard {
   var html: String? {
     get {
-      if let htmlString = value(forPasteboardType: kUTTypeHTML as String) as? String {
+      if let htmlString = self.value(forPasteboardType: kUTTypeHTML as String) as? String {
         return htmlString
       }
-      if let rtfData = data(forPasteboardType: kUTTypeRTF as String) as? Data {
-        let attributedString = try? NSAttributedString(data: rtfData, options: [.documentType: NSAttributedString.DocumentType.rtf], documentAttributes: nil)
+
+      if let rtfData = self.data(forPasteboardType: kUTTypeRTF as String) as? Data {
+        let attributedString = try? NSAttributedString(data: rtfData,
+                                                       options: [
+                                                         .documentType: NSAttributedString.DocumentType.rtf
+                                                       ],
+                                                       documentAttributes: nil)
+
         if let htmlString = attributedString?.htmlString {
           return htmlString
         }
       }
-      return string
+
+      return self.string
     }
     set {
       guard let newString = newValue,
             let attributedString = try? NSAttributedString(htmlString: newString)
       else {
-        string = ""
+        self.string = ""
         return
       }
       let item: [String: Any] = [
@@ -29,9 +36,11 @@ extension UIPasteboard {
         kUTTypeHTML as String: attributedString.htmlString,
         kUTTypeUTF8PlainText as String: attributedString.string
       ]
-      setItems([item])
+
+      self.setItems([item])
     }
   }
+
   var hasHTML: Bool {
     contains(pasteboardTypes: [kUTTypeHTML as String, kUTTypeRTF as String])
   }
