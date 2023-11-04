@@ -29,11 +29,7 @@ object ManifestFactory {
   }
 
   @Throws(JSONException::class)
-  fun getEmbeddedManifest(manifestJson: JSONObject, configuration: UpdatesConfiguration?): UpdateManifest {
-    return if (manifestJson.has("releaseId")) {
-      LegacyUpdateManifest.fromLegacyManifest(LegacyManifest(manifestJson), configuration!!)
-    } else {
-      BareUpdateManifest.fromBareManifest(BareManifest(manifestJson), configuration!!)
-    }
+  fun getEmbeddedManifest(manifestJson: JSONObject, configuration: UpdatesConfiguration?): BareUpdateManifest {
+    return BareUpdateManifest.fromBareManifest(BareManifest(manifestJson), configuration!!)
   }
 }
