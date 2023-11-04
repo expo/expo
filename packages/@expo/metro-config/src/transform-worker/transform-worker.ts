@@ -6,17 +6,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
-import worker, {
-  JsTransformerConfig,
-  JsTransformOptions,
-  TransformResponse,
-} from 'metro-transform-worker';
+// import worker from 'metro-transform-worker';
+import * as worker from './fork/metro-transform-worker';
+import { JsTransformerConfig, JsTransformOptions, TransformResponse } from 'metro-transform-worker';
 
 import { wrapDevelopmentCSS } from './css';
 import { matchCssModule, transformCssModuleWeb } from './css-modules';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
-import { env } from '../env';
 
 const countLines = require('metro/src/lib/countLines') as (string: string) => number;
 

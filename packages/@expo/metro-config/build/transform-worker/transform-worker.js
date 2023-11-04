@@ -1,10 +1,31 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transform = void 0;
-const metro_transform_worker_1 = __importDefault(require("metro-transform-worker"));
+// import worker from 'metro-transform-worker';
+const worker = __importStar(require("./fork/metro-transform-worker"));
 const css_1 = require("./css");
 const css_modules_1 = require("./css-modules");
 const postcss_1 = require("./postcss");
@@ -39,7 +60,7 @@ async function transform(config, projectRoot, filename, data, options) {
                 // Strip +api files.
                 filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))) {
             // Remove the server-only +html file and API Routes from the bundle when bundling for a client environment.
-            return metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, !nextOptions.minify
+            return worker.transform(nextConfig, projectRoot, filename, !nextOptions.minify
                 ? Buffer.from(
                 // Use a string so this notice is visible in the bundle if the user is
                 // looking for it.
@@ -51,14 +72,14 @@ async function transform(config, projectRoot, filename, data, options) {
             filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/)) {
             // Clear the contents of +api files when bundling for the client.
             // This ensures that the client doesn't accidentally use the server-only +api files.
-            return metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, Buffer.from(''), nextOptions);
+            return worker.transform(nextConfig, projectRoot, filename, Buffer.from(''), nextOptions);
         }
-        return metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, data, nextOptions);
+        return worker.transform(nextConfig, projectRoot, filename, data, nextOptions);
     }
     // If the platform is not web, then return an empty module.
     if (nextOptions.platform !== 'web') {
         const code = (0, css_modules_1.matchCssModule)(filename) ? 'module.exports={ unstable_styles: {} };' : '';
-        return metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, 
+        return worker.transform(nextConfig, projectRoot, filename, 
         // TODO: Native CSS Modules
         Buffer.from(code), nextOptions);
     }
@@ -86,7 +107,7 @@ async function transform(config, projectRoot, filename, data, options) {
                 sourceMap: false,
             },
         });
-        const jsModuleResults = await metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, Buffer.from(results.output), nextOptions);
+        const jsModuleResults = await worker.transform(nextConfig, projectRoot, filename, Buffer.from(results.output), nextOptions);
         const cssCode = results.css.toString();
         const output = [
             {
@@ -126,7 +147,7 @@ async function transform(config, projectRoot, filename, data, options) {
     // });
     // Create a mock JS module that exports an empty object,
     // this ensures Metro dependency graph is correct.
-    const jsModuleResults = await metro_transform_worker_1.default.transform(nextConfig, projectRoot, filename, nextOptions.dev ? Buffer.from((0, css_1.wrapDevelopmentCSS)({ src: code, filename })) : Buffer.from(''), nextOptions);
+    const jsModuleResults = await worker.transform(nextConfig, projectRoot, filename, nextOptions.dev ? Buffer.from((0, css_1.wrapDevelopmentCSS)({ src: code, filename })) : Buffer.from(''), nextOptions);
     const cssCode = cssResults.code.toString();
     // In production, we export the CSS as a string and use a special type to prevent
     // it from being included in the JS bundle. We'll extract the CSS like an asset later
@@ -161,6 +182,6 @@ exports.transform = transform;
  */
 module.exports = {
     // Use defaults for everything that's not custom.
-    ...metro_transform_worker_1.default,
+    ...worker,
     transform,
 };

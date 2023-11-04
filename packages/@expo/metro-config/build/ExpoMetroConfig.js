@@ -160,10 +160,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true } = {}) {
         symbolicator: {
             customizeFrame: (0, customizeFrame_1.getDefaultCustomizeFrame)(),
         },
-        transformerPath: isCSSEnabled
-            ? // Custom worker that adds CSS support for Metro web.
-                require.resolve('./transform-worker/transform-worker')
-            : metroDefaultValues.transformerPath,
+        transformerPath: require.resolve('./transform-worker/transform-worker'),
         transformer: {
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
             // @ts-expect-error: not on type.

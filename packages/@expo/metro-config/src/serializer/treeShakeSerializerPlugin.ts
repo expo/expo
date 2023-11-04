@@ -119,10 +119,8 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
           return;
         }
 
-        const ast =
-          output.data.ast ?? babylon.parse(output.data.code, { sourceType: 'unambiguous' });
-
-        output.data.ast = ast;
+        console.log('has ast:', !!output.data.ast);
+        output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
         output.data.modules = {
           imports: [],
           exports: [],
@@ -651,6 +649,18 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
 
         const babelPluginOpts = {
           // ...options,
+          ...graph.transformOptions,
+
+          // inlinePlatform: true,
+          // minify: false,
+          // platform: 'web',
+
+          // unstable_transformProfile: 'default',
+          // experimentalImportSupport: false,
+          // unstable_disableES6Transforms: false,
+          // nonInlinedRequires: [ 'React', 'react', 'react-native' ],
+          // type: 'module',
+          // inlineRequires: false,
           inlineableCalls: [importDefault, importAll],
           importDefault,
           importAll,
@@ -661,11 +671,11 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
           babelrc: false,
           code: false,
           configFile: false,
-          comments: includeDebugInfo,
-          compact: false,
+          // comments: includeDebugInfo,
+          // compact: false,
           filename: value.path,
           plugins: [
-            functionMapBabelPlugin,
+            // functionMapBabelPlugin,
             !preserveEsm && [
               require('metro-transform-plugins/src/import-export-plugin'),
               babelPluginOpts,
@@ -752,7 +762,7 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
         const result = generate(
           wrappedAst,
           {
-            comments: true,
+            // comments: true,
             // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L137
             compact: config.transformer?.unstable_compactOutput ?? false,
             filename: value.path,

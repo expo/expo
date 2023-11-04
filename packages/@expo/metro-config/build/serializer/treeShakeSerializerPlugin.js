@@ -36,7 +36,6 @@ exports.createPostTreeShakeTransformSerializerPlugin = exports.isShakingEnabled 
 const core_1 = require("@babel/core");
 const babylon = __importStar(require("@babel/parser"));
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
-const metro_source_map_1 = require("metro-source-map");
 const sideEffectsSerializerPlugin_1 = require("./sideEffectsSerializerPlugin");
 const generate = require('@babel/generator').default;
 const collectDependencies_1 = require("metro/src/ModuleGraph/worker/collectDependencies");
@@ -115,8 +114,8 @@ function treeShakeSerializerPlugin(config) {
                     output.data.code.startsWith('__d(function ')) {
                     return;
                 }
-                const ast = output.data.ast ?? babylon.parse(output.data.code, { sourceType: 'unambiguous' });
-                output.data.ast = ast;
+                console.log('has ast:', !!output.data.ast);
+                output.data.ast ??= babylon.parse(output.data.code, { sourceType: 'unambiguous' });
                 output.data.modules = {
                     imports: [],
                     exports: [],
@@ -565,6 +564,16 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 const { importDefault, importAll } = generateImportNames(ast);
                 const babelPluginOpts = {
                     // ...options,
+                    ...graph.transformOptions,
+                    // inlinePlatform: true,
+                    // minify: false,
+                    // platform: 'web',
+                    // unstable_transformProfile: 'default',
+                    // experimentalImportSupport: false,
+                    // unstable_disableES6Transforms: false,
+                    // nonInlinedRequires: [ 'React', 'react', 'react-native' ],
+                    // type: 'module',
+                    // inlineRequires: false,
                     inlineableCalls: [importDefault, importAll],
                     importDefault,
                     importAll,
@@ -574,11 +583,11 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     babelrc: false,
                     code: false,
                     configFile: false,
-                    comments: includeDebugInfo,
-                    compact: false,
+                    // comments: includeDebugInfo,
+                    // compact: false,
                     filename: value.path,
                     plugins: [
-                        metro_source_map_1.functionMapBabelPlugin,
+                        // functionMapBabelPlugin,
                         !preserveEsm && [
                             require('metro-transform-plugins/src/import-export-plugin'),
                             babelPluginOpts,
@@ -642,7 +651,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     }));
                 }
                 const result = generate(wrappedAst, {
-                    comments: true,
+                    // comments: true,
                     // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L137
                     compact: config.transformer?.unstable_compactOutput ?? false,
                     filename: value.path,
@@ -650,7 +659,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     sourceFileName: value.path,
                     sourceMaps: true,
                 }, outputItem.data.code);
-                let map = result.rawMappings ? result.rawMappings.map(metro_source_map_2.toSegmentTuple) : [];
+                let map = result.rawMappings ? result.rawMappings.map(metro_source_map_1.toSegmentTuple) : [];
                 let code = result.code;
                 if (minify && !preserveEsm) {
                     ({ map, code } = await minifyCode(config.transformer ?? {}, config.projectRoot, value.path, result.code, source, map, reserved));
@@ -755,10 +764,10 @@ function getDynamicDepsBehavior(inPackages, filename) {
 //     return require('zeta').zeta;
 //   },
 // };
-const metro_source_map_2 = require("metro-source-map");
+const metro_source_map_1 = require("metro-source-map");
 const getMinifier = require('metro-transform-worker/src/utils/getMinifier');
 async function minifyCode(config, projectRoot, filename, code, source, map, reserved = []) {
-    const sourceMap = (0, metro_source_map_2.fromRawMappings)([
+    const sourceMap = (0, metro_source_map_1.fromRawMappings)([
         {
             code,
             source,
@@ -801,7 +810,7 @@ async function minifyCode(config, projectRoot, filename, code, source, map, rese
         });
         return {
             code: minified.code,
-            map: minified.map ? (0, metro_source_map_2.toBabelSegments)(minified.map).map(metro_source_map_2.toSegmentTuple) : [],
+            map: minified.map ? (0, metro_source_map_1.toBabelSegments)(minified.map).map(metro_source_map_1.toSegmentTuple) : [],
         };
     }
     catch (error) {

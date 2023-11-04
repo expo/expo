@@ -179,10 +179,7 @@ export function getDefaultConfig(
     symbolicator: {
       customizeFrame: getDefaultCustomizeFrame(),
     },
-    transformerPath: isCSSEnabled
-      ? // Custom worker that adds CSS support for Metro web.
-        require.resolve('./transform-worker/transform-worker')
-      : metroDefaultValues.transformerPath,
+    transformerPath: require.resolve('./transform-worker/transform-worker'),
 
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
