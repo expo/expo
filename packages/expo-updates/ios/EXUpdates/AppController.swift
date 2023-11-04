@@ -1065,29 +1065,8 @@ public final class DevLauncherController: NSObject, UpdatesExternalInterface {
     }
   }
 
-  public func storedUpdateIds(
-    withConfiguration configuration: [String: Any],
-    success successBlock: @escaping UpdatesQuerySuccessBlock,
-    error errorBlock: @escaping UpdatesErrorBlock
-  ) {
-    guard setup(configuration: configuration, error: errorBlock) != nil else {
-      successBlock([])
-      return
-    }
-
-    AppLauncherWithDatabase.storedUpdateIds(
-      inDatabase: AppController.sharedInstance.database
-    ) { error, storedUpdateIds in
-      if let error = error {
-        errorBlock(error)
-      } else {
-        successBlock(storedUpdateIds!)
-      }
-    }
-  }
-
   /**
-   Common initialization for both fetchUpdateWithConfiguration: and storedUpdateIdsWithConfiguration:
+   Common initialization for both fetchUpdateWithConfiguration:
    Sets up EXUpdatesAppController shared instance
    Returns the updatesConfiguration
    */

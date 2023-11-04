@@ -1021,30 +1021,6 @@ class UpdatesController private constructor(
       )
     }
 
-    override fun storedUpdateIdsWithConfiguration(configuration: HashMap<String, Any>, context: Context, callback: UpdatesInterface.QueryCallback) {
-      val controller = UpdatesController.instance
-      val updatesConfiguration = UpdatesConfiguration(context, configuration)
-      if (updatesConfiguration.updateUrl == null || updatesConfiguration.scopeKey == null) {
-        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
-        return
-      }
-      val updatesDirectory = controller.updatesDirectory
-      if (updatesDirectory == null) {
-        callback.onFailure(controller.updatesDirectoryException)
-        return
-      }
-      val databaseHolder = controller.databaseHolder
-      val launcher = DatabaseLauncher(
-        updatesConfiguration,
-        updatesDirectory,
-        controller.fileDownloader,
-        controller.selectionPolicy
-      )
-      val readyUpdateIds = launcher.getReadyUpdateIds(databaseHolder.database)
-      controller.databaseHolder.releaseDatabase()
-      callback.onSuccess(readyUpdateIds)
-    }
-
     companion object {
       private var singletonInstance: UpdatesDevLauncherController? = null
       val instance: UpdatesDevLauncherController
