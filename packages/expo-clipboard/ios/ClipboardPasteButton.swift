@@ -52,7 +52,18 @@ class ClipboardPasteButton: ExpoView {
       return
     }
     for provider in itemProviders {
-      if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+      if provider.hasItemConformingToTypeIdentifier(UTType.gif.identifier) {
+        provider.loadDataRepresentation(forTypeIdentifier: UTType.gif.identifier) { data, error in
+          guard error == nil else {
+            log.error("Error loading pasted GIF")
+            return
+          }
+          if let gifData = data {
+            var image = UIImage.gif(data: gifData)
+            self.processImage(item: image)
+          }
+        }
+      } else if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
         _ = provider.loadObject(ofClass: UIImage.self) { data, error in
           guard error == nil else {
             log.error("Error loading pasted image")
