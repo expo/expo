@@ -5,20 +5,25 @@ import path from 'path';
 
 import {
   LaunchBrowserTypes,
-  type LaunchBrowserImpl,
+  type LaunchBrowser,
   type LaunchBrowserInstance,
+  LaunchBrowserTypesEnum,
 } from './LaunchBrowser.types';
 
 /**
  * Browser implementation for Linux
  */
-export default class LaunchBrowserImplLinux implements LaunchBrowserImpl, LaunchBrowserInstance {
+export default class LaunchBrowserImplLinux implements LaunchBrowser, LaunchBrowserInstance {
   private _appId: string | undefined;
   private _process: ChildProcess | undefined;
 
   MAP = {
-    [LaunchBrowserTypes.CHROME]: ['google-chrome', 'google-chrome-stable', 'chromium'],
-    [LaunchBrowserTypes.EDGE]: ['microsoft-edge', 'microsoft-edge-dev'],
+    [LaunchBrowserTypesEnum.CHROME]: ['google-chrome', 'google-chrome-stable', 'chromium'],
+    [LaunchBrowserTypesEnum.EDGE]: ['microsoft-edge', 'microsoft-edge-dev'],
+    [LaunchBrowserTypesEnum.BRAVE]: [
+      // I am not sure if this is the correct appId for brave, because I have only tested it on Mac
+      'brave-browser',
+    ],
   };
 
   /**

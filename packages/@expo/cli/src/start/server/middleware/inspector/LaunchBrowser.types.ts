@@ -3,17 +3,24 @@ export interface LaunchBrowserInstance {
 }
 
 /**
- * Supported browser types
+ * Supported browser types enum
  */
-export enum LaunchBrowserTypes {
-  CHROME,
-  EDGE,
-}
+export const LaunchBrowserTypesEnum = {
+  CHROME: 'Google Chrome',
+  EDGE: 'Microsoft Edge',
+  BRAVE: 'Brave Browser',
+} as const;
 
 /**
- * Internal browser implementation constraints
+ * Supported browser types
  */
-export interface LaunchBrowserImpl {
+export type LaunchBrowserTypes =
+  (typeof LaunchBrowserTypesEnum)[keyof typeof LaunchBrowserTypesEnum];
+
+/**
+ * A browser launcher
+ */
+export interface LaunchBrowser {
   /**
    * Return whether the given `browserType` is supported
    */
