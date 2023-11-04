@@ -107,6 +107,21 @@ function treeShakeSerializerPlugin(config) {
         if (!isShakingEnabled(graph, options)) {
             return [entryPoint, preModules, graph, options];
         }
+        // Generate AST for all modules.
+        graph.dependencies.forEach((value) => {
+            value.output.forEach((output) => {
+                if (output.type !== 'js/module') {
+                    return;
+                }
+                const ast = output.data.ast ?? babylon.parse(output.data.code, { sourceType: 'unambiguous' });
+                output.data.ast = ast;
+                output.data.modules = {
+                    imports: [],
+                    exports: [],
+                };
+            });
+        });
+        return [entryPoint, preModules, graph, options];
         function collectImportExports(value) {
             function getGraphId(moduleId) {
                 const key = [...value.dependencies.values()].find((dep) => {
@@ -119,12 +134,7 @@ function treeShakeSerializerPlugin(config) {
             }
             for (const index in value.output) {
                 const outputItem = value.output[index];
-                const ast = outputItem.data.ast ?? babylon.parse(outputItem.data.code, { sourceType: 'unambiguous' });
-                outputItem.data.ast = ast;
-                outputItem.data.modules = {
-                    imports: [],
-                    exports: [],
-                };
+                const ast = accessAst(outputItem);
                 (0, core_1.traverse)(ast, {
                     // Traverse and collect import/export statements.
                     ImportDeclaration(path) {
@@ -521,6 +531,7 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
         if (!isShakingEnabled(graph, options)) {
             return [entryPoint, preModules, graph, options];
         }
+        // return [entryPoint, preModules, graph, options];
         const includeDebugInfo = false;
         const preserveEsm = false;
         // TODO: When we can reuse transformJS for JSON, we should not derive `minify` separately.
@@ -543,6 +554,8 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 if (!ast) {
                     continue;
                 }
+                // TODO: Only transform if "type": "js/module",
+                // NOTE: ^^ Only modules are being parsed to ast right now.
                 delete outputItem.data.ast;
                 const { importDefault, importAll } = generateImportNames(ast);
                 const babelPluginOpts = {
@@ -566,10 +579,10 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                             babelPluginOpts,
                         ],
                         // TODO: Inline requires matchers
-                        dynamicTransformOptions?.transform?.inlineRequires && [
-                            require('metro-transform-plugins/src/inline-plugin'),
-                            babelPluginOpts,
-                        ],
+                        // dynamicTransformOptions?.transform?.inlineRequires && [
+                        //   require('metro-transform-plugins/src/inline-plugin'),
+                        //   babelPluginOpts,
+                        // ],
                     ].filter(Boolean),
                     sourceMaps: false,
                     // // Not-Cloning the input AST here should be safe because other code paths above this call
@@ -605,8 +618,24 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                     }
                     throw error;
                 }
-                const globalPrefix = '';
+                // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L107
+                const globalPrefix = config.transformer?.globalPrefix ?? '';
                 const { ast: wrappedAst } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, globalPrefix);
+                const source = value.getSource().toString('utf-8');
+                const reserved = [];
+                if (config.transformer?.unstable_dependencyMapReservedName != null) {
+                    reserved.push(config.transformer.unstable_dependencyMapReservedName);
+                }
+                // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L128C28-L128C38
+                const optimizationSizeLimit = config.transformer?.optimizationSizeLimit ?? 150 * 1024;
+                if (minify &&
+                    source.length <= optimizationSizeLimit &&
+                    !config.transformer?.unstable_disableNormalizePseudoGlobals) {
+                    // This MUST run before `generate` as it mutates the ast out of place.
+                    reserved.push(...metroTransformPlugins.normalizePseudoGlobals(wrappedAst, {
+                        reservedNames: reserved,
+                    }));
+                }
                 const result = generate(wrappedAst, {
                     comments: true,
                     // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L137
@@ -619,9 +648,8 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 let map = result.rawMappings ? result.rawMappings.map(metro_source_map_2.toSegmentTuple) : [];
                 let code = result.code;
                 if (minify && !preserveEsm) {
-                    // TODO
-                    const reserved = [];
-                    ({ map, code } = await minifyCode(config.transformer ?? {}, config.projectRoot, value.path, result.code, value.getSource().toString('utf-8'), map, reserved));
+                    ({ map, code } = await minifyCode(config.transformer ?? {}, config.projectRoot, value.path, result.code, source, map, reserved));
+                    // console.log('module', code);
                 }
                 outputItem.data.code = (includeDebugInfo ? `\n// ${value.path}\n` : '') + code;
                 // @ts-expect-error
@@ -737,14 +765,34 @@ async function minifyCode(config, projectRoot, filename, code, source, map, rese
             isIgnored: false,
         },
     ]).toMap(undefined, {});
+    // https://github.com/facebook/metro/blob/d1b0015d5a41ad1a1e1e78661805b692c34457db/packages/metro-config/src/defaults/defaults.js#L66
     const minify = getMinifier(config.minifierPath ?? 'metro-minify-terser');
     try {
+        // console.log('reserved', reserved, code);
         const minified = await minify({
             code,
             map: sourceMap,
             filename,
             reserved,
-            config: config.minifierConfig,
+            // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L109-L126
+            config: config.minifierConfig ?? {
+                mangle: {
+                    toplevel: false,
+                },
+                output: {
+                    ascii_only: true,
+                    quote_style: 3,
+                    wrap_iife: true,
+                },
+                sourceMap: {
+                    includeSources: false,
+                },
+                toplevel: false,
+                compress: {
+                    // reduce_funcs inlines single-use functions, which cause perf regressions.
+                    reduce_funcs: false,
+                },
+            },
         });
         return {
             code: minified.code,
@@ -758,3 +806,4 @@ async function minifyCode(config, projectRoot, filename, code, source, map, rese
         throw error;
     }
 }
+const metroTransformPlugins = require('metro-transform-plugins');

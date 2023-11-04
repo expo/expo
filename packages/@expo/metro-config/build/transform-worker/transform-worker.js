@@ -19,6 +19,10 @@ async function transform(config, projectRoot, filename, data, options) {
     };
     // Preserve the original format as much as we can for tree-shaking.
     if (options.customTransformOptions?.treeshake === 'true' &&
+        // Only tree-shake modules
+        options.type !== 'script' &&
+        options.type !== 'asset' &&
+        // Only in production
         !nextOptions.dev &&
         // TODO: Pass entry files
         !filename.match(/node_modules\/metro-runtime/) &&
