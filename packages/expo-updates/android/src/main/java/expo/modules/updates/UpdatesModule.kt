@@ -9,13 +9,11 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.updates.launcher.Launcher.LauncherCallback
-import expo.modules.updates.loader.*
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifest
-import expo.modules.updates.manifest.ManifestMetadata
 import java.util.Date
 
 // these unused imports must stay because of versioning
@@ -271,34 +269,19 @@ class UpdatesModule : Module() {
         return@AsyncFunction
       }
 
-      AsyncTask.execute {
-        val databaseHolder = updatesController.databaseHolder
-        try {
-          val result = ManifestMetadata.getExtraParams(
-            databaseHolder.database,
-            configuration,
-          )
-          databaseHolder.releaseDatabase()
-          val resultMap = when (result) {
-            null -> Bundle()
-            else -> {
-              Bundle().apply {
-                result.forEach {
-                  putString(it.key, it.value)
-                }
-              }
-            }
-          }
-          promise.resolve(resultMap)
-        } catch (e: Exception) {
-          databaseHolder.releaseDatabase()
+      updatesController.getExtraParams(object : UpdatesController.GetExtraParamsCallback {
+        override fun onFailure(e: Exception) {
           promise.reject(
             "ERR_UPDATES_FETCH",
             "Exception in getExtraParamsAsync: ${e.message}, ${e.stackTraceToString()}",
             e
           )
         }
-      }
+
+        override fun onSuccess(paramsBundle: Bundle) {
+          promise.resolve(paramsBundle)
+        }
+      })
     }
 
     AsyncFunction("setExtraParamAsync") { key: String, value: String?, promise: Promise ->
@@ -314,26 +297,22 @@ class UpdatesModule : Module() {
         return@AsyncFunction
       }
 
-      AsyncTask.execute {
-        val databaseHolder = updatesController.databaseHolder
-        try {
-          ManifestMetadata.setExtraParam(
-            databaseHolder.database,
-            configuration,
-            key,
-            value
-          )
-          databaseHolder.releaseDatabase()
-          promise.resolve(null)
-        } catch (e: Exception) {
-          databaseHolder.releaseDatabase()
-          promise.reject(
-            "ERR_UPDATES_FETCH",
-            "Exception in setExtraParamAsync: ${e.message}, ${e.stackTraceToString()}",
-            e
-          )
+      updatesController.setExtraParam(
+        key, value,
+        object : UpdatesController.SetExtraParamsCallback {
+          override fun onFailure(e: Exception) {
+            promise.reject(
+              "ERR_UPDATES_FETCH",
+              "Exception in setExtraParamAsync: ${e.message}, ${e.stackTraceToString()}",
+              e
+            )
+          }
+
+          override fun onSuccess() {
+            promise.resolve(null)
+          }
         }
-      }
+      )
     }
 
     AsyncFunction("readLogEntriesAsync") { maxAge: Long, promise: Promise ->
