@@ -89,13 +89,14 @@ async function bundleProject(entry: string) {
     resetCache: clear,
     resetGlobalCache: clear,
     maxWorkers: 1,
-    minify: false,
+    minify: true,
     sourcemapUseAbsolutePath: false,
     verbose: true,
+    unstableTransformProfile: 'default',
   });
   console.timeEnd('metro');
 
-  // console.log(bundle.code);
+  console.log(bundle.code);
 
   // return bundle.code;
   return bundle.code.replace(

@@ -38,6 +38,17 @@ const babylon = __importStar(require("@babel/parser"));
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const metro_source_map_1 = require("metro-source-map");
 const sideEffectsSerializerPlugin_1 = require("./sideEffectsSerializerPlugin");
+const generate = require('@babel/generator').default;
+const collectDependencies_1 = require("metro/src/ModuleGraph/worker/collectDependencies");
+class InvalidRequireCallError extends Error {
+    innerError;
+    filename;
+    constructor(innerError, filename) {
+        super(`${filename}:${innerError.message}`);
+        this.innerError = innerError;
+        this.filename = filename;
+    }
+}
 const JsFileWrapping = require('metro/src/ModuleGraph/worker/JsFileWrapping');
 const collectDependencies = require('metro/src/ModuleGraph/worker/collectDependencies');
 const generateImportNames = require('metro/src/ModuleGraph/worker/generateImportNames');
@@ -506,7 +517,7 @@ function isShakingEnabled(graph, options) {
 exports.isShakingEnabled = isShakingEnabled;
 function createPostTreeShakeTransformSerializerPlugin(config) {
     return async function treeShakeSerializer(entryPoint, preModules, graph, options) {
-        // console.log('treeshake:', graph.transformOptions);
+        console.log('treeshake:', graph.transformOptions, graph.transformOptions.customTransformOptions?.treeshake === 'true' && !options.dev);
         if (!isShakingEnabled(graph, options)) {
             return [entryPoint, preModules, graph, options];
         }
@@ -516,6 +527,13 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
         const minify = graph.transformOptions.minify &&
             graph.transformOptions.unstable_transformProfile !== 'hermes-canary' &&
             graph.transformOptions.unstable_transformProfile !== 'hermes-stable';
+        const dynamicTransformOptions = await config.transformer?.getTransformOptions?.([entryPoint], {
+            dev: options.dev,
+            hot: false,
+            platform: graph.transformOptions.platform,
+        }, async (filepath) => {
+            return [...(graph.dependencies.get(filepath)?.dependencies.keys() ?? [])];
+        });
         // Convert all remaining AST and dependencies to standard output that Metro expects.
         // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
         for (const value of graph.dependencies.values()) {
@@ -547,15 +565,19 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                             require('metro-transform-plugins/src/import-export-plugin'),
                             babelPluginOpts,
                         ],
-                        !preserveEsm && [require('metro-transform-plugins/src/inline-plugin'), babelPluginOpts],
+                        // TODO: Inline requires matchers
+                        dynamicTransformOptions?.transform?.inlineRequires && [
+                            require('metro-transform-plugins/src/inline-plugin'),
+                            babelPluginOpts,
+                        ],
                     ].filter(Boolean),
                     sourceMaps: false,
-                    // Not-Cloning the input AST here should be safe because other code paths above this call
-                    // are mutating the AST as well and no code is depending on the original AST.
-                    // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
-                    // either because one of the plugins is doing something funky or Babel messes up some caches.
-                    // Make sure to test the above mentioned case before flipping the flag back to false.
-                    cloneInputAst: true,
+                    // // Not-Cloning the input AST here should be safe because other code paths above this call
+                    // // are mutating the AST as well and no code is depending on the original AST.
+                    // // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
+                    // // either because one of the plugins is doing something funky or Babel messes up some caches.
+                    // // Make sure to test the above mentioned case before flipping the flag back to false.
+                    // cloneInputAst: true,
                 })?.ast;
                 let dependencyMapName = '';
                 // This pass converts the modules to use the generated import names.
@@ -564,69 +586,42 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                         asyncRequireModulePath: config.transformer?.asyncRequireModulePath ??
                             require.resolve('metro-runtime/src/modules/asyncRequire'),
                         dependencyTransformer: undefined,
-                        dynamicRequires: getDynamicDepsBehavior(config.transformer?.dynamicDepsInPackages ?? 'reject', value.path),
+                        dynamicRequires: getDynamicDepsBehavior(config.transformer?.dynamicDepsInPackages ?? 'throwAtRuntime', value.path),
                         inlineableCalls: [importDefault, importAll],
                         keepRequireNames: options.dev,
-                        allowOptionalDependencies: config.transformer?.allowOptionalDependencies ?? true,
-                        dependencyMapName: config.transformer?.unstable_dependencyMapReservedName,
+                        // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L132C32-L132C37
+                        allowOptionalDependencies: config.transformer?.allowOptionalDependencies ?? false,
+                        // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L134C46-L134C46
+                        dependencyMapName: config.transformer?.unstable_dependencyMapReservedName ?? null,
+                        // Expo sets this to `true`.
                         unstable_allowRequireContext: config.transformer?.unstable_allowRequireContext,
                     };
                     ({ ast, dependencyMapName } = collectDependencies(ast, opts));
                     // ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, opts));
                 }
                 catch (error) {
-                    // if (error instanceof InternalInvalidRequireCallError) {
-                    //   throw new InvalidRequireCallError(error, file.filename);
-                    // }
+                    if (error instanceof collectDependencies_1.InvalidRequireCallError) {
+                        throw new InvalidRequireCallError(error, value.path);
+                    }
                     throw error;
                 }
                 const globalPrefix = '';
                 const { ast: wrappedAst } = JsFileWrapping.wrapModule(ast, importDefault, importAll, dependencyMapName, globalPrefix);
-                const outputCode = (0, core_1.transformFromAstSync)(wrappedAst, undefined, {
-                    ast: false,
-                    babelrc: false,
-                    code: true,
-                    configFile: false,
-                    // comments: true,
-                    // compact: false,
-                    comments: includeDebugInfo,
-                    compact: !includeDebugInfo,
+                const result = generate(wrappedAst, {
+                    comments: true,
+                    // https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-config/src/defaults/index.js#L137
+                    compact: config.transformer?.unstable_compactOutput ?? false,
                     filename: value.path,
-                    plugins: [],
-                    sourceMaps: false,
-                    // Not-Cloning the input AST here should be safe because other code paths above this call
-                    // are mutating the AST as well and no code is depending on the original AST.
-                    // However, switching the flag to false caused issues with ES Modules if `experimentalImportSupport` isn't used https://github.com/facebook/metro/issues/641
-                    // either because one of the plugins is doing something funky or Babel messes up some caches.
-                    // Make sure to test the above mentioned case before flipping the flag back to false.
-                    cloneInputAst: true,
-                }).code;
-                let map = [];
-                let code = outputCode;
+                    retainLines: false,
+                    sourceFileName: value.path,
+                    sourceMaps: true,
+                }, outputItem.data.code);
+                let map = result.rawMappings ? result.rawMappings.map(metro_source_map_2.toSegmentTuple) : [];
+                let code = result.code;
                 if (minify && !preserveEsm) {
-                    const minifyCode = require('metro-minify-terser');
-                    try {
-                        ({ map, code } = await minifyCode({
-                            //           code: string;
-                            // map?: BasicSourceMap;
-                            // filename: string;
-                            // reserved: ReadonlyArray<string>;
-                            // config: MinifierConfig;
-                            // projectRoot,
-                            filename: value.path,
-                            code,
-                            // file.code,
-                            // map,
-                            config: {},
-                            reserved: [],
-                            // config,
-                        }));
-                    }
-                    catch (error) {
-                        console.error('Error minifying: ' + value.path);
-                        console.error(code);
-                        throw error;
-                    }
+                    // TODO
+                    const reserved = [];
+                    ({ map, code } = await minifyCode(config.transformer ?? {}, config.projectRoot, value.path, result.code, value.getSource().toString('utf-8'), map, reserved));
                 }
                 outputItem.data.code = (includeDebugInfo ? `\n// ${value.path}\n` : '') + code;
                 // @ts-expect-error
@@ -635,11 +630,11 @@ function createPostTreeShakeTransformSerializerPlugin(config) {
                 outputItem.data.map = map;
                 // @ts-expect-error
                 outputItem.data.functionMap =
+                    // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
                     ast.metadata?.metro?.functionMap ??
                         // Fallback to deprecated explicitly-generated `functionMap`
                         ast.functionMap ??
                         null;
-                // TODO: minify the code to fold anything that was dropped above.
                 // console.log('output code', outputItem.data.code);
             }
         }
@@ -727,3 +722,39 @@ function getDynamicDepsBehavior(inPackages, filename) {
 //     return require('zeta').zeta;
 //   },
 // };
+const metro_source_map_2 = require("metro-source-map");
+const getMinifier = require('metro-transform-worker/src/utils/getMinifier');
+async function minifyCode(config, projectRoot, filename, code, source, map, reserved = []) {
+    const sourceMap = (0, metro_source_map_2.fromRawMappings)([
+        {
+            code,
+            source,
+            map,
+            // functionMap is overridden by the serializer
+            functionMap: null,
+            path: filename,
+            // isIgnored is overriden by the serializer
+            isIgnored: false,
+        },
+    ]).toMap(undefined, {});
+    const minify = getMinifier(config.minifierPath ?? 'metro-minify-terser');
+    try {
+        const minified = await minify({
+            code,
+            map: sourceMap,
+            filename,
+            reserved,
+            config: config.minifierConfig,
+        });
+        return {
+            code: minified.code,
+            map: minified.map ? (0, metro_source_map_2.toBabelSegments)(minified.map).map(metro_source_map_2.toSegmentTuple) : [],
+        };
+    }
+    catch (error) {
+        if (error.constructor.name === 'JS_Parse_Error') {
+            throw new Error(`${error.message} in file ${filename} at ${error.line}:${error.col}`);
+        }
+        throw error;
+    }
+}

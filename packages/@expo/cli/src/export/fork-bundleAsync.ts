@@ -137,16 +137,12 @@ async function bundleProductionMetroClientAsync(
       inlineSourceMap: false,
       sourceMapUrl: bundle.sourceMapUrl,
       customTransformOptions: {
+        __proto__: null,
         engine: isHermes ? 'hermes' : undefined,
         treeshake: env.EXPO_USE_TREE_SHAKING ? String(env.EXPO_USE_TREE_SHAKING) : undefined,
       },
       unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
       createModuleIdFactory: config.serializer.createModuleIdFactory,
-      unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
-      customTransformOptions: {
-        __proto__: null,
-        engine: isHermes ? 'hermes' : undefined,
-      },
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
         reporter.update({
           buildID,
