@@ -54,7 +54,7 @@ public class ClipboardModule: Module {
 
     AsyncFunction("setImageAsync") { (content: String) in
       guard let data = Data(base64Encoded: content) else {
-          throw InvalidImageException(content)
+        throw InvalidImageException(content)
       }
       if data.mimeType == "image/gif" {
         if #available(iOS 14, *) {
@@ -68,7 +68,7 @@ public class ClipboardModule: Module {
         }
       } else {
         guard let image = UIImage(data: data) else {
-            throw InvalidImageException(content)
+          throw InvalidImageException(content)
         }
         UIPasteboard.general.image = image
       }
