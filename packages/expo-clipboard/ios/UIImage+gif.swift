@@ -20,10 +20,10 @@ extension UIImage {
     }
     return UIImage.animatedImage(with: images, duration: totalDuration)
   }
-  
+
   static func delayForImageAtIndex(index: Int, source: CGImageSource) -> TimeInterval {
     var delay = 0.1
-    if let properties = CGImageSourceCopyPropertiesAtIndex(source, index, nil) as? NSDictionary,
+    if let properties = CGImageSourceCopyPropertiesAtIndex(source, index, nil) as? [String: Any],
       let gifProperties = properties[kCGImagePropertyGIFDictionary as String] as? [String: Any] {
       let unclampedDelayTime = gifProperties[kCGImagePropertyGIFUnclampedDelayTime as String] as? Double
       let delayTime = gifProperties[kCGImagePropertyGIFDelayTime as String] as? Double
@@ -34,7 +34,7 @@ extension UIImage {
     }
     return delay
   }
-  
+
   func gifData(loopCount: Int = 0) -> Data? {
     let imagesToUse = images ?? [self]
     let gifLoopCount: [String: Any] = [kCGImagePropertyGIFLoopCount as String: loopCount]
