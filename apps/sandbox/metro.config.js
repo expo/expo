@@ -20,11 +20,11 @@ config.resolver.blockList = [
 ];
 
 // config.transformer.unstable_disableModuleWrapping = true;
-// config.transformer.getTransformOptions = async () => ({
-//   transform: {
-//     experimentalImportSupport: false,
-//     inlineRequires: true,
-//   },
-// });
+config.transformer.getTransformOptions = async () => ({
+  transform: {
+    experimentalImportSupport: true,
+    inlineRequires: false,
+  },
+});
 
 module.exports = config;

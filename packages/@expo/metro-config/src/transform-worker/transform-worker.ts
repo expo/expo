@@ -50,13 +50,10 @@ export async function transform(
   if (
     options.customTransformOptions?.treeshake === 'true' &&
     // Only tree-shake modules
-    options.type !== 'script' &&
-    options.type !== 'asset' &&
+    options.type === 'module'
     // Only in production
-    !nextOptions.dev &&
+    // !nextOptions.dev &&
     // TODO: Pass entry files
-    !filename.match(/node_modules\/metro-runtime/) &&
-    !filename.match(/\.expo\/metro\/polyfill/)
   ) {
     nextConfig.unstable_disableModuleWrapping = true;
     nextOptions.experimentalImportSupport = false;

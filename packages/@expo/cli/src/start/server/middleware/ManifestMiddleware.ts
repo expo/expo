@@ -306,34 +306,6 @@ export abstract class ManifestMiddleware<
     );
   }
 
-  private _getBundleUrlPath({
-    platform,
-    mainModuleName,
-    engine,
-  }: {
-    platform: string;
-    mainModuleName: string;
-    engine?: 'hermes';
-  }): string {
-    const queryParams = new URLSearchParams({
-      platform: encodeURIComponent(platform),
-      dev: String(this.options.mode !== 'production'),
-      // TODO: Is this still needed?
-      hot: String(false),
-    });
-    if (shouldEnableAsyncImports(this.projectRoot)) {
-      queryParams.append('lazy', String(true));
-    }
-    if (engine) {
-      queryParams.append('transform.engine', String(engine));
-    }
-    if (this.options.minify) {
-      queryParams.append('minify', String(this.options.minify));
-    }
-
-    return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
-  }
-
   /** Log telemetry. */
   protected abstract trackManifest(version?: string): void;
 
@@ -397,9 +369,12 @@ export abstract class ManifestMiddleware<
       pkg: this.initialProjectConfig.pkg,
       platform,
     });
-    return this._getBundleUrlPath({
+    return createBundleUrlPath({
       platform,
       mainModuleName,
+      mode: this.options.mode ?? 'development',
+      minify: this.options.minify,
+      lazy: shouldEnableAsyncImports(this.projectRoot),
       // Hermes doesn't support more modern JS features than most, if not all, modern browser.
       engine: 'hermes',
     });

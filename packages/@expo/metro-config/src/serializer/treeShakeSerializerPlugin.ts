@@ -111,7 +111,11 @@ export function treeShakeSerializerPlugin(config: InputConfigT) {
     // Generate AST for all modules.
     graph.dependencies.forEach((value) => {
       value.output.forEach((output) => {
-        if (output.type !== 'js/module') {
+        if (
+          output.type !== 'js/module' ||
+          // This is a hack to prevent modules that are already wrapped from being included.
+          output.data.code.startsWith('__d(function ')
+        ) {
           return;
         }
 
@@ -591,7 +595,7 @@ function accessAst(output: MixedOutput): Ast | undefined {
 }
 
 export function isShakingEnabled(graph: ReadOnlyGraph, options: SerializerOptions) {
-  return graph.transformOptions.customTransformOptions?.treeshake === 'true' && !options.dev;
+  return graph.transformOptions.customTransformOptions?.treeshake === 'true'; // && !options.dev;
 }
 
 export function createPostTreeShakeTransformSerializerPlugin(config: InputConfigT) {
@@ -601,11 +605,7 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
     graph: ReadOnlyGraph,
     options: SerializerOptions
   ): Promise<SerializerParameters> {
-    console.log(
-      'treeshake:',
-      graph.transformOptions,
-      graph.transformOptions.customTransformOptions?.treeshake === 'true' && !options.dev
-    );
+    console.log('treeshake:', graph.transformOptions, isShakingEnabled(graph, options));
     if (!isShakingEnabled(graph, options)) {
       return [entryPoint, preModules, graph, options];
     }
@@ -633,6 +633,9 @@ export function createPostTreeShakeTransformSerializerPlugin(config: InputConfig
     // Convert all remaining AST and dependencies to standard output that Metro expects.
     // This is normally done in the transformer, but we skipped it so we could perform graph analysis (tree-shake).
     for (const value of graph.dependencies.values()) {
+      if (value.path.includes('empty-module.js')) {
+        inspect(value);
+      }
       for (const index in value.output) {
         const outputItem = value.output[index];
         let ast = accessAst(outputItem);
