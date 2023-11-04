@@ -26,11 +26,6 @@ public interface UpdatesInterface {
      */
     boolean onManifestLoaded(JSONObject manifest);
   }
-
-  interface QueryCallback {
-    void onFailure(Exception e);
-    void onSuccess(List<UUID> updateIds);
-  }
   
   interface Update {
     JSONObject getManifest();
@@ -40,6 +35,4 @@ public interface UpdatesInterface {
   void reset();
 
   void fetchUpdateWithConfiguration(HashMap<String, Object> configuration, Context context, UpdateCallback callback);
-
-  void storedUpdateIdsWithConfiguration(HashMap<String, Object> configuration, Context context, QueryCallback callback);
 }
