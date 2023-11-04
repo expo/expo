@@ -30,8 +30,8 @@ public final class EmbeddedAppLoader: AppLoader {
 
   private static let ErrorDomain = "EXUpdatesEmbeddedAppLoader"
 
-  private static var embeddedManifestInternal: Update?
-  public static func embeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> Update? {
+  private static var embeddedManifestInternal: BareUpdate?
+  public static func embeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> BareUpdate? {
     guard config.hasEmbeddedUpdate else {
       return nil
     }

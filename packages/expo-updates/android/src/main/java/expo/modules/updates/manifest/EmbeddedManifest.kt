@@ -14,9 +14,9 @@ object EmbeddedManifest {
 
   private const val MANIFEST_FILENAME = "app.manifest"
 
-  private var sEmbeddedManifest: UpdateManifest? = null
+  private var sEmbeddedManifest: BareUpdateManifest? = null
 
-  fun get(context: Context, configuration: UpdatesConfiguration): UpdateManifest? {
+  fun get(context: Context, configuration: UpdatesConfiguration): BareUpdateManifest? {
     if (!configuration.hasEmbeddedUpdate) {
       return null
     }

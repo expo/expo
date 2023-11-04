@@ -15,7 +15,7 @@ public final class BareUpdate: Update {
     withBareManifest: BareManifest,
     config: UpdatesConfig,
     database: UpdatesDatabase?
-  ) -> Update {
+  ) -> BareUpdate {
     let manifest = withBareManifest
 
     let updateId = manifest.rawId()
@@ -46,7 +46,7 @@ public final class BareUpdate: Update {
       processedAssets.append(asset)
     }
 
-    let update = Update.init(
+    let update = BareUpdate.init(
       manifest: manifest,
       config: config,
       database: database,
