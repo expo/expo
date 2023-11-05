@@ -54,6 +54,9 @@ function getAssetPlugins(projectRoot) {
     return [hashAssetFilesPath];
 }
 let hasWarnedAboutExotic = false;
+// require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
+//   '@expo/metro-config/metro-runtime.js'
+// );
 function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true } = {}) {
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = (0, metro_config_1.importMetroConfig)(projectRoot);
     const isExotic = mode === 'exotic' || env_1.env.EXPO_USE_EXOTIC;
@@ -148,6 +151,18 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true } = {}) {
                 }
                 return preModules;
             },
+            // createModuleIdFactory(): (path: string) => number {
+            //   const fileToIdMap = new Map();
+            //   // let nextId = 0;
+            //   return (p: string) => {
+            //     if (!fileToIdMap.has(p)) {
+            //       fileToIdMap.set(p, path.relative(projectRoot, p));
+            //       // nextId += 1;
+            //     }
+            //     return fileToIdMap.get(p);
+            //     // return path.replace('/', '_').replace('@', '_'); // fileToIdMap.get(path);
+            //   };
+            // },
             getPolyfills: () => require('@react-native/js-polyfills')(),
         },
         server: {

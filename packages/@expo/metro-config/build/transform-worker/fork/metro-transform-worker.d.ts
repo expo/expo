@@ -1,5 +1,5 @@
-/// <reference types="metro" />
 /// <reference types="node" />
+/// <reference types="metro" />
 import { JsOutput, JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
 import type { TransformResultDependency } from 'metro/src/DeltaBundler';
 interface TransformResponse {

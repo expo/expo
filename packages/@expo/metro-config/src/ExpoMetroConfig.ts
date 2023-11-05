@@ -53,6 +53,10 @@ function getAssetPlugins(projectRoot: string): string[] {
 
 let hasWarnedAboutExotic = false;
 
+// require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
+//   '@expo/metro-config/metro-runtime.js'
+// );
+
 export function getDefaultConfig(
   projectRoot: string,
   { mode, isCSSEnabled = true }: DefaultConfigOptions = {}
@@ -167,6 +171,18 @@ export function getDefaultConfig(
 
         return preModules;
       },
+      // createModuleIdFactory(): (path: string) => number {
+      //   const fileToIdMap = new Map();
+      //   // let nextId = 0;
+      //   return (p: string) => {
+      //     if (!fileToIdMap.has(p)) {
+      //       fileToIdMap.set(p, path.relative(projectRoot, p));
+      //       // nextId += 1;
+      //     }
+      //     return fileToIdMap.get(p);
+      //     // return path.replace('/', '_').replace('@', '_'); // fileToIdMap.get(path);
+      //   };
+      // },
       getPolyfills: () => require('@react-native/js-polyfills')(),
     },
     server: {

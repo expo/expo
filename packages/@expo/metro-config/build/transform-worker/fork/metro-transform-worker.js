@@ -229,7 +229,13 @@ async function transformJS(file, { config, options, projectRoot }) {
                 unstable_allowRequireContext: config.unstable_allowRequireContext,
             };
             // @ts-expect-error
-            ({ ast, dependencies, dependencyMapName } = (0, collectDependencies_1.default)(ast, opts));
+            const ii = (0, collectDependencies_1.default)(types.cloneNode(ast), opts);
+            dependencies = ii.dependencies;
+            dependencyMapName = ii.dependencyMapName;
+            // if (!(config.unstable_disableModuleWrapping && file.type === 'js/module' && !minify)) {
+            ast = ii.ast;
+            // }
+            // ({ dependencies, dependencyMapName } = collectDependencies(ast, opts));
         }
         catch (error) {
             if (error instanceof collectDependencies_1.InvalidRequireCallError) {
@@ -255,7 +261,7 @@ async function transformJS(file, { config, options, projectRoot }) {
             reservedNames: reserved,
         }));
     }
-    const result = (0, generator_1.default)(types.cloneNode(wrappedAst), {
+    const result = (0, generator_1.default)(wrappedAst, {
         comments: true,
         compact: config.unstable_compactOutput,
         filename: file.filename,

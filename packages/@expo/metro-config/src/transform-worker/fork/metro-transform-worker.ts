@@ -302,7 +302,14 @@ async function transformJS(
         unstable_allowRequireContext: config.unstable_allowRequireContext,
       };
       // @ts-expect-error
-      ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, opts));
+      const ii = collectDependencies(types.cloneNode(ast), opts);
+      dependencies = ii.dependencies;
+      dependencyMapName = ii.dependencyMapName;
+      // if (!(config.unstable_disableModuleWrapping && file.type === 'js/module' && !minify)) {
+      ast = ii.ast;
+      // }
+
+      // ({ dependencies, dependencyMapName } = collectDependencies(ast, opts));
     } catch (error) {
       if (error instanceof InternalInvalidRequireCallError) {
         throw new InvalidRequireCallError(error, file.filename);
@@ -340,7 +347,7 @@ async function transformJS(
   }
 
   const result = generate(
-    types.cloneNode(wrappedAst),
+    wrappedAst,
     {
       comments: true,
       compact: config.unstable_compactOutput,
