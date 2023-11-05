@@ -1,4 +1,5 @@
 /**
+ * Copyright (c) Evan Bacon.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -40,7 +41,6 @@ function clear() {
   return modules;
 }
 if (__DEV__) {
-  var verboseNamesToModuleIds = Object.create(null);
   var initializingModuleIds = [];
 }
 function define(factory, moduleId, dependencyMap) {
@@ -83,44 +83,28 @@ function define(factory, moduleId, dependencyMap) {
     const verboseName = arguments[3];
     if (verboseName) {
       mod.verboseName = verboseName;
-      verboseNamesToModuleIds[verboseName] = moduleId;
     }
   }
 }
 function metroRequire(moduleId) {
-  // if (__DEV__ && typeof moduleId === "string") {
-  //   const verboseName = moduleId;
-  //   moduleId = verboseNamesToModuleIds[verboseName];
-  //   if (moduleId == null) {
-  //     throw new Error(`Unknown named module: "${verboseName}"`);
-  //   } else {
-  //     console.warn(
-  //       `Requiring module "${verboseName}" by name is only supported for ` +
-  //         "debugging purposes and will BREAK IN PRODUCTION!"
-  //     );
-  //   }
-  // }
-
-  //$FlowFixMe: at this point we know that moduleId is a number
+  // //$FlowFixMe: at this point we know that moduleId is a number
   const moduleIdReallyIsNumber = moduleId;
-  // if (__DEV__) {
-  //   const initializingIndex = initializingModuleIds.get(
-  //     moduleIdReallyIsNumber
-  //   );
-  //   if (initializingModuleIds.has(moduleIdReallyIsNumber)) {
-  //     const cycle = initializingModuleIds
-  //       .slice(initializingIndex)
-  //       .map((id) => (modules.has(id) ? modules.get(id).verboseName : "[unknown]"));
-  //     if (shouldPrintRequireCycle(cycle)) {
-  //       cycle.push(cycle[0]); // We want to print A -> B -> A:
-  //       console.warn(
-  //         `Require cycle: ${cycle.join(" -> ")}\n\n` +
-  //           "Require cycles are allowed, but can result in uninitialized values. " +
-  //           "Consider refactoring to remove the need for a cycle."
-  //       );
-  //     }
-  //   }
-  // }
+  if (__DEV__) {
+    const initializingIndex = initializingModuleIds.indexOf(moduleIdReallyIsNumber);
+    if (initializingIndex !== -1) {
+      const cycle = initializingModuleIds
+        .slice(initializingIndex)
+        .map((id) => (modules.has(id) ? modules.get(id).verboseName : '[unknown]'));
+      if (shouldPrintRequireCycle(cycle)) {
+        cycle.push(cycle[0]); // We want to print A -> B -> A:
+        console.warn(
+          `Require cycle: ${cycle.join(' -> ')}\n\n` +
+            'Require cycles are allowed, but can result in uninitialized values. ' +
+            'Consider refactoring to remove the need for a cycle.'
+        );
+      }
+    }
+  }
   const module = modules.get(moduleIdReallyIsNumber);
   return module && module.isInitialized
     ? module.publicModule.exports
@@ -137,14 +121,9 @@ function shouldPrintRequireCycle(modules) {
   const isIgnored = (module) => module != null && regExps.some((regExp) => regExp.test(module));
 
   // Print the cycle unless any part of it is ignored
-  return false; //modules.every((module) => !isIgnored(module));
+  return modules.every((module) => !isIgnored(module));
 }
 function metroImportDefault(moduleId) {
-  if (__DEV__ && typeof moduleId === 'string') {
-    const verboseName = moduleId;
-    moduleId = verboseNamesToModuleIds[verboseName];
-  }
-
   //$FlowFixMe: at this point we know that moduleId is a number
   const moduleIdReallyIsNumber = moduleId;
   if (
@@ -161,11 +140,6 @@ function metroImportDefault(moduleId) {
 }
 metroRequire.importDefault = metroImportDefault;
 function metroImportAll(moduleId) {
-  if (__DEV__ && typeof moduleId === 'string') {
-    const verboseName = moduleId;
-    moduleId = verboseNamesToModuleIds[verboseName];
-  }
-
   //$FlowFixMe: at this point we know that moduleId is a number
   const moduleIdReallyIsNumber = moduleId;
   if (
@@ -786,8 +760,6 @@ if (__DEV__) {
     }
   };
   global.__accept = metroHotUpdateModule;
-}
-if (__DEV__) {
   // The metro require polyfill can not have module dependencies.
   // The Systrace and ReactRefresh dependencies are, therefore, made publicly
   // available. Ideally, the dependency would be inversed in a way that
