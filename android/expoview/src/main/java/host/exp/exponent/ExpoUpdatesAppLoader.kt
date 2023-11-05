@@ -300,7 +300,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   }
 
   private fun launchWithNoDatabase(context: Context, e: Exception?) {
-    this.launcher = NoDatabaseLauncher(context, updatesConfiguration, e)
+    this.launcher = NoDatabaseLauncher(context, e)
     var manifestJson = EmbeddedManifest.get(context, updatesConfiguration)!!.manifest.getRawJson()
     try {
       manifestJson = processManifestJson(manifestJson)
@@ -313,7 +313,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     }
     callback.onManifestCompleted(Manifest.fromManifestJson(manifestJson))
     // ReactInstanceManagerBuilder accepts embedded assets as strings with "assets://" prefixed
-    val launchAssetFile = launcher.launchAssetFile ?: "assets://" + launcher.bundleAssetName
+    val launchAssetFile = launcher.launchAssetFile ?: ("assets://" + launcher.bundleAssetName)
     callback.onBundleCompleted(launchAssetFile)
   }
 

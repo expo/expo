@@ -2,6 +2,7 @@ package expo.modules.updates
 
 import android.content.Context
 import android.os.AsyncTask
+import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
@@ -31,6 +32,7 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifest
+import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
@@ -59,7 +61,7 @@ import java.util.HashMap
  * launching an update, then responds appropriately depending on the callbacks that are invoked.
  *
  * This class also provides getter methods to access information about the updates state, which are
- * used by the exported [UpdatesModule] through [UpdatesService]. Such information includes
+ * used by the exported [UpdatesModule]. Such information includes
  * references to: the database, the [UpdatesConfiguration] object, the path on disk to the updates
  * directory, any currently active [LoaderTask], the current [SelectionPolicy], the error recovery
  * handler, and the current launched update. This class is intended to be the source of truth for
@@ -70,20 +72,23 @@ import java.util.HashMap
  */
 class UpdatesController private constructor(
   context: Context,
-  var updatesConfiguration: UpdatesConfiguration
+  updatesConfiguration: UpdatesConfiguration
 ) : UpdatesStateChangeEventSender {
+  var updatesConfiguration = updatesConfiguration
+    private set
+
   private var reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
-    WeakReference((context as ReactApplication).reactNativeHost)
+    WeakReference(context.reactNativeHost)
   } else {
     null
   }
 
   var updatesDirectory: File? = null
   private var updatesDirectoryException: Exception? = null
-  private val stateMachine: UpdatesStateMachine = UpdatesStateMachine(context, this)
+  private val stateMachine = UpdatesStateMachine(context, this)
 
   private var launcher: Launcher? = null
-  val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
+  private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
 
   // TODO: move away from DatabaseHolder pattern to Handler thread
   private val databaseHandlerThread = HandlerThread("expo-updates-database")
@@ -243,7 +248,7 @@ class UpdatesController private constructor(
     isStarted = true
 
     if (!updatesConfiguration.isEnabled) {
-      launcher = NoDatabaseLauncher(context, updatesConfiguration)
+      launcher = NoDatabaseLauncher(context)
       notifyController()
       return
     }
@@ -251,7 +256,7 @@ class UpdatesController private constructor(
       throw AssertionError("expo-updates is enabled, but no valid URL is configured in AndroidManifest.xml. If you are making a release build for the first time, make sure you have run `expo publish` at least once.")
     }
     if (updatesDirectory == null) {
-      launcher = NoDatabaseLauncher(context, updatesConfiguration, updatesDirectoryException)
+      launcher = NoDatabaseLauncher(context, updatesDirectoryException)
       isEmergencyLaunch = true
       notifyController()
       return
@@ -275,7 +280,7 @@ class UpdatesController private constructor(
       object : LoaderTaskCallback {
         override fun onFailure(e: Exception) {
           logger.error("UpdatesController loaderTask onFailure: ${e.localizedMessage}", UpdatesErrorCode.None)
-          launcher = NoDatabaseLauncher(context, updatesConfiguration, e)
+          launcher = NoDatabaseLauncher(context, e)
           isEmergencyLaunch = true
           notifyController()
         }
@@ -813,6 +818,60 @@ class UpdatesController private constructor(
     }
   }
 
+  interface GetExtraParamsCallback {
+    fun onFailure(e: Exception)
+    fun onSuccess(paramsBundle: Bundle)
+  }
+
+  fun getExtraParams(callback: GetExtraParamsCallback) {
+    AsyncTask.execute {
+      try {
+        val result = ManifestMetadata.getExtraParams(
+          databaseHolder.database,
+          updatesConfiguration,
+        )
+        databaseHolder.releaseDatabase()
+        val resultMap = when (result) {
+          null -> Bundle()
+          else -> {
+            Bundle().apply {
+              result.forEach {
+                putString(it.key, it.value)
+              }
+            }
+          }
+        }
+        callback.onSuccess(resultMap)
+      } catch (e: Exception) {
+        databaseHolder.releaseDatabase()
+        callback.onFailure(e)
+      }
+    }
+  }
+
+  interface SetExtraParamsCallback {
+    fun onFailure(e: Exception)
+    fun onSuccess()
+  }
+
+  fun setExtraParam(key: String, value: String?, callback: SetExtraParamsCallback) {
+    AsyncTask.execute {
+      try {
+        ManifestMetadata.setExtraParam(
+          databaseHolder.database,
+          updatesConfiguration,
+          key,
+          value
+        )
+        databaseHolder.releaseDatabase()
+        callback.onSuccess()
+      } catch (e: Exception) {
+        databaseHolder.releaseDatabase()
+        callback.onFailure(e)
+      }
+    }
+  }
+
   companion object {
     private val TAG = UpdatesController::class.java.simpleName
 
@@ -1019,30 +1078,6 @@ class UpdatesController private constructor(
           }
         }
       )
-    }
-
-    override fun storedUpdateIdsWithConfiguration(configuration: HashMap<String, Any>, context: Context, callback: UpdatesInterface.QueryCallback) {
-      val controller = UpdatesController.instance
-      val updatesConfiguration = UpdatesConfiguration(context, configuration)
-      if (updatesConfiguration.updateUrl == null || updatesConfiguration.scopeKey == null) {
-        callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
-        return
-      }
-      val updatesDirectory = controller.updatesDirectory
-      if (updatesDirectory == null) {
-        callback.onFailure(controller.updatesDirectoryException)
-        return
-      }
-      val databaseHolder = controller.databaseHolder
-      val launcher = DatabaseLauncher(
-        updatesConfiguration,
-        updatesDirectory,
-        controller.fileDownloader,
-        controller.selectionPolicy
-      )
-      val readyUpdateIds = launcher.getReadyUpdateIds(databaseHolder.database)
-      controller.databaseHolder.releaseDatabase()
-      callback.onSuccess(readyUpdateIds)
     }
 
     companion object {

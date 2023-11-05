@@ -1,10 +1,9 @@
 import { Platform } from 'expo-modules-core';
-import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
-import URL from 'url-parse';
 import AssetSourceResolver from './AssetSourceResolver';
 import { getManifest, getManifest2, manifestBaseUrl } from './PlatformUtils';
-// Fast lookup check if asset map has any overrides in the manifest
+// Fast lookup check if asset map has any overrides in the manifest.
+// This value will always be either null or an absolute URL, e.g. `https://expo.dev/`
 const assetMapOverride = getManifest().assetMapOverride;
 /**
  * Selects the best file for the given asset (ex: choosing the best scale for images) and returns
@@ -30,33 +29,38 @@ export function selectAssetSource(meta) {
     // Check if the assetUrl was overridden in the manifest
     const assetUrlOverride = getManifest().assetUrlOverride;
     if (assetUrlOverride) {
-        const uri = path.join(assetUrlOverride, hash);
+        const uri = pathJoin(assetUrlOverride, hash);
         return { uri: resolveUri(uri), hash };
     }
     const fileScale = scale === 1 ? '' : `@${scale}x`;
     const fileExtension = meta.type ? `.${encodeURIComponent(meta.type)}` : '';
-    const suffix = `/${encodeURIComponent(meta.name)}${fileScale}${fileExtension}?platform=${encodeURIComponent(Platform.OS)}&hash=${encodeURIComponent(meta.hash)}`;
+    const suffix = `/${encodeURIComponent(meta.name)}${fileScale}${fileExtension}`;
+    const params = new URLSearchParams({
+        platform: Platform.OS,
+        hash: meta.hash,
+    });
     // For assets with a specified absolute URL, we use the existing origin instead of prepending the
     // development server or production CDN URL origin
     if (/^https?:\/\//.test(meta.httpServerLocation)) {
-        const uri = meta.httpServerLocation + suffix;
+        const uri = meta.httpServerLocation + suffix + '?' + params;
         return { uri, hash };
     }
     // For assets during development using manifest2, we use the development server's URL origin
     const manifest2 = getManifest2();
-    if (manifest2?.extra?.expoGo?.developer) {
-        const baseUrl = new URL(`http://${manifest2.extra.expoGo.debuggerHost}`);
-        baseUrl.set('pathname', meta.httpServerLocation + suffix);
+    const devServerUrl = manifest2?.extra?.expoGo?.developer
+        ? 'http://' + manifest2.extra.expoGo.debuggerHost
+        : // For assets during development, we use the development server's URL origin
+            getManifest().developer
+                ? getManifest().bundleUrl
+                : null;
+    if (devServerUrl) {
+        const baseUrl = new URL(meta.httpServerLocation + suffix, devServerUrl);
+        baseUrl.searchParams.set('platform', Platform.OS);
+        baseUrl.searchParams.set('hash', meta.hash);
         return {
             uri: baseUrl.href,
             hash,
         };
-    }
-    // For assets during development, we use the development server's URL origin
-    if (getManifest().developer) {
-        const baseUrl = new URL(getManifest().bundleUrl);
-        baseUrl.set('pathname', meta.httpServerLocation + suffix);
-        return { uri: baseUrl.href, hash };
     }
     // Production CDN URIs are based on each asset file hash
     return {
@@ -70,16 +74,32 @@ export function selectAssetSource(meta) {
  * base URI.
  */
 export function resolveUri(uri) {
-    if (!manifestBaseUrl) {
-        return uri;
+    // `manifestBaseUrl` is always an absolute URL or `null`.
+    return manifestBaseUrl ? new URL(uri, manifestBaseUrl).href : uri;
+}
+// A very cheap path canonicalization like path.join but without depending on a `path` polyfill.
+export function pathJoin(...paths) {
+    // Start by simply combining paths, without worrying about ".." or "."
+    const combined = paths
+        .map((part, index) => {
+        if (index === 0) {
+            return part.trim().replace(/\/*$/, '');
+        }
+        return part.trim().replace(/(^\/*|\/*$)/g, '');
+    })
+        .filter((part) => part.length > 0)
+        .join('/')
+        .split('/');
+    // Handle ".." and "." in paths
+    const resolved = [];
+    for (const part of combined) {
+        if (part === '..') {
+            resolved.pop(); // Remove the last element from the result
+        }
+        else if (part !== '.') {
+            resolved.push(part);
+        }
     }
-    const { protocol } = new URL(uri);
-    if (protocol !== '') {
-        return uri;
-    }
-    const baseUrl = new URL(manifestBaseUrl);
-    const resolvedPath = uri.startsWith('/') ? uri : path.join(baseUrl.pathname, uri);
-    baseUrl.set('pathname', resolvedPath);
-    return baseUrl.href;
+    return resolved.join('/');
 }
 //# sourceMappingURL=AssetSources.js.map

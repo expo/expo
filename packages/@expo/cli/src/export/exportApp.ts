@@ -180,7 +180,7 @@ export async function exportAppAsync(
   // Can be empty during web-only SSG.
   // TODO: Use same asset system across platforms again.
   if (Object.keys(fileNames).length) {
-    const { assets } = await exportAssetsAsync(projectRoot, {
+    const { assets, embeddedHashSet } = await exportAssetsAsync(projectRoot, {
       exp,
       outputDir: staticFolder,
       bundles,
@@ -210,7 +210,7 @@ export async function exportAppAsync(
     }
 
     // Generate a `metadata.json` and the export is complete.
-    await writeMetadataJsonAsync({ outputDir: staticFolder, bundles, fileNames });
+    await writeMetadataJsonAsync({ outputDir: staticFolder, bundles, fileNames, embeddedHashSet });
   }
 }
 

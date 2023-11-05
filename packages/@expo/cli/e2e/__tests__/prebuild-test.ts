@@ -110,7 +110,6 @@ it(
   'runs `npx expo prebuild`',
   async () => {
     const projectRoot = await setupTestProjectAsync('basic-prebuild', 'with-blank');
-    // `npx expo prebuild --no-install`
 
     const templateFolder = await ensureTemplatePathAsync();
     console.log('Using local template:', templateFolder);
@@ -136,8 +135,6 @@ it(
     // Added new packages
     expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
       'expo',
-      'expo-splash-screen',
-      'expo-status-bar',
       'react',
       'react-native',
     ]);

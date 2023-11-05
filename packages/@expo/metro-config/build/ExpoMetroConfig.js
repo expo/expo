@@ -257,7 +257,7 @@ function getDefaultConfig(projectRoot, {
         }
         return preModules;
       },
-      getPolyfills: () => require(_path().default.join(reactNativePath, 'rn-get-polyfills'))()
+      getPolyfills: () => require('@react-native/js-polyfills')()
     },
     server: {
       rewriteRequestUrl: (0, _rewriteRequestUrl().getRewriteRequestUrl)(projectRoot),
@@ -285,7 +285,13 @@ function getDefaultConfig(projectRoot, {
       allowOptionalDependencies: true,
       babelTransformerPath: require.resolve('./babel-transformer'),
       assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
-      assetPlugins: getAssetPlugins(projectRoot)
+      assetPlugins: getAssetPlugins(projectRoot),
+      getTransformOptions: async () => ({
+        transform: {
+          experimentalImportSupport: false,
+          inlineRequires: true
+        }
+      })
     }
   });
   return (0, _withExpoSerializers().withExpoSerializers)(metroConfig);
