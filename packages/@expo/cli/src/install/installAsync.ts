@@ -15,7 +15,7 @@ import { joinWithCommasAnd } from '../utils/strings';
 
 /**
  * Installs versions of specified packages compatible with the current Expo SDK version, or
- * checks/ fixes dependendencies in project if they don't match compatible versions specified in bundledNativeModules or versions endpoints.
+ * checks/ fixes dependencies in project if they don't match compatible versions specified in bundledNativeModules or versions endpoints.
  *
  * @param packages list of packages to install, if installing specific packages and not checking/ fixing
  * @param options options, including check or fix

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update snapshot tests. ([#25211](https://github.com/expo/expo/pull/25211) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 6.5.0 — 2023-10-17
 
 ### 💡 Others

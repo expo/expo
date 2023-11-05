@@ -4,6 +4,9 @@
 
 ### 🛠 Breaking changes
 
+- `npx expo prebuild` will only install Node dependencies if the `dependencies` have changed. ([#25211](https://github.com/expo/expo/pull/25211) by [@EvanBacon](https://github.com/EvanBacon))
+- `npx expo prebuild` will no longer modify `devDependencies` of the `package.json`. ([#25211](https://github.com/expo/expo/pull/25211) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - Add support for chaining the Metro resolver locally. ([#25148](https://github.com/expo/expo/pull/25148) by [@EvanBacon](https://github.com/EvanBacon))

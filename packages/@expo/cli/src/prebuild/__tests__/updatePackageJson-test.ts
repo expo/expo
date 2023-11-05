@@ -1,8 +1,13 @@
 import chalk from 'chalk';
+import { vol } from 'memfs';
 
 import * as Log from '../../log';
 import { isModuleSymlinked } from '../../utils/isModuleSymlinked';
-import { hashForDependencyMap, updatePkgDependencies } from '../updatePackageJson';
+import {
+  hashForDependencyMap,
+  updatePkgDependencies,
+  updatePackageJSONAsync,
+} from '../updatePackageJson';
 
 jest.mock('../../utils/isModuleSymlinked');
 jest.mock('../../log');
@@ -12,6 +17,129 @@ describe(hashForDependencyMap, () => {
     expect(hashForDependencyMap({ a: '1.0.0', b: 2, c: '~3.0' })).toBe(
       hashForDependencyMap({ c: '~3.0', b: 2, a: '1.0.0' })
     );
+  });
+});
+
+describe(updatePackageJSONAsync, () => {
+  beforeAll(() => {
+    (isModuleSymlinked as any).mockImplementation(() => false);
+  });
+
+  it(`has no changes`, async () => {
+    vol.fromJSON({}, '/');
+
+    expect(
+      await updatePackageJSONAsync('/', {
+        pkg: {
+          scripts: {
+            ios: 'expo run:ios',
+            android: 'expo run:android',
+          },
+          dependencies: {
+            expo: '1.0.0',
+            'react-native': '0.1.0',
+          },
+        },
+        templateDirectory: '/template',
+        templatePkg: {
+          dependencies: {
+            expo: '1.0.0',
+            'react-native': '0.1.0',
+            'expo-status-bar': '1.0.0',
+            'expo-splash-screen': '1.0.0',
+          },
+          devDependencies: {
+            'no-copy': '1.0.0',
+          },
+        },
+      })
+    ).toEqual({
+      changedDependencies: [],
+      scriptsChanged: false,
+    });
+
+    expect(vol.toJSON()).toEqual({});
+  });
+
+  it(`injects custom scripts`, async () => {
+    vol.fromJSON({}, '/');
+
+    expect(
+      await updatePackageJSONAsync('/', {
+        pkg: {
+          scripts: {
+            ios: 'expo start --ios',
+            android: 'expo start --android',
+          },
+          dependencies: {
+            expo: '1.0.0',
+            'react-native': '0.1.0',
+          },
+        },
+        templateDirectory: '/template',
+        templatePkg: {
+          dependencies: {
+            expo: '1.0.0',
+            'react-native': '0.1.0',
+            'expo-status-bar': '1.0.0',
+            'expo-splash-screen': '1.0.0',
+          },
+          devDependencies: {
+            'no-copy': '1.0.0',
+          },
+        },
+      })
+    ).toEqual({
+      changedDependencies: [],
+      scriptsChanged: true,
+    });
+
+    expect(JSON.parse(vol.toJSON()['/package.json'])).toEqual({
+      dependencies: { expo: '1.0.0', 'react-native': '0.1.0' },
+      scripts: { android: 'expo run:android', ios: 'expo run:ios' },
+    });
+  });
+
+  // TODO: We should change this functionality in the future to either require a custom dependency field
+  // or just not exist.
+  it(`updates dependencies if the template adds custom values`, async () => {
+    vol.fromJSON({}, '/');
+
+    expect(
+      await updatePackageJSONAsync('/', {
+        pkg: {
+          scripts: {
+            ios: 'expo run:ios',
+            android: 'expo run:android',
+          },
+          dependencies: {
+            expo: '1.0.0',
+            'react-native': '0.1.0',
+          },
+        },
+        templateDirectory: '/template',
+        templatePkg: {
+          dependencies: {
+            unexpected: '1.0.0',
+            expo: '1.0.0',
+            'react-native': '0.1.0',
+            'expo-status-bar': '1.0.0',
+            'expo-splash-screen': '1.0.0',
+          },
+          devDependencies: {
+            'no-copy': '1.0.0',
+          },
+        },
+      })
+    ).toEqual({
+      changedDependencies: ['unexpected'],
+      scriptsChanged: false,
+    });
+
+    expect(JSON.parse(vol.toJSON()['/package.json'])).toEqual({
+      dependencies: { unexpected: '1.0.0', expo: '1.0.0', 'react-native': '0.1.0' },
+      scripts: { android: 'expo run:android', ios: 'expo run:ios' },
+    });
   });
 });
 
