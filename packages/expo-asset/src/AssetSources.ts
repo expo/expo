@@ -80,11 +80,7 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
     ? getManifest().bundleUrl
     : null;
   if (devServerUrl) {
-    const baseUrl = new URL(
-      // `meta.httpServerLocation` could contain a `?` with query parameters so
-      // we need to parse it as the entire URL and not just as a path.
-      devServerUrl.replace(/\/+$/, '') + '/' + meta.httpServerLocation.replace(/$\/+/, '') + suffix
-    );
+    const baseUrl = new URL(meta.httpServerLocation + suffix, devServerUrl);
 
     baseUrl.searchParams.set('platform', Platform.OS);
     baseUrl.searchParams.set('hash', meta.hash);

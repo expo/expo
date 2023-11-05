@@ -7,6 +7,13 @@ const mockFontMetadata = {
   scales: [1],
   httpServerLocation: '/assets',
 };
+const mockFontMonorepoMetadata = {
+  hash: 'cafecafecafecafecafecafecafecafe',
+  name: 'test',
+  type: 'ttf',
+  scales: [1],
+  httpServerLocation: '/assets/?unstable_path=.',
+};
 
 describe('selectAssetSource', () => {
   beforeEach(() => {
@@ -129,6 +136,23 @@ describe('selectAssetSource', () => {
   });
 
   if (Platform.OS !== 'web') {
+    it(`returns a development URI using the asset file hash with non-standard path`, () => {
+      _mockConstants({
+        __unsafeNoWarnManifest: {
+          developer: {},
+          bundleUrl: 'https://exp.direct:19001/src/App.js',
+        },
+      });
+
+      const AssetSources = require('../AssetSources');
+
+      const source = AssetSources.selectAssetSource(mockFontMonorepoMetadata);
+      expect(source.uri).toBe(
+        `https://exp.direct:19001/assets/?unstable_path=.%2Ftest.ttf&platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
+      );
+      expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
+    });
+
     // Skip on web where the manifest isn't used for asset resolution
     it(`applies overrides if an asset's hash matches`, () => {
       const AssetSources = require('../AssetSources');
