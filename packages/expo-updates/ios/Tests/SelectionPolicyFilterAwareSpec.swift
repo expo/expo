@@ -38,7 +38,8 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
 
       let runtimeVersion = "1.0"
       let scopeKey = "dummyScope"
-      let config = UpdatesConfig.config(fromDictionary: [
+      let config = try! UpdatesConfig.config(fromDictionary: [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
         UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: runtimeVersion,
         UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey
       ])

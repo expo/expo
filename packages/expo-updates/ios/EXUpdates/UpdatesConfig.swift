@@ -29,6 +29,7 @@ public enum CheckAutomaticallyConfig: Int {
 public enum UpdatesConfigError: Int, Error {
   case ExpoUpdatesConfigPlistError
   case ExpoUpdatesConfigMissingURLError
+  case ExpoUpdatesMissingRuntimeVersionError
 }
 
 /**
@@ -85,7 +86,8 @@ public final class UpdatesConfig: NSObject {
   public let enableExpoUpdatesProtocolV0CompatibilityMode: Bool
 
   public let sdkVersion: String?
-  public let runtimeVersion: String?
+  public let runtimeVersionRaw: String?
+  public let runtimeVersionRealized: String
 
   public let hasEmbeddedUpdate: Bool
 
@@ -99,7 +101,8 @@ public final class UpdatesConfig: NSObject {
     checkOnLaunch: CheckAutomaticallyConfig,
     codeSigningConfiguration: CodeSigningConfiguration?,
     sdkVersion: String?,
-    runtimeVersion: String?,
+    runtimeVersionRaw: String?,
+    runtimeVersionRealized: String,
     hasEmbeddedUpdate: Bool,
     enableExpoUpdatesProtocolV0CompatibilityMode: Bool
   ) {
@@ -112,7 +115,8 @@ public final class UpdatesConfig: NSObject {
     self.checkOnLaunch = checkOnLaunch
     self.codeSigningConfiguration = codeSigningConfiguration
     self.sdkVersion = sdkVersion
-    self.runtimeVersion = runtimeVersion
+    self.runtimeVersionRaw = runtimeVersionRaw
+    self.runtimeVersionRealized = runtimeVersionRealized
     self.hasEmbeddedUpdate = hasEmbeddedUpdate
     self.enableExpoUpdatesProtocolV0CompatibilityMode = enableExpoUpdatesProtocolV0CompatibilityMode
   }
@@ -213,7 +217,12 @@ public final class UpdatesConfig: NSObject {
     } ?? CheckAutomaticallyConfig.Always
 
     let sdkVersion: String? = config.optionalValue(forKey: EXUpdatesConfigSDKVersionKey)
-    let runtimeVersion: String? = config.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey)
+    let runtimeVersionRaw: String? = config.optionalValue(forKey: EXUpdatesConfigRuntimeVersionKey)
+
+    guard let runtimeVersionRealized = runtimeVersionRaw ?? sdkVersion else {
+      throw UpdatesConfigError.ExpoUpdatesMissingRuntimeVersionError
+    }
+
     let hasEmbeddedUpdate = config.optionalValue(forKey: EXUpdatesConfigHasEmbeddedUpdateKey) ?? true
 
     let codeSigningConfiguration = config.optionalValue(forKey: EXUpdatesConfigCodeSigningCertificateKey).let { (certificateString: String) in
@@ -243,7 +252,8 @@ public final class UpdatesConfig: NSObject {
       checkOnLaunch: checkOnLaunch,
       codeSigningConfiguration: codeSigningConfiguration,
       sdkVersion: sdkVersion,
-      runtimeVersion: runtimeVersion,
+      runtimeVersionRaw: runtimeVersionRaw,
+      runtimeVersionRealized: runtimeVersionRealized,
       hasEmbeddedUpdate: hasEmbeddedUpdate,
       enableExpoUpdatesProtocolV0CompatibilityMode: enableExpoUpdatesProtocolV0CompatibilityMode
     )

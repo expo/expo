@@ -371,8 +371,8 @@ public final class ErrorRecovery: NSObject {
     return String(data: data, encoding: .utf8)
   }
 
-  public static func writeErrorOrExceptionToLog(_ errorOrException: Any) {
-    DispatchQueue.global().async {
+  public static func writeErrorOrExceptionToLog(_ errorOrException: Any, dispatchQueue: DispatchQueue = DispatchQueue.global()) {
+    dispatchQueue.async {
       var serializedError: String
       if let errorOrException = errorOrException as? NSError {
         serializedError = "Fatal error: \(ErrorRecovery.serialize(error: errorOrException))"

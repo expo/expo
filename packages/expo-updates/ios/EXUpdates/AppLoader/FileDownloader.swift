@@ -306,7 +306,7 @@ public final class FileDownloader: NSObject, URLSessionDataDelegate {
     request.setValue(config.expectsSignedManifest ? "true" : "false", forHTTPHeaderField: "Expo-Accept-Signature")
     request.setValue(config.releaseChannel, forHTTPHeaderField: "Expo-Release-Channel")
 
-    if let runtimeVersion = config.runtimeVersion {
+    if let runtimeVersion = config.runtimeVersionRaw {
       request.setValue(runtimeVersion, forHTTPHeaderField: "Expo-Runtime-Version")
     } else {
       request.setValue(config.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")

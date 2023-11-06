@@ -21,6 +21,8 @@ public class DisabledAppController: InternalAppControllerInterface {
   private var launcher: AppLauncher?
   private let isMissingRuntimeVersion: Bool
 
+  public let updatesDirectory: URL? = nil // internal for E2E test
+
   required init(error: Error?, isMissingRuntimeVersion: Bool) {
     self.initializationError = error
     self.isEmergencyLaunch = error != nil

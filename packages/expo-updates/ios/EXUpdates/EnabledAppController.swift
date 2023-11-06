@@ -42,7 +42,8 @@ public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDele
 
   private var launcher: AppLauncher?
   private let errorRecovery = ErrorRecovery()
-  private let updatesDirectory: URL // internal for E2E test
+  public let updatesDirectory: URL? // internal for E2E test
+  private let updatesDirectoryInternal: URL
   private let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
   public private(set) var isStarted = false
 
@@ -64,9 +65,10 @@ public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDele
   required init(config: UpdatesConfig, database: UpdatesDatabase, updatesDirectory: URL) {
     self.config = config
     self.database = database
+    self.updatesDirectoryInternal = updatesDirectory
     self.updatesDirectory = updatesDirectory
     self.selectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
-      withRuntimeVersion: UpdatesUtils.getRuntimeVersion(withConfig: self.config)
+      withRuntimeVersion: self.config.runtimeVersionRealized
     )
     self.logger.info(message: "AppController sharedInstance created")
 
@@ -89,7 +91,7 @@ public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDele
     loaderTask = AppLoaderTask(
       withConfig: config,
       database: database,
-      directory: updatesDirectory,
+      directory: updatesDirectoryInternal,
       selectionPolicy: selectionPolicy,
       delegateQueue: controllerQueue
     )
@@ -145,7 +147,7 @@ public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDele
     let launcherWithDatabase = AppLauncherWithDatabase(
       config: config,
       database: database,
-      directory: updatesDirectory,
+      directory: updatesDirectoryInternal,
       completionQueue: controllerQueue
     )
     candidateLauncher = launcherWithDatabase
@@ -330,7 +332,7 @@ public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDele
       UpdatesReaper.reapUnusedUpdates(
         withConfig: config,
         database: database,
-        directory: updatesDirectory,
+        directory: updatesDirectoryInternal,
         selectionPolicy: selectionPolicy,
         launchedUpdate: launchedUpdate
       )
@@ -405,7 +407,7 @@ public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDele
     let launcher = AppLauncherWithDatabase(
       config: config,
       database: database,
-      directory: updatesDirectory,
+      directory: updatesDirectoryInternal,
       completionQueue: controllerQueue
     )
     candidateLauncher = launcher
@@ -432,7 +434,7 @@ public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDele
     let remoteAppLoader = RemoteAppLoader(
       config: config,
       database: database,
-      directory: updatesDirectory,
+      directory: updatesDirectoryInternal,
       launchedUpdate: launchedUpdate(),
       completionQueue: controllerQueue
     )
@@ -528,7 +530,7 @@ public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDele
       isEnabled: true,
       releaseChannel: self.config.releaseChannel,
       isUsingEmbeddedAssets: isUsingEmbeddedAssets(),
-      runtimeVersion: self.config.runtimeVersion ?? "",
+      runtimeVersion: self.config.runtimeVersionRaw ?? "",
       checkOnLaunch: self.config.checkOnLaunch,
       requestHeaders: self.config.requestHeaders,
       assetFilesMap: assetFilesMap(),
@@ -657,7 +659,7 @@ public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDele
     let remoteAppLoader = RemoteAppLoader(
       config: self.config,
       database: self.database,
-      directory: self.updatesDirectory,
+      directory: self.updatesDirectoryInternal,
       launchedUpdate: self.launchedUpdate(),
       completionQueue: controllerQueue
     )
@@ -706,7 +708,7 @@ public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDele
         database: self.database,
         selectionPolicy: self.selectionPolicy,
         launchedUpdate: self.launchedUpdate(),
-        directory: self.updatesDirectory,
+        directory: self.updatesDirectoryInternal,
         loaderTaskQueue: DispatchQueue(label: "expo.loader.LoaderTaskQueue"),
         updateResponse: updateResponse,
         priorError: nil

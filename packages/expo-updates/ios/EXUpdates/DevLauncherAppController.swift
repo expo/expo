@@ -51,7 +51,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   private let isMissingRuntimeVersion: Bool
 
   private var directoryDatabaseException: Error?
-  internal let updatesDirectory: URL? // internal for E2E test
+  public let updatesDirectory: URL? // internal for E2E test
   private let database: UpdatesDatabase
 
   private var launcher: AppLauncher?
@@ -76,7 +76,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     self.isMissingRuntimeVersion = isMissingRuntimeVersion
 
     self.defaultSelectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
-      withRuntimeVersion: self.config.let { it in UpdatesUtils.getRuntimeVersion(withConfig: it) } ?? "1" // matches the default in UpdatesConfiguration
+      withRuntimeVersion: self.config.let { it in initialUpdatesConfiguration?.runtimeVersionRealized } ?? "1"
     )
 
     super.init()
@@ -281,7 +281,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
       isEnabled: true,
       releaseChannel: self.config?.releaseChannel ?? "default",
       isUsingEmbeddedAssets: isUsingEmbeddedAssets(),
-      runtimeVersion: self.config?.runtimeVersion ?? "1",
+      runtimeVersion: self.config?.runtimeVersionRaw ?? "1",
       checkOnLaunch: self.config?.checkOnLaunch ?? CheckAutomaticallyConfig.Always,
       requestHeaders: self.config?.requestHeaders ?? [:],
       assetFilesMap: assetFilesMap(),

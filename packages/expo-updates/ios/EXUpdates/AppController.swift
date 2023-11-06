@@ -73,6 +73,8 @@ public protocol AppControllerInterface {
 }
 
 public protocol InternalAppControllerInterface: AppControllerInterface {
+  var updatesDirectory: URL? { get }
+
   func getConstantsForModule() -> UpdatesModuleConstants
   func requestRelaunch(
     success successBlockArg: @escaping () -> Void,
