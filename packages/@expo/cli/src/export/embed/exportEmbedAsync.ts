@@ -68,7 +68,7 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
     customTransformOptions: {
       __proto__: null,
       engine: isHermes ? 'hermes' : undefined,
-      inlineEnvVars: env.EXPO_NO_CLIENT_ENV_VARS,
+      inlineEnvVars: !env.EXPO_NO_CLIENT_ENV_VARS,
     },
   };
 
