@@ -2,6 +2,13 @@
 
 #include "ExpoViewComponentDescriptor.h"
 
+
+#if REACT_NATIVE_TARGET_VERSION >= 73 && IS_NEW_ARCHITECTURE_ENABLED
+// Android can't find the definition of these static fields
+bool facebook::react::CoreFeatures::enableDefaultAsyncBatchedPriority;
+bool facebook::react::CoreFeatures::enablePropIteratorSetter;
+#endif
+
 namespace expo {
 
 ExpoViewComponentDescriptor::ExpoViewComponentDescriptor(facebook::react::ComponentDescriptorParameters const &parameters)
