@@ -15,10 +15,23 @@ import { processModules } from './processModules';
 export function baseJSBundle(
   entryPoint: string,
   preModules: readonly Module[],
-  graph: ReadOnlyGraph,
+  graph: Pick<ReadOnlyGraph, 'dependencies'>,
   options: SerializerOptions
 ): Bundle {
-  for (const module of graph.dependencies.values()) {
+  return baseJSBundleWithDependencies(
+    entryPoint,
+    preModules,
+    [...graph.dependencies.values()],
+    options
+  );
+}
+export function baseJSBundleWithDependencies(
+  entryPoint: string,
+  preModules: readonly Module[],
+  dependencies: Module<MixedOutput>[],
+  options: SerializerOptions
+): Bundle {
+  for (const module of dependencies) {
     options.createModuleId(module.path);
   }
 
@@ -41,7 +54,7 @@ export function baseJSBundle(
     .map(([_, code]) => code.src)
     .join('\n');
 
-  const modules = [...graph.dependencies.values()].sort(
+  const modules = [...dependencies].sort(
     (a: Module<MixedOutput>, b: Module<MixedOutput>) =>
       options.createModuleId(a.path) - options.createModuleId(b.path)
   );
@@ -63,9 +76,10 @@ export function baseJSBundle(
     .map(([_, code]) => code.src)
     .join('\n');
 
-  const mods = processModules([...graph.dependencies.values()], processModulesOptions).map(
-    ([module, code]) => [options.createModuleId(module.path), code]
-  );
+  const mods = processModules([...dependencies], processModulesOptions).map(([module, code]) => [
+    options.createModuleId(module.path),
+    code,
+  ]);
   return {
     pre: preCode,
     post: postCode,

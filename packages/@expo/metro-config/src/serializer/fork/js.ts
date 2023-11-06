@@ -116,7 +116,18 @@ export function getExportPathForDependency(
 ): string {
   //   console.log('getExportPathForDependency', dependency.data.data.locs, options);
   const { searchParams } = new URL(jscSafeUrl.toNormalUrl(options.sourceUrl!));
-  const bundlePath = path.relative(options.serverRoot, dependencyPath);
+  return getExportPathForDependencyWithOptions(dependencyPath, {
+    platform: searchParams.get('platform')!,
+    serverRoot: options.serverRoot,
+  });
+}
+
+export function getExportPathForDependencyWithOptions(
+  dependencyPath: string,
+  { platform, serverRoot }: { platform: string; serverRoot: string }
+): string {
+  //   console.log('getExportPathForDependency', dependency.data.data.locs, options);
+  const bundlePath = path.relative(serverRoot, dependencyPath);
   const relativePathname = path.join(
     path.dirname(bundlePath),
     // Strip the file extension
@@ -128,7 +139,7 @@ export function getExportPathForDependency(
     src: relativePathname,
   });
   return (
-    `_expo/static/js/${searchParams.get('platform')}/` +
+    `_expo/static/js/${platform}/` +
     // make filename safe
     // dependency.data.data.key.replace(/[^a-z0-9]/gi, '_') +
     name +

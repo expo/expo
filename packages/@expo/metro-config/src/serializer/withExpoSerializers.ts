@@ -5,23 +5,27 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { Module, MixedOutput } from 'metro';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
-// @ts-expect-error
+import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
+import { ConfigT } from 'metro-config';
+
+// @ts-expect-error
 import { InputConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
 
+import { toFixture } from './__tests__/fixtures/toFixture';
 import {
-  serverPreludeSerializerPlugin,
   environmentVariableSerializerPlugin,
+  serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
+import { baseJSBundle, baseJSBundleWithDependencies } from './fork/baseJSBundle';
+import { getExportPathForDependency, getExportPathForDependencyWithOptions } from './fork/js';
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
 
-export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
+export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
 export type SerializerParameters = Parameters<Serializer>;
 
@@ -51,12 +55,18 @@ export function withSerializerPlugins(
     ...config,
     serializer: {
       ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(processors, originalSerializer),
+      customSerializer: createSerializerFromSerialProcessors(
+        config.serializer ?? {},
+        processors,
+        originalSerializer
+      ),
     },
   };
 }
-
-function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer {
+export function getDefaultSerializer(
+  serializerConfig: ConfigT['serializer'],
+  fallbackSerializer?: Serializer | null
+): Serializer {
   const defaultSerializer =
     fallbackSerializer ??
     (async (...params: SerializerParameters) => {
@@ -67,24 +77,52 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
   return async (
     ...props: SerializerParameters
   ): Promise<string | { code: string; map: string }> => {
-    const [entryPoint, preModules, graph, options] = props;
+    const [entryFile, preModules, graph, options] = props;
 
-    const jsCode = await defaultSerializer(entryPoint, preModules, graph, options);
+    // const jsCode = await defaultSerializer(entryFile, preModules, graph, options);
 
+    // toFixture(...props);
     if (!options.sourceUrl) {
-      return jsCode;
+      return defaultSerializer(...props);
     }
+
     const sourceUrl = isJscSafeUrl(options.sourceUrl)
       ? toNormalUrl(options.sourceUrl)
       : options.sourceUrl;
     const url = new URL(sourceUrl, 'https://expo.dev');
+
+    if (!graph.transformOptions.platform) {
+      // @ts-expect-error
+      graph.transformOptions.platform = url.searchParams.get('platform');
+    }
+
     if (
-      url.searchParams.get('platform') !== 'web' ||
+      graph.transformOptions.platform !== 'web' ||
       url.searchParams.get('serializer.output') !== 'static'
     ) {
       // Default behavior if `serializer.output=static` is not present in the URL.
-      return jsCode;
+      return defaultSerializer(...props);
     }
+
+    const chunks:
+      | {
+          // Leaf file-path.
+          name: string;
+          // Relative file paths.
+          inputs: string[];
+        }[]
+      | null = url.searchParams.has('serializer.chunks')
+      ? JSON.parse(url.searchParams.get('serializer.chunks')!)
+      : null;
+
+    const allEntryFiles = new Set([
+      // Entry file for all chunks.
+      entryFile,
+      // Entry files for each chunk.
+      ...(chunks?.map((chunk) => chunk.inputs) ?? []).flat(),
+    ]);
+
+    console.log('process chunks:', entryFile, chunks, allEntryFiles);
 
     const includeSourceMaps = url.searchParams.get('serializer.map') === 'true';
 
@@ -93,55 +131,202 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
       processModuleFilter: options.processModuleFilter,
     });
 
-    const jsAssets: SerialAsset[] = [];
+    // JS
 
-    if (jsCode) {
-      const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
-      const jsFilename = fileNameFromContents({
-        filepath: url.pathname,
-        src: stringContents,
-      });
-      jsAssets.push({
-        filename: options.dev ? 'index.js' : `_expo/static/js/web/${jsFilename}.js`,
-        originFilename: 'index.js',
-        type: 'js',
-        metadata: {},
-        source: stringContents,
-      });
+    const _chunks = gatherChunks(new Set(), entryFile, preModules, graph, options);
 
-      if (
-        // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
-        includeSourceMaps &&
-        options.sourceMapUrl
-      ) {
-        const sourceMap = typeof jsCode === 'string' ? serializeToSourceMap(...props) : jsCode.map;
+    // Optimize the chunks
+    dedupeChunks(_chunks);
 
-        // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
-        const parsed = JSON.parse(sourceMap);
-        // TODO: Maybe we can do this earlier.
-        parsed.sources = parsed.sources.map(
-          // TODO: Maybe basePath support
-          (value: string) => {
-            if (value.startsWith('/')) {
-              return '/' + path.relative(options.serverRoot ?? options.projectRoot, value);
-            }
-            // Prevent `__prelude__` from being relative.
-            return value;
-          }
-        );
-
-        jsAssets.push({
-          filename: options.dev ? 'index.map' : `_expo/static/js/web/${jsFilename}.js.map`,
-          originFilename: 'index.map',
-          type: 'map',
-          metadata: {},
-          source: JSON.stringify(parsed),
-        });
-      }
-    }
+    const jsAssets = serializeChunks(_chunks, serializerConfig);
 
     return JSON.stringify([...jsAssets, ...cssDeps]);
   };
+}
+
+class Chunk {
+  public deps: Set<Module> = new Set();
+  public preModules: Set<Module> = new Set();
+
+  // Chunks that are required to be loaded synchronously before this chunk.
+  // These are included in the HTML as <script> tags.
+  public requiredChunks: Set<Chunk> = new Set();
+
+  constructor(
+    public name: string,
+    public entry: string,
+    public graph: ReadOnlyGraph<MixedOutput>,
+    public options: SerializerOptions<MixedOutput>
+  ) {}
+
+  getFilename() {
+    assert(
+      this.graph.transformOptions.platform,
+      "platform is required to be in graph's transformOptions"
+    );
+    // TODO: Content hash is needed
+    return this.options.dev
+      ? this.entry
+      : getExportPathForDependencyWithOptions(this.entry, {
+          platform: this.graph.transformOptions.platform,
+          serverRoot: this.options.serverRoot,
+        });
+  }
+
+  serializeToCode(serializerConfig: SerializerConfigT) {
+    const entryFile = this.entry;
+    const fileName = path.basename(entryFile, '.js');
+
+    const jsSplitBundle = baseJSBundleWithDependencies(
+      entryFile,
+      [...this.preModules.values()],
+      [...this.deps],
+      {
+        ...this.options,
+        runBeforeMainModule: serializerConfig.getModulesRunBeforeMainModule(
+          path.relative(this.options.projectRoot, entryFile)
+        ),
+        // ...(entryFile === '[vendor]'
+        //   ? {
+        //       runModule: false,
+        //       modulesOnly: true,
+        //       runBeforeMainModule: [],
+        //     }
+        //   : {}),
+        sourceMapUrl: `${fileName}.js.map`,
+      }
+    );
+
+    return bundleToString(jsSplitBundle).code;
+  }
+
+  serializeToAsset(serializerConfig: SerializerConfigT): SerialAsset {
+    const jsCode = this.serializeToCode(serializerConfig);
+
+    // console.log('-- code:', jsCode);
+    // // Save sourcemap
+    // const getSortedModules = (graph) => {
+    //   return [...graph.dependencies.values()].sort(
+    //     (a, b) => options.createModuleId(a.path) - options.createModuleId(b.path)
+    //   );
+    // };
+    // const sourceMapString = require('metro/src/DeltaBundler/Serializers/sourceMapString');
+
+    // const sourceMap = sourceMapString([...prependInner, ...getSortedModules(graph)], {
+    //   // excludeSource: options.excludeSource,
+    //   processModuleFilter: options.processModuleFilter,
+    //   shouldAddToIgnoreList: options.shouldAddToIgnoreList,
+    //   // excludeSource: options.excludeSource,
+    // });
+
+    // await writeFile(outputOpts.sourceMapOutput, sourceMap, null);
+
+    // console.log('entry >', entryDependency, entryDependency.dependencies);
+    const relativeEntry = path.relative(this.options.projectRoot, this.entry);
+    const outputFile = this.getFilename();
+
+    return {
+      filename: outputFile,
+      originFilename: relativeEntry,
+      type: 'js',
+      metadata: {
+        requires: [...this.requiredChunks.values()].map((chunk) => chunk.getFilename()),
+      },
+      source: jsCode,
+    };
+  }
+}
+import assert from 'assert';
+
+function gatherChunks(
+  chunks: Set<Chunk>,
+  entryFile: string,
+  preModules: readonly Module[],
+  graph: ReadOnlyGraph,
+  options: SerializerOptions<MixedOutput>
+): Set<Chunk> {
+  const entryModule = graph.dependencies.get(entryFile);
+  if (!entryModule) {
+    throw new Error('Entry module not found in graph: ' + entryFile);
+  }
+
+  // Prevent processing the same entry file twice.
+  if ([...chunks.values()].find((chunk) => chunk.entry === entryFile)) {
+    return chunks;
+  }
+
+  const entryChunk = new Chunk(entryFile, entryFile, graph, options);
+
+  // Add all the pre-modules to the first chunk.
+  if (chunks.size === 0) {
+    if (graph.transformOptions.platform === 'web') {
+      // On web, add a new required chunk that will be included in the HTML.
+      const preChunk = new Chunk('__premodules__', '__premodules__', graph, options);
+      for (const module of preModules.values()) {
+        preChunk.deps.add(module);
+      }
+      chunks.add(preChunk);
+      entryChunk.requiredChunks.add(preChunk);
+    } else {
+      // On native, use the preModules in insert code in the entry chunk.
+      for (const module of preModules.values()) {
+        entryChunk.preModules.add(module);
+      }
+    }
+  }
+
+  chunks.add(entryChunk);
+
+  function gatherDeps(entryModule: Module<MixedOutput>) {
+    for (const dependency of entryModule.dependencies.values()) {
+      if (dependency.data.data.asyncType === 'async') {
+        gatherChunks(chunks, dependency.absolutePath, preModules, graph, options);
+      } else {
+        const module = graph.dependencies.get(dependency.absolutePath);
+        if (module) {
+          entryChunk.deps.add(module);
+        }
+      }
+    }
+  }
+
+  gatherDeps(entryModule);
+
+  return chunks;
+}
+
+function dedupeChunks(chunks: Set<Chunk>) {
+  // Iterate chunks and pull duplicate modules into new common chunks that are required by the original chunks.
+
+  for (const chunk of chunks.values()) {
+    const deps = [...chunk.deps.values()];
+    for (const dep of deps) {
+      for (const otherChunk of chunks.values()) {
+        if (otherChunk === chunk) {
+          continue;
+        }
+        if (otherChunk.deps.has(dep)) {
+          // Move the dep into a new chunk.
+          const newChunk = new Chunk(dep.path, dep.path, chunk.graph, chunk.options);
+          newChunk.deps.add(dep);
+          newChunk.requiredChunks.add(chunk);
+          chunks.add(newChunk);
+          // Remove the dep from the original chunk.
+          chunk.deps.delete(dep);
+        }
+      }
+    }
+  }
+}
+
+function serializeChunks(chunks: Set<Chunk>, serializerConfig: SerializerConfigT) {
+  const jsAssets: SerialAsset[] = [];
+
+  chunks.forEach((chunk) => {
+    jsAssets.push(chunk.serializeToAsset(serializerConfig));
+  });
+
+  return jsAssets;
 }
 
 function getSortedModules(
@@ -179,10 +364,11 @@ function serializeToSourceMap(...props: SerializerParameters): string {
 }
 
 export function createSerializerFromSerialProcessors(
+  config: ConfigT['serializer'],
   processors: (SerializerPlugin | undefined)[],
   originalSerializer?: Serializer | null
 ): Serializer {
-  const finalSerializer = getDefaultSerializer(originalSerializer);
+  const finalSerializer = getDefaultSerializer(config, originalSerializer);
   return (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {
@@ -195,3 +381,5 @@ export function createSerializerFromSerialProcessors(
 }
 
 export { SerialAsset };
+
+// __d((function(g,r,i,a,m,e,d){}),435,{"0":2,"1":18,"2":184,"3":103,"4":436,"5":438,"6":439,"paths":{"438":"/etc/external.bundle?platform=web"}});
