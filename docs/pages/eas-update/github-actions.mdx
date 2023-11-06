@@ -161,3 +161,30 @@ Your GitHub Action should be set up now. Whenever a developer creates a pull req
 > Some repositories or organizations might need to explicitly enable GitHub Workflows and allow third-party Actions.
 
 </Step>
+
+## Using Bun instead of Yarn
+
+To use [Bun](/guides/using-bun/) as your package manager instead of Yarn, follow the steps below for both publishing updates on push and previews on pull requests:
+
+
+<Step label="1">
+
+Replace the `Setup Node` step in **update.yml** with the following snippet:
+
+```yaml update.yml
+- name: Setup Bun
+  uses: oven-sh/setup-bun@v1
+  with:
+    bun-version: latest
+```
+</Step>
+
+<Step label="2">
+
+To install dependencies using Bun, replace the `Install dependencies` step with the following snippet:
+
+```yaml update.yml
+- name: Install dependencies
+  run: bun install
+```
+</Step>
