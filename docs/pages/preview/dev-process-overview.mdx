@@ -1,47 +1,54 @@
 ---
 title: Development process overview
+description: An overview of the development process of building an Expo app and building an accurate mental model of the core development loop.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-This document aims to communicate an overview of what the development process of building an Expo app looks like, in order to help you build an accurate mental model.
+To help you build an accurate mental model, this document provides an overview of what the development process of building an Expo app looks like.
 
-If you’ve never used Expo or React Native before, or you’ve been around and them for a while, you might still learn something here. Let’s start with a clarifying key concepts, then we’ll move on to walking through the core development loop.
+You might have used Expo or React Native before, or are using them for a while, or you are still learning about the ecosystem. This document starts by clarifying key concepts and then defines different parts of the core development loop.
 
 ## Key concepts
 
-<Collapsible summary={`What is an “Expo app”?`}>
+<Collapsible summary={`What is an "Expo app"?`}>
 
-This is a shorthand term we use for describing a React Native app that uses Expo tools — it could use a single package from the Expo SDK, or Expo Router, or Expo CLI, or Continuous Native Generation, or all of those, for example.
+This is a shorthand term we use for describing a React Native app that uses Expo tools. It can use a single package from the Expo SDK, or Expo Router, or Expo CLI, or Continuous Native Generation, or a combination of them.
 
-We say “Expo app” because _“React Native app that uses Expo tools”_ is incredibly inconvenient to frequently type and speak out loud.
+We say "Expo app" because _React Native app that uses Expo tools_ is incredibly inconvenient to frequently type and speak out loud.
 
-<Collapsible summary={`Is the development process different for an "Expo app" and a "React Native app that does *not* use Expo tools"?`}>
+<Collapsible summary={<>Is the development process different for an "Expo app" and a "React Native app that does <span><i>not</i></span> use Expo tools"?</>}>
 
-All of the options of a “React Native app that does not use Expo tools” are available to you in an Expo app, and more. Expo provides a variety of tools and services that can be adopted independently, so the answer depends on what you choose to use!
-
-</Collapsible>
+All of the options of a "React Native app that does not use Expo tools" are available to you in an Expo app and much more. Expo provides a variety of tools and services that can be adopted independently, so the answer depends on what you choose to use!
 
 </Collapsible>
 
-<Collapsible summary={`What is the difference between “Expo” and “Expo Application Services” (EAS)?`}>
+</Collapsible>
 
-Expo is an open source project that gives developers powerful tools to assist in building and maintaining React Native apps at any scale. For example: Expo CLI, Expo Router, and Expo SDK packages. All Expo open source tools are entirely free to use and carry the MIT license.
+<Collapsible summary={`What is the difference between "Expo" and "Expo Application Services (EAS)"?`}>
 
-Expo Application Services (EAS) is an optional suite of hosted services that make it simple to build, submit, and update your app, to set up automation around all of those processes, and to collaborate with your team. EAS solves for a set of problems that require physical resources, such as application servers and CDNs for serving over-the-air updates and physical servers for running builds. EAS has a generous free plan that will work for many student and hobby projects.
+Expo is an open-source project that gives developers powerful tools to assist in building and maintaining React Native apps at any scale. For example, Expo CLI, Expo Router, and Expo SDK packages. All Expo open-source tools are entirely free to use and carry the MIT license.
+
+Expo Application Services (EAS) is an optional suite of hosted services that make it simple to:
+
+- Build, submit, and update your app
+- Set up automation around all of these processes
+- Collaborate with your team
+
+EAS solves a set of problems that require physical resources, such as application servers and CDNs for serving over-the-air updates and physical servers for running builds. EAS has a generous [free plan](https://expo.dev/pricing#get-started) that will work for many student and hobby projects.
 
 <Collapsible summary="Do I have to use EAS if I use Expo open source tools?">
 
-Nope! Your Expo project is just a React Native app, which is just a native app. You can use Fastlane or any native build, update, etc. tools that you like.
+Nope! Your Expo project is just a React Native app, which is just a native app. You can use Fastlane or any native build, update, and more, tools you like.
 
-Most EAS services also allow you to run them on your own infrastructure too, and we provide instructions for how you can accomplish this. For example, self-hosting updates (rather than using EAS Update) or running builds locally / on your own CI (rather than using our EAS Build worker fleet.
+Most EAS services also allow you to run them on your own infrastructure, and we provide instructions for how you can accomplish this. For example, [self-hosting updates](/distribution/custom-updates-server/) (rather than using EAS Update), or [running builds locally](/guides/local-app-development/) or on [your own CI](build/building-on-ci/) (rather than using our EAS Build worker fleet).
 
-For most teams, it makes sense to use EAS rather than spending the engineering time and resources on acquiring, setting up and maintaining the services on other infrastructure. Additionally, EAS provides deep integration between services, such as the deployments page for monitoring app version adoption, assigning updates to specific builds, and rolling those updates out incrementally — which then ties back into monitoring with EAS Insights.
+For most teams, it makes sense to use EAS rather than spending the engineering time and resources on acquiring, setting up, and maintaining the services on other infrastructure. Additionally, EAS provides deep integration between services, such as the deployments page for monitoring app version adoption, assigning updates to specific builds, and rolling those updates out incrementally &mdash; which ties back into monitoring with [EAS Insights](/eas-insights/introduction/).
 
 </Collapsible>
 
-<Collapsible summary="Can I use EAS if I’m not using any Expo open source tools?">
+<Collapsible summary="Can I use EAS if I'm not using any Expo open source tools?">
 
 Yes!
 
@@ -53,20 +60,19 @@ Yes!
 
 There's no faster way to spin up a React Native project and run it on your device or emulator than Expo Go ([learn more](/get-started/expo-go/)), especially when combined with [Snack](https://snack.expo.dev/).
 
-However, both Expo Go and Snack are not intended for building production apps. They are great when you're just getting started on a project or for prototypes, but if you plan on deploying your app to the store, then development builds will provide a more flexible, reliable, and complete development environment. **This guide does not go into any detail about Expo Go, and this is the only section that mentions it.**
+However, Expo Go and Snack are not intended for building production apps. They are great when you're getting started on a project or for prototypes. If you plan on deploying your app to the store, then [development builds](#development-builds) will provide a more flexible, reliable, and complete development environment. **This guide does not go into any detail about Expo Go, and this is the only section that mentions it.**
 
 </Collapsible>
 
 <Collapsible summary="Development builds">
 
-TODO
+A development build is a debug build of your app that contains `expo-dev-client` library. It helps you iterate as quickly as possible and provides a more flexible, reliable, and complete development environment than Expo Go. You can install any native library and configure or apply changes to a native directory using [app config](/workflow/configuration/) or by creating a [config plugin](/config-plugins/introduction/). You can create a [development build locally](/guides/local-app-development/#local-builds-with-expo-dev-client) or [EAS](/develop/development-builds/create-a-build/) to create a build in the cloud.
 
 </Collapsible>
 
 <Collapsible summary={`Android and iOS native projects`}>
 
 React Native apps for mobile platforms are made of two interconnected parts:
-
 
 <Collapsible summary={`1. The app JavaScript`}>
 
@@ -76,24 +82,30 @@ This contains your React components and most, if not all, of your application lo
 
 <Collapsible summary={`2. The native projects`}>
 
-Android and Xcode projects that bundle the JavaScript app, serve as the launchpad for the JavaScript app on each platform, handle the rendering of native components, and provide the means to access platform-specific functionalities and integrate with any installed native libraries. App configuration, such as the name (as it appears on the home screen), icon, required permissions, associated domains, supported orientations, and so on, is configured in the native project.
+Android and Xcode projects that bundle the JavaScript app, serve as the launchpad for the JavaScript app on each platform. They also handle the rendering of native components and provide the means to access platform-specific functionalities and integrate with any installed native libraries. App configuration, such as the name (as it appears on the home screen), icon, required permissions, associated domains, supported orientations, and so on, is configured in the native project.
 
 </Collapsible>
 
-Like any mobile app, the application that is distributed to users is created by compiling (”building”) the Xcode or Android project.
+Like any mobile app, the application that is distributed to users is created by compiling ("building") the Android Studio or Xcode project.
 
-When you initialize a new app with `npx create-expo-app`, you will not see any **android** or **ios** directories. You can generate the native projects by running `npx expo prebuild`, which will initialize the native projects and then apply the project Expo app config (**app.json/app.config.js**) to them ([learn more](https://docs.expo.dev/workflow/prebuild/)).
+When you initialize a new app with `npx create-expo-app`, you will not see any **android** or **ios** directories. You can [generate the native projects by running `npx expo prebuild`](/workflow/prebuild/), which will initialize the native projects and then apply the project Expo app config (**app.json/app.config.js**) to them.
 
-If you use a cloud-based development workflow, you may never need to run prebuild or install Xcode or Android Studio on your own machine (although you may find this to be useful). This is explained below in the “Local and cloud-based development workflows” section.
+If you use a cloud-based development workflow, you may never need to run prebuild or install Android Studio or Xcode on your own machine (although you may find this useful). This is explained below in the [Local and cloud-based development workflows](#local-and-cloud-based-development-workflows).
 
-<Collapsible summary={`Why aren’t the native projects created by default when you initialize a project with create-expo-app?`}>
+<Collapsible summary={`Why aren't the native projects created by default when you initialize a project with create-expo-app?`}>
 
 The default behavior encourages the use of [Continuous Native Generation](/workflow/continuous-native-generation/) (CNG) to generate the native projects when needed, which can make upgrades and project maintenance significantly easier.
 The following three commands result in more or less the same project:
 
-- `npx create-expo-app MyApp && cd MyApp && npx expo prebuild`
-- `npx create-expo-app --template bare-minimum`
-- `npx react-native init MyApp && cd MyApp && npx install-expo-modules`
+<Terminal
+  cmd={[
+    'npx create-expo-app MyApp && cd MyApp && npx expo prebuild',
+    '',
+    'npx create-expo-app --template bare-minimum',
+    '',
+    'npx react-native init MyApp && cd MyApp && npx install-expo-modules',
+  ]}
+/>
 
 </Collapsible>
 
@@ -101,42 +113,58 @@ The following three commands result in more or less the same project:
 
 <Collapsible summary={`Continuous Native Generation (CNG)`}>
 
-You can add the native project directories (**android/** and **ios/**) to your **.gitignore** and/or delete the project at any time, then re-generate them from the Expo app config with `npx expo prebuild` whenever they are needed. This is known as Continuous Native Generation. Using CNG can make upgrading to new versions of React Native much easier, it can simplify project maintenance, and it can facilitate setting up complex features such as [App Clips](https://github.com/bndkt/react-native-app-clip), [share extensions](https://github.com/timedtext/expo-config-plugin-ios-share-extension), and [push notifications](https://github.com/OneSignal/onesignal-expo-plugin). [Learn more about CNG](https://docs.expo.dev/workflow/continuous-native-generation/).
+You can add the native project directories (**android** and **ios**) to your **.gitignore** and/or delete the project at any time, then re-generate them from the Expo app config with `npx expo prebuild` whenever required. This is known as Continuous Native Generation.
 
+Using CNG can make upgrading to new versions of React Native much easier. It can simplify project maintenance and facilitate setting up complex features such as [App Clips](https://github.com/bndkt/react-native-app-clip), [share extensions](https://github.com/timedtext/expo-config-plugin-ios-share-extension), and [push notifications](https://github.com/OneSignal/onesignal-expo-plugin). Learn more about [CNG](/workflow/continuous-native-generation/).
 
-<Collapsible summary="What if I want to edit the native project configuration in Android Studio or Xcode, rather than generating the projects with prebuild?">
+<Collapsible summary="What if I want to edit the native project configuration in Android Studio or Xcode rather than generating the projects with prebuild?">
 
-If you prefer to edit the native projects in Android Studio or Xcode, then you can run prebuild once to generate the projects, or initialize your project with `npx create-expo-app --template bare-minimum`, and from then on configure your native projects using those IDEs instead of your from the Expo app config. CNG has proven to be helpful on many teams, but it may not be the best fit for yours, and this is a perfectly legitimate way to use Expo tools.
+Apart from generating your project with the `npx expo prebuild` command, you can also initialize your project with `npx create-expo-app --template bare-minimum`. This already runs the prebuild command when initializing your Expo project.
+
+After the native project directories are created and added to your project you may want to configure them directly instead of using Expo app config. If you decide to do so, then you lose the ability to generate those directories again with the prebuild command. Doing so will delete all the direct modifications you made to those native directories since the prebuild command will override those changes. You also become responsible for maintaining the native projects and keeping them up to date.
+
+CNG has proven to be helpful to many teams. However, it may not be the best fit for your project and this is a legitimate way to use Expo tools.
 
 </Collapsible>
 
 <Collapsible summary="How do I know when I need to run prebuild again?">
 
-If you add a new native dependency to your project, or change the project configuration in **app.json/app.config.js**, then you will want to run `npx expo prebuild --clean` in order to re-generate project directories.
+If you add a new native dependency to your project or change the project configuration in Expo app config (**app.json/app.config.js**), you can run `npx expo prebuild` to re-generate the native project directories.
 
 </Collapsible>
 
 </Collapsible>
 
-<Collapsible summary="Local and cloud-based development workflows">
+<Collapsible summary="Cloud-based and local development workflows">
 
-Local ___
+It's possible with Expo and EAS to work on your native Android or iOS app without installing Android Studio or Xcode and creating a cloud-based development build. This can be helpful when:
 
-It’s possible with Expo and EAS to work on your native Android and/or iOS app without installing Xcode or Android Studio. This can be helpful when ___
+- You are limited by local machine development workflow (for example, Xcode for iOS is [exclusively available for macOS](/faq/#can-i-develop-ios-apps-on-a-windows-computer))
+- Iterate as quickly as possible when developing your app
+- Share your project with other collaborators or trusted testers
+- Keep up with the latest changes in the React Native ecosystem and easier app upgrades
+- A proven and dedicated path for going from development to production using the EAS services (Build, Update, Submit)
+- Use [`expo-dev-client`](/develop/development-builds/introduction/#what-is-expo-dev-client) library to extend your development build by providing a launch UI to preview your updates, switch between development servers without the need to rebuild the entire app binary, share and run the build on any machine, and more
 
-_This is where we need to introduce the “do you want to compile the app locally or use EAS Build?” - in other words - do you want to install native toolchains and compile your app locally or do you want to use EAS Build to create builds for you? If cloud-based, you probably want to create development builds with expo-dev-client — this library provides adds a dev tools UI to your debug builds that allows you to choose where to load your project from, so you can can open preview updates, your project on your own machine, a colleagues machine, or wherever._
+<Collapsible summary="Do you want to compile your app locally">
 
-_Choosing local or cloud-based development workflow isn’t a commitment, it’s just a choice you make each time you run a new native build. Whether you choose local or cloud-based doesn’t significantly alter your development loop, it’s just about how you produce and distribute your app binaries that your JavaScript code runs against._
+To compile and release your app locally, you can use your own machine. You have to manually generate native code before testing the debug build or creating a production build for it to submit to the app store. You also need tools such as Android Studio and Xcode installed on your machine.
+
+See [Local app compilation](/guides/local-app-development/#local-app-compilation) for more in-depth information on how to set up your local development environment and compile your app locally. You can also use [`expo-dev-client` library](/guides/local-app-development/#local-builds-with-expo-dev-client) when managing everything locally.
 
 </Collapsible>
 
-## Initializing and running a project
+Choosing a cloud-based or local development workflow isn't a commitment. It's a choice you make each time you run a new native build. Whether you choose cloud-based or local doesn't significantly alter your development loop. It's about how you produce and distribute your app binaries that your JavaScript code runs against.
+
+</Collapsible>
+
+## Initialize and run a project
 
 The easiest way to create a new project is with `create-expo-app`.
 
 You can immediately launch the project directly in Expo Go from your physical device or in a simulator / emulator if you’d like to experiment / build a quick prototype.
 
-In many cases, you'll  ____
+In many cases, you'll \_\_\_\_
 
 (talk about creating a development build maybe? is this needed or should we just jump to the core development loop?)
 
@@ -150,21 +178,21 @@ In many cases, you'll  ____
 - maybe also link to app variants docs
 - info about debugging
 
-## Sharing your app with testers
+## Share app with testers
 
 - Build & Submit
 - Internal distribution
 
-## Release your app to stores
+## Release app to stores
 
 - Build & Submit
 
-## Monitoring your app in production
+## Monitor app in production
 
 - Crash reporting
 - Analytics
 
-## Updating your app
+## Update the app
 
 - EAS Update
 - Build & Submit
