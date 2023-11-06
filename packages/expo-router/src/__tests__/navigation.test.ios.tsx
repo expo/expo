@@ -766,3 +766,107 @@ it('can push & replace with nested Slots', async () => {
   expect(screen).toHavePathname('/');
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
+
+it('can navigation to a relative route without losing path params', async () => {
+  renderRouter(
+    {
+      _layout: () => <Slot />,
+      '(group)/[value]/one': () => <Text testID="one" />,
+      '(group)/[value]/two': () => <Text testID="two" />,
+      '(group)/[...value]/three': () => <Text testID="three" />,
+      '(group)/[...value]/four': () => <Text testID="four" />,
+    },
+    {
+      initialUrl: '/test/one',
+    }
+  );
+
+  expect(screen).toHavePathname('/test/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.push('./two'));
+  expect(screen).toHavePathname('/test/two');
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+
+  act(() => router.push('../apple/one?orange=1'));
+  expect(screen).toHavePathname('/apple/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  act(() => router.push('./two'));
+  expect(screen).toHavePathname('/apple/two');
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+
+  act(() => router.push('./three'));
+  expect(screen).toHavePathname('/apple/three');
+  expect(screen.getByTestId('three')).toBeOnTheScreen();
+
+  act(() => router.push('./banana/four'));
+  expect(screen).toHavePathname('/apple/banana/four');
+  expect(screen.getByTestId('four')).toBeOnTheScreen();
+
+  act(() => router.push('./three'));
+  expect(screen).toHavePathname('/apple/banana/three');
+  expect(screen.getByTestId('three')).toBeOnTheScreen();
+});
+
+describe('shared routes with tabs', () => {
+  function renderSharedTabs() {
+    renderRouter({
+      '(one,two)/_layout': () => <Stack />,
+      '(one,two)/one': () => <Text />,
+      '(one,two)/post': () => <Text />,
+      '(two)/two': () => <Text />,
+      _layout: () => <Tabs />,
+      index: () => <Redirect href="/one" />,
+    });
+
+    expect(screen).toHavePathname('/one');
+  }
+
+  describe('tab one (default)', () => {
+    it('pushes post in tab one using absolute /post', async () => {
+      renderSharedTabs();
+      act(() => router.push('/post'));
+      expect(screen).toHavePathname('/post');
+      expect(screen).toHaveSegments(['(one)', 'post']);
+    });
+    it('pushes post in tab one using absolute /(tabs)/(one)/post', async () => {
+      renderSharedTabs();
+      act(() => router.push('/(one)/post'));
+      expect(screen).toHavePathname('/post');
+      expect(screen).toHaveSegments(['(one)', 'post']);
+    });
+    it('pushes post in tab one using relative ./post', async () => {
+      renderSharedTabs();
+      act(() => router.push('./post'));
+      expect(screen).toHavePathname('/post');
+      expect(screen).toHaveSegments(['(one)', 'post']);
+    });
+  });
+  describe('tab two', () => {
+    // Navigate to tab two before each case here.
+    beforeEach(() => {
+      renderSharedTabs();
+      act(() => router.push('/two'));
+      expect(screen).toHavePathname('/two');
+      expect(screen).toHaveSegments(['(two)', 'two']);
+    });
+
+    it('pushes post in tab two with absolute `/post` goes to default tab', async () => {
+      act(() => router.push('/post'));
+      expect(screen).toHavePathname('/post');
+      expect(screen).toHaveSegments(['(one)', 'post']);
+    });
+    it('pushes post in tab two using absolute /(tabs)/(two)/post', async () => {
+      act(() => router.push('/(two)/post'));
+      expect(screen).toHavePathname('/post');
+      expect(screen).toHaveSegments(['(two)', 'post']);
+    });
+    it('pushes post in tab two using relative ./post', async () => {
+      // Pushing `./post` should preserve the relative position in tab two and NOT swap to the default tab one variation of the `/post` route.
+      act(() => router.push('./post'));
+      expect(screen).toHavePathname('/post');
+      expect(screen).toHaveSegments(['(two)', 'post']);
+    });
+  });
+});

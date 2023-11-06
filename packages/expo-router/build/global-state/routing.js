@@ -82,14 +82,29 @@ function linkTo(href, event) {
     }
     const rootState = navigationRef.getRootState();
     if (href.startsWith('.')) {
-        let base = this.linking.getPathFromState?.(rootState, {
-            screens: [],
-            preserveGroups: true,
-        }) ?? '';
-        if (base && !base.endsWith('/')) {
-            base += '/..';
-        }
-        href = (0, path_1.resolve)(base, href);
+        // Resolve base path by merging the current segments with the params
+        const base = this.routeInfo?.segments
+            ?.map((segment) => {
+            if (!segment.startsWith('['))
+                return segment;
+            if (segment.startsWith('[...')) {
+                segment = segment.slice(4, -1);
+                const params = this.routeInfo?.params?.[segment];
+                if (Array.isArray(params)) {
+                    return params.join('/');
+                }
+                else {
+                    return params?.split(',')?.join('/') ?? '';
+                }
+            }
+            else {
+                segment = segment.slice(1, -1);
+                return this.routeInfo?.params?.[segment];
+            }
+        })
+            .filter(Boolean)
+            .join('/') ?? '/';
+        href = (0, path_1.resolve)(base + '/..', href);
     }
     const state = this.linking.getStateFromPath(href, this.linking.config);
     if (!state || state.routes.length === 0) {
