@@ -88,7 +88,7 @@ class UpdatesController private constructor(
   private val stateMachine = UpdatesStateMachine(context, this)
 
   private var launcher: Launcher? = null
-  private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
+  public val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
 
   // TODO: move away from DatabaseHolder pattern to Handler thread
   private val databaseHandlerThread = HandlerThread("expo-updates-database")
