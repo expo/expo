@@ -157,6 +157,56 @@ describe('classic runtime', () => {
   });
 });
 
+// This tests that `@babel/preset-react` works as expected in development for edge-cases.
+it(`supports nested React components in destructured props in Metro + development + hermes`, () => {
+  const options = {
+    ...DEF_OPTIONS,
+    presets: [[preset, { jsxRuntime: 'automatic' }]],
+    caller: getCaller({
+      name: 'metro',
+      platform: 'ios',
+      engine: 'hermes',
+      isDev: true,
+    }),
+    retainLines: false,
+  };
+
+  const sourceCode = `
+  function Foo({
+    button = () => {
+      return <Text>Foo</Text>;
+    },
+  }) {
+    return <>{button()}</>;
+  }`;
+
+  const code = babel.transform(sourceCode, options)!.code;
+
+  expect(code).toMatch(/"react\/jsx-dev-runtime"/);
+  expect(code).toMatch(/var _this = this;/);
+  expect(code).toMatch(/var _ref\$button/);
+  expect(code).toMatchInlineSnapshot(`
+    "var _jsxDevRuntime = require("react/jsx-dev-runtime");
+    var _jsxFileName = "/unknown";
+    function Foo(_ref) {
+      var _this = this;
+      var _ref$button = _ref.button,
+        button = _ref$button === void 0 ? function () {
+          return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)(Text, {
+            children: "Foo"
+          }, void 0, false, {
+            fileName: _jsxFileName,
+            lineNumber: 4,
+            columnNumber: 14
+          }, _this);
+        } : _ref$button;
+      return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)(_jsxDevRuntime.Fragment, {
+        children: button()
+      }, void 0, false);
+    }"
+  `);
+});
+
 describe('auto runtime (default)', () => {
   // No React import...
   const sourceCode = `

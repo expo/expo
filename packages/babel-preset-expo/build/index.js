@@ -49,6 +49,12 @@ function babelPresetExpo(api, options = {}) {
             { loose: false },
         ]);
     }
+    else {
+        // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
+        // JSX is used in a function body. This is technically not required in production, but we
+        // should retain the same behavior since it's hard to debug the differences.
+        extraPlugins.push(require('@babel/plugin-transform-parameters'));
+    }
     if (platformOptions.useTransformReactJSXExperimental != null) {
         throw new Error(`babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`);
     }

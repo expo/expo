@@ -41,11 +41,6 @@ var obj = {
   bar: "bar"
 };
 
-// @babel/plugin-transform-parameters
-function test(x = "hello", { a, b }, ...args) {
-  console.log(x, a, b, args);
-}
-
 // @babel/plugin-transform-shorthand-properties
 var a1 = 0;
 var c = { a1 };
