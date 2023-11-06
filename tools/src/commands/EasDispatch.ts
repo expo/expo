@@ -2,7 +2,7 @@ import { Command } from '@expo/commander';
 import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
-import { S3 } from "@aws-sdk/client-s3";
+import { S3 } from '@aws-sdk/client-s3';
 import fs, { mkdirp } from 'fs-extra';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
@@ -17,9 +17,7 @@ import logger from '../Logger';
 import { androidAppVersionAsync, iosAppVersionAsync } from '../ProjectVersions';
 import { modifySdkVersionsAsync } from '../Versions';
 
-const s3Client = new S3({
-  region: 'us-east-1'
-});
+const s3Client = new S3({ region: 'us-east-1' });
 
 const RELEASE_BUILD_PROFILE = 'release-client';
 const PUBLISH_CLIENT_BUILD_PROFILE = 'publish-client';
