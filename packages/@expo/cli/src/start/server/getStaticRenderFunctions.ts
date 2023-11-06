@@ -14,6 +14,7 @@ import { logMetroError } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 import { stripAnsi } from '../../utils/ansi';
 import { delayAsync } from '../../utils/delay';
+import { env } from '../../utils/env';
 import { SilentError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
 import { profile } from '../../utils/profile';
@@ -122,6 +123,9 @@ export async function createMetroEndpointAsync(
   if (engine) {
     url += `&transform.engine=${engine}`;
   }
+
+  url += `&transform.inlineEnvVars=${String(!env.EXPO_NO_CLIENT_ENV_VARS)}`;
+
   return url;
 }
 
