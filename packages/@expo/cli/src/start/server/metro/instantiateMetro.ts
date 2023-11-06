@@ -181,7 +181,6 @@ export async function instantiateMetroAsync(
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
   const { server, metro } = await runServer(metroBundler, metroConfig, {
-    hmrEnabled: true,
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints,
     watch: !isExporting && isWatchEnabled(),
