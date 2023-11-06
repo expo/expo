@@ -44,7 +44,6 @@ it(`passes the environment as isServer to the babel preset`, () => {
       publicPath: '/',
       customTransformOptions: Object.create({
         environment: 'node',
-        inlineEnvVars: true,
       }),
     },
     src: fixture,
@@ -85,7 +84,6 @@ it(`passes the environment as isServer to the babel preset`, () => {
         bundler: 'metro',
         name: 'metro',
         platform: 'ios',
-        inlineEnvVars: true,
         projectRoot: expect.any(String),
       },
       cloneInputAst: false,

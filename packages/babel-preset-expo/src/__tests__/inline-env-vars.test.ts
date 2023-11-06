@@ -6,11 +6,13 @@ import { getInlineEnvVarsEnabled } from '../common';
 const ENABLED_CALLER = {
   name: 'metro',
   isDev: false,
-  inlineEnvVars: true,
   isServer: false,
 };
 describe(getInlineEnvVarsEnabled, () => {
   it(`enables under the correct conditions`, () => {
+    // Defaults to on.
+    expect(getInlineEnvVarsEnabled({})).toBe(true);
+
     expect(getInlineEnvVarsEnabled(ENABLED_CALLER)).toBe(true);
 
     expect(getInlineEnvVarsEnabled({ ...ENABLED_CALLER, isServer: undefined })).toBe(true);
@@ -22,13 +24,19 @@ describe(getInlineEnvVarsEnabled, () => {
     ).toBe(true);
   });
   it(`aggressively disables`, () => {
-    expect(getInlineEnvVarsEnabled({})).toBe(false);
+    expect(getInlineEnvVarsEnabled({ preserveEnvVars: true })).toBe(false);
 
     // Webpack
     expect(
       getInlineEnvVarsEnabled({
         ...ENABLED_CALLER,
         name: 'babel-loader',
+      })
+    ).toBe(false);
+    expect(
+      getInlineEnvVarsEnabled({
+        ...ENABLED_CALLER,
+        preserveEnvVars: true,
       })
     ).toBe(false);
     expect(

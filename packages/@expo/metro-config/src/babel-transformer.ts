@@ -227,7 +227,9 @@ const transform: BabelTransformer['transform'] = ({
         // This value indicates if the user has disabled the feature or not.
         // Other criteria may still cause the feature to be disabled, but all inputs used are
         // already considered in the cache key.
-        inlineEnvVars: isCustomTruthy(options.customTransformOptions?.inlineEnvVars),
+        preserveEnvVars: isCustomTruthy(options.customTransformOptions?.preserveEnvVars)
+          ? true
+          : undefined,
         // Pass the engine to babel so we can automatically transpile for the correct
         // target environment.
         engine: options.customTransformOptions?.engine,

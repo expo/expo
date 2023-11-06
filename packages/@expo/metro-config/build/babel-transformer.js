@@ -249,7 +249,7 @@ const transform = ({
         // This value indicates if the user has disabled the feature or not.
         // Other criteria may still cause the feature to be disabled, but all inputs used are
         // already considered in the cache key.
-        inlineEnvVars: isCustomTruthy((_options$customTransf2 = options.customTransformOptions) === null || _options$customTransf2 === void 0 ? void 0 : _options$customTransf2.inlineEnvVars),
+        preserveEnvVars: isCustomTruthy((_options$customTransf2 = options.customTransformOptions) === null || _options$customTransf2 === void 0 ? void 0 : _options$customTransf2.preserveEnvVars) ? true : undefined,
         // Pass the engine to babel so we can automatically transpile for the correct
         // target environment.
         engine: (_options$customTransf3 = options.customTransformOptions) === null || _options$customTransf3 === void 0 ? void 0 : _options$customTransf3.engine,

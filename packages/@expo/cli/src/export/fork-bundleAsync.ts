@@ -141,7 +141,7 @@ async function bundleProductionMetroClientAsync(
       customTransformOptions: {
         __proto__: null,
         engine: isHermes ? 'hermes' : undefined,
-        inlineEnvVars: !env.EXPO_NO_CLIENT_ENV_VARS,
+        preserveEnvVars: env.EXPO_NO_CLIENT_ENV_VARS,
       },
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
         reporter.update({

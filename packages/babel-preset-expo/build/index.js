@@ -18,7 +18,7 @@ function babelPresetExpo(api, options = {}) {
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
     const isDev = api.caller(common_1.getIsDev);
-    const inlineEnvVars = api.caller(common_1.getInlineEnvVarsEnabled);
+    const inlineEnvironmentVariables = api.caller(common_1.getInlineEnvVarsEnabled);
     // If the `platform` prop is not defined then this must be a custom config that isn't
     // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
     if (!platform && isWebpack) {
@@ -63,7 +63,7 @@ function babelPresetExpo(api, options = {}) {
     // Development uses an uncached serializer.
     // Servers read from the environment.
     // Users who disable the feature may be using a different babel plugin.
-    if (inlineEnvVars) {
+    if (inlineEnvironmentVariables) {
         extraPlugins.push(inline_env_vars_1.expoInlineEnvVars);
     }
     if (platform === 'web') {

@@ -95,7 +95,7 @@ export function createBundleUrlPath({
   serializerIncludeMaps,
   lazy,
   engine,
-  inlineEnvVars = !env.EXPO_NO_CLIENT_ENV_VARS,
+  preserveEnvVars = env.EXPO_NO_CLIENT_ENV_VARS,
 }: {
   platform: string;
   mainModuleName: string;
@@ -106,7 +106,7 @@ export function createBundleUrlPath({
   serializerIncludeMaps?: boolean;
   lazy?: boolean;
   engine?: 'hermes';
-  inlineEnvVars?: boolean;
+  preserveEnvVars?: boolean;
 }): string {
   const queryParams = new URLSearchParams({
     platform: encodeURIComponent(platform),
@@ -127,8 +127,8 @@ export function createBundleUrlPath({
     queryParams.append('transform.engine', engine);
   }
 
-  if (inlineEnvVars) {
-    queryParams.append('transform.inlineEnvVars', String(inlineEnvVars));
+  if (preserveEnvVars) {
+    queryParams.append('transform.preserveEnvVars', String(preserveEnvVars));
   }
 
   if (environment) {

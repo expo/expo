@@ -124,7 +124,9 @@ export async function createMetroEndpointAsync(
     url += `&transform.engine=${engine}`;
   }
 
-  url += `&transform.inlineEnvVars=${String(!env.EXPO_NO_CLIENT_ENV_VARS)}`;
+  if (env.EXPO_NO_CLIENT_ENV_VARS) {
+    url += `&transform.preserveEnvVars=${String(env.EXPO_NO_CLIENT_ENV_VARS)}`;
+  }
 
   return url;
 }

@@ -60,8 +60,8 @@ export function getInlineEnvVarsEnabled(caller: any): boolean {
   const isWebpack = getBundler(caller) === 'webpack';
   const isDev = getIsDev(caller);
   const isServer = getIsServer(caller);
-  const inlineEnvVars = caller?.inlineEnvVars;
+  const preserveEnvVars = caller?.preserveEnvVars;
   // Development env vars are added in the serializer to avoid caching issues in development.
   // Servers have env vars left as-is to read from the environment.
-  return !isWebpack && !isDev && !isServer && !!inlineEnvVars;
+  return !isWebpack && !isDev && !isServer && !preserveEnvVars;
 }
