@@ -128,7 +128,9 @@ public final class EmbeddedAppLoader: AppLoader {
   }
 
   override public func downloadAsset(_ asset: UpdateAsset) {
-    let destinationPath = UpdatesUtils.path(forBundledAsset: asset) ?? ""
+    guard let destinationPath = UpdatesUtils.path(forBundledAsset: asset) else {
+      // do something when this is nil. it's less clear what the behavior for `fileExists(atPath: "")` is 
+    }
     assert(FileManager.default.fileExists(atPath: destinationPath))
     FileDownloader.assetFilesQueue.async {
       self.handleAssetDownloadAlreadyExists(asset)

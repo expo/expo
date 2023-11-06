@@ -87,20 +87,19 @@ public final class UpdatesUtils: NSObject {
     }
   }
 
-  internal static func embeddedAssetsMap(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> [String: Any] {
-    var assetFilesMap: [String: Any] = [:]
+  internal static func embeddedAssetsMap(withConfig config: UpdatesConfig, database: UpdatesDatabase) -> [String: String?] {
+    var assetFilesMap: [String: String?] = [:]
     let embeddedManifest: Update? = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database)
     let embeddedAssets = embeddedManifest?.assets() ?? []
 
     // Prepopulate with embedded assets
     for asset in embeddedAssets {
-      if let assetKey: String = asset.key {
-        if !asset.isLaunchAsset {
-          let absolutePath = path(forBundledAsset: asset)
-          let message = "AppLauncherWithDatabase: embedded asset key = \(asset.key ?? ""), main bundle filename = \(asset.mainBundleFilename ?? ""), path = \(absolutePath ?? "")"
-          NSLog(message)
-          assetFilesMap[assetKey] = absolutePath
-        }
+      if let assetKey = asset.key,
+        !asset.isLaunchAsset {
+        let absolutePath = path(forBundledAsset: asset)
+        let message = "AppLauncherWithDatabase: embedded asset key = \(asset.key ?? ""), main bundle filename = \(asset.mainBundleFilename ?? ""), path = \(absolutePath ?? "")"
+        logger.debug(message: message)
+        assetFilesMap[assetKey] = absolutePath
       }
     }
 
