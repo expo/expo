@@ -38,7 +38,7 @@ it(`asserts in production that the origin was not specified at build-time`, () =
   // Don't mock the location object...
 
   expect(() => buildUrlForBundle('/foobar')).toThrow(
-    /Unable to determine the production URL where additional JavaScript chunks are hosted because the global \"location\" variable is not defined\./
+    /Unable to determine the production URL where additional JavaScript chunks are hosted because the global "location" variable is not defined\./
   );
 });
 it(`returns an expected URL in development`, () => {
