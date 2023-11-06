@@ -17,6 +17,27 @@ function babelPresetExpo(api, options = {}) {
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
     const isDev = api.caller(common_1.getIsDev);
+    // return {
+    //   presets: [
+    //     [
+    //       '@babel/preset-env',
+    //       {
+    //         targets: {
+    //           browsers: ['last 1 version'],
+    //         },
+    //         useBuiltIns: 'usage',
+    //       },
+    //     ],
+    //     [
+    //       '@babel/preset-react',
+    //       {
+    //         dev: true,
+    //         runtime: 'automatic',
+    //       },
+    //     ],
+    //   ],
+    //   plugins: [],
+    // };
     // If the `platform` prop is not defined then this must be a custom config that isn't
     // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
     if (!platform && isWebpack) {
@@ -48,6 +69,12 @@ function babelPresetExpo(api, options = {}) {
             require.resolve('@babel/plugin-proposal-object-rest-spread'),
             { loose: false },
         ]);
+    }
+    else {
+        // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
+        // JSX is used in a function body. This is technically not required in production, but we
+        // should retain the same behavior since it's hard to debug the differences.
+        extraPlugins.push(require('@babel/plugin-transform-parameters'));
     }
     if (platformOptions.useTransformReactJSXExperimental != null) {
         throw new Error(`babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`);
