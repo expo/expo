@@ -3,8 +3,10 @@ title: Development process overview
 description: An overview of the development process of building an Expo app and building an accurate mental model of the core development loop.
 ---
 
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { DocsLogo } from '@expo/styleguide';
 
 To help you build an accurate mental model, this document provides an overview of what the development process of building an Expo app looks like.
 
@@ -160,15 +162,23 @@ Choosing a cloud-based or local development workflow isn't a commitment. It's a 
 
 ## Initialize and run a project
 
-The easiest way to create a new project is with `create-expo-app`.
+The easiest way to [create a new project is with `create-expo-app`](/get-started/create-a-project/#initialize-a-new-project). After creating your project, you can immediately launch it directly in Expo Go on your physical device or in an emulator/simulator if want to experiment or build a quick prototype.
 
-You can immediately launch the project directly in Expo Go from your physical device or in a simulator / emulator if you’d like to experiment / build a quick prototype.
+In most cases, you will create and use a development build of your project. You will install the [`expo-dev-client`](/develop/development-builds/introduction/#what-is-expo-dev-client) library. Development builds can be created with EAS Build or locally on your machine:
 
-In many cases, you'll \_\_\_\_
+<BoxLink
+  title="Create a development build"
+  description="Learn how to a create development build for your project using EAS."
+  href="/develop/development-builds/create-a-build/"
+  Icon={DocsLogo}
+/>
 
-(talk about creating a development build maybe? is this needed or should we just jump to the core development loop?)
-
-(insert link to the dedicated page for creating new projects here, so people can get more info)
+<BoxLink
+  title="Local app compilation"
+  description="Learn how to compile your app locally using your own machine, Android Studio and Xcode."
+  href="/guides/local-app-development/"
+  Icon={DocsLogo}
+/>
 
 ## The core development loop
 
