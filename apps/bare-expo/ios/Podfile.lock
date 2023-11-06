@@ -25,8 +25,6 @@ PODS:
   - EXImageLoader (4.5.0):
     - ExpoModulesCore
     - React-Core
-  - EXInAppPurchases (14.6.0):
-    - ExpoModulesCore
   - EXJSONUtils (0.11.0)
   - EXJSONUtils/Tests (0.11.0)
   - EXLocation (16.4.0):
@@ -787,9 +785,9 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.22.0):
+  - RNScreens (3.27.0):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
-    - React-RCTImage
   - RNSVG (13.9.0):
     - React-Core
   - SDWebImage (5.17.0):
@@ -827,7 +825,6 @@ DEPENDENCIES:
   - EXContacts (from `../../../packages/expo-contacts/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
-  - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXJSONUtils/Tests (from `../../../packages/expo-json-utils/ios`)
   - EXLocation (from `../../../packages/expo-location/ios`)
@@ -1003,9 +1000,6 @@ EXTERNAL SOURCES:
   EXImageLoader:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-loader/ios"
-  EXInAppPurchases:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-in-app-purchases/ios"
   EXJSONUtils:
     inhibit_warnings: false
     :path: "../../../packages/expo-json-utils/ios"
@@ -1293,7 +1287,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
-  DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
+  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   EASClient: b98df462964e03ad48a44615e0141d8d25bfc4d4
   EXAV: 6e2524617053a4590b0ef46a4fcb9a13d97bac8a
   EXBarCodeScanner: da49272be74d5be70d0f5eab3dea576977b8d0cf
@@ -1302,7 +1296,6 @@ SPEC CHECKSUMS:
   EXContacts: 24e46f5cf1ba9776a2f301c4f3aa821848035a10
   EXFont: e5fa244ad8c8d6fcf3a215e1fdcaedbc9b580aad
   EXImageLoader: 6ffefe300f6f1a5be46f3722944d7f48a44f36bf
-  EXInAppPurchases: 16897367eb7e5e04f3b1d4ccba4169187f1b0e00
   EXJSONUtils: d15120ce0e8967b0822880162039dd75e5867086
   EXLocation: db102a331d49b1f55a82409f9d53a22684093c0c
   EXManifests: b658c34011f90e3379b515fb50680acb49ba099a
@@ -1364,7 +1357,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 71803c074f6325f10b5ec891c443b6bbabef0ca7
   FBReactNativeSpec: 556ded527fc4354929dd12d0936a64cd95bde744
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: f6cf92a471053245614d9d8097736f6337d5b86c
@@ -1422,7 +1415,7 @@ SPEC CHECKSUMS:
   RNFlashList: ade81b4e928ebd585dd492014d40fb8d0e848aab
   RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
   RNReanimated: 9633f8c2e214b721e35e371b473fbf3a1522948d
-  RNScreens: 68fd1060f57dd1023880bf4c05d74784b5392789
+  RNScreens: 3c2d122f5e08c192e254c510b212306da97d2581
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
   SDWebImageAVIFCoder: 8348fef6d0ec69e129c66c9fe4d74fbfbf366112
