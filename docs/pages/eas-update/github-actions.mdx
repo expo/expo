@@ -164,22 +164,15 @@ Your GitHub Action should be set up now. Whenever a developer creates a pull req
 
 ## Using Bun instead of Yarn
 
-If you're using Bun as your package manager instead of Yarn, you'll need to make some modifications to the provided workflow. Below are the updated steps for both publishing updates on push and previews on pull requests:
+To use [Bun](/guides/using-bun/) as your package manager instead of Yarn, follow the steps below for both publishing updates on push and previews on pull requests:
 
-Publish updates on push using Bun:
 
 <Step label="1">
 
-Replace the Node setup steps in update.yml:
+Replace the `Setup Node` step in **update.yml** with the following snippet:
 
-```- name: Setup Node
-  uses: actions/setup-node@v3
-  with:
-    node-version: 18.x
-    cache: yarn
-```
-with
-```- name: Setup Bun
+```yaml update.yml
+- name: Setup Bun
   uses: oven-sh/setup-bun@v1
   with:
     bun-version: latest
@@ -188,14 +181,9 @@ with
 
 <Step label="2">
 
-Install Dependencies with Bun:
+To install dependencies using Bun, replace the `Install dependencies` step with the following snippet:
 
-Replace the dependency installation step:
-
-```- name: Install dependencies
-  run: yarn install
-```
-with
-```- name: Install dependencies
+```yaml update.yml
+- name: Install dependencies
   run: bun install
 ```
