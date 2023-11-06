@@ -9,6 +9,7 @@
 import invariant from 'invariant';
 import jscSafeUrl from 'jsc-safe-url';
 import type { MixedOutput, Module } from 'metro';
+// @ts-expect-error
 import { addParamsToDefineCall } from 'metro-transform-plugins';
 import type { JsOutput } from 'metro-transform-worker';
 import path from 'path';

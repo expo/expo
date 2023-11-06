@@ -15,6 +15,7 @@
     "prepare": "taskr release",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
+    "test:metro": "bun test --watch --cwd ./bun-metro-tests",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
     "test:e2e": "jest --config e2e/jest.config.js",

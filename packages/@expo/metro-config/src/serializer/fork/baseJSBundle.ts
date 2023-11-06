@@ -7,7 +7,9 @@
  */
 
 import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+// @ts-expect-error
 import getAppendScripts from 'metro/src/lib/getAppendScripts';
+// @ts-expect-error
 import type { Bundle } from 'metro-runtime/src/modules/types.flow';
 
 import { processModules } from './processModules';

@@ -4,17 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import assert from 'assert';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+// @ts-expect-error
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
-import { ConfigT } from 'metro-config';
-
-// @ts-expect-error
-import { InputConfigT, SerializerConfigT } from 'metro-config';
+import { ConfigT, InputConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
 
-import { toFixture } from './__tests__/fixtures/toFixture';
+// import { toFixture } from './__tests__/fixtures/toFixture';
 import {
   environmentVariableSerializerPlugin,
   serverPreludeSerializerPlugin,
@@ -56,6 +55,7 @@ export function withSerializerPlugins(
     serializer: {
       ...config.serializer,
       customSerializer: createSerializerFromSerialProcessors(
+        // @ts-expect-error
         config.serializer ?? {},
         processors,
         originalSerializer
@@ -156,7 +156,8 @@ class Chunk {
     public name: string,
     public entry: string,
     public graph: ReadOnlyGraph<MixedOutput>,
-    public options: SerializerOptions<MixedOutput>
+    public options: SerializerOptions<MixedOutput>,
+    public isAsync: boolean = false
   ) {}
 
   getFilename() {
@@ -236,14 +237,14 @@ class Chunk {
     };
   }
 }
-import assert from 'assert';
 
 function gatherChunks(
   chunks: Set<Chunk>,
   entryFile: string,
   preModules: readonly Module[],
   graph: ReadOnlyGraph,
-  options: SerializerOptions<MixedOutput>
+  options: SerializerOptions<MixedOutput>,
+  isAsync: boolean = false
 ): Set<Chunk> {
   const entryModule = graph.dependencies.get(entryFile);
   if (!entryModule) {
@@ -255,11 +256,11 @@ function gatherChunks(
     return chunks;
   }
 
-  const entryChunk = new Chunk(entryFile, entryFile, graph, options);
+  const entryChunk = new Chunk(entryFile, entryFile, graph, options, isAsync);
 
   // Add all the pre-modules to the first chunk.
-  if (chunks.size === 0) {
-    if (graph.transformOptions.platform === 'web') {
+  if (preModules.length) {
+    if (graph.transformOptions.platform === 'web' && !isAsync) {
       // On web, add a new required chunk that will be included in the HTML.
       const preChunk = new Chunk('__premodules__', '__premodules__', graph, options);
       for (const module of preModules.values()) {
@@ -277,20 +278,17 @@ function gatherChunks(
 
   chunks.add(entryChunk);
 
-  function gatherDeps(entryModule: Module<MixedOutput>) {
-    for (const dependency of entryModule.dependencies.values()) {
-      if (dependency.data.data.asyncType === 'async') {
-        gatherChunks(chunks, dependency.absolutePath, preModules, graph, options);
-      } else {
-        const module = graph.dependencies.get(dependency.absolutePath);
-        if (module) {
-          entryChunk.deps.add(module);
-        }
+  entryChunk.deps.add(entryModule);
+  for (const dependency of entryModule.dependencies.values()) {
+    if (dependency.data.data.asyncType === 'async') {
+      gatherChunks(chunks, dependency.absolutePath, [], graph, options, true);
+    } else {
+      const module = graph.dependencies.get(dependency.absolutePath);
+      if (module) {
+        entryChunk.deps.add(module);
       }
     }
   }
-
-  gatherDeps(entryModule);
 
   return chunks;
 }
@@ -298,21 +296,44 @@ function gatherChunks(
 function dedupeChunks(chunks: Set<Chunk>) {
   // Iterate chunks and pull duplicate modules into new common chunks that are required by the original chunks.
 
-  for (const chunk of chunks.values()) {
+  // We can only de-dupe sync chunks since this would create vendor/shared chunks.
+  const currentChunks = [...chunks.values()].filter((chunk) => !chunk.isAsync);
+  for (const chunk of currentChunks) {
     const deps = [...chunk.deps.values()];
     for (const dep of deps) {
-      for (const otherChunk of chunks.values()) {
+      for (const otherChunk of currentChunks) {
         if (otherChunk === chunk) {
           continue;
         }
         if (otherChunk.deps.has(dep)) {
+          console.log('found common dep:', dep.path, 'in', chunk.name, 'and', otherChunk.name);
           // Move the dep into a new chunk.
-          const newChunk = new Chunk(dep.path, dep.path, chunk.graph, chunk.options);
+          const newChunk = new Chunk(dep.path, dep.path, chunk.graph, chunk.options, false);
           newChunk.deps.add(dep);
-          newChunk.requiredChunks.add(chunk);
+          chunk.requiredChunks.add(newChunk);
+          otherChunk.requiredChunks.add(newChunk);
           chunks.add(newChunk);
           // Remove the dep from the original chunk.
           chunk.deps.delete(dep);
+          otherChunk.deps.delete(dep);
+
+          // TODO: Pull all the deps of the dep into the new chunk.
+          for (const depDep of dep.dependencies.values()) {
+            if (depDep.data.data.asyncType === 'async') {
+              gatherChunks(chunks, depDep.absolutePath, [], chunk.graph, chunk.options, false);
+            } else {
+              const module = chunk.graph.dependencies.get(depDep.absolutePath);
+              if (module) {
+                newChunk.deps.add(module);
+                if (chunk.deps.has(module)) {
+                  chunk.deps.delete(module);
+                }
+                if (otherChunk.deps.has(module)) {
+                  otherChunk.deps.delete(module);
+                }
+              }
+            }
+          }
         }
       }
     }
