@@ -38,7 +38,7 @@ final class ExpoGoExpoUpdatesModule: Module {
 
       let releaseChannel = config?.releaseChannel
       let channel = config?.requestHeaders["expo-channel-name"] ?? ""
-      let runtimeVersion = config?.runtimeVersion ?? ""
+      let runtimeVersion = config?.runtimeVersionRaw ?? ""
       let checkAutomatically = config?.checkOnLaunch.asString ?? CheckAutomaticallyConfig.Always.asString
       let isMissingRuntimeVersion = false
 
