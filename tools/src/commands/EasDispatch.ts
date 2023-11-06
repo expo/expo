@@ -2,7 +2,7 @@ import { Command } from '@expo/commander';
 import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
-import aws from 'aws-sdk';
+import { S3 } from "@aws-sdk/client-s3";
 import fs, { mkdirp } from 'fs-extra';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
@@ -17,7 +17,9 @@ import logger from '../Logger';
 import { androidAppVersionAsync, iosAppVersionAsync } from '../ProjectVersions';
 import { modifySdkVersionsAsync } from '../Versions';
 
-const s3Client = new aws.S3({ region: 'us-east-1' });
+const s3Client = new S3({
+  region: 'us-east-1'
+});
 
 const RELEASE_BUILD_PROFILE = 'release-client';
 const PUBLISH_CLIENT_BUILD_PROFILE = 'publish-client';
@@ -407,8 +409,7 @@ async function internalIosSimulatorPublishAsync() {
       Key: `Exponent-${appVersion}.tar.gz`,
       Body: file,
       ACL: 'public-read',
-    })
-    .promise();
+    });
 
   logger.info('Updating versions endpoint');
   await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
@@ -439,8 +440,7 @@ async function internalAndroidAPKPublishAsync() {
       Key: `Exponent-${appVersion}.apk`,
       Body: file,
       ACL: 'public-read',
-    })
-    .promise();
+    });
 
   logger.info('Updating versions endpoint');
   await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
