@@ -143,6 +143,26 @@ function getDefaultSerializer(serializerConfig, fallbackSerializer) {
       // Default behavior if `serializer.output=static` is not present in the URL.
       return defaultSerializer(...props);
     }
+    let multipleEntries = [];
+    const multipleEntriesParam = url.searchParams.get('serializer.entries');
+    if (multipleEntriesParam && typeof multipleEntriesParam === 'string') {
+      multipleEntries = JSON.parse(multipleEntriesParam);
+      if (!Array.isArray(multipleEntries)) {
+        throw new Error('serializer.entries must be an array of strings');
+      }
+      multipleEntries = multipleEntries.map(entry => {
+        entry = decodeURIComponent(entry);
+        if (entry.includes(options.serverRoot)) {
+          return entry;
+        }
+        return _path().default.join(options.serverRoot, entry);
+      });
+      multipleEntries.forEach(fp => {
+        if (!graph.dependencies.get(fp)) {
+          throw new Error(`Entry file not found in graph: ${fp}`);
+        }
+      });
+    }
     const chunks = url.searchParams.has('serializer.chunks') ? JSON.parse(url.searchParams.get('serializer.chunks')) : null;
     const allEntryFiles = new Set([
     // Entry file for all chunks.
@@ -158,13 +178,17 @@ function getDefaultSerializer(serializerConfig, fallbackSerializer) {
 
     // JS
 
-    const _chunks = gatherChunks(new Set(), entryFile, preModules, graph, options);
+    const _chunks = new Set();
+    unique([entryFile, ...multipleEntries]).map(entryFile => gatherChunks(_chunks, entryFile, preModules, graph, options, false));
 
     // Optimize the chunks
     dedupeChunks(_chunks);
     const jsAssets = serializeChunks(_chunks, serializerConfig);
     return JSON.stringify([...jsAssets, ...cssDeps]);
   };
+}
+function unique(arr) {
+  return [...new Set(arr)];
 }
 class Chunk {
   // Chunks that are required to be loaded synchronously before this chunk.

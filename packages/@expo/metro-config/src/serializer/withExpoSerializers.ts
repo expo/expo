@@ -104,6 +104,30 @@ export function getDefaultSerializer(
       return defaultSerializer(...props);
     }
 
+    let multipleEntries: string[] = [];
+    const multipleEntriesParam = url.searchParams.get('serializer.entries');
+    if (multipleEntriesParam && typeof multipleEntriesParam === 'string') {
+      multipleEntries = JSON.parse(multipleEntriesParam) as any;
+
+      if (!Array.isArray(multipleEntries)) {
+        throw new Error('serializer.entries must be an array of strings');
+      }
+
+      multipleEntries = multipleEntries.map((entry) => {
+        entry = decodeURIComponent(entry);
+        if (entry.includes(options.serverRoot)) {
+          return entry;
+        }
+        return path.join(options.serverRoot, entry);
+      }) as string[];
+
+      multipleEntries.forEach((fp) => {
+        if (!graph.dependencies.get(fp)) {
+          throw new Error(`Entry file not found in graph: ${fp}`);
+        }
+      });
+    }
+
     const chunks:
       | {
           // Leaf file-path.
@@ -133,7 +157,11 @@ export function getDefaultSerializer(
 
     // JS
 
-    const _chunks = gatherChunks(new Set(), entryFile, preModules, graph, options);
+    const _chunks = new Set<Chunk>();
+
+    unique([entryFile, ...multipleEntries]).map((entryFile) =>
+      gatherChunks(_chunks, entryFile, preModules, graph, options, false)
+    );
 
     // Optimize the chunks
     dedupeChunks(_chunks);
@@ -142,6 +170,10 @@ export function getDefaultSerializer(
 
     return JSON.stringify([...jsAssets, ...cssDeps]);
   };
+}
+
+function unique<T>(arr: T[]): T[] {
+  return [...new Set(arr)];
 }
 
 class Chunk {
