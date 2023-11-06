@@ -13,6 +13,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix jsx dev transform with React components that are defined in the function parameters. ([#25235](https://github.com/expo/expo/pull/25235) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 - Drop unused `native.withDevTools` and `web.withDevTools` options. ([#25125](https://github.com/expo/expo/pull/25125) by [@EvanBacon](https://github.com/EvanBacon))
