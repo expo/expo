@@ -32,7 +32,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
 
   public var launchedUpdate: Update?
   public var launchAssetUrl: URL?
-  public var assetFilesMap: [String: Any]?
+  public var assetFilesMap: [String: String]?
 
   private let launcherQueue: DispatchQueue
   private var completedAssets: Int
@@ -204,7 +204,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     }
 
     // Initialize asset map with the embedded assets that may not be part of this update
-    self.assetFilesMap = UpdatesUtils.embeddedAssetsMap(withConfig: config, database: database)
+    self.assetFilesMap = UpdatesUtils.embeddedAssetsMap(withConfig: config, database: database, logger: logger)
 
     let assets = launchedUpdate.assets()!
     let totalAssetCount = assets.count

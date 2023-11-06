@@ -87,8 +87,8 @@ public final class UpdatesUtils: NSObject {
     }
   }
 
-  internal static func embeddedAssetsMap(withConfig config: UpdatesConfig, database: UpdatesDatabase) -> [String: String?] {
-    var assetFilesMap: [String: String?] = [:]
+  internal static func embeddedAssetsMap(withConfig config: UpdatesConfig, database: UpdatesDatabase, logger: UpdatesLogger) -> [String: String] {
+    var assetFilesMap: [String: String] = [:]
     let embeddedManifest: Update? = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database)
     let embeddedAssets = embeddedManifest?.assets() ?? []
 
