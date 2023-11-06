@@ -1,7 +1,7 @@
 package expo.modules.updates
 
-import android.net.Uri
 import expo.modules.updates.db.entity.AssetEntity
+import io.mockk.mockk
 import junit.framework.TestCase
 import org.junit.Assert
 import org.junit.Test
@@ -43,7 +43,7 @@ class UpdatesUtilsTest : TestCase() {
     val baseConfig = UpdatesConfiguration(
       expectsSignedManifest = true,
       scopeKey = "wat",
-      updateUrl = Uri.parse("http://google.com"),
+      updateUrl = mockk(),
       sdkVersion = "38.0.0",
       runtimeVersionRaw = "1.0",
       releaseChannel = "default",
