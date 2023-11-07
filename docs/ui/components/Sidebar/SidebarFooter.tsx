@@ -43,7 +43,7 @@ export const SidebarFooter = () => {
       />
       <SidebarSingleEntry
         secondary
-        href="http://eepurl.com/hk1tCn"
+        href="https://expo.dev/mailing-list/signup"
         title="Newsletter"
         Icon={Mail01Icon}
         isExternal
