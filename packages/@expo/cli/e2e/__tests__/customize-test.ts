@@ -88,10 +88,10 @@ it(
       'App.js',
       'app.json',
       'babel.config.js',
+      'bun.lockb',
       'package.json',
       'web/index.html',
       'web/serve.json',
-      'yarn.lock',
     ]);
   },
   // Could take 45s depending on how fast npm installs

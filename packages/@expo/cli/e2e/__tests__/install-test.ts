@@ -103,7 +103,7 @@ it(
       'react-native',
     ]);
 
-    expect(files).toStrictEqual(['App.js', 'app.json', 'package.json', 'yarn.lock']);
+    expect(files).toStrictEqual(['App.js', 'app.json', 'bun.lockb', 'package.json']);
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000
