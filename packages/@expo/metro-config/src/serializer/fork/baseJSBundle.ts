@@ -28,7 +28,7 @@ export function getPlatformOption(
   graph: Pick<ReadOnlyGraph, 'transformOptions'>,
   options: SerializerOptions
 ): string | null {
-  if (graph.transformOptions.platform != null) {
+  if (graph.transformOptions?.platform != null) {
     return graph.transformOptions.platform;
   }
   if (!options.sourceUrl) {
