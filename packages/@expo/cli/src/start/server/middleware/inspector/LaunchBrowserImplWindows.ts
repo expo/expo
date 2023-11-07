@@ -28,7 +28,6 @@ export default class LaunchBrowserImplWindows implements LaunchBrowser, LaunchBr
       appId: 'msedge',
     },
     [LaunchBrowserTypesEnum.BRAVE]: {
-      // I am not sure if this is the correct appId for brave, because I have only tested it on Mac
       appId: 'brave',
     },
   };

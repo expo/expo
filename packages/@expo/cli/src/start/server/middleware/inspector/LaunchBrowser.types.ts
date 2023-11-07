@@ -8,7 +8,7 @@ export interface LaunchBrowserInstance {
 export const LaunchBrowserTypesEnum = {
   CHROME: 'Google Chrome',
   EDGE: 'Microsoft Edge',
-  BRAVE: 'Brave Browser',
+  BRAVE: 'Brave',
 } as const;
 
 /**

@@ -20,10 +20,7 @@ export default class LaunchBrowserImplLinux implements LaunchBrowser, LaunchBrow
   MAP = {
     [LaunchBrowserTypesEnum.CHROME]: ['google-chrome', 'google-chrome-stable', 'chromium'],
     [LaunchBrowserTypesEnum.EDGE]: ['microsoft-edge', 'microsoft-edge-dev'],
-    [LaunchBrowserTypesEnum.BRAVE]: [
-      // I am not sure if this is the correct appId for brave, because I have only tested it on Mac
-      'brave-browser',
-    ],
+    [LaunchBrowserTypesEnum.BRAVE]: ['brave'],
   };
 
   /**
