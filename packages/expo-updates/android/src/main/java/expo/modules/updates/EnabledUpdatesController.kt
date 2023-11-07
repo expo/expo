@@ -65,6 +65,7 @@ class EnabledUpdatesController(
     null
   }
 
+  private val methodExecutorQueue = MethodExecutorQueue()
   private val stateMachine = UpdatesStateMachine(context, this)
 
   private var launcher: Launcher? = null
@@ -409,56 +410,61 @@ class EnabledUpdatesController(
       return
     }
 
-    stateMachine.processEvent(UpdatesStateEvent.Restart())
+    methodExecutorQueue.execute { onFinished ->
+      stateMachine.processEvent(UpdatesStateEvent.Restart())
 
-    val oldLaunchAssetFile = launcher!!.launchAssetFile
+      val oldLaunchAssetFile = launcher!!.launchAssetFile
 
-    val databaseLocal = getDatabase()
-    val newLauncher = DatabaseLauncher(
-      updatesConfiguration,
-      updatesDirectory,
-      fileDownloader,
-      selectionPolicy
-    )
-    newLauncher.launch(
-      databaseLocal, context,
-      object : LauncherCallback {
-        override fun onFailure(e: Exception) {
-          callback.onFailure(e)
-        }
+      val databaseLocal = getDatabase()
+      val newLauncher = DatabaseLauncher(
+        updatesConfiguration,
+        updatesDirectory,
+        fileDownloader,
+        selectionPolicy
+      )
+      newLauncher.launch(
+        databaseLocal, context,
+        object : LauncherCallback {
+          override fun onFailure(e: Exception) {
+            callback.onFailure(e)
+            onFinished()
+          }
 
-        override fun onSuccess() {
-          launcher = newLauncher
-          releaseDatabase()
+          override fun onSuccess() {
+            launcher = newLauncher
+            releaseDatabase()
 
-          val instanceManager = host.reactInstanceManager
+            val instanceManager = host.reactInstanceManager
 
-          val newLaunchAssetFile = launcher!!.launchAssetFile
-          if (newLaunchAssetFile != null && newLaunchAssetFile != oldLaunchAssetFile) {
-            // Unfortunately, even though RN exposes a way to reload an application,
-            // it assumes that the JS bundle will stay at the same location throughout
-            // the entire lifecycle of the app. Since we need to change the location of
-            // the bundle, we need to use reflection to set an otherwise inaccessible
-            // field of the ReactInstanceManager.
-            try {
-              val newJSBundleLoader = JSBundleLoader.createFileLoader(newLaunchAssetFile)
-              val jsBundleLoaderField = instanceManager.javaClass.getDeclaredField("mBundleLoader")
-              jsBundleLoaderField.isAccessible = true
-              jsBundleLoaderField[instanceManager] = newJSBundleLoader
-            } catch (e: Exception) {
-              Log.e(TAG, "Could not reset JSBundleLoader in ReactInstanceManager", e)
+            val newLaunchAssetFile = launcher!!.launchAssetFile
+            if (newLaunchAssetFile != null && newLaunchAssetFile != oldLaunchAssetFile) {
+              // Unfortunately, even though RN exposes a way to reload an application,
+              // it assumes that the JS bundle will stay at the same location throughout
+              // the entire lifecycle of the app. Since we need to change the location of
+              // the bundle, we need to use reflection to set an otherwise inaccessible
+              // field of the ReactInstanceManager.
+              try {
+                val newJSBundleLoader = JSBundleLoader.createFileLoader(newLaunchAssetFile)
+                val jsBundleLoaderField =
+                  instanceManager.javaClass.getDeclaredField("mBundleLoader")
+                jsBundleLoaderField.isAccessible = true
+                jsBundleLoaderField[instanceManager] = newJSBundleLoader
+              } catch (e: Exception) {
+                Log.e(TAG, "Could not reset JSBundleLoader in ReactInstanceManager", e)
+              }
             }
+            callback.onSuccess()
+            val handler = Handler(Looper.getMainLooper())
+            handler.post { instanceManager.recreateReactContextInBackground() }
+            if (shouldRunReaper) {
+              runReaper()
+            }
+            stateMachine.reset()
+            onFinished()
           }
-          callback.onSuccess()
-          val handler = Handler(Looper.getMainLooper())
-          handler.post { instanceManager.recreateReactContextInBackground() }
-          if (shouldRunReaper) {
-            runReaper()
-          }
-          stateMachine.reset()
         }
-      }
-    )
+      )
+    }
   }
 
   override fun sendUpdateStateChangeEventToBridge(eventType: UpdatesStateEventType, context: UpdatesStateContext) {
@@ -514,209 +520,232 @@ class EnabledUpdatesController(
   }
 
   override fun checkForUpdate(context: Context, callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>) {
-    stateMachine.processEvent(UpdatesStateEvent.Check())
+    methodExecutorQueue.execute { onFinished ->
+      stateMachine.processEvent(UpdatesStateEvent.Check())
 
-    AsyncTask.execute {
-      val embeddedUpdate = EmbeddedManifest.get(context, updatesConfiguration)?.updateEntity
-      val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
-        databaseHolder.database,
-        updatesConfiguration,
-        launchedUpdate,
-        embeddedUpdate
-      )
-      databaseHolder.releaseDatabase()
-      fileDownloader.downloadRemoteUpdate(
-        updatesConfiguration,
-        extraHeaders,
-        context,
-        object : FileDownloader.RemoteUpdateDownloadCallback {
-          override fun onFailure(message: String, e: Exception) {
-            stateMachine.processEvent(UpdatesStateEvent.CheckError(message))
-            callback.onSuccess(IUpdatesController.CheckForUpdateResult.ErrorResult(e, message))
-          }
+      AsyncTask.execute {
+        val embeddedUpdate = EmbeddedManifest.get(context, updatesConfiguration)?.updateEntity
+        val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
+          databaseHolder.database,
+          updatesConfiguration,
+          launchedUpdate,
+          embeddedUpdate
+        )
+        databaseHolder.releaseDatabase()
+        fileDownloader.downloadRemoteUpdate(
+          updatesConfiguration,
+          extraHeaders,
+          context,
+          object : FileDownloader.RemoteUpdateDownloadCallback {
+            override fun onFailure(message: String, e: Exception) {
+              stateMachine.processEvent(UpdatesStateEvent.CheckError(message))
+              callback.onSuccess(IUpdatesController.CheckForUpdateResult.ErrorResult(e, message))
+              onFinished()
+            }
 
-          override fun onSuccess(updateResponse: UpdateResponse) {
-            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+            override fun onSuccess(updateResponse: UpdateResponse) {
+              val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+              val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
 
-            if (updateDirective != null) {
-              if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
-                if (!updatesConfiguration.hasEmbeddedUpdate) {
-                  callback.onSuccess(IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED))
-                  stateMachine.processEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+              if (updateDirective != null) {
+                if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
+                  if (!updatesConfiguration.hasEmbeddedUpdate) {
+                    callback.onSuccess(IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED))
+                    stateMachine.processEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                    onFinished()
+                    return
+                  }
+
+                  if (embeddedUpdate == null) {
+                    callback.onSuccess(IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED))
+                    stateMachine.processEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                    onFinished()
+                    return
+                  }
+
+                  if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+                      updateDirective,
+                      embeddedUpdate,
+                      launchedUpdate,
+                      updateResponse.responseHeaderData?.manifestFilters
+                    )
+                  ) {
+                    callback.onSuccess(IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_REJECTED_BY_SELECTION_POLICY))
+                    stateMachine.processEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                    onFinished()
+                    return
+                  }
+
+                  callback.onSuccess(IUpdatesController.CheckForUpdateResult.RollBackToEmbedded(updateDirective.commitTime))
+                  stateMachine.processEvent(UpdatesStateEvent.CheckCompleteWithRollback(updateDirective.commitTime))
+                  onFinished()
                   return
                 }
+              }
 
-                if (embeddedUpdate == null) {
-                  callback.onSuccess(IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED))
-                  stateMachine.processEvent(UpdatesStateEvent.CheckCompleteUnavailable())
-                  return
-                }
-
-                if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
-                    updateDirective,
-                    embeddedUpdate,
-                    launchedUpdate,
-                    updateResponse.responseHeaderData?.manifestFilters
-                  )
-                ) {
-                  callback.onSuccess(IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_REJECTED_BY_SELECTION_POLICY))
-                  stateMachine.processEvent(UpdatesStateEvent.CheckCompleteUnavailable())
-                  return
-                }
-
-                callback.onSuccess(IUpdatesController.CheckForUpdateResult.RollBackToEmbedded(updateDirective.commitTime))
-                stateMachine.processEvent(UpdatesStateEvent.CheckCompleteWithRollback(updateDirective.commitTime))
+              if (updateManifest == null) {
+                callback.onSuccess(IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER))
+                UpdatesStateEvent.CheckCompleteUnavailable()
+                onFinished()
                 return
               }
-            }
 
-            if (updateManifest == null) {
-              callback.onSuccess(IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER))
-              UpdatesStateEvent.CheckCompleteUnavailable()
-              return
-            }
-
-            if (launchedUpdate == null) {
-              // this shouldn't ever happen, but if we don't have anything to compare
-              // the new manifest to, let the user know an update is available
-              callback.onSuccess(IUpdatesController.CheckForUpdateResult.UpdateAvailable(updateManifest))
-              stateMachine.processEvent(UpdatesStateEvent.CheckCompleteWithUpdate(updateManifest.manifest.getRawJson()))
-              return
-            }
-
-            var shouldLaunch = false
-            var failedPreviously = false
-            if (selectionPolicy.shouldLoadNewUpdate(
-                updateManifest.updateEntity,
-                launchedUpdate,
-                updateResponse.responseHeaderData?.manifestFilters
-              )
-            ) {
-              // If "update" has failed to launch previously, then
-              // "launchedUpdate" will be an earlier update, and the test above
-              // will return true (incorrectly).
-              // We check to see if the new update is already in the DB, and if so,
-              // only allow the update if it has had no launch failures.
-              shouldLaunch = true
-              updateManifest.updateEntity?.let { updateEntity ->
-                val storedUpdateEntity = databaseHolder.database.updateDao().loadUpdateWithId(
-                  updateEntity.id
-                )
-                databaseHolder.releaseDatabase()
-                storedUpdateEntity?.let {
-                  shouldLaunch = it.failedLaunchCount == 0
-                  logger.info("Stored update found: ID = ${updateEntity.id}, failureCount = ${it.failedLaunchCount}")
-                  failedPreviously = !shouldLaunch
-                }
-              }
-            }
-            if (shouldLaunch) {
-              callback.onSuccess(IUpdatesController.CheckForUpdateResult.UpdateAvailable(updateManifest))
-              stateMachine.processEvent(UpdatesStateEvent.CheckCompleteWithUpdate(updateManifest.manifest.getRawJson()))
-              return
-            } else {
-              val reason = when (failedPreviously) {
-                true -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_PREVIOUSLY_FAILED
-                else -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_REJECTED_BY_SELECTION_POLICY
-              }
-              callback.onSuccess(IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(reason))
-              stateMachine.processEvent(UpdatesStateEvent.CheckCompleteUnavailable())
-              return
-            }
-          }
-        }
-      )
-    }
-  }
-
-  override fun fetchUpdate(context: Context, callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>) {
-    stateMachine.processEvent(UpdatesStateEvent.Download())
-
-    AsyncTask.execute {
-      val database = databaseHolder.database
-      RemoteLoader(
-        context,
-        updatesConfiguration,
-        database,
-        fileDownloader,
-        updatesDirectory,
-        launchedUpdate
-      )
-        .start(
-          object : Loader.LoaderCallback {
-            override fun onFailure(e: Exception) {
-              databaseHolder.releaseDatabase()
-              callback.onSuccess(IUpdatesController.FetchUpdateResult.ErrorResult(e))
-              stateMachine.processEvent(
-                UpdatesStateEvent.DownloadError("Failed to download new update: ${e.message}")
-              )
-            }
-
-            override fun onAssetLoaded(
-              asset: AssetEntity,
-              successfulAssetCount: Int,
-              failedAssetCount: Int,
-              totalAssetCount: Int
-            ) {
-            }
-
-            override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
-              val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-              if (updateDirective != null) {
-                return Loader.OnUpdateResponseLoadedResult(
-                  shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
-                    is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
-                    is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
-                  }
-                )
+              if (launchedUpdate == null) {
+                // this shouldn't ever happen, but if we don't have anything to compare
+                // the new manifest to, let the user know an update is available
+                callback.onSuccess(IUpdatesController.CheckForUpdateResult.UpdateAvailable(updateManifest))
+                stateMachine.processEvent(UpdatesStateEvent.CheckCompleteWithUpdate(updateManifest.manifest.getRawJson()))
+                onFinished()
+                return
               }
 
-              val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
-                ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-
-              return Loader.OnUpdateResponseLoadedResult(
-                shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(
+              var shouldLaunch = false
+              var failedPreviously = false
+              if (selectionPolicy.shouldLoadNewUpdate(
                   updateManifest.updateEntity,
                   launchedUpdate,
                   updateResponse.responseHeaderData?.manifestFilters
                 )
-              )
-            }
-
-            override fun onSuccess(loaderResult: Loader.LoaderResult) {
-              RemoteLoader.processSuccessLoaderResult(
-                context,
-                updatesConfiguration,
-                database,
-                selectionPolicy,
-                updatesDirectory,
-                launchedUpdate,
-                loaderResult
-              ) { availableUpdate, didRollBackToEmbedded ->
-                databaseHolder.releaseDatabase()
-
-                if (didRollBackToEmbedded) {
-                  callback.onSuccess(IUpdatesController.FetchUpdateResult.RollBackToEmbedded())
-                  stateMachine.processEvent(UpdatesStateEvent.DownloadCompleteWithRollback())
-                } else {
-                  if (availableUpdate == null) {
-                    callback.onSuccess(IUpdatesController.FetchUpdateResult.Failure())
-                    stateMachine.processEvent(UpdatesStateEvent.DownloadComplete())
-                  } else {
-                    // We need the explicit casting here because when in versioned expo-updates,
-                    // the UpdateEntity and UpdatesModule are in different package namespace,
-                    // Kotlin cannot do the smart casting for that case.
-                    val updateEntity = loaderResult.updateEntity as UpdateEntity
-
-                    callback.onSuccess(IUpdatesController.FetchUpdateResult.Success(updateEntity))
-                    stateMachine.processEvent(UpdatesStateEvent.DownloadCompleteWithUpdate(updateEntity.manifest))
+              ) {
+                // If "update" has failed to launch previously, then
+                // "launchedUpdate" will be an earlier update, and the test above
+                // will return true (incorrectly).
+                // We check to see if the new update is already in the DB, and if so,
+                // only allow the update if it has had no launch failures.
+                shouldLaunch = true
+                updateManifest.updateEntity?.let { updateEntity ->
+                  val storedUpdateEntity = databaseHolder.database.updateDao().loadUpdateWithId(
+                    updateEntity.id
+                  )
+                  databaseHolder.releaseDatabase()
+                  storedUpdateEntity?.let {
+                    shouldLaunch = it.failedLaunchCount == 0
+                    logger.info("Stored update found: ID = ${updateEntity.id}, failureCount = ${it.failedLaunchCount}")
+                    failedPreviously = !shouldLaunch
                   }
                 }
+              }
+              if (shouldLaunch) {
+                callback.onSuccess(IUpdatesController.CheckForUpdateResult.UpdateAvailable(updateManifest))
+                stateMachine.processEvent(UpdatesStateEvent.CheckCompleteWithUpdate(updateManifest.manifest.getRawJson()))
+                onFinished()
+                return
+              } else {
+                val reason = when (failedPreviously) {
+                  true -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_PREVIOUSLY_FAILED
+                  else -> LoaderTask.RemoteCheckResultNotAvailableReason.UPDATE_REJECTED_BY_SELECTION_POLICY
+                }
+                callback.onSuccess(IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(reason))
+                stateMachine.processEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                onFinished()
+                return
               }
             }
           }
         )
+      }
+    }
+  }
+
+  override fun fetchUpdate(context: Context, callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>) {
+    methodExecutorQueue.execute { onFinished ->
+      stateMachine.processEvent(UpdatesStateEvent.Download())
+
+      AsyncTask.execute {
+        val database = databaseHolder.database
+        RemoteLoader(
+          context,
+          updatesConfiguration,
+          database,
+          fileDownloader,
+          updatesDirectory,
+          launchedUpdate
+        )
+          .start(
+            object : Loader.LoaderCallback {
+              override fun onFailure(e: Exception) {
+                databaseHolder.releaseDatabase()
+                callback.onSuccess(IUpdatesController.FetchUpdateResult.ErrorResult(e))
+                stateMachine.processEvent(
+                  UpdatesStateEvent.DownloadError("Failed to download new update: ${e.message}")
+                )
+                onFinished()
+              }
+
+              override fun onAssetLoaded(
+                asset: AssetEntity,
+                successfulAssetCount: Int,
+                failedAssetCount: Int,
+                totalAssetCount: Int
+              ) {
+              }
+
+              override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
+                val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+                if (updateDirective != null) {
+                  return Loader.OnUpdateResponseLoadedResult(
+                    shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+                      is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
+                      is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
+                    }
+                  )
+                }
+
+                val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+                  ?: return Loader.OnUpdateResponseLoadedResult(
+                    shouldDownloadManifestIfPresentInResponse = false
+                  )
+
+                return Loader.OnUpdateResponseLoadedResult(
+                  shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(
+                    updateManifest.updateEntity,
+                    launchedUpdate,
+                    updateResponse.responseHeaderData?.manifestFilters
+                  )
+                )
+              }
+
+              override fun onSuccess(loaderResult: Loader.LoaderResult) {
+                RemoteLoader.processSuccessLoaderResult(
+                  context,
+                  updatesConfiguration,
+                  database,
+                  selectionPolicy,
+                  updatesDirectory,
+                  launchedUpdate,
+                  loaderResult
+                ) { availableUpdate, didRollBackToEmbedded ->
+                  databaseHolder.releaseDatabase()
+
+                  if (didRollBackToEmbedded) {
+                    callback.onSuccess(IUpdatesController.FetchUpdateResult.RollBackToEmbedded())
+                    stateMachine.processEvent(UpdatesStateEvent.DownloadCompleteWithRollback())
+                    onFinished()
+                  } else {
+                    if (availableUpdate == null) {
+                      callback.onSuccess(IUpdatesController.FetchUpdateResult.Failure())
+                      stateMachine.processEvent(UpdatesStateEvent.DownloadComplete())
+                      onFinished()
+                    } else {
+                      // We need the explicit casting here because when in versioned expo-updates,
+                      // the UpdateEntity and UpdatesModule are in different package namespace,
+                      // Kotlin cannot do the smart casting for that case.
+                      val updateEntity = loaderResult.updateEntity as UpdateEntity
+
+                      callback.onSuccess(IUpdatesController.FetchUpdateResult.Success(updateEntity))
+                      stateMachine.processEvent(
+                        UpdatesStateEvent.DownloadCompleteWithUpdate(
+                          updateEntity.manifest
+                        )
+                      )
+                      onFinished()
+                    }
+                  }
+                }
+              }
+            }
+          )
+      }
     }
   }
 
