@@ -8,19 +8,17 @@ import {
   StaticPlugin,
   withPlugins,
   withStaticPlugin,
+  Icons,
 } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 import Debug from 'debug';
 
-import { withAndroidIcons } from './icons/withAndroidIcons';
-import { withIosIcons } from './icons/withIosIcons';
 import withAdMob from './unversioned/expo-ads-admob/expo-ads-admob';
 import withAppleAuthentication from './unversioned/expo-apple-authentication';
 import withContacts from './unversioned/expo-contacts';
 import withDocumentPicker from './unversioned/expo-document-picker';
 import withNavigationBar from './unversioned/expo-navigation-bar/expo-navigation-bar';
 import withNotifications from './unversioned/expo-notifications/expo-notifications';
-import withSplashScreen from './unversioned/expo-splash-screen/expo-splash-screen';
 import withSystemUI from './unversioned/expo-system-ui/expo-system-ui';
 import withUpdates from './unversioned/expo-updates';
 import withMaps from './unversioned/react-native-maps';
@@ -61,7 +59,7 @@ export const withIosExpoPlugins: ConfigPlugin<{
     IOSConfig.Bitcode.withBitcode,
     IOSConfig.Locales.withLocales,
     // Dangerous
-    withIosIcons,
+    Icons.IosIcons.withIosIcons,
   ]);
 };
 
@@ -112,7 +110,7 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
     AndroidConfig.StatusBar.withStatusBar,
     AndroidConfig.PrimaryColor.withPrimaryColor,
 
-    withAndroidIcons,
+    Icons.AndroidIcons.withAndroidIcons,
     // If we renamed the package, we should also move it around and rename it in source files
     // Added last to ensure this plugin runs first. Out of tree solutions will mistakenly resolve the package incorrectly otherwise.
     AndroidConfig.Package.withPackageRefactor,
@@ -145,7 +143,6 @@ export const withVersionedExpoSDKPlugins: ConfigPlugin = (config) => {
     // System UI must come before splash screen as they overlap
     // and splash screen will warn about conflicting rules.
     withSystemUI,
-    withSplashScreen,
     withNavigationBar,
   ]);
 };

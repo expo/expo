@@ -9,9 +9,10 @@ import { getIosModFileProviders, withIosBaseMods } from './plugins/withIosBaseMo
 import * as XML from './utils/XML';
 import * as History from './utils/history';
 import * as WarningAggregator from './utils/warnings';
+import * as Icons from './utils/icons';
 export * as Updates from './utils/Updates';
 export { IOSConfig, AndroidConfig };
-export { WarningAggregator, History, XML };
+export { WarningAggregator, History, XML, Icons };
 /**
  * These are the "config-plugins"
  */

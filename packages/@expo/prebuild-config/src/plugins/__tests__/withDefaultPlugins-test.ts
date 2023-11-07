@@ -49,9 +49,6 @@ function getLargeConfig(): ExportedConfig {
     // privacy?: 'public' | 'unlisted' | 'hidden';
     // sdkVersion?: string;
     // runtimeVersion?: string;
-    splash: {
-      backgroundColor: '#ff00ff',
-    },
     version: '1.0.0',
     platforms: ['android', 'ios', 'web'],
     githubUrl: 'https://github.com/expo/expo',
@@ -346,7 +343,7 @@ describe('built-in plugins', () => {
       'ios/HelloWorld/AppDelegate.mm',
       'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json',
       'ios/HelloWorld/Images.xcassets/Contents.json',
-      'ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/image.png',
+      'ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json',
       'ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json',
       'ios/HelloWorld/Info.plist',
       'ios/HelloWorld/SplashScreen.storyboard',
@@ -380,7 +377,6 @@ describe('built-in plugins', () => {
       'android/app/src/main/res/values/colors.xml',
       'android/app/src/main/res/values/strings.xml',
       'android/app/src/main/res/values/styles.xml',
-      'android/app/src/main/res/values-night/colors.xml',
       'android/app/src/release/java/com/bacon/todo/ReactNativeFlipper.java',
       'android/app/google-services.json',
       'android/build.gradle',

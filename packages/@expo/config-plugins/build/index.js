@@ -10,6 +10,7 @@ var _exportNames = {
   XML: true,
   History: true,
   WarningAggregator: true,
+  Icons: true,
   Updates: true,
   withPlugins: true,
   withRunOnce: true,
@@ -40,7 +41,7 @@ var _exportNames = {
   evalModsAsync: true,
   PluginError: true
 };
-exports.IOSConfig = exports.History = exports.BaseMods = exports.AndroidConfig = void 0;
+exports.Icons = exports.IOSConfig = exports.History = exports.BaseMods = exports.AndroidConfig = void 0;
 Object.defineProperty(exports, "PluginError", {
   enumerable: true,
   get: function () {
@@ -294,6 +295,19 @@ Object.defineProperty(exports, "WarningAggregator", {
   enumerable: true,
   get: function () {
     return WarningAggregator();
+  }
+});
+function Icons() {
+  const data = _interopRequireWildcard(require("./utils/icons"));
+  Icons = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "Icons", {
+  enumerable: true,
+  get: function () {
+    return Icons();
   }
 });
 function _Updates() {

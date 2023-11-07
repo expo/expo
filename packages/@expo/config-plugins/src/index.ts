@@ -8,14 +8,14 @@ import { getAndroidModFileProviders, withAndroidBaseMods } from './plugins/withA
 import { getIosModFileProviders, withIosBaseMods } from './plugins/withIosBaseMods';
 import * as XML from './utils/XML';
 import * as History from './utils/history';
+import * as Icons from './utils/icons';
 import * as WarningAggregator from './utils/warnings';
-
 // TODO: Remove
 export * as Updates from './utils/Updates';
 
 export { IOSConfig, AndroidConfig };
 
-export { WarningAggregator, History, XML };
+export { WarningAggregator, History, XML, Icons };
 
 /**
  * These are the "config-plugins"
