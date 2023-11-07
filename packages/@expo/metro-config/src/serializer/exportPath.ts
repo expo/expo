@@ -4,22 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import jscSafeUrl from 'jsc-safe-url';
 import path from 'path';
 
-import type { Options } from './fork/js';
 import { fileNameFromContents } from './getCssDeps';
-
-export function getExportPathForDependency(
-  dependencyPath: string,
-  options: Pick<Options, 'sourceUrl' | 'serverRoot'>
-): string {
-  const { searchParams } = new URL(jscSafeUrl.toNormalUrl(options.sourceUrl!));
-  return getExportPathForDependencyWithOptions(dependencyPath, {
-    platform: searchParams.get('platform')!,
-    serverRoot: options.serverRoot,
-  });
-}
 
 export function getExportPathForDependencyWithOptions(
   dependencyPath: string,

@@ -16,10 +16,10 @@ import {
   serverPreludeSerializerPlugin,
   environmentVariableSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
+import { baseJSBundle, getPlatformOption } from './fork/baseJSBundle';
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
-import { baseJSBundle, getPlatformOption } from './fork/baseJSBundle';
 
 export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
@@ -95,13 +95,18 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
 
     const jsAssets: SerialAsset[] = [];
 
-    const jsCode = await defaultSerializer(entryPoint, preModules, graph, options);
+    const jsCode = await defaultSerializer(entryPoint, preModules, graph, {
+      ...options,
+      sourceMapUrl: includeSourceMaps ? options.sourceMapUrl : undefined,
+    });
 
     const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
+
     const jsFilename = fileNameFromContents({
       filepath: url.pathname,
       src: stringContents,
     });
+
     jsAssets.push({
       filename: options.dev ? 'index.js' : `_expo/static/js/web/${jsFilename}.js`,
       originFilename: 'index.js',
@@ -116,27 +121,12 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
       options.sourceMapUrl
     ) {
       const sourceMap = typeof jsCode === 'string' ? serializeToSourceMap(...props) : jsCode.map;
-
-      // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
-      const parsed = JSON.parse(sourceMap);
-      // TODO: Maybe we can do this earlier.
-      parsed.sources = parsed.sources.map(
-        // TODO: Maybe basePath support
-        (value: string) => {
-          if (value.startsWith('/')) {
-            return '/' + path.relative(options.serverRoot ?? options.projectRoot, value);
-          }
-          // Prevent `__prelude__` from being relative.
-          return value;
-        }
-      );
-
       jsAssets.push({
         filename: options.dev ? 'index.map' : `_expo/static/js/web/${jsFilename}.js.map`,
         originFilename: 'index.map',
         type: 'map',
         metadata: {},
-        source: JSON.stringify(parsed),
+        source: sourceMap,
       });
     }
 
@@ -171,7 +161,18 @@ function serializeToSourceMap(...props: SerializerParameters): string {
     ...getSortedModules(graph, {
       createModuleId: options.createModuleId,
     }),
-  ];
+  ].map((module) => {
+    // TODO: Make this user-configurable.
+
+    // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
+    if (module.path.startsWith('/')) {
+      return {
+        ...module,
+        path: '/' + path.relative(options.serverRoot ?? options.projectRoot, module.path),
+      };
+    }
+    return module;
+  });
 
   return sourceMapString(modules, {
     ...options,

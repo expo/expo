@@ -9,12 +9,13 @@
  * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/helpers/js.js#L1
  */
 
+import assert from 'assert';
 import jscSafeUrl from 'jsc-safe-url';
 import type { MixedOutput, Module } from 'metro';
 import { addParamsToDefineCall } from 'metro-transform-plugins';
 import type { JsOutput } from 'metro-transform-worker';
 import path from 'path';
-import assert from 'assert';
+
 import { getExportPathForDependencyWithOptions } from '../exportPath';
 
 export type Options = {
@@ -73,8 +74,6 @@ export function getModuleParams(
       if (options.includeAsyncPaths) {
         if (options.sourceUrl) {
           hasPaths = true;
-          assert(options.sourceUrl != null, 'sourceUrl is required when includeAsyncPaths is true');
-
           // TODO: Only include path if the target is not in the bundle
 
           // Construct a server-relative URL for the split bundle, propagating

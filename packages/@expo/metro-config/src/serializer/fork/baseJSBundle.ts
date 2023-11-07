@@ -9,19 +9,19 @@
  * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/baseJSBundle.js#L1
  */
 
+import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import getAppendScripts from 'metro/src/lib/getAppendScripts';
 
 import { processModules } from './processModules';
-import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 
-export type ModuleMap = Array<[number, string]>;
+export type ModuleMap = [number, string][];
 
 export type Bundle = {
   modules: ModuleMap;
   post: string;
   pre: string;
-  _expoSplitBundlePaths: Array<[number, Record<string, string>]>;
+  _expoSplitBundlePaths: [number, Record<string, string>][];
 };
 
 export function getPlatformOption(
@@ -86,7 +86,7 @@ export function baseJSBundleWithDependencies(
   }
 
   const preCode = processModules(preModules, processModulesOptions)
-    .map(([_, code]) => code.src)
+    .map(([, code]) => code.src)
     .join('\n');
 
   const modules = [...dependencies].sort(
@@ -125,6 +125,6 @@ export function baseJSBundleWithDependencies(
     _expoSplitBundlePaths: mods.map(([id, code]) => [
       id,
       typeof code === 'number' ? {} : code.paths,
-    ]) as Array<[number, Record<string, string>]>,
+    ]) as [number, Record<string, string>][],
   };
 }
