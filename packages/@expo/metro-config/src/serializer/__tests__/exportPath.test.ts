@@ -1,9 +1,9 @@
-import { getExportPathForDependency } from '../exportPath';
+import { getExportPathForDependencyWithOptions } from '../exportPath';
 
-describe(getExportPathForDependency, () => {
+describe(getExportPathForDependencyWithOptions, () => {
   it(`returns consistent local path`, () => {
     expect(
-      getExportPathForDependency(
+      getExportPathForDependencyWithOptions(
         {
           absolutePath:
             '/Users/evanbacon/Documents/GitHub/expo-router/apps/sandbox/etc/external.tsx',
@@ -22,13 +22,10 @@ describe(getExportPathForDependency, () => {
           },
         }.absolutePath,
         {
-          includeAsyncPaths: false,
-          projectRoot: '/Users/evanbacon/Documents/GitHub/expo-router/apps/sandbox',
           serverRoot: '/Users/evanbacon/Documents/GitHub/expo-router/apps/sandbox',
-          sourceUrl:
-            'http://localhost:8081/index.bundle//&platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static',
+          platform: 'web',
         }
       )
-    ).toBe('/_expo/static/js/web/external-4df81b27e74f4b9adcab7bc5a479cb7a.js');
+    ).toBe('_expo/static/js/web/external-4df81b27e74f4b9adcab7bc5a479cb7a.js');
   });
 });
