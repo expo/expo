@@ -3,6 +3,7 @@ package expo.modules
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.ViewGroup
@@ -123,9 +124,7 @@ class ReactActivityDelegateWrapper(
     if (newDelegate != null && newDelegate != this) {
       val mDelegateField = ReactActivity::class.java.getDeclaredField("mDelegate")
       mDelegateField.isAccessible = true
-      val modifiers = Field::class.java.getDeclaredField("accessFlags")
-      modifiers.isAccessible = true
-      modifiers.setInt(mDelegateField, mDelegateField.modifiers and Modifier.FINAL.inv())
+      removeFinalModifier(mDelegateField)
       mDelegateField.set(activity, newDelegate)
       delegate = newDelegate
 
@@ -298,6 +297,25 @@ class ReactActivityDelegateWrapper(
       methodMap[name] = method
     }
     return method!!.invoke(delegate, *args) as T
+  }
+
+  /**
+   * Remove the Java `final` modifier from the field
+   */
+  @Suppress("DiscouragedPrivateApi")
+  private fun removeFinalModifier(field: Field) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      val artField = Field::class.java.getDeclaredField("artField")
+      artField.isAccessible = true
+      val modifiers = Class.forName("java.lang.reflect.ArtField").getDeclaredField("accessFlags")
+      modifiers.isAccessible = true
+      modifiers.setInt(artField.get(field), field.modifiers and Modifier.FINAL.inv())
+      return
+    }
+
+    val modifiers = Field::class.java.getDeclaredField("accessFlags")
+    modifiers.isAccessible = true
+    modifiers.setInt(field, field.modifiers and Modifier.FINAL.inv())
   }
 
   //endregion
