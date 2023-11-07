@@ -6,7 +6,6 @@
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import { Module, MixedOutput } from 'metro';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 // @ts-expect-error
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
@@ -20,6 +19,7 @@ import {
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
+import { baseJSBundle } from './fork/baseJSBundle';
 
 export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
