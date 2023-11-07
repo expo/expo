@@ -40,8 +40,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 function getPlatformOption(graph, options) {
-  var _url$searchParams$get;
-  if (graph.transformOptions.platform != null) {
+  var _graph$transformOptio, _url$searchParams$get;
+  if (((_graph$transformOptio = graph.transformOptions) === null || _graph$transformOptio === void 0 ? void 0 : _graph$transformOptio.platform) != null) {
     return graph.transformOptions.platform;
   }
   if (!options.sourceUrl) {
