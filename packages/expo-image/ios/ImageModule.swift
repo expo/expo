@@ -108,12 +108,12 @@ public final class ImageModule: Module {
       }
     }
 
-    AsyncFunction("prefetch") { (urls: [URL], promise: Promise) in
-      // Set the cache type to disk since the default will cache to both disk and memory.
+    AsyncFunction("prefetch") { (urls: [URL], cachePolicy: ImageCachePolicy?, promise: Promise) in
       var context = SDWebImageContext()
-      context[.storeCacheType] = SDImageCacheType.disk.rawValue
+      context[.storeCacheType] = cachePolicy?.toSdCacheType().rawValue ?? SDImageCacheType.disk.rawValue
 
-      SDWebImagePrefetcher.shared.prefetchURLs(urls, options: [.retryFailed, .handleCookies], context: context, progress: nil, completed: {finishedCount, skippedCount in
+      SDWebImagePrefetcher.shared.prefetchURLs(urls, options: [.retryFailed, .handleCookies], context: context,
+                                               progress: nil, completed: {finishedCount, skippedCount in
         let wasSuccessful = skippedCount == 0
 
         promise.resolve(wasSuccessful)

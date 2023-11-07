@@ -18,11 +18,20 @@ export class Image extends React.PureComponent<ImageProps> {
 
   /**
    * Preloads images at the given urls that can be later used in the image view.
-   * Preloaded images are always cached on the disk, so make sure to use
-   * `disk` (default) or `memory-disk` cache policy.
+   * Preloaded images are always cached to the disk with the option of also
+   * caching to memory.
+   * @param urls - A url string or an array of urls of images to prefetch.
+   * @param cachePolicy - The cache policy for pre-fetched images. Defaults to
+   * disk
+   * @return A promise resolving to `true` when the images have been prefetched.
+   * If any of the images fail to be prefetched, the promise will resolve to
+   * `false`.
    */
-  static async prefetch(urls: string | string[]): Promise<boolean> {
-    return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls]);
+  static async prefetch(
+    urls: string | string[],
+    cachePolicy?: 'disk' | 'memory-disk'
+  ): Promise<boolean> {
+    return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls], cachePolicy);
   }
 
   /**
