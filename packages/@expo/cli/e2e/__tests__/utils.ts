@@ -65,7 +65,7 @@ function isSpawnResult(errorOrResult: Error): errorOrResult is Error & SpawnResu
 }
 
 export async function installAsync(projectRoot: string, pkgs: string[] = []) {
-  return abortingSpawnAsync('yarn', pkgs, {
+  return abortingSpawnAsync('bun', ['install', ...pkgs], {
     cwd: projectRoot,
     stdio: ['ignore', 'pipe', 'pipe'],
   });

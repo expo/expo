@@ -183,6 +183,7 @@ it(
         "android/gradlew.bat",
         "android/settings.gradle",
         "app.json",
+        "bun.lockb",
         "ios/.gitignore",
         "ios/.xcode.env",
         "ios/Podfile",
@@ -205,7 +206,6 @@ it(
         "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
         "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
         "package.json",
-        "yarn.lock",
       ]
     `);
   },
