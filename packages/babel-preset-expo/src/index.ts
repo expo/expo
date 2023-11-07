@@ -1,8 +1,9 @@
 import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
-import { getBundler, getIsDev, hasModule } from './common';
+import { getBundler, getInlineEnvVarsEnabled, getIsDev, hasModule } from './common';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
 import { expoRouterBabelPlugin } from './expo-router-plugin';
+import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 
 type BabelPresetExpoPlatformOptions = {
@@ -52,6 +53,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   let platform = api.caller((caller) => (caller as any)?.platform);
   const engine = api.caller((caller) => (caller as any)?.engine) ?? 'default';
   const isDev = api.caller(getIsDev);
+  const inlineEnvironmentVariables = api.caller(getInlineEnvVarsEnabled);
 
   // If the `platform` prop is not defined then this must be a custom config that isn't
   // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
@@ -105,6 +107,15 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const aliasPlugin = getAliasPlugin();
   if (aliasPlugin) {
     extraPlugins.push(aliasPlugin);
+  }
+
+  // Only apply in non-server, for metro-only, in production environments, when the user hasn't disabled the feature.
+  // Webpack uses DefinePlugin for environment variables.
+  // Development uses an uncached serializer.
+  // Servers read from the environment.
+  // Users who disable the feature may be using a different babel plugin.
+  if (inlineEnvironmentVariables) {
+    extraPlugins.push(expoInlineEnvVars);
   }
 
   if (platform === 'web') {
