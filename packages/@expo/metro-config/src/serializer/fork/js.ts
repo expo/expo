@@ -15,7 +15,7 @@ import { addParamsToDefineCall } from 'metro-transform-plugins';
 import type { JsOutput } from 'metro-transform-worker';
 import path from 'path';
 import assert from 'assert';
-import { getExportPathForDependency } from '../exportPath';
+import { getExportPathForDependencyWithOptions } from '../exportPath';
 
 export type Options = {
   createModuleId: (module: string) => number | string;
@@ -24,6 +24,7 @@ export type Options = {
   projectRoot: string;
   serverRoot: string;
   sourceUrl: string | undefined;
+  platform: string;
   //   ...
 };
 
@@ -45,7 +46,16 @@ export function wrapModule(
 
 export function getModuleParams(
   module: Module,
-  options: Options
+  options: Pick<
+    Options,
+    | 'createModuleId'
+    | 'sourceUrl'
+    | 'includeAsyncPaths'
+    | 'serverRoot'
+    | 'platform'
+    | 'dev'
+    | 'projectRoot'
+  >
 ): { params: any[]; paths: Record<string, string> } {
   const moduleId = options.createModuleId(module.path);
 
@@ -57,36 +67,39 @@ export function getModuleParams(
       // NOTE(EvanBacon): Disabled this to ensure that paths are provided even when the entire bundle
       // is created. This is required for production bundle splitting.
       // options.includeAsyncPaths &&
-      options.sourceUrl &&
+
       dependency.data.data.asyncType != null
     ) {
-      hasPaths = true;
-      assert(options.sourceUrl != null, 'sourceUrl is required when includeAsyncPaths is true');
+      if (options.includeAsyncPaths) {
+        if (options.sourceUrl) {
+          hasPaths = true;
+          assert(options.sourceUrl != null, 'sourceUrl is required when includeAsyncPaths is true');
 
-      // TODO: Only include path if the target is not in the bundle
+          // TODO: Only include path if the target is not in the bundle
 
-      // Construct a server-relative URL for the split bundle, propagating
-      // most parameters from the main bundle's URL.
+          // Construct a server-relative URL for the split bundle, propagating
+          // most parameters from the main bundle's URL.
 
-      const { searchParams } = new URL(jscSafeUrl.toNormalUrl(options.sourceUrl));
-      searchParams.set('modulesOnly', 'true');
-      searchParams.set('runModule', 'false');
+          const { searchParams } = new URL(jscSafeUrl.toNormalUrl(options.sourceUrl));
+          searchParams.set('modulesOnly', 'true');
+          searchParams.set('runModule', 'false');
 
-      const bundlePath = path.relative(options.serverRoot, dependency.absolutePath);
-      if (options.dev) {
-        paths[id] =
-          '/' +
-          path.join(
-            path.dirname(bundlePath),
-            // Strip the file extension
-            path.basename(bundlePath, path.extname(bundlePath))
-          ) +
-          '.bundle?' +
-          searchParams.toString();
+          const bundlePath = path.relative(options.serverRoot, dependency.absolutePath);
+          paths[id] =
+            '/' +
+            path.join(
+              path.dirname(bundlePath),
+              // Strip the file extension
+              path.basename(bundlePath, path.extname(bundlePath))
+            ) +
+            '.bundle?' +
+            searchParams.toString();
+        }
       } else {
+        hasPaths = true;
         // NOTE(EvanBacon): Custom block for bundle splitting in production according to how `expo export` works
         // TODO: Add content hash
-        paths[id] = '/' + getExportPathForDependency(dependency.absolutePath, options);
+        paths[id] = '/' + getExportPathForDependencyWithOptions(dependency.absolutePath, options);
       }
     }
     return id;
@@ -126,7 +139,6 @@ export function getJsOutput(module: {
   );
 
   const jsOutput: JsOutput = jsModules[0] as unknown as any;
-  //   const jsOutput: JsOutput = (jsModules[0]: any);
 
   assert(
     Number.isFinite(jsOutput.data.lineCount),

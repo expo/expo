@@ -13,6 +13,7 @@ import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metr
 import getAppendScripts from 'metro/src/lib/getAppendScripts';
 
 import { processModules } from './processModules';
+import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 
 export type ModuleMap = Array<[number, string]>;
 
@@ -23,24 +24,46 @@ export type Bundle = {
   _expoSplitBundlePaths: Array<[number, Record<string, string>]>;
 };
 
+export function getPlatformOption(
+  graph: Pick<ReadOnlyGraph, 'transformOptions'>,
+  options: SerializerOptions
+): string | null {
+  if (graph.transformOptions.platform != null) {
+    return graph.transformOptions.platform;
+  }
+  if (!options.sourceUrl) {
+    return null;
+  }
+
+  const sourceUrl = isJscSafeUrl(options.sourceUrl)
+    ? toNormalUrl(options.sourceUrl)
+    : options.sourceUrl;
+  const url = new URL(sourceUrl, 'https://expo.dev');
+  return url.searchParams.get('platform') ?? null;
+}
+
 export function baseJSBundle(
   entryPoint: string,
   preModules: readonly Module[],
-  graph: Pick<ReadOnlyGraph, 'dependencies'>,
+  graph: Pick<ReadOnlyGraph, 'dependencies' | 'transformOptions'>,
   options: SerializerOptions
 ): Bundle {
-  return baseJSBundleWithDependencies(
-    entryPoint,
-    preModules,
-    [...graph.dependencies.values()],
-    options
-  );
+  const platform = getPlatformOption(graph, options);
+  if (platform == null) {
+    throw new Error('platform could not be determined for Metro bundle');
+  }
+
+  return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
+    ...options,
+    platform,
+  });
 }
+
 export function baseJSBundleWithDependencies(
   entryPoint: string,
   preModules: readonly Module[],
   dependencies: Module<MixedOutput>[],
-  options: SerializerOptions
+  options: SerializerOptions & { platform: string }
 ): Bundle {
   for (const module of dependencies) {
     options.createModuleId(module.path);
@@ -54,6 +77,7 @@ export function baseJSBundleWithDependencies(
     projectRoot: options.projectRoot,
     serverRoot: options.serverRoot,
     sourceUrl: options.sourceUrl,
+    platform: options.platform,
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested

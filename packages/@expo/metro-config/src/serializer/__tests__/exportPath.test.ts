@@ -1,4 +1,4 @@
-import { getExportPathForDependency } from '../js';
+import { getExportPathForDependency } from '../exportPath';
 
 describe(getExportPathForDependency, () => {
   it(`returns consistent local path`, () => {
@@ -22,8 +22,7 @@ describe(getExportPathForDependency, () => {
           },
         }.absolutePath,
         {
-          dev: false,
-          includeAsyncPaths: true,
+          includeAsyncPaths: false,
           projectRoot: '/Users/evanbacon/Documents/GitHub/expo-router/apps/sandbox',
           serverRoot: '/Users/evanbacon/Documents/GitHub/expo-router/apps/sandbox',
           sourceUrl:

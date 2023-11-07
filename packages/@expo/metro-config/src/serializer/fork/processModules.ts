@@ -20,7 +20,9 @@ export function processModules(
     projectRoot,
     serverRoot,
     sourceUrl,
+    platform,
   }: {
+    platform: string;
     filter?: (module: Module) => boolean;
     createModuleId: (module: string) => number;
     dev: boolean;
@@ -36,6 +38,7 @@ export function processModules(
     .map((module: Module) => [
       module,
       wrapModule(module, {
+        platform,
         createModuleId,
         dev,
         includeAsyncPaths,
