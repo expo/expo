@@ -9,6 +9,7 @@ import path from 'path';
 import { Options } from './resolveOptions';
 import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
+import { env } from '../../utils/env';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { profile } from '../../utils/profile';
 import { isEnableHermesManaged } from '../exportHermes';
@@ -67,6 +68,7 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
     customTransformOptions: {
       __proto__: null,
       engine: isHermes ? 'hermes' : undefined,
+      preserveEnvVars: env.EXPO_NO_CLIENT_ENV_VARS,
     },
   };
 

@@ -95,6 +95,7 @@ export function createBundleUrlPath({
   serializerIncludeMaps,
   lazy,
   engine,
+  preserveEnvVars = env.EXPO_NO_CLIENT_ENV_VARS,
 }: {
   platform: string;
   mainModuleName: string;
@@ -105,6 +106,7 @@ export function createBundleUrlPath({
   serializerIncludeMaps?: boolean;
   lazy?: boolean;
   engine?: 'hermes';
+  preserveEnvVars?: boolean;
 }): string {
   const queryParams = new URLSearchParams({
     platform: encodeURIComponent(platform),
@@ -125,10 +127,15 @@ export function createBundleUrlPath({
     queryParams.append('transform.engine', engine);
   }
 
+  if (preserveEnvVars) {
+    queryParams.append('transform.preserveEnvVars', String(preserveEnvVars));
+  }
+
   if (environment) {
     queryParams.append('resolver.environment', environment);
     queryParams.append('transform.environment', environment);
   }
+
   if (serializerOutput) {
     queryParams.append('serializer.output', serializerOutput);
   }
@@ -301,34 +308,6 @@ export abstract class ManifestMiddleware<
     );
   }
 
-  private _getBundleUrlPath({
-    platform,
-    mainModuleName,
-    engine,
-  }: {
-    platform: string;
-    mainModuleName: string;
-    engine?: 'hermes';
-  }): string {
-    const queryParams = new URLSearchParams({
-      platform: encodeURIComponent(platform),
-      dev: String(this.options.mode !== 'production'),
-      // TODO: Is this still needed?
-      hot: String(false),
-    });
-    if (shouldEnableAsyncImports(this.projectRoot)) {
-      queryParams.append('lazy', String(true));
-    }
-    if (engine) {
-      queryParams.append('transform.engine', String(engine));
-    }
-    if (this.options.minify) {
-      queryParams.append('minify', String(this.options.minify));
-    }
-
-    return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
-  }
-
   /** Log telemetry. */
   protected abstract trackManifest(version?: string): void;
 
@@ -392,9 +371,13 @@ export abstract class ManifestMiddleware<
       pkg: this.initialProjectConfig.pkg,
       platform,
     });
-    return this._getBundleUrlPath({
+
+    return createBundleUrlPath({
       platform,
       mainModuleName,
+      minify: this.options.minify,
+      lazy: shouldEnableAsyncImports(this.projectRoot),
+      mode: this.options.mode ?? 'development',
       // Hermes doesn't support more modern JS features than most, if not all, modern browser.
       engine: 'hermes',
     });

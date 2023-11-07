@@ -51,3 +51,17 @@ export function getIsDev(caller: any) {
   // https://babeljs.io/docs/options#envname
   return process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
 }
+
+export function getIsServer(caller: any) {
+  return caller?.isServer ?? false;
+}
+
+export function getInlineEnvVarsEnabled(caller: any): boolean {
+  const isWebpack = getBundler(caller) === 'webpack';
+  const isDev = getIsDev(caller);
+  const isServer = getIsServer(caller);
+  const preserveEnvVars = caller?.preserveEnvVars;
+  // Development env vars are added in the serializer to avoid caching issues in development.
+  // Servers have env vars left as-is to read from the environment.
+  return !isWebpack && !isDev && !isServer && !preserveEnvVars;
+}

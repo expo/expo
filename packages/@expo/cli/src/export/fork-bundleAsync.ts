@@ -16,6 +16,7 @@ import {
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
+import { env } from '../utils/env';
 
 export type MetroDevServerOptions = LoadOptions;
 
@@ -140,6 +141,7 @@ async function bundleProductionMetroClientAsync(
       customTransformOptions: {
         __proto__: null,
         engine: isHermes ? 'hermes' : undefined,
+        preserveEnvVars: env.EXPO_NO_CLIENT_ENV_VARS,
       },
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
         reporter.update({
