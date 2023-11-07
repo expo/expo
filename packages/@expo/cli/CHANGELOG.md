@@ -25,6 +25,7 @@
 
 ### 💡 Others
 
+- Fix tests running in CI. ([#25244](https://github.com/expo/expo/pull/25244) by [@EvanBacon](https://github.com/EvanBacon))
 - Drop support for running arbitrary Metro packages. ([#25197](https://github.com/expo/expo/pull/25197) by [@EvanBacon](https://github.com/EvanBacon))
 - Update tests. ([#25089](https://github.com/expo/expo/pull/25089) by [@EvanBacon](https://github.com/EvanBacon))
 - Memoize notice log about `src/app` directory to prevent spam. ([#25000](https://github.com/expo/expo/pull/25000) by [@EvanBacon](https://github.com/EvanBacon))

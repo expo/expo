@@ -23,6 +23,7 @@ import {
   getRouterDirectoryWithManifest,
 } from '../start/server/metro/router';
 import { learnMore } from '../utils/link';
+import { getFreePortAsync } from '../utils/port';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -41,16 +42,21 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
       learnMore('https://docs.expo.dev/router/reference/static-rendering/')
   );
 
+  // Useful for running parallel e2e tests in CI.
+  const port = await getFreePortAsync(8082);
+
   // TODO: Prevent starting the watcher.
   const devServerManager = new DevServerManager(projectRoot, {
     minify: options.minify,
     mode: 'production',
+    port,
     location: {},
   });
   await devServerManager.startAsync([
     {
       type: 'metro',
       options: {
+        port,
         location: {},
         isExporting: true,
       },

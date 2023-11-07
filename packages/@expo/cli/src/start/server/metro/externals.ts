@@ -39,7 +39,10 @@ export async function setupShimFiles(projectRoot: string) {
   // Copy the shims to the project folder in case we're running in a monorepo.
   const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '../static/shims');
 
-  await copyAsync(shimsFolder, path.join(projectRoot, METRO_SHIMS_FOLDER));
+  await copyAsync(shimsFolder, path.join(projectRoot, METRO_SHIMS_FOLDER), {
+    overwrite: true,
+    recursive: true,
+  });
 }
 
 export async function setupNodeExternals(projectRoot: string) {
