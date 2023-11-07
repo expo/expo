@@ -17,8 +17,6 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable: Any]?
   private lazy var shouldEnableAutoSetup: Bool = {
-    return false
-
     if EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled() {
       return false
     }
@@ -38,7 +36,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
 
     // Backward compatible if main AppDelegate already has expo-updates setup,
     // we just skip in this case.
-    if AppController.sharedInstance.isStarted {
+    if AppController.isInitialized() {
       return false
     }
 

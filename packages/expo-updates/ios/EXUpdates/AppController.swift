@@ -124,6 +124,9 @@ public protocol AppControllerDelegate: AnyObject {
 @objc(EXUpdatesAppController)
 @objcMembers
 public class AppController: NSObject {
+  public static func isInitialized() -> Bool {
+    return _sharedInstance != nil
+  }
   private static var _sharedInstance: InternalAppControllerInterface?
   public static var sharedInstance: InternalAppControllerInterface {
     assert(_sharedInstance != nil, "AppController.sharedInstace was called before the module was initialized")
