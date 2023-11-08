@@ -36,7 +36,6 @@ object BuildData {
     database: UpdatesDatabase,
   ) {
     val scopeKey = updatesConfiguration.scopeKey
-      ?: throw AssertionError("expo-updates is enabled, but no valid URL is configured in AndroidManifest.xml. If you are making a release build for the first time, make sure you have run `expo publish` at least once.")
     val buildJSON = getBuildDataFromDatabase(database, scopeKey)
     if (buildJSON == null) {
       setBuildDataInDatabase(database, updatesConfiguration)
@@ -82,7 +81,11 @@ object BuildData {
     updatesConfiguration: UpdatesConfiguration,
   ) {
     val buildDataJSON = getBuildDataFromConfig(updatesConfiguration)
-    database.jsonDataDao()?.setJSONStringForKey(staticBuildDataKey, buildDataJSON.toString(), updatesConfiguration.scopeKey as String)
+    database.jsonDataDao()?.setJSONStringForKey(
+      staticBuildDataKey,
+      buildDataJSON.toString(),
+      updatesConfiguration.scopeKey
+    )
   }
 
   fun getBuildDataFromDatabase(database: UpdatesDatabase, scopeKey: String): JSONObject? {

@@ -21,15 +21,12 @@ public final class AppLauncherNoDatabase: NSObject, AppLauncher {
 
   public override init() {}
 
-  public func launchUpdate(withConfig config: UpdatesConfig) {
-    launchedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: nil)
-    if launchedUpdate != nil {
-      precondition(assetFilesMap == nil, "assetFilesMap should be null for embedded updates")
-      launchAssetUrl = Bundle.main.url(
-        forResource: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFilename,
-        withExtension: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFileType
-      )
-    }
+  public func launchUpdate() {
+    precondition(assetFilesMap == nil, "assetFilesMap should be null for embedded updates")
+    launchAssetUrl = Bundle.main.url(
+      forResource: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFilename,
+      withExtension: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFileType
+    )
   }
 
   public func isUsingEmbeddedAssets() -> Bool {
