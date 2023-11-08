@@ -9,9 +9,8 @@ import ExpoModulesCore
 /**
  * Updates controller for applications that have updates enabled and properly-configured.
  */
-public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDelegate, 
+public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDelegate,
   ErrorRecoveryDelegate, UpdatesStateChangeDelegate, InternalAppControllerInterface {
-
   private static let ErrorDomain = "EXUpdatesAppController"
   private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
   private static let EXUpdatesStateChangeEventName = "Expo.nativeUpdatesStateChangeEvent"
