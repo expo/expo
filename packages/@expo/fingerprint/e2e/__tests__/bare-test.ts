@@ -1,6 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
-import os from 'os';
 import path from 'path';
 import rimraf from 'rimraf';
 
