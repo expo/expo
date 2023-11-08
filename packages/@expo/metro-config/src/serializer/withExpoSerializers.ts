@@ -80,15 +80,18 @@ export function getDefaultSerializer(
   ): Promise<string | { code: string; map: string }> => {
     const [entryFile, preModules, graph, options] = props;
 
+    // @ts-expect-error
+    const customSerializerOptions = options.serializerOptions;
+
     // Custom options can only be passed outside of the dev server, meaning
     // we don't need to stringify the results at the end, i.e. this is `npx expo export` or `npx expo export:embed`.
-    const supportsNonSerialReturn = !!options.serializerOptions?.output;
+    const supportsNonSerialReturn = !!customSerializerOptions?.output;
 
     const serializerOptions = (() => {
-      if (options.serializerOptions) {
+      if (customSerializerOptions) {
         return {
-          outputMode: options.serializerOptions.output,
-          includeSourceMaps: options.serializerOptions.includeMaps,
+          outputMode: customSerializerOptions.output,
+          includeSourceMaps: customSerializerOptions.includeMaps,
         };
       }
       if (options.sourceUrl) {
