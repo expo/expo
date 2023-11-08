@@ -1,6 +1,5 @@
 package expo.modules.image
 
-import android.util.Log
 import android.view.View
 import androidx.core.view.doOnDetach
 import com.bumptech.glide.Glide
@@ -209,8 +208,6 @@ class ExpoImageModule : Module() {
       }
 
       Prop("cachePolicy") { view: ExpoImageViewWrapper, cachePolicy: CachePolicy ->
-        Log.d("CACHE_POLICY","Cache policy is:")
-        Log.d("CACHE_POLICY", cachePolicy.value)
         view.cachePolicy = cachePolicy ?: CachePolicy.DISK
       }
 
