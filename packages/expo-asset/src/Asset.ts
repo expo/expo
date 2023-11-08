@@ -1,5 +1,5 @@
-import { Platform } from 'expo-modules-core';
 import { getAssetByID } from '@react-native/assets-registry/registry';
+import { Platform } from 'expo-modules-core';
 
 import { AssetMetadata, selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';

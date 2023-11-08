@@ -1,5 +1,5 @@
+import { getAssetByID } from '@react-native/assets-registry/registry';
 import { Platform } from 'expo-modules-core';
-import { getAssetByID } from 'react-native/Libraries/Image/AssetRegistry';
 import { selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as ImageAssets from './ImageAssets';
@@ -124,6 +124,7 @@ export class Asset {
         // Outside of the managed env we need the moduleId to initialize the asset
         // because resolveAssetSource depends on it
         if (!IS_ENV_WITH_UPDATES_ENABLED) {
+            // null-check is performed above with `getAssetByID`.
             const { uri } = resolveAssetSource(virtualAssetModule);
             const asset = new Asset({
                 name: meta.name,
