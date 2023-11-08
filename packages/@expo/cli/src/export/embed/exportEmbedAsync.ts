@@ -13,7 +13,7 @@ import { setNodeEnv } from '../../utils/nodeEnv';
 import { profile } from '../../utils/profile';
 import { isEnableHermesManaged } from '../exportHermes';
 import { getAssets } from '../fork-bundleAsync';
-import { saveAssets } from '../fork-saveAssets';
+import { persistMetroAssetsAsync } from '../persistMetroAssets';
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');
@@ -28,7 +28,13 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     output.save(bundle, options, Log.log),
     // NOTE(EvanBacon): This may need to be adjusted in the future if want to support basePath on native
     // platforms when doing production embeds (unlikely).
-    saveAssets(assets, options.platform, options.assetsDest, options.assetCatalogDest),
+    options.assetsDest
+      ? persistMetroAssetsAsync(assets, {
+          platform: options.platform,
+          outputDirectory: options.assetsDest,
+          iosAssetCatalogDirectory: options.assetCatalogDest,
+        })
+      : null,
   ]);
 }
 

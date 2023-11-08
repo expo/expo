@@ -1,8 +1,25 @@
+/**
+ * Copyright © 2023 650 Industries.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * Based on the community asset persisting for Metro but with base path and web support:
+ * https://github.com/facebook/react-native/blob/d6e0bc714ad4d215ede4949d3c4f44af6dea5dd3/packages/community-cli-plugin/src/commands/bundle/saveAssets.js#L1
+ */
 import fs from 'fs';
-import type { AssetData, AssetDataWithoutFiles } from 'metro';
 import path from 'path';
 
 import { Log } from '../log';
+
+import type { AssetData, AssetDataWithoutFiles } from 'metro';
+function cleanAssetCatalog(catalogDir: string): void {
+  const files = fs.readdirSync(catalogDir).filter((file) => file.endsWith('.imageset'));
+  for (const file of files) {
+    fs.rmSync(path.join(catalogDir, file));
+  }
+}
 
 export function persistMetroAssetsAsync(
   assets: readonly AssetData[],
@@ -10,13 +27,52 @@ export function persistMetroAssetsAsync(
     platform,
     outputDirectory,
     basePath,
+    iosAssetCatalogDirectory,
   }: {
     platform: string;
     outputDirectory: string;
     basePath?: string;
+    iosAssetCatalogDirectory?: string;
   }
 ) {
-  const files = assets.reduce<Record<string, string>>((acc, asset) => {
+  if (outputDirectory == null) {
+    Log.warn('Assets destination folder is not set, skipping...');
+    return;
+  }
+
+  let assetsToCopy: AssetData[] = [];
+
+  if (platform === 'ios' && iosAssetCatalogDirectory != null) {
+    // Use iOS Asset Catalog for images. This will allow Apple app thinning to
+    // remove unused scales from the optimized bundle.
+    const catalogDir = path.join(iosAssetCatalogDirectory, 'RNAssets.xcassets');
+    if (!fs.existsSync(catalogDir)) {
+      Log.error(
+        `Could not find asset catalog 'RNAssets.xcassets' in ${iosAssetCatalogDirectory}. Make sure to create it if it does not exist.`
+      );
+      return;
+    }
+
+    Log.log('Adding images to asset catalog', catalogDir);
+    cleanAssetCatalog(catalogDir);
+    for (const asset of assets) {
+      if (isCatalogAsset(asset)) {
+        const imageSet = getImageSet(
+          catalogDir,
+          asset,
+          filterPlatformAssetScales(platform, asset.scales)
+        );
+        writeImageSet(imageSet);
+      } else {
+        assetsToCopy.push(asset);
+      }
+    }
+    Log.log('Done adding images to asset catalog');
+  } else {
+    assetsToCopy = [...assets];
+  }
+
+  const files = assetsToCopy.reduce<Record<string, string>>((acc, asset) => {
     const validScales = new Set(filterPlatformAssetScales(platform, asset.scales));
 
     asset.scales.forEach((scale, idx) => {
@@ -24,13 +80,68 @@ export function persistMetroAssetsAsync(
         return;
       }
       const src = asset.files[idx];
-      const dest = path.join(outputDirectory, getAssetLocalPath(asset, { scale, basePath }));
+      const dest = path.join(
+        outputDirectory,
+        getAssetLocalPath(asset, { platform, scale, basePath })
+      );
       acc[src] = dest;
     });
     return acc;
   }, {});
 
   return copyAll(files);
+}
+
+function writeImageSet(imageSet: ImageSet): void {
+  fs.mkdirSync(imageSet.basePath, { recursive: true });
+
+  for (const file of imageSet.files) {
+    const dest = path.join(imageSet.basePath, file.name);
+    fs.copyFileSync(file.src, dest);
+  }
+
+  fs.writeFileSync(
+    path.join(imageSet.basePath, 'Contents.json'),
+    JSON.stringify({
+      images: imageSet.files.map((file) => ({
+        filename: file.name,
+        idiom: 'universal',
+        scale: `${file.scale}x`,
+      })),
+      info: {
+        author: 'expo',
+        version: 1,
+      },
+    })
+  );
+}
+
+function isCatalogAsset(asset: Pick<AssetData, 'type'>): boolean {
+  return asset.type === 'png' || asset.type === 'jpg' || asset.type === 'jpeg';
+}
+
+type ImageSet = {
+  basePath: string;
+  files: { name: string; src: string; scale: number }[];
+};
+
+function getImageSet(
+  catalogDir: string,
+  asset: Pick<AssetData, 'httpServerLocation' | 'name' | 'type' | 'files'>,
+  scales: number[]
+): ImageSet {
+  const fileName = getResourceIdentifier(asset);
+  return {
+    basePath: path.join(catalogDir, `${fileName}.imageset`),
+    files: scales.map((scale, idx) => {
+      const suffix = scale === 1 ? '' : `@${scale}x`;
+      return {
+        name: `${fileName + suffix}.${asset.type}`,
+        scale,
+        src: asset.files[idx],
+      };
+    }),
+  };
 }
 
 export function copyAll(filesToCopy: Record<string, string>) {
@@ -73,7 +184,7 @@ const ALLOWED_SCALES: { [key: string]: number[] } = {
   ios: [1, 2, 3],
 };
 
-function filterPlatformAssetScales(platform: string, scales: readonly number[]): readonly number[] {
+export function filterPlatformAssetScales(platform: string, scales: number[]): number[] {
   const whitelist: number[] = ALLOWED_SCALES[platform];
   if (!whitelist) {
     return scales;
@@ -99,8 +210,34 @@ function filterPlatformAssetScales(platform: string, scales: readonly number[]):
   return result;
 }
 
-function getAssetLocalPath(
-  asset: AssetDataWithoutFiles,
+function getAssetLocalPathAndroid(
+  asset: Pick<AssetData, 'type' | 'httpServerLocation' | 'name'>,
+  {
+    basePath,
+    scale,
+  }: {
+    // TODO: basePath support
+    basePath?: string;
+    scale: number;
+  }
+): string {
+  const androidFolder = getAndroidResourceFolderName(asset, scale);
+  const fileName = getResourceIdentifier(asset);
+  return path.join(androidFolder, `${fileName}.${asset.type}`);
+}
+
+export function getAssetLocalPath(
+  asset: Pick<AssetData, 'type' | 'httpServerLocation' | 'name'>,
+  { basePath, scale, platform }: { basePath?: string; scale: number; platform: string }
+): string {
+  if (platform === 'android') {
+    return getAssetLocalPathAndroid(asset, { basePath, scale });
+  }
+  return getAssetLocalPathDefault(asset, { basePath, scale });
+}
+
+function getAssetLocalPathDefault(
+  asset: Pick<AssetData, 'type' | 'httpServerLocation' | 'name'>,
   { basePath, scale }: { basePath?: string; scale: number }
 ): string {
   const suffix = scale === 1 ? '' : `@${scale}x`;
@@ -133,4 +270,60 @@ export function stripAssetPrefix(path: string, basePath?: string) {
     );
   }
   return path;
+}
+
+/**
+ * FIXME: using number to represent discrete scale numbers is fragile in essence because of
+ * floating point numbers imprecision.
+ */
+function getAndroidAssetSuffix(scale: number): string | null {
+  switch (scale) {
+    case 0.75:
+      return 'ldpi';
+    case 1:
+      return 'mdpi';
+    case 1.5:
+      return 'hdpi';
+    case 2:
+      return 'xhdpi';
+    case 3:
+      return 'xxhdpi';
+    case 4:
+      return 'xxxhdpi';
+    default:
+      return null;
+  }
+}
+
+// See https://developer.android.com/guide/topics/resources/drawable-resource.html
+const drawableFileTypes = new Set<string>(['gif', 'jpeg', 'jpg', 'png', 'webp', 'xml']);
+
+function getAndroidResourceFolderName(asset: Pick<AssetData, 'type'>, scale: number): string {
+  if (!drawableFileTypes.has(asset.type)) {
+    return 'raw';
+  }
+  const suffix = getAndroidAssetSuffix(scale);
+  if (!suffix) {
+    throw new Error(
+      `Asset "${JSON.stringify(asset)}" does not use a supported Android resolution suffix`
+    );
+  }
+  return `drawable-${suffix}`;
+}
+
+function getResourceIdentifier(asset: Pick<AssetData, 'httpServerLocation' | 'name'>): string {
+  const folderPath = getBasePath(asset);
+  return `${folderPath}/${asset.name}`
+    .toLowerCase()
+    .replace(/\//g, '_') // Encode folder structure in file name
+    .replace(/([^a-z0-9_])/g, '') // Remove illegal chars
+    .replace(/^assets_/, ''); // Remove "assets_" prefix
+}
+
+function getBasePath(asset: Pick<AssetData, 'httpServerLocation'>): string {
+  let basePath = asset.httpServerLocation;
+  if (basePath[0] === '/') {
+    basePath = basePath.substring(1);
+  }
+  return basePath;
 }
