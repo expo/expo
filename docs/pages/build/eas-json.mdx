@@ -160,9 +160,9 @@ It's common to want to share build tool configuration between profiles, and we c
 
 ### Selecting resource class
 
-If your project requires extensive resources due to its complexity or size, or if you want your builds to run faster, you can use `large` workers to run your jobs. These workers have access to a more powerful CPU and bigger memory.
+Resource class is the virtual machine resources configuration (CPU cores, RAM size) EAS Build provides to your jobs. By default, resource class is set to `medium` which is usually sufficient for both small and bigger projects. However, if your project requires more powerful CPU or bigger memory, or if you want your builds to finish faster, you can switch to `large` workers.
 
-To use workers of a specific resource class in your project, add [`android.resourceClass`](/eas/json/#resourceclass-1) or [`ios.resourceClass`](/eas/json/#resourceclass-2) property to your build profile:
+For more details on resources provided to each class, see [`android.resourceClass`](/eas/json/#resourceclass-1) and [`ios.resourceClass`](/eas/json/#resourceclass-2) property documentations. To run your build on a worker of specific resource class, configure this property in your build profile:
 
 {/* prettier-ignore */}
 ```json eas.json
