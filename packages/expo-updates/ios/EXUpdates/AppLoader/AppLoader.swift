@@ -323,8 +323,12 @@ open class AppLoader: NSObject {
           // the database and filesystem have gotten out of sync
           // do our best to create a new entry for this file even though it already existed on disk
           // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
-          let contents = try? Data(contentsOf: self.directory.appendingPathComponent(existingAsset.filename)) ??
-            UpdatesUtils.url(forBundledAsset: existingAsset).let { it in try? Data(contentsOf: it) }
+          var contents = try? Data(contentsOf: self.directory.appendingPathComponent(existingAsset.filename))
+          if contents == nil {
+            if let embeddedUrl = UpdatesUtils.url(forBundledAsset: existingAsset) {
+              contents = try? Data(contentsOf: embeddedUrl)
+            }
+          }
           // This replaces the old force try
           assert(contents != nil)
           if let contents = contents {
