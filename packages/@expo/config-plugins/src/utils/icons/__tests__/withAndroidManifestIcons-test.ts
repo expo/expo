@@ -1,6 +1,6 @@
 import { AndroidConfig, AndroidManifest, XML } from '@expo/config-plugins';
 
-import rnFixture from '../../__tests__/fixtures/react-native-project';
+import rnFixture from '../../../plugins/__tests__/fixtures/react-native-project';
 import { setRoundIconManifest } from '../withAndroidManifestIcons';
 
 const { getMainApplicationOrThrow } = AndroidConfig.Manifest;

@@ -5,12 +5,11 @@ import {
   withAndroidManifest,
   withDangerousMod,
 } from '@expo/config-plugins';
+import { ANDROID_RES_PATH, dpiValues } from '@expo/config-plugins/src/utils/icons/withAndroidIcons';
 import { ExpoConfig } from '@expo/config-types';
 import { generateImageAsync } from '@expo/image-utils';
 import fs from 'fs-extra';
 import path from 'path';
-
-import { ANDROID_RES_PATH, dpiValues } from '../../icons/withAndroidIcons';
 
 const { Colors } = AndroidConfig;
 const {

@@ -1,9 +1,5 @@
 import { AndroidConfig } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-import * as fs from 'fs';
-import { vol } from 'memfs';
-import * as path from 'path';
-
 import {
   ADAPTIVE_ICON_XML_WITH_BACKGROUND_COLOR,
   ADAPTIVE_ICON_XML_WITH_BACKGROUND_COLOR_AND_MONOCHROME,
@@ -11,9 +7,13 @@ import {
   ADAPTIVE_ICON_XML_WITH_BOTH_AND_MONOCHROME,
   LIST_OF_ANDROID_ADAPTIVE_ICON_FILES_FINAL,
   SAMPLE_COLORS_XML,
-} from '../../__tests__/fixtures/androidIcons';
-import rnFixture from '../../__tests__/fixtures/react-native-project';
-import { getDirFromFS } from '../../__tests__/getDirFromFS';
+} from '@expo/prebuild-config/src/plugins/__tests__/fixtures/androidIcons';
+import * as fs from 'fs';
+import { vol } from 'memfs';
+import * as path from 'path';
+
+import { getDirFromFS } from '../../../../src/ios/__tests__/utils/getDirFromFS.ts';
+import rnFixture from '../../../plugins/__tests__/fixtures/react-native-project';
 import {
   createAdaptiveIconXmlString,
   getAdaptiveIcon,

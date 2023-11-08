@@ -9,8 +9,8 @@ var _exportNames = {
   IOSConfig: true,
   XML: true,
   History: true,
-  WarningAggregator: true,
   Icons: true,
+  WarningAggregator: true,
   Updates: true,
   withPlugins: true,
   withRunOnce: true,
@@ -284,19 +284,6 @@ Object.defineProperty(exports, "History", {
     return History();
   }
 });
-function WarningAggregator() {
-  const data = _interopRequireWildcard(require("./utils/warnings"));
-  WarningAggregator = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "WarningAggregator", {
-  enumerable: true,
-  get: function () {
-    return WarningAggregator();
-  }
-});
 function Icons() {
   const data = _interopRequireWildcard(require("./utils/icons"));
   Icons = function () {
@@ -308,6 +295,19 @@ Object.defineProperty(exports, "Icons", {
   enumerable: true,
   get: function () {
     return Icons();
+  }
+});
+function WarningAggregator() {
+  const data = _interopRequireWildcard(require("./utils/warnings"));
+  WarningAggregator = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "WarningAggregator", {
+  enumerable: true,
+  get: function () {
+    return WarningAggregator();
   }
 });
 function _Updates() {
