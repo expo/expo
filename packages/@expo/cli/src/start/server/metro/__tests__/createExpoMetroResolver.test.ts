@@ -191,49 +191,57 @@ describe(createFastResolver, () => {
       );
     });
 
-    it('resolves module with browser shims', () => {
-      const resolver = createFastResolver({ preserveSymlinks: false });
-      const context = createContext({
-        platform,
-        origin: path.join(originProjectRoot, 'index.js'),
-      });
-      const results = resolver(context, 'object-inspect', platform);
-      expect(results).toEqual({
-        filePath: expect.stringMatching(/\/object-inspect\/index.js$/),
-        type: 'sourceFile',
-      });
+    [true, false].forEach((packageExports) => {
+      it('resolves module with browser shims' + packageExports ? ' (package exports)' : '', () => {
+        // object-inspect doesn't contain package exports so the results should be the same
+        // regardless of if the feature is on or not.
+        const resolver = createFastResolver({ preserveSymlinks: false });
+        const context = createContext({
+          platform,
+          packageExports,
+          origin: path.join(originProjectRoot, 'index.js'),
+        });
+        const results = resolver(context, 'object-inspect', platform);
+        expect(results).toEqual({
+          filePath: expect.stringMatching(/\/object-inspect\/index.js$/),
+          type: 'sourceFile',
+        });
 
-      assert(results.type === 'sourceFile');
+        assert(results.type === 'sourceFile');
 
-      // Browser shims are applied on native.
-      expect(
-        resolver(
-          createContext({
-            platform,
-            origin: results.filePath,
-          }),
-          './util.inspect.js',
-          platform
-        )
-      ).toEqual({
-        type: 'empty',
-      });
+        // Browser shims are applied on native.
+        ['web', 'ios'].forEach((platform) => {
+          expect(
+            resolver(
+              createContext({
+                platform,
+                packageExports,
+                origin: results.filePath,
+              }),
+              './util.inspect.js',
+              platform
+            )
+          ).toEqual({
+            type: 'empty',
+          });
+        });
 
-      // Browser shims are not applied in server contexts.
-      expect(
-        resolver(
-          createContext({
-            platform,
-            isServer: true,
-            origin: results.filePath,
-            packageExports: false,
-          }),
-          './util.inspect.js',
-          platform
-        )
-      ).toEqual({
-        filePath: expect.stringMatching(/object-inspect\/util\.inspect\.js$/),
-        type: 'sourceFile',
+        // Browser shims are not applied in server contexts.
+        expect(
+          resolver(
+            createContext({
+              platform,
+              isServer: true,
+              origin: results.filePath,
+              packageExports,
+            }),
+            './util.inspect.js',
+            platform
+          )
+        ).toEqual({
+          filePath: expect.stringMatching(/object-inspect\/util\.inspect\.js$/),
+          type: 'sourceFile',
+        });
       });
     });
 

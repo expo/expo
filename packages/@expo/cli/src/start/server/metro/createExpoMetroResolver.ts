@@ -137,28 +137,30 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
           );
         },
 
-        pathFilter: context.unstable_enablePackageExports
-          ? undefined
-          : // Enabled `browser` field support
-            (pkg: any, _resolvedPath: string, relativePathIn: string): string => {
-              let relativePath = relativePathIn;
-              if (relativePath[0] !== '.') {
-                relativePath = `./${relativePath}`;
-              }
+        pathFilter:
+          // Disable `browser` field for server environments.
+          isServer
+            ? undefined
+            : // Enable `browser` field support
+              (pkg: any, _resolvedPath: string, relativePathIn: string): string => {
+                let relativePath = relativePathIn;
+                if (relativePath[0] !== '.') {
+                  relativePath = `./${relativePath}`;
+                }
 
-              const replacements = pkg.browser;
-              if (replacements === undefined) {
-                return '';
-              }
+                const replacements = pkg.browser;
+                if (replacements === undefined) {
+                  return '';
+                }
 
-              // TODO: Probably use a better extension matching system here.
-              // This was added for `uuid/v4` -> `./lib/rng` -> `./lib/rng-browser.js`
-              const mappedPath = replacements[relativePath] ?? replacements[relativePath + '.js'];
-              if (mappedPath === false) {
-                throw new ShimModuleError();
-              }
-              return mappedPath;
-            },
+                // TODO: Probably use a better extension matching system here.
+                // This was added for `uuid/v4` -> `./lib/rng` -> `./lib/rng-browser.js`
+                const mappedPath = replacements[relativePath] ?? replacements[relativePath + '.js'];
+                if (mappedPath === false) {
+                  throw new ShimModuleError();
+                }
+                return mappedPath;
+              },
       });
 
       if (!isServer && isNodeExternal(fp)) {

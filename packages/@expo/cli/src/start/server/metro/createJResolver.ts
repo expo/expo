@@ -83,15 +83,14 @@ export type AsyncResolver = (path: string, options: ResolverOptions) => Promise<
 export type Resolver = SyncResolver | AsyncResolver;
 
 const defaultResolver: SyncResolver = (path, { enablePackageExports, ...options }) => {
+  // @ts-expect-error
   const resolveOptions: UpstreamResolveOptionsWithConditions = {
     ...options,
 
     isDirectory: directoryExistsSync,
     isFile: fileExistsSync,
-    preserveSymlinks: false,
+    // preserveSymlinks: enablePackageExports ? false : options.preserveSymlinks,
     defaultResolver,
-    // readPackageSync,
-    // realpathSync,
   };
 
   // resolveSync dereferences symlinks to ensure we don't create a separate
@@ -114,8 +113,6 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
   if (shouldIgnoreRequestForExports(path)) {
     return path;
   }
-
-  // TODO: Disable for babel/runtime for https://github.com/facebook/metro/issues/984/
 
   if (path.startsWith('#')) {
     const closestPackageJson = findClosestPackageJson(options.basedir);
@@ -158,6 +155,12 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
   if (moduleName) {
     if (moduleName.startsWith('@')) {
       moduleName = `${moduleName}/${segments.shift()}`;
+    }
+
+    // Disable package exports for babel/runtime for https://github.com/facebook/metro/issues/984/
+    // TODO: Test this
+    if (moduleName === '@babel/runtime') {
+      return path;
     }
 
     // self-reference
