@@ -1,4 +1,4 @@
-import AssetSourceResolver, { ResolvedAssetSource } from './AssetSourceResolver';
+import AssetSourceResolver, { ResolvedAssetSource } from './AssetSourceResolver.native';
 export declare function setCustomSourceTransformer(transformer: (resolver: AssetSourceResolver) => ResolvedAssetSource): void;
 /**
  * `source` is either a number (opaque type returned by require('./foo.png'))
