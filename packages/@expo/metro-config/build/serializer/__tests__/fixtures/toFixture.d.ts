@@ -26,12 +26,12 @@ export declare function simplifyGraph(graph: Graph, dropSource?: boolean): {
             [x: string]: unknown;
             __proto__?: null | undefined;
         };
-        platform?: string | undefined;
         dev: boolean;
         experimentalImportSupport?: boolean | undefined;
         hot: boolean;
         minify: boolean;
         nonInlinedRequires?: readonly string[] | undefined;
+        platform?: string | undefined;
         runtimeBytecodeVersion?: number | undefined;
         type: import("metro-transform-worker").Type;
         unstable_disableES6Transforms?: boolean | undefined;

@@ -147,6 +147,12 @@ class Chunk {
         const jsSplitBundle = (0, baseJSBundle_1.baseJSBundleWithDependencies)(entryFile, [...this.preModules.values()], [...this.deps], {
             ...this.options,
             runBeforeMainModule: serializerConfig?.getModulesRunBeforeMainModule?.(path_1.default.relative(this.options.projectRoot, entryFile)) ?? [],
+            // searchParams.set('modulesOnly', 'true');
+            // searchParams.set('runModule', 'false');
+            // TODO: Test cases when an async module has global side-effects that should be run.
+            // This should be fine as those side-effects would be defined in the module itself, which would be executed upon loading.
+            runModule: !this.isAsync,
+            modulesOnly: this.preModules.size === 0,
             platform: this.getPlatform(),
             sourceMapUrl: `${fileName}.map`,
         });
@@ -161,6 +167,7 @@ class Chunk {
             originFilename: relativeEntry,
             type: 'js',
             metadata: {
+                isAsync: this.isAsync,
                 requires: [...this.requiredChunks.values()].map((chunk) => chunk.getFilename()),
             },
             source: jsCode,

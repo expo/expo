@@ -34,7 +34,7 @@ describe('tree-shaking', () => {
     )) as unknown as SerialAsset[];
     // expect(typeof stringResults).toBe('string');
 
-    // console.log(artifacts);
+    console.log(artifacts);
     expect(artifacts.length).toBe(3);
     expect(artifacts[0].filename).toEqual(
       '_expo/static/js/web/_expo-metro-runtime-71d338f9431a2599ef5d0963be513d33.js'
