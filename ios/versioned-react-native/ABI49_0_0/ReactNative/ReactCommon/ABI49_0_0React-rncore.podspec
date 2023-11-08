@@ -16,7 +16,7 @@ version = package['version']
 # We should rethink this approach in T148704916
 
 # Relative path to react native from iOS project root (e.g. <ios-project-root>/../node_modules/react-native)
-react_native_dependency_path = ENV['REACT_NATIVE_PATH']
+react_native_dependency_path = ENV['ABI49_0_0REACT_NATIVE_PATH']
 # Relative path to react native from current podspec
 react_native_sources_path = '..'
 
