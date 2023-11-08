@@ -138,13 +138,14 @@ describe(`getHashSourcesAsync - managed project`, () => {
 
   beforeAll(async () => {
     rimraf.sync(projectRoot);
-    await spawnAsync('bunx', ['create-expo-app', '-t', 'blank', projectName], {
+    // Pin the SDK version to prevent the latest version breaking snapshots
+    await spawnAsync('bunx', ['create-expo-app', '-t', 'blank@sdk-49', projectName], {
       stdio: 'inherit',
       cwd: tmpDir,
     });
 
-    // Pin the `expo` package version to prevent the latest version and break snapshot
-    await spawnAsync('bun', ['install', '--save', 'expo@47.0.8'], {
+    // Pin the `expo` package version to prevent the latest version breaking snapshots
+    await spawnAsync('bun', ['install', '--save', 'expo@49.0.16'], {
       stdio: 'ignore',
       cwd: projectRoot,
     });
