@@ -93,13 +93,13 @@ Pod::Spec.new do |s|
     s.script_phases = {
       :name => "Generate Legacy Components Interop",
       :script => "
-WITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"
+WITH_ENVIRONMENT=\"$ABI49_0_0REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"
 source $WITH_ENVIRONMENT
-${NODE_BINARY} ${REACT_NATIVE_PATH}/scripts/codegen/generate-legacy-interop-components.js -p #{ENV['APP_PATH']} -o ${REACT_NATIVE_PATH}/Libraries/AppDelegate
+${NODE_BINARY} ${ABI49_0_0REACT_NATIVE_PATH}/scripts/codegen/generate-legacy-interop-components.js -p #{ENV['APP_PATH']} -o ${ABI49_0_0REACT_NATIVE_PATH}/Libraries/AppDelegate
       ",
       :execution_position => :before_compile,
       :input_files => ["#{ENV['APP_PATH']}/react-native.config.js"],
-      :output_files => ["${REACT_NATIVE_PATH}/Libraries/AppDelegate/RCTLegacyInteropComponents.mm"],
+      :output_files => ["${ABI49_0_0REACT_NATIVE_PATH}/Libraries/AppDelegate/RCTLegacyInteropComponents.mm"],
     }
   end
 end

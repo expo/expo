@@ -934,7 +934,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (11.6.0):
     - ExpoModulesCore
-  - ExpoSQLite (11.8.0):
+  - ExpoSQLite (12.0.0):
     - ExpoModulesCore
     - sqlite3 (~> 3.42.0)
   - ExpoStoreReview (6.7.0):
@@ -2651,7 +2651,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 28a662c0718e2680510ca5a208817164944f1cca
   ExpoSMS: 86be39c17d0c6cb50c63271751deaa26381ce25d
   ExpoSpeech: 8a4624ecde6e27157db008d0cc88572a4f523bd5
-  ExpoSQLite: 4fc808cb9536c7bdf6621478a05ce04cbf1037b6
+  ExpoSQLite: f77ef48850c7b2e6573812f0ad2fb46bf0c6eefb
   ExpoStoreReview: 462e12ab98505c836fffe262965a0852f4b32260
   ExpoSystemUI: adb6c827f30566d132501518df24b5b7e4ed294c
   ExpoTrackingTransparency: a7cf99bb23fa213879c36552dda51b6aa63f0279
@@ -2736,7 +2736,7 @@ SPEC CHECKSUMS:
   React-RCTSettings: 2c8f56a3f43ee64f79e21bc3fbfd306a303759c4
   React-RCTText: ce4499e4f2d8f85dc4b93ff0559313a016c4f3e2
   React-RCTVibration: e9ac884f275dcc0d539b2fa7586444d54ac26e78
-  React-rncore: 446a0d6fddbd0cfd9f2b626e228b4953d5185d98
+  React-rncore: 31a4000daac4fee2c6bed0044ec094ff3599bb62
   React-runtimeexecutor: 7e31e2bc6d0ecc83d4ba05eadc98401007abc10c
   React-runtimescheduler: cc32add98c45c5df18436a6a52a7e1f6edec102c
   React-utils: 7a9918a1ffdd39aba67835d42386f592ea3f8e76
