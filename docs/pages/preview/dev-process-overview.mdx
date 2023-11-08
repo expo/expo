@@ -8,9 +8,9 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { DocsLogo } from '@expo/styleguide';
 
-To help you build an accurate mental model, this document provides an overview of what the development process of building an Expo app looks like.
+To help you build an accurate mental model, this document provides an overview of the development process of building an Expo app.
 
-You might have used Expo or React Native before, or are using them for a while, or you are still learning about the ecosystem. This document starts by clarifying key concepts and then defines different parts of the core development loop.
+You might have used Expo or React Native before or are using them for a while, or you are still learning about the ecosystem. This document starts by clarifying key concepts and then defines different parts of the core development loop.
 
 ## Key concepts
 
@@ -139,14 +139,14 @@ If you add a new native dependency to your project or change the project configu
 
 <Collapsible summary="Cloud-based and local development workflows">
 
-It's possible with Expo and EAS to work on your native Android or iOS app without installing Android Studio or Xcode and creating a cloud-based development build. This can be helpful when:
+It's possible with Expo and EAS to work on your native Android or iOS app without installing Android Studio or Xcode and creating a cloud-based development build. This can be helpful when you:
 
-- You are limited by local machine development workflow (for example, Xcode for iOS is [exclusively available for macOS](/faq/#can-i-develop-ios-apps-on-a-windows-computer))
+- are limited by local machine development workflow (for example, Xcode for iOS is [exclusively available for macOS](/faq/#can-i-develop-ios-apps-on-a-windows-computer))
+- Want Use [`expo-dev-client`](/develop/development-builds/introduction/#what-is-expo-dev-client) library to extend your development build by providing a launch UI to preview your updates, switch between development servers without the need to rebuild the entire app binary, share and run the build on any machine, and more
 - Iterate as quickly as possible when developing your app
 - Share your project with other collaborators or trusted testers
 - Keep up with the latest changes in the React Native ecosystem and easier app upgrades
-- A proven and dedicated path for going from development to production using the EAS services (Build, Update, Submit)
-- Use [`expo-dev-client`](/develop/development-builds/introduction/#what-is-expo-dev-client) library to extend your development build by providing a launch UI to preview your updates, switch between development servers without the need to rebuild the entire app binary, share and run the build on any machine, and more
+- Use a proven and dedicated path for going from development to production using the EAS services (Build, Update, Submit)
 
 <Collapsible summary="Do you want to compile your app locally">
 
@@ -162,7 +162,7 @@ Choosing a cloud-based or local development workflow isn't a commitment. It's a 
 
 ## Initialize and run a project
 
-The easiest way to [create a new project is with `create-expo-app`](/get-started/create-a-project/#initialize-a-new-project). After creating your project, you can immediately launch it directly in Expo Go on your physical device or in an emulator/simulator if want to experiment or build a quick prototype.
+The easiest way to [create a new project is with `create-expo-app`](/get-started/create-a-project/#initialize-a-new-project). After creating your project, you can immediately launch it directly in Expo Go on your physical device or in an emulator/simulator if you want to experiment or build a quick prototype.
 
 In most cases, you will create and use a development build of your project. You will install the [`expo-dev-client`](/develop/development-builds/introduction/#what-is-expo-dev-client) library. Development builds can be created with EAS Build or locally on your machine:
 
@@ -182,27 +182,46 @@ In most cases, you will create and use a development build of your project. You 
 
 ## The core development loop
 
-- need to mention stuff about app.json / app.config.js here
-- prebuild clean
-- gitignore if you want to treat ios/android directories as throwaway artifacts
-- maybe also link to app variants docs
-- info about debugging
+The core development loop described in the diagram above is a cycle of four main activities that you typically go through when developing an app.
+
+- **Write and run JavaScript code**: This involves creating components, writing business logic, or installing third-party libraries from npm that don't require native code changes. The changes you make here are reflected in your app without needing any interaction with the native side of your app.
+
+- **Update app configuration**: This involves modifying your app's configuration using the app config file (**app.json** or **app.config.js**). It includes updating your app's name, icon, splash screen, and other properties. These changes don't affect the native project directly. However, if you make changes that affect the native projects, you can use the [app config](/workflow/configuration/) to modify the native project configuration or create or use a [config plugin](/config-plugins/introduction/). See [app config reference](/versions/latest/config/app/) for a complete list of properties available in the app config file.
+
+- **Write native code or modify native project configuration**: This includes writing native code directly or modifying native code configuration. You need access to the native code project directories to make these changes. You can create a development build using EAS or locally.
+
+- **Install a third-party library that requires native code modifications**: This includes that a third-party library requires making changes to the native code project configuration. Either the library provides a config plugin or steps to take to update the app config. Like the previous activity, this also requires you to create a development build.
+
+When creating a [development build](#development-builds), you have two options. You can create a cloud-based build using [EAS Build](/build/setup/) or do it locally. If you choose to do it locally, you can use [CNG](#continuous-native-generation-cng) and then [`npx expo prebuild --clean`](#how-do-i-know-when-i-need), or you can create a development build using [`npx expo run android|ios` or Android Studio and Xcode](/guides/local-app-development/#local-app-compilation).
+
+> **Note**: When creating a development build locally, the `npx expo run` commands will generate native directories before building your app. If you modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on the top of existing files. It may also produce different results after the build. To avoid this, add native directories to the project's **.gitignore** and use `npx expo prebuild --clean` command.
+
+During your app's development loop can also [install different variants (development, preview or production)](/build-reference/variants/) of your app on the same device.
+
+Another key part of the development loop is to debug issues. See [Debugging runtime issues](/debugging/runtime-issues/) for more information about debugging your app and learn about different [debugging tools](/debugging/tools/) available.
 
 ## Share app with testers
 
-- Build & Submit
-- Internal distribution
+The next step to developing an app is to share your app with your team, with beta testers, or run it on multiple test devices. A traditional approach is to upload your app's binary to the Google Play Beta (Android) or TestFlight (iOS). This can be a time-consuming effort and is limited to only one active build at a time (for example, in the case of TestFlight).
+
+If you are using EAS Build, we recommend going through [Internal distribution](/build/internal-distribution/) to learn more about sharing your app for testing.
+
+If you compile your app locally, you can create [release builds locally](/deploy/build-project/#production-builds-locally).
 
 ## Release app to stores
 
-- Build & Submit
+To release your app on the app stores, you can use [EAS Submit](/submit/introduction/). For more information on using EAS Submit, see [Submit to Google Play Store](/submit/android/) and [Submit to Apple App Store](/submit/ios/).
+
+To create a release build locally, see [release builds locally](/deploy/build-project/#production-builds-locally) and then go through the app stores guide to submit your app.
 
 ## Monitor app in production
 
-- Crash reporting
-- Analytics
+Two ways to monitor your production app are crash reports and analytics. Crash reports help you learn about exceptions or errors that your users run into while using your app. You can use [Sentry](/guides/using-sentry/) or [BugSnag](https://docs.bugsnag.com/platforms/react-native/expo/) to enable crash reports.
+
+Analytics allows you to track how users interact with your app. See [analytics overview](/guides/using-analytics/) to learn more about the services available in the Expo and React Native ecosystem.
 
 ## Update the app
 
-- EAS Update
-- Build & Submit
+The `expo-updates` library allows you to programmatically make new instant updates available to your production app. Sending instant updates is helpful for fixing bugs or updating your app's JavaScript.
+
+You can use [EAS Update](/eas-update/introduction/) which provides first-class support for instant updates in a React Native app. It serves updates from the edge of a global CDN and uses modern networking protocols such as HTTP/3 for clients that support them. It is also [tailored for developers](/eas-update/develop-faster/) who use EAS Build. You can also use it for builds you have created [locally](/eas-update/build-locally/).
