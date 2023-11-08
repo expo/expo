@@ -108,9 +108,9 @@ public final class ImageModule: Module {
       }
     }
 
-    AsyncFunction("prefetch") { (urls: [URL], cachePolicy: ImageCachePolicy?, promise: Promise) in
+    AsyncFunction("prefetch") { (urls: [URL], promise: Promise) in
       var context = SDWebImageContext()
-      context[.storeCacheType] = cachePolicy?.toSdCacheType().rawValue ?? SDImageCacheType.disk.rawValue
+      context[.storeCacheType] = SDImageCacheType.disk.rawValue
 
       SDWebImagePrefetcher.shared.prefetchURLs(urls, options: [.retryFailed, .handleCookies], context: context,
                                                progress: nil, completed: {finishedCount, skippedCount in
@@ -118,10 +118,6 @@ public final class ImageModule: Module {
 
         promise.resolve(wasSuccessful)
       })
-    }
-
-    Function ("cancelPrefetch") { () in
-      SDWebImagePrefetcher.shared.cancelPrefetching()
     }
 
     AsyncFunction("clearMemoryCache") { () -> Bool in
