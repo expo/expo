@@ -1,5 +1,13 @@
 import fs from 'fs-extra';
 
+export function fileExistsSync(file: string): boolean {
+  try {
+    return fs.statSync(file)?.isFile() ?? false;
+  } catch {
+    return false;
+  }
+}
+
 export function directoryExistsSync(file: string): boolean {
   try {
     return fs.statSync(file)?.isDirectory() ?? false;

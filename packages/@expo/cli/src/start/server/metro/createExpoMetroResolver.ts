@@ -6,11 +6,10 @@
  */
 import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
-import nodeResolve from 'resolve';
 
+import jestResolver from './createJResolver';
 import { isNodeExternal } from './externals';
 import { formatFileCandidates } from './formatFileCandidates';
-import { CommandError } from '../../../utils/errors';
 
 class FailedToResolvePathError extends Error {}
 
@@ -70,6 +69,8 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
       | 'nodeModulesPaths'
       | 'mainFields'
       | 'resolveAsset'
+      | 'unstable_conditionNames'
+      | 'unstable_conditionsByPlatform'
     >,
     moduleName: string,
     platform: string | null
@@ -77,9 +78,9 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
     // TODO: Support extraNodeModules for tsconfig basePath support
     // TODO: Support package exports import { resolve as resolveExports } from 'resolve.exports'
     // TODO: Support `resolver.blockList`
-    if (context.unstable_enablePackageExports) {
-      throw new CommandError('package exports are not supported with EXPO_USE_FAST_RESOLVER=1');
-    }
+    // if (context.unstable_enablePackageExports) {
+    //   throw new CommandError('package exports are not supported with EXPO_USE_FAST_RESOLVER=1');
+    // }
 
     const environment = context.customResolverOptions?.environment;
     const isServer = environment === 'node';
@@ -88,27 +89,29 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
       metroSourceExtensions: context.sourceExts,
       platform,
       isNative: context.preferNativePlatform,
-    });
+    }) as string[];
 
     let fp: string;
 
     try {
-      fp = nodeResolve.sync(moduleName, {
+      const conditions = context.unstable_enablePackageExports
+        ? [
+            ...new Set([
+              'default',
+              ...context.unstable_conditionNames,
+              ...(platform != null ? context.unstable_conditionsByPlatform[platform] ?? [] : []),
+            ]),
+          ]
+        : [];
+
+      fp = jestResolver(moduleName, {
+        enablePackageExports: context.unstable_enablePackageExports,
         basedir: path.dirname(context.originModulePath),
+        moduleDirectory: context.nodeModulesPaths as string[],
         extensions,
-        // Used to ensure files trace to packages instead of node_modules in expo/expo. This is how Metro works and
-        // the app doesn't finish without it.
-        preserveSymlinks,
-        readPackageSync(readFileSync, pkgFile) {
-          return (
-            context.getPackage(pkgFile) ??
-            JSON.parse(
-              // @ts-expect-error
-              readFileSync(pkgfile)
-            )
-          );
-        },
-        moduleDirectory: context.nodeModulesPaths,
+        conditions,
+        // @ts-ignore
+        realpathSync: context.unstable_getRealPath,
         packageFilter(pkg) {
           // set the pkg.main to the first available field in context.mainFields
           for (const field of context.mainFields) {
@@ -125,10 +128,23 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
           }
           return pkg;
         },
+        // Used to ensure files trace to packages instead of node_modules in expo/expo. This is how Metro works and
+        // the app doesn't finish without it.
+        preserveSymlinks,
+        readPackageSync(readFileSync, pkgFile) {
+          return (
+            context.getPackage(pkgFile) ??
+            JSON.parse(
+              // @ts-expect-error
+              readFileSync(pkgfile)
+            )
+          );
+        },
 
-        pathFilter: isServer
+        pathFilter: context.unstable_enablePackageExports
           ? undefined
-          : (pkg: any, _resolvedPath: string, relativePathIn: string): string => {
+          : // Enabled `browser` field support
+            (pkg: any, _resolvedPath: string, relativePathIn: string): string => {
               let relativePath = relativePathIn;
               if (relativePath[0] !== '.') {
                 relativePath = `./${relativePath}`;
@@ -147,11 +163,6 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
               }
               return mappedPath;
             },
-
-        // Not needed but added for parity...
-
-        // @ts-ignore
-        realpathSync: context.unstable_getRealPath,
       });
 
       if (!isServer && isNodeExternal(fp)) {
@@ -189,27 +200,40 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
         type: 'sourceFile',
         filePath: fp,
       };
-    } else {
-      // NOTE: platform extensions may not be supported on assets.
+    }
 
-      if (platform === 'web') {
-        // Skip multi-resolution on web/server bundles. Only consideration here is that
-        // we may still need it in case the only image is a multi-resolution image.
+    if (isNodeExternal(fp)) {
+      if (isServer) {
         return {
-          type: 'assetFiles',
-          filePaths: [fp],
+          type: 'sourceFile',
+          filePath: fp,
         };
       }
-
-      const dirPath = path.dirname(fp);
-      const extension = path.extname(fp);
-      const basename = path.basename(fp, extension);
+      // Mock non-server built-in modules to empty.
       return {
-        type: 'assetFiles',
-        // Support multi-resolution asset extensions...
-        filePaths: context.resolveAsset(dirPath, basename, extension) ?? [fp],
+        type: 'empty',
       };
     }
+
+    // NOTE: platform extensions may not be supported on assets.
+
+    if (platform === 'web') {
+      // Skip multi-resolution on web/server bundles. Only consideration here is that
+      // we may still need it in case the only image is a multi-resolution image.
+      return {
+        type: 'assetFiles',
+        filePaths: [fp],
+      };
+    }
+
+    const dirPath = path.dirname(fp);
+    const extension = path.extname(fp);
+    const basename = path.basename(fp, extension);
+    return {
+      type: 'assetFiles',
+      // Support multi-resolution asset extensions...
+      filePaths: context.resolveAsset(dirPath, basename, extension) ?? [fp],
+    };
   }
 
   return fastResolve;

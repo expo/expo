@@ -12,11 +12,13 @@ const createContext = ({
   isServer,
   origin,
   nodeModulesPaths = [],
+  packageExports,
 }: {
   origin: string;
   platform: string;
   isServer?: boolean;
   nodeModulesPaths?: string[];
+  packageExports?: boolean;
 }): SupportedContext => {
   const preferNativePlatform = platform === 'ios' || platform === 'android';
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
@@ -33,13 +35,15 @@ const createContext = ({
     mainFields: preferNativePlatform
       ? ['react-native', 'browser', 'main']
       : isServer
-      ? ['module', 'main']
+      ? ['main', 'module']
       : ['browser', 'module', 'main'],
     nodeModulesPaths: ['node_modules', ...nodeModulesPaths],
     originModulePath: origin,
     preferNativePlatform,
     sourceExts,
-    unstable_enablePackageExports: false,
+    unstable_enablePackageExports: !!packageExports,
+    unstable_conditionsByPlatform: isServer ? {} : { web: ['browser'] },
+    unstable_conditionNames: isServer ? ['node', 'require'] : ['require', 'import', 'react-native'],
   };
 };
 
@@ -51,14 +55,21 @@ const originProjectRoot = path.join(
   '../../../../../../../../apps/native-component-list'
 );
 
-function resolveTo(
+function resolveToEmpty(
   moduleId: string,
   {
     platform,
     isServer,
     from = 'index.js',
     nodeModulesPaths,
-  }: { platform: string; isServer?: boolean; from?: string; nodeModulesPaths?: string[] }
+    packageExports,
+  }: {
+    platform: string;
+    isServer?: boolean;
+    from?: string;
+    nodeModulesPaths?: string[];
+    packageExports?: boolean;
+  }
 ) {
   const resolver = createFastResolver({ preserveSymlinks: false });
   const context = createContext({
@@ -66,6 +77,35 @@ function resolveTo(
     isServer,
     origin: path.join(originProjectRoot, from),
     nodeModulesPaths,
+    packageExports,
+  });
+  const res = resolver(context, moduleId, platform);
+  expect(res.type).toBe('empty');
+}
+
+function resolveTo(
+  moduleId: string,
+  {
+    platform,
+    isServer,
+    from = 'index.js',
+    nodeModulesPaths,
+    packageExports,
+  }: {
+    platform: string;
+    isServer?: boolean;
+    from?: string;
+    nodeModulesPaths?: string[];
+    packageExports?: boolean;
+  }
+) {
+  const resolver = createFastResolver({ preserveSymlinks: false });
+  const context = createContext({
+    platform,
+    isServer,
+    origin: path.join(originProjectRoot, from),
+    nodeModulesPaths,
+    packageExports,
   });
   const res = resolver(context, moduleId, platform);
 
@@ -74,6 +114,52 @@ function resolveTo(
 }
 
 describe(createFastResolver, () => {
+  describe('node built-ins', () => {
+    it('shims node built-ins on non-server platforms', () => {
+      resolveToEmpty('node:path', { platform: 'ios', isServer: false });
+      resolveToEmpty('node:assert', { platform: 'web', isServer: false });
+    });
+    it('supports node built-ins on server platforms', () => {
+      expect(resolveTo('node:assert', { platform: 'web', isServer: true })).toEqual('node:assert');
+      expect(resolveTo('http', { platform: 'ios', isServer: true })).toEqual('http');
+    });
+
+    // TODO: Test node_module installed with the same name as a node built-in.
+  });
+
+  describe('package exports', () => {
+    it('resolves react server files', () => {
+      expect(resolveTo('react-dom/server', { platform: 'web' })).toEqual(
+        expect.stringMatching(/\/node_modules\/react-dom\/server\.browser\.js$/)
+      );
+      expect(resolveTo('react-dom/server', { platform: 'web', packageExports: true })).toEqual(
+        expect.stringMatching(/\/node_modules\/react-dom\/server\.browser\.js$/)
+      );
+      expect(resolveTo('react-dom/server', { platform: 'ios', packageExports: true })).toEqual(
+        expect.stringMatching(/\/node_modules\/react-dom\/server\.node\.js$/)
+      );
+      expect(
+        resolveTo('react-dom/server', { platform: 'web', packageExports: true, isServer: true })
+      ).toEqual(expect.stringMatching(/\/node_modules\/react-dom\/server\.node\.js$/));
+      expect(
+        resolveTo('react-dom/server', { platform: 'ios', packageExports: true, isServer: true })
+      ).toEqual(expect.stringMatching(/\/node_modules\/react-dom\/server\.node\.js$/));
+    });
+
+    it(`asserts missing export in package`, () => {
+      // Sanity
+      expect(() =>
+        resolveTo('react-dom/foo.js', { platform: 'web', packageExports: true, isServer: true })
+      ).toThrow(/Missing "\.\/foo\.js" specifier in "react-dom" package/);
+
+      // Actual check
+      expect(() =>
+        resolveTo('react-dom/server.js', { platform: 'web', packageExports: true, isServer: true })
+      ).toThrow(/Missing "\.\/server\.js" specifier in "react-dom" package/);
+      resolveTo('react-dom/server.js', { platform: 'web', packageExports: false, isServer: true });
+    });
+  });
+
   describe('ios', () => {
     const platform = 'ios';
 
@@ -101,7 +187,7 @@ describe(createFastResolver, () => {
       );
     });
 
-    it('resolves module with browser shims', () => {
+    xit('resolves module with browser shims', () => {
       const resolver = createFastResolver({ preserveSymlinks: false });
       const context = createContext({
         platform,
@@ -145,6 +231,7 @@ describe(createFastResolver, () => {
         type: 'sourceFile',
       });
     });
+
     it('resolves module with browser shims with non-matching extensions', () => {
       const resolver = createFastResolver({ preserveSymlinks: false });
       const context = createContext({

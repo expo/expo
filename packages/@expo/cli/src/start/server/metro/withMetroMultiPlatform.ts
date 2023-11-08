@@ -207,8 +207,7 @@ export function withExtendedResolver(
     return function doResolve(moduleName: string): Resolution {
       // Workaround for Node.js having package exports enabled by default and
       // the fast resolver not having package exports support yet.
-      const resolverToUse = isNode ? defaultResolver : resolver;
-      return resolverToUse(
+      return resolver(
         {
           ...context,
           resolveRequest: undefined,
@@ -385,6 +384,7 @@ export function withExtendedResolver(
 
         context.unstable_enablePackageExports = true;
         context.unstable_conditionNames = ['node', 'require'];
+        context.unstable_conditionsByPlatform = {};
         // Node.js runtimes should only be importing main at the moment.
         // This is a temporary fix until we can support the package.json exports.
         context.mainFields = ['main', 'module'];
