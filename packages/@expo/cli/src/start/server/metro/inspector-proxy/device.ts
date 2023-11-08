@@ -8,6 +8,7 @@ import { PageReloadHandler } from './handlers/PageReload';
 import { VscodeDebuggerGetPossibleBreakpointsHandler } from './handlers/VscodeDebuggerGetPossibleBreakpoints';
 import { VscodeDebuggerScriptParsedHandler } from './handlers/VscodeDebuggerScriptParsed';
 import { VscodeDebuggerSetBreakpointByUrlHandler } from './handlers/VscodeDebuggerSetBreakpointByUrl';
+import { VscodeRuntimeCallFunctionOnHandler } from './handlers/VscodeRuntimeCallFunctionOn';
 import { VscodeRuntimeGetPropertiesHandler } from './handlers/VscodeRuntimeGetProperties';
 import { DeviceRequest, InspectorHandler, DebuggerRequest } from './handlers/types';
 
@@ -35,6 +36,7 @@ export function createInspectorDeviceClass(
       new VscodeDebuggerScriptParsedHandler(this),
       new VscodeDebuggerSetBreakpointByUrlHandler(),
       new VscodeRuntimeGetPropertiesHandler(),
+      new VscodeRuntimeCallFunctionOnHandler(),
     ];
 
     onDeviceMessage(message: any, info: DebuggerInfo): boolean {

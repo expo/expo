@@ -2,6 +2,7 @@ import Protocol from 'devtools-protocol';
 
 import { ExpoDebuggerInfo } from '../device';
 import { CdpMessage, DebuggerRequest, DeviceResponse, InspectorHandler } from './types';
+import { respond } from './utils';
 
 /**
  * Hermes doesn't seem to handle this request, but `locations` have to be returned.
@@ -13,12 +14,10 @@ export class VscodeDebuggerGetPossibleBreakpointsHandler implements InspectorHan
     { socket, debuggerType }: ExpoDebuggerInfo
   ): boolean {
     if (debuggerType === 'vscode' && message.method === 'Debugger.getPossibleBreakpoints') {
-      const response: DeviceResponse<DebuggerGetPossibleBreakpoints> = {
+      return respond<DeviceResponse<DebuggerGetPossibleBreakpoints>>(socket, {
         id: message.id,
         result: { locations: [] },
-      };
-      socket.send(JSON.stringify(response));
-      return true;
+      });
     }
 
     return false;
