@@ -39,7 +39,7 @@ describe('managed project test', () => {
   it('should have same hash after adding js only library', async () => {
     const hash = await createProjectHashAsync(projectRoot);
     await spawnAsync('npx', ['expo', 'install', '@react-navigation/core'], {
-      stdio: 'ignore',
+      stdio: 'inherit',
       cwd: projectRoot,
     });
     const hash2 = await createProjectHashAsync(projectRoot);
@@ -60,7 +60,7 @@ describe('managed project test', () => {
   it('should have different hash after adding native library', async () => {
     const hash = await createProjectHashAsync(projectRoot);
     await spawnAsync('npx', ['expo', 'install', 'expo-updates'], {
-      stdio: 'ignore',
+      stdio: 'inherit',
       cwd: projectRoot,
     });
     const hash2 = await createProjectHashAsync(projectRoot);
@@ -92,7 +92,7 @@ describe('managed project test', () => {
   it('should have different hash after adding js only config-plugin', async () => {
     const hash = await createProjectHashAsync(projectRoot);
     await spawnAsync('npx', ['expo', 'install', 'expo-build-properties'], {
-      stdio: 'ignore',
+      stdio: 'inherit',
       cwd: projectRoot,
     });
     const hash2 = await createProjectHashAsync(projectRoot);
@@ -102,7 +102,7 @@ describe('managed project test', () => {
   it('diffFingerprintChangesAsync - should return diff after adding native library', async () => {
     const fingerprint = await createFingerprintAsync(projectRoot);
     await spawnAsync('npm', ['install', '--save', '@react-native-community/netinfo@9.3.7'], {
-      stdio: 'ignore',
+      stdio: 'inherit',
       cwd: projectRoot,
     });
     const diff = await diffFingerprintChangesAsync(fingerprint, projectRoot);

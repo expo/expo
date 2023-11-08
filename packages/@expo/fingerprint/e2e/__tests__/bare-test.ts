@@ -34,7 +34,7 @@ describe('bare project test', () => {
   it('should have same hash after adding js only library', async () => {
     const hash = await createProjectHashAsync(projectRoot);
     await spawnAsync('npm', ['install', '--save', '@react-navigation/core'], {
-      stdio: 'ignore',
+      stdio: 'inherit',
       cwd: projectRoot,
     });
     const hash2 = await createProjectHashAsync(projectRoot);
@@ -44,7 +44,7 @@ describe('bare project test', () => {
   it('should have different hash after adding native library', async () => {
     const hash = await createProjectHashAsync(projectRoot);
     await spawnAsync('npm', ['install', '--save', 'react-native-reanimated'], {
-      stdio: 'ignore',
+      stdio: 'inherit',
       cwd: projectRoot,
     });
     const hash2 = await createProjectHashAsync(projectRoot);

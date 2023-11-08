@@ -16,6 +16,7 @@ on:
       - yarn.lock
   schedule:
     - cron: 0 14 * * *
+  workflow_dispatch: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
