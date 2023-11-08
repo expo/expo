@@ -1,8 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable force_unwrapping
-// swiftlint:disable closure_body_length
-// swiftlint:disable superfluous_else
 
 import Foundation
 import SystemConfiguration
@@ -89,6 +87,25 @@ public final class UpdatesUtils: NSObject {
     }
   }
 
+  internal static func embeddedAssetsMap(withConfig config: UpdatesConfig, database: UpdatesDatabase, logger: UpdatesLogger) -> [String: String] {
+    var assetFilesMap: [String: String] = [:]
+    let embeddedManifest: Update? = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database)
+    let embeddedAssets = embeddedManifest?.assets() ?? []
+
+    // Prepopulate with embedded assets
+    for asset in embeddedAssets {
+      if let assetKey = asset.key,
+        !asset.isLaunchAsset {
+        let absolutePath = path(forBundledAsset: asset)
+        let message = "AppLauncherWithDatabase: embedded asset key = \(asset.key ?? ""), main bundle filename = \(asset.mainBundleFilename ?? ""), path = \(absolutePath ?? "")"
+        logger.debug(message: message)
+        assetFilesMap[assetKey] = absolutePath
+      }
+    }
+
+    return assetFilesMap
+  }
+
   internal static func url(forBundledAsset asset: UpdateAsset) -> URL? {
     guard let mainBundleDir = asset.mainBundleDir else {
       return Bundle.main.url(forResource: asset.mainBundleFilename, withExtension: asset.type)
@@ -156,5 +173,3 @@ public final class UpdatesUtils: NSObject {
 }
 
 // swiftlint:enable force_unwrapping
-// swiftlint:enable closure_body_length
-// swiftlint:enable superfluous_else

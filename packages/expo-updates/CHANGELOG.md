@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- [iOS] Make asset exclusion work. ([#25216](https://github.com/expo/expo/pull/25216) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix the E2E tests. ([#24865](https://github.com/expo/expo/pull/24865) by [@douglowder](https://github.com/douglowder))
