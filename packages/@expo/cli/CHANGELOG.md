@@ -28,7 +28,7 @@
 
 ### 💡 Others
 
-- Fix prebuild messages.
+- Fix prebuild messages. ([#25279](https://github.com/expo/expo/pull/25279) by [@EvanBacon](https://github.com/EvanBacon))
 - Add more types. ([#25245](https://github.com/expo/expo/pull/25245) by [@EvanBacon](https://github.com/EvanBacon))
 - Unify Metro config functions. ([#25257](https://github.com/expo/expo/pull/25257) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix tests running in CI. ([#25244](https://github.com/expo/expo/pull/25244) by [@EvanBacon](https://github.com/EvanBacon))
