@@ -153,7 +153,9 @@ export class Asset {
     // Outside of the managed env we need the moduleId to initialize the asset
     // because resolveAssetSource depends on it
     if (!IS_ENV_WITH_UPDATES_ENABLED) {
-      const { uri } = resolveAssetSource(virtualAssetModule);
+      // null-check is performed above with `getAssetByID`.
+      const { uri } = resolveAssetSource(virtualAssetModule)!;
+
       const asset = new Asset({
         name: meta.name,
         type: meta.type,

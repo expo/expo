@@ -14,14 +14,14 @@ export function setCustomSourceTransformer(
  * `source` is either a number (opaque type returned by require('./foo.png'))
  * or an `ImageSource` like { uri: '<http location || file path>' }
  */
-export default function resolveAssetSource(source: any): ResolvedAssetSource | undefined {
+export default function resolveAssetSource(source: any): ResolvedAssetSource | null {
   if (typeof source === 'object') {
     return source;
   }
 
   const asset = getAssetByID(source);
   if (!asset) {
-    return undefined;
+    return null;
   }
 
   const resolver = new AssetSourceResolver(
