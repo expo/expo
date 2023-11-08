@@ -1,8 +1,11 @@
-const path = require('path');
+#!/usr/bin/env yarn --silent ts-node --transpile-only
 
-const { initAsync, setupManualTestAppAsync } = require('./project');
+import nullthrows from 'nullthrows';
+import path from 'path';
 
-const repoRoot = process.env.EXPO_REPO_ROOT;
+import { initAsync, setupManualTestAppAsync } from './project';
+
+const repoRoot = nullthrows(process.env.EXPO_REPO_ROOT);
 const workingDir = path.resolve(repoRoot, '..');
 
 /*
@@ -16,7 +19,7 @@ const EXPO_ACCOUNT_NAME = process.env.EXPO_ACCOUNT_NAME || 'myusername';
  * and can be used to test different expo-updates and EAS updates workflows.
  */
 
-function transformAppJson(appJson, projectName, runtimeVersion) {
+function transformAppJson(appJson: any, projectName: string, runtimeVersion: string): any {
   return {
     expo: {
       ...appJson.expo,

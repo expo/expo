@@ -1,7 +1,10 @@
-const spawnAsync = require('@expo/spawn-async');
-const fs = require('fs/promises');
-const glob = require('glob');
-const path = require('path');
+#!/usr/bin/env yarn --silent ts-node --transpile-only
+
+import spawnAsync from '@expo/spawn-async';
+import fs from 'fs/promises';
+import glob from 'glob';
+import nullthrows from 'nullthrows';
+import path from 'path';
 
 const dirName = __dirname; /* eslint-disable-line */
 
@@ -40,10 +43,15 @@ const expoVersions = {};
  * Adds a dateTime stamp to the version to ensure that it is unique and that
  * only this version will be used when yarn installs dependencies in the test app.
  */
-async function packExpoDependency(repoRoot, projectRoot, destPath, dependencyName) {
+async function packExpoDependency(
+  repoRoot: string,
+  projectRoot: string,
+  destPath: string,
+  dependencyName: string
+) {
   // Pack up the named Expo package into the destination folder
   const dependencyComponents = dependencyName.split('/');
-  let dependencyPath;
+  let dependencyPath: string;
   if (dependencyComponents[0] === '@expo') {
     dependencyPath = path.resolve(
       repoRoot,
@@ -104,14 +112,21 @@ async function packExpoDependency(repoRoot, projectRoot, destPath, dependencyNam
   };
 }
 
-async function copyCommonFixturesToProject(projectRoot, { appJsFileName, repoRoot, isTV = false }) {
+async function copyCommonFixturesToProject(
+  projectRoot: string,
+  {
+    appJsFileName,
+    repoRoot,
+    isTV = false,
+  }: { appJsFileName: string; repoRoot: string; isTV: boolean }
+) {
   // copy App.tsx from test fixtures
   const appJsSourcePath = path.resolve(dirName, '..', 'fixtures', appJsFileName);
   const appJsDestinationPath = path.resolve(projectRoot, 'App.tsx');
   let appJsFileContents = await fs.readFile(appJsSourcePath, 'utf-8');
   appJsFileContents = appJsFileContents
-    .replace('UPDATES_HOST', process.env.UPDATES_HOST)
-    .replace('UPDATES_PORT', process.env.UPDATES_PORT);
+    .replace('UPDATES_HOST', nullthrows(process.env.UPDATES_HOST))
+    .replace('UPDATES_PORT', nullthrows(process.env.UPDATES_PORT));
   await fs.writeFile(appJsDestinationPath, appJsFileContents, 'utf-8');
 
   // pack up project files
@@ -180,7 +195,12 @@ async function copyCommonFixturesToProject(projectRoot, { appJsFileName, repoRoo
 /**
  * Adds all the dependencies and other properties needed for the E2E test app
  */
-async function preparePackageJson(projectRoot, repoRoot, configureE2E, isTV) {
+async function preparePackageJson(
+  projectRoot: string,
+  repoRoot: string,
+  configureE2E: boolean,
+  isTV: boolean
+) {
   // Create the project subfolder to hold NPM tarballs built from the current state of the repo
   const dependenciesPath = path.join(projectRoot, 'dependencies');
   await fs.mkdir(dependenciesPath);
@@ -285,7 +305,7 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E, isTV) {
  * Adds Detox modules to both iOS and Android expo-updates code.
  * Returns a function that cleans up these changes to the repo once E2E setup is complete
  */
-async function prepareLocalUpdatesModule(repoRoot) {
+async function prepareLocalUpdatesModule(repoRoot: string) {
   // copy UpdatesE2ETest exported module into the local package
   const iosE2ETestModuleSwiftPath = path.join(
     repoRoot,
@@ -353,8 +373,13 @@ async function prepareLocalUpdatesModule(repoRoot) {
 /**
  * Modifies app.json in the E2E test app to add the properties we need
  */
-function transformAppJsonForE2E(appJson, projectName, runtimeVersion, isTV) {
-  const plugins = ['expo-updates', '@config-plugins/detox'];
+function transformAppJsonForE2E(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string,
+  isTV: boolean
+) {
+  const plugins: any[] = ['expo-updates', '@config-plugins/detox'];
   if (isTV) {
     plugins.push([
       '@react-native-tvos/config-tv',
@@ -387,7 +412,7 @@ function transformAppJsonForE2E(appJson, projectName, runtimeVersion, isTV) {
   };
 }
 
-async function configureUpdatesSigningAsync(projectRoot) {
+async function configureUpdatesSigningAsync(projectRoot: string) {
   // generate and configure code signing
   await spawnAsync(
     'yarn',
@@ -421,8 +446,8 @@ async function configureUpdatesSigningAsync(projectRoot) {
   await spawnAsync('tar', ['cf', 'keys.tar', 'keys'], { cwd: projectRoot, stdio: 'inherit' });
 }
 
-async function initAsync(
-  projectRoot,
+export async function initAsync(
+  projectRoot: string,
   {
     repoRoot,
     runtimeVersion,
@@ -430,6 +455,18 @@ async function initAsync(
     configureE2E = true,
     transformAppJson = transformAppJsonForE2E,
     isTV = false,
+  }: {
+    repoRoot: string;
+    runtimeVersion: string;
+    localCliBin: string;
+    configureE2E?: boolean;
+    transformAppJson?: (
+      appJson: any,
+      projectName: string,
+      runtimeVersion: string,
+      isTV: boolean
+    ) => void;
+    isTV?: boolean;
   }
 ) {
   console.log('Creating expo app');
@@ -560,7 +597,10 @@ async function initAsync(
   return projectRoot;
 }
 
-async function setupE2EAppAsync(projectRoot, { localCliBin, repoRoot, isTV = false }) {
+export async function setupE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot, isTV = false }: { localCliBin: string; repoRoot: string; isTV?: boolean }
+) {
   await copyCommonFixturesToProject(projectRoot, { appJsFileName: 'App.tsx', repoRoot, isTV });
 
   // copy png assets and install extra package
@@ -580,7 +620,7 @@ async function setupE2EAppAsync(projectRoot, { localCliBin, repoRoot, isTV = fal
   );
 }
 
-async function setupManualTestAppAsync(projectRoot) {
+export async function setupManualTestAppAsync(projectRoot: string) {
   // Copy API test app to project
   await fs.rm(path.join(projectRoot, 'App.tsx'));
   await fs.copyFile(
@@ -594,9 +634,3 @@ async function setupManualTestAppAsync(projectRoot) {
     path.join(projectRoot, 'tsconfig.json')
   );
 }
-
-module.exports = {
-  initAsync,
-  setupE2EAppAsync,
-  setupManualTestAppAsync,
-};
