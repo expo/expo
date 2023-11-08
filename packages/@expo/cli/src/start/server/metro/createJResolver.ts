@@ -83,7 +83,10 @@ export type AsyncResolver = (path: string, options: ResolverOptions) => Promise<
 
 export type Resolver = SyncResolver | AsyncResolver;
 
-const defaultResolver: SyncResolver = (path, { enablePackageExports, blockList, ...options }) => {
+const defaultResolver: SyncResolver = (
+  path,
+  { enablePackageExports, blockList = [], ...options }
+) => {
   // @ts-expect-error
   const resolveOptions: UpstreamResolveOptionsWithConditions = {
     ...options,

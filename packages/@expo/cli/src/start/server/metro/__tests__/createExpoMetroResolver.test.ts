@@ -75,7 +75,7 @@ function resolveToEmpty(
     packageExports?: boolean;
   }
 ) {
-  const resolver = createFastResolver({ preserveSymlinks: false });
+  const resolver = createFastResolver({ preserveSymlinks: false, blockList: [] });
   const context = createContext({
     platform,
     isServer,
@@ -103,7 +103,7 @@ function resolveTo(
     packageExports?: boolean;
   }
 ) {
-  const resolver = createFastResolver({ preserveSymlinks: false });
+  const resolver = createFastResolver({ preserveSymlinks: false, blockList: [] });
   const context = createContext({
     platform,
     isServer,
@@ -233,7 +233,7 @@ describe(createFastResolver, () => {
         () => {
           // object-inspect doesn't contain package exports so the results should be the same
           // regardless of if the feature is on or not.
-          const resolver = createFastResolver({ preserveSymlinks: false });
+          const resolver = createFastResolver({ preserveSymlinks: false, blockList: [] });
           const context = createContext({
             platform,
             packageExports,
@@ -285,7 +285,7 @@ describe(createFastResolver, () => {
     });
 
     it('resolves module with browser shims with non-matching extensions', () => {
-      const resolver = createFastResolver({ preserveSymlinks: false });
+      const resolver = createFastResolver({ preserveSymlinks: false, blockList: [] });
       const context = createContext({
         platform,
         origin: path.join(originProjectRoot, 'index.js'),
@@ -314,7 +314,7 @@ describe(createFastResolver, () => {
       });
     });
     it('resolves an asset', () => {
-      const resolver = createFastResolver({ preserveSymlinks: false });
+      const resolver = createFastResolver({ preserveSymlinks: false, blockList: [] });
       const context = createContext({
         platform,
         origin: path.join(originProjectRoot, 'index.js'),
