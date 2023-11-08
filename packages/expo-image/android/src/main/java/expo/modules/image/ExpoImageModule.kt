@@ -1,9 +1,14 @@
 package expo.modules.image
 
+import android.util.Log
 import android.view.View
 import androidx.core.view.doOnDetach
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
@@ -14,21 +19,49 @@ import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.views.ViewDefinitionBuilder
+import java.io.File
 
 class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoImage")
 
-    Function("prefetch") { urls: List<String> ->
-      val context = appContext.reactContext ?: return@Function
+    AsyncFunction("prefetch") { urls: List<String>, promise: Promise ->
+      val context = appContext.reactContext ?: return@AsyncFunction false
+      var imagesLoaded = 0
+      var didSucceed = true
+
       urls.forEach {
         Glide
           .with(context)
           .download(GlideUrl(it))
+          .skipMemoryCache(true)
+          .listener(object : RequestListener<File> {
+            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<File>?,
+                                      isFirstResource: Boolean): Boolean {
+              imagesLoaded++;
+              didSucceed = false
+
+              if (imagesLoaded == urls.size) {
+                promise.resolve(didSucceed)
+              }
+              return true
+            }
+
+            override fun onResourceReady(resource: File?, model: Any?, target: Target<File>?,
+                                         dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+              imagesLoaded++;
+
+              if (imagesLoaded == urls.size) {
+                promise.resolve(didSucceed)
+              }
+              return true
+            }
+          })
           .submit()
       }
     }
@@ -175,7 +208,9 @@ class ExpoImageModule : Module() {
         view.priority = priority ?: Priority.NORMAL
       }
 
-      Prop("cachePolicy") { view: ExpoImageViewWrapper, cachePolicy: CachePolicy? ->
+      Prop("cachePolicy") { view: ExpoImageViewWrapper, cachePolicy: CachePolicy ->
+        Log.d("CACHE_POLICY","Cache policy is:")
+        Log.d("CACHE_POLICY", cachePolicy.value)
         view.cachePolicy = cachePolicy ?: CachePolicy.DISK
       }
 
