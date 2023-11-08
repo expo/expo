@@ -26,7 +26,7 @@ describe('managed project test', () => {
 
   beforeAll(async () => {
     rimraf.sync(projectRoot);
-    await spawnAsync('npx', ['create-expo-app', '-t', 'blank', projectName], {
+    await spawnAsync('bunx', ['create-expo-app', '-t', 'blank', projectName], {
       stdio: 'inherit',
       cwd: tmpDir,
     });
@@ -39,7 +39,7 @@ describe('managed project test', () => {
   it('should have same hash after adding js only library', async () => {
     const hash = await createProjectHashAsync(projectRoot);
     await spawnAsync('npx', ['expo', 'install', '@react-navigation/core'], {
-      stdio: 'inherit',
+      stdio: 'ignore',
       cwd: projectRoot,
     });
     const hash2 = await createProjectHashAsync(projectRoot);
@@ -60,7 +60,7 @@ describe('managed project test', () => {
   it('should have different hash after adding native library', async () => {
     const hash = await createProjectHashAsync(projectRoot);
     await spawnAsync('npx', ['expo', 'install', 'expo-updates'], {
-      stdio: 'inherit',
+      stdio: 'ignore',
       cwd: projectRoot,
     });
     const hash2 = await createProjectHashAsync(projectRoot);
@@ -92,7 +92,7 @@ describe('managed project test', () => {
   it('should have different hash after adding js only config-plugin', async () => {
     const hash = await createProjectHashAsync(projectRoot);
     await spawnAsync('npx', ['expo', 'install', 'expo-build-properties'], {
-      stdio: 'inherit',
+      stdio: 'ignore',
       cwd: projectRoot,
     });
     const hash2 = await createProjectHashAsync(projectRoot);
@@ -101,8 +101,8 @@ describe('managed project test', () => {
 
   it('diffFingerprintChangesAsync - should return diff after adding native library', async () => {
     const fingerprint = await createFingerprintAsync(projectRoot);
-    await spawnAsync('npm', ['install', '--save', '@react-native-community/netinfo@9.3.7'], {
-      stdio: 'inherit',
+    await spawnAsync('bun', ['install', '--save', '@react-native-community/netinfo@9.3.7'], {
+      stdio: 'ignore',
       cwd: projectRoot,
     });
     const diff = await diffFingerprintChangesAsync(fingerprint, projectRoot);
@@ -110,7 +110,7 @@ describe('managed project test', () => {
       [
         {
           "filePath": "node_modules/@react-native-community/netinfo",
-          "hash": "9864bf3bf95283fe99774aaeec91965d70f3eab3",
+          "hash": "8a255b59e10118a8cf5c1660d12d6b2e9293ed5c",
           "reasons": [
             "bareRncliAutolinking",
           ],
@@ -138,13 +138,13 @@ describe(`getHashSourcesAsync - managed project`, () => {
 
   beforeAll(async () => {
     rimraf.sync(projectRoot);
-    await spawnAsync('npx', ['create-expo-app', '-t', 'blank@sdk-47', projectName], {
-      stdio: 'inherit',
+    await spawnAsync('bunx', ['create-expo-app', '-t', 'blank@sdk-47', projectName], {
+      stdio: 'ignore',
       cwd: tmpDir,
     });
 
     // Pin the `expo` package version to prevent the latest version and break snapshot
-    await spawnAsync('npm', ['install', '--save', 'expo@47.0.8'], {
+    await spawnAsync('bun', ['install', '--save', 'expo@47.0.8'], {
       cwd: projectRoot,
     });
   });

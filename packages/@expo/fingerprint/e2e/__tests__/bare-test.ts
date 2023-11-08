@@ -15,13 +15,13 @@ jest.mock('../../src/sourcer/ExpoConfigLoader', () => ({
 
 describe('bare project test', () => {
   jest.setTimeout(600000);
-  const tmpDir = os.tmpdir();
+  const tmpDir = require('temp-dir');
   const projectName = 'fingerprint-e2e-bare';
   const projectRoot = path.join(tmpDir, projectName);
 
   beforeAll(async () => {
     rimraf.sync(projectRoot);
-    await spawnAsync('npx', ['create-expo-app', '-t', 'bare-minimum', projectName], {
+    await spawnAsync('bunx', ['create-expo-app', '-t', 'bare-minimum', projectName], {
       stdio: 'inherit',
       cwd: tmpDir,
     });
@@ -33,8 +33,8 @@ describe('bare project test', () => {
 
   it('should have same hash after adding js only library', async () => {
     const hash = await createProjectHashAsync(projectRoot);
-    await spawnAsync('npm', ['install', '--save', '@react-navigation/core'], {
-      stdio: 'inherit',
+    await spawnAsync('npx', ['expo', 'install', '@react-navigation/core'], {
+      stdio: 'ignore',
       cwd: projectRoot,
     });
     const hash2 = await createProjectHashAsync(projectRoot);
@@ -43,8 +43,8 @@ describe('bare project test', () => {
 
   it('should have different hash after adding native library', async () => {
     const hash = await createProjectHashAsync(projectRoot);
-    await spawnAsync('npm', ['install', '--save', 'react-native-reanimated'], {
-      stdio: 'inherit',
+    await spawnAsync('npx', ['expo', 'install', 'react-native-reanimated'], {
+      stdio: 'ignore',
       cwd: projectRoot,
     });
     const hash2 = await createProjectHashAsync(projectRoot);
