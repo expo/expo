@@ -8,13 +8,13 @@
 
 ### 🎉 New features
 
-- [Android] Add tracing.
-
 ### 🐛 Bug fixes
 
 - [Android] Fix `contentFit` not working for `SVG` images. ([#25187](https://github.com/expo/expo/pull/25187) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
+
+- [Android] Add tracing. ([#25251](https://github.com/expo/expo/pull/25251) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.7.0 — 2023-11-01
 
