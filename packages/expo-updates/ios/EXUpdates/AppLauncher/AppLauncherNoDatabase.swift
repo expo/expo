@@ -21,30 +21,12 @@ public final class AppLauncherNoDatabase: NSObject, AppLauncher {
 
   public override init() {}
 
-  public func launchUpdate(withConfig config: UpdatesConfig) {
-    launchedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: nil)
-    if let launchedUpdate = launchedUpdate {
-      if launchedUpdate.status == UpdateStatus.StatusEmbedded {
-        precondition(assetFilesMap == nil, "assetFilesMap should be null for embedded updates")
-        launchAssetUrl = Bundle.main.url(
-          forResource: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFilename,
-          withExtension: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFileType
-        )
-      } else {
-        launchAssetUrl = Bundle.main.url(
-          forResource: EmbeddedAppLoader.EXUpdatesEmbeddedBundleFilename,
-          withExtension: EmbeddedAppLoader.EXUpdatesEmbeddedBundleFileType
-        )
-
-        var assetFilesMapLocal: [String: String] = [:]
-        for asset in launchedUpdate.assets()! {
-          if let assetKey = asset.key, let localUrl = UpdatesUtils.url(forBundledAsset: asset) {
-            assetFilesMapLocal[assetKey] = localUrl.absoluteString
-          }
-        }
-        assetFilesMap = assetFilesMapLocal
-      }
-    }
+  public func launchUpdate() {
+    precondition(assetFilesMap == nil, "assetFilesMap should be null for embedded updates")
+    launchAssetUrl = Bundle.main.url(
+      forResource: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFilename,
+      withExtension: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFileType
+    )
   }
 
   public func isUsingEmbeddedAssets() -> Bool {

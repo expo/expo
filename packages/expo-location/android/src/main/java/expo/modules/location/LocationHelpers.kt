@@ -8,6 +8,7 @@ import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Granularity
 import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.Priority
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
@@ -47,13 +48,12 @@ class LocationHelpers {
     internal fun prepareLocationRequest(options: LocationOptions): LocationRequest {
       val locationParams = mapOptionsToLocationParams(options)
 
-      return LocationRequest.create().apply {
-        fastestInterval = locationParams.interval
-        interval = locationParams.interval
-        maxWaitTime = locationParams.interval
-        smallestDisplacement = locationParams.distance
-        priority = mapAccuracyToPriority(options.accuracy)
-      }
+      return LocationRequest.Builder(locationParams.interval)
+        .setMinUpdateIntervalMillis(locationParams.interval)
+        .setMaxUpdateDelayMillis(locationParams.interval)
+        .setMinUpdateDistanceMeters(locationParams.distance)
+        .setPriority(mapAccuracyToPriority(options.accuracy))
+        .build()
     }
 
     internal fun prepareCurrentLocationRequest(options: LocationOptions): CurrentLocationRequest {
@@ -119,10 +119,10 @@ class LocationHelpers {
 
     private fun mapAccuracyToPriority(accuracy: Int): Int {
       return when (accuracy) {
-        LocationModule.ACCURACY_BEST_FOR_NAVIGATION, LocationModule.ACCURACY_HIGHEST, LocationModule.ACCURACY_HIGH -> LocationRequest.PRIORITY_HIGH_ACCURACY
-        LocationModule.ACCURACY_BALANCED, LocationModule.ACCURACY_LOW -> LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-        LocationModule.ACCURACY_LOWEST -> LocationRequest.PRIORITY_LOW_POWER
-        else -> LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        LocationModule.ACCURACY_BEST_FOR_NAVIGATION, LocationModule.ACCURACY_HIGHEST, LocationModule.ACCURACY_HIGH -> Priority.PRIORITY_HIGH_ACCURACY
+        LocationModule.ACCURACY_BALANCED, LocationModule.ACCURACY_LOW -> Priority.PRIORITY_BALANCED_POWER_ACCURACY
+        LocationModule.ACCURACY_LOWEST -> Priority.PRIORITY_LOW_POWER
+        else -> Priority.PRIORITY_BALANCED_POWER_ACCURACY
       }
     }
 

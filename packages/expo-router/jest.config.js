@@ -6,9 +6,10 @@ const {
 } = require('jest-expo/config/getPlatformPreset');
 const { withWatchPlugins } = require('jest-expo/config/withWatchPlugins');
 
-function withDefaults(config) {
+function withDefaults({ watchPlugins, ...config }) {
   return {
     ...config,
+
     roots: ['src'],
     setupFilesAfterEnv: ['./build/testing-library/mocks.js'],
   };

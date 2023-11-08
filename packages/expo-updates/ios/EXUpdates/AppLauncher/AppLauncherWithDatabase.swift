@@ -8,7 +8,6 @@
 import Foundation
 
 public typealias AppLauncherUpdateCompletionBlock = (_ error: Error?, _ update: Update?) -> Void
-public typealias AppLauncherQueryCompletionBlock = (_ error: Error?, _ updateIds: [UUID]?) -> Void
 
 /**
  * Implementation of AppLauncher that uses the SQLite database and expo-updates file store
@@ -79,7 +78,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
       var manifestFilters: [String: Any]?
       var manifestFiltersError: Error?
       do {
-        manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey!)
+        manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey)
       } catch {
         manifestFiltersError = error
       }
@@ -156,20 +155,6 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
       }
     } else {
       finishLaunch()
-    }
-  }
-
-  public static func storedUpdateIds(
-    inDatabase database: UpdatesDatabase,
-    completion: @escaping AppLauncherQueryCompletionBlock
-  ) {
-    database.databaseQueue.async {
-      do {
-        let readyUpdateIds = try database.allUpdateIds(withStatus: .StatusReady)
-        completion(nil, readyUpdateIds)
-      } catch {
-        completion(error, nil)
-      }
     }
   }
 

@@ -11,7 +11,7 @@ import {
   requireContext,
   requireContextWithOverrides,
 } from './context-stubs';
-import { initialUrlRef } from './mocks';
+import { setInitialUrl } from './mocks';
 import { ExpoRoot } from '../ExpoRoot';
 import { stateCache } from '../getLinkingConfig';
 import { store } from '../global-state/router-store';
@@ -57,7 +57,8 @@ export function renderRouter(
   let ctx: RequireContext;
 
   // Reset the initial URL
-  initialUrlRef.value = initialUrl as any;
+
+  setInitialUrl(initialUrl);
 
   // Force the render to be synchronous
   process.env.EXPO_ROUTER_IMPORT_MODE_WEB = 'sync';

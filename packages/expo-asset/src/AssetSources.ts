@@ -80,8 +80,8 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
     ? getManifest().bundleUrl
     : null;
   if (devServerUrl) {
-    const baseUrl = new URL(devServerUrl);
-    baseUrl.pathname = meta.httpServerLocation + suffix;
+    const baseUrl = new URL(meta.httpServerLocation + suffix, devServerUrl);
+
     baseUrl.searchParams.set('platform', Platform.OS);
     baseUrl.searchParams.set('hash', meta.hash);
     return {

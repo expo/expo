@@ -17,7 +17,7 @@
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "test:e2e": "jest --config e2e/jest.config.js",
+    "test:e2e": "jest --config e2e/jest.config.js --runInBand",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml"

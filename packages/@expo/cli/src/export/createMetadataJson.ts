@@ -15,9 +15,11 @@ type FileMetadata = {
 export function createMetadataJson({
   bundles,
   fileNames,
+  embeddedHashSet,
 }: {
   bundles: Partial<Record<BundlePlatform, Pick<BundleOutput, 'assets'>>>;
   fileNames: Record<string, string | undefined>;
+  embeddedHashSet?: Set<string>;
 }): {
   version: 0;
   bundler: 'metro';
@@ -38,6 +40,7 @@ export function createMetadataJson({
             bundle: path.join('bundles', fileNames[platform]!),
             // Collect all of the assets and convert them to the serial format.
             assets: bundle.assets
+              .filter((asset) => !embeddedHashSet || !embeddedHashSet.has(asset.hash))
               .map(
                 (asset) =>
                   // Each asset has multiple hashes which we convert and then flatten.
