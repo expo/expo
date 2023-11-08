@@ -136,6 +136,7 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
             )
           );
         },
+        includeCoreModules: isServer,
 
         pathFilter:
           // Disable `browser` field for server environments.
@@ -162,13 +163,6 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
                 return mappedPath;
               },
       });
-
-      if (!isServer && isNodeExternal(fp)) {
-        // In this case, mock the file to use an empty module.
-        return {
-          type: 'empty',
-        };
-      }
     } catch (error: any) {
       if (error instanceof ShimModuleError) {
         return {
@@ -177,6 +171,13 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
       }
 
       if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
+        if (isNodeExternal(moduleName)) {
+          // In this case, mock the file to use an empty module.
+          return {
+            type: 'empty',
+          };
+        }
+
         // TODO: Add improved error handling.
         throw new FailedToResolvePathError(
           'The module could not be resolved because no file or module matched the pattern:\n' +
@@ -207,6 +208,7 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
           filePath: fp,
         };
       }
+      // NOTE: This shouldn't happen, the module should throw.
       // Mock non-server built-in modules to empty.
       return {
         type: 'empty',

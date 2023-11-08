@@ -79,7 +79,7 @@ function resolveToEmpty(
   const context = createContext({
     platform,
     isServer,
-    origin: path.join(originProjectRoot, from),
+    origin: path.isAbsolute(from) ? from : path.join(originProjectRoot, from),
     nodeModulesPaths,
     packageExports,
   });
@@ -107,7 +107,7 @@ function resolveTo(
   const context = createContext({
     platform,
     isServer,
-    origin: path.join(originProjectRoot, from),
+    origin: path.isAbsolute(from) ? from : path.join(originProjectRoot, from),
     nodeModulesPaths,
     packageExports,
   });
@@ -122,6 +122,8 @@ describe(createFastResolver, () => {
     it('shims node built-ins on non-server platforms', () => {
       resolveToEmpty('node:path', { platform: 'ios', isServer: false });
       resolveToEmpty('node:assert', { platform: 'web', isServer: false });
+      resolveToEmpty('node:punycode', { platform: 'web', isServer: false });
+      resolveTo('punycode', { platform: 'web', isServer: false });
     });
     it('supports node built-ins on server platforms', () => {
       expect(resolveTo('node:assert', { platform: 'web', isServer: true })).toEqual('node:assert');
@@ -166,6 +168,22 @@ describe(createFastResolver, () => {
 
   describe('ios', () => {
     const platform = 'ios';
+
+    it('resolves near self first', () => {
+      const reactNativePath = resolveTo('react-native/Libraries/Promise.js', {
+        platform,
+        packageExports: true,
+      })!;
+      expect(
+        resolveTo('promise/setimmediate/es6-extensions', {
+          platform,
+          from: reactNativePath,
+          packageExports: true,
+        })
+      ).toMatch(
+        /node_modules\/react-native\/node_modules\/promise\/setimmediate\/es6-extensions.js$/
+      );
+    });
 
     it('asserts not found module', () => {
       expect(() => resolveTo('react-native-fake-lib', { platform })).toThrowError(

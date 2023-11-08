@@ -114,40 +114,6 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
     return path;
   }
 
-  if (path.startsWith('#')) {
-    const closestPackageJson = findClosestPackageJson(options.basedir);
-
-    if (!closestPackageJson) {
-      throw new Error(
-        `unable to locate closest package.json from ${options.basedir} when resolving import "${path}"`
-      );
-    }
-
-    const pkg = options.readPackageSync!(options.readFileSync!, closestPackageJson);
-    assert(pkg, 'package.json should be read by `readPackageSync`');
-
-    const resolved = resolve.imports(
-      pkg,
-      path as resolve.Imports.Entry,
-      createResolveOptions(options.conditions)
-    );
-
-    if (resolved) {
-      const target = resolved[0];
-      return target.startsWith('.')
-        ? // internal relative filepath
-          pathResolve(dirname(closestPackageJson), target)
-        : // this is an external module, re-resolve it
-          defaultResolver(target, options);
-    }
-
-    if (pkg.imports) {
-      throw new Error(
-        "`imports` exists, but no results - this is a bug in Expo CLI's Metro resolver. Please report an issue"
-      );
-    }
-  }
-
   const segments = path.split('/');
 
   let moduleName = segments.shift();
