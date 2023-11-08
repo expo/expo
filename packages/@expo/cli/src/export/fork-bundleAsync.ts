@@ -16,7 +16,7 @@ import {
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
-import { env } from '../utils/env';
+import { getMetroDirectBundleOptions } from '../start/server/middleware/metroOptions';
 
 export type MetroDevServerOptions = LoadOptions;
 
@@ -129,20 +129,16 @@ async function bundleProductionMetroClientAsync(
     const isHermes = isEnableHermesManaged(expoConfig, bundle.platform);
     const bundleOptions: MetroBundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
+      ...getMetroDirectBundleOptions({
+        mainModuleName: bundle.entryPoint,
+        platform: bundle.platform,
+        mode: bundle.dev ? 'development' : 'production',
+        engine: isHermes ? 'hermes' : undefined,
+      }),
       bundleType: 'bundle',
-      platform: bundle.platform,
-      entryFile: bundle.entryPoint,
-      dev: bundle.dev ?? false,
-      minify: !isHermes && (bundle.minify ?? !bundle.dev),
       inlineSourceMap: false,
       sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
-      unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
-      customTransformOptions: {
-        __proto__: null,
-        engine: isHermes ? 'hermes' : undefined,
-        preserveEnvVars: env.EXPO_NO_CLIENT_ENV_VARS,
-      },
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
         reporter.update({
           buildID,
