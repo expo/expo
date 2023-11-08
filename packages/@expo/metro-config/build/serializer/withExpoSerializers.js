@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSerializerFromSerialProcessors = exports.graphToSerialAssets = exports.getDefaultSerializer = exports.withSerializerPlugins = exports.withExpoSerializers = void 0;
+exports.createSerializerFromSerialProcessors = exports.graphToSerialAssetsAsync = exports.getDefaultSerializer = exports.withSerializerPlugins = exports.withExpoSerializers = void 0;
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -22,6 +22,7 @@ const exportPath_1 = require("./exportPath");
 const baseJSBundle_1 = require("./fork/baseJSBundle");
 const getCssDeps_1 = require("./getCssDeps");
 const env_1 = require("../env");
+const exportHermes_1 = require("./exportHermes");
 function withExpoSerializers(config) {
     const processors = [];
     processors.push(environmentVariableSerializerPlugin_1.serverPreludeSerializerPlugin);
@@ -82,7 +83,7 @@ function getDefaultSerializer(serializerConfig, fallbackSerializer) {
         if (serializerOptions?.outputMode !== 'static') {
             return defaultSerializer(...props);
         }
-        const assets = graphToSerialAssets(serializerConfig, { includeMaps: serializerOptions.includeSourceMaps }, ...props);
+        const assets = await graphToSerialAssetsAsync(serializerConfig, { includeMaps: serializerOptions.includeSourceMaps }, ...props);
         if (supportsNonSerialReturn) {
             // @ts-expect-error: this is future proofing for adding assets to the output as well.
             return assets;
@@ -91,7 +92,7 @@ function getDefaultSerializer(serializerConfig, fallbackSerializer) {
     };
 }
 exports.getDefaultSerializer = getDefaultSerializer;
-function graphToSerialAssets(serializerConfig, { includeMaps }, ...props) {
+async function graphToSerialAssetsAsync(serializerConfig, { includeMaps }, ...props) {
     const [entryFile, preModules, graph, options] = props;
     const cssDeps = (0, getCssDeps_1.getCssSerialAssets)(graph.dependencies, {
         projectRoot: options.projectRoot,
@@ -104,12 +105,12 @@ function graphToSerialAssets(serializerConfig, { includeMaps }, ...props) {
     // console.log(inspect([..._chunks], { depth: 3, colors: true }));
     // Optimize the chunks
     // dedupeChunks(_chunks);
-    const jsAssets = serializeChunks(_chunks, serializerConfig, {
+    const jsAssets = await serializeChunksAsync(_chunks, serializerConfig, {
         includeSourceMaps: includeMaps,
     });
     return [...jsAssets, ...cssDeps];
 }
-exports.graphToSerialAssets = graphToSerialAssets;
+exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
 class Chunk {
     name;
     entry;
@@ -158,7 +159,7 @@ class Chunk {
         });
         return (0, bundleToString_1.default)(jsSplitBundle).code;
     }
-    serializeToAssets(serializerConfig, { includeSourceMaps }) {
+    async serializeToAssetsAsync(serializerConfig, { includeSourceMaps }) {
         const jsCode = this.serializeToCode(serializerConfig);
         const relativeEntry = path_1.default.relative(this.options.projectRoot, this.entry);
         const outputFile = this.getFilename();
@@ -172,6 +173,7 @@ class Chunk {
             },
             source: jsCode,
         };
+        const assets = [jsAsset];
         if (
         // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
         includeSourceMaps &&
@@ -195,18 +197,43 @@ class Chunk {
             const sourceMap = (0, sourceMapString_1.default)(modules, {
                 ...this.options,
             });
-            return [
-                jsAsset,
-                {
-                    filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
-                    originFilename: jsAsset.originFilename,
-                    type: 'map',
-                    metadata: {},
-                    source: sourceMap,
-                },
-            ];
+            assets.push({
+                filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
+                originFilename: jsAsset.originFilename,
+                type: 'map',
+                metadata: {},
+                source: sourceMap,
+            });
         }
-        return [jsAsset];
+        if (this.isHermesEnabled()) {
+            // TODO: Generate hbc for each chunk
+            const hermesBundleOutput = await (0, exportHermes_1.buildHermesBundleAsync)({
+                filename: this.entry,
+                code: jsAsset.source,
+                map: assets[1] ? assets[1].source : null,
+                // TODO: Maybe allow prod + no minify.
+                minify: true, //!this.options.dev,
+            });
+            if (hermesBundleOutput.hbc) {
+                // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
+                // jsAsset.metadata.hbc = hermesBundleOutput.hbc;
+                jsAsset.source = hermesBundleOutput.hbc;
+                jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
+            }
+            if (assets[1] && hermesBundleOutput.sourcemap) {
+                // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
+                assets[1].source = hermesBundleOutput.sourcemap;
+            }
+        }
+        return assets;
+    }
+    isHermesEnabled() {
+        // TODO: Revisit.
+        // TODO: There could be an issue with having the serializer for export:embed output hermes since the native scripts will
+        // also create hermes bytecode. We may need to disable in one of the two places.
+        return (!this.options.dev &&
+            this.getPlatform() !== 'web' &&
+            this.graph.transformOptions.customTransformOptions?.engine === 'hermes');
     }
 }
 function gatherChunks(chunks, entryFile, preModules, graph, options, isAsync = false) {
@@ -304,11 +331,11 @@ function dedupeChunks(chunks) {
         }
     }
 }
-function serializeChunks(chunks, serializerConfig, { includeSourceMaps }) {
+async function serializeChunksAsync(chunks, serializerConfig, { includeSourceMaps }) {
     const jsAssets = [];
-    chunks.forEach((chunk) => {
-        jsAssets.push(...chunk.serializeToAssets(serializerConfig, { includeSourceMaps }));
-    });
+    await Promise.all([...chunks].map(async (chunk) => {
+        jsAssets.push(...(await chunk.serializeToAssetsAsync(serializerConfig, { includeSourceMaps })));
+    }));
     return jsAssets;
 }
 function getSortedModules(modules, { createModuleId, }) {

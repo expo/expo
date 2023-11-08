@@ -23,6 +23,11 @@ import { baseJSBundle, baseJSBundleWithDependencies, getPlatformOption } from '.
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
+import {
+  buildHermesBundleAsync,
+  isEnableHermesManaged,
+  maybeThrowFromInconsistentEngineAsync,
+} from './exportHermes';
 
 // import { toFixture } from './__tests__/fixtures/toFixture';
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
@@ -114,7 +119,7 @@ export function getDefaultSerializer(
       return defaultSerializer(...props);
     }
 
-    const assets = graphToSerialAssets(
+    const assets = await graphToSerialAssetsAsync(
       serializerConfig,
       { includeMaps: serializerOptions.includeSourceMaps },
       ...props
@@ -129,11 +134,11 @@ export function getDefaultSerializer(
   };
 }
 
-export function graphToSerialAssets(
+export async function graphToSerialAssetsAsync(
   serializerConfig: ConfigT['serializer'],
   { includeMaps }: { includeMaps: boolean },
   ...props: SerializerParameters
-): SerialAsset[] | null {
+): Promise<SerialAsset[] | null> {
   const [entryFile, preModules, graph, options] = props;
 
   const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
@@ -153,7 +158,7 @@ export function graphToSerialAssets(
   // Optimize the chunks
   // dedupeChunks(_chunks);
 
-  const jsAssets = serializeChunks(_chunks, serializerConfig, {
+  const jsAssets = await serializeChunksAsync(_chunks, serializerConfig, {
     includeSourceMaps: includeMaps,
   });
 
@@ -225,10 +230,10 @@ class Chunk {
     return bundleToString(jsSplitBundle).code;
   }
 
-  serializeToAssets(
+  async serializeToAssetsAsync(
     serializerConfig: SerializerConfigT,
     { includeSourceMaps }: { includeSourceMaps?: boolean }
-  ): SerialAsset[] {
+  ): Promise<SerialAsset[]> {
     const jsCode = this.serializeToCode(serializerConfig);
 
     const relativeEntry = path.relative(this.options.projectRoot, this.entry);
@@ -244,6 +249,8 @@ class Chunk {
       },
       source: jsCode,
     };
+
+    const assets: SerialAsset[] = [jsAsset];
 
     if (
       // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
@@ -273,19 +280,49 @@ class Chunk {
         ...this.options,
       });
 
-      return [
-        jsAsset,
-        {
-          filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
-          originFilename: jsAsset.originFilename,
-          type: 'map',
-          metadata: {},
-          source: sourceMap,
-        },
-      ];
+      assets.push({
+        filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
+        originFilename: jsAsset.originFilename,
+        type: 'map',
+        metadata: {},
+        source: sourceMap,
+      });
     }
 
-    return [jsAsset];
+    if (this.isHermesEnabled()) {
+      // TODO: Generate hbc for each chunk
+      const hermesBundleOutput = await buildHermesBundleAsync({
+        filename: this.entry,
+        code: jsAsset.source,
+        map: assets[1] ? assets[1].source : null,
+        // TODO: Maybe allow prod + no minify.
+        minify: true, //!this.options.dev,
+      });
+
+      if (hermesBundleOutput.hbc) {
+        // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
+        // jsAsset.metadata.hbc = hermesBundleOutput.hbc;
+        jsAsset.source = hermesBundleOutput.hbc;
+        jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
+      }
+      if (assets[1] && hermesBundleOutput.sourcemap) {
+        // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
+        assets[1].source = hermesBundleOutput.sourcemap;
+      }
+    }
+
+    return assets;
+  }
+
+  isHermesEnabled() {
+    // TODO: Revisit.
+    // TODO: There could be an issue with having the serializer for export:embed output hermes since the native scripts will
+    // also create hermes bytecode. We may need to disable in one of the two places.
+    return (
+      !this.options.dev &&
+      this.getPlatform() !== 'web' &&
+      this.graph.transformOptions.customTransformOptions?.engine === 'hermes'
+    );
   }
 }
 
@@ -400,16 +437,20 @@ function dedupeChunks(chunks: Set<Chunk>) {
   }
 }
 
-function serializeChunks(
+async function serializeChunksAsync(
   chunks: Set<Chunk>,
   serializerConfig: SerializerConfigT,
   { includeSourceMaps }: { includeSourceMaps: boolean }
 ) {
   const jsAssets: SerialAsset[] = [];
 
-  chunks.forEach((chunk) => {
-    jsAssets.push(...chunk.serializeToAssets(serializerConfig, { includeSourceMaps }));
-  });
+  await Promise.all(
+    [...chunks].map(async (chunk) => {
+      jsAssets.push(
+        ...(await chunk.serializeToAssetsAsync(serializerConfig, { includeSourceMaps }))
+      );
+    })
+  );
 
   return jsAssets;
 }

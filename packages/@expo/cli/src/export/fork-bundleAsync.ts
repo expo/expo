@@ -196,26 +196,26 @@ async function bundleProductionMetroClientAsync(
     bundle: BundleOptions,
     bundleOutput: BundleOutput
   ): Promise<BundleOutput> => {
-    const { platform } = bundle;
-    const isHermesManaged = isEnableHermesManaged(expoConfig, platform);
-    if (isHermesManaged) {
-      const platformTag = chalk.bold(
-        { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform
-      );
+    // const { platform } = bundle;
+    // const isHermesManaged = isEnableHermesManaged(expoConfig, platform);
+    // if (isHermesManaged) {
+    //   const platformTag = chalk.bold(
+    //     { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform
+    //   );
 
-      reporter.terminal.log(`${platformTag} Building Hermes bytecode for the bundle`);
+    //   reporter.terminal.log(`${platformTag} Building Hermes bytecode for the bundle`);
 
-      // TODO: Generate hbc for each chunk
-      const hermesBundleOutput = await buildHermesBundleAsync(projectRoot, {
-        code: bundleOutput.artifacts[0].source,
-        map: bundle.sourcemaps ? bundleOutput.artifacts[1].source : null,
-        minify: bundle.minify ?? !bundle.dev,
-      });
+    //   // TODO: Generate hbc for each chunk
+    //   const hermesBundleOutput = await buildHermesBundleAsync(projectRoot, {
+    //     code: bundleOutput.artifacts[0].source,
+    //     map: bundle.sourcemaps ? bundleOutput.artifacts[1].source : null,
+    //     minify: bundle.minify ?? !bundle.dev,
+    //   });
 
-      // TODO: Emit serial assets for each chunk
-      bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;
-      bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap ?? undefined;
-    }
+    //   // TODO: Emit serial assets for each chunk
+    //   bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;
+    //   bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap ?? undefined;
+    // }
     return bundleOutput;
   };
 
