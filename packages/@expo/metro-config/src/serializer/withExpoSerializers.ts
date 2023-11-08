@@ -63,6 +63,7 @@ export function withSerializerPlugins(
     },
   };
 }
+
 export function getDefaultSerializer(
   serializerConfig: ConfigT['serializer'],
   fallbackSerializer?: Serializer | null
@@ -81,7 +82,6 @@ export function getDefaultSerializer(
 
     const platform = getPlatformOption(graph, options);
 
-    // toFixture(...props);
     if (!options.sourceUrl) {
       return defaultSerializer(...props);
     }
@@ -97,78 +97,41 @@ export function getDefaultSerializer(
       return defaultSerializer(entryFile, preModules, graph, options);
     }
 
-    let multipleEntries: string[] = [];
-    const multipleEntriesParam = url.searchParams.get('serializer.entries');
-    if (multipleEntriesParam && typeof multipleEntriesParam === 'string') {
-      multipleEntries = JSON.parse(multipleEntriesParam) as any;
-
-      if (!Array.isArray(multipleEntries)) {
-        throw new Error('serializer.entries must be an array of strings');
-      }
-
-      multipleEntries = multipleEntries.map((entry) => {
-        entry = decodeURIComponent(entry);
-        if (entry.includes(options.serverRoot)) {
-          return entry;
-        }
-        return path.join(options.serverRoot, entry);
-      }) as string[];
-
-      multipleEntries.forEach((fp) => {
-        if (!graph.dependencies.get(fp)) {
-          throw new Error(`Entry file not found in graph: ${fp}`);
-        }
-      });
-    }
-
-    const chunks:
-      | {
-          // Leaf file-path.
-          name: string;
-          // Relative file paths.
-          inputs: string[];
-        }[]
-      | null = url.searchParams.has('serializer.chunks')
-      ? JSON.parse(url.searchParams.get('serializer.chunks')!)
-      : null;
-
-    const allEntryFiles = new Set([
-      // Entry file for all chunks.
-      entryFile,
-      // Entry files for each chunk.
-      ...(chunks?.map((chunk) => chunk.inputs) ?? []).flat(),
-    ]);
-
-    console.log('process chunks:', entryFile, chunks, allEntryFiles);
-
     const includeSourceMaps = url.searchParams.get('serializer.map') === 'true';
 
-    const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
-      projectRoot: options.projectRoot,
-      processModuleFilter: options.processModuleFilter,
-    });
-
-    // JS
-
-    const _chunks = new Set<Chunk>();
-
-    unique([entryFile, ...multipleEntries]).map((entryFile) =>
-      gatherChunks(_chunks, entryFile, preModules, graph, options, false)
+    return JSON.stringify(
+      graphToSerialAssets(serializerConfig, { includeMaps: includeSourceMaps }, ...props)
     );
-
-    // Optimize the chunks
-    dedupeChunks(_chunks);
-
-    const jsAssets = serializeChunks(_chunks, serializerConfig, {
-      includeSourceMaps,
-    });
-
-    return JSON.stringify([...jsAssets, ...cssDeps]);
   };
 }
 
-function unique<T>(arr: T[]): T[] {
-  return [...new Set(arr)];
+export function graphToSerialAssets(
+  serializerConfig: ConfigT['serializer'],
+  { includeMaps }: { includeMaps: boolean },
+  ...props: SerializerParameters
+): SerialAsset[] | null {
+  const [entryFile, preModules, graph, options] = props;
+
+  const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
+    projectRoot: options.projectRoot,
+    processModuleFilter: options.processModuleFilter,
+  });
+
+  // Create chunks for splitting.
+  const _chunks = new Set<Chunk>();
+
+  [entryFile].map((entryFile) =>
+    gatherChunks(_chunks, entryFile, preModules, graph, options, false)
+  );
+
+  // Optimize the chunks
+  // dedupeChunks(_chunks);
+
+  const jsAssets = serializeChunks(_chunks, serializerConfig, {
+    includeSourceMaps: includeMaps,
+  });
+
+  return [...jsAssets, ...cssDeps];
 }
 
 class Chunk {
