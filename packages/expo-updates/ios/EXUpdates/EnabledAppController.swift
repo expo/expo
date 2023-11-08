@@ -9,7 +9,9 @@ import ExpoModulesCore
 /**
  * Updates controller for applications that have updates enabled and properly-configured.
  */
-public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDelegate, ErrorRecoveryDelegate, UpdatesStateChangeDelegate, InternalAppControllerInterface {
+public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDelegate, 
+  ErrorRecoveryDelegate, UpdatesStateChangeDelegate, InternalAppControllerInterface {
+
   private static let ErrorDomain = "EXUpdatesAppController"
   private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
   private static let EXUpdatesStateChangeEventName = "Expo.nativeUpdatesStateChangeEvent"
@@ -21,7 +23,7 @@ public class EnabledAppController: AppLoaderTaskDelegate, AppLoaderTaskSwiftDele
 
   public weak var delegate: AppControllerDelegate?
   public weak var bridge: AnyObject?
-  
+
   public func launchAssetUrl() -> URL? {
     return launcher?.launchAssetUrl
   }

@@ -26,7 +26,7 @@ public struct UpdatesModuleConstants {
    use the locally downloaded assets.
    */
   let assetFilesMap: [String: Any]?
-  
+
   let isMissingRuntimeVersion: Bool
 }
 

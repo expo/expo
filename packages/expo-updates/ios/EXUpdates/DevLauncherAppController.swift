@@ -76,7 +76,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     self.isMissingRuntimeVersion = isMissingRuntimeVersion
 
     self.defaultSelectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
-      withRuntimeVersion: self.config.let { it in initialUpdatesConfiguration?.runtimeVersionRealized } ?? "1"
+      withRuntimeVersion: initialUpdatesConfiguration.let { it in it.runtimeVersionRealized } ?? "1"
     )
 
     super.init()
