@@ -18,6 +18,7 @@ const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString")
 const path_1 = __importDefault(require("path"));
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const exportPath_1 = require("./exportPath");
+// import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 const baseJSBundle_1 = require("./fork/baseJSBundle");
 const getCssDeps_1 = require("./getCssDeps");
 const env_1 = require("../env");
@@ -99,6 +100,8 @@ function graphToSerialAssets(serializerConfig, { includeMaps }, ...props) {
     // Create chunks for splitting.
     const _chunks = new Set();
     [entryFile].map((entryFile) => gatherChunks(_chunks, entryFile, preModules, graph, options, false));
+    console.log('Chunks:');
+    console.log((0, util_1.inspect)([..._chunks], { depth: 3, colors: true }));
     // Optimize the chunks
     // dedupeChunks(_chunks);
     const jsAssets = serializeChunks(_chunks, serializerConfig, {
@@ -107,6 +110,7 @@ function graphToSerialAssets(serializerConfig, { includeMaps }, ...props) {
     return [...jsAssets, ...cssDeps];
 }
 exports.graphToSerialAssets = graphToSerialAssets;
+const util_1 = require("util");
 class Chunk {
     name;
     entry;
@@ -202,6 +206,7 @@ class Chunk {
     }
 }
 function gatherChunks(chunks, entryFile, preModules, graph, options, isAsync = false) {
+    console.log('gather chunk:', entryFile);
     const entryModule = graph.dependencies.get(entryFile);
     if (!entryModule) {
         throw new Error('Entry module not found in graph: ' + entryFile);
@@ -215,7 +220,7 @@ function gatherChunks(chunks, entryFile, preModules, graph, options, isAsync = f
     if (preModules.length) {
         if (graph.transformOptions.platform === 'web' && !isAsync) {
             // On web, add a new required chunk that will be included in the HTML.
-            const preChunk = new Chunk('__premodules__', '__premodules__', graph, options);
+            const preChunk = new Chunk('_expo-metro-runtime', '_expo-metro-runtime', graph, options);
             for (const module of preModules.values()) {
                 preChunk.deps.add(module);
             }

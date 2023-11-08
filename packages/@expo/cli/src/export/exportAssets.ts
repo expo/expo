@@ -166,28 +166,28 @@ export async function exportAssetsAsync(
   return { exp, assets, embeddedHashSet };
 }
 
-export async function exportCssAssetsAsync({
-  outputDir,
-  bundles,
-  basePath,
-}: {
-  bundles: Partial<Record<ModPlatform, BundleOutput>>;
-  outputDir: string;
-  basePath: string;
-}) {
-  const assets = uniqBy(
-    Object.values(bundles).flatMap((bundle) => bundle!.css),
-    (asset) => asset.filename
-  );
+// export async function exportCssAssetsAsync({
+//   outputDir,
+//   bundles,
+//   basePath,
+// }: {
+//   bundles: Partial<Record<ModPlatform, BundleOutput>>;
+//   outputDir: string;
+//   basePath: string;
+// }) {
+//   const assets = uniqBy(
+//     Object.values(bundles).flatMap((bundle) => bundle!.css),
+//     (asset) => asset.filename
+//   );
 
-  const cssDirectory = assets[0]?.filename;
-  if (!cssDirectory) return [];
+//   const cssDirectory = assets[0]?.filename;
+//   if (!cssDirectory) return [];
 
-  await fs.promises.mkdir(path.join(outputDir, path.dirname(cssDirectory)), { recursive: true });
+//   await fs.promises.mkdir(path.join(outputDir, path.dirname(cssDirectory)), { recursive: true });
 
-  await Promise.all(
-    assets.map((v) => fs.promises.writeFile(path.join(outputDir, v.filename), v.source))
-  );
+//   await Promise.all(
+//     assets.map((v) => fs.promises.writeFile(path.join(outputDir, v.filename), v.source))
+//   );
 
-  return assets.map((v) => basePath + '/' + v.filename);
-}
+//   return assets.map((v) => basePath + '/' + v.filename);
+// }

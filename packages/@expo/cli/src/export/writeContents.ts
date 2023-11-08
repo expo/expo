@@ -6,6 +6,7 @@ import path from 'path';
 import { createMetadataJson } from './createMetadataJson';
 import { BundleOutput } from './fork-bundleAsync';
 import { Asset } from './saveAssets';
+import { getFilesFromSerialAssets, persistMetroFilesAsync } from './exportStaticAsync';
 
 const debug = require('debug')('expo:export:write') as typeof console.log;
 
@@ -35,40 +36,47 @@ function createBundleHash(bundle: string | Uint8Array): string {
   return crypto.createHash('md5').update(bundle).digest('hex');
 }
 
+// TODO: Unify with exportStaticAsync
 export async function writeBundlesAsync({
   bundles,
   outputDir,
   useServerRendering,
+  includeMaps,
 }: {
-  bundles: Partial<Record<Platform, Pick<BundleOutput, 'hermesBytecodeBundle' | 'code'>>>;
+  bundles: Partial<Record<Platform, Pick<BundleOutput, 'artifacts'>>>;
   outputDir: string;
   useServerRendering?: boolean;
+  includeMaps: boolean;
 }) {
-  const hashes: Partial<Record<Platform, string>> = {};
-  const fileNames: Partial<Record<Platform, string>> = {};
-
+  // name : contents
+  const files = new Map<string, string>();
   for (const [platform, bundleOutput] of Object.entries(bundles) as [
     Platform,
-    Pick<BundleOutput, 'hermesBytecodeBundle' | 'code'>,
+    Pick<BundleOutput, 'artifacts'>,
   ][]) {
-    // TODO: Move native to use the newer `_expo/...` bundle writing system.
-    if (platform === 'web' && useServerRendering) {
-      continue;
-    }
-    const bundle = bundleOutput.hermesBytecodeBundle ?? bundleOutput.code;
-    const hash = createBundleHash(bundle);
-    const fileName = createBundleFileName({
-      platform,
-      format: bundleOutput.hermesBytecodeBundle ? 'bytecode' : 'javascript',
-      hash,
+    getFilesFromSerialAssets(bundleOutput.artifacts, {
+      includeMaps,
+      files,
     });
 
-    hashes[platform] = hash;
-    fileNames[platform] = fileName;
-    await fs.writeFile(path.join(outputDir, fileName), bundle);
+    // await Promise.all(bundleOutput.artifacts.map(artifact => {
+    //   return fs.writeFile(path.join(outputDir, fileName), bundle);
+    // }))
+
+    // const bundle = bundleOutput.hermesBytecodeBundle ?? bundleOutput.code;
+    // const hash = createBundleHash(bundle);
+    // const fileName = createBundleFileName({
+    //   platform,
+    //   format: bundleOutput.hermesBytecodeBundle ? 'bytecode' : 'javascript',
+    //   hash,
+    // });
+
+    // hashes[platform] = hash;
+    // fileNames[platform] = fileName;
+    // await fs.writeFile(path.join(outputDir, fileName), bundle);
   }
 
-  return { hashes, fileNames };
+  await persistMetroFilesAsync(files, outputDir);
 }
 
 type SourceMapWriteResult = {
@@ -139,7 +147,7 @@ export async function writeMetadataJsonAsync({
 }: {
   outputDir: string;
   bundles: Record<string, Pick<BundleOutput, 'assets'> | undefined>;
-  fileNames: Record<string, string | undefined>;
+  fileNames: Record<string, string[]>;
   embeddedHashSet?: Set<string>;
 }) {
   const contents = createMetadataJson({
@@ -171,13 +179,13 @@ export async function writeDebugHtmlAsync({
   fileNames,
 }: {
   outputDir: string;
-  fileNames: Record<string, string | undefined>;
+  fileNames: string[];
 }) {
   // Make a debug html so user can debug their bundles
   const contents = `
-      ${Object.values(fileNames)
+      ${fileNames
         .filter((value) => value != null)
-        .map((fileName) => `<script src="${path.join('bundles', fileName!)}"></script>`)
+        .map((fileName) => `<script src="${fileName}"></script>`)
         .join('\n      ')}
       Open up this file in Chrome. In the JavaScript developer console, navigate to the Source tab.
       You can see a red colored folder containing the original source code from your bundle.

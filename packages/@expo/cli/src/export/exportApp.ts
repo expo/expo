@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import { exportAssetsAsync, exportCssAssetsAsync } from './exportAssets';
+import { exportAssetsAsync } from './exportAssets';
 import { unstable_exportStaticAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { createBundlesAsync } from './fork-bundleAsync';
@@ -16,13 +16,13 @@ import {
   writeBundlesAsync,
   writeDebugHtmlAsync,
   writeMetadataJsonAsync,
-  writeSourceMapsAsync,
 } from './writeContents';
 import * as Log from '../log';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
+import { composeResourcesWithHtml } from '../start/server/metro/MetroBundlerDevServer';
 
 /**
  * The structure of the outputDir will be:
@@ -99,34 +99,35 @@ export async function exportAppAsync(
     dev,
   });
 
-  const bundleEntries = Object.entries(bundles);
-  if (bundleEntries.length) {
-    // Log bundle size info to the user
-    printBundleSizes(
-      Object.fromEntries(
-        bundleEntries.map(([key, value]) => {
-          if (!dumpSourcemap) {
-            return [
-              key,
-              {
-                ...value,
-                // Remove source maps from the bundles if they aren't going to be written.
-                map: undefined,
-              },
-            ];
-          }
+  // const bundleEntries = Object.entries(bundles);
+  // if (bundleEntries.length) {
+  //   // Log bundle size info to the user
+  //   printBundleSizes(
+  //     Object.fromEntries(
+  //       bundleEntries.map(([key, value]) => {
+  //         if (!dumpSourcemap) {
+  //           return [
+  //             key,
+  //             {
+  //               ...value,
+  //               // Remove source maps from the bundles if they aren't going to be written.
+  //               map: undefined,
+  //             },
+  //           ];
+  //         }
 
-          return [key, value];
-        })
-      )
-    );
-  }
+  //         return [key, value];
+  //       })
+  //     )
+  //   );
+  // }
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
-  const { hashes, fileNames } = await writeBundlesAsync({
+  await writeBundlesAsync({
     bundles,
     useServerRendering,
     outputDir: bundlesPath,
+    includeMaps: dumpSourcemap,
   });
 
   Log.log('Finished saving JS Bundles');
@@ -143,15 +144,18 @@ export async function exportAppAsync(
       });
       Log.log('Finished saving static files');
     } else {
-      const cssLinks = await exportCssAssetsAsync({
-        outputDir,
-        bundles,
+      // TODO: Unify with exportStaticAsync
+      // TODO: Maybe move to the serializer.
+      let html = await composeResourcesWithHtml({
+        mode: 'production',
+        resources: bundles.web!.artifacts,
+        template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+          scripts: [],
+          cssLinks: [],
+        }),
         basePath,
       });
-      let html = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-        scripts: [`${basePath}/bundles/${fileNames.web}`],
-        cssLinks,
-      });
+
       // Add the favicon assets to the HTML.
       const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
         outputDir,
@@ -179,7 +183,7 @@ export async function exportAppAsync(
 
   // Can be empty during web-only SSG.
   // TODO: Use same asset system across platforms again.
-  if (Object.keys(fileNames).length) {
+  if (Object.keys(bundles).length) {
     const { assets, embeddedHashSet } = await exportAssetsAsync(projectRoot, {
       exp,
       outputDir: staticFolder,
@@ -190,22 +194,36 @@ export async function exportAppAsync(
       Log.log('Dumping asset map');
       await writeAssetMapAsync({ outputDir: staticFolder, assets });
     }
+
+    const fileNames = Object.fromEntries(
+      Object.entries(bundles).map(([platform, bundle]) => [
+        platform,
+        bundle.artifacts
+          .filter(
+            (asset) =>
+              // TODO: Hermes support
+              asset.type === 'js'
+          )
+          .map((asset) => asset.filename),
+      ])
+    );
+
     // build source maps
     if (dumpSourcemap) {
-      Log.log('Dumping source maps');
-      await writeSourceMapsAsync({
-        bundles,
-        hashes,
-        outputDir: bundlesPath,
-        fileNames,
-      });
+      // Log.log('Dumping source maps');
+      // await writeSourceMapsAsync({
+      //   bundles,
+      //   hashes,
+      //   outputDir: bundlesPath,
+      //   fileNames,
+      // });
 
       Log.log('Preparing additional debugging files');
       // If we output source maps, then add a debug HTML file which the user can open in
       // the web browser to inspect the output like web.
       await writeDebugHtmlAsync({
         outputDir: staticFolder,
-        fileNames,
+        fileNames: Object.values(fileNames).flat(),
       });
     }
 

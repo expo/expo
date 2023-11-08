@@ -123,32 +123,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
-  async composeResourcesWithHtml({
-    mode,
-    resources,
-    template,
-    devBundleUrl,
-    basePath,
-  }: {
-    mode: 'development' | 'production';
-    resources: SerialAsset[];
-    template: string;
-    /** asset prefix used for deploying to non-standard origins like GitHub pages. */
-    basePath: string;
-    devBundleUrl?: string;
-  }): Promise<string> {
-    if (!resources) {
-      return '';
-    }
-    const isDev = mode === 'development';
-    return htmlFromSerialAssets(resources, {
-      dev: isDev,
-      template,
-      basePath,
-      bundleUrl: isDev ? devBundleUrl : undefined,
-    });
-  }
-
   async getExpoRouterRoutesManifestAsync({ appDir }: { appDir: string }) {
     // getBuiltTimeServerManifest
     const manifest = await fetchManifest(this.projectRoot, {
@@ -317,7 +291,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       this.getStaticResourcesAsync({ mode, minify }),
       bundleStaticHtml(),
     ]);
-    const content = await this.composeResourcesWithHtml({
+    const content = await composeResourcesWithHtml({
       mode,
       resources,
       template: staticHtml,
@@ -587,6 +561,32 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
       ...getDevClientProperties(projectRoot, exp),
     });
   };
+}
+
+export function composeResourcesWithHtml({
+  mode,
+  resources,
+  template,
+  devBundleUrl,
+  basePath,
+}: {
+  mode: 'development' | 'production';
+  resources: SerialAsset[];
+  template: string;
+  /** asset prefix used for deploying to non-standard origins like GitHub pages. */
+  basePath: string;
+  devBundleUrl?: string;
+}): string {
+  if (!resources) {
+    return '';
+  }
+  const isDev = mode === 'development';
+  return htmlFromSerialAssets(resources, {
+    dev: isDev,
+    template,
+    basePath,
+    bundleUrl: isDev ? devBundleUrl : undefined,
+  });
 }
 
 function htmlFromSerialAssets(

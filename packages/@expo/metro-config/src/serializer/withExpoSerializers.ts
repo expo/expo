@@ -18,6 +18,7 @@ import {
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
 import { getExportPathForDependencyWithOptions } from './exportPath';
+// import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import { baseJSBundle, baseJSBundleWithDependencies, getPlatformOption } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
@@ -147,6 +148,8 @@ export function graphToSerialAssets(
     gatherChunks(_chunks, entryFile, preModules, graph, options, false)
   );
 
+  console.log('Chunks:');
+  console.log(inspect([..._chunks], { depth: 3, colors: true }));
   // Optimize the chunks
   // dedupeChunks(_chunks);
 
@@ -156,6 +159,8 @@ export function graphToSerialAssets(
 
   return [...jsAssets, ...cssDeps];
 }
+
+import { inspect } from 'util';
 
 class Chunk {
   public deps: Set<Module> = new Set();
@@ -285,6 +290,7 @@ function gatherChunks(
   options: SerializerOptions<MixedOutput>,
   isAsync: boolean = false
 ): Set<Chunk> {
+  console.log('gather chunk:', entryFile);
   const entryModule = graph.dependencies.get(entryFile);
   if (!entryModule) {
     throw new Error('Entry module not found in graph: ' + entryFile);
@@ -301,7 +307,7 @@ function gatherChunks(
   if (preModules.length) {
     if (graph.transformOptions.platform === 'web' && !isAsync) {
       // On web, add a new required chunk that will be included in the HTML.
-      const preChunk = new Chunk('__premodules__', '__premodules__', graph, options);
+      const preChunk = new Chunk('_expo-metro-runtime', '_expo-metro-runtime', graph, options);
       for (const module of preModules.values()) {
         preChunk.deps.add(module);
       }

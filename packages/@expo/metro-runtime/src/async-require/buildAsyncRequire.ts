@@ -18,6 +18,7 @@ export function buildAsyncRequire(): AsyncRequire {
   const cache = new Map<string, Promise<void>>();
 
   return async function universal_loadBundleAsync(path: string): Promise<void> {
+    console.log('universal_loadBundleAsync:', path);
     if (cache.has(path)) {
       return cache.get(path)!;
     }

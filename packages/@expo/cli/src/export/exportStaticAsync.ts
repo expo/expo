@@ -15,7 +15,10 @@ import { inspect } from 'util';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
-import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
+import {
+  MetroBundlerDevServer,
+  composeResourcesWithHtml,
+} from '../start/server/metro/MetroBundlerDevServer';
 import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import {
@@ -24,6 +27,7 @@ import {
 } from '../start/server/metro/router';
 import { learnMore } from '../utils/link';
 import { getFreePortAsync } from '../utils/port';
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -174,7 +178,7 @@ export async function exportFromServerAsync(
     includeGroupVariations: !exportServer,
     async renderAsync(pathname: string) {
       const template = await renderAsync(pathname);
-      let html = await devServer.composeResourcesWithHtml({
+      let html = await composeResourcesWithHtml({
         mode: 'production',
         resources,
         template,
@@ -189,11 +193,9 @@ export async function exportFromServerAsync(
     },
   });
 
-  resources.forEach((resource) => {
-    files.set(
-      resource.filename,
-      modifyBundlesWithSourceMaps(resource.filename, resource.source, includeMaps)
-    );
+  getFilesFromSerialAssets(resources, {
+    includeMaps,
+    files,
   });
 
   if (exportServer) {
@@ -212,6 +214,31 @@ export async function exportFromServerAsync(
     warnPossibleInvalidExportType(appDir);
   }
 
+  await persistMetroFilesAsync(files, outputDir);
+}
+
+// TODO: Move source map modification to the serializer
+export function getFilesFromSerialAssets(
+  resources: SerialAsset[],
+  {
+    includeMaps,
+    files = new Map<string, string>(),
+  }: {
+    includeMaps: boolean;
+    files?: Map<string, string>;
+  }
+) {
+  resources.forEach((resource) => {
+    files.set(
+      resource.filename,
+      modifyBundlesWithSourceMaps(resource.filename, resource.source, includeMaps)
+    );
+  });
+
+  return files;
+}
+
+export async function persistMetroFilesAsync(files: Map<string, string>, outputDir: string) {
   fs.mkdirSync(path.join(outputDir), { recursive: true });
 
   Log.log('');
