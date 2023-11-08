@@ -12,8 +12,10 @@ import fs from 'fs';
 import path from 'path';
 
 import { Log } from '../log';
+import { getAssetLocalPath } from './metroAssetLocalPath';
 
-import type { AssetData, AssetDataWithoutFiles } from 'metro';
+import type { AssetData } from 'metro';
+
 function cleanAssetCatalog(catalogDir: string): void {
   const files = fs.readdirSync(catalogDir).filter((file) => file.endsWith('.imageset'));
   for (const file of files) {
@@ -89,7 +91,7 @@ export function persistMetroAssetsAsync(
     return acc;
   }, {});
 
-  return copyAll(files);
+  return copyInBatchesAsync(files);
 }
 
 function writeImageSet(imageSet: ImageSet): void {
@@ -144,7 +146,7 @@ function getImageSet(
   };
 }
 
-export function copyAll(filesToCopy: Record<string, string>) {
+export function copyInBatchesAsync(filesToCopy: Record<string, string>) {
   const queue = Object.keys(filesToCopy);
   if (queue.length === 0) {
     return;
@@ -208,107 +210,6 @@ export function filterPlatformAssetScales(platform: string, scales: number[]): n
     }
   }
   return result;
-}
-
-function getAssetLocalPathAndroid(
-  asset: Pick<AssetData, 'type' | 'httpServerLocation' | 'name'>,
-  {
-    basePath,
-    scale,
-  }: {
-    // TODO: basePath support
-    basePath?: string;
-    scale: number;
-  }
-): string {
-  const androidFolder = getAndroidResourceFolderName(asset, scale);
-  const fileName = getResourceIdentifier(asset);
-  return path.join(androidFolder, `${fileName}.${asset.type}`);
-}
-
-export function getAssetLocalPath(
-  asset: Pick<AssetData, 'type' | 'httpServerLocation' | 'name'>,
-  { basePath, scale, platform }: { basePath?: string; scale: number; platform: string }
-): string {
-  if (platform === 'android') {
-    return getAssetLocalPathAndroid(asset, { basePath, scale });
-  }
-  return getAssetLocalPathDefault(asset, { basePath, scale });
-}
-
-function getAssetLocalPathDefault(
-  asset: Pick<AssetData, 'type' | 'httpServerLocation' | 'name'>,
-  { basePath, scale }: { basePath?: string; scale: number }
-): string {
-  const suffix = scale === 1 ? '' : `@${scale}x`;
-  const fileName = `${asset.name + suffix}.${asset.type}`;
-
-  const adjustedHttpServerLocation = stripAssetPrefix(asset.httpServerLocation, basePath);
-  return path.join(
-    // Assets can have relative paths outside of the project root.
-    // Replace `../` with `_` to make sure they don't end up outside of
-    // the expected assets directory.
-    adjustedHttpServerLocation.replace(/^\/+/g, '').replace(/\.\.\//g, '_'),
-    fileName
-  );
-}
-
-export function stripAssetPrefix(path: string, basePath?: string) {
-  path = path.replace(/\/assets\?export_path=(.*)/, '$1');
-
-  // TODO: Windows?
-  if (basePath) {
-    return path.replace(/^\/+/g, '').replace(
-      new RegExp(
-        `^${basePath
-          .replace(/^\/+/g, '')
-          .replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
-          .replace(/-/g, '\\x2d')}`,
-        'g'
-      ),
-      ''
-    );
-  }
-  return path;
-}
-
-/**
- * FIXME: using number to represent discrete scale numbers is fragile in essence because of
- * floating point numbers imprecision.
- */
-function getAndroidAssetSuffix(scale: number): string | null {
-  switch (scale) {
-    case 0.75:
-      return 'ldpi';
-    case 1:
-      return 'mdpi';
-    case 1.5:
-      return 'hdpi';
-    case 2:
-      return 'xhdpi';
-    case 3:
-      return 'xxhdpi';
-    case 4:
-      return 'xxxhdpi';
-    default:
-      return null;
-  }
-}
-
-// See https://developer.android.com/guide/topics/resources/drawable-resource.html
-const drawableFileTypes = new Set<string>(['gif', 'jpeg', 'jpg', 'png', 'webp', 'xml']);
-
-function getAndroidResourceFolderName(asset: Pick<AssetData, 'type'>, scale: number): string {
-  if (!drawableFileTypes.has(asset.type)) {
-    return 'raw';
-  }
-  const suffix = getAndroidAssetSuffix(scale);
-  if (!suffix) {
-    throw new Error(
-      `Asset "${JSON.stringify(asset)}" does not use a supported Android resolution suffix`
-    );
-  }
-  return `drawable-${suffix}`;
 }
 
 function getResourceIdentifier(asset: Pick<AssetData, 'httpServerLocation' | 'name'>): string {
