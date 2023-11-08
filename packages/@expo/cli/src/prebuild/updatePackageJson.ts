@@ -240,7 +240,7 @@ export function createDependenciesMap(dependencies: any): DependenciesMap {
 
 /**
  * Update package.json scripts - `npm start` should default to `expo
- * start --dev-client` rather than `expo start` after ejecting, for example.
+ * start --dev-client` rather than `expo start` after prebuilding, for example.
  */
 function updatePkgScripts({ pkg }: { pkg: PackageJSONConfig }) {
   let hasChanged = false;

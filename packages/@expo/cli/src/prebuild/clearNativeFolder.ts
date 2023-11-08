@@ -133,7 +133,7 @@ export async function promptToClearMalformedNativeProjectsAsync(
 
   if (
     // If the process is non-interactive, default to clearing the malformed native project.
-    // This would only happen on re-running eject.
+    // This would only happen on re-running prebuild.
     !isInteractive() ||
     // Prompt to clear the native folders.
     (await confirmAsync({

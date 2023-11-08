@@ -72,10 +72,10 @@ export function resolvePlatformOption(
 
 /** Warns and filters out unsupported platforms based on the runtime constraints. Essentially this means no iOS on Windows devices. */
 export function ensureValidPlatforms(platforms: ModPlatform[]): ModPlatform[] {
-  // Skip ejecting for iOS on Windows
+  // Skip prebuild for iOS on Windows
   if (process.platform === 'win32' && platforms.includes('ios')) {
     Log.warn(
-      chalk`⚠️  Skipping generating the iOS native project files. Run {bold expo eject} again from macOS or Linux to generate the iOS project.\n`
+      chalk`⚠️  Skipping generating the iOS native project files. Run {bold npx expo prebuild} again from macOS or Linux to generate the iOS project.\n`
     );
     return platforms.filter((platform) => platform !== 'ios');
   }
