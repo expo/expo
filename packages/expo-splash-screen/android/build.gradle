@@ -93,8 +93,6 @@ android {
 
   namespace "expo.modules.splashscreen"
   defaultConfig {
-    minSdkVersion safeExtGet('minSdkVersion', 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 34)
     versionCode 17
     versionName '0.24.0'
   }

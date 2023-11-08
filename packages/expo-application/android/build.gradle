@@ -105,7 +105,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   }
 
-  implementation 'com.android.installreferrer:installreferrer:1.0'
+  implementation 'com.android.installreferrer:installreferrer:2.2'
 
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')
