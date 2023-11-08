@@ -160,10 +160,11 @@ It's common to want to share build tool configuration between profiles, and we c
 
 ### Selecting resource class
 
-If your project requires extensive resources due to its complexity or size or if you want your builds to run faster, you can choose to run your jobs on `large` workers, which have access to a more powerful CPU and bigger memory. For more details on class-specific resources, see [Android](/eas/json/#resourceclass-1) and [iOS](/eas/json/#resourceclass-2) `resourceClass` property documentations.
+If your project requires extensive resources due to its complexity or size, or if you want your builds to run faster, you can use `large` workers to run your jobs. These workers have access to a more powerful CPU and bigger memory.
 
-To use workers of specific resource class in your project, add `[platform].resourceClass` property to your build profile:
+To use workers of a specific resource class in your project, add [`android.resourceClass`](/eas/json/#resourceclass-1) or [`ios.resourceClass`](/eas/json/#resourceclass-2) property to your build profile:
 
+{/* prettier-ignore */}
 ```json eas.json
 {
   "build": {
@@ -175,13 +176,13 @@ To use workers of specific resource class in your project, add `[platform].resou
         "resourceClass": "medium"
       }
     }
-    // ...
+     /* @hide ... */ /* @end */
   }
-  // ...
+   /* @hide ... */ /* @end */
 }
 ```
 
-> Note: running jobs on `large` workers requires paid EAS plan. [Subscribe here](https://expo.dev/accounts/[account]/settings/billing).
+> **Note**: Running jobs on a `large` worker requires a paid EAS plan. [Subscribe here](https://expo.dev/accounts/[account]/settings/billing).
 
 ### Selecting a base image
 
