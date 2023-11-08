@@ -28,7 +28,8 @@ export function createModuleIdFactory() {
 }
 
 export const getRunModuleStatement = (moduleId: string | number) =>
-  `require(${JSON.stringify(moduleId)});`;
+  // A name that's easy to grep for.
+  `TEST_RUN_MODULE(${JSON.stringify(moduleId)});`;
 
 export function fromFixture(props: SerializerParameters[]): SerializerParameters {
   const [entryFile, preModules, graph, options] = props;

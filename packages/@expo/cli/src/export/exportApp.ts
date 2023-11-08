@@ -126,7 +126,7 @@ export async function exportAppAsync(
   await writeBundlesAsync({
     bundles,
     useServerRendering,
-    outputDir: bundlesPath,
+    outputDir: outputPath,
     includeMaps: dumpSourcemap,
   });
 

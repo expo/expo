@@ -29,14 +29,24 @@ describe('tree-shaking', () => {
     // splitFixtures.basic[1] = [];
 
     // Serialize
-    const stringResults = (await serializer(
+    const artifacts = (await serializer(
       ...splitFixtures.baseExpoAppBundleSplitting
     )) as unknown as SerialAsset[];
     // expect(typeof stringResults).toBe('string');
 
-    console.log(stringResults);
-    expect(stringResults.length).toBe(3);
-    expect(stringResults).not.toMatch(/subtract/);
+    // console.log(artifacts);
+    expect(artifacts.length).toBe(3);
+    expect(artifacts[0].filename).toEqual(
+      '_expo/static/js/web/_expo-metro-runtime-71d338f9431a2599ef5d0963be513d33.js'
+    );
+    expect(artifacts[1].filename).toEqual(
+      '_expo/static/js/web/index-15cb8de5975fcbb0f0cc21fabb951e0d.js'
+    );
+    expect(artifacts[2].filename).toEqual(
+      '_expo/static/js/web/other-d74f23532d99f361d597c2747439c277.js'
+    );
+    // Ensure the runModule isn't included for async chunks
+    expect(artifacts[2].source).not.toMatch(/TEST_RUN_MODULE\(\d+\)/);
   });
 });
 

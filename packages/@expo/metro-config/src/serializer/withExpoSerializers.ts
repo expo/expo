@@ -148,7 +148,7 @@ export function graphToSerialAssets(
     gatherChunks(_chunks, entryFile, preModules, graph, options, false)
   );
 
-  console.log('Chunks:');
+  // console.log('Chunks:');
   // console.log(inspect([..._chunks], { depth: 3, colors: true }));
   // Optimize the chunks
   // dedupeChunks(_chunks);
@@ -291,7 +291,6 @@ function gatherChunks(
   options: SerializerOptions<MixedOutput>,
   isAsync: boolean = false
 ): Set<Chunk> {
-  console.log('gather chunk:', entryFile);
   const entryModule = graph.dependencies.get(entryFile);
   if (!entryModule) {
     throw new Error('Entry module not found in graph: ' + entryFile);
@@ -325,16 +324,22 @@ function gatherChunks(
   chunks.add(entryChunk);
 
   entryChunk.deps.add(entryModule);
-  for (const dependency of entryModule.dependencies.values()) {
-    if (dependency.data.data.asyncType === 'async') {
-      gatherChunks(chunks, dependency.absolutePath, [], graph, options, true);
-    } else {
-      const module = graph.dependencies.get(dependency.absolutePath);
-      if (module) {
-        entryChunk.deps.add(module);
+
+  function includeModule(entryModule: Module<MixedOutput>) {
+    for (const dependency of entryModule.dependencies.values()) {
+      if (dependency.data.data.asyncType === 'async') {
+        gatherChunks(chunks, dependency.absolutePath, [], graph, options, true);
+      } else {
+        const module = graph.dependencies.get(dependency.absolutePath);
+        if (module) {
+          entryChunk.deps.add(module);
+          includeModule(module);
+        }
       }
     }
   }
+
+  includeModule(entryModule);
 
   return chunks;
 }
