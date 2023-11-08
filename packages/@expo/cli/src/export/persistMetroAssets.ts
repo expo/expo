@@ -9,12 +9,11 @@
  * https://github.com/facebook/react-native/blob/d6e0bc714ad4d215ede4949d3c4f44af6dea5dd3/packages/community-cli-plugin/src/commands/bundle/saveAssets.js#L1
  */
 import fs from 'fs';
+import type { AssetData } from 'metro';
 import path from 'path';
 
-import { Log } from '../log';
 import { getAssetLocalPath } from './metroAssetLocalPath';
-
-import type { AssetData } from 'metro';
+import { Log } from '../log';
 
 function cleanAssetCatalog(catalogDir: string): void {
   const files = fs.readdirSync(catalogDir).filter((file) => file.endsWith('.imageset'));

@@ -8,9 +8,8 @@
  * Based on the community asset persisting for Metro but with base path and web support:
  * https://github.com/facebook/react-native/blob/d6e0bc714ad4d215ede4949d3c4f44af6dea5dd3/packages/community-cli-plugin/src/commands/bundle/saveAssets.js#L1
  */
-import path from 'path';
-
 import type { AssetData } from 'metro';
+import path from 'path';
 
 export function getAssetLocalPath(
   asset: Pick<AssetData, 'type' | 'httpServerLocation' | 'name'>,
