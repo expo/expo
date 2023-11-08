@@ -1,6 +1,6 @@
 import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
-import { getBundler, getInlineEnvVarsEnabled, getIsDev, hasModule } from './common';
+import { getBundler, getInlineEnvVarsEnabled, getIsDev, getIsProd, hasModule } from './common';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
 import { expoRouterBabelPlugin } from './expo-router-plugin';
 import { expoInlineEnvVars } from './inline-env-vars';
@@ -53,6 +53,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   let platform = api.caller((caller) => (caller as any)?.platform);
   const engine = api.caller((caller) => (caller as any)?.engine) ?? 'default';
   const isDev = api.caller(getIsDev);
+  // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
+  // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
+  const isProduction = api.caller(getIsProd);
   const inlineEnvironmentVariables = api.caller(getInlineEnvVarsEnabled);
 
   // If the `platform` prop is not defined then this must be a custom config that isn't
@@ -98,7 +101,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push(require('@babel/plugin-transform-parameters'));
   }
 
-  if (!isDev && hasModule('metro-transform-plugins')) {
+  if (isProduction && hasModule('metro-transform-plugins')) {
     // Metro applies this plugin too but it does it after the imports have been transformed which breaks
     // the plugin. Here, we'll apply it before the commonjs transform, in production, to ensure `Platform.OS`
     // is replaced with a string literal and `__DEV__` is converted to a boolean.

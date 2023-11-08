@@ -15,6 +15,7 @@
 
 ### 🐛 Bug fixes
 
+- Only inline platforms when explicitly bundling for production. ([#25275](https://github.com/expo/expo/pull/25275) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix jsx dev transform with React components that are defined in the function parameters. ([#25235](https://github.com/expo/expo/pull/25235) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
