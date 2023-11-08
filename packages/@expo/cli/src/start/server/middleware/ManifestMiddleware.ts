@@ -7,9 +7,7 @@ import {
 } from '@expo/config';
 import { resolveEntryPoint } from '@expo/config/paths';
 import findWorkspaceRoot from 'find-yarn-workspace-root';
-import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 import { resolve } from 'url';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
