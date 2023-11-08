@@ -127,7 +127,12 @@ export function withExtendedResolver(
 
   const defaultResolver = metroResolver.resolve;
   const resolver = isFastResolverEnabled
-    ? createFastResolver({ preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false })
+    ? createFastResolver({
+        preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false,
+        blockList: Array.isArray(config.resolver?.blockList)
+          ? config.resolver?.blockList
+          : [config.resolver?.blockList],
+      })
     : defaultResolver;
 
   const extraNodeModules: { [key: string]: Record<string, string> } = {};

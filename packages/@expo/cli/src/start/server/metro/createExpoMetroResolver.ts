@@ -15,7 +15,13 @@ class FailedToResolvePathError extends Error {}
 
 class ShimModuleError extends Error {}
 
-export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boolean }) {
+export function createFastResolver({
+  preserveSymlinks,
+  blockList,
+}: {
+  preserveSymlinks: boolean;
+  blockList: RegExp[];
+}) {
   const cachedExtensions: Map<string, readonly string[]> = new Map();
 
   function getAdjustedExtensions({
@@ -101,6 +107,7 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
         : [];
 
       fp = jestResolver(moduleName, {
+        blockList,
         enablePackageExports: context.unstable_enablePackageExports,
         basedir: path.dirname(context.originModulePath),
         paths: context.nodeModulesPaths as string[],

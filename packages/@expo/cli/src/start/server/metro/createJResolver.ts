@@ -70,6 +70,8 @@ export type ResolverOptions = {
   rootDir?: string;
 
   enablePackageExports?: boolean;
+
+  blockList: RegExp[];
 } & Pick<
   UpstreamResolveOptions,
   'readPackageSync' | 'moduleDirectory' | 'extensions' | 'preserveSymlinks' | 'includeCoreModules'
@@ -82,14 +84,24 @@ export type AsyncResolver = (path: string, options: ResolverOptions) => Promise<
 
 export type Resolver = SyncResolver | AsyncResolver;
 
-const defaultResolver: SyncResolver = (path, { enablePackageExports, ...options }) => {
+const defaultResolver: SyncResolver = (path, { enablePackageExports, blockList, ...options }) => {
   // @ts-expect-error
   const resolveOptions: UpstreamResolveOptionsWithConditions = {
     ...options,
 
-    isDirectory: directoryExistsSync,
-    isFile: fileExistsSync,
-    // preserveSymlinks: enablePackageExports ? false : options.preserveSymlinks,
+    isDirectory(file) {
+      if (blockList.some((regex) => regex.test(file))) {
+        return false;
+      }
+      return directoryExistsSync(file);
+    },
+    isFile(file) {
+      if (blockList.some((regex) => regex.test(file))) {
+        return false;
+      }
+      return fileExistsSync(file);
+    },
+    preserveSymlinks: enablePackageExports ? false : options.preserveSymlinks,
     defaultResolver,
   };
 
@@ -129,7 +141,7 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
     }
 
     // self-reference
-    const closestPackageJson = findClosestPackageJson(options.basedir);
+    const closestPackageJson = findClosestPackageJson(options.basedir, options);
     if (closestPackageJson) {
       const pkg = options.readPackageSync!(options.readFileSync!, closestPackageJson);
       assert(pkg, 'package.json should be read by `readPackageSync`');
@@ -161,7 +173,7 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
       // ignore if package.json cannot be found
     }
 
-    if (packageJsonPath && fileExistsSync(packageJsonPath)) {
+    if (packageJsonPath && options.isFile!(packageJsonPath)) {
       const pkg = options.readPackageSync!(options.readFileSync!, packageJsonPath);
       assert(pkg, 'package.json should be read by `readPackageSync`');
 
@@ -198,15 +210,18 @@ const shouldIgnoreRequestForExports = (path: string) => path.startsWith('.') || 
 
 // adapted from
 // https://github.com/lukeed/escalade/blob/2477005062cdbd8407afc90d3f48f4930354252b/src/sync.js
-export function findClosestPackageJson(start: string): string | undefined {
+function findClosestPackageJson(
+  start: string,
+  options: UpstreamResolveOptions
+): string | undefined {
   let dir = pathResolve('.', start);
-  if (!directoryExistsSync(dir)) {
+  if (!options.isDirectory!(dir)) {
     dir = dirname(dir);
   }
 
   while (true) {
     const pkgJsonFile = pathResolve(dir, './package.json');
-    const hasPackageJson = fileExistsSync(pkgJsonFile);
+    const hasPackageJson = options.isFile!(pkgJsonFile);
 
     if (hasPackageJson) {
       return pkgJsonFile;
