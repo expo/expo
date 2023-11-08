@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Collapse re-export of `react-native/Libraries/Image/AssetRegistry` to `@react-native/assets-registry/registry`.
+
 ## 1.7.0 — 2023-11-01
 
 ### 🎉 New features
