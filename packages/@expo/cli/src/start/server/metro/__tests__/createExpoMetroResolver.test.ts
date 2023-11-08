@@ -181,6 +181,24 @@ describe(createFastResolver, () => {
         expect.stringMatching(/\/native-component-list\/App.tsx$/)
       );
     });
+    it('ignores package exports with @babel/runtime due to metro bugs', () => {
+      expect(resolveTo('@babel/runtime/helpers/interopRequireDefault', { platform })).toEqual(
+        expect.stringMatching(/\/@babel\/runtime\/helpers\/interopRequireDefault.js$/)
+      );
+      expect(
+        resolveTo('@babel/runtime/helpers/interopRequireDefault', {
+          platform,
+          packageExports: true,
+        })
+      ).toEqual(expect.stringMatching(/\/@babel\/runtime\/helpers\/interopRequireDefault.js$/));
+      expect(
+        resolveTo('@babel/runtime/helpers/interopRequireDefault', {
+          platform,
+          packageExports: true,
+          isServer: true,
+        })
+      ).toEqual(expect.stringMatching(/\/@babel\/runtime\/helpers\/interopRequireDefault.js$/));
+    });
 
     it('resolves with baseUrl', () => {
       expect(resolveTo('App.tsx', { platform, nodeModulesPaths: ['.'] })).toEqual(
@@ -192,57 +210,60 @@ describe(createFastResolver, () => {
     });
 
     [true, false].forEach((packageExports) => {
-      it('resolves module with browser shims' + packageExports ? ' (package exports)' : '', () => {
-        // object-inspect doesn't contain package exports so the results should be the same
-        // regardless of if the feature is on or not.
-        const resolver = createFastResolver({ preserveSymlinks: false });
-        const context = createContext({
-          platform,
-          packageExports,
-          origin: path.join(originProjectRoot, 'index.js'),
-        });
-        const results = resolver(context, 'object-inspect', platform);
-        expect(results).toEqual({
-          filePath: expect.stringMatching(/\/object-inspect\/index.js$/),
-          type: 'sourceFile',
-        });
+      it(
+        'resolves module with browser shims' + (packageExports ? ' (package exports)' : ''),
+        () => {
+          // object-inspect doesn't contain package exports so the results should be the same
+          // regardless of if the feature is on or not.
+          const resolver = createFastResolver({ preserveSymlinks: false });
+          const context = createContext({
+            platform,
+            packageExports,
+            origin: path.join(originProjectRoot, 'index.js'),
+          });
+          const results = resolver(context, 'object-inspect', platform);
+          expect(results).toEqual({
+            filePath: expect.stringMatching(/\/object-inspect\/index.js$/),
+            type: 'sourceFile',
+          });
 
-        assert(results.type === 'sourceFile');
+          assert(results.type === 'sourceFile');
 
-        // Browser shims are applied on native.
-        ['web', 'ios'].forEach((platform) => {
+          // Browser shims are applied on native.
+          ['web', 'ios'].forEach((platform) => {
+            expect(
+              resolver(
+                createContext({
+                  platform,
+                  packageExports,
+                  origin: results.filePath,
+                }),
+                './util.inspect.js',
+                platform
+              )
+            ).toEqual({
+              type: 'empty',
+            });
+          });
+
+          // Browser shims are not applied in server contexts.
           expect(
             resolver(
               createContext({
                 platform,
-                packageExports,
+                isServer: true,
                 origin: results.filePath,
+                packageExports,
               }),
               './util.inspect.js',
               platform
             )
           ).toEqual({
-            type: 'empty',
+            filePath: expect.stringMatching(/object-inspect\/util\.inspect\.js$/),
+            type: 'sourceFile',
           });
-        });
-
-        // Browser shims are not applied in server contexts.
-        expect(
-          resolver(
-            createContext({
-              platform,
-              isServer: true,
-              origin: results.filePath,
-              packageExports,
-            }),
-            './util.inspect.js',
-            platform
-          )
-        ).toEqual({
-          filePath: expect.stringMatching(/object-inspect\/util\.inspect\.js$/),
-          type: 'sourceFile',
-        });
-      });
+        }
+      );
     });
 
     it('resolves module with browser shims with non-matching extensions', () => {

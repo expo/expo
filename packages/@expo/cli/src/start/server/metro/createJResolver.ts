@@ -158,7 +158,6 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
     }
 
     // Disable package exports for babel/runtime for https://github.com/facebook/metro/issues/984/
-    // TODO: Test this
     if (moduleName === '@babel/runtime') {
       return path;
     }
