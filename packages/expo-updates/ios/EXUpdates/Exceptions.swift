@@ -43,3 +43,13 @@ internal final class UpdatesUnsupportedDirectiveException: Exception {
     "Updates service response included a directive that this client does not support."
   }
 }
+
+internal final class NotAvailableInDevClientException: Exception {
+  override var code: String {
+    "ERR_NOT_AVAILABLE_IN_DEV_CLIENT"
+  }
+
+  override var reason: String {
+    "This method is not supported in dev client."
+  }
+}

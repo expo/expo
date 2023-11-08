@@ -91,7 +91,6 @@ public final class ErrorRecovery: NSObject {
   private let remoteLoadTimeout: Int
 
   private let errorRecoveryQueue: DispatchQueue
-  private let diskWriteQueue: DispatchQueue?
 
   private var encounteredErrors: [Any]
 
@@ -103,14 +102,12 @@ public final class ErrorRecovery: NSObject {
   public convenience override init() {
     self.init(
       errorRecoveryQueue: DispatchQueue(label: "expo.controller.errorRecoveryQueue"),
-      diskWriteQueue: nil,
       remoteLoadTimeout: ErrorRecovery.RemoteLoadTimeoutMs
     )
   }
 
   public required init(
     errorRecoveryQueue: DispatchQueue,
-    diskWriteQueue: DispatchQueue?,
     remoteLoadTimeout: Int
   ) {
     // tasks should never be added to the pipeline after this point, only removed
@@ -124,7 +121,6 @@ public final class ErrorRecovery: NSObject {
     self.isWaitingForRemoteUpdate = false
     self.rctContentHasAppeared = false
     self.errorRecoveryQueue = errorRecoveryQueue
-    self.diskWriteQueue = diskWriteQueue
     self.remoteLoadTimeout = remoteLoadTimeout
     self.encounteredErrors = []
     self.logger = UpdatesLogger()
@@ -136,12 +132,12 @@ public final class ErrorRecovery: NSObject {
 
   public func handle(error: NSError) {
     startPipeline(withEncounteredError: error)
-    writeErrorOrExceptionToLog(error)
+    ErrorRecovery.writeErrorOrExceptionToLog(error)
   }
 
   public func handle(exception: NSException) {
     startPipeline(withEncounteredError: exception)
-    writeErrorOrExceptionToLog(exception)
+    ErrorRecovery.writeErrorOrExceptionToLog(exception)
   }
 
   public func notify(newRemoteLoadStatus newStatus: RemoteLoadStatus) {
@@ -375,9 +371,8 @@ public final class ErrorRecovery: NSObject {
     return String(data: data, encoding: .utf8)
   }
 
-  public func writeErrorOrExceptionToLog(_ errorOrException: Any) {
-    let queue = diskWriteQueue ?? DispatchQueue.global()
-    queue.async {
+  public static func writeErrorOrExceptionToLog(_ errorOrException: Any, dispatchQueue: DispatchQueue = DispatchQueue.global()) {
+    dispatchQueue.async {
       var serializedError: String
       if let errorOrException = errorOrException as? NSError {
         serializedError = "Fatal error: \(ErrorRecovery.serialize(error: errorOrException))"
@@ -387,7 +382,7 @@ public final class ErrorRecovery: NSObject {
         return
       }
 
-      self.logger.error(message: "ErrorRecovery fatal exception: \(serializedError)", code: .jsRuntimeError)
+      UpdatesLogger().error(message: "ErrorRecovery fatal exception: \(serializedError)", code: .jsRuntimeError)
       let data = serializedError.data(using: .utf8)!
       let errorLogFile = ErrorRecovery.errorLogFile()
       if FileManager.default.fileExists(atPath: errorLogFile.path) {

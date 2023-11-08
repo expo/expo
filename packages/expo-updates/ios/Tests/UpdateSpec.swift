@@ -7,7 +7,8 @@ import ExpoModulesTestCore
 import EXManifests
 
 class UpdateSpec : ExpoSpec {
-  let config = UpdatesConfig.config(fromDictionary: [
+  let config = try! UpdatesConfig.config(fromDictionary: [
+    UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
     UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test"
   ])
   let database = UpdatesDatabase()
@@ -90,20 +91,6 @@ class UpdateSpec : ExpoSpec {
           config: self.config,
           database: self.database
         )).to(throwError(UpdateError.invalidExpoProtocolVersion))
-      }
-      
-      it("works for embedded legacy manifest") {
-        let legacyManifest = [
-          "sdkVersion": "39.0.0",
-          "releaseId": "0eef8214-4833-4089-9dff-b4138a14f196",
-          "commitTime": "2020-11-11T00:17:54.797Z",
-          "bundleUrl": "https://url.to/bundle.js"
-        ]
-        expect(Update.update(
-          withEmbeddedManifest: legacyManifest,
-          config: self.config,
-          database: self.database
-        )).notTo(beNil())
       }
       
       it("works for embedded bare manifest") {

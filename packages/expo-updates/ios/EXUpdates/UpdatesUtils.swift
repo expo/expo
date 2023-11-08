@@ -89,13 +89,6 @@ public final class UpdatesUtils: NSObject {
     }
   }
 
-  internal static func getRuntimeVersion(withConfig config: UpdatesConfig) -> String {
-    // various places in the code assume that we have a nonnull runtimeVersion, so if the developer
-    // hasn't configured either runtimeVersion or sdkVersion, we'll use a dummy value of "1" but warn
-    // the developer in JS that they need to configure one of these values
-    return config.runtimeVersion ?? config.sdkVersion ?? "1"
-  }
-
   internal static func url(forBundledAsset asset: UpdateAsset) -> URL? {
     guard let mainBundleDir = asset.mainBundleDir else {
       return Bundle.main.url(forResource: asset.mainBundleFilename, withExtension: asset.type)

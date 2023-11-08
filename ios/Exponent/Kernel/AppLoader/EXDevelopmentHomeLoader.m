@@ -211,13 +211,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_startLoaderTask
 {
-  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+  NSDictionary *updatesConfig = @{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://expo.dev", // unused
     EXUpdatesConfig.EXUpdatesConfigHasEmbeddedUpdateKey: @NO,
     EXUpdatesConfig.EXUpdatesConfigSDKVersionKey: [self _sdkVersions],
     EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: self.manifestAndAssetRequestHeaders.manifest.scopeKey,
     EXUpdatesConfig.EXUpdatesConfigExpectsSignedManifestKey: @YES,
     EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: [self _requestHeaders]
-  }];
+  };
+
+  NSError *configError;
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:updatesConfig error:&configError];
+  if (configError) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Error creating updates config"
+                                 userInfo:@{ @"underlyingError": configError.localizedDescription }];
+  }
 
   EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
 

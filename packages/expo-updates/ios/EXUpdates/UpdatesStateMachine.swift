@@ -169,7 +169,7 @@ internal struct UpdatesStateContextRollback {
 /**
  The state machine context, with information that will be readable from JS.
  */
-internal struct UpdatesStateContext {
+public struct UpdatesStateContext {
   let isUpdateAvailable: Bool
   let isUpdatePending: Bool
   let isRollback: Bool

@@ -10,7 +10,10 @@ class AppLauncherWithDatabaseMock : AppLauncherWithDatabase {
   public static let testUpdate: Update = {
     return Update(
       manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-      config: UpdatesConfig.config(fromDictionary: [:]),
+      config: try! UpdatesConfig.config(fromDictionary: [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+      ]),
       database: UpdatesDatabase(),
       updateId: UUID(),
       scopeKey: "dummyScope",
@@ -80,7 +83,11 @@ class AppLauncherWithDatabaseSpec : ExpoSpec {
           try! db.addNewAssets([testAsset], toUpdateWithId: testUpdate.updateId)
         }
 
-        let config = UpdatesConfig.config(fromDictionary: [UpdatesConfig.EXUpdatesConfigScopeKeyKey:"dummyScope"])
+        let config = try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "dummyScope",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+        ])
         let launcher = AppLauncherWithDatabaseMock(
           config: config,
           database: db,

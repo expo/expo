@@ -78,7 +78,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
       var manifestFilters: [String: Any]?
       var manifestFiltersError: Error?
       do {
-        manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey!)
+        manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey)
       } catch {
         manifestFiltersError = error
       }

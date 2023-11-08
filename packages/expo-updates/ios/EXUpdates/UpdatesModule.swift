@@ -20,15 +20,16 @@ public final class UpdatesModule: Module {
     Name("ExpoUpdates")
 
     Constants {
-      let config = AppController.sharedInstance.config
-      let releaseChannel = config.releaseChannel
-      let channel = config.requestHeaders["expo-channel-name"] ?? ""
-      let runtimeVersion = config.runtimeVersion ?? ""
-      let checkAutomatically = config.checkOnLaunch.asString
-      let isMissingRuntimeVersion = config.isMissingRuntimeVersion()
+      let constantsForModule = AppController.sharedInstance.getConstantsForModule()
+
+      let releaseChannel = constantsForModule.releaseChannel
+      let channel = constantsForModule.requestHeaders["expo-channel-name"] ?? ""
+      let runtimeVersion = constantsForModule.runtimeVersion ?? ""
+      let checkAutomatically = constantsForModule.checkOnLaunch.asString
+      let isMissingRuntimeVersion = constantsForModule.isMissingRuntimeVersion
 
       guard AppController.sharedInstance.isStarted,
-        let launchedUpdate = AppController.sharedInstance.launchedUpdate() else {
+        let launchedUpdate = constantsForModule.launchedUpdate else {
         return [
           "isEnabled": false,
           "isEmbeddedLaunch": false,
@@ -40,18 +41,18 @@ public final class UpdatesModule: Module {
         ]
       }
 
-      let embeddedUpdate = AppController.sharedInstance.getEmbeddedUpdate()
+      let embeddedUpdate = constantsForModule.embeddedUpdate
       let isEmbeddedLaunch = embeddedUpdate != nil && embeddedUpdate?.updateId == launchedUpdate.updateId
 
       let commitTime = UInt64(floor(launchedUpdate.commitTime.timeIntervalSince1970 * 1000))
       return [
         "isEnabled": true,
         "isEmbeddedLaunch": isEmbeddedLaunch,
-        "isUsingEmbeddedAssets": AppController.sharedInstance.isUsingEmbeddedAssets,
+        "isUsingEmbeddedAssets": constantsForModule.isUsingEmbeddedAssets,
         "updateId": launchedUpdate.updateId.uuidString,
         "manifest": launchedUpdate.manifest.rawManifestJSON(),
-        "localAssets": AppController.sharedInstance.assetFilesMap,
-        "isEmergencyLaunch": AppController.sharedInstance.isEmergencyLaunch,
+        "localAssets": constantsForModule.assetFilesMap,
+        "isEmergencyLaunch": constantsForModule.isEmergencyLaunch,
         "isMissingRuntimeVersion": isMissingRuntimeVersion,
         "releaseChannel": releaseChannel,
         "runtimeVersion": runtimeVersion,
@@ -63,31 +64,14 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("reload") { (promise: Promise) in
-      let config = AppController.sharedInstance.config
-      guard config.isEnabled else {
-        throw UpdatesDisabledException()
-      }
-      guard AppController.sharedInstance.isStarted else {
-        throw UpdatesNotInitializedException()
-      }
-      AppController.sharedInstance.requestRelaunch { success in
-        if success {
-          promise.resolve(nil)
-        } else {
-          promise.reject(UpdatesReloadException())
-        }
+      AppController.sharedInstance.requestRelaunch {
+        promise.resolve(nil)
+      } error: { error in
+        promise.reject(error)
       }
     }
 
     AsyncFunction("checkForUpdateAsync") { (promise: Promise) in
-      let config = AppController.sharedInstance.config
-      guard config.isEnabled else {
-        throw UpdatesDisabledException()
-      }
-      guard AppController.sharedInstance.isStarted else {
-        throw UpdatesNotInitializedException()
-      }
-
       AppController.sharedInstance.checkForUpdate { remoteCheckResult in
         switch remoteCheckResult {
         case .noUpdateAvailable(let reason):
@@ -114,18 +98,12 @@ public final class UpdatesModule: Module {
           promise.reject("ERR_UPDATES_CHECK", error.localizedDescription)
           return
         }
+      } error: { error in
+        promise.reject(error)
       }
     }
 
     AsyncFunction("getExtraParamsAsync") { (promise: Promise) in
-      let config = AppController.sharedInstance.config
-      guard config.isEnabled else {
-        throw UpdatesDisabledException()
-      }
-      guard AppController.sharedInstance.isStarted else {
-        throw UpdatesNotInitializedException()
-      }
-
       AppController.sharedInstance.getExtraParams { extraParams in
         promise.resolve(extraParams)
       } error: { error in
@@ -134,14 +112,6 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("setExtraParamAsync") { (key: String, value: String?, promise: Promise) in
-      let config = AppController.sharedInstance.config
-      guard config.isEnabled else {
-        throw UpdatesDisabledException()
-      }
-      guard AppController.sharedInstance.isStarted else {
-        throw UpdatesNotInitializedException()
-      }
-
       AppController.sharedInstance.setExtraParam(key: key, value: value) {
         promise.resolve(nil)
       } error: { error in
@@ -169,14 +139,6 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("fetchUpdateAsync") { (promise: Promise) in
-      let config = AppController.sharedInstance.config
-      guard config.isEnabled else {
-        throw UpdatesDisabledException()
-      }
-      guard AppController.sharedInstance.isStarted else {
-        throw UpdatesNotInitializedException()
-      }
-
       AppController.sharedInstance.fetchUpdate { fetchUpdateResult in
         switch fetchUpdateResult {
         case .success(let manifest):
@@ -202,22 +164,18 @@ public final class UpdatesModule: Module {
           promise.reject("ERR_UPDATES_FETCH", error.localizedDescription)
           return
         }
+      } error: { error in
+        promise.reject(error)
       }
     }
 
     // Getter used internally by useUpdates()
     // to initialize its state
     AsyncFunction("getNativeStateMachineContextAsync") { (promise: Promise) in
-      let config = AppController.sharedInstance.config
-      guard config.isEnabled else {
-        throw UpdatesDisabledException()
-      }
-      guard AppController.sharedInstance.isStarted else {
-        throw UpdatesNotInitializedException()
-      }
-
       AppController.sharedInstance.getNativeStateMachineContext { stateMachineContext in
         promise.resolve(stateMachineContext.json)
+      } error: { error in
+        promise.reject(error)
       }
     }
   }
