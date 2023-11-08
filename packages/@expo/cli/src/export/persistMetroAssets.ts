@@ -33,7 +33,7 @@ export function persistMetroAssetsAsync(
   return copyAll(files);
 }
 
-function copyAll(filesToCopy: Record<string, string>) {
+export function copyAll(filesToCopy: Record<string, string>) {
   const queue = Object.keys(filesToCopy);
   if (queue.length === 0) {
     return;

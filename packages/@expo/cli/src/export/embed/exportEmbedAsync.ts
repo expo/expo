@@ -1,5 +1,4 @@
 import { getConfig } from '@expo/config';
-import saveAssets from '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets';
 import fs from 'fs';
 import Server from 'metro/src/Server';
 import output from 'metro/src/shared/output/bundle';
@@ -14,6 +13,7 @@ import { setNodeEnv } from '../../utils/nodeEnv';
 import { profile } from '../../utils/profile';
 import { isEnableHermesManaged } from '../exportHermes';
 import { getAssets } from '../fork-bundleAsync';
+import { saveAssets } from '../fork-saveAssets';
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');
