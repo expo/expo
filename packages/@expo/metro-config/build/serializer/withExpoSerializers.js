@@ -101,7 +101,7 @@ function graphToSerialAssets(serializerConfig, { includeMaps }, ...props) {
     const _chunks = new Set();
     [entryFile].map((entryFile) => gatherChunks(_chunks, entryFile, preModules, graph, options, false));
     console.log('Chunks:');
-    console.log((0, util_1.inspect)([..._chunks], { depth: 3, colors: true }));
+    // console.log(inspect([..._chunks], { depth: 3, colors: true }));
     // Optimize the chunks
     // dedupeChunks(_chunks);
     const jsAssets = serializeChunks(_chunks, serializerConfig, {
@@ -110,7 +110,6 @@ function graphToSerialAssets(serializerConfig, { includeMaps }, ...props) {
     return [...jsAssets, ...cssDeps];
 }
 exports.graphToSerialAssets = graphToSerialAssets;
-const util_1 = require("util");
 class Chunk {
     name;
     entry;
@@ -147,7 +146,7 @@ class Chunk {
         const fileName = path_1.default.basename(entryFile, '.js');
         const jsSplitBundle = (0, baseJSBundle_1.baseJSBundleWithDependencies)(entryFile, [...this.preModules.values()], [...this.deps], {
             ...this.options,
-            runBeforeMainModule: serializerConfig.getModulesRunBeforeMainModule(path_1.default.relative(this.options.projectRoot, entryFile)),
+            runBeforeMainModule: serializerConfig?.getModulesRunBeforeMainModule?.(path_1.default.relative(this.options.projectRoot, entryFile)) ?? [],
             platform: this.getPlatform(),
             sourceMapUrl: `${fileName}.map`,
         });
@@ -313,6 +312,7 @@ function getSortedModules(modules, { createModuleId, }) {
 function createSerializerFromSerialProcessors(config, processors, originalSerializer) {
     const finalSerializer = getDefaultSerializer(config, originalSerializer);
     return (...props) => {
+        // toFixture(...props);
         for (const processor of processors) {
             if (processor) {
                 props = processor(...props);

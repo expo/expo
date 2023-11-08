@@ -149,7 +149,7 @@ export function graphToSerialAssets(
   );
 
   console.log('Chunks:');
-  console.log(inspect([..._chunks], { depth: 3, colors: true }));
+  // console.log(inspect([..._chunks], { depth: 3, colors: true }));
   // Optimize the chunks
   // dedupeChunks(_chunks);
 
@@ -206,9 +206,10 @@ class Chunk {
       [...this.deps],
       {
         ...this.options,
-        runBeforeMainModule: serializerConfig.getModulesRunBeforeMainModule(
-          path.relative(this.options.projectRoot, entryFile)
-        ),
+        runBeforeMainModule:
+          serializerConfig?.getModulesRunBeforeMainModule?.(
+            path.relative(this.options.projectRoot, entryFile)
+          ) ?? [],
         platform: this.getPlatform(),
         sourceMapUrl: `${fileName}.map`,
       }
@@ -425,6 +426,7 @@ export function createSerializerFromSerialProcessors(
 ): Serializer {
   const finalSerializer = getDefaultSerializer(config, originalSerializer);
   return (...props: SerializerParameters): ReturnType<Serializer> => {
+    // toFixture(...props);
     for (const processor of processors) {
       if (processor) {
         props = processor(...props);
@@ -434,5 +436,7 @@ export function createSerializerFromSerialProcessors(
     return finalSerializer(...props);
   };
 }
+
+import { toFixture } from './__tests__/fixtures/toFixture';
 
 export { SerialAsset };
