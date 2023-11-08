@@ -20,7 +20,6 @@ function fetchThenEvalAsync(url) {
             // Errors are returned as JSON.
             throw new Error(JSON.parse(body).message || `Unknown error fetching '${url}'`);
         }
-        // NOTE(EvanBacon): All of this code is ignored in development mode at the root.
         // Some engines do not support `sourceURL` as a comment. We expose a
         // `globalEvalWithSourceUrl` function to handle updates in that case.
         if (global.globalEvalWithSourceUrl) {

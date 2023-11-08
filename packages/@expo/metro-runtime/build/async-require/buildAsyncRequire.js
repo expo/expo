@@ -12,7 +12,6 @@ const loadBundle_1 = require("./loadBundle");
 function buildAsyncRequire() {
     const cache = new Map();
     return async function universal_loadBundleAsync(path) {
-        console.log('universal_loadBundleAsync:', path);
         if (cache.has(path)) {
             return cache.get(path);
         }
