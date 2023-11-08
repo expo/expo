@@ -83,19 +83,19 @@ describe('e2e: iOS icons', () => {
     );
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);
-    // const icons = Object.keys(after).filter((value) =>
-    //   value.startsWith('ios/HelloWorld/Images.xcassets/AppIcon.appiconset/App-Icon')
-    // );
+    const icons = Object.keys(after).filter((value) =>
+      value.startsWith('ios/HelloWorld/Images.xcassets/AppIcon.appiconset/App-Icon')
+    );
 
-    // expect(icons.length).toBe(1);
+    expect(icons.length).toBe(1);
 
-    // // Test the Contents.json file
-    // const contents = JSON.parse(
-    //   after['ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json']
-    // );
-    // expect(contents.images).toMatchSnapshot();
+    // Test the Contents.json file
+    const contents = JSON.parse(
+      after['ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json']
+    );
+    expect(contents.images).toMatchSnapshot();
 
-    // // Ensure all icons are assigned as expected.
-    // expect(contents.images.length).toBe(1);
+    // Ensure all icons are assigned as expected.
+    expect(contents.images.length).toBe(1);
   });
 });
