@@ -80,28 +80,48 @@ export function getDefaultSerializer(
   ): Promise<string | { code: string; map: string }> => {
     const [entryFile, preModules, graph, options] = props;
 
-    const platform = getPlatformOption(graph, options);
+    // Custom options can only be passed outside of the dev server, meaning
+    // we don't need to stringify the results at the end, i.e. this is `npx expo export` or `npx expo export:embed`.
+    const supportsNonSerialReturn = !!options.serializerOptions?.output;
 
-    if (!options.sourceUrl) {
+    const serializerOptions = (() => {
+      if (options.serializerOptions) {
+        return {
+          outputMode: options.serializerOptions.output,
+          includeSourceMaps: options.serializerOptions.includeMaps,
+        };
+      }
+      if (options.sourceUrl) {
+        const sourceUrl = isJscSafeUrl(options.sourceUrl)
+          ? toNormalUrl(options.sourceUrl)
+          : options.sourceUrl;
+
+        const url = new URL(sourceUrl, 'https://expo.dev');
+
+        return {
+          outputMode: url.searchParams.get('serializer.output'),
+          includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
+        };
+      }
+      return null;
+    })();
+
+    if (serializerOptions?.outputMode !== 'static') {
       return defaultSerializer(...props);
     }
 
-    const sourceUrl = isJscSafeUrl(options.sourceUrl)
-      ? toNormalUrl(options.sourceUrl)
-      : options.sourceUrl;
+    const assets = graphToSerialAssets(
+      serializerConfig,
+      { includeMaps: serializerOptions.includeSourceMaps },
+      ...props
+    );
 
-    const url = new URL(sourceUrl, 'https://expo.dev');
-
-    if (platform !== 'web' || url.searchParams.get('serializer.output') !== 'static') {
-      // Default behavior if `serializer.output=static` is not present in the URL.
-      return defaultSerializer(entryFile, preModules, graph, options);
+    if (supportsNonSerialReturn) {
+      // @ts-expect-error: this is future proofing for adding assets to the output as well.
+      return assets;
     }
 
-    const includeSourceMaps = url.searchParams.get('serializer.map') === 'true';
-
-    return JSON.stringify(
-      graphToSerialAssets(serializerConfig, { includeMaps: includeSourceMaps }, ...props)
-    );
+    return JSON.stringify(assets);
   };
 }
 

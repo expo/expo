@@ -42,9 +42,18 @@ function withDefaults({
   };
 }
 
+export type SerializerOptions = {
+  includeMaps?: boolean;
+  output?: 'static';
+};
+
+export type ExpoMetroBundleOptions = MetroBundleOptions & {
+  serializerOptions?: SerializerOptions;
+};
+
 export function getMetroDirectBundleOptions(
   options: ExpoMetroOptions
-): Partial<MetroBundleOptions> {
+): Partial<ExpoMetroBundleOptions> {
   const {
     mainModuleName,
     platform,
@@ -71,7 +80,7 @@ export function getMetroDirectBundleOptions(
     ).toString();
   }
 
-  const bundleOptions: Partial<MetroBundleOptions> = {
+  const bundleOptions: Partial<ExpoMetroBundleOptions> = {
     platform,
     entryFile: mainModuleName,
     dev,
@@ -90,6 +99,10 @@ export function getMetroDirectBundleOptions(
       environment,
     },
     sourceUrl: fakeSourceUrl,
+    serializerOptions: {
+      output: serializerOutput,
+      includeMaps: serializerIncludeMaps,
+    },
   };
 
   return bundleOptions;

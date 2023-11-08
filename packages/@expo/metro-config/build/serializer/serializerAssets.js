@@ -1,2 +1,2 @@
 "use strict";
-//# sourceMappingURL=serializerAssets.js.map
+Object.defineProperty(exports, "__esModule", { value: true });

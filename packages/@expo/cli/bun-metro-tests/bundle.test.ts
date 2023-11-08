@@ -1,8 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { createBundlesAsync } from '../src/export/fork-bundleAsync';
 import { exportEmbedBundleAsync } from '../src/export/embed/exportEmbedAsync';
 import { unstable_exportStaticResourcesAsync } from '../src/export/exportStaticAsync';
+import { getConfig } from 'expo/config';
 
 function fileExists(path: string): boolean {
   const stat = fs.statSync(path, { throwIfNoEntry: false });
@@ -81,14 +83,21 @@ async function bundleProject(entry: string) {
   console.time('metro');
   const clear = false;
   const output = path.join(projectRoot, './dist/output.js');
-  const resources = await unstable_exportStaticResourcesAsync(projectRoot, {
-    basePath: '/',
-    exportServer: false,
-    includeMaps: false,
-    outputDir: path.join(projectRoot, 'dist'),
-    minify: false,
+  const resources = await createBundlesAsync(projectRoot, getConfig(projectRoot), {
+    platforms: ['web'],
+    clear,
+    dev: false,
+    sourcemaps: false,
     entryPoint: entry,
   });
+  // const resources = await unstable_exportStaticResourcesAsync(projectRoot, {
+  //   basePath: '/',
+  //   exportServer: false,
+  //   includeMaps: false,
+  //   outputDir: path.join(projectRoot, 'dist'),
+  //   minify: false,
+  //   entryPoint: entry,
+  // });
   console.timeEnd('metro');
 
   console.log(resources);
@@ -99,7 +108,8 @@ async function bundleProject(entry: string) {
 
 it(`tree shakes standard named imports`, async () => {
   const output = await bundleProject('01-import/index.js');
-  expect(output).not.toMatch('subtract');
+  expect(output.web.artifacts.length).toBe(2);
+  expect(output.web.artifacts).not.toMatch('subtract');
 });
 // it(`does not tree shake cjs imports`, async () => {
 //   const output = await bundleProject('01-import/index-require.js');
