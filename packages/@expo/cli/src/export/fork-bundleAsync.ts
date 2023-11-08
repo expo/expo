@@ -138,6 +138,7 @@ async function bundleProductionMetroClientAsync(
     const isHermes = isEnableHermesManaged(expoConfig, bundle.platform);
     const bundleOptions: MetroBundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
+      sourceMapUrl: bundle.sourceMapUrl,
       ...getMetroDirectBundleOptions({
         mainModuleName: bundle.entryPoint,
         platform: bundle.platform,
@@ -149,7 +150,6 @@ async function bundleProductionMetroClientAsync(
       }),
       bundleType: 'bundle',
       inlineSourceMap: false,
-      sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
         reporter.update({

@@ -71,6 +71,7 @@ export function getMetroDirectBundleOptions(
   const isHermes = engine === 'hermes';
 
   let fakeSourceUrl: string | undefined;
+  let fakeSourceMapUrl: string | undefined;
 
   // TODO: Upstream support to Metro for passing custom serializer options.
   if (serializerIncludeMaps != null || serializerOutput != null) {
@@ -78,6 +79,9 @@ export function getMetroDirectBundleOptions(
       createBundleUrlPath(options).replace(/^\//, ''),
       'http://localhost:8081'
     ).toString();
+    if (serializerIncludeMaps) {
+      fakeSourceMapUrl = fakeSourceUrl.replace('.bundle?', '.map?');
+    }
   }
 
   const bundleOptions: Partial<ExpoMetroBundleOptions> = {
@@ -98,6 +102,7 @@ export function getMetroDirectBundleOptions(
       __proto__: null,
       environment,
     },
+    sourceMapUrl: fakeSourceMapUrl,
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
       output: serializerOutput,

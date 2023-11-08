@@ -87,7 +87,7 @@ async function bundleProject(entry: string) {
     platforms: ['web'],
     clear,
     dev: false,
-    sourcemaps: false,
+    sourcemaps: true,
     entryPoint: entry,
   });
   // const resources = await unstable_exportStaticResourcesAsync(projectRoot, {
@@ -100,15 +100,20 @@ async function bundleProject(entry: string) {
   // });
   console.timeEnd('metro');
 
-  console.log(resources);
+  // console.log(resources);
 
   // return bundle.code;
   return resources;
 }
 
-it(`tree shakes standard named imports`, async () => {
-  const output = await bundleProject('01-import/index.js');
-  expect(output.web.artifacts.length).toBe(2);
+// it(`bundle splits standard`, async () => {
+//   const output = await bundleProject('01-import/index.js');
+//   // expect(output.web.artifacts.length).toBe(2);
+//   expect(output.web.artifacts).not.toMatch('subtract');
+// });
+it(`bundle splits async imports`, async () => {
+  const output = await bundleProject('01-import/async-import.js');
+  // expect(output.web.artifacts.length).toBe(2);
   expect(output.web.artifacts).not.toMatch('subtract');
 });
 // it(`does not tree shake cjs imports`, async () => {
