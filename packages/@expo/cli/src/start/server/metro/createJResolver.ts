@@ -72,7 +72,7 @@ export type ResolverOptions = {
   enablePackageExports?: boolean;
 } & Pick<
   UpstreamResolveOptions,
-  'readPackageSync' | 'moduleDirectory' | 'extensions' | 'preserveSymlinks'
+  'readPackageSync' | 'moduleDirectory' | 'extensions' | 'preserveSymlinks' | 'includeCoreModules'
 >;
 
 type UpstreamResolveOptionsWithConditions = UpstreamResolveOptions & ResolverOptions;

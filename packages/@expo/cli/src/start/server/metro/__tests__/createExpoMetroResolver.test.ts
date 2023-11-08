@@ -219,7 +219,7 @@ describe(createFastResolver, () => {
     });
 
     it('resolves with baseUrl', () => {
-      expect(resolveTo('App.tsx', { platform, nodeModulesPaths: ['.'] })).toEqual(
+      expect(resolveTo('App.tsx', { platform, nodeModulesPaths: [originProjectRoot] })).toEqual(
         expect.stringMatching(/\/native-component-list\/App.tsx$/)
       );
       expect(() => resolveTo('App.tsx', { platform })).toThrowError(

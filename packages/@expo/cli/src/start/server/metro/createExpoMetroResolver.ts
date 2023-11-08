@@ -103,7 +103,7 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
       fp = jestResolver(moduleName, {
         enablePackageExports: context.unstable_enablePackageExports,
         basedir: path.dirname(context.originModulePath),
-        moduleDirectory: context.nodeModulesPaths as string[],
+        paths: context.nodeModulesPaths as string[],
         extensions,
         conditions,
         // @ts-ignore

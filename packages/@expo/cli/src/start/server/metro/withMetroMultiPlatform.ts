@@ -407,12 +407,17 @@ export function withExtendedResolver(
       if (tsconfig?.baseUrl && isTsconfigPathsEnabled) {
         const nodeModulesPaths: string[] = [...immutableContext.nodeModulesPaths];
 
-        if (!nodeModulesPaths.length) {
-          nodeModulesPaths.push(path.join(config.projectRoot, 'node_modules'));
+        if (isFastResolverEnabled) {
+          // add last to ensure node modules are resolved first
+          nodeModulesPaths.push(
+            path.isAbsolute(tsconfig.baseUrl)
+              ? tsconfig.baseUrl
+              : path.join(config.projectRoot, tsconfig.baseUrl)
+          );
+        } else {
+          // add last to ensure node modules are resolved first
+          nodeModulesPaths.push(tsconfig.baseUrl);
         }
-
-        // add last to ensure node modules are resolved first
-        nodeModulesPaths.push(tsconfig.baseUrl);
 
         context.nodeModulesPaths = nodeModulesPaths;
       }
