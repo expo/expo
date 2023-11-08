@@ -7,13 +7,12 @@
 import assert from 'assert';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import { ConfigT, InputConfigT, SerializerConfigT } from 'metro-config';
 // @ts-expect-error
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
+import { ConfigT, InputConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
 
-import { env } from '../env';
 import {
   environmentVariableSerializerPlugin,
   serverPreludeSerializerPlugin,
@@ -22,6 +21,7 @@ import { getExportPathForDependencyWithOptions } from './exportPath';
 import { baseJSBundle, baseJSBundleWithDependencies, getPlatformOption } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
+import { env } from '../env';
 
 // import { toFixture } from './__tests__/fixtures/toFixture';
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
@@ -219,13 +219,6 @@ class Chunk {
           path.relative(this.options.projectRoot, entryFile)
         ),
         platform: this.getPlatform(),
-        // ...(entryFile === '[vendor]'
-        //   ? {
-        //       runModule: false,
-        //       modulesOnly: true,
-        //       runBeforeMainModule: [],
-        //     }
-        //   : {}),
         sourceMapUrl: `${fileName}.map`,
       }
     );
@@ -449,5 +442,3 @@ export function createSerializerFromSerialProcessors(
 }
 
 export { SerialAsset };
-
-// __d((function(g,r,i,a,m,e,d){}),435,{"0":2,"1":18,"2":184,"3":103,"4":436,"5":438,"6":439,"paths":{"438":"/etc/external.bundle?platform=web"}});

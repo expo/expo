@@ -10,8 +10,16 @@ Object.defineProperty(exports, "SerialAsset", {
   }
 });
 exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
+exports.getDefaultSerializer = getDefaultSerializer;
 exports.withExpoSerializers = withExpoSerializers;
 exports.withSerializerPlugins = withSerializerPlugins;
+function _assert() {
+  const data = _interopRequireDefault(require("assert"));
+  _assert = function () {
+    return data;
+  };
+  return data;
+}
 function _jscSafeUrl() {
   const data = require("jsc-safe-url");
   _jscSafeUrl = function () {
@@ -47,6 +55,13 @@ function _environmentVariableSerializerPlugin() {
   };
   return data;
 }
+function _exportPath() {
+  const data = require("./exportPath");
+  _exportPath = function () {
+    return data;
+  };
+  return data;
+}
 function _baseJSBundle() {
   const data = require("./fork/baseJSBundle");
   _baseJSBundle = function () {
@@ -76,15 +91,9 @@ function _env() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-/**
- * Copyright © 2022 650 Industries.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-// @ts-expect-error
-
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 function withExpoSerializers(config) {
   const processors = [];
   processors.push(_environmentVariableSerializerPlugin().serverPreludeSerializerPlugin);
@@ -97,75 +106,281 @@ function withExpoSerializers(config) {
 // There can only be one custom serializer as the input doesn't match the output.
 // Here we simply run
 function withSerializerPlugins(config, processors) {
-  var _config$serializer;
+  var _config$serializer, _config$serializer2;
   const originalSerializer = (_config$serializer = config.serializer) === null || _config$serializer === void 0 ? void 0 : _config$serializer.customSerializer;
   return {
     ...config,
     serializer: {
       ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(processors, originalSerializer)
+      customSerializer: createSerializerFromSerialProcessors( // @ts-expect-error
+      (_config$serializer2 = config.serializer) !== null && _config$serializer2 !== void 0 ? _config$serializer2 : {}, processors, originalSerializer)
     }
   };
 }
-function getDefaultSerializer(fallbackSerializer) {
+function getDefaultSerializer(serializerConfig, fallbackSerializer) {
   const defaultSerializer = fallbackSerializer !== null && fallbackSerializer !== void 0 ? fallbackSerializer : async (...params) => {
     const bundle = (0, _baseJSBundle().baseJSBundle)(...params);
     const outputCode = (0, _bundleToString().default)(bundle).code;
     return outputCode;
   };
   return async (...props) => {
-    const [entryPoint, preModules, graph, options] = props;
+    var _chunks$map;
+    const [entryFile, preModules, graph, options] = props;
     const platform = (0, _baseJSBundle().getPlatformOption)(graph, options);
+
+    // toFixture(...props);
     if (!options.sourceUrl) {
-      return await defaultSerializer(entryPoint, preModules, graph, options);
+      return defaultSerializer(...props);
     }
     const sourceUrl = (0, _jscSafeUrl().isJscSafeUrl)(options.sourceUrl) ? (0, _jscSafeUrl().toNormalUrl)(options.sourceUrl) : options.sourceUrl;
     const url = new URL(sourceUrl, 'https://expo.dev');
     if (platform !== 'web' || url.searchParams.get('serializer.output') !== 'static') {
       // Default behavior if `serializer.output=static` is not present in the URL.
-      return await defaultSerializer(entryPoint, preModules, graph, options);
+      return defaultSerializer(entryFile, preModules, graph, options);
     }
+    let multipleEntries = [];
+    const multipleEntriesParam = url.searchParams.get('serializer.entries');
+    if (multipleEntriesParam && typeof multipleEntriesParam === 'string') {
+      multipleEntries = JSON.parse(multipleEntriesParam);
+      if (!Array.isArray(multipleEntries)) {
+        throw new Error('serializer.entries must be an array of strings');
+      }
+      multipleEntries = multipleEntries.map(entry => {
+        entry = decodeURIComponent(entry);
+        if (entry.includes(options.serverRoot)) {
+          return entry;
+        }
+        return _path().default.join(options.serverRoot, entry);
+      });
+      multipleEntries.forEach(fp => {
+        if (!graph.dependencies.get(fp)) {
+          throw new Error(`Entry file not found in graph: ${fp}`);
+        }
+      });
+    }
+    const chunks = url.searchParams.has('serializer.chunks') ? JSON.parse(url.searchParams.get('serializer.chunks')) : null;
+    const allEntryFiles = new Set([
+    // Entry file for all chunks.
+    entryFile,
+    // Entry files for each chunk.
+    ...((_chunks$map = chunks === null || chunks === void 0 ? void 0 : chunks.map(chunk => chunk.inputs)) !== null && _chunks$map !== void 0 ? _chunks$map : []).flat()]);
+    console.log('process chunks:', entryFile, chunks, allEntryFiles);
     const includeSourceMaps = url.searchParams.get('serializer.map') === 'true';
     const cssDeps = (0, _getCssDeps().getCssSerialAssets)(graph.dependencies, {
       projectRoot: options.projectRoot,
       processModuleFilter: options.processModuleFilter
     });
-    const jsAssets = [];
-    const jsCode = await defaultSerializer(entryPoint, preModules, graph, {
-      ...options,
-      sourceMapUrl: includeSourceMaps ? options.sourceMapUrl : undefined
+
+    // JS
+
+    const _chunks = new Set();
+    unique([entryFile, ...multipleEntries]).map(entryFile => gatherChunks(_chunks, entryFile, preModules, graph, options, false));
+
+    // Optimize the chunks
+    dedupeChunks(_chunks);
+    const jsAssets = serializeChunks(_chunks, serializerConfig, {
+      includeSourceMaps
     });
-    const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
-    const jsFilename = (0, _getCssDeps().fileNameFromContents)({
-      filepath: url.pathname,
-      src: stringContents
+    return JSON.stringify([...jsAssets, ...cssDeps]);
+  };
+}
+function unique(arr) {
+  return [...new Set(arr)];
+}
+class Chunk {
+  // Chunks that are required to be loaded synchronously before this chunk.
+  // These are included in the HTML as <script> tags.
+
+  constructor(name, entry, graph, options, isAsync = false) {
+    this.name = name;
+    this.entry = entry;
+    this.graph = graph;
+    this.options = options;
+    this.isAsync = isAsync;
+    _defineProperty(this, "deps", new Set());
+    _defineProperty(this, "preModules", new Set());
+    _defineProperty(this, "requiredChunks", new Set());
+  }
+  getPlatform() {
+    (0, _assert().default)(this.graph.transformOptions.platform, "platform is required to be in graph's transformOptions");
+    return this.graph.transformOptions.platform;
+  }
+  getFilename() {
+    // TODO: Content hash is needed
+    return this.options.dev ? this.entry : (0, _exportPath().getExportPathForDependencyWithOptions)(this.entry, {
+      platform: this.getPlatform(),
+      serverRoot: this.options.serverRoot
     });
-    jsAssets.push({
-      filename: options.dev ? 'index.js' : `_expo/static/js/web/${jsFilename}.js`,
-      originFilename: 'index.js',
+  }
+  serializeToCode(serializerConfig) {
+    const entryFile = this.entry;
+    const fileName = _path().default.basename(entryFile, '.js');
+    const jsSplitBundle = (0, _baseJSBundle().baseJSBundleWithDependencies)(entryFile, [...this.preModules.values()], [...this.deps], {
+      ...this.options,
+      runBeforeMainModule: serializerConfig.getModulesRunBeforeMainModule(_path().default.relative(this.options.projectRoot, entryFile)),
+      platform: this.getPlatform(),
+      // ...(entryFile === '[vendor]'
+      //   ? {
+      //       runModule: false,
+      //       modulesOnly: true,
+      //       runBeforeMainModule: [],
+      //     }
+      //   : {}),
+      sourceMapUrl: `${fileName}.map`
+    });
+    return (0, _bundleToString().default)(jsSplitBundle).code;
+  }
+  serializeToAssets(serializerConfig, {
+    includeSourceMaps
+  }) {
+    const jsCode = this.serializeToCode(serializerConfig);
+    const relativeEntry = _path().default.relative(this.options.projectRoot, this.entry);
+    const outputFile = this.getFilename();
+    const jsAsset = {
+      filename: outputFile,
+      originFilename: relativeEntry,
       type: 'js',
-      metadata: {},
-      source: stringContents
-    });
+      metadata: {
+        requires: [...this.requiredChunks.values()].map(chunk => chunk.getFilename())
+      },
+      source: jsCode
+    };
     if (
     // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
-    includeSourceMaps && options.sourceMapUrl) {
-      const sourceMap = typeof jsCode === 'string' ? serializeToSourceMap(...props) : jsCode.map;
-      jsAssets.push({
-        filename: options.dev ? 'index.map' : `_expo/static/js/web/${jsFilename}.js.map`,
+    includeSourceMaps && this.options.sourceMapUrl) {
+      const modules = [...this.preModules, ...getSortedModules([...this.deps], {
+        createModuleId: this.options.createModuleId
+      })].map(module => {
+        // TODO: Make this user-configurable.
+
+        // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
+        if (module.path.startsWith('/')) {
+          var _this$options$serverR;
+          return {
+            ...module,
+            path: '/' + _path().default.relative((_this$options$serverR = this.options.serverRoot) !== null && _this$options$serverR !== void 0 ? _this$options$serverR : this.options.projectRoot, module.path)
+          };
+        }
+        return module;
+      });
+      const sourceMap = (0, _sourceMapString().default)(modules, {
+        ...this.options
+      });
+      return [jsAsset, {
+        filename: this.options.dev ? 'index.map' : `_expo/static/js/web/${outputFile}.map`,
         originFilename: 'index.map',
         type: 'map',
         metadata: {},
         source: sourceMap
-      });
+      }];
     }
-    return JSON.stringify([...jsAssets, ...cssDeps]);
-  };
+    return [jsAsset];
+  }
 }
-function getSortedModules(graph, {
+function gatherChunks(chunks, entryFile, preModules, graph, options, isAsync = false) {
+  const entryModule = graph.dependencies.get(entryFile);
+  if (!entryModule) {
+    throw new Error('Entry module not found in graph: ' + entryFile);
+  }
+
+  // Prevent processing the same entry file twice.
+  if ([...chunks.values()].find(chunk => chunk.entry === entryFile)) {
+    return chunks;
+  }
+  const entryChunk = new Chunk(entryFile, entryFile, graph, options, isAsync);
+
+  // Add all the pre-modules to the first chunk.
+  if (preModules.length) {
+    if (graph.transformOptions.platform === 'web' && !isAsync) {
+      // On web, add a new required chunk that will be included in the HTML.
+      const preChunk = new Chunk('__premodules__', '__premodules__', graph, options);
+      for (const module of preModules.values()) {
+        preChunk.deps.add(module);
+      }
+      chunks.add(preChunk);
+      entryChunk.requiredChunks.add(preChunk);
+    } else {
+      // On native, use the preModules in insert code in the entry chunk.
+      for (const module of preModules.values()) {
+        entryChunk.preModules.add(module);
+      }
+    }
+  }
+  chunks.add(entryChunk);
+  entryChunk.deps.add(entryModule);
+  for (const dependency of entryModule.dependencies.values()) {
+    if (dependency.data.data.asyncType === 'async') {
+      gatherChunks(chunks, dependency.absolutePath, [], graph, options, true);
+    } else {
+      const module = graph.dependencies.get(dependency.absolutePath);
+      if (module) {
+        entryChunk.deps.add(module);
+      }
+    }
+  }
+  return chunks;
+}
+function dedupeChunks(chunks) {
+  // Iterate chunks and pull duplicate modules into new common chunks that are required by the original chunks.
+
+  // We can only de-dupe sync chunks since this would create vendor/shared chunks.
+  const currentChunks = [...chunks.values()].filter(chunk => !chunk.isAsync);
+  for (const chunk of currentChunks) {
+    const deps = [...chunk.deps.values()];
+    for (const dep of deps) {
+      for (const otherChunk of currentChunks) {
+        if (otherChunk === chunk) {
+          continue;
+        }
+        if (otherChunk.deps.has(dep)) {
+          console.log('found common dep:', dep.path, 'in', chunk.name, 'and', otherChunk.name);
+          // Move the dep into a new chunk.
+          const newChunk = new Chunk(dep.path, dep.path, chunk.graph, chunk.options, false);
+          newChunk.deps.add(dep);
+          chunk.requiredChunks.add(newChunk);
+          otherChunk.requiredChunks.add(newChunk);
+          chunks.add(newChunk);
+          // Remove the dep from the original chunk.
+          chunk.deps.delete(dep);
+          otherChunk.deps.delete(dep);
+
+          // TODO: Pull all the deps of the dep into the new chunk.
+          for (const depDep of dep.dependencies.values()) {
+            if (depDep.data.data.asyncType === 'async') {
+              gatherChunks(chunks, depDep.absolutePath, [], chunk.graph, chunk.options, false);
+            } else {
+              const module = chunk.graph.dependencies.get(depDep.absolutePath);
+              if (module) {
+                newChunk.deps.add(module);
+                if (chunk.deps.has(module)) {
+                  chunk.deps.delete(module);
+                }
+                if (otherChunk.deps.has(module)) {
+                  otherChunk.deps.delete(module);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+function serializeChunks(chunks, serializerConfig, {
+  includeSourceMaps
+}) {
+  const jsAssets = [];
+  chunks.forEach(chunk => {
+    jsAssets.push(...chunk.serializeToAssets(serializerConfig, {
+      includeSourceMaps
+    }));
+  });
+  return jsAssets;
+}
+function getSortedModules(modules, {
   createModuleId
 }) {
-  const modules = [...graph.dependencies.values()];
+  // const modules = [...graph.dependencies.values()];
   // Assign IDs to modules in a consistent order
   for (const module of modules) {
     createModuleId(module.path);
@@ -173,29 +388,8 @@ function getSortedModules(graph, {
   // Sort by IDs
   return modules.sort((a, b) => createModuleId(a.path) - createModuleId(b.path));
 }
-function serializeToSourceMap(...props) {
-  const [, prepend, graph, options] = props;
-  const modules = [...prepend, ...getSortedModules(graph, {
-    createModuleId: options.createModuleId
-  })].map(module => {
-    // TODO: Make this user-configurable.
-
-    // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
-    if (module.path.startsWith('/')) {
-      var _options$serverRoot;
-      return {
-        ...module,
-        path: '/' + _path().default.relative((_options$serverRoot = options.serverRoot) !== null && _options$serverRoot !== void 0 ? _options$serverRoot : options.projectRoot, module.path)
-      };
-    }
-    return module;
-  });
-  return (0, _sourceMapString().default)(modules, {
-    ...options
-  });
-}
-function createSerializerFromSerialProcessors(processors, originalSerializer) {
-  const finalSerializer = getDefaultSerializer(originalSerializer);
+function createSerializerFromSerialProcessors(config, processors, originalSerializer) {
+  const finalSerializer = getDefaultSerializer(config, originalSerializer);
   return (...props) => {
     for (const processor of processors) {
       if (processor) {
@@ -205,4 +399,6 @@ function createSerializerFromSerialProcessors(processors, originalSerializer) {
     return finalSerializer(...props);
   };
 }
+
+// __d((function(g,r,i,a,m,e,d){}),435,{"0":2,"1":18,"2":184,"3":103,"4":436,"5":438,"6":439,"paths":{"438":"/etc/external.bundle?platform=web"}});
 //# sourceMappingURL=withExpoSerializers.js.map
