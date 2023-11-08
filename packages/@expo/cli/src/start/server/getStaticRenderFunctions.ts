@@ -83,7 +83,7 @@ export async function getStaticRenderFunctionsContentAsync(
 async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
   // Cannot be accessed using Metro's server API, we need to move the file
   // into the project root and try again.
-  if (!path.relative(projectRoot, otherFile).startsWith('../')) {
+  if (!path.relative(projectRoot, otherFile).startsWith('..' + path.sep)) {
     return otherFile;
   }
 
@@ -112,8 +112,7 @@ export async function createMetroEndpointAsync(
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
-  const serverPath = path.relative(root, safeOtherFile).replace(/\.[jt]sx?$/, '.bundle');
-  debug('fetching from Metro:', root, serverPath);
+  const serverPath = path.relative(root, safeOtherFile).replace(/\.[jt]sx?$/, '');
 
   const urlFragment = createBundleUrlPath({
     platform,
@@ -125,7 +124,9 @@ export async function createMetroEndpointAsync(
     minify,
   });
 
-  return new URL(urlFragment.replace(/^\//, ''), devServerUrl).toString();
+  const url = new URL(urlFragment.replace(/^\//, ''), devServerUrl).toString();
+  debug('fetching from Metro:', root, serverPath, url);
+  return url;
 }
 
 export class MetroNodeError extends Error {
