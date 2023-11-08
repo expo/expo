@@ -198,9 +198,7 @@ class Chunk {
             return [
                 jsAsset,
                 {
-                    filename: this.options.dev
-                        ? jsAsset.filename + '.map'
-                        : `_expo/static/js/${this.getPlatform()}/${outputFile}.map`,
+                    filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
                     originFilename: jsAsset.originFilename,
                     type: 'map',
                     metadata: {},
@@ -249,8 +247,11 @@ function gatherChunks(chunks, entryFile, preModules, graph, options, isAsync = f
             else {
                 const module = graph.dependencies.get(dependency.absolutePath);
                 if (module) {
-                    entryChunk.deps.add(module);
-                    includeModule(module);
+                    // Prevent circular dependencies from creating infinite loops.
+                    if (!entryChunk.deps.has(module)) {
+                        entryChunk.deps.add(module);
+                        includeModule(module);
+                    }
                 }
             }
         }

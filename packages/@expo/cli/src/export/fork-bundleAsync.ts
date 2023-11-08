@@ -146,7 +146,8 @@ async function bundleProductionMetroClientAsync(
         engine: isHermes ? 'hermes' : undefined,
         serializerIncludeMaps: bundle.sourcemaps,
         // Bundle splitting on web-only for now.
-        serializerOutput: bundle.platform === 'web' ? 'static' : undefined,
+        // serializerOutput: bundle.platform === 'web' ? 'static' : undefined,
+        serializerOutput: 'static',
       }),
       bundleType: 'bundle',
       inlineSourceMap: false,
