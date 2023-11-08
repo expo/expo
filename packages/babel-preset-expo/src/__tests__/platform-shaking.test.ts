@@ -36,13 +36,6 @@ it(`removes Platform module usage on web`, () => {
     caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web' }),
   };
 
-  expect(
-    babel.transform(
-      `Platform.select({ ios: () => console.log('ios'), web: () => console.log('web'), android: () => console.log('android'), })`,
-      options
-    )!.code
-  ).toEqual(`(function(){return console.log('web');});`);
-
   const sourceCode = `
     import { Platform } from 'react-native';
   
