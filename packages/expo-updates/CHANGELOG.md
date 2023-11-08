@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- [iOS] Make asset exclusion work. ([#25216](https://github.com/expo/expo/pull/25216) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix the E2E tests. ([#24865](https://github.com/expo/expo/pull/24865) by [@douglowder](https://github.com/douglowder))
@@ -23,6 +25,8 @@
 - Android: Backport ExpoGoUpdatesModule to SDK 49. ([#24974](https://github.com/expo/expo/pull/24974) by [@wschurman](https://github.com/wschurman))
 - Remove unused `storedUpdateIdsWithConfiguration` method. ([#25194](https://github.com/expo/expo/pull/25194) by [@wschurman](https://github.com/wschurman))
 - Remove ability for embedded manifests to be legacy manifests. ([#25195](https://github.com/expo/expo/pull/25195) by [@wschurman](https://github.com/wschurman))
+- Convert e2e setup scripts to typescript. ([#25271](https://github.com/expo/expo/pull/25271) by [@wschurman](https://github.com/wschurman))
+
 
 ## 0.18.17 — 2023-10-25
 

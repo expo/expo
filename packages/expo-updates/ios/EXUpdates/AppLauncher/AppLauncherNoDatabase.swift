@@ -17,7 +17,7 @@ import Foundation
 public final class AppLauncherNoDatabase: NSObject, AppLauncher {
   public var launchedUpdate: Update?
   public var launchAssetUrl: URL?
-  public var assetFilesMap: [String: Any]?
+  public var assetFilesMap: [String: String]?
 
   public override init() {}
 
