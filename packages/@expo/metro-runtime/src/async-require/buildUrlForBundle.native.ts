@@ -6,21 +6,22 @@
  */
 
 export function buildUrlForBundle(bundlePath: string): string {
-  if (process.env.NODE_ENV === 'production') {
-    if (typeof location !== 'undefined') {
-      return joinComponents(location.origin, bundlePath);
-    }
-    throw new Error(
-      'Unable to determine the production URL where additional JavaScript chunks are hosted because the global "location" variable is not defined.'
-    );
-  } else {
-    const getDevServer = require('../getDevServer')
-      .default as typeof import('../getDevServer').default;
+  const getDevServer = require('../getDevServer')
+    .default as typeof import('../getDevServer').default;
+  const { url: serverUrl, bundleLoadedFromServer } = getDevServer();
 
-    const { url: serverUrl } = getDevServer();
-
+  // Ensure the bundle wasn't loaded from a dev server, e.g. `npx expo start --no-dev` could trigger this while bundling in production-mode.
+  if (bundleLoadedFromServer) {
     return joinComponents(serverUrl, bundlePath);
   }
+
+  if (typeof location !== 'undefined') {
+    return joinComponents(location.origin, bundlePath);
+  }
+
+  throw new Error(
+    'Unable to determine the production URL where additional JavaScript chunks are hosted because the global "location" variable is not defined.'
+  );
 }
 
 function joinComponents(prefix: string, suffix: string): string {

@@ -3,6 +3,8 @@ import resolveFrom from 'resolve-from';
 
 import { env } from '../../../utils/env';
 
+const debug = require('debug')('expo:metro:options') as typeof console.log;
+
 export function shouldEnableAsyncImports(projectRoot: string): boolean {
   if (env.EXPO_NO_METRO_LAZY) {
     return false;
@@ -70,6 +72,11 @@ export function getMetroDirectBundleOptions(
   const dev = mode !== 'production';
   const isHermes = engine === 'hermes';
 
+  if (!dev && platform !== 'web') {
+    debug('Disabling lazy bundling for non-web platform in production mode');
+    options.lazy = false;
+  }
+
   let fakeSourceUrl: string | undefined;
   let fakeSourceMapUrl: string | undefined;
 
@@ -127,15 +134,20 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     preserveEnvVars,
   } = withDefaults(options);
 
+  const dev = String(mode !== 'production');
   const queryParams = new URLSearchParams({
     platform: encodeURIComponent(platform),
-    dev: String(mode !== 'production'),
+    dev,
     // TODO: Is this still needed?
     hot: String(false),
   });
 
   if (lazy) {
-    queryParams.append('lazy', String(lazy));
+    if (!dev && platform !== 'web') {
+      debug('Disabling lazy bundling for non-web platform in production mode');
+    } else {
+      queryParams.append('lazy', String(lazy));
+    }
   }
 
   if (minify) {
