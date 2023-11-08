@@ -394,6 +394,10 @@ async function generateReactNativePodScriptAsync(
       find: /\$(CODEGEN_OUTPUT_DIR)\b/g,
       replaceWith: `$${versionName}$1`,
     },
+    {
+      find: /(REACT_NATIVE_PATH)\b/g,
+      replaceWith: `${versionName}$1`,
+    },
     { find: /\b(React-Codegen)\b/g, replaceWith: `${versionName}$1` },
     { find: /(\$\(PODS_ROOT\)\/Headers\/Private\/)React-/g, replaceWith: `$1${versionName}React-` },
     {
