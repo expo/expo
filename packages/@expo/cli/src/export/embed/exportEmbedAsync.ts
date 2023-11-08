@@ -9,6 +9,7 @@ import path from 'path';
 import { Options } from './resolveOptions';
 import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
+import { getMetroDirectBundleOptions } from '../../start/server/middleware/metroOptions';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { profile } from '../../utils/profile';
 import { isEnableHermesManaged } from '../exportHermes';
@@ -57,17 +58,16 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
 
   const bundleRequest = {
     ...Server.DEFAULT_BUNDLE_OPTIONS,
-    entryFile: options.entryFile,
+    ...getMetroDirectBundleOptions({
+      mainModuleName: options.entryFile,
+      platform: options.platform,
+      minify: options.minify,
+      mode: options.dev ? 'development' : 'production',
+      engine: isHermes ? 'hermes' : undefined,
+    }),
     sourceMapUrl,
-    dev: options.dev,
-    minify: !!options.minify,
-    platform: options.platform,
     unstable_transformProfile: (options.unstableTransformProfile ||
       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
-    customTransformOptions: {
-      __proto__: null,
-      engine: isHermes ? 'hermes' : undefined,
-    },
   };
 
   const server = new Server(config, {

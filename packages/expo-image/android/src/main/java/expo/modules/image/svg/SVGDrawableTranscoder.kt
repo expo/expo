@@ -12,6 +12,8 @@ import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.load.resource.SimpleResource
 import com.bumptech.glide.load.resource.transcode.ResourceTranscoder
+import com.caverock.androidsvg.PreserveAspectRatio
+import com.caverock.androidsvg.RenderOptions
 import com.caverock.androidsvg.SVG
 
 /**
@@ -28,18 +30,30 @@ class SVGBitmapDrawable(res: Resources?, bitmap: Bitmap?, val svgIntrinsicWidth:
  */
 class SVGDrawableTranscoder(val context: Context) : ResourceTranscoder<SVG?, Drawable> {
   override fun transcode(toTranscode: Resource<SVG?>, options: Options): Resource<Drawable> {
-    val picture = toTranscode.get().renderToPicture()
-    val drawable = PictureDrawable(picture)
-    val width = drawable.intrinsicWidth
-    val height = drawable.intrinsicHeight
-    val svgIntrinsicWidth = toTranscode.get().documentViewBox.width().toInt()
-    val svgIntrinsicHeight = toTranscode.get().documentViewBox.height().toInt()
+    val svgData = toTranscode.get()
+    val svgIntrinsicWidth = svgData.documentViewBox.width()
+    val svgIntrinsicHeight = svgData.documentViewBox.height()
+    val documentWidth = svgData.documentWidth
+    val documentHeight = svgData.documentHeight
+    val aspectRatio = svgIntrinsicWidth / svgIntrinsicHeight
 
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    // We have no information on what content fit the user wants, so when choosing render resolution we assume
+    // "cover" in order to prevent loss of quality after the bitmap is transformed to appropriate `contentFit` later.
+    val shouldUseHeightReference = documentWidth / aspectRatio > documentHeight
+    val renderWidth = if (shouldUseHeightReference) documentWidth else documentHeight * aspectRatio
+    val renderHeight = if (shouldUseHeightReference) documentWidth / aspectRatio else documentHeight
+    val renderOptions = RenderOptions().apply {
+      viewPort(0f, 0f, renderWidth, renderHeight)
+      preserveAspectRatio(PreserveAspectRatio.FULLSCREEN_START)
+    }
+
+    val picture = svgData.renderToPicture(renderWidth.toInt(), renderHeight.toInt(), renderOptions)
+    val drawable = PictureDrawable(picture)
+    val bitmap = Bitmap.createBitmap(renderWidth.toInt(), renderHeight.toInt(), Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     drawable.setBounds(0, 0, canvas.width, canvas.height)
     drawable.draw(canvas)
 
-    return SimpleResource(SVGBitmapDrawable(context.resources, bitmap, svgIntrinsicWidth, svgIntrinsicHeight))
+    return SimpleResource(SVGBitmapDrawable(context.resources, bitmap, svgIntrinsicWidth.toInt(), svgIntrinsicHeight.toInt()))
   }
 }

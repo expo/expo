@@ -6,7 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { Module } from 'metro';
-export declare function processModules(modules: readonly Module[], { filter, createModuleId, dev, includeAsyncPaths, projectRoot, serverRoot, sourceUrl, }: {
+export declare function processModules(modules: readonly Module[], { filter, createModuleId, dev, includeAsyncPaths, projectRoot, serverRoot, sourceUrl, platform, }: {
+    platform: string;
     filter?: (module: Module) => boolean;
     createModuleId: (module: string) => number;
     dev: boolean;

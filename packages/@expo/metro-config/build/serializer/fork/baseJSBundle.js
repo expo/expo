@@ -5,6 +5,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.baseJSBundle = baseJSBundle;
 exports.baseJSBundleWithDependencies = baseJSBundleWithDependencies;
+exports.getPlatformOption = getPlatformOption;
+function _jscSafeUrl() {
+  const data = require("jsc-safe-url");
+  _jscSafeUrl = function () {
+    return data;
+  };
+  return data;
+}
 function _getAppendScripts() {
   const data = _interopRequireDefault(require("metro/src/lib/getAppendScripts"));
   _getAppendScripts = function () {
@@ -26,12 +34,32 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * Fork with bundle splitting and better source map support.
+ * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/baseJSBundle.js#L1
  */
 
-// @ts-expect-error
-
+function getPlatformOption(graph, options) {
+  var _graph$transformOptio, _url$searchParams$get;
+  if (((_graph$transformOptio = graph.transformOptions) === null || _graph$transformOptio === void 0 ? void 0 : _graph$transformOptio.platform) != null) {
+    return graph.transformOptions.platform;
+  }
+  if (!options.sourceUrl) {
+    return null;
+  }
+  const sourceUrl = (0, _jscSafeUrl().isJscSafeUrl)(options.sourceUrl) ? (0, _jscSafeUrl().toNormalUrl)(options.sourceUrl) : options.sourceUrl;
+  const url = new URL(sourceUrl, 'https://expo.dev');
+  return (_url$searchParams$get = url.searchParams.get('platform')) !== null && _url$searchParams$get !== void 0 ? _url$searchParams$get : null;
+}
 function baseJSBundle(entryPoint, preModules, graph, options) {
-  return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], options);
+  const platform = getPlatformOption(graph, options);
+  if (platform == null) {
+    throw new Error('platform could not be determined for Metro bundle');
+  }
+  return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
+    ...options,
+    platform
+  });
 }
 function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, options) {
   for (const module of dependencies) {
@@ -44,14 +72,15 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
     includeAsyncPaths: options.includeAsyncPaths,
     projectRoot: options.projectRoot,
     serverRoot: options.serverRoot,
-    sourceUrl: options.sourceUrl
+    sourceUrl: options.sourceUrl,
+    platform: options.platform
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested
   if (options.modulesOnly) {
     preModules = [];
   }
-  const preCode = (0, _processModules().processModules)(preModules, processModulesOptions).map(([_, code]) => code.src).join('\n');
+  const preCode = (0, _processModules().processModules)(preModules, processModulesOptions).map(([, code]) => code.src).join('\n');
   const modules = [...dependencies].sort((a, b) => options.createModuleId(a.path) - options.createModuleId(b.path));
   const postCode = (0, _processModules().processModules)((0, _getAppendScripts().default)(entryPoint, [...preModules, ...modules], {
     asyncRequireModulePath: options.asyncRequireModulePath,
@@ -63,7 +92,7 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
     shouldAddToIgnoreList: options.shouldAddToIgnoreList,
     sourceMapUrl: options.sourceMapUrl,
     sourceUrl: options.sourceUrl
-  }), processModulesOptions).map(([_, code]) => code.src).join('\n');
+  }), processModulesOptions).map(([, code]) => code.src).join('\n');
   const mods = (0, _processModules().processModules)([...dependencies], processModulesOptions).map(([module, code]) => [options.createModuleId(module.path), code]);
   return {
     pre: preCode,

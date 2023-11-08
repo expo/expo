@@ -26,9 +26,11 @@ function processModules(modules, {
   includeAsyncPaths,
   projectRoot,
   serverRoot,
-  sourceUrl
+  sourceUrl,
+  platform
 }) {
   return [...modules].filter(_js().isJsModule).filter(filter).map(module => [module, (0, _js().wrapModule)(module, {
+    platform,
     createModuleId,
     dev,
     includeAsyncPaths,

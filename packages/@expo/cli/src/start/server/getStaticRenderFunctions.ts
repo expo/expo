@@ -12,6 +12,7 @@ import resolveFrom from 'resolve-from';
 
 import { logMetroError } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
+import { createBundleUrlPath } from './middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
 import { delayAsync } from '../../utils/delay';
 import { SilentError } from '../../utils/errors';
@@ -82,7 +83,7 @@ export async function getStaticRenderFunctionsContentAsync(
 async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
   // Cannot be accessed using Metro's server API, we need to move the file
   // into the project root and try again.
-  if (!path.relative(projectRoot, otherFile).startsWith('../')) {
+  if (!path.relative(projectRoot, otherFile).startsWith('..' + path.sep)) {
     return otherFile;
   }
 
@@ -111,17 +112,20 @@ export async function createMetroEndpointAsync(
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
-  const serverPath = path.relative(root, safeOtherFile).replace(/\.[jt]sx?$/, '.bundle');
-  debug('fetching from Metro:', root, serverPath);
+  const serverPath = path.relative(root, safeOtherFile).replace(/\.[jt]sx?$/, '');
 
-  let url = `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}`;
+  const urlFragment = createBundleUrlPath({
+    platform,
+    mode: dev ? 'development' : 'production',
+    mainModuleName: serverPath,
+    engine,
+    environment,
+    lazy: false,
+    minify,
+  });
 
-  if (environment) {
-    url += `&resolver.environment=${environment}&transform.environment=${environment}`;
-  }
-  if (engine) {
-    url += `&transform.engine=${engine}`;
-  }
+  const url = new URL(urlFragment.replace(/^\//, ''), devServerUrl).toString();
+  debug('fetching from Metro:', root, serverPath, url);
   return url;
 }
 

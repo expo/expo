@@ -15,7 +15,9 @@ import { parse } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { createInspectorProxy, ExpoInspectorProxy } from './inspector-proxy';
+import { Log } from '../../../log';
 import { env } from '../../../utils/env';
+import { getRunningProcess } from '../../../utils/getRunningProcess';
 import type { ConnectAppType } from '../middleware/server.types';
 
 export const runServer = async (
@@ -69,6 +71,17 @@ export const runServer = async (
   }
   return new Promise<{ server: http.Server | https.Server; metro: Server }>((resolve, reject) => {
     httpServer.on('error', (error) => {
+      if ('code' in error && error.code === 'EADDRINUSE') {
+        // If `Error: listen EADDRINUSE: address already in use :::8081` then print additional info
+        // about the process before throwing.
+        const info = getRunningProcess(config.server.port);
+        if (info) {
+          Log.error(
+            `Port ${config.server.port} is busy running ${info.command} in: ${info.directory}`
+          );
+        }
+      }
+
       if (onError) {
         onError(error);
       }

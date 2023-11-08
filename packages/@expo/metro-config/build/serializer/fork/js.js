@@ -3,16 +3,14 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getExportPathForDependency = getExportPathForDependency;
-exports.getExportPathForDependencyWithOptions = getExportPathForDependencyWithOptions;
 exports.getJsOutput = getJsOutput;
 exports.getModuleParams = getModuleParams;
 exports.isJsModule = isJsModule;
 exports.isJsOutput = isJsOutput;
 exports.wrapModule = wrapModule;
-function _invariant() {
-  const data = _interopRequireDefault(require("invariant"));
-  _invariant = function () {
+function _assert() {
+  const data = _interopRequireDefault(require("assert"));
+  _assert = function () {
     return data;
   };
   return data;
@@ -38,9 +36,9 @@ function _path() {
   };
   return data;
 }
-function _getCssDeps() {
-  const data = require("../getCssDeps");
-  _getCssDeps = function () {
+function _exportPath() {
+  const data = require("../exportPath");
+  _exportPath = function () {
     return data;
   };
   return data;
@@ -52,9 +50,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * Fork of the metro helper, but with bundle splitting support.
+ * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/helpers/js.js#L1
  */
-
-// @ts-expect-error
 
 function wrapModule(module, options) {
   const output = getJsOutput(module);
@@ -84,35 +83,36 @@ function getModuleParams(module, options) {
     // NOTE(EvanBacon): Disabled this to ensure that paths are provided even when the entire bundle
     // is created. This is required for production bundle splitting.
     // options.includeAsyncPaths &&
-    options.sourceUrl && dependency.data.data.asyncType != null) {
-      hasPaths = true;
-      (0, _invariant().default)(options.sourceUrl != null, 'sourceUrl is required when includeAsyncPaths is true');
 
-      // TODO: Only include path if the target is not in the bundle
+    dependency.data.data.asyncType != null) {
+      if (options.includeAsyncPaths) {
+        if (options.sourceUrl) {
+          hasPaths = true;
+          // TODO: Only include path if the target is not in the bundle
 
-      // Construct a server-relative URL for the split bundle, propagating
-      // most parameters from the main bundle's URL.
+          // Construct a server-relative URL for the split bundle, propagating
+          // most parameters from the main bundle's URL.
 
-      const {
-        searchParams
-      } = new URL(_jscSafeUrl().default.toNormalUrl(options.sourceUrl));
-      searchParams.set('modulesOnly', 'true');
-      searchParams.set('runModule', 'false');
-      const bundlePath = _path().default.relative(options.serverRoot, dependency.absolutePath);
-      if (options.dev) {
-        paths[id] = '/' + _path().default.join(_path().default.dirname(bundlePath),
-        // Strip the file extension
-        _path().default.basename(bundlePath, _path().default.extname(bundlePath))) + '.bundle?' + searchParams.toString();
+          const {
+            searchParams
+          } = new URL(_jscSafeUrl().default.toNormalUrl(options.sourceUrl));
+          searchParams.set('modulesOnly', 'true');
+          searchParams.set('runModule', 'false');
+          const bundlePath = _path().default.relative(options.serverRoot, dependency.absolutePath);
+          paths[id] = '/' + _path().default.join(_path().default.dirname(bundlePath),
+          // Strip the file extension
+          _path().default.basename(bundlePath, _path().default.extname(bundlePath))) + '.bundle?' + searchParams.toString();
+        }
       } else {
+        hasPaths = true;
         // NOTE(EvanBacon): Custom block for bundle splitting in production according to how `expo export` works
         // TODO: Add content hash
-        paths[id] = '/' + getExportPathForDependency(dependency.absolutePath, options);
+        paths[id] = '/' + (0, _exportPath().getExportPathForDependencyWithOptions)(dependency.absolutePath, options);
       }
     }
     return id;
   });
   const params = [moduleId, hasPaths ? {
-    // $FlowIgnore[not-an-object] Intentionally spreading an array into an object
     ...dependencyMapArray,
     paths
   } : dependencyMapArray];
@@ -126,45 +126,14 @@ function getModuleParams(module, options) {
     paths
   };
 }
-function getExportPathForDependency(dependencyPath, options) {
-  //   console.log('getExportPathForDependency', dependency.data.data.locs, options);
-  const {
-    searchParams
-  } = new URL(_jscSafeUrl().default.toNormalUrl(options.sourceUrl));
-  return getExportPathForDependencyWithOptions(dependencyPath, {
-    platform: searchParams.get('platform'),
-    serverRoot: options.serverRoot
-  });
-}
-function getExportPathForDependencyWithOptions(dependencyPath, {
-  platform,
-  serverRoot
-}) {
-  //   console.log('getExportPathForDependency', dependency.data.data.locs, options);
-  const bundlePath = _path().default.relative(serverRoot, dependencyPath);
-  const relativePathname = _path().default.join(_path().default.dirname(bundlePath),
-  // Strip the file extension
-  _path().default.basename(bundlePath, _path().default.extname(bundlePath)));
-  const name = (0, _getCssDeps().fileNameFromContents)({
-    filepath: relativePathname,
-    // TODO: Add content hash
-    src: relativePathname
-  });
-  return `_expo/static/js/${platform}/` +
-  // make filename safe
-  // dependency.data.data.key.replace(/[^a-z0-9]/gi, '_') +
-  name + '.js';
-}
 function getJsOutput(module) {
   var _module$path, _module$path2;
   const jsModules = module.output.filter(({
     type
   }) => type.startsWith('js/'));
-  (0, _invariant().default)(jsModules.length === 1, `Modules must have exactly one JS output, but ${(_module$path = module.path) !== null && _module$path !== void 0 ? _module$path : 'unknown module'} has ${jsModules.length} JS outputs.`);
+  (0, _assert().default)(jsModules.length === 1, `Modules must have exactly one JS output, but ${(_module$path = module.path) !== null && _module$path !== void 0 ? _module$path : 'unknown module'} has ${jsModules.length} JS outputs.`);
   const jsOutput = jsModules[0];
-  //   const jsOutput: JsOutput = (jsModules[0]: any);
-
-  (0, _invariant().default)(Number.isFinite(jsOutput.data.lineCount), `JS output must populate lineCount, but ${(_module$path2 = module.path) !== null && _module$path2 !== void 0 ? _module$path2 : 'unknown module'} has ${jsOutput.type} output with lineCount '${jsOutput.data.lineCount}'`);
+  (0, _assert().default)(Number.isFinite(jsOutput.data.lineCount), `JS output must populate lineCount, but ${(_module$path2 = module.path) !== null && _module$path2 !== void 0 ? _module$path2 : 'unknown module'} has ${jsOutput.type} output with lineCount '${jsOutput.data.lineCount}'`);
   return jsOutput;
 }
 function isJsModule(module) {

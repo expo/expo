@@ -4,34 +4,66 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * Fork with bundle splitting and better source map support.
+ * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/baseJSBundle.js#L1
  */
 
+import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-// @ts-expect-error
 import getAppendScripts from 'metro/src/lib/getAppendScripts';
-// @ts-expect-error
-import type { Bundle } from 'metro-runtime/src/modules/types.flow';
 
 import { processModules } from './processModules';
+
+export type ModuleMap = [number, string][];
+
+export type Bundle = {
+  modules: ModuleMap;
+  post: string;
+  pre: string;
+  _expoSplitBundlePaths: [number, Record<string, string>][];
+};
+
+export function getPlatformOption(
+  graph: Pick<ReadOnlyGraph, 'transformOptions'>,
+  options: SerializerOptions
+): string | null {
+  if (graph.transformOptions?.platform != null) {
+    return graph.transformOptions.platform;
+  }
+  if (!options.sourceUrl) {
+    return null;
+  }
+
+  const sourceUrl = isJscSafeUrl(options.sourceUrl)
+    ? toNormalUrl(options.sourceUrl)
+    : options.sourceUrl;
+  const url = new URL(sourceUrl, 'https://expo.dev');
+  return url.searchParams.get('platform') ?? null;
+}
 
 export function baseJSBundle(
   entryPoint: string,
   preModules: readonly Module[],
-  graph: Pick<ReadOnlyGraph, 'dependencies'>,
+  graph: Pick<ReadOnlyGraph, 'dependencies' | 'transformOptions'>,
   options: SerializerOptions
 ): Bundle {
-  return baseJSBundleWithDependencies(
-    entryPoint,
-    preModules,
-    [...graph.dependencies.values()],
-    options
-  );
+  const platform = getPlatformOption(graph, options);
+  if (platform == null) {
+    throw new Error('platform could not be determined for Metro bundle');
+  }
+
+  return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
+    ...options,
+    platform,
+  });
 }
+
 export function baseJSBundleWithDependencies(
   entryPoint: string,
   preModules: readonly Module[],
   dependencies: Module<MixedOutput>[],
-  options: SerializerOptions
+  options: SerializerOptions & { platform: string }
 ): Bundle {
   for (const module of dependencies) {
     options.createModuleId(module.path);
@@ -45,6 +77,7 @@ export function baseJSBundleWithDependencies(
     projectRoot: options.projectRoot,
     serverRoot: options.serverRoot,
     sourceUrl: options.sourceUrl,
+    platform: options.platform,
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested
@@ -53,7 +86,7 @@ export function baseJSBundleWithDependencies(
   }
 
   const preCode = processModules(preModules, processModulesOptions)
-    .map(([_, code]) => code.src)
+    .map(([, code]) => code.src)
     .join('\n');
 
   const modules = [...dependencies].sort(
@@ -75,7 +108,7 @@ export function baseJSBundleWithDependencies(
     }),
     processModulesOptions
   )
-    .map(([_, code]) => code.src)
+    .map(([, code]) => code.src)
     .join('\n');
 
   const mods = processModules([...dependencies], processModulesOptions).map(([module, code]) => [
@@ -85,10 +118,13 @@ export function baseJSBundleWithDependencies(
   return {
     pre: preCode,
     post: postCode,
-    modules: mods.map(([id, code]) => [id, typeof code === 'number' ? code : code.src]),
+    modules: mods.map(([id, code]) => [
+      id,
+      typeof code === 'number' ? code : code.src,
+    ]) as ModuleMap,
     _expoSplitBundlePaths: mods.map(([id, code]) => [
       id,
       typeof code === 'number' ? {} : code.paths,
-    ]),
+    ]) as [number, Record<string, string>][],
   };
 }
