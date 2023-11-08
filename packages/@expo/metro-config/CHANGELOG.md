@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- Ensure the `react-native` exports condition is not used on web.
+
 ### 💡 Others
 
 - Move environment variables production inlining to `babel-preset-expo` to support source maps. ([#25239](https://github.com/expo/expo/pull/25239) by [@EvanBacon](https://github.com/EvanBacon))

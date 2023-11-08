@@ -8,14 +8,13 @@
  * Fork of the jest resolver but with additional settings for Metro and pnp removed.
  * https://github.com/jestjs/jest/blob/d1a2ed7fea4bdc19836274cd810c8360e3ab62f3/packages/jest-resolve/src/defaultResolver.ts#L1
  */
+import type { JSONObject as PackageJSON } from '@expo/json-file';
 import assert from 'assert';
 import { dirname, isAbsolute, resolve as pathResolve } from 'path';
 import { sync as resolveSync, SyncOpts as UpstreamResolveOptions } from 'resolve';
 import * as resolve from 'resolve.exports';
 
 import { directoryExistsSync, fileExistsSync } from '../../../utils/dir';
-
-import type { JSONObject as PackageJSON } from '@expo/json-file';
 
 /**
  * Allows transforming parsed `package.json` contents.
@@ -43,25 +42,25 @@ export type ResolverOptions = {
   /** Directory to begin resolving from. */
   basedir: string;
   /** List of export conditions. */
-  conditions?: Array<string>;
+  conditions?: string[];
   /** Instance of default resolver. */
   defaultResolver: typeof defaultResolver;
   /** List of file extensions to search in order. */
-  extensions?: Array<string>;
+  extensions?: string[];
   /**
    * List of directory names to be looked up for modules recursively.
    *
    * @defaultValue
    * The default is `['node_modules']`.
    */
-  moduleDirectory?: Array<string>;
+  moduleDirectory?: string[];
   /**
    * List of `require.paths` to use if nothing is found in `node_modules`.
    *
    * @defaultValue
    * The default is `undefined`.
    */
-  paths?: Array<string>;
+  paths?: string[];
   /** Allows transforming parsed `package.json` contents. */
   packageFilter?: PackageFilter;
   /** Allows transforms a path within a package. */
@@ -198,7 +197,7 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
   return path;
 }
 
-function createResolveOptions(conditions: Array<string> | undefined): resolve.Options {
+function createResolveOptions(conditions: string[] | undefined): resolve.Options {
   return conditions
     ? { conditions, unsafe: true }
     : // no conditions were passed - let's assume this is Jest internal and it should be `require`
