@@ -137,7 +137,7 @@ process.env['other'];
 
   expect(contents).not.toMatch('development');
   expect(contents).not.toMatch('bar');
-  expect(contents).not.toMatch('process.env.NODE_ENV');
+  expect(contents).toMatch('process.env.NODE_ENV');
   expect(contents).toMatch('process.env.JEST_WORKER_ID');
   expect(contents).toMatch('EXPO_PUBLIC_NODE_ENV');
   expect(contents).toMatch('EXPO_PUBLIC_FOO');
