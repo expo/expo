@@ -76,11 +76,7 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
     platform: string | null
   ): Resolution {
     // TODO: Support extraNodeModules for tsconfig basePath support
-    // TODO: Support package exports import { resolve as resolveExports } from 'resolve.exports'
     // TODO: Support `resolver.blockList`
-    // if (context.unstable_enablePackageExports) {
-    //   throw new CommandError('package exports are not supported with EXPO_USE_FAST_RESOLVER=1');
-    // }
 
     const environment = context.customResolverOptions?.environment;
     const isServer = environment === 'node';

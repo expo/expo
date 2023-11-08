@@ -202,8 +202,6 @@ export function withExtendedResolver(
   const shimsFolder = path.join(config.projectRoot, METRO_SHIMS_FOLDER);
 
   function getStrictResolver(context: ResolutionContext, platform: string | null) {
-    const isNode = context.customResolverOptions?.environment === 'node';
-
     return function doResolve(moduleName: string): Resolution {
       // Workaround for Node.js having package exports enabled by default and
       // the fast resolver not having package exports support yet.

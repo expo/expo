@@ -42,8 +42,12 @@ const createContext = ({
     preferNativePlatform,
     sourceExts,
     unstable_enablePackageExports: !!packageExports,
-    unstable_conditionsByPlatform: isServer ? {} : { web: ['browser'] },
-    unstable_conditionNames: isServer ? ['node', 'require'] : ['require', 'import', 'react-native'],
+    unstable_conditionsByPlatform: {},
+    unstable_conditionNames: isServer
+      ? ['node', 'require']
+      : platform === 'web'
+      ? ['require', 'import', 'browser']
+      : ['require', 'import', 'react-native'],
   };
 };
 
@@ -187,7 +191,7 @@ describe(createFastResolver, () => {
       );
     });
 
-    xit('resolves module with browser shims', () => {
+    it('resolves module with browser shims', () => {
       const resolver = createFastResolver({ preserveSymlinks: false });
       const context = createContext({
         platform,
@@ -222,6 +226,7 @@ describe(createFastResolver, () => {
             platform,
             isServer: true,
             origin: results.filePath,
+            packageExports: false,
           }),
           './util.inspect.js',
           platform
