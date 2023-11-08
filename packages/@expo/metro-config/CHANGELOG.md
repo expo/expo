@@ -14,7 +14,7 @@
 
 ### 🐛 Bug fixes
 
-- Ensure the `react-native` exports condition is not used on web.
+- Ensure the `react-native` exports condition is not used on web. ([#25260](https://github.com/expo/expo/pull/25260) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
