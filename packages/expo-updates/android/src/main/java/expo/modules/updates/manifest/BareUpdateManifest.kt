@@ -3,7 +3,6 @@ package expo.modules.updates.manifest
 import android.util.Log
 import expo.modules.jsonutils.getNullable
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
@@ -22,13 +21,13 @@ import java.util.*
 class BareUpdateManifest private constructor(
   override val manifest: BareManifest,
   private val mId: UUID,
-  private val mScopeKey: String?,
+  private val mScopeKey: String,
   private val mCommitTime: Date,
   private val mRuntimeVersion: String,
   private val mAssets: JSONArray?
 ) : UpdateManifest {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey!!, this@BareUpdateManifest.manifest.getRawJson()).apply {
+    UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey, this@BareUpdateManifest.manifest.getRawJson()).apply {
       status = UpdateStatus.EMBEDDED
     }
   }
@@ -86,7 +85,7 @@ class BareUpdateManifest private constructor(
     ): BareUpdateManifest {
       val id = UUID.fromString(manifest.getID())
       val commitTime = Date(manifest.getCommitTimeLong())
-      val runtimeVersion = UpdatesUtils.getRuntimeVersion(configuration)
+      val runtimeVersion = configuration.getRuntimeVersion()
       val assets = manifest.getAssets()
       if (runtimeVersion.contains(",")) {
         throw AssertionError("Should not be initializing a BareManifest in an environment with multiple runtime versions.")

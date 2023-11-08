@@ -1,7 +1,6 @@
 package expo.modules.updates
 
 import expo.modules.updates.db.entity.AssetEntity
-import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase
 import org.junit.Assert
@@ -41,27 +40,31 @@ class UpdatesUtilsTest : TestCase() {
 
   @Test
   fun testGetRuntimeVersion() {
-    val sdkOnlyConfig = mockk<UpdatesConfiguration>()
-    every { sdkOnlyConfig.sdkVersion } returns "38.0.0"
-    every { sdkOnlyConfig.runtimeVersion } returns null
-    Assert.assertEquals("38.0.0", UpdatesUtils.getRuntimeVersion(sdkOnlyConfig))
-    val runtimeOnlyConfig = mockk<UpdatesConfiguration>()
-    every { runtimeOnlyConfig.runtimeVersion } returns "1.0"
-    every { runtimeOnlyConfig.sdkVersion } returns null
-    Assert.assertEquals("1.0", UpdatesUtils.getRuntimeVersion(runtimeOnlyConfig))
+    val baseConfig = UpdatesConfiguration(
+      expectsSignedManifest = true,
+      scopeKey = "wat",
+      updateUrl = mockk(),
+      sdkVersion = "38.0.0",
+      runtimeVersionRaw = "1.0",
+      releaseChannel = "default",
+      launchWaitMs = 0,
+      checkOnLaunch = UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS,
+      hasEmbeddedUpdate = true,
+      requestHeaders = mapOf(),
+      codeSigningCertificate = null,
+      codeSigningMetadata = null,
+      codeSigningIncludeManifestResponseCertificateChain = true,
+      codeSigningAllowUnsignedManifests = true,
+      enableExpoUpdatesProtocolV0CompatibilityMode = true,
+    )
+
+    val sdkOnlyConfig = baseConfig.copy(runtimeVersionRaw = null)
+    Assert.assertEquals("38.0.0", sdkOnlyConfig.getRuntimeVersion())
+
+    val runtimeOnlyConfig = baseConfig.copy(sdkVersion = null)
+    Assert.assertEquals("1.0", runtimeOnlyConfig.getRuntimeVersion())
 
     // should prefer runtimeVersion over sdkVersion if both are specified
-    val bothConfig = mockk<UpdatesConfiguration>()
-    every { bothConfig.sdkVersion } returns "38.0.0"
-    every { bothConfig.runtimeVersion } returns "1.0"
-    Assert.assertEquals("1.0", UpdatesUtils.getRuntimeVersion(bothConfig))
-  }
-
-  @Test
-  fun testGetRuntimeVersion_neitherDefined() {
-    val neitherConfig = mockk<UpdatesConfiguration>()
-    every { neitherConfig.sdkVersion } returns null
-    every { neitherConfig.runtimeVersion } returns null
-    Assert.assertEquals("1", UpdatesUtils.getRuntimeVersion(neitherConfig))
+    Assert.assertEquals("1.0", baseConfig.getRuntimeVersion())
   }
 }

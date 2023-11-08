@@ -3,7 +3,6 @@ package expo.modules.updates.launcher
 import android.content.Context
 import android.os.AsyncTask
 import android.util.Log
-import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.loader.EmbeddedLoader
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -23,7 +22,7 @@ class NoDatabaseLauncher @JvmOverloads constructor(
   override val bundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME
   override val launchedUpdate = null
   override val launchAssetFile = null
-  override val localAssetFiles: Map<AssetEntity, String>? = null
+  override val localAssetFiles = null
   override val isUsingEmbeddedAssets = true
 
   private fun writeErrorToLog(context: Context, fatalException: Exception) {

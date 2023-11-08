@@ -45,7 +45,7 @@ import java.util.Date
 class LoaderTask(
   private val configuration: UpdatesConfiguration,
   private val databaseHolder: DatabaseHolder,
-  private val directory: File?,
+  private val directory: File,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
   private val callback: LoaderTaskCallback
@@ -135,20 +135,6 @@ class LoaderTask(
   private var finalizedLauncher: Launcher? = null
 
   fun start(context: Context) {
-    if (!configuration.isEnabled) {
-      callback.onFailure(Exception("LoaderTask was passed a configuration object with updates disabled. You should load updates from an embedded source rather than calling LoaderTask, or enable updates in the configuration."))
-      return
-    }
-
-    if (configuration.updateUrl == null) {
-      callback.onFailure(Exception("LoaderTask was passed a configuration object with a null URL. You must pass a nonnull URL in order to use LoaderTask to load updates."))
-      return
-    }
-
-    if (directory == null) {
-      throw AssertionError("LoaderTask directory must be nonnull.")
-    }
-
     isRunning = true
 
     val shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdateOnLaunch(configuration, context)

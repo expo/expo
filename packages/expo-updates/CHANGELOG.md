@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Split updates controllers depending on configuration, changing native public API. ([#25085](https://github.com/expo/expo/pull/25085) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
 

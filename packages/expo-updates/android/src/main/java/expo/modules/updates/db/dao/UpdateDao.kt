@@ -20,7 +20,7 @@ abstract class UpdateDao {
   // if an update has successfully launched at least once, we treat it as launchable
   // even if it has also failed to launch at least once
   @Query("SELECT * FROM updates WHERE scope_key = :scopeKey AND (successful_launch_count > 0 OR failed_launch_count < 1) AND status IN (:statuses);")
-  abstract fun _loadLaunchableUpdatesForProjectWithStatuses(scopeKey: String?, statuses: List<UpdateStatus>): List<UpdateEntity>
+  abstract fun _loadLaunchableUpdatesForProjectWithStatuses(scopeKey: String, statuses: List<UpdateStatus>): List<UpdateEntity>
 
   @Query("SELECT * FROM updates WHERE id = :id;")
   abstract fun _loadUpdatesWithId(id: UUID): List<UpdateEntity>
@@ -46,7 +46,7 @@ abstract class UpdateDao {
   @Query("SELECT * FROM updates;")
   abstract fun loadAllUpdates(): List<UpdateEntity>
 
-  fun loadLaunchableUpdatesForScope(scopeKey: String?): List<UpdateEntity> {
+  fun loadLaunchableUpdatesForScope(scopeKey: String): List<UpdateEntity> {
     return _loadLaunchableUpdatesForProjectWithStatuses(
       scopeKey,
       listOf(UpdateStatus.READY, UpdateStatus.EMBEDDED, UpdateStatus.DEVELOPMENT)

@@ -219,9 +219,6 @@ object UpdatesUtils {
     updatesConfiguration: UpdatesConfiguration,
     context: Context
   ): Boolean {
-    if (updatesConfiguration.updateUrl == null) {
-      return false
-    }
     return when (updatesConfiguration.checkOnLaunch) {
       CheckAutomaticallyConfiguration.NEVER -> false
       // check will happen later on if there's an error
@@ -238,21 +235,6 @@ object UpdatesUtils {
         !cm.isActiveNetworkMetered
       }
       CheckAutomaticallyConfiguration.ALWAYS -> true
-    }
-  }
-
-  fun getRuntimeVersion(updatesConfiguration: UpdatesConfiguration): String {
-    val runtimeVersion = updatesConfiguration.runtimeVersion
-    val sdkVersion = updatesConfiguration.sdkVersion
-    return if (runtimeVersion != null && runtimeVersion.isNotEmpty()) {
-      runtimeVersion
-    } else if (sdkVersion != null && sdkVersion.isNotEmpty()) {
-      sdkVersion
-    } else {
-      // various places in the code assume that we have a nonnull runtimeVersion, so if the developer
-      // hasn't configured either runtimeVersion or sdkVersion, we'll use a dummy value of "1" but warn
-      // the developer in JS that they need to configure one of these values
-      "1"
     }
   }
 

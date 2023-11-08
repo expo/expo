@@ -6,23 +6,25 @@ import android.os.Bundle
 import android.util.Log
 import abi49_0_0.expo.modules.kotlin.Promise
 import abi49_0_0.expo.modules.kotlin.exception.Exceptions
+import abi49_0_0.expo.modules.kotlin.exception.toCodedException
 import abi49_0_0.expo.modules.kotlin.modules.Module
 import abi49_0_0.expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.*
 import abi49_0_0.expo.modules.updates.logging.UpdatesErrorCode
 import abi49_0_0.expo.modules.updates.logging.UpdatesLogEntry
 import abi49_0_0.expo.modules.updates.logging.UpdatesLogReader
 import abi49_0_0.expo.modules.updates.logging.UpdatesLogger
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.BuildConfig
-import expo.modules.updates.manifest.ManifestMetadata
+import expo.modules.updates.IUpdatesController
 import java.util.Date
 import expo.modules.updates.UpdatesController
-import expo.modules.updates.manifest.EmbeddedManifest
 
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
 import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.statemachine.UpdatesStateContext
+
 /* ktlint-enable no-unused-imports */
 
 /**
@@ -44,21 +46,19 @@ class UpdatesModule : Module() {
       UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
       val constants = mutableMapOf<String, Any>()
       try {
-        val updatesController = UpdatesController.instance
-        val configuration = updatesController.updatesConfiguration
-        val launchedUpdate = updatesController.launchedUpdate
-        val embeddedUpdate = EmbeddedManifest.get(context, configuration)?.updateEntity
+        val constantsForModule = UpdatesController.instance.getConstantsForModule(context)
+        val launchedUpdate = constantsForModule.launchedUpdate
+        val embeddedUpdate = constantsForModule.embeddedUpdate
         val isEmbeddedLaunch = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
 
-        constants["isEmergencyLaunch"] = updatesController.isEmergencyLaunch
+        constants["isEmergencyLaunch"] = constantsForModule.isEmergencyLaunch
         constants["isEmbeddedLaunch"] = isEmbeddedLaunch
-        constants["isMissingRuntimeVersion"] = configuration.isMissingRuntimeVersion
-        constants["isEnabled"] = configuration.isEnabled
-        constants["releaseChannel"] = configuration.releaseChannel
-        constants["isUsingEmbeddedAssets"] = updatesController.isUsingEmbeddedAssets
-        constants["runtimeVersion"] = configuration.runtimeVersion ?: ""
-        constants["checkAutomatically"] = configuration.checkOnLaunch.toJSString()
-        constants["channel"] = configuration.requestHeaders["expo-channel-name"] ?: ""
+        constants["isEnabled"] = constantsForModule.isEnabled
+        constants["releaseChannel"] = constantsForModule.releaseChannel
+        constants["isUsingEmbeddedAssets"] = constantsForModule.isUsingEmbeddedAssets
+        constants["runtimeVersion"] = constantsForModule.runtimeVersion ?: ""
+        constants["checkAutomatically"] = constantsForModule.checkOnLaunch.toJSString()
+        constants["channel"] = constantsForModule.requestHeaders["expo-channel-name"] ?: ""
         constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
 
         if (launchedUpdate != null) {
@@ -66,7 +66,7 @@ class UpdatesModule : Module() {
           constants["commitTime"] = launchedUpdate.commitTime.time
           constants["manifestString"] = launchedUpdate.manifest.toString()
         }
-        val localAssetFiles = updatesController.localAssetFiles
+        val localAssetFiles = constantsForModule.localAssetFiles
         if (localAssetFiles != null) {
           val localAssets = mutableMapOf<String, String>()
           for (asset in localAssetFiles.keys) {
@@ -85,257 +85,160 @@ class UpdatesModule : Module() {
         // and warn the developer if not. This does not take into account any extra configuration
         // provided at runtime in MainApplication.java, because we don't have access to that in a
         // debug build.
-        val configuration = UpdatesConfiguration(context, null)
-        constants["isMissingRuntimeVersion"] = configuration.isMissingRuntimeVersion
+        val isMissingRuntimeVersion = UpdatesConfiguration.isMissingRuntimeVersion(context, null)
+        constants["isMissingRuntimeVersion"] = isMissingRuntimeVersion
       }
       constants
     }
 
     AsyncFunction("reload") { promise: Promise ->
-      try {
-        val updatesController = UpdatesController.instance
-        val configuration = updatesController.updatesConfiguration
-        val launchedUpdate = updatesController.launchedUpdate
-        val canRelaunch = configuration.isEnabled && launchedUpdate != null
-        if (!canRelaunch) {
-          promise.reject(
-            "ERR_UPDATES_DISABLED",
-            "You cannot reload when expo-updates is not enabled.",
-            null
-          )
-        } else {
-          updatesController.relaunchReactApplication(
-            context,
-            object : LauncherCallback {
-              override fun onFailure(e: Exception) {
-                Log.e(TAG, "Failed to relaunch application", e)
-                promise.reject("ERR_UPDATES_RELOAD", e.message, e)
-              }
+      UpdatesController.instance.relaunchReactApplicationForModule(
+        context,
+        object : IUpdatesController.ModuleCallback<Unit> {
+          override fun onSuccess(result: Unit) {
+            promise.resolve(null)
+          }
 
-              override fun onSuccess() {
-                promise.resolve(null)
-              }
-            }
-          )
+          override fun onFailure(exception: CodedException) {
+            promise.reject(exception.toCodedException())
+          }
         }
-      } catch (e: IllegalStateException) {
-        promise.reject(
-          "ERR_UPDATES_RELOAD",
-          "The updates module controller has not been properly initialized. If you're using a development client, you cannot use `Updates.reloadAsync`. Otherwise, make sure you have called the native method UpdatesController.initialize().",
-          e
-        )
-      }
+      )
     }
 
     // Used internally by useUpdates() to get its initial state
     AsyncFunction("getNativeStateMachineContextAsync") { promise: Promise ->
-      try {
-        val updatesController = UpdatesController.instance
-        val configuration = updatesController.updatesConfiguration
-        if (!configuration.isEnabled) {
-          promise.reject(
-            "ERR_UPDATES_DISABLED",
-            "You cannot check for updates when expo-updates is not enabled.",
-            null
-          )
-        } else {
-          val context = updatesController.getNativeStateMachineContext()
-          promise.resolve(context.bundle)
+      UpdatesController.instance.getNativeStateMachineContext(object : IUpdatesController.ModuleCallback<UpdatesStateContext> {
+        override fun onSuccess(result: UpdatesStateContext) {
+          promise.resolve(result.bundle)
         }
-      } catch (e: IllegalStateException) {
-        promise.reject(
-          "ERR_UPDATES_CHECK",
-          "The updates module controller has not been properly initialized. If you're using a development client, you cannot check for updates. Otherwise, make sure you have called the native method UpdatesController.initialize().",
-          e
-        )
-      }
+
+        override fun onFailure(exception: CodedException) {
+          promise.reject(exception.toCodedException())
+        }
+      })
     }
 
     AsyncFunction("checkForUpdateAsync") { promise: Promise ->
-      try {
-        val updatesController = UpdatesController.instance
-        val configuration = updatesController.updatesConfiguration
-        if (!configuration.isEnabled) {
-          promise.reject(
-            "ERR_UPDATES_DISABLED",
-            "You cannot check for updates when expo-updates is not enabled.",
-            null
-          )
-          return@AsyncFunction
-        }
-        updatesController.checkForUpdate(context) { result ->
-          when (result) {
-            is UpdatesController.CheckForUpdateResult.ErrorResult -> {
-              promise.reject("ERR_UPDATES_CHECK", result.message, result.error)
-              Log.e(TAG, result.message, result.error)
-            }
-            is UpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
-              promise.resolve(
-                Bundle().apply {
-                  putBoolean("isRollBackToEmbedded", false)
-                  putBoolean("isAvailable", false)
-                  putString("reason", result.reason.value)
-                }
-              )
-            }
-            is UpdatesController.CheckForUpdateResult.RollBackToEmbedded -> {
-              promise.resolve(
-                Bundle().apply {
-                  putBoolean("isRollBackToEmbedded", true)
-                  putBoolean("isAvailable", false)
-                }
-              )
-            }
-            is UpdatesController.CheckForUpdateResult.UpdateAvailable -> {
-              promise.resolve(
-                Bundle().apply {
-                  putBoolean("isRollBackToEmbedded", false)
-                  putBoolean("isAvailable", true)
-                  putString(
-                    "manifestString",
-                    result.updateManifest.manifest.toString()
-                  )
-                }
-              )
+      UpdatesController.instance.checkForUpdate(
+        context,
+        object : IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult> {
+          override fun onSuccess(result: IUpdatesController.CheckForUpdateResult) {
+            when (result) {
+              is IUpdatesController.CheckForUpdateResult.ErrorResult -> {
+                promise.reject("ERR_UPDATES_CHECK", result.message, result.error)
+                Log.e(TAG, result.message, result.error)
+              }
+              is IUpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
+                promise.resolve(
+                  Bundle().apply {
+                    putBoolean("isRollBackToEmbedded", false)
+                    putBoolean("isAvailable", false)
+                    putString("reason", result.reason.value)
+                  }
+                )
+              }
+              is IUpdatesController.CheckForUpdateResult.RollBackToEmbedded -> {
+                promise.resolve(
+                  Bundle().apply {
+                    putBoolean("isRollBackToEmbedded", true)
+                    putBoolean("isAvailable", false)
+                  }
+                )
+              }
+              is IUpdatesController.CheckForUpdateResult.UpdateAvailable -> {
+                promise.resolve(
+                  Bundle().apply {
+                    putBoolean("isRollBackToEmbedded", false)
+                    putBoolean("isAvailable", true)
+                    putString(
+                      "manifestString",
+                      result.updateManifest.manifest.toString()
+                    )
+                  }
+                )
+              }
             }
           }
+
+          override fun onFailure(exception: CodedException) {
+            promise.reject(exception.toCodedException())
+          }
         }
-      } catch (e: IllegalStateException) {
-        promise.reject(
-          "ERR_UPDATES_CHECK",
-          "The updates module controller has not been properly initialized. If you're using a development client, you cannot check for updates. Otherwise, make sure you have called the native method UpdatesController.initialize().",
-          e
-        )
-      }
+      )
     }
 
     AsyncFunction("fetchUpdateAsync") { promise: Promise ->
-      try {
-        val updatesController = UpdatesController.instance
-        val configuration = updatesController.updatesConfiguration
-        if (!configuration.isEnabled) {
-          promise.reject(
-            "ERR_UPDATES_DISABLED",
-            "You cannot fetch updates when expo-updates is not enabled.",
-            null
-          )
-          return@AsyncFunction
-        }
-
-        updatesController.fetchUpdate(context) { result ->
-          when (result) {
-            is UpdatesController.FetchUpdateResult.ErrorResult -> {
-              promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", result.error)
-            }
-            is UpdatesController.FetchUpdateResult.Failure -> {
-              promise.resolve(
-                Bundle().apply {
-                  putBoolean("isRollBackToEmbedded", false)
-                  putBoolean("isNew", false)
-                }
-              )
-            }
-            is UpdatesController.FetchUpdateResult.RollBackToEmbedded -> {
-              promise.resolve(
-                Bundle().apply {
-                  putBoolean("isRollBackToEmbedded", true)
-                  putBoolean("isNew", false)
-                }
-              )
-            }
-            is UpdatesController.FetchUpdateResult.Success -> {
-              promise.resolve(
-                Bundle().apply {
-                  putBoolean("isRollBackToEmbedded", false)
-                  putBoolean("isNew", true)
-                  putString("manifestString", result.update.manifest.toString())
-                }
-              )
+      UpdatesController.instance.fetchUpdate(
+        context,
+        object : IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult> {
+          override fun onSuccess(result: IUpdatesController.FetchUpdateResult) {
+            when (result) {
+              is IUpdatesController.FetchUpdateResult.ErrorResult -> {
+                promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", result.error)
+              }
+              is IUpdatesController.FetchUpdateResult.Failure -> {
+                promise.resolve(
+                  Bundle().apply {
+                    putBoolean("isRollBackToEmbedded", false)
+                    putBoolean("isNew", false)
+                  }
+                )
+              }
+              is IUpdatesController.FetchUpdateResult.RollBackToEmbedded -> {
+                promise.resolve(
+                  Bundle().apply {
+                    putBoolean("isRollBackToEmbedded", true)
+                    putBoolean("isNew", false)
+                  }
+                )
+              }
+              is IUpdatesController.FetchUpdateResult.Success -> {
+                promise.resolve(
+                  Bundle().apply {
+                    putBoolean("isRollBackToEmbedded", false)
+                    putBoolean("isNew", true)
+                    putString("manifestString", result.update.manifest.toString())
+                  }
+                )
+              }
             }
           }
+
+          override fun onFailure(exception: CodedException) {
+            promise.reject(exception.toCodedException())
+          }
         }
-      } catch (e: IllegalStateException) {
-        val message = "The updates module controller has not been properly initialized. If you're using a development client, you cannot fetch updates. Otherwise, make sure you have called the native method UpdatesController.initialize()."
-        promise.reject("ERR_UPDATES_FETCH", message, e)
-      }
+      )
     }
 
     AsyncFunction("getExtraParamsAsync") { promise: Promise ->
       logger.debug("Called getExtraParamsAsync")
-      val updatesController = UpdatesController.instance
-      val configuration = updatesController.updatesConfiguration
-      if (!configuration.isEnabled) {
-        promise.reject(
-          "ERR_UPDATES_DISABLED",
-          "You cannot get extra params when expo-updates is not enabled.",
-          null
-        )
-        return@AsyncFunction
-      }
-
-      AsyncTask.execute {
-        val databaseHolder = updatesController.databaseHolder
-        try {
-          val result = ManifestMetadata.getExtraParams(
-            databaseHolder.database,
-            configuration,
-          )
-          databaseHolder.releaseDatabase()
-          val resultMap = when (result) {
-            null -> Bundle()
-            else -> {
-              Bundle().apply {
-                result.forEach {
-                  putString(it.key, it.value)
-                }
-              }
-            }
-          }
-          promise.resolve(resultMap)
-        } catch (e: Exception) {
-          databaseHolder.releaseDatabase()
-          promise.reject(
-            "ERR_UPDATES_FETCH",
-            "Exception in getExtraParamsAsync: ${e.message}, ${e.stackTraceToString()}",
-            e
-          )
+      UpdatesController.instance.getExtraParams(object : IUpdatesController.ModuleCallback<Bundle> {
+        override fun onSuccess(result: Bundle) {
+          promise.resolve(result)
         }
-      }
+
+        override fun onFailure(exception: CodedException) {
+          promise.reject(exception.toCodedException())
+        }
+      })
     }
 
     AsyncFunction("setExtraParamAsync") { key: String, value: String?, promise: Promise ->
       logger.debug("Called setExtraParamAsync with key = $key, value = $value")
-      val updatesController = UpdatesController.instance
-      val configuration = updatesController.updatesConfiguration
-      if (!configuration.isEnabled) {
-        promise.reject(
-          "ERR_UPDATES_DISABLED",
-          "You cannot set extra client params when expo-updates is not enabled.",
-          null
-        )
-        return@AsyncFunction
-      }
+      UpdatesController.instance.setExtraParam(
+        key, value,
+        object : IUpdatesController.ModuleCallback<Unit> {
+          override fun onSuccess(result: Unit) {
+            promise.resolve(null)
+          }
 
-      AsyncTask.execute {
-        val databaseHolder = updatesController.databaseHolder
-        try {
-          ManifestMetadata.setExtraParam(
-            databaseHolder.database,
-            configuration,
-            key,
-            value
-          )
-          databaseHolder.releaseDatabase()
-          promise.resolve(null)
-        } catch (e: Exception) {
-          databaseHolder.releaseDatabase()
-          promise.reject(
-            "ERR_UPDATES_FETCH",
-            "Exception in setExtraParamAsync: ${e.message}, ${e.stackTraceToString()}",
-            e
-          )
+          override fun onFailure(exception: CodedException) {
+            promise.reject(exception.toCodedException())
+          }
         }
-      }
+      )
     }
 
     AsyncFunction("readLogEntriesAsync") { maxAge: Long, promise: Promise ->
