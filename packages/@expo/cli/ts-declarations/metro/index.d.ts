@@ -242,6 +242,17 @@ declare module 'metro/src/lib/bundleToString' {
   };
 }
 
+declare module 'metro/src/lib/getAppendScripts' {
+  function getAppendScripts(
+    entryPoint: string,
+    modules: readonly Module<MixedOutput>[],
+    options: SerializerOptions
+  ): Module<MixedOutput>[];
+
+  export default getAppendScripts;
+  module.exports = getAppendScripts;
+}
+
 declare module 'metro/src/IncrementalBundler' {
   import type OriginalIncrementalBundler from 'metro/src/IncrementalBundler.d';
 
