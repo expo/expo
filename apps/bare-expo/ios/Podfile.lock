@@ -61,17 +61,17 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.2.1):
     - ExpoModulesCore
-  - Expo (49.0.16):
+  - Expo (49.0.17):
     - ExpoModulesCore
-  - expo-dev-client (2.4.11):
+  - expo-dev-client (2.4.12):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (2.4.13):
+  - expo-dev-launcher (2.4.14):
     - EXManifests
-    - expo-dev-launcher/Main (= 2.4.13)
+    - expo-dev-launcher/Main (= 2.4.14)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -79,7 +79,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Main (2.4.13):
+  - expo-dev-launcher/Main (2.4.14):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -89,7 +89,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Tests (2.4.13):
+  - expo-dev-launcher/Tests (2.4.14):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -103,7 +103,7 @@ PODS:
     - React-Core
     - React-CoreModules
     - React-RCTAppDelegate
-  - expo-dev-launcher/Unsafe (2.4.13):
+  - expo-dev-launcher/Unsafe (2.4.14):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -112,38 +112,38 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-menu (3.2.1):
-    - expo-dev-menu/Main (= 3.2.1)
+  - expo-dev-menu (3.2.2):
+    - expo-dev-menu/Main (= 3.2.2)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - expo-dev-menu-interface (1.3.0)
   - expo-dev-menu-interface/Tests (1.3.0):
     - Nimble
     - Quick
-  - expo-dev-menu/Main (3.2.1):
+  - expo-dev-menu/Main (3.2.2):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - expo-dev-menu/SafeAreaView (3.2.1):
+  - expo-dev-menu/SafeAreaView (3.2.2):
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - expo-dev-menu/Tests (3.2.1):
+  - expo-dev-menu/Tests (3.2.2):
     - ExpoModulesTestCore
     - Nimble
     - Quick
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/UITests (3.2.1):
+  - expo-dev-menu/UITests (3.2.2):
     - RCT-Folly (= 2021.07.22.00)
     - React
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/Vendored (3.2.1):
+  - expo-dev-menu/Vendored (3.2.2):
     - expo-dev-menu/SafeAreaView
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -1382,10 +1382,10 @@ SPEC CHECKSUMS:
   EXMediaLibrary: 8ac14ce76f266026b10cac2ab049debe032d7ae7
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 4f80cf527001aa408a22eddf076e61465ea71d5a
-  Expo: fcfd60c1ed6806dee5103b210335ae0c72f675ed
-  expo-dev-client: a97a68508a6104ad99f4b2613fd808cda7a4186c
-  expo-dev-launcher: 7336e6dc8ed51b87225f8a96d787add81a99748c
-  expo-dev-menu: 9542570483a647626570cb4333c80add4cea1254
+  Expo: 61f0ce2461122eb405d373e512a0dbc79804001a
+  expo-dev-client: 1e20e0d67534fd63da37604747a60e7d69fc46f5
+  expo-dev-launcher: e9411e0c91abaa448682d0fa688957e7dbff356e
+  expo-dev-menu: f7036f78c69f0f6ecb386f5543a06266dde64bf5
   expo-dev-menu-interface: bda969497e73dadc2663c479e0fa726ca79a306e
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
   ExpoBattery: e9d7a71960cbc40733d956a29f8ba240173feb08

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed crash from accessing the `accessFlags` attribute on Android API 22. ([#25248](https://github.com/expo/expo/pull/25248) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 3.2.2 — 2023-11-08
+
+### 🐛 Bug fixes
+
+- [Android] Fixed crash from accessing the `accessFlags` attribute on Android API 22. ([#25248](https://github.com/expo/expo/pull/25248) by [@kudo](https://github.com/kudo))
 
 ## 3.2.1 — 2023-09-25
 

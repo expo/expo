@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-client",
-  "version": "2.4.11",
+  "version": "2.4.12",
   "description": "Expo Development Client",
   "main": "build/DevClient.js",
   "types": "build/DevClient.d.ts",
@@ -32,8 +32,8 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/clients/introduction/",
   "dependencies": {
-    "expo-dev-launcher": "2.4.13",
-    "expo-dev-menu": "3.2.1",
+    "expo-dev-launcher": "2.4.14",
+    "expo-dev-menu": "3.2.2",
     "expo-dev-menu-interface": "1.3.0",
     "expo-manifests": "~0.7.0",
     "expo-updates-interface": "~0.10.0"
