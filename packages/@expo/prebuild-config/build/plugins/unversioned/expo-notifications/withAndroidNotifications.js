@@ -17,6 +17,13 @@ function _configPlugins() {
   };
   return data;
 }
+function _withAndroidIcons() {
+  const data = require("@expo/config-plugins/src/utils/icons/withAndroidIcons");
+  _withAndroidIcons = function () {
+    return data;
+  };
+  return data;
+}
 function _imageUtils() {
   const data = require("@expo/image-utils");
   _imageUtils = function () {
@@ -34,13 +41,6 @@ function _fsExtra() {
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
-    return data;
-  };
-  return data;
-}
-function _withAndroidIcons() {
-  const data = require("../../icons/withAndroidIcons");
-  _withAndroidIcons = function () {
     return data;
   };
   return data;

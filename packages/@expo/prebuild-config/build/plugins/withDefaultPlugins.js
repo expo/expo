@@ -22,20 +22,6 @@ function _debug() {
   };
   return data;
 }
-function _withAndroidIcons() {
-  const data = require("./icons/withAndroidIcons");
-  _withAndroidIcons = function () {
-    return data;
-  };
-  return data;
-}
-function _withIosIcons() {
-  const data = require("./icons/withIosIcons");
-  _withIosIcons = function () {
-    return data;
-  };
-  return data;
-}
 function _expoAdsAdmob() {
   const data = _interopRequireDefault(require("./unversioned/expo-ads-admob/expo-ads-admob"));
   _expoAdsAdmob = function () {
@@ -131,7 +117,7 @@ const withIosExpoPlugins = (config, {
   // XcodeProject
   _configPlugins().IOSConfig.DeviceFamily.withDeviceFamily, _configPlugins().IOSConfig.Bitcode.withBitcode, _configPlugins().IOSConfig.Locales.withLocales,
   // Dangerous
-  _withIosIcons().withIosIcons]);
+  _configPlugins().Icons.IosIcons.withIosIcons]);
 };
 
 /**
@@ -162,7 +148,7 @@ const withAndroidExpoPlugins = (config, props) => {
   // Dangerous -- these plugins run in reverse order.
   _configPlugins().AndroidConfig.GoogleServices.withGoogleServicesFile,
   // Modify colors.xml and styles.xml
-  _configPlugins().AndroidConfig.StatusBar.withStatusBar, _configPlugins().AndroidConfig.PrimaryColor.withPrimaryColor, _withAndroidIcons().withAndroidIcons,
+  _configPlugins().AndroidConfig.StatusBar.withStatusBar, _configPlugins().AndroidConfig.PrimaryColor.withPrimaryColor, _configPlugins().Icons.AndroidIcons.withAndroidIcons,
   // If we renamed the package, we should also move it around and rename it in source files
   // Added last to ensure this plugin runs first. Out of tree solutions will mistakenly resolve the package incorrectly otherwise.
   _configPlugins().AndroidConfig.Package.withPackageRefactor]);
