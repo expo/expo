@@ -123,6 +123,9 @@ export class Statement {
  */
 export function normalizeParams(...params) {
     let bindParams = params.length > 1 ? params : params[0];
+    if (bindParams == null) {
+        bindParams = [];
+    }
     if (typeof bindParams !== 'object') {
         bindParams = [bindParams];
     }

@@ -239,13 +239,11 @@ export class Database {
   public eachAsync<T>(source: string, params: BindParams): AsyncIterableIterator<T>;
   public async *eachAsync<T>(source: string, ...params: any[]): AsyncIterableIterator<T> {
     const statement = await this.prepareAsync(source);
-    let result;
     try {
-      result = await statement.eachAsync<T>(...params);
+      yield* await statement.eachAsync<T>(...params);
     } finally {
       await statement.finalizeAsync();
     }
-    yield* result;
   }
 
   /**
@@ -327,13 +325,11 @@ export class Database {
   public eachSync<T>(source: string, params: BindParams): IterableIterator<T>;
   public *eachSync<T>(source: string, ...params: any[]): IterableIterator<T> {
     const statement = this.prepareSync(source);
-    let result;
     try {
-      result = statement.eachSync<T>(...params);
+      yield* statement.eachSync<T>(...params);
     } finally {
       statement.finalizeSync();
     }
-    yield* result;
   }
 
   /**
