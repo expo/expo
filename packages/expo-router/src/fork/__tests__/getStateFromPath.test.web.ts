@@ -1,5 +1,3 @@
-import Constants from 'expo-constants';
-
 import { configFromFs } from '../../utils/mockState';
 import getPathFromState from '../getPathFromState';
 import getStateFromPath, {
@@ -7,15 +5,12 @@ import getStateFromPath, {
   getUrlWithReactNavigationConcessions,
 } from '../getStateFromPath';
 
-jest.mock('expo-constants', () => ({
-  __esModule: true,
-  default: {
-    expoConfig: {},
-  },
-}));
+beforeEach(() => {
+  delete process.env.EXPO_BASE_URL;
+});
 
-afterEach(() => {
-  Constants.expoConfig!.experiments = undefined;
+afterAll(() => {
+  delete process.env.EXPO_BASE_URL;
 });
 
 describe(stripBaseUrl, () => {
@@ -43,12 +38,8 @@ describe(stripBaseUrl, () => {
 
 describe('baseUrl', () => {
   it('accounts for baseUrl', () => {
-    // @ts-expect-error
-    Constants.expoConfig = {
-      experiments: {
-        baseUrl: '/expo/prefix',
-      },
-    };
+    process.env.EXPO_BASE_URL = '/expo/prefix';
+
     const path = '/expo/prefix/bar';
     const config = configFromFs(['_layout.tsx', 'bar.tsx', 'index.tsx']);
 
@@ -62,12 +53,7 @@ describe('baseUrl', () => {
   });
 
   it('has baseUrl and state that does not match', () => {
-    // @ts-expect-error
-    Constants.expoConfig = {
-      experiments: {
-        baseUrl: '/expo',
-      },
-    };
+    process.env.EXPO_BASE_URL = '/expo';
     const path = '/bar';
     const config = configFromFs(['_layout.tsx', 'bar.tsx', 'index.tsx']);
 

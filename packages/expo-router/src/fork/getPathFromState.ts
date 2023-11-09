@@ -1,6 +1,5 @@
 import { PathConfig, PathConfigMap, validatePathConfig } from '@react-navigation/core';
 import type { NavigationState, PartialState, Route } from '@react-navigation/routers';
-import Constants from 'expo-constants';
 
 import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
 
@@ -618,7 +617,7 @@ const createNormalizedConfigs = (
 
 export function appendBaseUrl(
   path: string,
-  assetPrefix: string | undefined = Constants.expoConfig?.experiments?.baseUrl
+  assetPrefix: string | undefined = process.env.EXPO_BASE_URL
 ) {
   if (process.env.NODE_ENV !== 'development') {
     if (assetPrefix) {

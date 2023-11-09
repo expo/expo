@@ -5,11 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.stripBaseUrl = exports.getMatchableRouteConfigs = exports.getUrlWithReactNavigationConcessions = void 0;
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
-const expo_constants_1 = __importDefault(require("expo-constants"));
 const findFocusedRoute_1 = require("./findFocusedRoute");
 const validatePathConfig_1 = __importDefault(require("./validatePathConfig"));
 const matchers_1 = require("../matchers");
-function getUrlWithReactNavigationConcessions(path, baseUrl = expo_constants_1.default.expoConfig?.experiments?.baseUrl) {
+function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_BASE_URL) {
     let parsed;
     try {
         parsed = new URL(path, 'https://phony.example');
@@ -554,7 +553,7 @@ function getBaseUrlRegex(baseUrl) {
     baseUrlCache.set(baseUrl, regex);
     return regex;
 }
-function stripBaseUrl(path, baseUrl = expo_constants_1.default.expoConfig?.experiments?.baseUrl) {
+function stripBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     if (process.env.NODE_ENV !== 'development') {
         if (baseUrl) {
             const reg = getBaseUrlRegex(baseUrl);

@@ -1,7 +1,6 @@
 import { PathConfigMap } from '@react-navigation/core';
 import type { InitialState, NavigationState, PartialState } from '@react-navigation/routers';
 import escape from 'escape-string-regexp';
-import Constants from 'expo-constants';
 
 import { findFocusedRoute } from './findFocusedRoute';
 import validatePathConfig from './validatePathConfig';
@@ -45,7 +44,7 @@ type ParsedRoute = {
 
 export function getUrlWithReactNavigationConcessions(
   path: string,
-  baseUrl: string | undefined = Constants.expoConfig?.experiments?.baseUrl
+  baseUrl: string | undefined = process.env.EXPO_BASE_URL
 ) {
   let parsed: URL;
   try {
@@ -791,7 +790,7 @@ function getBaseUrlRegex(baseUrl: string) {
 
 export function stripBaseUrl(
   path: string,
-  baseUrl: string | undefined = Constants.expoConfig?.experiments?.baseUrl
+  baseUrl: string | undefined = process.env.EXPO_BASE_URL
 ) {
   if (process.env.NODE_ENV !== 'development') {
     if (baseUrl) {
