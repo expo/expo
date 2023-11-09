@@ -8,7 +8,6 @@ import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.types.JSTypeConverter
 import expo.modules.kotlin.types.putGeneric
-import kotlin.reflect.KType
 
 fun interface ViewEventCallback<T> {
   operator fun invoke(arg: T)
@@ -16,7 +15,6 @@ fun interface ViewEventCallback<T> {
 
 open class ViewEvent<T>(
   private val name: String,
-  private val type: KType,
   private val view: View,
   private val coalescingKey: CoalescingKey<T>?
 ) : ViewEventCallback<T> {
