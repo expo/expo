@@ -125,7 +125,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     val requiresAuthentication = encryptedItem.optBoolean(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY)
 
     if (authenticationTagLength < MIN_GCM_AUTHENTICATION_TAG_LENGTH) {
-      throw DecryptException("Authentication tag length must be at least $MIN_GCM_AUTHENTICATION_TAG_LENGTH", key, options.keychainService)
+      throw DecryptException("Authentication tag length must be at least $MIN_GCM_AUTHENTICATION_TAG_LENGTH bits long", key, options.keychainService)
     }
     cipher.init(Cipher.DECRYPT_MODE, keyStoreEntry.secretKey, gcmSpec)
     val unlockedCipher = authenticationHelper.authenticateCipher(cipher, requiresAuthentication, options.authenticationPrompt)
