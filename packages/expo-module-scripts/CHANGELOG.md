@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Remove watchPlugins from sub-projects when using multi-project runner.
+- Default to using jest-preset-plugin when running `yarn test plugin` with no `plugin/jest.config.js` file.
+
 ### 💡 Others
 
 ## 3.2.0 — 2023-10-17
