@@ -4,8 +4,8 @@ import com.android.build.api.variant.AndroidComponentsExtension
 buildscript {
   ext {
     minSdkVersion = 23
-    targetSdkVersion = 33
-    compileSdkVersion = 33
+    targetSdkVersion = 34
+    compileSdkVersion = 34
 
     dbFlowVersion = '4.2.4'
     buildToolsVersion = '33.0.0'

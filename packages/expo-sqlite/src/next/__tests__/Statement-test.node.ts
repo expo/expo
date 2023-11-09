@@ -101,54 +101,61 @@ describe(Statement, () => {
 
 describe(normalizeParams, () => {
   it('should accept no params', () => {
-    expect(normalizeParams()).toEqual({
+    expect(normalizeParams()).toStrictEqual({
+      shouldPassAsObject: false,
+      params: [],
+    });
+  });
+
+  it('should accept variadic empty array', () => {
+    expect(normalizeParams(...[])).toStrictEqual({
       shouldPassAsObject: false,
       params: [],
     });
   });
 
   it('should accept single primitive param as array', () => {
-    expect(normalizeParams(1)).toEqual({
+    expect(normalizeParams(1)).toStrictEqual({
       shouldPassAsObject: false,
       params: [1],
     });
-    expect(normalizeParams('hello')).toEqual({
+    expect(normalizeParams('hello')).toStrictEqual({
       shouldPassAsObject: false,
       params: ['hello'],
     });
   });
 
   it('should accept variadic params', () => {
-    expect(normalizeParams(1, 2, 3)).toEqual({
+    expect(normalizeParams(1, 2, 3)).toStrictEqual({
       shouldPassAsObject: false,
       params: [1, 2, 3],
     });
   });
 
   it('should accept array params', () => {
-    expect(normalizeParams([1, 2, 3])).toEqual({
+    expect(normalizeParams([1, 2, 3])).toStrictEqual({
       shouldPassAsObject: false,
       params: [1, 2, 3],
     });
   });
 
   it('should accept object params', () => {
-    expect(normalizeParams({ foo: 'foo', bar: 'bar' })).toEqual({
+    expect(normalizeParams({ foo: 'foo', bar: 'bar' })).toStrictEqual({
       shouldPassAsObject: true,
       params: { foo: 'foo', bar: 'bar' },
     });
   });
 
   it('special cases - should pass as array params', () => {
-    expect(normalizeParams({ foo: 'foo', bar: 'bar' }, 1, 2, 3)).toEqual({
+    expect(normalizeParams({ foo: 'foo', bar: 'bar' }, 1, 2, 3)).toStrictEqual({
       shouldPassAsObject: false,
       params: [{ foo: 'foo', bar: 'bar' }, 1, 2, 3],
     });
-    expect(normalizeParams({ foo: 'foo', bar: 'bar' }, [1, 2, 3])).toEqual({
+    expect(normalizeParams({ foo: 'foo', bar: 'bar' }, [1, 2, 3])).toStrictEqual({
       shouldPassAsObject: false,
       params: [{ foo: 'foo', bar: 'bar' }, [1, 2, 3]],
     });
-    expect(normalizeParams({ foo: 'foo', bar: 'bar' }, { hello: 'hello' })).toEqual({
+    expect(normalizeParams({ foo: 'foo', bar: 'bar' }, { hello: 'hello' })).toStrictEqual({
       shouldPassAsObject: false,
       params: [{ foo: 'foo', bar: 'bar' }, { hello: 'hello' }],
     });

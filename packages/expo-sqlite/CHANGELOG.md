@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash issues in `sqlite/next`. ([#25295](https://github.com/expo/expo/pull/25295) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 12.0.0 — 2023-11-06
@@ -16,6 +18,7 @@
 
 - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Remove CRSQLite support on legacy API. ([#25092](https://github.com/expo/expo/pull/25092) by [@kudo](https://github.com/kudo))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🎉 New features
 
