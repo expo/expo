@@ -48,7 +48,7 @@
   },
   "peerDependencies": {
     "@babel/core": "*",
-    "metro-react-native-babel-preset": "*"
+    "@react-native/babel-preset": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
