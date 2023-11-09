@@ -233,7 +233,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (11.6.0):
     - ExpoModulesCore
-  - ExpoSQLite (11.8.0):
+  - ExpoSQLite (12.0.0):
     - ExpoModulesCore
     - sqlite3 (~> 3.42.0)
   - ExpoStoreReview (6.7.0):
@@ -1287,7 +1287,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
-  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
+  DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: b98df462964e03ad48a44615e0141d8d25bfc4d4
   EXAV: 6e2524617053a4590b0ef46a4fcb9a13d97bac8a
   EXBarCodeScanner: da49272be74d5be70d0f5eab3dea576977b8d0cf
@@ -1342,7 +1342,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 28a662c0718e2680510ca5a208817164944f1cca
   ExpoSMS: 86be39c17d0c6cb50c63271751deaa26381ce25d
   ExpoSpeech: 8a4624ecde6e27157db008d0cc88572a4f523bd5
-  ExpoSQLite: 4fc808cb9536c7bdf6621478a05ce04cbf1037b6
+  ExpoSQLite: f77ef48850c7b2e6573812f0ad2fb46bf0c6eefb
   ExpoStoreReview: 462e12ab98505c836fffe262965a0852f4b32260
   ExpoSystemUI: adb6c827f30566d132501518df24b5b7e4ed294c
   ExpoTrackingTransparency: a7cf99bb23fa213879c36552dda51b6aa63f0279
@@ -1357,7 +1357,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 71803c074f6325f10b5ec891c443b6bbabef0ca7
   FBReactNativeSpec: 556ded527fc4354929dd12d0936a64cd95bde744
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
+  glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: f6cf92a471053245614d9d8097736f6337d5b86c
