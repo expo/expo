@@ -7,8 +7,8 @@ buildscript {
         buildToolsVersion = '33.0.0'
         gradlePluginVersion = '7.4.2'
         minSdkVersion = 23
-        compileSdkVersion = 33
-        targetSdkVersion = 33
+        compileSdkVersion = 34
+        targetSdkVersion = 34
         // Some dependencies still expect supportLibVersion to be defined
         supportLibVersion = "29.0.0"
         kotlinVersion = '1.8.10'
@@ -79,7 +79,9 @@ allprojects {
         maven {
             // expo-camera bundles a custom com.google.android:cameraview
             url "$rootDir/../node_modules/expo-camera/android/maven"
-            url(new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven"))
+        }
+        maven {
+          url(new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven"))
         }
         maven {
             url(new File(["node", "--print", "require.resolve('detox/package.json')"].execute(null, rootDir).text.trim(), "../Detox-android"))
