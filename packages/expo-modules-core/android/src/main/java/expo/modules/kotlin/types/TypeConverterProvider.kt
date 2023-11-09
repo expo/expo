@@ -44,7 +44,6 @@ import java.net.URL
 import java.nio.file.Path
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.typeOf
 
 interface TypeConverterProvider {
@@ -92,28 +91,25 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     }
 
     val kClass = type.classifier as? KClass<*> ?: throw MissingTypeConverter(type)
+    val jClass = kClass.java
 
-    if (kClass.java.isArray) {
+    if (jClass.isArray || Array::class.java.isAssignableFrom(jClass)) {
       return ArrayTypeConverter(this, type)
     }
 
-    if (kClass.isSubclassOf(List::class)) {
+    if (List::class.java.isAssignableFrom(jClass)) {
       return ListTypeConverter(this, type)
     }
 
-    if (kClass.isSubclassOf(Map::class)) {
+    if (Map::class.java.isAssignableFrom(jClass)) {
       return MapTypeConverter(this, type)
     }
 
-    if (kClass.isSubclassOf(Pair::class)) {
+    if (Pair::class.java.isAssignableFrom(jClass)) {
       return PairTypeConverter(this, type)
     }
 
-    if (kClass.isSubclassOf(Array::class)) {
-      return ArrayTypeConverter(this, type)
-    }
-
-    if (kClass.java.isEnum) {
+    if (jClass.isEnum) {
       @Suppress("UNCHECKED_CAST")
       return EnumTypeConverter(kClass as KClass<Enum<*>>, type.isMarkedNullable)
     }
@@ -123,36 +119,36 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return cachedConverter
     }
 
-    if (kClass.isSubclassOf(Record::class)) {
+    if (Record::class.java.isAssignableFrom(jClass)) {
       val converter = RecordTypeConverter<Record>(this, type)
       cachedRecordConverters[kClass] = converter
       return converter
     }
 
-    if (kClass.isSubclassOf(View::class)) {
+    if (View::class.java.isAssignableFrom(jClass)) {
       return ViewTypeConverter<View>(type)
     }
 
-    if (kClass.isSubclassOf(SharedObject::class)) {
+    if (SharedObject::class.java.isAssignableFrom(jClass)) {
       return SharedObjectTypeConverter<SharedObject>(type)
     }
 
-    if (kClass.isSubclassOf(JavaScriptFunction::class)) {
+    if (JavaScriptFunction::class.java.isAssignableFrom(jClass)) {
       return JavaScriptFunctionTypeConverter<Any>(type)
     }
 
-    return handelEither(type, kClass)
+    return handelEither(type, jClass)
       ?: handelCustomConverter(type, kClass)
       ?: throw MissingTypeConverter(type)
   }
 
   @OptIn(EitherType::class)
-  private fun handelEither(type: KType, kClass: KClass<*>): TypeConverter<*>? {
-    if (kClass.isSubclassOf(Either::class)) {
-      if (kClass.isSubclassOf(EitherOfFour::class)) {
+  private fun handelEither(type: KType, jClass: Class<*>): TypeConverter<*>? {
+    if (Either::class.java.isAssignableFrom(jClass)) {
+      if (EitherOfFour::class.java.isAssignableFrom(jClass)) {
         return EitherOfFourTypeConverter<Any, Any, Any, Any>(this, type)
       }
-      if (kClass.isSubclassOf(EitherOfThree::class)) {
+      if (EitherOfThree::class.java.isAssignableFrom(jClass)) {
         return EitherOfThreeTypeConverter<Any, Any, Any>(this, type)
       }
       return EitherTypeConverter<Any, Any>(this, type)
