@@ -122,10 +122,11 @@ export async function exportFromServerAsync(
   assert(devServer instanceof MetroBundlerDevServer);
 
   const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
-    devServer.getStaticResourcesAsync({ mode: 'production', minify, includeMaps }),
+    devServer.getStaticResourcesAsync({ mode: 'production', minify, includeMaps, baseUrl }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
       minify,
+      baseUrl,
     }),
   ]);
 
@@ -167,6 +168,7 @@ export async function exportFromServerAsync(
       server: devServer,
       appDir,
       manifest: serverManifest,
+      baseUrl,
     });
 
     // Add the api routes to the files to export.
@@ -331,12 +333,14 @@ async function exportApiRoutesAsync({
   outputDir,
   server,
   appDir,
+  baseUrl,
   ...props
 }: {
   outputDir: string;
   server: MetroBundlerDevServer;
   appDir: string;
   manifest: ExpoRouterServerManifestV1;
+  baseUrl: string;
 }): Promise<Map<string, string>> {
   const functionsDir = '_expo/functions';
   const funcDir = path.join(outputDir, functionsDir);
@@ -347,6 +351,7 @@ async function exportApiRoutesAsync({
     appDir,
     outputDir: functionsDir,
     prerenderManifest: props.manifest,
+    baseUrl,
   });
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);

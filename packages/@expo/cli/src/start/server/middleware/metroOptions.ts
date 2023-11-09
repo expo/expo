@@ -45,6 +45,7 @@ function withDefaults({
 }
 
 export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
+  // @ts-expect-error: baseUrl is not in the ExpoConfig type yet.
   return (exp.experiments?.baseUrl?.replace(/\/+$/, '') ?? '').trim();
 }
 
