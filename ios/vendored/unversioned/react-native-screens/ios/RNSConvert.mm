@@ -4,119 +4,115 @@
 @implementation RNSConvert
 
 + (RNSScreenStackPresentation)RNSScreenStackPresentationFromCppEquivalent:
-    (facebook::react::RNSScreenStackPresentation)stackPresentation
+    (react::RNSScreenStackPresentation)stackPresentation
 {
   switch (stackPresentation) {
-    case facebook::react::RNSScreenStackPresentation::Push:
+    case react::RNSScreenStackPresentation::Push:
       return RNSScreenStackPresentationPush;
-    case facebook::react::RNSScreenStackPresentation::Modal:
+    case react::RNSScreenStackPresentation::Modal:
       return RNSScreenStackPresentationModal;
-    case facebook::react::RNSScreenStackPresentation::FullScreenModal:
+    case react::RNSScreenStackPresentation::FullScreenModal:
       return RNSScreenStackPresentationFullScreenModal;
-    case facebook::react::RNSScreenStackPresentation::FormSheet:
+    case react::RNSScreenStackPresentation::FormSheet:
       return RNSScreenStackPresentationFormSheet;
-    case facebook::react::RNSScreenStackPresentation::ContainedModal:
+    case react::RNSScreenStackPresentation::ContainedModal:
       return RNSScreenStackPresentationContainedModal;
-    case facebook::react::RNSScreenStackPresentation::TransparentModal:
+    case react::RNSScreenStackPresentation::TransparentModal:
       return RNSScreenStackPresentationTransparentModal;
-    case facebook::react::RNSScreenStackPresentation::ContainedTransparentModal:
+    case react::RNSScreenStackPresentation::ContainedTransparentModal:
       return RNSScreenStackPresentationContainedTransparentModal;
   }
 }
 
-+ (RNSScreenStackAnimation)RNSScreenStackAnimationFromCppEquivalent:
-    (facebook::react::RNSScreenStackAnimation)stackAnimation
++ (RNSScreenStackAnimation)RNSScreenStackAnimationFromCppEquivalent:(react::RNSScreenStackAnimation)stackAnimation
 {
   switch (stackAnimation) {
     // these three are intentionally grouped
-    case facebook::react::RNSScreenStackAnimation::Slide_from_right:
-    case facebook::react::RNSScreenStackAnimation::Slide_from_left:
-    case facebook::react::RNSScreenStackAnimation::Default:
+    case react::RNSScreenStackAnimation::Slide_from_right:
+    case react::RNSScreenStackAnimation::Slide_from_left:
+    case react::RNSScreenStackAnimation::Default:
       return RNSScreenStackAnimationDefault;
-    case facebook::react::RNSScreenStackAnimation::Flip:
+    case react::RNSScreenStackAnimation::Flip:
       return RNSScreenStackAnimationFlip;
-    case facebook::react::RNSScreenStackAnimation::Simple_push:
+    case react::RNSScreenStackAnimation::Simple_push:
       return RNSScreenStackAnimationSimplePush;
-    case facebook::react::RNSScreenStackAnimation::None:
+    case react::RNSScreenStackAnimation::None:
       return RNSScreenStackAnimationNone;
-    case facebook::react::RNSScreenStackAnimation::Fade:
+    case react::RNSScreenStackAnimation::Fade:
       return RNSScreenStackAnimationFade;
-    case facebook::react::RNSScreenStackAnimation::Slide_from_bottom:
+    case react::RNSScreenStackAnimation::Slide_from_bottom:
       return RNSScreenStackAnimationSlideFromBottom;
-    case facebook::react::RNSScreenStackAnimation::Fade_from_bottom:
+    case react::RNSScreenStackAnimation::Fade_from_bottom:
       return RNSScreenStackAnimationFadeFromBottom;
   }
 }
 
 + (RNSScreenStackHeaderSubviewType)RNSScreenStackHeaderSubviewTypeFromCppEquivalent:
-    (facebook::react::RNSScreenStackHeaderSubviewType)subviewType
+    (react::RNSScreenStackHeaderSubviewType)subviewType
 {
   switch (subviewType) {
-    case facebook::react::RNSScreenStackHeaderSubviewType::Left:
+    case react::RNSScreenStackHeaderSubviewType::Left:
       return RNSScreenStackHeaderSubviewTypeLeft;
-    case facebook::react::RNSScreenStackHeaderSubviewType::Right:
+    case react::RNSScreenStackHeaderSubviewType::Right:
       return RNSScreenStackHeaderSubviewTypeRight;
-    case facebook::react::RNSScreenStackHeaderSubviewType::Title:
+    case react::RNSScreenStackHeaderSubviewType::Title:
       return RNSScreenStackHeaderSubviewTypeTitle;
-    case facebook::react::RNSScreenStackHeaderSubviewType::Center:
+    case react::RNSScreenStackHeaderSubviewType::Center:
       return RNSScreenStackHeaderSubviewTypeCenter;
-    case facebook::react::RNSScreenStackHeaderSubviewType::SearchBar:
+    case react::RNSScreenStackHeaderSubviewType::SearchBar:
       return RNSScreenStackHeaderSubviewTypeSearchBar;
-    case facebook::react::RNSScreenStackHeaderSubviewType::Back:
+    case react::RNSScreenStackHeaderSubviewType::Back:
       return RNSScreenStackHeaderSubviewTypeBackButton;
   }
 }
 
 + (RNSScreenReplaceAnimation)RNSScreenReplaceAnimationFromCppEquivalent:
-    (facebook::react::RNSScreenReplaceAnimation)replaceAnimation
+    (react::RNSScreenReplaceAnimation)replaceAnimation
 {
   switch (replaceAnimation) {
-    case facebook::react::RNSScreenReplaceAnimation::Pop:
+    case react::RNSScreenReplaceAnimation::Pop:
       return RNSScreenReplaceAnimationPop;
-    case facebook::react::RNSScreenReplaceAnimation::Push:
+    case react::RNSScreenReplaceAnimation::Push:
       return RNSScreenReplaceAnimationPush;
   }
 }
 
-+ (RNSScreenSwipeDirection)RNSScreenSwipeDirectionFromCppEquivalent:
-    (facebook::react::RNSScreenSwipeDirection)swipeDirection
++ (RNSScreenSwipeDirection)RNSScreenSwipeDirectionFromCppEquivalent:(react::RNSScreenSwipeDirection)swipeDirection
 {
   switch (swipeDirection) {
-    case facebook::react::RNSScreenSwipeDirection::Horizontal:
+    case react::RNSScreenSwipeDirection::Horizontal:
       return RNSScreenSwipeDirectionHorizontal;
-    case facebook::react::RNSScreenSwipeDirection::Vertical:
+    case react::RNSScreenSwipeDirection::Vertical:
       return RNSScreenSwipeDirectionVertical;
   }
 }
 
-+ (RNSScreenDetentType)RNSScreenDetentTypeFromAllowedDetents:
-    (facebook::react::RNSScreenSheetAllowedDetents)allowedDetents
++ (RNSScreenDetentType)RNSScreenDetentTypeFromAllowedDetents:(react::RNSScreenSheetAllowedDetents)allowedDetents
 {
   switch (allowedDetents) {
-    case facebook::react::RNSScreenSheetAllowedDetents::All:
+    case react::RNSScreenSheetAllowedDetents::All:
       return RNSScreenDetentTypeAll;
-    case facebook::react::RNSScreenSheetAllowedDetents::Large:
+    case react::RNSScreenSheetAllowedDetents::Large:
       return RNSScreenDetentTypeLarge;
-    case facebook::react::RNSScreenSheetAllowedDetents::Medium:
+    case react::RNSScreenSheetAllowedDetents::Medium:
       return RNSScreenDetentTypeMedium;
   }
 }
 
-+ (RNSScreenDetentType)RNSScreenDetentTypeFromLargestUndimmedDetent:
-    (facebook::react::RNSScreenSheetLargestUndimmedDetent)detent
++ (RNSScreenDetentType)RNSScreenDetentTypeFromLargestUndimmedDetent:(react::RNSScreenSheetLargestUndimmedDetent)detent
 {
   switch (detent) {
-    case facebook::react::RNSScreenSheetLargestUndimmedDetent::All:
+    case react::RNSScreenSheetLargestUndimmedDetent::All:
       return RNSScreenDetentTypeAll;
-    case facebook::react::RNSScreenSheetLargestUndimmedDetent::Large:
+    case react::RNSScreenSheetLargestUndimmedDetent::Large:
       return RNSScreenDetentTypeLarge;
-    case facebook::react::RNSScreenSheetLargestUndimmedDetent::Medium:
+    case react::RNSScreenSheetLargestUndimmedDetent::Medium:
       return RNSScreenDetentTypeMedium;
   }
 }
 
 + (NSDictionary *)gestureResponseDistanceDictFromCppStruct:
-    (const facebook::react::RNSScreenGestureResponseDistanceStruct &)gestureResponseDistance
+    (const react::RNSScreenGestureResponseDistanceStruct &)gestureResponseDistance
 {
   return @{
     @"start" : @(gestureResponseDistance.start),
@@ -127,17 +123,29 @@
 }
 
 + (UITextAutocapitalizationType)UITextAutocapitalizationTypeFromCppEquivalent:
-    (facebook::react::RNSSearchBarAutoCapitalize)autoCapitalize
+    (react::RNSSearchBarAutoCapitalize)autoCapitalize
 {
   switch (autoCapitalize) {
-    case facebook::react::RNSSearchBarAutoCapitalize::Words:
+    case react::RNSSearchBarAutoCapitalize::Words:
       return UITextAutocapitalizationTypeWords;
-    case facebook::react::RNSSearchBarAutoCapitalize::Sentences:
+    case react::RNSSearchBarAutoCapitalize::Sentences:
       return UITextAutocapitalizationTypeSentences;
-    case facebook::react::RNSSearchBarAutoCapitalize::Characters:
+    case react::RNSSearchBarAutoCapitalize::Characters:
       return UITextAutocapitalizationTypeAllCharacters;
-    case facebook::react::RNSSearchBarAutoCapitalize::None:
+    case react::RNSSearchBarAutoCapitalize::None:
       return UITextAutocapitalizationTypeNone;
+  }
+}
+
++ (RNSSearchBarPlacement)RNSScreenSearchBarPlacementFromCppEquivalent:(react::RNSSearchBarPlacement)placement
+{
+  switch (placement) {
+    case react::RNSSearchBarPlacement::Stacked:
+      return RNSSearchBarPlacementStacked;
+    case react::RNSSearchBarPlacement::Automatic:
+      return RNSSearchBarPlacementAutomatic;
+    case react::RNSSearchBarPlacement::Inline:
+      return RNSSearchBarPlacementInline;
   }
 }
 
