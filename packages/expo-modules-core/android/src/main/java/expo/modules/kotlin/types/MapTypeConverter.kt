@@ -10,14 +10,13 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.recycle
 import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 
 class MapTypeConverter(
   converterProvider: TypeConverterProvider,
   private val mapType: KType
 ) : DynamicAwareTypeConverters<Map<*, *>>(mapType.isMarkedNullable) {
   init {
-    require(mapType.arguments.first().type == typeOf<String>()) {
+    require(mapType.arguments.first().type?.classifier == String::class) {
       "The map key type should be String, but received ${mapType.arguments.first()}."
     }
   }
