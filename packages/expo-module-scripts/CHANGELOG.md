@@ -8,8 +8,8 @@
 
 ### 🐛 Bug fixes
 
-- Remove watchPlugins from sub-projects when using multi-project runner.
-- Default to using jest-preset-plugin when running `yarn test plugin` with no `plugin/jest.config.js` file.
+- Remove watchPlugins from sub-projects when using multi-project runner. ([#25302](https://github.com/expo/expo/pull/25302) by [@EvanBacon](https://github.com/EvanBacon))
+- Default to using jest-preset-plugin when running `yarn test plugin` with no `plugin/jest.config.js` file. ([#25302](https://github.com/expo/expo/pull/25302) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
