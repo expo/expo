@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash issues in `sqlite/next`. ([#25295](https://github.com/expo/expo/pull/25295) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 12.0.0 — 2023-11-06
