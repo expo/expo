@@ -32,7 +32,6 @@ class ExpoImageModule : Module() {
     AsyncFunction("prefetch") { urls: List<String>, promise: Promise ->
       val context = appContext.reactContext ?: return@AsyncFunction false
       var imagesLoaded = 0
-      var didSucceed = true
 
       urls.forEach {
         Glide
@@ -42,12 +41,7 @@ class ExpoImageModule : Module() {
           .listener(object : RequestListener<File> {
             override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<File>?,
                                       isFirstResource: Boolean): Boolean {
-              imagesLoaded++;
-              didSucceed = false
-
-              if (imagesLoaded == urls.size) {
-                promise.resolve(didSucceed)
-              }
+              promise.resolve(false)
               return true
             }
 
@@ -56,7 +50,7 @@ class ExpoImageModule : Module() {
               imagesLoaded++;
 
               if (imagesLoaded == urls.size) {
-                promise.resolve(didSucceed)
+                promise.resolve(true)
               }
               return true
             }

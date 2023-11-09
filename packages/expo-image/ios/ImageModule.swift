@@ -114,9 +114,11 @@ public final class ImageModule: Module {
 
       SDWebImagePrefetcher.shared.prefetchURLs(urls, options: [.retryFailed, .handleCookies], context: context,
                                                progress: nil, completed: {finishedCount, skippedCount in
-        let wasSuccessful = skippedCount == 0
-
-        promise.resolve(wasSuccessful)
+        if skippedCount > 0 {
+          promise.resolve(false)
+        } else if finishedCount == urls.count {
+          promise.resolve(true)
+        }
       })
     }
 
