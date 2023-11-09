@@ -16,13 +16,8 @@ class ViewEventDelegate<T>(
   private val coalescingKey: CoalescingKey<T>?
 ) {
   private val viewHolder = WeakReference(view)
-  internal var isValidated = false
 
   operator fun getValue(thisRef: View, property: KProperty<*>): ViewEventCallback<T> {
-    if (!isValidated) {
-      throw IllegalStateException("You have to export '${property.name}' property as a event in the `View` component")
-    }
-
     val view = viewHolder.get()
       ?: throw IllegalStateException("Can't send the '${property.name}' event from the view that is deallocated")
     return ViewEvent(property.name, type, view, coalescingKey)

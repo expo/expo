@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Improve boot time on low-end devices. ([#25267](https://github.com/expo/expo/pull/25267) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 1.5.11 — 2023-08-29
