@@ -3,6 +3,7 @@
 //
 // Forks https://github.com/facebook/metro/blob/b80d9a0f638ee9fb82ff69cd3c8d9f4309ca1da2/packages/metro/src/index.flow.js#L57
 // and adds the ability to access the bundler instance.
+import InspectorProxy from '@react-native/dev-middleware/dist/inspector-proxy/InspectorProxy';
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
@@ -10,7 +11,6 @@ import Metro, { RunServerOptions, Server } from 'metro';
 import MetroHmrServer from 'metro/src/HmrServer';
 import createWebsocketServer from 'metro/src/lib/createWebsocketServer';
 import { ConfigT } from 'metro-config';
-import { InspectorProxy } from 'metro-inspector-proxy';
 import { parse } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
