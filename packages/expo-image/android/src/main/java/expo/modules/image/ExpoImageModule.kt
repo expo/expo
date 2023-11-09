@@ -32,6 +32,7 @@ class ExpoImageModule : Module() {
     AsyncFunction("prefetch") { urls: List<String>, promise: Promise ->
       val context = appContext.reactContext ?: return@AsyncFunction false
       var imagesLoaded = 0
+      var failed = false
 
       urls.forEach {
         Glide
@@ -41,7 +42,10 @@ class ExpoImageModule : Module() {
           .listener(object : RequestListener<File> {
             override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<File>?,
                                       isFirstResource: Boolean): Boolean {
-              promise.resolve(false)
+              if (!failed) {
+                failed = true
+                promise.resolve(false)
+              }
               return true
             }
 

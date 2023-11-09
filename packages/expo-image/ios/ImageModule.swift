@@ -112,14 +112,22 @@ public final class ImageModule: Module {
       var context = SDWebImageContext()
       context[.storeCacheType] = SDImageCacheType.disk.rawValue
 
-      SDWebImagePrefetcher.shared.prefetchURLs(urls, options: [.retryFailed, .handleCookies], context: context,
-                                               progress: nil, completed: {finishedCount, skippedCount in
-        if skippedCount > 0 {
-          promise.resolve(false)
-        } else if finishedCount == urls.count {
-          promise.resolve(true)
-        }
-      })
+      var imagesLoaded = 0
+      var failed = false
+
+      urls.forEach { url in
+        SDWebImagePrefetcher.shared.prefetchURLs([url], context: context, progress: nil, completed: { loaded, skipped in
+          if skipped > 0 && !failed {
+            failed = true
+            promise.resolve(false)
+          } else {
+            imagesLoaded = imagesLoaded + 1
+            if imagesLoaded == urls.count {
+              promise.resolve(true)
+            }
+          }
+        })
+      }
     }
 
     AsyncFunction("clearMemoryCache") { () -> Bool in
