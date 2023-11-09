@@ -37,11 +37,11 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
     // Setup build options that are common for all modules
     if (project.plugins.hasPlugin('kotlin-android')) {
       project.android {
-        compileSdkVersion project.ext.safeExtGet("compileSdkVersion", 33)
+        compileSdkVersion project.ext.safeExtGet("compileSdkVersion", 34)
 
         defaultConfig {
           minSdkVersion project.ext.safeExtGet("minSdkVersion", 23)
-          targetSdkVersion project.ext.safeExtGet("targetSdkVersion", 33)
+          targetSdkVersion project.ext.safeExtGet("targetSdkVersion", 34)
         }
 
         lintOptions {
