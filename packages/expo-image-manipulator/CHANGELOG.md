@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- Added `extent` action ([#25116](https://github.com/expo/expo/pull/25116) by [@LinusU](https://github.com/LinusU))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
