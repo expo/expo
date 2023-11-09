@@ -169,11 +169,11 @@ export async function exportAssetsAsync(
 export async function exportCssAssetsAsync({
   outputDir,
   bundles,
-  basePath,
+  baseUrl,
 }: {
   bundles: Partial<Record<ModPlatform, BundleOutput>>;
   outputDir: string;
-  basePath: string;
+  baseUrl: string;
 }) {
   const assets = uniqBy(
     Object.values(bundles).flatMap((bundle) => bundle!.css),
@@ -189,5 +189,5 @@ export async function exportCssAssetsAsync({
     assets.map((v) => fs.promises.writeFile(path.join(outputDir, v.filename), v.source))
   );
 
-  return assets.map((v) => basePath + '/' + v.filename);
+  return assets.map((v) => baseUrl + '/' + v.filename);
 }

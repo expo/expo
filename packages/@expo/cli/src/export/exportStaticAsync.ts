@@ -31,7 +31,7 @@ type Options = {
   outputDir: string;
   minify: boolean;
   exportServer: boolean;
-  basePath: string;
+  baseUrl: string;
   includeMaps: boolean;
 };
 
@@ -111,12 +111,12 @@ export async function getFilesToExportFromServerAsync(
 export async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, basePath, exportServer, minify, includeMaps }: Options
+  { outputDir, baseUrl, exportServer, minify, includeMaps }: Options
 ): Promise<void> {
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const appDir = getRouterDirectoryWithManifest(projectRoot, exp);
 
-  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, { outputDir, basePath });
+  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, { outputDir, baseUrl });
 
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
@@ -143,7 +143,7 @@ export async function exportFromServerAsync(
         mode: 'production',
         resources,
         template,
-        basePath,
+        baseUrl,
       });
 
       if (injectFaviconTag) {
@@ -203,7 +203,7 @@ export function modifyBundlesWithSourceMaps(
   if (filename.endsWith('.js')) {
     // If the bundle ends with source map URLs then update them to point to the correct location.
 
-    // TODO: basePath support
+    // TODO: baseUrl support
     const normalizedFilename = '/' + filename.replace(/^\/+/, '');
     //# sourceMappingURL=//localhost:8085/index.map?platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
     //# sourceURL=http://localhost:8085/index.bundle//&platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
@@ -231,17 +231,17 @@ export function getHtmlFiles({
 }): string[] {
   const htmlFiles = new Set<string>();
 
-  function traverseScreens(screens: string | { screens: any; path: string }, basePath = '') {
+  function traverseScreens(screens: string | { screens: any; path: string }, baseUrl = '') {
     for (const value of Object.values(screens)) {
       if (typeof value === 'string') {
-        let filePath = basePath + value;
+        let filePath = baseUrl + value;
         if (value === '') {
           filePath =
-            basePath === ''
+            baseUrl === ''
               ? 'index'
-              : basePath.endsWith('/')
-              ? basePath + 'index'
-              : basePath.slice(0, -1);
+              : baseUrl.endsWith('/')
+              ? baseUrl + 'index'
+              : baseUrl.slice(0, -1);
         }
         if (includeGroupVariations) {
           // TODO: Dedupe requests for alias routes.
@@ -250,7 +250,7 @@ export function getHtmlFiles({
           htmlFiles.add(filePath);
         }
       } else if (typeof value === 'object' && value?.screens) {
-        const newPath = basePath + value.path + '/';
+        const newPath = baseUrl + value.path + '/';
         traverseScreens(value.screens, newPath);
       }
     }

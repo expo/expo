@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import { configFromFs } from '../../utils/mockState';
 import getPathFromState from '../getPathFromState';
 import getStateFromPath, {
-  stripBasePath,
+  stripBaseUrl,
   getUrlWithReactNavigationConcessions,
 } from '../getStateFromPath';
 
@@ -18,7 +18,7 @@ afterEach(() => {
   Constants.expoConfig!.experiments = undefined;
 });
 
-describe(stripBasePath, () => {
+describe(stripBaseUrl, () => {
   [
     [
       // Input
@@ -34,19 +34,19 @@ describe(stripBasePath, () => {
     ['///one/', '/one', '/'],
     ['one/', '/one', 'one/'],
     ['/a/b', '/one', '/a/b'],
-  ].forEach(([path, basePath, result]) => {
-    it(`strips basePath "${path}"`, () => {
-      expect(stripBasePath(path, basePath)).toBe(result);
+  ].forEach(([path, baseUrl, result]) => {
+    it(`strips baseUrl "${path}"`, () => {
+      expect(stripBaseUrl(path, baseUrl)).toBe(result);
     });
   });
 });
 
-describe('basePath', () => {
-  it('accounts for basePath', () => {
+describe('baseUrl', () => {
+  it('accounts for baseUrl', () => {
     // @ts-expect-error
     Constants.expoConfig = {
       experiments: {
-        basePath: '/expo/prefix',
+        baseUrl: '/expo/prefix',
       },
     };
     const path = '/expo/prefix/bar';
@@ -61,11 +61,11 @@ describe('basePath', () => {
     );
   });
 
-  it('has basePath and state that does not match', () => {
+  it('has baseUrl and state that does not match', () => {
     // @ts-expect-error
     Constants.expoConfig = {
       experiments: {
-        basePath: '/expo',
+        baseUrl: '/expo',
       },
     };
     const path = '/bar';

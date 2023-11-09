@@ -74,7 +74,7 @@ export function createFastResolver({ preserveSymlinks }: { preserveSymlinks: boo
     moduleName: string,
     platform: string | null
   ): Resolution {
-    // TODO: Support extraNodeModules for tsconfig basePath support
+    // TODO: Support extraNodeModules for tsconfig baseUrl support
     // TODO: Support package exports import { resolve as resolveExports } from 'resolve.exports'
     // TODO: Support `resolver.blockList`
     if (context.unstable_enablePackageExports) {

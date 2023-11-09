@@ -1,5 +1,5 @@
 import type { State } from './fork/getPathFromState';
-import { stripBasePath } from './fork/getStateFromPath';
+import { stripBaseUrl } from './fork/getStateFromPath';
 
 type SearchParams = Record<string, string | string[]>;
 
@@ -13,7 +13,7 @@ export type UrlObject = {
 export function getRouteInfoFromState(
   getPathFromState: (state: State, asPath: boolean) => { path: string; params: any },
   state: State,
-  basePath?: string
+  baseUrl?: string
 ): UrlObject {
   const { path } = getPathFromState(state, false);
   const qualified = getPathFromState(state, true);
@@ -21,8 +21,8 @@ export function getRouteInfoFromState(
   return {
     // TODO: This may have a predefined origin attached in the future.
     unstable_globalHref: path,
-    pathname: stripBasePath(path, basePath).split('?')['0'],
-    ...getNormalizedStatePath(qualified, basePath),
+    pathname: stripBaseUrl(path, baseUrl).split('?')['0'],
+    ...getNormalizedStatePath(qualified, baseUrl),
   };
 }
 
@@ -35,12 +35,12 @@ export function getNormalizedStatePath(
     path: string;
     params: any;
   },
-  basePath?: string
+  baseUrl?: string
 ): Pick<UrlObject, 'segments' | 'params'> {
   const [pathname] = statePath.split('?');
   return {
     // Strip empty path at the start
-    segments: stripBasePath(pathname, basePath).split('/').filter(Boolean).map(decodeURIComponent),
+    segments: stripBaseUrl(pathname, baseUrl).split('/').filter(Boolean).map(decodeURIComponent),
     // TODO: This is not efficient, we should generate based on the state instead
     // of converting to string then back to object
     params: Object.entries(params).reduce((prev, [key, value]) => {

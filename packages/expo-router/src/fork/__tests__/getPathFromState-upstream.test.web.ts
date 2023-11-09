@@ -201,11 +201,11 @@ type State = PartialState<NavigationState>;
   });
 });
 
-it('appends basePath', () => {
+it('appends baseUrl', () => {
   // @ts-expect-error
   Constants.expoConfig = {
     experiments: {
-      basePath: '/expo-prefix/',
+      baseUrl: '/expo-prefix/',
     },
   };
   const path = '/expo-prefix/bar';
@@ -235,11 +235,11 @@ it('appends basePath', () => {
   expect(getPathFromState<object>(state, config)).toBe(path);
 });
 
-it('appends multi-level basePath', () => {
+it('appends multi-level baseUrl', () => {
   // @ts-expect-error
   Constants.expoConfig = {
     experiments: {
-      basePath: '/expo/prefix/',
+      baseUrl: '/expo/prefix/',
     },
   };
   const path = '/expo/prefix/bar';

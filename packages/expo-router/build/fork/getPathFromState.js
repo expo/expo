@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.appendBasePath = exports.deepEqual = exports.getPathDataFromState = void 0;
+exports.appendBaseUrl = exports.deepEqual = exports.getPathDataFromState = void 0;
 const core_1 = require("@react-navigation/core");
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const matchers_1 = require("../matchers");
@@ -290,7 +290,7 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
             break;
         }
     }
-    return { path: appendBasePath(basicSanitizePath(path)), params: decodeParams(allParams) };
+    return { path: appendBaseUrl(basicSanitizePath(path)), params: decodeParams(allParams) };
 }
 function decodeParams(params) {
     const parsed = {};
@@ -432,7 +432,7 @@ const createConfigItem = (config, parentPattern) => {
     };
 };
 const createNormalizedConfigs = (options, pattern) => Object.fromEntries(Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)]));
-function appendBasePath(path, assetPrefix = expo_constants_1.default.expoConfig?.experiments?.basePath) {
+function appendBaseUrl(path, assetPrefix = expo_constants_1.default.expoConfig?.experiments?.baseUrl) {
     if (process.env.NODE_ENV !== 'development') {
         if (assetPrefix) {
             return `/${assetPrefix.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
@@ -440,5 +440,5 @@ function appendBasePath(path, assetPrefix = expo_constants_1.default.expoConfig?
     }
     return path;
 }
-exports.appendBasePath = appendBasePath;
+exports.appendBaseUrl = appendBaseUrl;
 //# sourceMappingURL=getPathFromState.js.map

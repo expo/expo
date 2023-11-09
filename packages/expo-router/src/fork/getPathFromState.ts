@@ -402,7 +402,7 @@ function getPathFromResolvedState(
     }
   }
 
-  return { path: appendBasePath(basicSanitizePath(path)), params: decodeParams(allParams) };
+  return { path: appendBaseUrl(basicSanitizePath(path)), params: decodeParams(allParams) };
 }
 
 function decodeParams(params: Record<string, string>) {
@@ -616,9 +616,9 @@ const createNormalizedConfigs = (
     Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)])
   );
 
-export function appendBasePath(
+export function appendBaseUrl(
   path: string,
-  assetPrefix: string | undefined = Constants.expoConfig?.experiments?.basePath
+  assetPrefix: string | undefined = Constants.expoConfig?.experiments?.baseUrl
 ) {
   if (process.env.NODE_ENV !== 'development') {
     if (assetPrefix) {

@@ -23,6 +23,7 @@ import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTempla
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
+import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 
 /**
  * The structure of the outputDir will be:
@@ -61,14 +62,14 @@ export async function exportAppAsync(
   });
 
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
-  const basePath = (exp.experiments?.basePath?.replace(/\/+$/, '') ?? '').trim();
+  const baseUrl = getBaseUrlFromExpoConfig(exp);
 
   // Print out logs
-  if (basePath) {
+  if (baseUrl) {
     Log.log();
-    Log.log(chalk.gray`Using (experimental) base path: ${basePath}`);
+    Log.log(chalk.gray`Using (experimental) base path: ${baseUrl}`);
     // Warn if not using an absolute path.
-    if (!basePath.startsWith('/')) {
+    if (!baseUrl.startsWith('/')) {
       Log.log(
         chalk.yellow`  Base path does not start with a slash. Requests will not be absolute.`
       );
@@ -136,7 +137,7 @@ export async function exportAppAsync(
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
         minify,
-        basePath,
+        baseUrl,
         includeMaps: dumpSourcemap,
         // @ts-expect-error: server not on type yet
         exportServer: exp.web?.output === 'server',
@@ -146,16 +147,16 @@ export async function exportAppAsync(
       const cssLinks = await exportCssAssetsAsync({
         outputDir,
         bundles,
-        basePath,
+        baseUrl,
       });
       let html = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-        scripts: [`${basePath}/bundles/${fileNames.web}`],
+        scripts: [`${baseUrl}/bundles/${fileNames.web}`],
         cssLinks,
       });
       // Add the favicon assets to the HTML.
       const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
         outputDir,
-        basePath,
+        baseUrl,
       });
       if (modifyHtml) {
         html = modifyHtml(html);
@@ -172,7 +173,7 @@ export async function exportAppAsync(
       await persistMetroAssetsAsync(bundles.web.assets, {
         platform: 'web',
         outputDirectory: staticFolder,
-        basePath,
+        baseUrl,
       });
     }
   }
