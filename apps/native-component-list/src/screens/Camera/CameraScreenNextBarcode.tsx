@@ -12,7 +12,7 @@ export default function CameraScreenNextBarcode() {
   }, []);
 
   async function launchScanner() {
-    if (Camera.modernBarcodeScannerAvailable) {
+    if (Camera.isModernBarcodeScannerAvailable) {
       await Camera.launchModernScanner({
         barCodeTypes: ['qr'],
         isHighlightingEnabled: true,
