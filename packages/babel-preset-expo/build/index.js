@@ -18,6 +18,9 @@ function babelPresetExpo(api, options = {}) {
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
     const isDev = api.caller(common_1.getIsDev);
+    // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
+    // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
+    const isProduction = api.caller(common_1.getIsProd);
     const inlineEnvironmentVariables = api.caller(common_1.getInlineEnvVarsEnabled);
     // If the `platform` prop is not defined then this must be a custom config that isn't
     // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
@@ -57,7 +60,7 @@ function babelPresetExpo(api, options = {}) {
         // should retain the same behavior since it's hard to debug the differences.
         extraPlugins.push(require('@babel/plugin-transform-parameters'));
     }
-    if (!isDev && (0, common_1.hasModule)('metro-transform-plugins')) {
+    if (isProduction && (0, common_1.hasModule)('metro-transform-plugins')) {
         // Metro applies this plugin too but it does it after the imports have been transformed which breaks
         // the plugin. Here, we'll apply it before the commonjs transform, in production, to ensure `Platform.OS`
         // is replaced with a string literal and `__DEV__` is converted to a boolean.
