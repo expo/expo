@@ -6,9 +6,12 @@
 #import <React/RCTFabricComponentsPlugins.h>
 #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
 #import <react/renderer/components/rnscreens/Props.h>
-#endif
 
-@implementation RNScreensViewController
+namespace react = facebook::react;
+
+#endif // RCT_NEW_ARCH_ENABLED
+
+@implementation RNSViewController
 
 #if !TARGET_OS_TV
 - (UIViewController *)childViewControllerForStatusBarStyle
@@ -59,7 +62,7 @@
 {
   if (self = [super init]) {
 #ifdef RCT_NEW_ARCH_ENABLED
-    static const auto defaultProps = std::make_shared<const facebook::react::RNSScreenContainerProps>();
+    static const auto defaultProps = std::make_shared<const react::RNSScreenContainerProps>();
     _props = defaultProps;
 #endif
     _activeScreens = [NSMutableSet new];
@@ -72,7 +75,7 @@
 
 - (void)setupController
 {
-  _controller = [[RNScreensViewController alloc] init];
+  _controller = [[RNSViewController alloc] init];
   [self addSubview:_controller.view];
 }
 
@@ -235,7 +238,7 @@
   _controller.view.frame = self.bounds;
   for (RNSScreenView *subview in _reactSubviews) {
 #ifdef RCT_NEW_ARCH_ENABLED
-    facebook::react::LayoutMetrics screenLayoutMetrics = subview.newLayoutMetrics;
+    react::LayoutMetrics screenLayoutMetrics = subview.newLayoutMetrics;
     screenLayoutMetrics.frame = RCTRectFromCGRect(CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height));
     [subview updateLayoutMetrics:screenLayoutMetrics oldLayoutMetrics:subview.oldLayoutMetrics];
 #else
@@ -267,7 +270,7 @@
 
   [_reactSubviews insertObject:screenView atIndex:index];
   screenView.reactSuperview = self;
-  facebook::react::LayoutMetrics screenLayoutMetrics = screenView.newLayoutMetrics;
+  react::LayoutMetrics screenLayoutMetrics = screenView.newLayoutMetrics;
   screenLayoutMetrics.frame = RCTRectFromCGRect(CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height));
   [screenView updateLayoutMetrics:screenLayoutMetrics oldLayoutMetrics:screenView.oldLayoutMetrics];
   [self markChildUpdated];
@@ -295,9 +298,9 @@
   [self markChildUpdated];
 }
 
-+ (facebook::react::ComponentDescriptorProvider)componentDescriptorProvider
++ (react::ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return facebook::react::concreteComponentDescriptorProvider<facebook::react::RNSScreenContainerComponentDescriptor>();
+  return react::concreteComponentDescriptorProvider<react::RNSScreenContainerComponentDescriptor>();
 }
 
 - (void)prepareForRecycle

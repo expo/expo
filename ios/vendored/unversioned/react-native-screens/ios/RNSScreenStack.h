@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RNScreensNavigationController : UINavigationController <RNScreensViewControllerDelegate>
+@interface RNSNavigationController : UINavigationController <RNSViewControllerDelegate>
 
 @end
 

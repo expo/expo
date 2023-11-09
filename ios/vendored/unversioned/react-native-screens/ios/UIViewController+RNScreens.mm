@@ -8,39 +8,39 @@
 #if !TARGET_OS_TV
 - (UIViewController *)reactNativeScreensChildViewControllerForStatusBarStyle
 {
-  UIViewController *childVC = [self findChildRNScreensViewController];
+  UIViewController *childVC = [self findChildRNSScreensViewController];
   return childVC ?: [self reactNativeScreensChildViewControllerForStatusBarStyle];
 }
 
 - (UIViewController *)reactNativeScreensChildViewControllerForStatusBarHidden
 {
-  UIViewController *childVC = [self findChildRNScreensViewController];
+  UIViewController *childVC = [self findChildRNSScreensViewController];
   return childVC ?: [self reactNativeScreensChildViewControllerForStatusBarHidden];
 }
 
 - (UIStatusBarAnimation)reactNativeScreensPreferredStatusBarUpdateAnimation
 {
-  UIViewController *childVC = [self findChildRNScreensViewController];
+  UIViewController *childVC = [self findChildRNSScreensViewController];
   return childVC ? childVC.preferredStatusBarUpdateAnimation
                  : [self reactNativeScreensPreferredStatusBarUpdateAnimation];
 }
 
 - (UIInterfaceOrientationMask)reactNativeScreensSupportedInterfaceOrientations
 {
-  UIViewController *childVC = [self findChildRNScreensViewController];
+  UIViewController *childVC = [self findChildRNSScreensViewController];
   return childVC ? childVC.supportedInterfaceOrientations : [self reactNativeScreensSupportedInterfaceOrientations];
 }
 
 - (UIViewController *)reactNativeScreensChildViewControllerForHomeIndicatorAutoHidden
 {
-  UIViewController *childVC = [self findChildRNScreensViewController];
+  UIViewController *childVC = [self findChildRNSScreensViewController];
   return childVC ?: [self reactNativeScreensChildViewControllerForHomeIndicatorAutoHidden];
 }
 
-- (UIViewController *)findChildRNScreensViewController
+- (UIViewController *)findChildRNSScreensViewController
 {
   UIViewController *lastViewController = [[self childViewControllers] lastObject];
-  if ([lastViewController conformsToProtocol:@protocol(RNScreensViewControllerDelegate)]) {
+  if ([lastViewController conformsToProtocol:@protocol(RNSViewControllerDelegate)]) {
     return lastViewController;
   }
   return nil;
