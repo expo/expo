@@ -1,7 +1,17 @@
 const { createMetroConfiguration } = require('expo-yarn-workspaces');
-
+const path = require('path');
 /* global __dirname */
 const baseConfig = createMetroConfiguration(__dirname);
+
+const root = path.join(__dirname, '../..');
+
+const reactNativeRoot = path.join(
+  root,
+  'react-native-lab',
+  'react-native',
+  'packages',
+  'react-native'
+);
 
 module.exports = {
   ...baseConfig,
@@ -30,5 +40,25 @@ module.exports = {
         return middleware(req, res, next);
       };
     },
+  },
+  resolver: {
+    ...baseConfig.resolver,
+    assetExts: [...baseConfig.resolver.assetExts, 'kml'],
+    blockList: [
+      ...baseConfig.resolver.blockList,
+
+      // Exclude react-native-lab from haste map.
+      // Because react-native versions may be different between node_modules/react-native and react-native-lab,
+      // we should use the one from node_modules for bare-expo.
+      /\bnode_modules\/react-native\//,
+      /\breact-native-lab\/react-native\/node_modules\b/,
+    ],
+  },
+  serializer: {
+    ...baseConfig.serializer,
+    getModulesRunBeforeMainModule: () => [
+      require.resolve(path.join(reactNativeRoot, 'Libraries/Core/InitializeCore')),
+    ],
+    getPolyfills: () => require(path.join(reactNativeRoot, 'rn-get-polyfills'))(),
   },
 };
