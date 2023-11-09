@@ -173,11 +173,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     minify = mode !== 'development',
     includeMaps,
     mainModuleName,
+    basePath,
   }: {
     mode: string;
     minify?: boolean;
     includeMaps?: boolean;
     mainModuleName?: string;
+    basePath?: string;
   }): Promise<SerialAsset[]> {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
@@ -189,6 +191,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mainModuleName:
         mainModuleName ?? resolveMainModuleName(this.projectRoot, { platform: 'web' }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
+      basePath,
     });
 
     const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
@@ -269,6 +272,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'client',
       mainModuleName: resolveMainModuleName(this.projectRoot, { platform: 'web' }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
+      basePath,
     });
 
     const bundleStaticHtml = async (): Promise<string> => {
@@ -288,7 +292,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     const [resources, staticHtml] = await Promise.all([
-      this.getStaticResourcesAsync({ mode, minify }),
+      this.getStaticResourcesAsync({ mode, minify, basePath }),
       bundleStaticHtml(),
     ]);
     const content = await composeResourcesWithHtml({

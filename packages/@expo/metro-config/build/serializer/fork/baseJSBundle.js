@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.baseJSBundleWithDependencies = exports.baseJSBundle = exports.getPlatformOption = void 0;
+exports.baseJSBundleWithDependencies = exports.baseJSBundle = exports.getBasePathOption = exports.getPlatformOption = void 0;
 const jsc_safe_url_1 = require("jsc-safe-url");
 const getAppendScripts_1 = __importDefault(require("metro/src/lib/getAppendScripts"));
 const processModules_1 = require("./processModules");
@@ -31,6 +31,22 @@ function getPlatformOption(graph, options) {
     return url.searchParams.get('platform') ?? null;
 }
 exports.getPlatformOption = getPlatformOption;
+function getBasePathOption(graph, options) {
+    // @ts-expect-error
+    if (options.serializerOptions != null) {
+        // @ts-expect-error
+        return options.serializerOptions.basePath;
+    }
+    if (!options.sourceUrl) {
+        return null;
+    }
+    const sourceUrl = (0, jsc_safe_url_1.isJscSafeUrl)(options.sourceUrl)
+        ? (0, jsc_safe_url_1.toNormalUrl)(options.sourceUrl)
+        : options.sourceUrl;
+    const url = new URL(sourceUrl, 'https://expo.dev');
+    return url.searchParams.get('serializer.basePath') ?? null;
+}
+exports.getBasePathOption = getBasePathOption;
 function baseJSBundle(entryPoint, preModules, graph, options) {
     const platform = getPlatformOption(graph, options);
     if (platform == null) {
@@ -38,6 +54,7 @@ function baseJSBundle(entryPoint, preModules, graph, options) {
     }
     return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
         ...options,
+        basePath: getBasePathOption(graph, options) ?? '/',
         platform,
     });
 }
@@ -55,6 +72,7 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
         serverRoot: options.serverRoot,
         sourceUrl: options.sourceUrl,
         platform: options.platform,
+        basePath: options.basePath,
     };
     // Do not prepend polyfills or the require runtime when only modules are requested
     if (options.modulesOnly) {

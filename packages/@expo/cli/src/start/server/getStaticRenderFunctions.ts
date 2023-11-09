@@ -47,6 +47,7 @@ type StaticRenderOptions = {
   platform?: string;
   environment?: 'node';
   engine?: 'hermes';
+  basePath?: string;
 };
 
 const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
@@ -108,6 +109,7 @@ export async function createMetroEndpointAsync(
     minify = false,
     environment,
     engine = 'hermes',
+    basePath = '/',
   }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
@@ -122,6 +124,7 @@ export async function createMetroEndpointAsync(
     environment,
     lazy: false,
     minify,
+    basePath,
   });
 
   const url = new URL(urlFragment.replace(/^\//, ''), devServerUrl).toString();

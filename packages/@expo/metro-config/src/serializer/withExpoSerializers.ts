@@ -19,7 +19,12 @@ import {
 } from './environmentVariableSerializerPlugin';
 import { getExportPathForDependencyWithOptions } from './exportPath';
 // import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
-import { baseJSBundle, baseJSBundleWithDependencies, getPlatformOption } from './fork/baseJSBundle';
+import {
+  baseJSBundle,
+  baseJSBundleWithDependencies,
+  getBasePathOption,
+  getPlatformOption,
+} from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
@@ -224,6 +229,7 @@ class Chunk {
         modulesOnly: this.preModules.size === 0,
         platform: this.getPlatform(),
         sourceMapUrl: `${fileName}.map`,
+        basePath: getBasePathOption(this.graph, this.options) ?? '/',
       }
     );
 

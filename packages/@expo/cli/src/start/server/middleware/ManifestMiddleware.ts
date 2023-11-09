@@ -159,6 +159,7 @@ export abstract class ManifestMiddleware<
       platform,
       mainModuleName,
       hostname,
+      basePath: projectConfig.exp.experiments?.basePath,
       engine: isHermesEnabled ? 'hermes' : undefined,
     });
 
@@ -211,11 +212,13 @@ export abstract class ManifestMiddleware<
     mainModuleName,
     hostname,
     engine,
+    basePath,
   }: {
     platform: string;
     hostname?: string | null;
     mainModuleName: string;
     engine?: 'hermes';
+    basePath?: string;
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
@@ -224,6 +227,7 @@ export abstract class ManifestMiddleware<
       mainModuleName,
       lazy: shouldEnableAsyncImports(this.projectRoot),
       engine,
+      basePath,
     });
 
     return (
@@ -307,6 +311,7 @@ export abstract class ManifestMiddleware<
       mode: this.options.mode ?? 'development',
       // Hermes doesn't support more modern JS features than most, if not all, modern browser.
       engine: 'hermes',
+      basePath: this.initialProjectConfig.exp.experiments?.basePath,
     });
   }
 

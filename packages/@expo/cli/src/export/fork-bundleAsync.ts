@@ -148,6 +148,7 @@ async function bundleProductionMetroClientAsync(
         // Bundle splitting on web-only for now.
         // serializerOutput: bundle.platform === 'web' ? 'static' : undefined,
         serializerOutput: 'static',
+        basePath: expoConfig.experiments?.basePath,
       }),
       bundleType: 'bundle',
       inlineSourceMap: false,

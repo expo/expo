@@ -21,8 +21,10 @@ export function processModules(
     serverRoot,
     sourceUrl,
     platform,
+    basePath,
   }: {
     platform: string;
+    basePath: string;
     filter?: (module: Module) => boolean;
     createModuleId: (module: string) => number;
     dev: boolean;
@@ -38,6 +40,7 @@ export function processModules(
     .map((module: Module) => [
       module,
       wrapModule(module, {
+        basePath,
         platform,
         createModuleId,
         dev,

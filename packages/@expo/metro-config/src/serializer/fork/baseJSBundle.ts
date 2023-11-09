@@ -42,6 +42,27 @@ export function getPlatformOption(
   return url.searchParams.get('platform') ?? null;
 }
 
+export function getBasePathOption(
+  graph: Pick<ReadOnlyGraph, 'transformOptions'>,
+  options: SerializerOptions
+): string | null {
+  // @ts-expect-error
+  if (options.serializerOptions != null) {
+    // @ts-expect-error
+    return options.serializerOptions.basePath;
+  }
+
+  if (!options.sourceUrl) {
+    return null;
+  }
+
+  const sourceUrl = isJscSafeUrl(options.sourceUrl)
+    ? toNormalUrl(options.sourceUrl)
+    : options.sourceUrl;
+  const url = new URL(sourceUrl, 'https://expo.dev');
+  return url.searchParams.get('serializer.basePath') ?? null;
+}
+
 export function baseJSBundle(
   entryPoint: string,
   preModules: readonly Module[],
@@ -55,6 +76,7 @@ export function baseJSBundle(
 
   return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
     ...options,
+    basePath: getBasePathOption(graph, options) ?? '/',
     platform,
   });
 }
@@ -63,7 +85,7 @@ export function baseJSBundleWithDependencies(
   entryPoint: string,
   preModules: readonly Module[],
   dependencies: Module<MixedOutput>[],
-  options: SerializerOptions & { platform: string }
+  options: SerializerOptions & { platform: string; basePath: string }
 ): Bundle {
   for (const module of dependencies) {
     options.createModuleId(module.path);
@@ -78,6 +100,7 @@ export function baseJSBundleWithDependencies(
     serverRoot: options.serverRoot,
     sourceUrl: options.sourceUrl,
     platform: options.platform,
+    basePath: options.basePath,
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested

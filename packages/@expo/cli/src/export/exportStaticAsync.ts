@@ -139,6 +139,7 @@ export async function unstable_exportStaticResourcesAsync(projectRoot: string, o
       minify: options.minify,
       includeMaps: options.includeMaps,
       mainModuleName: options.entryPoint,
+      basePath: options.basePath,
     });
     return resources;
   } finally {
@@ -161,7 +162,7 @@ export async function exportFromServerAsync(
   assert(devServer instanceof MetroBundlerDevServer);
 
   const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
-    devServer.getStaticResourcesAsync({ mode: 'production', minify, includeMaps }),
+    devServer.getStaticResourcesAsync({ mode: 'production', minify, includeMaps, basePath }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
       minify,

@@ -66,7 +66,9 @@ function getModuleParams(module, options) {
                 hasPaths = true;
                 // NOTE(EvanBacon): Custom block for bundle splitting in production according to how `expo export` works
                 // TODO: Add content hash
-                paths[id] = '/' + (0, exportPath_1.getExportPathForDependencyWithOptions)(dependency.absolutePath, options);
+                paths[id] =
+                    (options.basePath ?? '/') +
+                        (0, exportPath_1.getExportPathForDependencyWithOptions)(dependency.absolutePath, options);
             }
         }
         return id;

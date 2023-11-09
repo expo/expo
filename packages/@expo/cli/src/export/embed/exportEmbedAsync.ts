@@ -64,6 +64,7 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
       minify: options.minify,
       mode: options.dev ? 'development' : 'production',
       engine: isHermes ? 'hermes' : undefined,
+      basePath: exp.experiments?.basePath,
     }),
     sourceMapUrl,
     unstable_transformProfile: (options.unstableTransformProfile ||

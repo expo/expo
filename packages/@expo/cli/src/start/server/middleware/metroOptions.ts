@@ -25,6 +25,7 @@ export type ExpoMetroOptions = {
   environment?: string;
   serializerOutput?: 'static';
   serializerIncludeMaps?: boolean;
+  basePath?: string;
   lazy?: boolean;
   engine?: 'hermes';
   preserveEnvVars?: boolean;
@@ -47,6 +48,7 @@ function withDefaults({
 export type SerializerOptions = {
   includeMaps?: boolean;
   output?: 'static';
+  basePath?: string;
 };
 
 export type ExpoMetroBundleOptions = MetroBundleOptions & {
@@ -67,6 +69,7 @@ export function getMetroDirectBundleOptions(
     lazy,
     engine,
     preserveEnvVars,
+    basePath,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -112,6 +115,7 @@ export function getMetroDirectBundleOptions(
     sourceMapUrl: fakeSourceMapUrl,
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
+      basePath,
       output: serializerOutput,
       includeMaps: serializerIncludeMaps,
     },
@@ -132,6 +136,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     lazy,
     engine,
     preserveEnvVars,
+    basePath,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -172,6 +177,10 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   }
   if (serializerIncludeMaps) {
     queryParams.append('serializer.map', String(serializerIncludeMaps));
+  }
+  // TODO: Probably pass to transformer instead and use in favor of app.json constants.
+  if (basePath) {
+    queryParams.append('serializer.basePath', String(basePath));
   }
 
   return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;

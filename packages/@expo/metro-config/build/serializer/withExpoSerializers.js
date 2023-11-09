@@ -156,6 +156,7 @@ class Chunk {
             modulesOnly: this.preModules.size === 0,
             platform: this.getPlatform(),
             sourceMapUrl: `${fileName}.map`,
+            basePath: (0, baseJSBundle_1.getBasePathOption)(this.graph, this.options) ?? '/',
         });
         return (0, bundleToString_1.default)(jsSplitBundle).code;
     }
