@@ -287,41 +287,37 @@ class ViewDefinitionBuilder<T : View>(
   ) = AsyncFunctionBuilder(name).also { functionBuilders[name] = it }
 
   private fun createViewFactory(): (Context, AppContext) -> View = viewFactory@{ context: Context, appContext: AppContext ->
-    val primaryConstructor = requireNotNull(getPrimaryConstructor()) { "$viewClass doesn't have a primary constructor" }
-    val args = primaryConstructor.parameters
-
-    if (args.isEmpty()) {
-      throw IllegalStateException("Android view has to have a constructor with at least one argument.")
+    val fullConstructor = try {
+      // Try to use constructor with two arguments
+      viewClass.java.getConstructor(Context::class.java, AppContext::class.java)
+    } catch (e: NoSuchMethodException) {
+      null
     }
 
-    val firstArgType = args.first().type
-    if (Context::class != firstArgType.classifier) {
-      throw IllegalStateException("The type of the first constructor argument has to be `android.content.Context`.")
-    }
-
-    // Backward compatibility
-    if (args.size == 1) {
+    fullConstructor?.let {
       return@viewFactory try {
-        primaryConstructor.call(context)
+        it.newInstance(context, appContext)
       } catch (e: Throwable) {
         handleFailureDuringViewCreation(context, appContext, e)
       }
     }
 
-    val secondArgType = args[1].type
-    if (AppContext::class != secondArgType.classifier) {
-      throw IllegalStateException("The type of the second constructor argument has to be `expo.modules.kotlin.AppContext`.")
+    val contextConstructor = try {
+      // Try to use constructor that use Android's context
+      viewClass.java.getConstructor(Context::class.java)
+    } catch (e: NoSuchMethodException) {
+      null
     }
 
-    if (args.size != 2) {
-      throw IllegalStateException("Android view has more constructor arguments than expected.")
+    contextConstructor?.let {
+      return@viewFactory try {
+        it.newInstance(context)
+      } catch (e: Throwable) {
+        handleFailureDuringViewCreation(context, appContext, e)
+      }
     }
 
-    return@viewFactory try {
-      primaryConstructor.call(context, appContext)
-    } catch (e: Throwable) {
-      handleFailureDuringViewCreation(context, appContext, e)
-    }
+    throw IllegalStateException("Didn't find a correct constructor for $viewClass")
   }
 
   private fun handleFailureDuringViewCreation(context: Context, appContext: AppContext, e: Throwable): View {

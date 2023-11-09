@@ -5,13 +5,10 @@ package expo.modules.kotlin.viewevent
 import android.view.View
 import java.lang.ref.WeakReference
 import kotlin.reflect.KProperty
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 
 typealias CoalescingKey<T> = (event: T) -> Short
 
 class ViewEventDelegate<T>(
-  private val type: KType,
   view: View,
   private val coalescingKey: CoalescingKey<T>?
 ) {
@@ -20,7 +17,7 @@ class ViewEventDelegate<T>(
   operator fun getValue(thisRef: View, property: KProperty<*>): ViewEventCallback<T> {
     val view = viewHolder.get()
       ?: throw IllegalStateException("Can't send the '${property.name}' event from the view that is deallocated")
-    return ViewEvent(property.name, type, view, coalescingKey)
+    return ViewEvent(property.name, view, coalescingKey)
   }
 }
 
@@ -31,11 +28,11 @@ class ViewEventDelegate<T>(
  */
 @Suppress("FunctionName")
 inline fun <reified T> View.EventDispatcher(noinline coalescingKey: CoalescingKey<T>? = null): ViewEventDelegate<T> {
-  return ViewEventDelegate(typeOf<T>(), this, coalescingKey)
+  return ViewEventDelegate(this, coalescingKey)
 }
 
 @JvmName("MapEventDispatcher")
 @Suppress("FunctionName")
 fun View.EventDispatcher(coalescingKey: CoalescingKey<Map<String, Any>>? = null): ViewEventDelegate<Map<String, Any>> {
-  return ViewEventDelegate(typeOf<Map<String, Any>>(), this, coalescingKey)
+  return ViewEventDelegate(this, coalescingKey)
 }
