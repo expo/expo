@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Return a promise for `prefetch`. ([#25196](https://github.com/expo/expo/pull/25196) by [@gkasdorf](https://github.com/gkasdorf))
 
 ### 🎉 New features
 
