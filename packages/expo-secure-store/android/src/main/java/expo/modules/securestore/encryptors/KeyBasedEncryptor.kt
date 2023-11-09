@@ -30,6 +30,7 @@ interface KeyBasedEncryptor<E : KeyStore.Entry> {
 
   @Throws(GeneralSecurityException::class, JSONException::class)
   suspend fun decryptItem(
+    key: String,
     encryptedItem: JSONObject,
     keyStoreEntry: E,
     options: SecureStoreOptions,

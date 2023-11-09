@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Enforce minimum authentication tag length for the `AESEncryptor` for improved security.
+
 ## 12.6.0 — 2023-10-17
 
 ### 🛠 Breaking changes
