@@ -3,8 +3,6 @@ package expo.modules.kotlin.viewevent
 import android.view.View
 import java.lang.ref.WeakReference
 import kotlin.reflect.KProperty
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 
 typealias CoalescingKey<T> = (event: T) -> Short
 
