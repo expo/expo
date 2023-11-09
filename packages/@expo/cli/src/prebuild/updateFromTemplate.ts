@@ -14,7 +14,7 @@ import { profile } from '../utils/profile';
 /**
  * Creates local native files from an input template file path.
  *
- * @return `true` if the project is ejecting, and `false` if it's syncing.
+ * @return `true` if the project is prebuilding, and `false` if it's syncing.
  */
 export async function updateFromTemplateAsync(
   projectRoot: string,
