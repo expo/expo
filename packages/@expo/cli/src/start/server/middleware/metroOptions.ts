@@ -1,8 +1,8 @@
+import { ExpoConfig } from '@expo/config';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import resolveFrom from 'resolve-from';
 
 import { env } from '../../../utils/env';
-import { ExpoConfig } from '@expo/config';
 
 export function shouldEnableAsyncImports(projectRoot: string): boolean {
   if (env.EXPO_NO_METRO_LAZY) {

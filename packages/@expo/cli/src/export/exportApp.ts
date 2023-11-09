@@ -19,11 +19,11 @@ import {
   writeSourceMapsAsync,
 } from './writeContents';
 import * as Log from '../log';
+import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
-import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 
 /**
  * The structure of the outputDir will be:
