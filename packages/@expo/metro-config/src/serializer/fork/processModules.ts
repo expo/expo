@@ -22,9 +22,11 @@ export function processModules(
     sourceUrl,
     platform,
     basePath,
+    splitChunks,
   }: {
     platform: string;
     basePath: string;
+    splitChunks: boolean;
     filter?: (module: Module) => boolean;
     createModuleId: (module: string) => number;
     dev: boolean;
@@ -42,6 +44,7 @@ export function processModules(
       wrapModule(module, {
         basePath,
         platform,
+        splitChunks,
         createModuleId,
         dev,
         includeAsyncPaths,

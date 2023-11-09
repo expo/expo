@@ -42,6 +42,14 @@ export function getPlatformOption(
   return url.searchParams.get('platform') ?? null;
 }
 
+export function getSplitChunksOption(
+  graph: Pick<ReadOnlyGraph, 'transformOptions'>,
+  options: SerializerOptions
+): boolean {
+  // Only enable when the entire bundle is being split, and only run on web.
+  return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
+}
+
 export function getBasePathOption(
   graph: Pick<ReadOnlyGraph, 'transformOptions'>,
   options: SerializerOptions
@@ -77,6 +85,7 @@ export function baseJSBundle(
   return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
     ...options,
     basePath: getBasePathOption(graph, options) ?? '/',
+    splitChunks: getSplitChunksOption(graph, options),
     platform,
   });
 }
@@ -85,7 +94,7 @@ export function baseJSBundleWithDependencies(
   entryPoint: string,
   preModules: readonly Module[],
   dependencies: Module<MixedOutput>[],
-  options: SerializerOptions & { platform: string; basePath: string }
+  options: SerializerOptions & { platform: string; basePath: string; splitChunks: boolean }
 ): Bundle {
   for (const module of dependencies) {
     options.createModuleId(module.path);
@@ -101,6 +110,7 @@ export function baseJSBundleWithDependencies(
     sourceUrl: options.sourceUrl,
     platform: options.platform,
     basePath: options.basePath,
+    splitChunks: options.splitChunks,
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested

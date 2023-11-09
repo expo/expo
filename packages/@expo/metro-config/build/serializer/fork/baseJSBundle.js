@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.baseJSBundleWithDependencies = exports.baseJSBundle = exports.getBasePathOption = exports.getPlatformOption = void 0;
+exports.baseJSBundleWithDependencies = exports.baseJSBundle = exports.getBasePathOption = exports.getSplitChunksOption = exports.getPlatformOption = void 0;
 const jsc_safe_url_1 = require("jsc-safe-url");
 const getAppendScripts_1 = __importDefault(require("metro/src/lib/getAppendScripts"));
 const processModules_1 = require("./processModules");
@@ -31,6 +31,11 @@ function getPlatformOption(graph, options) {
     return url.searchParams.get('platform') ?? null;
 }
 exports.getPlatformOption = getPlatformOption;
+function getSplitChunksOption(graph, options) {
+    // Only enable when the entire bundle is being split, and only run on web.
+    return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
+}
+exports.getSplitChunksOption = getSplitChunksOption;
 function getBasePathOption(graph, options) {
     // @ts-expect-error
     if (options.serializerOptions != null) {
@@ -55,6 +60,7 @@ function baseJSBundle(entryPoint, preModules, graph, options) {
     return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
         ...options,
         basePath: getBasePathOption(graph, options) ?? '/',
+        splitChunks: getSplitChunksOption(graph, options),
         platform,
     });
 }
@@ -73,6 +79,7 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
         sourceUrl: options.sourceUrl,
         platform: options.platform,
         basePath: options.basePath,
+        splitChunks: options.splitChunks,
     };
     // Do not prepend polyfills or the require runtime when only modules are requested
     if (options.modulesOnly) {

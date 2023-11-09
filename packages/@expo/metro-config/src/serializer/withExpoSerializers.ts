@@ -24,6 +24,7 @@ import {
   baseJSBundleWithDependencies,
   getBasePathOption,
   getPlatformOption,
+  getSplitChunksOption,
 } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
@@ -230,6 +231,7 @@ class Chunk {
         platform: this.getPlatform(),
         sourceMapUrl: `${fileName}.map`,
         basePath: getBasePathOption(this.graph, this.options) ?? '/',
+        splitChunks: getSplitChunksOption(this.graph, this.options),
       }
     );
 
@@ -370,13 +372,18 @@ function gatherChunks(
     }
   }
 
+  const splitChunks = getSplitChunksOption(graph, options);
   chunks.add(entryChunk);
 
   entryChunk.deps.add(entryModule);
 
   function includeModule(entryModule: Module<MixedOutput>) {
     for (const dependency of entryModule.dependencies.values()) {
-      if (dependency.data.data.asyncType === 'async') {
+      if (
+        dependency.data.data.asyncType === 'async' &&
+        // Support disabling multiple chunks.
+        splitChunks
+      ) {
         gatherChunks(chunks, dependency.absolutePath, [], graph, options, true);
       } else {
         const module = graph.dependencies.get(dependency.absolutePath);

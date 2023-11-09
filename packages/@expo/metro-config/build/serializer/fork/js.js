@@ -62,7 +62,7 @@ function getModuleParams(module, options) {
                             searchParams.toString();
                 }
             }
-            else {
+            else if (options.splitChunks) {
                 hasPaths = true;
                 // NOTE(EvanBacon): Custom block for bundle splitting in production according to how `expo export` works
                 // TODO: Add content hash

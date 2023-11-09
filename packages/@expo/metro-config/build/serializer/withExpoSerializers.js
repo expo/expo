@@ -157,6 +157,7 @@ class Chunk {
             platform: this.getPlatform(),
             sourceMapUrl: `${fileName}.map`,
             basePath: (0, baseJSBundle_1.getBasePathOption)(this.graph, this.options) ?? '/',
+            splitChunks: (0, baseJSBundle_1.getSplitChunksOption)(this.graph, this.options),
         });
         return (0, bundleToString_1.default)(jsSplitBundle).code;
     }
@@ -265,11 +266,14 @@ function gatherChunks(chunks, entryFile, preModules, graph, options, isAsync = f
             }
         }
     }
+    const splitChunks = (0, baseJSBundle_1.getSplitChunksOption)(graph, options);
     chunks.add(entryChunk);
     entryChunk.deps.add(entryModule);
     function includeModule(entryModule) {
         for (const dependency of entryModule.dependencies.values()) {
-            if (dependency.data.data.asyncType === 'async') {
+            if (dependency.data.data.asyncType === 'async' &&
+                // Support disabling multiple chunks.
+                splitChunks) {
                 gatherChunks(chunks, dependency.absolutePath, [], graph, options, true);
             }
             else {

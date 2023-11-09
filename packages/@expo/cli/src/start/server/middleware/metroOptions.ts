@@ -147,12 +147,9 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     hot: String(false),
   });
 
-  if (lazy) {
-    if (!dev && platform !== 'web') {
-      debug('Disabling lazy bundling for non-web platform in production mode');
-    } else {
-      queryParams.append('lazy', String(lazy));
-    }
+  // Lazy bundling must be disabled for bundle splitting to work.
+  if (lazy && !dev) {
+    queryParams.append('lazy', String(lazy));
   }
 
   if (minify) {

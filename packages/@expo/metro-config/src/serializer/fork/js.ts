@@ -27,6 +27,7 @@ export type Options = {
   sourceUrl: string | undefined;
   platform: string;
   basePath: string;
+  splitChunks: boolean;
   //   ...
 };
 
@@ -56,6 +57,7 @@ export function getModuleParams(
     | 'serverRoot'
     | 'platform'
     | 'basePath'
+    | 'splitChunks'
     | 'dev'
     | 'projectRoot'
   >
@@ -100,7 +102,7 @@ export function getModuleParams(
             '.bundle?' +
             searchParams.toString();
         }
-      } else {
+      } else if (options.splitChunks) {
         hasPaths = true;
         // NOTE(EvanBacon): Custom block for bundle splitting in production according to how `expo export` works
         // TODO: Add content hash
