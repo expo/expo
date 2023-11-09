@@ -56,7 +56,7 @@ Pod::Spec.new do |s|
     '"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header"',
     '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"',
-    '"$(PODS_ROOT)/Headers/Private/Yoga\"',
+    '"$(PODS_ROOT)/Headers/Private/Yoga"',
   ]
   if fabric_enabled && ENV['USE_FRAMEWORKS']
     user_header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
