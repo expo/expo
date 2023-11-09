@@ -166,6 +166,11 @@ class Env {
   get EXPO_NO_CLIENT_ENV_VARS(): boolean {
     return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
   }
+
+  /** Host the local native bundle from `npx expo export` with `npx expo start` for testing locally. */
+  get EXPO_SERVE_LOCAL(): boolean {
+    return boolish('EXPO_SERVE_LOCAL', false);
+  }
 }
 
 export const env = new Env();

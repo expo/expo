@@ -3,6 +3,8 @@ import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
 import crypto from 'crypto';
 import FormData from 'form-data';
+import path from 'path';
+import fs from 'fs';
 import { serializeDictionary, Dictionary } from 'structured-headers';
 
 import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
@@ -18,6 +20,8 @@ import {
 } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
 import { stripPort } from '../../../utils/url';
+import { Log } from '../../../log';
+import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
 
@@ -94,6 +98,22 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     return headers;
   }
 
+  private getLocalBundle(platform: string) {
+    const distDir = path.join(this.projectRoot, 'dist');
+    const metadataPath = path.join(distDir, 'metadata.json');
+    if (!fs.existsSync(metadataPath)) {
+      throw new CommandError(
+        'EXPO_SERVE_LOCAL is set but no dist/metadata.json found. Build project with `npx expo export -p ' +
+          platform +
+          '`'
+      );
+    }
+    const manifest = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
+    const bundleUrl = '/dist/' + manifest.fileMetadata[platform].bundle.replace(/^\/+/, '');
+    Log.log('Loading local bundle:', bundleUrl);
+    return bundleUrl;
+  }
+
   public async _getManifestResponseAsync(requestOptions: ExpoGoManifestRequestInfo): Promise<{
     body: string;
     version: string;
@@ -133,7 +153,9 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       launchAsset: {
         key: 'bundle',
         contentType: 'application/javascript',
-        url: bundleUrl,
+        url: env.EXPO_SERVE_LOCAL
+          ? new URL(this.getLocalBundle(requestOptions.platform), bundleUrl).toString()
+          : bundleUrl,
       },
       assets: [], // assets are not used in development
       metadata: {}, // required for the client to detect that this is an expo-updates manifest
