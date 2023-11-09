@@ -1,4 +1,4 @@
-import { buildContentsJsonImages } from '../withIosSplashAssets';
+import { buildContentsJsonImages } from '../ios/withIosSplashAssets';
 
 describe(buildContentsJsonImages, () => {
   it(`supports dark mode`, () => {

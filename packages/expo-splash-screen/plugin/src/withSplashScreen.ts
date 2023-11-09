@@ -1,4 +1,5 @@
-import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
+import { ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
+
 import { withAndroidSplashScreen } from './android/withAndroidSplashScreen';
 import { withIosSplashScreen } from './ios/withIosSplashScreen';
 

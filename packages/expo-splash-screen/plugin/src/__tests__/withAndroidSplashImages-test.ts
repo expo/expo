@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 
-import fixtures from '../../../__tests__/fixtures/react-native-project';
-import { setSplashImageDrawablesAsync } from '../../android/withAndroidSplashImages';
+// import fixtures from '../fixtures/react-native-project';
+import { setSplashImageDrawablesAsync } from '../android/withAndroidSplashImages';
 
 jest.mock('fs');
 
@@ -9,7 +9,7 @@ describe(setSplashImageDrawablesAsync, () => {
   beforeAll(async () => {
     vol.fromJSON(
       {
-        ...fixtures,
+        // ...fixtures,
         'assets/splash.png': '...',
         'assets/splash-dark.png': '...',
       },

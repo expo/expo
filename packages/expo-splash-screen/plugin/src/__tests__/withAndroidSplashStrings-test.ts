@@ -1,6 +1,6 @@
 import { XML } from '@expo/config-plugins';
 
-import { setSplashStrings } from '../../android/withAndroidSplashStrings';
+import { setSplashStrings } from '../android/withAndroidSplashStrings';
 
 describe(setSplashStrings, () => {
   it('add expo_splash_screen_strings', () => {

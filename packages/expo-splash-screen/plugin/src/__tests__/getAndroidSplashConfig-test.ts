@@ -1,4 +1,7 @@
-import { getAndroidDarkSplashConfig, getAndroidSplashConfig } from '../getAndroidSplashConfig';
+import {
+  getAndroidDarkSplashConfig,
+  getAndroidSplashConfig,
+} from '../android/getAndroidSplashConfig';
 
 describe(getAndroidSplashConfig, () => {
   it(`uses the more specific splash`, () => {

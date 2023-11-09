@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Parser } from 'xml2js';
 
-import { IBSplashScreenDocument, toString } from '../plugin/InterfaceBuilder';
+import { IBSplashScreenDocument, toString } from './InterfaceBuilder';
 
 export const STORYBOARD_FILE_PATH = './SplashScreen.storyboard';
 

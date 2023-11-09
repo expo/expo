@@ -1,6 +1,6 @@
-import { toString } from '../InterfaceBuilder';
-import { getTemplateAsync } from '../../ios/withIosSplashScreenStoryboard';
-import { applySplashScreenStoryboard } from '../../ios/withIosSplashScreenStoryboardImage';
+import { toString } from '../ios/InterfaceBuilder';
+import { getTemplateAsync } from '../ios/withIosSplashScreenStoryboard';
+import { applySplashScreenStoryboard } from '../ios/withIosSplashScreenStoryboardImage';
 
 describe(applySplashScreenStoryboard, () => {
   it(`gets a splash screen without options`, async () => {

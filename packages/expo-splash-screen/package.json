@@ -37,7 +37,8 @@
     "@expo/prebuild-config": "6.5.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^3.0.0",
+    "@expo/config-plugins": "^7.2.5"
   },
   "peerDependencies": {
     "expo": "*"

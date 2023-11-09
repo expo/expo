@@ -1,4 +1,4 @@
-import * as InterfaceBuilder from '../InterfaceBuilder';
+import * as InterfaceBuilder from '../ios/InterfaceBuilder';
 
 describe('createConstraint', () => {
   it(`creates a reliable constraint`, () => {

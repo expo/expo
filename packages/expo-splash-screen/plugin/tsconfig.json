@@ -4,6 +4,6 @@
     "outDir": "build",
     "rootDir": "src"
   },
-  "include": ["./src"],
+  "include": ["./src", "__tests__/InterfaceBuilder.ts"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*"]
 }

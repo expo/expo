@@ -5,7 +5,7 @@ import {
   removeOldSplashStyleGroup,
   setSplashColorsForTheme,
   setSplashStylesForTheme,
-} from '../withAndroidSplashStyles';
+} from '../android/withAndroidSplashStyles';
 
 jest.mock('fs');
 

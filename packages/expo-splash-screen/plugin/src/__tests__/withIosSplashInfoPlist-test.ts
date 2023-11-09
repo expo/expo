@@ -1,7 +1,7 @@
 import { WarningAggregator } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
-import { setSplashInfoPlist } from '../../ios/withIosSplashInfoPlist';
+import { setSplashInfoPlist } from '../ios/withIosSplashInfoPlist';
 
 jest.mock('@expo/config-plugins', () => {
   const plugins = jest.requireActual('@expo/config-plugins');

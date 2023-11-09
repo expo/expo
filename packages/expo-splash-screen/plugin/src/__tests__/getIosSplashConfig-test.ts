@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { getIosSplashConfig } from '../getIosSplashConfig';
+import { getIosSplashConfig } from '../ios/getIosSplashConfig';
 
 jest.mock('@expo/config-plugins', () => {
   const plugins = jest.requireActual('@expo/config-plugins');

@@ -5,7 +5,7 @@ import {
   IBSplashScreenDocument,
   ImageContentMode,
   removeImageFromSplashScreen,
-} from '../plugin/InterfaceBuilder';
+} from './InterfaceBuilder';
 import { IOSSplashConfig } from './getIosSplashConfig';
 import { withIosSplashScreenStoryboard } from './withIosSplashScreenStoryboard';
 
