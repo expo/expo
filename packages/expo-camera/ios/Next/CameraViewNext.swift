@@ -754,9 +754,9 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  private func createBarCodeScanner() -> BarCodeScanner {
-    let scanner = BarCodeScanner(session: session, sessionQueue: sessionQueue)
-    scanner.onBarCodeScanned = { [weak self] body in
+  private func createBarCodeScanner() -> BarcodeScanner {
+    let scanner = BarcodeScanner(session: session, sessionQueue: sessionQueue)
+    scanner.onBarcodeScanned = { [weak self] body in
       if let body = body as? [String: Any] {
         self?.onBarCodeScanned(body)
       }

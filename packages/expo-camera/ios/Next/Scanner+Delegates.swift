@@ -1,7 +1,7 @@
 import AVFoundation
 import ZXingObjC
 
-extension BarCodeScanner: AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
+extension BarcodeScanner: AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
   func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
     guard let settings = settings[BARCODE_TYPES_KEY], let metadataOutput else {
       return
@@ -16,7 +16,7 @@ extension BarCodeScanner: AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideo
 
         if let codeMetadata {
           if codeMetadata.stringValue != nil && codeMetadata.type == barcodeType {
-            onBarCodeScanned?(BarCodeScannerUtils.avMetadataCodeObjectToDictionary(codeMetadata))
+            onBarcodeScanned?(BarcodeScannerUtils.avMetadataCodeObjectToDictionary(codeMetadata))
           }
         }
       }
@@ -44,7 +44,7 @@ extension BarCodeScanner: AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideo
       if let videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer),
        let videoFrameImage = ZXCGImageLuminanceSource.createImage(from: videoFrame) {
         self.scanBarcodes(from: videoFrameImage) { barCodeScannerResult in
-          self.onBarCodeScanned?(BarCodeScannerUtils.zxResultToDictionary(barCodeScannerResult))
+          self.onBarcodeScanned?(BarcodeScannerUtils.zxResultToDictionary(barCodeScannerResult))
         }
       }
     }

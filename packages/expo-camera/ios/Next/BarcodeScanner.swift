@@ -3,8 +3,8 @@ import AVFoundation
 
 let BARCODE_TYPES_KEY = "barCodeTypes"
 
-class BarCodeScanner: NSObject {
-  var onBarCodeScanned: (([String: Any]?) -> Void)?
+class BarcodeScanner: NSObject {
+  var onBarcodeScanned: (([String: Any]?) -> Void)?
   var isScanningBarcodes = false
 
   // MARK: - Properties
@@ -15,7 +15,7 @@ class BarCodeScanner: NSObject {
 
   internal var metadataOutput: AVCaptureMetadataOutput?
   internal var videoDataOutput: AVCaptureVideoDataOutput?
-  internal var settings = BarCodeScannerUtils.getDefaultSettings()
+  internal var settings = BarcodeScannerUtils.getDefaultSettings()
   internal var zxingBarcodeReaders: [AVMetadataObject.ObjectType: ZXReader] = [
     AVMetadataObject.ObjectType.pdf417: ZXPDF417Reader(),
     AVMetadataObject.ObjectType.code39: ZXCode39Reader()
@@ -100,7 +100,7 @@ class BarCodeScanner: NSObject {
   func stopBarCodeScanning() {
     removeOutputs()
     if isScanningBarcodes {
-      onBarCodeScanned?(nil)
+      onBarcodeScanned?(nil)
     }
   }
 

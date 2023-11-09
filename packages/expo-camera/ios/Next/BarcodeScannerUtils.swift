@@ -2,7 +2,7 @@ import AVFoundation
 import ZXingObjC
 import VisionKit
 
-class BarCodeScannerUtils {
+class BarcodeScannerUtils {
   static func getDefaultSettings() -> [String: [AVMetadataObject.ObjectType]] {
     var validTypes = [
       "upc_e": AVMetadataObject.ObjectType.upce,
@@ -27,25 +27,25 @@ class BarCodeScannerUtils {
     return [BARCODE_TYPES_KEY: Array(validTypes.values)]
   }
 
-  static func avMetadataCodeObjectToDictionary(_ barCodeScannerResult: AVMetadataMachineReadableCodeObject) -> [String: Any] {
+  static func avMetadataCodeObjectToDictionary(_ barcodeScannerResult: AVMetadataMachineReadableCodeObject) -> [String: Any] {
     var result = [String: Any]()
-    result["type"] = barCodeScannerResult.type
-    result["data"] = barCodeScannerResult.stringValue
+    result["type"] = barcodeScannerResult.type
+    result["data"] = barcodeScannerResult.stringValue
 
-    if !barCodeScannerResult.corners.isEmpty {
+    if !barcodeScannerResult.corners.isEmpty {
       var cornerPointsResult = [[String: Any]]()
-      for point in barCodeScannerResult.corners {
+      for point in barcodeScannerResult.corners {
         cornerPointsResult.append(["x": point.x, "y": point.y])
       }
       result["cornerPoints"] = cornerPointsResult
       result["bounds"] = [
         "origin": [
-          "x": barCodeScannerResult.bounds.origin.x,
-          "y": barCodeScannerResult.bounds.origin.y
+          "x": barcodeScannerResult.bounds.origin.x,
+          "y": barcodeScannerResult.bounds.origin.y
         ],
         "size": [
-          "width": barCodeScannerResult.bounds.size.width,
-          "height": barCodeScannerResult.bounds.size.height
+          "width": barcodeScannerResult.bounds.size.width,
+          "height": barcodeScannerResult.bounds.size.height
         ]
       ]
     } else {
@@ -85,7 +85,7 @@ class BarCodeScannerUtils {
 
   static func zxResultToDictionary(_ barCodeScannerResult: ZXResult) -> [String: Any] {
     var result = [String: Any]()
-    result["type"] = BarCodeScannerUtils.zxingFormatToString(barCodeScannerResult.barcodeFormat)
+    result["type"] = BarcodeScannerUtils.zxingFormatToString(barCodeScannerResult.barcodeFormat)
 
     var data = ""
     for i in 0..<barCodeScannerResult.text.count {

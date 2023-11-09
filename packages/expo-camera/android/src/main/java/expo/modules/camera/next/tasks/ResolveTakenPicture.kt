@@ -39,7 +39,7 @@ private const val DATA_KEY = "data"
 private const val URI_KEY = "uri"
 private const val ID_KEY = "id"
 
-class ResolveTakePicture(
+class ResolveTakenPicture(
   private var imageData: ByteArray,
   private var promise: Promise,
   private var options: PictureOptions,
@@ -120,7 +120,7 @@ class ResolveTakePicture(
           bitmap.compress(Bitmap.CompressFormat.JPEG, quality, imageStream)
           // Write compressed image to file in cache directory
           val filePath = writeStreamToFile(imageStream)
-
+          bitmap.recycle()
           // Save Exif data to the image if requested
           if (options.exif) {
             val exifFromFile = ExifInterface(filePath!!)
@@ -181,12 +181,11 @@ class ResolveTakePicture(
           }
         }
       }
+    } catch (e: IOException) {
+      promise.reject(ERROR_TAG, UNKNOWN_IO_EXCEPTION_MSG, e)
+      e.printStackTrace()
     } catch (e: Exception) {
-      if (e is IOException) {
-        promise.reject(ERROR_TAG, UNKNOWN_IO_EXCEPTION_MSG, e)
-      } else {
-        promise.reject(ERROR_TAG, UNKNOWN_EXCEPTION_MSG, e)
-      }
+      promise.reject(ERROR_TAG, UNKNOWN_EXCEPTION_MSG, e)
       e.printStackTrace()
     }
     // error occurred
@@ -194,16 +193,17 @@ class ResolveTakePicture(
   }
 
   private fun onComplete(response: Bundle?) {
-    // If the response is not null everything went well and we can resolve the promise.
-    if (response != null) {
-      if (options.fastMode) {
-        val wrapper = Bundle()
-        wrapper.putInt(ID_KEY, requireNotNull(options.id))
-        wrapper.putBundle(DATA_KEY, response)
-        pictureSavedDelegate.onPictureSaved(wrapper)
-      } else {
-        promise.resolve(response)
-      }
+    if (response == null) {
+      return
+    }
+
+    if (options.fastMode) {
+      val wrapper = Bundle()
+      wrapper.putInt(ID_KEY, requireNotNull(options.id))
+      wrapper.putBundle(DATA_KEY, response)
+      pictureSavedDelegate.onPictureSaved(wrapper)
+    } else {
+      promise.resolve(response)
     }
   }
 

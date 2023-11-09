@@ -106,8 +106,6 @@ repositories {
 }
 
 dependencies {
-
-
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
     implementation project(':expo-modules-core')

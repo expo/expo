@@ -1,4 +1,3 @@
-import UIKit
 import VisionKit
 
 protocol ScannerResultHandler {
@@ -17,7 +16,7 @@ class VisionScannerDelegate: NSObject, DataScannerViewControllerDelegate {
     if let item = updatedItems.first {
       switch item {
       case .barcode(let code):
-        handler.onItemScanned(result: BarCodeScannerUtils.visionDataScannerObjectToDictionary(item: code))
+        handler.onItemScanned(result: BarcodeScannerUtils.visionDataScannerObjectToDictionary(item: code))
       case .text(let text):
         return
       }

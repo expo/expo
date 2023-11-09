@@ -30,7 +30,6 @@ import androidx.camera.video.Quality
 import androidx.camera.video.QualitySelector
 import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
-import androidx.camera.video.VideoCapabilities
 import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
@@ -45,7 +44,7 @@ import expo.modules.camera.next.records.BarcodeType
 import expo.modules.camera.next.records.CameraMode
 import expo.modules.camera.next.records.CameraType
 import expo.modules.camera.next.records.FlashMode
-import expo.modules.camera.next.tasks.ResolveTakePicture
+import expo.modules.camera.next.tasks.ResolveTakenPicture
 import expo.modules.camera.next.utils.FileSystemUtils
 import expo.modules.camera.utils.mapX
 import expo.modules.camera.utils.mapY
@@ -176,7 +175,7 @@ class ExpoCameraView(
           }
           cacheDirectory.let {
             scope.launch {
-              ResolveTakePicture(data, promise, options, it) { response: Bundle ->
+              ResolveTakenPicture(data, promise, options, it) { response: Bundle ->
                 onPictureSaved(response)
               }.resolve()
             }
@@ -446,8 +445,7 @@ class ExpoCameraView(
     }
   }
 
-  override fun setPreviewTexture(surfaceTexture: SurfaceTexture?) {
-  }
+  override fun setPreviewTexture(surfaceTexture: SurfaceTexture?) = Unit
 
   override fun getPreviewSizeAsArray() = intArrayOf(previewView.width, previewView.height)
 

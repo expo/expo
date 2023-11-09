@@ -10,7 +10,6 @@ struct ScannerContext {
 }
 
 public final class CameraViewNextModule: Module, ScannerResultHandler {
-
   private var scannerContext: ScannerContext?
 
   public func definition() -> ModuleDefinition {
@@ -31,14 +30,13 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
       )
     }
 
-    Property("modernBarcodeScannerAvailable")
-      .get { () -> Bool in
-        if #available(iOS 16.0, *) {
-          return true
-        }
-        return false
+    Property("isModernBarcodeScannerAvailable") { () -> Bool in
+      if #available(iOS 16.0, *) {
+        return true
       }
-
+      return false
+    }
+    
     // swiftlint:disable:next closure_body_length
     View(CameraViewNext.self) {
       Events(cameraEvents)
@@ -118,12 +116,10 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
 
     AsyncFunction("launchModernScanner") { (options: VisionScannerOptions?, promise: Promise) in
       if #available(iOS 16.0, *) {
-        Task {
-          try await MainActor.run {
-            let delegate = VisionScannerDelegate(handler: self)
-            scannerContext = ScannerContext(promise: promise, delegate: delegate)
-            launchModernScanner(with: options)
-          }
+        try await MainActor.run {
+          let delegate = VisionScannerDelegate(handler: self)
+          scannerContext = ScannerContext(promise: promise, delegate: delegate)
+          launchModernScanner(with: options)
         }
       }
     }
@@ -166,7 +162,8 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
   }
 
   @available(iOS 16.0, *)
-  @MainActor private func launchModernScanner(with options: VisionScannerOptions?) {
+  @MainActor 
+  private func launchModernScanner(with options: VisionScannerOptions?) {
     let symbologies = options?.toSymbology()
     let controller = DataScannerViewController(
       recognizedDataTypes: [.barcode(symbologies: symbologies ?? [.qr, .dataMatrix])],
@@ -192,7 +189,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
 private func takePictureForSimulator(
   _ appContext: AppContext?,
   _ view: CameraView,
-  _ options: TakePictureOptions,
+  _ options: TakePictureOptionsNext,
   _ promise: Promise
 ) throws {
   if options.fastMode {
@@ -212,7 +209,7 @@ private func takePictureForSimulator(
 
 private func generatePictureForSimulator(
   appContext: AppContext?,
-  options: TakePictureOptions
+  options: TakePictureOptionsNext
 ) throws -> [String: Any?] {
   guard let fileSystem = appContext?.fileSystem else {
     throw Exceptions.FileSystemModuleNotFound()

@@ -6,7 +6,7 @@ export default class Camera extends React.Component<CameraProps> {
     /**
      * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
      */
-    static modernBarcodeScannerAvailable: boolean;
+    static isModernBarcodeScannerAvailable: boolean;
     /**
      * Check whether the current device has a camera. This is useful for web and simulators cases.
      * This isn't influenced by the Permissions API (all platforms), or HTTP usage (in the browser).

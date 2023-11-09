@@ -2,16 +2,11 @@ package expo.modules.camera.next
 
 import android.Manifest
 import android.util.Log
-import expo.modules.camera.VIDEO_1080P
-import expo.modules.camera.VIDEO_2160P
-import expo.modules.camera.VIDEO_480P
-import expo.modules.camera.VIDEO_4x3
-import expo.modules.camera.VIDEO_720P
 import expo.modules.camera.next.records.BarCodeSettings
 import expo.modules.camera.next.records.CameraMode
 import expo.modules.camera.next.records.CameraType
 import expo.modules.camera.next.records.FlashMode
-import expo.modules.camera.next.tasks.ResolveTakePicture
+import expo.modules.camera.next.tasks.ResolveTakenPicture
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.interfaces.permissions.Permissions
@@ -126,7 +121,7 @@ class CameraViewNextModule : Module() {
         } else {
           val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
           moduleScope.launch {
-            ResolveTakePicture(image, promise, options, cacheDirectory) { response ->
+            ResolveTakenPicture(image, promise, options, cacheDirectory) { response ->
               view.onPictureSaved(response)
             }.resolve()
           }
