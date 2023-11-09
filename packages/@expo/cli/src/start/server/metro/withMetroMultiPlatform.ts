@@ -206,18 +206,12 @@ export function withExtendedResolver(
 
   const shimsFolder = path.join(config.projectRoot, METRO_SHIMS_FOLDER);
 
-  function getStrictResolver(context: ResolutionContext, platform: string | null) {
+  function getStrictResolver(
+    { resolveRequest, ...context }: ResolutionContext,
+    platform: string | null
+  ) {
     return function doResolve(moduleName: string): Resolution {
-      // Workaround for Node.js having package exports enabled by default and
-      // the fast resolver not having package exports support yet.
-      return resolver(
-        {
-          ...context,
-          resolveRequest: undefined,
-        },
-        moduleName,
-        platform
-      );
+      return resolver(context, moduleName, platform);
     };
   }
 
