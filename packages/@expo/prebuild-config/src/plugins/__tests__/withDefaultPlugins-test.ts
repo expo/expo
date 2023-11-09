@@ -27,13 +27,22 @@ const { readXMLAsync } = XML;
 const fsReal = jest.requireActual('fs') as typeof fs;
 
 jest.mock('fs');
+
 // Weird issues with Android Icon module make it hard to mock test.
-jest.mock('../icons/withAndroidIcons', () => {
+jest.mock('@expo/config-plugins', () => {
+  const pluginsReal = jest.requireActual('@expo/config-plugins');
   return {
-    withAndroidIcons(config) {
-      return config;
+    ...pluginsReal,
+    Icons: {
+      ...pluginsReal.Icons,
+      AndroidIcons: {
+        ...pluginsReal.Icons.AndroidIcons,
+        withAndroidIcons(config) {
+          return config;
+        },
+        setIconAsync() {},
+      },
     },
-    setIconAsync() {},
   };
 });
 const NotificationsPlugin = require('../unversioned/expo-notifications/withAndroidNotifications');
