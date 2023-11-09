@@ -164,9 +164,6 @@ export async function graphToSerialAssetsAsync(
 
   [
     {
-      test: /node_modules[\//]+(react|react-native|react-dom|react-native-web)[\//]+/,
-    },
-    {
       test: pathToRegExp(entryFile),
     },
   ].map((chunkSettings) => gatherChunks(_chunks, chunkSettings, preModules, graph, options, false));

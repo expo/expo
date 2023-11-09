@@ -103,9 +103,6 @@ async function graphToSerialAssetsAsync(serializerConfig, { includeMaps }, ...pr
     const _chunks = new Set();
     [
         {
-            test: /node_modules[\//]+(react|react-native|react-dom|react-native-web)[\//]+/,
-        },
-        {
             test: (0, path_to_regexp_1.default)(entryFile),
         },
     ].map((chunkSettings) => gatherChunks(_chunks, chunkSettings, preModules, graph, options, false));
