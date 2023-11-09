@@ -1,18 +1,16 @@
 package com.swmansion.rnscreens.events
 
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
-import com.facebook.react.uimanager.events.RCTEventEmitter
 
-class ScreenWillAppearEvent(viewId: Int) : Event<ScreenWillAppearEvent>(viewId) {
+class ScreenWillAppearEvent(surfaceId: Int, viewId: Int) : Event<ScreenWillAppearEvent>(surfaceId, viewId) {
     override fun getEventName() = EVENT_NAME
 
     // All events for a given view can be coalesced.
     override fun getCoalescingKey(): Short = 0
 
-    override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-        rctEventEmitter.receiveEvent(viewTag, eventName, Arguments.createMap())
-    }
+    override fun getEventData(): WritableMap? = Arguments.createMap()
 
     companion object {
         const val EVENT_NAME = "topWillAppear"

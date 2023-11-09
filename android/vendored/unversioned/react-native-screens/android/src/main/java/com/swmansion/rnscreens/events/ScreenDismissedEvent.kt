@@ -1,20 +1,17 @@
 package com.swmansion.rnscreens.events
 
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
-import com.facebook.react.uimanager.events.RCTEventEmitter
 
-class ScreenDismissedEvent(viewId: Int) : Event<ScreenDismissedEvent>(viewId) {
+class ScreenDismissedEvent(surfaceId: Int, viewId: Int) : Event<ScreenDismissedEvent>(surfaceId, viewId) {
     override fun getEventName() = EVENT_NAME
 
     // All events for a given view can be coalesced.
     override fun getCoalescingKey(): Short = 0
 
-    override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-        val args = Arguments.createMap()
-        // on Android we always dismiss one screen at a time
-        args.putInt("dismissCount", 1)
-        rctEventEmitter.receiveEvent(viewTag, eventName, args)
+    override fun getEventData(): WritableMap? = Arguments.createMap().apply {
+        putInt("dismissCount", 1)
     }
 
     companion object {

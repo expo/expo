@@ -9,6 +9,7 @@ import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Build
 import android.view.ViewParent
+import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -115,12 +116,31 @@ object ScreenWindowTraits {
                     if (translucent) {
                         ViewCompat.setOnApplyWindowInsetsListener(decorView) { v, insets ->
                             val defaultInsets = ViewCompat.onApplyWindowInsets(v, insets)
-                            defaultInsets.replaceSystemWindowInsets(
-                                defaultInsets.systemWindowInsetLeft,
-                                0,
-                                defaultInsets.systemWindowInsetRight,
-                                defaultInsets.systemWindowInsetBottom
-                            )
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                val windowInsets =
+                                    defaultInsets.getInsets(WindowInsetsCompat.Type.statusBars())
+
+                                WindowInsetsCompat
+                                    .Builder()
+                                    .setInsets(
+                                        WindowInsetsCompat.Type.statusBars(),
+                                        Insets.of(
+                                            windowInsets.left,
+                                            0,
+                                            windowInsets.right,
+                                            windowInsets.bottom
+                                        )
+                                    )
+                                    .build()
+                            } else {
+                                defaultInsets.replaceSystemWindowInsets(
+                                    defaultInsets.systemWindowInsetLeft,
+                                    0,
+                                    defaultInsets.systemWindowInsetRight,
+                                    defaultInsets.systemWindowInsetBottom
+                                )
+                            }
                         }
                     } else {
                         ViewCompat.setOnApplyWindowInsetsListener(decorView, null)
@@ -239,7 +259,7 @@ object ScreenWindowTraits {
         screen: Screen?,
         trait: WindowTraits
     ): Screen? {
-        screen?.fragment?.let {
+        screen?.fragmentWrapper?.let {
             for (sc in it.childScreenContainers) {
                 // we check only the top screen for the trait
                 val topScreen = sc.topScreen
