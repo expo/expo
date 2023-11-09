@@ -22,13 +22,13 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   private var photoCaptureOptions: TakePictureOptionsNext?
   private var videoStabilizationMode: AVCaptureVideoStabilizationMode?
   private var errorNotification: NSObjectProtocol?
+  private var physicalOrientation: UIDeviceOrientation = .unknown
   private var motionManager: CMMotionManager = {
     let mm = CMMotionManager()
     mm.accelerometerUpdateInterval = 0.2
     mm.gyroUpdateInterval = 0.2
     return mm
   }()
-  private var physicalOrientation: UIDeviceOrientation = .unknown
 
   // MARK: Property Observers
 
@@ -631,7 +631,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   func ensureSessionConfiguration() {
     sessionQueue.async {
-//      self.updateSessionAudioIsMuted()
+      self.updateSessionAudioIsMuted()
     }
   }
 

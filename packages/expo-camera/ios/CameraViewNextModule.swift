@@ -19,7 +19,6 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
 
     OnCreate {
       let permissionsManager = self.appContext?.permissions
-
       EXPermissionsMethodsDelegate.register(
         [
           CameraPermissionRequester(),
@@ -164,11 +163,11 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
   @available(iOS 16.0, *)
   @MainActor 
   private func launchModernScanner(with options: VisionScannerOptions?) {
-    let symbologies = options?.toSymbology()
+    let symbologies = options?.toSymbology() ?? [.qr]
     let controller = DataScannerViewController(
-      recognizedDataTypes: [.barcode(symbologies: symbologies ?? [.qr, .dataMatrix])],
-      isPinchToZoomEnabled: options?.isPinchToZoomEnabled ?? false,
-      isGuidanceEnabled: options?.isGuidanceEnabled ?? false,
+      recognizedDataTypes: [.barcode(symbologies: symbologies)],
+      isPinchToZoomEnabled: options?.isPinchToZoomEnabled ?? true,
+      isGuidanceEnabled: options?.isGuidanceEnabled ?? true,
       isHighlightingEnabled: options?.isHighlightingEnabled ?? false
     )
 
@@ -230,15 +229,3 @@ private func generatePictureForSimulator(
     "base64": options.base64 ? photoData.base64EncodedString() : nil
   ]
 }
-
-private let pictureSizesDict = [
-  "3840x2160": AVCaptureSession.Preset.hd4K3840x2160,
-  "1920x1080": AVCaptureSession.Preset.hd1920x1080,
-  "1280x720": AVCaptureSession.Preset.hd1280x720,
-  "640x480": AVCaptureSession.Preset.vga640x480,
-  "352x288": AVCaptureSession.Preset.cif352x288,
-  "Photo": AVCaptureSession.Preset.photo,
-  "High": AVCaptureSession.Preset.high,
-  "Medium": AVCaptureSession.Preset.medium,
-  "Low": AVCaptureSession.Preset.low
-]
