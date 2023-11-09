@@ -15,9 +15,12 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
+  s.dependency 'ZXingObjC/PDF417'
+  s.dependency 'ZXingObjC/OneD'
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
+    'GCC_PREPROCESSOR_DEFINITIONS' => 'ZXINGOBJC_USE_SUBSPECS ZXINGOBJC_PDF417 ZXINGOBJC_ONED',
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }

@@ -9,6 +9,8 @@ const screens = [
   'BlurView',
   'Button',
   'Camera',
+  'Camera (next)',
+  'Camera (next barcode)',
   'Checkbox',
   'ClipboardPasteButton',
   'DateTimePicker',

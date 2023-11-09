@@ -368,8 +368,8 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   func updateFaceDetectorSettings(settings: [String: Any]) {
-    if faceDetector != nil {
-      faceDetector?.updateSettings(settings)
+    if let faceDetector {
+      faceDetector.updateSettings(settings)
     }
   }
 
@@ -710,7 +710,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
             if isMuted {
               self.session.removeInput(input)
             }
-            self.session.commitConfiguration()
             return
           }
         }
