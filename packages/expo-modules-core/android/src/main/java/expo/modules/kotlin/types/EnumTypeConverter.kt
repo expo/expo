@@ -8,7 +8,6 @@ import expo.modules.kotlin.logger
 import expo.modules.kotlin.toKType
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
 
 class EnumTypeConverter(
