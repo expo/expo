@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add e2e tests for disabled mode. ([#25301](https://github.com/expo/expo/pull/25301) by [@wschurman](https://github.com/wschurman))
+
 ## 0.23.0 — 2023-11-14
 
 ### 🛠 Breaking changes
