@@ -40,8 +40,12 @@ class ExpoImageModule : Module() {
           .download(GlideUrl(it))
           .skipMemoryCache(true)
           .listener(object : RequestListener<File> {
-            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<File>?,
-                                      isFirstResource: Boolean): Boolean {
+            override fun onLoadFailed(
+              e: GlideException?,
+              model: Any?,
+              target: Target<File>?,
+              isFirstResource: Boolean
+            ): Boolean {
               if (!failed) {
                 failed = true
                 promise.resolve(false)
@@ -49,9 +53,14 @@ class ExpoImageModule : Module() {
               return true
             }
 
-            override fun onResourceReady(resource: File?, model: Any?, target: Target<File>?,
-                                         dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-              imagesLoaded++;
+            override fun onResourceReady(
+              resource: File?,
+              model: Any?,
+              target: Target<File>?,
+              dataSource: DataSource?,
+              isFirstResource: Boolean
+            ): Boolean {
+              imagesLoaded++
 
               if (imagesLoaded == urls.size) {
                 promise.resolve(true)
