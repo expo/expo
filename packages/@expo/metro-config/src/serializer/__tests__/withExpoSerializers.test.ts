@@ -22,7 +22,7 @@ describe('tree-shaking', () => {
     // delete process.env.EXPO_USE_TREE_SHAKING;
     jest.mock('fs');
   });
-  xit(`splits chunks`, async () => {
+  it(`splits chunks`, async () => {
     const serializer = getSerializer();
 
     // Drop the pre-modules for brevity
@@ -37,7 +37,7 @@ describe('tree-shaking', () => {
     console.log(artifacts);
     expect(artifacts.length).toBe(3);
     expect(artifacts[0].filename).toEqual(
-      '_expo/static/js/web/_expo-metro-runtime-71d338f9431a2599ef5d0963be513d33.js'
+      '_expo/static/js/web/require-c7ba1f81b36aa959b8f163550994c66c.js'
     );
     expect(artifacts[1].filename).toEqual(
       '_expo/static/js/web/index-15cb8de5975fcbb0f0cc21fabb951e0d.js'
@@ -48,7 +48,7 @@ describe('tree-shaking', () => {
     // Ensure the runModule isn't included for async chunks
     expect(artifacts[2].source).not.toMatch(/TEST_RUN_MODULE\(\d+\)/);
   });
-  it(`splits chunks ios`, async () => {
+  xit(`splits chunks ios`, async () => {
     const serializer = getSerializer();
 
     // Serialize

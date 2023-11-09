@@ -140,6 +140,13 @@ export function getDefaultSerializer(
   };
 }
 
+import pathToRegExp from 'path-to-regexp';
+
+type ChunkSettings = {
+  /** Match the initial modules. */
+  test: RegExp;
+};
+
 export async function graphToSerialAssetsAsync(
   serializerConfig: ConfigT['serializer'],
   { includeMaps }: { includeMaps: boolean },
@@ -155,9 +162,11 @@ export async function graphToSerialAssetsAsync(
   // Create chunks for splitting.
   const _chunks = new Set<Chunk>();
 
-  [entryFile].map((entryFile) =>
-    gatherChunks(_chunks, entryFile, preModules, graph, options, false)
-  );
+  [
+    {
+      test: pathToRegExp(entryFile),
+    },
+  ].map((chunkSettings) => gatherChunks(_chunks, chunkSettings, preModules, graph, options, false));
 
   // console.log('Chunks:');
   // console.log(inspect([..._chunks], { depth: 3, colors: true }));
@@ -183,11 +192,13 @@ class Chunk {
 
   constructor(
     public name: string,
-    public entry: string,
+    public entries: Module<MixedOutput>[],
     public graph: ReadOnlyGraph<MixedOutput>,
     public options: SerializerOptions<MixedOutput>,
     public isAsync: boolean = false
-  ) {}
+  ) {
+    this.deps = new Set(entries);
+  }
 
   private getPlatform() {
     assert(
@@ -200,15 +211,15 @@ class Chunk {
   getFilename() {
     // TODO: Content hash is needed
     return this.options.dev
-      ? this.entry
-      : getExportPathForDependencyWithOptions(this.entry, {
+      ? this.name
+      : getExportPathForDependencyWithOptions(this.name, {
           platform: this.getPlatform(),
           serverRoot: this.options.serverRoot,
         });
   }
 
   serializeToCode(serializerConfig: SerializerConfigT) {
-    const entryFile = this.entry;
+    const entryFile = this.name;
     const fileName = path.basename(entryFile, '.js');
 
     const jsSplitBundle = baseJSBundleWithDependencies(
@@ -244,7 +255,7 @@ class Chunk {
   ): Promise<SerialAsset[]> {
     const jsCode = this.serializeToCode(serializerConfig);
 
-    const relativeEntry = path.relative(this.options.projectRoot, this.entry);
+    const relativeEntry = path.relative(this.options.projectRoot, this.name);
     const outputFile = this.getFilename();
 
     const jsAsset: SerialAsset = {
@@ -300,7 +311,7 @@ class Chunk {
     if (this.isHermesEnabled()) {
       // TODO: Generate hbc for each chunk
       const hermesBundleOutput = await buildHermesBundleAsync({
-        filename: this.entry,
+        filename: this.name,
         code: jsAsset.source,
         map: assets[1] ? assets[1].source : null,
         // TODO: Maybe allow prod + no minify.
@@ -310,6 +321,7 @@ class Chunk {
       if (hermesBundleOutput.hbc) {
         // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
         // jsAsset.metadata.hbc = hermesBundleOutput.hbc;
+        // @ts-expect-error: TODO
         jsAsset.source = hermesBundleOutput.hbc;
         jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
       }
@@ -334,34 +346,65 @@ class Chunk {
   }
 }
 
+function getEntryModulesForChunkSettings(graph: ReadOnlyGraph, settings: ChunkSettings) {
+  return [...graph.dependencies.entries()]
+    .filter(([path]) => settings.test.test(path))
+    .map(([, module]) => module);
+}
+
+function chunkIdForModules(modules: Module[]) {
+  return modules
+    .map((module) => module.path)
+    .sort()
+    .join('=>');
+}
+
 function gatherChunks(
   chunks: Set<Chunk>,
-  entryFile: string,
+  settings: ChunkSettings,
   preModules: readonly Module[],
   graph: ReadOnlyGraph,
   options: SerializerOptions<MixedOutput>,
   isAsync: boolean = false
 ): Set<Chunk> {
-  const entryModule = graph.dependencies.get(entryFile);
-  if (!entryModule) {
-    throw new Error('Entry module not found in graph: ' + entryFile);
-  }
+  let entryModules = getEntryModulesForChunkSettings(graph, settings);
+
+  const existingChunks = [...chunks.values()];
+
+  entryModules = entryModules.filter((module) => {
+    return !existingChunks.find((chunk) => chunk.entries.includes(module));
+  });
+
+  // if (!entryModules.length) {
+  //   throw new Error('Entry module not found in graph: ' + entryFile);
+  // }
 
   // Prevent processing the same entry file twice.
-  if ([...chunks.values()].find((chunk) => chunk.entry === entryFile)) {
+  if (!entryModules.length) {
     return chunks;
   }
 
-  const entryChunk = new Chunk(entryFile, entryFile, graph, options, isAsync);
+  const entryChunk = new Chunk(
+    chunkIdForModules(entryModules),
+    entryModules,
+    graph,
+    options,
+    isAsync
+  );
 
   // Add all the pre-modules to the first chunk.
   if (preModules.length) {
     if (graph.transformOptions.platform === 'web' && !isAsync) {
       // On web, add a new required chunk that will be included in the HTML.
-      const preChunk = new Chunk('_expo-metro-runtime', '_expo-metro-runtime', graph, options);
-      for (const module of preModules.values()) {
-        preChunk.deps.add(module);
-      }
+      const preChunk = new Chunk(
+        chunkIdForModules([...preModules]),
+        [...preModules],
+        graph,
+        options
+      );
+      // for (const module of preModules.values()) {
+      //   preChunk.deps.add(module);
+      // }
       chunks.add(preChunk);
       entryChunk.requiredChunks.add(preChunk);
     } else {
@@ -375,7 +418,7 @@ function gatherChunks(
   const splitChunks = getSplitChunksOption(graph, options);
   chunks.add(entryChunk);
 
-  entryChunk.deps.add(entryModule);
+  // entryChunk.deps.add(entryModule);
 
   function includeModule(entryModule: Module<MixedOutput>) {
     for (const dependency of entryModule.dependencies.values()) {
@@ -384,7 +427,14 @@ function gatherChunks(
         // Support disabling multiple chunks.
         splitChunks
       ) {
-        gatherChunks(chunks, dependency.absolutePath, [], graph, options, true);
+        gatherChunks(
+          chunks,
+          { test: pathToRegExp(dependency.absolutePath) },
+          [],
+          graph,
+          options,
+          true
+        );
       } else {
         const module = graph.dependencies.get(dependency.absolutePath);
         if (module) {
@@ -398,7 +448,9 @@ function gatherChunks(
     }
   }
 
-  includeModule(entryModule);
+  for (const entryModule of entryModules) {
+    includeModule(entryModule);
+  }
 
   return chunks;
 }

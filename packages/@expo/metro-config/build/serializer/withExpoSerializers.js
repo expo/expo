@@ -92,6 +92,7 @@ function getDefaultSerializer(serializerConfig, fallbackSerializer) {
     };
 }
 exports.getDefaultSerializer = getDefaultSerializer;
+const path_to_regexp_1 = __importDefault(require("path-to-regexp"));
 async function graphToSerialAssetsAsync(serializerConfig, { includeMaps }, ...props) {
     const [entryFile, preModules, graph, options] = props;
     const cssDeps = (0, getCssDeps_1.getCssSerialAssets)(graph.dependencies, {
@@ -100,7 +101,11 @@ async function graphToSerialAssetsAsync(serializerConfig, { includeMaps }, ...pr
     });
     // Create chunks for splitting.
     const _chunks = new Set();
-    [entryFile].map((entryFile) => gatherChunks(_chunks, entryFile, preModules, graph, options, false));
+    [
+        {
+            test: (0, path_to_regexp_1.default)(entryFile),
+        },
+    ].map((chunkSettings) => gatherChunks(_chunks, chunkSettings, preModules, graph, options, false));
     // console.log('Chunks:');
     // console.log(inspect([..._chunks], { depth: 3, colors: true }));
     // Optimize the chunks
@@ -113,7 +118,7 @@ async function graphToSerialAssetsAsync(serializerConfig, { includeMaps }, ...pr
 exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
 class Chunk {
     name;
-    entry;
+    entries;
     graph;
     options;
     isAsync;
@@ -122,12 +127,13 @@ class Chunk {
     // Chunks that are required to be loaded synchronously before this chunk.
     // These are included in the HTML as <script> tags.
     requiredChunks = new Set();
-    constructor(name, entry, graph, options, isAsync = false) {
+    constructor(name, entries, graph, options, isAsync = false) {
         this.name = name;
-        this.entry = entry;
+        this.entries = entries;
         this.graph = graph;
         this.options = options;
         this.isAsync = isAsync;
+        this.deps = new Set(entries);
     }
     getPlatform() {
         (0, assert_1.default)(this.graph.transformOptions.platform, "platform is required to be in graph's transformOptions");
@@ -136,14 +142,14 @@ class Chunk {
     getFilename() {
         // TODO: Content hash is needed
         return this.options.dev
-            ? this.entry
-            : (0, exportPath_1.getExportPathForDependencyWithOptions)(this.entry, {
+            ? this.name
+            : (0, exportPath_1.getExportPathForDependencyWithOptions)(this.name, {
                 platform: this.getPlatform(),
                 serverRoot: this.options.serverRoot,
             });
     }
     serializeToCode(serializerConfig) {
-        const entryFile = this.entry;
+        const entryFile = this.name;
         const fileName = path_1.default.basename(entryFile, '.js');
         const jsSplitBundle = (0, baseJSBundle_1.baseJSBundleWithDependencies)(entryFile, [...this.preModules.values()], [...this.deps], {
             ...this.options,
@@ -163,7 +169,7 @@ class Chunk {
     }
     async serializeToAssetsAsync(serializerConfig, { includeSourceMaps }) {
         const jsCode = this.serializeToCode(serializerConfig);
-        const relativeEntry = path_1.default.relative(this.options.projectRoot, this.entry);
+        const relativeEntry = path_1.default.relative(this.options.projectRoot, this.name);
         const outputFile = this.getFilename();
         const jsAsset = {
             filename: outputFile,
@@ -210,7 +216,7 @@ class Chunk {
         if (this.isHermesEnabled()) {
             // TODO: Generate hbc for each chunk
             const hermesBundleOutput = await (0, exportHermes_1.buildHermesBundleAsync)({
-                filename: this.entry,
+                filename: this.name,
                 code: jsAsset.source,
                 map: assets[1] ? assets[1].source : null,
                 // TODO: Maybe allow prod + no minify.
@@ -219,6 +225,7 @@ class Chunk {
             if (hermesBundleOutput.hbc) {
                 // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
                 // jsAsset.metadata.hbc = hermesBundleOutput.hbc;
+                // @ts-expect-error: TODO
                 jsAsset.source = hermesBundleOutput.hbc;
                 jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
             }
@@ -238,24 +245,39 @@ class Chunk {
             this.graph.transformOptions.customTransformOptions?.engine === 'hermes');
     }
 }
-function gatherChunks(chunks, entryFile, preModules, graph, options, isAsync = false) {
-    const entryModule = graph.dependencies.get(entryFile);
-    if (!entryModule) {
-        throw new Error('Entry module not found in graph: ' + entryFile);
-    }
+function getEntryModulesForChunkSettings(graph, settings) {
+    return [...graph.dependencies.entries()]
+        .filter(([path]) => settings.test.test(path))
+        .map(([, module]) => module);
+}
+function chunkIdForModules(modules) {
+    return modules
+        .map((module) => module.path)
+        .sort()
+        .join('=>');
+}
+function gatherChunks(chunks, settings, preModules, graph, options, isAsync = false) {
+    let entryModules = getEntryModulesForChunkSettings(graph, settings);
+    const existingChunks = [...chunks.values()];
+    entryModules = entryModules.filter((module) => {
+        return !existingChunks.find((chunk) => chunk.entries.includes(module));
+    });
+    // if (!entryModules.length) {
+    //   throw new Error('Entry module not found in graph: ' + entryFile);
+    // }
     // Prevent processing the same entry file twice.
-    if ([...chunks.values()].find((chunk) => chunk.entry === entryFile)) {
+    if (!entryModules.length) {
         return chunks;
     }
-    const entryChunk = new Chunk(entryFile, entryFile, graph, options, isAsync);
+    const entryChunk = new Chunk(chunkIdForModules(entryModules), entryModules, graph, options, isAsync);
     // Add all the pre-modules to the first chunk.
     if (preModules.length) {
         if (graph.transformOptions.platform === 'web' && !isAsync) {
             // On web, add a new required chunk that will be included in the HTML.
-            const preChunk = new Chunk('_expo-metro-runtime', '_expo-metro-runtime', graph, options);
-            for (const module of preModules.values()) {
-                preChunk.deps.add(module);
-            }
+            const preChunk = new Chunk(chunkIdForModules([...preModules]), [...preModules], graph, options);
+            // for (const module of preModules.values()) {
+            //   preChunk.deps.add(module);
+            // }
             chunks.add(preChunk);
             entryChunk.requiredChunks.add(preChunk);
         }
@@ -268,13 +290,13 @@ function gatherChunks(chunks, entryFile, preModules, graph, options, isAsync = f
     }
     const splitChunks = (0, baseJSBundle_1.getSplitChunksOption)(graph, options);
     chunks.add(entryChunk);
-    entryChunk.deps.add(entryModule);
+    // entryChunk.deps.add(entryModule);
     function includeModule(entryModule) {
         for (const dependency of entryModule.dependencies.values()) {
             if (dependency.data.data.asyncType === 'async' &&
                 // Support disabling multiple chunks.
                 splitChunks) {
-                gatherChunks(chunks, dependency.absolutePath, [], graph, options, true);
+                gatherChunks(chunks, { test: (0, path_to_regexp_1.default)(dependency.absolutePath) }, [], graph, options, true);
             }
             else {
                 const module = graph.dependencies.get(dependency.absolutePath);
@@ -288,7 +310,9 @@ function gatherChunks(chunks, entryFile, preModules, graph, options, isAsync = f
             }
         }
     }
-    includeModule(entryModule);
+    for (const entryModule of entryModules) {
+        includeModule(entryModule);
+    }
     return chunks;
 }
 function dedupeChunks(chunks) {
