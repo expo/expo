@@ -192,14 +192,12 @@ export class Database {
     }
     async *eachAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
-        let result;
         try {
-            result = await statement.eachAsync(...params);
+            yield* await statement.eachAsync(...params);
         }
         finally {
             await statement.finalizeAsync();
         }
-        yield* result;
     }
     async allAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
@@ -236,14 +234,12 @@ export class Database {
     }
     *eachSync(source, ...params) {
         const statement = this.prepareSync(source);
-        let result;
         try {
-            result = statement.eachSync(...params);
+            yield* statement.eachSync(...params);
         }
         finally {
             statement.finalizeSync();
         }
-        yield* result;
     }
     allSync(source, ...params) {
         const statement = this.prepareSync(source);

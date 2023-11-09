@@ -232,6 +232,9 @@ export function normalizeParams(...params: any[]): {
   shouldPassAsObject: boolean;
 } {
   let bindParams = params.length > 1 ? params : (params[0] as BindParams);
+  if (bindParams == null) {
+    bindParams = [];
+  }
   if (typeof bindParams !== 'object') {
     bindParams = [bindParams];
   }
