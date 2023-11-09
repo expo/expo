@@ -18,6 +18,7 @@
 - Include static routes from `generateStaticParams` in server manifest. ([#25003](https://github.com/expo/expo/pull/25003) by [@EvanBacon](https://github.com/EvanBacon))
 - Added Expo CLI devtools plugins support. ([#24650](https://github.com/expo/expo/pull/24650) by [@kudo](https://github.com/kudo))
 - Optionally export only selected assets. ([#25065](https://github.com/expo/expo/pull/25065) by [@douglowder](https://github.com/douglowder))
+- Added Brave Browser debugger support. ([#25109](https://github.com/expo/expo/pull/25109) by [@kapobajza](https://github.com/kapobajza))
 
 ### 🐛 Bug fixes
 
@@ -25,9 +26,14 @@
 - Fix native polyfill import. ([#25203](https://github.com/expo/expo/pull/25203) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix API Routes not updating in `src/app` directory. ([#24968](https://github.com/expo/expo/pull/24968) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent `npx expo export` and `npx expo export:embed` from hanging with file watchers. ([#24952](https://github.com/expo/expo/pull/24952) by [@EvanBacon](https://github.com/EvanBacon))
+- Prevent `Runtime.callFunctionOn` messages from Vscode debugger to avoid Hermes crashes. ([#25270](https://github.com/expo/expo/pull/25270) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
+- Fix prebuild messages. ([#25279](https://github.com/expo/expo/pull/25279) by [@EvanBacon](https://github.com/EvanBacon))
+- Pull in source for Metro asset persisting for iOS and Android. ([#25278](https://github.com/expo/expo/pull/25278) by [@EvanBacon](https://github.com/EvanBacon))
+- Add more types. ([#25245](https://github.com/expo/expo/pull/25245) by [@EvanBacon](https://github.com/EvanBacon))
+- Unify Metro config functions. ([#25257](https://github.com/expo/expo/pull/25257) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix tests running in CI. ([#25244](https://github.com/expo/expo/pull/25244) by [@EvanBacon](https://github.com/EvanBacon))
 - Drop support for running arbitrary Metro packages. ([#25197](https://github.com/expo/expo/pull/25197) by [@EvanBacon](https://github.com/EvanBacon))
 - Update tests. ([#25089](https://github.com/expo/expo/pull/25089) by [@EvanBacon](https://github.com/EvanBacon))

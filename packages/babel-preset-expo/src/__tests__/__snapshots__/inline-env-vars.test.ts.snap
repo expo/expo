@@ -17,7 +17,7 @@ exports[`inlines environment variables 1`] = `
 "
 var foo = process.env.JEST_WORKER_ID;
 process.env.ABC;
-console.log(process.env.NODE_ENV);
+console.log("production");
 console.log("development");
 "bar";
 

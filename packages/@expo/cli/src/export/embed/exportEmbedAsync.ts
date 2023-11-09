@@ -1,5 +1,4 @@
 import { getConfig } from '@expo/config';
-import saveAssets from '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets';
 import fs from 'fs';
 import Server from 'metro/src/Server';
 import output from 'metro/src/shared/output/bundle';
@@ -9,11 +8,12 @@ import path from 'path';
 import { Options } from './resolveOptions';
 import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
-import { env } from '../../utils/env';
+import { getMetroDirectBundleOptions } from '../../start/server/middleware/metroOptions';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { profile } from '../../utils/profile';
 import { isEnableHermesManaged } from '../exportHermes';
 import { getAssets } from '../fork-bundleAsync';
+import { persistMetroAssetsAsync } from '../persistMetroAssets';
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');
@@ -28,7 +28,13 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     output.save(bundle, options, Log.log),
     // NOTE(EvanBacon): This may need to be adjusted in the future if want to support basePath on native
     // platforms when doing production embeds (unlikely).
-    saveAssets(assets, options.platform, options.assetsDest, options.assetCatalogDest),
+    options.assetsDest
+      ? persistMetroAssetsAsync(assets, {
+          platform: options.platform,
+          outputDirectory: options.assetsDest,
+          iosAssetCatalogDirectory: options.assetCatalogDest,
+        })
+      : null,
   ]);
 }
 
@@ -58,18 +64,16 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
 
   const bundleRequest = {
     ...Server.DEFAULT_BUNDLE_OPTIONS,
-    entryFile: options.entryFile,
+    ...getMetroDirectBundleOptions({
+      mainModuleName: options.entryFile,
+      platform: options.platform,
+      minify: options.minify,
+      mode: options.dev ? 'development' : 'production',
+      engine: isHermes ? 'hermes' : undefined,
+    }),
     sourceMapUrl,
-    dev: options.dev,
-    minify: !!options.minify,
-    platform: options.platform,
     unstable_transformProfile: (options.unstableTransformProfile ||
       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
-    customTransformOptions: {
-      __proto__: null,
-      engine: isHermes ? 'hermes' : undefined,
-      preserveEnvVars: env.EXPO_NO_CLIENT_ENV_VARS,
-    },
   };
 
   const server = new Server(config, {

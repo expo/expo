@@ -29,6 +29,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 100
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: 🚀 Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
@@ -41,5 +49,5 @@ jobs:
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: E2E Test @expo/fingerprint
-        run: yarn test:e2e
+        run: bun test:e2e --ci --runInBand
         working-directory: packages/@expo/fingerprint

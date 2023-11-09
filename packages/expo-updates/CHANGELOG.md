@@ -6,8 +6,11 @@
 
 - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Split updates controllers depending on configuration, changing native public API. ([#25085](https://github.com/expo/expo/pull/25085), [#25192](https://github.com/expo/expo/pull/25192) by [@wschurman](https://github.com/wschurman))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🎉 New features
+
+- [iOS] Make asset exclusion work. ([#25216](https://github.com/expo/expo/pull/25216) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
@@ -23,6 +26,8 @@
 - Android: Backport ExpoGoUpdatesModule to SDK 49. ([#24974](https://github.com/expo/expo/pull/24974) by [@wschurman](https://github.com/wschurman))
 - Remove unused `storedUpdateIdsWithConfiguration` method. ([#25194](https://github.com/expo/expo/pull/25194) by [@wschurman](https://github.com/wschurman))
 - Remove ability for embedded manifests to be legacy manifests. ([#25195](https://github.com/expo/expo/pull/25195) by [@wschurman](https://github.com/wschurman))
+- Convert e2e setup scripts to typescript. ([#25271](https://github.com/expo/expo/pull/25271) by [@wschurman](https://github.com/wschurman))
+
 
 ## 0.18.17 — 2023-10-25
 

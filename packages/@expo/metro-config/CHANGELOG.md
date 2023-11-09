@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- Improve source map generation for static web. ([#25245](https://github.com/expo/expo/pull/25245) by [@EvanBacon](https://github.com/EvanBacon))
+- Improve types. ([#25257](https://github.com/expo/expo/pull/25257) by [@EvanBacon](https://github.com/EvanBacon))
 - Move environment variables production inlining to `babel-preset-expo` to support source maps. ([#25239](https://github.com/expo/expo/pull/25239) by [@EvanBacon](https://github.com/EvanBacon))
 - Update tests. ([#25149](https://github.com/expo/expo/pull/25149) by [@EvanBacon](https://github.com/EvanBacon))
 - Unrevert `URL` support. ([#25005](https://github.com/expo/expo/pull/25005) by [@EvanBacon](https://github.com/EvanBacon))

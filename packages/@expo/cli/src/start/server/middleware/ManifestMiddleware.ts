@@ -8,10 +8,10 @@ import {
 import { resolveEntryPoint } from '@expo/config/paths';
 import findWorkspaceRoot from 'find-yarn-workspace-root';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 import { resolve } from 'url';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
+import { shouldEnableAsyncImports, createBundleUrlPath } from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
@@ -71,79 +71,6 @@ export function resolveMainModuleName(
   debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
 
   return stripExtension(entryPoint, 'js');
-}
-
-export function shouldEnableAsyncImports(projectRoot: string): boolean {
-  if (env.EXPO_NO_METRO_LAZY) {
-    return false;
-  }
-
-  // `@expo/metro-runtime` includes support for the fetch + eval runtime code required
-  // to support async imports. If it's not installed, we can't support async imports.
-  // If it is installed, the user MUST import it somewhere in their project.
-  // Expo Router automatically pulls this in, so we can check for it.
-  return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
-}
-
-export function createBundleUrlPath({
-  platform,
-  mainModuleName,
-  mode,
-  minify = mode === 'production',
-  environment,
-  serializerOutput,
-  serializerIncludeMaps,
-  lazy,
-  engine,
-  preserveEnvVars = env.EXPO_NO_CLIENT_ENV_VARS,
-}: {
-  platform: string;
-  mainModuleName: string;
-  mode: string;
-  minify?: boolean;
-  environment?: string;
-  serializerOutput?: 'static';
-  serializerIncludeMaps?: boolean;
-  lazy?: boolean;
-  engine?: 'hermes';
-  preserveEnvVars?: boolean;
-}): string {
-  const queryParams = new URLSearchParams({
-    platform: encodeURIComponent(platform),
-    dev: String(mode !== 'production'),
-    // TODO: Is this still needed?
-    hot: String(false),
-  });
-
-  if (lazy) {
-    queryParams.append('lazy', String(lazy));
-  }
-
-  if (minify) {
-    queryParams.append('minify', String(minify));
-  }
-
-  if (engine) {
-    queryParams.append('transform.engine', engine);
-  }
-
-  if (preserveEnvVars) {
-    queryParams.append('transform.preserveEnvVars', String(preserveEnvVars));
-  }
-
-  if (environment) {
-    queryParams.append('resolver.environment', environment);
-    queryParams.append('transform.environment', environment);
-  }
-
-  if (serializerOutput) {
-    queryParams.append('serializer.output', serializerOutput);
-  }
-  if (serializerIncludeMaps) {
-    queryParams.append('serializer.map', String(serializerIncludeMaps));
-  }
-
-  return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
 }
 
 /** Info about the computer hosting the dev server. */

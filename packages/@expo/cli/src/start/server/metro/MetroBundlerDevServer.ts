@@ -31,17 +31,14 @@ import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
-import {
-  createBundleUrlPath,
-  resolveMainModuleName,
-  shouldEnableAsyncImports,
-} from '../middleware/ManifestMiddleware';
+import { resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import {
   DeepLinkHandler,
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
+import { shouldEnableAsyncImports, createBundleUrlPath } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 

@@ -1,8 +1,11 @@
-const path = require('path');
+#!/usr/bin/env yarn --silent ts-node --transpile-only
 
-const { initAsync, setupE2EAppAsync } = require('./project');
+import nullthrows from 'nullthrows';
+import path from 'path';
 
-const repoRoot = process.env.EXPO_REPO_ROOT;
+import { initAsync, setupE2EAppAsync } from './project';
+
+const repoRoot = nullthrows(process.env.EXPO_REPO_ROOT);
 const workingDir = path.resolve(repoRoot, '..');
 const runtimeVersion = '1.0.0';
 
