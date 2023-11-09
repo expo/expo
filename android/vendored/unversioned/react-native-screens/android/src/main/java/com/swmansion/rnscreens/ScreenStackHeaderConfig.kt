@@ -24,6 +24,7 @@ import com.swmansion.rnscreens.events.HeaderDetachedEvent
 class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
     private val mConfigSubviews = ArrayList<ScreenStackHeaderSubview>(3)
     val toolbar: CustomToolbar
+    var mIsHidden = false
     private var headerTopInset: Int? = null
     private var mTitle: String? = null
     private var mTitleColor = 0
@@ -32,7 +33,6 @@ class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
     private var mTitleFontSize = 0f
     private var mTitleFontWeight = 0
     private var mBackgroundColor: Int? = null
-    private var mIsHidden = false
     private var mIsBackButtonHidden = false
     private var mIsShadowHidden = false
     private var mDestroyed = false
@@ -76,8 +76,9 @@ class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         mIsAttachedToWindow = true
+        val surfaceId = UIManagerHelper.getSurfaceId(this)
         UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
-            ?.dispatchEvent(HeaderAttachedEvent(id))
+            ?.dispatchEvent(HeaderAttachedEvent(surfaceId, id))
         // we want to save the top inset before the status bar can be hidden, which would resolve in
         // inset being 0
         if (headerTopInset == null) {
@@ -93,8 +94,9 @@ class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         mIsAttachedToWindow = false
+        val surfaceId = UIManagerHelper.getSurfaceId(this)
         UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
-            ?.dispatchEvent(HeaderDetachedEvent(id))
+            ?.dispatchEvent(HeaderDetachedEvent(surfaceId, id))
     }
 
     private val screen: Screen?
@@ -139,7 +141,7 @@ class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
             val reactContext = if (context is ReactContext) {
                 context as ReactContext
             } else {
-                it.fragment?.tryGetContext()
+                it.fragmentWrapper?.tryGetContext()
             }
             ScreenWindowTraits.trySetWindowTraits(it, activity, reactContext)
         }
@@ -388,7 +390,7 @@ class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
 
         // set primary color as background by default
         val tv = TypedValue()
-        if (context.theme.resolveAttribute(R.attr.colorPrimary, tv, true)) {
+        if (context.theme.resolveAttribute(android.R.attr.colorPrimary, tv, true)) {
             toolbar.setBackgroundColor(tv.data)
         }
         toolbar.clipChildren = false

@@ -1,10 +1,10 @@
 package com.swmansion.rnscreens.events
 
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
-import com.facebook.react.uimanager.events.RCTEventEmitter
 
-class SearchBarSearchButtonPressEvent(viewId: Int, private val text: String?) : Event<ScreenAppearEvent>(viewId) {
+class SearchBarSearchButtonPressEvent(surfaceId: Int, viewId: Int, private val text: String?) : Event<ScreenAppearEvent>(surfaceId, viewId) {
     override fun getEventName(): String {
         return EVENT_NAME
     }
@@ -14,10 +14,8 @@ class SearchBarSearchButtonPressEvent(viewId: Int, private val text: String?) : 
         return 0
     }
 
-    override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-        val map = Arguments.createMap()
-        map.putString("text", text)
-        rctEventEmitter.receiveEvent(viewTag, eventName, map)
+    override fun getEventData(): WritableMap? = Arguments.createMap().apply {
+        putString("text", text)
     }
 
     companion object {

@@ -15,6 +15,14 @@
 
 @implementation RNSFullWindowOverlayContainer
 
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  if (self = [super initWithFrame:frame]) {
+    self.accessibilityViewIsModal = YES;
+  }
+  return self;
+}
+
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
   for (UIView *view in [self subviews]) {
@@ -74,7 +82,7 @@
 - (instancetype)init
 {
   if (self = [super init]) {
-    static const auto defaultProps = std::make_shared<const facebook::react::RNSFullWindowOverlayProps>();
+    static const auto defaultProps = std::make_shared<const react::RNSFullWindowOverlayProps>();
     _props = defaultProps;
     [self _initCommon];
   }
@@ -119,14 +127,17 @@
   [window addSubview:_container];
 }
 
-- (void)didMoveToWindow
+- (void)didMoveToSuperview
 {
-  if (self.window == nil) {
+  if (self.superview == nil) {
     if (_container != nil) {
       [_container removeFromSuperview];
       [_touchHandler detachFromView:_container];
     }
   } else {
+    if (_container != nil) {
+      UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, _container);
+    }
     if (_touchHandler == nil) {
 #ifdef RCT_NEW_ARCH_ENABLED
       _touchHandler = [RCTSurfaceTouchHandler new];
@@ -151,10 +162,9 @@
   }
 }
 
-+ (facebook::react::ComponentDescriptorProvider)componentDescriptorProvider
++ (react::ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return facebook::react::concreteComponentDescriptorProvider<
-      facebook::react::RNSFullWindowOverlayComponentDescriptor>();
+  return react::concreteComponentDescriptorProvider<react::RNSFullWindowOverlayComponentDescriptor>();
 }
 
 - (void)prepareForRecycle
@@ -182,8 +192,8 @@
   [childComponentView removeFromSuperview];
 }
 
-- (void)updateLayoutMetrics:(facebook::react::LayoutMetrics const &)layoutMetrics
-           oldLayoutMetrics:(facebook::react::LayoutMetrics const &)oldLayoutMetrics
+- (void)updateLayoutMetrics:(react::LayoutMetrics const &)layoutMetrics
+           oldLayoutMetrics:(react::LayoutMetrics const &)oldLayoutMetrics
 {
   CGRect frame = RCTCGRectFromRect(layoutMetrics.frame);
   _reactFrame = frame;

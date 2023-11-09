@@ -3,7 +3,7 @@
 #import "RNSScreenContainer.h"
 #import "RNSScreenStack.h"
 
-@interface RNScreensContainerNavigationController : RNScreensNavigationController
+@interface RNSContainerNavigationController : RNSNavigationController
 
 @end
 

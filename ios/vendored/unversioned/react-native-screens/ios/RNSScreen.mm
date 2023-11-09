@@ -14,6 +14,7 @@
 #import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
 #import <rnscreens/RNSScreenComponentDescriptor.h>
 #import "RNSConvert.h"
+#import "RNSHeaderHeightChangeEvent.h"
 #import "RNSScreenViewEvent.h"
 #else
 #import <React/RCTTouchHandler.h>
@@ -23,6 +24,10 @@
 #import <React/RCTUIManager.h>
 #import "RNSScreenStack.h"
 #import "RNSScreenStackHeaderConfig.h"
+
+#ifdef RCT_NEW_ARCH_ENABLED
+namespace react = facebook::react;
+#endif // RCT_NEW_ARCH_ENABLED
 
 @interface RNSScreenView ()
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -36,7 +41,7 @@
   __weak RCTBridge *_bridge;
 #ifdef RCT_NEW_ARCH_ENABLED
   RCTSurfaceTouchHandler *_touchHandler;
-  facebook::react::RNSScreenShadowNode::ConcreteState::Shared _state;
+  react::RNSScreenShadowNode::ConcreteState::Shared _state;
   // on fabric, they are not available by default so we need them exposed here too
   NSMutableArray<UIView *> *_reactSubviews;
 #else
@@ -49,12 +54,11 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const facebook::react::RNSScreenProps>();
+    static const auto defaultProps = std::make_shared<const react::RNSScreenProps>();
     _props = defaultProps;
     _reactSubviews = [NSMutableArray new];
     [self initCommonProps];
   }
-
   return self;
 }
 #endif // RCT_NEW_ARCH_ENABLED
@@ -103,7 +107,7 @@
 {
 #ifdef RCT_NEW_ARCH_ENABLED
   if (_state != nullptr) {
-    auto newState = facebook::react::RNSScreenState{RCTSizeFromCGSize(self.bounds.size)};
+    auto newState = react::RNSScreenState{RCTSizeFromCGSize(self.bounds.size)};
     _state->updateState(std::move(newState));
     UINavigationController *navctr = _controller.navigationController;
     [navctr.view setNeedsLayout];
@@ -247,6 +251,13 @@
   _statusBarHidden = statusBarHidden;
   [RNSScreenWindowTraits assertViewControllerBasedStatusBarAppearenceSet];
   [RNSScreenWindowTraits updateStatusBarAppearance];
+
+  // As the status bar could change its visibility, we need to calculate header
+  // height for the correct value in `onHeaderHeightChange` event when navigation
+  // bar is not visible.
+  if (self.controller.navigationController.navigationBarHidden && !self.isModal) {
+    [self.controller calculateAndNotifyHeaderHeightChangeIsModal:NO];
+  }
 }
 
 - (void)setScreenOrientation:(UIInterfaceOrientationMask)screenOrientation
@@ -284,8 +295,8 @@
   // If screen is already unmounted then there will be no event emitter
   // it will be cleaned in prepareForRecycle
   if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const facebook::react::RNSScreenEventEmitter>(_eventEmitter)
-        ->onDismissed(facebook::react::RNSScreenEventEmitter::OnDismissed{.dismissCount = dismissCount});
+    std::dynamic_pointer_cast<const react::RNSScreenEventEmitter>(_eventEmitter)
+        ->onDismissed(react::RNSScreenEventEmitter::OnDismissed{.dismissCount = dismissCount});
   }
 #else
   // TODO: hopefully problems connected to dismissed prop are only the case on paper
@@ -306,9 +317,9 @@
   // If screen is already unmounted then there will be no event emitter
   // it will be cleaned in prepareForRecycle
   if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const facebook::react::RNSScreenEventEmitter>(_eventEmitter)
+    std::dynamic_pointer_cast<const react::RNSScreenEventEmitter>(_eventEmitter)
         ->onNativeDismissCancelled(
-            facebook::react::RNSScreenEventEmitter::OnNativeDismissCancelled{.dismissCount = dismissCount});
+            react::RNSScreenEventEmitter::OnNativeDismissCancelled{.dismissCount = dismissCount});
   }
 #else
   if (self.onNativeDismissCancelled) {
@@ -323,8 +334,8 @@
   // If screen is already unmounted then there will be no event emitter
   // it will be cleaned in prepareForRecycle
   if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const facebook::react::RNSScreenEventEmitter>(_eventEmitter)
-        ->onWillAppear(facebook::react::RNSScreenEventEmitter::OnWillAppear{});
+    std::dynamic_pointer_cast<const react::RNSScreenEventEmitter>(_eventEmitter)
+        ->onWillAppear(react::RNSScreenEventEmitter::OnWillAppear{});
   }
   [self updateLayoutMetrics:_newLayoutMetrics oldLayoutMetrics:_oldLayoutMetrics];
 #else
@@ -346,8 +357,8 @@
   // If screen is already unmounted then there will be no event emitter
   // it will be cleaned in prepareForRecycle
   if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const facebook::react::RNSScreenEventEmitter>(_eventEmitter)
-        ->onWillDisappear(facebook::react::RNSScreenEventEmitter::OnWillDisappear{});
+    std::dynamic_pointer_cast<const react::RNSScreenEventEmitter>(_eventEmitter)
+        ->onWillDisappear(react::RNSScreenEventEmitter::OnWillDisappear{});
   }
 #else
   if (self.onWillDisappear) {
@@ -362,8 +373,8 @@
   // If screen is already unmounted then there will be no event emitter
   // it will be cleaned in prepareForRecycle
   if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const facebook::react::RNSScreenEventEmitter>(_eventEmitter)
-        ->onAppear(facebook::react::RNSScreenEventEmitter::OnAppear{});
+    std::dynamic_pointer_cast<const react::RNSScreenEventEmitter>(_eventEmitter)
+        ->onAppear(react::RNSScreenEventEmitter::OnAppear{});
   }
 #else
   if (self.onAppear) {
@@ -382,12 +393,49 @@
   // If screen is already unmounted then there will be no event emitter
   // it will be cleaned in prepareForRecycle
   if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const facebook::react::RNSScreenEventEmitter>(_eventEmitter)
-        ->onDisappear(facebook::react::RNSScreenEventEmitter::OnDisappear{});
+    std::dynamic_pointer_cast<const react::RNSScreenEventEmitter>(_eventEmitter)
+        ->onDisappear(react::RNSScreenEventEmitter::OnDisappear{});
   }
 #else
   if (self.onDisappear) {
     self.onDisappear(nil);
+  }
+#endif
+}
+
+- (void)notifyHeaderHeightChange:(double)headerHeight
+{
+#ifdef RCT_NEW_ARCH_ENABLED
+  if (_eventEmitter != nullptr) {
+    std::dynamic_pointer_cast<const facebook::react::RNSScreenEventEmitter>(_eventEmitter)
+        ->onHeaderHeightChange(
+            facebook::react::RNSScreenEventEmitter::OnHeaderHeightChange{.headerHeight = headerHeight});
+  }
+
+  RNSHeaderHeightChangeEvent *event =
+      [[RNSHeaderHeightChangeEvent alloc] initWithEventName:@"onHeaderHeightChange"
+                                                   reactTag:[NSNumber numberWithInt:self.tag]
+                                               headerHeight:headerHeight];
+  [[RCTBridge currentBridge].eventDispatcher sendEvent:event];
+#else
+  if (self.onHeaderHeightChange) {
+    self.onHeaderHeightChange(@{
+      @"headerHeight" : @(headerHeight),
+    });
+  }
+#endif
+}
+
+- (void)notifyGestureCancel
+{
+#ifdef RCT_NEW_ARCH_ENABLED
+  if (_eventEmitter != nullptr) {
+    std::dynamic_pointer_cast<const react::RNSScreenEventEmitter>(_eventEmitter)
+        ->onGestureCancel(react::RNSScreenEventEmitter::OnGestureCancel{});
+  }
+#else
+  if (self.onGestureCancel) {
+    self.onGestureCancel(nil);
   }
 #endif
 }
@@ -454,8 +502,8 @@
 {
 #ifdef RCT_NEW_ARCH_ENABLED
   if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const facebook::react::RNSScreenEventEmitter>(_eventEmitter)
-        ->onTransitionProgress(facebook::react::RNSScreenEventEmitter::OnTransitionProgress{
+    std::dynamic_pointer_cast<const react::RNSScreenEventEmitter>(_eventEmitter)
+        ->onTransitionProgress(react::RNSScreenEventEmitter::OnTransitionProgress{
             .progress = progress, .closing = closing ? 1 : 0, .goingForward = goingForward ? 1 : 0});
   }
   RNSScreenViewEvent *event = [[RNSScreenViewEvent alloc] initWithEventName:@"onTransitionProgress"
@@ -512,9 +560,42 @@
   }
 }
 
+- (RNSScreenStackHeaderConfig *_Nullable)findHeaderConfig
+{
+  for (UIView *view in self.reactSubviews) {
+    if ([view isKindOfClass:RNSScreenStackHeaderConfig.class]) {
+      return (RNSScreenStackHeaderConfig *)view;
+    }
+  }
+  return nil;
+}
+
 - (BOOL)isModal
 {
   return self.stackPresentation != RNSScreenStackPresentationPush;
+}
+
+- (BOOL)isPresentedAsNativeModal
+{
+  return self.controller.parentViewController == nil && self.controller.presentingViewController != nil;
+}
+
+- (BOOL)isFullscreenModal
+{
+  switch (self.controller.modalPresentationStyle) {
+    case UIModalPresentationFullScreen:
+    case UIModalPresentationCurrentContext:
+    case UIModalPresentationOverCurrentContext:
+      return YES;
+    default:
+      return NO;
+  }
+}
+
+- (BOOL)isTransparentModal
+{
+  return self.controller.modalPresentationStyle == UIModalPresentationOverFullScreen ||
+      self.controller.modalPresentationStyle == UIModalPresentationOverCurrentContext;
 }
 
 #if !TARGET_OS_TV
@@ -574,19 +655,24 @@
 #pragma mark - Fabric specific
 #ifdef RCT_NEW_ARCH_ENABLED
 
-+ (facebook::react::ComponentDescriptorProvider)componentDescriptorProvider
+- (BOOL)hasHeaderConfig
 {
-  return facebook::react::concreteComponentDescriptorProvider<facebook::react::RNSScreenComponentDescriptor>();
+  return _config != nil;
+}
+
++ (react::ComponentDescriptorProvider)componentDescriptorProvider
+{
+  return react::concreteComponentDescriptorProvider<react::RNSScreenComponentDescriptor>();
 }
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  [super mountChildComponentView:childComponentView index:index];
   if ([childComponentView isKindOfClass:[RNSScreenStackHeaderConfig class]]) {
-    _config = childComponentView;
-    ((RNSScreenStackHeaderConfig *)childComponentView).screenView = self;
+    _config = (RNSScreenStackHeaderConfig *)childComponentView;
+    _config.screenView = self;
   }
   [_reactSubviews insertObject:childComponentView atIndex:index];
+  [super mountChildComponentView:childComponentView index:index];
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
@@ -621,11 +707,10 @@
   _stackPresentation = RNSScreenStackPresentationPush;
 }
 
-- (void)updateProps:(facebook::react::Props::Shared const &)props
-           oldProps:(facebook::react::Props::Shared const &)oldProps
+- (void)updateProps:(react::Props::Shared const &)props oldProps:(react::Props::Shared const &)oldProps
 {
-  const auto &oldScreenProps = *std::static_pointer_cast<const facebook::react::RNSScreenProps>(_props);
-  const auto &newScreenProps = *std::static_pointer_cast<const facebook::react::RNSScreenProps>(props);
+  const auto &oldScreenProps = *std::static_pointer_cast<const react::RNSScreenProps>(_props);
+  const auto &newScreenProps = *std::static_pointer_cast<const react::RNSScreenProps>(props);
 
   [self setFullScreenSwipeEnabled:newScreenProps.fullScreenSwipeEnabled];
 
@@ -704,22 +789,21 @@
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateState:(facebook::react::State::Shared const &)state
-           oldState:(facebook::react::State::Shared const &)oldState
+- (void)updateState:(react::State::Shared const &)state oldState:(react::State::Shared const &)oldState
 {
-  _state = std::static_pointer_cast<const facebook::react::RNSScreenShadowNode::ConcreteState>(state);
+  _state = std::static_pointer_cast<const react::RNSScreenShadowNode::ConcreteState>(state);
 }
 
-- (void)updateLayoutMetrics:(const facebook::react::LayoutMetrics &)layoutMetrics
-           oldLayoutMetrics:(const facebook::react::LayoutMetrics &)oldLayoutMetrics
+- (void)updateLayoutMetrics:(const react::LayoutMetrics &)layoutMetrics
+           oldLayoutMetrics:(const react::LayoutMetrics &)oldLayoutMetrics
 {
   _newLayoutMetrics = layoutMetrics;
   _oldLayoutMetrics = oldLayoutMetrics;
   UIViewController *parentVC = self.reactViewController.parentViewController;
-  if (parentVC != nil && ![parentVC isKindOfClass:[RNScreensNavigationController class]]) {
+  if (parentVC != nil && ![parentVC isKindOfClass:[RNSNavigationController class]]) {
     [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
   }
-  // when screen is mounted under RNScreensNavigationController it's size is controller
+  // when screen is mounted under RNSNavigationController it's size is controller
   // by the navigation controller itself. That is, it is set to fill space of
   // the controller. In that case we ignore react layout system from managing
   // the screen dimensions and we wait for the screen VC to update and then we
@@ -730,6 +814,7 @@
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
+  [super finalizeUpdates:updateMask];
 #if !TARGET_OS_TV
   [self updatePresentationStyle];
 #endif // !TARGET_OS_TV
@@ -756,10 +841,10 @@
 {
   _reactFrame = frame;
   UIViewController *parentVC = self.reactViewController.parentViewController;
-  if (parentVC != nil && ![parentVC isKindOfClass:[RNScreensNavigationController class]]) {
+  if (parentVC != nil && ![parentVC isKindOfClass:[RNSNavigationController class]]) {
     [super reactSetFrame:frame];
   }
-  // when screen is mounted under RNScreensNavigationController it's size is controller
+  // when screen is mounted under RNSNavigationController it's size is controller
   // by the navigation controller itself. That is, it is set to fill space of
   // the controller. In that case we ignore react layout system from managing
   // the screen dimensions and we wait for the screen VC to update and then we
@@ -886,6 +971,8 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
     // or successfully swiped back
     [self.screenView notifyAppear];
     [self notifyTransitionProgress:1.0 closing:NO goingForward:_goingForward];
+  } else {
+    [self.screenView notifyGestureCancel];
   }
 
   _isSwiping = NO;
@@ -928,15 +1015,18 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
   [super viewDidLayoutSubviews];
 
   // The below code makes the screen view adapt dimensions provided by the system. We take these
-  // into account only when the view is mounted under RNScreensNavigationController in which case system
+  // into account only when the view is mounted under RNSNavigationController in which case system
   // provides additional padding to account for possible header, and in the case when screen is
   // shown as a native modal, as the final dimensions of the modal on iOS 12+ are shorter than the
   // screen size
-  BOOL isDisplayedWithinUINavController =
-      [self.parentViewController isKindOfClass:[RNScreensNavigationController class]];
-  BOOL isPresentedAsNativeModal = self.parentViewController == nil && self.presentingViewController != nil;
+  BOOL isDisplayedWithinUINavController = [self.parentViewController isKindOfClass:[RNSNavigationController class]];
 
-  if (isDisplayedWithinUINavController || isPresentedAsNativeModal) {
+  // Calculate header height on modal open
+  if (self.screenView.isPresentedAsNativeModal) {
+    [self calculateAndNotifyHeaderHeightChangeIsModal:YES];
+  }
+
+  if (isDisplayedWithinUINavController || self.screenView.isPresentedAsNativeModal) {
 #ifdef RCT_NEW_ARCH_ENABLED
     [self.screenView updateBounds];
 #else
@@ -946,6 +1036,103 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
     }
 #endif
   }
+}
+
+- (BOOL)isModalWithHeader
+{
+  return self.screenView.isModal && self.childViewControllers.count == 1 &&
+      [self.childViewControllers[0] isKindOfClass:UINavigationController.class];
+}
+
+// Checks whether this screen has any child view controllers of type RNSNavigationController.
+// Useful for checking if this screen has nested stack or is displayed at the top.
+- (BOOL)hasNestedStack
+{
+  for (UIViewController *vc in self.childViewControllers) {
+    if ([vc isKindOfClass:[RNSNavigationController class]]) {
+      return YES;
+    }
+  }
+
+  return NO;
+}
+
+- (CGSize)getStatusBarHeightIsModal:(BOOL)isModal
+{
+#if !TARGET_OS_TV
+  CGSize fallbackStatusBarSize = [[UIApplication sharedApplication] statusBarFrame].size;
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+  if (@available(iOS 13.0, *)) {
+    CGSize primaryStatusBarSize = self.view.window.windowScene.statusBarManager.statusBarFrame.size;
+    if (primaryStatusBarSize.height == 0 || primaryStatusBarSize.width == 0)
+      return fallbackStatusBarSize;
+
+    return primaryStatusBarSize;
+  } else {
+    return fallbackStatusBarSize;
+  }
+#endif /* Check for iOS 13.0 */
+
+#else
+  // TVOS does not have status bar.
+  return CGSizeMake(0, 0);
+#endif // !TARGET_OS_TV
+}
+
+- (UINavigationController *)getVisibleNavigationControllerIsModal:(BOOL)isModal
+{
+  UINavigationController *navctr = self.navigationController;
+
+  if (isModal) {
+    // In case where screen is a modal, we want to calculate childViewController's
+    // navigation bar height instead of the navigation controller from RNSScreen.
+    if (self.isModalWithHeader) {
+      navctr = self.childViewControllers[0];
+    } else {
+      // If the modal does not meet requirements (there's no RNSNavigationController which means that probably it
+      // doesn't have header or there are more than one RNSNavigationController which is invalid) we don't want to
+      // return anything.
+      return nil;
+    }
+  }
+
+  return navctr;
+}
+
+- (CGFloat)calculateHeaderHeightIsModal:(BOOL)isModal
+{
+  UINavigationController *navctr = [self getVisibleNavigationControllerIsModal:isModal];
+
+  // If navigation controller doesn't exists (or it is hidden) we want to handle two possible cases.
+  // If there's no navigation controller for the modal, we simply don't want to return header height, as modal possibly
+  // does not have header and we don't want to count status bar. If there's no navigation controller for the view we
+  // just want to return status bar height (if it's hidden, it will simply return 0).
+  if (navctr == nil || navctr.isNavigationBarHidden) {
+    if (isModal) {
+      return 0;
+    } else {
+      CGSize statusBarSize = [self getStatusBarHeightIsModal:isModal];
+      return MIN(statusBarSize.width, statusBarSize.height);
+    }
+  }
+
+  CGFloat navbarHeight = navctr.navigationBar.frame.size.height;
+#if !TARGET_OS_TV
+  CGFloat navbarInset = navctr.navigationBar.frame.origin.y;
+#else
+  // On TVOS there's no inset of navigation bar.
+  CGFloat navbarInset = 0;
+#endif // !TARGET_OS_TV
+
+  return navbarHeight + navbarInset;
+}
+
+- (void)calculateAndNotifyHeaderHeightChangeIsModal:(BOOL)isModal
+{
+  CGFloat totalHeight = [self calculateHeaderHeightIsModal:isModal];
+  [self.screenView notifyHeaderHeightChange:totalHeight];
 }
 
 - (void)notifyFinishTransitioning
@@ -1048,7 +1235,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
   if (lastViewController == nil) {
     return selfOrNil;
   } else {
-    if ([lastViewController conformsToProtocol:@protocol(RNScreensViewControllerDelegate)]) {
+    if ([lastViewController conformsToProtocol:@protocol(RNSViewControllerDelegate)]) {
       // If there is a child (should be VC of ScreenContainer or ScreenStack), that has a child that could provide the
       // trait, we recursively go into its findChildVCForConfig, and if one of the children has the trait set, we return
       // it, otherwise we return self if this VC has config, and nil if it doesn't we use
@@ -1178,12 +1365,10 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
 
     // we need to check whether reactSubviews array is empty, because on Fabric child nodes are unmounted first ->
     // reactSubviews array may be empty
-    if (currentIndex > 0 && [self.screenView.reactSubviews count] > 0 &&
-        [self.screenView.reactSubviews[0] isKindOfClass:[RNSScreenStackHeaderConfig class]]) {
+    RNSScreenStackHeaderConfig *config = [self.screenView findHeaderConfig];
+    if (currentIndex > 0 && config != nil) {
       UINavigationItem *prevNavigationItem =
           [self.navigationController.viewControllers objectAtIndex:currentIndex - 1].navigationItem;
-      RNSScreenStackHeaderConfig *config = ((RNSScreenStackHeaderConfig *)self.screenView.reactSubviews[0]);
-
       BOOL wasSearchBarActive = prevNavigationItem.searchController.active;
 
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -1270,11 +1455,13 @@ RCT_EXPORT_VIEW_PROPERTY(transitionDuration, NSNumber)
 
 RCT_EXPORT_VIEW_PROPERTY(onAppear, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onDisappear, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onHeaderHeightChange, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onDismissed, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onNativeDismissCancelled, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onTransitionProgress, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onWillAppear, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onWillDisappear, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onGestureCancel, RCTDirectEventBlock);
 
 #if !TARGET_OS_TV
 RCT_EXPORT_VIEW_PROPERTY(screenOrientation, UIInterfaceOrientationMask)
