@@ -428,10 +428,10 @@ const createConfigItem = (config, parentPattern) => {
     };
 };
 const createNormalizedConfigs = (options, pattern) => Object.fromEntries(Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)]));
-function appendBaseUrl(path, assetPrefix = process.env.EXPO_BASE_URL) {
+function appendBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     if (process.env.NODE_ENV !== 'development') {
-        if (assetPrefix) {
-            return `/${assetPrefix.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
+        if (baseUrl) {
+            return `/${baseUrl.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
         }
     }
     return path;
