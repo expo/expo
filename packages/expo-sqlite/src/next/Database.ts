@@ -185,27 +185,14 @@ export class Database {
    * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.runAsync()`](#runasyncparams).
    * Unlike [`Statement.runAsync()`](#runasyncparams), this method finalizes the statement after execution.
    * @param source A string containing the SQL query.
-   * @param params The variadic parameters to bind to the prepared statement. You can also pass an array of values.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
-   * @example
-   * ```ts
-   *   db.runAsync('SELECT * FROM test WHERE intValue = ? AND name = ?', 1, 'Hello');
-   *   db.runAsync('SELECT * FROM test WHERE intValue = ? AND name = ?', [1, 'Hello']); // You can also pass an array of values.
-   * ```
-   */
-  public runAsync(source: string, ...params: VariadicBindParams): Promise<RunResult>;
-  /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.runAsync()`](#runasyncparams).
-   * Unlike [`Statement.runAsync()`](#runasyncparams), this method finalizes the statement after execution.
-   * @param source A string containing the SQL query.
-   * @param params The map parameters to bind to the prepared statement.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
-   * @example
-   * ```ts
-   *   db.runAsync('SELECT * FROM test WHERE intValue = $intValue AND name = $name', { $intValue: 1, $name: 'Hello' });
-   * ```
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
    */
   public runAsync(source: string, params: BindParams): Promise<RunResult>;
+
+  /**
+   * @hidden
+   */
+  public runAsync(source: string, ...params: VariadicBindParams): Promise<RunResult>;
   public async runAsync(source: string, ...params: any[]): Promise<RunResult> {
     const statement = await this.prepareAsync(source);
     let result;
@@ -221,18 +208,13 @@ export class Database {
    * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.getAsync()`](#getasyncparams).
    * Unlike [`Statement.getAsync()`](#getasyncparams), this method finalizes the statement after execution.
    * @param source A string containing the SQL query.
-   * @param params The variadic parameters to bind to the prepared statement. You can also pass an array of values.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
-   */
-  public getAsync<T>(source: string, ...params: VariadicBindParams): Promise<T | null>;
-  /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.getAsync()`](#getasyncparams).
-   * Unlike [`Statement.getAsync()`](#getasyncparams), this method finalizes the statement after execution.
-   * @param source A string containing the SQL query.
-   * @param params The map parameters to bind to the prepared statement.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
    */
   public getAsync<T>(source: string, params: BindParams): Promise<T | null>;
+  /**
+   * @hidden
+   */
+  public getAsync<T>(source: string, ...params: VariadicBindParams): Promise<T | null>;
   public async getAsync<T>(source: string, ...params: any[]): Promise<T | null> {
     const statement = await this.prepareAsync(source);
     let result;
@@ -248,18 +230,13 @@ export class Database {
    * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.eachAsync()`](#eachasyncparams).
    * Unlike [`Statement.eachAsync()`](#eachasyncparams), this method finalizes the statement after execution.
    * @param source A string containing the SQL query.
-   * @param params The variadic parameters to bind to the prepared statement. You can also pass an array of values.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
-   */
-  public eachAsync<T>(source: string, ...params: VariadicBindParams): AsyncIterableIterator<T>;
-  /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.eachAsync()`](#eachasyncparams).
-   * Unlike [`Statement.eachAsync()`](#eachasyncparams), this method finalizes the statement after execution.
-   * @param source A string containing the SQL query.
-   * @param params The map parameters to bind to the prepared statement.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
    */
   public eachAsync<T>(source: string, params: BindParams): AsyncIterableIterator<T>;
+  /**
+   * @hidden
+   */
+  public eachAsync<T>(source: string, ...params: VariadicBindParams): AsyncIterableIterator<T>;
   public async *eachAsync<T>(source: string, ...params: any[]): AsyncIterableIterator<T> {
     const statement = await this.prepareAsync(source);
     try {
@@ -273,18 +250,24 @@ export class Database {
    * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.allAsync()`](#allasyncparams).
    * Unlike [`Statement.allAsync()`](#allasyncparams), this method finalizes the statement after execution.
    * @param source A string containing the SQL query.
-   * @param params The variadic parameters to bind to the prepared statement. You can also pass an array of values.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
-   */
-  public allAsync<T>(source: string, ...params: VariadicBindParams): Promise<T[]>;
-  /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.allAsync()`](#allasyncparams).
-   * Unlike [`Statement.allAsync()`](#allasyncparams), this method finalizes the statement after execution.
-   * @param source A string containing the SQL query.
-   * @param params The map parameters to bind to the prepared statement.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+   * @example
+   * ```ts
+   *   // For unnamed parameters, you pass values in an array.
+   *   db.allAsync('SELECT * FROM test WHERE intValue = ? AND name = ?', [1, 'Hello']);
+   *
+   *   // For unnamed parameters, you pass values in variadic arguments.
+   *   db.allAsync('SELECT * FROM test WHERE intValue = ? AND name = ?', 1, 'Hello');
+   *
+   *   // For named parameters, you should pass values in object.
+   *   db.allAsync('SELECT * FROM test WHERE intValue = $intValue AND name = $name', { $intValue: 1, $name: 'Hello' });
+   * ```
    */
   public allAsync<T>(source: string, params: BindParams): Promise<T[]>;
+  /**
+   * @hidden
+   */
+  public allAsync<T>(source: string, ...params: VariadicBindParams): Promise<T[]>;
   public async allAsync<T>(source: string, ...params: any[]): Promise<T[]> {
     const statement = await this.prepareAsync(source);
     let result;
@@ -301,19 +284,13 @@ export class Database {
    * Unlike [`Statement.runSync()`](#runsyncparams), this method finalizes the statement after execution.
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param source A string containing the SQL query.
-   * @param params The variadic parameters to bind to the prepared statement. You can also pass an array of values.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
-   */
-  public runSync(source: string, ...params: VariadicBindParams): RunResult;
-  /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.runSync()`](#runsyncparams).
-   * Unlike [`Statement.runSync()`](#runsyncparams), this method finalizes the statement after execution.
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
-   * @param source A string containing the SQL query.
-   * @param params The map parameters to bind to the prepared statement.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
    */
   public runSync(source: string, params: BindParams): RunResult;
+  /**
+   * @hidden
+   */
+  public runSync(source: string, ...params: VariadicBindParams): RunResult;
   public runSync(source: string, ...params: any[]): RunResult {
     const statement = this.prepareSync(source);
     let result;
@@ -330,19 +307,13 @@ export class Database {
    * Unlike [`Statement.getSync()`](#getsyncparams), this method finalizes the statement after execution.
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param source A string containing the SQL query.
-   * @param params The variadic parameters to bind to the prepared statement. You can also pass an array of values.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
-   */
-  public getSync<T>(source: string, ...params: VariadicBindParams): T | null;
-  /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.getSync()`](#getsyncparams).
-   * Unlike [`Statement.getSync()`](#getsyncparams), this method finalizes the statement after execution.
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
-   * @param source A string containing the SQL query.
-   * @param params The map parameters to bind to the prepared statement.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
    */
   public getSync<T>(source: string, params: BindParams): T | null;
+  /**
+   * @hidden
+   */
+  public getSync<T>(source: string, ...params: VariadicBindParams): T | null;
   public getSync<T>(source: string, ...params: any[]): T | null {
     const statement = this.prepareSync(source);
     let result;
@@ -359,19 +330,13 @@ export class Database {
    * Unlike [`Statement.eachSync()`](#eachsyncparams), this method finalizes the statement after execution.
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param source A string containing the SQL query.
-   * @param params The variadic parameters to bind to the prepared statement. You can also pass an array of values.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
-   */
-  public eachSync<T>(source: string, ...params: VariadicBindParams): IterableIterator<T>;
-  /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.eachSync()`](#eachsyncparams).
-   * Unlike [`Statement.eachSync()`](#eachsyncparams), this method finalizes the statement after execution.
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
-   * @param source A string containing the SQL query.
-   * @param params The map parameters to bind to the prepared statement.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
    */
   public eachSync<T>(source: string, params: BindParams): IterableIterator<T>;
+  /**
+   * @hidden
+   */
+  public eachSync<T>(source: string, ...params: VariadicBindParams): IterableIterator<T>;
   public *eachSync<T>(source: string, ...params: any[]): IterableIterator<T> {
     const statement = this.prepareSync(source);
     try {
@@ -386,19 +351,13 @@ export class Database {
    * Unlike [`Statement.allSync()`](#allsyncparams), this method finalizes the statement after execution.
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param source A string containing the SQL query.
-   * @param params The variadic parameters to bind to the prepared statement. You can also pass an array of values.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
-   */
-  public allSync<T>(source: string, ...params: VariadicBindParams): T[];
-  /**
-   * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.allSync()`](#allsyncparams).
-   * Unlike [`Statement.allSync()`](#allsyncparams), this method finalizes the statement after execution.
-   * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
-   * @param source A string containing the SQL query.
-   * @param params The map parameters to bind to the prepared statement.
-   * @see [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
    */
   public allSync<T>(source: string, params: BindParams): T[];
+  /**
+   * @hidden
+   */
+  public allSync<T>(source: string, ...params: VariadicBindParams): T[];
   public allSync<T>(source: string, ...params: any[]): T[] {
     const statement = this.prepareSync(source);
     let result;

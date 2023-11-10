@@ -16,17 +16,17 @@ export interface RunResult {
  * You can either pass the parameters in the following forms:
  *
  * @example
- * - Variadic arguments for unnamed parameters.
- * ```ts
- * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ? AND intValue = ?');
- * await statement.getAsync('test1', 789);
- * ```
- *
- * @example
  * - A single array for unnamed parameters.
  * ```ts
  * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ? AND intValue = ?');
  * await statement.getAsync(['test1', 789]);
+ * ```
+ *
+ * @example
+ * - Variadic arguments for unnamed parameters.
+ * ```ts
+ * const statement = await db.prepareAsync('SELECT * FROM test WHERE value = ? AND intValue = ?');
+ * await statement.getAsync('test1', 789);
  * ```
  *
  * @example
