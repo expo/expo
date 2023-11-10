@@ -67,9 +67,7 @@ function getIsProd(caller) {
 }
 exports.getIsProd = getIsProd;
 function getBaseUrl(caller) {
-    if (caller?.baseUrl != null)
-        return caller.baseUrl;
-    return '';
+    return caller?.baseUrl ?? '';
 }
 exports.getBaseUrl = getBaseUrl;
 function getIsServer(caller) {
