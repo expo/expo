@@ -13,7 +13,7 @@ export const expoExport: Command = async (argv) => {
       '--clear': Boolean,
       '--dump-assetmap': Boolean,
       '--dev': Boolean,
-      '--sourcemaps': Boolean,
+      '--source-maps': Boolean,
       '--max-workers': Number,
       '--output-dir': String,
       '--platform': [String],
@@ -28,13 +28,13 @@ export const expoExport: Command = async (argv) => {
       '-h': '--help',
       '-s': '--dump-sourcemap',
       // '-d': '--dump-assetmap',
-      '-c': '--sourcemaps',
+      '-c': '--clear',
       '-p': '--platform',
       // Interop with Metro docs and RedBox errors.
       '--reset-cache': '--clear',
 
       // Deprecated
-      '--dump-sourcemap': '--sourcemaps',
+      '--dump-sourcemap': '--source-maps',
     },
     argv
   );
