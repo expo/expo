@@ -7,7 +7,9 @@ sidebar_title: Module API
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { APIBox } from '~/components/plugins/APIBox';
 import { PlatformTags } from '~/ui/components/Tag';
+import { A, CALLOUT } from '~/ui/components/Text';
 import { APIMethod } from '~/components/plugins/api/APISectionMethods';
+import { FileTree } from '~/ui/components/FileTree';
 
 The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primitives that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy-to-use and convenient API that is consistent across platforms where possible.
 
@@ -1122,17 +1124,63 @@ class MyModule : Module() {
 
 For more examples from real modules, you can refer to Expo modules that already use this API on GitHub:
 
-- `expo-battery` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-battery/ios))
-- `expo-cellular` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-cellular/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-cellular/android/src/main/java/expo/modules/cellular))
-- `expo-clipboard` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-clipboard/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-clipboard/android/src/main/java/expo/modules/clipboard))
-- `expo-crypto` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-crypto/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-crypto/android/src/main/java/expo/modules/crypto))
-- `expo-device` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-device/ios))
-- `expo-haptics` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-haptics/ios))
-- `expo-image-manipulator` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios))
-- `expo-image-picker` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-picker/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-image-picker/android/src/main/java/expo/modules/imagepicker))
-- `expo-linear-gradient` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient))
-- `expo-localization` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-localization/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-localization/android/src/main/java/expo/modules/localization))
-- `expo-store-review` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-store-review/ios))
-- `expo-system-ui` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI))
-- `expo-video-thumbnails` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-video-thumbnails/ios))
-- `expo-web-browser` ([Swift](https://github.com/expo/expo/blob/main/packages/expo-web-browser/ios), [Kotlin](https://github.com/expo/expo/blob/main/packages/expo-web-browser/android/src/main/java/expo/modules/webbrowser))
+<FileTree
+  files={[
+    ['expo-battery', <A href="https://github.com/expo/expo/tree/main/packages/expo-battery/ios">Swift</A>],
+    [
+      'expo-cellular',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-cellular/android/src/main/java/expo/modules/cellular">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-cellular/ios">Swift</A>
+      </CALLOUT>
+    ],
+    [
+      'expo-clipboard',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-clipboard/android/src/main/java/expo/modules/clipboard">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-clipboard/ios">Swift</A>
+      </CALLOUT>
+    ],
+    [
+      'expo-crypto',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-crypto/android/src/main/java/expo/modules/crypto">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-crypto/ios">Swift</A>
+      </CALLOUT>
+    ],
+    ['expo-device', <A href="https://github.com/expo/expo/tree/main/packages/expo-device/ios">Swift</A>],
+    ['expo-haptics', <A href="https://github.com/expo/expo/tree/main/packages/expo-haptics/ios">Swift</A>],
+    ['expo-image-manipulator', <A href="https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios">Swift</A>],
+    [
+      'expo-image-picker',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-image-picker/android/src/main/java/expo/modules/imagepicker">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-image-picker/ios">Swift</A>
+      </CALLOUT>
+    ],
+    [
+      'expo-linear-gradient',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/ios">Swift</A>
+      </CALLOUT>
+    ],
+    [
+      'expo-localization',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-localization/android/src/main/java/expo/modules/localization">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-localization/ios">Swift</A>
+      </CALLOUT>
+    ],
+    ['expo-store-review', <A href="https://github.com/expo/expo/tree/main/packages/expo-store-review/ios">Swift</A>],
+    ['expo-system-ui', <A href="https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI">Swift</A>],
+    ['expo-video-thumbnails', <A href="https://github.com/expo/expo/tree/main/packages/expo-video-thumbnails/ios">Swift</A>],
+    [
+      'expo-web-browser',
+      <CALLOUT>
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-web-browser/android/src/main/java/expo/modules/webbrowser">Kotlin</A>,{' '}
+        <A href="https://github.com/expo/expo/tree/main/packages/expo-web-browser/ios">Swift</A>
+      </CALLOUT>
+    ]
+  ]}
+/>
