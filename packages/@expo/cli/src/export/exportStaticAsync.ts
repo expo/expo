@@ -35,6 +35,7 @@ type Options = {
   exportServer: boolean;
   basePath: string;
   includeMaps: boolean;
+  clear: boolean;
 };
 
 /** @private */
@@ -53,6 +54,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
     mode: 'production',
     port,
     location: {},
+    resetDevServer: options.clear,
   });
   await devServerManager.startAsync([
     {
@@ -61,6 +63,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
         port,
         location: {},
         isExporting: true,
+        resetDevServer: options.clear,
       },
     },
   ]);

@@ -168,6 +168,7 @@ export async function exportAppAsync(
 
   if (useServerRendering) {
     await unstable_exportStaticAsync(projectRoot, {
+      clear: !!clear,
       outputDir: outputPath,
       minify,
       basePath,
