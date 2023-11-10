@@ -22,6 +22,7 @@ describe('exports static without sourcemaps', () => {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'url-polyfill',
+          _EXPO_NO_METRO_FILE_MAP_ERRORS: '1',
           E2E_ROUTER_ASYNC: 'development',
           EXPO_USE_FAST_RESOLVER: 'true',
         },

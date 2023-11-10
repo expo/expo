@@ -24,18 +24,7 @@ config.resolver.blockList = [
 if (process.env._EXPO_NO_METRO_FILE_MAP_ERRORS) {
   config.watchFolders = [__dirname];
   // Can't ignore everything because that breaks require.context
-  config.resolver.blacklistRE = [
-    /\/__tests__\/.*/,
-    /\/node_modules\//,
-    /\/dist\//,
-    /\/\.expo\//,
-
-    // pathToRegExp(path.join(__dirname, 'dist'), { end: false }),
-    // pathToRegExp(path.join(__dirname, '.expo'), { end: false }),
-    // pathToRegExp(path.join(__dirname, 'node_modules'), { end: false }),
-    // // Ignore node_modules cache packages
-    // /\/node_modules\/\.*\//,
-  ];
+  config.resolver.blacklistRE = [/\/__tests__\/.*/, /\/node_modules\//, /\/dist\//, /\/\.expo\//];
 } else {
   config.watchFolders = [__dirname, ...['packages', 'node_modules'].map((v) => path.join(root, v))];
 }
