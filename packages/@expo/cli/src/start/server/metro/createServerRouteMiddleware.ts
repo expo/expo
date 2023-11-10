@@ -41,7 +41,21 @@ export function createRouteHandlerMiddleware(
         debug('manifest', manifest);
         // NOTE: no app dir if null
         // TODO: Redirect to 404 page
-        return manifest;
+        return (
+          manifest ?? {
+            // Support the onboarding screen if there's no manifest
+            htmlRoutes: [
+              {
+                file: 'index.js',
+                page: '/index',
+                routeKeys: {},
+                namedRegex: /^\/(?:index)?\/?$/i,
+              },
+            ],
+            apiRoutes: [],
+            notFoundRoutes: [],
+          }
+        );
       },
       async getHtml(request) {
         try {
