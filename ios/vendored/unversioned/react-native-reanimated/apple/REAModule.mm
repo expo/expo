@@ -2,12 +2,14 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTFabricSurface.h>
-#import <React/RCTRuntimeExecutorFromBridge.h>
 #import <React/RCTScheduler.h>
 #import <React/RCTSurface.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTSurfaceView.h>
+#if REACT_NATIVE_MINOR_VERSION < 73
+#import <React/RCTRuntimeExecutorFromBridge.h>
+#endif
 #endif
 
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -53,7 +55,7 @@ typedef void (^AnimatedOperation)(REANodesManager *nodesManager);
 #else
   NSMutableArray<AnimatedOperation> *_operations;
 #endif
-#ifdef DEBUG
+#ifndef NDEBUG
   SingleInstanceChecker<REAModule> singleInstanceChecker_;
 #endif
   bool hasListeners;
@@ -162,7 +164,7 @@ RCT_EXPORT_MODULE(ReanimatedModule);
   // only within the first loading `self.bridge.surfacePresenter` exists
   // during the reload `self.bridge.surfacePresenter` is null
   _surfacePresenter = self.bridge.surfacePresenter;
-#ifdef DEBUG
+#ifndef NDEBUG
   if (reaSurface == nil) {
     // we need only one instance because SurfacePresenter is the same during the application lifetime
     reaSurface = [[REAInitializerRCTFabricSurface alloc] init];

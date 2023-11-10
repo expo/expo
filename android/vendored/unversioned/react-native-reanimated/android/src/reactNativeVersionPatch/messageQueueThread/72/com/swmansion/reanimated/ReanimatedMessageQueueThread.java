@@ -9,9 +9,4 @@ public class ReanimatedMessageQueueThread extends ReanimatedMessageQueueThreadBa
   public boolean runOnQueue(Runnable runnable) {
     return messageQueueThread.runOnQueue(runnable);
   }
-
-  @Override
-  public boolean isIdle() {
-    return messageQueueThread.isIdle();
-  }
 }
