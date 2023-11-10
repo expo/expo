@@ -5,6 +5,7 @@ export type UrlObject = {
     pathname: string;
     readonly params: SearchParams;
     segments: string[];
+    isIndex: boolean;
 };
 export declare function getRouteInfoFromState(getPathFromState: (state: State, asPath: boolean) => {
     path: string;

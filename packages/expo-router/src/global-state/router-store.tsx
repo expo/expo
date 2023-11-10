@@ -94,6 +94,7 @@ export class RouterStore {
       this.routeInfo = {
         unstable_globalHref: '',
         pathname: '',
+        isIndex: false,
         params: {},
         segments: [],
       };
