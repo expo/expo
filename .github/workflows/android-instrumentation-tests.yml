@@ -13,6 +13,7 @@ on:
       - packages/expo-json-utils/android/**
       - packages/expo-manifests/android/**
       - packages/expo-updates/android/**
+      - tools/src/commands/AndroidNativeUnitTests.ts
       - yarn.lock
       - '!packages/@expo/cli/**'
   pull_request:
@@ -25,6 +26,7 @@ on:
       - packages/expo-json-utils/android/**
       - packages/expo-manifests/android/**
       - packages/expo-updates/android/**
+      - tools/src/commands/AndroidNativeUnitTests.ts
       - yarn.lock
       - '!packages/@expo/cli/**'
 
@@ -63,7 +65,6 @@ jobs:
           gradle: 'true'
           yarn-workspace: 'true'
           yarn-tools: 'true'
-          hermes-engine-aar: 'true'
           react-native-gradle-downloads: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
