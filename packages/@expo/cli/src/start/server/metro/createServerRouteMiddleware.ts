@@ -29,6 +29,7 @@ export function createRouteHandlerMiddleware(
     mode?: string;
     appDir: string;
     port?: number;
+    baseUrl: string;
     getWebBundleUrl: () => string;
     getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
   }

@@ -433,6 +433,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           createRouteHandlerMiddleware(this.projectRoot, {
             ...options,
             appDir,
+            baseUrl,
             getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
             getStaticPageAsync: (pathname) => {
               return this.getStaticPageAsync(pathname, {
