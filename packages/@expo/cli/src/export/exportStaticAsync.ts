@@ -168,7 +168,7 @@ export async function exportFromServerAsync(
     await persistMetroAssetsAsync(resources.assets, {
       platform: 'web',
       outputDirectory: outputDir,
-      basePath,
+      baseUrl,
     });
   }
 

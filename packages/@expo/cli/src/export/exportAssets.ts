@@ -125,12 +125,12 @@ export async function exportAssetsAsync(
     exp,
     outputDir,
     bundles: { web, ...bundles },
-    basePath,
+    baseUrl,
   }: {
     exp: ExpoConfig;
     bundles: Partial<Record<string, BundleOutput>>;
     outputDir: string;
-    basePath: string;
+    baseUrl: string;
   }
 ) {
   // NOTE: We use a different system for static web
@@ -140,7 +140,7 @@ export async function exportAssetsAsync(
     await persistMetroAssetsAsync(web.assets, {
       platform: 'web',
       outputDirectory: outputDir,
-      basePath,
+      baseUrl,
     });
   }
 
