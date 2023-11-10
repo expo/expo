@@ -251,7 +251,7 @@ export interface ExpoConfig {
         /**
          * Export a website relative to a subpath of a domain. The path will be prepended as-is to links to all bundled resources. Prefix the path with a `/` (recommended) to load all resources relative to the server root. If the path **does not** start with a `/` then resources will be loaded relative to the code that requests them, this could lead to unexpected behavior. Example '/subpath'. Defaults to '' (empty string).
          */
-        basePath?: string;
+        baseUrl?: string;
         /**
          * If true, indicates that this project does not support tablets or handsets, and only supports Apple TV and Android TV
          */

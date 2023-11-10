@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Rename `basePath` to `baseUrl` and expose to bundles with `process.env.EXPO_BASE_URL`. ([#25305](https://github.com/expo/expo/pull/25305) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `Platform.OS` shaking without needing to enable experimental ESM transforms. ([#25171](https://github.com/expo/expo/pull/25171) by [@EvanBacon](https://github.com/EvanBacon))
 - Inline environment variables in production before the serializer to support source maps. ([#25239](https://github.com/expo/expo/pull/25239) by [@EvanBacon](https://github.com/EvanBacon))
 - Support all options in top-level object and in `native` and `web` sub-objects. ([#25172](https://github.com/expo/expo/pull/25172) by [@EvanBacon](https://github.com/EvanBacon))

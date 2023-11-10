@@ -84,6 +84,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
         bundler: 'metro',
         name: 'metro',
         platform: 'ios',
+        baseUrl: '',
         projectRoot: expect.any(String),
       },
       cloneInputAst: false,

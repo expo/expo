@@ -633,11 +633,11 @@ afterEach(() => {
   Constants.expoConfig!.experiments = undefined;
 });
 
-it('respects basePath', async () => {
+it('respects baseUrl', async () => {
   // @ts-expect-error
   Constants.expoConfig = {
     experiments: {
-      basePath: '/one/two',
+      baseUrl: '/one/two',
     },
   };
 

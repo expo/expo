@@ -5,13 +5,13 @@ export function serializeHtmlWithAssets({
   resources,
   template,
   devBundleUrl,
-  basePath,
+  baseUrl,
 }: {
   mode: 'development' | 'production';
   resources: SerialAsset[];
   template: string;
   /** asset prefix used for deploying to non-standard origins like GitHub pages. */
-  basePath: string;
+  baseUrl: string;
   devBundleUrl?: string;
 }): string {
   if (!resources) {
@@ -21,7 +21,7 @@ export function serializeHtmlWithAssets({
   return htmlFromSerialAssets(resources, {
     dev: isDev,
     template,
-    basePath,
+    baseUrl,
     bundleUrl: isDev ? devBundleUrl : undefined,
   });
 }
@@ -31,12 +31,12 @@ function htmlFromSerialAssets(
   {
     dev,
     template,
-    basePath,
+    baseUrl,
     bundleUrl,
   }: {
     dev: boolean;
     template: string;
-    basePath: string;
+    baseUrl: string;
     /** This is dev-only. */
     bundleUrl?: string;
   }
@@ -49,8 +49,8 @@ function htmlFromSerialAssets(
         return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
       } else {
         return [
-          `<link rel="preload" href="${basePath}/${filename}" as="style">`,
-          `<link rel="stylesheet" href="${basePath}/${filename}">`,
+          `<link rel="preload" href="${baseUrl}/${filename}" as="style">`,
+          `<link rel="stylesheet" href="${baseUrl}/${filename}">`,
         ].join('');
       }
     })
@@ -62,7 +62,7 @@ function htmlFromSerialAssets(
     ? `<script src="${bundleUrl}" defer></script>`
     : jsAssets
         .map(({ filename }) => {
-          return `<script src="${basePath}/${filename}" defer></script>`;
+          return `<script src="${baseUrl}/${filename}" defer></script>`;
         })
         .join('');
 
