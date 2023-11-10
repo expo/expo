@@ -166,6 +166,11 @@ class Env {
   get EXPO_NO_CLIENT_ENV_VARS(): boolean {
     return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
   }
+
+  /** Disable Metro asserting that it can't create its giant file cache. */
+  get _EXPO_NO_METRO_FILE_MAP_ERRORS(): boolean {
+    return boolish('_EXPO_NO_METRO_FILE_MAP_ERRORS', false);
+  }
 }
 
 export const env = new Env();

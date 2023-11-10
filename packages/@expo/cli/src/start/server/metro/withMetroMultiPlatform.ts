@@ -424,6 +424,20 @@ export function withExtendedResolver(
       // TODO: We can drop this in the next version upgrade (SDK 50).
       const mainFields: string[] = context.mainFields;
 
+      // Disable throwing errors when a file is outside of haste map.
+      if (env._EXPO_NO_METRO_FILE_MAP_ERRORS) {
+        context.resolveAsset = (dirPath: string, assetName: string, extension: string) => {
+          const basePath = dirPath + path.sep + assetName;
+          const assets = [
+            basePath + extension,
+            ...config.resolver.assetResolutions.map(
+              (resolution: string) => basePath + '@' + resolution + 'x' + extension
+            ),
+          ].filter(context.doesFileExist);
+          return assets.length ? assets : undefined;
+        };
+      }
+
       return {
         ...context,
         preferNativePlatform: platform !== 'web',
@@ -439,6 +453,61 @@ export function withExtendedResolver(
       };
     }
   );
+
+  // Mutate the Metro methods to prevent it from throwing errors when a file is outside of haste map.
+  if (env._EXPO_NO_METRO_FILE_MAP_ERRORS) {
+    const TreeFS = require('metro-file-map/src/lib/TreeFS.js').default;
+    const H = require('metro-file-map/src/constants');
+
+    TreeFS.prototype.getSha1 = function (mixedPath: string): string {
+      let fileMetadata = this._getFileData(mixedPath);
+      const data = fileMetadata && fileMetadata[H.SHA1];
+      if (!data) {
+        return mixedPath;
+      }
+      return data;
+    };
+
+    // We need to patch `_processSingleAssetRequest` because it calls
+    // `Assets.getAsset`, and `Assets.getAsset` checks whether the asset lives
+    // under one of `projectRoot` or `watchFolders`.
+    const Server = require('metro/src/Server');
+    Server.prototype.orig__processSingleAssetRequest = Server.prototype._processSingleAssetRequest;
+    Server.prototype._processSingleAssetRequest = function (
+      req: { url: string },
+      res: unknown
+    ): Promise<void> {
+      // eslint-disable-next-line node/no-deprecated-api
+      const urlObj = new URL(decodeURI(req.url), 'http://localhost:8081/');
+      let [, assetPath] =
+        (urlObj && urlObj.pathname && urlObj.pathname.match(/^\/assets\/(.+)$/)) || [];
+
+      if (!assetPath && urlObj && urlObj.searchParams.has('unstable_path')) {
+        const unstable_path = urlObj.searchParams.get('unstable_path')!;
+        const result = unstable_path.match(/^([^?]*)\??(.*)$/);
+        if (result == null) {
+          throw new Error(`Unable to parse URL: ${unstable_path}`);
+        }
+
+        const [, actualPath] = result;
+        assetPath = actualPath;
+      }
+
+      if (!assetPath) {
+        throw new Error(`Could not extract asset path from URL: ${req.url}`);
+      }
+
+      const watchFolders = this.getWatchFolders();
+      const absolutePath = path.resolve(this._config.projectRoot, assetPath);
+      this._config.watchFolders = [path.dirname(absolutePath)];
+
+      try {
+        return this.orig__processSingleAssetRequest(req, res);
+      } finally {
+        this._config.watchFolders = watchFolders;
+      }
+    };
+  }
 
   return withMetroErrorReportingResolver(metroConfigWithCustomContext);
 }
@@ -510,13 +579,13 @@ export async function withMetroMultiPlatformAsync(
   }
 
   // This is used for running Expo CLI in development against projects outside the monorepo.
-  if (!isDirectoryIn(__dirname, projectRoot)) {
+  if (!env._EXPO_NO_METRO_FILE_MAP_ERRORS && !isDirectoryIn(__dirname, projectRoot)) {
     if (!config.watchFolders) {
       // @ts-expect-error: watchFolders is readonly
       config.watchFolders = [];
     }
     // @ts-expect-error: watchFolders is readonly
-    // config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+    config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
   }
 
   // Ensure the cache is invalidated if these values change.

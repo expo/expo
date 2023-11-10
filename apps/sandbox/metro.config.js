@@ -9,29 +9,25 @@ const path = require('path');
 
 const root = path.join(__dirname, '../..');
 
-const pathToRegExp = require('path-to-regexp');
-// config.watchFolders = [__dirname];
-config.watchFolders = [__dirname];
-// config.watchFolders = [__dirname, ...['packages', 'node_modules'].map((v) => path.join(root, v))];
+if (process.env._EXPO_NO_METRO_FILE_MAP_ERRORS) {
+  config.watchFolders = [__dirname];
 
-config.projectRoot = __dirname;
-// config.server.unstable_serverRoot = __dirname;
-// 66358
-config.resolver.blacklistRE = [
-  // This is default in metro and needs to be added back.
-  /\/__tests__\/.*/,
+  // Can't ignore everything because that breaks require.context
+  config.resolver.blacklistRE = [
+    /\/__tests__\/.*/,
+    /\/node_modules\//,
+    /\/dist\//,
+    /\/\.expo\//,
 
-  // /\/dist\//,
-  // /\/\.expo\//,
-  pathToRegExp(path.join(__dirname, 'dist'), { end: false }),
-  pathToRegExp(path.join(__dirname, '.expo'), { end: false }),
-  pathToRegExp(path.join(__dirname, 'node_modules'), { end: false }),
-  // Ignore node_modules cache packages
-  /\/node_modules\/\.*\//,
-];
-config.resolver.nodeModulesPaths = [];
-
-console.log('REX:', __dirname, config.resolver.blacklistRE);
+    // pathToRegExp(path.join(__dirname, 'dist'), { end: false }),
+    // pathToRegExp(path.join(__dirname, '.expo'), { end: false }),
+    // pathToRegExp(path.join(__dirname, 'node_modules'), { end: false }),
+    // // Ignore node_modules cache packages
+    // /\/node_modules\/\.*\//,
+  ];
+} else {
+  config.watchFolders = [__dirname, ...['packages', 'node_modules'].map((v) => path.join(root, v))];
+}
 
 // 89934
 config.resolver.blockList = [
