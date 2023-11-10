@@ -26,7 +26,7 @@ export const expoExport: Command = async (argv) => {
 
       // Aliases
       '-h': '--help',
-      '-s': '--dump-sourcemap',
+      '-s': '--source-maps',
       // '-d': '--dump-assetmap',
       '-c': '--clear',
       '-p': '--platform',
