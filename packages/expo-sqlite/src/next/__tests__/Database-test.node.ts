@@ -229,6 +229,14 @@ describe('Database - Synchronous calls', () => {
     expect(result?.intValue).toBe(123);
   });
 
+  it('runSync should throw error on int64 input as int', () => {
+    db = openDatabaseSync(':memory:');
+    db.execSync(
+      'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
+    );
+    expect(db.runSync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', Date.now())).toThrow(Error);
+  });
+
   it('eachSync should return iterable', () => {
     db = openDatabaseSync(':memory:');
     db.execSync(`
