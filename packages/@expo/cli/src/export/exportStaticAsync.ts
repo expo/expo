@@ -163,11 +163,13 @@ export async function exportFromServerAsync(
     );
   });
 
-  await persistMetroAssetsAsync(resources.assets, {
-    platform: 'web',
-    outputDirectory: outputDir,
-    basePath,
-  });
+  if (resources.assets) {
+    await persistMetroAssetsAsync(resources.assets, {
+      platform: 'web',
+      outputDirectory: outputDir,
+      basePath,
+    });
+  }
 
   if (exportServer) {
     const apiRoutes = await exportApiRoutesAsync({
