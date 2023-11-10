@@ -54,6 +54,9 @@ export type SQLTransactionCallback = (transaction: SQLTransaction) => void;
 // @docsMissing
 export type SQLTransactionErrorCallback = (error: SQLError) => void;
 
+// @docsMissing
+export type SQLStatementArg = string | number | null;
+
 // @needsAudit
 /**
  * A `SQLTransaction` object is passed in as a parameter to the `callback` parameter for the
@@ -77,7 +80,7 @@ export interface SQLTransaction {
    */
   executeSql(
     sqlStatement: string,
-    args?: (number | string | null)[],
+    args?: SQLStatementArg[],
     callback?: SQLStatementCallback,
     errorCallback?: SQLStatementErrorCallback
   ): void;
@@ -185,7 +188,7 @@ export type SQLiteCallback = (
 /** A transaction object to perform SQL statements in async mode. */
 export interface SQLTransactionAsync {
   /** Executes a SQL statement in async mode. */
-  executeSqlAsync(sqlStatement: string, args?: (number | string)[]): Promise<ResultSet>;
+  executeSqlAsync(sqlStatement: string, args?: SQLStatementArg[]): Promise<ResultSet>;
 }
 
 /** A transaction callback with given `SQLTransactionAsync` object to perform SQL statements in async mode. */

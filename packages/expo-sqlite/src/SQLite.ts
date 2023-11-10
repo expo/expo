@@ -9,6 +9,7 @@ import type {
   ResultSet,
   ResultSetError,
   SQLiteCallback,
+  SQLStatementArg,
   SQLTransactionAsyncCallback,
   SQLTransactionAsync,
   SQLTransactionCallback,
@@ -264,7 +265,7 @@ export class ExpoSQLTransactionAsync implements SQLTransactionAsync {
     private readonly readOnly: boolean
   ) {}
 
-  async executeSqlAsync(sqlStatement: string, args?: (number | string)[]): Promise<ResultSet> {
+  async executeSqlAsync(sqlStatement: string, args?: SQLStatementArg[]): Promise<ResultSet> {
     const resultSets = await this.db.execAsync(
       [{ sql: sqlStatement, args: args ?? [] }],
       this.readOnly
