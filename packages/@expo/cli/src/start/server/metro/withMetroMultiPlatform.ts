@@ -516,7 +516,7 @@ export async function withMetroMultiPlatformAsync(
       config.watchFolders = [];
     }
     // @ts-expect-error: watchFolders is readonly
-    config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+    // config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
   }
 
   // Ensure the cache is invalidated if these values change.

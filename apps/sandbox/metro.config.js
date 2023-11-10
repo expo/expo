@@ -9,8 +9,31 @@ const path = require('path');
 
 const root = path.join(__dirname, '../..');
 
-config.watchFolders = [__dirname, ...['packages', 'node_modules'].map((v) => path.join(root, v))];
+const pathToRegExp = require('path-to-regexp');
+// config.watchFolders = [__dirname];
+config.watchFolders = [__dirname];
+// config.watchFolders = [__dirname, ...['packages', 'node_modules'].map((v) => path.join(root, v))];
 
+config.projectRoot = __dirname;
+// config.server.unstable_serverRoot = __dirname;
+// 66358
+config.resolver.blacklistRE = [
+  // This is default in metro and needs to be added back.
+  /\/__tests__\/.*/,
+
+  // /\/dist\//,
+  // /\/\.expo\//,
+  pathToRegExp(path.join(__dirname, 'dist'), { end: false }),
+  pathToRegExp(path.join(__dirname, '.expo'), { end: false }),
+  pathToRegExp(path.join(__dirname, 'node_modules'), { end: false }),
+  // Ignore node_modules cache packages
+  /\/node_modules\/\.*\//,
+];
+config.resolver.nodeModulesPaths = [];
+
+console.log('REX:', __dirname, config.resolver.blacklistRE);
+
+// 89934
 config.resolver.blockList = [
   ...config.resolver.blockList,
 
