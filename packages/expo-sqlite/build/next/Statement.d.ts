@@ -131,7 +131,7 @@ export declare function normalizeParams(...params: any[]): {
  */
 export declare function composeRow<T>(columnNames: ColumnNames, columnValues: ColumnValues): T;
 /**
- * Compose `columnNames` and `columnValuesList` to an array of row object.
+ * Compose `columnNames` and `columnValuesList` to an array of row objects.
  * @hidden
  */
 export declare function composeRows<T>(columnNames: ColumnNames, columnValuesList: ColumnValues[]): T[];

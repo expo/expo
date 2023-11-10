@@ -160,7 +160,7 @@ export function composeRow(columnNames, columnValues) {
     return row;
 }
 /**
- * Compose `columnNames` and `columnValuesList` to an array of row object.
+ * Compose `columnNames` and `columnValuesList` to an array of row objects.
  * @hidden
  */
 export function composeRows(columnNames, columnValuesList) {

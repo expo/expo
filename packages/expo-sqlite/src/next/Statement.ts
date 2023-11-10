@@ -281,7 +281,7 @@ export function composeRow<T>(columnNames: ColumnNames, columnValues: ColumnValu
 }
 
 /**
- * Compose `columnNames` and `columnValuesList` to an array of row object.
+ * Compose `columnNames` and `columnValuesList` to an array of row objects.
  * @hidden
  */
 export function composeRows<T>(columnNames: ColumnNames, columnValuesList: ColumnValues[]): T[] {
