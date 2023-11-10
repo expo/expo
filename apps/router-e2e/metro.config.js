@@ -21,7 +21,7 @@ config.resolver.blockList = [
   /node_modules\/pretty-format\/node_modules\/react-is/,
 ];
 
-if (process.env._EXPO_NO_METRO_FILE_MAP_ERRORS) {
+if (require('getenv').boolish('_EXPO_NO_METRO_FILE_MAP_ERRORS', false)) {
   config.watchFolders = [__dirname];
   // Can't ignore everything because that breaks require.context
   config.resolver.blacklistRE = [/\/__tests__\/.*/, /\/node_modules\//, /\/dist\//, /\/\.expo\//];
