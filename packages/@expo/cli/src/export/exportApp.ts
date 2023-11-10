@@ -8,7 +8,6 @@ import { unstable_exportStaticAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { createBundlesAsync } from './fork-bundleAsync';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
-import { persistMetroAssetsAsync } from './persistMetroAssets';
 import { printBundleSizes } from './printBundleSizes';
 import { Options } from './resolveOptions';
 import {
@@ -131,6 +130,7 @@ export async function exportAppAsync(
       exp,
       outputDir: staticFolder,
       bundles,
+      basePath,
     });
 
     if (dumpAssetmap) {
@@ -197,17 +197,6 @@ export async function exportAppAsync(
     // Generate SPA-styled HTML file.
     // If web exists, then write the template HTML file.
     await fs.promises.writeFile(path.join(staticFolder, 'index.html'), html);
-
-    // NOTE: We use a different system for static web
-    if (bundles.web) {
-      // Save assets like a typical bundler, preserving the file paths on web.
-      // TODO: Update React Native Web to support loading files from asset hashes.
-      await persistMetroAssetsAsync(bundles.web.assets, {
-        platform: 'web',
-        outputDirectory: staticFolder,
-        basePath,
-      });
-    }
   }
 }
 

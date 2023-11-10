@@ -9,6 +9,7 @@ import { Asset, saveAssetsAsync } from './saveAssets';
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
+import { persistMetroAssetsAsync } from './persistMetroAssets';
 
 const debug = require('debug')('expo:export:exportAssets') as typeof console.log;
 
@@ -123,13 +124,26 @@ export async function exportAssetsAsync(
   {
     exp,
     outputDir,
-    bundles,
+    bundles: { web, ...bundles },
+    basePath,
   }: {
     exp: ExpoConfig;
-    bundles: Partial<Record<ModPlatform, BundleOutput>>;
+    bundles: Partial<Record<string, BundleOutput>>;
     outputDir: string;
+    basePath: string;
   }
 ) {
+  // NOTE: We use a different system for static web
+  if (web) {
+    // Save assets like a typical bundler, preserving the file paths on web.
+    // TODO: Update React Native Web to support loading files from asset hashes.
+    await persistMetroAssetsAsync(web.assets, {
+      platform: 'web',
+      outputDirectory: outputDir,
+      basePath,
+    });
+  }
+
   const assets: Asset[] = uniqBy(
     Object.values(bundles).flatMap((bundle) => bundle!.assets),
     (asset) => asset.hash
