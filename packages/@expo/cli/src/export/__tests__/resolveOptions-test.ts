@@ -59,7 +59,7 @@ describe(resolveOptionsAsync, () => {
         '--clear': true,
         '--dev': true,
         '--dump-assetmap': true,
-        '--dump-sourcemap': true,
+        '--source-maps': true,
         '--max-workers': 2,
       })
     ).resolves.toEqual({
@@ -67,7 +67,7 @@ describe(resolveOptionsAsync, () => {
       dev: true,
       minify: true,
       dumpAssetmap: true,
-      dumpSourcemap: true,
+      sourceMaps: true,
       maxWorkers: 2,
       outputDir: 'foobar',
       platforms: ['android'],
@@ -80,7 +80,7 @@ describe(resolveOptionsAsync, () => {
       dev: false,
       minify: true,
       dumpAssetmap: false,
-      dumpSourcemap: false,
+      sourceMaps: false,
       maxWorkers: undefined,
       outputDir: 'dist',
       platforms: ['ios', 'android'],

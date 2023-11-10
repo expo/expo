@@ -218,6 +218,7 @@ export function modifyBundlesWithSourceMaps(
 
     // TODO: baseUrl support
     const normalizedFilename = '/' + filename.replace(/^\/+/, '');
+    // Ref: https://developer.chrome.com/blog/sourcemaps/#sourceurl-and-displayname-in-action-eval-and-anonymous-functions
     //# sourceMappingURL=//localhost:8085/index.map?platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
     //# sourceURL=http://localhost:8085/index.bundle//&platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
     return source.replace(/^\/\/# (sourceMappingURL|sourceURL)=.*$/gm, (...props) => {
