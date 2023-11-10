@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 import { openDatabaseAsync, type Database } from './Database';
 import type { OpenOptions } from './NativeDatabase';
@@ -50,7 +50,7 @@ export function SQLiteProvider({
   loadingFallback,
   errorHandler,
 }: SQLiteProviderProps) {
-  const [database, setDatabase] = useState<Database | null>(null);
+  const databaseRef = useRef<Database | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -58,19 +58,19 @@ export function SQLiteProvider({
     async function setup() {
       try {
         const db = await openDatabaseAsync(dbName, options);
-        setDatabase(db);
         if (initHandler != null) {
           await initHandler(db);
         }
+        databaseRef.current = db;
         setLoading(false);
       } catch (e) {
         setError(e);
       }
     }
 
-    async function teardown() {
+    async function teardown(db: Database | null) {
       try {
-        await database?.closeAsync();
+        await db?.closeAsync();
       } catch (e) {
         setError(e);
       }
@@ -79,7 +79,9 @@ export function SQLiteProvider({
     setup();
 
     return () => {
-      teardown();
+      const db = databaseRef.current;
+      teardown(db);
+      databaseRef.current = null;
     };
   }, [dbName, options, initHandler]);
 
@@ -92,10 +94,10 @@ export function SQLiteProvider({
     handler(error);
   }
 
-  if (loading) {
+  if (loading || !databaseRef.current) {
     return loadingFallback != null ? <>{loadingFallback}</> : null;
   }
-  return <SQLiteContext.Provider value={database}>{children}</SQLiteContext.Provider>;
+  return <SQLiteContext.Provider value={databaseRef.current}>{children}</SQLiteContext.Provider>;
 }
 
 // Create a hook for accessing the SQLite database context

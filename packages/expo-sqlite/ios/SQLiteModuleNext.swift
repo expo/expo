@@ -503,8 +503,8 @@ public final class SQLiteModuleNext: Module {
       return
     }
     Self.lockQueue.sync {
-      if var statements = cachedStatements[database] {
-        statements.append(statement)
+      if cachedStatements[database] != nil {
+        cachedStatements[database]?.append(statement)
       } else {
         cachedStatements[database] = [statement]
       }
