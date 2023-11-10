@@ -5,6 +5,7 @@ import minimatch from 'minimatch';
 import path from 'path';
 
 import { BundleOutput } from './fork-bundleAsync';
+import { persistMetroAssetsAsync } from './persistMetroAssets';
 import { Asset, saveAssetsAsync } from './saveAssets';
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
@@ -123,13 +124,26 @@ export async function exportAssetsAsync(
   {
     exp,
     outputDir,
-    bundles,
+    bundles: { web, ...bundles },
+    basePath,
   }: {
     exp: ExpoConfig;
-    bundles: Partial<Record<ModPlatform, BundleOutput>>;
+    bundles: Partial<Record<string, BundleOutput>>;
     outputDir: string;
+    basePath: string;
   }
 ) {
+  // NOTE: We use a different system for static web
+  if (web) {
+    // Save assets like a typical bundler, preserving the file paths on web.
+    // TODO: Update React Native Web to support loading files from asset hashes.
+    await persistMetroAssetsAsync(web.assets, {
+      platform: 'web',
+      outputDirectory: outputDir,
+      basePath,
+    });
+  }
+
   const assets: Asset[] = uniqBy(
     Object.values(bundles).flatMap((bundle) => bundle!.assets),
     (asset) => asset.hash
@@ -157,7 +171,7 @@ export async function exportAssetsAsync(
       debug(`Filtered assets count = ${filteredAssets.length}`);
     }
     Log.log('Saving assets');
-    await saveAssetsAsync(projectRoot, { assets: filteredAssets, outputDir });
+    await saveAssetsAsync({ assets: filteredAssets, outputDir });
   }
 
   // Add google services file if it exists

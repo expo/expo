@@ -13,6 +13,7 @@ import prettyBytes from 'pretty-bytes';
 import { inspect } from 'util';
 
 import { getVirtualFaviconAssetsAsync } from './favicon';
+import { persistMetroAssetsAsync } from './persistMetroAssets';
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
@@ -143,7 +144,7 @@ export async function exportFromServerAsync(
       const template = await renderAsync(pathname);
       let html = await serializeHtmlWithAssets({
         mode: 'production',
-        resources,
+        resources: resources.artifacts,
         template,
         baseUrl,
       });
@@ -156,12 +157,20 @@ export async function exportFromServerAsync(
     },
   });
 
-  resources.forEach((resource) => {
+  resources.artifacts.forEach((resource) => {
     files.set(
       resource.filename,
       modifyBundlesWithSourceMaps(resource.filename, resource.source, includeMaps)
     );
   });
+
+  if (resources.assets) {
+    await persistMetroAssetsAsync(resources.assets, {
+      platform: 'web',
+      outputDirectory: outputDir,
+      basePath,
+    });
+  }
 
   if (exportServer) {
     const apiRoutes = await exportApiRoutesAsync({
@@ -183,6 +192,7 @@ export async function exportFromServerAsync(
   fs.mkdirSync(path.join(outputDir), { recursive: true });
 
   Log.log('');
+
   Log.log(chalk.bold`Exporting ${files.size} files:`);
   await Promise.all(
     [...files.entries()]
