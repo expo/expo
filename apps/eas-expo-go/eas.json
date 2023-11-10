@@ -7,6 +7,7 @@
   },
   "build": {
     "base": {
+      "node": "18.18.0",
       "credentialsSource": "local",
       "android": {
         "image": "ubuntu-20.04-jdk-11-ndk-r21e",
@@ -22,7 +23,7 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk49-0.72.5",
+          "key": "sdk50-0.73.0-rc.4",
           "customPaths": ["../../ios/Pods"]
         },
         "resourceClass": "m-medium",
