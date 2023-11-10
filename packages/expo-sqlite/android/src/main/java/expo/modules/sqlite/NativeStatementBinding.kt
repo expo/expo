@@ -2,11 +2,11 @@
 
 package expo.modules.sqlite
 
-import android.util.ArrayMap
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 
-internal typealias Row = ArrayMap<String, Any>
+internal typealias ColumnNames = ArrayList<String>
+internal typealias ColumnValues = ArrayList<Any>
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
@@ -28,7 +28,8 @@ internal class NativeStatementBinding {
   external fun sqlite3_step(): Int
 
   external fun bindStatementParam(index: Int, param: Any): Int
-  external fun getRow(): Row
+  external fun getColumnNames(): ColumnNames
+  external fun getColumnValues(): ColumnValues
 
   // endregion
 
