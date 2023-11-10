@@ -1,6 +1,6 @@
 ---
 title: Development process overview
-description: An overview of the development process of building an Expo app and building an accurate mental model of the core development loop.
+description: An overview of the development process of building an Expo app to help build mental model of the core development loop.
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -8,11 +8,11 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { DocsLogo } from '@expo/styleguide';
 
-To help you build an accurate mental model, this document provides an overview of the development process of building an Expo app.
-
 You might have used Expo or React Native before or are using them for a while, or you are still learning about the ecosystem. This document starts by clarifying key concepts and then defines different parts of the core development loop.
 
 ## Key concepts
+
+The following concepts are valuable to understand, and we recommend referring back to these definitions as you read through the rest of this guide and also as you use Expo tools.
 
 <Collapsible summary={`What is an "Expo app"?`}>
 
@@ -92,7 +92,7 @@ Like any mobile app, the application that is distributed to users is created by 
 
 When you initialize a new app with `npx create-expo-app`, you will not see any **android** or **ios** directories. You can [generate the native projects by running `npx expo prebuild`](/workflow/prebuild/), which will initialize the native projects and then apply the project Expo app config (**app.json/app.config.js**) to them.
 
-If you use a cloud-based development workflow, you may never need to run prebuild or install Android Studio or Xcode on your own machine (although you may find this useful). This is explained below in the [Local and cloud-based development workflows](#local-and-cloud-based-development-workflows).
+If you use a cloud-based development workflow, you may never need to run prebuild or install Android Studio or Xcode on your own machine (although you may find this useful). This is explained below in the [Local and cloud-based development workflows](#cloud-based-and-local-development-workflows).
 
 <Collapsible summary={`Why aren't the native projects created by default when you initialize a project with create-expo-app?`}>
 
@@ -139,28 +139,17 @@ If you add a new native dependency to your project or change the project configu
 
 <Collapsible summary="Cloud-based and local development workflows">
 
-It's possible with Expo and EAS to work on your native Android or iOS app without installing Android Studio or Xcode and creating a cloud-based development build. This can be helpful when you:
+Choosing a cloud-based or local development is a choice you can make each time you run a new native build. Whether you choose cloud-based or local doesn't significantly alter your development loop. It's about how you produce and distribute your app binaries that your JavaScript code runs against.
 
-- are limited by local machine development workflow (for example, Xcode for iOS is [exclusively available for macOS](/faq/#can-i-develop-ios-apps-on-a-windows-computer))
-- Want Use [`expo-dev-client`](/develop/development-builds/introduction/#what-is-expo-dev-client) library to extend your development build by providing a launch UI to preview your updates, switch between development servers without the need to rebuild the entire app binary, share and run the build on any machine, and more
-- Iterate as quickly as possible when developing your app
-- Share your project with other collaborators or trusted testers
-- Keep up with the latest changes in the React Native ecosystem and easier app upgrades
-- Use a proven and dedicated path for going from development to production using the EAS services (Build, Update, Submit)
+Compiling your app in the cloud with EAS Build is as easy as running a single command, no need to install Android Studio or Xcode to create a build in the cloud.
 
-<Collapsible summary="Do you want to compile your app locally">
+To compile your app locally, you will need to install Android Studio and Xcode on your machine, and then you can either run the build from those tools or use `npx expo run:[android|ios]`.
 
-To compile and release your app locally, you can use your own machine. You have to manually generate native code before testing the debug build or creating a production build for it to submit to the app store. You also need tools such as Android Studio and Xcode installed on your machine.
-
-See [Local app compilation](/guides/local-app-development/#local-app-compilation) for more in-depth information on how to set up your local development environment and compile your app locally. You can also use [`expo-dev-client` library](/guides/local-app-development/#local-builds-with-expo-dev-client) when managing everything locally.
+Learn more about [cloud-based workflows with EAS Build](/build/introduction/) and [local development](/guides/local-app-development/).
 
 </Collapsible>
 
-Choosing a cloud-based or local development workflow isn't a commitment. It's a choice you make each time you run a new native build. Whether you choose cloud-based or local doesn't significantly alter your development loop. It's about how you produce and distribute your app binaries that your JavaScript code runs against.
-
-</Collapsible>
-
-## Initialize and run a project
+{/* ## Initialize and run a project
 
 The easiest way to [create a new project is with `create-expo-app`](/get-started/create-a-project/#initialize-a-new-project). After creating your project, you can immediately launch it directly in Expo Go on your physical device or in an emulator/simulator if you want to experiment or build a quick prototype.
 
@@ -178,19 +167,19 @@ In most cases, you will create and use a development build of your project. You 
   description="Learn how to compile your app locally using your own machine, Android Studio and Xcode."
   href="/guides/local-app-development/"
   Icon={DocsLogo}
-/>
+/> */}
 
 ## The core development loop
 
 The core development loop described in the diagram above is a cycle of four main activities that you typically go through when developing an app.
 
-- **Write and run JavaScript code**: This involves creating components, writing business logic, or installing third-party libraries from npm that don't require native code changes. The changes you make here are reflected in your app without needing any interaction with the native side of your app.
+- **Write and run JavaScript code**: This involves creating components, writing business logic, or installing libraries from npm that don't require native code changes. The changes you make here are reflected in your app without needing any interaction with the native side of your app.
 
-- **Update app configuration**: This involves modifying your app's configuration using the app config file (**app.json** or **app.config.js**). It includes updating your app's name, icon, splash screen, and other properties. These changes don't affect the native project directly. However, if you make changes that affect the native projects, you can use the [app config](/workflow/configuration/) to modify the native project configuration or create or use a [config plugin](/config-plugins/introduction/). See [app config reference](/versions/latest/config/app/) for a complete list of properties available in the app config file.
+- **Update app configuration**: This involves modifying your app's configuration using the app config file (**app.json** or **app.config.js**). It includes updating your app's name, icon, splash screen, and other properties. These changes don't all affect the native project directly. However, if you make changes that affect the native projects, you can use the [app config](/workflow/configuration/) to modify the native project configuration or create or use a [config plugin](/config-plugins/introduction/). See [app config reference](/versions/latest/config/app/) for a complete list of properties available in the app config file.
 
 - **Write native code or modify native project configuration**: This includes writing native code directly or modifying native code configuration. You need access to the native code project directories to make these changes. You can create a development build using EAS or locally.
 
-- **Install a third-party library that requires native code modifications**: This includes that a third-party library requires making changes to the native code project configuration. Either the library provides a config plugin or steps to take to update the app config. Like the previous activity, this also requires you to create a development build.
+- **Install a library that requires native code modifications**: This includes that a library requires making changes to the native code project configuration. Either the library provides a config plugin or steps to take to update the app config. Like the previous activity, this also requires you to create a development build.
 
 When creating a [development build](#development-builds), you have two options. You can create a cloud-based build using [EAS Build](/build/setup/) or do it locally. If you choose to do it locally, you can use [CNG](#continuous-native-generation-cng) and then [`npx expo prebuild --clean`](#how-do-i-know-when-i-need), or you can create a development build using [`npx expo run android|ios` or Android Studio and Xcode](/guides/local-app-development/#local-app-compilation).
 
