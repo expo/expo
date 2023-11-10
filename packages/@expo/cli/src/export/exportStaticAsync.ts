@@ -25,6 +25,7 @@ import {
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 import { getFreePortAsync } from '../utils/port';
+import { persistMetroAssetsAsync } from './persistMetroAssets';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -142,7 +143,7 @@ export async function exportFromServerAsync(
       const template = await renderAsync(pathname);
       let html = await serializeHtmlWithAssets({
         mode: 'production',
-        resources,
+        resources: resources.artifacts,
         template,
         basePath,
       });
@@ -155,11 +156,17 @@ export async function exportFromServerAsync(
     },
   });
 
-  resources.forEach((resource) => {
+  resources.artifacts.forEach((resource) => {
     files.set(
       resource.filename,
       modifyBundlesWithSourceMaps(resource.filename, resource.source, includeMaps)
     );
+  });
+
+  await persistMetroAssetsAsync(resources.assets, {
+    platform: 'web',
+    outputDirectory: outputDir,
+    basePath,
   });
 
   if (exportServer) {
@@ -181,6 +188,7 @@ export async function exportFromServerAsync(
   fs.mkdirSync(path.join(outputDir), { recursive: true });
 
   Log.log('');
+
   Log.log(chalk.bold`Exporting ${files.size} files:`);
   await Promise.all(
     [...files.entries()]

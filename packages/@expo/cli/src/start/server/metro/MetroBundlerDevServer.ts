@@ -42,6 +42,7 @@ import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { shouldEnableAsyncImports, createBundleUrlPath } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { AssetData } from 'metro';
 
 export class ForwardHtmlError extends CommandError {
   constructor(
@@ -177,7 +178,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     mode: string;
     minify?: boolean;
     includeMaps?: boolean;
-  }): Promise<SerialAsset[]> {
+  }): Promise<{ artifacts: SerialAsset[]; assets?: AssetData[] }> {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
@@ -219,7 +220,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
 
     // NOTE: This could potentially need more validation in the future.
-    if (Array.isArray(data)) {
+    if ('artifacts' in data && Array.isArray(data.artifacts)) {
       return data;
     }
 
@@ -285,7 +286,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return await getStaticContent(location);
     };
 
-    const [resources, staticHtml] = await Promise.all([
+    const [{ artifacts: resources }, staticHtml] = await Promise.all([
       this.getStaticResourcesAsync({ mode, minify }),
       bundleStaticHtml(),
     ]);

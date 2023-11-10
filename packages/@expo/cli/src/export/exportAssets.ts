@@ -157,7 +157,7 @@ export async function exportAssetsAsync(
       debug(`Filtered assets count = ${filteredAssets.length}`);
     }
     Log.log('Saving assets');
-    await saveAssetsAsync(projectRoot, { assets: filteredAssets, outputDir });
+    await saveAssetsAsync({ assets: filteredAssets, outputDir });
   }
 
   // Add google services file if it exists

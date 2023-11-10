@@ -9,7 +9,7 @@ jest.mock('../../utils/dir', () => ({
 
 describe(saveAssetsAsync, () => {
   it(`copy assets into directory`, async () => {
-    await saveAssetsAsync('/', {
+    await saveAssetsAsync({
       outputDir: 'output',
       assets: [
         {
