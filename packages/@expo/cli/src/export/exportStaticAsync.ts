@@ -13,6 +13,7 @@ import prettyBytes from 'pretty-bytes';
 import { inspect } from 'util';
 
 import { getVirtualFaviconAssetsAsync } from './favicon';
+import { persistMetroAssetsAsync } from './persistMetroAssets';
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
@@ -25,7 +26,6 @@ import {
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 import { getFreePortAsync } from '../utils/port';
-import { persistMetroAssetsAsync } from './persistMetroAssets';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 

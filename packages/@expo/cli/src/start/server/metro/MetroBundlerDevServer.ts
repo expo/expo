@@ -8,6 +8,7 @@ import { getConfig } from '@expo/config';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
+import { AssetData } from 'metro';
 import fetch from 'node-fetch';
 import path from 'path';
 
@@ -42,7 +43,6 @@ import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { shouldEnableAsyncImports, createBundleUrlPath } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
-import { AssetData } from 'metro';
 
 export class ForwardHtmlError extends CommandError {
   constructor(

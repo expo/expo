@@ -5,11 +5,11 @@ import minimatch from 'minimatch';
 import path from 'path';
 
 import { BundleOutput } from './fork-bundleAsync';
+import { persistMetroAssetsAsync } from './persistMetroAssets';
 import { Asset, saveAssetsAsync } from './saveAssets';
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
-import { persistMetroAssetsAsync } from './persistMetroAssets';
 
 const debug = require('debug')('expo:export:exportAssets') as typeof console.log;
 
