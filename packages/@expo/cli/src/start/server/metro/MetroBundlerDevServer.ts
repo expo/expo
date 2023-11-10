@@ -8,6 +8,7 @@ import { getConfig } from '@expo/config';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
+import { AssetData } from 'metro';
 import fetch from 'node-fetch';
 import path from 'path';
 
@@ -177,7 +178,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     mode: string;
     minify?: boolean;
     includeMaps?: boolean;
-  }): Promise<SerialAsset[]> {
+  }): Promise<{ artifacts: SerialAsset[]; assets?: AssetData[] }> {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
@@ -219,7 +220,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
 
     // NOTE: This could potentially need more validation in the future.
-    if (Array.isArray(data)) {
+    if ('artifacts' in data && Array.isArray(data.artifacts)) {
       return data;
     }
 
@@ -285,7 +286,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return await getStaticContent(location);
     };
 
-    const [resources, staticHtml] = await Promise.all([
+    const [{ artifacts: resources }, staticHtml] = await Promise.all([
       this.getStaticResourcesAsync({ mode, minify }),
       bundleStaticHtml(),
     ]);

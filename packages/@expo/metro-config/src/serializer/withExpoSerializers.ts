@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { Module, MixedOutput } from 'metro';
+import { Module, MixedOutput, MetroConfig, AssetData } from 'metro';
+import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
 // @ts-expect-error
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
@@ -51,12 +52,19 @@ export function withSerializerPlugins(
     ...config,
     serializer: {
       ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(processors, originalSerializer),
+      customSerializer: createSerializerFromSerialProcessors(
+        config,
+        processors,
+        originalSerializer
+      ),
     },
   };
 }
 
-function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer {
+function getDefaultSerializer(
+  config: MetroConfig,
+  fallbackSerializer?: Serializer | null
+): Serializer {
   const defaultSerializer =
     fallbackSerializer ??
     (async (...params: SerializerParameters) => {
@@ -92,6 +100,16 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
       projectRoot: options.projectRoot,
       processModuleFilter: options.processModuleFilter,
     });
+
+    // TODO: Convert to serial assets
+    // TODO: Disable this call dynamically in development since assets are fetched differently.
+    const metroAssets = (await getMetroAssets(graph.dependencies, {
+      processModuleFilter: options.processModuleFilter,
+      assetPlugins: config.transformer!.assetPlugins ?? [],
+      platform,
+      projectRoot: options.projectRoot, // this._getServerRootDir(),
+      publicPath: config.transformer!.publicPath!,
+    })) as AssetData[];
 
     const jsAssets: SerialAsset[] = [];
 
@@ -130,7 +148,7 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
       });
     }
 
-    return JSON.stringify([...jsAssets, ...cssDeps]);
+    return JSON.stringify({ artifacts: [...jsAssets, ...cssDeps], assets: metroAssets });
   };
 }
 
@@ -180,10 +198,11 @@ function serializeToSourceMap(...props: SerializerParameters): string {
 }
 
 export function createSerializerFromSerialProcessors(
+  config: MetroConfig,
   processors: (SerializerPlugin | undefined)[],
   originalSerializer?: Serializer | null
 ): Serializer {
-  const finalSerializer = getDefaultSerializer(originalSerializer);
+  const finalSerializer = getDefaultSerializer(config, originalSerializer);
   return (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {
