@@ -1,3 +1,4 @@
+import { ExpoConfig } from '@expo/config';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import resolveFrom from 'resolve-from';
 
@@ -26,6 +27,7 @@ export type ExpoMetroOptions = {
   lazy?: boolean;
   engine?: 'hermes';
   preserveEnvVars?: boolean;
+  baseUrl?: string;
 };
 
 function withDefaults({
@@ -42,6 +44,10 @@ function withDefaults({
   };
 }
 
+export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
+  return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
+}
+
 export function getMetroDirectBundleOptions(
   options: ExpoMetroOptions
 ): Partial<MetroBundleOptions> {
@@ -56,6 +62,7 @@ export function getMetroDirectBundleOptions(
     lazy,
     engine,
     preserveEnvVars,
+    baseUrl,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -84,6 +91,7 @@ export function getMetroDirectBundleOptions(
       engine,
       preserveEnvVars,
       environment,
+      baseUrl,
     },
     customResolverOptions: {
       __proto__: null,
@@ -107,6 +115,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     lazy,
     engine,
     preserveEnvVars,
+    baseUrl,
   } = withDefaults(options);
 
   const queryParams = new URLSearchParams({
@@ -130,6 +139,9 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
 
   if (preserveEnvVars) {
     queryParams.append('transform.preserveEnvVars', String(preserveEnvVars));
+  }
+  if (baseUrl) {
+    queryParams.append('transform.baseUrl', baseUrl);
   }
 
   if (environment) {

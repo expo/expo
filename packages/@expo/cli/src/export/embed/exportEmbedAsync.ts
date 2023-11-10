@@ -8,7 +8,10 @@ import path from 'path';
 import { Options } from './resolveOptions';
 import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
-import { getMetroDirectBundleOptions } from '../../start/server/middleware/metroOptions';
+import {
+  getBaseUrlFromExpoConfig,
+  getMetroDirectBundleOptions,
+} from '../../start/server/middleware/metroOptions';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { profile } from '../../utils/profile';
 import { isEnableHermesManaged } from '../exportHermes';
@@ -26,7 +29,7 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   // Persist bundle and source maps.
   await Promise.all([
     output.save(bundle, options, Log.log),
-    // NOTE(EvanBacon): This may need to be adjusted in the future if want to support basePath on native
+    // NOTE(EvanBacon): This may need to be adjusted in the future if want to support baseUrl on native
     // platforms when doing production embeds (unlikely).
     options.assetsDest
       ? persistMetroAssetsAsync(assets, {
@@ -70,6 +73,7 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
       minify: options.minify,
       mode: options.dev ? 'development' : 'production',
       engine: isHermes ? 'hermes' : undefined,
+      baseUrl: getBaseUrlFromExpoConfig(exp),
     }),
     sourceMapUrl,
     unstable_transformProfile: (options.unstableTransformProfile ||

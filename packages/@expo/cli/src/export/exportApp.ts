@@ -18,6 +18,7 @@ import {
   writeSourceMapsAsync,
 } from './writeContents';
 import * as Log from '../log';
+import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
@@ -60,14 +61,14 @@ export async function exportAppAsync(
   });
 
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
-  const basePath = (exp.experiments?.basePath?.replace(/\/+$/, '') ?? '').trim();
+  const baseUrl = getBaseUrlFromExpoConfig(exp);
 
   // Print out logs
-  if (basePath) {
+  if (baseUrl) {
     Log.log();
-    Log.log(chalk.gray`Using (experimental) base path: ${basePath}`);
+    Log.log(chalk.gray`Using (experimental) base path: ${baseUrl}`);
     // Warn if not using an absolute path.
-    if (!basePath.startsWith('/')) {
+    if (!baseUrl.startsWith('/')) {
       Log.log(
         chalk.yellow`  Base path does not start with a slash. Requests will not be absolute.`
       );
@@ -130,7 +131,7 @@ export async function exportAppAsync(
       exp,
       outputDir: staticFolder,
       bundles,
-      basePath,
+      baseUrl,
     });
 
     if (dumpAssetmap) {
@@ -171,7 +172,7 @@ export async function exportAppAsync(
       clear: !!clear,
       outputDir: outputPath,
       minify,
-      basePath,
+      baseUrl,
       includeMaps: sourceMaps,
       // @ts-expect-error: server not on type yet
       exportServer: exp.web?.output === 'server',
@@ -181,16 +182,16 @@ export async function exportAppAsync(
     const cssLinks = await exportCssAssetsAsync({
       outputDir,
       bundles,
-      basePath,
+      baseUrl,
     });
     let html = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-      scripts: [`${basePath}/bundles/${fileNames.web}`],
+      scripts: [`${baseUrl}/bundles/${fileNames.web}`],
       cssLinks,
     });
     // Add the favicon assets to the HTML.
     const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
       outputDir,
-      basePath,
+      baseUrl,
     });
     if (modifyHtml) {
       html = modifyHtml(html);
