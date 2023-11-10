@@ -125,12 +125,12 @@ export async function exportAssetsAsync(
     exp,
     outputDir,
     bundles: { web, ...bundles },
-    basePath,
+    baseUrl,
   }: {
     exp: ExpoConfig;
     bundles: Partial<Record<string, BundleOutput>>;
     outputDir: string;
-    basePath: string;
+    baseUrl: string;
   }
 ) {
   // NOTE: We use a different system for static web
@@ -140,7 +140,7 @@ export async function exportAssetsAsync(
     await persistMetroAssetsAsync(web.assets, {
       platform: 'web',
       outputDirectory: outputDir,
-      basePath,
+      baseUrl,
     });
   }
 
@@ -183,11 +183,11 @@ export async function exportAssetsAsync(
 export async function exportCssAssetsAsync({
   outputDir,
   bundles,
-  basePath,
+  baseUrl,
 }: {
   bundles: Partial<Record<ModPlatform, BundleOutput>>;
   outputDir: string;
-  basePath: string;
+  baseUrl: string;
 }) {
   const assets = uniqBy(
     Object.values(bundles).flatMap((bundle) => bundle!.css),
@@ -203,5 +203,5 @@ export async function exportCssAssetsAsync({
     assets.map((v) => fs.promises.writeFile(path.join(outputDir, v.filename), v.source))
   );
 
-  return assets.map((v) => basePath + '/' + v.filename);
+  return assets.map((v) => baseUrl + '/' + v.filename);
 }

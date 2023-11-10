@@ -27,12 +27,12 @@ export function persistMetroAssetsAsync(
   {
     platform,
     outputDirectory,
-    basePath,
+    baseUrl,
     iosAssetCatalogDirectory,
   }: {
     platform: string;
     outputDirectory: string;
-    basePath?: string;
+    baseUrl?: string;
     iosAssetCatalogDirectory?: string;
   }
 ) {
@@ -83,7 +83,7 @@ export function persistMetroAssetsAsync(
       const src = asset.files[idx];
       const dest = path.join(
         outputDirectory,
-        getAssetLocalPath(asset, { platform, scale, basePath })
+        getAssetLocalPath(asset, { platform, scale, baseUrl })
       );
       acc[src] = dest;
     });
@@ -94,15 +94,15 @@ export function persistMetroAssetsAsync(
 }
 
 function writeImageSet(imageSet: ImageSet): void {
-  fs.mkdirSync(imageSet.basePath, { recursive: true });
+  fs.mkdirSync(imageSet.baseUrl, { recursive: true });
 
   for (const file of imageSet.files) {
-    const dest = path.join(imageSet.basePath, file.name);
+    const dest = path.join(imageSet.baseUrl, file.name);
     fs.copyFileSync(file.src, dest);
   }
 
   fs.writeFileSync(
-    path.join(imageSet.basePath, 'Contents.json'),
+    path.join(imageSet.baseUrl, 'Contents.json'),
     JSON.stringify({
       images: imageSet.files.map((file) => ({
         filename: file.name,
@@ -122,7 +122,7 @@ function isCatalogAsset(asset: Pick<AssetData, 'type'>): boolean {
 }
 
 type ImageSet = {
-  basePath: string;
+  baseUrl: string;
   files: { name: string; src: string; scale: number }[];
 };
 
@@ -133,7 +133,7 @@ function getImageSet(
 ): ImageSet {
   const fileName = getResourceIdentifier(asset);
   return {
-    basePath: path.join(catalogDir, `${fileName}.imageset`),
+    baseUrl: path.join(catalogDir, `${fileName}.imageset`),
     files: scales.map((scale, idx) => {
       const suffix = scale === 1 ? '' : `@${scale}x`;
       return {
@@ -212,7 +212,7 @@ export function filterPlatformAssetScales(platform: string, scales: number[]): n
 }
 
 function getResourceIdentifier(asset: Pick<AssetData, 'httpServerLocation' | 'name'>): string {
-  const folderPath = getBasePath(asset);
+  const folderPath = getBaseUrl(asset);
   return `${folderPath}/${asset.name}`
     .toLowerCase()
     .replace(/\//g, '_') // Encode folder structure in file name
@@ -220,10 +220,10 @@ function getResourceIdentifier(asset: Pick<AssetData, 'httpServerLocation' | 'na
     .replace(/^assets_/, ''); // Remove "assets_" prefix
 }
 
-function getBasePath(asset: Pick<AssetData, 'httpServerLocation'>): string {
-  let basePath = asset.httpServerLocation;
-  if (basePath[0] === '/') {
-    basePath = basePath.substring(1);
+function getBaseUrl(asset: Pick<AssetData, 'httpServerLocation'>): string {
+  let baseUrl = asset.httpServerLocation;
+  if (baseUrl[0] === '/') {
+    baseUrl = baseUrl.substring(1);
   }
-  return basePath;
+  return baseUrl;
 }

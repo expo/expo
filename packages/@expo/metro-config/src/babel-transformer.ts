@@ -222,6 +222,12 @@ const transform: BabelTransformer['transform'] = ({
         // Metro automatically updates the cache to account for the custom transform options.
         isServer: options.customTransformOptions?.environment === 'node',
 
+        // The base url to make requests from, used for hosting from non-standard locations.
+        baseUrl:
+          typeof options.customTransformOptions?.baseUrl === 'string'
+            ? decodeURI(options.customTransformOptions.baseUrl)
+            : '',
+
         isDev: options.dev,
 
         // This value indicates if the user has disabled the feature or not.

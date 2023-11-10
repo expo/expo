@@ -16,7 +16,10 @@ import {
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
-import { getMetroDirectBundleOptions } from '../start/server/middleware/metroOptions';
+import {
+  getBaseUrlFromExpoConfig,
+  getMetroDirectBundleOptions,
+} from '../start/server/middleware/metroOptions';
 
 export type MetroDevServerOptions = LoadOptions;
 
@@ -134,6 +137,7 @@ async function bundleProductionMetroClientAsync(
         platform: bundle.platform,
         mode: bundle.dev ? 'development' : 'production',
         engine: isHermes ? 'hermes' : undefined,
+        baseUrl: getBaseUrlFromExpoConfig(expoConfig),
       }),
       bundleType: 'bundle',
       inlineSourceMap: false,

@@ -506,6 +506,14 @@ Always use `babel-preset-expo` as the default Babel preset, this ensures the tra
 
 When bundling for a server environment, Expo's Metro config automatically supports externalizing Node.js built-in modules (`fs`, `path`, `node:crypto`, etc.) based on the current Node.js version. If the CLI is bundling for a browser environment, then built-ins will first check if the module is installed locally, then fallback on an empty shim. For example, if you install `path` for use in the browser, this can be used, otherwise the module will automatically be skipped.
 
+## Environment settings
+
+Expo's Metro config injects build settings that can be used in the client bundle via environment variables. All variables will be inlined and cannot be used dynamically. For example, `process.env["EXPO_BASE_URL"]` won't work.
+
+- `process.env.EXPO_BASE_URL` exposes the base URL defined in `experiments.baseUrl`. This is used in Expo Router to respect the production base URL for deployment.
+
+> These environment variables will not be defined in test environments!
+
 ## Bare workflow setup
 
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.
