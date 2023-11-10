@@ -4,24 +4,24 @@ import * as Font from '../Font';
 import * as FontLoader from '../FontLoader';
 
 describe('loadSingleFontAsync', () => {
-  it(`only excepts FontResource`, async () => {
+  it(`only accepts FontResource`, async () => {
     expect(() => FontLoader.loadSingleFontAsync('foo', 10 as any)).toThrow(
-      'Expected font asset of type'
+      'Expected font asset of type `string | FontResource | Asset` instead got: number'
     );
     expect(() => FontLoader.loadSingleFontAsync('foo', { uri: 10 as any })).toThrow(
-      'Expected font asset of type'
+      'Expected font asset of type `string | FontResource | Asset` instead got: {'
     );
     expect(() => FontLoader.loadSingleFontAsync('foo', Asset.fromURI('foo'))).toThrow(
-      'Expected font asset of type'
+      'Invalid URL'
     );
   });
   it(`rejects expo-asset`, async () => {
     expect(() => FontLoader.loadSingleFontAsync('foo', Asset.fromURI('foo'))).toThrow(
-      'Expected font asset of type'
+      'Invalid URL'
     );
     expect(() =>
       FontLoader.loadSingleFontAsync('foo', { uri: Asset.fromURI('foo') } as any)
-    ).toThrow('Expected font asset of type');
+    ).toThrow('Invalid URL');
   });
 });
 
