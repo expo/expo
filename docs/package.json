@@ -78,7 +78,7 @@
     "@types/react-dom": "^18.2.14",
     "acorn": "^8.10.0",
     "autoprefixer": "^10.4.16",
-    "axios": "^1.5.1",
+    "axios": "^1.6.0",
     "danger": "^11.3.0",
     "eslint": "^8.52.0",
     "eslint-config-next": "^13.5.6",
