@@ -19,6 +19,7 @@ export const expoRunIos: Command = async (argv) => {
 
     '--port': Number,
     // Aliases
+    '--mode': '--configuration',
     '-p': '--port',
 
     '-h': '--help',
@@ -37,14 +38,14 @@ export const expoRunIos: Command = async (argv) => {
       `Run the iOS app binary locally`,
       `npx expo run:ios`,
       [
-        `--no-build-cache                 Clear the native derived data before building`,
-        `--no-install                     Skip installing dependencies`,
-        `--no-bundler                     Skip starting the Metro bundler`,
-        `--scheme [scheme]                Scheme to build`,
-        chalk`--configuration <configuration>  Xcode configuration to use. Debug or Release. {dim Default: Debug}`,
-        `-d, --device [device]            Device name or UDID to build the app on`,
-        chalk`-p, --port <port>                Port to start the Metro bundler on. {dim Default: 8081}`,
-        `-h, --help                       Usage info`,
+        `--no-build-cache                         Clear the native derived data before building`,
+        `--no-install                             Skip installing dependencies`,
+        `--no-bundler                             Skip starting the Metro bundler`,
+        `--scheme [scheme]                        Scheme to build`,
+        chalk`--configuration, --mode <configuration>  Xcode configuration to use. Debug or Release. {dim Default: Debug}`,
+        `-d, --device [device]                    Device name or UDID to build the app on`,
+        chalk`-p, --port <port>                        Port to start the Metro bundler on. {dim Default: 8081}`,
+        `-h, --help                               Usage info`,
       ].join('\n'),
       [
         '',
