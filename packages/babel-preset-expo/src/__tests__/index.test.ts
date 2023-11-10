@@ -236,7 +236,7 @@ export * as default from './Animated';
     };
 
     function stablePaths(src) {
-      return src.replace(new RegExp(samplesPath, 'g'), '[mock]/worklet.js');
+      return src.replace(new RegExp(samplesPath, 'g'), '[mock]/worklet.js').replace(/version:".*"/, 'version:"[GLOBAL]"');
     }
 
     const code = stablePaths(babel.transformFileSync(samplesPath, options)!.code);
