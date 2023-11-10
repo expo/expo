@@ -10,7 +10,7 @@ jsi::Function getValueUnpacker(jsi::Runtime &rt) {
   return valueUnpacker.asObject(rt).asFunction(rt);
 }
 
-#ifdef DEBUG
+#ifndef NDEBUG
 
 static const auto callGuardLambda = [](facebook::jsi::Runtime &rt,
                                        const facebook::jsi::Value &thisVal,
@@ -36,7 +36,7 @@ jsi::Function getCallGuard(jsi::Runtime &rt) {
       rt, jsi::PropNameID::forAscii(rt, "callGuard"), 1, callGuardLambda);
 }
 
-#endif // DEBUG
+#endif // NDEBUG
 
 jsi::Value makeShareableClone(
     jsi::Runtime &rt,
@@ -65,10 +65,13 @@ jsi::Value makeShareableClone(
       } else {
         shareable = std::make_shared<ShareableArray>(rt, object.asArray(rt));
       }
+    } else if (object.isArrayBuffer(rt)) {
+      shareable =
+          std::make_shared<ShareableArrayBuffer>(rt, object.getArrayBuffer(rt));
     } else if (object.isHostObject(rt)) {
-      assert(
-          !object.isHostObject<ShareableJSRef>(rt) &&
-          "[Reanimated] Provided value is already an instance of ShareableJSRef.");
+      if (object.isHostObject<ShareableJSRef>(rt)) {
+        return object;
+      }
       shareable =
           std::make_shared<ShareableHostObject>(rt, object.getHostObject(rt));
     } else {
@@ -89,6 +92,10 @@ jsi::Value makeShareableClone(
     shareable = std::make_shared<ShareableScalar>(value.getBool());
   } else if (value.isNumber()) {
     shareable = std::make_shared<ShareableScalar>(value.getNumber());
+#if REACT_NATIVE_MINOR_VERSION >= 71
+  } else if (value.isBigInt()) {
+    shareable = std::make_shared<ShareableBigInt>(rt, value.getBigInt(rt));
+#endif
   } else if (value.isSymbol()) {
     // TODO: this is only a placeholder implementation, here we replace symbols
     // with strings in order to make certain objects to be captured. There isn't
@@ -101,6 +108,15 @@ jsi::Value makeShareableClone(
         "[Reanimated] Attempted to convert an unsupported value type.");
   }
   return ShareableJSRef::newHostObject(rt, shareable);
+}
+
+void updateDataSynchronously(
+    jsi::Runtime &rt,
+    const jsi::Value &synchronizedDataHolderRef,
+    const jsi::Value &newData) {
+  auto dataHolder = extractShareableOrThrow<ShareableSynchronizedDataHolder>(
+      rt, synchronizedDataHolderRef);
+  dataHolder->set(rt, newData);
 }
 
 std::shared_ptr<Shareable> extractShareableOrThrow(
@@ -170,6 +186,17 @@ jsi::Value ShareableArray::toJSValue(jsi::Runtime &rt) {
   return ary;
 }
 
+jsi::Value ShareableArrayBuffer::toJSValue(jsi::Runtime &rt) {
+  auto size = static_cast<int>(data_.size());
+  auto arrayBuffer = rt.global()
+                         .getPropertyAsFunction(rt, "ArrayBuffer")
+                         .callAsConstructor(rt, size)
+                         .getObject(rt)
+                         .getArrayBuffer(rt);
+  memcpy(arrayBuffer.data(rt), data_.data(), size);
+  return arrayBuffer;
+}
+
 ShareableObject::ShareableObject(jsi::Runtime &rt, const jsi::Object &object)
     : Shareable(ObjectType) {
   auto propertyNames = object.getPropertyNames(rt);
@@ -215,7 +242,7 @@ jsi::Value ShareableRemoteFunction::toJSValue(jsi::Runtime &rt) {
   if (&rt == runtime_) {
     return jsi::Value(rt, *function_);
   } else {
-#ifdef DEBUG
+#ifndef NDEBUG
     return getValueUnpacker(rt).call(
         rt,
         ShareableJSRef::newHostObject(rt, shared_from_this()),
@@ -277,6 +304,14 @@ jsi::Value ShareableSynchronizedDataHolder::toJSValue(jsi::Runtime &rt) {
 jsi::Value ShareableString::toJSValue(jsi::Runtime &rt) {
   return jsi::String::createFromUtf8(rt, data_);
 }
+
+#if REACT_NATIVE_MINOR_VERSION >= 71
+jsi::Value ShareableBigInt::toJSValue(jsi::Runtime &rt) {
+  return rt.global()
+      .getPropertyAsFunction(rt, "BigInt")
+      .call(rt, jsi::String::createFromUtf8(rt, string_));
+}
+#endif
 
 jsi::Value ShareableScalar::toJSValue(jsi::Runtime &) {
   switch (valueType_) {

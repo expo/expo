@@ -8,6 +8,7 @@ export type UrlObject = {
   pathname: string;
   readonly params: SearchParams;
   segments: string[];
+  isIndex: boolean;
 };
 
 export function getRouteInfoFromState(
@@ -21,9 +22,22 @@ export function getRouteInfoFromState(
   return {
     // TODO: This may have a predefined origin attached in the future.
     unstable_globalHref: path,
+    isIndex: isIndexPath(state),
     pathname: stripBasePath(path, basePath).split('?')['0'],
     ...getNormalizedStatePath(qualified, basePath),
   };
+}
+
+function isIndexPath(state: State) {
+  const route = state.routes[state.index ?? state.routes.length - 1];
+  if (route.state) {
+    return isIndexPath(route.state);
+  }
+  // router.params is typed as 'object', so this usual syntax is to please TypeScript
+  if (route.params && 'screen' in route.params) {
+    return route.params.screen === 'index';
+  }
+  return false;
 }
 
 // TODO: Split up getPathFromState to return all this info at once.
