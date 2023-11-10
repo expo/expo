@@ -16506,10 +16506,10 @@ react-native-paper@^4.0.1:
     color "^3.1.2"
     react-native-iphone-x-helper "^1.3.1"
 
-react-native-reanimated@~3.5.4:
-  version "3.5.4"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.5.4.tgz#a6c2b0c43b6dad246f5d276213974afedb8e3fc7"
-  integrity sha512-8we9LLDO1o4Oj9/DICeEJ2K1tjfqkJagqQUglxeUAkol/HcEJ6PGxIrpBcNryLqCDYEcu6FZWld/FzizBIw6bg==
+react-native-reanimated@3.6.0-nightly-20231031-c56d44fd9:
+  version "3.6.0-nightly-20231031-c56d44fd9"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.6.0-nightly-20231031-c56d44fd9.tgz#86a10c0c1ef9ace0743371ebaf5579244990ed22"
+  integrity sha512-kmq/IBADwDfnyMBJngqcrmSU3OVPJzoAI9oPwZBxu0D1mRr9LBjdsTSRwKthkFmMmq92mYlCQaPbhKK56qcimg==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.16.7"
     "@babel/preset-typescript" "^7.16.7"

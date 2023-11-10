@@ -3,7 +3,7 @@
 #include "LayoutAnimationType.h"
 #include "Shareables.h"
 
-#ifdef DEBUG
+#ifndef NDEBUG
 #include "JSLogger.h"
 #endif
 
@@ -23,7 +23,7 @@ using namespace facebook;
 
 class LayoutAnimationsManager {
  public:
-#ifdef DEBUG
+#ifndef NDEBUG
   explicit LayoutAnimationsManager(const std::shared_ptr<JSLogger> &jsLogger)
       : jsLogger_(jsLogger) {}
 #endif
@@ -32,6 +32,8 @@ class LayoutAnimationsManager {
       LayoutAnimationType type,
       const std::string &sharedTransitionTag,
       std::shared_ptr<Shareable> config);
+  void setShouldAnimateExiting(int tag, bool value);
+  bool shouldAnimateExiting(int tag, bool shouldAnimate);
   bool hasLayoutAnimation(int tag, LayoutAnimationType type);
   void startLayoutAnimation(
       jsi::Runtime &rt,
@@ -41,7 +43,7 @@ class LayoutAnimationsManager {
   void clearLayoutAnimationConfig(int tag);
   void cancelLayoutAnimation(jsi::Runtime &rt, int tag);
   int findPrecedingViewTagForTransition(int tag);
-#ifdef DEBUG
+#ifndef NDEBUG
   std::string getScreenSharedTagPairString(
       const int screenTag,
       const std::string &sharedTag) const;
@@ -52,7 +54,7 @@ class LayoutAnimationsManager {
   std::unordered_map<int, std::shared_ptr<Shareable>> &getConfigsForType(
       LayoutAnimationType type);
 
-#ifdef DEBUG
+#ifndef NDEBUG
   std::shared_ptr<JSLogger> jsLogger_;
   // This set's function is to detect duplicate sharedTags on a single screen
   // it contains strings in form: "reactScreenTag:sharedTag"
@@ -69,9 +71,10 @@ class LayoutAnimationsManager {
   std::unordered_set<int> ignoreProgressAnimationForTag_;
   std::unordered_map<std::string, std::vector<int>> sharedTransitionGroups_;
   std::unordered_map<int, std::string> viewTagToSharedTag_;
+  std::unordered_map<int, bool> shouldAnimateExitingForTag_;
   mutable std::mutex
       animationsMutex_; // Protects `enteringAnimations_`, `exitingAnimations_`,
-  // `layoutAnimations_` and `viewSharedValues_`.
+  // `layoutAnimations_`, `viewSharedValues_` and `shouldAnimateExitingForTag_`.
 };
 
 } // namespace reanimated

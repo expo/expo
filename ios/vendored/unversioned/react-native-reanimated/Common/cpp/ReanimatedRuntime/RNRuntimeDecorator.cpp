@@ -1,5 +1,7 @@
 #include "RNRuntimeDecorator.h"
+#ifndef NDEBUG
 #include "ReanimatedVersion.h"
+#endif // NDEBUG
 
 namespace reanimated {
 
@@ -29,8 +31,9 @@ void RNRuntimeDecorator::decorate(
 #endif // RCT_NEW_ARCH_ENABLED
   rnRuntime.global().setProperty(rnRuntime, "_IS_FABRIC", isFabric);
 
-  auto version = getReanimatedVersionString(rnRuntime);
-  rnRuntime.global().setProperty(rnRuntime, "_REANIMATED_VERSION_CPP", version);
+#ifndef NDEBUG
+  checkJSVersion(rnRuntime);
+#endif // NDEBUG
 
   rnRuntime.global().setProperty(
       rnRuntime, "_REANIMATED_IS_REDUCED_MOTION", isReducedMotion);

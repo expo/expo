@@ -41,9 +41,10 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>))
   NSMutableArray<NSString *> *_currentKeys;
   REAAnimationStartingBlock _startAnimationForTag;
   REAHasAnimationBlock _hasAnimationForTag;
+  REAShouldAnimateExitingBlock _shouldAnimateExiting;
   REAAnimationRemovingBlock _clearAnimationConfigForTag;
   REASharedTransitionManager *_sharedTransitionManager;
-#ifdef DEBUG
+#ifndef NDEBUG
   REACheckDuplicateSharedTagBlock _checkDuplicateSharedTag;
 #endif
 }
@@ -85,10 +86,14 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>))
       // default implementation, this block will be replaced by a setter
       return NO;
     };
+    _shouldAnimateExiting = ^(NSNumber *tag, BOOL shouldAnimate) {
+      // default implementation, this block will be replaced by a setter
+      return YES;
+    };
     _clearAnimationConfigForTag = ^(NSNumber *tag) {
       // default implementation, this block will be replaced by a setter
     };
-#ifdef DEBUG
+#ifndef NDEBUG
     _checkDuplicateSharedTag = ^(REAUIView *view, NSNumber *viewTag) {
       // default implementation, this block will be replaced by a setter
     };
@@ -117,12 +122,17 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>))
   _hasAnimationForTag = hasAnimation;
 }
 
+- (void)setShouldAnimateExitingBlock:(REAShouldAnimateExitingBlock)shouldAnimateExiting
+{
+  _shouldAnimateExiting = shouldAnimateExiting;
+}
+
 - (void)setAnimationRemovingBlock:(REAAnimationRemovingBlock)clearAnimation
 {
   _clearAnimationConfigForTag = clearAnimation;
 }
 
-#ifdef DEBUG
+#ifndef NDEBUG
 - (void)setCheckDuplicateSharedTagBlock:(REACheckDuplicateSharedTagBlock)checkDuplicateSharedTag
 {
   _checkDuplicateSharedTag = checkDuplicateSharedTag;
@@ -315,14 +325,6 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>))
   return preparedData;
 }
 
-- (BOOL)wantsHandleRemovalOfView:(REAUIView *)view
-{
-  return REANodeFind(view, ^(id<RCTComponent> view) {
-    return [self->_exitingSubviewsCountMap objectForKey:view.reactTag] != nil ||
-        self->_hasAnimationForTag(view.reactTag, EXITING);
-  });
-}
-
 - (void)registerExitingAncestors:(REAUIView *)child
 {
   [self registerExitingAncestors:child exitingSubviewsCount:1];
@@ -402,7 +404,8 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>))
 }
 
 - (BOOL)startAnimationsRecursive:(REAUIView *)view
-    shouldRemoveSubviewsWithoutAnimations:(BOOL)shouldRemoveSubviewsWithoutAnimations;
+    shouldRemoveSubviewsWithoutAnimations:(BOOL)shouldRemoveSubviewsWithoutAnimations
+                            shouldAnimate:(BOOL)shouldAnimate;
 {
   if (!view.reactTag) {
     return NO;
@@ -420,15 +423,18 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>))
     return NO;
   }
 
-  BOOL hasExitAnimation =
-      [self hasAnimationForTag:view.reactTag type:EXITING] || [_exitingViews objectForKey:view.reactTag];
+  shouldAnimate = [self shouldAnimateExiting:view.reactTag shouldAnimate:shouldAnimate];
+
+  BOOL hasExitAnimation = shouldAnimate &&
+      ([self hasAnimationForTag:view.reactTag type:EXITING] || [_exitingViews objectForKey:view.reactTag]);
   BOOL hasAnimatedChildren = NO;
   shouldRemoveSubviewsWithoutAnimations = shouldRemoveSubviewsWithoutAnimations && !hasExitAnimation;
   NSMutableArray *toBeRemoved = [[NSMutableArray alloc] init];
 
   for (REAUIView *subview in [view.reactSubviews copy]) {
     if ([self startAnimationsRecursive:subview
-            shouldRemoveSubviewsWithoutAnimations:shouldRemoveSubviewsWithoutAnimations]) {
+            shouldRemoveSubviewsWithoutAnimations:shouldRemoveSubviewsWithoutAnimations
+                                    shouldAnimate:shouldAnimate]) {
       hasAnimatedChildren = YES;
     } else if (shouldRemoveSubviewsWithoutAnimations) {
       [toBeRemoved addObject:subview];
@@ -436,10 +442,6 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>))
   }
 
   BOOL wantAnimateExit = hasExitAnimation || hasAnimatedChildren;
-
-  if (!wantAnimateExit) {
-    return NO;
-  }
 
   REASnapshot *before;
   if (hasExitAnimation) {
@@ -454,6 +456,16 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>))
     _startAnimationForTag(view.reactTag, EXITING, preparedValues);
   }
 
+  // NOTE: even though this view is still visible,
+  // since it's removed from the React tree, we won't
+  // start new animations for it, and might as well remove
+  // the layout animation config now
+  _clearAnimationConfigForTag(view.reactTag);
+
+  if (!wantAnimateExit) {
+    return NO;
+  }
+
   if (hasAnimatedChildren) {
     [_ancestorsToRemove addObject:view.reactTag];
   }
@@ -461,12 +473,6 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>))
   for (REAUIView *child in toBeRemoved) {
     [view removeReactSubview:child];
   }
-
-  // NOTE: even though this view is still visible,
-  // since it's removed from the React tree, we won't
-  // start new animations for it, and might as well remove
-  // the layout animation config now
-  _clearAnimationConfigForTag(view.reactTag);
 
   // we don't want user interaction on exiting views
   view.userInteractionEnabled = NO;
@@ -497,7 +503,7 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>))
     }
     REAUIView *childView = (REAUIView *)child;
     NSNumber *originalIndex = indices[i];
-    if ([self startAnimationsRecursive:childView shouldRemoveSubviewsWithoutAnimations:YES]) {
+    if ([self startAnimationsRecursive:childView shouldRemoveSubviewsWithoutAnimations:YES shouldAnimate:YES]) {
       [(REAUIView *)container insertSubview:childView atIndex:[originalIndex intValue] - skippedViewsCount];
       int exitingSubviewsCount = [_exitingSubviewsCountMap[childView.reactTag] intValue];
       if ([_exitingViews objectForKey:childView.reactTag] != nil) {
@@ -561,7 +567,7 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>))
   if (_hasAnimationForTag(viewTag, SHARED_ELEMENT_TRANSITION)) {
     if (type == ENTERING) {
       [_sharedTransitionManager notifyAboutNewView:view];
-#ifdef DEBUG
+#ifndef NDEBUG
       _checkDuplicateSharedTag(view, viewTag);
 #endif
     } else {
@@ -588,11 +594,12 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>))
 
 - (BOOL)hasAnimationForTag:(NSNumber *)tag type:(LayoutAnimationType)type
 {
-  if (!_hasAnimationForTag) {
-    // It can happen during reload.
-    return NO;
-  }
   return _hasAnimationForTag(tag, type);
+}
+
+- (BOOL)shouldAnimateExiting:(NSNumber *)tag shouldAnimate:(BOOL)shouldAnimate
+{
+  return _shouldAnimateExiting(tag, shouldAnimate);
 }
 
 - (void)clearAnimationConfigForTag:(NSNumber *)tag

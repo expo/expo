@@ -16,10 +16,11 @@ typedef NS_ENUM(NSInteger, ViewState) {
 };
 
 typedef BOOL (^REAHasAnimationBlock)(NSNumber *_Nonnull tag, LayoutAnimationType type);
+typedef BOOL (^REAShouldAnimateExitingBlock)(NSNumber *_Nonnull tag, BOOL shouldAnimate);
 typedef void (
     ^REAAnimationStartingBlock)(NSNumber *_Nonnull tag, LayoutAnimationType type, NSDictionary *_Nonnull yogaValues);
 typedef void (^REAAnimationRemovingBlock)(NSNumber *_Nonnull tag);
-#ifdef DEBUG
+#ifndef NDEBUG
 typedef void (^REACheckDuplicateSharedTagBlock)(REAUIView *view, NSNumber *_Nonnull viewTag);
 #endif
 typedef void (^REACancelAnimationBlock)(NSNumber *_Nonnull tag);
@@ -32,8 +33,9 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>));
 - (instancetype)initWithUIManager:(RCTUIManager *)uiManager;
 - (void)setAnimationStartingBlock:(REAAnimationStartingBlock)startAnimation;
 - (void)setHasAnimationBlock:(REAHasAnimationBlock)hasAnimation;
+- (void)setShouldAnimateExitingBlock:(REAShouldAnimateExitingBlock)shouldAnimateExiting;
 - (void)setAnimationRemovingBlock:(REAAnimationRemovingBlock)clearAnimation;
-#ifdef DEBUG
+#ifndef NDEBUG
 - (void)setCheckDuplicateSharedTagBlock:(REACheckDuplicateSharedTagBlock)checkDuplicateSharedTag;
 #endif
 - (void)progressLayoutAnimationWithStyle:(NSDictionary *_Nonnull)newStyle
@@ -47,7 +49,6 @@ BOOL REANodeFind(id<RCTComponent> view, int (^block)(id<RCTComponent>));
 - (void)invalidate;
 - (void)viewDidMount:(REAUIView *)view withBeforeSnapshot:(REASnapshot *)snapshot withNewFrame:(CGRect)frame;
 - (REASnapshot *)prepareSnapshotBeforeMountForView:(REAUIView *)view;
-- (BOOL)wantsHandleRemovalOfView:(REAUIView *)view;
 - (void)removeAnimationsFromSubtree:(REAUIView *)view;
 - (void)reattachAnimatedChildren:(NSArray<id<RCTComponent>> *)children
                      toContainer:(id<RCTComponent>)container

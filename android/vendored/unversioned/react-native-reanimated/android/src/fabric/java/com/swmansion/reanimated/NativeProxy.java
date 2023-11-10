@@ -46,6 +46,9 @@ public class NativeProxy extends NativeProxyCommon {
                         fabricUIManager);
         prepareLayoutAnimations(LayoutAnimations);
         installJSIBindings();
+        if (BuildConfig.DEBUG) {
+            checkCppVersion();
+        }
     }
 
     private native HybridData initHybrid(
@@ -78,6 +81,11 @@ public class NativeProxy extends NativeProxyCommon {
             @Override
             public int findPrecedingViewTagForTransition(int tag) {
                 return -1;
+            }
+
+            @Override
+            public boolean shouldAnimateExiting(int tag, boolean shouldAnimate) {
+                return false;
             }
 
             @Override

@@ -176,6 +176,16 @@ static jsi::Value SPEC_PREFIX(configureLayoutAnimation)(
           std::move(args[3]));
 }
 
+static jsi::Value SPEC_PREFIX(setShouldAnimateExiting)(
+    jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const jsi::Value *args,
+    size_t) {
+  static_cast<NativeReanimatedModuleSpec *>(&turboModule)
+      ->setShouldAnimateExiting(rt, std::move(args[0]), std::move(args[1]));
+  return jsi::Value::undefined();
+}
+
 NativeReanimatedModuleSpec::NativeReanimatedModuleSpec(
     std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule("NativeReanimated", jsInvoker) {
@@ -213,5 +223,7 @@ NativeReanimatedModuleSpec::NativeReanimatedModuleSpec(
 
   methodMap_["configureLayoutAnimation"] =
       MethodMetadata{4, SPEC_PREFIX(configureLayoutAnimation)};
+  methodMap_["setShouldAnimateExitingForTag"] =
+      MethodMetadata{2, SPEC_PREFIX(setShouldAnimateExiting)};
 }
 } // namespace reanimated

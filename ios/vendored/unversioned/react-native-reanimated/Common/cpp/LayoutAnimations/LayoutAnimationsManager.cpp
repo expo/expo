@@ -2,9 +2,8 @@
 #include "CollectionUtils.h"
 #include "Shareables.h"
 
-#ifdef DEBUG
+#ifndef NDEBUG
 #include <utility>
-#include "JSLogger.h"
 #endif
 
 namespace reanimated {
@@ -28,6 +27,20 @@ void LayoutAnimationsManager::configureAnimation(
   }
 }
 
+void LayoutAnimationsManager::setShouldAnimateExiting(int tag, bool value) {
+  auto lock = std::unique_lock<std::mutex>(animationsMutex_);
+  shouldAnimateExitingForTag_[tag] = value;
+}
+
+bool LayoutAnimationsManager::shouldAnimateExiting(
+    int tag,
+    bool shouldAnimate) {
+  auto lock = std::unique_lock<std::mutex>(animationsMutex_);
+  return collection::contains(shouldAnimateExitingForTag_, tag)
+      ? shouldAnimateExitingForTag_[tag]
+      : shouldAnimate;
+}
+
 bool LayoutAnimationsManager::hasLayoutAnimation(
     int tag,
     LayoutAnimationType type) {
@@ -44,11 +57,12 @@ void LayoutAnimationsManager::clearLayoutAnimationConfig(int tag) {
   enteringAnimations_.erase(tag);
   exitingAnimations_.erase(tag);
   layoutAnimations_.erase(tag);
-#ifdef DEBUG
+  shouldAnimateExitingForTag_.erase(tag);
+#ifndef NDEBUG
   const auto &pair = viewsScreenSharedTagMap_[tag];
   screenSharedTagSet_.erase(pair);
   viewsScreenSharedTagMap_.erase(tag);
-#endif // DEBUG
+#endif // NDEBUG
 
   sharedTransitionAnimations_.erase(tag);
   auto const &groupName = viewTagToSharedTag_[tag];
@@ -121,7 +135,7 @@ int LayoutAnimationsManager::findPrecedingViewTagForTransition(int tag) {
   return -1;
 }
 
-#ifdef DEBUG
+#ifndef NDEBUG
 std::string LayoutAnimationsManager::getScreenSharedTagPairString(
     const int screenTag,
     const std::string &sharedTag) const {
@@ -145,7 +159,7 @@ void LayoutAnimationsManager::checkDuplicateSharedTag(
   viewsScreenSharedTagMap_[viewTag] = pair;
   screenSharedTagSet_.insert(pair);
 }
-#endif // DEBUG
+#endif // NDEBUG
 
 std::unordered_map<int, std::shared_ptr<Shareable>>
     &LayoutAnimationsManager::getConfigsForType(LayoutAnimationType type) {

@@ -34,11 +34,11 @@ using namespace facebook::react;
 
 - (void)setNeedsLayout;
 
+- (bool)isExecutingUpdatesBatch;
+
 @end
 
 @interface RCTUIManager (SyncUpdates)
-
-- (BOOL)hasEnqueuedUICommands;
 
 - (void)runSyncUIUpdatesWithObserver:(id<RCTUIManagerObserver>)observer;
 
@@ -56,12 +56,6 @@ using namespace facebook::react;
 @end
 
 @implementation RCTUIManager (SyncUpdates)
-
-- (BOOL)hasEnqueuedUICommands
-{
-  // Accessing some private bits of RCTUIManager to provide missing functionality
-  return [[self valueForKey:@"_pendingUIBlocks"] count] > 0;
-}
 
 - (void)runSyncUIUpdatesWithObserver:(id<RCTUIManagerObserver>)observer
 {
@@ -336,7 +330,10 @@ using namespace facebook::react;
       if (strongSelf == nil) {
         return;
       }
-      BOOL canUpdateSynchronously = trySynchronously && ![strongSelf.uiManager hasEnqueuedUICommands];
+      // It is safe to call `isExecutingUpdatesBatch` in this context (Shadow thread) because both
+      // the Shadow thread and UI Thread are locked at this point. The UI Thread is specifically
+      // locked by the lock inside `REASyncUpdateObserver`, ensuring a safe reading operation.
+      BOOL canUpdateSynchronously = trySynchronously && ![strongSelf.uiManager isExecutingUpdatesBatch];
 
       if (!canUpdateSynchronously) {
         [syncUpdateObserver unblockUIThread];
