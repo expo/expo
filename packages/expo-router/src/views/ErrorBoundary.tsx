@@ -155,7 +155,11 @@ const styles = StyleSheet.create({
     }),
   },
   buttonInner: {
-    transitionDuration: '100ms',
+    ...Platform.select({
+      web: {
+        transitionDuration: '100ms',
+      },
+    }),
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderColor: 'white',
