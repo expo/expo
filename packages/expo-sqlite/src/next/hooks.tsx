@@ -82,6 +82,7 @@ export function SQLiteProvider({
       const db = databaseRef.current;
       teardown(db);
       databaseRef.current = null;
+      setLoading(true);
     };
   }, [dbName, options, initHandler]);
 
