@@ -2,7 +2,7 @@ import assert from 'assert';
 import sqlite3 from 'better-sqlite3';
 
 import { OpenOptions } from '../NativeDatabase';
-import { BindParams, RunResult } from '../NativeStatement';
+import { BindParams, ColumnValues, RunResult } from '../NativeStatement';
 
 export default {
   get name(): string {
@@ -94,7 +94,9 @@ class NativeStatement {
         this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
       }
       const result = this.iterator.next();
-      return Promise.resolve(result.done === false ? result.value : null);
+      const columnValues =
+        result.done === false ? Object.values(result.value as Record<string, any>) : null;
+      return Promise.resolve(columnValues);
     });
   public objectGetAsync = jest
     .fn()
@@ -105,18 +107,24 @@ class NativeStatement {
         this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
       }
       const result = this.iterator.next();
-      return Promise.resolve(result.done === false ? result.value : null);
+      const columnValues =
+        result.done === false ? Object.values(result.value as Record<string, any>) : null;
+      return Promise.resolve(columnValues);
     });
   public arrayGetAllAsync = jest
     .fn()
     .mockImplementation((database: NativeDatabase, params: BindParams) =>
-      Promise.resolve(this._all(normalizeParams(params)))
+      Promise.resolve(this._allValues(normalizeParams(params)))
     );
   public objectGetAllAsync = jest
     .fn()
     .mockImplementation((database: NativeDatabase, params: BindParams) =>
-      Promise.resolve(this._all(normalizeParams(params)))
+      Promise.resolve(this._allValues(normalizeParams(params)))
     );
+  public getColumnNamesAsync = jest.fn().mockImplementation(async (database: NativeDatabase) => {
+    assert(this.sqlite3Stmt);
+    return this.sqlite3Stmt.columns().map((column) => column.name);
+  });
   public resetAsync = jest.fn().mockImplementation(async (database: NativeDatabase) => {
     this._reset();
   });
@@ -149,7 +157,9 @@ class NativeStatement {
         this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
       }
       const result = this.iterator.next();
-      return result.done === false ? result.value : null;
+      const columnValues =
+        result.done === false ? Object.values(result.value as Record<string, any>) : null;
+      return columnValues;
     });
   public objectGetSync = jest
     .fn()
@@ -160,18 +170,24 @@ class NativeStatement {
         this.iterator = this.sqlite3Stmt.iterate(this.iteratorParams);
       }
       const result = this.iterator.next();
-      return result.done === false ? result.value : null;
+      const columnValues =
+        result.done === false ? Object.values(result.value as Record<string, any>) : null;
+      return columnValues;
     });
   public arrayGetAllSync = jest
     .fn()
     .mockImplementation((database: NativeDatabase, params: BindParams) =>
-      this._all(normalizeParams(params))
+      this._allValues(normalizeParams(params))
     );
   public objectGetAllSync = jest
     .fn()
     .mockImplementation((database: NativeDatabase, params: BindParams) =>
-      this._all(normalizeParams(params))
+      this._allValues(normalizeParams(params))
     );
+  public getColumnNamesSync = jest.fn().mockImplementation((database: NativeDatabase) => {
+    assert(this.sqlite3Stmt);
+    return this.sqlite3Stmt.columns().map((column) => column.name);
+  });
   public resetSync = jest.fn().mockImplementation((database: NativeDatabase) => {
     this._reset();
   });
@@ -190,14 +206,10 @@ class NativeStatement {
     };
   };
 
-  private _get = <T>(...params: any[]) => {
+  private _allValues = (...params: any[]): ColumnValues[] => {
     assert(this.sqlite3Stmt);
-    return this.sqlite3Stmt.get(...params) as T | null;
-  };
-
-  private _all = <T>(...params: any[]) => {
-    assert(this.sqlite3Stmt);
-    return this.sqlite3Stmt.all(...params) as T[];
+    const sqlite3Stmt = this.sqlite3Stmt as any;
+    return sqlite3Stmt.all(...params).map((row: any) => Object.values(row));
   };
 
   private _reset = () => {

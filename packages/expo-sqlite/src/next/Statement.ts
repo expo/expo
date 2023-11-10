@@ -5,6 +5,8 @@ import {
   NativeStatement,
   RunResult,
   VariadicBindParams,
+  type ColumnNames,
+  type ColumnValues,
 } from './NativeStatement';
 
 export { BindParams, BindValue, RunResult, VariadicBindParams };
@@ -57,11 +59,12 @@ export class Statement {
       ? this.nativeStatement.objectGetAsync.bind(this.nativeStatement)
       : this.nativeStatement.arrayGetAsync.bind(this.nativeStatement);
 
-    let result: T | null = null;
+    const columnNames = await this.getColumnNamesAsync();
+    let result = null;
     do {
       result = await func(this.nativeDatabase, bindParams);
       if (result != null) {
-        yield result;
+        yield composeRow<T>(columnNames, result);
       }
     } while (result != null);
   }
@@ -75,11 +78,11 @@ export class Statement {
   public getAsync<T>(params: BindParams): Promise<T | null>;
   public async getAsync<T>(...params: unknown[]): Promise<T | null> {
     const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
-    if (shouldPassAsObject) {
-      return (await this.nativeStatement.objectGetAsync(this.nativeDatabase, bindParams)) ?? null;
-    } else {
-      return (await this.nativeStatement.arrayGetAsync(this.nativeDatabase, bindParams)) ?? null;
-    }
+    const columnNames = await this.getColumnNamesAsync();
+    const columnValues = shouldPassAsObject
+      ? await this.nativeStatement.objectGetAsync(this.nativeDatabase, bindParams)
+      : await this.nativeStatement.arrayGetAsync(this.nativeDatabase, bindParams);
+    return columnValues != null ? composeRow<T>(columnNames, columnValues) : null;
   }
 
   /**
@@ -91,11 +94,18 @@ export class Statement {
   public allAsync<T>(params: BindParams): Promise<T[]>;
   public async allAsync<T>(...params: unknown[]): Promise<T[]> {
     const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
-    if (shouldPassAsObject) {
-      return await this.nativeStatement.objectGetAllAsync(this.nativeDatabase, bindParams);
-    } else {
-      return await this.nativeStatement.arrayGetAllAsync(this.nativeDatabase, bindParams);
-    }
+    const columnNames = await this.getColumnNamesAsync();
+    const columnValuesList = shouldPassAsObject
+      ? await this.nativeStatement.objectGetAllAsync(this.nativeDatabase, bindParams)
+      : await this.nativeStatement.arrayGetAllAsync(this.nativeDatabase, bindParams);
+    return composeRows<T>(columnNames, columnValuesList);
+  }
+
+  /**
+   * Get the column names of the prepared statement.
+   */
+  public getColumnNamesAsync(): Promise<string[]> {
+    return this.nativeStatement.getColumnNamesAsync();
   }
 
   /**
@@ -158,11 +168,12 @@ export class Statement {
       ? this.nativeStatement.objectGetSync.bind(this.nativeStatement)
       : this.nativeStatement.arrayGetSync.bind(this.nativeStatement);
 
-    let result: T | null = null;
+    const columnNames = this.getColumnNamesSync();
+    let result = null;
     do {
       result = func(this.nativeDatabase, bindParams);
       if (result != null) {
-        yield result;
+        yield composeRow<T>(columnNames, result);
       }
     } while (result != null);
   }
@@ -178,11 +189,11 @@ export class Statement {
   public getSync<T>(params: BindParams): T | null;
   public getSync<T>(...params: unknown[]): T | null {
     const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
-    if (shouldPassAsObject) {
-      return this.nativeStatement.objectGetSync(this.nativeDatabase, bindParams) ?? null;
-    } else {
-      return this.nativeStatement.arrayGetSync(this.nativeDatabase, bindParams) ?? null;
-    }
+    const columnNames = this.getColumnNamesSync();
+    const columnValues = shouldPassAsObject
+      ? this.nativeStatement.objectGetSync(this.nativeDatabase, bindParams)
+      : this.nativeStatement.arrayGetSync(this.nativeDatabase, bindParams);
+    return columnValues != null ? composeRow<T>(columnNames, columnValues) : null;
   }
 
   /**
@@ -196,11 +207,18 @@ export class Statement {
   public allSync<T>(params: BindParams): T[];
   public allSync<T>(...params: unknown[]): T[] {
     const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
-    if (shouldPassAsObject) {
-      return this.nativeStatement.objectGetAllSync(this.nativeDatabase, bindParams);
-    } else {
-      return this.nativeStatement.arrayGetAllSync(this.nativeDatabase, bindParams);
-    }
+    const columnNames = this.getColumnNamesSync();
+    const columnValuesList = shouldPassAsObject
+      ? this.nativeStatement.objectGetAllSync(this.nativeDatabase, bindParams)
+      : this.nativeStatement.arrayGetAllSync(this.nativeDatabase, bindParams);
+    return composeRows<T>(columnNames, columnValuesList);
+  }
+
+  /**
+   * Get the column names of the prepared statement.
+   */
+  public getColumnNamesSync(): string[] {
+    return this.nativeStatement.getColumnNamesSync();
   }
 
   /**
@@ -243,4 +261,46 @@ export function normalizeParams(...params: any[]): {
     params: bindParams,
     shouldPassAsObject,
   };
+}
+
+/**
+ * Compose `columnNames` and `columnValues` to an row object.
+ * @hidden
+ */
+export function composeRow<T>(columnNames: ColumnNames, columnValues: ColumnValues): T {
+  const row = {};
+  if (columnNames.length !== columnValues.length) {
+    throw new Error(
+      `Column names and values count mismatch. Names: ${columnNames.length}, Values: ${columnValues.length}`
+    );
+  }
+  for (let i = 0; i < columnNames.length; i++) {
+    row[columnNames[i]] = columnValues[i];
+  }
+  return row as T;
+}
+
+/**
+ * Compose `columnNames` and `columnValuesList` to an array of row objects.
+ * @hidden
+ */
+export function composeRows<T>(columnNames: ColumnNames, columnValuesList: ColumnValues[]): T[] {
+  if (columnValuesList.length === 0) {
+    return [];
+  }
+  if (columnNames.length !== columnValuesList[0].length) {
+    // We only check the first row because SQLite returns the same column count for all rows.
+    throw new Error(
+      `Column names and values count mismatch. Names: ${columnNames.length}, Values: ${columnValuesList[0].length}`
+    );
+  }
+  const results: T[] = [];
+  for (const columnValues of columnValuesList) {
+    const row = {};
+    for (let i = 0; i < columnNames.length; i++) {
+      row[columnNames[i]] = columnValues[i];
+    }
+    results.push(row as T);
+  }
+  return results;
 }

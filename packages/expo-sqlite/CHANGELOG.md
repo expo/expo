@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Improved performance on the `expo-sqlite/next` API. ([#25314](https://github.com/expo/expo/pull/25314) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Fix crash issues in `sqlite/next`. ([#25295](https://github.com/expo/expo/pull/25295) by [@kudo](https://github.com/kudo))

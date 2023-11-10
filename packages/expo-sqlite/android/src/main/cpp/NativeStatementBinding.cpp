@@ -30,7 +30,10 @@ void NativeStatementBinding::registerNatives() {
       makeNativeMethod("sqlite3_step", NativeStatementBinding::sqlite3_step),
       makeNativeMethod("bindStatementParam",
                        NativeStatementBinding::bindStatementParam),
-      makeNativeMethod("getRow", NativeStatementBinding::getRow),
+      makeNativeMethod("getColumnNames",
+                       NativeStatementBinding::getColumnNames),
+      makeNativeMethod("getColumnValues",
+                       NativeStatementBinding::getColumnValues),
   });
 }
 
@@ -92,16 +95,24 @@ int NativeStatementBinding::bindStatementParam(
   return ret;
 }
 
-jni::local_ref<ArrayMap<jni::JString, jni::JObject>>
-NativeStatementBinding::getRow() {
+jni::local_ref<jni::JArrayList<jni::JString>>
+NativeStatementBinding::getColumnNames() {
   int columnCount = sqlite3_column_count();
-  auto row = ArrayMap<jni::JString, jni::JObject>::create(columnCount);
+  auto columnNames = jni::JArrayList<jni::JString>::create(columnCount);
   for (int i = 0; i < columnCount; ++i) {
-    auto name = sqlite3_column_name(i);
-    auto value = getColumnValue(i);
-    row->put(jni::make_jstring(name), value);
+    columnNames->add(jni::make_jstring(sqlite3_column_name(i)));
   }
-  return row;
+  return columnNames;
+}
+
+jni::local_ref<jni::JArrayList<jni::JObject>>
+NativeStatementBinding::getColumnValues() {
+  int columnCount = sqlite3_column_count();
+  auto columnValues = jni::JArrayList<jni::JObject>::create(columnCount);
+  for (int i = 0; i < columnCount; ++i) {
+    columnValues->add(getColumnValue(i));
+  }
+  return columnValues;
 }
 
 // static

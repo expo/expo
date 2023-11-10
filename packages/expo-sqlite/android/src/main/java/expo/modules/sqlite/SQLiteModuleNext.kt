@@ -150,6 +150,13 @@ class SQLiteModuleNext : Module() {
         return@Function objectGetAll(statement, database, bindParams)
       }
 
+      AsyncFunction("getColumnNamesAsync") { statement: NativeStatement ->
+        return@AsyncFunction statement.ref.getColumnNames()
+      }
+      Function("getColumnNamesSync") { statement: NativeStatement ->
+        return@Function statement.ref.getColumnNames()
+      }
+
       AsyncFunction("resetAsync") { statement: NativeStatement, database: NativeDatabase ->
         return@AsyncFunction reset(statement, database)
       }
@@ -231,13 +238,13 @@ class SQLiteModuleNext : Module() {
   }
 
   @Throws(InvalidConvertibleException::class, SQLiteErrorException::class)
-  private fun arrayGet(statement: NativeStatement, database: NativeDatabase, bindParams: List<Any>): Row? {
+  private fun arrayGet(statement: NativeStatement, database: NativeDatabase, bindParams: List<Any>): ColumnValues? {
     for ((index, param) in bindParams.withIndex()) {
       statement.ref.bindStatementParam(index + 1, param)
     }
     val ret = statement.ref.sqlite3_step()
     if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-      return statement.ref.getRow()
+      return statement.ref.getColumnValues()
     }
     if (ret != NativeDatabaseBinding.SQLITE_DONE) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
@@ -246,7 +253,7 @@ class SQLiteModuleNext : Module() {
   }
 
   @Throws(InvalidConvertibleException::class, SQLiteErrorException::class)
-  private fun objectGet(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>): Row? {
+  private fun objectGet(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>): ColumnValues? {
     for ((name, param) in bindParams) {
       val index = statement.ref.sqlite3_bind_parameter_index(name)
       if (index > 0) {
@@ -255,7 +262,7 @@ class SQLiteModuleNext : Module() {
     }
     val ret = statement.ref.sqlite3_step()
     if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-      return statement.ref.getRow()
+      return statement.ref.getColumnValues()
     }
     if (ret != NativeDatabaseBinding.SQLITE_DONE) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
@@ -264,44 +271,44 @@ class SQLiteModuleNext : Module() {
   }
 
   @Throws(InvalidConvertibleException::class, SQLiteErrorException::class)
-  private fun arrayGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: List<Any>): List<Row> {
+  private fun arrayGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: List<Any>): List<ColumnValues> {
     for ((index, param) in bindParams.withIndex()) {
       statement.ref.bindStatementParam(index + 1, param)
     }
-    val rows = mutableListOf<Row>()
+    val columnValuesList = mutableListOf<ColumnValues>()
     while (true) {
       val ret = statement.ref.sqlite3_step()
       if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-        rows.add(statement.ref.getRow())
+        columnValuesList.add(statement.ref.getColumnValues())
         continue
       } else if (ret == NativeDatabaseBinding.SQLITE_DONE) {
         break
       }
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
-    return rows
+    return columnValuesList
   }
 
   @Throws(InvalidConvertibleException::class, SQLiteErrorException::class)
-  private fun objectGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>): List<Row> {
+  private fun objectGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>): List<ColumnValues> {
     for ((name, param) in bindParams) {
       val index = statement.ref.sqlite3_bind_parameter_index(name)
       if (index > 0) {
         statement.ref.bindStatementParam(index, param)
       }
     }
-    val rows = mutableListOf<Row>()
+    val columnValuesList = mutableListOf<ColumnValues>()
     while (true) {
       val ret = statement.ref.sqlite3_step()
       if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-        rows.add(statement.ref.getRow())
+        columnValuesList.add(statement.ref.getColumnValues())
         continue
       } else if (ret == NativeDatabaseBinding.SQLITE_DONE) {
         break
       }
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
-    return rows
+    return columnValuesList
   }
 
   @Throws(SQLiteErrorException::class)
