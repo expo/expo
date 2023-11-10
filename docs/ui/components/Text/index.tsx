@@ -239,7 +239,7 @@ export const A = (props: LinkBaseProps & { isStyled?: boolean; shouldLeakReferre
   return (
     <LinkBase
       css={[link, !isStyled && linkStyled]}
-      {...(shouldLeakReferrer && { target: '_blank', referrerpolicy: 'origin' })}
+      {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
       openInNewTab={(!shouldLeakReferrer && openInNewTab) ?? isExternalLink(props.href)}
       {...rest}
     />

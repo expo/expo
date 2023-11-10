@@ -21,7 +21,7 @@ declare module 'metro/src/HmrServer' {
     constructor(...args: any[]);
   }
 
-  module.exports = MetroHmrServer;
+  export default MetroHmrServer;
 }
 
 declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
@@ -240,6 +240,17 @@ declare module 'metro/src/lib/bundleToString' {
     readonly code: string;
     readonly metadata: BundleMetadata;
   };
+}
+
+declare module 'metro/src/lib/getAppendScripts' {
+  function getAppendScripts(
+    entryPoint: string,
+    modules: readonly Module<MixedOutput>[],
+    options: SerializerOptions
+  ): Module<MixedOutput>[];
+
+  export default getAppendScripts;
+  module.exports = getAppendScripts;
 }
 
 declare module 'metro/src/IncrementalBundler' {

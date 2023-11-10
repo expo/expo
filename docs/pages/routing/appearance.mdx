@@ -5,6 +5,8 @@ description: Learn how to use a splash screen, fonts and images in your app that
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Terminal } from '~/ui/components/Snippet';
 
 There are three major elements that you can use to customize the appearance of your app:
 
@@ -27,7 +29,6 @@ import {
   // This example uses a basic Layout component, but you can use any Layout.
   Slot,
 } from 'expo-router';
-
 import { useFonts, Inter_500Medium } from '@expo-google-fonts/inter';
 
 /* @info Prevent hiding the splash screen after the navigation has mounted. */
@@ -107,7 +108,6 @@ React Navigation navigators `<Stack>`, `<Drawer>`, and `<Tabs>` use a shared app
 /* @info Import theme APIs from React Navigation directly. */
 import { ThemeProvider, DarkTheme, DefaultTheme, useTheme } from '@react-navigation/native';
 /* @end */
-
 import { Slot } from 'expo-router';
 
 export default function RootLayout() {
@@ -123,6 +123,30 @@ export default function RootLayout() {
 
 You can use this technique at any layer of the app to set the theme for a specific layout. The current theme can be accessed with `useTheme` from `@react-navigation/native`.
 
+## React Navigation Elements
+
+The [`@react-navigation/elements`](https://reactnavigation.org/docs/elements/) library provides a set of UI elements and helpers that can be used to build a navigation UI. These components are designed to be composable and customizable. You can reuse the default functionality from the library or build your navigator's UI on top of it.
+
+To use it with Expo Router, you need to install the library:
+
+<Tabs>
+
+<Tab label="npm">
+
+<Terminal cmd={['$ npm install @react-navigation/elements']} />
+
+</Tab>
+
+<Tab label="Yarn">
+
+<Terminal cmd={['$ yarn add @react-navigation/elements']} />
+
+</Tab>
+
+</Tabs>
+
+To learn more about the components and utilities the library provides, see [Elements library](https://reactnavigation.org/docs/elements/) documentation.
+
 ## Next steps
 
 <BoxLink
@@ -131,3 +155,4 @@ You can use this technique at any layer of the app to set the theme for a specif
   href="/routing/error-handling/"
   Icon={BookOpen02Icon}
 />
+```

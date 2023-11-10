@@ -5,7 +5,7 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import path from 'path';
 
-const TARGET_DEVICE = 'iPhone 14 Pro';
+const TARGET_DEVICE = 'iPhone 14';
 const TARGET_DEVICE_IOS_VERSION = 16;
 const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
 const OUTPUT_APP_PATH = 'ios/build/Bare Expo.app';
@@ -34,7 +34,7 @@ enum StartMode {
       await fs.cp(binaryPath, appBinaryPath, { recursive: true });
     }
     if (startMode === StartMode.TEST || startMode === StartMode.BUILD_AND_TEST) {
-      await testAsync(projectRoot, deviceId, appBinaryPath);
+      await retryAsync(() => testAsync(projectRoot, deviceId, appBinaryPath), 3);
     }
   } catch (e) {
     console.error('Uncaught Error', e);
@@ -72,25 +72,50 @@ async function testAsync(
   deviceId: string,
   appBinaryPath: string
 ): Promise<void> {
-  console.log(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
-  await spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], { stdio: 'inherit' });
-  await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
-    stdio: 'inherit',
-  });
+  try {
+    console.log(`\n📱 Starting Device - name[${TARGET_DEVICE}] udid[${deviceId}]`);
+    await spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], { stdio: 'inherit' });
+    await spawnAsync('open', ['-a', 'Simulator', '--args', '-CurrentDeviceUDID', deviceId], {
+      stdio: 'inherit',
+    });
 
-  console.log(`\n🔌 Installing App - appBinaryPath[${appBinaryPath}]`);
-  await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
+    console.log(`\n🔌 Installing App - appBinaryPath[${appBinaryPath}]`);
+    await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
 
-  const maestroFlowFilePath = path.join(projectRoot, MAESTRO_GENERATED_FLOW);
-  await createMaestroFlowAsync(projectRoot, maestroFlowFilePath);
-  console.log(`\n📷 Starting Maestro tests - maestroFlowFilePath[${maestroFlowFilePath}]`);
-  await spawnAsync('maestro', ['--device', deviceId, 'test', maestroFlowFilePath], {
-    stdio: 'inherit',
-    env: {
-      ...process.env,
-      MAESTRO_DRIVER_STARTUP_TIMEOUT,
-    },
-  });
+    const maestroFlowFilePath = path.join(projectRoot, MAESTRO_GENERATED_FLOW);
+    await createMaestroFlowAsync(projectRoot, maestroFlowFilePath);
+    console.log(`\n📷 Starting Maestro tests - maestroFlowFilePath[${maestroFlowFilePath}]`);
+    await spawnAsync('maestro', ['--device', deviceId, 'test', maestroFlowFilePath], {
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        MAESTRO_DRIVER_STARTUP_TIMEOUT,
+      },
+    });
+  } finally {
+    await spawnAsync('xcrun', ['simctl', 'shutdown', deviceId], { stdio: 'inherit' });
+  }
+}
+
+async function retryAsync<T>(
+  fn: () => Promise<T>,
+  retries: number,
+  delayAfterErrorMs: number = 5000
+): Promise<T> {
+  let lastError: Error | undefined;
+  for (let i = 0; i < retries; ++i) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastError = e;
+      await delayAsync(delayAfterErrorMs);
+    }
+  }
+  throw lastError;
+}
+
+async function delayAsync(timeMs: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, timeMs));
 }
 
 /**
@@ -152,7 +177,7 @@ appId: dev.expo.Payments
 - extendedWaitUntil:
     visible:
       id: "test_suite_container"
-    timeout: 5000
+    timeout: 30000
 - scrollUntilVisible:
     element:
       id: "test_suite_text_results"

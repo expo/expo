@@ -73,8 +73,8 @@ When you run the `eas build` command, it will link your project to a new or exis
 
 The `development` profile sets the following options:
 
-- [`developmentClient`](/build-reference/eas-json/#developmentclient) to `true` to create a Debug build. It allows the `expo-dev-client` library to choose the update to load in your app and provides tools to help you develop it. It also generates a build artifact you can install on a device or emulator/simulator.
-- [`distribution`](/build-reference/eas-json/#distribution) to `internal` makes the build ready for [internal distribution](/build/internal-distribution/).
+- [`developmentClient`](/eas/json/#developmentclient) to `true` to create a Debug build. It allows the `expo-dev-client` library to choose the update to load in your app and provides tools to help you develop it. It also generates a build artifact you can install on a device or emulator/simulator.
+- [`distribution`](/eas/json/#distribution) to `internal` makes the build ready for [internal distribution](/build/internal-distribution/).
 
 > iOS builds where `developmentClient` is set to `true` on the build profile should always be distributed as `internal`. If you are distributing for TestFlight, you have to set the distribution to `store`.
 

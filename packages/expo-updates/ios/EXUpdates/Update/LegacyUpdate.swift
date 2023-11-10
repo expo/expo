@@ -104,7 +104,7 @@ public final class LegacyUpdate: Update {
       config: config,
       database: database,
       updateId: updateId,
-      scopeKey: config.scopeKey.require("Must supply scopeKey in configuration"),
+      scopeKey: config.scopeKey,
       commitTime: commitTime,
       runtimeVersion: runtimeVersion,
       keep: true,
@@ -121,7 +121,7 @@ public final class LegacyUpdate: Update {
 
   static func bundledAssetBaseUrl(withManifest: LegacyManifest, config: UpdatesConfig) -> URL {
     let manifestUrl = config.updateUrl
-    let host = manifestUrl?.host
+    let host = manifestUrl.host
 
     guard let host = host else {
       // The URL is valid and constant, so it'll never throw

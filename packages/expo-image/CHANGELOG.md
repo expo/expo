@@ -5,13 +5,18 @@
 ### 🛠 Breaking changes
 
 - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
 - Return a promise for `prefetch`. ([#25196](https://github.com/expo/expo/pull/25196) by [@gkasdorf](https://github.com/gkasdorf))
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `contentFit` not working for `SVG` images. ([#25187](https://github.com/expo/expo/pull/25187) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
+
+- [Android] Add tracing. ([#25251](https://github.com/expo/expo/pull/25251) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.7.0 — 2023-11-01
 

@@ -1,8 +1,18 @@
 #!/bin/bash
 
-# iOS
-
 export NODE_ENV=production
+
+# Generate temporary app.json for `npx expo export:embed` and indicate that we want to use JSC bundling profile.
+# The reason to use JSC because the bundle should be compatible with both JSC and Hermes.
+cat > app.json <<EOF
+{
+  "expo": {
+    "jsEngine": "jsc"
+  }
+}
+EOF
+
+# iOS
 
 EXPO_BUNDLE_APP=1 npx expo export:embed \
     --platform ios \
@@ -26,3 +36,7 @@ EXPO_BUNDLE_APP=1 npx expo export:embed \
     --bundle-output android/src/debug/assets/expo_dev_launcher_android.bundle \
     --assets-dest android/src/debug/res \
     --reset-cache
+
+# Cleanup
+
+rm app.json

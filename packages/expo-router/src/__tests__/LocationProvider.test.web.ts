@@ -25,7 +25,7 @@ describe(getNormalizedStatePath, () => {
     });
   });
 
-  it(`returns the normalized path with a basePath`, () => {
+  it(`returns the normalized path with a baseUrl`, () => {
     expect(
       getNormalizedStatePath(
         {

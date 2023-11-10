@@ -293,7 +293,7 @@ export function JoinTheCommunity() {
           <CommunityGridCell
             title="Newsletter"
             description="Get the latest updates from monthly Expo newsletter."
-            link="http://eepurl.com/hk1tCn"
+            link="https://expo.dev/mailing-list/signup"
             icon={<Mail01Icon className="icon-lg text-palette-white" />}
           />
         </Row>

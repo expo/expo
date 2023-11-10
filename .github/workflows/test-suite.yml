@@ -132,7 +132,7 @@ jobs:
 
   ios-test:
     needs: ios-build
-    runs-on: macos-12
+    runs-on: macos-latest
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -196,7 +196,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - name: 🔨 Use JDK 11
         uses: actions/setup-java@v3
         with:

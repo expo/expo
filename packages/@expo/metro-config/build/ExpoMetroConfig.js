@@ -225,8 +225,13 @@ function getDefaultConfig(projectRoot, {
   const metroConfig = mergeConfig(metroDefaultValues, {
     watchFolders,
     resolver: {
-      // unstable_conditionsByPlatform: { web: ['browser'] },
-      unstable_conditionNames: ['require', 'import', 'react-native'],
+      unstable_conditionsByPlatform: {
+        ios: ['react-native'],
+        android: ['react-native'],
+        // This is removed for server platforms.
+        web: ['browser']
+      },
+      unstable_conditionNames: ['require', 'import'],
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts.concat(
@@ -257,7 +262,7 @@ function getDefaultConfig(projectRoot, {
         }
         return preModules;
       },
-      getPolyfills: () => require(_path().default.join(reactNativePath, 'rn-get-polyfills'))()
+      getPolyfills: () => require('@react-native/js-polyfills')()
     },
     server: {
       rewriteRequestUrl: (0, _rewriteRequestUrl().getRewriteRequestUrl)(projectRoot),

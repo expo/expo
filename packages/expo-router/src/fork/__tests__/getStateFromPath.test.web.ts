@@ -1,24 +1,19 @@
-import Constants from 'expo-constants';
-
 import { configFromFs } from '../../utils/mockState';
 import getPathFromState from '../getPathFromState';
 import getStateFromPath, {
-  stripBasePath,
+  stripBaseUrl,
   getUrlWithReactNavigationConcessions,
 } from '../getStateFromPath';
 
-jest.mock('expo-constants', () => ({
-  __esModule: true,
-  default: {
-    expoConfig: {},
-  },
-}));
-
-afterEach(() => {
-  Constants.expoConfig!.experiments = undefined;
+beforeEach(() => {
+  delete process.env.EXPO_BASE_URL;
 });
 
-describe(stripBasePath, () => {
+afterAll(() => {
+  delete process.env.EXPO_BASE_URL;
+});
+
+describe(stripBaseUrl, () => {
   [
     [
       // Input
@@ -34,21 +29,21 @@ describe(stripBasePath, () => {
     ['///one/', '/one', '/'],
     ['one/', '/one', 'one/'],
     ['/a/b', '/one', '/a/b'],
-  ].forEach(([path, basePath, result]) => {
-    it(`strips basePath "${path}"`, () => {
-      expect(stripBasePath(path, basePath)).toBe(result);
+  ].forEach(([path, baseUrl, result]) => {
+    it(`strips baseUrl "${path}"`, () => {
+      expect(stripBaseUrl(path, baseUrl)).toBe(result);
     });
   });
 });
 
-describe('basePath', () => {
-  it('accounts for basePath', () => {
-    // @ts-expect-error
-    Constants.expoConfig = {
-      experiments: {
-        basePath: '/expo/prefix',
-      },
-    };
+describe('baseUrl', () => {
+  beforeEach(() => {
+    delete process.env.EXPO_BASE_URL;
+  });
+
+  it('accounts for baseUrl', () => {
+    process.env.EXPO_BASE_URL = '/expo/prefix';
+
     const path = '/expo/prefix/bar';
     const config = configFromFs(['_layout.tsx', 'bar.tsx', 'index.tsx']);
 
@@ -61,13 +56,8 @@ describe('basePath', () => {
     );
   });
 
-  it('has basePath and state that does not match', () => {
-    // @ts-expect-error
-    Constants.expoConfig = {
-      experiments: {
-        basePath: '/expo',
-      },
-    };
+  it('has baseUrl and state that does not match', () => {
+    process.env.EXPO_BASE_URL = '/expo';
     const path = '/bar';
     const config = configFromFs(['_layout.tsx', 'bar.tsx', 'index.tsx']);
 
@@ -79,6 +69,10 @@ describe('basePath', () => {
 });
 
 describe(getUrlWithReactNavigationConcessions, () => {
+  beforeEach(() => {
+    delete process.env.EXPO_BASE_URL;
+  });
+
   ['/', 'foo/', 'foo/bar/', 'foo/bar/baz/'].forEach((path) => {
     it(`returns the pathname for ${path}`, () => {
       expect(getUrlWithReactNavigationConcessions(path).nonstandardPathname).toBe(path);

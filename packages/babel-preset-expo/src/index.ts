@@ -1,8 +1,16 @@
 import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
-import { getBundler, getIsDev, hasModule } from './common';
+import {
+  getBaseUrl,
+  getBundler,
+  getInlineEnvVarsEnabled,
+  getIsDev,
+  getIsProd,
+  hasModule,
+} from './common';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
 import { expoRouterBabelPlugin } from './expo-router-plugin';
+import { expoInlineEnvVars, expoInlineTransformEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 
 type BabelPresetExpoPlatformOptions = {
@@ -52,6 +60,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   let platform = api.caller((caller) => (caller as any)?.platform);
   const engine = api.caller((caller) => (caller as any)?.engine) ?? 'default';
   const isDev = api.caller(getIsDev);
+  const baseUrl = api.caller(getBaseUrl);
+  // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
+  // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
+  const isProduction = api.caller(getIsProd);
+  const inlineEnvironmentVariables = api.caller(getInlineEnvVarsEnabled);
 
   // If the `platform` prop is not defined then this must be a custom config that isn't
   // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
@@ -89,6 +102,26 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       require.resolve('@babel/plugin-proposal-object-rest-spread'),
       { loose: false },
     ]);
+  } else {
+    // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
+    // JSX is used in a function body. This is technically not required in production, but we
+    // should retain the same behavior since it's hard to debug the differences.
+    extraPlugins.push(require('@babel/plugin-transform-parameters'));
+  }
+
+  if (isProduction && hasModule('metro-transform-plugins')) {
+    // Metro applies this plugin too but it does it after the imports have been transformed which breaks
+    // the plugin. Here, we'll apply it before the commonjs transform, in production, to ensure `Platform.OS`
+    // is replaced with a string literal and `__DEV__` is converted to a boolean.
+    // Applying early also means that web can be transformed before the `react-native-web` transform mutates the import.
+    extraPlugins.push([
+      require('metro-transform-plugins/src/inline-plugin.js'),
+      {
+        dev: isDev,
+        inlinePlatform: true,
+        platform,
+      },
+    ]);
   }
 
   if (platformOptions.useTransformReactJSXExperimental != null) {
@@ -100,6 +133,27 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const aliasPlugin = getAliasPlugin();
   if (aliasPlugin) {
     extraPlugins.push(aliasPlugin);
+  }
+
+  // Allow jest tests to redefine the environment variables.
+  if (process.env.NODE_ENV !== 'test') {
+    extraPlugins.push([
+      expoInlineTransformEnvVars,
+      {
+        // These values should not be prefixed with `EXPO_PUBLIC_`, so we don't
+        // squat user-defined environment variables.
+        EXPO_BASE_URL: baseUrl,
+      },
+    ]);
+  }
+
+  // Only apply in non-server, for metro-only, in production environments, when the user hasn't disabled the feature.
+  // Webpack uses DefinePlugin for environment variables.
+  // Development uses an uncached serializer.
+  // Servers read from the environment.
+  // Users who disable the feature may be using a different babel plugin.
+  if (inlineEnvironmentVariables) {
+    extraPlugins.push(expoInlineEnvVars);
   }
 
   if (platform === 'web') {

@@ -71,7 +71,9 @@ The JSON object under `submit` can contain multiple submit profiles. Each profil
 }
 ```
 
-You can use EAS CLI to pick up another `submit` profile by specifying it with a parameter. For example, `eas submit --platform iOS --profile submit-profile-name`.
+When you select a build for submission, it chooses the profile that is used for the selected build. If the profile does not exist, it selects the default `production` profile.
+
+You can also use EAS CLI to pick up another `submit` profile by specifying it with a parameter. For example, `eas submit --platform ios --profile submit-profile-name`.
 
 ## Share configuration between `submit` profiles
 
