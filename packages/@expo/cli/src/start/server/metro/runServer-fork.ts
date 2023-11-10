@@ -3,7 +3,6 @@
 //
 // Forks https://github.com/facebook/metro/blob/b80d9a0f638ee9fb82ff69cd3c8d9f4309ca1da2/packages/metro/src/index.flow.js#L57
 // and adds the ability to access the bundler instance.
-import InspectorProxy from '@react-native/dev-middleware/dist/inspector-proxy/InspectorProxy';
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
@@ -14,9 +13,7 @@ import { ConfigT } from 'metro-config';
 import { parse } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
-import { createInspectorProxy, ExpoInspectorProxy } from './inspector-proxy';
 import { Log } from '../../../log';
-import { env } from '../../../utils/env';
 import { getRunningProcess } from '../../../utils/getRunningProcess';
 import type { ConnectAppType } from '../middleware/server.types';
 
@@ -55,13 +52,6 @@ export const runServer = async (
   assert(typeof (middleware as any).use === 'function');
   const serverApp = middleware as ConnectAppType;
 
-  let inspectorProxy: InspectorProxy | ExpoInspectorProxy | null = null;
-  if (config.server.runInspectorProxy && !env.EXPO_NO_INSPECTOR_PROXY) {
-    inspectorProxy = createInspectorProxy(metroBundler, config.projectRoot);
-  } else if (config.server.runInspectorProxy) {
-    inspectorProxy = new InspectorProxy(config.projectRoot);
-  }
-
   let httpServer: http.Server | https.Server;
 
   if (secureServerOptions != null) {
@@ -95,7 +85,6 @@ export const runServer = async (
       }
 
       Object.assign(websocketEndpoints, {
-        ...(inspectorProxy ? { ...inspectorProxy.createWebSocketListeners(httpServer) } : {}),
         // @ts-expect-error: incorrect types
         '/hot': createWebsocketServer({
           websocketServer: new MetroHmrServer(
@@ -116,14 +105,6 @@ export const runServer = async (
           socket.destroy();
         }
       });
-
-      if (inspectorProxy) {
-        // TODO(hypuk): Refactor inspectorProxy.processRequest into separate request handlers
-        // so that we could provide routes (/json/list and /json/version) here.
-        // Currently this causes Metro to give warning about T31407894.
-        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-        serverApp.use(inspectorProxy.processRequest.bind(inspectorProxy));
-      }
 
       resolve({ server: httpServer, metro: metroServer });
     });
