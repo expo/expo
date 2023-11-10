@@ -124,7 +124,12 @@ export function withExtendedResolver(
 
   const defaultResolver = metroResolver.resolve;
   const resolver = isFastResolverEnabled
-    ? createFastResolver({ preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false })
+    ? createFastResolver({
+        preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false,
+        blockList: Array.isArray(config.resolver?.blockList)
+          ? config.resolver?.blockList
+          : [config.resolver?.blockList],
+      })
     : defaultResolver;
 
   const extraNodeModules: { [key: string]: Record<string, string> } = {};
@@ -198,21 +203,12 @@ export function withExtendedResolver(
 
   const shimsFolder = path.join(config.projectRoot, METRO_SHIMS_FOLDER);
 
-  function getStrictResolver(context: ResolutionContext, platform: string | null) {
-    const isNode = context.customResolverOptions?.environment === 'node';
-
+  function getStrictResolver(
+    { resolveRequest, ...context }: ResolutionContext,
+    platform: string | null
+  ) {
     return function doResolve(moduleName: string): Resolution {
-      // Workaround for Node.js having package exports enabled by default and
-      // the fast resolver not having package exports support yet.
-      const resolverToUse = isNode ? defaultResolver : resolver;
-      return resolverToUse(
-        {
-          ...context,
-          resolveRequest: undefined,
-        },
-        moduleName,
-        platform
-      );
+      return resolver(context, moduleName, platform);
     };
   }
 
@@ -382,6 +378,7 @@ export function withExtendedResolver(
 
         context.unstable_enablePackageExports = true;
         context.unstable_conditionNames = ['node', 'require'];
+        context.unstable_conditionsByPlatform = {};
         // Node.js runtimes should only be importing main at the moment.
         // This is a temporary fix until we can support the package.json exports.
         context.mainFields = ['main', 'module'];
@@ -406,12 +403,17 @@ export function withExtendedResolver(
       if (tsconfig?.baseUrl && isTsconfigPathsEnabled) {
         const nodeModulesPaths: string[] = [...immutableContext.nodeModulesPaths];
 
-        if (!nodeModulesPaths.length) {
-          nodeModulesPaths.push(path.join(config.projectRoot, 'node_modules'));
+        if (isFastResolverEnabled) {
+          // add last to ensure node modules are resolved first
+          nodeModulesPaths.push(
+            path.isAbsolute(tsconfig.baseUrl)
+              ? tsconfig.baseUrl
+              : path.join(config.projectRoot, tsconfig.baseUrl)
+          );
+        } else {
+          // add last to ensure node modules are resolved first
+          nodeModulesPaths.push(tsconfig.baseUrl);
         }
-
-        // add last to ensure node modules are resolved first
-        nodeModulesPaths.push(tsconfig.baseUrl);
 
         context.nodeModulesPaths = nodeModulesPaths;
       }
