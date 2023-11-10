@@ -101,7 +101,7 @@ const config: VendoringTargetConfig = {
         async mutatePodspec(podspec: Podspec) {
           const reactCommonDir = path.relative(
             EXPO_DIR,
-            path.join(REACT_NATIVE_SUBMODULE_DIR, 'packages', 'react-native', 'ReactCommon')
+            path.join(REACT_NATIVE_SUBMODULE_DIR, 'ReactCommon')
           );
           // `reanimated_utils.rb` generates wrong and confusing paths to ReactCommon headers, so we need to fix them.
           podspec.xcconfig['HEADER_SEARCH_PATHS'] = podspec.xcconfig[

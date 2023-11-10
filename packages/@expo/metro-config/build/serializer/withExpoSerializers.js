@@ -19,13 +19,6 @@ function _jscSafeUrl() {
   };
   return data;
 }
-function _baseJSBundle() {
-  const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/baseJSBundle"));
-  _baseJSBundle = function () {
-    return data;
-  };
-  return data;
-}
 function _sourceMapString() {
   const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
   _sourceMapString = function () {
@@ -50,6 +43,13 @@ function _path() {
 function _environmentVariableSerializerPlugin() {
   const data = require("./environmentVariableSerializerPlugin");
   _environmentVariableSerializerPlugin = function () {
+    return data;
+  };
+  return data;
+}
+function _baseJSBundle() {
+  const data = require("./fork/baseJSBundle");
+  _baseJSBundle = function () {
     return data;
   };
   return data;
@@ -109,21 +109,21 @@ function withSerializerPlugins(config, processors) {
 }
 function getDefaultSerializer(fallbackSerializer) {
   const defaultSerializer = fallbackSerializer !== null && fallbackSerializer !== void 0 ? fallbackSerializer : async (...params) => {
-    const bundle = (0, _baseJSBundle().default)(...params);
+    const bundle = (0, _baseJSBundle().baseJSBundle)(...params);
     const outputCode = (0, _bundleToString().default)(bundle).code;
     return outputCode;
   };
   return async (...props) => {
     const [entryPoint, preModules, graph, options] = props;
-    const jsCode = await defaultSerializer(entryPoint, preModules, graph, options);
+    const platform = (0, _baseJSBundle().getPlatformOption)(graph, options);
     if (!options.sourceUrl) {
-      return jsCode;
+      return await defaultSerializer(entryPoint, preModules, graph, options);
     }
     const sourceUrl = (0, _jscSafeUrl().isJscSafeUrl)(options.sourceUrl) ? (0, _jscSafeUrl().toNormalUrl)(options.sourceUrl) : options.sourceUrl;
     const url = new URL(sourceUrl, 'https://expo.dev');
-    if (url.searchParams.get('platform') !== 'web' || url.searchParams.get('serializer.output') !== 'static') {
+    if (platform !== 'web' || url.searchParams.get('serializer.output') !== 'static') {
       // Default behavior if `serializer.output=static` is not present in the URL.
-      return jsCode;
+      return await defaultSerializer(entryPoint, preModules, graph, options);
     }
     const includeSourceMaps = url.searchParams.get('serializer.map') === 'true';
     const cssDeps = (0, _getCssDeps().getCssSerialAssets)(graph.dependencies, {
@@ -131,45 +131,33 @@ function getDefaultSerializer(fallbackSerializer) {
       processModuleFilter: options.processModuleFilter
     });
     const jsAssets = [];
-    if (jsCode) {
-      const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
-      const jsFilename = (0, _getCssDeps().fileNameFromContents)({
-        filepath: url.pathname,
-        src: stringContents
-      });
+    const jsCode = await defaultSerializer(entryPoint, preModules, graph, {
+      ...options,
+      sourceMapUrl: includeSourceMaps ? options.sourceMapUrl : undefined
+    });
+    const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
+    const jsFilename = (0, _getCssDeps().fileNameFromContents)({
+      filepath: url.pathname,
+      src: stringContents
+    });
+    jsAssets.push({
+      filename: options.dev ? 'index.js' : `_expo/static/js/web/${jsFilename}.js`,
+      originFilename: 'index.js',
+      type: 'js',
+      metadata: {},
+      source: stringContents
+    });
+    if (
+    // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
+    includeSourceMaps && options.sourceMapUrl) {
+      const sourceMap = typeof jsCode === 'string' ? serializeToSourceMap(...props) : jsCode.map;
       jsAssets.push({
-        filename: options.dev ? 'index.js' : `_expo/static/js/web/${jsFilename}.js`,
-        originFilename: 'index.js',
-        type: 'js',
+        filename: options.dev ? 'index.map' : `_expo/static/js/web/${jsFilename}.js.map`,
+        originFilename: 'index.map',
+        type: 'map',
         metadata: {},
-        source: stringContents
+        source: sourceMap
       });
-      if (
-      // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
-      includeSourceMaps && options.sourceMapUrl) {
-        const sourceMap = typeof jsCode === 'string' ? serializeToSourceMap(...props) : jsCode.map;
-
-        // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
-        const parsed = JSON.parse(sourceMap);
-        // TODO: Maybe we can do this earlier.
-        parsed.sources = parsed.sources.map(
-        // TODO: Maybe basePath support
-        value => {
-          if (value.startsWith('/')) {
-            var _options$serverRoot;
-            return '/' + _path().default.relative((_options$serverRoot = options.serverRoot) !== null && _options$serverRoot !== void 0 ? _options$serverRoot : options.projectRoot, value);
-          }
-          // Prevent `__prelude__` from being relative.
-          return value;
-        });
-        jsAssets.push({
-          filename: options.dev ? 'index.map' : `_expo/static/js/web/${jsFilename}.js.map`,
-          originFilename: 'index.map',
-          type: 'map',
-          metadata: {},
-          source: JSON.stringify(parsed)
-        });
-      }
     }
     return JSON.stringify([...jsAssets, ...cssDeps]);
   };
@@ -189,7 +177,19 @@ function serializeToSourceMap(...props) {
   const [, prepend, graph, options] = props;
   const modules = [...prepend, ...getSortedModules(graph, {
     createModuleId: options.createModuleId
-  })];
+  })].map(module => {
+    // TODO: Make this user-configurable.
+
+    // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
+    if (module.path.startsWith('/')) {
+      var _options$serverRoot;
+      return {
+        ...module,
+        path: '/' + _path().default.relative((_options$serverRoot = options.serverRoot) !== null && _options$serverRoot !== void 0 ? _options$serverRoot : options.projectRoot, module.path)
+      };
+    }
+    return module;
+  });
   return (0, _sourceMapString().default)(modules, {
     ...options
   });

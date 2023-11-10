@@ -9,7 +9,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import al from '@mdx-js/react';
 import { HardwareList, BuildResourceList } from '~/ui/components/utils/infrastructure';
 
-> This document was last updated on **October 18, 2023**.
+> This document was last updated on **November 8, 2023**.
 
 ## Builder IP addresses
 
@@ -65,7 +65,22 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 ### Android server images
 
-#### `ubuntu-22.04-jdk-11-ndk-r21e` (alias `latest`)
+#### `ubuntu-22.04-jdk-17-ndk-r21e` (alias `latest`)
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:jammy-20220531`
+- NDK 21.4.7075529
+- Node.js 18.18.0
+- Bun 1.0.2
+- Yarn 1.22.17
+- pnpm 8.9.2
+- npm 8.19.2
+- Java 17
+
+</Collapsible>
+
+#### `ubuntu-22.04-jdk-11-ndk-r21e` (alias `default`)
 
 <Collapsible summary="Details">
 
@@ -157,8 +172,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 ## iOS build server configurations
 
-iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build gets its own fresh macOS VM.
-[Learn more about it here](eas-json/#resourceclass-2)
+iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build gets its own fresh macOS VM. For more information, see [see iOS-specific resource class](/eas/json/#resourceclass-2).
 
 - Hardware:
 
@@ -194,7 +208,7 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 
 - macOS Ventura 13.6
 - Xcode 15.0 (15A240d)
-- Node.js 16.18.1
+- Node.js 18.18.0
 - Bun 1.0.2
 - Yarn 1.22.17
 - pnpm 8.7.6

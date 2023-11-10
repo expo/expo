@@ -6,7 +6,6 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
-set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR} ${BOOST_VERSION}")
 
 string(APPEND CMAKE_CXX_FLAGS " -DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}")
 
@@ -65,14 +64,6 @@ target_compile_options(CommonSettings INTERFACE
   -DUNIT_TEST=${UNIT_TEST_INT}
   ${NEW_ARCHITECTURE_COMPILE_OPTIONS}
 )
-
-# Extracted AAR: ${BUILD_DIR}/react-native-0*/jni/${ANDROID_ABI}
-file(GLOB LIBRN_DIR "${REACT_NATIVE_SO_DIR}/${ANDROID_ABI}")
-if (NOT LIBRN_DIR)
-    # If /${ANDROID_ABI} dir not found, then ${REACT_NATIVE_SO_DIR} is probably:
-    # ReactAndroid/build/react-ndk/exported
-    file(GLOB LIBRN_DIR "${REACT_NATIVE_SO_DIR}")
-endif ()
 
 # tests
 

@@ -236,8 +236,13 @@ export declare function deleteDatabaseSync(dbName: string): void;
  * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
  */
 export declare function addDatabaseChangeListener(listener: (event: {
+    /** The database name. The value would be `main` by default and other database names if you use `ATTACH DATABASE` statement. */
     dbName: string;
+    /** The absolute file path to the database. */
+    dbFilePath: string;
+    /** The table name. */
     tableName: string;
+    /** The changed row ID. */
     rowId: number;
 }) => void): Subscription;
 /**

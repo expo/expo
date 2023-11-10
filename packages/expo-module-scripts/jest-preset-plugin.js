@@ -4,7 +4,10 @@ const nodePreset = {
   transform: {
     '^.+\\.[jt]sx?$': ['babel-jest', { configFile: require.resolve('./babel.config.base.js') }],
   },
-  watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
+  watchPlugins: [
+    require.resolve('jest-watch-typeahead/filename'),
+    require.resolve('jest-watch-typeahead/testname'),
+  ],
 };
 
 module.exports = nodePreset;

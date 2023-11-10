@@ -425,7 +425,6 @@ export default class CameraScreen extends React.Component<object, State> {
         }}
         onBarCodeScanned={this.state.barcodeScanning ? this.onBarCodeScanned : undefined}>
         {this.renderTopBar()}
-
         {this.renderBottomBar()}
       </Camera>
       {this.state.faceDetecting && this.renderFaces()}

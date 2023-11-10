@@ -11,7 +11,7 @@
         android:fillAfter="true"
         android:interpolator="@anim/rns_standard_accelerate_interpolator"
         android:startOffset="0"
-        android:duration="450" />
+        android:duration="83" />
 
     <translate
         android:fromXDelta="0"

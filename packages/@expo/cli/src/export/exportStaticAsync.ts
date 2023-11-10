@@ -16,13 +16,15 @@ import { getVirtualFaviconAssetsAsync } from './favicon';
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
+import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import {
   getApiRoutesForDirectory,
   getRouterDirectoryWithManifest,
 } from '../start/server/metro/router';
+import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
-import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
+import { getFreePortAsync } from '../utils/port';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -41,16 +43,21 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
       learnMore('https://docs.expo.dev/router/reference/static-rendering/')
   );
 
+  // Useful for running parallel e2e tests in CI.
+  const port = await getFreePortAsync(8082);
+
   // TODO: Prevent starting the watcher.
   const devServerManager = new DevServerManager(projectRoot, {
     minify: options.minify,
     mode: 'production',
+    port,
     location: {},
   });
   await devServerManager.startAsync([
     {
       type: 'metro',
       options: {
+        port,
         location: {},
         isExporting: true,
       },
@@ -133,7 +140,7 @@ export async function exportFromServerAsync(
     includeGroupVariations: !exportServer,
     async renderAsync(pathname: string) {
       const template = await renderAsync(pathname);
-      let html = await devServer.composeResourcesWithHtml({
+      let html = await serializeHtmlWithAssets({
         mode: 'production',
         resources,
         template,

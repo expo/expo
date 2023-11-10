@@ -401,15 +401,6 @@ public final class UpdatesDatabase: NSObject {
     }
   }
 
-  public func allUpdateIds(withStatus status: UpdateStatus) throws -> [UUID] {
-    let sql = "SELECT id FROM updates WHERE status = ?1;"
-    let rows = try execute(sql: sql, withArgs: [status.rawValue])
-    return rows.map { row in
-      // swiftlint:disable:next force_cast
-      row["id"] as! UUID
-    }
-  }
-
   public func launchableUpdates(withConfig config: UpdatesConfig) throws -> [Update] {
     // if an update has successfully launched at least once, we treat it as launchable
     // even if it has also failed to launch at least once

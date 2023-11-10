@@ -1,14 +1,13 @@
 diff --git a/packages/expo-av/android/build.gradle b/packages/expo-av/android/build.gradle
-index f2c50906e3..396012ffee 100644
+index 23806e7b3c..780fab15bb 100644
 --- a/packages/expo-av/android/build.gradle
 +++ b/packages/expo-av/android/build.gradle
-@@ -21,6 +21,10 @@ file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { react
- def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
- def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
-
-+REACT_NATIVE_DIR = "${rootDir}/versioned-react-native/packages/react-native"
+@@ -12,6 +12,9 @@ def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
+   ? findProject(":ReactAndroid").getProjectDir().parent
+   : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
+ 
 +REACT_NATIVE_BUILD_FROM_SOURCE = false
-+RN_SO_DIR = "${buildDir}/reactandroid-{VERSIONED_ABI_NAME}-*/jni"
++REACT_NATIVE_DIR = "${rootDir}/versioned-react-native/packages/react-native"
 +
  def reactNativeArchitectures() {
      def value = project.getProperties().get("reactNativeArchitectures")

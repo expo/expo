@@ -106,15 +106,19 @@ export class Database {
    */
   public async transactionExclusiveAsync(task: (txn: Transaction) => Promise<void>): Promise<void> {
     const transaction = await Transaction.createAsync(this);
+    let error;
     try {
       await transaction.execAsync('BEGIN');
       await task(transaction);
       await transaction.execAsync('COMMIT');
     } catch (e) {
       await transaction.execAsync('ROLLBACK');
-      throw e;
+      error = e;
     } finally {
       await transaction.closeAsync();
+    }
+    if (error) {
+      throw error;
     }
   }
 
@@ -191,11 +195,13 @@ export class Database {
   public runAsync(source: string, params: BindParams): Promise<RunResult>;
   public async runAsync(source: string, ...params: any[]): Promise<RunResult> {
     const statement = await this.prepareAsync(source);
+    let result;
     try {
-      return await statement.runAsync(...params);
+      result = await statement.runAsync(...params);
     } finally {
       await statement.finalizeAsync();
     }
+    return result;
   }
 
   /**
@@ -211,11 +217,13 @@ export class Database {
   public getAsync<T>(source: string, params: BindParams): Promise<T | null>;
   public async getAsync<T>(source: string, ...params: any[]): Promise<T | null> {
     const statement = await this.prepareAsync(source);
+    let result;
     try {
-      return await statement.getAsync<T>(...params);
+      result = await statement.getAsync<T>(...params);
     } finally {
       await statement.finalizeAsync();
     }
+    return result;
   }
 
   /**
@@ -232,7 +240,7 @@ export class Database {
   public async *eachAsync<T>(source: string, ...params: any[]): AsyncIterableIterator<T> {
     const statement = await this.prepareAsync(source);
     try {
-      yield* statement.eachAsync<T>(...params);
+      yield* await statement.eachAsync<T>(...params);
     } finally {
       await statement.finalizeAsync();
     }
@@ -251,11 +259,13 @@ export class Database {
   public allAsync<T>(source: string, params: BindParams): Promise<T[]>;
   public async allAsync<T>(source: string, ...params: any[]): Promise<T[]> {
     const statement = await this.prepareAsync(source);
+    let result;
     try {
-      return await statement.allAsync<T>(...params);
+      result = await statement.allAsync<T>(...params);
     } finally {
       await statement.finalizeAsync();
     }
+    return result;
   }
 
   /**
@@ -271,11 +281,13 @@ export class Database {
   public runSync(source: string, params: BindParams): RunResult;
   public runSync(source: string, ...params: any[]): RunResult {
     const statement = this.prepareSync(source);
+    let result;
     try {
-      return statement.runSync(...params);
+      result = statement.runSync(...params);
     } finally {
       statement.finalizeSync();
     }
+    return result;
   }
 
   /**
@@ -291,11 +303,13 @@ export class Database {
   public getSync<T>(source: string, params: BindParams): T | null;
   public getSync<T>(source: string, ...params: any[]): T | null {
     const statement = this.prepareSync(source);
+    let result;
     try {
-      return statement.getSync<T>(...params);
+      result = statement.getSync<T>(...params);
     } finally {
       statement.finalizeSync();
     }
+    return result;
   }
 
   /**
@@ -331,11 +345,13 @@ export class Database {
   public allSync<T>(source: string, params: BindParams): T[];
   public allSync<T>(source: string, ...params: any[]): T[] {
     const statement = this.prepareSync(source);
+    let result;
     try {
-      return statement.allSync<T>(...params);
+      result = statement.allSync<T>(...params);
     } finally {
       statement.finalizeSync();
     }
+    return result;
   }
 
   //#endregion
@@ -397,7 +413,19 @@ export function deleteDatabaseSync(dbName: string): void {
  * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
  */
 export function addDatabaseChangeListener(
-  listener: (event: { dbName: string; tableName: string; rowId: number }) => void
+  listener: (event: {
+    /** The database name. The value would be `main` by default and other database names if you use `ATTACH DATABASE` statement. */
+    dbName: string;
+
+    /** The absolute file path to the database. */
+    dbFilePath: string;
+
+    /** The table name. */
+    tableName: string;
+
+    /** The changed row ID. */
+    rowId: number;
+  }) => void
 ): Subscription {
   return emitter.addListener('onDatabaseChange', listener);
 }

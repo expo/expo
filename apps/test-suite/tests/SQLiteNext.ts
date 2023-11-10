@@ -1,6 +1,7 @@
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
 import * as SQLite from 'expo-sqlite/next';
+import path from 'path';
 
 export const name = 'SQLiteNext';
 
@@ -385,6 +386,7 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
           statement.runAsync('ccc'),
         ]);
 
+        await statement.finalizeAsync();
         const result = await db.getAsync<any>('SELECT COUNT(*) FROM Users');
         expect(result['COUNT(*)']).toEqual(3);
       });
@@ -449,12 +451,10 @@ INSERT INTO Users (name) VALUES ('aaa');
         }
       });
 
-      let error = null;
-      try {
-        await Promise.all([promise1, promise2]);
-      } catch (e) {
-        error = e;
-      }
+      const [result1, result2] = await Promise.allSettled([promise1, promise2]);
+      expect(result1.status).toBe('rejected');
+      expect(result2.status).toBe('fulfilled');
+      const error = (result1 as PromiseRejectedResult).reason;
       expect(error.toString()).toMatch(/Exception from promise1: Expected aaa but received bbb/);
     });
 
@@ -491,17 +491,11 @@ INSERT INTO Users (name) VALUES ('aaa');
         }
       });
 
-      let error = null;
-      try {
-        await Promise.all([promise1, promise2]);
-      } catch (e) {
-        error = e;
-      }
-
+      const [result1, result2] = await Promise.allSettled([promise1, promise2]);
+      expect(result1.status).toBe('fulfilled');
+      expect(result2.status).toBe('rejected');
+      const error = (result2 as PromiseRejectedResult).reason;
       expect(error.toString()).toMatch(/Exception from promise2:[\s\S]*database is locked/);
-
-      // We still need to wait for promise1 to finish for promise1 to finalize the transaction.
-      await promise1;
     });
   });
 
@@ -602,8 +596,9 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
 `);
 
       const waitChangePromise = new Promise((resolve) => {
-        SQLite.addDatabaseChangeListener(({ dbName, tableName, rowId }) => {
-          expect(dbName).toEqual('test.db');
+        SQLite.addDatabaseChangeListener(({ dbName, dbFilePath, tableName, rowId }) => {
+          expect(dbName).toEqual('main');
+          expect(path.basename(dbFilePath)).toEqual('test.db');
           expect(tableName).toEqual('foo');
           expect(rowId).toBeDefined();
           resolve(null);
@@ -618,6 +613,36 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
 
       await db.closeAsync();
     }, 10000);
+  });
+
+  describe('Error handling', () => {
+    it('finalizeUnusedStatementsBeforeClosing should close all unclosed statements', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.prepareAsync('SELECT sqlite_version()');
+
+      let error = null;
+      try {
+        await db.closeAsync();
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeNull();
+    });
+
+    it('disable finalizeUnusedStatementsBeforeClosing should have unclosed statements error when closing db', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', {
+        finalizeUnusedStatementsBeforeClosing: false,
+      });
+      await db.prepareAsync('SELECT sqlite_version()');
+
+      let error = null;
+      try {
+        await db.closeAsync();
+      } catch (e) {
+        error = e;
+      }
+      expect(error.toString()).toMatch(/unable to close due to unfinalized statements/);
+    });
   });
 }
 

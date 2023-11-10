@@ -17,6 +17,7 @@ import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { getRouterDirectoryWithManifest, isApiRouteConvention } from './router';
+import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
@@ -31,17 +32,14 @@ import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
-import {
-  createBundleUrlPath,
-  resolveMainModuleName,
-  shouldEnableAsyncImports,
-} from '../middleware/ManifestMiddleware';
+import { resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import {
   DeepLinkHandler,
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
+import { shouldEnableAsyncImports, createBundleUrlPath } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 
@@ -124,32 +122,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       },
       files,
     };
-  }
-
-  async composeResourcesWithHtml({
-    mode,
-    resources,
-    template,
-    devBundleUrl,
-    basePath,
-  }: {
-    mode: 'development' | 'production';
-    resources: SerialAsset[];
-    template: string;
-    /** asset prefix used for deploying to non-standard origins like GitHub pages. */
-    basePath: string;
-    devBundleUrl?: string;
-  }): Promise<string> {
-    if (!resources) {
-      return '';
-    }
-    const isDev = mode === 'development';
-    return htmlFromSerialAssets(resources, {
-      dev: isDev,
-      template,
-      basePath,
-      bundleUrl: isDev ? devBundleUrl : undefined,
-    });
   }
 
   async getExpoRouterRoutesManifestAsync({ appDir }: { appDir: string }) {
@@ -317,7 +289,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       this.getStaticResourcesAsync({ mode, minify }),
       bundleStaticHtml(),
     ]);
-    const content = await this.composeResourcesWithHtml({
+    const content = serializeHtmlWithAssets({
       mode,
       resources,
       template: staticHtml,
@@ -587,49 +559,4 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
       ...getDevClientProperties(projectRoot, exp),
     });
   };
-}
-
-function htmlFromSerialAssets(
-  assets: SerialAsset[],
-  {
-    dev,
-    template,
-    basePath,
-    bundleUrl,
-  }: {
-    dev: boolean;
-    template: string;
-    basePath: string;
-    /** This is dev-only. */
-    bundleUrl?: string;
-  }
-) {
-  // Combine the CSS modules into tags that have hot refresh data attributes.
-  const styleString = assets
-    .filter((asset) => asset.type === 'css')
-    .map(({ metadata, filename, source }) => {
-      if (dev) {
-        return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
-      } else {
-        return [
-          `<link rel="preload" href="${basePath}/${filename}" as="style">`,
-          `<link rel="stylesheet" href="${basePath}/${filename}">`,
-        ].join('');
-      }
-    })
-    .join('');
-
-  const jsAssets = assets.filter((asset) => asset.type === 'js');
-
-  const scripts = bundleUrl
-    ? `<script src="${bundleUrl}" defer></script>`
-    : jsAssets
-        .map(({ filename }) => {
-          return `<script src="${basePath}/${filename}" defer></script>`;
-        })
-        .join('');
-
-  return template
-    .replace('</head>', `${styleString}</head>`)
-    .replace('</body>', `${scripts}\n</body>`);
 }

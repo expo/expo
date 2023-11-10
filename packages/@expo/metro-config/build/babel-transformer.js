@@ -153,8 +153,6 @@ const getBabelRC = function () {
       const platformOptions = {
         // @ts-expect-error: This is how Metro works by default
         unstable_transformProfile: presetOptions.unstable_transformProfile,
-        // @ts-expect-error: This is how Metro works by default
-        withDevTools: presetOptions.withDevTools,
         disableImportExportTransform: experimentalImportSupport,
         dev: presetOptions.dev,
         enableBabelRuntime: presetOptions.enableBabelRuntime
@@ -218,6 +216,9 @@ function buildBabelConfig(filename, options, plugins = []) {
     ...config
   };
 }
+function isCustomTruthy(value) {
+  return value === true || value === 'true';
+}
 const transform = ({
   filename,
   options,
@@ -231,7 +232,7 @@ const transform = ({
   // Ensure the default babel preset is Expo.
   options.extendsBabelConfigPath = (_getBabelPresetExpo = getBabelPresetExpo(options.projectRoot)) !== null && _getBabelPresetExpo !== void 0 ? _getBabelPresetExpo : undefined;
   try {
-    var _options$customTransf, _options$customTransf2;
+    var _options$customTransf, _options$customTransf2, _options$customTransf3;
     const babelConfig = {
       // ES modules require sourceType='module' but OSS may not always want that
       sourceType: 'unambiguous',
@@ -244,9 +245,14 @@ const transform = ({
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
         isServer: ((_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment) === 'node',
+        isDev: options.dev,
+        // This value indicates if the user has disabled the feature or not.
+        // Other criteria may still cause the feature to be disabled, but all inputs used are
+        // already considered in the cache key.
+        preserveEnvVars: isCustomTruthy((_options$customTransf2 = options.customTransformOptions) === null || _options$customTransf2 === void 0 ? void 0 : _options$customTransf2.preserveEnvVars) ? true : undefined,
         // Pass the engine to babel so we can automatically transpile for the correct
         // target environment.
-        engine: (_options$customTransf2 = options.customTransformOptions) === null || _options$customTransf2 === void 0 ? void 0 : _options$customTransf2.engine,
+        engine: (_options$customTransf3 = options.customTransformOptions) === null || _options$customTransf3 === void 0 ? void 0 : _options$customTransf3.engine,
         // Provide the project root for accurately reading the Expo config.
         projectRoot: options.projectRoot
       },

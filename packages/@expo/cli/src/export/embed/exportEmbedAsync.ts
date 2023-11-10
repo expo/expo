@@ -1,3 +1,4 @@
+import { getConfig } from '@expo/config';
 import fs from 'fs';
 import Server from 'metro/src/Server';
 import output from 'metro/src/shared/output/bundle';
@@ -7,14 +8,40 @@ import path from 'path';
 import { Options } from './resolveOptions';
 import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
-import { importCliSaveAssetsFromProject } from '../../start/server/metro/resolveFromProject';
+import { getMetroDirectBundleOptions } from '../../start/server/middleware/metroOptions';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { profile } from '../../utils/profile';
+import { isEnableHermesManaged } from '../exportHermes';
 import { getAssets } from '../fork-bundleAsync';
+import { persistMetroAssetsAsync } from '../persistMetroAssets';
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
+  const { bundle, assets } = await exportEmbedBundleAsync(projectRoot, options);
+
+  fs.mkdirSync(path.dirname(options.bundleOutput), { recursive: true, mode: 0o755 });
+
+  // Persist bundle and source maps.
+  await Promise.all([
+    output.save(bundle, options, Log.log),
+    // NOTE(EvanBacon): This may need to be adjusted in the future if want to support basePath on native
+    // platforms when doing production embeds (unlikely).
+    options.assetsDest
+      ? persistMetroAssetsAsync(assets, {
+          platform: options.platform,
+          outputDirectory: options.assetsDest,
+          iosAssetCatalogDirectory: options.assetCatalogDest,
+        })
+      : null,
+  ]);
+}
+
+export async function exportEmbedBundleAsync(projectRoot: string, options: Options) {
+  const exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp;
+
+  // TODO: This is slow ~40ms
   const { config } = await loadMetroConfigAsync(
     projectRoot,
     {
@@ -23,13 +50,12 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
       config: options.config,
     },
     {
+      exp,
       isExporting: true,
     }
   );
 
-  // NOTE(EvanBacon): This may need to be adjusted in the future if want to support basePath on native
-  // platforms when doing production embeds (unlikely).
-  const saveAssets = importCliSaveAssetsFromProject(projectRoot);
+  const isHermes = isEnableHermesManaged(exp, options.platform);
 
   let sourceMapUrl = options.sourcemapOutput;
   if (sourceMapUrl && !options.sourcemapUseAbsolutePath) {
@@ -38,13 +64,16 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
 
   const bundleRequest = {
     ...Server.DEFAULT_BUNDLE_OPTIONS,
-    entryFile: options.entryFile,
+    ...getMetroDirectBundleOptions({
+      mainModuleName: options.entryFile,
+      platform: options.platform,
+      minify: options.minify,
+      mode: options.dev ? 'development' : 'production',
+      engine: isHermes ? 'hermes' : undefined,
+    }),
     sourceMapUrl,
-    dev: options.dev,
-    minify: !!options.minify,
-    platform: options.platform,
-    unstable_transformProfile:
-      options.unstableTransformProfile as BundleOptions['unstable_transformProfile'],
+    unstable_transformProfile: (options.unstableTransformProfile ||
+      (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
   };
 
   const server = new Server(config, {
@@ -52,15 +81,13 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   });
 
   try {
-    const bundle = await server.build({
+    const bundle = await profile(
+      server.build.bind(server),
+      'metro-bundle'
+    )({
       ...bundleRequest,
       bundleType: 'bundle',
     });
-
-    fs.mkdirSync(path.dirname(options.bundleOutput), { recursive: true, mode: 0o755 });
-
-    // Persist bundle and source maps.
-    await output.save(bundle, options, Log.log);
 
     // Save the assets of the bundle
     const outputAssets = await getAssets(server, {
@@ -68,7 +95,10 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
       bundleType: 'todo',
     });
 
-    await saveAssets(outputAssets, options.platform, options.assetsDest, options.assetCatalogDest);
+    return {
+      bundle,
+      assets: outputAssets,
+    };
   } finally {
     server.end();
   }

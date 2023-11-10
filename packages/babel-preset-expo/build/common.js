@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
+exports.getInlineEnvVarsEnabled = exports.getIsServer = exports.getIsProd = exports.getIsDev = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
 function hasModule(name) {
     try {
         return !!require.resolve(name);
@@ -52,3 +52,31 @@ function getPossibleProjectRoot(caller) {
     return process.env.EXPO_PROJECT_ROOT;
 }
 exports.getPossibleProjectRoot = getPossibleProjectRoot;
+function getIsDev(caller) {
+    if (caller?.isDev != null)
+        return caller.isDev;
+    // https://babeljs.io/docs/options#envname
+    return process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
+}
+exports.getIsDev = getIsDev;
+function getIsProd(caller) {
+    if (caller?.isDev != null)
+        return caller.isDev === false;
+    // https://babeljs.io/docs/options#envname
+    return process.env.BABEL_ENV === 'production' || process.env.NODE_ENV === 'production';
+}
+exports.getIsProd = getIsProd;
+function getIsServer(caller) {
+    return caller?.isServer ?? false;
+}
+exports.getIsServer = getIsServer;
+function getInlineEnvVarsEnabled(caller) {
+    const isWebpack = getBundler(caller) === 'webpack';
+    const isDev = getIsDev(caller);
+    const isServer = getIsServer(caller);
+    const preserveEnvVars = caller?.preserveEnvVars;
+    // Development env vars are added in the serializer to avoid caching issues in development.
+    // Servers have env vars left as-is to read from the environment.
+    return !isWebpack && !isDev && !isServer && !preserveEnvVars;
+}
+exports.getInlineEnvVarsEnabled = getInlineEnvVarsEnabled;

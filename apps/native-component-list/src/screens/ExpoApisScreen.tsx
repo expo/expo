@@ -1,4 +1,3 @@
-import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import React from 'react';
@@ -79,10 +78,6 @@ const screens = [
   'ViewShot',
   'WebBrowser',
 ];
-
-if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient) {
-  screens.push('InAppPurchases');
-}
 
 export const ScreenItems = screens.map((name) => ({
   name,

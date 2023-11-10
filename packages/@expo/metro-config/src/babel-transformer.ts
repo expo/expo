@@ -114,8 +114,6 @@ const getBabelRC = (function () {
       const platformOptions = {
         // @ts-expect-error: This is how Metro works by default
         unstable_transformProfile: presetOptions.unstable_transformProfile,
-        // @ts-expect-error: This is how Metro works by default
-        withDevTools: presetOptions.withDevTools,
         disableImportExportTransform: experimentalImportSupport,
         dev: presetOptions.dev,
         enableBabelRuntime: presetOptions.enableBabelRuntime,
@@ -194,6 +192,10 @@ function buildBabelConfig(
   };
 }
 
+function isCustomTruthy(value: any): boolean {
+  return value === true || value === 'true';
+}
+
 const transform: BabelTransformer['transform'] = ({
   filename,
   options,
@@ -219,6 +221,15 @@ const transform: BabelTransformer['transform'] = ({
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
         isServer: options.customTransformOptions?.environment === 'node',
+
+        isDev: options.dev,
+
+        // This value indicates if the user has disabled the feature or not.
+        // Other criteria may still cause the feature to be disabled, but all inputs used are
+        // already considered in the cache key.
+        preserveEnvVars: isCustomTruthy(options.customTransformOptions?.preserveEnvVars)
+          ? true
+          : undefined,
         // Pass the engine to babel so we can automatically transpile for the correct
         // target environment.
         engine: options.customTransformOptions?.engine,

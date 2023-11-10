@@ -36,11 +36,11 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
 
         constants["isEmergencyLaunch"] = appLoaderLocal.isEmergencyLaunch
         constants["isEmbeddedLaunch"] = false
-        constants["isMissingRuntimeVersion"] = configuration.isMissingRuntimeVersion
-        constants["isEnabled"] = configuration.isEnabled
+        constants["isMissingRuntimeVersion"] = false
+        constants["isEnabled"] = true
         constants["releaseChannel"] = configuration.releaseChannel
         constants["isUsingEmbeddedAssets"] = false
-        constants["runtimeVersion"] = configuration.runtimeVersion ?: ""
+        constants["runtimeVersion"] = configuration.runtimeVersionRaw ?: ""
         constants["checkAutomatically"] = configuration.checkOnLaunch.toJSString()
         constants["channel"] = configuration.requestHeaders["expo-channel-name"] ?: ""
         constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG

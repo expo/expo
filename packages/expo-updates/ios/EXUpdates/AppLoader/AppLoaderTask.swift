@@ -146,38 +146,6 @@ public final class AppLoaderTask: NSObject {
   }
 
   public func start() {
-    guard config.isEnabled else {
-      let errorMessage = "AppLoaderTask was passed a configuration object with updates disabled. You should load updates from an embedded source rather than calling AppLoaderTask, or enable updates in the configuration."
-      logger.error(message: errorMessage, code: .updateFailedToLoad)
-      delegateQueue.async {
-        self.delegate?.appLoaderTask(
-          self,
-          didFinishWithError: NSError(
-            domain: AppLoaderTask.ErrorDomain,
-            code: 1030,
-            userInfo: [NSLocalizedDescriptionKey: errorMessage]
-          )
-        )
-      }
-      return
-    }
-
-    guard config.updateUrl != nil else {
-      let errorMessage = "AppLoaderTask was passed a configuration object with a null URL. You must pass a nonnull URL in order to use AppLoaderTask to load updates."
-      logger.error(message: errorMessage, code: .updateFailedToLoad)
-      delegateQueue.async {
-        self.delegate?.appLoaderTask(
-          self,
-          didFinishWithError: NSError(
-            domain: AppLoaderTask.ErrorDomain,
-            code: 1030,
-            userInfo: [NSLocalizedDescriptionKey: errorMessage]
-          )
-        )
-      }
-      return
-    }
-
     isRunning = true
 
     var shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdate(withConfig: config)
@@ -305,7 +273,7 @@ public final class AppLoaderTask: NSObject {
         var manifestFiltersError: Error?
         var manifestFilters: [String: Any]?
         do {
-          manifestFilters = try self.database.manifestFilters(withScopeKey: self.config.scopeKey!)
+          manifestFilters = try self.database.manifestFilters(withScopeKey: self.config.scopeKey)
         } catch {
           manifestFiltersError = error
         }
@@ -371,7 +339,7 @@ public final class AppLoaderTask: NSObject {
       }
     }
     remoteAppLoader!.loadUpdate(
-      fromURL: config.updateUrl!
+      fromURL: config.updateUrl
     ) { updateResponse in
       if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
         switch updateDirective {

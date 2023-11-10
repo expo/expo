@@ -76,9 +76,9 @@ export class Statement {
   public async getAsync<T>(...params: unknown[]): Promise<T | null> {
     const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
     if (shouldPassAsObject) {
-      return await this.nativeStatement.objectGetAsync(this.nativeDatabase, bindParams);
+      return (await this.nativeStatement.objectGetAsync(this.nativeDatabase, bindParams)) ?? null;
     } else {
-      return await this.nativeStatement.arrayGetAsync(this.nativeDatabase, bindParams);
+      return (await this.nativeStatement.arrayGetAsync(this.nativeDatabase, bindParams)) ?? null;
     }
   }
 
@@ -179,9 +179,9 @@ export class Statement {
   public getSync<T>(...params: unknown[]): T | null {
     const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
     if (shouldPassAsObject) {
-      return this.nativeStatement.objectGetSync(this.nativeDatabase, bindParams);
+      return this.nativeStatement.objectGetSync(this.nativeDatabase, bindParams) ?? null;
     } else {
-      return this.nativeStatement.arrayGetSync(this.nativeDatabase, bindParams);
+      return this.nativeStatement.arrayGetSync(this.nativeDatabase, bindParams) ?? null;
     }
   }
 
@@ -232,6 +232,9 @@ export function normalizeParams(...params: any[]): {
   shouldPassAsObject: boolean;
 } {
   let bindParams = params.length > 1 ? params : (params[0] as BindParams);
+  if (bindParams == null) {
+    bindParams = [];
+  }
   if (typeof bindParams !== 'object') {
     bindParams = [bindParams];
   }

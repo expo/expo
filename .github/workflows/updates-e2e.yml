@@ -8,7 +8,10 @@ on:
       - packages/@expo/cli/**
       - packages/@expo/config-plugins/**
       - packages/@expo/config-types/**
+      - packages/expo-av/**
+      - packages/expo-image/**
       - packages/expo-json-utils/**
+      - packages/expo-localization/**
       - packages/expo-manifests/**
       - packages/expo-modules-core/**
       - packages/expo-structured-headers/**
@@ -93,10 +96,10 @@ jobs:
         run: echo "TEST_PROJECT_ROOT=$GITHUB_WORKSPACE/updates-e2e" >> $GITHUB_ENV
       - name: 📦 Setup test project for updates E2E basic tests
         if: matrix.platform != 'tvos'
-        run: node packages/expo-updates/e2e/setup/create-eas-project.js
+        run: yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project.ts
       - name: 📦 Setup test project for testing Apple TV build
         if: matrix.platform == 'tvos'
-        run: node packages/expo-updates/e2e/setup/create-eas-project-tv.js
+        run: yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project-tv.ts
       - name: 🚀 Build with EAS for ${{ matrix.platform }}
         uses: ./.github/actions/eas-build
         id: build_eas

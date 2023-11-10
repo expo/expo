@@ -54,7 +54,7 @@ SingleInstanceChecker<T>::SingleInstanceChecker() {
   // to co-exist during a reload.
   assertWithMessage(
       instanceCount_ <= 1,
-      "More than one instance of " + className +
+      "[Reanimated] More than one instance of " + className +
           " present. This may indicate a memory leak due to a retain cycle.");
 
   instanceCount_++;

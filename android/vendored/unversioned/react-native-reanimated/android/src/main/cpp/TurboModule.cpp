@@ -35,7 +35,7 @@ jsi::Value TurboModule::get(
       meta.argCount,
       [this, meta](
           facebook::jsi::Runtime &rt,
-          const facebook::jsi::Value &thisVal,
+          const facebook::jsi::Value &,
           const facebook::jsi::Value *args,
           size_t count) { return meta.invoker(rt, *this, args, count); });
 }

@@ -12,7 +12,6 @@ import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher
-import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
@@ -22,7 +21,6 @@ import expo.modules.manifests.core.Manifest
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_ALGORITHM_KEY
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_KEY_ID_KEY
 import expo.modules.updates.codesigning.CodeSigningAlgorithm
-import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -178,10 +176,6 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     updatesConfiguration = configuration
     updatesDirectory = directory
     this.selectionPolicy = selectionPolicy
-    if (!configuration.isEnabled) {
-      launchWithNoDatabase(context, null)
-      return
-    }
     LoaderTask(
       configuration,
       databaseHolder,
@@ -297,24 +291,6 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         }
       }
     ).start(context)
-  }
-
-  private fun launchWithNoDatabase(context: Context, e: Exception?) {
-    this.launcher = NoDatabaseLauncher(context, updatesConfiguration, e)
-    var manifestJson = EmbeddedManifest.get(context, updatesConfiguration)!!.manifest.getRawJson()
-    try {
-      manifestJson = processManifestJson(manifestJson)
-    } catch (ex: Exception) {
-      Log.e(
-        TAG,
-        "Failed to process manifest; attempting to launch with raw manifest. This may cause errors or unexpected behavior.",
-        e
-      )
-    }
-    callback.onManifestCompleted(Manifest.fromManifestJson(manifestJson))
-    // ReactInstanceManagerBuilder accepts embedded assets as strings with "assets://" prefixed
-    val launchAssetFile = launcher.launchAssetFile ?: "assets://" + launcher.bundleAssetName
-    callback.onBundleCompleted(launchAssetFile)
   }
 
   @Throws(JSONException::class)

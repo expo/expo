@@ -20,12 +20,6 @@ class JavaScriptObject;
 
 class JSIInteropModuleRegistry;
 
-#if REACT_NATIVE_TARGET_VERSION >= 73
-using NativeMethodCallInvokerCompatible = react::NativeMethodCallInvoker;
-#else
-using NativeMethodCallInvokerCompatible = react::CallInvoker;
-#endif
-
 /**
  * A wrapper for the jsi::Runtime.
  * This class is used as a bridge between CPP and Kotlin and to encapsulate common runtime helper functions.
@@ -48,8 +42,7 @@ public:
   JavaScriptRuntime(
     JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Runtime *runtime,
-    std::shared_ptr<react::CallInvoker> jsInvoker,
-    std::shared_ptr<NativeMethodCallInvokerCompatible> nativeInvoker
+    std::shared_ptr<react::CallInvoker> jsInvoker
   );
 
   /**
@@ -84,7 +77,6 @@ public:
   void installMainObject();
 
   std::shared_ptr<react::CallInvoker> jsInvoker;
-  std::shared_ptr<NativeMethodCallInvokerCompatible> nativeInvoker;
 
   std::shared_ptr<jsi::Object> getMainObject();
 

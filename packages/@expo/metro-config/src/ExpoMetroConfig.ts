@@ -129,8 +129,13 @@ export function getDefaultConfig(
   const metroConfig: Partial<MetroConfig> = mergeConfig(metroDefaultValues, {
     watchFolders,
     resolver: {
-      // unstable_conditionsByPlatform: { web: ['browser'] },
-      unstable_conditionNames: ['require', 'import', 'react-native'],
+      unstable_conditionsByPlatform: {
+        ios: ['react-native'],
+        android: ['react-native'],
+        // This is removed for server platforms.
+        web: ['browser'],
+      },
+      unstable_conditionNames: ['require', 'import'],
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['ios', 'android'],
       assetExts: metroDefaultValues.resolver.assetExts
@@ -153,10 +158,10 @@ export function getDefaultConfig(
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
         ];
 
-        // const stdRuntime = resolveFrom.silent(projectRoot, 'expo/build/winter');
-        // if (stdRuntime) {
-        //   preModules.push(stdRuntime);
-        // }
+        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/build/winter');
+        if (stdRuntime) {
+          preModules.push(stdRuntime);
+        }
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
         // This will only be applied if the module is installed and imported somewhere in the bundle already.
@@ -167,7 +172,7 @@ export function getDefaultConfig(
 
         return preModules;
       },
-      getPolyfills: () => require(path.join(reactNativePath, 'rn-get-polyfills'))(),
+      getPolyfills: () => require('@react-native/js-polyfills')(),
     },
     server: {
       rewriteRequestUrl: getRewriteRequestUrl(projectRoot),
@@ -201,6 +206,12 @@ export function getDefaultConfig(
       babelTransformerPath: require.resolve('./babel-transformer'),
       assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
       assetPlugins: getAssetPlugins(projectRoot),
+      getTransformOptions: async () => ({
+        transform: {
+          experimentalImportSupport: false,
+          inlineRequires: true,
+        },
+      }),
     },
   });
 

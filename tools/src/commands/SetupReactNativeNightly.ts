@@ -100,29 +100,6 @@ async function addPinnedPackagesAsync(packages: Record<string, string>) {
 async function updateReactNativePackageAsync() {
   const reactNativeRoot = path.join(EXPO_DIR, 'node_modules', 'react-native');
 
-  // Update native ReactNativeVersion
-  const versions = (process.env.REACT_NATIVE_OVERRIDE_VERSION ?? '9999.9999.9999').split('.');
-  await transformFileAsync(
-    path.join(
-      reactNativeRoot,
-      'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java'
-    ),
-    [
-      {
-        find: /("major", )\d+,/g,
-        replaceWith: `$1${versions[0]},`,
-      },
-      {
-        find: /("minor", )\d+,/g,
-        replaceWith: `$1${versions[1]},`,
-      },
-      {
-        find: /("patch", )\d+,/g,
-        replaceWith: `$1${versions[2]},`,
-      },
-    ]
-  );
-
   // https://github.com/facebook/react-native/pull/38993
   await transformFileAsync(path.join(reactNativeRoot, 'React-Core.podspec'), [
     {

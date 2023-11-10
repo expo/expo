@@ -8,6 +8,8 @@ import fs from 'fs';
 import { builtinModules } from 'module';
 import path from 'path';
 
+import { copyAsync } from '../../../utils/dir';
+
 // A list of the Node.js standard library modules that are currently
 // available,
 export const NODE_STDLIB_MODULES: string[] = [
@@ -23,12 +25,24 @@ export const NODE_STDLIB_MODULES: string[] = [
 export const EXTERNAL_REQUIRE_POLYFILL = '.expo/metro/polyfill.js';
 export const EXTERNAL_REQUIRE_NATIVE_POLYFILL = '.expo/metro/polyfill.native.js';
 export const METRO_EXTERNALS_FOLDER = '.expo/metro/externals';
+export const METRO_SHIMS_FOLDER = '.expo/metro/shims';
 
 export function getNodeExternalModuleId(fromModule: string, moduleId: string) {
   return path.relative(
     path.dirname(fromModule),
     path.join(METRO_EXTERNALS_FOLDER, moduleId, 'index.js')
   );
+}
+
+export async function setupShimFiles(projectRoot: string) {
+  await fs.promises.mkdir(path.join(projectRoot, METRO_SHIMS_FOLDER), { recursive: true });
+  // Copy the shims to the project folder in case we're running in a monorepo.
+  const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '../static/shims');
+
+  await copyAsync(shimsFolder, path.join(projectRoot, METRO_SHIMS_FOLDER), {
+    overwrite: true,
+    recursive: true,
+  });
 }
 
 export async function setupNodeExternals(projectRoot: string) {

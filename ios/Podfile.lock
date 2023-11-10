@@ -154,7 +154,6 @@ PODS:
     - Analytics
     - AppAuth
     - Branch
-    - EXBranch
     - FBAudienceNetwork
     - FBSDKCoreKit
     - Google-Maps-iOS-Utils
@@ -809,10 +808,6 @@ PODS:
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXBranch (6.5.0):
-    - Branch (= 0.35.0)
-    - ExpoModulesCore
-    - React-Core
   - EXCalendar (12.1.0):
     - ExpoModulesCore
   - EXConstants (15.2.0):
@@ -855,6 +850,8 @@ PODS:
     - ExpoModulesCore
   - ExpoCamera (13.8.0):
     - ExpoModulesCore
+    - ZXingObjC/OneD
+    - ZXingObjC/PDF417
   - ExpoCellular (5.6.0):
     - ExpoModulesCore
   - ExpoClipboard (4.7.0):
@@ -939,7 +936,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (11.6.0):
     - ExpoModulesCore
-  - ExpoSQLite (11.8.0):
+  - ExpoSQLite (12.0.0):
     - ExpoModulesCore
     - sqlite3 (~> 3.42.0)
   - ExpoStoreReview (6.7.0):
@@ -1598,7 +1595,7 @@ PODS:
     - React-Core
   - RNGestureHandler (2.12.0):
     - React-Core
-  - RNReanimated (3.3.0):
+  - RNReanimated (3.5.4):
     - DoubleConversion
     - FBLazyVector
     - glog
@@ -1627,7 +1624,7 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.22.0):
+  - RNScreens (3.27.0):
     - React-Core
     - React-RCTImage
   - RNSVG (13.9.0):
@@ -1817,7 +1814,6 @@ DEPENDENCIES:
   - EASClient/Tests (from `../packages/expo-eas-client/ios`)
   - EXAV (from `../packages/expo-av/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
-  - EXBranch (from `../packages/expo-branch/ios`)
   - EXCalendar (from `../packages/expo-calendar/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
@@ -2245,8 +2241,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-av/ios"
   EXBarCodeScanner:
     :path: "../packages/expo-barcode-scanner/ios"
-  EXBranch:
-    :path: "../packages/expo-branch/ios"
   EXCalendar:
     :path: "../packages/expo-calendar/ios"
   EXConstants:
@@ -2522,7 +2516,7 @@ SPEC CHECKSUMS:
   ABI49_0_0ExpoImagePicker: e90159346c8082085c6071c56873a4deea002a97
   ABI49_0_0ExpoInsights: d4433e3114fc7fd01edbc82aa8cb72c0e346f40d
   ABI49_0_0ExpoKeepAwake: 5508e162548e92d0087811d63218030135ad45e0
-  ABI49_0_0ExpoKit: 98a60b257663bce6159e04ab9a8b18485bdec1ec
+  ABI49_0_0ExpoKit: 96b0359fa56c7e5068471ce0383e186c4b9b36bc
   ABI49_0_0ExpoLinearGradient: 98f9ba2f1b8bf7cc3974c1681114d58a2c07341f
   ABI49_0_0ExpoLocalAuthentication: fbc31ba5781a6b74fe8cd4f4dbbac4200ff8b076
   ABI49_0_0ExpoLocalization: ecce53a514e89c84e43ce3ed9fe38bf30258c99b
@@ -2610,69 +2604,68 @@ SPEC CHECKSUMS:
   Branch: 23b6b9351d5574377e7a764841cfb13a70c2799b
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  EASClient: e40ec588adaaed075128bebdcd852e1fe749ea02
-  EXAV: 99e41d9fd39a5d17eb66d822197a249d80140d56
-  EXBarCodeScanner: 9d23a7823c1dda81249aa8d494bae6130e312ab1
-  EXBranch: 3abd983225b85532b79f257ca2c8f573b7d468c7
-  EXCalendar: 3380176a50dac91328e80a1cf32b6819dc0f08f4
-  EXConstants: 1734e43270773c7e22c50492bcbd3c2557f4bf14
-  EXContacts: 49cadf80e7f1019821dde4a536960717f474dbeb
-  EXFont: f229885758944aad44348468d62a3493012decd6
-  EXImageLoader: 7f0a6f7534461787baf1c6c1140c6c13e89e82bb
-  EXJSONUtils: f201c0e92a2a835909714b9c60f6fd65dd01f785
-  EXLocation: 43aa0af2d612791245df41f86d0995c7380abd53
-  EXManifests: 04bba5e6b64da18ac13011c367316f203760dea8
-  EXMediaLibrary: 2b8d9f49a6c2523b4e0ae9557db05f1343ef820d
-  EXNotifications: c3d43ae880be510cd95d92cc63505383c66dd353
-  Expo: a0d8fe46ad02731a3f8df4bee9792154ad72bff1
-  ExpoAppleAuthentication: c6d8719247589d41c3ec89e8a822ecf0c4d56d51
-  ExpoApplication: 47646ff8a434290959a73f131cba7a96eba2be9e
-  ExpoBackgroundFetch: 6753a73c4c5e705c19f00e5bd69f7284a1f8f9f7
-  ExpoBattery: f7ecc6800108c14a1425d3e7ea49609a5e1cb013
-  ExpoBlur: 2e733ec3aa76653040b29a833984f128a293295a
-  ExpoBrightness: dfc8f9e9e936decbda6b1a332e7f7176f28377ab
-  ExpoCamera: 377b2a9759cd86e455d6fb46b65b3eb6f8e29446
-  ExpoCellular: 1870591227bdb23b171490ea9ea06f504f2cb812
-  ExpoClipboard: 8f04af2957214af1e45a056b2331327721cd7168
-  ExpoCrypto: ebc31369538a8a56cc2a5d447c22318465e4f14f
-  ExpoDevice: 9587c3f5820c176dfaa861c5eff6cdcb67bd3e89
-  ExpoDocumentPicker: 630b37fedb2911064d33236cc93729bebe2cce5f
-  ExpoFileSystem: 9920645fb15201acac21ee631799ac9bfcad8479
-  ExpoGL: b0a5371872d1857fb6f154a0df7e41a72ed70465
-  ExpoHaptics: acdfbe0450cf8c8ce97b5801326d0dddbddf7048
-  ExpoHead: 625d2c4518d00ccc47cd7cbeb89975570ad57ba0
-  ExpoImage: 64cd716d10414edf59342de32043857a58e9a2a3
-  ExpoImageManipulator: 6c30083e367e83eb7719db833c225bfc2ae53fe4
-  ExpoImagePicker: d01668d6308e1b7bd50b530ee72187f62dcd1c48
-  ExpoKeepAwake: 1ced2ebbeb594a66462568a7b7d9ac06f88abe89
-  ExpoLinearGradient: 4c88e406b9c9ccefcc657943b26c9b1d72882c26
-  ExpoLocalAuthentication: dd96886ee4c50a0ec5b73bae5e929ea082a2e53e
-  ExpoLocalization: ac58dde8d9f0e300e95f5a4c8e3a7b45601a5e8d
-  ExpoMailComposer: d220c74a211bf703ddbd1a8aaf97c4e4d5329845
-  ExpoModulesCore: c18917c5a1e6e637e039d07069cebdc088b37475
-  ExpoModulesTestCore: 857e954f27e424f45157d2c43504e32af0f0d46d
-  ExpoNetwork: 885d63dbe37a77ae06652bcfb42afb2bb5bc4a7c
-  ExpoPrint: bcac9d36faaada5a6dd51dffbb4aa08f4f4514f2
-  ExpoRandom: 450083d54eb573d5eed11bb9cee2252933f02e87
-  ExpoScreenOrientation: 2cd1f9bcca5288196c6ed58c4410e2bd4235edcb
-  ExpoSecureStore: 8476999c3d6f7e37705aedc7a987f2b1d45164c6
-  ExpoSensors: 54491b67e9ebd486f923ccd6508f1ae4541c814f
-  ExpoSharing: 4cc060e992c6334da17ba05a7e8a60254cfe480f
-  ExpoSMS: 472f07a415ce52f32d25a8b1c3d02f6bf8d3af05
-  ExpoSpeech: 538590bbe4d72e70bde918b4cff62e006da3dadb
-  ExpoSQLite: 312f219f0a8137aec65760f59d859f89c34a8360
-  ExpoStoreReview: 0ba6078484c39e8cb23f30b13156f3f30e40d7ba
-  ExpoSystemUI: a37c7207c92098105fcf83e7ae290c38f7e3c07a
-  ExpoTrackingTransparency: b14d3e7946b36962ee87c8656be540d60ff70c5d
-  ExpoVideo: d02bcd2a3afa123dc4a7edfc2d0db6cb5177bd6a
-  ExpoVideoThumbnails: e04eb6c4a40b7ade09afa5ff9afdc6afc83602df
-  ExpoWebBrowser: 7eace712d903993a5962aa1a211a19be95f0d5a7
-  EXScreenCapture: bfbbabb3feff9839ee9c1d6bda1a827a866f8fbd
-  EXSplashScreen: 4823f5693944dedee7c4147567a548efb7100f2a
-  EXStructuredHeaders: d16bfeda62ccfea69015df87cb4d1d92528b02d7
-  EXTaskManager: 0f640aa791ebac6c38efd4842e54eb15cff06e28
-  EXUpdates: 312d2ac94d300d33880fad7363ca5f20ea465453
-  EXUpdatesInterface: 806249fbd771c72f015125166d756e1d71f3b905
+  EASClient: b98df462964e03ad48a44615e0141d8d25bfc4d4
+  EXAV: 6e2524617053a4590b0ef46a4fcb9a13d97bac8a
+  EXBarCodeScanner: da49272be74d5be70d0f5eab3dea576977b8d0cf
+  EXCalendar: 31d366a7851700af2eca360a3673503b774a3304
+  EXConstants: 230de23b26974884686d49205e6822a02b6dd6d0
+  EXContacts: 24e46f5cf1ba9776a2f301c4f3aa821848035a10
+  EXFont: e5fa244ad8c8d6fcf3a215e1fdcaedbc9b580aad
+  EXImageLoader: 6ffefe300f6f1a5be46f3722944d7f48a44f36bf
+  EXJSONUtils: d15120ce0e8967b0822880162039dd75e5867086
+  EXLocation: db102a331d49b1f55a82409f9d53a22684093c0c
+  EXManifests: b658c34011f90e3379b515fb50680acb49ba099a
+  EXMediaLibrary: 13e742c3235b09d8ac7300f982b91b0ed72dee54
+  EXNotifications: 492c39d8a09c6ea77bc9979a0b2ac9bdd4fe52c1
+  Expo: ec3dff9f00792f6a2a4ec9b867c8575ad48f919e
+  ExpoAppleAuthentication: 7676bc4d7b02362d1127b2b264d3a0ca649e4b8c
+  ExpoApplication: d181a88964679df7241ff101e7be1802758c5b9a
+  ExpoBackgroundFetch: a30484f343fdecb7ff4e1e38368f33a59c7c7266
+  ExpoBattery: 807b36eacbe112503a9a0ca0f862ee7a653a4639
+  ExpoBlur: fd3aefb4b4f3acaaa1ca2406cf9a98351ec5ffc4
+  ExpoBrightness: f521d33b9a5211ba9c4d1749b4ec7ca3d9aa3cd3
+  ExpoCamera: ca563f22e6418a63ae420424e94d032ec1b7b7d1
+  ExpoCellular: 23176ea4488b3a69a43101a31857b84e2df71305
+  ExpoClipboard: f0beee97ddfe5d3376d9e2d6ff72300be6a07d70
+  ExpoCrypto: 5cd349fbd604e28dbc92fce97a587b4f0197f93d
+  ExpoDevice: 09c362d66308f0d7547ffc964ea19cf8e12c9b1d
+  ExpoDocumentPicker: b33b9c68f55d282fca35f25a9f64ecec7e5e9bd1
+  ExpoFileSystem: 5014f25f212972b797ce29dbbae8dceb1f4fae31
+  ExpoGL: 469c5c99b28bdaaff38ed9e913e3d3036e3976aa
+  ExpoHaptics: 71f2315d201911bd75b94924c5f6a9aaa5220751
+  ExpoHead: dd640949303710dd5ee8fc9cefaefecd9a6be340
+  ExpoImage: a02f1b0c514f3521c8b442a93687f927ef2c0d8d
+  ExpoImageManipulator: 858ad2f65e560ce5d2da65f6a625aa236563b23b
+  ExpoImagePicker: ba4a77770995ca6512a8a63ebe13af0e29c46bbf
+  ExpoKeepAwake: 11a6adc67b21af7a520ee62fe9a014eca6871884
+  ExpoLinearGradient: 04e65c5a1bc2eb79953a8636537ef2cbfa743b5b
+  ExpoLocalAuthentication: 0323879e8592b859b55c12012874c60a831699c2
+  ExpoLocalization: ebcdab1a3b0d025e6c4c7d7dbf87ab70d23bd5a7
+  ExpoMailComposer: 142575dd638c48b3fabf5127bc6652548fdaac5f
+  ExpoModulesCore: d712760b77977a3454bf310c7b97e90bd00ae16d
+  ExpoModulesTestCore: e95cb44dbbfc57128993b1d8a15dd56f720f2756
+  ExpoNetwork: 6bfaef1f062be33276b573379fdc09ea78d7aa05
+  ExpoPrint: 5c1599952793b22a0261dcf1da8d601bc8c00c73
+  ExpoRandom: 67ce2870b1277ba25f93b2601a6ee168ff7f1b9f
+  ExpoScreenOrientation: b6f32b097a9629a572168a11855adc096a338f65
+  ExpoSecureStore: 7b56a1668a764401f94b193bd2cae2e113f26119
+  ExpoSensors: 83ea3eeebc81c729245506c8c07194e5fb68853e
+  ExpoSharing: 28a662c0718e2680510ca5a208817164944f1cca
+  ExpoSMS: 86be39c17d0c6cb50c63271751deaa26381ce25d
+  ExpoSpeech: 8a4624ecde6e27157db008d0cc88572a4f523bd5
+  ExpoSQLite: f77ef48850c7b2e6573812f0ad2fb46bf0c6eefb
+  ExpoStoreReview: 462e12ab98505c836fffe262965a0852f4b32260
+  ExpoSystemUI: adb6c827f30566d132501518df24b5b7e4ed294c
+  ExpoTrackingTransparency: a7cf99bb23fa213879c36552dda51b6aa63f0279
+  ExpoVideo: 24287b18e9aa1b79cce3159d58a5aef1909fd4bd
+  ExpoVideoThumbnails: 5a579eac1d481891adad831f01acec09b2dbf7d2
+  ExpoWebBrowser: 71200e00b0a3c3a78a00e60ef6e3577ad521b8bf
+  EXScreenCapture: 0031ceb57d192ed1309ada12b43e6259a2e3c46c
+  EXSplashScreen: 9c781de1c78454f5f3dd2c6a0a381ee50822b037
+  EXStructuredHeaders: b88446922ba65b0c42defc5b409e0789b672d396
+  EXTaskManager: 8bbe029b46e7e419a0429837ced467791fc6c806
+  EXUpdates: 131dc5d0a58711e43eead0a785f863e810e55ee1
+  EXUpdatesInterface: defbda79f841a0dec9588f2cbf9fdfed52583667
   FBAEMKit: 5facf4292bff062963f563d68fd5c0cdd6c90d63
   FBAudienceNetwork: 03e273f66b70756be7d060927111af97b7641b06
   FBLazyVector: 71803c074f6325f10b5ec891c443b6bbabef0ca7
@@ -2745,7 +2738,7 @@ SPEC CHECKSUMS:
   React-RCTSettings: 2c8f56a3f43ee64f79e21bc3fbfd306a303759c4
   React-RCTText: ce4499e4f2d8f85dc4b93ff0559313a016c4f3e2
   React-RCTVibration: e9ac884f275dcc0d539b2fa7586444d54ac26e78
-  React-rncore: 446a0d6fddbd0cfd9f2b626e228b4953d5185d98
+  React-rncore: 31a4000daac4fee2c6bed0044ec094ff3599bb62
   React-runtimeexecutor: 7e31e2bc6d0ecc83d4ba05eadc98401007abc10c
   React-runtimescheduler: cc32add98c45c5df18436a6a52a7e1f6edec102c
   React-utils: 7a9918a1ffdd39aba67835d42386f592ea3f8e76
@@ -2753,8 +2746,8 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
   RNFlashList: ade81b4e928ebd585dd492014d40fb8d0e848aab
   RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
-  RNReanimated: c540188fb085b7bf60678f5f5ca3ced906faaab7
-  RNScreens: 68fd1060f57dd1023880bf4c05d74784b5392789
+  RNReanimated: 55bccc2349a021d103ee111ec95e167d0f12211b
+  RNScreens: 2b19e2471db8a581c83f381f4ea5d43071c9a3bf
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
   SDWebImageAVIFCoder: 8348fef6d0ec69e129c66c9fe4d74fbfbf366112
@@ -2771,10 +2764,10 @@ SPEC CHECKSUMS:
   StripePaymentSheet: 1fef5afa050bfd684e84553cba613041a2b3d7b7
   StripePaymentsUI: 7d2fc8fe17c3fdc63508bc54df2b7cc3f45c8ef7
   StripeUICore: 1dc4d2f9afcd908db85190e9091dfe260a1861fe
-  UMAppLoader: b89b2daf2f10d2767d670bcd7417493be38fdc40
+  UMAppLoader: 78c74693193f977fc851141d0fc49ca42cf24c72
   Yoga: 86fed2e4d425ee4c6eab3813ba1791101ee153c6
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 06342aaca572567c83a18449ba902704200b41cc
+PODFILE CHECKSUM: 548074f79b4144edeae371a061bbe3a1aa0d8909
 
 COCOAPODS: 1.12.1

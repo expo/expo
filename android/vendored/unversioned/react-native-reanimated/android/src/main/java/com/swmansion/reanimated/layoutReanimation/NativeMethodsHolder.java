@@ -9,9 +9,11 @@ public interface NativeMethodsHolder {
 
   void clearAnimationConfig(int tag);
 
-  void cancelAnimation(int tag, int type, boolean cancelled, boolean removeView);
+  void cancelAnimation(int tag);
 
   boolean isLayoutAnimationEnabled();
 
   int findPrecedingViewTagForTransition(int tag);
+
+  void checkDuplicateSharedTag(int viewTag, int screenTag);
 }

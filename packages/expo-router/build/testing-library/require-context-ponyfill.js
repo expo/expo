@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// @ts-expect-error: types node
+// @ts-ignore: types node
 const node_fs_1 = __importDefault(require("node:fs"));
-// @ts-expect-error: types node
+// @ts-ignore: types node
 const node_path_1 = __importDefault(require("node:path"));
 function requireContext(base = '.', scanSubDirectories = true, regularExpression = /\.[tj]sx?$/) {
     const files = {};

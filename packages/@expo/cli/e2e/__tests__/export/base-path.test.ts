@@ -5,7 +5,7 @@ import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, getPageHtml, getRouterE2ERoot } from '../utils';
+import { bin, ensurePortFreeAsync, getPageHtml, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -16,6 +16,8 @@ describe('static-rendering with a custom base path', () => {
 
   beforeAll(
     async () => {
+      await ensurePortFreeAsync(8081);
+
       const basePath = '/one/two';
       process.env.EXPO_E2E_BASE_PATH = basePath;
       await execa('node', [bin, 'export', '-p', 'web', '--clear', '--output-dir', outputName], {

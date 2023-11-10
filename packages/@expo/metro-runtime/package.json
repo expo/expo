@@ -35,24 +35,5 @@
   },
   "peerDependencies": {
     "react-native": "*"
-  },
-  "dependencies": {
-    "qs": "^6.10.3"
-  },
-  "jest": {
-    "projects": [
-      {
-        "preset": "jest-expo/ios",
-        "clearMocks": true
-      },
-      {
-        "preset": "jest-expo/android",
-        "clearMocks": true
-      },
-      {
-        "preset": "jest-expo/web",
-        "clearMocks": true
-      }
-    ]
   }
 }
