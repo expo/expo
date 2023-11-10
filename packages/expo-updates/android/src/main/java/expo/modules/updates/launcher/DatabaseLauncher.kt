@@ -155,9 +155,11 @@ class DatabaseLauncher(
         }
         val filename = asset.relativePath
         if (filename != null) {
-          val file = when (asset.embeddedAssetFilename != null) {
-            true -> File(asset.embeddedAssetFilename)
-            false -> File(updatesDirectory, asset.relativePath)
+          val embeddedAssetFilename = asset.embeddedAssetFilename
+          val file = if (embeddedAssetFilename != null) {
+            File(embeddedAssetFilename)
+          } else {
+            File(updatesDirectory, asset.relativePath)
           }
           this[asset] = Uri.fromFile(file).toString()
         }
