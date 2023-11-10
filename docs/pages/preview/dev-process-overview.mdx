@@ -3,10 +3,9 @@ title: Development process overview
 description: An overview of the development process of building an Expo app to help build mental model of the core development loop.
 ---
 
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Diagram } from '~/ui/components/Diagram';
 import { Terminal } from '~/ui/components/Snippet';
-import { DocsLogo } from '@expo/styleguide';
 
 You might have used Expo or React Native before or are using them for a while, or you are still learning about the ecosystem. This document starts by clarifying key concepts and then defines different parts of the core development loop.
 
@@ -149,6 +148,7 @@ Learn more about [cloud-based workflows with EAS Build](/build/introduction/) an
 
 </Collapsible>
 
+{/* prettier-ignore */}
 {/* ## Initialize and run a project
 
 The easiest way to [create a new project is with `create-expo-app`](/get-started/create-a-project/#initialize-a-new-project). After creating your project, you can immediately launch it directly in Expo Go on your physical device or in an emulator/simulator if you want to experiment or build a quick prototype.
@@ -170,6 +170,12 @@ In most cases, you will create and use a development build of your project. You 
 /> */}
 
 ## The core development loop
+
+<Diagram
+  source="/static/images/guides/core-development-loop-light.png"
+  darkSource="/static/images/guides/core-development-loop-dark.png"
+  alt="Core development loop diagram"
+/>
 
 The core development loop described in the diagram above is a cycle of four main activities that you typically go through when developing an app.
 
