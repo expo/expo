@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- [Android] Enforce minimum authentication tag length for the `AESEncryptor` for improved security. ([#25294](https://github.com/expo/expo/pull/25294) by [@behenate](https://github.com/behenate))
+
 ## 12.6.0 — 2023-10-17
 
 ### 🛠 Breaking changes
