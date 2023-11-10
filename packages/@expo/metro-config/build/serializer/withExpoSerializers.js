@@ -19,6 +19,13 @@ function _jscSafeUrl() {
   };
   return data;
 }
+function _getAssets() {
+  const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/getAssets"));
+  _getAssets = function () {
+    return data;
+  };
+  return data;
+}
 function _sourceMapString() {
   const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
   _sourceMapString = function () {
@@ -103,17 +110,18 @@ function withSerializerPlugins(config, processors) {
     ...config,
     serializer: {
       ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(processors, originalSerializer)
+      customSerializer: createSerializerFromSerialProcessors(config, processors, originalSerializer)
     }
   };
 }
-function getDefaultSerializer(fallbackSerializer) {
+function getDefaultSerializer(config, fallbackSerializer) {
   const defaultSerializer = fallbackSerializer !== null && fallbackSerializer !== void 0 ? fallbackSerializer : async (...params) => {
     const bundle = (0, _baseJSBundle().baseJSBundle)(...params);
     const outputCode = (0, _bundleToString().default)(bundle).code;
     return outputCode;
   };
   return async (...props) => {
+    var _assetPlugins;
     const [entryPoint, preModules, graph, options] = props;
     const platform = (0, _baseJSBundle().getPlatformOption)(graph, options);
     if (!options.sourceUrl) {
@@ -129,6 +137,17 @@ function getDefaultSerializer(fallbackSerializer) {
     const cssDeps = (0, _getCssDeps().getCssSerialAssets)(graph.dependencies, {
       projectRoot: options.projectRoot,
       processModuleFilter: options.processModuleFilter
+    });
+
+    // TODO: Convert to serial assets
+    // TODO: Disable this call dynamically in development since assets are fetched differently.
+    const metroAssets = await (0, _getAssets().default)(graph.dependencies, {
+      processModuleFilter: options.processModuleFilter,
+      assetPlugins: (_assetPlugins = config.transformer.assetPlugins) !== null && _assetPlugins !== void 0 ? _assetPlugins : [],
+      platform,
+      projectRoot: options.projectRoot,
+      // this._getServerRootDir(),
+      publicPath: config.transformer.publicPath
     });
     const jsAssets = [];
     const jsCode = await defaultSerializer(entryPoint, preModules, graph, {
@@ -159,7 +178,10 @@ function getDefaultSerializer(fallbackSerializer) {
         source: sourceMap
       });
     }
-    return JSON.stringify([...jsAssets, ...cssDeps]);
+    return JSON.stringify({
+      artifacts: [...jsAssets, ...cssDeps],
+      assets: metroAssets
+    });
   };
 }
 function getSortedModules(graph, {
@@ -194,8 +216,8 @@ function serializeToSourceMap(...props) {
     ...options
   });
 }
-function createSerializerFromSerialProcessors(processors, originalSerializer) {
-  const finalSerializer = getDefaultSerializer(originalSerializer);
+function createSerializerFromSerialProcessors(config, processors, originalSerializer) {
+  const finalSerializer = getDefaultSerializer(config, originalSerializer);
   return (...props) => {
     for (const processor of processors) {
       if (processor) {

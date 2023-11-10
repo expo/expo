@@ -83,7 +83,7 @@ function linkTo(href, event) {
     const rootState = navigationRef.getRootState();
     if (href.startsWith('.')) {
         // Resolve base path by merging the current segments with the params
-        const base = this.routeInfo?.segments
+        let base = this.routeInfo?.segments
             ?.map((segment) => {
             if (!segment.startsWith('['))
                 return segment;
@@ -104,7 +104,10 @@ function linkTo(href, event) {
         })
             .filter(Boolean)
             .join('/') ?? '/';
-        href = (0, path_1.resolve)(base + '/..', href);
+        if (!this.routeInfo?.isIndex) {
+            base += '/..';
+        }
+        href = (0, path_1.resolve)(base, href);
     }
     const state = this.linking.getStateFromPath(href, this.linking.config);
     if (!state || state.routes.length === 0) {
