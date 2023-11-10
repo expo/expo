@@ -45,7 +45,7 @@ function withDefaults({
 }
 
 export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
-  return (exp.experiments?.baseUrl?.replace(/\/+$/, '') ?? '').trim();
+  return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
 }
 
 export function getMetroDirectBundleOptions(

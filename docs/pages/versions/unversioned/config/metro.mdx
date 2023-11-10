@@ -508,7 +508,7 @@ When bundling for a server environment, Expo's Metro config automatically suppor
 
 ## Environment settings
 
-Expo's Metro config injects build-settings that can be used in the client bundle via environment variables. All variables will be inlined and cannot be used dynamically, i.e. `process.env["EXPO_BASE_URL"]` won't work.
+Expo's Metro config injects build settings that can be used in the client bundle via environment variables. All variables will be inlined and cannot be used dynamically. For example, `process.env["EXPO_BASE_URL"]` won't work.
 
 - `process.env.EXPO_BASE_URL` exposes the base URL defined in `experiments.baseUrl`. This is used in Expo Router to respect the production base URL for deployment.
 

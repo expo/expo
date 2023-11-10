@@ -60,8 +60,7 @@ export function getIsProd(caller: any) {
 }
 
 export function getBaseUrl(caller: any): string {
-  if (caller?.baseUrl != null) return caller.baseUrl;
-  return '';
+  return caller?.baseUrl ?? '';
 }
 
 export function getIsServer(caller: any) {
