@@ -70,7 +70,7 @@ describe(exportAppAsync, () => {
       platforms: ['ios'],
       dev: false,
       dumpAssetmap: true,
-      dumpSourcemap: true,
+      sourceMaps: true,
       clear: false,
       // publishOptions: {},
     });

@@ -43,11 +43,11 @@ export async function exportAppAsync(
     clear,
     dev,
     dumpAssetmap,
-    dumpSourcemap,
+    sourceMaps,
     minify,
   }: Pick<
     Options,
-    'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms' | 'minify'
+    'dumpAssetmap' | 'sourceMaps' | 'dev' | 'clear' | 'outputDir' | 'platforms' | 'minify'
   >
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
@@ -89,7 +89,7 @@ export async function exportAppAsync(
   const bundles = await createBundlesAsync(projectRoot, projectConfig, {
     clear: !!clear,
     minify,
-    sourcemaps: dumpSourcemap,
+    sourcemaps: sourceMaps,
     platforms: useServerRendering ? platforms.filter((platform) => platform !== 'web') : platforms,
     dev,
   });
@@ -106,7 +106,7 @@ export async function exportAppAsync(
     printBundleSizes(
       Object.fromEntries(
         bundleEntries.map(([key, value]) => {
-          if (!dumpSourcemap) {
+          if (!sourceMaps) {
             return [
               key,
               {
@@ -138,8 +138,8 @@ export async function exportAppAsync(
       await writeAssetMapAsync({ outputDir: staticFolder, assets });
     }
     // build source maps
-    if (dumpSourcemap) {
-      Log.log('Dumping source maps');
+    if (sourceMaps) {
+      Log.log('Emitting source maps');
       await writeSourceMapsAsync({
         bundles,
         hashes,
@@ -171,7 +171,7 @@ export async function exportAppAsync(
       outputDir: outputPath,
       minify,
       basePath,
-      includeMaps: dumpSourcemap,
+      includeMaps: sourceMaps,
       // @ts-expect-error: server not on type yet
       exportServer: exp.web?.output === 'server',
     });
