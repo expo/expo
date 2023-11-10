@@ -37,6 +37,10 @@ describe(stripBaseUrl, () => {
 });
 
 describe('baseUrl', () => {
+  beforeEach(() => {
+    delete process.env.EXPO_BASE_URL;
+  });
+
   it('accounts for baseUrl', () => {
     process.env.EXPO_BASE_URL = '/expo/prefix';
 
@@ -65,6 +69,10 @@ describe('baseUrl', () => {
 });
 
 describe(getUrlWithReactNavigationConcessions, () => {
+  beforeEach(() => {
+    delete process.env.EXPO_BASE_URL;
+  });
+
   ['/', 'foo/', 'foo/bar/', 'foo/bar/baz/'].forEach((path) => {
     it(`returns the pathname for ${path}`, () => {
       expect(getUrlWithReactNavigationConcessions(path).nonstandardPathname).toBe(path);

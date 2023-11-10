@@ -198,6 +198,7 @@ type State = PartialState<NavigationState>;
 
 it('appends baseUrl', () => {
   process.env.EXPO_BASE_URL = '/expo-prefix/';
+
   const path = '/expo-prefix/bar';
   const config = {
     screens: {

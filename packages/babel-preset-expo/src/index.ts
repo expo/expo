@@ -135,14 +135,17 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push(aliasPlugin);
   }
 
-  extraPlugins.push([
-    expoInlineTransformEnvVars,
-    {
-      // These values should not be prefixed with `EXPO_PUBLIC_`, so we don't
-      // squat user-defined environment variables.
-      EXPO_BASE_URL: baseUrl,
-    },
-  ]);
+  // Allow jest tests to redefine the environment variables.
+  if (process.env.NODE_ENV !== 'test') {
+    extraPlugins.push([
+      expoInlineTransformEnvVars,
+      {
+        // These values should not be prefixed with `EXPO_PUBLIC_`, so we don't
+        // squat user-defined environment variables.
+        EXPO_BASE_URL: baseUrl,
+      },
+    ]);
+  }
 
   // Only apply in non-server, for metro-only, in production environments, when the user hasn't disabled the feature.
   // Webpack uses DefinePlugin for environment variables.
