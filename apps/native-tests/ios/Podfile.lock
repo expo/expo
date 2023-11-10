@@ -22,7 +22,7 @@ PODS:
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-RCTAppDelegate
   - expo-dev-launcher/Main (3.4.0):
@@ -32,7 +32,7 @@ PODS:
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-RCTAppDelegate
   - expo-dev-launcher/Tests (3.4.0):
@@ -45,7 +45,7 @@ PODS:
     - Nimble
     - OHHTTPStubs
     - Quick
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-CoreModules
     - React-RCTAppDelegate
@@ -55,7 +55,7 @@ PODS:
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-RCTAppDelegate
   - expo-dev-menu (4.4.0):
@@ -72,20 +72,20 @@ PODS:
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
   - expo-dev-menu/ReactNativeCompatibles (4.4.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - expo-dev-menu/SafeAreaView (4.4.0):
     - ExpoModulesCore
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
   - expo-dev-menu/Tests (4.4.0):
     - ExpoModulesTestCore
     - Nimble
     - Quick
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-CoreModules
   - expo-dev-menu/UITests (4.4.0):
@@ -95,7 +95,7 @@ PODS:
     - React-CoreModules
   - expo-dev-menu/Vendored (4.4.0):
     - expo-dev-menu/SafeAreaView
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
   - ExpoClipboard (4.8.0):
     - ExpoModulesCore
@@ -115,7 +115,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoModulesCore/Tests (1.10.0):
     - ExpoModulesTestCore
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
     - React-NativeModulesApple
     - React-RCTAppDelegate
@@ -133,7 +133,7 @@ PODS:
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - ReachabilitySwift
     - React-Core
     - sqlite3 (~> 3.42.0)
@@ -144,7 +144,7 @@ PODS:
     - ExpoModulesTestCore
     - EXStructuredHeaders
     - EXUpdatesInterface
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - ReachabilitySwift
     - React-Core
     - sqlite3 (~> 3.42.0)
@@ -174,13 +174,13 @@ PODS:
     - OHHTTPStubs/Core
   - OHHTTPStubs/OHPathHelpers (9.1.0)
   - Quick (5.0.0)
-  - RCT-Folly (2021.07.22.00):
+  - RCT-Folly (2022.05.16.00):
     - boost
     - DoubleConversion
     - fmt (~> 6.2.1)
     - glog
-    - RCT-Folly/Default (= 2021.07.22.00)
-  - RCT-Folly/Default (2021.07.22.00):
+    - RCT-Folly/Default (= 2022.05.16.00)
+  - RCT-Folly/Default (2022.05.16.00):
     - boost
     - DoubleConversion
     - fmt (~> 6.2.1)
@@ -235,7 +235,7 @@ PODS:
     - Yoga
   - React-Core/CoreModulesHeaders (0.72.5):
     - glog
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core/Default
     - React-cxxreact
     - React-jsc
@@ -248,7 +248,7 @@ PODS:
     - Yoga
   - React-Core/Default (0.72.5):
     - glog
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-cxxreact
     - React-jsc
     - React-jsi
@@ -275,7 +275,7 @@ PODS:
     - Yoga
   - React-Core/RCTActionSheetHeaders (0.72.5):
     - glog
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core/Default
     - React-cxxreact
     - React-jsc
@@ -288,7 +288,7 @@ PODS:
     - Yoga
   - React-Core/RCTAnimationHeaders (0.72.5):
     - glog
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core/Default
     - React-cxxreact
     - React-jsc
@@ -301,7 +301,7 @@ PODS:
     - Yoga
   - React-Core/RCTBlobHeaders (0.72.5):
     - glog
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core/Default
     - React-cxxreact
     - React-jsc
@@ -314,7 +314,7 @@ PODS:
     - Yoga
   - React-Core/RCTImageHeaders (0.72.5):
     - glog
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core/Default
     - React-cxxreact
     - React-jsc
@@ -327,7 +327,7 @@ PODS:
     - Yoga
   - React-Core/RCTLinkingHeaders (0.72.5):
     - glog
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core/Default
     - React-cxxreact
     - React-jsc
@@ -340,7 +340,7 @@ PODS:
     - Yoga
   - React-Core/RCTNetworkHeaders (0.72.5):
     - glog
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core/Default
     - React-cxxreact
     - React-jsc
@@ -353,7 +353,7 @@ PODS:
     - Yoga
   - React-Core/RCTSettingsHeaders (0.72.5):
     - glog
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core/Default
     - React-cxxreact
     - React-jsc
@@ -366,7 +366,7 @@ PODS:
     - Yoga
   - React-Core/RCTTextHeaders (0.72.5):
     - glog
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core/Default
     - React-cxxreact
     - React-jsc
@@ -379,7 +379,7 @@ PODS:
     - Yoga
   - React-Core/RCTVibrationHeaders (0.72.5):
     - glog
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core/Default
     - React-cxxreact
     - React-jsc
@@ -524,14 +524,14 @@ PODS:
     - React-jsi (= 0.72.5)
   - React-runtimescheduler (0.72.5):
     - glog
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-callinvoker
     - React-debug
     - React-jsi
     - React-runtimeexecutor
   - React-utils (0.72.5):
     - glog
-    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly (= 2022.05.16.00)
     - React-debug
   - ReactCommon/turbomodule/bridging (0.72.5):
     - DoubleConversion
