@@ -22,6 +22,7 @@ import {
   getApiRoutesForDirectory,
   getRouterDirectoryWithManifest,
 } from '../start/server/metro/router';
+import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 import { getFreePortAsync } from '../utils/port';
 
@@ -139,7 +140,7 @@ export async function exportFromServerAsync(
     includeGroupVariations: !exportServer,
     async renderAsync(pathname: string) {
       const template = await renderAsync(pathname);
-      let html = await devServer.composeResourcesWithHtml({
+      let html = await serializeHtmlWithAssets({
         mode: 'production',
         resources,
         template,
