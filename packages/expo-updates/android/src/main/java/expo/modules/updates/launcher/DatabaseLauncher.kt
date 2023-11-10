@@ -159,7 +159,7 @@ class DatabaseLauncher(
           val file = if (embeddedAssetFilename != null) {
             File(embeddedAssetFilename)
           } else {
-            File(updatesDirectory, asset.relativePath)
+            File(updatesDirectory, asset.relativePath!!)
           }
           this[asset] = Uri.fromFile(file).toString()
         }
