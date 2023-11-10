@@ -19,7 +19,7 @@
 - Added Expo CLI devtools plugins support. ([#24650](https://github.com/expo/expo/pull/24650) by [@kudo](https://github.com/kudo))
 - Optionally export only selected assets. ([#25065](https://github.com/expo/expo/pull/25065) by [@douglowder](https://github.com/douglowder))
 - Added Brave Browser debugger support. ([#25109](https://github.com/expo/expo/pull/25109) by [@kapobajza](https://github.com/kapobajza))
-- Add `--mode` aliases for `--variant` and `--configuration` flags for `expo run:` commands.
+- Add `--mode` aliases for `--variant` and `--configuration` flags for `expo run:` commands. ([#25330](https://github.com/expo/expo/pull/25330) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
