@@ -1,5 +1,5 @@
 import { NativeDatabase } from './NativeDatabase';
-import { BindParams, BindValue, NativeStatement, RunResult, VariadicBindParams } from './NativeStatement';
+import { BindParams, BindValue, NativeStatement, RunResult, VariadicBindParams, type ColumnNames, type ColumnValues } from './NativeStatement';
 export { BindParams, BindValue, RunResult, VariadicBindParams };
 /**
  * A prepared statement returned by `Database.prepareAsync()` that can be binded with parameters and executed.
@@ -44,6 +44,10 @@ export declare class Statement {
      */
     allAsync<T>(...params: VariadicBindParams): Promise<T[]>;
     allAsync<T>(params: BindParams): Promise<T[]>;
+    /**
+     * Get the column names of the prepared statement.
+     */
+    getColumnNamesAsync(): Promise<string[]>;
     /**
      * Reset the prepared statement cursor.
      */
@@ -98,6 +102,10 @@ export declare class Statement {
     allSync<T>(...params: VariadicBindParams): T[];
     allSync<T>(params: BindParams): T[];
     /**
+     * Get the column names of the prepared statement.
+     */
+    getColumnNamesSync(): string[];
+    /**
      * Reset the prepared statement cursor.
      */
     resetSync(): void;
@@ -117,4 +125,14 @@ export declare function normalizeParams(...params: any[]): {
     params: BindParams;
     shouldPassAsObject: boolean;
 };
+/**
+ * Compose `columnNames` and `columnValues` to an row object.
+ * @hidden
+ */
+export declare function composeRow<T>(columnNames: ColumnNames, columnValues: ColumnValues): T;
+/**
+ * Compose `columnNames` and `columnValuesList` to an array of row object.
+ * @hidden
+ */
+export declare function composeRows<T>(columnNames: ColumnNames, columnValuesList: ColumnValues[]): T[];
 //# sourceMappingURL=Statement.d.ts.map
