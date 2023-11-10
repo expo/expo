@@ -1,12 +1,15 @@
 package expo.modules.image
 
+import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.core.view.doOnDetach
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
@@ -29,21 +32,26 @@ class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoImage")
 
-    AsyncFunction("prefetch") { urls: List<String>, promise: Promise ->
+    AsyncFunction("prefetch") { urls: List<String>, cachePolicy: CachePolicy, promise: Promise ->
       val context = appContext.reactContext ?: return@AsyncFunction false
+
       var imagesLoaded = 0
       var failed = false
 
       urls.forEach {
         Glide
           .with(context)
-          .download(GlideUrl(it))
-          .skipMemoryCache(true)
-          .listener(object : RequestListener<File> {
+          .load(GlideUrl(it))
+          .apply {
+            if (cachePolicy == CachePolicy.MEMORY) {
+              diskCacheStrategy(DiskCacheStrategy.NONE)
+            }
+          }
+          .listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(
               e: GlideException?,
               model: Any?,
-              target: Target<File>?,
+              target: Target<Drawable>?,
               isFirstResource: Boolean
             ): Boolean {
               if (!failed) {
@@ -54,9 +62,9 @@ class ExpoImageModule : Module() {
             }
 
             override fun onResourceReady(
-              resource: File?,
+              resource: Drawable?,
               model: Any?,
-              target: Target<File>?,
+              target: Target<Drawable>?,
               dataSource: DataSource?,
               isFirstResource: Boolean
             ): Boolean {

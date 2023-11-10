@@ -108,9 +108,9 @@ public final class ImageModule: Module {
       }
     }
 
-    AsyncFunction("prefetch") { (urls: [URL], promise: Promise) in
+    AsyncFunction("prefetch") { (urls: [URL], cachePolicy: ImageCachePolicy, promise: Promise) in
       var context = SDWebImageContext()
-      context[.storeCacheType] = SDImageCacheType.disk.rawValue
+      context[.storeCacheType] = cachePolicy.toSdCacheType().rawValue
 
       var imagesLoaded = 0
       var failed = false
