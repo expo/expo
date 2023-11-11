@@ -204,7 +204,7 @@ export function getDefaultConfig(
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: require.resolve('./babel-transformer'),
-      assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
+      assetRegistryPath: '@react-native/assets-registry/registry',
       assetPlugins: getAssetPlugins(projectRoot),
       getTransformOptions: async () => ({
         transform: {
