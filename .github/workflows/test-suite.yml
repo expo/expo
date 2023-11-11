@@ -3,7 +3,7 @@ name: Test Suite
 on:
   workflow_dispatch: {}
   push:
-    branches: [main, 'sdk-*']
+    branches: [main]
     paths:
       - .github/workflows/test-suite.yml
       - apps/bare-expo/**

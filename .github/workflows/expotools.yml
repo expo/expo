@@ -3,7 +3,7 @@ name: Expotools
 on:
   workflow_dispatch: {}
   push:
-    branches: [main, 'sdk-*']
+    branches: [main]
     paths:
       - .github/workflows/expotools.yml
       - tools/**
