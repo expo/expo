@@ -270,9 +270,8 @@ function getDefaultConfig(projectRoot, {
     reporter,
     ...metroDefaultValues
   } = getDefaultMetroConfig.getDefaultValues(projectRoot);
-  const cacheStore = new (_fileStore().ExpoMetroFileStore)({
+  const cacheStore = new (_fileStore().FileStore)({
     root: _path().default.join(_os().default.tmpdir(), 'metro-cache')
-    // root: path.join(getServerRoot(projectRoot), 'node_modules/.cache/metro')
   });
 
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.

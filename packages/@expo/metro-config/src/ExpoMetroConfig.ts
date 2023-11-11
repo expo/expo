@@ -13,7 +13,7 @@ import resolveFrom from 'resolve-from';
 
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
-import { ExpoMetroFileStore } from './file-store';
+import { FileStore } from './file-store';
 import { getModulesPaths, getServerRoot } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
@@ -164,9 +164,8 @@ export function getDefaultConfig(
     ...metroDefaultValues
   } = getDefaultMetroConfig.getDefaultValues(projectRoot);
 
-  const cacheStore = new ExpoMetroFileStore<any>({
+  const cacheStore = new FileStore<any>({
     root: path.join(os.tmpdir(), 'metro-cache'),
-    // root: path.join(getServerRoot(projectRoot), 'node_modules/.cache/metro')
   });
 
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
