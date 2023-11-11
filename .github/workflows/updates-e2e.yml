@@ -22,6 +22,7 @@ on:
       - templates/expo-template-bare-minimum/**
   push:
     branches: [main, 'sdk-*']
+    branches-ignore: ['sdk-4*']
     paths:
       - .github/workflows/updates-e2e-basic.yml
       - packages/@expo/cli/**
