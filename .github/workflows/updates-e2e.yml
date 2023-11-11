@@ -18,7 +18,7 @@ on:
       - packages/expo/ios/**
       - templates/expo-template-bare-minimum/**
   push:
-    branches: [main, 'sdk-*']
+    branches: [main]
     paths:
       - .github/workflows/updates-e2e-basic.yml
       - packages/@expo/cli/**

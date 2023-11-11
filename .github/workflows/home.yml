@@ -8,7 +8,7 @@ on:
       - home/**
       - yarn.lock
   push:
-    branches: [main, 'sdk-*']
+    branches: [main]
     paths:
       - .github/workflows/home.yml
       - home/**

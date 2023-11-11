@@ -8,7 +8,7 @@ on:
         required: false
         default: ''
   push:
-    branches: [main, 'sdk-*']
+    branches: [main]
     paths:
       - .github/workflows/sdk.yml
       - tools/**

@@ -2,7 +2,7 @@ name: CLI
 
 on:
   push:
-    branches: [main, 'sdk-*']
+    branches: [main]
     paths:
       - .github/workflows/cli.yml
       - packages/@expo/cli/**
