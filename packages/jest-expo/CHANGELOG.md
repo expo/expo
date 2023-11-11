@@ -14,6 +14,7 @@
 
 ### 💡 Others
 
+- Collapse re-export of `react-native/Libraries/Image/AssetRegistry` to `@react-native/assets-registry/registry`. ([#25265](https://github.com/expo/expo/pull/25265) by [@EvanBacon](https://github.com/EvanBacon))
 - Renamed `ExponentCamera` to `ExpoCamera`. ([#22604](https://github.com/expo/expo/pull/22604) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 50.0.0-alpha.3 — 2023-10-17

@@ -132,7 +132,7 @@ try {
   }
 }
 
-jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
+jest.mock('@react-native/assets-registry/registry', () => ({
   registerAsset: jest.fn(() => 1),
   getAssetByID: jest.fn(() => ({
     fileSystemLocation: '/full/path/to/directory',

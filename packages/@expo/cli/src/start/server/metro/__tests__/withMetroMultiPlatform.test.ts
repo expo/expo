@@ -47,7 +47,7 @@ describe(withExtendedResolver, () => {
   function mockMinFs() {
     vol.fromJSON(
       {
-        'node_modules/react-native/Libraries/Image/AssetRegistry.js': '',
+        'node_modules/@react-native/assets-registry/registry.js': '',
       },
       '/'
     );
