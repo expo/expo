@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Prevent `Runtime.callFunctionOn` messages from Vscode debugger to avoid Hermes crashes. ([#25270](https://github.com/expo/expo/pull/25270) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 0.10.15 — 2023-11-11
+
+### 🐛 Bug fixes
+
+- Prevent `Runtime.callFunctionOn` messages from Vscode debugger to avoid Hermes crashes. ([#25270](https://github.com/expo/expo/pull/25270) by [@byCedric](https://github.com/byCedric))
 
 ## 0.10.14 — 2023-10-20
 
