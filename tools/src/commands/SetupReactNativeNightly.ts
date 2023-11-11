@@ -100,29 +100,6 @@ async function addPinnedPackagesAsync(packages: Record<string, string>) {
 async function updateReactNativePackageAsync() {
   const reactNativeRoot = path.join(EXPO_DIR, 'node_modules', 'react-native');
 
-  // Update native ReactNativeVersion
-  const versions = (process.env.REACT_NATIVE_OVERRIDE_VERSION ?? '9999.9999.9999').split('.');
-  await transformFileAsync(
-    path.join(
-      reactNativeRoot,
-      'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java'
-    ),
-    [
-      {
-        find: /("major", )\d+,/g,
-        replaceWith: `$1${versions[0]},`,
-      },
-      {
-        find: /("minor", )\d+,/g,
-        replaceWith: `$1${versions[1]},`,
-      },
-      {
-        find: /("patch", )\d+,/g,
-        replaceWith: `$1${versions[2]},`,
-      },
-    ]
-  );
-
   // https://github.com/facebook/react-native/pull/38993
   await transformFileAsync(path.join(reactNativeRoot, 'React-Core.podspec'), [
     {
@@ -228,6 +205,20 @@ async function updateBareExpoAsync(nightlyVersion: string) {
     {
       find: /(platform :ios, )['"]13\.0['"]/g,
       replaceWith: "$1'13.4'",
+    },
+    {
+      // __apply_Xcode_12_5_M1_post_install_workaround was removed in 0.73
+      find: '__apply_Xcode_12_5_M1_post_install_workaround(installer)',
+      replaceWith: '',
+    },
+    {
+      // Flipper was removed in 0.74
+      find: `flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled`,
+      replaceWith: '',
+    },
+    {
+      find: /:flipper_configuration => FlipperConfiguration.disabled,/g,
+      replaceWith: '',
     },
   ]);
 

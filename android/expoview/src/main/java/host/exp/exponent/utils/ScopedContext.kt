@@ -10,7 +10,6 @@ import android.content.SharedPreferences
 import android.database.sqlite.SQLiteDatabase.CursorFactory
 import android.database.sqlite.SQLiteDatabase
 import android.database.DatabaseErrorHandler
-import host.exp.exponent.Constants
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
@@ -158,16 +157,6 @@ class ScopedContext @Throws(UnsupportedEncodingException::class) constructor(con
     filesDir = scopedFilesDir
     cacheDir = File(baseContext.cacheDir.toString() + "/ExperienceData/" + scopeKey)
     noBackupDir = File(baseContext.noBackupFilesDir.toString() + "/ExperienceData/" + scopeKey)
-
-    if (Constants.isStandaloneApp()) {
-      val scopedFilesMigrationMarker = File(scopedFilesDir, ".expo-migration")
-      if (scopedFilesDir.exists() && !scopedFilesMigrationMarker.exists()) {
-        migrateAllFiles(scopedFilesDir, baseContext.filesDir)
-      }
-      filesDir = baseContext.filesDir
-      cacheDir = baseContext.cacheDir
-      noBackupDir = baseContext.noBackupFilesDir
-    }
 
     listOf(filesDir, cacheDir, noBackupDir).forEach {
       ensureDirExists(it)

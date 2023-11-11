@@ -4,8 +4,8 @@ import com.android.build.api.variant.AndroidComponentsExtension
 buildscript {
   ext {
     minSdkVersion = 23
-    targetSdkVersion = 33
-    compileSdkVersion = 33
+    targetSdkVersion = 34
+    compileSdkVersion = 34
 
     dbFlowVersion = '4.2.4'
     buildToolsVersion = '33.0.0'
@@ -53,12 +53,6 @@ allprojects {
     // For old expoviews to work
     maven {
       url "$rootDir/versioned-abis/expoview-abi49_0_0/maven"
-    }
-    maven {
-      url "$rootDir/versioned-abis/expoview-abi48_0_0/maven"
-    }
-    maven {
-      url "$rootDir/versioned-abis/expoview-abi47_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/maven"

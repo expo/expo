@@ -17,7 +17,7 @@ import java.io.File
 
 class CameraViewModule : Module() {
   override fun definition() = ModuleDefinition {
-    Name("ExponentCamera")
+    Name("ExpoCamera")
 
     Constants(
       "Type" to mapOf(

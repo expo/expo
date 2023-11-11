@@ -2,6 +2,7 @@ import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import { ReactNode } from 'react';
 
+
 const STYLES_HIGHLIGHT_YELLOW = css`
   text-shadow:
     ${theme.palette.yellow7} 0px 0px 10px,

@@ -1,4 +1,4 @@
-import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
+import { AndroidConfig, ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
 const pkg = require('expo-tracking-transparency/package.json');
 
@@ -31,6 +31,10 @@ export const withUserTrackingPermission: ConfigPlugin<
     userTrackingPermission ||
     config.ios.infoPlist.NSUserTrackingUsageDescription ||
     DEFAULT_NSUserTrackingUsageDescription;
+
+  config = AndroidConfig.Permissions.withPermissions(config, [
+    'com.google.android.gms.permission.AD_ID',
+  ]);
 
   return config;
 };

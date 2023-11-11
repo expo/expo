@@ -82,7 +82,6 @@ public final class SharedObjectRegistry {
     if let pair = pairs[id] {
       // Reset an ID on the objects.
       pair.native.sharedObjectId = 0
-      pair.javaScript.lock()?.defineProperty(sharedObjectIdPropertyName, value: 0, options: [.writable])
 
       // Delete the pair from the dictionary.
       pairs[id] = nil

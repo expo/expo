@@ -107,9 +107,6 @@ function getLargeConfig(): ExportedConfig {
       backgroundColor: '#ff0000',
       appStoreUrl: 'https://itunes.apple.com/us/app/pillar-valley/id1336398804?ls=1&mt=8',
       config: {
-        branch: {
-          apiKey: 'MY_BRANCH_KEY',
-        },
         usesNonExemptEncryption: true,
         googleMapsApiKey: 'TEST_googleMapsApiKey',
         googleMobileAdsAppId: 'TEST_googleMobileAdsAppId',
@@ -328,8 +325,6 @@ describe('built-in plugins', () => {
         CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
       )
     ).toBeDefined();
-    // Branch
-    expect(config.ios?.infoPlist?.branch_key?.live).toBe('MY_BRANCH_KEY');
 
     // Mods should all be functions
     expect(Object.values(config.mods!.ios!).every((value) => typeof value === 'function')).toBe(
@@ -476,8 +471,6 @@ describe('built-in plugins', () => {
         CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
       )
     ).toBeDefined();
-    // Branch
-    expect(config.ios?.infoPlist?.branch_key?.live).toBe('MY_BRANCH_KEY');
 
     const mods = config.mods!;
     // Mods should all be functions
@@ -623,8 +616,6 @@ describe('built-in plugins', () => {
         CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
       )
     ).toBeDefined();
-    // Branch
-    expect(config.ios?.infoPlist?.branch_key?.live).toBe('MY_BRANCH_KEY');
 
     const mods = config.mods!;
     // Mods should all be functions

@@ -13,11 +13,9 @@
 #import "EXScopedPermissions.h"
 #import "EXScopedSegment.h"
 #import "EXScopedLocalAuthentication.h"
-#import "EXScopedBranch.h"
 #import "EXScopedErrorRecoveryModule.h"
 #import "EXScopedFacebook.h"
 #import "EXScopedFirebaseCore.h"
-#import "EXUpdatesBinding.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXExpoUserNotificationCenterProxy.h"
@@ -43,13 +41,6 @@
                            withKernelServices:(NSDictionary *)kernelServices
 {
   EXModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
-
-#if __has_include(<EXUpdates/EXUpdatesService.h>)
-  EXUpdatesBinding *updatesBinding = [[EXUpdatesBinding alloc] initWithScopeKey:scopeKey
-                                                                     updatesKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesManager")]
-                                                                    databaseKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesDatabaseManager")]];
-  [moduleRegistry registerInternalModule:updatesBinding];
-#endif
 
 #if __has_include(<EXConstants/EXConstantsService.h>)
   EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithParams:params];
@@ -114,11 +105,6 @@
 #if __has_include(<EXSegment/EXSegment.h>)
   EXScopedSegment *segmentModule = [[EXScopedSegment alloc] init];
   [moduleRegistry registerExportedModule:segmentModule];
-#endif
-
-#if __has_include(<EXBranch/RNBranch.h>)
-  EXScopedBranch *branchModule = [[EXScopedBranch alloc] initWithScopeKey:scopeKey];
-  [moduleRegistry registerInternalModule:branchModule];
 #endif
 
 #if __has_include(<EXLocalAuthentication/EXLocalAuthentication.h>)

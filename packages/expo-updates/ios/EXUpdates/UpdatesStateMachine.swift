@@ -169,7 +169,7 @@ internal struct UpdatesStateContextRollback {
 /**
  The state machine context, with information that will be readable from JS.
  */
-internal struct UpdatesStateContext {
+public struct UpdatesStateContext {
   let isUpdateAvailable: Bool
   let isUpdatePending: Bool
   let isRollback: Bool
@@ -289,16 +289,12 @@ extension UpdatesStateContext {
 internal class UpdatesStateMachine {
   private let logger = UpdatesLogger()
 
-  init(changeEventDelegate: (any UpdatesStateChangeDelegate)) {
-    self.changeEventDelegate = changeEventDelegate
-  }
-
   // MARK: - Public methods and properties
 
   /**
    In production, this is the AppController instance.
    */
-  private weak var changeEventDelegate: (any UpdatesStateChangeDelegate)?
+  internal weak var changeEventDelegate: (any UpdatesStateChangeDelegate)?
 
   /**
    The current state

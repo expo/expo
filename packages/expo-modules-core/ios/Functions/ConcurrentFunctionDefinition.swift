@@ -26,6 +26,10 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
 
   let dynamicArgumentTypes: [AnyDynamicType]
 
+  var argumentsCount: Int {
+    return dynamicArgumentTypes.count - (takesOwner ? 1 : 0)
+  }
+
   var takesOwner: Bool = false
 
   func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void) {
@@ -43,7 +47,7 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
       )
 
       // All `JavaScriptValue` args must be preliminarly converted on the JS thread, before we jump to the function's queue.
-      arguments = try cast(jsValues: args, forFunction: self, appContext: appContext)
+      arguments = try cast(jsValues: arguments, forFunction: self, appContext: appContext)
     } catch let error as Exception {
       callback(.failure(error))
       return
@@ -72,7 +76,10 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
         result = .failure(UnexpectedException(error))
       }
 
-      callback(result)
+      // Go back to the JS thread to execute the callback
+      appContext.executeOnJavaScriptThread {
+        callback(result)
+      }
     }
   }
 
@@ -92,10 +99,12 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
       }
       self.call(by: this, withArguments: args, appContext: appContext) { result in
         switch result {
-          case .failure(let error):
-            reject(error.code, error.description, nil)
-          case .success(let value):
-            resolve(value)
+        case .failure(let error):
+          reject(error.code, error.description, nil)
+        case .success(let value):
+          // Convert some results to primitive types (e.g. records) or JS values (e.g. shared objects)
+          let convertedResult = Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: ~ReturnType.self)
+          resolve(convertedResult)
         }
       }
     }

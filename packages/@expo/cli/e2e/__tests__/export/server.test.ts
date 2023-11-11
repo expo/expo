@@ -13,6 +13,7 @@ describe('server-output', () => {
 
   beforeAll(
     async () => {
+      await ensurePortFreeAsync(8081);
       await execa('node', [bin, 'export', '-p', 'web', '--output-dir', 'dist-server'], {
         cwd: projectRoot,
         env: {
@@ -71,6 +72,17 @@ describe('server-output', () => {
           method: method.toLowerCase(),
         });
       });
+    });
+
+    it(`can serve build-time static dynamic route`, async () => {
+      const res = await fetch('http://localhost:3000/blog-ssg/abc');
+      expect(res.status).toEqual(200);
+      expect(await res.text()).toMatch(/Post: <!-- -->abc/);
+
+      // This route is not pre-rendered and should show the default value for the dynamic parameter.
+      const res2 = await fetch('http://localhost:3000/blog-ssg/123');
+      expect(res2.status).toEqual(200);
+      expect(await res2.text()).toMatch(/Post: <!-- -->\[post\]/);
     });
 
     it(`can serve up custom not-found`, async () => {

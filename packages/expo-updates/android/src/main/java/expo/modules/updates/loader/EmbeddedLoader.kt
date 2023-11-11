@@ -27,7 +27,7 @@ class EmbeddedLoader internal constructor(
   private val context: Context,
   private val configuration: UpdatesConfiguration,
   database: UpdatesDatabase,
-  updatesDirectory: File?,
+  updatesDirectory: File,
   private val loaderFiles: LoaderFiles
 ) : Loader(
   context, configuration, database, updatesDirectory, loaderFiles
@@ -37,7 +37,7 @@ class EmbeddedLoader internal constructor(
     context: Context,
     configuration: UpdatesConfiguration,
     database: UpdatesDatabase,
-    updatesDirectory: File?
+    updatesDirectory: File
   ) : this(context, configuration, database, updatesDirectory, LoaderFiles()) {
   }
 

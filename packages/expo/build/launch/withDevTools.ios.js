@@ -21,11 +21,12 @@ export function withDevTools(AppRootComponent) {
     function WithDevTools(props) {
         useOptionalKeepAwake();
         if (shouldUseExpoFastRefreshView) {
-            return (React.createElement(React.Fragment, null,
-                React.createElement(AppRootComponent, { ...props }),
-                React.createElement(DevLoadingView, null)));
+            return (<>
+          <AppRootComponent {...props}/>
+          <DevLoadingView />
+        </>);
         }
-        return React.createElement(AppRootComponent, { ...props });
+        return <AppRootComponent {...props}/>;
     }
     if (process.env.NODE_ENV !== 'production') {
         const name = AppRootComponent.displayName || AppRootComponent.name || 'Anonymous';

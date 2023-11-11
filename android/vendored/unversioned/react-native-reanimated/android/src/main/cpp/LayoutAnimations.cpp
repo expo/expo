@@ -36,14 +36,10 @@ void LayoutAnimations::progressLayoutAnimation(
   method(javaPart_.get(), tag, updates.get(), isSharedTransition);
 }
 
-void LayoutAnimations::endLayoutAnimation(
-    int tag,
-    bool cancelled,
-    bool removeView) {
+void LayoutAnimations::endLayoutAnimation(int tag, bool removeView) {
   static const auto method =
-      javaPart_->getClass()->getMethod<void(int, bool, bool)>(
-          "endLayoutAnimation");
-  method(javaPart_.get(), tag, cancelled, removeView);
+      javaPart_->getClass()->getMethod<void(int, bool)>("endLayoutAnimation");
+  method(javaPart_.get(), tag, removeView);
 }
 
 void LayoutAnimations::setHasAnimationBlock(
@@ -51,8 +47,28 @@ void LayoutAnimations::setHasAnimationBlock(
   this->hasAnimationBlock_ = hasAnimationBlock;
 }
 
+void LayoutAnimations::setShouldAnimateExitingBlock(
+    ShouldAnimateExitingBlock shouldAnimateExitingBlock) {
+  this->shouldAnimateExitingBlock_ = shouldAnimateExitingBlock;
+}
+
+#ifndef NDEBUG
+void LayoutAnimations::setCheckDuplicateSharedTag(
+    CheckDuplicateSharedTag checkDuplicateSharedTag) {
+  checkDuplicateSharedTag_ = checkDuplicateSharedTag;
+}
+
+void LayoutAnimations::checkDuplicateSharedTag(int viewTag, int screenTag) {
+  checkDuplicateSharedTag_(viewTag, screenTag);
+}
+#endif
+
 bool LayoutAnimations::hasAnimationForTag(int tag, int type) {
   return hasAnimationBlock_(tag, type);
+}
+
+bool LayoutAnimations::shouldAnimateExiting(int tag, bool shouldAnimate) {
+  return shouldAnimateExitingBlock_(tag, shouldAnimate);
 }
 
 void LayoutAnimations::setClearAnimationConfigBlock(
@@ -69,12 +85,8 @@ void LayoutAnimations::setCancelAnimationForTag(
   this->cancelAnimationBlock_ = cancelAnimationBlock;
 }
 
-void LayoutAnimations::cancelAnimationForTag(
-    int tag,
-    int type,
-    jboolean cancelled,
-    jboolean removeView) {
-  this->cancelAnimationBlock_(tag, type, cancelled, removeView);
+void LayoutAnimations::cancelAnimationForTag(int tag) {
+  this->cancelAnimationBlock_(tag);
 }
 
 bool LayoutAnimations::isLayoutAnimationEnabled() {
@@ -100,6 +112,8 @@ void LayoutAnimations::registerNatives() {
       makeNativeMethod(
           "hasAnimationForTag", LayoutAnimations::hasAnimationForTag),
       makeNativeMethod(
+          "shouldAnimateExiting", LayoutAnimations::shouldAnimateExiting),
+      makeNativeMethod(
           "clearAnimationConfigForTag",
           LayoutAnimations::clearAnimationConfigForTag),
       makeNativeMethod(
@@ -110,6 +124,10 @@ void LayoutAnimations::registerNatives() {
       makeNativeMethod(
           "findPrecedingViewTagForTransition",
           LayoutAnimations::findPrecedingViewTagForTransition),
+#ifndef NDEBUG
+      makeNativeMethod(
+          "checkDuplicateSharedTag", LayoutAnimations::checkDuplicateSharedTag),
+#endif
   });
 }
 }; // namespace reanimated

@@ -8,7 +8,17 @@
 
 ### 🐛 Bug fixes
 
+- Only modify quoted or prefixed android package names. ([#24559](https://github.com/expo/expo/pull/24559) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Update tests. ([#25211](https://github.com/expo/expo/pull/25211) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 7.6.0 — 2023-10-17
+
+### 💡 Others
+
+- Added a new type `ManifestQuery` to model the top-level `<queries>` tag in the App Manifest. ([#24619](https://github.com/expo/expo/pull/24619) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 7.5.0 — 2023-09-15
 

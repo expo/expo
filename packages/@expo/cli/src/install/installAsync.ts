@@ -2,20 +2,26 @@ import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
+import { applyPluginsAsync } from './applyPlugins';
 import { checkPackagesAsync } from './checkPackages';
+import { installExpoPackageAsync } from './installExpoPackage';
 import { Options } from './resolveOptions';
 import * as Log from '../log';
-import {
-  getOperationLog,
-  getVersionedPackagesAsync,
-} from '../start/doctor/dependencies/getVersionedPackages';
-import { getVersionedDependenciesAsync } from '../start/doctor/dependencies/validateDependenciesVersions';
-import { groupBy } from '../utils/array';
+import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { learnMore } from '../utils/link';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { joinWithCommasAnd } from '../utils/strings';
 
+/**
+ * Installs versions of specified packages compatible with the current Expo SDK version, or
+ * checks/ fixes dependencies in project if they don't match compatible versions specified in bundledNativeModules or versions endpoints.
+ *
+ * @param packages list of packages to install, if installing specific packages and not checking/ fixing
+ * @param options options, including check or fix
+ * @param packageManagerArguments arguments to forward to the package manager invoked while installing
+ * @returns Promise<void>
+ */
 export async function installAsync(
   packages: string[],
   options: Options & { projectRoot?: string },
@@ -113,106 +119,60 @@ export async function installPackagesAsync(
   );
 
   if (versioning.excludedNativeModules.length) {
-    Log.log(
-      chalk`\u203A Using latest version instead of ${joinWithCommasAnd(
-        versioning.excludedNativeModules.map(
-          ({ bundledNativeVersion, name }) => `${bundledNativeVersion} for ${name}`
-        )
-      )} because ${
-        versioning.excludedNativeModules.length > 1 ? 'they are' : 'it is'
-      } listed in {bold expo.install.exclude} in package.json. ${learnMore(
-        'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
-      )}`
+    const alreadyExcluded = versioning.excludedNativeModules.filter(
+      (module) => module.isExcludedFromValidation
     );
+    const specifiedExactVersion = versioning.excludedNativeModules.filter(
+      (module) => !module.isExcludedFromValidation
+    );
+
+    if (alreadyExcluded.length) {
+      Log.log(
+        chalk`\u203A Using ${joinWithCommasAnd(
+          alreadyExcluded.map(
+            ({ bundledNativeVersion, name, specifiedVersion }) =>
+              `${specifiedVersion || 'latest'} instead of  ${bundledNativeVersion} for ${name}`
+          )
+        )} because ${
+          alreadyExcluded.length > 1 ? 'they are' : 'it is'
+        } listed in {bold expo.install.exclude} in package.json. ${learnMore(
+          'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+        )}`
+      );
+    }
+
+    if (specifiedExactVersion.length) {
+      Log.log(
+        chalk`\u203A Using ${joinWithCommasAnd(
+          specifiedExactVersion.map(
+            ({ bundledNativeVersion, name, specifiedVersion }) =>
+              `${specifiedVersion} instead of ${bundledNativeVersion} for ${name}`
+          )
+        )} because ${
+          specifiedExactVersion.length > 1 ? 'these versions' : 'this version'
+        } was explicitly provided. Packages excluded from dependency validation should be listed in {bold expo.install.exclude} in package.json. ${learnMore(
+          'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+        )}`
+      );
+    }
+  }
+
+  // if updating expo package, install this first, then re-run the command minus expo to install everything else
+  if (packages.find((pkg) => pkg === 'expo')) {
+    const packagesMinusExpo = packages.filter((pkg) => pkg !== 'expo');
+
+    await installExpoPackageAsync(projectRoot, {
+      packageManager,
+      packageManagerArguments,
+      expoPackageToInstall: versioning.packages.find((pkg) => pkg.startsWith('expo@'))!,
+      followUpCommandArgs: packagesMinusExpo,
+    });
+
+    // follow-up commands will be spawned in a detached process, so return immediately
+    return;
   }
 
   await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
 
   await applyPluginsAsync(projectRoot, versioning.packages);
-}
-
-export async function fixPackagesAsync(
-  projectRoot: string,
-  {
-    packages,
-    packageManager,
-    sdkVersion,
-    packageManagerArguments,
-  }: {
-    packages: Awaited<ReturnType<typeof getVersionedDependenciesAsync>>;
-    /** Package manager to use when installing the versioned packages. */
-    packageManager: PackageManager.NodePackageManager;
-    /**
-     * SDK to version `packages` for.
-     * @example '44.0.0'
-     */
-    sdkVersion: string;
-    /**
-     * Extra parameters to pass to the `packageManager` when installing versioned packages.
-     * @example ['--no-save']
-     */
-    packageManagerArguments: string[];
-  }
-): Promise<void> {
-  if (!packages.length) {
-    return;
-  }
-
-  const { dependencies = [], devDependencies = [] } = groupBy(packages, (dep) => dep.packageType);
-  const versioningMessages = getOperationLog({
-    othersCount: 0, // All fixable packages are versioned
-    nativeModulesCount: packages.length,
-    sdkVersion,
-  });
-
-  Log.log(
-    chalk`\u203A Installing ${
-      versioningMessages.length ? versioningMessages.join(' and ') + ' ' : ''
-    }using {bold ${packageManager.name}}`
-  );
-
-  if (dependencies.length) {
-    const versionedPackages = dependencies.map(
-      (dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`
-    );
-
-    await packageManager.addAsync([...packageManagerArguments, ...versionedPackages]);
-
-    await applyPluginsAsync(projectRoot, versionedPackages);
-  }
-
-  if (devDependencies.length) {
-    await packageManager.addDevAsync([
-      ...packageManagerArguments,
-      ...devDependencies.map((dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`),
-    ]);
-  }
-}
-
-/**
- * A convenience feature for automatically applying Expo Config Plugins to the `app.json` after installing them.
- * This should be dropped in favor of autolinking in the future.
- */
-async function applyPluginsAsync(projectRoot: string, packages: string[]) {
-  const { autoAddConfigPluginsAsync } = await import('./utils/autoAddConfigPlugins.js');
-
-  try {
-    const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-
-    // Only auto add plugins if the plugins array is defined or if the project is using SDK +42.
-    await autoAddConfigPluginsAsync(
-      projectRoot,
-      exp,
-      // Split any possible NPM tags. i.e. `expo@latest` -> `expo`
-      packages.map((pkg) => pkg.split('@')[0]).filter(Boolean)
-    );
-  } catch (error: any) {
-    // If we fail to apply plugins, the log a warning and continue.
-    if (error.isPluginError) {
-      Log.warn(`Skipping config plugin check: ` + error.message);
-      return;
-    }
-    // Any other error, rethrow.
-    throw error;
-  }
 }

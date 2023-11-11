@@ -5,13 +5,14 @@ import path from 'path';
 import { SearchOptions } from '../types';
 
 /**
- * Path to the `package.json` of the closest project in the current working dir.
+ * Find the path to the `package.json` of the closest project in the given project root.
  */
-export const projectPackageJsonPath = findUp.sync('package.json', { cwd: process.cwd() }) as string;
-
-// This won't happen in usual scenarios, but we need to unwrap the optional path :)
-if (!projectPackageJsonPath) {
-  throw new Error(`Couldn't find "package.json" up from path "${process.cwd()}"`);
+export async function getProjectPackageJsonPathAsync(projectRoot: string): Promise<string> {
+  const result = await findUp('package.json', { cwd: projectRoot });
+  if (!result) {
+    throw new Error(`Couldn't find "package.json" up from path "${projectRoot}"`);
+  }
+  return result;
 }
 
 /**
@@ -23,7 +24,7 @@ if (!projectPackageJsonPath) {
 export async function mergeLinkingOptionsAsync<OptionsType extends SearchOptions>(
   providedOptions: OptionsType
 ): Promise<OptionsType> {
-  const packageJson = require(projectPackageJsonPath);
+  const packageJson = require(await getProjectPackageJsonPathAsync(providedOptions.projectRoot));
   const baseOptions = packageJson.expo?.autolinking;
   const platformOptions = providedOptions.platform && baseOptions?.[providedOptions.platform];
   const finalOptions = Object.assign(
@@ -34,11 +35,14 @@ export async function mergeLinkingOptionsAsync<OptionsType extends SearchOptions
   ) as OptionsType;
 
   // Makes provided paths absolute or falls back to default paths if none was provided.
-  finalOptions.searchPaths = await resolveSearchPathsAsync(finalOptions.searchPaths, process.cwd());
+  finalOptions.searchPaths = await resolveSearchPathsAsync(
+    finalOptions.searchPaths,
+    providedOptions.projectRoot
+  );
 
   finalOptions.nativeModulesDir = await resolveNativeModulesDirAsync(
     finalOptions.nativeModulesDir,
-    process.cwd()
+    providedOptions.projectRoot
   );
 
   return finalOptions;

@@ -8,9 +8,6 @@ begin
 rescue
   reactNativeVersion = '0.0.0'
 end
-if ENV["REACT_NATIVE_OVERRIDE_VERSION"]
-  reactNativeVersion = ENV["REACT_NATIVE_OVERRIDE_VERSION"]
-end
 
 reactNativeMinorVersion = reactNativeVersion.split('.')[1].to_i
 
@@ -27,7 +24,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platforms       = { :ios => '13.0', :tvos => '13.0'}
+  s.platforms       = { :ios => '13.4', :tvos => '13.4'}
   s.swift_version  = '5.4'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -43,10 +40,6 @@ Pod::Spec.new do |s|
 
     # EXAppDelegateWrapper -> RCTAppDelegate -> RCTCxxBridgeDelegate
     '"${PODS_ROOT}/Headers/Private/React-Core"',
-
-    # similar to https://github.com/facebook/react-native/commit/c4b51e8d7, review this when we drop SDK 47
-    '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging"',
-    '"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"',
   ]
 
   # Swift/Objective-C compatibility

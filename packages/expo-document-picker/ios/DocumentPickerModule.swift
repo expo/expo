@@ -130,7 +130,7 @@ public class DocumentPickerModule: Module, PickingResultHandler {
       try FileManager.default.copyItem(at: documentUrl, to: newUrl)
     }
 
-    let mimeType = self.getMimeType(from: documentUrl.pathExtension)
+    let mimeType = self.getMimeType(from: documentUrl.pathExtension) ?? "application/octet-stream"
 
     return DocumentInfo(
       uri: newUrl.absoluteString,

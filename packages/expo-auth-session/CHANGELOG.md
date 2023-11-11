@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Migrate to new standard `URL` support on native. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 5.2.2 — 2023-10-17
+
+_This version does not introduce any user-facing changes._
+
 ## 5.2.1 — 2023-09-16
 
 _This version does not introduce any user-facing changes._

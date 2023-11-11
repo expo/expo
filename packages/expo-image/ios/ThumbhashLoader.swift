@@ -20,7 +20,6 @@ class ThumbhashLoader: NSObject, SDImageLoader {
       completedBlock?(nil, nil, error, false)
       return nil
     }
-
     // The URI looks like this: thumbhash:/3OcRJYB4d3h\iIeHeEh3eIhw+j2w
     // ThumbHash may include slashes which could break the structure of the URL, so we replace them
     // with backslashes on the JS side and revert them back to slashes here, before generating the image.

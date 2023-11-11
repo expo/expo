@@ -10,7 +10,14 @@
 
 ### 💡 Others
 
+- Update snapshot tests. ([#25211](https://github.com/expo/expo/pull/25211) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 6.5.0 — 2023-10-17
+
+### 💡 Others
+
 - Transpile for Node 18 (LTS). ([#24471](https://github.com/expo/expo/pull/24471) by [@EvanBacon](https://github.com/EvanBacon))
+- Improve `expo-modules-autolinking` integration from its new public exported APIs. ([#24650](https://github.com/expo/expo/pull/24650) by [@kudo](https://github.com/kudo))
 
 ## 6.4.1 — 2023-09-15
 

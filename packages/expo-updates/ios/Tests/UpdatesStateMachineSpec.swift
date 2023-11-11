@@ -22,13 +22,15 @@ class UpdatesStateMachineSpec: ExpoSpec {
     describe("default state") {
       it("instantiates") {
         let testStateChangeDelegate = TestStateChangeDelegate()
-        let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
+        let machine = UpdatesStateMachine()
+        machine.changeEventDelegate = testStateChangeDelegate
         expect(machine.state) == .idle
       }
 
       it("should handle check and checkCompleteAvailable") {
         let testStateChangeDelegate = TestStateChangeDelegate()
-        let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
+        let machine = UpdatesStateMachine()
+        machine.changeEventDelegate = testStateChangeDelegate
 
         machine.processEvent(UpdatesStateEventCheck())
         expect(machine.state) == .checking
@@ -50,7 +52,8 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("should handle check and checkCompleteUnavailable") {
         let testStateChangeDelegate = TestStateChangeDelegate()
-        let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
+        let machine = UpdatesStateMachine()
+        machine.changeEventDelegate = testStateChangeDelegate
 
         machine.processEvent(UpdatesStateEventCheck())
         expect(machine.state) == .checking
@@ -66,7 +69,8 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("should handle download and downloadComplete") {
         let testStateChangeDelegate = TestStateChangeDelegate()
-        let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
+        let machine = UpdatesStateMachine()
+        machine.changeEventDelegate = testStateChangeDelegate
 
         machine.processEvent(UpdatesStateEventDownload())
         expect(machine.state) == .downloading
@@ -86,7 +90,8 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("should handle rollback") {
         let testStateChangeDelegate = TestStateChangeDelegate()
-        let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
+        let machine = UpdatesStateMachine()
+        machine.changeEventDelegate = testStateChangeDelegate
         let commitTime = Date()
         machine.processEvent(UpdatesStateEventCheck())
         expect(machine.state) == .checking
@@ -103,7 +108,8 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
       it("invalid transitions are handled as expected") {
         let testStateChangeDelegate = TestStateChangeDelegate()
-        let machine = UpdatesStateMachine(changeEventDelegate: testStateChangeDelegate)
+        let machine = UpdatesStateMachine()
+        machine.changeEventDelegate = testStateChangeDelegate
 
         machine.processEvent(UpdatesStateEventCheck())
         expect(machine.state) == .checking

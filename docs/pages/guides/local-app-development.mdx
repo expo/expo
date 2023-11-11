@@ -197,9 +197,13 @@ To build your project locally you can use compile commands from Expo CLI which g
   ]}
 />
 
-The above commands compile your project into an app locally. You can also add the `--device` flag to create a debug build of your project and run it on a connected device. These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building.
+The above commands compile your project, using your locally installed Android SDK or Xcode, into a debug build of your app.
 
-To modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on the top of existing files. It may also produce different results after the build.
+- These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building, if they do not exist yet. If they already exist, this will be skipped.
+- You can also add the `--device` flag to select a device to run the app on — you can select a physically connected device or emulator/simulator.
+- You can pass in `--variant release` (Android) or `--configuration Release` (iOS) to build a [production version of your app](/deploy/build-project/#production-builds-locally).
+
+To modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on top of existing files. It may also produce different results after the build.
 
 To avoid this, add native directories to the project's **.gitignore** and use `npx expo prebuild --clean` command. This ensures that the project is always managed, and the [`--clean` flag](/workflow/prebuild/#clean) will delete existing directories before regenerating them. You can use [app config](/workflow/configuration/) or create a [config plugin](/config-plugins/introduction/) to modify your project's configuration or code inside the native directories.
 
@@ -224,6 +228,14 @@ To learn more about how compilation and prebuild works, see the following guides
   Icon={BookOpen02Icon}
 />
 
+## Local builds with `expo-dev-client`
+
+If you install [`expo-dev-client`](/develop/development-builds/introduction/#what-is-expo-dev-client) to your project, then a debug build of your project will include the `expo-dev-client` UI and tooling, and we call these development builds.
+
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
+
+To create a development build, you can use [local app compilation](#local-app-compilation) commands (`npx expo run:[android|ios]`) which will create a debug build and start the development server.
+
 ## Local builds with EAS
 
 <BoxLink
@@ -236,13 +248,4 @@ To learn more about how compilation and prebuild works, see the following guides
   }
   href="/build-reference/local-builds"
   Icon={BuildIcon}
-/>
-
-## Next steps
-
-<BoxLink
-  title="Production builds locally"
-  description="Learn how to create a production build for your app that is ready to be submitted to app stores."
-  href="/deploy/build-project/#production-builds-locally"
-  Icon={BookOpen02Icon}
 />

@@ -6,7 +6,6 @@ import {
   ArrowRightIcon,
   CameraPlusDuotoneIcon,
   DiscordIcon,
-  DiscourseIcon,
   GithubIcon,
   Image03DuotoneIcon,
   Mail01Icon,
@@ -192,7 +191,7 @@ const Home = () => {
               </div>
               <RawH3 css={css({ color: palette.purple11 })}>Chat with the community</RawH3>
               <P css={{ color: palette.purple11, ...typography.fontSizes[14] }}>
-                Join over 15,000 other developers
+                Join over 20,000 other developers
                 <br />
                 on the Expo Community Discord.
               </P>
@@ -275,11 +274,12 @@ export function JoinTheCommunity() {
             icon={<GithubIcon className="icon-lg text-palette-white" />}
           />
           <CommunityGridCell
-            title="Discord"
-            description="Join our Discord and chat with other Expo users."
+            title="Discord and Forums"
+            description="Join our Discord to chat with Expo users or ask questions."
             link="https://chat.expo.dev"
             icon={<DiscordIcon className="icon-lg text-palette-white" />}
             iconBackground="#3131E8"
+            shouldLeakReferrer
           />
         </Row>
         <Row>
@@ -291,10 +291,10 @@ export function JoinTheCommunity() {
             iconBackground="#000000"
           />
           <CommunityGridCell
-            title="Forums"
-            description="Ask or answer a question on the forums."
-            link="https://forums.expo.dev/"
-            icon={<DiscourseIcon className="icon-lg text-palette-white" />}
+            title="Newsletter"
+            description="Get the latest updates from monthly Expo newsletter."
+            link="https://expo.dev/mailing-list/signup"
+            icon={<Mail01Icon className="icon-lg text-palette-white" />}
           />
         </Row>
         <Row>
@@ -304,12 +304,6 @@ export function JoinTheCommunity() {
             link="https://www.reddit.com/r/expo"
             icon={<RedditIcon className="icon-lg text-palette-white" />}
             iconBackground="#FC471E"
-          />
-          <CommunityGridCell
-            title="Newsletter"
-            description="Get the latest updates from monthly Expo newsletter."
-            link="http://eepurl.com/hk1tCn"
-            icon={<Mail01Icon className="icon-lg text-palette-white" />}
           />
         </Row>
       </CellContainer>

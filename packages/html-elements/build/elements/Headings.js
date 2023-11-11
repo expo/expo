@@ -5,12 +5,15 @@ import Text from '../primitives/Text';
 function createHeadingComponent(level) {
     const nativeProps = Platform.select({
         web: {
-            accessibilityLevel: level,
+            'aria-level': level,
+            role: 'header',
         },
-        default: {},
+        default: {
+            accessibilityRole: 'header',
+        },
     });
     return forwardRef((props, ref) => {
-        return (React.createElement(Text, { ...nativeProps, accessibilityRole: "header", ...props, style: [styles[`h${level}`], props.style], ref: ref }));
+        return (<Text {...nativeProps} {...props} style={[styles[`h${level}`], props.style]} ref={ref}/>);
     });
 }
 export const H1 = createHeadingComponent(1);
@@ -19,6 +22,14 @@ export const H3 = createHeadingComponent(3);
 export const H4 = createHeadingComponent(4);
 export const H5 = createHeadingComponent(5);
 export const H6 = createHeadingComponent(6);
+if (__DEV__) {
+    H1.displayName = 'H1';
+    H2.displayName = 'H2';
+    H3.displayName = 'H3';
+    H4.displayName = 'H4';
+    H5.displayName = 'H5';
+    H6.displayName = 'H6';
+}
 // Default web styles: http://trac.webkit.org/browser/trunk/Source/WebCore/css/html.css
 const styles = StyleSheet.create({
     h1: {

@@ -322,7 +322,7 @@ Create a Netlify configuration file at the root of your project to redirect all 
 
 [functions]
   # Include everything to ensure dynamic routes can be used.
-  included_files = ["dist/**/*"]
+  included_files = ["dist/**/*.html", "dist/_expo/functions/**/*", "dist/_expo/routes.json"]
 
 [[headers]]
   for = "/dist/_expo/functions/*"

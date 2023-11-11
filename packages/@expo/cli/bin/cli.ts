@@ -127,7 +127,7 @@ if (!isSubcommand) {
     'client:install:ios': 'npx expo start --ios',
     'client:install:android': 'npx expo start --android',
     doctor: 'npx expo-doctor',
-    upgrade: 'expo-cli upgrade',
+    upgrade: 'https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/',
     'customize:web': 'npx expo customize',
 
     publish: 'eas update',
@@ -164,8 +164,9 @@ if (!isSubcommand) {
   if (subcommand in migrationMap) {
     const replacement = migrationMap[subcommand];
     console.log();
+    const instruction = subcommand === 'upgrade' ? 'follow this guide' : 'use'
     console.log(
-      chalk.yellow`  {gray $} {bold expo ${subcommand}} is not supported in the local CLI, please use {bold ${replacement}} instead`
+      chalk.yellow`  {gray $} {bold expo ${subcommand}} is not supported in the local CLI, please ${instruction} {bold ${replacement}} instead`
     );
     console.log();
     process.exit(1);

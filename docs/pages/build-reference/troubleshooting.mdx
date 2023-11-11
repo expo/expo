@@ -5,6 +5,7 @@ description: A reference for troubleshooting build errors and crashes when using
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { A } from '~/ui/components/Text';
 
 > This document is under active development; the topic it covers is expansive and finding the right way to explain how to troubleshoot issues will take some trial and error. Your suggestions for improvements are welcome as pull requests.
 
@@ -59,9 +60,9 @@ It's important to note that with iOS builds the build details page only displays
 
 {/* TODO: native and js build phases should be separate in eas build logs, this is too much work for people to figure out */}
 
-If you are working on a managed app and the build error is a native error rather than a JavaScript error, this is likely due to a [config plugin](/config-plugins/introduction/) or a dependency in your project. Keep an eye out in the logs for any new packages that you've added since your previous successful build. Run `npx expo-doctor` to determine that the versions of Expo SDK dependencies in your project are compatible with your Expo SDK version.
+If you are working on a managed app and the build error is a native error rather than a JavaScript error, this is likely due to a [config plugin](/config-plugins/introduction/) or a dependency in your project. Keep an eye out in the logs for any new packages that you have added since your previous successful build. Run `npx expo-doctor` to determine that the versions of Expo SDK dependencies in your project are compatible with your Expo SDK version.
 
-Armed with your error logs, you can often start to fix your build, or you can search the [forums](https://forums.expo.dev) and GitHub issues for related packages to dig deeper. Some common sources of problems are listed below.
+Armed with your error logs, you can often start to fix your build or search the [forums](https://chat.expo.dev/) and GitHub issues for related packages to dig deeper. Some common sources of problems are listed below.
 
 <Collapsible summary="Are you using a monorepo?">
 
@@ -81,7 +82,7 @@ This can often be a sign that your app bundle is extremely large, which will mak
 
 To determine how large your bundle is and to see a breakdown of where the size comes from, use [react-native-bundle-visualizer](https://github.com/IjzerenHein/react-native-bundle-visualizer).
 
-To increase memory limits on your EAS Build builders, you can use [`large` resource class](/build-reference/eas-json/#resourceclass-1) in your **eas.json**. See [Android-specific resource class](/build-reference/infrastructure/#android-build-server-configurations) and [iOS-specific resource class](/build-reference/infrastructure/#ios-build-server-configurations) for more information.
+To increase memory limits on your EAS Build builders, you can use [`large` resource class](/eas/json/#resourceclass) in your **eas.json**. See [Android-specific resource class](/build-reference/infrastructure/#android-build-server-configurations) and [iOS-specific resource class](/build-reference/infrastructure/#ios-build-server-configurations) for more information.
 
 </Collapsible>
 
@@ -154,7 +155,7 @@ If you have followed the advice here, you're now in a good position to describe 
 
 ### How to ask a good question
 
-Join us on [Discord](https://chat.expo.dev) or the [forums](https://forums.expo.dev) to ask for help from the community and the Expo team. The Expo team does our best to respond to high quality and well articulated questions and issues, but responses are not guaranteed unless you are signed up for a [support plan](https://expo.dev/eas/enterprise-support). To ensure that an Expo team member sees your question, you can file a ticket at [expo.dev/contact](https://expo.dev/contact).
+Join us on <A href="https://chat.expo.dev/" shouldLeakReferrer>Discord and Forums</A> to ask for help from the community and the Expo team. The Expo team does our best to respond to high quality and well-articulated questions and issues, but responses are not guaranteed unless you are signed up for a [support plan](https://expo.dev/support-terms#target-response-time-guidelines-for-subscriptions). To ensure that an Expo team member sees your question, you can file a ticket at [expo.dev/contact](https://expo.dev/contact).
 
 When you ask for troubleshooting help, be sure to share the following information:
 

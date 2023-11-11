@@ -1,8 +1,8 @@
 import GithubSlugger from 'github-slugger';
 import * as React from 'react';
 
-import { ElementType, PageMetadata, RemarkHeading } from '../types/common';
 import * as Utilities from './utilities';
+import { ElementType, PageMetadata, RemarkHeading } from '../types/common';
 
 /**
  * These types directly correspond to MDAST node types

@@ -25,6 +25,7 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::READABLE_ARRAY, ReadableNativeArrayFrontendConverter);
   RegisterConverter(CppType::VIEW_TAG, ViewTagFrontendConverter);
   RegisterConverter(CppType::SHARED_OBJECT_ID, SharedObjectIdConverter);
+  RegisterConverter(CppType::ANY, AnyFrontendConvert);
 #undef RegisterConverter
 
   auto registerPolyConverter = [this](const std::vector<CppType> &types) {
@@ -41,16 +42,6 @@ void FrontendConverterProvider::createConverters() {
 
   // Enums
   registerPolyConverter({CppType::STRING, CppType::INT});
-
-  // Any
-  // We are not using all types here to provide a similar behaviour to the bridge implementation
-  registerPolyConverter({
-                          CppType::DOUBLE,
-                          CppType::READABLE_MAP,
-                          CppType::READABLE_ARRAY,
-                          CppType::STRING,
-                          CppType::BOOLEAN
-                        });
 }
 
 std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverter(

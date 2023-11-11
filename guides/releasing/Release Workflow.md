@@ -50,6 +50,7 @@
 
 **How:**
 
+- `et update-versions --sdkVersion XX.X.X --key expoVersion --value <expo package version>`
 - `et update-versions --sdkVersion XX.X.X --key facebookReactVersion --value <react package version>`
 - `et update-versions --sdkVersion XX.X.X --key facebookReactNativeVersion --value <react-native package version>`
 - `et update-versions --sdkVersion XX.X.X --key expoReactNativeTag --value sdk-XX.X.X`
@@ -339,6 +340,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
   - `react-native-web`
   - `babel-preset-expo`
   - `@expo/config-plugins`
+  - `@expo/metro-config`
   - `@expo/webpack-config`
   - `@expo/prebuild-config`
   - `expo-modules-autolinking`

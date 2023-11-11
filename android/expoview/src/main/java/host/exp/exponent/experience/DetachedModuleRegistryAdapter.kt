@@ -11,7 +11,6 @@ import host.exp.exponent.utils.ScopedContext
 import versioned.host.exp.exponent.modules.universal.ConstantsBinding
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter
 import versioned.host.exp.exponent.modules.universal.ScopedUIManagerModuleWrapper
-import versioned.host.exp.exponent.modules.universal.UpdatesBinding
 
 open class DetachedModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistryProvider) :
   ExpoModuleRegistryAdapter(moduleRegistryProvider) {
@@ -35,9 +34,6 @@ open class DetachedModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegi
         manifest
       )
     )
-
-    // Overriding expo-updates UpdatesService
-    moduleRegistry.registerInternalModule(UpdatesBinding(scopedContext, experienceProperties))
 
     // ReactAdapterPackage requires ReactContext
     val reactContext = scopedContext.context as ReactApplicationContext

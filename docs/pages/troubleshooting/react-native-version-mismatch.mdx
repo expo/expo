@@ -30,7 +30,7 @@ The bundler that you're running in your terminal (using `npx expo start`) is usi
 
 - If this is a managed workflow project, you should make sure your `react-native` version is correct. Run `npx expo-doctor` will show a warning where the `react-native` version you should install. If you did upgrade to a newer SDK, make sure to run `expo-cli upgrade` and follow the prompts. Expo CLI will make sure that your dependency versions for packages like `expo` and `react-native` are aligned.
 
-- If this is a bare workflow project, and this error is occurring right after upgrading your React Native version, you should double-check that you've performed each of the upgrade steps correctly.
+- If this is a bare workflow project, and this error is occurring right after upgrading your React Native version, you should double-check that you have performed each of the upgrade steps correctly.
 
 - Finally:
   - Clear your bundler caches by running `rm -rf node_modules && npm cache clean --force && npm install && watchman watch-del-all && rm -rf $TMPDIR/haste-map-* && rm -rf $TMPDIR/metro-cache && expo start --clear`

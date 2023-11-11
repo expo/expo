@@ -22,6 +22,7 @@ jest.mock('../getVersionedPackages', () => ({
     'expo-splash-screen': '~1.2.3',
     'expo-updates': '~2.3.4',
     firebase: '9.1.0',
+    expo: '49.0.7',
   }),
 }));
 
@@ -40,10 +41,9 @@ describe(logIncorrectDependencies, () => {
 
     expect(Log.warn).toHaveBeenNthCalledWith(
       1,
-      expect.stringContaining('Some dependencies are incompatible')
+      expect.stringContaining('The following packages should be updated for best compatibility')
     );
     expect(Log.warn).toHaveBeenNthCalledWith(2, expect.stringContaining('expected version'));
-    expect(Log.warn).toHaveBeenNthCalledWith(3, expect.stringContaining('npx expo install --fix'));
   });
 });
 
@@ -79,6 +79,48 @@ describe(validateDependenciesVersionsAsync, () => {
     );
   });
 
+  it('resolves to true when installed expo version is greater than "known" good version', async () => {
+    vol.fromJSON(
+      {
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '49.0.8',
+        }),
+      },
+      projectRoot
+    );
+    const exp = {
+      sdkVersion: '49.0.0',
+    };
+    const pkg = {
+      dependencies: { expo: '^49.0.0' },
+    };
+
+    await expect(validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)).resolves.toBe(
+      true
+    );
+  });
+
+  it('resolves to false when installed expo version is less than known good version', async () => {
+    vol.fromJSON(
+      {
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '49.0.6',
+        }),
+      },
+      projectRoot
+    );
+    const exp = {
+      sdkVersion: '49.0.0',
+    };
+    const pkg = {
+      dependencies: { expo: '^49.0.0' },
+    };
+
+    await expect(validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)).resolves.toBe(
+      false
+    );
+  });
+
   it('resolves to false when the installed packages do not match bundled native modules', async () => {
     asMock(Log.warn).mockReset();
     vol.fromJSON(
@@ -104,7 +146,7 @@ describe(validateDependenciesVersionsAsync, () => {
     );
     expect(Log.warn).toHaveBeenNthCalledWith(
       1,
-      expect.stringContaining('Some dependencies are incompatible with the installed')
+      expect.stringContaining('The following packages should be updated for best compatibility')
     );
     expect(Log.warn).toHaveBeenNthCalledWith(2, expect.stringContaining('expo-splash-screen'));
     expect(Log.warn).toHaveBeenNthCalledWith(3, expect.stringContaining('expo-updates'));
@@ -136,7 +178,7 @@ describe(validateDependenciesVersionsAsync, () => {
     );
     expect(Log.warn).toHaveBeenNthCalledWith(
       1,
-      expect.stringContaining('Some dependencies are incompatible with the installed')
+      expect.stringContaining('The following packages should be updated for best compatibility')
     );
     expect(Log.warn).toHaveBeenCalledWith(expect.stringContaining('expo-updates'));
     expect(Log.warn).not.toHaveBeenCalledWith(expect.stringContaining('expo-splash-screen'));

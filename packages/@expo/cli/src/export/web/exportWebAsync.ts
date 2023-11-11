@@ -19,7 +19,7 @@ export async function exportWebAsync(projectRoot: string, options: Options) {
   const { exp } = getConfig(projectRoot);
   const platformBundlers = getPlatformBundlers(exp);
   // Create a bundler interface
-  const bundler = new WebpackBundlerDevServer(projectRoot, platformBundlers, false);
+  const bundler = new WebpackBundlerDevServer(projectRoot, platformBundlers);
 
   // If the user set `web.bundler: 'metro'` then they should use `expo export` instead.
   if (!bundler.isTargetingWeb()) {

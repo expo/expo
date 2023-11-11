@@ -1,4 +1,11 @@
 const expoTheme = require('@expo/styleguide/tailwind');
+const { merge } = require('lodash');
+
+function getExpoTheme(extend = {}) {
+  const customizedTheme = Object.assign({}, expoTheme);
+  customizedTheme.theme.extend = Object.assign({}, merge(expoTheme.theme.extend, extend));
+  return customizedTheme;
+}
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -10,5 +17,13 @@ module.exports = {
     './node_modules/@expo/styleguide/dist/**/*.{js,ts,jsx,tsx}',
   ],
   plugins: [],
-  ...expoTheme,
+  ...getExpoTheme(
+    {
+      backgroundImage: (theme) => ({
+        'default-fade': `linear-gradient(to bottom, ${theme(
+          'backgroundColor.default'
+        )}, transparent)`,
+      }),
+    },
+  ),
 };

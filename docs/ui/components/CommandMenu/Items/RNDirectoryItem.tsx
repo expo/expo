@@ -1,9 +1,9 @@
 import { GithubIcon } from '@expo/styleguide-icons';
 
-import type { RNDirectoryItemType } from '../types';
-import { addHighlight } from '../utils';
 import { CommandItemBase } from './CommandItemBase';
 import { ExternalLinkIcon } from './icons';
+import type { RNDirectoryItemType } from '../types';
+import { addHighlight } from '../utils';
 
 import { CALLOUT, CAPTION } from '~/ui/components/Text';
 

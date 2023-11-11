@@ -4,16 +4,28 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+
+## 5.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
 - Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
 - Removed `androidId` constant in favor of a method (`getAndroidId`) to comply with Huawei and Xiaomi's app store policies. ([#22585](https://github.com/expo/expo/pull/22585) by [@fobos531](https://github.com/fobos531))
 
 ### 🎉 New features
 
+- Migrate iOS module to Expo modules API. ([#24871](https://github.com/expo/expo/pull/24871) by [@reichhartd](https://github.com/reichhartd))
 - Android module is now written using the Sweet API. ([#22395](https://github.com/expo/expo/pull/22585) by [@fobos531](https://github.com/fobos531))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 5.5.0 — 2023-09-15
 

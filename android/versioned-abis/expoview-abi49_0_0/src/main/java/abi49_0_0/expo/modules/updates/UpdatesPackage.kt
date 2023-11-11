@@ -8,9 +8,7 @@ import androidx.annotation.WorkerThread
 import abi49_0_0.com.facebook.react.ReactActivity
 import abi49_0_0.com.facebook.react.ReactInstanceManager
 import abi49_0_0.com.facebook.react.ReactNativeHost
-import abi49_0_0.expo.modules.core.ExportedModule
 import abi49_0_0.expo.modules.core.interfaces.Package
-import abi49_0_0.expo.modules.core.interfaces.InternalModule
 import abi49_0_0.expo.modules.core.interfaces.ReactActivityHandler
 import abi49_0_0.expo.modules.core.interfaces.ReactNativeHostHandler
 
@@ -31,14 +29,6 @@ import expo.modules.updates.UpdatesController
 class UpdatesPackage : Package {
   private val useNativeDebug = false
   private var mShouldAutoSetup: Boolean? = null
-
-  override fun createInternalModules(context: Context): List<InternalModule> {
-    return listOf(UpdatesService(context) as InternalModule)
-  }
-
-  override fun createExportedModules(context: Context): List<ExportedModule> {
-    return listOf(UpdatesModule(context) as ExportedModule)
-  }
 
   override fun createReactNativeHostHandlers(context: Context): List<ReactNativeHostHandler> {
     val handler: ReactNativeHostHandler = object : ReactNativeHostHandler {

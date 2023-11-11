@@ -9,6 +9,7 @@ on:
       - yarn.lock
   push:
     branches: [main, 'sdk-*']
+    branches-ignore: ['sdk-4*']
     paths:
       - .github/workflows/home.yml
       - home/**
@@ -29,7 +30,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
