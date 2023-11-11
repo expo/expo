@@ -15920,11 +15920,6 @@ postcss-safe-parser@^4.0.2:
   dependencies:
     postcss "^7.0.26"
 
-postcss-scss@^4.0.9:
-  version "4.0.9"
-  resolved "https://registry.yarnpkg.com/postcss-scss/-/postcss-scss-4.0.9.tgz#a03c773cd4c9623cb04ce142a52afcec74806685"
-  integrity sha512-AjKOeiwAitL/MXxQW2DliT28EKukvvbEWx3LBmJIRN8KfBGZbRTxNYW0kSqi1COiTZ57nZ9NW06S6ux//N1c9A==
-
 postcss-selector-parser@^3.0.0:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/postcss-selector-parser/-/postcss-selector-parser-3.1.2.tgz#b310f5c4c0fdaf76f94902bbaa30db6aa84f5270"
@@ -15986,7 +15981,7 @@ postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.14, postcss@^7.0.26, postcss@^7.0.2
     picocolors "^0.2.1"
     source-map "^0.6.1"
 
-postcss@^8.4.23:
+postcss@^8.4.23, postcss@^8.4.31:
   version "8.4.31"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.31.tgz#92b451050a9f914da6755af352bdc0192508656d"
   integrity sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==
