@@ -4,6 +4,7 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main, 'sdk-*']
+    branches-ignore: ['sdk-4*']
     paths:
       - .github/workflows/expotools.yml
       - tools/**
