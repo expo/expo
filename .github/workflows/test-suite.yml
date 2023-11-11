@@ -4,7 +4,6 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main, 'sdk-*']
-    branches-ignore: ['sdk-4*']
     paths:
       - .github/workflows/test-suite.yml
       - apps/bare-expo/**

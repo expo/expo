@@ -3,7 +3,6 @@ name: Fingerprint
 on:
   push:
     branches: [main, 'sdk-*']
-    branches-ignore: ['sdk-4*']
     paths:
       - .github/workflows/fingerprint.yml
       - packages/@expo/fingerprint/**

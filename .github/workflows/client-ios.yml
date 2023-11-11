@@ -18,7 +18,6 @@ on:
       - yarn.lock
   push:
     branches: [main, sdk-*]
-    branches-ignore: ['sdk-4*']
     paths:
       - .github/workflows/client-ios.yml
       - ios/**
