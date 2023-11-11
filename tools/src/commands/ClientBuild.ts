@@ -1,5 +1,5 @@
-import { Command } from '@expo/commander';
 import { S3 } from '@aws-sdk/client-s3';
+import { Command } from '@expo/commander';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
