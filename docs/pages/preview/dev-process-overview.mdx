@@ -7,6 +7,7 @@ import { DocsLogo } from '@expo/styleguide';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Diagram } from '~/ui/components/Diagram';
+import Highlight from '~/components/plugins/Highlight';
 import { Terminal } from '~/ui/components/Snippet';
 
 You might have used Expo or React Native before or are using them for a while, or you are still learning about the ecosystem. This document starts by clarifying key concepts and then defines different parts of the core development loop.
@@ -181,13 +182,29 @@ In most cases, you will create and use a development build of your project. You 
 
 The core development loop described in the diagram above is a cycle of four main activities that you typically go through when developing an app.
 
-- **Write and run JavaScript code**: This involves creating components, writing business logic, or installing libraries from npm that don't require native code changes. The changes you make here are reflected in your app without needing any interaction with the native side of your app.
+- <Highlight isBlue>**Write and run JavaScript code**</Highlight>: This involves creating
+  components, writing business logic, or installing libraries from npm that don't require native
+  code changes. The changes you make here are reflected in your app without needing any interaction
+  with the native side of your app.
 
-- **Update app configuration**: This involves modifying your app's configuration using the app config file (**app.json** or **app.config.js**). It includes updating your app's name, icon, splash screen, and other properties. These changes don't all affect the native project directly. However, if you make changes that affect the native projects, you can use the [app config](/workflow/configuration/) to modify the native project configuration or create or use a [config plugin](/config-plugins/introduction/). See [app config reference](/versions/latest/config/app/) for a complete list of properties available in the app config file.
+- <Highlight isBlue>**Update app configuration**</Highlight>: This involves modifying your app's
+  configuration using the app config file (**app.json** or **app.config.js**). It includes updating
+  your app's name, icon, splash screen, and other properties. These changes don't all affect the
+  native project directly. However, if you make changes that affect the native projects, you can use
+  the [app config](/workflow/configuration/) to modify the native project configuration or create or
+  use a [config plugin](/config-plugins/introduction/). See [app config
+  reference](/versions/latest/config/app/) for a complete list of properties available in the app
+  config file.
 
-- **Write native code or modify native project configuration**: This includes writing native code directly or modifying native code configuration. You need access to the native code project directories to make these changes. You can create a development build using EAS or locally.
+- <Highlight isBlue>**Write native code or modify native project configuration**</Highlight>: This
+  includes writing native code directly or modifying native code configuration. You need access to
+  the native code project directories to make these changes. You can create a development build
+  using EAS or locally.
 
-- **Install a library that requires native code modifications**: This includes that a library requires making changes to the native code project configuration. Either the library provides a config plugin or steps to take to update the app config. Like the previous activity, this also requires you to create a development build.
+- <Highlight isBlue>**Install a library that requires native code modifications**</Highlight>: This
+  includes that a library requires making changes to the native code project configuration. Either
+  the library provides a config plugin or steps to take to update the app config. Like the previous
+  activity, this also requires you to create a development build.
 
 When creating a [development build](#development-builds), you have two options. You can create a cloud-based build using [EAS Build](/build/setup/) or do it locally. If you choose to do it locally, you can use [CNG](#continuous-native-generation-cng) and then [`npx expo prebuild --clean`](#how-do-i-know-when-i-need), or you can create a development build using [`npx expo run android|ios` or Android Studio and Xcode](/guides/local-app-development/#local-app-compilation).
 
