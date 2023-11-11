@@ -220,13 +220,13 @@ Then, ensure [CSS is setup](#css) in the **metro.config.js** file.
 
 ### Tailwind
 
-> **info** Standard Tailwind does not support native platforms, this is web-only. Use a compatability library like [Nativewind](https://www.nativewind.dev/) for universal support.
+> **info** Standard Tailwind does not support native platforms. This is web-only. For universal support, use a compatible library like [Nativewind](https://www.nativewind.dev/).
 
-[Tailwind](https://tailwindcss.com/) can be used with Metro for web. The following files are modified:
+[Tailwind](https://tailwindcss.com/) can be used with Metro for web. The following files are required to be modified to set it up:
 
 <FileTree files={['app.json', 'package.json', 'global.css', 'tailwind.config.js', 'index.js']} />
 
-First, ensure you're using Metro for web in your **app.json**:
+First, ensure you are using Metro for web in your **app.json**:
 
 ```json app.json
 {
@@ -238,11 +238,11 @@ First, ensure you're using Metro for web in your **app.json**:
 }
 ```
 
-Then simply configure Tailwind according to the [Tailwind PostCSS docs](https://tailwindcss.com/docs/installation/using-postcss).
+Then, configure Tailwind according to the [Tailwind PostCSS docs](https://tailwindcss.com/docs/installation/using-postcss).
 
 <Step label="1">
 
-Install `tailwindcss` and its peer dependencies, and create your **tailwind.config.js** file.
+Install `tailwindcss` and its peer dependencies, and create a **tailwind.config.js** file:
 
 <Terminal cmd={['$ yarn add --dev tailwindcss postcss autoprefixer', '$ npx tailwindcss init']} />
 
@@ -250,7 +250,7 @@ Install `tailwindcss` and its peer dependencies, and create your **tailwind.conf
 
 <Step label="2">
 
-Add `tailwindcss` and `autoprefixer` to your **postcss.config.js** file.
+Add `tailwindcss` and `autoprefixer` to your **postcss.config.js** file:
 
 ```js postcss.config.js
 module.exports = {
@@ -265,7 +265,7 @@ module.exports = {
 
 <Step label="3">
 
-Add the paths to all of your template files in your **tailwind.config.js** file.
+Add the paths to all of your template files in your **tailwind.config.js** file:
 
 ```js tailwind.config.js
 /** @type {import('tailwindcss').Config} */
@@ -304,13 +304,13 @@ Ensure you import this file in your root-most JavaScript file:
 import './global.css';
 ```
 
-> Expo Router users can use `./index.js` or `./app/_layout.js`, they both work the same.
+> When using Expo Router, you can use **./index.js** or **./app/_layout.js**. They both work the same.
 
 </Step>
 
 <Step label="5">
 
-Start your project, you may want to clear the transform cache for good measure:
+Start your project by clearing the transform cache for good measure:
 
 <Terminal cmd={['$ npx expo --clear']} />
 
@@ -346,7 +346,7 @@ export default function Page() {
 
 #### Tailwind Troubleshooting
 
-If you have a custom `config.cacheStores` in your **metro.config.js**, you'll need to extend the Expo superclass of `FileStore`:
+If you have a custom `config.cacheStores` in your **metro.config.js**, you need to extend the Expo superclass of `FileStore`:
 
 ```js metro.config.js
 // Import the Expo superclass which has support for PostCSS.
