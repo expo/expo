@@ -1,11 +1,11 @@
 /* eslint-env jest */
-import JsonFile from '@expo/json-file';
 import execa from 'execa';
+import fs from 'fs';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
+import { bin, getPageHtml, getRouterE2ERoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
-import { bin, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -44,24 +44,38 @@ describe('exports with tailwind and postcss', () => {
       })
       .filter(Boolean);
 
-    const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
-
-    expect(metadata).toEqual({
-      bundler: 'metro',
-      fileMetadata: {
-        ios: {
-          assets: expect.anything(),
-          bundle: expect.stringMatching(/bundles\/ios-.*\.js/),
-        },
-      },
-      version: 0,
-    });
-
     // The wrapper should not be included as a route.
-    expect(files).not.toContain('+html.html');
-    expect(files).not.toContain('index.html');
+    expect(files).toEqual([
+      '+not-found.html',
+      expect.stringMatching(/_expo\/static\/css\/global-.*\.css/),
+      expect.stringMatching(/_expo\/static\/js\/web\/index-.*\.js/),
+      '_sitemap.html',
+      'assets/__packages/expo-router/assets/error.png',
+      'assets/__packages/expo-router/assets/file.png',
+      'assets/__packages/expo-router/assets/forward.png',
+      'assets/__packages/expo-router/assets/pkg.png',
+      'index.html',
+    ]);
+  });
+  it('has tailwind classes', async () => {
+    const indexHtml = await getPageHtml(outputDir, 'index.html');
+    expect(indexHtml.querySelector('p.text-lg')).toBeDefined();
+  });
 
-    const iosBundle = files.find((v) => v?.startsWith('bundles/ios'));
-    expect(iosBundle).toBeDefined();
+  it('has tailwind CSS', async () => {
+    const files = klawSync(outputDir)
+      .map((entry) => {
+        if (!entry.stats.isFile() || !entry.path.endsWith('.css')) {
+          return null;
+        }
+        return entry.path;
+      })
+      .filter(Boolean);
+
+    expect(files.length).toBe(1);
+
+    const contents = fs.readFileSync(files[0]!, 'utf8');
+
+    expect(contents).toMatch(/\.text-lg{/);
   });
 });
