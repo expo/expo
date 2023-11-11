@@ -1,8 +1,8 @@
+import { S3 } from '@aws-sdk/client-s3';
 import { Command } from '@expo/commander';
 import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
-import { S3 } from '@aws-sdk/client-s3';
 import fs, { mkdirp } from 'fs-extra';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
@@ -401,13 +401,12 @@ async function internalIosSimulatorPublishAsync() {
   const file = fs.createReadStream(tmpTarGzPath);
 
   logger.info(`Uploading Exponent-${appVersion}.tar.gz to S3`);
-  await s3Client
-    .putObject({
-      Bucket: 'exp-ios-simulator-apps',
-      Key: `Exponent-${appVersion}.tar.gz`,
-      Body: file,
-      ACL: 'public-read',
-    });
+  await s3Client.putObject({
+    Bucket: 'exp-ios-simulator-apps',
+    Key: `Exponent-${appVersion}.tar.gz`,
+    Body: file,
+    ACL: 'public-read',
+  });
 
   logger.info('Updating versions endpoint');
   await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
@@ -432,13 +431,12 @@ async function internalAndroidAPKPublishAsync() {
   const file = fs.createReadStream(artifactPaths[0]);
 
   logger.info(`Uploading Exponent-${appVersion}.apk to S3`);
-  await s3Client
-    .putObject({
-      Bucket: 'exp-android-apks',
-      Key: `Exponent-${appVersion}.apk`,
-      Body: file,
-      ACL: 'public-read',
-    });
+  await s3Client.putObject({
+    Bucket: 'exp-android-apks',
+    Key: `Exponent-${appVersion}.apk`,
+    Body: file,
+    ACL: 'public-read',
+  });
 
   logger.info('Updating versions endpoint');
   await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
