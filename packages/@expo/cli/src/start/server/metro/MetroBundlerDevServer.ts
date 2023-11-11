@@ -8,7 +8,7 @@ import { getConfig } from '@expo/config';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
-import { AssetData } from 'metro';
+import { AssetData, DefaultBundleOptions } from 'metro';
 import fetch from 'node-fetch';
 import path from 'path';
 
@@ -47,6 +47,8 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { ServerRequest } from '../middleware/server.types';
+import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 
 export class ForwardHtmlError extends CommandError {
   constructor(
@@ -391,6 +393,78 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // https://github.com/expo/expo/issues/13114
     prependMiddleware(middleware, manifestMiddleware.getHandler());
 
+    // middleware.use(
+    //   // Current Metro stats for devtools endpoint
+    //   '/_expo/last-metro-stats',
+    //   async (req, res, next) => {
+    //     if (!lastRequests.length) {
+    //       // Not found
+    //       res.statusCode = 404;
+
+    //       res.end();
+    //       return;
+    //     }
+
+    //     const latest = lastRequests[lastRequests.length - 1];
+
+    //     const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions(
+    //       latest.options
+    //     );
+
+    //     /**
+    //      * `entryFile` is relative to projectRoot, we need to use resolution function
+    //      * to find the appropriate file with supported extensions.
+    //      */
+    //     const resolvedEntryFilePath = await metro._resolveRelativePath(entryFile, {
+    //       relativeTo: 'server',
+    //       resolverOptions,
+    //       transformOptions,
+    //     });
+
+    //     // const entryPoint = metro._getEntryPointAbsolutePath(entryFile);
+
+    //     console.log('>>', entryFile, resolvedEntryFilePath);
+    //     try {
+    //       // @ts-expect-error: _bundler isn't exposed on the type.
+    //       const dependencies = await metro._bundler.getDependencies(
+    //         [resolvedEntryFilePath],
+    //         transformOptions,
+    //         resolverOptions,
+    //         { onProgress, shallow: false, lazy: false }
+    //       );
+
+    //       const dropSource = true;
+
+    //       const stats = [...dependencies.entries()].map(([key, value]) => {
+    //         return modifyDep(this.projectRoot, value, options, dropSource);
+    //       });
+
+    //       res.setHeader('Content-Type', 'application/json');
+    //       res.end(
+    //         JSON.stringify(
+    //           {
+    //             version: 1,
+    //             dependencies: stats,
+    //             entryFile,
+    //             transformOptions,
+    //             resolverOptions,
+    //             url: latest.url,
+    //           },
+    //           null,
+    //           2
+    //         )
+    //       );
+    //       return;
+    //     } catch (error) {
+    //       console.log('ERROR:', error);
+    //       res.statusCode = 500;
+    //       res.end();
+    //       return;
+    //     }
+    //     // toJson(this.projectRoot, entryFile, , dependencies, results, {)
+    //   }
+    // );
+
     middleware.use(
       new InterstitialPageMiddleware(this.projectRoot, {
         // TODO: Prevent this from becoming stale.
@@ -493,6 +567,25 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     };
 
+    // const lastRequests: { url: string; options: DefaultBundleOptions }[] = [];
+
+    // Intercept bundle requests to Metro and store them.
+
+    // prependMiddleware(middleware, async (req: ServerRequest, res, next) => {
+    //   console.log('intercept:', req.url);
+    //   if (req.url) {
+    //     const url = new URL(req.url, 'http://localhost');
+    //     if (url.pathname.endsWith('.bundle')) {
+    //       // @ts-expect-error: not public
+    //       const options = metro._parseOptions(req.url);
+
+    //       // console.log('store url:', url, options);
+    //       lastRequests.push({ url: req.url, options });
+    //     }
+    //   }
+    //   return next();
+    // });
+
     this.metro = metro;
     return {
       server,
@@ -579,4 +672,101 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
       ...getDevClientProperties(projectRoot, exp),
     });
   };
+}
+
+const sourceMapString = require('metro/src/DeltaBundler/Serializers/sourceMapString');
+
+function modifyDep(projectRoot, mod, options, dropSource = false) {
+  return {
+    dependencies: [...mod.dependencies.entries()].map(([key, value]) => {
+      return path.relative(projectRoot, value.absolutePath);
+    }),
+    // dependencies: Object.fromEntries(
+    //   [...mod.dependencies.entries()].map(([key, value]) => {
+    //     return [key, value];
+    //   })
+    // ),
+    getSource: mod.getSource().toString(),
+    size: mod.output.reduce((acc, { data }) => acc + data.code.length, 0),
+    // inverseDependencies: Array.from(mod.inverseDependencies),
+    path: path.relative(projectRoot, mod.path),
+    output: mod.output.map((output) => ({
+      type: output.type,
+      data: {
+        ...output.data,
+        ...(dropSource
+          ? { map: [], code: '...', functionMap: {} }
+          : {
+              map: sourceMapString([mod], {
+                processModuleFilter: () => true,
+                excludeSource: false,
+                shouldAddToIgnoreList: options.shouldAddToIgnoreList,
+              }),
+            }),
+      },
+    })),
+  };
+}
+
+function simplifyGraph(projectRoot, { transformOptions, ...graph }, options, dropSource = false) {
+  return {
+    ...graph,
+    dependencies: [...graph.dependencies.entries()].slice(0, 100).map(([key, value]) => {
+      return modifyDep(projectRoot, value, options, dropSource);
+    }),
+    // dependencies: Object.fromEntries(
+    //   [...graph.dependencies.entries()].map(([key, value]) => {
+    //     return [key, modifyDep(value, dropSource)];
+    //   })
+    // ),
+    entryPoints: [...graph.entryPoints.entries()],
+    // transformOptions: {
+    //   ...graph.transformOptions,
+    //   customTransformOptions: {
+    //     ...graph.transformOptions?.customTransformOptions,
+    //   },
+    // },
+  };
+}
+
+// function storeFixture(name: string, obj: any) {
+//   const filePath = path.join(
+//     __dirname.replace('metro-config/build/', 'metro-config/src/'),
+//     `${name}.json`
+//   );
+//   fs.writeFileSync(filePath, JSON.stringify(obj, null, 2));
+// }
+
+function toJson(projectRoot: string, entryFile: string, preModules, graph, options) {
+  const dropSource = false;
+  return [
+    entryFile,
+    preModules.map((mod) => modifyDep(projectRoot, mod, options, dropSource)),
+    simplifyGraph(projectRoot, graph, options, dropSource),
+    {
+      ...options,
+      processModuleFilter: '[Function: processModuleFilter]',
+      createModuleId: '[Function (anonymous)]',
+      getRunModuleStatement: '[Function: getRunModuleStatement]',
+      shouldAddToIgnoreList: '[Function: shouldAddToIgnoreList]',
+    },
+  ];
+
+  //   console.log('DATA:\n\n');
+  //   console.log(require('util').inspect(json, { depth: 5000 }));
+  //   console.log('\n\n....');
+
+  //   const hashContents = crypto.createHash('sha256').update(JSON.stringify(json)).digest('hex');
+
+  //   const platform =
+  //     graph.transformOptions?.platform ??
+  //     ((options.sourceUrl ? new URL(options.sourceUrl).searchParams.get('platform') : '') ||
+  //       'unknown_platform');
+
+  //   storeFixture(
+  //     [path.basename(entryFile).replace(/\.[tj]sx?/, ''), platform, hashContents]
+  //       .filter(Boolean)
+  //       .join('-'),
+  //     json
+  //   );
 }

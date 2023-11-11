@@ -178,6 +178,92 @@ export async function instantiateMetroAsync(
     return middleware.use(metroMiddleware);
   };
 
+  const original = metroConfig.serializer.customSerializer;
+
+  const bundles: {
+    date: number;
+    entryPoint: string;
+    preModules: any; //ReadonlyArray<Module>;
+    graph: any; // ReadOnlyGraph;
+    options: any; // SerializerOptions;
+  }[] = [];
+  metroConfig.serializer.customSerializer = (
+    entryPoint: string,
+    preModules: any, //ReadonlyArray<Module>,
+    graph: any, // ReadOnlyGraph,
+    options: any // SerializerOptions,
+  ) => {
+    // console.log('push bundle', entryPoint);
+    bundles.push({ entryPoint, preModules, graph, options, date: Date.now() });
+    return original(entryPoint, preModules, graph, options);
+  };
+
+  function allowCrossOrigin(req: ServerRequest, res: ServerResponse) {
+    const origin = (() => {
+      if (req.headers['origin']) {
+        return req.headers['origin'];
+      }
+
+      if (req.headers['referer']) {
+        return req.headers['referer'];
+      }
+
+      try {
+        return new URL(req.url!).origin;
+      } catch {
+        return null;
+      }
+    })();
+
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+  }
+
+  middleware.use(
+    // Current Metro stats for devtools endpoint
+    '/_expo/last-metro-stats',
+    async (req, res, next) => {
+      if (!bundles.length) {
+        // Not found
+        res.statusCode = 404;
+
+        res.end();
+        return;
+      }
+
+      try {
+        allowCrossOrigin(req, res);
+
+        res.setHeader('Content-Type', 'application/json');
+        res.end(
+          JSON.stringify(
+            {
+              version: 1,
+              graphs: bundles.map((bundle) =>
+                toJson(
+                  projectRoot,
+                  bundle.entryPoint,
+                  bundle.preModules,
+                  bundle.graph,
+                  bundle.options
+                )
+              ),
+            },
+            null,
+            2
+          )
+        );
+        return;
+      } catch (error) {
+        console.log('ERROR:', error);
+        res.statusCode = 500;
+        res.end();
+        return;
+      }
+    }
+  );
+
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
   const { server, metro } = await runServer(metroBundler, metroConfig, {
@@ -221,4 +307,102 @@ export function isWatchEnabled() {
   }
 
   return !env.CI;
+}
+
+const sourceMapString = require('metro/src/DeltaBundler/Serializers/sourceMapString');
+import path from 'path';
+
+function modifyDep(projectRoot, mod, options, dropSource = false) {
+  return {
+    dependencies: [...mod.dependencies.entries()].map(([key, value]) => {
+      return path.relative(projectRoot, value.absolutePath);
+    }),
+    // dependencies: Object.fromEntries(
+    //   [...mod.dependencies.entries()].map(([key, value]) => {
+    //     return [key, value];
+    //   })
+    // ),
+    getSource: mod.getSource().toString(),
+    size: mod.output.reduce((acc, { data }) => acc + data.code.length, 0),
+    // inverseDependencies: Array.from(mod.inverseDependencies),
+    path: path.relative(projectRoot, mod.path),
+    output: mod.output.map((output) => ({
+      type: output.type,
+      data: {
+        ...output.data,
+        ...(dropSource
+          ? { map: [], code: '...', functionMap: {} }
+          : {
+              map: sourceMapString([mod], {
+                processModuleFilter: () => true,
+                excludeSource: false,
+                shouldAddToIgnoreList: options.shouldAddToIgnoreList,
+              }),
+            }),
+      },
+    })),
+  };
+}
+
+function simplifyGraph(projectRoot, { transformOptions, ...graph }, options, dropSource = false) {
+  return {
+    ...graph,
+    dependencies: [...graph.dependencies.entries()].slice(0, 100).map(([key, value]) => {
+      return modifyDep(projectRoot, value, options, dropSource);
+    }),
+    // dependencies: Object.fromEntries(
+    //   [...graph.dependencies.entries()].map(([key, value]) => {
+    //     return [key, modifyDep(value, dropSource)];
+    //   })
+    // ),
+    entryPoints: [...graph.entryPoints.entries()],
+    // transformOptions: {
+    //   ...graph.transformOptions,
+    //   customTransformOptions: {
+    //     ...graph.transformOptions?.customTransformOptions,
+    //   },
+    // },
+  };
+}
+
+// function storeFixture(name: string, obj: any) {
+//   const filePath = path.join(
+//     __dirname.replace('metro-config/build/', 'metro-config/src/'),
+//     `${name}.json`
+//   );
+//   fs.writeFileSync(filePath, JSON.stringify(obj, null, 2));
+// }
+
+function toJson(projectRoot: string, entryFile: string, preModules, graph, options) {
+  const dropSource = false;
+  return [
+    entryFile,
+    preModules.map((mod) => modifyDep(projectRoot, mod, options, dropSource)),
+    simplifyGraph(projectRoot, graph, options, dropSource),
+    {
+      ...options,
+      processModuleFilter: '[Function: processModuleFilter]',
+      createModuleId: '[Function (anonymous)]',
+      getRunModuleStatement: '[Function: getRunModuleStatement]',
+      shouldAddToIgnoreList: '[Function: shouldAddToIgnoreList]',
+    },
+  ];
+
+  //   console.log('DATA:\n\n');
+  //   console.log(require('util').inspect(json, { depth: 5000 }));
+  //   console.log('\n\n....');
+
+  //   const hashContents = crypto.createHash('sha256').update(JSON.stringify(json)).digest('hex');
+
+  //   const platform =
+  //     graph.transformOptions?.platform ??
+  //     ((options.sourceUrl ? new URL(options.sourceUrl).searchParams.get('platform') : '') ||
+  //       'unknown_platform');
+
+  //   storeFixture(
+  //     [path.basename(entryFile).replace(/\.[tj]sx?/, ''), platform, hashContents]
+  //       .filter(Boolean)
+  //       .join('-'),
+  //     json
+  //   );
 }
