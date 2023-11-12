@@ -28,6 +28,7 @@
 - Remove unused `storedUpdateIdsWithConfiguration` method. ([#25194](https://github.com/expo/expo/pull/25194) by [@wschurman](https://github.com/wschurman))
 - Remove ability for embedded manifests to be legacy manifests. ([#25195](https://github.com/expo/expo/pull/25195) by [@wschurman](https://github.com/wschurman))
 - Convert e2e setup scripts to typescript. ([#25271](https://github.com/expo/expo/pull/25271) by [@wschurman](https://github.com/wschurman))
+- Deprecate useUpdateEvents, addListener. ([#25345](https://github.com/expo/expo/pull/25345) by [@douglowder](https://github.com/douglowder))
 
 ## 0.18.17 — 2023-10-25
 
