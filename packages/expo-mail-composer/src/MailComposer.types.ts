@@ -1,3 +1,21 @@
+/**
+ * Configuration options for the mail client selection prompt.
+ */
+export type MailClientOptions = {
+  /**
+   *  Title for the mail app selection prompt.
+   * This title is displayed when the user is asked to choose an email client.
+   */
+  title?: string;
+
+  /**
+   * Label for the cancel button in the mail app selection prompt.
+   * This label is used on the button that allows the user to cancel the action of choosing a mail client.
+   * @platform ios
+   */
+  cancelLabel?: string;
+};
+
 // @needsAudit
 /**
  * A map defining the data to fill the mail.

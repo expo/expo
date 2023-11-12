@@ -3,6 +3,13 @@ package expo.modules.mailcomposer
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
+data class MailClientOptions(
+  @Field
+  val title: String?,
+  @Field
+  val cancelLabel: String?,
+) : Record
+
 data class MailComposerOptions(
   @Field
   val recipients: List<String>?,

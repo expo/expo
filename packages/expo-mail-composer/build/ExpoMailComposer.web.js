@@ -1,4 +1,4 @@
-import { MailComposerStatus } from './MailComposer.types';
+import { MailComposerStatus, } from './MailComposer.types';
 function removeNullishValues(obj) {
     for (const propName in obj) {
         if (obj[propName] == null) {
@@ -15,6 +15,7 @@ function checkValue(value) {
     return arr.join(',');
 }
 export default {
+    async openClientAsync(options) { },
     async composeAsync(options) {
         if (typeof window === 'undefined') {
             return { status: MailComposerStatus.CANCELLED };

@@ -8,6 +8,7 @@ public class MailComposerModule: Module {
   var currentSession: MailComposingSession?
 
   public func definition() -> ModuleDefinition {
+    // TODO: Rename the package to 'ExpoMail'
     Name("ExpoMailComposer")
 
     AsyncFunction("isAvailableAsync", canSendMail)

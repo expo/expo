@@ -39,5 +39,8 @@
   },
   "peerDependencies": {
     "expo": "*"
+  },
+  "dependencies": {
+    "expo-linking": "~6.2.0"
   }
 }
