@@ -1,5 +1,6 @@
 /**
- * The types of update-related events.
+ * @deprecated The types of update-related events, used with `addListener()` and `useUpdateEvents()`.
+ * These APIs are deprecated, and may be removed in a future release; `useUpdates()` should be used instead.
  */
 export var UpdateEventType;
 (function (UpdateEventType) {
