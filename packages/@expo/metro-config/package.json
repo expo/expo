@@ -28,6 +28,7 @@
   "files": [
     "build",
     "transformer",
+    "file-store",
     "babel-transformer"
   ],
   "dependencies": {
