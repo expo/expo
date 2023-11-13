@@ -1,6 +1,6 @@
 import React from 'react';
 import { ImageProps } from './Image.types';
-export declare class Image extends React.PureComponent<ImageProps> {
+export declare class ImageView extends React.PureComponent<ImageProps> {
     nativeViewRef: any;
     constructor(props: any);
     /**
@@ -52,4 +52,5 @@ export declare class Image extends React.PureComponent<ImageProps> {
     stopAnimating(): Promise<void>;
     render(): JSX.Element;
 }
+export declare const Image: typeof ImageView;
 //# sourceMappingURL=Image.d.ts.map

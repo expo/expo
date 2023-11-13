@@ -4,7 +4,7 @@ import ExpoImage, { ExpoImageModule } from './ExpoImage';
 import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
 import { resolveSources } from './utils/resolveSources';
 let loggedDefaultSourceDeprecationWarning = false;
-export class Image extends React.PureComponent {
+export class ImageView extends React.PureComponent {
     nativeViewRef;
     constructor(props) {
         super(props);
@@ -80,4 +80,27 @@ export class Image extends React.PureComponent {
         return (<ExpoImage {...restProps} style={restStyle} source={resolveSources(source)} placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)} contentFit={resolveContentFit(contentFit, resizeMode)} contentPosition={resolveContentPosition(contentPosition)} transition={resolveTransition(transition, fadeDuration)} nativeViewRef={this.nativeViewRef}/>);
     }
 }
+// A flag whether the Image component deprecation warning was already called.
+let loggedImageComponentDeprecationWarning = false;
+// These are some of the properties that React gets from the component during rendering.
+const reactComponentSpecificProperties = [
+    'defaultProps',
+    'propTypes',
+    'PropTypes',
+    'getDefaultProps',
+    'childContextTypes',
+    'contextType',
+    'tag',
+    'displayName',
+];
+export const Image = new Proxy(ImageView, {
+    get(target, property) {
+        if (!loggedImageComponentDeprecationWarning &&
+            reactComponentSpecificProperties.includes(property)) {
+            console.warn('[expo-image]: `<Image />` component is deprecated, use `<ImageView />` instead');
+            loggedImageComponentDeprecationWarning = true;
+        }
+        return target[property];
+    },
+});
 //# sourceMappingURL=Image.js.map

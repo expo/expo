@@ -8,7 +8,7 @@ import { resolveSources } from './utils/resolveSources';
 
 let loggedDefaultSourceDeprecationWarning = false;
 
-export class Image extends React.PureComponent<ImageProps> {
+export class ImageView extends React.PureComponent<ImageProps> {
   nativeViewRef;
 
   constructor(props) {
@@ -120,3 +120,33 @@ export class Image extends React.PureComponent<ImageProps> {
     );
   }
 }
+
+// A flag whether the Image component deprecation warning was already called.
+let loggedImageComponentDeprecationWarning = false;
+
+// These are some of the properties that React gets from the component during rendering.
+const reactComponentSpecificProperties = [
+  'defaultProps',
+  'propTypes',
+  'PropTypes',
+  'getDefaultProps',
+  'childContextTypes',
+  'contextType',
+  'tag',
+  'displayName',
+];
+
+export const Image = new Proxy(ImageView, {
+  get(target, property) {
+    if (
+      !loggedImageComponentDeprecationWarning &&
+      reactComponentSpecificProperties.includes(property as string)
+    ) {
+      console.warn(
+        '[expo-image]: `<Image />` component is deprecated, use `<ImageView />` instead'
+      );
+      loggedImageComponentDeprecationWarning = true;
+    }
+    return target[property];
+  },
+});
