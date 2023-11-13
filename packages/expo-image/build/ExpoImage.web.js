@@ -6,11 +6,21 @@ import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
 loadStyle();
 export const ExpoImageModule = {
-    prefetch(urls) {
+    async prefetch(urls, _) {
         const urlsArray = Array.isArray(urls) ? urls : [urls];
-        urlsArray.forEach((url) => {
-            const img = new Image();
-            img.src = url;
+        return new Promise((resolve) => {
+            let imagesLoaded = 0;
+            urlsArray.forEach((url) => {
+                const img = new Image();
+                img.src = url;
+                img.onload = () => {
+                    imagesLoaded++;
+                    if (imagesLoaded === urlsArray.length) {
+                        resolve(true);
+                    }
+                };
+                img.onerror = () => resolve(false);
+            });
         });
     },
     async clearMemoryCache() {
