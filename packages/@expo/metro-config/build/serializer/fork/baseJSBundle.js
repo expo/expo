@@ -5,7 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.baseJSBundle = baseJSBundle;
 exports.baseJSBundleWithDependencies = baseJSBundleWithDependencies;
+exports.getBaseUrlOption = getBaseUrlOption;
 exports.getPlatformOption = getPlatformOption;
+exports.getSplitChunksOption = getSplitChunksOption;
 function _jscSafeUrl() {
   const data = require("jsc-safe-url");
   _jscSafeUrl = function () {
@@ -51,6 +53,21 @@ function getPlatformOption(graph, options) {
   const url = new URL(sourceUrl, 'https://expo.dev');
   return (_url$searchParams$get = url.searchParams.get('platform')) !== null && _url$searchParams$get !== void 0 ? _url$searchParams$get : null;
 }
+function getSplitChunksOption(graph, options) {
+  // Only enable when the entire bundle is being split, and only run on web.
+  return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
+}
+function getBaseUrlOption(graph, options) {
+  var _graph$transformOptio2;
+  const baseUrl = (_graph$transformOptio2 = graph.transformOptions.customTransformOptions) === null || _graph$transformOptio2 === void 0 ? void 0 : _graph$transformOptio2.baseUrl;
+  if (typeof baseUrl === 'string') {
+    // This tells us that the value came over a URL and may be encoded.
+    // @ts-expect-error
+    const mayBeEncoded = options.serializerOptions == null;
+    return mayBeEncoded ? decodeURI(baseUrl) : baseUrl;
+  }
+  return '/';
+}
 function baseJSBundle(entryPoint, preModules, graph, options) {
   const platform = getPlatformOption(graph, options);
   if (platform == null) {
@@ -58,6 +75,8 @@ function baseJSBundle(entryPoint, preModules, graph, options) {
   }
   return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
     ...options,
+    baseUrl: getBaseUrlOption(graph, options),
+    splitChunks: getSplitChunksOption(graph, options),
     platform
   });
 }
@@ -73,7 +92,9 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
     projectRoot: options.projectRoot,
     serverRoot: options.serverRoot,
     sourceUrl: options.sourceUrl,
-    platform: options.platform
+    platform: options.platform,
+    baseUrl: options.baseUrl,
+    splitChunks: options.splitChunks
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested

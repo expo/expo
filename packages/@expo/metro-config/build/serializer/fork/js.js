@@ -86,7 +86,9 @@ function getModuleParams(module, options) {
 
     dependency.data.data.asyncType != null) {
       if (options.includeAsyncPaths) {
-        if (options.sourceUrl) {
+        if (
+        // TODO: Replace this logic with some option that indicates we are bundling for use without a dev server, i.e. `devServerUrl` or `isExporting`.
+        options.dev && options.sourceUrl) {
           hasPaths = true;
           // TODO: Only include path if the target is not in the bundle
 
@@ -103,11 +105,12 @@ function getModuleParams(module, options) {
           // Strip the file extension
           _path().default.basename(bundlePath, _path().default.extname(bundlePath))) + '.bundle?' + searchParams.toString();
         }
-      } else {
+      } else if (options.splitChunks) {
+        var _options$baseUrl;
         hasPaths = true;
         // NOTE(EvanBacon): Custom block for bundle splitting in production according to how `expo export` works
         // TODO: Add content hash
-        paths[id] = '/' + (0, _exportPath().getExportPathForDependencyWithOptions)(dependency.absolutePath, options);
+        paths[id] = ((_options$baseUrl = options.baseUrl) !== null && _options$baseUrl !== void 0 ? _options$baseUrl : '/') + (0, _exportPath().getExportPathForDependencyWithOptions)(dependency.absolutePath, options);
       }
     }
     return id;

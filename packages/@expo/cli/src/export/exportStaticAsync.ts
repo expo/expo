@@ -26,6 +26,7 @@ import {
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 import { getFreePortAsync } from '../utils/port';
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -35,6 +36,7 @@ type Options = {
   exportServer: boolean;
   baseUrl: string;
   includeMaps: boolean;
+  entryPoint?: string;
   clear: boolean;
 };
 
@@ -160,11 +162,9 @@ export async function exportFromServerAsync(
     },
   });
 
-  resources.artifacts.forEach((resource) => {
-    files.set(
-      resource.filename,
-      modifyBundlesWithSourceMaps(resource.filename, resource.source, includeMaps)
-    );
+  getFilesFromSerialAssets(resources.artifacts, {
+    includeMaps,
+    files,
   });
 
   if (resources.assets) {
@@ -192,6 +192,31 @@ export async function exportFromServerAsync(
     warnPossibleInvalidExportType(appDir);
   }
 
+  await persistMetroFilesAsync(files, outputDir);
+}
+
+// TODO: Move source map modification to the serializer
+export function getFilesFromSerialAssets(
+  resources: SerialAsset[],
+  {
+    includeMaps,
+    files = new Map<string, string>(),
+  }: {
+    includeMaps: boolean;
+    files?: Map<string, string>;
+  }
+) {
+  resources.forEach((resource) => {
+    files.set(
+      resource.filename,
+      modifyBundlesWithSourceMaps(resource.filename, resource.source, includeMaps)
+    );
+  });
+
+  return files;
+}
+
+export async function persistMetroFilesAsync(files: Map<string, string>, outputDir: string) {
   fs.mkdirSync(path.join(outputDir), { recursive: true });
 
   Log.log('');

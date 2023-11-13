@@ -42,6 +42,28 @@ export function getPlatformOption(
   return url.searchParams.get('platform') ?? null;
 }
 
+export function getSplitChunksOption(
+  graph: Pick<ReadOnlyGraph, 'transformOptions'>,
+  options: SerializerOptions
+): boolean {
+  // Only enable when the entire bundle is being split, and only run on web.
+  return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
+}
+
+export function getBaseUrlOption(
+  graph: Pick<ReadOnlyGraph, 'transformOptions'>,
+  options: SerializerOptions
+): string {
+  const baseUrl = graph.transformOptions.customTransformOptions?.baseUrl;
+  if (typeof baseUrl === 'string') {
+    // This tells us that the value came over a URL and may be encoded.
+    // @ts-expect-error
+    const mayBeEncoded = options.serializerOptions == null;
+    return mayBeEncoded ? decodeURI(baseUrl) : baseUrl;
+  }
+  return '/';
+}
+
 export function baseJSBundle(
   entryPoint: string,
   preModules: readonly Module[],
@@ -55,6 +77,8 @@ export function baseJSBundle(
 
   return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
     ...options,
+    baseUrl: getBaseUrlOption(graph, options),
+    splitChunks: getSplitChunksOption(graph, options),
     platform,
   });
 }
@@ -63,7 +87,7 @@ export function baseJSBundleWithDependencies(
   entryPoint: string,
   preModules: readonly Module[],
   dependencies: Module<MixedOutput>[],
-  options: SerializerOptions & { platform: string }
+  options: SerializerOptions & { platform: string; baseUrl: string; splitChunks: boolean }
 ): Bundle {
   for (const module of dependencies) {
     options.createModuleId(module.path);
@@ -78,6 +102,8 @@ export function baseJSBundleWithDependencies(
     serverRoot: options.serverRoot,
     sourceUrl: options.sourceUrl,
     platform: options.platform,
+    baseUrl: options.baseUrl,
+    splitChunks: options.splitChunks,
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested

@@ -26,6 +26,8 @@ export type Options = {
   serverRoot: string;
   sourceUrl: string | undefined;
   platform: string;
+  baseUrl: string;
+  splitChunks: boolean;
   //   ...
 };
 
@@ -54,6 +56,8 @@ export function getModuleParams(
     | 'includeAsyncPaths'
     | 'serverRoot'
     | 'platform'
+    | 'baseUrl'
+    | 'splitChunks'
     | 'dev'
     | 'projectRoot'
   >
@@ -72,7 +76,11 @@ export function getModuleParams(
       dependency.data.data.asyncType != null
     ) {
       if (options.includeAsyncPaths) {
-        if (options.sourceUrl) {
+        if (
+          // TODO: Replace this logic with some option that indicates we are bundling for use without a dev server, i.e. `devServerUrl` or `isExporting`.
+          options.dev &&
+          options.sourceUrl
+        ) {
           hasPaths = true;
           // TODO: Only include path if the target is not in the bundle
 
@@ -94,11 +102,13 @@ export function getModuleParams(
             '.bundle?' +
             searchParams.toString();
         }
-      } else {
+      } else if (options.splitChunks) {
         hasPaths = true;
         // NOTE(EvanBacon): Custom block for bundle splitting in production according to how `expo export` works
         // TODO: Add content hash
-        paths[id] = '/' + getExportPathForDependencyWithOptions(dependency.absolutePath, options);
+        paths[id] =
+          (options.baseUrl ?? '/') +
+          getExportPathForDependencyWithOptions(dependency.absolutePath, options);
       }
     }
     return id;
