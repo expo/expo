@@ -83,10 +83,14 @@ export async function transform(
   let code = data.toString('utf8');
 
   // Apply postcss transforms
-  code = await transformPostCssModule(projectRoot, {
+  const postcssResults = await transformPostCssModule(projectRoot, {
     src: code,
     filename,
   });
+
+  if (postcssResults.hasPostcss) {
+    code = postcssResults.src;
+  }
 
   // TODO: When native has CSS support, this will need to move higher up.
   const syntax = matchSass(filename);
@@ -188,6 +192,9 @@ export async function transform(
           lineCount: countLines(cssCode),
           map: [],
           functionMap: null,
+          // Disable caching for CSS files when postcss is enabled and has been run on the file.
+          // This ensures that things like tailwind can update on every change.
+          skipCache: postcssResults.hasPostcss,
         },
       },
     },

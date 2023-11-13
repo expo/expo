@@ -30,6 +30,7 @@ export type ExpoJsOutput = Omit<JsOutput, 'data'> & {
       lineCount: number;
       map: unknown[];
       functionMap: null;
+      skipCache?: boolean;
     };
   };
 };

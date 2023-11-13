@@ -10,7 +10,10 @@ type PostCSSInputConfig = {
 export declare function transformPostCssModule(projectRoot: string, { src, filename }: {
     src: string;
     filename: string;
-}): Promise<string>;
+}): Promise<{
+    src: string;
+    hasPostcss: boolean;
+}>;
 export declare function pluginFactory(): (plugins?: any) => Map<string, any>;
 export declare function resolvePostcssConfig(projectRoot: string): PostCSSInputConfig | null;
 export declare function getPostcssConfigHash(projectRoot: string): string | null;
