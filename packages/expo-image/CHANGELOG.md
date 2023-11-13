@@ -12,7 +12,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix `contentFit` not working for `SVG` images. ([#25187](https://github.com/expo/expo/pull/25187) by [@behenate](https://github.com/behenate))
-- [Android] Fix `SVG` not scaling correctly in the release mode.
+- [Android] Fix `SVG` not scaling correctly in the release mode. ([#25326](https://github.com/expo/expo/pull/25326) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
