@@ -251,7 +251,7 @@ class Chunk {
         modulesOnly: this.preModules.size === 0,
         platform: this.getPlatform(),
         sourceMapUrl: `${fileName}.map`,
-        baseUrl: getBaseUrlOption(this.graph, this.options) ?? '/',
+        baseUrl: getBaseUrlOption(this.graph, this.options),
         splitChunks: getSplitChunksOption(this.graph, this.options),
       }
     );

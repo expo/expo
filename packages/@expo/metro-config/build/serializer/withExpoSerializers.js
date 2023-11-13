@@ -249,7 +249,7 @@ class Chunk {
     });
   }
   serializeToCode(serializerConfig) {
-    var _serializerConfig$get, _serializerConfig$get2, _getBaseUrlOption;
+    var _serializerConfig$get, _serializerConfig$get2;
     const entryFile = this.name;
     const fileName = _path().default.basename(entryFile, '.js');
     const jsSplitBundle = (0, _baseJSBundle().baseJSBundleWithDependencies)(entryFile, [...this.preModules.values()], [...this.deps], {
@@ -264,7 +264,7 @@ class Chunk {
       modulesOnly: this.preModules.size === 0,
       platform: this.getPlatform(),
       sourceMapUrl: `${fileName}.map`,
-      baseUrl: (_getBaseUrlOption = (0, _baseJSBundle().getBaseUrlOption)(this.graph, this.options)) !== null && _getBaseUrlOption !== void 0 ? _getBaseUrlOption : '/',
+      baseUrl: (0, _baseJSBundle().getBaseUrlOption)(this.graph, this.options),
       splitChunks: (0, _baseJSBundle().getSplitChunksOption)(this.graph, this.options)
     });
     return (0, _bundleToString().default)(jsSplitBundle).code;

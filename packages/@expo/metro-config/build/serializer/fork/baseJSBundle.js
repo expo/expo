@@ -58,28 +58,24 @@ function getSplitChunksOption(graph, options) {
   return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
 }
 function getBaseUrlOption(graph, options) {
-  var _url$searchParams$get2;
-  // @ts-expect-error
-  if (options.serializerOptions != null) {
+  var _graph$transformOptio2;
+  const baseUrl = (_graph$transformOptio2 = graph.transformOptions.customTransformOptions) === null || _graph$transformOptio2 === void 0 ? void 0 : _graph$transformOptio2.baseUrl;
+  if (typeof baseUrl === 'string') {
+    // This tells us that the value came over a URL and may be encoded.
     // @ts-expect-error
-    return options.serializerOptions.baseUrl;
+    const mayBeEncoded = options.serializerOptions == null;
+    return mayBeEncoded ? decodeURI(baseUrl) : baseUrl;
   }
-  if (!options.sourceUrl) {
-    return null;
-  }
-  const sourceUrl = (0, _jscSafeUrl().isJscSafeUrl)(options.sourceUrl) ? (0, _jscSafeUrl().toNormalUrl)(options.sourceUrl) : options.sourceUrl;
-  const url = new URL(sourceUrl, 'https://expo.dev');
-  return (_url$searchParams$get2 = url.searchParams.get('serializer.baseUrl')) !== null && _url$searchParams$get2 !== void 0 ? _url$searchParams$get2 : null;
+  return '/';
 }
 function baseJSBundle(entryPoint, preModules, graph, options) {
-  var _getBaseUrlOption;
   const platform = getPlatformOption(graph, options);
   if (platform == null) {
     throw new Error('platform could not be determined for Metro bundle');
   }
   return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
     ...options,
-    baseUrl: (_getBaseUrlOption = getBaseUrlOption(graph, options)) !== null && _getBaseUrlOption !== void 0 ? _getBaseUrlOption : '/',
+    baseUrl: getBaseUrlOption(graph, options),
     splitChunks: getSplitChunksOption(graph, options),
     platform
   });

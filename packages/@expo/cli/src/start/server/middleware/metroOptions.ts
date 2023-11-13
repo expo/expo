@@ -49,7 +49,6 @@ function withDefaults({
 export type SerializerOptions = {
   includeMaps?: boolean;
   output?: 'static';
-  baseUrl?: string;
 };
 
 export type ExpoMetroBundleOptions = MetroBundleOptions & {
@@ -121,7 +120,6 @@ export function getMetroDirectBundleOptions(
     sourceMapUrl: fakeSourceMapUrl,
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
-      baseUrl,
       output: serializerOutput,
       includeMaps: serializerIncludeMaps,
     },
@@ -171,8 +169,6 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   }
   if (baseUrl) {
     queryParams.append('transform.baseUrl', baseUrl);
-    // TODO: We could probably drop this in favor of the transformer version.
-    queryParams.append('serializer.baseUrl', baseUrl);
   }
 
   if (environment) {

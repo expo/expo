@@ -53,22 +53,15 @@ export function getSplitChunksOption(
 export function getBaseUrlOption(
   graph: Pick<ReadOnlyGraph, 'transformOptions'>,
   options: SerializerOptions
-): string | null {
-  // @ts-expect-error
-  if (options.serializerOptions != null) {
+): string {
+  const baseUrl = graph.transformOptions.customTransformOptions?.baseUrl;
+  if (typeof baseUrl === 'string') {
+    // This tells us that the value came over a URL and may be encoded.
     // @ts-expect-error
-    return options.serializerOptions.baseUrl;
+    const mayBeEncoded = options.serializerOptions == null;
+    return mayBeEncoded ? decodeURI(baseUrl) : baseUrl;
   }
-
-  if (!options.sourceUrl) {
-    return null;
-  }
-
-  const sourceUrl = isJscSafeUrl(options.sourceUrl)
-    ? toNormalUrl(options.sourceUrl)
-    : options.sourceUrl;
-  const url = new URL(sourceUrl, 'https://expo.dev');
-  return url.searchParams.get('serializer.baseUrl') ?? null;
+  return '/';
 }
 
 export function baseJSBundle(
@@ -84,7 +77,7 @@ export function baseJSBundle(
 
   return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
     ...options,
-    baseUrl: getBaseUrlOption(graph, options) ?? '/',
+    baseUrl: getBaseUrlOption(graph, options),
     splitChunks: getSplitChunksOption(graph, options),
     platform,
   });
