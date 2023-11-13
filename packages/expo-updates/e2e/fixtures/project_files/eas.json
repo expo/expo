@@ -23,6 +23,7 @@
         "NO_FLIPPER": "1"
       },
       "android": {
+        "image": "ubuntu-22.04-jdk-17-ndk-r21e",
         "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
         "withoutCredentials": true,
         "resourceClass": "large"
