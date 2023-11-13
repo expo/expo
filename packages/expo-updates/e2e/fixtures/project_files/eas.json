@@ -3,7 +3,11 @@
     "version": ">= 2.7.1"
   },
   "build": {
+    "base": {
+      "node": "18.18.0"
+    },
     "development": {
+      "extends": "base",
       "distribution": "internal",
       "android": {
         "gradleCommand": ":app:assembleDebug"
@@ -13,6 +17,7 @@
       }
     },
     "updates_testing": {
+      "extends": "base",
       "env": {
         "EX_UPDATES_NATIVE_DEBUG": "1",
         "NO_FLIPPER": "1"
@@ -34,7 +39,9 @@
       "distribution": "internal",
       "buildArtifactPaths": ["logs/*.log"]
     },
-    "production": {}
+    "production": {
+      "extends": "base"
+    }
   },
   "submit": {
     "production": {}
