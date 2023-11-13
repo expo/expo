@@ -20,11 +20,13 @@ import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString'
 import bundleToString from 'metro/src/lib/bundleToString';
 import { ConfigT, InputConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
+import pathToRegExp from 'path-to-regexp';
 
 import {
   environmentVariableSerializerPlugin,
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
+import { buildHermesBundleAsync } from './exportHermes';
 import { getExportPathForDependencyWithOptions } from './exportPath';
 // import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import {
@@ -37,11 +39,6 @@ import {
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
-import {
-  buildHermesBundleAsync,
-  isEnableHermesManaged,
-  maybeThrowFromInconsistentEngineAsync,
-} from './exportHermes';
 
 // import { toFixture } from './__tests__/fixtures/toFixture';
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
@@ -87,7 +84,6 @@ function getDefaultSerializer(
   config: MetroConfig,
   fallbackSerializer?: Serializer | null
 ): Serializer {
-  const serializerConfig = config.serializer;
   const defaultSerializer =
     fallbackSerializer ??
     (async (...params: SerializerParameters) => {
@@ -148,15 +144,13 @@ function getDefaultSerializer(
   };
 }
 
-import pathToRegExp from 'path-to-regexp';
-
 type ChunkSettings = {
   /** Match the initial modules. */
   test: RegExp;
 };
 
 export async function graphToSerialAssetsAsync(
-  config: ConfigT,
+  config: MetroConfig,
   { includeMaps }: { includeMaps: boolean },
   ...props: SerializerParameters
 ): Promise<{ artifacts: SerialAsset[] | null; assets: AssetData[] }> {
@@ -181,7 +175,7 @@ export async function graphToSerialAssetsAsync(
   // Optimize the chunks
   // dedupeChunks(_chunks);
 
-  const jsAssets = await serializeChunksAsync(_chunks, config.serializer, {
+  const jsAssets = await serializeChunksAsync(_chunks, config.serializer ?? {}, {
     includeSourceMaps: includeMaps,
   });
 
@@ -197,8 +191,6 @@ export async function graphToSerialAssetsAsync(
 
   return { artifacts: [...jsAssets, ...cssDeps], assets: metroAssets };
 }
-
-import { inspect } from 'util';
 
 class Chunk {
   public deps: Set<Module> = new Set();
@@ -236,7 +228,7 @@ class Chunk {
         });
   }
 
-  serializeToCode(serializerConfig: SerializerConfigT) {
+  serializeToCode(serializerConfig: Partial<SerializerConfigT>) {
     const entryFile = this.name;
     const fileName = path.basename(entryFile, '.js');
 
@@ -268,7 +260,7 @@ class Chunk {
   }
 
   async serializeToAssetsAsync(
-    serializerConfig: SerializerConfigT,
+    serializerConfig: Partial<SerializerConfigT>,
     { includeSourceMaps }: { includeSourceMaps?: boolean }
   ): Promise<SerialAsset[]> {
     const jsCode = this.serializeToCode(serializerConfig);
@@ -473,56 +465,56 @@ function gatherChunks(
   return chunks;
 }
 
-function dedupeChunks(chunks: Set<Chunk>) {
-  // Iterate chunks and pull duplicate modules into new common chunks that are required by the original chunks.
+// function dedupeChunks(chunks: Set<Chunk>) {
+//   // Iterate chunks and pull duplicate modules into new common chunks that are required by the original chunks.
 
-  // We can only de-dupe sync chunks since this would create vendor/shared chunks.
-  const currentChunks = [...chunks.values()].filter((chunk) => !chunk.isAsync);
-  for (const chunk of currentChunks) {
-    const deps = [...chunk.deps.values()];
-    for (const dep of deps) {
-      for (const otherChunk of currentChunks) {
-        if (otherChunk === chunk) {
-          continue;
-        }
-        if (otherChunk.deps.has(dep)) {
-          console.log('found common dep:', dep.path, 'in', chunk.name, 'and', otherChunk.name);
-          // Move the dep into a new chunk.
-          const newChunk = new Chunk(dep.path, dep.path, chunk.graph, chunk.options, false);
-          newChunk.deps.add(dep);
-          chunk.requiredChunks.add(newChunk);
-          otherChunk.requiredChunks.add(newChunk);
-          chunks.add(newChunk);
-          // Remove the dep from the original chunk.
-          chunk.deps.delete(dep);
-          otherChunk.deps.delete(dep);
+//   // We can only de-dupe sync chunks since this would create vendor/shared chunks.
+//   const currentChunks = [...chunks.values()].filter((chunk) => !chunk.isAsync);
+//   for (const chunk of currentChunks) {
+//     const deps = [...chunk.deps.values()];
+//     for (const dep of deps) {
+//       for (const otherChunk of currentChunks) {
+//         if (otherChunk === chunk) {
+//           continue;
+//         }
+//         if (otherChunk.deps.has(dep)) {
+//           console.log('found common dep:', dep.path, 'in', chunk.name, 'and', otherChunk.name);
+//           // Move the dep into a new chunk.
+//           const newChunk = new Chunk(dep.path, dep.path, chunk.graph, chunk.options, false);
+//           newChunk.deps.add(dep);
+//           chunk.requiredChunks.add(newChunk);
+//           otherChunk.requiredChunks.add(newChunk);
+//           chunks.add(newChunk);
+//           // Remove the dep from the original chunk.
+//           chunk.deps.delete(dep);
+//           otherChunk.deps.delete(dep);
 
-          // TODO: Pull all the deps of the dep into the new chunk.
-          for (const depDep of dep.dependencies.values()) {
-            if (depDep.data.data.asyncType === 'async') {
-              gatherChunks(chunks, depDep.absolutePath, [], chunk.graph, chunk.options, false);
-            } else {
-              const module = chunk.graph.dependencies.get(depDep.absolutePath);
-              if (module) {
-                newChunk.deps.add(module);
-                if (chunk.deps.has(module)) {
-                  chunk.deps.delete(module);
-                }
-                if (otherChunk.deps.has(module)) {
-                  otherChunk.deps.delete(module);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
+//           // TODO: Pull all the deps of the dep into the new chunk.
+//           for (const depDep of dep.dependencies.values()) {
+//             if (depDep.data.data.asyncType === 'async') {
+//               gatherChunks(chunks, depDep.absolutePath, [], chunk.graph, chunk.options, false);
+//             } else {
+//               const module = chunk.graph.dependencies.get(depDep.absolutePath);
+//               if (module) {
+//                 newChunk.deps.add(module);
+//                 if (chunk.deps.has(module)) {
+//                   chunk.deps.delete(module);
+//                 }
+//                 if (otherChunk.deps.has(module)) {
+//                   otherChunk.deps.delete(module);
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
 
 async function serializeChunksAsync(
   chunks: Set<Chunk>,
-  serializerConfig: SerializerConfigT,
+  serializerConfig: Partial<SerializerConfigT>,
   { includeSourceMaps }: { includeSourceMaps: boolean }
 ) {
   const jsAssets: SerialAsset[] = [];
@@ -574,7 +566,5 @@ export function createSerializerFromSerialProcessors(
     return finalSerializer(...props);
   };
 }
-
-import { toFixture } from './__tests__/fixtures/toFixture';
 
 export { SerialAsset };

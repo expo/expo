@@ -161,14 +161,6 @@ export async function exportAppAsync(
 
     // build source maps
     if (sourceMaps) {
-      Log.log('Emitting source maps');
-      // await writeSourceMapsAsync({
-      //   bundles,
-      //   hashes,
-      //   outputDir: bundlesPath,
-      //   fileNames,
-      // });
-
       Log.log('Preparing additional debugging files');
       // If we output source maps, then add a debug HTML file which the user can open in
       // the web browser to inspect the output like web.

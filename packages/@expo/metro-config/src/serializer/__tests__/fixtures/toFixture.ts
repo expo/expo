@@ -6,7 +6,7 @@
  */
 import crypto from 'crypto';
 import fs from 'fs';
-import { Graph, MixedOutput, Module } from 'metro';
+import { MixedOutput, Module, ReadOnlyGraph } from 'metro';
 import path from 'path';
 
 import { SerializerParameters } from '../../withExpoSerializers';
@@ -28,7 +28,7 @@ function modifyDep(mod: Module<MixedOutput>, dropSource: boolean = false) {
   };
 }
 
-export function simplifyGraph(graph: Graph, dropSource: boolean = false) {
+export function simplifyGraph(graph: ReadOnlyGraph, dropSource: boolean = false) {
   return {
     ...graph,
     dependencies: Object.fromEntries(

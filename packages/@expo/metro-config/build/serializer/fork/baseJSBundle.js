@@ -5,7 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.baseJSBundle = baseJSBundle;
 exports.baseJSBundleWithDependencies = baseJSBundleWithDependencies;
+exports.getBasePathOption = getBasePathOption;
 exports.getPlatformOption = getPlatformOption;
+exports.getSplitChunksOption = getSplitChunksOption;
 function _jscSafeUrl() {
   const data = require("jsc-safe-url");
   _jscSafeUrl = function () {
@@ -51,13 +53,34 @@ function getPlatformOption(graph, options) {
   const url = new URL(sourceUrl, 'https://expo.dev');
   return (_url$searchParams$get = url.searchParams.get('platform')) !== null && _url$searchParams$get !== void 0 ? _url$searchParams$get : null;
 }
+function getSplitChunksOption(graph, options) {
+  // Only enable when the entire bundle is being split, and only run on web.
+  return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
+}
+function getBasePathOption(graph, options) {
+  var _url$searchParams$get2;
+  // @ts-expect-error
+  if (options.serializerOptions != null) {
+    // @ts-expect-error
+    return options.serializerOptions.basePath;
+  }
+  if (!options.sourceUrl) {
+    return null;
+  }
+  const sourceUrl = (0, _jscSafeUrl().isJscSafeUrl)(options.sourceUrl) ? (0, _jscSafeUrl().toNormalUrl)(options.sourceUrl) : options.sourceUrl;
+  const url = new URL(sourceUrl, 'https://expo.dev');
+  return (_url$searchParams$get2 = url.searchParams.get('serializer.basePath')) !== null && _url$searchParams$get2 !== void 0 ? _url$searchParams$get2 : null;
+}
 function baseJSBundle(entryPoint, preModules, graph, options) {
+  var _getBasePathOption;
   const platform = getPlatformOption(graph, options);
   if (platform == null) {
     throw new Error('platform could not be determined for Metro bundle');
   }
   return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
     ...options,
+    basePath: (_getBasePathOption = getBasePathOption(graph, options)) !== null && _getBasePathOption !== void 0 ? _getBasePathOption : '/',
+    splitChunks: getSplitChunksOption(graph, options),
     platform
   });
 }
@@ -73,7 +96,9 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
     projectRoot: options.projectRoot,
     serverRoot: options.serverRoot,
     sourceUrl: options.sourceUrl,
-    platform: options.platform
+    platform: options.platform,
+    basePath: options.basePath,
+    splitChunks: options.splitChunks
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested

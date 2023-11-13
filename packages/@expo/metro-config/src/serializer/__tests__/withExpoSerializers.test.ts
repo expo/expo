@@ -1,13 +1,5 @@
 import * as splitFixtures from './fixtures/basic-treeshaking';
-import { createModuleIdFactory } from './fixtures/fromFixture';
-import { simplifyGraph } from './fixtures/toFixture';
-import { baseJSBundle } from '../fork/baseJSBundle';
-import {
-  SerialAsset,
-  getDefaultSerializer,
-  withExpoSerializers,
-  withSerializerPlugins,
-} from '../withExpoSerializers';
+import { SerialAsset, withExpoSerializers, withSerializerPlugins } from '../withExpoSerializers';
 
 function getSerializer() {
   return withExpoSerializers({}).serializer.customSerializer;

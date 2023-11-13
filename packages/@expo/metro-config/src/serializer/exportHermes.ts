@@ -1,4 +1,3 @@
-import { ExpoConfig } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
@@ -6,11 +5,10 @@ import { composeSourceMaps } from 'metro-source-map';
 import os from 'os';
 import path from 'path';
 import process from 'process';
-import resolveFrom from 'resolve-from';
 
 const debug = require('debug')('expo:metro:hermes') as typeof console.log;
 
-export function importHermesCommandFromProject(): string {
+function importHermesCommandFromProject(): string {
   const platformExecutable = getHermesCommandPlatform();
   const hermescLocations = [
     // Override hermesc dir by environment variables
@@ -46,22 +44,6 @@ function getHermesCommandPlatform(): string {
       return 'win64-bin/hermesc.exe';
     default:
       throw new Error(`Unsupported host platform for Hermes compiler: ${os.platform()}`);
-  }
-}
-
-export function isEnableHermesManaged(
-  expoConfig: Partial<Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>>,
-  platform: string
-): boolean {
-  switch (platform) {
-    case 'android': {
-      return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
-    }
-    case 'ios': {
-      return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
-    }
-    default:
-      return false;
   }
 }
 
@@ -126,65 +108,15 @@ export async function buildHermesBundleAsync({
     }
     throw error;
   } finally {
-    // await fs.remove(tempDir);
+    await fs.remove(tempDir);
   }
 }
 
-export async function createHermesSourcemapAsync(
+async function createHermesSourcemapAsync(
   sourcemap: string,
   hermesMapFile: string
 ): Promise<string> {
   const bundlerSourcemap = JSON.parse(sourcemap);
   const hermesSourcemap = await fs.readJSON(hermesMapFile);
   return JSON.stringify(composeSourceMaps([bundlerSourcemap, hermesSourcemap]));
-}
-
-export function parseGradleProperties(content: string): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (let line of content.split('\n')) {
-    line = line.trim();
-    if (!line || line.startsWith('#')) {
-      continue;
-    }
-
-    const sepIndex = line.indexOf('=');
-    const key = line.substr(0, sepIndex);
-    const value = line.substr(sepIndex + 1);
-    result[key] = value;
-  }
-  return result;
-}
-
-// https://github.com/facebook/hermes/blob/release-v0.5/include/hermes/BCGen/HBC/BytecodeFileFormat.h#L24-L25
-const HERMES_MAGIC_HEADER = 'c61fbc03c103191f';
-
-export async function isHermesBytecodeBundleAsync(file: string): Promise<boolean> {
-  const header = await readHermesHeaderAsync(file);
-  return header.slice(0, 8).toString('hex') === HERMES_MAGIC_HEADER;
-}
-
-export async function getHermesBytecodeBundleVersionAsync(file: string): Promise<number> {
-  const header = await readHermesHeaderAsync(file);
-  if (header.slice(0, 8).toString('hex') !== HERMES_MAGIC_HEADER) {
-    throw new Error('Invalid hermes bundle file');
-  }
-  return header.readUInt32LE(8);
-}
-
-async function readHermesHeaderAsync(file: string): Promise<Buffer> {
-  const fd = await fs.open(file, 'r');
-  const buffer = Buffer.alloc(12);
-  await fs.read(fd, buffer, 0, 12, null);
-  await fs.close(fd);
-  return buffer;
-}
-
-async function parsePodfilePropertiesAsync(
-  podfilePropertiesPath: string
-): Promise<Record<string, string>> {
-  try {
-    return JSON.parse(await fs.readFile(podfilePropertiesPath, 'utf8'));
-  } catch {
-    return {};
-  }
 }

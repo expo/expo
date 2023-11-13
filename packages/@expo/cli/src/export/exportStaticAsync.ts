@@ -114,41 +114,6 @@ export async function getFilesToExportFromServerAsync(
   return files;
 }
 
-/** @private */
-export async function unstable_exportStaticResourcesAsync(projectRoot: string, options: Options) {
-  // TODO: Prevent starting the watcher.
-  const devServerManager = new DevServerManager(projectRoot, {
-    minify: options.minify,
-    mode: 'production',
-    location: {},
-  });
-  await devServerManager.startAsync([
-    {
-      type: 'metro',
-      options: {
-        location: {},
-        isExporting: true,
-      },
-    },
-  ]);
-
-  try {
-    const devServer = devServerManager.getDefaultDevServer();
-    assert(devServer instanceof MetroBundlerDevServer);
-
-    const resources = await devServer.getStaticResourcesAsync({
-      mode: 'production',
-      minify: options.minify,
-      includeMaps: options.includeMaps,
-      mainModuleName: options.entryPoint,
-      baseUrl: options.baseUrl,
-    });
-    return resources;
-  } finally {
-    await devServerManager.stopAsync();
-  }
-}
-
 /** Perform all fs commits */
 export async function exportFromServerAsync(
   projectRoot: string,
