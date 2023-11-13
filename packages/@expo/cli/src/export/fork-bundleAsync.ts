@@ -9,6 +9,8 @@ import IncrementalBundler from 'metro/src/IncrementalBundler';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import Server from 'metro/src/Server';
 import path from 'path';
+import type { ResolverInputOptions } from 'metro/src/shared/types';
+import type { TransformInputOptions } from 'metro/src/DeltaBundler/types';
 
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
@@ -223,9 +225,6 @@ async function getAssets(
     publicPath: _config.transformer.publicPath,
   });
 }
-
-import type { ResolverInputOptions } from 'metro/src/shared/types';
-import type { TransformInputOptions } from 'metro/src/DeltaBundler/types';
 
 function isMetroServerInstance(metro: Metro.Server): metro is Metro.Server & {
   _shouldAddModuleToIgnoreList: (module: Module<MixedOutput>) => boolean;
