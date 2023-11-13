@@ -10,6 +10,7 @@
 
 - [Android] Fix `contentFit` not working for `SVG` images. ([#25187](https://github.com/expo/expo/pull/25187) by [@behenate](https://github.com/behenate))
 - [iOS] Start loading the image before the view mounts to fix issues with the PagerView. ([#25343](https://github.com/expo/expo/pull/25343) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fix `SVG` not scaling correctly in the release mode. ([#25326](https://github.com/expo/expo/pull/25326) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
