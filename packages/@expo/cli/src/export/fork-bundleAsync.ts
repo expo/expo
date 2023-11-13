@@ -41,7 +41,7 @@ export type BundleOutput = {
   artifacts: SerialAsset[];
   hermesBytecodeBundle?: Uint8Array;
   hermesSourcemap?: string;
-  css: CSSAsset[];
+  // css: CSSAsset[];
   assets: readonly BundleAssetWithFileHashes[];
 };
 
@@ -171,16 +171,16 @@ async function bundleProductionMetroClientAsync(
     });
     try {
       const artifacts = await forkMetroBuildAsync(metroServer, bundleOptions);
-      const [assets, css] = await Promise.all([
-        getAssets(metroServer, bundleOptions),
-        getCssModulesFromBundler(config, metroServer.getBundler(), bundleOptions),
-      ]);
+      // const [assets, css] = await Promise.all([
+      //   getAssets(metroServer, bundleOptions),
+      //   getCssModulesFromBundler(config, metroServer.getBundler(), bundleOptions),
+      // ]);
 
       reporter.update({
         buildID,
         type: 'bundle_build_done',
       });
-      return { artifacts, assets: assets as readonly BundleAssetWithFileHashes[], css };
+      return artifacts;
     } catch (error) {
       reporter.update({
         buildID,
@@ -191,40 +191,13 @@ async function bundleProductionMetroClientAsync(
     }
   };
 
-  const maybeAddHermesBundleAsync = async (
-    bundle: BundleOptions,
-    bundleOutput: BundleOutput
-  ): Promise<BundleOutput> => {
-    // const { platform } = bundle;
-    // const isHermesManaged = isEnableHermesManaged(expoConfig, platform);
-    // if (isHermesManaged) {
-    //   const platformTag = chalk.bold(
-    //     { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform
-    //   );
-
-    //   reporter.terminal.log(`${platformTag} Building Hermes bytecode for the bundle`);
-
-    //   // TODO: Generate hbc for each chunk
-    //   const hermesBundleOutput = await buildHermesBundleAsync(projectRoot, {
-    //     code: bundleOutput.artifacts[0].source,
-    //     map: bundle.sourcemaps ? bundleOutput.artifacts[1].source : null,
-    //     minify: bundle.minify ?? !bundle.dev,
-    //   });
-
-    //   // TODO: Emit serial assets for each chunk
-    //   bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;
-    //   bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap ?? undefined;
-    // }
-    return bundleOutput;
-  };
-
   try {
     const intermediateOutputs = await Promise.all(bundles.map((bundle) => buildAsync(bundle)));
     const bundleOutputs: BundleOutput[] = [];
     for (let i = 0; i < bundles.length; ++i) {
       // hermesc does not support parallel building even we spawn processes.
       // we should build them sequentially.
-      bundleOutputs.push(await maybeAddHermesBundleAsync(bundles[i], intermediateOutputs[i]));
+      bundleOutputs.push(intermediateOutputs[i]);
     }
     return bundleOutputs;
   } catch (error) {
@@ -293,7 +266,7 @@ function isMetroServerInstance(metro: Metro.Server): metro is Metro.Server & {
 async function forkMetroBuildAsync(
   metro: Metro.Server,
   options: ExpoMetroBundleOptions
-): Promise<SerialAsset[]> {
+): Promise<{ artifacts: SerialAsset[]; assets: AssetData[] }> {
   if (!isMetroServerInstance(metro)) {
     throw new Error('Expected Metro server instance to have private functions exposed.');
   }
@@ -360,10 +333,10 @@ async function forkMetroBuildAsync(
 
   if (options.serializerOptions?.output === 'static') {
     if (typeof bundle === 'string') {
-      return JSON.parse(bundle) as SerialAsset[];
+      return JSON.parse(bundle) as { artifacts: SerialAsset[]; assets: AssetData[] };
     } else {
-      assert(Array.isArray(bundle), 'Expected serializer to return an array of serial assets.');
-      return bundle;
+      assert('artifacts' in bundle, 'Expected serializer to return an array of serial assets.');
+      return bundle as { artifacts: SerialAsset[]; assets: AssetData[] };
     }
   }
 
@@ -382,20 +355,24 @@ async function forkMetroBuildAsync(
 
   // Hack to make the single bundle use the multi-bundle pipeline.
   // TODO: Only support multi-bundle output format in the future.
-  return [
-    {
-      filename: 'index.js',
-      originFilename: 'index.js',
-      source: bundleCode,
-      type: 'js',
-      metadata: {},
-    },
-    {
-      filename: 'index.js.map',
-      originFilename: 'index.js.map',
-      source: bundleMap,
-      type: 'map',
-      metadata: {},
-    },
-  ];
+  return {
+    artifacts: [
+      {
+        filename: 'index.js',
+        originFilename: 'index.js',
+        source: bundleCode,
+        type: 'js',
+        metadata: {},
+      },
+      {
+        filename: 'index.js.map',
+        originFilename: 'index.js.map',
+        source: bundleMap,
+        type: 'map',
+        metadata: {},
+      },
+    ],
+
+    assets: await getAssets(metro, options),
+  };
 }
