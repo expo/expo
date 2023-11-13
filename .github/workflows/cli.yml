@@ -53,7 +53,7 @@ jobs:
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
-          bun-version: 1.x
+          bun-version: latest
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
