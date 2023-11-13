@@ -25,7 +25,7 @@
 
 ### 🐛 Bug fixes
 
-- Disable bundle splitting on native platforms.
+- Disable bundle splitting on native platforms. ([#25366](https://github.com/expo/expo/pull/25366) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure cache can be cleared with static web exports. ([#25335](https://github.com/expo/expo/pull/25335) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix server-rendering errors. ([#25247](https://github.com/expo/expo/pull/25247) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix native polyfill import. ([#25203](https://github.com/expo/expo/pull/25203) by [@EvanBacon](https://github.com/EvanBacon))
