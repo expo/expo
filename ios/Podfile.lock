@@ -1591,7 +1591,7 @@ PODS:
     - React-perflogger (= 0.72.5)
   - RNCAsyncStorage (1.18.2):
     - React-Core
-  - RNFlashList (1.4.3):
+  - RNFlashList (1.6.3):
     - React-Core
   - RNGestureHandler (2.12.0):
     - React-Core
@@ -2744,7 +2744,7 @@ SPEC CHECKSUMS:
   React-utils: 7a9918a1ffdd39aba67835d42386f592ea3f8e76
   ReactCommon: 91ece8350ebb3dd2be9cef662abd78b6948233c0
   RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
-  RNFlashList: ade81b4e928ebd585dd492014d40fb8d0e848aab
+  RNFlashList: 4b4b6b093afc0df60ae08f9cbf6ccd4c836c667a
   RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
   RNReanimated: 4258342812b73136c6c75bd9720ea45dcbb5842c
   RNScreens: 2b19e2471db8a581c83f381f4ea5d43071c9a3bf
