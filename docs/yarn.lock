@@ -485,6 +485,16 @@
   dependencies:
     tailwind-merge "^1.13.2"
 
+"@expo/styleguide-search-ui@^1.0.0-alpha.5":
+  version "1.0.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-search-ui/-/styleguide-search-ui-1.0.0-alpha.5.tgz#f67595fbd0a24068e97f60da2239cd91db696bfc"
+  integrity sha512-EkSt4Mx3V0oZU7Gn5MNW8fsvz16KsrmcjmzyMowKMQXx82STsTDgio+KemX74wXxu8D0gkyByZYpqJWmOC7hCw==
+  dependencies:
+    "@expo/styleguide" "^8.1.0"
+    "@expo/styleguide-icons" "^1.0.3"
+    cmdk "^0.2.0"
+    lodash.groupby "^4.6.0"
+
 "@expo/styleguide@^8.1.0":
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.1.0.tgz#3a0b0cac8da6058078178e854aeda01702a00f2a"
@@ -5833,6 +5843,11 @@ lodash.find@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/lodash.find/-/lodash.find-4.6.0.tgz#cb0704d47ab71789ffa0de8b97dd926fb88b13b1"
   integrity sha512-yaRZoAV3Xq28F1iafWN1+a0rflOej93l1DQUejs3SZ41h2O9UJBoS9aueGjPDgAl4B6tPC0NuuchLKaDQQ3Isg==
+
+lodash.groupby@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.groupby/-/lodash.groupby-4.6.0.tgz#0b08a1dcf68397c397855c3239783832df7403d1"
+  integrity sha512-5dcWxm23+VAoz+awKmBaiBvzox8+RqMgFhi7UvX9DHZr2HdxHXM/Wrf8cfKpsW37RNrvtPn6hSwNqurSILbmJw==
 
 lodash.includes@^4.3.0:
   version "4.3.0"

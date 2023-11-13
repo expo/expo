@@ -14,6 +14,7 @@ import { markdownComponents } from '~/ui/components/Markdown';
 
 import 'global-styles/global.css';
 import '@expo/styleguide/dist/expo-theme.css';
+import '@expo/styleguide-search-ui/dist/expo-search-ui.css';
 import 'tippy.js/dist/tippy.css';
 
 const isDev = process.env.NODE_ENV === 'development';

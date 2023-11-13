@@ -11,9 +11,17 @@ import {
   Cube02Icon,
   Dataflow03Icon,
   DataIcon,
+  Smartphone01Icon,
 } from '@expo/styleguide-icons';
+import type { ComponentType, HTMLAttributes } from 'react';
 
-export const entries = [
+export type ExpoItemType = {
+  label: string;
+  url: string;
+  Icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
+};
+
+export const entries: ExpoItemType[] = [
   {
     label: 'Account Settings',
     url: 'https://expo.dev/accounts/[account]/settings',
@@ -43,6 +51,11 @@ export const entries = [
     label: 'Project Deployments',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/deployments',
     Icon: Dataflow03Icon,
+  },
+  {
+    label: 'Project Development Builds',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/development-builds',
+    Icon: Smartphone01Icon,
   },
   {
     label: 'Project Builds',
