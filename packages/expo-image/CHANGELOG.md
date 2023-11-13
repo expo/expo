@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Return a promise in the `prefetch` method. ([#25196](https://github.com/expo/expo/pull/25196) by [@gkasdorf](https://github.com/gkasdorf))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix `contentFit` not working for `SVG` images. ([#25187](https://github.com/expo/expo/pull/25187) by [@behenate](https://github.com/behenate))

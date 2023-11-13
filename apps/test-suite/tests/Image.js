@@ -160,5 +160,29 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(result).toBe(false);
       });
     });
+
+    t.describe('prefetch', async () => {
+      t.it('prefetches an image and resolves promise to true', async () => {
+        await Image.clearDiskCache();
+        const result = await Image.prefetch(REMOTE_SOURCE.uri);
+        t.expect(result).toBe(true);
+
+        if (Platform.OS === 'android' || Platform.OS === 'ios') {
+          const path = await Image.getCachePathAsync(REMOTE_SOURCE.uri);
+          t.expect(typeof path).toBe('string');
+        }
+      });
+
+      t.it('returns false when prefetching a non-existent image', async () => {
+        await Image.clearDiskCache();
+        const result = await Image.prefetch(NON_EXISTENT_SOURCE.uri);
+        t.expect(result).toBe(false);
+
+        if (Platform.OS === 'android' || Platform.OS === 'ios') {
+          const path = await Image.getCachePathAsync(NON_EXISTENT_SOURCE.uri);
+          t.expect(path).toBe(null);
+        }
+      });
+    });
   });
 }
