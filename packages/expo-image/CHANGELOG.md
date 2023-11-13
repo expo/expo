@@ -18,6 +18,10 @@
 - Collapse re-export of `react-native/Libraries/Image/AssetRegistry` to `@react-native/assets-registry/registry`. ([#25265](https://github.com/expo/expo/pull/25265) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Add tracing. ([#25251](https://github.com/expo/expo/pull/25251) by [@lukmccall](https://github.com/lukmccall))
 
+### ⚠️ Notices
+
+- `Image` is now deprecated as a React component and renamed to `ImageView`. In the future, `Image` will become a reference to a native `UIImage`/`Drawable` that can be passed to the view. ([#25352](https://github.com/expo/expo/pull/25352) by [@tsapeta](https://github.com/tsapeta))
+
 ## 1.7.0 — 2023-11-01
 
 ### 🎉 New features
