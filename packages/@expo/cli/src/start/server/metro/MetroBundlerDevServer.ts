@@ -185,11 +185,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     minify = mode !== 'development',
     includeMaps,
     baseUrl,
+    mainModuleName,
   }: {
     mode: string;
     minify?: boolean;
     includeMaps?: boolean;
     baseUrl?: string;
+    mainModuleName?: string;
   }): Promise<{ artifacts: SerialAsset[]; assets?: AssetData[] }> {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
@@ -198,7 +200,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'client',
       serializerOutput: 'static',
       serializerIncludeMaps: includeMaps,
-      mainModuleName: resolveMainModuleName(this.projectRoot, { platform: 'web' }),
+      mainModuleName:
+        mainModuleName ?? resolveMainModuleName(this.projectRoot, { platform: 'web' }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
       baseUrl,
     });
@@ -210,7 +213,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const txt = await results.text();
 
-    // console.log('STAT:', results.status, results.statusText);
     let data: any;
     try {
       data = JSON.parse(txt);
