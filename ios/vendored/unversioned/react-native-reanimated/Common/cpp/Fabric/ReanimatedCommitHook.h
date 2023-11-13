@@ -19,6 +19,16 @@ class ReanimatedCommitHook : public UIManagerCommitHook {
 
   ~ReanimatedCommitHook() noexcept override;
 
+#if REACT_NATIVE_MINOR_VERSION >= 73
+  void commitHookWasRegistered(UIManager const &) noexcept override {}
+
+  void commitHookWasUnregistered(UIManager const &) noexcept override {}
+
+  RootShadowNode::Unshared shadowTreeWillCommit(
+      ShadowTree const &shadowTree,
+      RootShadowNode::Shared const &oldRootShadowNode,
+      RootShadowNode::Unshared const &newRootShadowNode) noexcept override;
+#else
   void commitHookWasRegistered(UIManager const &) const noexcept override {}
 
   void commitHookWasUnregistered(UIManager const &) const noexcept override {}
@@ -28,6 +38,7 @@ class ReanimatedCommitHook : public UIManagerCommitHook {
       RootShadowNode::Shared const &oldRootShadowNode,
       RootShadowNode::Unshared const &newRootShadowNode)
       const noexcept override;
+#endif
 
  private:
   std::shared_ptr<PropsRegistry> propsRegistry_;

@@ -1,20 +1,15 @@
 // Ensure all the upstream tests from @react-navigation/core pass.
 
 import type { NavigationState, PartialState } from '@react-navigation/routers';
-import Constants from 'expo-constants';
 
 import getPathFromState from '../getPathFromState';
 import getStateFromPath from '../getStateFromPath';
 
-jest.mock('expo-constants', () => ({
-  __esModule: true,
-  default: {
-    expoConfig: {},
-  },
-}));
-
-afterEach(() => {
-  Constants.expoConfig!.experiments = undefined;
+beforeEach(() => {
+  delete process.env.EXPO_BASE_URL;
+});
+afterAll(() => {
+  delete process.env.EXPO_BASE_URL;
 });
 
 type State = PartialState<NavigationState>;
@@ -201,13 +196,9 @@ type State = PartialState<NavigationState>;
   });
 });
 
-it('appends basePath', () => {
-  // @ts-expect-error
-  Constants.expoConfig = {
-    experiments: {
-      basePath: '/expo-prefix/',
-    },
-  };
+it('appends baseUrl', () => {
+  process.env.EXPO_BASE_URL = '/expo-prefix/';
+
   const path = '/expo-prefix/bar';
   const config = {
     screens: {
@@ -235,13 +226,9 @@ it('appends basePath', () => {
   expect(getPathFromState<object>(state, config)).toBe(path);
 });
 
-it('appends multi-level basePath', () => {
-  // @ts-expect-error
-  Constants.expoConfig = {
-    experiments: {
-      basePath: '/expo/prefix/',
-    },
-  };
+it('appends multi-level baseUrl', () => {
+  process.env.EXPO_BASE_URL = '/expo/prefix/';
+
   const path = '/expo/prefix/bar';
   const config = {
     screens: {

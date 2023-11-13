@@ -1,5 +1,4 @@
 import { getConfig } from '@expo/config';
-import saveAssets from '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets';
 import fs from 'fs';
 import Server from 'metro/src/Server';
 import output from 'metro/src/shared/output/bundle';
@@ -9,11 +8,15 @@ import path from 'path';
 import { Options } from './resolveOptions';
 import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
-import { getMetroDirectBundleOptions } from '../../start/server/middleware/metroOptions';
+import {
+  getBaseUrlFromExpoConfig,
+  getMetroDirectBundleOptions,
+} from '../../start/server/middleware/metroOptions';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { profile } from '../../utils/profile';
 import { isEnableHermesManaged } from '../exportHermes';
 import { getAssets } from '../fork-bundleAsync';
+import { persistMetroAssetsAsync } from '../persistMetroAssets';
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');
@@ -26,9 +29,15 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   // Persist bundle and source maps.
   await Promise.all([
     output.save(bundle, options, Log.log),
-    // NOTE(EvanBacon): This may need to be adjusted in the future if want to support basePath on native
+    // NOTE(EvanBacon): This may need to be adjusted in the future if want to support baseUrl on native
     // platforms when doing production embeds (unlikely).
-    saveAssets(assets, options.platform, options.assetsDest, options.assetCatalogDest),
+    options.assetsDest
+      ? persistMetroAssetsAsync(assets, {
+          platform: options.platform,
+          outputDirectory: options.assetsDest,
+          iosAssetCatalogDirectory: options.assetCatalogDest,
+        })
+      : null,
   ]);
 }
 
@@ -64,7 +73,7 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
       minify: options.minify,
       mode: options.dev ? 'development' : 'production',
       engine: isHermes ? 'hermes' : undefined,
-      basePath: exp.experiments?.basePath,
+      baseUrl: getBaseUrlFromExpoConfig(exp),
     }),
     sourceMapUrl,
     unstable_transformProfile: (options.unstableTransformProfile ||

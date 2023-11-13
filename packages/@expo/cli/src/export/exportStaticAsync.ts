@@ -13,18 +13,17 @@ import prettyBytes from 'pretty-bytes';
 import { inspect } from 'util';
 
 import { getVirtualFaviconAssetsAsync } from './favicon';
+import { persistMetroAssetsAsync } from './persistMetroAssets';
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
-import {
-  MetroBundlerDevServer,
-  composeResourcesWithHtml,
-} from '../start/server/metro/MetroBundlerDevServer';
+import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import {
   getApiRoutesForDirectory,
   getRouterDirectoryWithManifest,
 } from '../start/server/metro/router';
+import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 import { getFreePortAsync } from '../utils/port';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
@@ -35,9 +34,10 @@ type Options = {
   outputDir: string;
   minify: boolean;
   exportServer: boolean;
-  basePath: string;
+  baseUrl: string;
   includeMaps: boolean;
   entryPoint?: string;
+  clear: boolean;
 };
 
 /** @private */
@@ -56,6 +56,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
     mode: 'production',
     port,
     location: {},
+    resetDevServer: options.clear,
   });
   await devServerManager.startAsync([
     {
@@ -64,6 +65,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
         port,
         location: {},
         isExporting: true,
+        resetDevServer: options.clear,
       },
     },
   ]);
@@ -139,7 +141,7 @@ export async function unstable_exportStaticResourcesAsync(projectRoot: string, o
       minify: options.minify,
       includeMaps: options.includeMaps,
       mainModuleName: options.entryPoint,
-      basePath: options.basePath,
+      baseUrl: options.baseUrl,
     });
     return resources;
   } finally {
@@ -151,21 +153,22 @@ export async function unstable_exportStaticResourcesAsync(projectRoot: string, o
 export async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, basePath, exportServer, minify, includeMaps }: Options
+  { outputDir, baseUrl, exportServer, minify, includeMaps }: Options
 ): Promise<void> {
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const appDir = getRouterDirectoryWithManifest(projectRoot, exp);
 
-  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, { outputDir, basePath });
+  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, { outputDir, baseUrl });
 
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
   const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
-    devServer.getStaticResourcesAsync({ mode: 'production', minify, includeMaps, basePath }),
+    devServer.getStaticResourcesAsync({ mode: 'production', minify, includeMaps, baseUrl }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
       minify,
+      baseUrl,
     }),
   ]);
 
@@ -179,11 +182,11 @@ export async function exportFromServerAsync(
     includeGroupVariations: !exportServer,
     async renderAsync(pathname: string) {
       const template = await renderAsync(pathname);
-      let html = await composeResourcesWithHtml({
+      let html = await serializeHtmlWithAssets({
         mode: 'production',
-        resources,
+        resources: resources.artifacts,
         template,
-        basePath,
+        baseUrl,
       });
 
       if (injectFaviconTag) {
@@ -194,10 +197,18 @@ export async function exportFromServerAsync(
     },
   });
 
-  getFilesFromSerialAssets(resources, {
+  getFilesFromSerialAssets(resources.artifacts, {
     includeMaps,
     files,
   });
+
+  if (resources.assets) {
+    await persistMetroAssetsAsync(resources.assets, {
+      platform: 'web',
+      outputDirectory: outputDir,
+      baseUrl,
+    });
+  }
 
   if (exportServer) {
     const apiRoutes = await exportApiRoutesAsync({
@@ -205,6 +216,7 @@ export async function exportFromServerAsync(
       server: devServer,
       appDir,
       manifest: serverManifest,
+      baseUrl,
     });
 
     // Add the api routes to the files to export.
@@ -243,6 +255,7 @@ export async function persistMetroFilesAsync(files: Map<string, string>, outputD
   fs.mkdirSync(path.join(outputDir), { recursive: true });
 
   Log.log('');
+
   Log.log(chalk.bold`Exporting ${files.size} files:`);
   await Promise.all(
     [...files.entries()]
@@ -266,8 +279,9 @@ export function modifyBundlesWithSourceMaps(
   if (filename.endsWith('.js')) {
     // If the bundle ends with source map URLs then update them to point to the correct location.
 
-    // TODO: basePath support
+    // TODO: baseUrl support
     const normalizedFilename = '/' + filename.replace(/^\/+/, '');
+    // Ref: https://developer.chrome.com/blog/sourcemaps/#sourceurl-and-displayname-in-action-eval-and-anonymous-functions
     //# sourceMappingURL=//localhost:8085/index.map?platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
     //# sourceURL=http://localhost:8085/index.bundle//&platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
     return source.replace(/^\/\/# (sourceMappingURL|sourceURL)=.*$/gm, (...props) => {
@@ -294,17 +308,17 @@ export function getHtmlFiles({
 }): string[] {
   const htmlFiles = new Set<string>();
 
-  function traverseScreens(screens: string | { screens: any; path: string }, basePath = '') {
+  function traverseScreens(screens: string | { screens: any; path: string }, baseUrl = '') {
     for (const value of Object.values(screens)) {
       if (typeof value === 'string') {
-        let filePath = basePath + value;
+        let filePath = baseUrl + value;
         if (value === '') {
           filePath =
-            basePath === ''
+            baseUrl === ''
               ? 'index'
-              : basePath.endsWith('/')
-              ? basePath + 'index'
-              : basePath.slice(0, -1);
+              : baseUrl.endsWith('/')
+              ? baseUrl + 'index'
+              : baseUrl.slice(0, -1);
         }
         if (includeGroupVariations) {
           // TODO: Dedupe requests for alias routes.
@@ -313,7 +327,7 @@ export function getHtmlFiles({
           htmlFiles.add(filePath);
         }
       } else if (typeof value === 'object' && value?.screens) {
-        const newPath = basePath + value.path + '/';
+        const newPath = baseUrl + value.path + '/';
         traverseScreens(value.screens, newPath);
       }
     }
@@ -394,12 +408,14 @@ async function exportApiRoutesAsync({
   outputDir,
   server,
   appDir,
+  baseUrl,
   ...props
 }: {
   outputDir: string;
   server: MetroBundlerDevServer;
   appDir: string;
   manifest: ExpoRouterServerManifestV1;
+  baseUrl: string;
 }): Promise<Map<string, string>> {
   const functionsDir = '_expo/functions';
   const funcDir = path.join(outputDir, functionsDir);
@@ -410,6 +426,7 @@ async function exportApiRoutesAsync({
     appDir,
     outputDir: functionsDir,
     prerenderManifest: props.manifest,
+    baseUrl,
   });
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);

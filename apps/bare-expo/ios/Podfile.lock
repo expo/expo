@@ -25,8 +25,6 @@ PODS:
   - EXImageLoader (4.5.0):
     - ExpoModulesCore
     - React-Core
-  - EXInAppPurchases (14.6.0):
-    - ExpoModulesCore
   - EXJSONUtils (0.11.0)
   - EXJSONUtils/Tests (0.11.0)
   - EXLocation (16.4.0):
@@ -146,6 +144,8 @@ PODS:
     - ExpoModulesCore
   - ExpoCamera (13.8.0):
     - ExpoModulesCore
+    - ZXingObjC/OneD
+    - ZXingObjC/PDF417
   - ExpoCellular (5.6.0):
     - ExpoModulesCore
   - ExpoClipboard (4.7.0):
@@ -235,7 +235,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (11.6.0):
     - ExpoModulesCore
-  - ExpoSQLite (11.8.0):
+  - ExpoSQLite (12.1.0):
     - ExpoModulesCore
     - sqlite3 (~> 3.42.0)
   - ExpoStoreReview (6.7.0):
@@ -758,7 +758,7 @@ PODS:
     - React-Core
   - RNGestureHandler (2.12.0):
     - React-Core
-  - RNReanimated (3.5.4):
+  - RNReanimated (3.6.0-nightly-20231031-c56d44fd9):
     - DoubleConversion
     - FBLazyVector
     - glog
@@ -787,9 +787,9 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.22.0):
+  - RNScreens (3.27.0):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
-    - React-RCTImage
   - RNSVG (13.9.0):
     - React-Core
   - SDWebImage (5.17.0):
@@ -827,7 +827,6 @@ DEPENDENCIES:
   - EXContacts (from `../../../packages/expo-contacts/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
-  - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXJSONUtils/Tests (from `../../../packages/expo-json-utils/ios`)
   - EXLocation (from `../../../packages/expo-location/ios`)
@@ -1003,9 +1002,6 @@ EXTERNAL SOURCES:
   EXImageLoader:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-loader/ios"
-  EXInAppPurchases:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-in-app-purchases/ios"
   EXJSONUtils:
     inhibit_warnings: false
     :path: "../../../packages/expo-json-utils/ios"
@@ -1302,7 +1298,6 @@ SPEC CHECKSUMS:
   EXContacts: 24e46f5cf1ba9776a2f301c4f3aa821848035a10
   EXFont: e5fa244ad8c8d6fcf3a215e1fdcaedbc9b580aad
   EXImageLoader: 6ffefe300f6f1a5be46f3722944d7f48a44f36bf
-  EXInAppPurchases: 16897367eb7e5e04f3b1d4ccba4169187f1b0e00
   EXJSONUtils: d15120ce0e8967b0822880162039dd75e5867086
   EXLocation: db102a331d49b1f55a82409f9d53a22684093c0c
   EXManifests: b658c34011f90e3379b515fb50680acb49ba099a
@@ -1319,7 +1314,7 @@ SPEC CHECKSUMS:
   ExpoBattery: 807b36eacbe112503a9a0ca0f862ee7a653a4639
   ExpoBlur: fd3aefb4b4f3acaaa1ca2406cf9a98351ec5ffc4
   ExpoBrightness: f521d33b9a5211ba9c4d1749b4ec7ca3d9aa3cd3
-  ExpoCamera: e7f55f4baad8f8934bf57a606919d2fd66953f23
+  ExpoCamera: ca563f22e6418a63ae420424e94d032ec1b7b7d1
   ExpoCellular: 23176ea4488b3a69a43101a31857b84e2df71305
   ExpoClipboard: f0beee97ddfe5d3376d9e2d6ff72300be6a07d70
   ExpoCrypto: 5cd349fbd604e28dbc92fce97a587b4f0197f93d
@@ -1349,7 +1344,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 28a662c0718e2680510ca5a208817164944f1cca
   ExpoSMS: 86be39c17d0c6cb50c63271751deaa26381ce25d
   ExpoSpeech: 8a4624ecde6e27157db008d0cc88572a4f523bd5
-  ExpoSQLite: 4fc808cb9536c7bdf6621478a05ce04cbf1037b6
+  ExpoSQLite: f72785101e82c8d28aed08dc01606bccb26ec811
   ExpoStoreReview: 462e12ab98505c836fffe262965a0852f4b32260
   ExpoSystemUI: adb6c827f30566d132501518df24b5b7e4ed294c
   ExpoTrackingTransparency: a7cf99bb23fa213879c36552dda51b6aa63f0279
@@ -1421,8 +1416,8 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 3942382593f104af226ad9c56e16166960c7ae30
   RNFlashList: ade81b4e928ebd585dd492014d40fb8d0e848aab
   RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
-  RNReanimated: 9633f8c2e214b721e35e371b473fbf3a1522948d
-  RNScreens: 68fd1060f57dd1023880bf4c05d74784b5392789
+  RNReanimated: 87736ffd129fbc2c637abd06ca6d0738a4f73004
+  RNScreens: 3c2d122f5e08c192e254c510b212306da97d2581
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
   SDWebImageAVIFCoder: 8348fef6d0ec69e129c66c9fe4d74fbfbf366112

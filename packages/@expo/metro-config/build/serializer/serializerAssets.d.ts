@@ -3,5 +3,5 @@ export type SerialAsset = {
     filename: string;
     source: string;
     type: 'css' | 'js' | 'map';
-    metadata: Record<string, boolean | string | string[]>;
+    metadata: Record<string, string | string[]>;
 };

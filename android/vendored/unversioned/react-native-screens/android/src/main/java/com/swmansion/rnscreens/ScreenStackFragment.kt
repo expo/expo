@@ -19,12 +19,15 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.facebook.react.uimanager.PixelUtil
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.ScrollingViewBehavior
+import com.swmansion.rnscreens.utils.DeviceUtils
 
-class ScreenStackFragment : ScreenFragment {
+class ScreenStackFragment : ScreenFragment, ScreenStackFragmentWrapper {
     private var mAppBarLayout: AppBarLayout? = null
     private var mToolbar: Toolbar? = null
     private var mShadowHidden = false
     private var mIsTranslucent = false
+
+    private var mLastFocusedChild: View? = null
 
     var searchView: CustomSearchView? = null
     var onSearchViewCreate: ((searchView: CustomSearchView) -> Unit)? = null
@@ -38,7 +41,7 @@ class ScreenStackFragment : ScreenFragment {
         )
     }
 
-    fun removeToolbar() {
+    override fun removeToolbar() {
         mAppBarLayout?.let {
             mToolbar?.let { toolbar ->
                 if (toolbar.parent === it) {
@@ -49,7 +52,7 @@ class ScreenStackFragment : ScreenFragment {
         mToolbar = null
     }
 
-    fun setToolbar(toolbar: Toolbar) {
+    override fun setToolbar(toolbar: Toolbar) {
         mAppBarLayout?.addView(toolbar)
         toolbar.layoutParams = AppBarLayout.LayoutParams(
             AppBarLayout.LayoutParams.MATCH_PARENT, AppBarLayout.LayoutParams.WRAP_CONTENT
@@ -57,14 +60,14 @@ class ScreenStackFragment : ScreenFragment {
         mToolbar = toolbar
     }
 
-    fun setToolbarShadowHidden(hidden: Boolean) {
+    override fun setToolbarShadowHidden(hidden: Boolean) {
         if (mShadowHidden != hidden) {
             mAppBarLayout?.targetElevation = if (hidden) 0f else PixelUtil.toPixelFromDIP(4f)
             mShadowHidden = hidden
         }
     }
 
-    fun setToolbarTranslucent(translucent: Boolean) {
+    override fun setToolbarTranslucent(translucent: Boolean) {
         if (mIsTranslucent != translucent) {
             val params = screen.layoutParams
             (params as CoordinatorLayout.LayoutParams).behavior =
@@ -87,6 +90,11 @@ class ScreenStackFragment : ScreenFragment {
         if (screenStack is ScreenStack) {
             screenStack.onViewAppearTransitionEnd()
         }
+    }
+
+    override fun onStart() {
+        mLastFocusedChild?.requestFocus()
+        super.onStart()
     }
 
     override fun onCreateView(
@@ -121,6 +129,13 @@ class ScreenStackFragment : ScreenFragment {
         mToolbar?.let { mAppBarLayout?.addView(recycleView(it)) }
         setHasOptionsMenu(true)
         return view
+    }
+
+    override fun onStop() {
+        if (DeviceUtils.isPlatformAndroidTV(context))
+            mLastFocusedChild = findLastFocusedChild()
+
+        super.onStop()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
@@ -163,8 +178,18 @@ class ScreenStackFragment : ScreenFragment {
         }
     }
 
-    fun canNavigateBack(): Boolean {
-        val container: ScreenContainer<*>? = screen.container
+    private fun findLastFocusedChild(): View? {
+        var view: View? = screen
+        while (view != null) {
+            if (view.isFocused) return view
+            view = if (view is ViewGroup) view.focusedChild else null
+        }
+
+        return null
+    }
+
+    override fun canNavigateBack(): Boolean {
+        val container: ScreenContainer? = screen.container
         check(container is ScreenStack) { "ScreenStackFragment added into a non-stack container" }
         return if (container.rootScreen == screen) {
             // this screen is the root of the container, if it is nested we can check parent container
@@ -180,8 +205,8 @@ class ScreenStackFragment : ScreenFragment {
         }
     }
 
-    fun dismiss() {
-        val container: ScreenContainer<*>? = screen.container
+    override fun dismiss() {
+        val container: ScreenContainer? = screen.container
         check(container is ScreenStack) { "ScreenStackFragment added into a non-stack container" }
         container.dismiss(this)
     }
@@ -251,7 +276,7 @@ class ScreenStackFragment : ScreenFragment {
         override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
             super.applyTransformation(interpolatedTime, t)
             // interpolated time should be the progress of the current transition
-            mFragment.dispatchTransitionProgress(interpolatedTime, !mFragment.isResumed)
+            mFragment.dispatchTransitionProgressEvent(interpolatedTime, !mFragment.isResumed)
         }
     }
 }

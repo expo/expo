@@ -61,11 +61,11 @@ if (!safeExtGet("expoProvidesDefaultConfig", false)) {
 android {
   // Remove this if and it's contents, when support for SDK49 is dropped
   if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 33)
+    compileSdkVersion safeExtGet("compileSdkVersion", 34)
 
     defaultConfig {
       minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 33)
+      targetSdkVersion safeExtGet("targetSdkVersion", 34)
     }
 
     publishing {

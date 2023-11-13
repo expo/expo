@@ -10,7 +10,6 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Build
@@ -57,6 +56,7 @@ import expo.modules.location.taskConsumers.LocationTaskConsumer
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.geocoding.utils.LocationAddress
 import io.nlopez.smartlocation.location.config.LocationParams
+import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -207,7 +207,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     }
 
     AsyncFunction("removeWatchAsync") { watchId: Int ->
-      println("$watchId")
       if (isMissingForegroundPermissions()) {
         throw LocationUnauthorizedException()
       }
@@ -653,7 +652,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     }
   }
 
-  private suspend fun geocode(address: String): MutableList<GeocodeResponse> {
+  private suspend fun geocode(address: String): List<GeocodeResponse> {
     if (mGeocoderPaused) {
       throw GeocodeException("Geocoder is not running")
     }
@@ -662,21 +661,21 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       throw LocationUnauthorizedException()
     }
 
-    if (Geocoder.isPresent()) {
-      return suspendCoroutine { continuation ->
-        SmartLocation.with(mContext).geocoding().direct(address) { _: String?, list: List<LocationAddress> ->
-          val results = arrayListOf<GeocodeResponse>()
-          for (locationAddress in list) {
-            GeocodeResponse.from(locationAddress.location)?.let {
-              results.add(it)
-            }
+    if (!Geocoder.isPresent()) {
+      throw NoGeocodeException()
+    }
+
+    return suspendCoroutine { continuation ->
+      val locations = Geocoder(mContext, Locale.getDefault()).getFromLocationName(address, 1)
+      locations?.let { location ->
+        location.let {
+          val results = it.mapNotNull { address ->
+            val locationAddress = LocationAddress(address)
+            GeocodeResponse.from(locationAddress.location)
           }
-          SmartLocation.with(mContext).geocoding().stop()
           continuation.resume(results)
         }
-      }
-    } else {
-      throw NoGeocodeException()
+      } ?: continuation.resume(emptyList())
     }
   }
 
@@ -689,26 +688,25 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       throw LocationUnauthorizedException()
     }
 
+    if (!Geocoder.isPresent()) {
+      throw NoGeocodeException()
+    }
+
     val androidLocation = Location("").apply {
       latitude = location.latitude
       longitude = location.longitude
     }
 
-    if (Geocoder.isPresent()) {
-      return suspendCoroutine { continuation ->
-        SmartLocation.with(mContext).geocoding().reverse(androidLocation) { _: Location?, addresses: List<Address?> ->
-          val results = arrayListOf<ReverseGeocodeResponse>()
-          addresses.forEach {
-            it?.let {
-              results.add(ReverseGeocodeResponse(it))
-            }
+    return suspendCoroutine { continuation ->
+      val locations = Geocoder(mContext, Locale.getDefault()).getFromLocation(androidLocation.latitude, androidLocation.longitude, 1)
+      locations?.let { addresses ->
+        val results = addresses.mapNotNull { address ->
+          address?.let {
+            ReverseGeocodeResponse(it)
           }
-          SmartLocation.with(mContext).geocoding().stop()
-          continuation.resume(results)
         }
-      }
-    } else {
-      throw NoGeocodeException()
+        continuation.resume(results)
+      } ?: continuation.resume(emptyList())
     }
   }
 

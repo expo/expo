@@ -2,7 +2,7 @@ import * as babel from '@babel/core';
 
 import preset from '..';
 
-function getCaller(props: Record<string, string>): babel.TransformCaller {
+function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
 }
 
@@ -33,7 +33,7 @@ function stripReactNativeImport(code: string) {
 it(`removes Platform module usage on web`, () => {
   const options = {
     ...DEFAULT_OPTS,
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web' }),
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'web', isDev: false }),
   };
 
   const sourceCode = `
@@ -58,7 +58,7 @@ it(`removes Platform module usage on web`, () => {
 it(`removes Platform module usage on native`, () => {
   const options = {
     ...DEFAULT_OPTS,
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'android' }),
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'android', isDev: false }),
   };
 
   expect(
@@ -90,7 +90,7 @@ it(`removes Platform module usage on native`, () => {
 it(`removes __DEV__ usage`, () => {
   const options = {
     ...DEFAULT_OPTS,
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'android' }),
+    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'android', isDev: false }),
   };
 
   const sourceCode = `  

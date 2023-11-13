@@ -17,11 +17,7 @@ export type Bundle = {
     _expoSplitBundlePaths: [number, Record<string, string>][];
 };
 export declare function getPlatformOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: SerializerOptions): string | null;
-export declare function getSplitChunksOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: SerializerOptions): boolean;
-export declare function getBasePathOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: SerializerOptions): string | null;
 export declare function baseJSBundle(entryPoint: string, preModules: readonly Module[], graph: Pick<ReadOnlyGraph, 'dependencies' | 'transformOptions'>, options: SerializerOptions): Bundle;
 export declare function baseJSBundleWithDependencies(entryPoint: string, preModules: readonly Module[], dependencies: Module<MixedOutput>[], options: SerializerOptions & {
     platform: string;
-    basePath: string;
-    splitChunks: boolean;
 }): Bundle;

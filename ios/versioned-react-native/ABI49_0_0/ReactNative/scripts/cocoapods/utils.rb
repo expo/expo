@@ -74,7 +74,7 @@ class ReactNativePodsUtils
 
         projects.each do |project|
             project.build_configurations.each do |config|
-                config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", react_native_path)
+                config.build_settings["ABI49_0_0REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", react_native_path)
             end
 
             project.save()

@@ -11,7 +11,11 @@ import path from 'path';
 import { resolve } from 'url';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
-import { shouldEnableAsyncImports, createBundleUrlPath } from './metroOptions';
+import {
+  shouldEnableAsyncImports,
+  createBundleUrlPath,
+  getBaseUrlFromExpoConfig,
+} from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
@@ -159,8 +163,8 @@ export abstract class ManifestMiddleware<
       platform,
       mainModuleName,
       hostname,
-      basePath: projectConfig.exp.experiments?.basePath,
       engine: isHermesEnabled ? 'hermes' : undefined,
+      baseUrl: getBaseUrlFromExpoConfig(projectConfig.exp),
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -212,13 +216,13 @@ export abstract class ManifestMiddleware<
     mainModuleName,
     hostname,
     engine,
-    basePath,
+    baseUrl,
   }: {
     platform: string;
     hostname?: string | null;
     mainModuleName: string;
     engine?: 'hermes';
-    basePath?: string;
+    baseUrl?: string;
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
@@ -227,7 +231,7 @@ export abstract class ManifestMiddleware<
       mainModuleName,
       lazy: shouldEnableAsyncImports(this.projectRoot),
       engine,
-      basePath,
+      baseUrl,
     });
 
     return (
@@ -311,7 +315,7 @@ export abstract class ManifestMiddleware<
       mode: this.options.mode ?? 'development',
       // Hermes doesn't support more modern JS features than most, if not all, modern browser.
       engine: 'hermes',
-      basePath: this.initialProjectConfig.exp.experiments?.basePath,
+      baseUrl: getBaseUrlFromExpoConfig(this.initialProjectConfig.exp),
     });
   }
 

@@ -6,7 +6,15 @@
  */
 import assert from 'assert';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+import {
+  Module,
+  MixedOutput,
+  ReadOnlyGraph,
+  SerializerOptions,
+  MetroConfig,
+  AssetData,
+} from 'metro';
+import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
 // @ts-expect-error
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
@@ -67,8 +75,7 @@ export function withSerializerPlugins(
     serializer: {
       ...config.serializer,
       customSerializer: createSerializerFromSerialProcessors(
-        // @ts-expect-error
-        config.serializer ?? {},
+        config,
         processors,
         originalSerializer
       ),
@@ -76,10 +83,11 @@ export function withSerializerPlugins(
   };
 }
 
-export function getDefaultSerializer(
-  serializerConfig: ConfigT['serializer'],
+function getDefaultSerializer(
+  config: MetroConfig,
   fallbackSerializer?: Serializer | null
 ): Serializer {
+  const serializerConfig = config.serializer;
   const defaultSerializer =
     fallbackSerializer ??
     (async (...params: SerializerParameters) => {
@@ -126,7 +134,7 @@ export function getDefaultSerializer(
     }
 
     const assets = await graphToSerialAssetsAsync(
-      serializerConfig,
+      config,
       { includeMaps: serializerOptions.includeSourceMaps },
       ...props
     );
@@ -148,10 +156,10 @@ type ChunkSettings = {
 };
 
 export async function graphToSerialAssetsAsync(
-  serializerConfig: ConfigT['serializer'],
+  config: ConfigT,
   { includeMaps }: { includeMaps: boolean },
   ...props: SerializerParameters
-): Promise<SerialAsset[] | null> {
+): Promise<{ artifacts: SerialAsset[] | null; assets: AssetData[] }> {
   const [entryFile, preModules, graph, options] = props;
 
   const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
@@ -173,11 +181,21 @@ export async function graphToSerialAssetsAsync(
   // Optimize the chunks
   // dedupeChunks(_chunks);
 
-  const jsAssets = await serializeChunksAsync(_chunks, serializerConfig, {
+  const jsAssets = await serializeChunksAsync(_chunks, config.serializer, {
     includeSourceMaps: includeMaps,
   });
 
-  return [...jsAssets, ...cssDeps];
+  // TODO: Convert to serial assets
+  // TODO: Disable this call dynamically in development since assets are fetched differently.
+  const metroAssets = (await getMetroAssets(graph.dependencies, {
+    processModuleFilter: options.processModuleFilter,
+    assetPlugins: config.transformer!.assetPlugins ?? [],
+    platform: getPlatformOption(graph, options) ?? 'web',
+    projectRoot: options.projectRoot, // this._getServerRootDir(),
+    publicPath: config.transformer!.publicPath!,
+  })) as AssetData[];
+
+  return { artifacts: [...jsAssets, ...cssDeps], assets: metroAssets };
 }
 
 import { inspect } from 'util';
@@ -540,7 +558,7 @@ function getSortedModules(
 }
 
 export function createSerializerFromSerialProcessors(
-  config: ConfigT['serializer'],
+  config: MetroConfig,
   processors: (SerializerPlugin | undefined)[],
   originalSerializer?: Serializer | null
 ): Serializer {

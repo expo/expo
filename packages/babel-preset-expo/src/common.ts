@@ -52,6 +52,17 @@ export function getIsDev(caller: any) {
   return process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
 }
 
+export function getIsProd(caller: any) {
+  if (caller?.isDev != null) return caller.isDev === false;
+
+  // https://babeljs.io/docs/options#envname
+  return process.env.BABEL_ENV === 'production' || process.env.NODE_ENV === 'production';
+}
+
+export function getBaseUrl(caller: any): string {
+  return caller?.baseUrl ?? '';
+}
+
 export function getIsServer(caller: any) {
   return caller?.isServer ?? false;
 }

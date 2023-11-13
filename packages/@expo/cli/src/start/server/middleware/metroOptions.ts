@@ -1,3 +1,4 @@
+import { ExpoConfig } from '@expo/config';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import resolveFrom from 'resolve-from';
 
@@ -29,6 +30,7 @@ export type ExpoMetroOptions = {
   lazy?: boolean;
   engine?: 'hermes';
   preserveEnvVars?: boolean;
+  baseUrl?: string;
 };
 
 function withDefaults({
@@ -48,12 +50,16 @@ function withDefaults({
 export type SerializerOptions = {
   includeMaps?: boolean;
   output?: 'static';
-  basePath?: string;
+  baseUrl?: string;
 };
 
 export type ExpoMetroBundleOptions = MetroBundleOptions & {
   serializerOptions?: SerializerOptions;
 };
+
+export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
+  return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
+}
 
 export function getMetroDirectBundleOptions(
   options: ExpoMetroOptions
@@ -69,7 +75,7 @@ export function getMetroDirectBundleOptions(
     lazy,
     engine,
     preserveEnvVars,
-    basePath,
+    baseUrl,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -107,6 +113,7 @@ export function getMetroDirectBundleOptions(
       engine,
       preserveEnvVars,
       environment,
+      baseUrl,
     },
     customResolverOptions: {
       __proto__: null,
@@ -115,7 +122,7 @@ export function getMetroDirectBundleOptions(
     sourceMapUrl: fakeSourceMapUrl,
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
-      basePath,
+      baseUrl,
       output: serializerOutput,
       includeMaps: serializerIncludeMaps,
     },
@@ -136,7 +143,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     lazy,
     engine,
     preserveEnvVars,
-    basePath,
+    baseUrl,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -163,6 +170,11 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   if (preserveEnvVars) {
     queryParams.append('transform.preserveEnvVars', String(preserveEnvVars));
   }
+  if (baseUrl) {
+    queryParams.append('transform.baseUrl', baseUrl);
+    // TODO: We could probably drop this in favor of the transformer version.
+    queryParams.append('serializer.basePath', String(baseUrl));
+  }
 
   if (environment) {
     queryParams.append('resolver.environment', environment);
@@ -174,10 +186,6 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   }
   if (serializerIncludeMaps) {
     queryParams.append('serializer.map', String(serializerIncludeMaps));
-  }
-  // TODO: Probably pass to transformer instead and use in favor of app.json constants.
-  if (basePath) {
-    queryParams.append('serializer.basePath', String(basePath));
   }
 
   return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;

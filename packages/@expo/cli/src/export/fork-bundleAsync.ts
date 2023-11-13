@@ -1,26 +1,24 @@
 import { ExpoConfig, getConfigFilePaths, Platform, ProjectConfig } from '@expo/config';
-import chalk from 'chalk';
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import assert from 'assert';
 import Metro, { AssetData, MixedOutput, Module, ReadOnlyGraph } from 'metro';
 import { ConfigT } from 'metro-config';
 import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
+import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import IncrementalBundler from 'metro/src/IncrementalBundler';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import Server from 'metro/src/Server';
 import path from 'path';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 
 import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import {
   ExpoMetroBundleOptions,
+  getBaseUrlFromExpoConfig,
   getMetroDirectBundleOptions,
 } from '../start/server/middleware/metroOptions';
-import {
-  buildHermesBundleAsync,
-  isEnableHermesManaged,
-  maybeThrowFromInconsistentEngineAsync,
-} from './exportHermes';
+import { isEnableHermesManaged, maybeThrowFromInconsistentEngineAsync } from './exportHermes';
 
 import type { LoadOptions } from '@expo/metro-config';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
@@ -148,7 +146,7 @@ async function bundleProductionMetroClientAsync(
         // Bundle splitting on web-only for now.
         // serializerOutput: bundle.platform === 'web' ? 'static' : undefined,
         serializerOutput: 'static',
-        basePath: expoConfig.experiments?.basePath,
+        baseUrl: getBaseUrlFromExpoConfig(expoConfig),
       }),
       bundleType: 'bundle',
       inlineSourceMap: false,
@@ -401,7 +399,3 @@ async function forkMetroBuildAsync(
     },
   ];
 }
-
-import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
-
-import assert from 'assert';

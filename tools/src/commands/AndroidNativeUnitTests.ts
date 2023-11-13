@@ -1,14 +1,18 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
+import fs from 'fs/promises';
 import path from 'path';
 
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
 import { filterAsync } from '../Utils';
 
-const ANDROID_DIR = Directories.getAndroidDir();
-
 const BARE_EXPO_DIR = path.join(Directories.getAppsDir(), 'bare-expo', 'android');
+const BARE_EXPO_PACKAGE_JSON_PATH = path.join(
+  Directories.getAppsDir(),
+  'bare-expo',
+  'package.json'
+);
 
 const excludedInTests = [
   'expo-module-template',
@@ -19,18 +23,38 @@ const excludedInTests = [
   'expo-dev-client',
 ];
 
-const packagesNeedToBeTestedUsingBareExpo = [
-  'expo-dev-launcher',
-  'expo-dev-menu-interface',
-  'expo-dev-menu',
-  'expo-modules-core',
-];
-
 type TestType = 'local' | 'instrumented';
 
 function consoleErrorOutput(output: string, label: string, colorifyLine: (string) => string): void {
   const lines = output.trim().split(/\r\n?|\n/g);
   console.error(lines.map((line) => `${chalk.gray(label)} ${colorifyLine(line)}`).join('\n'));
+}
+
+/**
+ * Modify the package.json of the bare-expo project, by removing expo-updates from
+ * the list of packages that are excluded from autolinking. This will allow expo-updates
+ * code to be compiled and unit tested. Returns the original package.json text so that the
+ * file can be restored at the end of testing.
+ */
+async function modifyBareExpoPackageJson() {
+  const packageJsonOriginalText = await fs.readFile(BARE_EXPO_PACKAGE_JSON_PATH, {
+    encoding: 'utf-8',
+  });
+  const packageJson: any = JSON.parse(packageJsonOriginalText);
+  if (packageJson?.expo?.autolinking?.exclude) {
+    const excluded = new Set<string>(packageJson?.expo?.autolinking?.exclude || []);
+    if (excluded.has('expo-updates')) {
+      excluded.delete('expo-updates');
+      packageJson.expo.autolinking.exclude = [...excluded];
+    }
+  }
+  const packageJsonModifiedText = JSON.stringify(packageJson, null, 2);
+  await fs.writeFile(BARE_EXPO_PACKAGE_JSON_PATH, packageJsonModifiedText, { encoding: 'utf-8' });
+  return packageJsonOriginalText;
+}
+
+async function restoreBareExpoPackageJson(packageJsonOriginalText: string) {
+  await fs.writeFile(BARE_EXPO_PACKAGE_JSON_PATH, packageJsonOriginalText, { encoding: 'utf-8' });
 }
 
 export async function androidNativeUnitTests({
@@ -60,7 +84,12 @@ export async function androidNativeUnitTests({
     let includesTests;
     if (pkg.isSupportedOnPlatform('android') && !excludedInTests.includes(pkg.packageSlug)) {
       if (type === 'instrumented') {
-        includesTests = await pkg.hasNativeInstrumentationTestsAsync('android');
+        // TODO: expo-updates instrumentation tests are broken at the moment
+        if (pkg.packageSlug === 'expo-updates') {
+          includesTests = false;
+        } else {
+          includesTests = await pkg.hasNativeInstrumentationTestsAsync('android');
+        }
       } else {
         includesTests = await pkg.hasNativeTestsAsync('android');
       }
@@ -80,54 +109,39 @@ export async function androidNativeUnitTests({
     console.log(chalk.yellow(pkg.packageSlug));
   });
 
-  const partition = <T>(arr: T[], condition: (T) => boolean) => {
-    const trues = arr.filter((el) => condition(el));
-    const falses = arr.filter((el) => !condition(el));
-    return [trues, falses];
-  };
+  let packageJsonOriginalText;
 
-  const [androidPackagesTestedUsingBareProject, androidPackagesTestedUsingExpoProject] = partition(
-    androidPackages,
-    (element) => packagesNeedToBeTestedUsingBareExpo.includes(element.packageName)
-  );
+  try {
+    packageJsonOriginalText = await modifyBareExpoPackageJson();
+    if (type === 'instrumented') {
+      const testCommand = 'connectedAndroidTest';
+      const uninstallTestCommand = 'uninstallDebugAndroidTest';
 
-  if (type === 'instrumented') {
-    const testCommand = 'connectedAndroidTest';
-    const uninstallTestCommand = 'uninstallDebugAndroidTest';
+      // TODO: remove this once avd cache saved to storage
+      await runGradlew(androidPackages, uninstallTestCommand, BARE_EXPO_DIR);
 
-    // TODO: remove this once avd cache saved to storage
-    await runGradlew(androidPackagesTestedUsingExpoProject, uninstallTestCommand, ANDROID_DIR);
-    await runGradlew(androidPackagesTestedUsingBareProject, uninstallTestCommand, BARE_EXPO_DIR);
+      // We should build and test expo-modules-core first
+      // that to make the `isExpoModulesCoreTests` in _expo-modules-core/android/build.gradle_ working.
+      // Otherwise, the `./gradlew :expo-modules-core:connectedAndroidTest :expo-eas-client:connectedAndroidTest`
+      // will have duplicated fbjni.so when building expo-eas-client.
+      const isExpoModulesCore = (pkg: Packages.Package) => pkg.packageName === 'expo-modules-core';
+      const isNotExpoModulesCore = (pkg: Packages.Package) =>
+        pkg.packageName !== 'expo-modules-core';
+      await runGradlew(androidPackages.filter(isExpoModulesCore), testCommand, BARE_EXPO_DIR);
 
-    // We should build and test expo-modules-core first
-    // that to make the `isExpoModulesCoreTests` in _expo-modules-core/android/build.gradle_ working.
-    // Otherwise, the `./gradlew :expo-modules-core:connectedAndroidTest :expo-eas-client:connectedAndroidTest`
-    // will have duplicated fbjni.so when building expo-eas-client.
-    const isExpoModulesCore = (pkg: Packages.Package) => pkg.packageName === 'expo-modules-core';
-    const isNotExpoModulesCore = (pkg: Packages.Package) => pkg.packageName !== 'expo-modules-core';
-    await runGradlew(androidPackages.filter(isExpoModulesCore), testCommand, BARE_EXPO_DIR);
+      await runGradlew(androidPackages.filter(isNotExpoModulesCore), testCommand, BARE_EXPO_DIR);
 
-    await runGradlew(
-      androidPackagesTestedUsingExpoProject.filter(isNotExpoModulesCore),
-      testCommand,
-      ANDROID_DIR
-    );
-    await runGradlew(
-      androidPackagesTestedUsingBareProject.filter(isNotExpoModulesCore),
-      testCommand,
-      BARE_EXPO_DIR
-    );
+      // Cleanup installed test app
+      await runGradlew(androidPackages, uninstallTestCommand, BARE_EXPO_DIR);
+    } else {
+      const testCommand = 'testDebugUnitTest';
+      await runGradlew(androidPackages, testCommand, BARE_EXPO_DIR);
+    }
 
-    // Cleanup installed test app
-    await runGradlew(androidPackagesTestedUsingExpoProject, uninstallTestCommand, ANDROID_DIR);
-    await runGradlew(androidPackagesTestedUsingBareProject, uninstallTestCommand, BARE_EXPO_DIR);
-  } else {
-    const testCommand = 'testDebugUnitTest';
-    await runGradlew(androidPackagesTestedUsingExpoProject, testCommand, ANDROID_DIR);
-    await runGradlew(androidPackagesTestedUsingBareProject, testCommand, BARE_EXPO_DIR);
+    console.log(chalk.green('Finished android unit tests successfully.'));
+  } finally {
+    restoreBareExpoPackageJson(packageJsonOriginalText);
   }
-
-  console.log(chalk.green('Finished android unit tests successfully.'));
 }
 
 async function runGradlew(packages: Packages.Package[], testCommand: string, cwd: string) {
