@@ -67,8 +67,8 @@ public final class ImageView: ExpoView {
 
   public override var bounds: CGRect {
     didSet {
-      // Reload the image when the bounds size has changed and the view is mounted.
-      if oldValue.size != bounds.size && window != nil {
+      // Reload the image when the bounds size has changed and is not empty.
+      if oldValue.size != bounds.size && bounds.size != .zero {
         reload()
       }
     }
