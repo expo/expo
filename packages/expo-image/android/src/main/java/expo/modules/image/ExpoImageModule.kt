@@ -39,7 +39,7 @@ class ExpoImageModule : Module() {
       urls.forEach {
         Glide
           .with(context)
-          .load(GlideUrl(it))
+          .load(GlideUrl(it)) //  Use `load` instead of `download` to store the asset in the memory cache
           .apply {
             if (cachePolicy == CachePolicy.MEMORY) {
               diskCacheStrategy(DiskCacheStrategy.NONE)
