@@ -6,7 +6,7 @@ import { addListener } from './UpdatesEmitter';
 /**
  * @deprecated React hook to create an [`UpdateEvent`](#updateevent) listener subscription on mount, using
  * [`addListener`](#updatesaddlistenerlistener). It calls `remove()` on the subscription during unmount. This
- * API is deprecated, and may be removed in a future release; `useUpdates()` should be used instead.
+ * API is deprecated and will be removed in a future release. Use [`useUpdates()`](#useupdates) instead.
  *
  * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
  * and should not return any value.

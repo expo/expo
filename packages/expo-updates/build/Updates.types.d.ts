@@ -2,7 +2,7 @@ import { NewManifest, BareManifest } from 'expo-manifests';
 export type Manifest = NewManifest | BareManifest;
 /**
  * @deprecated The types of update-related events, used with `addListener()` and `useUpdateEvents()`.
- * These APIs are deprecated, and may be removed in a future release; `useUpdates()` should be used instead.
+ * These APIs are deprecated and will be removed in a future release. Use [`useUpdates()`](#useupdates) instead.
  */
 export declare enum UpdateEventType {
     /**
