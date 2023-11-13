@@ -485,10 +485,10 @@
   dependencies:
     tailwind-merge "^1.13.2"
 
-"@expo/styleguide-search-ui@^1.0.0-alpha.3":
-  version "1.0.0-alpha.3"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-search-ui/-/styleguide-search-ui-1.0.0-alpha.3.tgz#4d26816cb182dfcefe56a3f65065dcc97a79739a"
-  integrity sha512-y3xlMRl+vhjXRU0hfOnadMdBgtdtbLU+J6e/8ZGeXAtwjfzZq7eOfY9UmmsJkSIODnAEKuLUCDjmOwP1YV0IPw==
+"@expo/styleguide-search-ui@^1.0.0-alpha.5":
+  version "1.0.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-search-ui/-/styleguide-search-ui-1.0.0-alpha.5.tgz#f67595fbd0a24068e97f60da2239cd91db696bfc"
+  integrity sha512-EkSt4Mx3V0oZU7Gn5MNW8fsvz16KsrmcjmzyMowKMQXx82STsTDgio+KemX74wXxu8D0gkyByZYpqJWmOC7hCw==
   dependencies:
     "@expo/styleguide" "^8.1.0"
     "@expo/styleguide-icons" "^1.0.3"

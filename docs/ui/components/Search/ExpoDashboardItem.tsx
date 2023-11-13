@@ -1,6 +1,6 @@
-import { BuildIcon } from '@expo/styleguide-icons';
-import { CommandItemBase, addHighlight } from '@expo/styleguide-search-ui';
-import React, { type ComponentType } from 'react';
+import { ArrowUpRightIcon, BuildIcon } from '@expo/styleguide-icons';
+import { addHighlight, CommandItemBaseWithCopy } from '@expo/styleguide-search-ui';
+import { type ComponentType, HTMLAttributes } from 'react';
 
 type Props = {
   item: ExpoDashboardItemType;
@@ -11,20 +11,27 @@ type Props = {
 export type ExpoDashboardItemType = {
   label: string;
   url: string;
-  Icon?: ComponentType<any>;
+  Icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
 };
 
 export const ExpoDashboardItem = ({ item, onSelect, query }: Props) => {
   const Icon = item.Icon ?? BuildIcon;
   return (
-    <CommandItemBase value={`expo-dashboard-${item.url}`} url={item.url} onSelect={onSelect}>
-      <div className="inline-flex gap-3 items-center">
-        <Icon className="text-icon-secondary" />
-        <p
-          className="text-xs font-medium"
-          dangerouslySetInnerHTML={{ __html: addHighlight(item.label, query) }}
-        />
+    <CommandItemBaseWithCopy
+      value={`expo-dashboard-${item.url}`}
+      url={item.url}
+      onSelect={onSelect}
+      isExternalLink>
+      <div className="flex gap-3 justify-between">
+        <div className="inline-flex gap-3 items-center justify-between">
+          <Icon className="text-icon-secondary" />
+          <p
+            className="text-xs font-medium"
+            dangerouslySetInnerHTML={{ __html: addHighlight(item.label, query) }}
+          />
+        </div>
+        <ArrowUpRightIcon className="text-icon-tertiary" />
       </div>
-    </CommandItemBase>
+    </CommandItemBaseWithCopy>
   );
 };
