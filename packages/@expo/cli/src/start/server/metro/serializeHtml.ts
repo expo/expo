@@ -61,7 +61,12 @@ function htmlFromSerialAssets(
   const scripts = bundleUrl
     ? `<script src="${bundleUrl}" defer></script>`
     : jsAssets
-        .map(({ filename }) => {
+        .map(({ filename, metadata }) => {
+              // TODO: Mark dependencies of the HTML and include them to prevent waterfalls.
+          if (metadata.isAsync) {
+            return '';
+          }
+
           return `<script src="${baseUrl}/${filename}" defer></script>`;
         })
         .join('');
