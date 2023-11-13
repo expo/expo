@@ -10,7 +10,6 @@ import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import Server from 'metro/src/Server';
 import path from 'path';
 
-import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import {
@@ -171,11 +170,6 @@ async function bundleProductionMetroClientAsync(
     });
     try {
       const artifacts = await forkMetroBuildAsync(metroServer, bundleOptions);
-      // const [assets, css] = await Promise.all([
-      //   getAssets(metroServer, bundleOptions),
-      //   getCssModulesFromBundler(config, metroServer.getBundler(), bundleOptions),
-      // ]);
-
       reporter.update({
         buildID,
         type: 'bundle_build_done',
@@ -192,14 +186,7 @@ async function bundleProductionMetroClientAsync(
   };
 
   try {
-    const intermediateOutputs = await Promise.all(bundles.map((bundle) => buildAsync(bundle)));
-    const bundleOutputs: BundleOutput[] = [];
-    for (let i = 0; i < bundles.length; ++i) {
-      // hermesc does not support parallel building even we spawn processes.
-      // we should build them sequentially.
-      bundleOutputs.push(intermediateOutputs[i]);
-    }
-    return bundleOutputs;
+    return await Promise.all(bundles.map((bundle) => buildAsync(bundle)));
   } catch (error) {
     // New line so errors don't show up inline with the progress bar
     console.log('');
@@ -211,7 +198,7 @@ async function bundleProductionMetroClientAsync(
 
 // Forked out of Metro because the `this._getServerRootDir()` doesn't match the development
 // behavior.
-export async function getAssets(
+async function getAssets(
   metro: Metro.Server,
   options: MetroBundleOptions
 ): Promise<readonly AssetData[]> {

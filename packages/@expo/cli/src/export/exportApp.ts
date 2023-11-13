@@ -4,18 +4,17 @@ import fs from 'fs';
 import path from 'path';
 
 import { exportAssetsAsync } from './exportAssets';
-import { unstable_exportStaticAsync } from './exportStaticAsync';
+import {
+  getFilesFromSerialAssets,
+  persistMetroFilesAsync,
+  unstable_exportStaticAsync,
+} from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { createBundlesAsync } from './fork-bundleAsync';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { printBundleSizes } from './printBundleSizes';
 import { Options } from './resolveOptions';
-import {
-  writeAssetMapAsync,
-  writeBundlesAsync,
-  writeDebugHtmlAsync,
-  writeMetadataJsonAsync,
-} from './writeContents';
+import { writeAssetMapAsync, writeDebugHtmlAsync, writeMetadataJsonAsync } from './writeContents';
 import * as Log from '../log';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
@@ -96,17 +95,15 @@ export async function exportAppAsync(
   });
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
-  // const { hashes, fileNames } = await writeBundlesAsync({
-  //   bundles,
-  //   useServerRendering,
-  //   outputDir: bundlesPath,
-  // });
-  await writeBundlesAsync({
-    bundles,
-    useServerRendering,
-    outputDir: outputPath,
-    includeMaps: sourceMaps,
+
+  const files = new Map<string, string>();
+  Object.values(bundles).forEach((bundle) => {
+    getFilesFromSerialAssets(bundle.artifacts, {
+      includeMaps: sourceMaps,
+      files,
+    });
   });
+  await persistMetroFilesAsync(files, outputPath);
 
   const bundleEntries = Object.entries(bundles);
   if (bundleEntries.length) {
