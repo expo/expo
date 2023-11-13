@@ -253,7 +253,7 @@ function isMetroServerInstance(metro: Metro.Server): metro is Metro.Server & {
 async function forkMetroBuildAsync(
   metro: Metro.Server,
   options: ExpoMetroBundleOptions
-): Promise<{ artifacts: SerialAsset[]; assets: AssetData[] }> {
+): Promise<{ artifacts: SerialAsset[]; assets: BundleAssetWithFileHashes[] }> {
   if (!isMetroServerInstance(metro)) {
     throw new Error('Expected Metro server instance to have private functions exposed.');
   }
@@ -319,12 +319,13 @@ async function forkMetroBuildAsync(
   );
 
   if (options.serializerOptions?.output === 'static') {
-    if (typeof bundle === 'string') {
-      return JSON.parse(bundle) as { artifacts: SerialAsset[]; assets: AssetData[] };
-    } else {
-      assert('artifacts' in bundle, 'Expected serializer to return an array of serial assets.');
-      return bundle as { artifacts: SerialAsset[]; assets: AssetData[] };
-    }
+    let parsed = typeof bundle === 'string' ? JSON.parse(bundle) : bundle;
+
+    assert(
+      'artifacts' in parsed && Array.isArray(parsed.artifacts),
+      'Expected serializer to return an object with key artifacts to contain an array of serial assets.'
+    );
+    return parsed;
   }
 
   assert(typeof bundle === 'string', 'Expected serializer to return a string.');

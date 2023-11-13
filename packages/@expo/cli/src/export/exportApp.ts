@@ -77,13 +77,12 @@ export async function exportAppAsync(
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
   const outputPath = path.resolve(projectRoot, outputDir);
-  const staticFolder = outputPath;
-  const assetsPath = path.join(staticFolder, 'assets');
-  const bundlesPath = path.join(staticFolder, 'bundles');
+  const assetsPath = path.join(outputPath, 'assets');
+  const bundlesPath = path.join(outputPath, 'bundles');
 
   await Promise.all([assetsPath, bundlesPath].map(ensureDirectoryAsync));
 
-  await copyPublicFolderAsync(publicPath, staticFolder);
+  await copyPublicFolderAsync(publicPath, outputPath);
 
   // Run metro bundler and create the JS bundles/source maps.
   const bundles = await createBundlesAsync(projectRoot, projectConfig, {
@@ -108,39 +107,39 @@ export async function exportAppAsync(
   const bundleEntries = Object.entries(bundles);
   if (bundleEntries.length) {
     // Log bundle size info to the user
-    printBundleSizes(
-      Object.fromEntries(
-        bundleEntries.map(([key, value]) => {
-          if (!sourceMaps) {
-            return [
-              key,
-              {
-                ...value,
-                // Remove source maps from the bundles if they aren't going to be written.
-                map: undefined,
-              },
-            ];
-          }
+    // printBundleSizes(
+    //   Object.fromEntries(
+    //     bundleEntries.map(([key, value]) => {
+    //       if (!sourceMaps) {
+    //         return [
+    //           key,
+    //           {
+    //             ...value,
+    //             // Remove source maps from the bundles if they aren't going to be written.
+    //             map: undefined,
+    //           },
+    //         ];
+    //       }
 
-          return [key, value];
-        })
-      )
-    );
+    //       return [key, value];
+    //     })
+    //   )
+    // );
 
-    Log.log('Finished saving JS Bundles');
+    // Log.log('Finished saving JS Bundles');
 
     // Can be empty during web-only SSG.
     // TODO: Use same asset system across platforms again.
     const { assets, embeddedHashSet } = await exportAssetsAsync(projectRoot, {
       exp,
-      outputDir: staticFolder,
+      outputDir: outputPath,
       bundles,
       baseUrl,
     });
 
     if (dumpAssetmap) {
       Log.log('Dumping asset map');
-      await writeAssetMapAsync({ outputDir: staticFolder, assets });
+      await writeAssetMapAsync({ outputDir: outputPath, assets });
     }
 
     const fileNames = Object.fromEntries(
@@ -162,13 +161,13 @@ export async function exportAppAsync(
       // If we output source maps, then add a debug HTML file which the user can open in
       // the web browser to inspect the output like web.
       await writeDebugHtmlAsync({
-        outputDir: staticFolder,
+        outputDir: outputPath,
         fileNames: Object.values(fileNames).flat(),
       });
     }
 
     // Generate a `metadata.json` and the export is complete.
-    await writeMetadataJsonAsync({ outputDir: staticFolder, bundles, fileNames, embeddedHashSet });
+    await writeMetadataJsonAsync({ outputDir: outputPath, bundles, fileNames, embeddedHashSet });
   }
 
   // Additional web-only steps...
@@ -211,7 +210,7 @@ export async function exportAppAsync(
     }
     // Generate SPA-styled HTML file.
     // If web exists, then write the template HTML file.
-    await fs.promises.writeFile(path.join(staticFolder, 'index.html'), html);
+    await fs.promises.writeFile(path.join(outputPath, 'index.html'), html);
   }
 }
 
