@@ -198,11 +198,11 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
   // ...rest of the code remains same
   return (
     <View style={{ top: -350 }}>
-      /* @info Wrap the AnimatedImage component with GestureDetector*/ <GestureDetector gesture={doubleTap}>/* @end */
+      /* @info Wrap the AnimatedImage component with GestureDetector. */ <GestureDetector gesture={doubleTap}>/* @end */
         <AnimatedImage
           source={stickerSource}
           resizeMode="contain"
-          /* @info Modify the style prop on the AnimatedImage to pass the imageStyle.*/ style={[imageStyle, { width: imageSize, height: imageSize }]} /* @end */
+          /* @info Modify the style prop on the AnimatedImage to pass the imageStyle. */ style={[imageStyle, { width: imageSize, height: imageSize }]} /* @end */
         />
       /* @info */</GestureDetector>/* @end */
     </View>
@@ -239,7 +239,7 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
   // ...rest of the code remains same
 
   return (
-    /* @info Replace the View component with AnimatedView */<AnimatedView style={{ top: -350 }}>/* @end */
+    /* @info Replace the View component with AnimatedView. */<AnimatedView style={{ top: -350 }}>/* @end */
       <GestureDetector gesture={doubleTap}>
         {/* ...rest of the code remains same */}
       </GestureDetector>
