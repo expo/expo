@@ -67,7 +67,7 @@ android {
   namespace "expo.modules.image"
   defaultConfig {
     versionCode 1
-    versionName "1.7.0"
+    versionName "1.8.0"
     consumerProguardFiles("proguard-rules.pro")
   }
   publishing {

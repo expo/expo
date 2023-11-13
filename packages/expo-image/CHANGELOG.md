@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.8.0 — 2023-11-13
+
+### 🎉 New features
+
 - Return a promise in the `prefetch` method. ([#25196](https://github.com/expo/expo/pull/25196) by [@gkasdorf](https://github.com/gkasdorf))
 - [Android] Added `autoplay` prop and `startAnimating()` and `stopAnimating()` functions to reflect changes made to iOS in [#25008](https://github.com/expo/expo/pull/25008). ([#25124](https://github.com/expo/expo/pull/25124) by [@gkasdorf](https://github.com/gkasdorf))
 
