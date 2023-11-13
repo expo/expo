@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Build `crsqlite` from source using the correct architectures.
+
 ## 12.1.0 — 2023-11-10
 
 ### 🎉 New features
