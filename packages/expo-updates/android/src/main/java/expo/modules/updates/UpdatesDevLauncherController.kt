@@ -38,7 +38,7 @@ import java.io.File
  * expo-dev-client to compile without needing expo-updates to be installed.
  */
 class UpdatesDevLauncherController(
-  context: Context,
+  private val context: Context,
   initialUpdatesConfiguration: UpdatesConfiguration?,
   override val updatesDirectory: File?,
   private val updatesDirectoryException: Exception?,
@@ -79,7 +79,7 @@ class UpdatesDevLauncherController(
 
   override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {}
 
-  override fun start(context: Context) {
+  override fun start() {
     throw Exception("IUpdatesController.start should not be called in dev client")
   }
 
@@ -264,7 +264,7 @@ class UpdatesDevLauncherController(
 
   class NotAvailableInDevClientException(message: String) : CodedException(message)
 
-  override fun getConstantsForModule(context: Context): IUpdatesController.UpdatesModuleConstants {
+  override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
       embeddedUpdate = updatesConfiguration?.let { EmbeddedManifest.get(context, it) }?.updateEntity,
@@ -281,7 +281,6 @@ class UpdatesDevLauncherController(
   }
 
   override fun relaunchReactApplicationForModule(
-    context: Context,
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
     callback.onFailure(NotAvailableInDevClientException("Cannot reload update in a development client"))
@@ -292,14 +291,12 @@ class UpdatesDevLauncherController(
   }
 
   override fun checkForUpdate(
-    context: Context,
     callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>
   ) {
     callback.onFailure(NotAvailableInDevClientException("Cannot check for update in a development client"))
   }
 
   override fun fetchUpdate(
-    context: Context,
     callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>
   ) {
     callback.onFailure(NotAvailableInDevClientException("Cannot fetch update in a development client"))
