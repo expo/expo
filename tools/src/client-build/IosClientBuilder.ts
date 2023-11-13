@@ -47,14 +47,12 @@ export default class IosClientBuilder implements ClientBuilder {
 
     const file = fs.createReadStream(tempAppPath);
 
-    await s3Client
-      .putObject({
-        Bucket: 'exp-ios-simulator-apps',
-        Key: `Exponent-${appVersion}.tar.gz`,
-        Body: file,
-        ACL: 'public-read',
-      })
-      .promise();
+    await s3Client.putObject({
+      Bucket: 'exp-ios-simulator-apps',
+      Key: `Exponent-${appVersion}.tar.gz`,
+      Body: file,
+      ACL: 'public-read',
+    });
 
     await fs.remove(tempAppPath);
   }

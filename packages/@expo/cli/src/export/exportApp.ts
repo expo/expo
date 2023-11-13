@@ -8,7 +8,6 @@ import { unstable_exportStaticAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { createBundlesAsync } from './fork-bundleAsync';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
-import { persistMetroAssetsAsync } from './persistMetroAssets';
 import { printBundleSizes } from './printBundleSizes';
 import { Options } from './resolveOptions';
 import {
@@ -19,6 +18,7 @@ import {
   writeSourceMapsAsync,
 } from './writeContents';
 import * as Log from '../log';
+import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
@@ -44,11 +44,11 @@ export async function exportAppAsync(
     clear,
     dev,
     dumpAssetmap,
-    dumpSourcemap,
+    sourceMaps,
     minify,
   }: Pick<
     Options,
-    'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms' | 'minify'
+    'dumpAssetmap' | 'sourceMaps' | 'dev' | 'clear' | 'outputDir' | 'platforms' | 'minify'
   >
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
@@ -61,14 +61,14 @@ export async function exportAppAsync(
   });
 
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
-  const basePath = (exp.experiments?.basePath?.replace(/\/+$/, '') ?? '').trim();
+  const baseUrl = getBaseUrlFromExpoConfig(exp);
 
   // Print out logs
-  if (basePath) {
+  if (baseUrl) {
     Log.log();
-    Log.log(chalk.gray`Using (experimental) base path: ${basePath}`);
+    Log.log(chalk.gray`Using (experimental) base path: ${baseUrl}`);
     // Warn if not using an absolute path.
-    if (!basePath.startsWith('/')) {
+    if (!baseUrl.startsWith('/')) {
       Log.log(
         chalk.yellow`  Base path does not start with a slash. Requests will not be absolute.`
       );
@@ -89,23 +89,25 @@ export async function exportAppAsync(
   // Run metro bundler and create the JS bundles/source maps.
   const bundles = await createBundlesAsync(projectRoot, projectConfig, {
     clear: !!clear,
-    platforms,
     minify,
-    sourcemaps: dumpSourcemap,
-    // TODO: Breaks asset exports
-    // platforms: useServerRendering
-    //   ? platforms.filter((platform) => platform !== 'web')
-    //   : platforms,
+    sourcemaps: sourceMaps,
+    platforms: useServerRendering ? platforms.filter((platform) => platform !== 'web') : platforms,
     dev,
   });
 
+  // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
+  const { hashes, fileNames } = await writeBundlesAsync({
+    bundles,
+    useServerRendering,
+    outputDir: bundlesPath,
+  });
   const bundleEntries = Object.entries(bundles);
   if (bundleEntries.length) {
     // Log bundle size info to the user
     printBundleSizes(
       Object.fromEntries(
         bundleEntries.map(([key, value]) => {
-          if (!dumpSourcemap) {
+          if (!sourceMaps) {
             return [
               key,
               {
@@ -120,70 +122,16 @@ export async function exportAppAsync(
         })
       )
     );
-  }
 
-  // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
-  const { hashes, fileNames } = await writeBundlesAsync({
-    bundles,
-    useServerRendering,
-    outputDir: bundlesPath,
-  });
+    Log.log('Finished saving JS Bundles');
 
-  Log.log('Finished saving JS Bundles');
-
-  if (platforms.includes('web')) {
-    if (useServerRendering) {
-      await unstable_exportStaticAsync(projectRoot, {
-        outputDir: outputPath,
-        minify,
-        basePath,
-        includeMaps: dumpSourcemap,
-        // @ts-expect-error: server not on type yet
-        exportServer: exp.web?.output === 'server',
-      });
-      Log.log('Finished saving static files');
-    } else {
-      const cssLinks = await exportCssAssetsAsync({
-        outputDir,
-        bundles,
-        basePath,
-      });
-      let html = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-        scripts: [`${basePath}/bundles/${fileNames.web}`],
-        cssLinks,
-      });
-      // Add the favicon assets to the HTML.
-      const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
-        outputDir,
-        basePath,
-      });
-      if (modifyHtml) {
-        html = modifyHtml(html);
-      }
-      // Generate SPA-styled HTML file.
-      // If web exists, then write the template HTML file.
-      await fs.promises.writeFile(path.join(staticFolder, 'index.html'), html);
-    }
-
-    // TODO: Use a different mechanism for static web.
-    if (bundles.web) {
-      // Save assets like a typical bundler, preserving the file paths on web.
-      // TODO: Update React Native Web to support loading files from asset hashes.
-      await persistMetroAssetsAsync(bundles.web.assets, {
-        platform: 'web',
-        outputDirectory: staticFolder,
-        basePath,
-      });
-    }
-  }
-
-  // Can be empty during web-only SSG.
-  // TODO: Use same asset system across platforms again.
-  if (Object.keys(fileNames).length) {
+    // Can be empty during web-only SSG.
+    // TODO: Use same asset system across platforms again.
     const { assets, embeddedHashSet } = await exportAssetsAsync(projectRoot, {
       exp,
       outputDir: staticFolder,
       bundles,
+      baseUrl,
     });
 
     if (dumpAssetmap) {
@@ -191,8 +139,8 @@ export async function exportAppAsync(
       await writeAssetMapAsync({ outputDir: staticFolder, assets });
     }
     // build source maps
-    if (dumpSourcemap) {
-      Log.log('Dumping source maps');
+    if (sourceMaps) {
+      Log.log('Emitting source maps');
       await writeSourceMapsAsync({
         bundles,
         hashes,
@@ -211,6 +159,46 @@ export async function exportAppAsync(
 
     // Generate a `metadata.json` and the export is complete.
     await writeMetadataJsonAsync({ outputDir: staticFolder, bundles, fileNames, embeddedHashSet });
+  }
+
+  // Additional web-only steps...
+
+  if (!platforms.includes('web')) {
+    return;
+  }
+
+  if (useServerRendering) {
+    await unstable_exportStaticAsync(projectRoot, {
+      clear: !!clear,
+      outputDir: outputPath,
+      minify,
+      baseUrl,
+      includeMaps: sourceMaps,
+      // @ts-expect-error: server not on type yet
+      exportServer: exp.web?.output === 'server',
+    });
+    Log.log('Finished saving static files');
+  } else {
+    const cssLinks = await exportCssAssetsAsync({
+      outputDir,
+      bundles,
+      baseUrl,
+    });
+    let html = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+      scripts: [`${baseUrl}/bundles/${fileNames.web}`],
+      cssLinks,
+    });
+    // Add the favicon assets to the HTML.
+    const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
+      outputDir,
+      baseUrl,
+    });
+    if (modifyHtml) {
+      html = modifyHtml(html);
+    }
+    // Generate SPA-styled HTML file.
+    // If web exists, then write the template HTML file.
+    await fs.promises.writeFile(path.join(staticFolder, 'index.html'), html);
   }
 }
 

@@ -81,9 +81,6 @@ export function createFastResolver({
     moduleName: string,
     platform: string | null
   ): Resolution {
-    // TODO: Support extraNodeModules for tsconfig basePath support
-    // TODO: Support `resolver.blockList`
-
     const environment = context.customResolverOptions?.environment;
     const isServer = environment === 'node';
 

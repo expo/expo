@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getInlineEnvVarsEnabled = exports.getIsServer = exports.getIsProd = exports.getIsDev = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
+exports.getInlineEnvVarsEnabled = exports.getIsServer = exports.getBaseUrl = exports.getIsProd = exports.getIsDev = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
 function hasModule(name) {
     try {
         return !!require.resolve(name);
@@ -66,6 +66,10 @@ function getIsProd(caller) {
     return process.env.BABEL_ENV === 'production' || process.env.NODE_ENV === 'production';
 }
 exports.getIsProd = getIsProd;
+function getBaseUrl(caller) {
+    return caller?.baseUrl ?? '';
+}
+exports.getBaseUrl = getBaseUrl;
 function getIsServer(caller) {
     return caller?.isServer ?? false;
 }
