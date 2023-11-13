@@ -10,7 +10,7 @@
       "node": "18.18.0",
       "credentialsSource": "local",
       "android": {
-        "image": "ubuntu-20.04-jdk-11-ndk-r21e",
+        "image": "ubuntu-22.04-jdk-17-ndk-r21e",
         "cache": {
           "customPaths": ["../../android/prebuiltHermes"]
         },
