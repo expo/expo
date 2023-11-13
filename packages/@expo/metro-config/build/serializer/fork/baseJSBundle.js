@@ -58,13 +58,13 @@ function getSplitChunksOption(graph, options) {
   return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
 }
 function getBaseUrlOption(graph, options) {
-  var _graph$transformOptio2;
-  const baseUrl = (_graph$transformOptio2 = graph.transformOptions.customTransformOptions) === null || _graph$transformOptio2 === void 0 ? void 0 : _graph$transformOptio2.baseUrl;
+  var _graph$transformOptio2, _graph$transformOptio3;
+  const baseUrl = (_graph$transformOptio2 = graph.transformOptions) === null || _graph$transformOptio2 === void 0 ? void 0 : (_graph$transformOptio3 = _graph$transformOptio2.customTransformOptions) === null || _graph$transformOptio3 === void 0 ? void 0 : _graph$transformOptio3.baseUrl;
   if (typeof baseUrl === 'string') {
     // This tells us that the value came over a URL and may be encoded.
-    // @ts-expect-error
     const mayBeEncoded = options.serializerOptions == null;
-    return mayBeEncoded ? decodeURI(baseUrl) : baseUrl;
+    const option = mayBeEncoded ? decodeURIComponent(baseUrl) : baseUrl;
+    return option.replace(/\/+$/, '') + '/';
   }
   return '/';
 }

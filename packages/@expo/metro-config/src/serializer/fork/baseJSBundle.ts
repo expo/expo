@@ -24,9 +24,15 @@ export type Bundle = {
   _expoSplitBundlePaths: [number, Record<string, string>][];
 };
 
+export type ExpoSerializerOptions = SerializerOptions & {
+  serializerOptions?: {
+    baseUrl?: string;
+  };
+};
+
 export function getPlatformOption(
   graph: Pick<ReadOnlyGraph, 'transformOptions'>,
-  options: SerializerOptions
+  options: Pick<SerializerOptions, 'sourceUrl'>
 ): string | null {
   if (graph.transformOptions?.platform != null) {
     return graph.transformOptions.platform;
@@ -44,7 +50,7 @@ export function getPlatformOption(
 
 export function getSplitChunksOption(
   graph: Pick<ReadOnlyGraph, 'transformOptions'>,
-  options: SerializerOptions
+  options: Pick<SerializerOptions, 'includeAsyncPaths' | 'sourceUrl'>
 ): boolean {
   // Only enable when the entire bundle is being split, and only run on web.
   return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
@@ -52,14 +58,15 @@ export function getSplitChunksOption(
 
 export function getBaseUrlOption(
   graph: Pick<ReadOnlyGraph, 'transformOptions'>,
-  options: SerializerOptions
+  options: Pick<ExpoSerializerOptions, 'serializerOptions'>
 ): string {
-  const baseUrl = graph.transformOptions.customTransformOptions?.baseUrl;
+  const baseUrl = graph.transformOptions?.customTransformOptions?.baseUrl;
   if (typeof baseUrl === 'string') {
     // This tells us that the value came over a URL and may be encoded.
-    // @ts-expect-error
     const mayBeEncoded = options.serializerOptions == null;
-    return mayBeEncoded ? decodeURI(baseUrl) : baseUrl;
+    const option = mayBeEncoded ? decodeURIComponent(baseUrl) : baseUrl;
+
+    return option.replace(/\/+$/, '') + '/';
   }
   return '/';
 }
@@ -68,7 +75,7 @@ export function baseJSBundle(
   entryPoint: string,
   preModules: readonly Module[],
   graph: Pick<ReadOnlyGraph, 'dependencies' | 'transformOptions'>,
-  options: SerializerOptions
+  options: ExpoSerializerOptions
 ): Bundle {
   const platform = getPlatformOption(graph, options);
   if (platform == null) {
@@ -87,7 +94,7 @@ export function baseJSBundleWithDependencies(
   entryPoint: string,
   preModules: readonly Module[],
   dependencies: Module<MixedOutput>[],
-  options: SerializerOptions & { platform: string; baseUrl: string; splitChunks: boolean }
+  options: ExpoSerializerOptions & { platform: string; baseUrl: string; splitChunks: boolean }
 ): Bundle {
   for (const module of dependencies) {
     options.createModuleId(module.path);
