@@ -213,7 +213,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const txt = await results.text();
 
-    console.log('STAT:', results.status, results.statusText, txt, bundleUrl);
     let data: any;
     try {
       data = JSON.parse(txt);

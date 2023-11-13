@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.baseJSBundle = baseJSBundle;
 exports.baseJSBundleWithDependencies = baseJSBundleWithDependencies;
-exports.getBasePathOption = getBasePathOption;
+exports.getBaseUrlOption = getBaseUrlOption;
 exports.getPlatformOption = getPlatformOption;
 exports.getSplitChunksOption = getSplitChunksOption;
 function _jscSafeUrl() {
@@ -57,29 +57,29 @@ function getSplitChunksOption(graph, options) {
   // Only enable when the entire bundle is being split, and only run on web.
   return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
 }
-function getBasePathOption(graph, options) {
+function getBaseUrlOption(graph, options) {
   var _url$searchParams$get2;
   // @ts-expect-error
   if (options.serializerOptions != null) {
     // @ts-expect-error
-    return options.serializerOptions.basePath;
+    return options.serializerOptions.baseUrl;
   }
   if (!options.sourceUrl) {
     return null;
   }
   const sourceUrl = (0, _jscSafeUrl().isJscSafeUrl)(options.sourceUrl) ? (0, _jscSafeUrl().toNormalUrl)(options.sourceUrl) : options.sourceUrl;
   const url = new URL(sourceUrl, 'https://expo.dev');
-  return (_url$searchParams$get2 = url.searchParams.get('serializer.basePath')) !== null && _url$searchParams$get2 !== void 0 ? _url$searchParams$get2 : null;
+  return (_url$searchParams$get2 = url.searchParams.get('serializer.baseUrl')) !== null && _url$searchParams$get2 !== void 0 ? _url$searchParams$get2 : null;
 }
 function baseJSBundle(entryPoint, preModules, graph, options) {
-  var _getBasePathOption;
+  var _getBaseUrlOption;
   const platform = getPlatformOption(graph, options);
   if (platform == null) {
     throw new Error('platform could not be determined for Metro bundle');
   }
   return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
     ...options,
-    basePath: (_getBasePathOption = getBasePathOption(graph, options)) !== null && _getBasePathOption !== void 0 ? _getBasePathOption : '/',
+    baseUrl: (_getBaseUrlOption = getBaseUrlOption(graph, options)) !== null && _getBaseUrlOption !== void 0 ? _getBaseUrlOption : '/',
     splitChunks: getSplitChunksOption(graph, options),
     platform
   });
@@ -97,7 +97,7 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
     serverRoot: options.serverRoot,
     sourceUrl: options.sourceUrl,
     platform: options.platform,
-    basePath: options.basePath,
+    baseUrl: options.baseUrl,
     splitChunks: options.splitChunks
   };
 

@@ -26,7 +26,6 @@ export type ExpoMetroOptions = {
   environment?: string;
   serializerOutput?: 'static';
   serializerIncludeMaps?: boolean;
-  basePath?: string;
   lazy?: boolean;
   engine?: 'hermes';
   preserveEnvVars?: boolean;
@@ -173,7 +172,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   if (baseUrl) {
     queryParams.append('transform.baseUrl', baseUrl);
     // TODO: We could probably drop this in favor of the transformer version.
-    queryParams.append('serializer.basePath', String(baseUrl));
+    queryParams.append('serializer.baseUrl', baseUrl);
   }
 
   if (environment) {

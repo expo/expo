@@ -138,7 +138,6 @@ function withSerializerPlugins(config, processors) {
   };
 }
 function getDefaultSerializer(config, fallbackSerializer) {
-  const serializerConfig = config.serializer;
   const defaultSerializer = fallbackSerializer !== null && fallbackSerializer !== void 0 ? fallbackSerializer : async (...params) => {
     const bundle = (0, _baseJSBundle().baseJSBundle)(...params);
     const outputCode = (0, _bundleToString().default)(bundle).code;
@@ -250,7 +249,7 @@ class Chunk {
     });
   }
   serializeToCode(serializerConfig) {
-    var _serializerConfig$get, _serializerConfig$get2, _getBasePathOption;
+    var _serializerConfig$get, _serializerConfig$get2, _getBaseUrlOption;
     const entryFile = this.name;
     const fileName = _path().default.basename(entryFile, '.js');
     const jsSplitBundle = (0, _baseJSBundle().baseJSBundleWithDependencies)(entryFile, [...this.preModules.values()], [...this.deps], {
@@ -265,7 +264,7 @@ class Chunk {
       modulesOnly: this.preModules.size === 0,
       platform: this.getPlatform(),
       sourceMapUrl: `${fileName}.map`,
-      basePath: (_getBasePathOption = (0, _baseJSBundle().getBasePathOption)(this.graph, this.options)) !== null && _getBasePathOption !== void 0 ? _getBasePathOption : '/',
+      baseUrl: (_getBaseUrlOption = (0, _baseJSBundle().getBaseUrlOption)(this.graph, this.options)) !== null && _getBaseUrlOption !== void 0 ? _getBaseUrlOption : '/',
       splitChunks: (0, _baseJSBundle().getSplitChunksOption)(this.graph, this.options)
     });
     return (0, _bundleToString().default)(jsSplitBundle).code;

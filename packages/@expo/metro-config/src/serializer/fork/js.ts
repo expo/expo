@@ -26,7 +26,7 @@ export type Options = {
   serverRoot: string;
   sourceUrl: string | undefined;
   platform: string;
-  basePath: string;
+  baseUrl: string;
   splitChunks: boolean;
   //   ...
 };
@@ -56,7 +56,7 @@ export function getModuleParams(
     | 'includeAsyncPaths'
     | 'serverRoot'
     | 'platform'
-    | 'basePath'
+    | 'baseUrl'
     | 'splitChunks'
     | 'dev'
     | 'projectRoot'
@@ -107,7 +107,7 @@ export function getModuleParams(
         // NOTE(EvanBacon): Custom block for bundle splitting in production according to how `expo export` works
         // TODO: Add content hash
         paths[id] =
-          (options.basePath ?? '/') +
+          (options.baseUrl ?? '/') +
           getExportPathForDependencyWithOptions(dependency.absolutePath, options);
       }
     }

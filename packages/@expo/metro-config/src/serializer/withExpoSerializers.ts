@@ -32,7 +32,7 @@ import { getExportPathForDependencyWithOptions } from './exportPath';
 import {
   baseJSBundle,
   baseJSBundleWithDependencies,
-  getBasePathOption,
+  getBaseUrlOption,
   getPlatformOption,
   getSplitChunksOption,
 } from './fork/baseJSBundle';
@@ -251,7 +251,7 @@ class Chunk {
         modulesOnly: this.preModules.size === 0,
         platform: this.getPlatform(),
         sourceMapUrl: `${fileName}.map`,
-        basePath: getBasePathOption(this.graph, this.options) ?? '/',
+        baseUrl: getBaseUrlOption(this.graph, this.options) ?? '/',
         splitChunks: getSplitChunksOption(this.graph, this.options),
       }
     );

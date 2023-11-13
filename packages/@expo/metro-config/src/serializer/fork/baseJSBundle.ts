@@ -50,14 +50,14 @@ export function getSplitChunksOption(
   return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
 }
 
-export function getBasePathOption(
+export function getBaseUrlOption(
   graph: Pick<ReadOnlyGraph, 'transformOptions'>,
   options: SerializerOptions
 ): string | null {
   // @ts-expect-error
   if (options.serializerOptions != null) {
     // @ts-expect-error
-    return options.serializerOptions.basePath;
+    return options.serializerOptions.baseUrl;
   }
 
   if (!options.sourceUrl) {
@@ -68,7 +68,7 @@ export function getBasePathOption(
     ? toNormalUrl(options.sourceUrl)
     : options.sourceUrl;
   const url = new URL(sourceUrl, 'https://expo.dev');
-  return url.searchParams.get('serializer.basePath') ?? null;
+  return url.searchParams.get('serializer.baseUrl') ?? null;
 }
 
 export function baseJSBundle(
@@ -84,7 +84,7 @@ export function baseJSBundle(
 
   return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
     ...options,
-    basePath: getBasePathOption(graph, options) ?? '/',
+    baseUrl: getBaseUrlOption(graph, options) ?? '/',
     splitChunks: getSplitChunksOption(graph, options),
     platform,
   });
@@ -94,7 +94,7 @@ export function baseJSBundleWithDependencies(
   entryPoint: string,
   preModules: readonly Module[],
   dependencies: Module<MixedOutput>[],
-  options: SerializerOptions & { platform: string; basePath: string; splitChunks: boolean }
+  options: SerializerOptions & { platform: string; baseUrl: string; splitChunks: boolean }
 ): Bundle {
   for (const module of dependencies) {
     options.createModuleId(module.path);
@@ -109,7 +109,7 @@ export function baseJSBundleWithDependencies(
     serverRoot: options.serverRoot,
     sourceUrl: options.sourceUrl,
     platform: options.platform,
-    basePath: options.basePath,
+    baseUrl: options.baseUrl,
     splitChunks: options.splitChunks,
   };
 

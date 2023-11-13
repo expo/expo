@@ -21,11 +21,11 @@ export function processModules(
     serverRoot,
     sourceUrl,
     platform,
-    basePath,
+    baseUrl,
     splitChunks,
   }: {
     platform: string;
-    basePath: string;
+    baseUrl: string;
     splitChunks: boolean;
     filter?: (module: Module) => boolean;
     createModuleId: (module: string) => number;
@@ -42,7 +42,7 @@ export function processModules(
     .map((module: Module) => [
       module,
       wrapModule(module, {
-        basePath,
+        baseUrl,
         platform,
         splitChunks,
         createModuleId,
