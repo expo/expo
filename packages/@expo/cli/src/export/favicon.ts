@@ -34,7 +34,7 @@ export async function getVirtualFaviconAssetsAsync(
       const assetPath = path.join(outputDir, asset.path);
       if (files) {
         debug('Storing asset for persisting: ' + assetPath);
-        files?.set(asset.path, asset.source);
+        files?.set(asset.path, { contents: asset.source });
       } else {
         debug('Writing asset to disk: ' + assetPath);
         await fs.promises.writeFile(assetPath, asset.source);

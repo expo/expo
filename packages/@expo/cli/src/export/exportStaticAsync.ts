@@ -101,9 +101,12 @@ export async function getFilesToExportFromServerAsync(
     getHtmlFiles({ manifest, includeGroupVariations }).map(async (outputPath) => {
       const pathname = outputPath.replace(/(?:index)?\.html$/, '');
       try {
-        files.set(outputPath, '');
+        files.set(outputPath, { contents: '' });
         const data = await renderAsync(pathname);
-        files.set(outputPath, data);
+        files.set(outputPath, {
+          contents: data,
+          routeId: pathname,
+        });
       } catch (e: any) {
         await logMetroErrorAsync({ error: e, projectRoot });
         throw new Error('Failed to statically export route: ' + pathname);
@@ -332,7 +335,7 @@ async function exportApiRoutesAsync({
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
 
-  files.set('_expo/routes.json', JSON.stringify(manifest, null, 2));
+  files.set('_expo/routes.json', { contents: JSON.stringify(manifest, null, 2) });
 
   return files;
 }

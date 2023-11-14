@@ -116,7 +116,7 @@ export async function exportAppAsync(
 
     if (dumpAssetmap) {
       Log.log('Creating asset map');
-      files.set('assetmap.json', JSON.stringify(createAssetMap({ assets })));
+      files.set('assetmap.json', { contents: JSON.stringify(createAssetMap({ assets })) });
     }
 
     const fileNames = Object.fromEntries(
@@ -131,12 +131,11 @@ export async function exportAppAsync(
       Log.log('Preparing additional debugging files');
       // If we output source maps, then add a debug HTML file which the user can open in
       // the web browser to inspect the output like web.
-      files.set(
-        'debug.html',
-        createSourceMapDebugHtml({
+      files.set('debug.html', {
+        contents: createSourceMapDebugHtml({
           fileNames: Object.values(fileNames).flat(),
-        })
-      );
+        }),
+      });
     }
 
     // Generate a `metadata.json` for EAS Update.
@@ -145,7 +144,7 @@ export async function exportAppAsync(
       fileNames,
       embeddedHashSet,
     });
-    files.set('metadata.json', JSON.stringify(contents));
+    files.set('metadata.json', { contents: JSON.stringify(contents) });
   }
 
   // Additional web-only steps...
@@ -187,7 +186,7 @@ export async function exportAppAsync(
 
       // Generate SPA-styled HTML file.
       // If web exists, then write the template HTML file.
-      files.set('index.html', html);
+      files.set('index.html', { contents: html });
     }
   }
 

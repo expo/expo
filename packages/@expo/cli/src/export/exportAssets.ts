@@ -176,11 +176,21 @@ export async function exportAssetsAsync(
 
     // Add assets to copy.
     filteredAssets.forEach((asset) => {
+      const assetId =
+        'fileSystemLocation' in asset
+          ? path.relative(projectRoot, path.join(asset.fileSystemLocation, asset.name)) +
+            (asset.type ? '.' + asset.type : '')
+          : undefined;
+
       asset.files.forEach((fp: string, index: number) => {
         const hash = asset.fileHashes[index];
         if (hashes.has(hash)) return;
         hashes.add(hash);
-        files.set(path.join('assets', hash), fs.readFileSync(fp));
+        files.set(path.join('assets', hash), {
+          originFilename: path.relative(projectRoot, fp),
+          contents: fs.readFileSync(fp),
+          assetId,
+        });
       });
     });
   }
