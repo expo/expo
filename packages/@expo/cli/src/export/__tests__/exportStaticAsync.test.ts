@@ -214,45 +214,45 @@ describe(getHtmlFiles, () => {
 describe(getFilesToExportFromServerAsync, () => {
   it(`should export from server async`, async () => {
     const renderAsync = jest.fn(async () => '');
-    expect(
-      await getFilesToExportFromServerAsync('/', {
-        includeGroupVariations: true,
-        manifest: {
-          initialRouteName: undefined,
-          screens: {
-            alpha: {
-              path: 'alpha',
-              screens: { index: '', second: 'second' },
-              initialRouteName: 'index',
+    expect([
+      // @ts-expect-error: downlevel iteration
+      ...(
+        await getFilesToExportFromServerAsync('/', {
+          includeGroupVariations: true,
+          manifest: {
+            initialRouteName: undefined,
+            screens: {
+              alpha: {
+                path: 'alpha',
+                screens: { index: '', second: 'second' },
+                initialRouteName: 'index',
+              },
+              '(app)': {
+                path: '(app)',
+                screens: { compose: 'compose', index: '', 'note/[note]': 'note/:note' },
+                initialRouteName: 'index',
+              },
+              '(auth)/sign-in': '(auth)/sign-in',
+              _sitemap: '_sitemap',
+              '[...404]': '*404',
             },
-            '(app)': {
-              path: '(app)',
-              screens: { compose: 'compose', index: '', 'note/[note]': 'note/:note' },
-              initialRouteName: 'index',
-            },
-            '(auth)/sign-in': '(auth)/sign-in',
-            _sitemap: '_sitemap',
-            '[...404]': '*404',
           },
-        },
-        renderAsync,
-      })
-    ).toEqual(
-      new Map([
-        ['(app)/compose.html', ''],
-        ['(app)/index.html', ''],
-        ['(app)/note/[note].html', ''],
-        ['(auth)/sign-in.html', ''],
-        ['[...404].html', ''],
-        ['sign-in.html', ''],
-        ['alpha/index.html', ''],
-        ['alpha/second.html', ''],
-        // ['[...404].html', ''],
-        ['_sitemap.html', ''],
-        ['compose.html', ''],
-        ['index.html', ''],
-        ['note/[note].html', ''],
-      ])
-    );
+          renderAsync,
+        })
+      ).keys(),
+    ]).toEqual([
+      'alpha/index.html',
+      'alpha/second.html',
+      '(app)/compose.html',
+      'compose.html',
+      '(app)/index.html',
+      'index.html',
+      '(app)/note/[note].html',
+      'note/[note].html',
+      '(auth)/sign-in.html',
+      'sign-in.html',
+      '_sitemap.html',
+      '[...404].html',
+    ]);
   });
 });
