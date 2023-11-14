@@ -79,4 +79,8 @@ export const globalExtras = css`
   code {
     font-variant-ligatures: none;
   }
+
+  [cmdk-input] {
+    outline: none;
+  }
 `;

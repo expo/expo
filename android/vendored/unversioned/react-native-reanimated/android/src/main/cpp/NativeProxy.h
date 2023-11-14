@@ -2,6 +2,7 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #include <react/fabric/JFabricUIManager.h>
+#include <react/renderer/scheduler/Scheduler.h>
 #endif
 
 #include <ReactCommon/CallInvokerHolder.h>
@@ -170,6 +171,10 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
   jsi::Runtime *rnRuntime_;
   std::shared_ptr<NativeReanimatedModule> nativeReanimatedModule_;
   jni::global_ref<LayoutAnimations::javaobject> layoutAnimations_;
+#ifndef NDEBUG
+  void checkJavaVersion(jsi::Runtime &);
+  void injectCppVersion();
+#endif // NDEBUG
 #ifdef RCT_NEW_ARCH_ENABLED
   // removed temporarily, event listener mechanism needs to be fixed on RN side
   // std::shared_ptr<facebook::react::Scheduler> reactScheduler_;
@@ -185,7 +190,7 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
   PlatformDepMethodsHolder getPlatformDependentMethods();
   void setupLayoutAnimations();
 
-  double getCurrentTime();
+  double getAnimationTimestamp();
   bool isAnyHandlerWaitingForEvent(
       const std::string &eventName,
       const int emitterReactTag);

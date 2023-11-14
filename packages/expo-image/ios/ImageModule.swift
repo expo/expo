@@ -92,7 +92,7 @@ public final class ImageModule: Module {
       }
 
       Prop("autoplay") { (view, autoplay: Bool?) in
-        view.sdImageView.autoPlayAnimatedImage = autoplay ?? true
+        view.autoplay = autoplay ?? true
       }
 
       AsyncFunction("startAnimating") { (view: ImageView) in
@@ -108,8 +108,26 @@ public final class ImageModule: Module {
       }
     }
 
-    Function("prefetch") { (urls: [URL]) in
-      SDWebImagePrefetcher.shared.prefetchURLs(urls)
+    AsyncFunction("prefetch") { (urls: [URL], cachePolicy: ImageCachePolicy, promise: Promise) in
+      var context = SDWebImageContext()
+      context[.storeCacheType] = cachePolicy.toSdCacheType().rawValue
+
+      var imagesLoaded = 0
+      var failed = false
+
+      urls.forEach { url in
+        SDWebImagePrefetcher.shared.prefetchURLs([url], context: context, progress: nil, completed: { loaded, skipped in
+          if skipped > 0 && !failed {
+            failed = true
+            promise.resolve(false)
+          } else {
+            imagesLoaded = imagesLoaded + 1
+            if imagesLoaded == urls.count {
+              promise.resolve(true)
+            }
+          }
+        })
+      }
     }
 
     AsyncFunction("clearMemoryCache") { () -> Bool in

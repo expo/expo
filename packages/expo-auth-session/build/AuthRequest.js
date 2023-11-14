@@ -214,9 +214,8 @@ export class AuthRequest {
         if (request.scopes?.length) {
             params.scope = request.scopes.join(' ');
         }
-        const query = QueryParams.buildQueryString(params);
         // Store the URL for later
-        this.url = `${discovery.authorizationEndpoint}?${query}`;
+        this.url = `${discovery.authorizationEndpoint}?${new URLSearchParams(params)}`;
         return this.url;
     }
     async ensureCodeIsSetupAsync() {

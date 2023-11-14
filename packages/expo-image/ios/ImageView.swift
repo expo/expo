@@ -53,6 +53,8 @@ public final class ImageView: ExpoView {
     }
   }
 
+  var autoplay: Bool = true
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -67,8 +69,8 @@ public final class ImageView: ExpoView {
 
   public override var bounds: CGRect {
     didSet {
-      // Reload the image when the bounds size has changed and the view is mounted.
-      if oldValue.size != bounds.size && window != nil {
+      // Reload the image when the bounds size has changed and is not empty.
+      if oldValue.size != bounds.size && bounds.size != .zero {
         reload()
       }
     }
@@ -372,6 +374,12 @@ public final class ImageView: ExpoView {
 
   private func setImage(_ image: UIImage?, contentFit: ContentFit, isPlaceholder: Bool) {
     sdImageView.contentMode = contentFit.toContentMode()
+
+    if isPlaceholder {
+      sdImageView.autoPlayAnimatedImage = true
+    } else {
+      sdImageView.autoPlayAnimatedImage = autoplay
+    }
 
     if let imageTintColor, !isPlaceholder {
       sdImageView.tintColor = imageTintColor

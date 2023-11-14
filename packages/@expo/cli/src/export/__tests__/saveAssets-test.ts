@@ -1,15 +1,15 @@
-import { copyAsync } from '../../utils/dir';
+import { copyInBatchesAsync } from '../persistMetroAssets';
 import { saveAssetsAsync } from '../saveAssets';
 
 jest.mock('../../log');
 
-jest.mock('../../utils/dir', () => ({
-  copyAsync: jest.fn(),
+jest.mock('../persistMetroAssets', () => ({
+  copyInBatchesAsync: jest.fn(),
 }));
 
 describe(saveAssetsAsync, () => {
   it(`copy assets into directory`, async () => {
-    await saveAssetsAsync('/', {
+    await saveAssetsAsync({
       outputDir: 'output',
       assets: [
         {
@@ -23,12 +23,10 @@ describe(saveAssetsAsync, () => {
       ],
     });
 
-    expect(copyAsync).toBeCalledTimes(2);
-    expect(copyAsync).toHaveBeenNthCalledWith(
-      1,
-      '/icon.png',
-      'output/assets/4e3f888fc8475f69fd5fa32f1ad5216a'
-    );
-    expect(copyAsync).toHaveBeenNthCalledWith(2, '/icon@2x.png', 'output/assets/hash-2');
+    expect(copyInBatchesAsync).toBeCalledTimes(1);
+    expect(copyInBatchesAsync).toHaveBeenNthCalledWith(1, {
+      '/icon.png': 'output/assets/4e3f888fc8475f69fd5fa32f1ad5216a',
+      '/icon@2x.png': 'output/assets/hash-2',
+    });
   });
 });

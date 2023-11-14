@@ -14,14 +14,14 @@ add_library(
   ${PACKAGE_NAME}
   SHARED
   ${SOURCES}
-  "${CMAKE_SOURCE_DIR}/../vendor/sqlite3.c"
+  "${SQLITE3_SRC_DIR}/sqlite3.c"
 )
 
 target_include_directories(
   ${PACKAGE_NAME}
   PRIVATE
   ${SRC_DIR}
-  "${CMAKE_SOURCE_DIR}/../vendor"
+  "${SQLITE3_SRC_DIR}"
 )
 
 find_library(LOG_LIB log)

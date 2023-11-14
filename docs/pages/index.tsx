@@ -279,6 +279,7 @@ export function JoinTheCommunity() {
             link="https://chat.expo.dev"
             icon={<DiscordIcon className="icon-lg text-palette-white" />}
             iconBackground="#3131E8"
+            shouldLeakReferrer
           />
         </Row>
         <Row>
@@ -292,7 +293,7 @@ export function JoinTheCommunity() {
           <CommunityGridCell
             title="Newsletter"
             description="Get the latest updates from monthly Expo newsletter."
-            link="http://eepurl.com/hk1tCn"
+            link="https://expo.dev/mailing-list/signup"
             icon={<Mail01Icon className="icon-lg text-palette-white" />}
           />
         </Row>

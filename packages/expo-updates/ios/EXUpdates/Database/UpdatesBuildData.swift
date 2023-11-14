@@ -28,13 +28,7 @@ import Foundation
 internal final class UpdatesBuildData {
   static func ensureBuildDataIsConsistentAsync(database: UpdatesDatabase, config: UpdatesConfig) {
     database.databaseQueue.async {
-      guard let scopeKey = config.scopeKey else {
-        NSException(
-          name: .internalInconsistencyException,
-          reason: "expo-updates was configured with no scope key. Make sure a valid URL is configured under EXUpdatesURL."
-        ).raise()
-        return
-      }
+      let scopeKey = config.scopeKey
 
       let staticBuildData: [AnyHashable: Any]?
       do {
@@ -64,7 +58,7 @@ internal final class UpdatesBuildData {
 
   static func getBuildDataFromConfig(_ config: UpdatesConfig) -> [String: Any] {
     return [
-      "EXUpdatesURL": config.updateUrl.require("Must supply updateUrl in config").absoluteString,
+      "EXUpdatesURL": config.updateUrl.absoluteString,
       "EXUpdatesReleaseChannel": config.releaseChannel,
       "EXUpdatesRequestHeaders": config.requestHeaders
     ]

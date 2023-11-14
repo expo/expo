@@ -22,17 +22,24 @@ When your project requires custom native code, a config plugin, a custom runtime
 
 A **development build** of your app is a Debug build that contains the `expo-dev-client` package. As a production build is for the general public, and a preview build lets your team test your next release, a development build lets developers iterate as quickly as possible. It comes with extensible development tools to develop and test your project.
 
-You can think of a development build as your version of the Expo Go client.
+You can think of a development build as your fully customizable version of Expo Go.
 
 ## What is expo-dev-client
 
-The [`expo-dev-client`](https://www.npmjs.com/package/expo-dev-client) package is used to create a development build. It is a library designed to support any workflow, release process, or set of dependencies in the Expo/React Native ecosystem. Whatever your project needs, either now or in the future, you'll be able to create a development build for it and get the productivity and quality of life improvements of JavaScript-driven development.
+The [`expo-dev-client`](https://www.npmjs.com/package/expo-dev-client) package replaces the default in-app development tools UI that React Native provides (the [Dev Menu](https://reactnative.dev/docs/debugging#accessing-the-dev-menu)) with [a more powerful and extensible UI](/debugging/tools/#developer-menu) and adds a launcher UI, so you can launch updates (such as from [PR previews](/develop/development-builds/development-workflows/#pr-previews)) and switch between development servers without needing to rebuild the app binary.
 
-## Next step
+## Next steps
 
 <BoxLink
-  title="Development Builds: Installation"
-  description="Learn what are the prerequisites and installation steps to create a development build."
-  href="/develop/development-builds/installation"
+  title="Create development builds"
+  description="Learn about how you can create a development build."
+  href="/develop/development-builds/create-a-build/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Local app development"
+  description="Learn how to compile and build your app locally when using Expo."
+  href="/guides/local-app-development/"
   Icon={BookOpen02Icon}
 />

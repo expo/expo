@@ -512,22 +512,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-branch': {
-    repoUrl: 'https://github.com/BranchMetrics/react-native-branch-deep-linking.git',
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: '../../../../packages/expo-branch/ios/EXBranch/RNBranch',
-        sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
-        targetAndroidPath:
-          '../../../../../../../../../packages/expo-branch/android/src/main/java/io/branch/rnbranch',
-        sourceAndroidPackage: 'io.branch.rnbranch',
-        targetAndroidPackage: 'io.branch.rnbranch',
-        recursive: false,
-        updatePbxproj: false,
-      },
-    ],
-  },
   'lottie-react-native': {
     repoUrl: 'https://github.com/react-native-community/lottie-react-native.git',
     installableInManagedApps: true,

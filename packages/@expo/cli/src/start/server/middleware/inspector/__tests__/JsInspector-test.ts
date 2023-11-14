@@ -6,7 +6,7 @@ import {
   queryAllInspectorAppsAsync,
   queryInspectorAppAsync,
 } from '../JsInspector';
-import { launchBrowserAsync } from '../LaunchBrowser';
+import { launchInspectorBrowserAsync } from '../LaunchBrowser';
 
 jest.mock('fs-extra');
 jest.mock('node-fetch');
@@ -18,8 +18,8 @@ const { Response } = jest.requireActual('node-fetch');
 
 describe(openJsInspector, () => {
   it('should open browser for PUT request with given app', async () => {
-    const mockLaunchBrowserAsync = launchBrowserAsync as jest.MockedFunction<
-      typeof launchBrowserAsync
+    const mockLaunchBrowserAsync = launchInspectorBrowserAsync as jest.MockedFunction<
+      typeof launchInspectorBrowserAsync
     >;
     const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
     await openJsInspector(app);

@@ -1,10 +1,26 @@
 #include "WorkletRuntimeDecorator.h"
 #include "JSISerializer.h"
-#include "Logger.h"
 #include "ReanimatedJSIUtils.h"
 #include "Shareables.h"
 
+#ifdef ANDROID
+#include "Logger.h"
+#else
+#include "Common/cpp/hidden_headers/Logger.h"
+#endif
+
 namespace reanimated {
+
+static inline double performanceNow() {
+  // copied from JSExecutor.cpp
+  auto time = std::chrono::steady_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                      time.time_since_epoch())
+                      .count();
+
+  constexpr double NANOSECONDS_IN_MILLISECOND = 1000000.0;
+  return duration / NANOSECONDS_IN_MILLISECOND;
+}
 
 void WorkletRuntimeDecorator::decorate(
     jsi::Runtime &rt,
@@ -17,7 +33,14 @@ void WorkletRuntimeDecorator::decorate(
 
   rt.global().setProperty(rt, "_LABEL", jsi::String::createFromAscii(rt, name));
 
-#ifdef DEBUG
+#ifdef RCT_NEW_ARCH_ENABLED
+  constexpr auto isFabric = true;
+#else
+  constexpr auto isFabric = false;
+#endif // RCT_NEW_ARCH_ENABLED
+  rt.global().setProperty(rt, "_IS_FABRIC", isFabric);
+
+#ifndef NDEBUG
   auto evalWithSourceUrl = [](jsi::Runtime &rt,
                               const jsi::Value &thisValue,
                               const jsi::Value *args,
@@ -91,6 +114,30 @@ void WorkletRuntimeDecorator::decorate(
           }
         });
       });
+
+  jsi_utils::installJsiFunction(
+      rt,
+      "_updateDataSynchronously",
+      [](jsi::Runtime &rt,
+         const jsi::Value &synchronizedDataHolderRef,
+         const jsi::Value &newData) {
+        return reanimated::updateDataSynchronously(
+            rt, synchronizedDataHolderRef, newData);
+      });
+
+  jsi::Object performance(rt);
+  performance.setProperty(
+      rt,
+      "now",
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "now"),
+          0,
+          [](jsi::Runtime &runtime,
+             const jsi::Value &,
+             const jsi::Value *args,
+             size_t count) { return jsi::Value(performanceNow()); }));
+  rt.global().setProperty(rt, "performance", performance);
 }
 
 } // namespace reanimated

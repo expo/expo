@@ -22,7 +22,6 @@ ExpoModulesHostObject::~ExpoModulesHostObject() {
   installer->jsRegistry.reset();
   installer->runtimeHolder.reset();
   installer->jsInvoker.reset();
-  installer->nativeInvoker.reset();
   installer->jniDeallocator.reset();
 }
 

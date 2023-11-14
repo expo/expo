@@ -24,6 +24,10 @@ extension AsyncFunctionComponent: ClassComponentElement {
   public typealias OwnerType = FirstArgType
 }
 
+extension ConcurrentFunctionDefinition: ClassComponentElement {
+  public typealias OwnerType = FirstArgType
+}
+
 extension PropertyComponent: ClassComponentElement {
   // It already has the `OwnerType`
 }

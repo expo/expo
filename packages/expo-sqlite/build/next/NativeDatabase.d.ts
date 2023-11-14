@@ -25,7 +25,7 @@ export interface OpenOptions {
      */
     enableCRSQLite?: boolean;
     /**
-     * Whether to call the `sqlite3_update_hook` function and enable the `onDatabaseChange` events.
+     * Whether to call the [`sqlite3_update_hook`](https://www.sqlite.org/c3ref/update_hook.html) function and enable the `onDatabaseChange` events. You can later subscribe to the change events by [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener).
      * @default false
      */
     enableChangeListener?: boolean;
@@ -34,5 +34,11 @@ export interface OpenOptions {
      * @default false
      */
     useNewConnection?: boolean;
+    /**
+     * Finalized unclosed statements automatically when the database is closed.
+     * @default true
+     * @hidden
+     */
+    finalizeUnusedStatementsBeforeClosing?: boolean;
 }
 //# sourceMappingURL=NativeDatabase.d.ts.map

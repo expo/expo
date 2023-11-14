@@ -80,7 +80,13 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
   }
 
   @Throws(GeneralSecurityException::class, JSONException::class)
-  override suspend fun decryptItem(encryptedItem: JSONObject, keyStoreEntry: KeyStore.PrivateKeyEntry, options: SecureStoreOptions, authenticationHelper: AuthenticationHelper): String {
+  override suspend fun decryptItem(
+    key: String,
+    encryptedItem: JSONObject,
+    keyStoreEntry: KeyStore.PrivateKeyEntry,
+    options: SecureStoreOptions,
+    authenticationHelper: AuthenticationHelper
+  ): String {
     // Decrypt the encrypted symmetric key
     val encryptedSecretKeyString = encryptedItem.getString(ENCRYPTED_SECRET_KEY_PROPERTY)
     val encryptedSecretKeyBytes = Base64.decode(encryptedSecretKeyString, Base64.DEFAULT)
@@ -92,7 +98,7 @@ class HybridAESEncryptor(private var mContext: Context, private val mAESEncrypto
 
     // Decrypt the value with the symmetric key
     val secretKeyEntry = KeyStore.SecretKeyEntry(secretKey)
-    return mAESEncryptor.decryptItem(encryptedItem, secretKeyEntry, options, authenticationHelper)
+    return mAESEncryptor.decryptItem(key, encryptedItem, secretKeyEntry, options, authenticationHelper)
   }
 
   @get:Throws(NoSuchAlgorithmException::class, NoSuchProviderException::class, NoSuchPaddingException::class)

@@ -1,7 +1,5 @@
-import type { ParsedQs } from 'qs';
-
 // @docsMissing
-export type QueryParams = ParsedQs;
+export type QueryParams = Record<string, undefined | string | string[]>;
 
 // @needsAudit @docsMissing
 export type ParsedURL = {

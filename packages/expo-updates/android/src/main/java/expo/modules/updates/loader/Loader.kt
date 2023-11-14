@@ -26,7 +26,7 @@ abstract class Loader protected constructor(
   private val context: Context,
   private val configuration: UpdatesConfiguration,
   private val database: UpdatesDatabase,
-  private val updatesDirectory: File?,
+  private val updatesDirectory: File,
   private val loaderFiles: LoaderFiles
 ) {
   private var updateResponse: UpdateResponse? = null

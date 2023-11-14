@@ -73,7 +73,7 @@ public final class NewUpdate: Update {
       config: config,
       database: database,
       updateId: uuid,
-      scopeKey: config.scopeKey.require("Must supply scopeKey in configuration"),
+      scopeKey: config.scopeKey,
       commitTime: RCTConvert.nsDate(commitTime),
       runtimeVersion: runtimeVersion,
       keep: true,

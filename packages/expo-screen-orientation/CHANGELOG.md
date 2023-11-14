@@ -4,15 +4,22 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- On `Android`, add event to module definition to prevent `new NativeEventEmitter()` warning. ([#24943](https://github.com/expo/expo/pull/24943) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 6.4.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- On `Android`, add event to module definition to prevent `new NativeEventEmitter()` warning. ([#24943](https://github.com/expo/expo/pull/24943) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 6.0.6 — 2023-10-20
 

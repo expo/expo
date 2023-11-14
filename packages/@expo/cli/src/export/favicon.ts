@@ -14,7 +14,7 @@ export function getUserDefinedFaviconFile(projectRoot: string): string | null {
 
 export async function getVirtualFaviconAssetsAsync(
   projectRoot: string,
-  { basePath, outputDir }: { outputDir: string; basePath: string }
+  { baseUrl, outputDir }: { outputDir: string; baseUrl: string }
 ): Promise<((html: string) => string) | null> {
   const existing = getUserDefinedFaviconFile(projectRoot);
   if (existing) {
@@ -42,7 +42,7 @@ export async function getVirtualFaviconAssetsAsync(
     }
     return html.replace(
       '</head>',
-      `<link rel="shortcut icon" href="${basePath}/favicon.ico" /></head>`
+      `<link rel="shortcut icon" href="${baseUrl}/favicon.ico" /></head>`
     );
   }
 

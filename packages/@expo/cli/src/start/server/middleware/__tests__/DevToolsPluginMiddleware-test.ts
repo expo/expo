@@ -65,6 +65,51 @@ describe(DevToolsPluginMiddleware, () => {
     expect(response.statusCode).toBe(200);
   });
 
+  it('handleRequestAsync should support plugin with scoped package name', async () => {
+    const devToolsPluginManager = new MockDevToolsPluginManager('/');
+    devToolsPluginManager.queryPluginsAsync.mockResolvedValue([
+      {
+        packageName: '@namespace/hello-plugin',
+        packageRoot: '/root/node_modules/@namespace/hello-plugin',
+        webpageRoot: '/root/node_modules/@namespace/hello-plugin/dist',
+      },
+    ]);
+    devToolsPluginManager.queryPluginWebpageRootAsync.mockResolvedValueOnce(
+      '/root/node_modules/@namespace/hello-plugin/dist'
+    );
+    vol.fromJSON({
+      '/root/node_modules/@namespace/hello-plugin/dist/index.html': '<html></html>',
+    });
+
+    const middleware = createMiddleware(devToolsPluginManager);
+
+    const response = createMockResponse();
+    await middleware.handleRequestAsync(
+      asReq({
+        url: 'http://localhost:8081/_expo/plugins/@namespace/hello-plugin',
+        headers: {
+          host: 'localhost:8081',
+        },
+      }),
+      response
+    );
+    await delayAsync(0);
+    expect(response.statusCode).toBe(200);
+
+    const response2 = createMockResponse();
+    await middleware.handleRequestAsync(
+      asReq({
+        url: 'http://localhost:8081/_expo/plugins/hello-plugin',
+        headers: {
+          host: 'localhost:8081',
+        },
+      }),
+      response2
+    );
+    await delayAsync(0);
+    expect(response2.statusCode).toBe(404);
+  });
+
   it('handleRequestAsync should return static resources from a matched plugin', async () => {
     const devToolsPluginManager = new MockDevToolsPluginManager('/');
     devToolsPluginManager.queryPluginsAsync.mockResolvedValue([

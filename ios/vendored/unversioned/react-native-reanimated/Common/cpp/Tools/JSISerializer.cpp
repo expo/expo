@@ -135,15 +135,15 @@ std::string JSISerializer::stringifyHostObject(jsi::HostObject &hostObject) {
   }
 
   std::stringstream ss;
-  ss << "[jsi::HostObject(" << hostObjClassName << ") ";
+  ss << "[jsi::HostObject(" << hostObjClassName << ")";
   std::free(hostObjClassName);
 
   auto props = hostObject.getPropertyNames(rt_);
   auto propsCount = props.size();
-  auto lastKey = props.back().utf8(rt_);
 
   if (propsCount > 0) {
-    ss << '{';
+    ss << " {";
+    auto lastKey = props.back().utf8(rt_);
     for (const auto &key : props) {
       auto formattedKey = key.utf8(rt_);
       auto value = hostObject.get(rt_, key);

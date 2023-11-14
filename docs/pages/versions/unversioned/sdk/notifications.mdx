@@ -206,7 +206,7 @@ import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 
 function useNotificationObserver() {
-  React.useEffect(() => {
+  useEffect(() => {
     let isMounted = true;
 
     function redirect(notification: Notifications.Notification) {

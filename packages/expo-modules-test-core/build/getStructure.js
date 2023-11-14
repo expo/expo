@@ -181,12 +181,12 @@ function findAndParseView(moduleDefinition, file) {
     const { view: _, ...definition } = parseModuleDefinition(viewModuleDefinition, file);
     return definition;
 }
-function omitViewFromClosureArguments(definitions) {
+function omitParamsFromClosureArguments(definitions, paramsToOmit) {
     return definitions.map((d) => ({
         ...d,
         types: {
             ...d.types,
-            parameters: d.types?.parameters?.filter((t, idx) => idx !== 0 && t.name !== 'view'),
+            parameters: d.types?.parameters?.filter((t, idx) => idx !== 0 && !paramsToOmit.includes(t.name)) ?? [],
         },
     }));
 }
@@ -202,10 +202,10 @@ function parseModuleDefinition(moduleDefinition, file) {
     const parsedDefinition = {
         name: findNamedDefinitionsOfType('Name', preparedModuleDefinition, file)?.[0]?.name,
         functions: findNamedDefinitionsOfType('Function', preparedModuleDefinition, file),
-        asyncFunctions: findNamedDefinitionsOfType('AsyncFunction', preparedModuleDefinition, file),
+        asyncFunctions: omitParamsFromClosureArguments(findNamedDefinitionsOfType('AsyncFunction', preparedModuleDefinition, file), ['promise']),
         events: findGroupedDefinitionsOfType('Events', preparedModuleDefinition, file),
         properties: findNamedDefinitionsOfType('Property', preparedModuleDefinition, file),
-        props: omitViewFromClosureArguments(findNamedDefinitionsOfType('Prop', preparedModuleDefinition, file)),
+        props: omitParamsFromClosureArguments(findNamedDefinitionsOfType('Prop', preparedModuleDefinition, file), ['view']),
         view: findAndParseView(preparedModuleDefinition, file),
     };
     return parsedDefinition;

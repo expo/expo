@@ -16,7 +16,7 @@ import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
 import expo.modules.constants.ConstantsPackage
-import expo.modules.contacts.ContactsPackage
+import expo.modules.contacts.ContactsModule
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
@@ -74,6 +74,7 @@ import expo.modules.speech.SpeechModule
 import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.sqlite.SQLiteModule
+import expo.modules.sqlite.SQLiteModuleNext
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
@@ -88,7 +89,6 @@ object ExperiencePackagePicker : ModulesProvider {
     AVPackage(),
     BarCodeScannerPackage(),
     ConstantsPackage(),
-    ContactsPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
     ImageLoaderPackage(),
@@ -148,6 +148,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ClipboardModule::class.java,
     CryptoModule::class.java,
     ConstantsModule::class.java,
+    ContactsModule::class.java,
     DeviceModule::class.java,
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
@@ -181,6 +182,7 @@ object ExperiencePackagePicker : ModulesProvider {
     SplashScreenModule::class.java,
     StoreReviewModule::class.java,
     SQLiteModule::class.java,
+    SQLiteModuleNext::class.java,
     SystemUIModule::class.java,
     TaskManagerModule::class.java,
     VideoThumbnailsModule::class.java,

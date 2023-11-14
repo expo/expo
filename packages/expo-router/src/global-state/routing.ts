@@ -72,15 +72,32 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
   const rootState = navigationRef.getRootState();
 
   if (href.startsWith('.')) {
+    // Resolve base path by merging the current segments with the params
     let base =
-      this.linking.getPathFromState?.(rootState, {
-        screens: [],
-        preserveGroups: true,
-      }) ?? '';
+      this.routeInfo?.segments
+        ?.map((segment) => {
+          if (!segment.startsWith('[')) return segment;
 
-    if (base && !base.endsWith('/')) {
+          if (segment.startsWith('[...')) {
+            segment = segment.slice(4, -1);
+            const params = this.routeInfo?.params?.[segment];
+            if (Array.isArray(params)) {
+              return params.join('/');
+            } else {
+              return params?.split(',')?.join('/') ?? '';
+            }
+          } else {
+            segment = segment.slice(1, -1);
+            return this.routeInfo?.params?.[segment];
+          }
+        })
+        .filter(Boolean)
+        .join('/') ?? '/';
+
+    if (!this.routeInfo?.isIndex) {
       base += '/..';
     }
+
     href = resolve(base, href);
   }
 

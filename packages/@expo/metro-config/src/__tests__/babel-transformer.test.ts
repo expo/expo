@@ -56,11 +56,16 @@ it(`passes the environment as isServer to the babel preset`, () => {
     });
     exports.default = App;
     var _reactNative = require("react-native");
-    var _jsxRuntime = require("react/jsx-runtime");
+    var _jsxDevRuntime = require("react/jsx-dev-runtime");
+    var _jsxFileName = "/foo.js";
     function App() {
-      return /*#__PURE__*/(0, _jsxRuntime.jsx)("div", {
+      return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)("div", {
         children: "Hello"
-      });
+      }, void 0, false, {
+        fileName: _jsxFileName,
+        lineNumber: 4,
+        columnNumber: 16
+      }, this);
     }
     _c = App;
     var _c;
@@ -75,9 +80,11 @@ it(`passes the environment as isServer to the babel preset`, () => {
       caller: {
         // HERE IS THE MAGIC
         isServer: true,
+        isDev: true,
         bundler: 'metro',
         name: 'metro',
         platform: 'ios',
+        baseUrl: '',
         projectRoot: expect.any(String),
       },
       cloneInputAst: false,

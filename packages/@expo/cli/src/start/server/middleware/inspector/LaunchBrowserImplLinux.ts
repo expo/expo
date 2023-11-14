@@ -5,20 +5,22 @@ import path from 'path';
 
 import {
   LaunchBrowserTypes,
-  type LaunchBrowserImpl,
+  type LaunchBrowser,
   type LaunchBrowserInstance,
+  LaunchBrowserTypesEnum,
 } from './LaunchBrowser.types';
 
 /**
  * Browser implementation for Linux
  */
-export default class LaunchBrowserImplLinux implements LaunchBrowserImpl, LaunchBrowserInstance {
+export default class LaunchBrowserImplLinux implements LaunchBrowser, LaunchBrowserInstance {
   private _appId: string | undefined;
   private _process: ChildProcess | undefined;
 
   MAP = {
-    [LaunchBrowserTypes.CHROME]: ['google-chrome', 'google-chrome-stable', 'chromium'],
-    [LaunchBrowserTypes.EDGE]: ['microsoft-edge', 'microsoft-edge-dev'],
+    [LaunchBrowserTypesEnum.CHROME]: ['google-chrome', 'google-chrome-stable', 'chromium'],
+    [LaunchBrowserTypesEnum.EDGE]: ['microsoft-edge', 'microsoft-edge-dev'],
+    [LaunchBrowserTypesEnum.BRAVE]: ['brave'],
   };
 
   /**

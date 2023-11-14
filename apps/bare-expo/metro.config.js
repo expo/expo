@@ -1,6 +1,15 @@
 const { createMetroConfiguration } = require('expo-yarn-workspaces');
-
 const baseConfig = createMetroConfiguration(__dirname);
+const path = require('path');
+
+const root = path.join(__dirname, '../..');
+
+baseConfig.watchFolders = [
+  __dirname,
+  ...['packages', 'apps/test-suite', 'apps/native-component-list', 'node_modules'].map((v) =>
+    path.join(root, v)
+  ),
+];
 
 module.exports = {
   ...baseConfig,

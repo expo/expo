@@ -1,6 +1,7 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
 
 import type { ConnectionInfo } from './devtools.types';
+import * as logger from './logger';
 
 // This version should be synced with the one in the **createMessageSocketEndpoint.ts** in @react-native-community/cli-server-api
 export const MESSAGE_PROTOCOL_VERSION = 2;
@@ -62,7 +63,7 @@ export abstract class DevToolsPluginClient {
     try {
       payload = JSON.parse(event.data);
     } catch (e) {
-      console.debug('Failed to parse JSON', e);
+      logger.info('Failed to parse JSON', e);
       return;
     }
 

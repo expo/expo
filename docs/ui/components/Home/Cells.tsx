@@ -111,6 +111,7 @@ export const TalkGridCell = ({
 type CommunityGridCellProps = APIGridCellProps & {
   description?: string;
   iconBackground?: string;
+  shouldLeakReferrer?: boolean;
 };
 
 export const CommunityGridCell = ({
@@ -121,12 +122,14 @@ export const CommunityGridCell = ({
   description,
   className,
   md = 6,
+  shouldLeakReferrer,
 }: CommunityGridCellProps) => (
   <CustomCol css={cellWrapperStyle} md={md}>
     <A
       href={link}
       css={[cellStyle, cellCommunityStyle, cellCommunityHoverStyle]}
       className={className}
+      shouldLeakReferrer={shouldLeakReferrer}
       isStyled>
       <div css={[cellCommunityIconWrapperStyle, css({ backgroundColor: iconBackground })]}>
         {icon}

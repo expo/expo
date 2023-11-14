@@ -15,6 +15,7 @@ module.exports = {
     './ui/foundations/**/*.{js,ts,jsx,tsx}',
     './ui/components/**/*.{js,ts,jsx,tsx}',
     './node_modules/@expo/styleguide/dist/**/*.{js,ts,jsx,tsx}',
+    './node_modules/@expo/styleguide-search-ui/dist/**/*.{js,ts,jsx,tsx}',
   ],
   plugins: [],
   ...getExpoTheme(

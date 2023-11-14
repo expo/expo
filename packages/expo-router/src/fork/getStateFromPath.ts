@@ -1,9 +1,6 @@
 import { PathConfigMap } from '@react-navigation/core';
 import type { InitialState, NavigationState, PartialState } from '@react-navigation/routers';
 import escape from 'escape-string-regexp';
-import Constants from 'expo-constants';
-import * as queryString from 'query-string';
-import URL from 'url-parse';
 
 import { findFocusedRoute } from './findFocusedRoute';
 import validatePathConfig from './validatePathConfig';
@@ -47,19 +44,29 @@ type ParsedRoute = {
 
 export function getUrlWithReactNavigationConcessions(
   path: string,
-  basePath: string | undefined = Constants.expoConfig?.experiments?.basePath
+  baseUrl: string | undefined = process.env.EXPO_BASE_URL
 ) {
-  const parsed = new URL(path, 'https://acme.com');
+  let parsed: URL;
+  try {
+    parsed = new URL(path, 'https://phony.example');
+  } catch {
+    // Do nothing with invalid URLs.
+    return {
+      nonstandardPathname: '',
+      inputPathnameWithoutHash: '',
+    };
+  }
+
   const pathname = parsed.pathname;
 
   // Make sure there is a trailing slash
   return {
     // The slashes are at the end, not the beginning
     nonstandardPathname:
-      stripBasePath(pathname, basePath).replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
+      stripBaseUrl(pathname, baseUrl).replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
 
     // React Navigation doesn't support hashes, so here
-    inputPathnameWithoutHash: stripBasePath(path, basePath).replace(/#.*$/, ''),
+    inputPathnameWithoutHash: stripBaseUrl(path, baseUrl).replace(/#.*$/, ''),
   };
 }
 
@@ -753,7 +760,11 @@ const createNestedStateObject = (
 
 const parseQueryParams = (path: string, parseConfig?: Record<string, (value: string) => any>) => {
   const query = path.split('?')[1];
-  const params = queryString.parse(query);
+  const searchParams = new URLSearchParams(query);
+  const params = Object.fromEntries(
+    // @ts-ignore: [Symbol.iterator] is indeed, available on every platform.
+    searchParams
+  );
 
   if (parseConfig) {
     Object.keys(params).forEach((name) => {
@@ -766,24 +777,24 @@ const parseQueryParams = (path: string, parseConfig?: Record<string, (value: str
   return Object.keys(params).length ? params : undefined;
 };
 
-const basePathCache = new Map<string, RegExp>();
+const baseUrlCache = new Map<string, RegExp>();
 
-function getBasePathRegex(basePath: string) {
-  if (basePathCache.has(basePath)) {
-    return basePathCache.get(basePath)!;
+function getBaseUrlRegex(baseUrl: string) {
+  if (baseUrlCache.has(baseUrl)) {
+    return baseUrlCache.get(baseUrl)!;
   }
-  const regex = new RegExp(`^\\/?${escape(basePath)}`, 'g');
-  basePathCache.set(basePath, regex);
+  const regex = new RegExp(`^\\/?${escape(baseUrl)}`, 'g');
+  baseUrlCache.set(baseUrl, regex);
   return regex;
 }
 
-export function stripBasePath(
+export function stripBaseUrl(
   path: string,
-  basePath: string | undefined = Constants.expoConfig?.experiments?.basePath
+  baseUrl: string | undefined = process.env.EXPO_BASE_URL
 ) {
   if (process.env.NODE_ENV !== 'development') {
-    if (basePath) {
-      const reg = getBasePathRegex(basePath);
+    if (baseUrl) {
+      const reg = getBaseUrlRegex(baseUrl);
       return path.replace(/^\/+/g, '/').replace(reg, '');
     }
   }

@@ -133,7 +133,7 @@ mkdir $WORKING_DIR_ROOT
 - Then execute
 
 ```bash
-node packages/expo-updates/e2e/setup/create-updates-test.js
+./packages/expo-updates/e2e/setup/create-updates-test.ts
 ```
 
 - Change to the test project directory

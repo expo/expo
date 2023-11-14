@@ -17,7 +17,7 @@ Both React Navigation and Expo Router are Expo frameworks for routing and naviga
 
 > **warning** `@expo/webpack-config` is in maintenance-mode and not receiving any new feature updates.
 
-Expo Router supports [static rendering on web](/router/reference/static-rendering), which enables search engine optimization (SEO), social media previews, and faster loading times, unlike Expo Webpack. Along with the benefits of React Navigation, it enables automatic deep linking,  [type safety](/router/reference/typed-routes), [deferred bundling](/router/reference/async-routes), [modular HTML templates](/router/reference/static-rendering#root-html), [static rendering on web](/router/reference/static-rendering), and more.
+Expo Router supports [static rendering on web](/router/reference/static-rendering), which enables search engine optimization (SEO), social media previews, and faster loading times, unlike Expo Webpack. Along with the benefits of React Navigation, it enables automatic deep linking, [type safety](/router/reference/typed-routes), [deferred bundling](/router/reference/async-routes), [modular HTML templates](/router/reference/static-rendering#root-html), [static rendering on web](/router/reference/static-rendering), and more.
 
 Expo Router is also designed to fix the main cross-platform issue with Expo Webpack by sharing navigation between web and native without compromising functionality or performance.
 
@@ -31,21 +31,22 @@ Ultimately as a full universal framework, Expo Router is a substantially more ro
 
 Unlike `@expo/webpack-config`, Expo Router uses the same CLI commands and features for web and native. Refer to the table below for more information on the differences between Expo Router and `@expo/webpack-config`.
 
-| Feature           | Expo Router                          | `@expo/webpack-config` |
-| ----------------- | ------------------------------------ | ---------------------- |
-| Start command     | `npx expo start`                     | `npx expo start`       |
-| Bundle command    | `npx expo export`                    | `npx expo export:web`  |
-| Output folder     | **dist**                             | **web-build**          |
-| Static folder     | **public**                           | **web**                |
-| Config file       | **metro.config.js**                  | **webpack.config.js**  |
-| Default config    | `@expo/metro-config`                 | `@expo/webpack-config` |
-| Multi-platform    | <YesIcon />                          | <NoIcon />             |
-| Fast Refresh      | <YesIcon /> (`@expo/metro-runtime`)  | <NoIcon />             |
-| Error Overlay     | <YesIcon /> (`@expo/metro-runtime`)  | <NoIcon />             |
-| Deferred Bundling | <YesIcon /> (`@expo/metro-runtime`)  | <NoIcon />             |
-| CSS Modules       | <YesIcon /> (SDK 50)                 | <NoIcon />             |
-| Global CSS        | <YesIcon /> (SDK 50)                 | <YesIcon />            |
-| Bundle Splitting  | <YesIcon /> (pending native and web) | <YesIcon />            |
+| Feature           | Expo Router                         | `@expo/webpack-config` |
+| ----------------- | ----------------------------------- | ---------------------- |
+| Start command     | `npx expo start`                    | `npx expo start`       |
+| Bundle command    | `npx expo export`                   | `npx expo export:web`  |
+| Output folder     | **dist**                            | **web-build**          |
+| Static folder     | **public**                          | **web**                |
+| Config file       | **metro.config.js**                 | **webpack.config.js**  |
+| Default config    | `@expo/metro-config`                | `@expo/webpack-config` |
+| Multi-platform    | <YesIcon />                         | <NoIcon />             |
+| Fast Refresh      | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
+| Error Overlay     | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
+| Deferred Bundling | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
+| CSS Modules       | <YesIcon /> (SDK 50)                | <NoIcon />             |
+| Global CSS        | <YesIcon /> (SDK 50)                | <YesIcon />            |
+| Bundle Splitting  | <NoIcon />                          | <YesIcon />            |
+| Tree Shaking      | <NoIcon />                          | <YesIcon />            |
 
 ## HTML template
 
@@ -163,11 +164,10 @@ Workbox doesn't have a Metro integration, but because Workbox doesn't require on
 
 For example, here's a possible flow for setting up Workbox. Create a new project with the following command:
 
-<Terminal cmd={[
-  "$ bun create expo -t tabs my-app",
-  "",
-  "$ cd my-app",
-]} cmdCopy="bun create expo -t tabs my-app && cd my-app" />
+<Terminal
+  cmd={['$ npm create expo -t tabs my-app', '', '$ cd my-app']}
+  cmdCopy="npm create expo -t tabs my-app && cd my-app"
+/>
 
 Next, create a root HTML file for the app and add the service worker registration script:
 

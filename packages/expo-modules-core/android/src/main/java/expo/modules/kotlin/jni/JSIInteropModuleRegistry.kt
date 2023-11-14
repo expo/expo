@@ -5,7 +5,6 @@ import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.NativeMethodCallInvokerHolderImplCompatible
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.lang.ref.WeakReference
@@ -33,8 +32,7 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
   external fun installJSI(
     jsRuntimePointer: Long,
     jniDeallocator: JNIDeallocator,
-    jsInvokerHolder: CallInvokerHolderImpl,
-    nativeInvokerHolder: NativeMethodCallInvokerHolderImplCompatible
+    jsInvokerHolder: CallInvokerHolderImpl
   )
 
   /**

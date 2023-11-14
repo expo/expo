@@ -1,35 +1,7 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.appendBasePath = exports.deepEqual = exports.getPathDataFromState = void 0;
+exports.appendBaseUrl = exports.deepEqual = exports.getPathDataFromState = void 0;
 const core_1 = require("@react-navigation/core");
-const expo_constants_1 = __importDefault(require("expo-constants"));
-const queryString = __importStar(require("query-string"));
 const matchers_1 = require("../matchers");
 const DEFAULT_SCREENS = {};
 const getActiveRoute = (state) => {
@@ -306,7 +278,7 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
                         delete focusedParams[param];
                     }
                 }
-                const query = queryString.stringify(focusedParams, { sort: false });
+                const query = new URLSearchParams(focusedParams).toString();
                 if (query) {
                     path += `?${query}`;
                 }
@@ -314,7 +286,7 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
             break;
         }
     }
-    return { path: appendBasePath(basicSanitizePath(path)), params: decodeParams(allParams) };
+    return { path: appendBaseUrl(basicSanitizePath(path)), params: decodeParams(allParams) };
 }
 function decodeParams(params) {
     const parsed = {};
@@ -456,13 +428,13 @@ const createConfigItem = (config, parentPattern) => {
     };
 };
 const createNormalizedConfigs = (options, pattern) => Object.fromEntries(Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)]));
-function appendBasePath(path, assetPrefix = expo_constants_1.default.expoConfig?.experiments?.basePath) {
+function appendBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     if (process.env.NODE_ENV !== 'development') {
-        if (assetPrefix) {
-            return `/${assetPrefix.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
+        if (baseUrl) {
+            return `/${baseUrl.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
         }
     }
     return path;
 }
-exports.appendBasePath = appendBasePath;
+exports.appendBaseUrl = appendBaseUrl;
 //# sourceMappingURL=getPathFromState.js.map

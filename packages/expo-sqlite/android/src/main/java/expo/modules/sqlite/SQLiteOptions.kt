@@ -13,5 +13,8 @@ internal data class OpenDatabaseOptions(
   val enableChangeListener: Boolean = false,
 
   @Field
-  val useNewConnection: Boolean = false
+  val useNewConnection: Boolean = false,
+
+  @Field
+  val finalizeUnusedStatementsBeforeClosing: Boolean = true
 ) : Record

@@ -77,7 +77,7 @@ def use_react_native_ABI49_0_0! (
 
   # Set the app_path as env variable so the podspecs can access it.
   ENV['APP_PATH'] = app_path
-  ENV['REACT_NATIVE_PATH'] = path
+  ENV['ABI49_0_0REACT_NATIVE_PATH'] = path
 
   # Current target definition is provided by Cocoapods and it refers to the target
   # that has invoked the `use_react_native!` function.

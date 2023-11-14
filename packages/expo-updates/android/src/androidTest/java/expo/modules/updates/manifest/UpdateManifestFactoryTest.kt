@@ -21,7 +21,10 @@ class UpdateManifestFactoryTest {
     "{\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":1609975977832}"
 
   private fun createConfig(): UpdatesConfiguration {
-    val configMap = mapOf("updateUrl" to Uri.parse("https://exp.host/@esamelson/native-component-list"))
+    val configMap = mapOf(
+      "updateUrl" to Uri.parse("https://exp.host/@esamelson/native-component-list"),
+      "runtimeVersion" to "1",
+    )
     return UpdatesConfiguration(null, configMap)
   }
 
@@ -58,16 +61,6 @@ class UpdateManifestFactoryTest {
       null,
       createConfig()
     )
-  }
-
-  @Test
-  @Throws(JSONException::class)
-  fun testGetEmbeddedManifest_Legacy() {
-    val actual = getEmbeddedManifest(
-      JSONObject(legacyManifestJson),
-      createConfig()
-    )
-    Assert.assertTrue(actual is LegacyUpdateManifest)
   }
 
   @Test

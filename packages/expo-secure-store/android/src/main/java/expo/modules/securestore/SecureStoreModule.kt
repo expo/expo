@@ -126,12 +126,12 @@ open class SecureStoreModule : Module() {
         AESEncryptor.NAME -> {
           val secretKeyEntry = getPreferredKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
             ?: throw DecryptException("Could not find a keychain for key $key$legacyReadFailedWarning", key, options.keychainService)
-          return mAESEncryptor.decryptItem(encryptedItem, secretKeyEntry, options, authenticationHelper)
+          return mAESEncryptor.decryptItem(key, encryptedItem, secretKeyEntry, options, authenticationHelper)
         }
         HybridAESEncryptor.NAME -> {
           val privateKeyEntry = getPreferredKeyEntry(PrivateKeyEntry::class.java, hybridAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
             ?: throw DecryptException("Could not find a keychain for key $key$legacyReadFailedWarning", key, options.keychainService)
-          return hybridAESEncryptor.decryptItem(encryptedItem, privateKeyEntry, options, authenticationHelper)
+          return hybridAESEncryptor.decryptItem(key, encryptedItem, privateKeyEntry, options, authenticationHelper)
         }
         else -> {
           throw DecryptException("The item for key $key in SecureStore has an unknown encoding scheme $scheme)", key, options.keychainService)

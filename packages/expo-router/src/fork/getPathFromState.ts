@@ -1,7 +1,5 @@
 import { PathConfig, PathConfigMap, validatePathConfig } from '@react-navigation/core';
 import type { NavigationState, PartialState, Route } from '@react-navigation/routers';
-import Constants from 'expo-constants';
-import * as queryString from 'query-string';
 
 import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
 
@@ -394,7 +392,7 @@ function getPathFromResolvedState(
           }
         }
 
-        const query = queryString.stringify(focusedParams, { sort: false });
+        const query = new URLSearchParams(focusedParams).toString();
         if (query) {
           path += `?${query}`;
         }
@@ -403,7 +401,7 @@ function getPathFromResolvedState(
     }
   }
 
-  return { path: appendBasePath(basicSanitizePath(path)), params: decodeParams(allParams) };
+  return { path: appendBaseUrl(basicSanitizePath(path)), params: decodeParams(allParams) };
 }
 
 function decodeParams(params: Record<string, string>) {
@@ -617,13 +615,13 @@ const createNormalizedConfigs = (
     Object.entries(options).map(([name, c]) => [name, createConfigItem(c, pattern)])
   );
 
-export function appendBasePath(
+export function appendBaseUrl(
   path: string,
-  assetPrefix: string | undefined = Constants.expoConfig?.experiments?.basePath
+  baseUrl: string | undefined = process.env.EXPO_BASE_URL
 ) {
   if (process.env.NODE_ENV !== 'development') {
-    if (assetPrefix) {
-      return `/${assetPrefix.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
+    if (baseUrl) {
+      return `/${baseUrl.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
     }
   }
   return path;

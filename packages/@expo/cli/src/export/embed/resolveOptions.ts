@@ -23,7 +23,7 @@ export interface Options {
   sourcemapSourcesRoot?: string;
   sourcemapUseAbsolutePath: boolean;
   verbose: boolean;
-  unstableTransformProfile: string;
+  unstableTransformProfile?: string;
 }
 
 function assertIsBoolean(val: any): asserts val is boolean {
@@ -64,7 +64,7 @@ export function resolveOptions(
     sourcemapSourcesRoot: args['--sourcemap-sources-root'],
     sourcemapUseAbsolutePath: !!parsed.args['--sourcemap-use-absolute-path'],
     assetsDest: args['--assets-dest'],
-    unstableTransformProfile: args['--unstable-transform-profile'] ?? 'default',
+    unstableTransformProfile: args['--unstable-transform-profile'],
     resetCache: !!parsed.args['--reset-cache'],
     resetGlobalCache: false,
     verbose: args['--verbose'] ?? env.EXPO_DEBUG,

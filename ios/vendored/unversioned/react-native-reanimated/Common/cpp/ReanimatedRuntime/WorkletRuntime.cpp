@@ -1,6 +1,5 @@
 #include "WorkletRuntime.h"
 #include "JSISerializer.h"
-#include "Logger.h"
 #include "ReanimatedRuntime.h"
 #include "WorkletRuntimeCollector.h"
 #include "WorkletRuntimeDecorator.h"

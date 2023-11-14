@@ -16,6 +16,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.soloader.SoLoader;
 import com.swmansion.common.GestureHandlerStateManager;
 import com.swmansion.reanimated.AndroidUIScheduler;
+import com.swmansion.reanimated.BuildConfig;
 import com.swmansion.reanimated.NativeProxy;
 import com.swmansion.reanimated.NodesManager;
 import com.swmansion.reanimated.ReanimatedModule;
@@ -44,6 +45,7 @@ public abstract class NativeProxyCommon {
   private ReanimatedKeyboardEventListener reanimatedKeyboardEventListener;
   private Long firstUptime = SystemClock.uptimeMillis();
   private boolean slowAnimationsEnabled = false;
+  protected String cppVersion = null;
 
   protected NativeProxyCommon(ReactApplicationContext context) {
     mAndroidUIScheduler = new AndroidUIScheduler(context);
@@ -98,6 +100,37 @@ public abstract class NativeProxyCommon {
   }
 
   @DoNotStrip
+  public String getReanimatedJavaVersion() {
+    return BuildConfig.REANIMATED_VERSION_JAVA;
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  // It turns out it's pretty difficult to set a member of a class
+  // instance through JNI so we decided to use a setter instead.
+  protected void setCppVersion(String version) {
+    cppVersion = version;
+  }
+
+  protected void checkCppVersion() {
+    if (cppVersion == null) {
+      throw new RuntimeException(
+          "[Reanimated] Java side failed to resolve C++ code version. "
+              + "See https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooting#java-side-failed-to-resolve-c-code-version for more information.");
+    }
+    String javaVersion = getReanimatedJavaVersion();
+    if (!cppVersion.equals(javaVersion)) {
+      throw new RuntimeException(
+          "[Reanimated] Mismatch between Java code version and C++ code version ("
+              + javaVersion
+              + " vs. "
+              + cppVersion
+              + " respectively). See "
+              + "https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooting#mismatch-between-java-code-version-and-c-code-version for more information.");
+    }
+  }
+
+  @DoNotStrip
   public void updateProps(int viewTag, Map<String, Object> props) {
     mNodesManager.updateProps(viewTag, props);
   }
@@ -130,7 +163,7 @@ public abstract class NativeProxyCommon {
   }
 
   @DoNotStrip
-  public long getCurrentTime() {
+  public long getAnimationTimestamp() {
     if (slowAnimationsEnabled) {
       final long ANIMATIONS_DRAG_FACTOR = 10;
       return this.firstUptime

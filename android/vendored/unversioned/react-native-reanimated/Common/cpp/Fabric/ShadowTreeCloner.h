@@ -12,18 +12,10 @@ using namespace react;
 
 namespace reanimated {
 
-class ShadowTreeCloner {
- public:
-  ShadowTreeCloner(const UIManager &uiManager, SurfaceId surfaceId);
-
-  ShadowNode::Unshared cloneWithNewProps(
-      const ShadowNode::Shared &oldRootNode,
-      const ShadowNodeFamily &family,
-      RawProps &&rawProps);
-
- private:
-  PropsParserContext propsParserContext_;
-};
+ShadowNode::Unshared cloneShadowTreeWithNewProps(
+    const ShadowNode::Shared &oldRootNode,
+    const ShadowNodeFamily &family,
+    RawProps &&rawProps);
 
 } // namespace reanimated
 

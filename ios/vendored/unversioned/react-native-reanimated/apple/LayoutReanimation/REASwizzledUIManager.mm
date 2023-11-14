@@ -7,6 +7,8 @@
 #import <React/RCTRootShadowView.h>
 #import <React/RCTRootViewInternal.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTUIManagerUtils.h>
+#import <objc/runtime.h>
 
 @interface RCTUIManager (Reanimated)
 @property REAAnimationsManager *animationsManager;
@@ -28,12 +30,22 @@
 
 @implementation REASwizzledUIManager
 
+std::atomic<uint> isFlushingBlocks;
+std::atomic<bool> hasPendingBlocks;
+
 - (instancetype)initWithUIManager:(RCTUIManager *)uiManager
              withAnimationManager:(REAAnimationsManager *)animationsManager
 {
   if (self = [super init]) {
+    isFlushingBlocks = 0;
+    hasPendingBlocks = false;
     [uiManager setAnimationsManager:animationsManager];
     [self swizzleMethods];
+
+    IMP isExecutingUpdatesBatchImpl = imp_implementationWithBlock(^() {
+      return hasPendingBlocks || isFlushingBlocks > 0;
+    });
+    class_addMethod([RCTUIManager class], @selector(isExecutingUpdatesBatch), isExecutingUpdatesBatchImpl, "");
   }
   return self;
 }
@@ -54,6 +66,18 @@
     [REAUtils swizzleMethod:manageChildrenOriginal
                    forClass:[RCTUIManager class]
                        with:manageChildrenReanimated
+                  fromClass:[self class]];
+    [REAUtils swizzleMethod:@selector(addUIBlock:)
+                   forClass:[RCTUIManager class]
+                       with:@selector(reanimated_addUIBlock:)
+                  fromClass:[self class]];
+    [REAUtils swizzleMethod:@selector(prependUIBlock:)
+                   forClass:[RCTUIManager class]
+                       with:@selector(reanimated_prependUIBlock:)
+                  fromClass:[self class]];
+    [REAUtils swizzleMethod:@selector(flushUIBlocksWithCompletion:)
+                   forClass:[RCTUIManager class]
+                       with:@selector(reanimated_flushUIBlocksWithCompletion:)
                   fromClass:[self class]];
   });
 }
@@ -89,8 +113,8 @@
           [originalSelf _childrenToRemoveFromContainer:container atIndices:removeAtIndices];
       for (REAUIView *view in permanentlyRemovedChildren) {
         [originalSelf.animationsManager endAnimationsRecursive:view];
+        [originalSelf.animationsManager removeAnimationsFromSubtree:view];
       }
-      [originalSelf.animationsManager removeAnimationsFromSubtree:(REAUIView *)container];
       [originalSelf.animationsManager onScreenRemoval:(REAUIView *)permanentlyRemovedChildren[0]
                                                 stack:(REAUIView *)container];
     }
@@ -135,7 +159,11 @@
   }
 
   RCTUIManager *originalSelf = (RCTUIManager *)self;
+#if REACT_NATIVE_MINOR_VERSION >= 73
+  NSPointerArray *affectedShadowViews = [NSPointerArray weakObjectsPointerArray];
+#else
   NSHashTable<RCTShadowView *> *affectedShadowViews = [NSHashTable weakObjectsHashTable];
+#endif
   [rootShadowView layoutWithAffectedShadowViews:affectedShadowViews];
 
   if (!affectedShadowViews.count) {
@@ -322,6 +350,34 @@
     [originalSelf.animationsManager viewsDidLayout];
     // Reanimated changes /end
   };
+}
+
+- (void)reanimated_addUIBlock:(RCTViewManagerUIBlock)block
+{
+  RCTAssertUIManagerQueue();
+  hasPendingBlocks = true;
+  [self reanimated_addUIBlock:block];
+}
+
+- (void)reanimated_prependUIBlock:(RCTViewManagerUIBlock)block
+{
+  RCTAssertUIManagerQueue();
+  hasPendingBlocks = true;
+  [self reanimated_prependUIBlock:block];
+}
+
+- (void)reanimated_flushUIBlocksWithCompletion:(void (^)(void))completion
+{
+  RCTAssertUIManagerQueue();
+  if (hasPendingBlocks) {
+    ++isFlushingBlocks;
+    hasPendingBlocks = false;
+    [self reanimated_addUIBlock:^(
+              __unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, REAUIView *> *viewRegistry) {
+      --isFlushingBlocks;
+    }];
+  }
+  [self reanimated_flushUIBlocksWithCompletion:completion];
 }
 
 @end

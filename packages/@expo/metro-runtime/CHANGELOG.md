@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 3.0.4 — 2023-11-14
+
+### 💡 Others
+
+- Improve testing for URL support on native. ([#25240](https://github.com/expo/expo/pull/25240) by [@EvanBacon](https://github.com/EvanBacon))
+- Migrate to new standard `URL` support on native. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 3.0.3 — 2023-10-17
 
 ### 💡 Others

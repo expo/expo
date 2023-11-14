@@ -13,7 +13,6 @@
 #import "EXScopedPermissions.h"
 #import "EXScopedSegment.h"
 #import "EXScopedLocalAuthentication.h"
-#import "EXScopedBranch.h"
 #import "EXScopedErrorRecoveryModule.h"
 #import "EXScopedFacebook.h"
 #import "EXScopedFirebaseCore.h"
@@ -106,11 +105,6 @@
 #if __has_include(<EXSegment/EXSegment.h>)
   EXScopedSegment *segmentModule = [[EXScopedSegment alloc] init];
   [moduleRegistry registerExportedModule:segmentModule];
-#endif
-
-#if __has_include(<EXBranch/RNBranch.h>)
-  EXScopedBranch *branchModule = [[EXScopedBranch alloc] initWithScopeKey:scopeKey];
-  [moduleRegistry registerInternalModule:branchModule];
 #endif
 
 #if __has_include(<EXLocalAuthentication/EXLocalAuthentication.h>)

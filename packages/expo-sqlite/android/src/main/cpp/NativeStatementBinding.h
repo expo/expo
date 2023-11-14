@@ -13,19 +13,6 @@ namespace expo {
 
 class NativeDatabaseBinding;
 
-/**
- * A convenient wrapper for the ArrayMap
- */
-template <typename K = jobject, typename V = jobject>
-struct ArrayMap : public jni::JavaClass<ArrayMap<K, V>, jni::JMap<K, V>> {
-  static auto constexpr kJavaDescriptor = "Landroid/util/ArrayMap;";
-
-  static jni::local_ref<typename ArrayMap<K, V>::javaobject>
-  create(int capacity) {
-    return ArrayMap<K, V>::newInstance(capacity);
-  }
-};
-
 class NativeStatementBinding : public jni::HybridClass<NativeStatementBinding> {
 public:
   static constexpr auto kJavaDescriptor =
@@ -43,7 +30,8 @@ public:
 
   // helpers
   int bindStatementParam(int index, jni::alias_ref<jni::JObject> param);
-  jni::local_ref<ArrayMap<jni::JString, jni::JObject>> getRow();
+  jni::local_ref<jni::JArrayList<jni::JString>> getColumnNames();
+  jni::local_ref<jni::JArrayList<jni::JObject>> getColumnValues();
 
 private:
   explicit NativeStatementBinding(

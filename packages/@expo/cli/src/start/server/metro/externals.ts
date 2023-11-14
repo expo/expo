@@ -39,7 +39,10 @@ export async function setupShimFiles(projectRoot: string) {
   // Copy the shims to the project folder in case we're running in a monorepo.
   const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '../static/shims');
 
-  await copyAsync(shimsFolder, path.join(projectRoot, METRO_SHIMS_FOLDER));
+  await copyAsync(shimsFolder, path.join(projectRoot, METRO_SHIMS_FOLDER), {
+    overwrite: false,
+    recursive: true,
+  });
 }
 
 export async function setupNodeExternals(projectRoot: string) {
@@ -51,14 +54,23 @@ async function tapExternalRequirePolyfill(projectRoot: string) {
   await fs.promises.mkdir(path.join(projectRoot, path.dirname(EXTERNAL_REQUIRE_POLYFILL)), {
     recursive: true,
   });
-  await fs.promises.writeFile(
+  await writeIfDifferentAsync(
     path.join(projectRoot, EXTERNAL_REQUIRE_POLYFILL),
     'global.$$require_external = typeof window === "undefined" ? require : () => null;'
   );
-  await fs.promises.writeFile(
+  await writeIfDifferentAsync(
     path.join(projectRoot, EXTERNAL_REQUIRE_NATIVE_POLYFILL),
     'global.$$require_external = (moduleId) => {throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);}'
   );
+}
+
+async function writeIfDifferentAsync(filePath: string, contents: string): Promise<void> {
+  if (fs.existsSync(filePath)) {
+    const current = await fs.promises.readFile(filePath, 'utf8');
+    if (current === contents) return;
+  }
+
+  await fs.promises.writeFile(filePath, contents);
 }
 
 export function isNodeExternal(moduleName: string): string | null {

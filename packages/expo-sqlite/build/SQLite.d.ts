@@ -1,5 +1,5 @@
 import './polyfillNextTick';
-import type { Query, ResultSet, ResultSetError, SQLiteCallback, SQLTransactionAsyncCallback, SQLTransactionAsync, SQLTransactionCallback, SQLTransactionErrorCallback } from './SQLite.types';
+import type { Query, ResultSet, ResultSetError, SQLiteCallback, SQLStatementArg, SQLTransactionAsyncCallback, SQLTransactionAsync, SQLTransactionCallback, SQLTransactionErrorCallback } from './SQLite.types';
 /** The database returned by `openDatabase()` */
 export declare class SQLiteDatabase {
     _name: string;
@@ -84,6 +84,6 @@ export declare class ExpoSQLTransactionAsync implements SQLTransactionAsync {
     private readonly db;
     private readonly readOnly;
     constructor(db: SQLiteDatabase, readOnly: boolean);
-    executeSqlAsync(sqlStatement: string, args?: (number | string)[]): Promise<ResultSet>;
+    executeSqlAsync(sqlStatement: string, args?: SQLStatementArg[]): Promise<ResultSet>;
 }
 //# sourceMappingURL=SQLite.d.ts.map

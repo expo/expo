@@ -1,9 +1,10 @@
 #pragma once
 
-#ifdef DEBUG
+#ifndef NDEBUG
 
 #include <cxxabi.h>
 
+#include <atomic>
 #include <iostream>
 #include <string>
 
@@ -41,7 +42,7 @@ class SingleInstanceChecker {
 
   // A static field will exist separately for every class template.
   // This has to be inline for automatic initialization.
-  inline static volatile int instanceCount_;
+  inline static std::atomic<int> instanceCount_;
 };
 
 template <class T>
@@ -67,4 +68,4 @@ SingleInstanceChecker<T>::~SingleInstanceChecker() {
 
 } // namespace reanimated
 
-#endif // DEBUG
+#endif // NDEBUG

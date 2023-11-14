@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { Module, MixedOutput } from 'metro';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
+import { Module, MixedOutput, MetroConfig, AssetData } from 'metro';
+import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
 // @ts-expect-error
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
@@ -17,6 +17,7 @@ import {
   serverPreludeSerializerPlugin,
   environmentVariableSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
+import { baseJSBundle, getPlatformOption } from './fork/baseJSBundle';
 import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
@@ -51,12 +52,19 @@ export function withSerializerPlugins(
     ...config,
     serializer: {
       ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(processors, originalSerializer),
+      customSerializer: createSerializerFromSerialProcessors(
+        config,
+        processors,
+        originalSerializer
+      ),
     },
   };
 }
 
-function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serializer {
+function getDefaultSerializer(
+  config: MetroConfig,
+  fallbackSerializer?: Serializer | null
+): Serializer {
   const defaultSerializer =
     fallbackSerializer ??
     (async (...params: SerializerParameters) => {
@@ -69,21 +77,21 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
   ): Promise<string | { code: string; map: string }> => {
     const [entryPoint, preModules, graph, options] = props;
 
-    const jsCode = await defaultSerializer(entryPoint, preModules, graph, options);
+    const platform = getPlatformOption(graph, options);
 
     if (!options.sourceUrl) {
-      return jsCode;
+      return await defaultSerializer(entryPoint, preModules, graph, options);
     }
+
     const sourceUrl = isJscSafeUrl(options.sourceUrl)
       ? toNormalUrl(options.sourceUrl)
       : options.sourceUrl;
+
     const url = new URL(sourceUrl, 'https://expo.dev');
-    if (
-      url.searchParams.get('platform') !== 'web' ||
-      url.searchParams.get('serializer.output') !== 'static'
-    ) {
+
+    if (platform !== 'web' || url.searchParams.get('serializer.output') !== 'static') {
       // Default behavior if `serializer.output=static` is not present in the URL.
-      return jsCode;
+      return await defaultSerializer(entryPoint, preModules, graph, options);
     }
 
     const includeSourceMaps = url.searchParams.get('serializer.map') === 'true';
@@ -93,54 +101,54 @@ function getDefaultSerializer(fallbackSerializer?: Serializer | null): Serialize
       processModuleFilter: options.processModuleFilter,
     });
 
+    // TODO: Convert to serial assets
+    // TODO: Disable this call dynamically in development since assets are fetched differently.
+    const metroAssets = (await getMetroAssets(graph.dependencies, {
+      processModuleFilter: options.processModuleFilter,
+      assetPlugins: config.transformer!.assetPlugins ?? [],
+      platform,
+      projectRoot: options.projectRoot, // this._getServerRootDir(),
+      publicPath: config.transformer!.publicPath!,
+    })) as AssetData[];
+
     const jsAssets: SerialAsset[] = [];
 
-    if (jsCode) {
-      const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
-      const jsFilename = fileNameFromContents({
-        filepath: url.pathname,
-        src: stringContents,
-      });
+    const jsCode = await defaultSerializer(entryPoint, preModules, graph, {
+      ...options,
+      sourceMapUrl: includeSourceMaps ? options.sourceMapUrl : undefined,
+    });
+
+    const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
+
+    const jsFilename = fileNameFromContents({
+      filepath: url.pathname,
+      src: stringContents,
+    });
+
+    jsAssets.push({
+      filename: options.dev ? 'index.js' : `_expo/static/js/web/${jsFilename}.js`,
+      originFilename: 'index.js',
+      type: 'js',
+      metadata: {},
+      source: stringContents,
+    });
+
+    if (
+      // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
+      includeSourceMaps &&
+      options.sourceMapUrl
+    ) {
+      const sourceMap = typeof jsCode === 'string' ? serializeToSourceMap(...props) : jsCode.map;
       jsAssets.push({
-        filename: options.dev ? 'index.js' : `_expo/static/js/web/${jsFilename}.js`,
-        originFilename: 'index.js',
-        type: 'js',
+        filename: options.dev ? 'index.map' : `_expo/static/js/web/${jsFilename}.js.map`,
+        originFilename: 'index.map',
+        type: 'map',
         metadata: {},
-        source: stringContents,
+        source: sourceMap,
       });
-
-      if (
-        // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
-        includeSourceMaps &&
-        options.sourceMapUrl
-      ) {
-        const sourceMap = typeof jsCode === 'string' ? serializeToSourceMap(...props) : jsCode.map;
-
-        // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
-        const parsed = JSON.parse(sourceMap);
-        // TODO: Maybe we can do this earlier.
-        parsed.sources = parsed.sources.map(
-          // TODO: Maybe basePath support
-          (value: string) => {
-            if (value.startsWith('/')) {
-              return '/' + path.relative(options.serverRoot ?? options.projectRoot, value);
-            }
-            // Prevent `__prelude__` from being relative.
-            return value;
-          }
-        );
-
-        jsAssets.push({
-          filename: options.dev ? 'index.map' : `_expo/static/js/web/${jsFilename}.js.map`,
-          originFilename: 'index.map',
-          type: 'map',
-          metadata: {},
-          source: JSON.stringify(parsed),
-        });
-      }
     }
 
-    return JSON.stringify([...jsAssets, ...cssDeps]);
+    return JSON.stringify({ artifacts: [...jsAssets, ...cssDeps], assets: metroAssets });
   };
 }
 
@@ -171,7 +179,18 @@ function serializeToSourceMap(...props: SerializerParameters): string {
     ...getSortedModules(graph, {
       createModuleId: options.createModuleId,
     }),
-  ];
+  ].map((module) => {
+    // TODO: Make this user-configurable.
+
+    // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
+    if (module.path.startsWith('/')) {
+      return {
+        ...module,
+        path: '/' + path.relative(options.serverRoot ?? options.projectRoot, module.path),
+      };
+    }
+    return module;
+  });
 
   return sourceMapString(modules, {
     ...options,
@@ -179,10 +198,11 @@ function serializeToSourceMap(...props: SerializerParameters): string {
 }
 
 export function createSerializerFromSerialProcessors(
+  config: MetroConfig,
   processors: (SerializerPlugin | undefined)[],
   originalSerializer?: Serializer | null
 ): Serializer {
-  const finalSerializer = getDefaultSerializer(originalSerializer);
+  const finalSerializer = getDefaultSerializer(config, originalSerializer);
   return (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {

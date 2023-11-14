@@ -94,6 +94,13 @@ export async function getRemoteVersionsForSdkAsync({
   }
 }
 
+type ExcludedNativeModules = {
+  name: string;
+  bundledNativeVersion: string;
+  isExcludedFromValidation: boolean;
+  specifiedVersion?: string; // e.g. 1.2.3, latest
+};
+
 /**
  * Versions a list of `packages` against a given `sdkVersion` based on local and remote versioning resources.
  *
@@ -117,7 +124,7 @@ export async function getVersionedPackagesAsync(
 ): Promise<{
   packages: string[];
   messages: string[];
-  excludedNativeModules: { name: string; bundledNativeVersion: string }[];
+  excludedNativeModules: ExcludedNativeModules[];
 }> {
   const versionsForSdk = await getCombinedKnownVersionsAsync({
     projectRoot,
@@ -127,17 +134,24 @@ export async function getVersionedPackagesAsync(
 
   let nativeModulesCount = 0;
   let othersCount = 0;
-  const excludedNativeModules: { name: string; bundledNativeVersion: string }[] = [];
+  const excludedNativeModules: ExcludedNativeModules[] = [];
 
   const versionedPackages = packages.map((arg) => {
-    const { name, type, raw } = npmPackageArg(arg);
+    const { name, type, raw, rawSpec } = npmPackageArg(arg);
 
     if (['tag', 'version', 'range'].includes(type) && name && versionsForSdk[name]) {
       // Unimodule packages from npm registry are modified to use the bundled version.
       // Some packages have the recommended version listed in https://exp.host/--/api/v2/versions.
-      if (pkg?.expo?.install?.exclude?.includes(name)) {
+      const isExcludedFromValidation = pkg?.expo?.install?.exclude?.includes(name);
+      const hasSpecifiedExactVersion = rawSpec !== '';
+      if (isExcludedFromValidation || hasSpecifiedExactVersion) {
         othersCount++;
-        excludedNativeModules.push({ name, bundledNativeVersion: versionsForSdk[name] });
+        excludedNativeModules.push({
+          name,
+          bundledNativeVersion: versionsForSdk[name],
+          isExcludedFromValidation,
+          specifiedVersion: rawSpec,
+        });
         return raw;
       }
       nativeModulesCount++;

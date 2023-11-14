@@ -6,7 +6,7 @@ import path from 'path';
 import * as prettier from 'prettier';
 import ts from 'typescript';
 
-import { Closure, ClosureTypes, OutputModuleDefinition } from './types';
+import { Closure, ClosureTypes, OutputModuleDefinition, OutputViewDefinition } from './types';
 
 const directoryPath = process.cwd();
 
@@ -232,7 +232,7 @@ function getAllTypeReferences(node: ts.Node, accumulator: string[]) {
 /**
  * Iterates over types to collect the aliases.
  */
-function getTypesToMock(module: OutputModuleDefinition) {
+function getTypesToMock(module: OutputModuleDefinition | OutputViewDefinition) {
   const foundTypes: string[] = [];
 
   Object.values(module)
@@ -272,13 +272,80 @@ function getPrefix() {
   return [ts.factory.createJSDocComment(prefix)];
 }
 
-function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean) {
-  return ([] as (ts.TypeAliasDeclaration | ts.FunctionDeclaration | ts.JSDoc)[]).concat(
-    getPrefix(),
-    includeTypes ? getMockedTypes(getTypesToMock(module)) : [],
-    getMockedFunctions(module.functions),
-    getMockedFunctions(module.asyncFunctions, true)
+/*
+Generate a mock for view props and functions.
+*/
+function getMockedView(definition: OutputViewDefinition | null) {
+  if (!definition) {
+    return [];
+  }
+  const propsType = ts.factory.createTypeAliasDeclaration(
+    [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
+    'ViewProps',
+    undefined,
+    ts.factory.createTypeLiteralNode([
+      ...definition.props.map((p) => {
+        const propType = mapSwiftTypeToTsType(p.types.parameters[0].typename);
+        return ts.factory.createPropertySignature(undefined, p.name, undefined, propType);
+      }),
+      ...definition.events.map((e) => {
+        const eventType = ts.factory.createFunctionTypeNode(
+          undefined,
+          [
+            ts.factory.createParameterDeclaration(
+              undefined,
+              undefined,
+              'event',
+              undefined,
+              ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)
+            ),
+          ],
+          ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword)
+        );
+        return ts.factory.createPropertySignature(undefined, e.name, undefined, eventType);
+      }),
+    ])
   );
+  const props = ts.factory.createParameterDeclaration(
+    undefined,
+    undefined,
+    'props',
+    undefined,
+    ts.factory.createTypeReferenceNode('ViewProps', undefined),
+    undefined
+  );
+  const viewFunction = ts.factory.createFunctionDeclaration(
+    [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
+    undefined,
+    'View',
+    undefined,
+    [props],
+    undefined,
+    ts.factory.createBlock([])
+  );
+  return [propsType, viewFunction];
+}
+
+const newlineIdentifier = ts.factory.createIdentifier('\n\n') as any;
+function separateWithNewlines<T>(arr: T) {
+  return [arr, newlineIdentifier];
+}
+
+function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean) {
+  return ([] as (ts.TypeAliasDeclaration | ts.FunctionDeclaration | ts.JSDoc)[])
+    .concat(
+      getPrefix(),
+      newlineIdentifier,
+      includeTypes ? getMockedTypes(getTypesToMock(module)) : [],
+      newlineIdentifier,
+      getMockedFunctions(module.functions).flatMap((mf) => [mf, newlineIdentifier]),
+      getMockedFunctions(module.asyncFunctions, true),
+      newlineIdentifier,
+      includeTypes && module.view ? getMockedTypes(getTypesToMock(module.view)) : [],
+      newlineIdentifier,
+      getMockedView(module.view)
+    )
+    .flatMap(separateWithNewlines);
 }
 
 async function prettifyCode(text: string, parser: 'babel' | 'typescript' = 'babel') {
@@ -310,7 +377,11 @@ export async function generateMocks(
     const filePath = path.join(directoryPath, 'mocks', filename);
     // get ts nodearray from getMockForModule(m) array
     const mock = ts.factory.createNodeArray(getMockForModule(m, outputLanguage === 'typescript'));
-    const printedTs = printer.printList(ts.ListFormat.MultiLine, mock, resultFile);
+    const printedTs = printer.printList(
+      ts.ListFormat.MultiLine + ts.ListFormat.PreserveLines,
+      mock,
+      resultFile
+    );
 
     if (outputLanguage === 'javascript') {
       const compiledJs = ts.transpileModule(printedTs, {

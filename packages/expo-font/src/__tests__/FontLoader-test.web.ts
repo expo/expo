@@ -5,22 +5,30 @@ import * as FontLoader from '../FontLoader';
 
 describe('loadSingleFontAsync', () => {
   it(`only excepts FontResource`, async () => {
-    expect(() => FontLoader.loadSingleFontAsync('foo', 10 as any)).toThrow(
-      'Expected font asset of type'
-    );
-    expect(() => FontLoader.loadSingleFontAsync('foo', { uri: 10 as any })).toThrow(
-      'Expected font asset of type'
-    );
-    expect(() => FontLoader.loadSingleFontAsync('foo', Asset.fromURI('foo'))).toThrow(
-      'Expected font asset of type'
-    );
+    expect(() =>
+      FontLoader.loadSingleFontAsync('http://localhost:8081/font.ttf', 10 as any)
+    ).toThrow('Expected font asset of type');
+    expect(() =>
+      FontLoader.loadSingleFontAsync('http://localhost:8081/font.ttf', { uri: 10 as any })
+    ).toThrow('Expected font asset of type');
+    expect(() =>
+      FontLoader.loadSingleFontAsync(
+        'http://localhost:8081/font.ttf',
+        Asset.fromURI('http://localhost:8081/font.ttf')
+      )
+    ).toThrow('Expected font asset of type');
   });
   it(`rejects expo-asset`, async () => {
-    expect(() => FontLoader.loadSingleFontAsync('foo', Asset.fromURI('foo'))).toThrow(
-      'Expected font asset of type'
-    );
     expect(() =>
-      FontLoader.loadSingleFontAsync('foo', { uri: Asset.fromURI('foo') } as any)
+      FontLoader.loadSingleFontAsync(
+        'http://localhost:8081/font.ttf',
+        Asset.fromURI('http://localhost:8081/font.ttf')
+      )
+    ).toThrow('Expected font asset of type');
+    expect(() =>
+      FontLoader.loadSingleFontAsync('http://localhost:8081/font.ttf', {
+        uri: Asset.fromURI('http://localhost:8081/font.ttf'),
+      } as any)
     ).toThrow('Expected font asset of type');
   });
 });

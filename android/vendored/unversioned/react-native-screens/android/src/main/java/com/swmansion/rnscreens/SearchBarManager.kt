@@ -97,6 +97,8 @@ class SearchBarManager : ViewGroupManager<SearchBarView>() {
         view.shouldShowHintSearchIcon = shouldShowHintSearchIcon ?: true
     }
 
+    fun setPlacement(view: SearchBarView, placeholder: String?) = Unit
+
     override fun receiveCommand(root: SearchBarView, commandId: String?, args: ReadableArray?) {
         when (commandId) {
             "focus" -> root.handleFocusJsRequest()

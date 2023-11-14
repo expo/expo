@@ -53,7 +53,7 @@ using RequestRenderFunction =
     std::function<void(std::function<void(const double)>, jsi::Runtime &)>;
 using ObtainPropFunction =
     std::function<jsi::Value(jsi::Runtime &, const int, const jsi::String &)>;
-using TimeProviderFunction = std::function<double(void)>;
+using GetAnimationTimestampFunction = std::function<double(void)>;
 
 using ProgressLayoutAnimationFunction =
     std::function<void(jsi::Runtime &, int, jsi::Object, bool)>;
@@ -84,7 +84,7 @@ struct PlatformDepMethodsHolder {
   ConfigurePropsFunction configurePropsFunction;
   ObtainPropFunction obtainPropFunction;
 #endif
-  TimeProviderFunction getCurrentTime;
+  GetAnimationTimestampFunction getAnimationTimestamp;
   ProgressLayoutAnimationFunction progressLayoutAnimation;
   EndLayoutAnimationFunction endLayoutAnimation;
   RegisterSensorFunction registerSensor;

@@ -13,7 +13,7 @@
 #import <RNReanimated/ReanimatedRuntime.h>
 #import <RNReanimated/ReanimatedSensorContainer.h>
 
-#ifdef DEBUG
+#ifndef NDEBUG
 #import <RNReanimated/REAScreensHelper.h>
 #endif
 
@@ -231,7 +231,7 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
   // Layout Animations end
 #endif
 
-  auto getCurrentTime = []() { return calculateTimestampWithSlowAnimations(CACurrentMediaTime()) * 1000; };
+  auto getAnimationTimestamp = []() { return calculateTimestampWithSlowAnimations(CACurrentMediaTime()) * 1000; };
 
   // sensors
   ReanimatedSensorContainer *reanimatedSensorContainer = [[ReanimatedSensorContainer alloc] init];
@@ -276,7 +276,7 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
       configurePropsFunction,
       obtainPropFunction,
 #endif
-      getCurrentTime,
+      getAnimationTimestamp,
       progressLayoutAnimation,
       endLayoutAnimation,
       registerSensorFunction,
@@ -341,6 +341,15 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
     return NO;
   }];
 
+  [animationsManager setShouldAnimateExitingBlock:^(NSNumber *_Nonnull tag, BOOL shouldAnimate) {
+    if (auto nativeReanimatedModule = weakNativeReanimatedModule.lock()) {
+      bool shouldAnimateExiting =
+          nativeReanimatedModule->layoutAnimationsManager().shouldAnimateExiting([tag intValue], shouldAnimate);
+      return shouldAnimateExiting ? YES : NO;
+    }
+    return NO;
+  }];
+
   [animationsManager setAnimationRemovingBlock:^(NSNumber *_Nonnull tag) {
     if (auto nativeReanimatedModule = weakNativeReanimatedModule.lock()) {
       nativeReanimatedModule->layoutAnimationsManager().clearLayoutAnimationConfig([tag intValue]);
@@ -362,7 +371,7 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
     }
     return nil;
   }];
-#ifdef DEBUG
+#ifndef NDEBUG
   [animationsManager setCheckDuplicateSharedTagBlock:^(REAUIView *view, NSNumber *_Nonnull viewTag) {
     if (auto nativeReanimatedModule = weakNativeReanimatedModule.lock()) {
       REAUIView *screen = [REAScreensHelper getScreenForView:(REAUIView *)view];
@@ -371,7 +380,7 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
       nativeReanimatedModule->layoutAnimationsManager().checkDuplicateSharedTag([viewTag intValue], screenTag);
     }
   }];
-#endif // DEBUG
+#endif // NDEBUG
 
 #endif
 

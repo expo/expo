@@ -203,13 +203,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/InAppPurchases/InAppPurchases'));
-    },
-    name: 'InAppPurchases',
-    options: { title: 'In-App Purchases' },
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/IntentLauncherScreen'));
     },
     name: 'IntentLauncher',

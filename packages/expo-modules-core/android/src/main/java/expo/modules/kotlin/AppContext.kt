@@ -149,8 +149,7 @@ class AppContext(
             jsiInterop.installJSI(
               it,
               jniDeallocator,
-              jsContextProvider.jsCallInvokerHolder,
-              ReactNativeCompatibleHelper.getNativeMethodCallInvokerHolderImplCompatible(catalystInstance)
+              jsContextProvider.jsCallInvokerHolder
             )
             logger.info("✅ JSI interop was installed")
           }

@@ -4,7 +4,46 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🎉 New features
+
+- [Android] The stability of the memory cache key generation has been improved. ([#25372](https://github.com/expo/expo/pull/25372) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Collapse re-export of `react-native/Libraries/Image/AssetRegistry` to `@react-native/assets-registry/registry`. ([#25265](https://github.com/expo/expo/pull/25265) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 1.8.0 — 2023-11-13
+
+### 🎉 New features
+
+- Return a promise in the `prefetch` method. ([#25196](https://github.com/expo/expo/pull/25196) by [@gkasdorf](https://github.com/gkasdorf))
+- [Android] Added `autoplay` prop and `startAnimating()` and `stopAnimating()` functions to reflect changes made to iOS in [#25008](https://github.com/expo/expo/pull/25008). ([#25124](https://github.com/expo/expo/pull/25124) by [@gkasdorf](https://github.com/gkasdorf))
+
+### 🐛 Bug fixes
+
+- [Android] Fix `contentFit` not working for `SVG` images. ([#25187](https://github.com/expo/expo/pull/25187) by [@behenate](https://github.com/behenate))
+- [iOS] Start loading the image before the view mounts to fix issues with the PagerView. ([#25343](https://github.com/expo/expo/pull/25343) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fix `SVG` not scaling correctly in the release mode. ([#25326](https://github.com/expo/expo/pull/25326) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix incorrect `intrinsicSize` returned for SVGs. ([#25048](https://github.com/expo/expo/pull/25048) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- [Android] Add tracing. ([#25251](https://github.com/expo/expo/pull/25251) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.7.0 — 2023-11-01
 
 ### 🎉 New features
 
@@ -19,7 +58,17 @@
 - [iOS] Fix compilation on tvOS. ([#25010](https://github.com/expo/expo/pull/25010) by [@douglowder](https://github.com/douglowder))
 - [iOS] Fixed issue where some animated images would cause the app to hang ([#25008](https://github.com/expo/expo/pull/25008) by [@gkasdorf](https://github.com/gkasdorf))
 
-### 💡 Others
+## 1.6.1 — 2023-11-01
+
+### 🐛 Bug fixes
+
+- [Android] fix crash when loading local image files with no file extension ([#24201](https://github.com/expo/expo/pull/25032) by [@kadikraman](https://github.com/kadikraman))
+
+## 1.3.5 — 2023-11-01
+
+### 🐛 Bug fixes
+
+- [Android] fix crash when loading local image files with no file extension ([#24201](https://github.com/expo/expo/pull/25032) by [@kadikraman](https://github.com/kadikraman))
 
 ## 1.6.0 — 2023-10-17
 

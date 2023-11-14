@@ -1,19 +1,17 @@
-import React from 'react';
+import { PureComponent, useMemo, createRef } from 'react';
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView from './NativeVideoView';
 export function useVideoPlayer(source = null) {
-    return React.useMemo(() => {
+    return useMemo(() => {
         return new NativeVideoModule.VideoPlayer(source);
     }, []);
 }
-export class VideoView extends React.PureComponent {
-    nativeRef = React.createRef();
+export class VideoView extends PureComponent {
+    nativeRef = createRef();
     enterFullscreen() {
-        // @ts-expect-error
         this.nativeRef.current?.enterFullscreen();
     }
     exitFullscreen() {
-        // @ts-expect-error
         this.nativeRef.current?.exitFullscreen();
     }
     render() {

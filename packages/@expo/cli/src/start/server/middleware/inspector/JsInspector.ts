@@ -1,7 +1,6 @@
 import fetch from 'node-fetch';
 
-import { launchBrowserAsync, type LaunchBrowserInstance } from './LaunchBrowser';
-
+import { launchInspectorBrowserAsync, type LaunchBrowserInstance } from './LaunchBrowser';
 export interface MetroInspectorProxyApp {
   description: string;
   devtoolsFrontendUrl: string;
@@ -28,7 +27,7 @@ export async function openJsInspector(app: MetroInspectorProxyApp) {
   const ws = app.webSocketDebuggerUrl.replace(/^ws:\/\//, '');
   const url = `${urlBase}?panel=console&ws=${encodeURIComponent(ws)}`;
   await closeJsInspector();
-  openingBrowserInstance = await launchBrowserAsync(url);
+  openingBrowserInstance = await launchInspectorBrowserAsync(url);
 }
 
 export async function closeJsInspector() {

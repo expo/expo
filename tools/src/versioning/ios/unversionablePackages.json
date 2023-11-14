@@ -1,10 +1,8 @@
 [
-  "expo-branch",
   "expo-dev-client",
   "expo-dev-launcher",
   "expo-dev-menu",
   "expo-dev-menu-interface",
-  "expo-in-app-purchases",
   "expo-module-scripts",
   "expo-module-template",
   "expo-module-template-local",

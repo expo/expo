@@ -6,9 +6,11 @@
 #import <React/RCTFabricComponentsPlugins.h>
 #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
 #import <react/renderer/components/rnscreens/Props.h>
-#endif
 
-@implementation RNScreensContainerNavigationController
+namespace react = facebook::react;
+#endif // RCT_NEW_ARCH_ENABLED
+
+@implementation RNSContainerNavigationController
 
 @end
 
@@ -16,8 +18,8 @@
 
 - (void)setupController
 {
-  self.controller = [[RNScreensContainerNavigationController alloc] init];
-  [(RNScreensContainerNavigationController *)self.controller setNavigationBarHidden:YES animated:NO];
+  self.controller = [[RNSContainerNavigationController alloc] init];
+  [(RNSContainerNavigationController *)self.controller setNavigationBarHidden:YES animated:NO];
   [self addSubview:self.controller.view];
 }
 
@@ -27,7 +29,7 @@
     if (screen.activityState == RNSActivityStateOnTop) {
       // there should never be more than one screen with `RNSActivityStateOnTop`
       // since this component should be used for `tabs` and `drawer` navigators
-      [(RNScreensContainerNavigationController *)self.controller setViewControllers:@[ screen.controller ] animated:NO];
+      [(RNSContainerNavigationController *)self.controller setViewControllers:@[ screen.controller ] animated:NO];
       [screen notifyFinishTransitioning];
     }
   }
@@ -37,10 +39,9 @@
 
 #pragma mark-- Fabric specific
 #ifdef RCT_NEW_ARCH_ENABLED
-+ (facebook::react::ComponentDescriptorProvider)componentDescriptorProvider
++ (react::ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return facebook::react::concreteComponentDescriptorProvider<
-      facebook::react::RNSScreenNavigationContainerComponentDescriptor>();
+  return react::concreteComponentDescriptorProvider<react::RNSScreenNavigationContainerComponentDescriptor>();
 }
 #endif
 

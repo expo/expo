@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.7.0 — 2023-11-14
+
+### 💡 Others
+
 - Use `pointerEvent` style instead of prop for components on web. ([#24931](https://github.com/expo/expo/pull/24931) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.6.0 — 2023-10-17

@@ -34,10 +34,13 @@ export type JSModule = Module<{
       code: string;
       map: unknown;
       lineCount: number;
+      skipCache?: boolean;
     };
   };
   type: 'js/module';
-}>;
+}> & {
+  unstable_transformResultKey?: string;
+};
 
 export function filterJsModules(
   dependencies: ReadOnlyDependencies,

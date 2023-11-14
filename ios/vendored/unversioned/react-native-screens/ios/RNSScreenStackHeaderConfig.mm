@@ -25,7 +25,7 @@
 #import "RNSUIBarButtonItem.h"
 
 #ifdef RCT_NEW_ARCH_ENABLED
-namespace rct = facebook::react;
+namespace react = facebook::react;
 #endif // RCT_NEW_ARCH_ENABLED
 
 #ifndef RCT_NEW_ARCH_ENABLED
@@ -64,7 +64,7 @@ namespace rct = facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const rct::RNSScreenStackHeaderConfigProps>();
+    static const auto defaultProps = std::make_shared<const react::RNSScreenStackHeaderConfigProps>();
     _props = defaultProps;
     _show = YES;
     _translucent = NO;
@@ -147,6 +147,9 @@ namespace rct = facebook::react;
   // if nav is nil, it means we can be in a fullScreen modal, so there is no nextVC, but we still want to update
   if (vc != nil && (nextVC == vc || isInFullScreenModal || isPresentingVC)) {
     [RNSScreenStackHeaderConfig updateViewController:self.screenView.controller withConfig:self animated:YES];
+    // As the header might have change in `updateViewController` we need to ensure that header height
+    // returned by the `onHeaderHeightChange` event is correct.
+    [self.screenView.controller calculateAndNotifyHeaderHeightChangeIsModal:NO];
   }
 }
 
@@ -315,7 +318,7 @@ namespace rct = facebook::react;
                   scale:imageSource.scale
 #ifdef RCT_NEW_ARCH_ENABLED
              resizeMode:resizeModeFromCppEquiv(
-                            std::static_pointer_cast<const rct::ImageProps>(imageView.props)->resizeMode)];
+                            std::static_pointer_cast<const react::ImageProps>(imageView.props)->resizeMode)];
 #else
              resizeMode:imageView.resizeMode];
 #endif // RCT_NEW_ARCH_ENABLED
@@ -353,6 +356,11 @@ namespace rct = facebook::react;
                     withConfig:(RNSScreenStackHeaderConfig *)config
 {
   [self updateViewController:vc withConfig:config animated:animated];
+  // As the header might have change in `updateViewController` we need to ensure that header height
+  // returned by the `onHeaderHeightChange` event is correct.
+  if ([vc isKindOfClass:[RNSScreen class]]) {
+    [(RNSScreen *)vc calculateAndNotifyHeaderHeightChangeIsModal:NO];
+  }
 }
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
@@ -484,6 +492,7 @@ namespace rct = facebook::react;
   }
 
   if (shouldHide) {
+    navitem.title = config.title;
     return;
   }
 
@@ -566,6 +575,8 @@ namespace rct = facebook::react;
 #endif
   }
 #if !TARGET_OS_TV
+  // Workaround for the wrong rotation of back button arrow in RTL mode.
+  navitem.hidesBackButton = true;
   navitem.hidesBackButton = config.hideBackButton;
 #endif
   navitem.leftBarButtonItem = nil;
@@ -606,8 +617,14 @@ namespace rct = facebook::react;
             RNSSearchBar *searchBar = subview.subviews[0];
             navitem.searchController = searchBar.controller;
             navitem.hidesSearchBarWhenScrolling = searchBar.hideWhenScrolling;
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_16_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+            if (@available(iOS 16.0, *)) {
+              navitem.preferredSearchBarPlacement = [searchBar placementAsUINavigationItemSearchBarPlacement];
+            }
+#endif /* Check for iOS 16.0 */
           }
-#endif
+#endif /* !TARGET_OS_TV */
         }
         break;
       }
@@ -616,6 +633,13 @@ namespace rct = facebook::react;
       }
     }
   }
+
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0), dispatch_get_main_queue(), ^{
+    // Position the contents in the navigation bar, regarding to the direction.
+    for (UIView *view in navctr.navigationBar.subviews) {
+      view.semanticContentAttribute = config.direction;
+    }
+  });
 
   // This assignment should be done after `navitem.titleView = ...` assignment (iOS 16.0 bug).
   // See: https://github.com/software-mansion/react-native-screens/issues/1570 (comments)
@@ -698,18 +722,18 @@ namespace rct = facebook::react;
   [childComponentView removeFromSuperview];
 }
 
-static RCTResizeMode resizeModeFromCppEquiv(rct::ImageResizeMode resizeMode)
+static RCTResizeMode resizeModeFromCppEquiv(react::ImageResizeMode resizeMode)
 {
   switch (resizeMode) {
-    case rct::ImageResizeMode::Cover:
+    case react::ImageResizeMode::Cover:
       return RCTResizeModeCover;
-    case rct::ImageResizeMode::Contain:
+    case react::ImageResizeMode::Contain:
       return RCTResizeModeContain;
-    case rct::ImageResizeMode::Stretch:
+    case react::ImageResizeMode::Stretch:
       return RCTResizeModeStretch;
-    case rct::ImageResizeMode::Center:
+    case react::ImageResizeMode::Center:
       return RCTResizeModeCenter;
-    case rct::ImageResizeMode::Repeat:
+    case react::ImageResizeMode::Repeat:
       return RCTResizeModeRepeat;
   }
 }
@@ -720,8 +744,8 @@ static RCTResizeMode resizeModeFromCppEquiv(rct::ImageResizeMode resizeMode)
  */
 + (RCTImageSource *)imageSourceFromImageView:(RCTImageComponentView *)view
 {
-  auto const imageProps = *std::static_pointer_cast<const rct::ImageProps>(view.props);
-  rct::ImageSource cppImageSource = imageProps.sources.at(0);
+  auto const imageProps = *std::static_pointer_cast<const react::ImageProps>(view.props);
+  react::ImageSource cppImageSource = imageProps.sources.at(0);
   auto imageSize = CGSize{cppImageSource.size.width, cppImageSource.size.height};
   NSURLRequest *request =
       [NSURLRequest requestWithURL:[NSURL URLWithString:RCTNSStringFromStringNilIfEmpty(cppImageSource.uri)]];
@@ -739,9 +763,9 @@ static RCTResizeMode resizeModeFromCppEquiv(rct::ImageResizeMode resizeMode)
   _initialPropsSet = NO;
 }
 
-+ (rct::ComponentDescriptorProvider)componentDescriptorProvider
++ (react::ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return rct::concreteComponentDescriptorProvider<rct::RNSScreenStackHeaderConfigComponentDescriptor>();
+  return react::concreteComponentDescriptorProvider<react::RNSScreenStackHeaderConfigComponentDescriptor>();
 }
 
 - (NSNumber *)getFontSizePropValue:(int)value
@@ -751,20 +775,20 @@ static RCTResizeMode resizeModeFromCppEquiv(rct::ImageResizeMode resizeMode)
   return nil;
 }
 
-- (UISemanticContentAttribute)getDirectionPropValue:(rct::RNSScreenStackHeaderConfigDirection)direction
+- (UISemanticContentAttribute)getDirectionPropValue:(react::RNSScreenStackHeaderConfigDirection)direction
 {
   switch (direction) {
-    case rct::RNSScreenStackHeaderConfigDirection::Rtl:
+    case react::RNSScreenStackHeaderConfigDirection::Rtl:
       return UISemanticContentAttributeForceRightToLeft;
-    case rct::RNSScreenStackHeaderConfigDirection::Ltr:
+    case react::RNSScreenStackHeaderConfigDirection::Ltr:
       return UISemanticContentAttributeForceLeftToRight;
   }
 }
 
-- (void)updateProps:(rct::Props::Shared const &)props oldProps:(rct::Props::Shared const &)oldProps
+- (void)updateProps:(react::Props::Shared const &)props oldProps:(react::Props::Shared const &)oldProps
 {
-  const auto &oldScreenProps = *std::static_pointer_cast<const rct::RNSScreenStackHeaderConfigProps>(_props);
-  const auto &newScreenProps = *std::static_pointer_cast<const rct::RNSScreenStackHeaderConfigProps>(props);
+  const auto &oldScreenProps = *std::static_pointer_cast<const react::RNSScreenStackHeaderConfigProps>(_props);
+  const auto &newScreenProps = *std::static_pointer_cast<const react::RNSScreenStackHeaderConfigProps>(props);
 
   BOOL needsNavigationControllerLayout = !_initialPropsSet;
 
@@ -826,7 +850,7 @@ static RCTResizeMode resizeModeFromCppEquiv(rct::ImageResizeMode resizeMode)
   }
 
   _initialPropsSet = YES;
-  _props = std::static_pointer_cast<rct::RNSScreenStackHeaderConfigProps const>(props);
+  _props = std::static_pointer_cast<react::RNSScreenStackHeaderConfigProps const>(props);
 
   [super updateProps:props oldProps:oldProps];
 }

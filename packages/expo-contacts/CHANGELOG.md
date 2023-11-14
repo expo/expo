@@ -4,15 +4,23 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+## 12.7.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
 - Renamed `unimodule.json` to `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+- Migrated codebase to use Expo Modules API. ([#24991](https://github.com/expo/expo/pull/24991) by [@lukmccall](https://github.com/lukmccall))
 
 ## 12.6.0 — 2023-10-17
 

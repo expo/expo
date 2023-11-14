@@ -1,12 +1,8 @@
 "use strict";
 // Copyright © 2023 650 Industries.
 // Copyright 2018-2023 the Deno authors. All rights reserved. MIT license.
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.install = exports.setLocationHref = void 0;
-const url_parse_1 = __importDefault(require("url-parse"));
 class DOMException extends Error {
     constructor(message, name) {
         super(message);
@@ -20,12 +16,10 @@ class DOMException extends Error {
 // - https://heycam.github.io/webidl/#LegacyUnforgeable
 class Location {
     constructor(href = null) {
-        const url = new url_parse_1.default(
+        const url = new URL(
         // @ts-expect-error
         href);
-        // @ts-expect-error
         url.username = '';
-        // @ts-expect-error
         url.password = '';
         Object.defineProperties(this, {
             hash: {
@@ -99,7 +93,6 @@ class Location {
             },
             search: {
                 get() {
-                    // @ts-expect-error
                     return url.search;
                 },
                 set() {

@@ -25,10 +25,6 @@ public:
   // sqlite3 bindings
   int sqlite3_open(const std::string &dbPath);
   int sqlite3_close();
-  int sqlite3_enable_load_extension(int onoff);
-  int sqlite3_load_extension(const std::string &libPath,
-                             const std::string &entryProc);
-  void sqlite3_update_hook(bool enabled);
 
 private:
   explicit SQLite3Wrapper(jni::alias_ref<SQLite3Wrapper::jhybridobject> jThis)

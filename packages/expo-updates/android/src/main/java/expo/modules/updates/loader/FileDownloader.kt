@@ -781,11 +781,11 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         .header("Expo-Accept-Signature", configuration.expectsSignedManifest.toString())
         .header("EAS-Client-ID", EASClientID(context).uuid.toString())
         .apply {
-          val runtimeVersion = configuration.runtimeVersion
+          val runtimeVersion = configuration.runtimeVersionRaw
           val sdkVersion = configuration.sdkVersion
-          if (runtimeVersion != null && runtimeVersion.isNotEmpty()) {
+          if (!runtimeVersion.isNullOrEmpty()) {
             header("Expo-Runtime-Version", runtimeVersion)
-          } else if (sdkVersion != null && sdkVersion.isNotEmpty()) {
+          } else if (!sdkVersion.isNullOrEmpty()) {
             header("Expo-SDK-Version", sdkVersion)
           }
         }

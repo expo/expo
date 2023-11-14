@@ -21,6 +21,7 @@ export interface Database {
 }
 export type SQLTransactionCallback = (transaction: SQLTransaction) => void;
 export type SQLTransactionErrorCallback = (error: SQLError) => void;
+export type SQLStatementArg = string | number | null;
 /**
  * A `SQLTransaction` object is passed in as a parameter to the `callback` parameter for the
  * `db.transaction()` method on a `Database` (see above). It allows enqueuing SQL statements to
@@ -41,7 +42,7 @@ export interface SQLTransaction {
      * @param errorCallback Called if an error occurred executing this particular query in the
      * transaction. Takes two parameters: the transaction itself, and the error object.
      */
-    executeSql(sqlStatement: string, args?: (number | string | null)[], callback?: SQLStatementCallback, errorCallback?: SQLStatementErrorCallback): void;
+    executeSql(sqlStatement: string, args?: SQLStatementArg[], callback?: SQLStatementCallback, errorCallback?: SQLStatementErrorCallback): void;
 }
 export type SQLStatementCallback = (transaction: SQLTransaction, resultSet: SQLResultSet) => void;
 export type SQLStatementErrorCallback = (transaction: SQLTransaction, error: SQLError) => boolean;
@@ -125,7 +126,7 @@ export type SQLiteCallback = (error?: Error | null, resultSet?: (ResultSetError 
 /** A transaction object to perform SQL statements in async mode. */
 export interface SQLTransactionAsync {
     /** Executes a SQL statement in async mode. */
-    executeSqlAsync(sqlStatement: string, args?: (number | string)[]): Promise<ResultSet>;
+    executeSqlAsync(sqlStatement: string, args?: SQLStatementArg[]): Promise<ResultSet>;
 }
 /** A transaction callback with given `SQLTransactionAsync` object to perform SQL statements in async mode. */
 export type SQLTransactionAsyncCallback = (transaction: SQLTransactionAsync) => Promise<void>;

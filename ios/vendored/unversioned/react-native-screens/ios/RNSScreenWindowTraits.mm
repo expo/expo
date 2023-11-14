@@ -242,12 +242,12 @@
                 inViewController:(UIViewController *)vc
 {
   UIViewController *lastViewController = [[vc childViewControllers] lastObject];
-  if ([lastViewController conformsToProtocol:@protocol(RNScreensViewControllerDelegate)]) {
+  if ([lastViewController conformsToProtocol:@protocol(RNSViewControllerDelegate)]) {
     UIViewController *vc = nil;
-    if ([lastViewController isKindOfClass:[RNScreensViewController class]]) {
-      vc = [(RNScreensViewController *)lastViewController findActiveChildVC];
-    } else if ([lastViewController isKindOfClass:[RNScreensNavigationController class]]) {
-      vc = [(RNScreensNavigationController *)lastViewController topViewController];
+    if ([lastViewController isKindOfClass:[RNSViewController class]]) {
+      vc = [(RNSViewController *)lastViewController findActiveChildVC];
+    } else if ([lastViewController isKindOfClass:[RNSNavigationController class]]) {
+      vc = [(RNSNavigationController *)lastViewController topViewController];
     }
     return [vc isKindOfClass:[RNSScreen class]] &&
         [(RNSScreen *)vc findChildVCForConfigAndTrait:trait includingModals:includingModals] != nil;

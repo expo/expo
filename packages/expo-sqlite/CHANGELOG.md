@@ -4,17 +4,54 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.2.0 — 2023-11-14
+
+### 🐛 Bug fixes
+
+- Fixed the `transactionExclusiveAsync` does not support CRSQLite. ([#25370](https://github.com/expo/expo/pull/25370) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Build `crsqlite` from source using the correct architectures. ([#25363](https://github.com/expo/expo/pull/25363) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.1.0 — 2023-11-10
+
+### 🎉 New features
+
+- Improved performance on the `expo-sqlite/next` API. ([#25314](https://github.com/expo/expo/pull/25314) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fix crash issues in `sqlite/next`. ([#25295](https://github.com/expo/expo/pull/25295) by [@kudo](https://github.com/kudo))
+- Fix `executeSqlAsync` to accept null properly as arguments. ([#24761](https://github.com/expo/expo/pull/24761) by [@spencerc99](https://github.com/spencerc99))
+- Fixed `useSQLiteContext()` and `finalizeUnusedStatementsBeforeClosing` issues in `expo-sqlite/next` API. ([#25328](https://github.com/expo/expo/pull/25328) by [@kudo](https://github.com/kudo))
+
+## 12.0.0 — 2023-11-06
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Remove CRSQLite support on legacy API. ([#25092](https://github.com/expo/expo/pull/25092) by [@kudo](https://github.com/kudo))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🎉 New features
 
 - Added Android implementation for `sqlite/next` APIs. ([#25021](https://github.com/expo/expo/pull/25021) by [@kudo](https://github.com/kudo))
+- Added the `useSQLiteContext` hook that can be used across components. ([#25129](https://github.com/expo/expo/pull/25129) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 - [ios] Fix some issues for `sqlite/next`. ([#25022](https://github.com/expo/expo/pull/25022) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- [Android] Removed the package included SQLite source and download in build time. ([#25186](https://github.com/expo/expo/pull/25186) by [@kudo](https://github.com/kudo))
 
 ## 11.8.0 — 2023-10-17
 

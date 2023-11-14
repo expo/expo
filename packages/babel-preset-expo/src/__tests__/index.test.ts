@@ -4,16 +4,26 @@ import * as path from 'node:path';
 
 import preset from '..';
 
-function getCaller(props: Record<string, string>): babel.TransformCaller {
+function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
 }
+
+jest.mock('../common.ts', () => ({
+  ...jest.requireActual('../common.ts'),
+  hasModule: jest.fn((moduleId) => {
+    if (['react-native-reanimated', 'expo-router', '@expo/vector-icons'].includes(moduleId)) {
+      return true;
+    }
+    return false;
+  }),
+}));
 
 it(`compiles samples with Metro targeting Hermes`, () => {
   const options = {
     babelrc: false,
     presets: [preset],
     sourceMaps: true,
-    filename: 'unknown',
+    filename: '/unknown',
     configFile: false,
     compact: false,
     comments: true,
@@ -30,11 +40,6 @@ var obj = {
   foo: "foo",
   bar: "bar"
 };
-
-// @babel/plugin-transform-parameters
-function test(x = "hello", { a, b }, ...args) {
-  console.log(x, a, b, args);
-}
 
 // @babel/plugin-transform-shorthand-properties
 var a1 = 0;
@@ -137,11 +142,10 @@ it(`supports overwriting the default engine option`, () => {
 });
 
 describe.each([
-  ['metro', getCaller({ name: 'metro' })],
-  ['metro+hermes', getCaller({ name: 'metro', engine: 'hermes' })],
-  ['webpack', getCaller({ name: 'babel-loader' })],
+  ['metro', getCaller({ name: 'metro', isDev: false })],
+  ['metro+hermes', getCaller({ name: 'metro', engine: 'hermes', isDev: true })],
+  ['webpack', getCaller({ name: 'babel-loader', isDev: true })],
 ])('%s', (_name, caller) => {
-  const isMetro = _name.includes('metro');
   it(`compiles sample files`, () => {
     const options = {
       babelrc: false,
@@ -168,7 +172,7 @@ describe.each([
     const options = {
       babelrc: false,
       presets: [preset],
-      filename: 'unknown',
+      filename: '/unknown',
       // Make the snapshot easier to read
       retainLines: true,
       caller,
@@ -186,7 +190,7 @@ import { View } from 'react-native';
     const options = {
       babelrc: false,
       presets: [preset],
-      filename: 'unknown',
+      filename: '/unknown',
       // Make the snapshot easier to read
       retainLines: true,
       caller,
@@ -197,30 +201,6 @@ export * as default from './Animated';
 `;
     const { code } = babel.transform(sourceCode, options)!;
 
-    expect(code).toMatchSnapshot();
-  });
-
-  it(`supports automatic JSX runtime`, () => {
-    const options = {
-      babelrc: false,
-      presets: [[preset, { jsxRuntime: 'automatic' }]],
-      filename: 'unknown',
-      // Make the snapshot easier to read
-      retainLines: true,
-      caller,
-    };
-
-    // No React import...
-    const sourceCode = `
-import { Text, View } from 'react-native';
-export default function App() {
-  return (<View><Text>Hello World</Text></View>);
-}`;
-    const { code } = babel.transform(sourceCode, options)!;
-
-    expect(code).toMatch(/"react\/jsx-runtime"/);
-
-    expect(code).toMatch(isMetro ? /_jsxRuntime.jsx/ : /_jsx\(View/);
     expect(code).toMatchSnapshot();
   });
 
@@ -256,7 +236,9 @@ export default function App() {
     };
 
     function stablePaths(src) {
-      return src.replace(new RegExp(samplesPath, 'g'), '[mock]/worklet.js');
+      return src
+        .replace(new RegExp(samplesPath, 'g'), '[mock]/worklet.js')
+        .replace(/version:".*"/, 'version:"[GLOBAL]"');
     }
 
     const code = stablePaths(babel.transformFileSync(samplesPath, options)!.code);
@@ -272,30 +254,6 @@ export default function App() {
         })!.code
       )
     ).toBe(code);
-  });
-
-  it(`supports classic JSX runtime`, () => {
-    const options = {
-      babelrc: false,
-      presets: [[preset, { jsxRuntime: 'classic' }]],
-      filename: 'unknown',
-      // Make the snapshot easier to read
-      retainLines: true,
-      caller,
-    };
-
-    // No React import...
-    const sourceCode = `
-import { Text, View } from 'react-native';
-export default function App() {
-  return (<View><Text>Hello World</Text></View>);
-}`;
-    const { code } = babel.transform(sourceCode, options)!;
-
-    expect(code).not.toMatch(/"react\/jsx-runtime"/);
-
-    expect(code).not.toMatch(isMetro ? /_jsxRuntime.jsx/ : /_jsx\(View/);
-    expect(code).toMatchSnapshot();
   });
 
   it(`aliases @expo/vector-icons`, () => {

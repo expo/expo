@@ -4,7 +4,6 @@ import Foundation
 
 public typealias UpdatesErrorBlock = (_ error: Error) -> Void
 public typealias UpdatesUpdateSuccessBlock = (_ manifest: [String: Any]?) -> Void
-public typealias UpdatesQuerySuccessBlock = (_ updateIds: [UUID]) -> Void
 public typealias UpdatesProgressBlock = (_ successfulAssetCount: UInt, _ failedAssetCount: UInt, _ totalAssetCount: UInt) -> Void
 
 /**
@@ -30,16 +29,6 @@ public protocol UpdatesExternalInterface {
     onManifest manifestBlock: @escaping UpdatesManifestBlock,
     progress progressBlock: @escaping UpdatesProgressBlock,
     success successBlock: @escaping UpdatesUpdateSuccessBlock,
-    error errorBlock: @escaping UpdatesErrorBlock
-  )
-
-  /**
-   * Obtains a list of UUIDs for updates already in the updates DB that are in the READY state.
-   * The success block will pass in the array of UUIDs
-   */
-  @objc func storedUpdateIds(
-    withConfiguration configuration: [String: Any],
-    success successBlock: @escaping UpdatesQuerySuccessBlock,
     error errorBlock: @escaping UpdatesErrorBlock
   )
 }

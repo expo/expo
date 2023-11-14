@@ -1,5 +1,5 @@
 const { createMetroConfiguration } = require('expo-yarn-workspaces');
-const { FileStore } = require('metro-cache');
+const { FileStore } = require('@expo/metro-config/file-store');
 
 // Find the project and workspace directories
 const projectRoot = __dirname;

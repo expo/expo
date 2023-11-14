@@ -18,7 +18,7 @@ describe('exports static', () => {
     async () => {
       await execa(
         'node',
-        [bin, 'export', '-p', 'web', '--dump-sourcemap', '--output-dir', outputName],
+        [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName],
         {
           cwd: projectRoot,
           env: {

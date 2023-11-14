@@ -15,6 +15,9 @@ if [ "$1" == "plugin" ]; then
   if [[ -f plugin/jest.config.js ]]; then
     args+=("--config")
     args+=("plugin/jest.config.js")
+  else
+    args+=("--config")
+    args+=("$(node --print "require.resolve('expo-module-scripts/jest-preset-plugin.js')")")
   fi
 
   # Push the rest of the arguments minus the `plugin` arg

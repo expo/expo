@@ -25,12 +25,9 @@ export class DevToolsPluginMiddleware extends ExpoMiddleware {
   async handleRequestAsync(req: ServerRequest, res: ServerResponse): Promise<void> {
     assert(req.headers.host, 'Request headers must include host');
     const { pathname } = new URL(req.url ?? '/', `http://${req.headers.host}`);
-    const pluginName = pathname.substring(DevToolsPluginEndpoint.length + 1).split('/')[0];
-    if (!pluginName) {
-      res.statusCode = 404;
-      res.end();
-      return;
-    }
+    const pluginName = this.queryPossiblePluginName(
+      pathname.substring(DevToolsPluginEndpoint.length + 1)
+    );
     const webpageRoot = await this.pluginManager.queryPluginWebpageRootAsync(pluginName);
     if (!webpageRoot) {
       res.statusCode = 404;
@@ -41,5 +38,14 @@ export class DevToolsPluginMiddleware extends ExpoMiddleware {
     const pathInPluginRoot =
       pathname.substring(DevToolsPluginEndpoint.length + pluginName.length + 1) || '/';
     send(req, pathInPluginRoot, { root: webpageRoot }).pipe(res);
+  }
+
+  private queryPossiblePluginName(pathname: string): string {
+    const parts = pathname.split('/');
+    if (parts[0][0] === '@' && parts.length > 1) {
+      // Scoped package name
+      return `${parts[0]}/${parts[1]}`;
+    }
+    return parts[0];
   }
 }

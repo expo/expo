@@ -5,6 +5,9 @@ const withFontsAndroid_1 = require("./withFontsAndroid");
 const withFontsIos_1 = require("./withFontsIos");
 const pkg = require('expo-font/package.json');
 const withFonts = (config, props) => {
+    if (!props) {
+        return config;
+    }
     if (props.fonts && props.fonts.length === 0) {
         return config;
     }

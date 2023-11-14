@@ -14,7 +14,7 @@ import java.io.IOException
 @Suppress("unused")
 class SQLiteModuleNext : Module() {
   private val cachedDatabases: MutableList<NativeDatabase> = mutableListOf()
-  private val cachedStatements: MutableList<NativeStatement> = mutableListOf()
+  private val cachedStatements: MutableMap<NativeDatabase, MutableList<NativeStatement>> = mutableMapOf()
   private var hasListeners = false
 
   private val context: Context
@@ -34,14 +34,11 @@ class SQLiteModuleNext : Module() {
     }
 
     OnDestroy {
-      cachedStatements.forEach {
-        it.ref.sqlite3_finalize()
-      }
-      cachedStatements.clear()
-      cachedDatabases.forEach {
-        closeDatabase(it)
-      }
-      cachedDatabases.clear()
+      try {
+        removeAllCachedDatabases().forEach {
+          closeDatabase(it)
+        }
+      } catch (_: Throwable) {}
     }
 
     AsyncFunction("deleteDatabaseAsync") { dbName: String ->
@@ -56,17 +53,15 @@ class SQLiteModuleNext : Module() {
         val dbPath = pathForDatabaseName(dbName)
 
         // Try to find opened database for fast refresh
-        for (database in cachedDatabases) {
-          if (database.dbName == dbName && database.openOptions == options && !options.useNewConnection) {
-            return@Constructor database
-          }
+        findCachedDatabase { it.dbName == dbName && it.openOptions == options && !options.useNewConnection }?.let {
+          return@Constructor it
         }
 
         val database = NativeDatabase(dbName, options)
         if (database.ref.sqlite3_open(dbPath) != NativeDatabaseBinding.SQLITE_OK) {
           throw OpenDatabaseException(dbName)
         }
-        cachedDatabases.add(database)
+        addCachedDatabase(database)
         return@Constructor database
       }
 
@@ -85,12 +80,12 @@ class SQLiteModuleNext : Module() {
       }
 
       AsyncFunction("closeAsync") { database: NativeDatabase ->
+        removeCachedDatabase(database)
         closeDatabase(database)
-        cachedDatabases.remove(database)
       }
       Function("closeSync") { database: NativeDatabase ->
+        removeCachedDatabase(database)
         closeDatabase(database)
-        cachedDatabases.remove(database)
       }
 
       AsyncFunction("execAsync") { database: NativeDatabase, source: String ->
@@ -155,6 +150,13 @@ class SQLiteModuleNext : Module() {
         return@Function objectGetAll(statement, database, bindParams)
       }
 
+      AsyncFunction("getColumnNamesAsync") { statement: NativeStatement ->
+        return@AsyncFunction statement.ref.getColumnNames()
+      }
+      Function("getColumnNamesSync") { statement: NativeStatement ->
+        return@Function statement.ref.getColumnNames()
+      }
+
       AsyncFunction("resetAsync") { statement: NativeStatement, database: NativeDatabase ->
         return@AsyncFunction reset(statement, database)
       }
@@ -199,7 +201,7 @@ class SQLiteModuleNext : Module() {
   @Throws(SQLiteErrorException::class)
   private fun prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) {
     database.ref.sqlite3_prepare_v2(source, statement.ref)
-    cachedStatements.add(statement)
+    maybeAddCachedStatement(database, statement)
   }
 
   @Throws(SQLiteErrorException::class)
@@ -236,13 +238,13 @@ class SQLiteModuleNext : Module() {
   }
 
   @Throws(InvalidConvertibleException::class, SQLiteErrorException::class)
-  private fun arrayGet(statement: NativeStatement, database: NativeDatabase, bindParams: List<Any>): Row? {
+  private fun arrayGet(statement: NativeStatement, database: NativeDatabase, bindParams: List<Any>): ColumnValues? {
     for ((index, param) in bindParams.withIndex()) {
       statement.ref.bindStatementParam(index + 1, param)
     }
     val ret = statement.ref.sqlite3_step()
     if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-      return statement.ref.getRow()
+      return statement.ref.getColumnValues()
     }
     if (ret != NativeDatabaseBinding.SQLITE_DONE) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
@@ -251,7 +253,7 @@ class SQLiteModuleNext : Module() {
   }
 
   @Throws(InvalidConvertibleException::class, SQLiteErrorException::class)
-  private fun objectGet(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>): Row? {
+  private fun objectGet(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>): ColumnValues? {
     for ((name, param) in bindParams) {
       val index = statement.ref.sqlite3_bind_parameter_index(name)
       if (index > 0) {
@@ -260,7 +262,7 @@ class SQLiteModuleNext : Module() {
     }
     val ret = statement.ref.sqlite3_step()
     if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-      return statement.ref.getRow()
+      return statement.ref.getColumnValues()
     }
     if (ret != NativeDatabaseBinding.SQLITE_DONE) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
@@ -269,44 +271,44 @@ class SQLiteModuleNext : Module() {
   }
 
   @Throws(InvalidConvertibleException::class, SQLiteErrorException::class)
-  private fun arrayGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: List<Any>): List<Row> {
+  private fun arrayGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: List<Any>): List<ColumnValues> {
     for ((index, param) in bindParams.withIndex()) {
       statement.ref.bindStatementParam(index + 1, param)
     }
-    val rows = mutableListOf<Row>()
+    val columnValuesList = mutableListOf<ColumnValues>()
     while (true) {
       val ret = statement.ref.sqlite3_step()
       if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-        rows.add(statement.ref.getRow())
+        columnValuesList.add(statement.ref.getColumnValues())
         continue
       } else if (ret == NativeDatabaseBinding.SQLITE_DONE) {
         break
       }
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
-    return rows
+    return columnValuesList
   }
 
   @Throws(InvalidConvertibleException::class, SQLiteErrorException::class)
-  private fun objectGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>): List<Row> {
+  private fun objectGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>): List<ColumnValues> {
     for ((name, param) in bindParams) {
       val index = statement.ref.sqlite3_bind_parameter_index(name)
       if (index > 0) {
         statement.ref.bindStatementParam(index, param)
       }
     }
-    val rows = mutableListOf<Row>()
+    val columnValuesList = mutableListOf<ColumnValues>()
     while (true) {
       val ret = statement.ref.sqlite3_step()
       if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-        rows.add(statement.ref.getRow())
+        columnValuesList.add(statement.ref.getColumnValues())
         continue
       } else if (ret == NativeDatabaseBinding.SQLITE_DONE) {
         break
       }
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
-    return rows
+    return columnValuesList
   }
 
   @Throws(SQLiteErrorException::class)
@@ -318,10 +320,10 @@ class SQLiteModuleNext : Module() {
 
   @Throws(SQLiteErrorException::class)
   private fun finalize(statement: NativeStatement, database: NativeDatabase) {
+    maybeRemoveCachedStatement(database, statement)
     if (statement.ref.sqlite3_finalize() != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
-    cachedStatements.remove(statement)
   }
 
   private fun loadCRSQLiteExtension(database: NativeDatabase) {
@@ -355,15 +357,22 @@ class SQLiteModuleNext : Module() {
     }
   }
 
+  @Throws(SQLiteErrorException::class)
   private fun closeDatabase(database: NativeDatabase) {
+    maybeRemoveAllCachedStatements(database).forEach {
+      it.ref.sqlite3_finalize()
+    }
     if (database.openOptions.enableCRSQLite) {
       database.ref.sqlite3_exec("SELECT crsql_finalize()")
     }
-    database.ref.sqlite3_close()
+    val ret = database.ref.sqlite3_close()
+    if (ret != NativeDatabaseBinding.SQLITE_OK) {
+      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+    }
   }
 
   private fun deleteDatabase(dbName: String) {
-    cachedDatabases.find { it.dbName == dbName }?.let {
+    findCachedDatabase { it.dbName == dbName }?.let {
       throw DeleteDatabaseException(dbName)
     }
 
@@ -375,6 +384,69 @@ class SQLiteModuleNext : Module() {
       throw DeleteDatabaseFileException(dbName)
     }
   }
+
+  // region cachedDatabases managements
+
+  @Synchronized
+  private fun addCachedDatabase(database: NativeDatabase) {
+    cachedDatabases.add(database)
+  }
+
+  @Synchronized
+  private fun removeCachedDatabase(database: NativeDatabase): NativeDatabase? {
+    return if (cachedDatabases.remove(database)) {
+      database
+    } else {
+      null
+    }
+  }
+
+  @Synchronized
+  private fun findCachedDatabase(predicate: (NativeDatabase) -> Boolean): NativeDatabase? {
+    return cachedDatabases.find(predicate)
+  }
+
+  @Synchronized
+  private fun removeAllCachedDatabases(): List<NativeDatabase> {
+    val databases = cachedDatabases
+    cachedDatabases.clear()
+    return databases
+  }
+
+  // endregion
+
+  // region cachedStatements managements
+
+  @Synchronized
+  private fun maybeAddCachedStatement(database: NativeDatabase, statement: NativeStatement) {
+    if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
+      return
+    }
+    val statements = cachedStatements[database]
+    if (statements != null) {
+      statements.add(statement)
+    } else {
+      cachedStatements[database] = mutableListOf(statement)
+    }
+  }
+
+  @Synchronized
+  private fun maybeRemoveCachedStatement(database: NativeDatabase, statement: NativeStatement) {
+    if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
+      return
+    }
+    cachedStatements[database]?.remove(statement)
+  }
+
+  @Synchronized
+  private fun maybeRemoveAllCachedStatements(database: NativeDatabase): List<NativeStatement> {
+    if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
+      return emptyList()
+    }
+    return cachedStatements.remove(database) ?: emptyList()
+  }
+
+  // endregion
 
   companion object {
     private val TAG = SQLiteModuleNext::class.java.simpleName

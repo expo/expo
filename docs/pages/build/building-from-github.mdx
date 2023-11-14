@@ -6,9 +6,7 @@ description: Learn how to trigger builds on EAS for your app using the Expo GitH
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-You can trigger builds on EAS for your app from a CI environment such as GitHub Actions, Travis CI, and more.
-
-Before building with EAS on CI, you'll need to install and configure `eas-cli`. Then, you can trigger new builds with the `eas build` command.
+This guide explains how to trigger builds directly from your GitHub repository using the Expo GitHub App.
 
 ## Prerequisites
 
@@ -93,7 +91,7 @@ settings for this project.
 You can trigger a build from a GitHub PR by adding a label to the PR. The label must be in the form
 of `eas-build-[platform]:[profile]` where `[platform]` is either `android`, `ios`, or `all` and
 `[profile]` is the name of a build profile specified in your **eas.json** file. If you don't specify
-a build platform, it will default to `all`. If you don't speficy
+a build platform, it will default to `all`. If you don't specify
 a build profile, it will default to `production`.
 
 For example, if
