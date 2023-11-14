@@ -171,13 +171,11 @@ class Chunk {
         if (dependency.data.data.asyncType === 'async') {
           const chunkContainingModule = chunks.find(chunk => chunk.hasAbsolutePath(dependency.absolutePath));
           (0, _assert().default)(chunkContainingModule, 'Chunk containing module not found: ' + dependency.absolutePath);
-          console.log('chunkContainingModule', chunkContainingModule, dependency.absolutePath);
           const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
           computedAsyncModulePaths[dependency.absolutePath] = (baseUrl !== null && baseUrl !== void 0 ? baseUrl : '/') + moduleIdName;
         }
       });
     });
-    console.log('computed:', computedAsyncModulePaths);
     return computedAsyncModulePaths;
   }
   serializeToCode(serializerConfig, chunks) {
