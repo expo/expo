@@ -110,6 +110,7 @@ export async function exportAppAsync(
 
     // TODO: Use same asset system across platforms again.
     const { assets, embeddedHashSet } = await exportAssetsAsync(projectRoot, {
+      files,
       exp,
       outputDir: outputPath,
       bundles,
@@ -192,7 +193,6 @@ export async function exportAppAsync(
       // Generate SPA-styled HTML file.
       // If web exists, then write the template HTML file.
       files.set('index.html', html);
-      // await fs.promises.writeFile(path.join(outputPath, 'index.html'), html);
     }
   }
 

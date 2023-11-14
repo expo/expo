@@ -126,11 +126,13 @@ export async function exportAssetsAsync(
     outputDir,
     bundles: { web, ...bundles },
     baseUrl,
+    files = new Map(),
   }: {
     exp: ExpoConfig;
     bundles: Partial<Record<string, BundleOutput>>;
     outputDir: string;
     baseUrl: string;
+    files?: Map<string, string | Buffer>;
   }
 ) {
   // NOTE: We use a different system for static web
@@ -170,11 +172,11 @@ export async function exportAssetsAsync(
       });
       debug(`Filtered assets count = ${filteredAssets.length}`);
     }
-    await saveAssetsAsync({ assets: filteredAssets, outputDir });
+    await saveAssetsAsync({ assets: filteredAssets, files });
   }
 
   // Add google services file if it exists
   await resolveGoogleServicesFile(projectRoot, exp);
 
-  return { exp, assets, embeddedHashSet };
+  return { exp, assets, embeddedHashSet, files };
 }

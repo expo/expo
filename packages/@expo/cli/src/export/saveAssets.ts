@@ -1,5 +1,5 @@
 import path from 'path';
-
+import fs from 'fs';
 import { BundleAssetWithFileHashes } from './fork-bundleAsync';
 import { copyInBatchesAsync } from './persistMetroAssets';
 
@@ -9,10 +9,12 @@ export type Asset = ManifestAsset | BundleAssetWithFileHashes;
 
 export async function saveAssetsAsync({
   assets,
-  outputDir,
+  // outputDir,
+  files,
 }: {
   assets: Asset[];
-  outputDir: string;
+  // outputDir: string;
+  files: Map<string, string | Buffer>;
 }) {
   const paths: Record<string, string> = {};
   const hashes = new Set<string>();
@@ -21,9 +23,11 @@ export async function saveAssetsAsync({
       const hash = asset.fileHashes[index];
       if (hashes.has(hash)) return;
       hashes.add(hash);
-      paths[fp] = path.join(outputDir, 'assets', hash);
+      files.set(path.join('assets', hash), fs.readFileSync(fp));
+      // paths[fp] = path.join(outputDir, 'assets', hash);
     });
   });
 
-  await copyInBatchesAsync(paths);
+  return files;
+  // await copyInBatchesAsync(paths);
 }
