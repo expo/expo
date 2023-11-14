@@ -26,7 +26,6 @@ export type Options = {
   splitChunks: boolean;
   skipWrapping: boolean;
   computedAsyncModulePaths: Record<string, string> | null;
-  //   ...
 };
 
 export function wrapModule(

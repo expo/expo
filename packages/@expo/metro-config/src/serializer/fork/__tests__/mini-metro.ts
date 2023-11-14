@@ -123,7 +123,7 @@ transformOptions: {
 serializerOptions: (options.output || options.hermes || options.sourceMaps) ? {
     output: options.output,
     includeBytecode: options.hermes,
-    includeMaps: options.sourceMaps
+    includeSourceMaps: options.sourceMaps
 } : undefined,
 
 sourceMapUrl: options.sourceMaps ? 'https://localhost:8081/indedx.bundle?dev=false' : undefined,

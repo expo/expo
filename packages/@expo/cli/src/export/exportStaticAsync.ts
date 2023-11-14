@@ -35,7 +35,7 @@ type Options = {
   minify: boolean;
   exportServer: boolean;
   baseUrl: string;
-  includeMaps: boolean;
+  includeSourceMaps: boolean;
   entryPoint?: string;
   clear: boolean;
 };
@@ -121,7 +121,7 @@ export async function getFilesToExportFromServerAsync(
 async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, baseUrl, exportServer, minify, includeMaps, files = new Map() }: Options
+  { outputDir, baseUrl, exportServer, minify, includeSourceMaps, files = new Map() }: Options
 ): Promise<ExportAssetMap> {
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const appDir = getRouterDirectoryWithManifest(projectRoot, exp);
@@ -135,7 +135,7 @@ async function exportFromServerAsync(
   assert(devServer instanceof MetroBundlerDevServer);
 
   const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
-    devServer.getStaticResourcesAsync({ mode: 'production', minify, includeMaps, baseUrl }),
+    devServer.getStaticResourcesAsync({ mode: 'production', minify, includeSourceMaps, baseUrl }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
       minify,
@@ -170,7 +170,7 @@ async function exportFromServerAsync(
   });
 
   getFilesFromSerialAssets(resources.artifacts, {
-    includeMaps,
+    includeSourceMaps,
     files,
   });
 

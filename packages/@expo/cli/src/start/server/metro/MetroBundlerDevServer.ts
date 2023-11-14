@@ -184,13 +184,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticResourcesAsync({
     mode,
     minify = mode !== 'development',
-    includeMaps,
+    includeSourceMaps,
     baseUrl,
     mainModuleName,
   }: {
     mode: string;
     minify?: boolean;
-    includeMaps?: boolean;
+    includeSourceMaps?: boolean;
     baseUrl?: string;
     mainModuleName?: string;
   }): Promise<{ artifacts: SerialAsset[]; assets?: AssetData[] }> {
@@ -200,7 +200,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       minify,
       environment: 'client',
       serializerOutput: 'static',
-      serializerIncludeMaps: includeMaps,
+      serializerIncludeMaps: includeSourceMaps,
       mainModuleName:
         mainModuleName ?? resolveMainModuleName(this.projectRoot, { platform: 'web' }),
       lazy: shouldEnableAsyncImports(this.projectRoot),

@@ -99,8 +99,6 @@ function getDefaultSerializer(config, fallbackSerializer) {
   };
   return async (...props) => {
     const [,,, options] = props;
-
-    // @ts-expect-error
     const customSerializerOptions = options.serializerOptions;
 
     // Custom options can only be passed outside of the dev server, meaning
@@ -111,7 +109,7 @@ function getDefaultSerializer(config, fallbackSerializer) {
         return {
           includeBytecode: customSerializerOptions.includeBytecode,
           outputMode: customSerializerOptions.output,
-          includeSourceMaps: customSerializerOptions.includeMaps
+          includeSourceMaps: customSerializerOptions.includeSourceMaps
         };
       }
       if (options.sourceUrl) {
@@ -129,8 +127,8 @@ function getDefaultSerializer(config, fallbackSerializer) {
       return defaultSerializer(...props);
     }
     const assets = await (0, _serializeChunks().graphToSerialAssetsAsync)(config, {
-      includeSourceMaps: serializerOptions.includeSourceMaps,
-      includeBytecode: serializerOptions.includeBytecode
+      includeSourceMaps: !!serializerOptions.includeSourceMaps,
+      includeBytecode: !!serializerOptions.includeBytecode
     }, ...props);
     if (supportsNonSerialReturn) {
       // @ts-expect-error: this is future proofing for adding assets to the output as well.

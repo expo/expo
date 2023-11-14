@@ -48,7 +48,7 @@ function withDefaults({
 }
 
 export type SerializerOptions = {
-  includeMaps?: boolean;
+  includeSourceMaps?: boolean;
   includeBytecode?: boolean;
   output?: 'static';
 };
@@ -128,7 +128,7 @@ export function getMetroDirectBundleOptions(
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
       output: serializerOutput,
-      includeMaps: serializerIncludeMaps,
+      includeSourceMaps: serializerIncludeMaps,
       includeBytecode: serializerIncludeBytecode,
     },
   };

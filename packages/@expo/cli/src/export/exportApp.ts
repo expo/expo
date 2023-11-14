@@ -95,7 +95,7 @@ export async function exportAppAsync(
 
   Object.values(bundles).forEach((bundle) => {
     getFilesFromSerialAssets(bundle.artifacts, {
-      includeMaps: sourceMaps,
+      includeSourceMaps: sourceMaps,
       files,
     });
   });
@@ -157,7 +157,7 @@ export async function exportAppAsync(
         outputDir: outputPath,
         minify,
         baseUrl,
-        includeMaps: sourceMaps,
+        includeSourceMaps: sourceMaps,
         // @ts-expect-error: server not on type yet
         exportServer: exp.web?.output === 'server',
       });

@@ -182,16 +182,16 @@ function groupBy<T>(array: T[], key: (item: T) => string): Map<string, T[]> {
 export function getFilesFromSerialAssets(
   resources: SerialAsset[],
   {
-    includeMaps,
+    includeSourceMaps,
     files = new Map(),
   }: {
-    includeMaps: boolean;
+    includeSourceMaps: boolean;
     files?: ExportAssetMap;
   }
 ) {
   resources.forEach((resource) => {
     files.set(resource.filename, {
-      contents: modifyBundlesWithSourceMaps(resource.filename, resource.source, includeMaps),
+      contents: modifyBundlesWithSourceMaps(resource.filename, resource.source, includeSourceMaps),
       originFilename: resource.originFilename,
     });
   });
@@ -202,7 +202,7 @@ export function getFilesFromSerialAssets(
 export function modifyBundlesWithSourceMaps(
   filename: string,
   source: string,
-  includeMaps: boolean
+  includeSourceMaps: boolean
 ): string {
   if (filename.endsWith('.js')) {
     // If the bundle ends with source map URLs then update them to point to the correct location.
@@ -213,7 +213,7 @@ export function modifyBundlesWithSourceMaps(
     //# sourceMappingURL=//localhost:8085/index.map?platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
     //# sourceURL=http://localhost:8085/index.bundle//&platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
     return source.replace(/^\/\/# (sourceMappingURL|sourceURL)=.*$/gm, (...props) => {
-      if (includeMaps) {
+      if (includeSourceMaps) {
         // TODO: Drop sourceURL when the name is the same as the file output location.
         if (props[1] === 'sourceURL') {
           return `//# ${props[1]}=` + normalizedFilename;

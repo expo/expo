@@ -19,6 +19,9 @@ export type ExpoSerializerOptions = SerializerOptions & {
     serializerOptions?: {
         baseUrl?: string;
         skipWrapping?: boolean;
+        output?: string;
+        includeBytecode?: boolean;
+        includeSourceMaps?: boolean;
     };
 };
 export declare function getPlatformOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: Pick<SerializerOptions, 'sourceUrl'>): string | null;

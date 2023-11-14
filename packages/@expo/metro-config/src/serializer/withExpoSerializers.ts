@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { MetroConfig } from 'metro';
+import { MetroConfig, Module, ReadOnlyGraph } from 'metro';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { ConfigT, InputConfigT } from 'metro-config';
 
@@ -13,14 +13,19 @@ import {
   environmentVariableSerializerPlugin,
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
-import { baseJSBundle } from './fork/baseJSBundle';
+import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
 import { graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
-export type SerializerParameters = Parameters<Serializer>;
+export type SerializerParameters = [
+  string,
+  ReadonlyArray<Module>,
+  ReadOnlyGraph,
+  ExpoSerializerOptions,
+];
 
 // A serializer that processes the input and returns a modified version.
 // Unlike a serializer, these can be chained together.
@@ -73,7 +78,6 @@ function getDefaultSerializer(
   ): Promise<string | { code: string; map: string }> => {
     const [, , , options] = props;
 
-    // @ts-expect-error
     const customSerializerOptions = options.serializerOptions;
 
     // Custom options can only be passed outside of the dev server, meaning
@@ -85,7 +89,7 @@ function getDefaultSerializer(
         return {
           includeBytecode: customSerializerOptions.includeBytecode,
           outputMode: customSerializerOptions.output,
-          includeSourceMaps: customSerializerOptions.includeMaps,
+          includeSourceMaps: customSerializerOptions.includeSourceMaps,
         };
       }
       if (options.sourceUrl) {
@@ -111,8 +115,8 @@ function getDefaultSerializer(
     const assets = await graphToSerialAssetsAsync(
       config,
       {
-        includeSourceMaps: serializerOptions.includeSourceMaps,
-        includeBytecode: serializerOptions.includeBytecode,
+        includeSourceMaps: !!serializerOptions.includeSourceMaps,
+        includeBytecode: !!serializerOptions.includeBytecode,
       },
       ...props
     );
