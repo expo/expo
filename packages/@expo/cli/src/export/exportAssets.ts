@@ -1,12 +1,11 @@
 import { ExpoConfig } from '@expo/config';
-import { ModPlatform } from '@expo/config-plugins';
-import fs from 'fs';
 import minimatch from 'minimatch';
 import path from 'path';
+import fs from 'fs';
 
 import { BundleOutput } from './fork-bundleAsync';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
-import { Asset, saveAssetsAsync } from './saveAssets';
+import { Asset } from './saveAssets';
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
@@ -172,7 +171,18 @@ export async function exportAssetsAsync(
       });
       debug(`Filtered assets count = ${filteredAssets.length}`);
     }
-    await saveAssetsAsync({ assets: filteredAssets, files });
+
+    const hashes = new Set<string>();
+
+    // Add assets to copy.
+    filteredAssets.forEach((asset) => {
+      asset.files.forEach((fp: string, index: number) => {
+        const hash = asset.fileHashes[index];
+        if (hashes.has(hash)) return;
+        hashes.add(hash);
+        files.set(path.join('assets', hash), fs.readFileSync(fp));
+      });
+    });
   }
 
   // Add google services file if it exists

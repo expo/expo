@@ -165,8 +165,6 @@ export async function exportAppAsync(
         // @ts-expect-error: server not on type yet
         exportServer: exp.web?.output === 'server',
       });
-
-      Log.log('Static web exported');
     } else {
       // TODO: Unify with exportStaticAsync
       // TODO: Maybe move to the serializer.

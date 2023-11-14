@@ -205,7 +205,6 @@ async function exportFromServerAsync(
     warnPossibleInvalidExportType(appDir);
   }
 
-  // await persistMetroFilesAsync(files, outputDir);
   return files;
 }
 
