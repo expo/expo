@@ -2,10 +2,12 @@ interface HermesBundleOutput {
     hbc: Uint8Array;
     sourcemap: string | null;
 }
-export declare function buildHermesBundleAsync({ code, map, minify, filename, }: {
+type BuildHermesOptions = {
     filename: string;
     code: string;
     map: string | null;
     minify?: boolean;
-}): Promise<HermesBundleOutput>;
+};
+export declare function buildHermesBundleAsync(options: BuildHermesOptions): Promise<HermesBundleOutput>;
+export declare function directlyBuildHermesBundleAsync({ code, map, minify, filename, }: BuildHermesOptions): Promise<HermesBundleOutput>;
 export {};

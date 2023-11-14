@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.buildHermesBundleAsync = buildHermesBundleAsync;
+exports.directlyBuildHermesBundleAsync = directlyBuildHermesBundleAsync;
 function _spawnAsync() {
   const data = _interopRequireDefault(require("@expo/spawn-async"));
   _spawnAsync = function () {
@@ -85,13 +86,23 @@ function getHermesCommandPlatform() {
       throw new Error(`Unsupported host platform for Hermes compiler: ${_os().default.platform()}`);
   }
 }
-async function buildHermesBundleAsync({
+// Only one hermes build at a time is supported.
+let currentHermesBuild = null;
+async function buildHermesBundleAsync(options) {
+  if (currentHermesBuild) {
+    debug(`Waiting for existing Hermes builds to finish`);
+    await currentHermesBuild;
+  }
+  currentHermesBuild = directlyBuildHermesBundleAsync(options);
+  return await currentHermesBuild;
+}
+async function directlyBuildHermesBundleAsync({
   code,
   map,
   minify = false,
   filename
 }) {
-  const tempDir = _path().default.join(_os().default.tmpdir(), `expo-bundler-${_process().default.pid}`);
+  const tempDir = _path().default.join(_os().default.tmpdir(), `expo-bundler-${Math.random()}-${Date.now()}`);
   await _fsExtra().default.ensureDir(tempDir);
   try {
     const tempBundleFile = _path().default.join(tempDir, 'index.js');

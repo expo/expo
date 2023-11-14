@@ -51,18 +51,35 @@ interface HermesBundleOutput {
   hbc: Uint8Array;
   sourcemap: string | null;
 }
-export async function buildHermesBundleAsync({
-  code,
-  map,
-  minify = false,
-  filename,
-}: {
+
+type BuildHermesOptions = {
   filename: string;
   code: string;
   map: string | null;
   minify?: boolean;
-}): Promise<HermesBundleOutput> {
-  const tempDir = path.join(os.tmpdir(), `expo-bundler-${process.pid}`);
+};
+
+// Only one hermes build at a time is supported.
+let currentHermesBuild: Promise<HermesBundleOutput> | null = null;
+
+export async function buildHermesBundleAsync(
+  options: BuildHermesOptions
+): Promise<HermesBundleOutput> {
+  if (currentHermesBuild) {
+    debug(`Waiting for existing Hermes builds to finish`);
+    await currentHermesBuild;
+  }
+  currentHermesBuild = directlyBuildHermesBundleAsync(options);
+  return await currentHermesBuild;
+}
+
+export async function directlyBuildHermesBundleAsync({
+  code,
+  map,
+  minify = false,
+  filename,
+}: BuildHermesOptions): Promise<HermesBundleOutput> {
+  const tempDir = path.join(os.tmpdir(), `expo-bundler-${Math.random()}-${Date.now()}`);
   await fs.ensureDir(tempDir);
   try {
     const tempBundleFile = path.join(tempDir, 'index.js');
