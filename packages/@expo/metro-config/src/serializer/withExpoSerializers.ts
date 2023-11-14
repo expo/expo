@@ -5,24 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { Module, MixedOutput, MetroConfig, AssetData } from 'metro';
-import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
-// @ts-expect-error
-import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
+import { MetroConfig } from 'metro';
 import bundleToString from 'metro/src/lib/bundleToString';
-import { InputConfigT, SerializerConfigT } from 'metro-config';
-import path from 'path';
+import { ConfigT, InputConfigT } from 'metro-config';
 
 import {
-  serverPreludeSerializerPlugin,
   environmentVariableSerializerPlugin,
+  serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
-import { baseJSBundle, getPlatformOption } from './fork/baseJSBundle';
-import { fileNameFromContents, getCssSerialAssets } from './getCssDeps';
+import { baseJSBundle } from './fork/baseJSBundle';
+import { graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
 
-export type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
+export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
 export type SerializerParameters = Parameters<Serializer>;
 
@@ -75,126 +71,54 @@ function getDefaultSerializer(
   return async (
     ...props: SerializerParameters
   ): Promise<string | { code: string; map: string }> => {
-    const [entryPoint, preModules, graph, options] = props;
+    const [, , , options] = props;
 
-    const platform = getPlatformOption(graph, options);
+    // @ts-expect-error
+    const customSerializerOptions = options.serializerOptions;
 
-    if (!options.sourceUrl) {
-      return await defaultSerializer(entryPoint, preModules, graph, options);
+    // Custom options can only be passed outside of the dev server, meaning
+    // we don't need to stringify the results at the end, i.e. this is `npx expo export` or `npx expo export:embed`.
+    const supportsNonSerialReturn = !!customSerializerOptions?.output;
+
+    const serializerOptions = (() => {
+      if (customSerializerOptions) {
+        return {
+          outputMode: customSerializerOptions.output,
+          includeSourceMaps: customSerializerOptions.includeMaps,
+        };
+      }
+      if (options.sourceUrl) {
+        const sourceUrl = isJscSafeUrl(options.sourceUrl)
+          ? toNormalUrl(options.sourceUrl)
+          : options.sourceUrl;
+
+        const url = new URL(sourceUrl, 'https://expo.dev');
+
+        return {
+          outputMode: url.searchParams.get('serializer.output'),
+          includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
+        };
+      }
+      return null;
+    })();
+
+    if (serializerOptions?.outputMode !== 'static') {
+      return defaultSerializer(...props);
     }
 
-    const sourceUrl = isJscSafeUrl(options.sourceUrl)
-      ? toNormalUrl(options.sourceUrl)
-      : options.sourceUrl;
+    const assets = await graphToSerialAssetsAsync(
+      config,
+      { includeMaps: serializerOptions.includeSourceMaps },
+      ...props
+    );
 
-    const url = new URL(sourceUrl, 'https://expo.dev');
-
-    if (platform !== 'web' || url.searchParams.get('serializer.output') !== 'static') {
-      // Default behavior if `serializer.output=static` is not present in the URL.
-      return await defaultSerializer(entryPoint, preModules, graph, options);
+    if (supportsNonSerialReturn) {
+      // @ts-expect-error: this is future proofing for adding assets to the output as well.
+      return assets;
     }
 
-    const includeSourceMaps = url.searchParams.get('serializer.map') === 'true';
-
-    const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
-      projectRoot: options.projectRoot,
-      processModuleFilter: options.processModuleFilter,
-    });
-
-    // TODO: Convert to serial assets
-    // TODO: Disable this call dynamically in development since assets are fetched differently.
-    const metroAssets = (await getMetroAssets(graph.dependencies, {
-      processModuleFilter: options.processModuleFilter,
-      assetPlugins: config.transformer!.assetPlugins ?? [],
-      platform,
-      projectRoot: options.projectRoot, // this._getServerRootDir(),
-      publicPath: config.transformer!.publicPath!,
-    })) as AssetData[];
-
-    const jsAssets: SerialAsset[] = [];
-
-    const jsCode = await defaultSerializer(entryPoint, preModules, graph, {
-      ...options,
-      sourceMapUrl: includeSourceMaps ? options.sourceMapUrl : undefined,
-    });
-
-    const stringContents = typeof jsCode === 'string' ? jsCode : jsCode.code;
-
-    const jsFilename = fileNameFromContents({
-      filepath: url.pathname,
-      src: stringContents,
-    });
-
-    jsAssets.push({
-      filename: options.dev ? 'index.js' : `_expo/static/js/web/${jsFilename}.js`,
-      originFilename: 'index.js',
-      type: 'js',
-      metadata: {},
-      source: stringContents,
-    });
-
-    if (
-      // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
-      includeSourceMaps &&
-      options.sourceMapUrl
-    ) {
-      const sourceMap = typeof jsCode === 'string' ? serializeToSourceMap(...props) : jsCode.map;
-      jsAssets.push({
-        filename: options.dev ? 'index.map' : `_expo/static/js/web/${jsFilename}.js.map`,
-        originFilename: 'index.map',
-        type: 'map',
-        metadata: {},
-        source: sourceMap,
-      });
-    }
-
-    return JSON.stringify({ artifacts: [...jsAssets, ...cssDeps], assets: metroAssets });
+    return JSON.stringify(assets);
   };
-}
-
-function getSortedModules(
-  graph: SerializerParameters[2],
-  {
-    createModuleId,
-  }: {
-    createModuleId: (path: string) => number;
-  }
-): readonly Module<any>[] {
-  const modules = [...graph.dependencies.values()];
-  // Assign IDs to modules in a consistent order
-  for (const module of modules) {
-    createModuleId(module.path);
-  }
-  // Sort by IDs
-  return modules.sort(
-    (a: Module<any>, b: Module<any>) => createModuleId(a.path) - createModuleId(b.path)
-  );
-}
-
-function serializeToSourceMap(...props: SerializerParameters): string {
-  const [, prepend, graph, options] = props;
-
-  const modules = [
-    ...prepend,
-    ...getSortedModules(graph, {
-      createModuleId: options.createModuleId,
-    }),
-  ].map((module) => {
-    // TODO: Make this user-configurable.
-
-    // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
-    if (module.path.startsWith('/')) {
-      return {
-        ...module,
-        path: '/' + path.relative(options.serverRoot ?? options.projectRoot, module.path),
-      };
-    }
-    return module;
-  });
-
-  return sourceMapString(modules, {
-    ...options,
-  });
 }
 
 export function createSerializerFromSerialProcessors(
@@ -204,6 +128,7 @@ export function createSerializerFromSerialProcessors(
 ): Serializer {
   const finalSerializer = getDefaultSerializer(config, originalSerializer);
   return (...props: SerializerParameters): ReturnType<Serializer> => {
+    // toFixture(...props);
     for (const processor of processors) {
       if (processor) {
         props = processor(...props);

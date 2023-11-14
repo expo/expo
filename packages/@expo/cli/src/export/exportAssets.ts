@@ -179,29 +179,3 @@ export async function exportAssetsAsync(
 
   return { exp, assets, embeddedHashSet };
 }
-
-export async function exportCssAssetsAsync({
-  outputDir,
-  bundles,
-  baseUrl,
-}: {
-  bundles: Partial<Record<ModPlatform, BundleOutput>>;
-  outputDir: string;
-  baseUrl: string;
-}) {
-  const assets = uniqBy(
-    Object.values(bundles).flatMap((bundle) => bundle!.css),
-    (asset) => asset.filename
-  );
-
-  const cssDirectory = assets[0]?.filename;
-  if (!cssDirectory) return [];
-
-  await fs.promises.mkdir(path.join(outputDir, path.dirname(cssDirectory)), { recursive: true });
-
-  await Promise.all(
-    assets.map((v) => fs.promises.writeFile(path.join(outputDir, v.filename), v.source))
-  );
-
-  return assets.map((v) => baseUrl + '/' + v.filename);
-}
