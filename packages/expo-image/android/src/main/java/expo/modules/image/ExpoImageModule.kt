@@ -40,6 +40,9 @@ class ExpoImageModule : Module() {
         Glide
           .with(context)
           .load(GlideUrl(it)) //  Use `load` instead of `download` to store the asset in the memory cache
+          // We added `quality` and `downsample` to create the same cache key as in final image load.
+          .encodeQuality(100)
+          .downsample(NoopDownsampleStrategy())
           .apply {
             if (cachePolicy == CachePolicy.MEMORY) {
               diskCacheStrategy(DiskCacheStrategy.NONE)

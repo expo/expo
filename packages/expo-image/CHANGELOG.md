@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- [Android] The stability of the memory cache key generation has been improved. ([#25372](https://github.com/expo/expo/pull/25372) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
