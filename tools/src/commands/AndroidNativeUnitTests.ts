@@ -81,15 +81,10 @@ export async function androidNativeUnitTests({
       return false;
     }
 
-    let includesTests;
+    let includesTests: boolean = false;
     if (pkg.isSupportedOnPlatform('android') && !excludedInTests.includes(pkg.packageSlug)) {
       if (type === 'instrumented') {
-        // TODO: expo-updates instrumentation tests are broken at the moment
-        if (pkg.packageSlug === 'expo-updates') {
-          includesTests = false;
-        } else {
-          includesTests = await pkg.hasNativeInstrumentationTestsAsync('android');
-        }
+        includesTests = await pkg.hasNativeInstrumentationTestsAsync('android');
       } else {
         includesTests = await pkg.hasNativeTestsAsync('android');
       }

@@ -18,6 +18,7 @@
 - [iOS] Fix the E2E tests. ([#24865](https://github.com/expo/expo/pull/24865) by [@douglowder](https://github.com/douglowder))
 - [Android] Simplify UpdatesUtils.parseDateString, fix UpdatesLoggingTest. ([#24951](https://github.com/expo/expo/pull/24951) by [@douglowder](https://github.com/douglowder))
 - [iOS] Fix expo-localization tvOS compile, add CI. ([#25082](https://github.com/expo/expo/pull/25082) by [@douglowder](https://github.com/douglowder))
+- Fix instrumentation tests. ([#25367](https://github.com/expo/expo/pull/25367) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
