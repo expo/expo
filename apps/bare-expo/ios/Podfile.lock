@@ -25,8 +25,6 @@ PODS:
   - EXImageLoader (4.5.0):
     - ExpoModulesCore
     - React-Core
-  - EXInAppPurchases (14.6.0):
-    - ExpoModulesCore
   - EXJSONUtils (0.11.0)
   - EXJSONUtils/Tests (0.11.0)
   - EXLocation (16.4.0):
@@ -169,7 +167,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.7.0):
     - ExpoModulesCore
-  - ExpoImage (1.8.0):
+  - ExpoImage (1.8.1):
     - ExpoModulesCore
     - SDWebImage (~> 5.17.0)
     - SDWebImageAVIFCoder (~> 0.10.1)
@@ -754,11 +752,11 @@ PODS:
     - React-Core
   - RNDateTimePicker (7.2.0):
     - React-Core
-  - RNFlashList (1.4.3):
+  - RNFlashList (1.6.3):
     - React-Core
   - RNGestureHandler (2.12.0):
     - React-Core
-  - RNReanimated (3.5.4):
+  - RNReanimated (3.6.0-nightly-20231031-c56d44fd9):
     - DoubleConversion
     - FBLazyVector
     - glog
@@ -787,9 +785,9 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.22.0):
+  - RNScreens (3.27.0):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
-    - React-RCTImage
   - RNSVG (13.9.0):
     - React-Core
   - SDWebImage (5.17.0):
@@ -827,7 +825,6 @@ DEPENDENCIES:
   - EXContacts (from `../../../packages/expo-contacts/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
-  - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXJSONUtils/Tests (from `../../../packages/expo-json-utils/ios`)
   - EXLocation (from `../../../packages/expo-location/ios`)
@@ -1003,9 +1000,6 @@ EXTERNAL SOURCES:
   EXImageLoader:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-loader/ios"
-  EXInAppPurchases:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-in-app-purchases/ios"
   EXJSONUtils:
     inhibit_warnings: false
     :path: "../../../packages/expo-json-utils/ios"
@@ -1302,7 +1296,6 @@ SPEC CHECKSUMS:
   EXContacts: 49cadf80e7f1019821dde4a536960717f474dbeb
   EXFont: f229885758944aad44348468d62a3493012decd6
   EXImageLoader: 7f0a6f7534461787baf1c6c1140c6c13e89e82bb
-  EXInAppPurchases: fa0af818ea94ae5c2df9ff234f5f29e557d88efd
   EXJSONUtils: f201c0e92a2a835909714b9c60f6fd65dd01f785
   EXLocation: 43aa0af2d612791245df41f86d0995c7380abd53
   EXManifests: 04bba5e6b64da18ac13011c367316f203760dea8
@@ -1328,7 +1321,7 @@ SPEC CHECKSUMS:
   ExpoFileSystem: 9920645fb15201acac21ee631799ac9bfcad8479
   ExpoGL: b0a5371872d1857fb6f154a0df7e41a72ed70465
   ExpoHaptics: acdfbe0450cf8c8ce97b5801326d0dddbddf7048
-  ExpoImage: f31672812650c72e26dc0393303921daf6988838
+  ExpoImage: e35fb1acb84c01575b4f5c5f6260906639a3320b
   ExpoImageManipulator: 6c30083e367e83eb7719db833c225bfc2ae53fe4
   ExpoImagePicker: d01668d6308e1b7bd50b530ee72187f62dcd1c48
   ExpoInsights: 41b8aca205663111aa89aec17a65139cfa4545d9
@@ -1419,10 +1412,10 @@ SPEC CHECKSUMS:
   RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
   RNCPicker: 529d564911e93598cc399b56cc0769ce3675f8c8
   RNDateTimePicker: 3942382593f104af226ad9c56e16166960c7ae30
-  RNFlashList: ade81b4e928ebd585dd492014d40fb8d0e848aab
+  RNFlashList: 4b4b6b093afc0df60ae08f9cbf6ccd4c836c667a
   RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
-  RNReanimated: 9633f8c2e214b721e35e371b473fbf3a1522948d
-  RNScreens: 68fd1060f57dd1023880bf4c05d74784b5392789
+  RNReanimated: 87736ffd129fbc2c637abd06ca6d0738a4f73004
+  RNScreens: 3c2d122f5e08c192e254c510b212306da97d2581
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
   SDWebImageAVIFCoder: 8348fef6d0ec69e129c66c9fe4d74fbfbf366112
