@@ -110,7 +110,9 @@ export async function graphToSerialAssetsAsync(
         chunkIdForModules(commonDependenciesUnique),
         commonDependenciesUnique,
         graph,
-        options
+        options,
+        false,
+        true
       );
       entryChunk.requiredChunks.add(commonChunk);
       chunks.add(commonChunk);
@@ -149,7 +151,8 @@ class Chunk {
     public entries: Module<MixedOutput>[],
     public graph: ReadOnlyGraph<MixedOutput>,
     public options: ExpoSerializerOptions,
-    public isAsync: boolean = false
+    public isAsync: boolean = false,
+    public isVendor: boolean = false
   ) {
     this.deps = new Set(entries);
   }
@@ -195,7 +198,7 @@ class Chunk {
           serializerConfig?.getModulesRunBeforeMainModule?.(
             path.relative(this.options.projectRoot, entryFile)
           ) ?? [],
-        runModule: !this.isAsync,
+        runModule: !this.isVendor && !this.isAsync,
         modulesOnly: this.preModules.size === 0,
         platform: this.getPlatform(),
         sourceMapUrl: `${fileName}.map`,

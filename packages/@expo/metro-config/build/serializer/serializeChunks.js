@@ -124,7 +124,7 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
     // Add common chunk if one exists.
     if (commonDependencies.length) {
       const commonDependenciesUnique = [...new Set(commonDependencies)];
-      const commonChunk = new Chunk(chunkIdForModules(commonDependenciesUnique), commonDependenciesUnique, graph, options);
+      const commonChunk = new Chunk(chunkIdForModules(commonDependenciesUnique), commonDependenciesUnique, graph, options, false, true);
       entryChunk.requiredChunks.add(commonChunk);
       chunks.add(commonChunk);
     }
@@ -150,12 +150,13 @@ class Chunk {
   // Chunks that are required to be loaded synchronously before this chunk.
   // These are included in the HTML as <script> tags.
 
-  constructor(name, entries, graph, options, isAsync = false) {
+  constructor(name, entries, graph, options, isAsync = false, isVendor = false) {
     this.name = name;
     this.entries = entries;
     this.graph = graph;
     this.options = options;
     this.isAsync = isAsync;
+    this.isVendor = isVendor;
     _defineProperty(this, "deps", new Set());
     _defineProperty(this, "preModules", new Set());
     _defineProperty(this, "requiredChunks", new Set());
@@ -182,7 +183,7 @@ class Chunk {
     const jsSplitBundle = (0, _baseJSBundle().baseJSBundleWithDependencies)(entryFile, [...this.preModules.values()], [...this.deps], {
       ...this.options,
       runBeforeMainModule: (_serializerConfig$get = serializerConfig === null || serializerConfig === void 0 ? void 0 : (_serializerConfig$get2 = serializerConfig.getModulesRunBeforeMainModule) === null || _serializerConfig$get2 === void 0 ? void 0 : _serializerConfig$get2.call(serializerConfig, _path().default.relative(this.options.projectRoot, entryFile))) !== null && _serializerConfig$get !== void 0 ? _serializerConfig$get : [],
-      runModule: !this.isAsync,
+      runModule: !this.isVendor && !this.isAsync,
       modulesOnly: this.preModules.size === 0,
       platform: this.getPlatform(),
       sourceMapUrl: `${fileName}.map`,
