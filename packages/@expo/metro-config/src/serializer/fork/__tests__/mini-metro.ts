@@ -17,6 +17,64 @@ function toDependencyMap(...deps: Dependency[]): Map<string, Dependency> {
   return map;
 }
 
+export function microBundle({
+    fs, 
+    entry,
+    resolve = (from, id) => {
+        for (const ext of ['', '.js', '.ts', '.tsx']) {
+            const next = path.join(path.dirname(from), id) + ext
+            if (fs[next]) {
+                return next
+            }
+        }
+        throw new Error(`Cannot resolve ${id} from ${from}. Available files: ${Object.keys(fs).join(', ')}`)
+    },
+}: {
+    fs: Record<string, string>,
+    entry?: string,
+    resolve?: (from: string, id: string) => string,
+}) {
+    if (!entry) {
+        entry = Object.keys(fs).find((key) => key.match(/(\.\/)?index\.[tj]sx?/))
+        if (!entry) { 
+            throw new Error('No entrypoint found and cannot infer one from the mock fs: ' + Object.keys(fs).join(', '))
+        }
+    }
+    const modules = new Map<string, Module>();
+    const visited = new Set<string>();
+
+    function recurseWith(queue: string[], parent?: Module) {
+       
+    while (queue.length) {
+        const id = queue.shift()!;
+        if (visited.has(id)) {
+            modules.get(id)?.inverseDependencies.add(parent?.path);
+            continue;
+        }
+        visited.add(id);
+        const code = fs[id];
+        if (!code) {
+            throw new Error(`File not found: ${id}`);
+        }
+        const module = parseModule(id, code);
+        modules.set(id, module);
+        
+        if (parent?.path) {
+            module.inverseDependencies.add(parent.path);
+        }
+
+        // @ts-ignore
+        for (const dep of module.dependencies.values()) {
+            const resolved = resolve(id, dep.data.name);
+            recurseWith([resolved], module);
+        }
+    }
+}
+recurseWith([entry]);
+
+    return modules;
+}
+
 // A small version of the Metro transformer to easily create dependency mocks from a string of code.
 export function parseModule(
   relativeFilePath: string,
