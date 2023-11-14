@@ -19,6 +19,7 @@ export type Bundle = {
 export type ExpoSerializerOptions = SerializerOptions & {
     serializerOptions?: {
         baseUrl?: string;
+        skipWrapping?: boolean;
     };
 };
 export declare function getPlatformOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: Pick<SerializerOptions, 'sourceUrl'>): string | null;
@@ -29,4 +30,6 @@ export declare function baseJSBundleWithDependencies(entryPoint: string, preModu
     platform: string;
     baseUrl: string;
     splitChunks: boolean;
+    skipWrapping: boolean;
+    computedAsyncModulePaths: Record<string, string> | null;
 }): Bundle;

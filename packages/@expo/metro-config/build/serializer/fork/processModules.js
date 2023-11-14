@@ -29,7 +29,9 @@ function processModules(modules, {
   sourceUrl,
   platform,
   baseUrl,
-  splitChunks
+  splitChunks,
+  skipWrapping,
+  computedAsyncModulePaths
 }) {
   return [...modules].filter(_js().isJsModule).filter(filter).map(module => [module, (0, _js().wrapModule)(module, {
     baseUrl,
@@ -40,7 +42,9 @@ function processModules(modules, {
     includeAsyncPaths,
     projectRoot,
     serverRoot,
-    sourceUrl
+    sourceUrl,
+    skipWrapping,
+    computedAsyncModulePaths
   })]);
 }
 //# sourceMappingURL=processModules.js.map

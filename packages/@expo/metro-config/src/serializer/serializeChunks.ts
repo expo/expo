@@ -113,17 +113,26 @@ class Chunk {
     return this.graph.transformOptions.platform;
   }
 
-  getFilename() {
-    // TODO: Content hash is needed
+  private getFilename(src: string) {
     return this.options.dev
       ? this.name
       : getExportPathForDependencyWithOptions(this.name, {
           platform: this.getPlatform(),
+          src,
           serverRoot: this.options.serverRoot,
         });
   }
 
-  serializeToCode(serializerConfig: Partial<SerializerConfigT>) {
+  private getFilenameForConfig(serializerConfig: Partial<SerializerConfigT>) {
+    return this.getFilename(
+      this.options.dev ? '' : this.serializeToCodeWithTemplates(serializerConfig)
+    );
+  }
+
+  private serializeToCodeWithTemplates(
+    serializerConfig: Partial<SerializerConfigT>,
+    options: Partial<Parameters<typeof baseJSBundleWithDependencies>[3]> = {}
+  ) {
     const entryFile = this.name;
     const fileName = path.basename(entryFile, '.js');
 
@@ -137,34 +146,68 @@ class Chunk {
           serializerConfig?.getModulesRunBeforeMainModule?.(
             path.relative(this.options.projectRoot, entryFile)
           ) ?? [],
-        // searchParams.set('modulesOnly', 'true');
-        // searchParams.set('runModule', 'false');
-
-        // TODO: Test cases when an async module has global side-effects that should be run.
-        // This should be fine as those side-effects would be defined in the module itself, which would be executed upon loading.
         runModule: !this.isAsync,
         modulesOnly: this.preModules.size === 0,
         platform: this.getPlatform(),
         sourceMapUrl: `${fileName}.map`,
         baseUrl: getBaseUrlOption(this.graph, this.options),
         splitChunks: getSplitChunksOption(this.graph, this.options),
+        skipWrapping: true,
+        computedAsyncModulePaths: null,
+        ...options,
       }
     );
 
     return bundleToString(jsSplitBundle).code;
   }
 
+  private getComputedPathsForAsyncDependencies(
+    serializerConfig: Partial<SerializerConfigT>,
+    chunks: Chunk[]
+  ) {
+    const baseUrl = getBaseUrlOption(this.graph, this.options);
+    // Only calculate production paths when all chunks are being exported.
+    if (this.options.includeAsyncPaths) {
+      return null;
+    }
+    const computedAsyncModulePaths: Record<string, string> = {};
+
+    this.deps.forEach((module) => {
+      module.dependencies.forEach((dependency) => {
+        if (dependency.data.data.asyncType === 'async') {
+          const chunkContainingModule = chunks.find((chunk) => chunk.deps.has(module));
+          assert(chunkContainingModule, 'Chunk containing module not found: ' + module.path);
+
+          const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
+          computedAsyncModulePaths![dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
+        }
+      });
+    });
+    return computedAsyncModulePaths;
+  }
+
+  private serializeToCode(serializerConfig: Partial<SerializerConfigT>, chunks: Chunk[]) {
+    return this.serializeToCodeWithTemplates(serializerConfig, {
+      skipWrapping: false,
+      computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
+    });
+  }
+
   async serializeToAssetsAsync(
     serializerConfig: Partial<SerializerConfigT>,
+    chunks: Chunk[],
     {
       includeSourceMaps,
       includeBytecode,
     }: { includeSourceMaps?: boolean; includeBytecode?: boolean }
   ): Promise<SerialAsset[]> {
-    const jsCode = this.serializeToCode(serializerConfig);
+    const jsCode = this.serializeToCode(serializerConfig, chunks);
 
     const relativeEntry = path.relative(this.options.projectRoot, this.name);
-    const outputFile = this.getFilename();
+    const outputFile = this.getFilenameForConfig(
+      // Create hash without wrapping to prevent it changing when the wrapping changes.
+      serializerConfig
+    );
 
     const jsAsset: SerialAsset = {
       filename: outputFile,
@@ -172,7 +215,9 @@ class Chunk {
       type: 'js',
       metadata: {
         isAsync: this.isAsync,
-        requires: [...this.requiredChunks.values()].map((chunk) => chunk.getFilename()),
+        requires: [...this.requiredChunks.values()].map((chunk) =>
+          chunk.getFilenameForConfig(serializerConfig)
+        ),
       },
       source: jsCode,
     };
@@ -338,10 +383,11 @@ async function serializeChunksAsync(
 ) {
   const jsAssets: SerialAsset[] = [];
 
+  const chunksArray = [...chunks.values()];
   await Promise.all(
-    [...chunks].map(async (chunk) => {
+    chunksArray.map(async (chunk) => {
       jsAssets.push(
-        ...(await chunk.serializeToAssetsAsync(serializerConfig, {
+        ...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, {
           includeSourceMaps,
           includeBytecode,
         }))

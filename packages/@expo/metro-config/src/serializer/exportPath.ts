@@ -10,7 +10,7 @@ import { fileNameFromContents } from './getCssDeps';
 
 export function getExportPathForDependencyWithOptions(
   dependencyPath: string,
-  { platform, serverRoot }: { platform: string; serverRoot: string }
+  { platform, src, serverRoot }: { platform: string; serverRoot: string; src: string }
 ): string {
   const bundlePath = path.relative(serverRoot, dependencyPath);
   const relativePathname = path.join(
@@ -20,14 +20,7 @@ export function getExportPathForDependencyWithOptions(
   );
   const name = fileNameFromContents({
     filepath: relativePathname,
-    // TODO: Add content hash
-    src: relativePathname,
+    src,
   });
-  return (
-    `_expo/static/js/${platform}/` +
-    // make filename safe
-    // dependency.data.data.key.replace(/[^a-z0-9]/gi, '_') +
-    name +
-    '.js'
-  );
+  return `_expo/static/js/${platform}/${name}.js`;
 }

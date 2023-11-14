@@ -69,6 +69,7 @@ function getBaseUrlOption(graph, options) {
   return '/';
 }
 function baseJSBundle(entryPoint, preModules, graph, options) {
+  var _options$serializerOp;
   const platform = getPlatformOption(graph, options);
   if (platform == null) {
     throw new Error('platform could not be determined for Metro bundle');
@@ -77,7 +78,9 @@ function baseJSBundle(entryPoint, preModules, graph, options) {
     ...options,
     baseUrl: getBaseUrlOption(graph, options),
     splitChunks: getSplitChunksOption(graph, options),
-    platform
+    platform,
+    skipWrapping: !!((_options$serializerOp = options.serializerOptions) !== null && _options$serializerOp !== void 0 && _options$serializerOp.skipWrapping),
+    computedAsyncModulePaths: null
   });
 }
 function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, options) {
@@ -94,7 +97,9 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
     sourceUrl: options.sourceUrl,
     platform: options.platform,
     baseUrl: options.baseUrl,
-    splitChunks: options.splitChunks
+    splitChunks: options.splitChunks,
+    skipWrapping: options.skipWrapping,
+    computedAsyncModulePaths: options.computedAsyncModulePaths
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested

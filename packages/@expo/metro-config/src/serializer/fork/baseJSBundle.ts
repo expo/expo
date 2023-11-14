@@ -27,6 +27,7 @@ export type Bundle = {
 export type ExpoSerializerOptions = SerializerOptions & {
   serializerOptions?: {
     baseUrl?: string;
+    skipWrapping?: boolean;
   };
 };
 
@@ -87,6 +88,8 @@ export function baseJSBundle(
     baseUrl: getBaseUrlOption(graph, options),
     splitChunks: getSplitChunksOption(graph, options),
     platform,
+    skipWrapping: !!options.serializerOptions?.skipWrapping,
+    computedAsyncModulePaths: null,
   });
 }
 
@@ -94,7 +97,13 @@ export function baseJSBundleWithDependencies(
   entryPoint: string,
   preModules: readonly Module[],
   dependencies: Module<MixedOutput>[],
-  options: ExpoSerializerOptions & { platform: string; baseUrl: string; splitChunks: boolean }
+  options: ExpoSerializerOptions & {
+    platform: string;
+    baseUrl: string;
+    splitChunks: boolean;
+    skipWrapping: boolean;
+    computedAsyncModulePaths: Record<string, string> | null;
+  }
 ): Bundle {
   for (const module of dependencies) {
     options.createModuleId(module.path);
@@ -111,6 +120,8 @@ export function baseJSBundleWithDependencies(
     platform: options.platform,
     baseUrl: options.baseUrl,
     splitChunks: options.splitChunks,
+    skipWrapping: options.skipWrapping,
+    computedAsyncModulePaths: options.computedAsyncModulePaths,
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested
