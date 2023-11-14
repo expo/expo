@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.15.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
 - `npx expo prebuild` will only install Node dependencies if the `dependencies` have changed. ([#25211](https://github.com/expo/expo/pull/25211) by [@EvanBacon](https://github.com/EvanBacon))
 - `npx expo prebuild` will no longer modify `devDependencies` of the `package.json`. ([#25211](https://github.com/expo/expo/pull/25211) by [@EvanBacon](https://github.com/EvanBacon))
 

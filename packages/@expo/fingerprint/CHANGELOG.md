@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.4.1 — 2023-11-14
+
+_This version does not introduce any user-facing changes._
+
 ## 0.4.0 — 2023-10-17
 
 ### 💡 Others

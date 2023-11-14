@@ -38,7 +38,7 @@ buildscript {
 }
 
 group = 'host.exp.exponent'
-version = '4.5.0'
+version = '4.6.0'
 
 // Remove this if and it's contents, when support for SDK49 is dropped
 if (!safeExtGet("expoProvidesDefaultConfig", false)) {
@@ -94,7 +94,7 @@ android {
   namespace "expo.modules.imageloader"
   defaultConfig {
     versionCode 8
-    versionName "4.5.0"
+    versionName "4.6.0"
   }
 }
 

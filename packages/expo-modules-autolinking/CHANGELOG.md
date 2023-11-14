@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Added Expo CLI devtools plugins support. ([#24649](https://github.com/expo/expo/pull/24649) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.8.0 — 2023-11-14
+
+### 🎉 New features
+
+- Added Expo CLI devtools plugins support. ([#24649](https://github.com/expo/expo/pull/24649) by [@kudo](https://github.com/kudo))
 
 ## 1.7.0 — 2023-10-17
 

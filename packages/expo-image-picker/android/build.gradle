@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '14.6.0'
+version = '14.7.0'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 if (expoModulesCorePlugin.exists()) {
@@ -94,7 +94,7 @@ android {
   namespace "expo.modules.imagepicker"
   defaultConfig {
     versionCode 22
-    versionName "14.6.0"
+    versionName "14.7.0"
   }
 }
 

@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 9.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
 - Remove support for `native.useTransformReactJSXExperimental` and `web.useTransformReactJSXExperimental` option in favor of `jsxRuntime: 'classic'`. React support can no longer be removed. ([#25125](https://github.com/expo/expo/pull/25125) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
