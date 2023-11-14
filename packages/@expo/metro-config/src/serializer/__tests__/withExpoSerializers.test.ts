@@ -42,7 +42,8 @@ jest.mock('../exportHermes', () => {
 });
 
 describe('serializes', () => {
-  it(`serializes with adjusted hbc source maps in production`, async () => {
+  // General helper to reduce boilerplate
+  async function serializeTo(options: Partial<Parameters<typeof microBundle>[0]>) {
     const serializer = createSerializerFromSerialProcessors(
       {
         projectRoot,
@@ -55,10 +56,31 @@ describe('serializes', () => {
         console.log("hello");
       `,
     };
-
     const output = (await serializer(
       ...microBundle({
         fs,
+        ...options,
+      })
+    )) as any;
+    if (options.options.output === 'static') {
+      assert('artifacts' in output && Array.isArray(output.artifacts));
+      return output.artifacts;
+    } else {
+      return output;
+    }
+  }
+
+  // Serialize to a split bundle
+  async function serializeSplitAsync(fs: Record<string, string>) {
+    return await serializeTo({
+      fs,
+      options: { platform: 'web', dev: false, output: 'static' },
+    });
+  }
+
+  describe('source maps', () => {
+    it(`serializes with adjusted hbc source maps in production`, async () => {
+      const artifacts = await serializeTo({
         options: {
           dev: false,
           platform: 'ios',
@@ -66,40 +88,22 @@ describe('serializes', () => {
           output: 'static',
           sourceMaps: true,
         },
-      })
-    )) as any;
-    assert('artifacts' in output && Array.isArray(output.artifacts));
+      });
 
-    // Ensure the assets both use the .hbc extension
-    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc/),
-      expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc\.map/),
-    ]);
+      // Ensure the assets both use the .hbc extension
+      expect(artifacts.map(({ filename }) => filename)).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc\.map/),
+      ]);
 
-    // Ensure the annotation is included and uses the .hbc.map. We make this modification as
-    // a string before passing to Hermes.
-    expect(output.artifacts[0].source).toMatch(
-      `//# sourceMappingURL=https://localhost:8081/_expo/static/js/ios/index-91e3ec343caa177ec8aadd46fc9269ae.hbc.map`
-    );
-  });
-
-  it(`serializes with relative base url in production`, async () => {
-    const serializer = createSerializerFromSerialProcessors(
-      {
-        projectRoot,
-      },
-      []
-    );
-
-    const fs = {
-      'index.js': `
-        console.log("hello");
-      `,
-    };
-
-    const output = (await serializer(
-      ...microBundle({
-        fs,
+      // Ensure the annotation is included and uses the .hbc.map. We make this modification as
+      // a string before passing to Hermes.
+      expect(artifacts[0].source).toMatch(
+        `//# sourceMappingURL=https://localhost:8081/_expo/static/js/ios/index-91e3ec343caa177ec8aadd46fc9269ae.hbc.map`
+      );
+    });
+    it(`serializes with relative base url in production`, async () => {
+      const artifacts = await serializeTo({
         options: {
           dev: false,
           platform: 'ios',
@@ -108,39 +112,21 @@ describe('serializes', () => {
           sourceMaps: true,
           baseUrl: '/subdomain/',
         },
-      })
-    )) as any;
-    assert('artifacts' in output && Array.isArray(output.artifacts));
+      });
 
-    // Ensure the assets both use the .hbc extension
-    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js/),
-      expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/),
-    ]);
+      // Ensure the assets both use the .hbc extension
+      expect(artifacts.map(({ filename }) => filename)).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/),
+      ]);
 
-    // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
-    expect(output.artifacts[0].source).toMatch(
-      `//# sourceMappingURL=https://localhost:8081/subdomain/_expo/static/js/ios/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
-    );
-  });
-
-  it(`serializes source maps in production for web`, async () => {
-    const serializer = createSerializerFromSerialProcessors(
-      {
-        projectRoot,
-      },
-      []
-    );
-
-    const fs = {
-      'index.js': `
-        console.log("hello");
-      `,
-    };
-
-    const output = (await serializer(
-      ...microBundle({
-        fs,
+      // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
+      expect(artifacts[0].source).toMatch(
+        `//# sourceMappingURL=https://localhost:8081/subdomain/_expo/static/js/ios/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+      );
+    });
+    it(`serializes source maps in production for web`, async () => {
+      const artifacts = await serializeTo({
         options: {
           dev: false,
           platform: 'web',
@@ -148,39 +134,22 @@ describe('serializes', () => {
           output: 'static',
           sourceMaps: true,
         },
-      })
-    )) as any;
-    assert('artifacts' in output && Array.isArray(output.artifacts));
+      });
 
-    // Ensure the assets both use the .hbc extension
-    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
-      expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
-    ]);
+      // Ensure the assets both use the .hbc extension
+      expect(artifacts.map(({ filename }) => filename)).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+      ]);
 
-    // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
-    expect(output.artifacts[0].source).toMatch(
-      `//# sourceMappingURL=/_expo/static/js/web/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
-    );
-  });
+      // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
+      expect(artifacts[0].source).toMatch(
+        `//# sourceMappingURL=/_expo/static/js/web/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+      );
+    });
 
-  it(`serializes with relative base url in production for web`, async () => {
-    const serializer = createSerializerFromSerialProcessors(
-      {
-        projectRoot,
-      },
-      []
-    );
-
-    const fs = {
-      'index.js': `
-        console.log("hello");
-      `,
-    };
-
-    const output = (await serializer(
-      ...microBundle({
-        fs,
+    it(`serializes with relative base url in production for web`, async () => {
+      const artifacts = await serializeTo({
         options: {
           dev: false,
           platform: 'web',
@@ -189,39 +158,22 @@ describe('serializes', () => {
           sourceMaps: true,
           baseUrl: '/subdomain/',
         },
-      })
-    )) as any;
-    assert('artifacts' in output && Array.isArray(output.artifacts));
+      });
 
-    // Ensure the assets both use the .hbc extension
-    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
-      expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
-    ]);
+      // Ensure the assets both use the .hbc extension
+      expect(artifacts.map(({ filename }) => filename)).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+      ]);
 
-    // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
-    expect(output.artifacts[0].source).toMatch(
-      `//# sourceMappingURL=/subdomain/_expo/static/js/web/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
-    );
-  });
+      // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
+      expect(artifacts[0].source).toMatch(
+        `//# sourceMappingURL=/subdomain/_expo/static/js/web/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+      );
+    });
 
-  it(`serializes with absolute base url in production`, async () => {
-    const serializer = createSerializerFromSerialProcessors(
-      {
-        projectRoot,
-      },
-      []
-    );
-
-    const fs = {
-      'index.js': `
-        console.log("hello");
-      `,
-    };
-
-    const output = (await serializer(
-      ...microBundle({
-        fs,
+    it(`serializes with absolute base url in production`, async () => {
+      const artifacts = await serializeTo({
         options: {
           dev: false,
           platform: 'ios',
@@ -230,39 +182,22 @@ describe('serializes', () => {
           sourceMaps: true,
           baseUrl: 'https://evanbacon.dev',
         },
-      })
-    )) as any;
-    assert('artifacts' in output && Array.isArray(output.artifacts));
+      });
 
-    // Ensure the assets both use the .hbc extension
-    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js/),
-      expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/),
-    ]);
+      // Ensure the assets both use the .hbc extension
+      expect(artifacts.map(({ filename }) => filename)).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/),
+      ]);
 
-    // Ensure the source uses the absolute base URL in production to fetch maps from a non-standard hosting location.
-    expect(output.artifacts[0].source).toMatch(
-      `//# sourceMappingURL=https://evanbacon.dev/_expo/static/js/ios/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
-    );
-  });
+      // Ensure the source uses the absolute base URL in production to fetch maps from a non-standard hosting location.
+      expect(artifacts[0].source).toMatch(
+        `//# sourceMappingURL=https://evanbacon.dev/_expo/static/js/ios/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+      );
+    });
 
-  it(`serializes with absolute base url in production for web`, async () => {
-    const serializer = createSerializerFromSerialProcessors(
-      {
-        projectRoot,
-      },
-      []
-    );
-
-    const fs = {
-      'index.js': `
-        console.log("hello");
-      `,
-    };
-
-    const output = (await serializer(
-      ...microBundle({
-        fs,
+    it(`serializes with absolute base url in production for web`, async () => {
+      const artifacts = await serializeTo({
         options: {
           dev: false,
           platform: 'web',
@@ -271,39 +206,22 @@ describe('serializes', () => {
           sourceMaps: true,
           baseUrl: 'https://evanbacon.dev',
         },
-      })
-    )) as any;
-    assert('artifacts' in output && Array.isArray(output.artifacts));
+      });
 
-    // Ensure the assets both use the .hbc extension
-    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
-      expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
-    ]);
+      // Ensure the assets both use the .hbc extension
+      expect(artifacts.map(({ filename }) => filename)).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+      ]);
 
-    // Ensure the source uses the absolute base URL in production to fetch maps from a non-standard hosting location.
-    expect(output.artifacts[0].source).toMatch(
-      `//# sourceMappingURL=https://evanbacon.dev/_expo/static/js/web/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
-    );
-  });
+      // Ensure the source uses the absolute base URL in production to fetch maps from a non-standard hosting location.
+      expect(artifacts[0].source).toMatch(
+        `//# sourceMappingURL=https://evanbacon.dev/_expo/static/js/web/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+      );
+    });
 
-  it(`does not use hbc or adjusted source map URL in development`, async () => {
-    const serializer = createSerializerFromSerialProcessors(
-      {
-        projectRoot,
-      },
-      []
-    );
-
-    const fs = {
-      'index.js': `
-        console.log("hello");
-      `,
-    };
-
-    const output = (await serializer(
-      ...microBundle({
-        fs,
+    it(`does not use hbc or adjusted source map URL in development`, async () => {
+      const artifacts = await serializeTo({
         options: {
           dev: true,
           platform: 'ios',
@@ -311,19 +229,18 @@ describe('serializes', () => {
           output: 'static',
           sourceMaps: true,
         },
-      })
-    )) as any;
-    assert('artifacts' in output && Array.isArray(output.artifacts));
+      });
 
-    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
-      expect.stringMatching(/\/app\/index\.js/),
-      expect.stringMatching(/\/app\/index\.js\.map/),
-    ]);
+      expect(artifacts.map(({ filename }) => filename)).toEqual([
+        expect.stringMatching(/\/app\/index\.js/),
+        expect.stringMatching(/\/app\/index\.js\.map/),
+      ]);
 
-    // Ensure the absolute dev URL is being used.
-    expect(output.artifacts[0].source).toMatch(
-      `//# sourceMappingURL=https://localhost:8081/indedx.bundle?dev=false`
-    );
+      // Ensure the absolute dev URL is being used.
+      expect(artifacts[0].source).toMatch(
+        `//# sourceMappingURL=https://localhost:8081/indedx.bundle?dev=false`
+      );
+    });
   });
 
   it(`passes sanity`, async () => {
@@ -360,26 +277,46 @@ describe('serializes', () => {
     `);
   });
 
-  async function doSplit(fs: Record<string, string>) {
-    const serializer = createSerializerFromSerialProcessors(
-      {
-        projectRoot,
+  it(`bundles basic production native using string output`, async () => {
+    const str = await serializeTo({
+      options: {
+        dev: false,
+        platform: 'ios',
+        hermes: false,
+        sourceMaps: false,
       },
-      []
-    );
-
-    const serialParams = microBundle({
-      fs,
-      options: { platform: 'web', dev: false, output: 'static' },
     });
+    expect(typeof str).toBe('string');
+    // Ensure the module is run.
+    expect(str).toMatch(/TEST_RUN_MODULE\("\/app\/index\.js"\);/);
+  });
 
-    const output = (await serializer(...serialParams)) as any;
-    assert('artifacts' in output && Array.isArray(output.artifacts));
+  // This is how most people will be bundling for production.
+  it(`bundles basic production native with async imports`, async () => {
+    const str = await serializeTo({
+      fs: {
+        'index.js': `
+          import('./foo')          
+        `,
+        'foo.js': `
+          export const foo = 'foo';
+        `,
+      },
+      options: {
+        dev: false,
+        platform: 'ios',
+        hermes: false,
+        sourceMaps: false,
+      },
+    });
+    expect(typeof str).toBe('string');
+    // Ensure the module is run.
+    expect(str).toMatch(/TEST_RUN_MODULE\("\/app\/index\.js"\);/);
+    expect(str).toMatch(/expo-mock\/async-require/);
+  });
 
-    return output.artifacts;
-  }
   it(`bundle splits an async import`, async () => {
-    const artifacts = await doSplit({
+    const artifacts = await serializeSplitAsync({
       'index.js': `
           import('./foo')
         `,
@@ -435,7 +372,7 @@ describe('serializes', () => {
   });
 
   it(`imports async bundles in second module`, async () => {
-    const artifacts = await doSplit({
+    const artifacts = await serializeSplitAsync({
       'index.js': `
           import "./two"
         `,
@@ -497,7 +434,7 @@ describe('serializes', () => {
   });
 
   it(`dedupes shared module in async imports`, async () => {
-    const artifacts = await doSplit({
+    const artifacts = await serializeSplitAsync({
       'index.js': `
           import('./math');
           import('./shapes');
