@@ -142,7 +142,6 @@ function getDefaultSerializer(config, fallbackSerializer) {
 function createSerializerFromSerialProcessors(config, processors, originalSerializer) {
   const finalSerializer = getDefaultSerializer(config, originalSerializer);
   return (...props) => {
-    // toFixture(...props);
     for (const processor of processors) {
       if (processor) {
         props = processor(...props);

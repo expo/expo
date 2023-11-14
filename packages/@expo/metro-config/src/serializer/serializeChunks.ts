@@ -60,16 +60,16 @@ export async function graphToSerialAssetsAsync(
   });
 
   // Create chunks for splitting.
-  const _chunks = new Set<Chunk>();
+  const chunks = new Set<Chunk>();
 
   [
     {
       test: pathToRegExp(entryFile),
     },
-  ].map((chunkSettings) => gatherChunks(_chunks, chunkSettings, preModules, graph, options, false));
+  ].map((chunkSettings) => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
 
   const jsAssets = await serializeChunksAsync(
-    _chunks,
+    chunks,
     config.serializer ?? {},
     serializeChunkOptions
   );

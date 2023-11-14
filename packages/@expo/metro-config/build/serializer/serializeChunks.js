@@ -87,11 +87,11 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
   });
 
   // Create chunks for splitting.
-  const _chunks = new Set();
+  const chunks = new Set();
   [{
     test: (0, _pathToRegexp().default)(entryFile)
-  }].map(chunkSettings => gatherChunks(_chunks, chunkSettings, preModules, graph, options, false));
-  const jsAssets = await serializeChunksAsync(_chunks, (_config$serializer = config.serializer) !== null && _config$serializer !== void 0 ? _config$serializer : {}, serializeChunkOptions);
+  }].map(chunkSettings => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
+  const jsAssets = await serializeChunksAsync(chunks, (_config$serializer = config.serializer) !== null && _config$serializer !== void 0 ? _config$serializer : {}, serializeChunkOptions);
 
   // TODO: Convert to serial assets
   // TODO: Disable this call dynamically in development since assets are fetched differently.

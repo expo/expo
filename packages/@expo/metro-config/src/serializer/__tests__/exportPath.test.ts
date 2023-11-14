@@ -27,6 +27,6 @@ describe(getExportPathForDependencyWithOptions, () => {
           src: 'xxx',
         }
       )
-    ).toBe('_expo/static/js/web/external-4df81b27e74f4b9adcab7bc5a479cb7a.js');
+    ).toBe('_expo/static/js/web/external-af0af2881d61de928b41386ba16f8115.js');
   });
 });

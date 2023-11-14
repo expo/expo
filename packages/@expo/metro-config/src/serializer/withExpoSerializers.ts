@@ -133,7 +133,6 @@ export function createSerializerFromSerialProcessors(
 ): Serializer {
   const finalSerializer = getDefaultSerializer(config, originalSerializer);
   return (...props: SerializerParameters): ReturnType<Serializer> => {
-    // toFixture(...props);
     for (const processor of processors) {
       if (processor) {
         props = processor(...props);
