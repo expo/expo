@@ -83,6 +83,42 @@ describe('serializes', () => {
   }
 
   describe('source maps', () => {
+    it(`serializes with source maps disabled in production using classic serializer`, async () => {
+      for (const platform of ['web', 'ios']) {
+        const bundle = await serializeTo({
+          options: {
+            dev: false,
+            platform: platform,
+            hermes: false,
+            // output: 'static',
+            sourceMaps: false,
+          },
+        });
+
+        // Ensure no directive to include them is added.
+        expect(bundle).not.toMatch(/\/\/# sourceMappingURL=/);
+      }
+    });
+    it(`serializes with source maps disabled in production for web`, async () => {
+      const artifacts = await serializeTo({
+        options: {
+          dev: false,
+          platform: 'web',
+          hermes: false,
+          output: 'static',
+          sourceMaps: false,
+        },
+      });
+
+      // Ensure no source maps exist
+      expect(artifacts.map(({ filename }) => filename)).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+      ]);
+
+      // Ensure no directive to include them is added.
+      expect(artifacts[0].source).not.toMatch(/\/\/# sourceMappingURL=/);
+    });
+
     it(`serializes with adjusted hbc source maps in production`, async () => {
       const artifacts = await serializeTo({
         options: {
