@@ -112,21 +112,6 @@ allprojects {
   }
 }
 
-// to prevent duplicated lib error, pick first of libc++_shared.so and libfbjni.so
-allprojects { subProject ->
-  subProject.afterEvaluate {
-    def androidComponents = subProject.extensions.findByType(AndroidComponentsExtension.class)
-    androidComponents?.with {
-      onVariants(selector().all()) {
-        packaging?.jniLibs?.pickFirsts?.addAll([
-          "**/libc++_shared.so",
-          "**/libfbjni.so",
-        ])
-      }
-    }
-  }
-}
-
 // This var needs to be defined outside any "remove_from_here" comment blocks
 // because the "*/" in there could affect the resulted code by closing the comment to early.
 def ktlintTarget = '**/*.kt'

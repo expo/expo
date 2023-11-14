@@ -154,6 +154,7 @@ android {
   }
 }
 
+// [BEGIN] Applying namespace for 3rd party vendor modules
 import com.android.build.api.variant.AndroidComponentsExtension
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
@@ -230,6 +231,7 @@ class AgpConfiguratorPlugin implements Plugin<Project> {
     }
   }
 }
+// [END] Applying namespace for 3rd party vendor modules
 
 // we need to apply this plugin here instead of inside expoview
 // for it to be applied when running the clean task as well
