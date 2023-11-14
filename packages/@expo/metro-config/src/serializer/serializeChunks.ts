@@ -68,6 +68,56 @@ export async function graphToSerialAssetsAsync(
     },
   ].map((chunkSettings) => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
 
+  // Get the common modules and extract them into a separate chunk.
+  const entryChunk = [...chunks.values()].find(
+    (chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile)
+  );
+  if (entryChunk) {
+    for (const chunk of chunks.values()) {
+      if (chunk !== entryChunk && chunk.isAsync) {
+        for (const dep of chunk.deps.values()) {
+          if (entryChunk.deps.has(dep)) {
+            // Remove the dependency from the async chunk since it will be loaded in the main chunk.
+            chunk.deps.delete(dep);
+          }
+        }
+      }
+    }
+
+    const toCompare = [...chunks.values()];
+
+    const commonDependencies = [];
+
+    while (toCompare.length) {
+      const chunk = toCompare.shift()!;
+      for (const chunk2 of toCompare) {
+        if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
+          const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
+
+          for (const dep of commonDeps) {
+            chunk.deps.delete(dep);
+            chunk2.deps.delete(dep);
+          }
+
+          commonDependencies.push(...commonDeps);
+        }
+      }
+    }
+
+    // Add common chunk if one exists.
+    if (commonDependencies.length) {
+      const commonDependenciesUnique = [...new Set(commonDependencies)];
+      const commonChunk = new Chunk(
+        chunkIdForModules(commonDependenciesUnique),
+        commonDependenciesUnique,
+        graph,
+        options
+      );
+      entryChunk.requiredChunks.add(commonChunk);
+      chunks.add(commonChunk);
+    }
+  }
+
   const jsAssets = await serializeChunksAsync(
     chunks,
     config.serializer ?? {},
