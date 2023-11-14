@@ -52,7 +52,7 @@ data class SourceMap(
       }
     }
 
-    var lastDotIndex = uri?.lastIndexOf('.')
+    val lastDotIndex = uri?.lastIndexOf('.')
     // if the path has no file extension and no . at all (e.g. file://path/to/file) return false
     if (lastDotIndex == -1 || lastDotIndex == null) {
       return false

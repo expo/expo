@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- [Android] The stability of the memory cache key generation has been improved.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
