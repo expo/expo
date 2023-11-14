@@ -1,4 +1,4 @@
-import { getMetroDirectBundleOptions, createBundleUrlPath } from '../metroOptions';
+import { createBundleUrlPath, getMetroDirectBundleOptions } from '../metroOptions';
 
 describe(getMetroDirectBundleOptions, () => {
   it(`returns basic options`, () => {
@@ -12,6 +12,7 @@ describe(getMetroDirectBundleOptions, () => {
     ).toEqual({
       customResolverOptions: {},
       customTransformOptions: { preserveEnvVars: false, baseUrl: '/foo/' },
+      serializerOptions: {},
       dev: true,
       entryFile: '/index.js',
       inlineSourceMap: false,
@@ -34,6 +35,11 @@ describe(getMetroDirectBundleOptions, () => {
         'http://localhost:8081/index.js.bundle?platform=ios&dev=true&hot=false&serializer.map=true',
       customResolverOptions: {},
       customTransformOptions: { preserveEnvVars: false },
+      serializerOptions: {
+        includeMaps: true,
+      },
+      sourceMapUrl:
+        'http://localhost:8081/index.js.map?platform=ios&dev=true&hot=false&serializer.map=true',
       dev: true,
       entryFile: '/index.js',
       inlineSourceMap: false,
