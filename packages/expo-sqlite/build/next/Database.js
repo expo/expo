@@ -37,7 +37,6 @@ export class Database {
      * Prepare a SQL statement.
      *
      * @param source A string containing the SQL query.
-     * @returns A `Statement` object.
      */
     async prepareAsync(source) {
         const nativeStatement = new ExpoSQLite.NativeStatement();
@@ -130,7 +129,8 @@ export class Database {
      * Execute all SQL queries in the supplied string.
      *
      * > **Note:** The queries are not escaped for you! Be careful when constructing your queries.
-     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
      * @param source A string containing all the SQL queries.
      */
@@ -140,10 +140,9 @@ export class Database {
     /**
      * Prepare a SQL statement.
      *
-     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
      * @param source A string containing the SQL query.
-     * @returns A `Statement` object.
      */
     prepareSync(source) {
         const nativeStatement = new ExpoSQLite.NativeStatement();
@@ -153,7 +152,7 @@ export class Database {
     /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
-     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
      * @param task An async function to execute within a transaction.
      */
@@ -258,7 +257,6 @@ export class Database {
  *
  * @param dbName The name of the database file to open.
  * @param options Open options.
- * @returns Database object.
  */
 export async function openDatabaseAsync(dbName, options) {
     const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, options ?? {});
@@ -268,11 +266,10 @@ export async function openDatabaseAsync(dbName, options) {
 /**
  * Open a database.
  *
- * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param dbName The name of the database file to open.
  * @param options Open options.
- * @returns Database object.
  */
 export function openDatabaseSync(dbName, options) {
     const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, options ?? {});
@@ -290,7 +287,7 @@ export async function deleteDatabaseAsync(dbName) {
 /**
  * Delete a database file.
  *
- * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param dbName The name of the database file to delete.
  */
@@ -299,16 +296,17 @@ export function deleteDatabaseSync(dbName) {
 }
 /**
  * Add a listener for database changes.
- * > Note: to enable this feature, you must set `enableChangeListener` to `true` when opening the database.
+ * > Note: to enable this feature, you must set [`enableChangeListener` to `true`](#openoptions) when opening the database.
  *
- * @param listener A function that receives the `dbName`, `tableName` and `rowId` of the modified data.
+ * @param listener A function that receives the `dbFilePath`, `dbName`, `tableName` and `rowId` of the modified data.
  * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
  */
 export function addDatabaseChangeListener(listener) {
     return emitter.addListener('onDatabaseChange', listener);
 }
 /**
- * A new connection specific for `transactionExclusiveAsync`.
+ * A new connection specific used for [`transactionExclusiveAsync`](#transactionexclusiveasynctask).
+ * @hidden not going to pull all the database methods to the document.
  */
 class Transaction extends Database {
     static async createAsync(db) {
