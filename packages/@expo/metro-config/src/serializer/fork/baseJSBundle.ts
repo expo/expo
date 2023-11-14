@@ -21,7 +21,6 @@ export type Bundle = {
   modules: ModuleMap;
   post: string;
   pre: string;
-  _expoSplitBundlePaths: [number, Record<string, string>][];
 };
 
 export type ExpoSerializerOptions = SerializerOptions & {
@@ -166,9 +165,5 @@ export function baseJSBundleWithDependencies(
       id,
       typeof code === 'number' ? code : code.src,
     ]) as ModuleMap,
-    _expoSplitBundlePaths: mods.map(([id, code]) => [
-      id,
-      typeof code === 'number' ? {} : code.paths,
-    ]) as [number, Record<string, string>][],
   };
 }

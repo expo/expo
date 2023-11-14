@@ -1,112 +1,134 @@
-import { vol } from 'memfs';
-import countLines from 'metro/src/lib/countLines';
 import { wrapModule } from '../js';
-import CountingSet from 'metro/src/lib/CountingSet';
-import { Dependency, Module } from 'metro';
-import * as path from 'path';
+import { parseModule, projectRoot } from './mini-metro';
 
 jest.mock('fs');
 
-function line(str: string) {
-  const [line, column] = str.split(':').map(Number);
-  return { line, column };
-}
-
-function toDependencyMap(...deps: Dependency[]): Map<string, Dependency> {
-  const map = new Map();
-
-  for (const dep of deps) {
-    map.set(dep.absolutePath, dep);
-  }
-
-  return map;
-}
-
-function toDependency(
-  absolutePath: string,
-  {
-    name = path.basename(absolutePath),
-    isAsync,
-  }: {
-    name?: string;
-    isAsync?: boolean;
-  } = {}
-): Dependency {
-  return {
-    absolutePath,
-    data: {
-      name,
-      data: {
-        locs: [
-          {
-            start: line('0:0'),
-            end: line('0:5'),
-          },
-        ],
-        asyncType: isAsync ? 'async' : undefined,
-        key: name + isAsync,
-      },
-    },
-  };
-}
-
-function toModule(
-  absolutePath: string,
-  src: string,
-  {
-    dependencies = new Map(),
-  }: {
-    dependencies?: Map<string, Dependency>;
-  } = {}
-): Module<{ type: string; data: { lineCount: number; code: string } }> {
-  return {
-    getSource() {
-      return Buffer.from(src);
-    },
-    path: absolutePath,
-    dependencies,
-    inverseDependencies: new CountingSet(),
-    output: [
-      {
-        data: {
-          code: src,
-          lineCount: countLines(src),
-        },
-        type: 'js/module',
-      },
-    ],
-  };
+function helpWrap(src: string, options: Partial<Parameters<typeof wrapModule>[1]>) {
+  return wrapModule(parseModule('index.js', src), {
+    computedAsyncModulePaths: null,
+    createModuleId: (m) => m,
+    dev: true,
+    includeAsyncPaths: false,
+    projectRoot: projectRoot,
+    serverRoot: projectRoot,
+    skipWrapping: false,
+    sourceUrl: 'http://localhost:8081/index.bundle?platform=web&dev=true&minify=false',
+    splitChunks: false,
+    ...options,
+  });
 }
 
 describe(wrapModule, () => {
-  it(`wraps module with params`, () => {
-    vol.fromJSON({});
-
-    expect(
-      wrapModule(
-        toModule('/to/index.js', '__d(() => { /* Hey */ })', {
-          dependencies: toDependencyMap(
-            toDependency('/to/dep1.js'),
-            toDependency('/to/other.js', { isAsync: true })
-          ),
-        }),
+  describe('lazy disabled', () => {
+    it(`wraps module with params in dev with lazy disabled`, () => {
+      const res = helpWrap(
+        `import { View } from 'react-native';
+              console.log("Hello World")`,
         {
-          baseUrl: '/',
-          computedAsyncModulePaths: null,
-          createModuleId: (m) => m,
           dev: true,
           includeAsyncPaths: false,
-          platform: 'web',
-          projectRoot: '/to',
-          serverRoot: '/to',
-          skipWrapping: false,
-          sourceUrl: 'http://localhost:8081/index.bundle?platform=web&dev=true&minify=false',
-          splitChunks: false,
         }
-      )
-    ).toEqual({
-      paths: {},
-      src: '__d(() => { /* Hey */ },"/to/index.js",["/to/dep1.js","/to/other.js"],"index.js")',
+      );
+      expect(res.paths).toEqual({});
+      expect(res.src).toMatchInlineSnapshot(`
+              "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+                var View = _$$_REQUIRE(dependencyMap[0], "react-native").View;
+                console.log("Hello World");
+              },"/app/index.js",["/app/node_modules/react-native/index.js"],"index.js");"
+            `);
     });
+    it(`wraps module with params in dev with lazy loading disabled`, () => {
+      const res = helpWrap(`const evan = import('bacon');`, {
+        dev: true,
+        includeAsyncPaths: false,
+      });
+      expect(res.paths).toEqual({});
+      expect(res.src).toMatchInlineSnapshot(`
+              "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+                const evan = _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "bacon");
+              },"/app/index.js",["/app/node_modules/bacon/index.js","/app/node_modules/expo-mock/async-require/index.js"],"index.js");"
+            `);
+    });
+  });
+  it(`wraps module with params in dev with lazy loading enabled`, () => {
+    const res = helpWrap(`const evan = import('bacon');`, {
+      dev: true,
+      includeAsyncPaths: true,
+    });
+    expect(res.paths).toEqual({
+      '/app/node_modules/bacon/index.js':
+        '/node_modules/bacon/index.bundle?platform=web&dev=true&minify=false&modulesOnly=true&runModule=false',
+    });
+    expect(res.src).toMatch(/expo-mock\/async-require/);
+    expect(res.src).toMatch(/paths/);
+    expect(res.src).toMatch(
+      /node_modules\/bacon\/index\.bundle\?platform=web&dev=true&minify=false&modulesOnly=true&runModule=false/
+    );
+    expect(res.src).toMatchInlineSnapshot(`
+      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+        const evan = _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "bacon");
+      },"/app/index.js",{"0":"/app/node_modules/bacon/index.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/node_modules/bacon/index.js":"/node_modules/bacon/index.bundle?platform=web&dev=true&minify=false&modulesOnly=true&runModule=false"}},"index.js");"
+    `);
+  });
+
+  it(`wraps module with params in prod with lazy loading enabled`, () => {
+    const res = helpWrap(`const evan = import('bacon');`, {
+      dev: false,
+      includeAsyncPaths: false,
+      splitChunks: true,
+      computedAsyncModulePaths: {
+        '/app/node_modules/bacon/index.js': '/_expo/static/js/web/0.chunk.js',
+      },
+    });
+    expect(res.paths).toEqual({
+      '/app/node_modules/bacon/index.js': '/_expo/static/js/web/0.chunk.js',
+    });
+    expect(res.src).toMatch(/expo-mock\/async-require/);
+    expect(res.src).toMatch(/paths/);
+    expect(res.src).not.toMatch(
+      /\?platform=web&dev=true&minify=false&modulesOnly=true&runModule=false/
+    );
+    expect(res.src).toMatchInlineSnapshot(`
+      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+        const evan = _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "bacon");
+      },"/app/index.js",{"0":"/app/node_modules/bacon/index.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/node_modules/bacon/index.js":"/_expo/static/js/web/0.chunk.js"}});"
+    `);
+  });
+
+  // Disabled wrapping is used to calculate content hashes without knowing all the module paths ahead of time.
+  it(`disables module wrapping in dev`, () => {
+    const res = helpWrap(`const evan = import('bacon');`, {
+      skipWrapping: true,
+      dev: false,
+      includeAsyncPaths: true,
+    });
+    expect(res.paths).toEqual({
+      '/app/node_modules/bacon/index.js':
+        '/node_modules/bacon/index.bundle?platform=web&dev=true&minify=false&modulesOnly=true&runModule=false',
+    });
+    expect(res.src).toMatchInlineSnapshot(`
+      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+        const evan = _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "bacon");
+      });"
+    `);
+  });
+  it(`disables module wrapping in prod`, () => {
+    const res = helpWrap(`const evan = import('bacon');`, {
+      dev: false,
+      includeAsyncPaths: false,
+      splitChunks: true,
+      skipWrapping: true,
+      computedAsyncModulePaths: {
+        '/app/node_modules/bacon/index.js': '/_expo/static/js/web/0.chunk.js',
+      },
+    });
+    expect(res.paths).toEqual({
+      '/app/node_modules/bacon/index.js': '/_expo/static/js/web/0.chunk.js',
+    });
+    expect(res.src).toMatchInlineSnapshot(`
+      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
+        const evan = _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "bacon");
+      });"
+    `);
   });
 });

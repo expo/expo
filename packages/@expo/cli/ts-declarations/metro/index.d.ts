@@ -32,6 +32,30 @@ declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
   export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject';
 
   export type AllowOptionalDependencies = boolean | AllowOptionalDependenciesWithOptions;
+
+  type BabelNodeFile = any;
+
+  export type CollectedDependencies = readonly {
+    ast: BabelNodeFile;
+    dependencyMapName: string;
+    dependencies: readonly Array<Dependency>;
+  };
+
+  export type Options = readonly {
+    asyncRequireModulePath: string;
+    dependencyMapName?: string;
+    dynamicRequires: DynamicRequiresBehavior;
+    inlineableCalls: readonly Array<string>;
+    keepRequireNames: boolean;
+    allowOptionalDependencies: AllowOptionalDependencies;
+    dependencyTransformer?: DependencyTransformer;
+    /** Enable `require.context` statements which can be used to import multiple files in a directory. */
+    unstable_allowRequireContext: boolean;
+  };
+
+  function collectDependencies(ast: BabelNodeFile, options: Options): CollectedDependencies;
+
+  export default collectDependencies;
 }
 
 declare module 'metro/src/DeltaBundler/types.flow' {

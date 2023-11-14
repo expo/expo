@@ -23,8 +23,6 @@ export type Options = {
   projectRoot: string;
   serverRoot: string;
   sourceUrl: string | undefined;
-  platform: string;
-  baseUrl: string;
   splitChunks: boolean;
   skipWrapping: boolean;
   computedAsyncModulePaths: Record<string, string> | null;
@@ -58,8 +56,6 @@ export function getModuleParams(
     | 'sourceUrl'
     | 'includeAsyncPaths'
     | 'serverRoot'
-    | 'platform'
-    | 'baseUrl'
     | 'splitChunks'
     | 'dev'
     | 'projectRoot'

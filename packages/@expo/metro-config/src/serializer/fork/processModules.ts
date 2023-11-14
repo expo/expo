@@ -20,14 +20,10 @@ export function processModules(
     projectRoot,
     serverRoot,
     sourceUrl,
-    platform,
-    baseUrl,
     splitChunks,
     skipWrapping,
     computedAsyncModulePaths,
   }: {
-    platform: string;
-    baseUrl: string;
     splitChunks: boolean;
     filter?: (module: Module) => boolean;
     createModuleId: (module: string) => number;
@@ -46,8 +42,6 @@ export function processModules(
     .map((module: Module) => [
       module,
       wrapModule(module, {
-        baseUrl,
-        platform,
         splitChunks,
         createModuleId,
         dev,
