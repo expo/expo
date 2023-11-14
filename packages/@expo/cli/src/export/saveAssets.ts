@@ -191,7 +191,7 @@ export function getFilesFromSerialAssets(
 ) {
   resources.forEach((resource) => {
     files.set(resource.filename, {
-      contents: modifyBundlesWithSourceMaps(resource.filename, resource.source, includeSourceMaps),
+      contents: resource.source,
       originFilename: resource.originFilename,
     });
   });

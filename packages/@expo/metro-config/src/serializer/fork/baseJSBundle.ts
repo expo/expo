@@ -149,8 +149,12 @@ export function baseJSBundleWithDependencies(
       runBeforeMainModule: options.runBeforeMainModule,
       runModule: options.runModule,
       shouldAddToIgnoreList: options.shouldAddToIgnoreList,
-      sourceMapUrl: options.sourceMapUrl,
-      sourceUrl: options.sourceUrl,
+      sourceMapUrl:
+        options.serializerOptions?.includeSourceMaps === false ? undefined : options.sourceMapUrl,
+      // This directive doesn't make a lot of sense in the context of a large single bundle that represent
+      // multiple files. It's usually used for things like TypeScript where you want the file name to appear with a
+      // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web.
+      sourceUrl: options.platform === 'web' ? undefined : options.sourceUrl,
     }),
     processModulesOptions
   )

@@ -103,7 +103,7 @@ describe('serializes', () => {
       // Ensure the annotation is included and uses the .hbc.map. We make this modification as
       // a string before passing to Hermes.
       expect(artifacts[0].source).toMatch(
-        `//# sourceMappingURL=https://localhost:8081/_expo/static/js/ios/index-91e3ec343caa177ec8aadd46fc9269ae.hbc.map`
+        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc\.map/
       );
     });
     it(`serializes with relative base url in production`, async () => {
@@ -126,7 +126,7 @@ describe('serializes', () => {
 
       // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        `//# sourceMappingURL=https://localhost:8081/subdomain/_expo/static/js/ios/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/subdomain\/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/
       );
     });
     it(`serializes source maps in production for web`, async () => {
@@ -148,7 +148,7 @@ describe('serializes', () => {
 
       // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        `//# sourceMappingURL=/_expo/static/js/web/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+        /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/
       );
     });
 
@@ -172,7 +172,7 @@ describe('serializes', () => {
 
       // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        `//# sourceMappingURL=/subdomain/_expo/static/js/web/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+        /\/\/# sourceMappingURL=\/subdomain\/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/
       );
     });
 
@@ -196,7 +196,7 @@ describe('serializes', () => {
 
       // Ensure the source uses the absolute base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        `//# sourceMappingURL=https://evanbacon.dev/_expo/static/js/ios/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+        /\/\/# sourceMappingURL=https:\/\/evanbacon\.dev\/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/
       );
     });
 
@@ -220,7 +220,7 @@ describe('serializes', () => {
 
       // Ensure the source uses the absolute base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        `//# sourceMappingURL=https://evanbacon.dev/_expo/static/js/web/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+        /\/\/# sourceMappingURL=https:\/\/evanbacon\.dev\/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/
       );
     });
 
@@ -331,15 +331,15 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-0b9b43ecdb3c710f64dda45d7d0db4cd.js",
-        "_expo/static/js/web/foo-232b89d35f31c36feae2c10429b845f0.js",
+        "_expo/static/js/web/index-f0606e9a7a39437c8958b4d8e3e9ff34.js",
+        "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-0b9b43ecdb3c710f64dda45d7d0db4cd.js",
+          "filename": "_expo/static/js/web/index-f0606e9a7a39437c8958b4d8e3e9ff34.js",
           "metadata": {
             "isAsync": false,
             "requires": [],
@@ -347,12 +347,12 @@ describe('serializes', () => {
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "./foo");
-      },"/app/index.js",{"0":"/app/foo.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-232b89d35f31c36feae2c10429b845f0.js"}});
+      },"/app/index.js",{"0":"/app/foo.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js"}});
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/foo-232b89d35f31c36feae2c10429b845f0.js",
+          "filename": "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
           "metadata": {
             "isAsync": true,
             "requires": [],
@@ -390,15 +390,15 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-904a90a53c6490313e6bce0f78f03fa8.js",
-        "_expo/static/js/web/foo-232b89d35f31c36feae2c10429b845f0.js",
+        "_expo/static/js/web/index-b0f278bb5fc494c16eecc93bd05c55c6.js",
+        "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-904a90a53c6490313e6bce0f78f03fa8.js",
+          "filename": "_expo/static/js/web/index-b0f278bb5fc494c16eecc93bd05c55c6.js",
           "metadata": {
             "isAsync": false,
             "requires": [],
@@ -409,12 +409,12 @@ describe('serializes', () => {
       },"/app/index.js",["/app/two.js"]);
       __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "./foo");
-      },"/app/two.js",{"0":"/app/foo.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-232b89d35f31c36feae2c10429b845f0.js"}});
+      },"/app/two.js",{"0":"/app/foo.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js"}});
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/foo-232b89d35f31c36feae2c10429b845f0.js",
+          "filename": "_expo/static/js/web/foo-c054379d08b2cfa157d6fc1caa8f4802.js",
           "metadata": {
             "isAsync": true,
             "requires": [],
@@ -458,33 +458,33 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-833b20aeb77cc593674361f73b066ac3.js",
-        "_expo/static/js/web/math-b70acfe62bcee9c14849d23d1d5d35ff.js",
-        "_expo/static/js/web/shapes-d1c59c3d9c2577a2efe2e98e1e3acf65.js",
-        "_expo/static/js/web/colors-8b2ec726ca43b2f43070a8f845cd4ef9.js",
+        "_expo/static/js/web/index-2886bcb99609bebf6f5d5b3a6fef2aca.js",
+        "_expo/static/js/web/math-b278c4815cd8b12f59e193dbc2a4d19b.js",
+        "_expo/static/js/web/shapes-405334a7946b0b9fb76331cda92fa85a.js",
+        "_expo/static/js/web/colors-f0d273187f9a6fb9aa2b039462d8aa07.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-833b20aeb77cc593674361f73b066ac3.js",
+          "filename": "_expo/static/js/web/index-2886bcb99609bebf6f5d5b3a6fef2aca.js",
           "metadata": {
             "isAsync": false,
             "requires": [
-              "_expo/static/js/web/colors-8b2ec726ca43b2f43070a8f845cd4ef9.js",
+              "_expo/static/js/web/colors-f0d273187f9a6fb9aa2b039462d8aa07.js",
             ],
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "./math");
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[2], dependencyMap.paths, "./shapes");
-      },"/app/index.js",{"0":"/app/math.js","1":"/app/node_modules/expo-mock/async-require/index.js","2":"/app/shapes.js","paths":{"/app/math.js":"/_expo/static/js/web/math-b70acfe62bcee9c14849d23d1d5d35ff.js","/app/shapes.js":"/_expo/static/js/web/shapes-d1c59c3d9c2577a2efe2e98e1e3acf65.js"}});
+      },"/app/index.js",{"0":"/app/math.js","1":"/app/node_modules/expo-mock/async-require/index.js","2":"/app/shapes.js","paths":{"/app/math.js":"/_expo/static/js/web/math-b278c4815cd8b12f59e193dbc2a4d19b.js","/app/shapes.js":"/_expo/static/js/web/shapes-405334a7946b0b9fb76331cda92fa85a.js"}});
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/math-b70acfe62bcee9c14849d23d1d5d35ff.js",
+          "filename": "_expo/static/js/web/math-b278c4815cd8b12f59e193dbc2a4d19b.js",
           "metadata": {
             "isAsync": true,
             "requires": [],
@@ -501,7 +501,7 @@ describe('serializes', () => {
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/shapes-d1c59c3d9c2577a2efe2e98e1e3acf65.js",
+          "filename": "_expo/static/js/web/shapes-405334a7946b0b9fb76331cda92fa85a.js",
           "metadata": {
             "isAsync": true,
             "requires": [],
@@ -518,7 +518,7 @@ describe('serializes', () => {
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/colors-8b2ec726ca43b2f43070a8f845cd4ef9.js",
+          "filename": "_expo/static/js/web/colors-f0d273187f9a6fb9aa2b039462d8aa07.js",
           "metadata": {
             "isAsync": false,
             "requires": [],

@@ -177,7 +177,16 @@ class Chunk {
 
   private getFilenameForConfig(serializerConfig: Partial<SerializerConfigT>) {
     return this.getFilename(
-      this.options.dev ? '' : this.serializeToCodeWithTemplates(serializerConfig)
+      this.options.dev
+        ? ''
+        : this.serializeToCodeWithTemplates(serializerConfig, {
+            // Disable source maps when creating a sha to reduce the number of possible changes that could
+            // influence the cache hit.
+            serializerOptions: {
+              includeSourceMaps: false,
+            },
+            sourceMapUrl: undefined,
+          })
     );
   }
 
@@ -186,7 +195,6 @@ class Chunk {
     options: Partial<Parameters<typeof baseJSBundleWithDependencies>[3]> = {}
   ) {
     const entryFile = this.name;
-    const fileName = path.basename(entryFile, '.js');
 
     const jsSplitBundle = baseJSBundleWithDependencies(
       entryFile,
@@ -201,7 +209,6 @@ class Chunk {
         runModule: !this.isVendor && !this.isAsync,
         modulesOnly: this.preModules.size === 0,
         platform: this.getPlatform(),
-        sourceMapUrl: `${fileName}.map`,
         baseUrl: getBaseUrlOption(this.graph, this.options),
         splitChunks: getSplitChunksOption(this.graph, this.options),
         skipWrapping: true,
@@ -250,6 +257,10 @@ class Chunk {
     // Metro really only accounts for development, so we'll use the defaults here.
     if (this.options.dev) {
       return this.options.sourceMapUrl ?? null;
+    }
+
+    if (!this.options.serializerOptions?.includeSourceMaps) {
+      return null;
     }
 
     if (this.options.inlineSourceMap || !this.options.sourceMapUrl) {
