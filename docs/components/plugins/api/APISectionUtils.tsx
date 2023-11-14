@@ -108,12 +108,14 @@ export const mdComponentsNoValidation: MDComponents = {
 };
 
 const nonLinkableTypes = [
+  'AsyncIterableIterator',
   'ColorValue',
   'Component',
   'ComponentClass',
   'PureComponent',
   'E',
   'EventSubscription',
+  'IterableIterator',
   'Listener',
   'NativeSyntheticEvent',
   'ParsedQs',
@@ -123,6 +125,7 @@ const nonLinkableTypes = [
   'Uint8Array',
   // React & React Native
   'React.FC',
+  'ReactNode',
   'ForwardRefExoticComponent',
   'StyleProp',
   'HTMLInputElement',

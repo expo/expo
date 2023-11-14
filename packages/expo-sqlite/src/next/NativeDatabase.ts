@@ -38,7 +38,7 @@ export interface OpenOptions {
   enableCRSQLite?: boolean;
 
   /**
-   * Whether to call the `sqlite3_update_hook` function and enable the `onDatabaseChange` events.
+   * Whether to call the [`sqlite3_update_hook`](https://www.sqlite.org/c3ref/update_hook.html) function and enable the `onDatabaseChange` events.
    * @default false
    */
   enableChangeListener?: boolean;
