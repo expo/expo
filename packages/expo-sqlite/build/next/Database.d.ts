@@ -7,8 +7,9 @@ export { OpenOptions };
  */
 export declare class Database {
     readonly dbName: string;
+    readonly options: OpenOptions;
     private readonly nativeDatabase;
-    constructor(dbName: string, nativeDatabase: NativeDatabase);
+    constructor(dbName: string, options: OpenOptions, nativeDatabase: NativeDatabase);
     /**
      * Asynchronous call to return whether the database is currently in a transaction.
      */
