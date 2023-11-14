@@ -93,12 +93,6 @@ async function graphToSerialAssetsAsync(config, {
   [{
     test: (0, _pathToRegexp().default)(entryFile)
   }].map(chunkSettings => gatherChunks(_chunks, chunkSettings, preModules, graph, options, false));
-
-  // console.log('Chunks:');
-  // console.log(inspect([..._chunks], { depth: 3, colors: true }));
-  // Optimize the chunks
-  // dedupeChunks(_chunks);
-
   const jsAssets = await serializeChunksAsync(_chunks, (_config$serializer = config.serializer) !== null && _config$serializer !== void 0 ? _config$serializer : {}, {
     includeSourceMaps: includeMaps
   });
@@ -235,12 +229,15 @@ class Chunk {
     }
     return assets;
   }
+  supportsBytecode() {
+    return this.getPlatform() !== 'web';
+  }
   isHermesEnabled() {
     var _this$graph$transform;
     // TODO: Revisit.
     // TODO: There could be an issue with having the serializer for export:embed output hermes since the native scripts will
     // also create hermes bytecode. We may need to disable in one of the two places.
-    return !this.options.dev && this.getPlatform() !== 'web' && ((_this$graph$transform = this.graph.transformOptions.customTransformOptions) === null || _this$graph$transform === void 0 ? void 0 : _this$graph$transform.engine) === 'hermes';
+    return !this.options.dev && this.supportsBytecode() && ((_this$graph$transform = this.graph.transformOptions.customTransformOptions) === null || _this$graph$transform === void 0 ? void 0 : _this$graph$transform.engine) === 'hermes';
   }
 }
 function getEntryModulesForChunkSettings(graph, settings) {
@@ -256,10 +253,6 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
     return !existingChunks.find(chunk => chunk.entries.includes(module));
   });
 
-  // if (!entryModules.length) {
-  //   throw new Error('Entry module not found in graph: ' + entryFile);
-  // }
-
   // Prevent processing the same entry file twice.
   if (!entryModules.length) {
     return chunks;
@@ -268,42 +261,21 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
 
   // Add all the pre-modules to the first chunk.
   if (preModules.length) {
-    if (graph.transformOptions.platform === 'web' && !isAsync) {
-      // On web, add a new required chunk that will be included in the HTML.
-      const preChunk = new Chunk(chunkIdForModules([...preModules]), [...preModules], graph, options);
-      // for (const module of preModules.values()) {
-      //   preChunk.deps.add(module);
-      // }
-      chunks.add(preChunk);
-      entryChunk.requiredChunks.add(preChunk);
-    } else {
-      // On native, use the preModules in insert code in the entry chunk.
-      for (const module of preModules.values()) {
-        entryChunk.preModules.add(module);
-      }
+    // On native, use the preModules in insert code in the entry chunk.
+    for (const module of preModules.values()) {
+      entryChunk.preModules.add(module);
     }
   }
-  const splitChunks = (0, _baseJSBundle().getSplitChunksOption)(graph, options);
   chunks.add(entryChunk);
-
-  // entryChunk.deps.add(entryModule);
-
   function includeModule(entryModule) {
     for (const dependency of entryModule.dependencies.values()) {
-      if (dependency.data.data.asyncType === 'async' &&
-      // Support disabling multiple chunks.
-      splitChunks) {
-        gatherChunks(chunks, {
-          test: (0, _pathToRegexp().default)(dependency.absolutePath)
-        }, [], graph, options, true);
-      } else {
-        const module = graph.dependencies.get(dependency.absolutePath);
-        if (module) {
-          // Prevent circular dependencies from creating infinite loops.
-          if (!entryChunk.deps.has(module)) {
-            entryChunk.deps.add(module);
-            includeModule(module);
-          }
+      // TODO: Create more chunks
+      const module = graph.dependencies.get(dependency.absolutePath);
+      if (module) {
+        // Prevent circular dependencies from creating infinite loops.
+        if (!entryChunk.deps.has(module)) {
+          entryChunk.deps.add(module);
+          includeModule(module);
         }
       }
     }
@@ -327,7 +299,6 @@ async function serializeChunksAsync(chunks, serializerConfig, {
 function getSortedModules(modules, {
   createModuleId
 }) {
-  // const modules = [...graph.dependencies.values()];
   // Assign IDs to modules in a consistent order
   for (const module of modules) {
     createModuleId(module.path);

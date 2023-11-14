@@ -24,6 +24,7 @@ import pathToRegExp from 'path-to-regexp';
 import { buildHermesBundleAsync } from './exportHermes';
 import { getExportPathForDependencyWithOptions } from './exportPath';
 import {
+  ExpoSerializerOptions,
   baseJSBundleWithDependencies,
   getBaseUrlOption,
   getPlatformOption,
@@ -32,8 +33,6 @@ import {
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 
-// import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
-// import { toFixture } from './__tests__/fixtures/toFixture';
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
 type SerializerParameters = Parameters<Serializer>;
@@ -64,11 +63,6 @@ export async function graphToSerialAssetsAsync(
     },
   ].map((chunkSettings) => gatherChunks(_chunks, chunkSettings, preModules, graph, options, false));
 
-  // console.log('Chunks:');
-  // console.log(inspect([..._chunks], { depth: 3, colors: true }));
-  // Optimize the chunks
-  // dedupeChunks(_chunks);
-
   const jsAssets = await serializeChunksAsync(_chunks, config.serializer ?? {}, {
     includeSourceMaps: includeMaps,
   });
@@ -98,7 +92,7 @@ class Chunk {
     public name: string,
     public entries: Module<MixedOutput>[],
     public graph: ReadOnlyGraph<MixedOutput>,
-    public options: SerializerOptions<MixedOutput>,
+    public options: ExpoSerializerOptions,
     public isAsync: boolean = false
   ) {
     this.deps = new Set(entries);
@@ -238,13 +232,17 @@ class Chunk {
     return assets;
   }
 
+  private supportsBytecode() {
+    return this.getPlatform() !== 'web';
+  }
+
   isHermesEnabled() {
     // TODO: Revisit.
     // TODO: There could be an issue with having the serializer for export:embed output hermes since the native scripts will
     // also create hermes bytecode. We may need to disable in one of the two places.
     return (
       !this.options.dev &&
-      this.getPlatform() !== 'web' &&
+      this.supportsBytecode() &&
       this.graph.transformOptions.customTransformOptions?.engine === 'hermes'
     );
   }
@@ -279,10 +277,6 @@ function gatherChunks(
     return !existingChunks.find((chunk) => chunk.entries.includes(module));
   });
 
-  // if (!entryModules.length) {
-  //   throw new Error('Entry module not found in graph: ' + entryFile);
-  // }
-
   // Prevent processing the same entry file twice.
   if (!entryModules.length) {
     return chunks;
@@ -298,55 +292,23 @@ function gatherChunks(
 
   // Add all the pre-modules to the first chunk.
   if (preModules.length) {
-    if (graph.transformOptions.platform === 'web' && !isAsync) {
-      // On web, add a new required chunk that will be included in the HTML.
-      const preChunk = new Chunk(
-        chunkIdForModules([...preModules]),
-        [...preModules],
-        graph,
-        options
-      );
-      // for (const module of preModules.values()) {
-      //   preChunk.deps.add(module);
-      // }
-      chunks.add(preChunk);
-      entryChunk.requiredChunks.add(preChunk);
-    } else {
-      // On native, use the preModules in insert code in the entry chunk.
-      for (const module of preModules.values()) {
-        entryChunk.preModules.add(module);
-      }
+    // On native, use the preModules in insert code in the entry chunk.
+    for (const module of preModules.values()) {
+      entryChunk.preModules.add(module);
     }
   }
 
-  const splitChunks = getSplitChunksOption(graph, options);
   chunks.add(entryChunk);
-
-  // entryChunk.deps.add(entryModule);
 
   function includeModule(entryModule: Module<MixedOutput>) {
     for (const dependency of entryModule.dependencies.values()) {
-      if (
-        dependency.data.data.asyncType === 'async' &&
-        // Support disabling multiple chunks.
-        splitChunks
-      ) {
-        gatherChunks(
-          chunks,
-          { test: pathToRegExp(dependency.absolutePath) },
-          [],
-          graph,
-          options,
-          true
-        );
-      } else {
-        const module = graph.dependencies.get(dependency.absolutePath);
-        if (module) {
-          // Prevent circular dependencies from creating infinite loops.
-          if (!entryChunk.deps.has(module)) {
-            entryChunk.deps.add(module);
-            includeModule(module);
-          }
+      // TODO: Create more chunks
+      const module = graph.dependencies.get(dependency.absolutePath);
+      if (module) {
+        // Prevent circular dependencies from creating infinite loops.
+        if (!entryChunk.deps.has(module)) {
+          entryChunk.deps.add(module);
+          includeModule(module);
         }
       }
     }
@@ -385,7 +347,6 @@ function getSortedModules(
     createModuleId: (path: string) => number;
   }
 ): readonly Module<any>[] {
-  // const modules = [...graph.dependencies.values()];
   // Assign IDs to modules in a consistent order
   for (const module of modules) {
     createModuleId(module.path);

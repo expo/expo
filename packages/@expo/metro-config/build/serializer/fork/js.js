@@ -86,9 +86,7 @@ function getModuleParams(module, options) {
 
     dependency.data.data.asyncType != null) {
       if (options.includeAsyncPaths) {
-        if (
-        // TODO: Replace this logic with some option that indicates we are bundling for use without a dev server, i.e. `devServerUrl` or `isExporting`.
-        options.dev && options.sourceUrl) {
+        if (options.sourceUrl) {
           hasPaths = true;
           // TODO: Only include path if the target is not in the bundle
 
