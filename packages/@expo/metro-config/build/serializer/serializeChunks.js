@@ -156,6 +156,9 @@ class Chunk {
     });
     return (0, _bundleToString().default)(jsSplitBundle).code;
   }
+  hasAbsolutePath(absolutePath) {
+    return [...this.deps].some(module => module.path === absolutePath);
+  }
   getComputedPathsForAsyncDependencies(serializerConfig, chunks) {
     const baseUrl = (0, _baseJSBundle().getBaseUrlOption)(this.graph, this.options);
     // Only calculate production paths when all chunks are being exported.
@@ -166,13 +169,15 @@ class Chunk {
     this.deps.forEach(module => {
       module.dependencies.forEach(dependency => {
         if (dependency.data.data.asyncType === 'async') {
-          const chunkContainingModule = chunks.find(chunk => chunk.deps.has(module));
-          (0, _assert().default)(chunkContainingModule, 'Chunk containing module not found: ' + module.path);
+          const chunkContainingModule = chunks.find(chunk => chunk.hasAbsolutePath(dependency.absolutePath));
+          (0, _assert().default)(chunkContainingModule, 'Chunk containing module not found: ' + dependency.absolutePath);
+          console.log('chunkContainingModule', chunkContainingModule, dependency.absolutePath);
           const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
           computedAsyncModulePaths[dependency.absolutePath] = (baseUrl !== null && baseUrl !== void 0 ? baseUrl : '/') + moduleIdName;
         }
       });
     });
+    console.log('computed:', computedAsyncModulePaths);
     return computedAsyncModulePaths;
   }
   serializeToCode(serializerConfig, chunks) {
@@ -292,15 +297,23 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
     }
   }
   chunks.add(entryChunk);
+  const splitChunks = (0, _baseJSBundle().getSplitChunksOption)(graph, options);
   function includeModule(entryModule) {
     for (const dependency of entryModule.dependencies.values()) {
-      // TODO: Create more chunks
-      const module = graph.dependencies.get(dependency.absolutePath);
-      if (module) {
-        // Prevent circular dependencies from creating infinite loops.
-        if (!entryChunk.deps.has(module)) {
-          entryChunk.deps.add(module);
-          includeModule(module);
+      if (dependency.data.data.asyncType === 'async' &&
+      // Support disabling multiple chunks.
+      splitChunks) {
+        gatherChunks(chunks, {
+          test: (0, _pathToRegexp().default)(dependency.absolutePath)
+        }, [], graph, options, true);
+      } else {
+        const module = graph.dependencies.get(dependency.absolutePath);
+        if (module) {
+          // Prevent circular dependencies from creating infinite loops.
+          if (!entryChunk.deps.has(module)) {
+            entryChunk.deps.add(module);
+            includeModule(module);
+          }
         }
       }
     }

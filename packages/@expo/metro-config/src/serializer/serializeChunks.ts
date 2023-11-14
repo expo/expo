@@ -161,6 +161,10 @@ class Chunk {
     return bundleToString(jsSplitBundle).code;
   }
 
+  hasAbsolutePath(absolutePath: string): boolean {
+    return [...this.deps].some((module) => module.path === absolutePath);
+  }
+
   private getComputedPathsForAsyncDependencies(
     serializerConfig: Partial<SerializerConfigT>,
     chunks: Chunk[]
@@ -175,9 +179,13 @@ class Chunk {
     this.deps.forEach((module) => {
       module.dependencies.forEach((dependency) => {
         if (dependency.data.data.asyncType === 'async') {
-          const chunkContainingModule = chunks.find((chunk) => chunk.deps.has(module));
-          assert(chunkContainingModule, 'Chunk containing module not found: ' + module.path);
-
+          const chunkContainingModule = chunks.find((chunk) =>
+            chunk.hasAbsolutePath(dependency.absolutePath)
+          );
+          assert(
+            chunkContainingModule,
+            'Chunk containing module not found: ' + dependency.absolutePath
+          );
           const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
           computedAsyncModulePaths![dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
         }
@@ -355,15 +363,31 @@ function gatherChunks(
 
   chunks.add(entryChunk);
 
+  const splitChunks = getSplitChunksOption(graph, options);
+
   function includeModule(entryModule: Module<MixedOutput>) {
     for (const dependency of entryModule.dependencies.values()) {
-      // TODO: Create more chunks
-      const module = graph.dependencies.get(dependency.absolutePath);
-      if (module) {
-        // Prevent circular dependencies from creating infinite loops.
-        if (!entryChunk.deps.has(module)) {
-          entryChunk.deps.add(module);
-          includeModule(module);
+      if (
+        dependency.data.data.asyncType === 'async' &&
+        // Support disabling multiple chunks.
+        splitChunks
+      ) {
+        gatherChunks(
+          chunks,
+          { test: pathToRegExp(dependency.absolutePath) },
+          [],
+          graph,
+          options,
+          true
+        );
+      } else {
+        const module = graph.dependencies.get(dependency.absolutePath);
+        if (module) {
+          // Prevent circular dependencies from creating infinite loops.
+          if (!entryChunk.deps.has(module)) {
+            entryChunk.deps.add(module);
+            includeModule(module);
+          }
         }
       }
     }
