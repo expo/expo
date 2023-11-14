@@ -6,23 +6,23 @@ sidebar_title: Store assets
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-Before you can submit your app to the App Store and Play Store, you need to provide screenshots and previews
-for your app listing page. The goal of these images and videos is to give prospective users an idea of what your app experience
+Before you can submit your app to the App Store and Play Store, you need to provide some assets for your store listing page.
+The goal of these images and videos is to give prospective users an idea of what your app experience
 is going to be like.
 
-It is important to note that while these are called "app screenshots" on both stores and they *do* have to include accurate
-visuals of your app, there is no rule citing that these images have to be screenshots taken on specific devices. App and Play Store
-give you a required image format and size, but within these restrictions, you can be creative.
+The most important assets you need to add are the app screenshots. Note that while they are called "app screenshots" on both stores and they *do* have to include accurate
+visuals of your app, there is no rule citing that these images have to be screenshots taken on specific devices. The stores will have
+requirements on image format and size, but within these restrictions, you can be creative.
 For example, a common approach is to design the assets using a design tool such as Figma and incorporate actual app screenshots
 (or designs) with supplementary messaging.
 
-## Three approaches for creating Store Assets
+## Different approaches for creating "screenshots"
 
-There are three commonly used approaches to creating your store assets. You can choose whatever approach works best for your app's needs and resources.
+There are three commonly used approaches to creating your store screenshots. You can choose whichever approach works best for your app's needs and your resources.
 
-### Option 1: Just screenshots
+### Option 1: actual screenshots
 
-The most straightforward option: open up your app on a real device and take screenshots.
+The most straightforward option: open up your app on a real device and take the screenshots.
 
 **Pros**: straightforward to do; most accurate representation of your app
 
@@ -35,12 +35,12 @@ The most straightforward option: open up your app on a real device and take scre
   style={{ maxWidth: 720 }}
 />
 
-### Option 2: Screenshots within a design
+### Option 2: screenshots within a design
 
 The majority of apps use this approach: it involves taking screenshots of the app (or in some cases using existing
 designs instead of actual screenshots) and embedding them in the store assets along with appropriate messaging.
 
-**Pros:** allows conveying additional messaging withing the assets
+**Pros:** allows conveying additional messaging within the assets
 
 **Cons:** the assets need to be created using a design program
 
@@ -50,9 +50,9 @@ designs instead of actual screenshots) and embedding them in the store assets al
   style={{ maxWidth: 720 }}
 />
 
-### Option 4: Make it fancy
+### Option 3: make it fancy
 
-Here you can create parts of your app design to highlight on the store pages, but incorprate them into a design with creative messaging.
+Here you can use elements of your app design to highlight on the store pages, but incorprate them into a design with creative messaging.
 
 **Pros:** you can make your store page really creative and fun
 
@@ -63,3 +63,48 @@ Here you can create parts of your app design to highlight on the store pages, bu
   src="/static/images/guides/office-screenshots.png"
   style={{ maxWidth: 720 }}
 />
+
+## iOS App Store Asset Requirements
+
+For the iOS App Store you can upload screenshots (images) and previews (videos). For each, Apple requires specific
+widths and heights, so make sure you reference the [documentation](https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications/)
+for the exact sizing. Being even a single pixel off will mean you are unable to submit the images.
+
+### Screenshots
+
+At a minimum, Apple requires you to upload 2 screenshots for an iPhone without the notch, and 2 screenshots for the iPhone with the notch,
+but you an upload up to 10 screenshots per localisation. Note that if your app is available in multiple languages and your screenshots
+include text, you should upload screenshots with the appropriate language for each localisation.
+
+If your app runs on an iPad, you will need to also provide iPad-sized screenshots.
+
+### Preview (optional)
+
+An app preview is a video you can choose to include to demonstrate how your app works. You can add up to three app previews for each screen size.
+Reference the [Apple Documentation](https://developer.apple.com/help/app-store-connect/reference/app-preview-specifications/) for specifications on
+video size and format.
+
+## Google Play Store Asset Requirements
+
+Google has specific requirements for the store asset format and dimenstions and they are different from Apple's. For the most up to
+date specifications, reference the [official documentation](https://support.google.com/googleplay/android-developer/answer/9866151) for detailed requirements
+for your Play Store assets.
+
+### App Icon
+
+Unlike on the iOS App Store where the app icon is always taken automatically from the app bundle,
+on the Google Play store you need to also upload a separate App Icon for your store listing.
+
+### Feature Graphic
+
+A feature graphic must be provided in order to publish your Store Listing. It is a banner that is
+displayed at the top of your store listing page.
+
+### Screenshots
+
+You need to upload at least 4 screenshots in order to publish your app.
+
+### Video (optional)
+
+You can add one preview video to your Store Listing. The video needs to be uploaded to YouTube, and you
+add it by entering a YouTube URL in the "preview video" field.
