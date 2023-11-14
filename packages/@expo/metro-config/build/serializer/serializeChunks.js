@@ -232,11 +232,21 @@ class Chunk {
     const filename = this.getFilenameForConfig(serializerConfig);
     const isAbsoluteBaseUrl = !!(baseUrl !== null && baseUrl !== void 0 && baseUrl.match(/https?:\/\//));
     const pathname = (isAbsoluteBaseUrl ? '' : baseUrl.replace(/\/+$/, '')) + '/' + filename.replace(/^\/+$/, '') + '.map';
-    const parsed = new URL(pathname, isAbsoluteBaseUrl ? baseUrl : this.options.sourceMapUrl);
-    if (isAbsoluteBaseUrl || isAbsolute) {
-      return parsed.href;
+    let adjustedSourceMapUrl = this.options.sourceMapUrl;
+    // Metro has lots of issues...
+    if (this.options.sourceMapUrl.startsWith('//localhost')) {
+      adjustedSourceMapUrl = 'http:' + this.options.sourceMapUrl;
     }
-    return parsed.pathname;
+    try {
+      const parsed = new URL(pathname, isAbsoluteBaseUrl ? baseUrl : adjustedSourceMapUrl);
+      if (isAbsoluteBaseUrl || isAbsolute) {
+        return parsed.href;
+      }
+      return parsed.pathname;
+    } catch (error) {
+      console.error(`Failed to link source maps because the source map URL "${this.options.sourceMapUrl}" is corrupt:`, error);
+      return null;
+    }
   }
   serializeToCode(serializerConfig, chunks) {
     var _this$getAdjustedSour;

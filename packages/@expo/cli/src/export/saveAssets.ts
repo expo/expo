@@ -73,7 +73,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
     Log.log('');
     Log.log(chalk.bold`Exporting ${routeEntries.length} static route${plural}:`);
 
-    for (const [, assets] of routeEntries.sort((a, b) => a[0].localeCompare(b[0]))) {
+    for (const [, assets] of routeEntries.sort((a, b) => a[0].length - b[0].length)) {
       const id = assets.routeId!;
       Log.log('/' + (id === '' ? chalk.gray(' (index)') : id), sizeStr(assets.contents));
     }
@@ -136,7 +136,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
         const sourceMapIndex = allAssets.findIndex(([fp]) => fp === filePath + '.map');
         if (sourceMapIndex !== -1) {
           const [sourceMapFilePath, sourceMapAsset] = allAssets.splice(sourceMapIndex, 1)[0];
-          Log.log('  ', chalk.gray(sourceMapFilePath), sizeStr(sourceMapAsset.contents));
+          Log.log(chalk.gray(sourceMapFilePath), sizeStr(sourceMapAsset.contents));
         }
       }
     }

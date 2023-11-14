@@ -119,7 +119,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         outputDir,
         path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js'))
       );
-      files.set(artifactFilename, contents!);
+      if (contents) {
+        files.set(artifactFilename, { contents });
+      }
       // Remap the manifest files to represent the output files.
       route.file = artifactFilename;
     }
