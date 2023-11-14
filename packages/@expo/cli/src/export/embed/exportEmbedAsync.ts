@@ -74,6 +74,9 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
       mode: options.dev ? 'development' : 'production',
       engine: isHermes ? 'hermes' : undefined,
       baseUrl: getBaseUrlFromExpoConfig(exp),
+
+      // Shouldn't be needed, but just in case.
+      serializerIncludeBytecode: false,
     }),
     sourceMapUrl,
     unstable_transformProfile: (options.unstableTransformProfile ||

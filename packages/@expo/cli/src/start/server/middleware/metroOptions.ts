@@ -26,6 +26,7 @@ export type ExpoMetroOptions = {
   environment?: string;
   serializerOutput?: 'static';
   serializerIncludeMaps?: boolean;
+  serializerIncludeBytecode?: boolean;
   lazy?: boolean;
   engine?: 'hermes';
   preserveEnvVars?: boolean;
@@ -48,6 +49,7 @@ function withDefaults({
 
 export type SerializerOptions = {
   includeMaps?: boolean;
+  includeBytecode?: boolean;
   output?: 'static';
 };
 
@@ -70,6 +72,7 @@ export function getMetroDirectBundleOptions(
     environment,
     serializerOutput,
     serializerIncludeMaps,
+    serializerIncludeBytecode,
     lazy,
     engine,
     preserveEnvVars,
@@ -88,7 +91,11 @@ export function getMetroDirectBundleOptions(
   let fakeSourceMapUrl: string | undefined;
 
   // TODO: Upstream support to Metro for passing custom serializer options.
-  if (serializerIncludeMaps != null || serializerOutput != null) {
+  if (
+    serializerIncludeMaps != null ||
+    serializerOutput != null ||
+    serializerIncludeBytecode != null
+  ) {
     fakeSourceUrl = new URL(
       createBundleUrlPath(options).replace(/^\//, ''),
       'http://localhost:8081'
@@ -122,6 +129,7 @@ export function getMetroDirectBundleOptions(
     serializerOptions: {
       output: serializerOutput,
       includeMaps: serializerIncludeMaps,
+      includeBytecode: serializerIncludeBytecode,
     },
   };
 
@@ -137,6 +145,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     environment,
     serializerOutput,
     serializerIncludeMaps,
+    serializerIncludeBytecode,
     lazy,
     engine,
     preserveEnvVars,
@@ -181,6 +190,9 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   }
   if (serializerIncludeMaps) {
     queryParams.append('serializer.map', String(serializerIncludeMaps));
+  }
+  if (serializerIncludeBytecode) {
+    queryParams.append('serializer.bytecode', String(serializerIncludeBytecode));
   }
 
   return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;

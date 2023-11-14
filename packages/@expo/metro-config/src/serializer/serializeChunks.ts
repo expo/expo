@@ -42,9 +42,14 @@ type ChunkSettings = {
   test: RegExp;
 };
 
+export type SerializeChunkOptions = {
+  includeSourceMaps: boolean;
+  includeBytecode: boolean;
+};
+
 export async function graphToSerialAssetsAsync(
   config: MetroConfig,
-  { includeMaps }: { includeMaps: boolean },
+  serializeChunkOptions: SerializeChunkOptions,
   ...props: SerializerParameters
 ): Promise<{ artifacts: SerialAsset[] | null; assets: AssetData[] }> {
   const [entryFile, preModules, graph, options] = props;
@@ -63,9 +68,11 @@ export async function graphToSerialAssetsAsync(
     },
   ].map((chunkSettings) => gatherChunks(_chunks, chunkSettings, preModules, graph, options, false));
 
-  const jsAssets = await serializeChunksAsync(_chunks, config.serializer ?? {}, {
-    includeSourceMaps: includeMaps,
-  });
+  const jsAssets = await serializeChunksAsync(
+    _chunks,
+    config.serializer ?? {},
+    serializeChunkOptions
+  );
 
   // TODO: Convert to serial assets
   // TODO: Disable this call dynamically in development since assets are fetched differently.
@@ -149,7 +156,10 @@ class Chunk {
 
   async serializeToAssetsAsync(
     serializerConfig: Partial<SerializerConfigT>,
-    { includeSourceMaps }: { includeSourceMaps?: boolean }
+    {
+      includeSourceMaps,
+      includeBytecode,
+    }: { includeSourceMaps?: boolean; includeBytecode?: boolean }
   ): Promise<SerialAsset[]> {
     const jsCode = this.serializeToCode(serializerConfig);
 
@@ -206,7 +216,7 @@ class Chunk {
       });
     }
 
-    if (this.isHermesEnabled()) {
+    if (includeBytecode && this.isHermesEnabled()) {
       // TODO: Generate hbc for each chunk
       const hermesBundleOutput = await buildHermesBundleAsync({
         filename: this.name,
@@ -324,14 +334,17 @@ function gatherChunks(
 async function serializeChunksAsync(
   chunks: Set<Chunk>,
   serializerConfig: Partial<SerializerConfigT>,
-  { includeSourceMaps }: { includeSourceMaps: boolean }
+  { includeSourceMaps, includeBytecode }: SerializeChunkOptions
 ) {
   const jsAssets: SerialAsset[] = [];
 
   await Promise.all(
     [...chunks].map(async (chunk) => {
       jsAssets.push(
-        ...(await chunk.serializeToAssetsAsync(serializerConfig, { includeSourceMaps }))
+        ...(await chunk.serializeToAssetsAsync(serializerConfig, {
+          includeSourceMaps,
+          includeBytecode,
+        }))
       );
     })
   );

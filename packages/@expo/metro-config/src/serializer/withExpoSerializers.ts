@@ -83,6 +83,7 @@ function getDefaultSerializer(
     const serializerOptions = (() => {
       if (customSerializerOptions) {
         return {
+          includeBytecode: customSerializerOptions.includeBytecode,
           outputMode: customSerializerOptions.output,
           includeSourceMaps: customSerializerOptions.includeMaps,
         };
@@ -97,6 +98,7 @@ function getDefaultSerializer(
         return {
           outputMode: url.searchParams.get('serializer.output'),
           includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
+          includeBytecode: url.searchParams.get('serializer.bytecode') === 'true',
         };
       }
       return null;
@@ -108,7 +110,10 @@ function getDefaultSerializer(
 
     const assets = await graphToSerialAssetsAsync(
       config,
-      { includeMaps: serializerOptions.includeSourceMaps },
+      {
+        includeSourceMaps: serializerOptions.includeSourceMaps,
+        includeBytecode: serializerOptions.includeBytecode,
+      },
       ...props
     );
 

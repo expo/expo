@@ -109,6 +109,7 @@ function getDefaultSerializer(config, fallbackSerializer) {
     const serializerOptions = (() => {
       if (customSerializerOptions) {
         return {
+          includeBytecode: customSerializerOptions.includeBytecode,
           outputMode: customSerializerOptions.output,
           includeSourceMaps: customSerializerOptions.includeMaps
         };
@@ -118,7 +119,8 @@ function getDefaultSerializer(config, fallbackSerializer) {
         const url = new URL(sourceUrl, 'https://expo.dev');
         return {
           outputMode: url.searchParams.get('serializer.output'),
-          includeSourceMaps: url.searchParams.get('serializer.map') === 'true'
+          includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
+          includeBytecode: url.searchParams.get('serializer.bytecode') === 'true'
         };
       }
       return null;
@@ -127,7 +129,8 @@ function getDefaultSerializer(config, fallbackSerializer) {
       return defaultSerializer(...props);
     }
     const assets = await (0, _serializeChunks().graphToSerialAssetsAsync)(config, {
-      includeMaps: serializerOptions.includeSourceMaps
+      includeSourceMaps: serializerOptions.includeSourceMaps,
+      includeBytecode: serializerOptions.includeBytecode
     }, ...props);
     if (supportsNonSerialReturn) {
       // @ts-expect-error: this is future proofing for adding assets to the output as well.

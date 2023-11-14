@@ -78,9 +78,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-async function graphToSerialAssetsAsync(config, {
-  includeMaps
-}, ...props) {
+async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
   var _config$serializer, _assetPlugins, _getPlatformOption;
   const [entryFile, preModules, graph, options] = props;
   const cssDeps = (0, _getCssDeps().getCssSerialAssets)(graph.dependencies, {
@@ -93,9 +91,7 @@ async function graphToSerialAssetsAsync(config, {
   [{
     test: (0, _pathToRegexp().default)(entryFile)
   }].map(chunkSettings => gatherChunks(_chunks, chunkSettings, preModules, graph, options, false));
-  const jsAssets = await serializeChunksAsync(_chunks, (_config$serializer = config.serializer) !== null && _config$serializer !== void 0 ? _config$serializer : {}, {
-    includeSourceMaps: includeMaps
-  });
+  const jsAssets = await serializeChunksAsync(_chunks, (_config$serializer = config.serializer) !== null && _config$serializer !== void 0 ? _config$serializer : {}, serializeChunkOptions);
 
   // TODO: Convert to serial assets
   // TODO: Disable this call dynamically in development since assets are fetched differently.
@@ -160,7 +156,8 @@ class Chunk {
     return (0, _bundleToString().default)(jsSplitBundle).code;
   }
   async serializeToAssetsAsync(serializerConfig, {
-    includeSourceMaps
+    includeSourceMaps,
+    includeBytecode
   }) {
     const jsCode = this.serializeToCode(serializerConfig);
     const relativeEntry = _path().default.relative(this.options.projectRoot, this.name);
@@ -205,7 +202,7 @@ class Chunk {
         source: sourceMap
       });
     }
-    if (this.isHermesEnabled()) {
+    if (includeBytecode && this.isHermesEnabled()) {
       // TODO: Generate hbc for each chunk
       const hermesBundleOutput = await (0, _exportHermes().buildHermesBundleAsync)({
         filename: this.name,
@@ -286,12 +283,14 @@ function gatherChunks(chunks, settings, preModules, graph, options, isAsync = fa
   return chunks;
 }
 async function serializeChunksAsync(chunks, serializerConfig, {
-  includeSourceMaps
+  includeSourceMaps,
+  includeBytecode
 }) {
   const jsAssets = [];
   await Promise.all([...chunks].map(async chunk => {
     jsAssets.push(...(await chunk.serializeToAssetsAsync(serializerConfig, {
-      includeSourceMaps
+      includeSourceMaps,
+      includeBytecode
     })));
   }));
   return jsAssets;

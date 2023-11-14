@@ -130,6 +130,9 @@ async function bundleProductionMetroClientAsync(
   const buildAsync = async (bundle: BundleOptions): Promise<BundleOutput> => {
     const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;
     const isHermes = isEnableHermesManaged(expoConfig, bundle.platform);
+    if (isHermes) {
+      await assertEngineMismatchAsync(projectRoot, expoConfig, bundle.platform);
+    }
     const bundleOptions: MetroBundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       sourceMapUrl: bundle.sourceMapUrl,
@@ -142,6 +145,7 @@ async function bundleProductionMetroClientAsync(
         // Bundle splitting on web-only for now.
         // serializerOutput: bundle.platform === 'web' ? 'static' : undefined,
         serializerOutput: 'static',
+        serializerIncludeBytecode: isHermes,
         baseUrl: getBaseUrlFromExpoConfig(expoConfig),
       }),
       bundleType: 'bundle',
