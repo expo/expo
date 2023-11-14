@@ -33,8 +33,6 @@ import expo.modules.image.records.ImageProgressEvent
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.tracing.beginAsyncTraceBlock
-import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import jp.wasabeef.glide.transformations.BlurTransformation
@@ -265,83 +263,74 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     // However, in this case, it is safe to use as long as nothing else is added to the queue.
     // The intention is simply to wait for the Glide code to finish before the content of the underlying views is changed during the same rendering tick.
     mainHandler.postAtFrontOfQueue {
-      trace(Trace.tag, "onResourceReady") {
-        val transitionDuration = (transition?.duration ?: 0).toLong()
+      val transitionDuration = (transition?.duration ?: 0).toLong()
 
-        // If provided resource is a placeholder, but the target doesn't have a source, we treat it as a normal image.
-        if (!isPlaceholder || !target.hasSource) {
-          val (newView, previousView) = if (firstView.drawable == null) {
-            firstView to secondView
-          } else {
-            secondView to firstView
-          }
-
-          val clearPreviousView = {
-            previousView
-              .recycleView()
-              ?.apply {
-                // When the placeholder is loaded, one target is displayed in both views.
-                // So we just have to move the reference to a new view instead of clearing the target.
-                if (this != target) {
-                  clear(requestManager)
-                }
-              }
-          }
-
-          configureView(newView, target, resource, isPlaceholder)
-          if (transitionDuration <= 0) {
-            clearPreviousView()
-            newView.alpha = 1f
-            newView.bringToFront()
-          } else {
-            newView.bringToFront()
-            previousView.alpha = 1f
-            newView.alpha = 0f
-            previousView.animate().apply {
-              duration = transitionDuration
-              alpha(0f)
-              withEndAction {
-                clearPreviousView()
-              }
-            }
-            newView.animate().apply {
-              duration = transitionDuration
-              alpha(1f)
-            }
-          }
+      // If provided resource is a placeholder, but the target doesn't have a source, we treat it as a normal image.
+      if (!isPlaceholder || !target.hasSource) {
+        val (newView, previousView) = if (firstView.drawable == null) {
+          firstView to secondView
         } else {
-          // We don't want to show the placeholder if something is currently displayed.
-          // There is one exception - when we're displaying a different placeholder.
-          if ((firstView.drawable != null && !firstView.isPlaceholder) || secondView.drawable != null) {
-            return@trace
-          }
+          secondView to firstView
+        }
 
-          firstView
+        val clearPreviousView = {
+          previousView
             .recycleView()
             ?.apply {
-              // The current target is already bound to the view. We don't want to cancel it in that case.
+              // When the placeholder is loaded, one target is displayed in both views.
+              // So we just have to move the reference to a new view instead of clearing the target.
               if (this != target) {
                 clear(requestManager)
               }
             }
-
-          configureView(firstView, target, resource, isPlaceholder)
-          if (transitionDuration > 0) {
-            firstView.bringToFront()
-            firstView.alpha = 0f
-            secondView.isVisible = false
-            firstView.animate().apply {
-              duration = transitionDuration
-              alpha(1f)
-            }
-          }
         }
 
-        // If our image is animated, we want to see if autoplay is disabled. If it is, we should
-        // stop the animation as soon as the resource is ready. Placeholders should not follow this
-        // value since the intention is almost certainly to display the animation (i.e. a spinner)
-        if (resource is Animatable && !isPlaceholder && !autoplay) {
-          resource.stop()
+        configureView(newView, target, resource, isPlaceholder)
+        if (transitionDuration <= 0) {
+          clearPreviousView()
+          newView.alpha = 1f
+          newView.bringToFront()
+        } else {
+          newView.bringToFront()
+          previousView.alpha = 1f
+          newView.alpha = 0f
+          previousView.animate().apply {
+            duration = transitionDuration
+            alpha(0f)
+            withEndAction {
+              clearPreviousView()
+            }
+          }
+          newView.animate().apply {
+            duration = transitionDuration
+            alpha(1f)
+          }
+        }
+      } else {
+        // We don't want to show the placeholder if something is currently displayed.
+        // There is one exception - when we're displaying a different placeholder.
+        if ((firstView.drawable != null && !firstView.isPlaceholder) || secondView.drawable != null) {
+          return@postAtFrontOfQueue
+        }
+
+        firstView
+          .recycleView()
+          ?.apply {
+            // The current target is already bound to the view. We don't want to cancel it in that case.
+            if (this != target) {
+              clear(requestManager)
+            }
+          }
+
+        configureView(firstView, target, resource, isPlaceholder)
+        if (transitionDuration > 0) {
+          firstView.bringToFront()
+          firstView.alpha = 0f
+          secondView.isVisible = false
+          firstView.animate().apply {
+            duration = transitionDuration
+            alpha(1f)
+          }
         }
       }
     }
@@ -439,7 +428,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     requestManager.clear(secondTarget)
   }
 
-  internal fun rerenderIfNeeded(shouldRerenderBecauseOfResize: Boolean = false) = trace(Trace.tag, "rerenderIfNeeded(shouldRerenderBecauseOfResize=$shouldRerenderBecauseOfResize)") {
+  internal fun rerenderIfNeeded(shouldRerenderBecauseOfResize: Boolean = false) {
     val bestSource = bestSource
     val bestPlaceholder = bestPlaceholder
 
@@ -457,7 +446,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       loadedSource = null
       transformationMatrixChanged = false
       clearViewBeforeChangingSource = false
-      return@trace
+      return
     }
 
     val shouldRerender = sourceToLoad != loadedSource || shouldRerender || (sourceToLoad == null && placeholder != null)
@@ -590,9 +579,6 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .encodeQuality(100)
         .apply(propOptions)
 
-      val cookie = Trace.getNextCookieValue()
-      beginAsyncTraceBlock(Trace.tag, Trace.loadNewImageBlock, cookie)
-      newTarget.setCookie(cookie)
       request.into(newTarget)
     } else {
       // In the case where the source didn't change, but the transformation matrix has to be
