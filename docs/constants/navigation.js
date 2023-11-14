@@ -377,6 +377,7 @@ const general = [
         makePage('guides/configuring-js-engines.mdx'),
         makePage('guides/using-bun.mdx'),
         makePage('guides/editing-richtext.mdx'),
+        makePage('guides/store-assets.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),
