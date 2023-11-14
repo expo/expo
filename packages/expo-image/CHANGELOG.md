@@ -16,6 +16,7 @@
 ### 💡 Others
 
 - Collapse re-export of `react-native/Libraries/Image/AssetRegistry` to `@react-native/assets-registry/registry`. ([#25265](https://github.com/expo/expo/pull/25265) by [@EvanBacon](https://github.com/EvanBacon))
+- [Android] Changed how the `tintColor` is applied to the SVG.
 
 ## 1.8.0 — 2023-11-13
 
