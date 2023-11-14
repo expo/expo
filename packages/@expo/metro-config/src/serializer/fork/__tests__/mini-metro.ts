@@ -46,7 +46,9 @@ export function microBundle({
         dev?: boolean,
         platform?: string,
         baseUrl?: string;
-        output?: 'static'
+        output?: 'static',
+        hermes?: boolean,
+        sourceMaps?: boolean,
     }
 }): [string, readonly Module<MixedOutput>[], ReadOnlyGraph<MixedOutput>,SerializerOptions<MixedOutput> ] {
     if (!entry) {
@@ -105,11 +107,12 @@ transformOptions: {
     minify: false,
     dev,
     type: 'module',
-    unstable_transformProfile: 'default',
+    unstable_transformProfile: options.hermes ? 'hermes-stable' : 'default',
     platform: options.platform ?? 'web',
     customTransformOptions: {
         __proto__: null,
-        baseUrl: options.baseUrl
+        baseUrl: options.baseUrl,
+        engine: options.hermes ? 'hermes' : undefined,
     }
 },
 
@@ -117,10 +120,13 @@ transformOptions: {
         // options: SerializerOptions<MixedOutput>
         {
             // @ts-ignore
-serializerOptions: options.output ? {
-    output: options.output
+serializerOptions: (options.output || options.hermes || options.sourceMaps) ? {
+    output: options.output,
+    includeBytecode: options.hermes,
+    includeMaps: options.sourceMaps
 } : undefined,
 
+sourceMapUrl: options.sourceMaps ? 'https://localhost:8081/indedx.bundle?dev=false' : undefined,
             asyncRequireModulePath: 'expo-mock/async-require',
             
             createModuleId(filePath) {

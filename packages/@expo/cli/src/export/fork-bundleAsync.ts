@@ -161,6 +161,7 @@ async function bundleProductionMetroClientAsync(
         });
       },
     };
+
     const bundleDetails = {
       ...bundleOptions,
       buildID,

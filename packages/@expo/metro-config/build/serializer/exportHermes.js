@@ -4,7 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.buildHermesBundleAsync = buildHermesBundleAsync;
-exports.directlyBuildHermesBundleAsync = directlyBuildHermesBundleAsync;
 function _spawnAsync() {
   const data = _interopRequireDefault(require("@expo/spawn-async"));
   _spawnAsync = function () {

@@ -73,7 +73,7 @@ export async function buildHermesBundleAsync(
   return await currentHermesBuild;
 }
 
-export async function directlyBuildHermesBundleAsync({
+async function directlyBuildHermesBundleAsync({
   code,
   map,
   minify = false,

@@ -32,7 +32,300 @@ describe(withSerializerPlugins, () => {
   });
 });
 
+jest.mock('../exportHermes', () => {
+  return {
+    buildHermesBundleAsync: jest.fn(({ code, map }) => ({
+      hbc: code,
+      sourcemap: map,
+    })),
+  };
+});
+
 describe('serializes', () => {
+  it(`serializes with adjusted hbc source maps in production`, async () => {
+    const serializer = createSerializerFromSerialProcessors(
+      {
+        projectRoot,
+      },
+      []
+    );
+
+    const fs = {
+      'index.js': `
+        console.log("hello");
+      `,
+    };
+
+    const output = (await serializer(
+      ...microBundle({
+        fs,
+        options: {
+          dev: false,
+          platform: 'ios',
+          hermes: true,
+          output: 'static',
+          sourceMaps: true,
+        },
+      })
+    )) as any;
+    assert('artifacts' in output && Array.isArray(output.artifacts));
+
+    // Ensure the assets both use the .hbc extension
+    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
+      expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc/),
+      expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc\.map/),
+    ]);
+
+    // Ensure the annotation is included and uses the .hbc.map. We make this modification as
+    // a string before passing to Hermes.
+    expect(output.artifacts[0].source).toMatch(
+      `//# sourceMappingURL=https://localhost:8081/_expo/static/js/ios/index-91e3ec343caa177ec8aadd46fc9269ae.hbc.map`
+    );
+  });
+
+  it(`serializes with relative base url in production`, async () => {
+    const serializer = createSerializerFromSerialProcessors(
+      {
+        projectRoot,
+      },
+      []
+    );
+
+    const fs = {
+      'index.js': `
+        console.log("hello");
+      `,
+    };
+
+    const output = (await serializer(
+      ...microBundle({
+        fs,
+        options: {
+          dev: false,
+          platform: 'ios',
+          hermes: false,
+          output: 'static',
+          sourceMaps: true,
+          baseUrl: '/subdomain/',
+        },
+      })
+    )) as any;
+    assert('artifacts' in output && Array.isArray(output.artifacts));
+
+    // Ensure the assets both use the .hbc extension
+    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
+      expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js/),
+      expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/),
+    ]);
+
+    // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
+    expect(output.artifacts[0].source).toMatch(
+      `//# sourceMappingURL=https://localhost:8081/subdomain/_expo/static/js/ios/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+    );
+  });
+
+  it(`serializes source maps in production for web`, async () => {
+    const serializer = createSerializerFromSerialProcessors(
+      {
+        projectRoot,
+      },
+      []
+    );
+
+    const fs = {
+      'index.js': `
+        console.log("hello");
+      `,
+    };
+
+    const output = (await serializer(
+      ...microBundle({
+        fs,
+        options: {
+          dev: false,
+          platform: 'web',
+          hermes: false,
+          output: 'static',
+          sourceMaps: true,
+        },
+      })
+    )) as any;
+    assert('artifacts' in output && Array.isArray(output.artifacts));
+
+    // Ensure the assets both use the .hbc extension
+    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
+      expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+      expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+    ]);
+
+    // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
+    expect(output.artifacts[0].source).toMatch(
+      `//# sourceMappingURL=/_expo/static/js/web/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+    );
+  });
+
+  it(`serializes with relative base url in production for web`, async () => {
+    const serializer = createSerializerFromSerialProcessors(
+      {
+        projectRoot,
+      },
+      []
+    );
+
+    const fs = {
+      'index.js': `
+        console.log("hello");
+      `,
+    };
+
+    const output = (await serializer(
+      ...microBundle({
+        fs,
+        options: {
+          dev: false,
+          platform: 'web',
+          hermes: false,
+          output: 'static',
+          sourceMaps: true,
+          baseUrl: '/subdomain/',
+        },
+      })
+    )) as any;
+    assert('artifacts' in output && Array.isArray(output.artifacts));
+
+    // Ensure the assets both use the .hbc extension
+    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
+      expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+      expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+    ]);
+
+    // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
+    expect(output.artifacts[0].source).toMatch(
+      `//# sourceMappingURL=/subdomain/_expo/static/js/web/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+    );
+  });
+
+  it(`serializes with absolute base url in production`, async () => {
+    const serializer = createSerializerFromSerialProcessors(
+      {
+        projectRoot,
+      },
+      []
+    );
+
+    const fs = {
+      'index.js': `
+        console.log("hello");
+      `,
+    };
+
+    const output = (await serializer(
+      ...microBundle({
+        fs,
+        options: {
+          dev: false,
+          platform: 'ios',
+          hermes: false,
+          output: 'static',
+          sourceMaps: true,
+          baseUrl: 'https://evanbacon.dev',
+        },
+      })
+    )) as any;
+    assert('artifacts' in output && Array.isArray(output.artifacts));
+
+    // Ensure the assets both use the .hbc extension
+    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
+      expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js/),
+      expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/),
+    ]);
+
+    // Ensure the source uses the absolute base URL in production to fetch maps from a non-standard hosting location.
+    expect(output.artifacts[0].source).toMatch(
+      `//# sourceMappingURL=https://evanbacon.dev/_expo/static/js/ios/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+    );
+  });
+
+  it(`serializes with absolute base url in production for web`, async () => {
+    const serializer = createSerializerFromSerialProcessors(
+      {
+        projectRoot,
+      },
+      []
+    );
+
+    const fs = {
+      'index.js': `
+        console.log("hello");
+      `,
+    };
+
+    const output = (await serializer(
+      ...microBundle({
+        fs,
+        options: {
+          dev: false,
+          platform: 'web',
+          hermes: false,
+          output: 'static',
+          sourceMaps: true,
+          baseUrl: 'https://evanbacon.dev',
+        },
+      })
+    )) as any;
+    assert('artifacts' in output && Array.isArray(output.artifacts));
+
+    // Ensure the assets both use the .hbc extension
+    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
+      expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+      expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+    ]);
+
+    // Ensure the source uses the absolute base URL in production to fetch maps from a non-standard hosting location.
+    expect(output.artifacts[0].source).toMatch(
+      `//# sourceMappingURL=https://evanbacon.dev/_expo/static/js/web/index-91e3ec343caa177ec8aadd46fc9269ae.js.map`
+    );
+  });
+
+  it(`does not use hbc or adjusted source map URL in development`, async () => {
+    const serializer = createSerializerFromSerialProcessors(
+      {
+        projectRoot,
+      },
+      []
+    );
+
+    const fs = {
+      'index.js': `
+        console.log("hello");
+      `,
+    };
+
+    const output = (await serializer(
+      ...microBundle({
+        fs,
+        options: {
+          dev: true,
+          platform: 'ios',
+          hermes: true,
+          output: 'static',
+          sourceMaps: true,
+        },
+      })
+    )) as any;
+    assert('artifacts' in output && Array.isArray(output.artifacts));
+
+    expect(output.artifacts.map(({ filename }) => filename)).toEqual([
+      expect.stringMatching(/\/app\/index\.js/),
+      expect.stringMatching(/\/app\/index\.js\.map/),
+    ]);
+
+    // Ensure the absolute dev URL is being used.
+    expect(output.artifacts[0].source).toMatch(
+      `//# sourceMappingURL=https://localhost:8081/indedx.bundle?dev=false`
+    );
+  });
+
   it(`passes sanity`, async () => {
     const serializer = createSerializerFromSerialProcessors(
       {
@@ -114,8 +407,7 @@ describe('serializes', () => {
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "./foo");
       },"/app/index.js",{"0":"/app/foo.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-232b89d35f31c36feae2c10429b845f0.js"}});
-      TEST_RUN_MODULE("/app/index.js");
-      //# sourceMappingURL=index.map",
+      TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
@@ -131,8 +423,7 @@ describe('serializes', () => {
         });
         const foo = 'foo';
         exports.foo = foo;
-      },"/app/foo.js",[]);
-      //# sourceMappingURL=foo.map",
+      },"/app/foo.js",[]);",
           "type": "js",
         },
       ]
@@ -178,8 +469,7 @@ describe('serializes', () => {
       __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, dependencyMap) {
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "./foo");
       },"/app/two.js",{"0":"/app/foo.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-232b89d35f31c36feae2c10429b845f0.js"}});
-      TEST_RUN_MODULE("/app/index.js");
-      //# sourceMappingURL=index.map",
+      TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
@@ -195,8 +485,7 @@ describe('serializes', () => {
         });
         const foo = 'foo';
         exports.foo = foo;
-      },"/app/foo.js",[]);
-      //# sourceMappingURL=foo.map",
+      },"/app/foo.js",[]);",
           "type": "js",
         },
       ]
@@ -250,8 +539,7 @@ describe('serializes', () => {
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[0], dependencyMap.paths, "./math");
         _$$_REQUIRE(dependencyMap[1], "expo-mock/async-require")(dependencyMap[2], dependencyMap.paths, "./shapes");
       },"/app/index.js",{"0":"/app/math.js","1":"/app/node_modules/expo-mock/async-require/index.js","2":"/app/shapes.js","paths":{"/app/math.js":"/_expo/static/js/web/math-b70acfe62bcee9c14849d23d1d5d35ff.js","/app/shapes.js":"/_expo/static/js/web/shapes-d1c59c3d9c2577a2efe2e98e1e3acf65.js"}});
-      TEST_RUN_MODULE("/app/index.js");
-      //# sourceMappingURL=index.map",
+      TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
@@ -268,8 +556,7 @@ describe('serializes', () => {
         _$$_REQUIRE(dependencyMap[0], "./colors");
         const add = 'add';
         exports.add = add;
-      },"/app/math.js",["/app/colors.js"]);
-      //# sourceMappingURL=math.map",
+      },"/app/math.js",["/app/colors.js"]);",
           "type": "js",
         },
         {
@@ -286,8 +573,7 @@ describe('serializes', () => {
         _$$_REQUIRE(dependencyMap[0], "./colors");
         const square = 'square';
         exports.square = square;
-      },"/app/shapes.js",["/app/colors.js"]);
-      //# sourceMappingURL=shapes.map",
+      },"/app/shapes.js",["/app/colors.js"]);",
           "type": "js",
         },
         {
@@ -303,8 +589,7 @@ describe('serializes', () => {
         });
         const orange = 'orange';
         exports.orange = orange;
-      },"/app/colors.js",[]);
-      //# sourceMappingURL=colors.map",
+      },"/app/colors.js",[]);",
           "type": "js",
         },
       ]

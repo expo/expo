@@ -246,9 +246,39 @@ class Chunk {
     return computedAsyncModulePaths;
   }
 
+  private getAdjustedSourceMapUrl(serializerConfig: Partial<SerializerConfigT>): string | null {
+    // Metro really only accounts for development, so we'll use the defaults here.
+    if (this.options.dev) {
+      return this.options.sourceMapUrl ?? null;
+    }
+
+    if (this.options.inlineSourceMap || !this.options.sourceMapUrl) {
+      return this.options.sourceMapUrl ?? null;
+    }
+
+    const isAbsolute = this.getPlatform() !== 'web';
+
+    const baseUrl = getBaseUrlOption(this.graph, this.options);
+    const filename = this.getFilenameForConfig(serializerConfig);
+    const isAbsoluteBaseUrl = !!baseUrl?.match(/https?:\/\//);
+    const pathname =
+      (isAbsoluteBaseUrl ? '' : baseUrl.replace(/\/+$/, '')) +
+      '/' +
+      filename.replace(/^\/+$/, '') +
+      '.map';
+    const parsed = new URL(pathname, isAbsoluteBaseUrl ? baseUrl : this.options.sourceMapUrl);
+
+    if (isAbsoluteBaseUrl || isAbsolute) {
+      return parsed.href;
+    }
+
+    return parsed.pathname;
+  }
+
   private serializeToCode(serializerConfig: Partial<SerializerConfigT>, chunks: Chunk[]) {
     return this.serializeToCodeWithTemplates(serializerConfig, {
       skipWrapping: false,
+      sourceMapUrl: this.getAdjustedSourceMapUrl(serializerConfig) ?? undefined,
       computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
     });
   }
@@ -324,10 +354,21 @@ class Chunk {
     }
 
     if (includeBytecode && this.isHermesEnabled()) {
+      const adjustedSource = jsAsset.source.replace(
+        /^\/\/# (sourceMappingURL)=(.*)$/gm,
+        (...props) => {
+          if (props[1] === 'sourceMappingURL') {
+            const mapName = props[2].replace(/\.js\.map$/, '.hbc.map');
+            return `//# ${props[1]}=` + mapName;
+          }
+          return '';
+        }
+      );
+
       // TODO: Generate hbc for each chunk
       const hermesBundleOutput = await buildHermesBundleAsync({
         filename: this.name,
-        code: jsAsset.source,
+        code: adjustedSource,
         map: assets[1] ? assets[1].source : null,
         // TODO: Maybe allow prod + no minify.
         minify: true, //!this.options.dev,
@@ -341,8 +382,8 @@ class Chunk {
         jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
       }
       if (assets[1] && hermesBundleOutput.sourcemap) {
-        // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
         assets[1].source = hermesBundleOutput.sourcemap;
+        assets[1].filename = assets[1].filename.replace(/\.js\.map$/, '.hbc.map');
       }
     }
 
