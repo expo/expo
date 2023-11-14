@@ -14,7 +14,11 @@ export function getUserDefinedFaviconFile(projectRoot: string): string | null {
 
 export async function getVirtualFaviconAssetsAsync(
   projectRoot: string,
-  { baseUrl, outputDir }: { outputDir: string; baseUrl: string }
+  {
+    baseUrl,
+    outputDir,
+    files,
+  }: { outputDir: string; baseUrl: string; files?: Map<string, string | Buffer> }
 ): Promise<((html: string) => string) | null> {
   const existing = getUserDefinedFaviconFile(projectRoot);
   if (existing) {
@@ -29,10 +33,15 @@ export async function getVirtualFaviconAssetsAsync(
   }
 
   await Promise.all(
-    [data].map((asset) => {
+    [data].map(async (asset) => {
       const assetPath = path.join(outputDir, asset.path);
-      debug('Writing asset to disk: ' + assetPath);
-      return fs.promises.writeFile(assetPath, asset.source);
+      if (files) {
+        debug('Storing asset for persisting: ' + assetPath);
+        files?.set(asset.path, asset.source);
+      } else {
+        debug('Writing asset to disk: ' + assetPath);
+        await fs.promises.writeFile(assetPath, asset.source);
+      }
     })
   );
 

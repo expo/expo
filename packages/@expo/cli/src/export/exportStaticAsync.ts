@@ -31,6 +31,7 @@ import { getFreePortAsync } from '../utils/port';
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
 type Options = {
+  files?: Map<string, string | Buffer>;
   outputDir: string;
   minify: boolean;
   exportServer: boolean;
@@ -71,7 +72,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
   ]);
 
   try {
-    await exportFromServerAsync(projectRoot, devServerManager, options);
+    return await exportFromServerAsync(projectRoot, devServerManager, options);
   } finally {
     await devServerManager.stopAsync();
   }
@@ -88,15 +89,15 @@ export async function getFilesToExportFromServerAsync(
     manifest,
     renderAsync,
     includeGroupVariations,
+    // name : contents
+    files = new Map<string, string | Buffer>(),
   }: {
     manifest: any;
     renderAsync: (pathname: string) => Promise<string>;
     includeGroupVariations?: boolean;
+    files?: Map<string, string | Buffer>;
   }
-): Promise<Map<string, string>> {
-  // name : contents
-  const files = new Map<string, string>();
-
+): Promise<Map<string, string | Buffer>> {
   await Promise.all(
     getHtmlFiles({ manifest, includeGroupVariations }).map(async (outputPath) => {
       const pathname = outputPath.replace(/(?:index)?\.html$/, '');
@@ -115,15 +116,25 @@ export async function getFilesToExportFromServerAsync(
 }
 
 /** Perform all fs commits */
-export async function exportFromServerAsync(
+async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, baseUrl, exportServer, minify, includeMaps }: Options
-): Promise<void> {
+  {
+    outputDir,
+    baseUrl,
+    exportServer,
+    minify,
+    includeMaps,
+    files = new Map<string, string | Buffer>(),
+  }: Options
+): Promise<Map<string, string | Buffer>> {
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const appDir = getRouterDirectoryWithManifest(projectRoot, exp);
-
-  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, { outputDir, baseUrl });
+  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, {
+    outputDir,
+    baseUrl,
+    files,
+  });
 
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
@@ -139,7 +150,8 @@ export async function exportFromServerAsync(
 
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
 
-  const files = await getFilesToExportFromServerAsync(projectRoot, {
+  await getFilesToExportFromServerAsync(projectRoot, {
+    files,
     manifest,
     // Servers can handle group routes automatically and therefore
     // don't require the build-time generation of every possible group
@@ -168,6 +180,7 @@ export async function exportFromServerAsync(
   });
 
   if (resources.assets) {
+    // TODO: Collect files without writing to disk.
     await persistMetroAssetsAsync(resources.assets, {
       platform: 'web',
       outputDirectory: outputDir,
@@ -192,7 +205,8 @@ export async function exportFromServerAsync(
     warnPossibleInvalidExportType(appDir);
   }
 
-  await persistMetroFilesAsync(files, outputDir);
+  // await persistMetroFilesAsync(files, outputDir);
+  return files;
 }
 
 // TODO: Move source map modification to the serializer
@@ -203,7 +217,7 @@ export function getFilesFromSerialAssets(
     files = new Map<string, string>(),
   }: {
     includeMaps: boolean;
-    files?: Map<string, string>;
+    files?: Map<string, string | Buffer>;
   }
 ) {
   resources.forEach((resource) => {
@@ -216,10 +230,12 @@ export function getFilesFromSerialAssets(
   return files;
 }
 
-export async function persistMetroFilesAsync(files: Map<string, string>, outputDir: string) {
+export async function persistMetroFilesAsync(
+  files: Map<string, string | Buffer>,
+  outputDir: string
+) {
   fs.mkdirSync(path.join(outputDir), { recursive: true });
   if (!files.size) {
-    Log.warn('No files to export');
     return;
   }
 
@@ -231,7 +247,8 @@ export async function persistMetroFilesAsync(files: Map<string, string>, outputD
     [...files.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
       .map(async ([file, contents]) => {
-        const length = Buffer.byteLength(contents, 'utf8');
+        const length =
+          typeof contents === 'string' ? Buffer.byteLength(contents, 'utf8') : contents.length;
         Log.log(file, chalk.gray`(${prettyBytes(length)})`);
         const outputPath = path.join(outputDir, file);
         await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });

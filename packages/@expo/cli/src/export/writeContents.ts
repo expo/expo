@@ -23,12 +23,16 @@ export async function writeMetadataJsonAsync({
     fileNames,
     embeddedHashSet,
   });
-  const metadataPath = path.join(outputDir, 'metadata.json');
-  debug(`Writing metadata.json to ${metadataPath}`);
-  await fs.writeFile(metadataPath, JSON.stringify(contents));
-  return contents;
+  // const metadataPath = path.join(outputDir, 'metadata.json');
+  // debug(`Writing metadata.json to ${metadataPath}`);
+  // await fs.writeFile(metadataPath, JSON.stringify(contents));
+  return ['metadata.json', contents];
 }
 
+export function createAssetMap({ assets }: { assets: Asset[] }) {
+  // Convert the assets array to a k/v pair where the asset hash is the key and the asset is the value.
+  return Object.fromEntries(assets.map((asset) => [asset.hash, asset]));
+}
 export async function writeAssetMapAsync({
   outputDir,
   assets,
@@ -42,13 +46,7 @@ export async function writeAssetMapAsync({
   return contents;
 }
 
-export async function writeDebugHtmlAsync({
-  outputDir,
-  fileNames,
-}: {
-  outputDir: string;
-  fileNames: string[];
-}) {
+export function createSourceMapDebugHtml({ fileNames }: { fileNames: string[] }) {
   // Make a debug html so user can debug their bundles
   const contents = `
       ${fileNames
@@ -58,7 +56,8 @@ export async function writeDebugHtmlAsync({
       Open up this file in Chrome. In the JavaScript developer console, navigate to the Source tab.
       You can see a red colored folder containing the original source code from your bundle.
       `;
-
-  await fs.writeFile(path.join(outputDir, 'debug.html'), contents);
   return contents;
+
+  // await fs.writeFile(path.join(outputDir, 'debug.html'), contents);
+  // return contents;
 }
