@@ -14,7 +14,6 @@ export type Bundle = {
     modules: ModuleMap;
     post: string;
     pre: string;
-    _expoSplitBundlePaths: [number, Record<string, string>][];
 };
 export type ExpoSerializerOptions = SerializerOptions & {
     serializerOptions?: {

@@ -1,5 +1,5 @@
 import * as babel from '@babel/core';
-import { Dependency, Module } from 'metro';
+import { Dependency, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import CountingSet from 'metro/src/lib/CountingSet';
 import countLines from 'metro/src/lib/countLines';
 import collectDependencies from 'metro/src/ModuleGraph/worker/collectDependencies';
@@ -27,19 +27,35 @@ export function microBundle({
                 return next
             }
         }
+        if (id === 'expo-mock/async-require' && !fs['expo-mock/async-require']) {
+            fs['expo-mock/async-require'] = `
+                module.exports = () => 'MOCK'
+            `
+            return 'expo-mock/async-require'
+        }
+
         throw new Error(`Cannot resolve ${id} from ${from}. Available files: ${Object.keys(fs).join(', ')}`)
+    },
+    options = {
     },
 }: {
     fs: Record<string, string>,
     entry?: string,
     resolve?: (from: string, id: string) => string,
-}) {
+    options?: {
+        dev?: boolean,
+        platform?: string,
+        baseUrl?: string;
+        output?: 'static'
+    }
+}): [string, readonly Module<MixedOutput>[], ReadOnlyGraph<MixedOutput>,SerializerOptions<MixedOutput> ] {
     if (!entry) {
         entry = Object.keys(fs).find((key) => key.match(/(\.\/)?index\.[tj]sx?/))
         if (!entry) { 
             throw new Error('No entrypoint found and cannot infer one from the mock fs: ' + Object.keys(fs).join(', '))
         }
     }
+    
     const modules = new Map<string, Module>();
     const visited = new Set<string>();
 
@@ -47,17 +63,18 @@ export function microBundle({
        
     while (queue.length) {
         const id = queue.shift()!;
-        if (visited.has(id)) {
-            modules.get(id)?.inverseDependencies.add(parent?.path);
+        const absPath = path.join(projectRoot, id)
+        if (visited.has(absPath)) {
+            modules.get(absPath)?.inverseDependencies.add(parent?.path);
             continue;
         }
-        visited.add(id);
+        visited.add(absPath);
         const code = fs[id];
         if (!code) {
             throw new Error(`File not found: ${id}`);
         }
         const module = parseModule(id, code);
-        modules.set(id, module);
+        modules.set(absPath, module);
         
         if (parent?.path) {
             module.inverseDependencies.add(parent.path);
@@ -72,7 +89,62 @@ export function microBundle({
 }
 recurseWith([entry]);
 
-    return modules;
+const absEntry = path.join(projectRoot, entry);
+const dev = options.dev ?? true;
+    return [
+        // entryPoint: string, 
+        absEntry,
+        // preModules: readonly Module<MixedOutput>[], 
+        [],
+        // graph: ReadOnlyGraph<MixedOutput>, 
+        {
+dependencies: modules,
+entryPoints: new Set([absEntry]),
+transformOptions: {
+    hot: false,
+    minify: false,
+    dev,
+    type: 'module',
+    unstable_transformProfile: 'default',
+    platform: options.platform ?? 'web',
+    customTransformOptions: {
+        __proto__: null,
+        baseUrl: options.baseUrl
+    }
+},
+
+        },
+        // options: SerializerOptions<MixedOutput>
+        {
+            // @ts-ignore
+serializerOptions: options.output ? {
+    output: options.output
+} : undefined,
+
+            asyncRequireModulePath: 'expo-mock/async-require',
+            
+            createModuleId(filePath) {
+                return filePath as unknown as number;
+            },
+            dev,
+            getRunModuleStatement(moduleId) {
+                return `TEST_RUN_MODULE(${JSON.stringify(moduleId)});`;
+            },
+            includeAsyncPaths: dev,
+            shouldAddToIgnoreList(module) {
+                return false;
+            },
+            modulesOnly: false,
+            processModuleFilter(module) {
+                return true;
+            },
+            projectRoot,
+            runBeforeMainModule: [],
+            runModule: true,
+            serverRoot: projectRoot,
+
+        }
+    ]
 }
 
 // A small version of the Metro transformer to easily create dependency mocks from a string of code.

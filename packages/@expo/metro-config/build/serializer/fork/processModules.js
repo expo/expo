@@ -27,15 +27,11 @@ function processModules(modules, {
   projectRoot,
   serverRoot,
   sourceUrl,
-  platform,
-  baseUrl,
   splitChunks,
   skipWrapping,
   computedAsyncModulePaths
 }) {
   return [...modules].filter(_js().isJsModule).filter(filter).map(module => [module, (0, _js().wrapModule)(module, {
-    baseUrl,
-    platform,
     splitChunks,
     createModuleId,
     dev,

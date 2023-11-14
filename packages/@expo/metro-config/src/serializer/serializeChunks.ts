@@ -127,10 +127,10 @@ export async function graphToSerialAssetsAsync(
   // TODO: Disable this call dynamically in development since assets are fetched differently.
   const metroAssets = (await getMetroAssets(graph.dependencies, {
     processModuleFilter: options.processModuleFilter,
-    assetPlugins: config.transformer!.assetPlugins ?? [],
+    assetPlugins: config.transformer?.assetPlugins ?? [],
     platform: getPlatformOption(graph, options) ?? 'web',
     projectRoot: options.projectRoot, // this._getServerRootDir(),
-    publicPath: config.transformer!.publicPath!,
+    publicPath: config.transformer?.publicPath ?? '/',
   })) as AssetData[];
 
   return { artifacts: [...jsAssets, ...cssDeps], assets: metroAssets };

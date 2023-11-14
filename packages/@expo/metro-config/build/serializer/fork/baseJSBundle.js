@@ -123,8 +123,7 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
   return {
     pre: preCode,
     post: postCode,
-    modules: mods.map(([id, code]) => [id, typeof code === 'number' ? code : code.src]),
-    _expoSplitBundlePaths: mods.map(([id, code]) => [id, typeof code === 'number' ? {} : code.paths])
+    modules: mods.map(([id, code]) => [id, typeof code === 'number' ? code : code.src])
   };
 }
 //# sourceMappingURL=baseJSBundle.js.map

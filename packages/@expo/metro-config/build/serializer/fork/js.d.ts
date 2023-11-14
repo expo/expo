@@ -17,8 +17,6 @@ export type Options = {
     projectRoot: string;
     serverRoot: string;
     sourceUrl: string | undefined;
-    platform: string;
-    baseUrl: string;
     splitChunks: boolean;
     skipWrapping: boolean;
     computedAsyncModulePaths: Record<string, string> | null;
@@ -27,7 +25,7 @@ export declare function wrapModule(module: Module, options: Options): {
     src: string;
     paths: Record<string, string>;
 };
-export declare function getModuleParams(module: Module, options: Pick<Options, 'createModuleId' | 'sourceUrl' | 'includeAsyncPaths' | 'serverRoot' | 'platform' | 'baseUrl' | 'splitChunks' | 'dev' | 'projectRoot' | 'computedAsyncModulePaths'>): {
+export declare function getModuleParams(module: Module, options: Pick<Options, 'createModuleId' | 'sourceUrl' | 'includeAsyncPaths' | 'serverRoot' | 'splitChunks' | 'dev' | 'projectRoot' | 'computedAsyncModulePaths'>): {
     params: any[];
     paths: Record<string, string>;
 };

@@ -79,7 +79,7 @@ function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key i
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
-  var _config$serializer, _assetPlugins, _getPlatformOption;
+  var _config$serializer, _config$transformer$a, _config$transformer, _getPlatformOption, _config$transformer$p, _config$transformer2;
   const [entryFile, preModules, graph, options] = props;
   const cssDeps = (0, _getCssDeps().getCssSerialAssets)(graph.dependencies, {
     projectRoot: options.projectRoot,
@@ -135,11 +135,11 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
   // TODO: Disable this call dynamically in development since assets are fetched differently.
   const metroAssets = await (0, _getAssets().default)(graph.dependencies, {
     processModuleFilter: options.processModuleFilter,
-    assetPlugins: (_assetPlugins = config.transformer.assetPlugins) !== null && _assetPlugins !== void 0 ? _assetPlugins : [],
+    assetPlugins: (_config$transformer$a = (_config$transformer = config.transformer) === null || _config$transformer === void 0 ? void 0 : _config$transformer.assetPlugins) !== null && _config$transformer$a !== void 0 ? _config$transformer$a : [],
     platform: (_getPlatformOption = (0, _baseJSBundle().getPlatformOption)(graph, options)) !== null && _getPlatformOption !== void 0 ? _getPlatformOption : 'web',
     projectRoot: options.projectRoot,
     // this._getServerRootDir(),
-    publicPath: config.transformer.publicPath
+    publicPath: (_config$transformer$p = (_config$transformer2 = config.transformer) === null || _config$transformer2 === void 0 ? void 0 : _config$transformer2.publicPath) !== null && _config$transformer$p !== void 0 ? _config$transformer$p : '/'
   });
   return {
     artifacts: [...jsAssets, ...cssDeps],
