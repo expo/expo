@@ -2,7 +2,7 @@ import { NativeDatabase } from './NativeDatabase';
 import { BindParams, BindValue, NativeStatement, RunResult, VariadicBindParams, type ColumnNames, type ColumnValues } from './NativeStatement';
 export { BindParams, BindValue, RunResult, VariadicBindParams };
 /**
- * A prepared statement returned by `Database.prepareAsync()` that can be binded with parameters and executed.
+ * A prepared statement returned by [`Database.prepareAsync()`](#prepareasyncsource) or [`Database.prepareSync()`](#preparesyncsource) that can be binded with parameters and executed.
  */
 export declare class Statement {
     private readonly nativeDatabase;
@@ -10,40 +10,48 @@ export declare class Statement {
     constructor(nativeDatabase: NativeDatabase, nativeStatement: NativeStatement);
     /**
      * Run the prepared statement and return the result.
-     *
-     * @param params @see `BindParams`
+     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
      */
-    runAsync(...params: VariadicBindParams): Promise<RunResult>;
     runAsync(params: BindParams): Promise<RunResult>;
     /**
+     * @hidden
+     */
+    runAsync(...params: VariadicBindParams): Promise<RunResult>;
+    /**
      * Iterate the prepared statement and return results as an async iterable.
-     *
-     * @param params @see `BindParams`
-     *
+     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
      * @example
      * ```ts
      * const statement = await db.prepareAsync('SELECT * FROM test');
      * for await (const row of statement.eachAsync<any>()) {
      *   console.log(row);
      * }
+     * await statement.finalizeAsync();
      * ```
      */
-    eachAsync<T>(...params: VariadicBindParams): AsyncIterableIterator<T>;
     eachAsync<T>(params: BindParams): AsyncIterableIterator<T>;
     /**
-     * Get one row from the prepared statement.
-     *
-     * @param params @see `BindParams`
+     * @hidden
      */
-    getAsync<T>(...params: VariadicBindParams): Promise<T | null>;
+    eachAsync<T>(...params: VariadicBindParams): AsyncIterableIterator<T>;
+    /**
+     * Get one row from the prepared statement.
+     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+     */
     getAsync<T>(params: BindParams): Promise<T | null>;
     /**
+     * @hidden
+     */
+    getAsync<T>(...params: VariadicBindParams): Promise<T | null>;
+    /**
      * Get all rows from the prepared statement.
-     *
-     * @param params @see `BindParams`
+     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+     */
+    allAsync<T>(params: BindParams): Promise<T[]>;
+    /**
+     * @hidden
      */
     allAsync<T>(...params: VariadicBindParams): Promise<T[]>;
-    allAsync<T>(params: BindParams): Promise<T[]>;
     /**
      * Get the column names of the prepared statement.
      */
@@ -59,48 +67,44 @@ export declare class Statement {
     finalizeAsync(): Promise<void>;
     /**
      * Run the prepared statement and return the result.
-     *
-     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
-     *
-     * @param params @see `BindParams`
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
      */
-    runSync(...params: VariadicBindParams): RunResult;
     runSync(params: BindParams): RunResult;
     /**
-     * Iterate the prepared statement and return results as an iterable.
-     *
-     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
-     *
-     * @param params @see `BindParams`
-     *
-     * @example
-     * ```ts
-     * const statement = await db.prepareSync('SELECT * FROM test');
-     * for (const row of statement.eachSync<any>()) {
-     *   console.log(row);
-     * }
-     * ```
+     * @hidden
      */
-    eachSync<T>(...params: VariadicBindParams): IterableIterator<T>;
+    runSync(...params: VariadicBindParams): RunResult;
+    /**
+     * Iterate the prepared statement and return results as an iterable.
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+     */
     eachSync<T>(params: BindParams): IterableIterator<T>;
     /**
-     * Get one row from the prepared statement.
-     *
-     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
-     *
-     * @param params @see `BindParams`
+     * @hidden
      */
-    getSync<T>(...params: VariadicBindParams): T | null;
+    eachSync<T>(...params: VariadicBindParams): IterableIterator<T>;
+    /**
+     * Get one row from the prepared statement.
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+     */
     getSync<T>(params: BindParams): T | null;
     /**
+     * @hidden
+     */
+    getSync<T>(...params: VariadicBindParams): T | null;
+    /**
      * Get all rows from the prepared statement.
-     *
-     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
-     *
-     * @param params @see `BindParams`
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+     * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+     */
+    allSync<T>(params: BindParams): T[];
+    /**
+     * @hidden
      */
     allSync<T>(...params: VariadicBindParams): T[];
-    allSync<T>(params: BindParams): T[];
     /**
      * Get the column names of the prepared statement.
      */

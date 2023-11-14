@@ -1,5 +1,5 @@
 /**
- * A prepared statement returned by `Database.prepareAsync()` that can be binded with parameters and executed.
+ * A prepared statement returned by [`Database.prepareAsync()`](#prepareasyncsource) or [`Database.prepareSync()`](#preparesyncsource) that can be binded with parameters and executed.
  */
 export class Statement {
     nativeDatabase;

@@ -189,7 +189,10 @@ const renderType = ({
         </div>
       );
     }
-  } else if ((type.name === 'Record' && type.typeArguments) || type.type === 'reference') {
+  } else if (
+    (type.name === 'Record' && type.typeArguments) ||
+    ['array', 'reference'].includes(type.type)
+  ) {
     return (
       <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />

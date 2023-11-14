@@ -38,10 +38,15 @@ export interface SQLiteProviderProps {
   errorHandler?: (error: Error) => void;
 }
 
-// Create a context for the SQLite database
+/**
+ * Create a context for the SQLite database
+ */
 const SQLiteContext = createContext<Database | null>(null);
 
-// Create a provider component
+/**
+ * Context.Provider component that provides a SQLite database to all children.
+ * All descendants of this component will be able to access the database using the [`useSQLiteContext`](#usesqlitecontext) hook.
+ */
 export function SQLiteProvider({
   dbName,
   options,
@@ -101,8 +106,28 @@ export function SQLiteProvider({
   return <SQLiteContext.Provider value={databaseRef.current}>{children}</SQLiteContext.Provider>;
 }
 
-// Create a hook for accessing the SQLite database context
-export function useSQLiteContext() {
+/**
+ * A global hook for accessing the SQLite database across components.
+ * This hook should only be used within a [`<SQLiteProvider>`](#sqliteprovider) component.
+ *
+ * @example
+ * ```tsx
+ * export default function App() {
+ *   return (
+ *     <SQLiteProvider dbName="test.db">
+ *       <Main />
+ *     </SQLiteProvider>
+ *   );
+ * }
+ *
+ * export function Main() {
+ *   const db = useSQLiteContext();
+ *   console.log('sqlite version', db.getSync('SELECT sqlite_version()'));
+ *   return <View />
+ * }
+ * ```
+ */
+export function useSQLiteContext(): Database {
   const context = useContext(SQLiteContext);
   if (context == null) {
     throw new Error('useSQLiteContext must be used within a <SQLiteProvider>');

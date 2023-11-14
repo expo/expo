@@ -81,6 +81,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-speech': ['Speech/Speech.ts'],
   'expo-splash-screen': ['index.ts'],
   'expo-sqlite': ['index.ts'],
+  'expo-sqlite-next': ['next/index.ts', 'expo-sqlite'],
   'expo-status-bar': ['StatusBar.ts'],
   'expo-store-review': ['StoreReview.ts'],
   'expo-system-ui': ['SystemUI.ts'],
