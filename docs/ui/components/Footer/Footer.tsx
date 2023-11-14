@@ -50,7 +50,7 @@ export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPa
               </div>
             </LinkBase>
           ) : (
-            <div />
+            <div className="w-full" />
           )}
           {nextPage ? (
             <LinkBase
@@ -68,9 +68,9 @@ export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPa
               <ArrowRightIcon className="text-icon-secondary shrink-0" />
             </LinkBase>
           ) : (
-            <div />
+            <div className="w-full" />
           )}
-        </div>
+        </div >
       )}
       <div className="flex flex-row max-md-gutters:flex-col">
         <UL className="flex-1 !mt-0 !ml-0 mb-5 !list-none">
