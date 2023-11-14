@@ -14,6 +14,7 @@ const emitter = new EventEmitter(ExpoSQLite);
 export class Database {
   constructor(
     public readonly dbName: string,
+    public readonly options: OpenOptions,
     private readonly nativeDatabase: NativeDatabase
   ) {}
 
@@ -379,9 +380,10 @@ export class Database {
  * @param options Open options.
  */
 export async function openDatabaseAsync(dbName: string, options?: OpenOptions): Promise<Database> {
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, options ?? {});
+  const openOptions = options ?? {};
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, openOptions);
   await nativeDatabase.initAsync();
-  return new Database(dbName, nativeDatabase);
+  return new Database(dbName, openOptions, nativeDatabase);
 }
 
 /**
@@ -393,9 +395,10 @@ export async function openDatabaseAsync(dbName: string, options?: OpenOptions): 
  * @param options Open options.
  */
 export function openDatabaseSync(dbName: string, options?: OpenOptions): Database {
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, options ?? {});
+  const openOptions = options ?? {};
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, openOptions);
   nativeDatabase.initSync();
-  return new Database(dbName, nativeDatabase);
+  return new Database(dbName, openOptions, nativeDatabase);
 }
 
 /**
@@ -454,8 +457,9 @@ export function addDatabaseChangeListener(
  */
 class Transaction extends Database {
   public static async createAsync(db: Database): Promise<Transaction> {
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.dbName, { useNewConnection: true });
+    const options = { ...db.options, useNewConnection: true };
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.dbName, options);
     await nativeDatabase.initAsync();
-    return new Transaction(db.dbName, nativeDatabase);
+    return new Transaction(db.dbName, options, nativeDatabase);
   }
 }
