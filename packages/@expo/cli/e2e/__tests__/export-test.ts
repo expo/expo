@@ -188,9 +188,9 @@ describe('server', () => {
       // If this changes then everything else probably changed as well.
       expect(files).toEqual([
         expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc/),
-        expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc\.map/),
         expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc/),
-        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc\.map/),
         expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js/),
         expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js\.map/),
         'assetmap.json',
