@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Build `crsqlite` from source using the correct architectures. ([#25363](https://github.com/expo/expo/pull/25363) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 12.1.0 — 2023-11-10
 
 ### 🎉 New features
