@@ -62,7 +62,7 @@ function htmlFromSerialAssets(
     ? `<script src="${bundleUrl}" defer></script>`
     : jsAssets
         .map(({ filename, metadata }) => {
-              // TODO: Mark dependencies of the HTML and include them to prevent waterfalls.
+          // TODO: Mark dependencies of the HTML and include them to prevent waterfalls.
           if (metadata.isAsync) {
             return '';
           }

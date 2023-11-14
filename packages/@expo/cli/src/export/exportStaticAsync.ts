@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -26,7 +27,6 @@ import {
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 import { getFreePortAsync } from '../utils/port';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
