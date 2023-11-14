@@ -167,7 +167,7 @@ class DatabaseLauncher(
     }
   }
 
-  private fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, context: Context): File? {
+  fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, context: Context): File? {
     val assetFile = File(updatesDirectory, asset.relativePath ?: "")
     var assetFileExists = assetFile.exists()
     if (!assetFileExists) {
