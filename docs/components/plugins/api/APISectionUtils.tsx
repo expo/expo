@@ -125,7 +125,6 @@ const nonLinkableTypes = [
   'Uint8Array',
   // React & React Native
   'React.FC',
-  'ReactNode',
   'ForwardRefExoticComponent',
   'StyleProp',
   'HTMLInputElement',
@@ -175,6 +174,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+  ReactNode: 'https://reactnative.dev/docs/react-node',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',

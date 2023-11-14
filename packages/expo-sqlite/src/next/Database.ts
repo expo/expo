@@ -253,14 +253,14 @@ export class Database {
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
    * @example
    * ```ts
-   *   // For unnamed parameters, you pass values in an array.
-   *   db.allAsync('SELECT * FROM test WHERE intValue = ? AND name = ?', [1, 'Hello']);
+   * // For unnamed parameters, you pass values in an array.
+   * db.allAsync('SELECT * FROM test WHERE intValue = ? AND name = ?', [1, 'Hello']);
    *
-   *   // For unnamed parameters, you pass values in variadic arguments.
-   *   db.allAsync('SELECT * FROM test WHERE intValue = ? AND name = ?', 1, 'Hello');
+   * // For unnamed parameters, you pass values in variadic arguments.
+   * db.allAsync('SELECT * FROM test WHERE intValue = ? AND name = ?', 1, 'Hello');
    *
-   *   // For named parameters, you should pass values in object.
-   *   db.allAsync('SELECT * FROM test WHERE intValue = $intValue AND name = $name', { $intValue: 1, $name: 'Hello' });
+   * // For named parameters, you should pass values in object.
+   * db.allAsync('SELECT * FROM test WHERE intValue = $intValue AND name = $name', { $intValue: 1, $name: 'Hello' });
    * ```
    */
   public allAsync<T>(source: string, params: BindParams): Promise<T[]>;
@@ -419,6 +419,23 @@ export function deleteDatabaseSync(dbName: string): void {
 }
 
 /**
+ * The event payload for the listener of [`addDatabaseChangeListener`](#sqliteadddatabasechangelistenerlistener)
+ */
+export type DatabaseChangeEvent = {
+  /** The database name. The value would be `main` by default and other database names if you use `ATTACH DATABASE` statement. */
+  dbName: string;
+
+  /** The absolute file path to the database. */
+  dbFilePath: string;
+
+  /** The table name. */
+  tableName: string;
+
+  /** The changed row ID. */
+  rowId: number;
+};
+
+/**
  * Add a listener for database changes.
  * > Note: to enable this feature, you must set [`enableChangeListener` to `true`](#openoptions) when opening the database.
  *
@@ -426,19 +443,7 @@ export function deleteDatabaseSync(dbName: string): void {
  * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
  */
 export function addDatabaseChangeListener(
-  listener: (event: {
-    /** The database name. The value would be `main` by default and other database names if you use `ATTACH DATABASE` statement. */
-    dbName: string;
-
-    /** The absolute file path to the database. */
-    dbFilePath: string;
-
-    /** The table name. */
-    tableName: string;
-
-    /** The changed row ID. */
-    rowId: number;
-  }) => void
+  listener: (event: DatabaseChangeEvent) => void
 ): Subscription {
   return emitter.addListener('onDatabaseChange', listener);
 }

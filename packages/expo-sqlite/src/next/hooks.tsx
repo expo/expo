@@ -121,9 +121,9 @@ export function SQLiteProvider({
  * }
  *
  * export function Main() {
- *  const db = useSQLiteContext();
- *  console.log('sqlite version', db.getSync('SELECT sqlite_version()'));
- *  return <View />
+ *   const db = useSQLiteContext();
+ *   console.log('sqlite version', db.getSync('SELECT sqlite_version()'));
+ *   return <View />
  * }
  * ```
  */
