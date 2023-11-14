@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Reverted ["[image][Android] Add tracing (#25251)"](https://github.com/expo/expo/pull/25251)
+
 ### 💡 Others
 
 ## 1.8.0 — 2023-11-13
