@@ -1,5 +1,4 @@
-import { copyInBatchesAsync } from '../persistMetroAssets';
-import { saveAssetsAsync } from '../saveAssets';
+import { modifyBundlesWithSourceMaps } from '../saveAssets';
 
 jest.mock('../../log');
 
@@ -7,26 +6,50 @@ jest.mock('../persistMetroAssets', () => ({
   copyInBatchesAsync: jest.fn(),
 }));
 
-describe(saveAssetsAsync, () => {
-  it(`copy assets into directory`, async () => {
-    await saveAssetsAsync({
-      outputDir: 'output',
-      assets: [
-        {
-          __packager_asset: true,
-          files: ['/icon.png', '/icon@2x.png'],
-          hash: '4e3f888fc8475f69fd5fa32f1ad5216a',
-          name: 'icon',
-          type: 'png',
-          fileHashes: ['4e3f888fc8475f69fd5fa32f1ad5216a', 'hash-2'],
-        },
-      ],
-    });
+describe(modifyBundlesWithSourceMaps, () => {
+  it(`should modify bundles with source maps`, () => {
+    const res = modifyBundlesWithSourceMaps(
+      `_expo/static/js/web/entry-3174c2a5c9b63f8dcf27c09b187bdc3c.js`,
+      `
+//# sourceMappingURL=//localhost:8082/packages/expo-router/entry.map?platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
+//# sourceURL=http://localhost:8082/packages/expo-router/entry.bundle//&platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static`,
+      true
+    );
+    expect(res.split('\n')[1]).toBe(
+      '//# sourceMappingURL=/_expo/static/js/web/entry-3174c2a5c9b63f8dcf27c09b187bdc3c.js.map'
+    );
+    expect(res.split('\n')[2]).toBe(
+      '//# sourceURL=/_expo/static/js/web/entry-3174c2a5c9b63f8dcf27c09b187bdc3c.js'
+    );
+  });
+  it(`should strip source source maps`, () => {
+    const res = modifyBundlesWithSourceMaps(
+      `_expo/static/js/web/entry-3174c2a5c9b63f8dcf27c09b187bdc3c.js`,
+      `
+//# sourceMappingURL=//localhost:8082/packages/expo-router/entry.map?platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
+//# sourceURL=http://localhost:8082/packages/expo-router/entry.bundle//&platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static`,
+      false
+    );
+    expect(res.trim()).toEqual('');
+  });
+  it(`should partially modify bundles with source maps`, () => {
+    const res = modifyBundlesWithSourceMaps(
+      `_expo/static/js/web/entry-3174c2a5c9b63f8dcf27c09b187bdc3c.js`,
+      `
+//# sourceURL=http://localhost:8082/packages/expo-router/entry.bundle//&platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static`,
+      true
+    );
 
-    expect(copyInBatchesAsync).toBeCalledTimes(1);
-    expect(copyInBatchesAsync).toHaveBeenNthCalledWith(1, {
-      '/icon.png': 'output/assets/4e3f888fc8475f69fd5fa32f1ad5216a',
-      '/icon@2x.png': 'output/assets/hash-2',
-    });
+    expect(res.split('\n')[1]).toBe(
+      '//# sourceURL=/_expo/static/js/web/entry-3174c2a5c9b63f8dcf27c09b187bdc3c.js'
+    );
+  });
+  it(`should skip modifying bundles without source maps`, () => {
+    const res = modifyBundlesWithSourceMaps(
+      `_expo/static/js/web/entry-3174c2a5c9b63f8dcf27c09b187bdc3c.js`,
+      `__r(1)`,
+      true
+    );
+    expect(res).toBe(`__r(1)`);
   });
 });

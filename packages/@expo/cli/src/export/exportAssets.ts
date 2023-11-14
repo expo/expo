@@ -5,7 +5,7 @@ import fs from 'fs';
 
 import { BundleOutput } from './fork-bundleAsync';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
-import { Asset } from './saveAssets';
+import { Asset, ExportAssetMap } from './saveAssets';
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
@@ -131,7 +131,7 @@ export async function exportAssetsAsync(
     bundles: Partial<Record<string, BundleOutput>>;
     outputDir: string;
     baseUrl: string;
-    files?: Map<string, string | Buffer>;
+    files?: ExportAssetMap;
   }
 ) {
   // NOTE: We use a different system for static web

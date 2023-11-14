@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { getUserDefinedFile } from './publicFolder';
+import { ExportAssetMap } from './saveAssets';
 
 const debug = require('debug')('expo:favicon') as typeof console.log;
 
@@ -14,11 +15,7 @@ export function getUserDefinedFaviconFile(projectRoot: string): string | null {
 
 export async function getVirtualFaviconAssetsAsync(
   projectRoot: string,
-  {
-    baseUrl,
-    outputDir,
-    files,
-  }: { outputDir: string; baseUrl: string; files?: Map<string, string | Buffer> }
+  { baseUrl, outputDir, files }: { outputDir: string; baseUrl: string; files?: ExportAssetMap }
 ): Promise<((html: string) => string) | null> {
   const existing = getUserDefinedFaviconFile(projectRoot);
   if (existing) {

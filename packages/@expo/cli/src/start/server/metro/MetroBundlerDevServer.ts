@@ -47,6 +47,7 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { ExportAssetMap } from '../../../export/saveAssets';
 
 export class ForwardHtmlError extends CommandError {
   constructor(
@@ -100,10 +101,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // This does not contain the API routes info.
     prerenderManifest: ExpoRouterServerManifestV1;
     baseUrl: string;
-  }) {
+  }): Promise<{ files: ExportAssetMap; manifest: ExpoRouterServerManifestV1<string> }> {
     const manifest = await this.getExpoRouterRoutesManifestAsync({ appDir });
 
-    const files: Map<string, string> = new Map();
+    const files: ExportAssetMap = new Map();
 
     for (const route of manifest.apiRoutes) {
       const filepath = path.join(appDir, route.file);

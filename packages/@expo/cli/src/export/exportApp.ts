@@ -1,14 +1,9 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
-import fs from 'fs';
 import path from 'path';
 
 import { exportAssetsAsync } from './exportAssets';
-import {
-  getFilesFromSerialAssets,
-  persistMetroFilesAsync,
-  unstable_exportStaticAsync,
-} from './exportStaticAsync';
+import { unstable_exportStaticAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { createBundlesAsync } from './fork-bundleAsync';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
@@ -17,11 +12,13 @@ import { createAssetMap, createSourceMapDebugHtml } from './writeContents';
 import * as Log from '../log';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
-import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
+import { ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { createMetadataJson } from './createMetadataJson';
+import { ExportAssetMap, getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
+import { copyPublicFolderAsync } from './publicFolder';
 
 /**
  * The structure of the outputDir will be:
@@ -94,7 +91,7 @@ export async function exportAppAsync(
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
 
-  const files = new Map<string, string | Buffer>();
+  const files: ExportAssetMap = new Map();
 
   Object.values(bundles).forEach((bundle) => {
     getFilesFromSerialAssets(bundle.artifacts, {
@@ -196,18 +193,4 @@ export async function exportAppAsync(
 
   // Write all files at the end for unified logging.
   await persistMetroFilesAsync(files, outputPath);
-}
-
-/**
- * Copy the contents of the public folder into the output folder.
- * This enables users to add static files like `favicon.ico` or `serve.json`.
- *
- * The contents of this folder are completely universal since they refer to
- * static network requests which fall outside the scope of React Native's magic
- * platform resolution patterns.
- */
-async function copyPublicFolderAsync(publicFolder: string, outputFolder: string) {
-  if (fs.existsSync(publicFolder)) {
-    await copyAsync(publicFolder, outputFolder);
-  }
 }
