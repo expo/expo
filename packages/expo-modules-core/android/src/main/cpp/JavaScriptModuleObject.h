@@ -36,6 +36,13 @@ void decorateObjectWithProperties(
   JavaScriptModuleObject *objectData
 );
 
+void decorateObjectWithConstProperties(
+  jsi::Runtime &runtime,
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  jsi::Object *jsObject,
+  JavaScriptModuleObject *objectData
+);
+
 void decorateObjectWithConstants(
   jsi::Runtime &runtime,
   JSIInteropModuleRegistry *jsiInteropModuleRegistry,
@@ -130,6 +137,11 @@ public:
     jni::alias_ref<JNIFunctionBody::javaobject> setter
   );
 
+  void registerConstProperty(
+    jni::alias_ref<jstring> name,
+    jni::alias_ref<jobject> value
+  );
+
 private:
   explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis);
 
@@ -144,6 +156,13 @@ private:
   );
 
   friend void decorateObjectWithProperties(
+    jsi::Runtime &runtime,
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    jsi::Object *jsObject,
+    JavaScriptModuleObject *objectData
+  );
+
+  friend void decorateObjectWithConstProperties(
     jsi::Runtime &runtime,
     JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Object *jsObject,
@@ -181,6 +200,11 @@ private:
    * The first MethodMetadata points to the getter and the second one to the setter.
    */
   std::map<std::string, std::pair<MethodMetadata, MethodMetadata>> properties;
+
+  /**
+   * A registry of const properties
+   */
+  std::map<std::string, jni::global_ref<jobject>> constProperties;
 
   std::map<
     std::string,

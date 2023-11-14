@@ -3,6 +3,7 @@
 #include "JavaScriptModuleObject.h"
 #include "JSIInteropModuleRegistry.h"
 #include "JSIUtils.h"
+#include "types/JNIToJSIConverter.h"
 
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
@@ -65,6 +66,24 @@ void decorateObjectWithProperties(
   }
 }
 
+void decorateObjectWithConstProperties(
+  jsi::Runtime &runtime,
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  jsi::Object *jsObject,
+  JavaScriptModuleObject *objectData) {
+  auto env = jni::Environment::current();
+  for (auto &[name, value]: objectData->constProperties) {
+    jsObject->setProperty(
+      runtime,
+      name.c_str(),
+      jsi::Value(
+        runtime,
+        convert(jsiInteropModuleRegistry, env, runtime, jni::make_local(value))
+      )
+    );
+  }
+}
+
 void decorateObjectWithConstants(
   jsi::Runtime &runtime,
   JSIInteropModuleRegistry *jsiInteropModuleRegistry,
@@ -97,7 +116,9 @@ void JavaScriptModuleObject::registerNatives() {
                    makeNativeMethod("registerClass",
                                     JavaScriptModuleObject::registerClass),
                    makeNativeMethod("registerViewPrototype",
-                                    JavaScriptModuleObject::registerViewPrototype)
+                                    JavaScriptModuleObject::registerViewPrototype),
+                   makeNativeMethod("registerConstProperty",
+                                    JavaScriptModuleObject::registerConstProperty)
                  });
 }
 
@@ -115,6 +136,12 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
     this
   );
   decorateObjectWithProperties(
+    runtime,
+    jsiInteropModuleRegistry,
+    moduleObject.get(),
+    this
+  );
+  decorateObjectWithConstProperties(
     runtime,
     jsiInteropModuleRegistry,
     moduleObject.get(),
@@ -354,6 +381,15 @@ void JavaScriptModuleObject::registerProperty(
   );
 
   properties.insert({cName, std::move(functions)});
+}
+
+
+void JavaScriptModuleObject::registerConstProperty(
+  jni::alias_ref<jstring> name,
+  jni::alias_ref<jobject> value
+) {
+  auto cName = name->toStdString();
+  constProperties[cName] = jni::make_global(value);
 }
 
 JavaScriptModuleObject::JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
