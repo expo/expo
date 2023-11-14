@@ -218,10 +218,15 @@ export function getFilesFromSerialAssets(
 
 export async function persistMetroFilesAsync(files: Map<string, string>, outputDir: string) {
   fs.mkdirSync(path.join(outputDir), { recursive: true });
+  if (!files.size) {
+    Log.warn('No files to export');
+    return;
+  }
 
   Log.log('');
 
-  Log.log(chalk.bold`Exporting ${files.size} files:`);
+  const plural = files.size === 1 ? '' : 's';
+  Log.log(chalk.bold`Exporting ${files.size} file${plural}:`);
   await Promise.all(
     [...files.entries()]
       .sort(([a], [b]) => a.localeCompare(b))

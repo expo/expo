@@ -170,7 +170,6 @@ export async function exportAssetsAsync(
       });
       debug(`Filtered assets count = ${filteredAssets.length}`);
     }
-    Log.log('Saving assets');
     await saveAssetsAsync({ assets: filteredAssets, outputDir });
   }
 
