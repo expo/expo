@@ -244,7 +244,7 @@ class Chunk {
     const assets = [jsAsset];
     if (
     // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
-    includeSourceMaps && this.options.sourceMapUrl) {
+    includeSourceMaps && !this.options.inlineSourceMap && this.options.sourceMapUrl) {
       const modules = [...this.preModules, ...getSortedModules([...this.deps], {
         createModuleId: this.options.createModuleId
       })].map(module => {

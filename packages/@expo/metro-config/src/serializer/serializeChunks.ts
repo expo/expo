@@ -284,6 +284,7 @@ class Chunk {
     if (
       // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
       includeSourceMaps &&
+      !this.options.inlineSourceMap &&
       this.options.sourceMapUrl
     ) {
       const modules = [
