@@ -256,6 +256,7 @@ export function modifyBundlesWithSourceMaps(
     //# sourceURL=http://localhost:8085/index.bundle//&platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
     return source.replace(/^\/\/# (sourceMappingURL|sourceURL)=.*$/gm, (...props) => {
       if (includeMaps) {
+        // TODO: Drop sourceURL when the name is the same as the file output location.
         if (props[1] === 'sourceURL') {
           return `//# ${props[1]}=` + normalizedFilename;
         } else if (props[1] === 'sourceMappingURL') {

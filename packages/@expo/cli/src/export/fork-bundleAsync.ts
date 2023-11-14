@@ -1,7 +1,7 @@
 import { ExpoConfig, getConfigFilePaths, Platform, ProjectConfig } from '@expo/config';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
-import Metro, { AssetData, MixedOutput, Module, ReadOnlyGraph } from 'metro';
+import Metro, { MixedOutput, Module, ReadOnlyGraph } from 'metro';
 import { ConfigT } from 'metro-config';
 import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
@@ -37,12 +37,7 @@ export type BundleAssetWithFileHashes = Metro.AssetData & {
   fileHashes: string[]; // added by the hashAssets asset plugin
 };
 export type BundleOutput = {
-  // code: string;
-  // map: string;
   artifacts: SerialAsset[];
-  hermesBytecodeBundle?: Uint8Array;
-  hermesSourcemap?: string;
-  // css: CSSAsset[];
   assets: readonly BundleAssetWithFileHashes[];
 };
 
@@ -203,7 +198,7 @@ async function bundleProductionMetroClientAsync(
 async function getAssets(
   metro: Metro.Server,
   options: MetroBundleOptions
-): Promise<readonly AssetData[]> {
+): Promise<readonly BundleAssetWithFileHashes[]> {
   const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions(options);
 
   // @ts-expect-error: _bundler isn't exposed on the type.
@@ -217,7 +212,7 @@ async function getAssets(
   // @ts-expect-error
   const _config = metro._config as ConfigT;
 
-  return await getMetroAssets(dependencies, {
+  return getMetroAssets(dependencies, {
     processModuleFilter: _config.serializer.processModuleFilter,
     assetPlugins: _config.transformer.assetPlugins,
     platform: transformOptions.platform!,
@@ -252,7 +247,7 @@ function isMetroServerInstance(metro: Metro.Server): metro is Metro.Server & {
 async function forkMetroBuildAsync(
   metro: Metro.Server,
   options: ExpoMetroBundleOptions
-): Promise<{ artifacts: SerialAsset[]; assets: BundleAssetWithFileHashes[] }> {
+): Promise<{ artifacts: SerialAsset[]; assets: readonly BundleAssetWithFileHashes[] }> {
   if (!isMetroServerInstance(metro)) {
     throw new Error('Expected Metro server instance to have private functions exposed.');
   }

@@ -12,7 +12,6 @@ import {
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { createBundlesAsync } from './fork-bundleAsync';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
-import { printBundleSizes } from './printBundleSizes';
 import { Options } from './resolveOptions';
 import { writeAssetMapAsync, writeDebugHtmlAsync, writeMetadataJsonAsync } from './writeContents';
 import * as Log from '../log';
@@ -78,9 +77,8 @@ export async function exportAppAsync(
 
   const outputPath = path.resolve(projectRoot, outputDir);
   const assetsPath = path.join(outputPath, 'assets');
-  const bundlesPath = path.join(outputPath, 'bundles');
 
-  await Promise.all([assetsPath, bundlesPath].map(ensureDirectoryAsync));
+  await Promise.all([assetsPath].map(ensureDirectoryAsync));
 
   await copyPublicFolderAsync(publicPath, outputPath);
 
@@ -105,30 +103,10 @@ export async function exportAppAsync(
   await persistMetroFilesAsync(files, outputPath);
 
   const bundleEntries = Object.entries(bundles);
+  // Can be empty during web-only SSG.
   if (bundleEntries.length) {
-    // Log bundle size info to the user
-    // printBundleSizes(
-    //   Object.fromEntries(
-    //     bundleEntries.map(([key, value]) => {
-    //       if (!sourceMaps) {
-    //         return [
-    //           key,
-    //           {
-    //             ...value,
-    //             // Remove source maps from the bundles if they aren't going to be written.
-    //             map: undefined,
-    //           },
-    //         ];
-    //       }
+    // TODO: Improve logging the bundle sizes
 
-    //       return [key, value];
-    //     })
-    //   )
-    // );
-
-    // Log.log('Finished saving JS Bundles');
-
-    // Can be empty during web-only SSG.
     // TODO: Use same asset system across platforms again.
     const { assets, embeddedHashSet } = await exportAssetsAsync(projectRoot, {
       exp,
