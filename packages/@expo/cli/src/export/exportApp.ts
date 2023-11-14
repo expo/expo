@@ -123,13 +123,7 @@ export async function exportAppAsync(
     const fileNames = Object.fromEntries(
       Object.entries(bundles).map(([platform, bundle]) => [
         platform,
-        bundle.artifacts
-          .filter(
-            (asset) =>
-              // TODO: Hermes support
-              asset.type === 'js'
-          )
-          .map((asset) => asset.filename),
+        bundle.artifacts.filter((asset) => asset.type === 'js').map((asset) => asset.filename),
       ])
     );
 

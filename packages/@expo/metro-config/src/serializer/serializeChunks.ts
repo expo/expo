@@ -14,7 +14,6 @@ import {
   SerializerOptions,
 } from 'metro';
 import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
-// @ts-expect-error
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { ConfigT, SerializerConfigT } from 'metro-config';
@@ -307,6 +306,7 @@ class Chunk {
       });
 
       const sourceMap = sourceMapString(modules, {
+        excludeSource: false,
         ...this.options,
       });
 

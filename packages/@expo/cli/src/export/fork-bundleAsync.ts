@@ -1,4 +1,5 @@
 import { ExpoConfig, getConfigFilePaths, Platform, ProjectConfig } from '@expo/config';
+import { LoadOptions } from '@expo/metro-config';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import Metro, { MixedOutput, Module, ReadOnlyGraph } from 'metro';
@@ -9,8 +10,6 @@ import IncrementalBundler from 'metro/src/IncrementalBundler';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import Server from 'metro/src/Server';
 import path from 'path';
-import type { ResolverInputOptions } from 'metro/src/shared/types';
-import type { TransformInputOptions } from 'metro/src/DeltaBundler/types';
 
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
@@ -21,8 +20,10 @@ import {
 } from '../start/server/middleware/metroOptions';
 import { isEnableHermesManaged, maybeThrowFromInconsistentEngineAsync } from './exportHermes';
 
-import type { LoadOptions } from '@expo/metro-config';
+import type { ResolverInputOptions } from 'metro/src/shared/types';
+import type { TransformInputOptions } from 'metro/src/DeltaBundler/types';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
+
 export type MetroDevServerOptions = LoadOptions;
 
 export type BundleOptions = {
@@ -199,7 +200,7 @@ async function bundleProductionMetroClientAsync(
 
 // Forked out of Metro because the `this._getServerRootDir()` doesn't match the development
 // behavior.
-async function getAssets(
+export async function getAssets(
   metro: Metro.Server,
   options: MetroBundleOptions
 ): Promise<readonly BundleAssetWithFileHashes[]> {
@@ -311,6 +312,7 @@ async function forkMetroBuildAsync(
 
   const bundle = await metro._config.serializer.customSerializer!(
     entryPoint,
+    // @ts-expect-error: Metro is typed incorrectly
     prepend,
     graph,
     bundleOptions
@@ -332,11 +334,17 @@ async function forkMetroBuildAsync(
   let bundleMap = null;
 
   if (!bundleMap) {
-    bundleMap = sourceMapString([...prepend, ...metro._getSortedModules(graph)], {
-      excludeSource: serializerOptions.excludeSource,
-      processModuleFilter: metro._config.serializer.processModuleFilter,
-      shouldAddToIgnoreList: bundleOptions.shouldAddToIgnoreList,
-    });
+    bundleMap = sourceMapString(
+      [
+        ...(prepend as unknown as Module<MixedOutput>[]),
+        ...metro._getSortedModules(graph as unknown as ReadOnlyGraph),
+      ],
+      {
+        excludeSource: serializerOptions.excludeSource,
+        processModuleFilter: metro._config.serializer.processModuleFilter,
+        shouldAddToIgnoreList: bundleOptions.shouldAddToIgnoreList,
+      }
+    );
   }
 
   // Hack to make the single bundle use the multi-bundle pipeline.

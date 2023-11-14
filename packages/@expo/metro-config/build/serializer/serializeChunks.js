@@ -261,6 +261,7 @@ class Chunk {
         return module;
       });
       const sourceMap = (0, _sourceMapString().default)(modules, {
+        excludeSource: false,
         ...this.options
       });
       assets.push({

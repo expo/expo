@@ -96,6 +96,27 @@ declare module 'metro/src/lib/createWebsocketServer' {
   module.exports = createWebsocketServer;
 }
 
+declare module 'metro/src/DeltaBundler/Serializers/sourceMapGenerator' {
+  import type { Module } from 'metro';
+
+  export type SourceMapGeneratorOptions = {
+    excludeSource: boolean;
+    processModuleFilter: (module: Module) => boolean;
+    shouldAddToIgnoreList: (module: Module) => boolean;
+  };
+}
+declare module 'metro/src/DeltaBundler/Serializers/sourceMapString' {
+  import type { SourceMapGeneratorOptions } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
+  import type { Module } from 'metro';
+
+  function sourceMapString(
+    modules: readonly Array<Module>,
+    options: SourceMapGeneratorOptions
+  ): string;
+
+  export default sourceMapString;
+}
+
 declare module 'metro/src/DeltaBundler/Serializers/getAssets' {
   import { ConfigT } from 'metro-config';
 

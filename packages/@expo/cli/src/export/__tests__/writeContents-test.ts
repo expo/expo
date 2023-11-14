@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import path from 'path';
+import * as path from 'path';
 
 import { writeAssetMapAsync, writeDebugHtmlAsync } from '../writeContents';
 
@@ -12,7 +12,7 @@ describe(writeDebugHtmlAsync, () => {
     const projectRoot = '/';
     await writeDebugHtmlAsync({
       outputDir: projectRoot,
-      fileNames: { ios: 'index.ios.js', android: 'index.android.js', windows: 'index.windows.js' },
+      fileNames: ['bundles/index.ios.js', 'bundles/index.android.js', 'bundles/index.windows.js'],
     });
     expect(vol.readFileSync(path.join(projectRoot, 'debug.html'), 'utf8')).toMatchSnapshot();
   });
