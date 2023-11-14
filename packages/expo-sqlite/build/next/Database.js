@@ -7,9 +7,11 @@ const emitter = new EventEmitter(ExpoSQLite);
  */
 export class Database {
     dbName;
+    options;
     nativeDatabase;
-    constructor(dbName, nativeDatabase) {
+    constructor(dbName, options, nativeDatabase) {
         this.dbName = dbName;
+        this.options = options;
         this.nativeDatabase = nativeDatabase;
     }
     /**
@@ -259,9 +261,10 @@ export class Database {
  * @param options Open options.
  */
 export async function openDatabaseAsync(dbName, options) {
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, options ?? {});
+    const openOptions = options ?? {};
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, openOptions);
     await nativeDatabase.initAsync();
-    return new Database(dbName, nativeDatabase);
+    return new Database(dbName, openOptions, nativeDatabase);
 }
 /**
  * Open a database.
@@ -272,9 +275,10 @@ export async function openDatabaseAsync(dbName, options) {
  * @param options Open options.
  */
 export function openDatabaseSync(dbName, options) {
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, options ?? {});
+    const openOptions = options ?? {};
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, openOptions);
     nativeDatabase.initSync();
-    return new Database(dbName, nativeDatabase);
+    return new Database(dbName, openOptions, nativeDatabase);
 }
 /**
  * Delete a database file.
@@ -310,9 +314,10 @@ export function addDatabaseChangeListener(listener) {
  */
 class Transaction extends Database {
     static async createAsync(db) {
-        const nativeDatabase = new ExpoSQLite.NativeDatabase(db.dbName, { useNewConnection: true });
+        const options = { ...db.options, useNewConnection: true };
+        const nativeDatabase = new ExpoSQLite.NativeDatabase(db.dbName, options);
         await nativeDatabase.initAsync();
-        return new Transaction(db.dbName, nativeDatabase);
+        return new Transaction(db.dbName, options, nativeDatabase);
     }
 }
 //# sourceMappingURL=Database.js.map
