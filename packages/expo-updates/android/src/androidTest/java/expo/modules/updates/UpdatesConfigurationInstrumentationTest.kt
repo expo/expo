@@ -24,6 +24,10 @@ class UpdatesConfigurationInstrumentationTest {
         every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
           metaData = Bundle().apply {
             putString(
+              "expo.modules.updates.EXPO_UPDATE_URL",
+              "https://example.com"
+            )
+            putString(
               "expo.modules.updates.EXPO_RUNTIME_VERSION",
               String.format("string:%s", testRuntimeVersion)
             )
@@ -32,7 +36,7 @@ class UpdatesConfigurationInstrumentationTest {
       }
     }
     val config = UpdatesConfiguration(context, null)
-    Assert.assertEquals(config.runtimeVersion, testRuntimeVersion)
+    Assert.assertEquals(config.runtimeVersionRaw, testRuntimeVersion)
   }
 
   @Test
@@ -45,13 +49,17 @@ class UpdatesConfigurationInstrumentationTest {
       every { packageManager } returns mockk {
         every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
           metaData = Bundle().apply {
+            putString(
+              "expo.modules.updates.EXPO_UPDATE_URL",
+              "https://example.com"
+            )
             putString("expo.modules.updates.EXPO_RUNTIME_VERSION", testRuntimeVersion)
           }
         }
       }
     }
     val config = UpdatesConfiguration(context, null)
-    Assert.assertEquals(config.runtimeVersion, testRuntimeVersion)
+    Assert.assertEquals(config.runtimeVersionRaw, testRuntimeVersion)
   }
 
   @Test
@@ -61,13 +69,17 @@ class UpdatesConfigurationInstrumentationTest {
       every { packageName } returns testPackageName
       every { packageManager } returns mockk {
         every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
-          metaData = Bundle()
+          metaData = Bundle().apply {
+            putString(
+              "expo.modules.updates.EXPO_UPDATE_URL",
+              "https://example.com"
+            )
+          }
         }
       }
     }
 
     val config = UpdatesConfiguration(context, null)
-    Assert.assertEquals(true, config.isEnabled)
     Assert.assertEquals(false, config.expectsSignedManifest)
     Assert.assertEquals("default", config.releaseChannel)
     Assert.assertEquals(0, config.launchWaitMs)
@@ -84,7 +96,10 @@ class UpdatesConfigurationInstrumentationTest {
       every { packageManager } returns mockk {
         every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
           metaData = Bundle().apply {
-            putBoolean("expo.modules.updates.ENABLED", false)
+            putString(
+              "expo.modules.updates.EXPO_UPDATE_URL",
+              "https://example.com"
+            )
             putInt("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS", 1000)
             putBoolean("expo.modules.updates.HAS_EMBEDDED_UPDATE", false)
             putBoolean("expo.modules.updates.CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN", true)
@@ -94,7 +109,6 @@ class UpdatesConfigurationInstrumentationTest {
     }
 
     val config = UpdatesConfiguration(context, null)
-    Assert.assertEquals(false, config.isEnabled)
     Assert.assertEquals(1000, config.launchWaitMs)
     Assert.assertEquals(false, config.hasEmbeddedUpdate)
     Assert.assertEquals(true, config.codeSigningIncludeManifestResponseCertificateChain)
@@ -145,12 +159,11 @@ class UpdatesConfigurationInstrumentationTest {
       )
     )
 
-    Assert.assertEquals(false, config.isEnabled)
     Assert.assertEquals(false, config.expectsSignedManifest)
     Assert.assertEquals("override", config.scopeKey)
     Assert.assertEquals(Uri.parse("http://override.com"), config.updateUrl)
     Assert.assertEquals("override", config.sdkVersion)
-    Assert.assertEquals("override", config.runtimeVersion)
+    Assert.assertEquals("override", config.runtimeVersionRaw)
     Assert.assertEquals("override", config.releaseChannel)
     Assert.assertEquals(1000, config.launchWaitMs)
     Assert.assertEquals(UpdatesConfiguration.CheckAutomaticallyConfiguration.NEVER, config.checkOnLaunch)

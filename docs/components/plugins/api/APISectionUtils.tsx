@@ -35,7 +35,6 @@ import {
   OL,
   P,
   RawH3,
-  RawH4,
   UL,
   createPermalinkedComponent,
   DEMI,
@@ -59,6 +58,8 @@ export enum TypeDocKind {
   Accessor = 262144,
   TypeAlias = 4194304,
 }
+
+export const DEFAULT_BASE_NESTING_LEVEL = 2;
 
 export type MDComponents = ComponentProps<typeof ReactMarkdown>['components'];
 
@@ -107,12 +108,14 @@ export const mdComponentsNoValidation: MDComponents = {
 };
 
 const nonLinkableTypes = [
+  'AsyncIterableIterator',
   'ColorValue',
   'Component',
   'ComponentClass',
   'PureComponent',
   'E',
   'EventSubscription',
+  'IterableIterator',
   'Listener',
   'NativeSyntheticEvent',
   'ParsedQs',
@@ -171,6 +174,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+  ReactNode: 'https://reactnative.dev/docs/react-node',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
@@ -415,22 +419,26 @@ export const ParamsTableHeadRow = () => (
   </TableHead>
 );
 
-const InheritPermalink = createPermalinkedComponent(
-  createTextComponent(
-    TextElement.SPAN,
-    css({ fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' })
-  ),
-  { baseNestingLevel: 2 }
-);
+function createInheritPermalink(baseNestingLevel: number) {
+  return createPermalinkedComponent(
+    createTextComponent(
+      TextElement.SPAN,
+      css({ fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' })
+    ),
+    { baseNestingLevel }
+  );
+}
 
 export const BoxSectionHeader = ({
   text,
   exposeInSidebar,
+  baseNestingLevel = DEFAULT_BASE_NESTING_LEVEL,
 }: {
   text: string;
   exposeInSidebar?: boolean;
+  baseNestingLevel?: number;
 }) => {
-  const TextWrapper = exposeInSidebar ? InheritPermalink : Fragment;
+  const TextWrapper = exposeInSidebar ? createInheritPermalink(baseNestingLevel) : Fragment;
   return (
     <CALLOUT theme="secondary" weight="medium" css={STYLES_NESTED_SECTION_HEADER}>
       <TextWrapper>{text}</TextWrapper>
@@ -641,16 +649,17 @@ export const CommentTextBlock = ({
   );
 };
 
-const getMonospaceHeader = (element: ComponentType<any>) => {
-  const level = parseInt(element?.displayName?.replace(/\D/g, '') ?? '0', 10);
+const getMonospaceHeader = (element: ComponentType<any>, baseNestingLevel: number) => {
   return createPermalinkedComponent(element, {
-    baseNestingLevel: level !== 0 ? level : undefined,
+    baseNestingLevel,
     sidebarType: HeadingType.InlineCode,
   });
 };
 
-export const H3Code = getMonospaceHeader(RawH3);
-export const H4Code = getMonospaceHeader(RawH4);
+export function getH3CodeWithBaseNestingLevel(baseNestingLevel: number) {
+  return getMonospaceHeader(RawH3, baseNestingLevel);
+}
+export const H3Code = getH3CodeWithBaseNestingLevel(3);
 
 export const getComponentName = (name?: string, children: PropData[] = []) => {
   if (name && name !== 'default') return name;
