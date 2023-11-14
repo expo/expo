@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import {
+  SerializerPlugin,
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
 } from '../withExpoSerializers';
@@ -43,12 +44,15 @@ jest.mock('../exportHermes', () => {
 
 describe('serializes', () => {
   // General helper to reduce boilerplate
-  async function serializeTo(options: Partial<Parameters<typeof microBundle>[0]>) {
+  async function serializeTo(
+    options: Partial<Parameters<typeof microBundle>[0]>,
+    processors: SerializerPlugin[] = []
+  ) {
     const serializer = createSerializerFromSerialProcessors(
       {
         projectRoot,
       },
-      []
+      processors
     );
 
     const fs = {
