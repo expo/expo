@@ -184,6 +184,8 @@ PODS:
     - ExpoModulesCore
   - ExpoCamera (13.8.0):
     - ExpoModulesCore
+    - ZXingObjC/OneD
+    - ZXingObjC/PDF417
   - ExpoFileSystem (15.8.0):
     - ExpoModulesCore
   - ExpoImage (1.6.0):
@@ -1262,6 +1264,11 @@ PODS:
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
+  - ZXingObjC/Core (3.6.9)
+  - ZXingObjC/OneD (3.6.9):
+    - ZXingObjC/Core
+  - ZXingObjC/PDF417 (3.6.9):
+    - ZXingObjC/Core
 
 DEPENDENCIES:
   - boost (from `../../../node_modules/react-native/third-party-podspecs/boost.podspec`)
@@ -1344,6 +1351,7 @@ SPEC REPOS:
     - SDWebImageSVGCoder
     - SDWebImageWebPCoder
     - SocketRocket
+    - ZXingObjC
 
 EXTERNAL SOURCES:
   boost:
@@ -1490,7 +1498,7 @@ SPEC CHECKSUMS:
   ExpoAppleAuthentication: 7676bc4d7b02362d1127b2b264d3a0ca649e4b8c
   ExpoApplication: d181a88964679df7241ff101e7be1802758c5b9a
   ExpoBlur: fd3aefb4b4f3acaaa1ca2406cf9a98351ec5ffc4
-  ExpoCamera: e7f55f4baad8f8934bf57a606919d2fd66953f23
+  ExpoCamera: ca563f22e6418a63ae420424e94d032ec1b7b7d1
   ExpoFileSystem: 5014f25f212972b797ce29dbbae8dceb1f4fae31
   ExpoImage: a02f1b0c514f3521c8b442a93687f927ef2c0d8d
   ExpoKeepAwake: 11a6adc67b21af7a520ee62fe9a014eca6871884
@@ -1549,7 +1557,8 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: af09429398d99d524cae2fe00f6f0f6e491ed102
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 86fed2e4d425ee4c6eab3813ba1791101ee153c6
+  ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 781aa9eaa5940ea4e9236ee562000d084d888903
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.14.2
