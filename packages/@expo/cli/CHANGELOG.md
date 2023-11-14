@@ -9,7 +9,7 @@
 
 ### 🎉 New features
 
-- Use multi-bundle output serializer for all exports.
+- Use multi-bundle output serializer for all exports. ([#25369](https://github.com/expo/expo/pull/25369) by [@EvanBacon](https://github.com/EvanBacon))
 - Rename `basePath` to `baseUrl` and expose to bundles with `process.env.EXPO_BASE_URL`. ([#25305](https://github.com/expo/expo/pull/25305) by [@EvanBacon](https://github.com/EvanBacon))
 - Rename `--dump-sourcemap` to `--source-maps` with `-s` alias in `expo export`. ([#25303](https://github.com/expo/expo/pull/25303) by [@EvanBacon](https://github.com/EvanBacon))
 - Bundle static websites +2x faster. ([#25312](https://github.com/expo/expo/pull/25312) by [@EvanBacon](https://github.com/EvanBacon))
