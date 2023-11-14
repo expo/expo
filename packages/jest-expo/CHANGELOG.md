@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 50.0.0-alpha.4 — 2023-11-14
+
+### 🎉 New features
+
 - Install `URL` API support on the global for native. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
