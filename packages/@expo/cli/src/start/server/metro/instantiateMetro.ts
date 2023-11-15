@@ -324,7 +324,7 @@ function modifyDep(projectRoot, mod, options, dropSource = false) {
     // ),
     getSource: mod.getSource().toString(),
     size: mod.output.reduce((acc, { data }) => acc + data.code.length, 0),
-    // inverseDependencies: Array.from(mod.inverseDependencies),
+    inverseDependencies: Array.from(mod.inverseDependencies),
     path: path.relative(projectRoot, mod.path),
     output: mod.output.map((output) => ({
       type: output.type,
