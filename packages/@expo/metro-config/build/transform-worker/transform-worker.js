@@ -50,6 +50,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const countLines = require('metro/src/lib/countLines');
 async function transform(config, projectRoot, filename, data, options) {
+  const startTime = Date.now();
+  const result = await transformInner(config, projectRoot, filename, data, options);
+  const endTime = Date.now();
+  const duration = endTime - startTime;
+
+  // @ts-expect-error
+  result.output[0].data.profiling = {
+    start: startTime,
+    end: endTime,
+    duration
+  };
+  return result;
+}
+async function transformInner(config, projectRoot, filename, data, options) {
   const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {

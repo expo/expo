@@ -44,6 +44,7 @@ function LoadedLayoutInner({ data }: { data: ExpoServerResponse }) {
     return [...latest[1], ...latest[2].dependencies].map((dep, index) => ({
       ...dep,
       index,
+      duration: dep.output[0]?.data?.profiling?.duration ?? -1,
     }));
   }, [latest]);
 

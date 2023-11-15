@@ -26,6 +26,27 @@ export async function transform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
+  const startTime = Date.now();
+  const result = await transformInner(config, projectRoot, filename, data, options);
+  const endTime = Date.now();
+  const duration = endTime - startTime;
+
+  // @ts-expect-error
+  result.output[0].data.profiling = {
+    start: startTime,
+    end: endTime,
+    duration,
+  };
+  return result;
+}
+
+async function transformInner(
+  config: JsTransformerConfig,
+  projectRoot: string,
+  filename: string,
+  data: Buffer,
+  options: JsTransformOptions
+): Promise<TransformResponse> {
   const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {

@@ -13,6 +13,11 @@ export type MetroJsonModule = {
       lineCount: number;
       // We convert this ahead of time.
       map: string;
+      profiling: {
+        start: number;
+        end: number;
+        duration: number;
+      };
     };
   }[];
 

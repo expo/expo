@@ -46,6 +46,19 @@ function formatSize(size: number) {
   }
 }
 
+export function msToTime(ms: number) {
+  if (ms <= 0.5) return '<1ms';
+  if (ms < 2000) return `${ms}ms`;
+  const seconds = +(ms / 1000).toFixed(1);
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = +(ms / (1000 * 60)).toFixed(1);
+  if (minutes < 60) return `${minutes}m`;
+  const hours = +(ms / (1000 * 60 * 60)).toFixed(1);
+  if (hours < 24) return `${hours}h`;
+  const days = +(ms / (1000 * 60 * 60 * 24)).toFixed(1);
+  return `${days}d`;
+}
+
 export const columns: ColumnDef<MetroJsonModule>[] = [
   {
     accessorKey: 'path',
@@ -92,6 +105,20 @@ export const columns: ColumnDef<MetroJsonModule>[] = [
     },
   },
 
+  {
+    accessorKey: 'duration',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+          Duration
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div className="text-center">{msToTime(row.getValue('duration'))}</div>,
+  },
   {
     accessorKey: 'size',
 
