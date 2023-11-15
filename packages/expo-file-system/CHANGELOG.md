@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- On `Android`, handle using files from `SAF` correctly.
+
 ### 💡 Others
 
 ## 15.8.0 — 2023-10-17
