@@ -4,7 +4,7 @@ import { githubUrl } from './utils';
 import { A, CALLOUT, LI } from '../Text';
 
 const LINK_CLASSES = 'inline-flex items-center mb-1 focus-visible:outline-offset-4';
-const ICON_CLASSES = 'flex items-center mr-2.5 text-icon-secondary';
+const ICON_CLASSES = 'flex items-center mr-2.5 text-icon-secondary shrink-0';
 
 export const IssuesLink = ({ title, repositoryUrl }: { title: string; repositoryUrl?: string }) => (
   <LI>
