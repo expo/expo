@@ -24,17 +24,17 @@ export default function Layout() {
 }
 
 function LoadedLayout() {
-  // const { status, data, error, isFetching } = useFetchedServerData();
-  // // console.log('status, data, error, isFetching', status, data, error, isFetching);
+  const { status, data, error, isFetching } = useFetchedServerData();
+  // console.log('status, data, error, isFetching', status, data, error, isFetching);
 
-  // if (isFetching) {
-  //   return <h1 className="text-slate-200">Loading...</h1>;
-  // }
-  // if (!data) {
-  //   return <h1 className="text-slate-200">No data, perform a build and reload...</h1>;
-  // }
+  if (isFetching) {
+    return <h1 className="text-slate-200">Loading...</h1>;
+  }
+  if (!data) {
+    return <h1 className="text-slate-200">No data, perform a build and reload...</h1>;
+  }
 
-  const data = require('fixture.json');
+  // const data = require('fixture.json');
   return <LoadedLayoutInner data={data} />;
 }
 

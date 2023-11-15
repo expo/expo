@@ -39,7 +39,7 @@ export type ExpoServerResponse = {
   graphs: JsonGraph[];
 };
 
-const origin = 'http://localhost:8081';
+const origin = null; //'http://localhost:8081';
 
 import { useQuery, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient({
@@ -51,11 +51,12 @@ const queryClient = new QueryClient({
 });
 
 export function useFetchedServerData() {
-  const url = '/_expo/last-metro-stats';
+  const url = '/fixture.json';
+  // const url = '/_expo/last-metro-stats';
   return useQuery<ExpoServerResponse>({
     queryKey: ['graphs'],
     queryFn: async () => {
-      return fetch(new URL(url, origin), {
+      return fetch(origin ? new URL(url, origin) : url, {
         // Cross-origin request...
         // mode: 'no-cors',
       }).then((response) => response.json());
