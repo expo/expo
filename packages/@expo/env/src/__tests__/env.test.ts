@@ -51,19 +51,20 @@ describe(getFiles, () => {
   it(`gets no files when dotenv is disabled`, () => {
     process.env.EXPO_NO_DOTENV = '1';
 
-    expect(originalEnv.EXPO_NO_DOTENV).toBeUndefined();
-
-    ['development', 'production', 'test'].forEach((mode) => {
-      expect(getFiles(mode)).toEqual([]);
-    });
+    expect(getFiles('test')).toEqual([]);
+    expect(getFiles('development')).toEqual([]);
+    expect(getFiles('production')).toEqual([]);
   });
 
-  it(`throws if NODE_ENV is not set`, () => {
+  it(`errors if NODE_ENV is not set`, () => {
     getFiles(undefined);
 
     expect(console.error).toBeCalledTimes(2);
     expect(console.error).toBeCalledWith(
       expect.stringContaining('The NODE_ENV environment variable is required but was not specified')
+    );
+    expect(console.error).toBeCalledWith(
+      expect.stringContaining('Proceeding without mode-specific .env')
     );
   });
   it(`throws if NODE_ENV is not valid`, () => {
