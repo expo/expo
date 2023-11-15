@@ -1,6 +1,5 @@
 import { Link, useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { View } from 'react-native';
 
 import { BaconCode } from '../../components/code';
 import { MetroJsonModule } from '../../components/data';
@@ -31,7 +30,7 @@ function DependencyInfo({ getSource, output, path }: MetroJsonModule) {
   ];
   return (
     <div className="flex flex-1 bg-[#191A20] border-l border-l-[#ffffff1a]">
-      <View style={{ flex: 1 }}>
+      <div className="flex flex-1 flex-col">
         {/* Header */}
         <span className="flex border-b border-b-[#ffffff1a] flex-col justify-between">
           <div className="flex flex-1 flex-row p-2 border-b border-b-[#ffffff1a]">
@@ -40,10 +39,10 @@ function DependencyInfo({ getSource, output, path }: MetroJsonModule) {
           </div>
 
           <div className="flex flex-1 flex-row p-2 items-center justify-between border-b border-b-[#ffffff1a]">
-            <Link href="/">
-              <p className="text-[#6272a4] active:text-slate-50 hover:underline text-md font-bold pr-2">
-                ← Go Back
-              </p>
+            <Link
+              href="/"
+              className="text-[#6272a4] active:text-slate-50 hover:underline text-md font-bold pr-2">
+              ← Go Back
             </Link>
 
             <p
@@ -78,7 +77,7 @@ function DependencyInfo({ getSource, output, path }: MetroJsonModule) {
             ))}
           </div>
         </div>
-      </View>
+      </div>
     </div>
   );
 }
