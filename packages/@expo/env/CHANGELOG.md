@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Avoid unnecessary `process.env` modifications for consistent Node and Bun results.
+- Avoid unnecessary `process.env` modifications for consistent Node and Bun results. ([#25393](https://github.com/expo/expo/pull/25393) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
