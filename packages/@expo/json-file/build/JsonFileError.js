@@ -5,6 +5,10 @@ exports.EmptyJsonFileError = void 0;
  * Note that instances of this class do NOT pass `instanceof JsonFileError`.
  */
 class JsonFileError extends Error {
+    cause;
+    code;
+    fileName;
+    isJsonFileError;
     constructor(message, cause, code, fileName) {
         let fullMessage = message;
         if (fileName) {
@@ -28,4 +32,3 @@ class EmptyJsonFileError extends JsonFileError {
     }
 }
 exports.EmptyJsonFileError = EmptyJsonFileError;
-//# sourceMappingURL=JsonFileError.js.map

@@ -1,11 +1,11 @@
-export declare type JSONValue = boolean | number | string | null | JSONArray | JSONObject;
+export type JSONValue = boolean | number | string | null | JSONArray | JSONObject;
 export interface JSONArray extends Array<JSONValue> {
 }
 export interface JSONObject {
     [key: string]: JSONValue | undefined;
 }
-declare type Defined<T> = T extends undefined ? never : T;
-declare type Options<TJSONObject extends JSONObject> = {
+type Defined<T> = T extends undefined ? never : T;
+type Options<TJSONObject extends JSONObject> = {
     badJsonDefault?: TJSONObject;
     jsonParseErrorDefault?: TJSONObject;
     cantReadFileDefault?: TJSONObject;

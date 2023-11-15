@@ -52,6 +52,18 @@ const DEFAULT_OPTIONS = {
  * @type {[type]}
  */
 class JsonFile {
+    file;
+    options;
+    static read = read;
+    static readAsync = readAsync;
+    static parseJsonString = parseJsonString;
+    static writeAsync = writeAsync;
+    static getAsync = getAsync;
+    static setAsync = setAsync;
+    static mergeAsync = mergeAsync;
+    static deleteKeyAsync = deleteKeyAsync;
+    static deleteKeysAsync = deleteKeysAsync;
+    static rewriteAsync = rewriteAsync;
     constructor(file, options = {}) {
         this.file = file;
         this.options = options;
@@ -94,16 +106,6 @@ class JsonFile {
     }
 }
 exports.default = JsonFile;
-JsonFile.read = read;
-JsonFile.readAsync = readAsync;
-JsonFile.parseJsonString = parseJsonString;
-JsonFile.writeAsync = writeAsync;
-JsonFile.getAsync = getAsync;
-JsonFile.setAsync = setAsync;
-JsonFile.mergeAsync = mergeAsync;
-JsonFile.deleteKeyAsync = deleteKeyAsync;
-JsonFile.deleteKeysAsync = deleteKeysAsync;
-JsonFile.rewriteAsync = rewriteAsync;
 function read(file, options) {
     let json;
     try {
@@ -175,7 +177,7 @@ async function getAsync(file, key, defaultValue, options) {
     return defaultValue;
 }
 async function writeAsync(file, object, options) {
-    if (options === null || options === void 0 ? void 0 : options.ensureDir) {
+    if (options?.ensureDir) {
         await fs_1.default.promises.mkdir(path_1.default.dirname(file), { recursive: true });
     }
     const space = _getOption(options, 'space');
@@ -274,8 +276,7 @@ function locationFromSyntaxError(error, sourceString) {
     return null;
 }
 function assertEmptyJsonString(json, file) {
-    if ((json === null || json === void 0 ? void 0 : json.trim()) === '') {
+    if (json?.trim() === '') {
         throw new JsonFileError_1.EmptyJsonFileError(file);
     }
 }
-//# sourceMappingURL=JsonFile.js.map

@@ -1,4 +1,4 @@
-import JsonFileError from '../src/JsonFileError';
+import JsonFileError from '../JsonFileError';
 
 describe('JsonFileError', () => {
   it(`is an error`, () => {

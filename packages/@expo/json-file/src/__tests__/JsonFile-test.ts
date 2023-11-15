@@ -2,9 +2,9 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import JsonFile from '../src/JsonFile';
+import JsonFile from '../JsonFile';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 20 * 1000;
+jest.setTimeout(20 * 1000);
 
 const FIXTURES = path.join(os.tmpdir(), 'json-file-fixtures');
 
@@ -12,7 +12,7 @@ beforeAll(() => fs.promises.mkdir(FIXTURES, { recursive: true }));
 afterAll(() => fs.promises.rmdir(FIXTURES, { recursive: true }));
 
 it(`is a class`, () => {
-  const file = new JsonFile(path.join(__dirname, '../package.json'));
+  const file = new JsonFile(path.join(__dirname, '../../package.json'));
   expect(file instanceof JsonFile).toBe(true);
 });
 
@@ -22,13 +22,13 @@ it(`has static functions`, () => {
 });
 
 it(`reads JSON from a file`, async () => {
-  const file = new JsonFile(path.join(__dirname, '../package.json'));
+  const file = new JsonFile(path.join(__dirname, '../../package.json'));
   const object = await file.readAsync();
   expect(object.version).toBeDefined();
 });
 
 it(`reads JSON statically from a file`, async () => {
-  const object = await JsonFile.readAsync(path.join(__dirname, '../package.json'));
+  const object = await JsonFile.readAsync(path.join(__dirname, '../../package.json'));
   expect(object.version).toBeDefined();
 });
 

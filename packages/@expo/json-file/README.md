@@ -14,3 +14,24 @@
 </p>
 
 <!-- Body -->
+
+## 🏁 Setup
+
+Install `@expo/json-file` in your project.
+
+```sh
+yarn add @expo/json-file
+```
+
+## ⚽️ Usage
+
+```ts
+import JsonFile, { JSONObject } from '@expo/json-file';
+
+// Create a file instance
+const jsonFile = new JsonFile<JSONObject>(filePath);
+
+// Interact with the file
+await jsonFile.readAsync();
+await jsonFile.writeAsync({ some: 'data' });
+```

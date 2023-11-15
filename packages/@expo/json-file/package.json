@@ -7,23 +7,23 @@
     "watch": "tsc --watch --preserveWatchOutput",
     "build": "tsc",
     "prepare": "yarn run clean && yarn build",
-    "clean": "rimraf build ./tsconfig.tsbuildinfo",
+    "clean": "git clean -xdf ./build ./tsconfig.tsbuildinfo",
     "lint": "eslint .",
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo-cli.git",
-    "directory": "packages/json-file"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/json-file"
   },
   "keywords": [
     "json"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/expo/expo-cli/issues"
+    "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/json-file#readme",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/json-file#readme",
   "files": [
     "build"
   ],
@@ -33,6 +33,7 @@
     "write-file-atomic": "^2.3.0"
   },
   "devDependencies": {
+    "@expo/babel-preset-cli": "^0.3.1",
     "@types/babel__code-frame": "^7.0.1",
     "@types/json5": "^2.2.0",
     "@types/write-file-atomic": "^2.1.1"
