@@ -36,7 +36,7 @@ import {
 import { MetroJsonModule } from './data';
 import { Link, router } from 'expo-router';
 
-function formatSize(size: number) {
+export function formatSize(size: number) {
   if (size < 1024) {
     return size + 'B';
   } else if (size < 1024 * 1024) {
@@ -206,6 +206,7 @@ export function DataTableDemo({ data }: { data: MetroJsonModule[] }) {
   });
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    dependencies: false,
     isNodeModule: false,
   });
 

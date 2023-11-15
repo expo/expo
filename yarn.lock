@@ -1271,6 +1271,11 @@
     deepmerge "^3.2.0"
     hoist-non-react-statics "^3.3.0"
 
+"@carrotsearch/foamtree@^3.5.1":
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/@carrotsearch/foamtree/-/foamtree-3.5.1.tgz#2bd22ca0b0218e41d447ca4479278334f5827e21"
+  integrity sha512-73YfG2jauHoC3fs0IVWcW8uI9u8lOS50SKLF25QiUVbNvIoJ1fuJtLQWBfhK8D8WQYMNP4P5Hcxa2FWayITI2A==
+
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/@cspotcode/source-map-support/-/source-map-support-0.8.1.tgz#00629c35a688e05a88b1cda684fb9d5e73f000a1"
@@ -3441,6 +3446,25 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
     "@radix-ui/react-compose-refs" "1.0.1"
+
+"@radix-ui/react-tooltip@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-tooltip/-/react-tooltip-1.0.7.tgz#8f55070f852e7e7450cc1d9210b793d2e5a7686e"
+  integrity sha512-lPh5iKNFVQ/jav/j6ZrWq3blfDJ0OH9R6FlNUHPMqdLuQ9vwDgFsRxvl8b7Asuy5c8xmoojHUxKHQSOAvMHxyw==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@radix-ui/primitive" "1.0.1"
+    "@radix-ui/react-compose-refs" "1.0.1"
+    "@radix-ui/react-context" "1.0.1"
+    "@radix-ui/react-dismissable-layer" "1.0.5"
+    "@radix-ui/react-id" "1.0.1"
+    "@radix-ui/react-popper" "1.1.3"
+    "@radix-ui/react-portal" "1.0.4"
+    "@radix-ui/react-presence" "1.0.1"
+    "@radix-ui/react-primitive" "1.0.3"
+    "@radix-ui/react-slot" "1.0.2"
+    "@radix-ui/react-use-controllable-state" "1.0.1"
+    "@radix-ui/react-visually-hidden" "1.0.3"
 
 "@radix-ui/react-use-callback-ref@1.0.1":
   version "1.0.1"
