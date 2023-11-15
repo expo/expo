@@ -148,7 +148,8 @@ function createControlledEnvironment() {
       ignoreProcessEnv: true
     });
     if (allExpandedEnv.error) {
-      console.error(`Failed to expand environment variables: ${allExpandedEnv.error}`);
+      console.error(`Failed to expand environment variables, using non-expanded environment variables: ${allExpandedEnv.error}`);
+      return parsedEnv;
     }
     for (const key of Object.keys(parsedEnv)) {
       var _allExpandedEnv$parse;
