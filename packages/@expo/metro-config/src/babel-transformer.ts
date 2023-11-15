@@ -8,6 +8,9 @@
 // A fork of the upstream babel-transformer that uses Expo-specific babel defaults
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
 
+// import { NodePath } from '@babel/core';
+// import generate from '@babel/generator';
+// import * as types from '@babel/types';
 // @ts-expect-error
 import inlineRequiresPlugin from 'babel-preset-fbjs/plugins/inline-requires';
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
@@ -251,6 +254,64 @@ const transform: BabelTransformer['transform'] = ({
       // You get this behavior by default when using Babel's `transform` method directly.
       cloneInputAst: false,
     };
+
+    // const phases: {
+    //   code: string | null;
+    //   name: string;
+    //   visitorType: 'enter' | 'exit';
+    //   currentNode: unknown;
+    // }[] = [];
+    // if (!filename.match(/node_modules/) && filename.match(/src\/app\/_layout/)) {
+    //   // Track the modifications made to the AST by the plugins and store in metadata for Why UI.
+    //   Object.assign(babelConfig, {
+    //     wrapPluginVisitorMethod(
+    //       pluginAlias: string,
+    //       visitorType: 'enter' | 'exit',
+    //       callback: (path: NodePath<types.Node>, state: any) => void
+    //     ) {
+    //       const getPreviousPhaseCode = () => {
+    //         if (phases.length === 0) return null;
+    //         let i = phases.length - 1;
+    //         while (i >= 0) {
+    //           if (phases[i].code != null) {
+    //             return phases[i].code;
+    //           }
+    //           i--;
+    //         }
+    //         return null;
+    //       };
+    //       // @ts-expect-error
+    //       return function (...args) {
+    //         if (!pluginAlias.startsWith('internal.')) {
+    //           const { code } = generate(getProgramParent(args[0]).node);
+    //           if (phases.length === 0 || phases[phases.length - 1].code !== code) {
+    //             console.log(
+    //               'Collect:',
+    //               filename,
+    //               pluginAlias,
+    //               visitorType,
+    //               code,
+    //               args[0].node.type
+    //             );
+    //             const previous = getPreviousPhaseCode();
+    //             if (code === previous) {
+    //               console.log('SKIP:!!', pluginAlias);
+    //             }
+    //             phases.push({
+    //               code: code === previous ? null : code,
+    //               name: pluginAlias,
+    //               visitorType,
+    //               currentNode: args[0].node.type,
+    //             });
+    //           }
+    //         }
+    //         // @ts-expect-error
+    //         callback.call(this, ...args);
+    //       };
+    //     },
+    //   });
+    // }
+
     const sourceAst =
       isTypeScriptSource(filename) || isTSXSource(filename) || !options.hermesParser
         ? parseSync(src, babelConfig)
@@ -269,6 +330,11 @@ const transform: BabelTransformer['transform'] = ({
     }
 
     assert(result.ast);
+    // // @ts-expect-error
+    // if (!result.metadata) result.metadata = {};
+    // // @ts-expect-error
+    // result.metadata._yuiPhases = phases;
+
     return { ast: result.ast, metadata: result.metadata };
   } finally {
     if (OLD_BABEL_ENV) {
@@ -289,3 +355,10 @@ const babelTransformer: BabelTransformer = {
 };
 
 module.exports = babelTransformer;
+
+function getProgramParent(path: any) {
+  let parent = path;
+  do {
+    if (parent.isProgram()) return parent;
+  } while ((parent = parent.parentPath));
+}

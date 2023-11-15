@@ -317,6 +317,9 @@ function toJson(
   const dropSource = false;
 
   function modifyDep(mod: Module) {
+    // if (!mod.path.match(/src\/app\/_layout/)) {
+    //   return null;
+    // }
     return {
       dependencies: [...mod.dependencies.entries()].map(([key, value]) => {
         return path.relative(projectRoot, value.absolutePath);
@@ -373,10 +376,10 @@ function toJson(
     simplifyGraph(graph),
     {
       ...options,
-      processModuleFilter: '[Function: processModuleFilter]',
-      createModuleId: '[Function (anonymous)]',
-      getRunModuleStatement: '[Function: getRunModuleStatement]',
-      shouldAddToIgnoreList: '[Function: shouldAddToIgnoreList]',
+      processModuleFilter: undefined,
+      createModuleId: undefined,
+      getRunModuleStatement: undefined,
+      shouldAddToIgnoreList: undefined,
     },
   ];
 }
