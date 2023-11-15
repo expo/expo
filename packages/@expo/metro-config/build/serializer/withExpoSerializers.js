@@ -126,6 +126,12 @@ function getDefaultSerializer(config, fallbackSerializer) {
     if ((serializerOptions === null || serializerOptions === void 0 ? void 0 : serializerOptions.outputMode) !== 'static') {
       return defaultSerializer(...props);
     }
+
+    // Mutate the serializer options with the parsed options.
+    options.serializerOptions = {
+      ...options.serializerOptions,
+      ...serializerOptions
+    };
     const assets = await (0, _serializeChunks().graphToSerialAssetsAsync)(config, {
       includeSourceMaps: !!serializerOptions.includeSourceMaps,
       includeBytecode: !!serializerOptions.includeBytecode

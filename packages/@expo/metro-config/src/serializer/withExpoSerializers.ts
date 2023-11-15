@@ -112,6 +112,12 @@ function getDefaultSerializer(
       return defaultSerializer(...props);
     }
 
+    // Mutate the serializer options with the parsed options.
+    options.serializerOptions = {
+      ...options.serializerOptions,
+      ...serializerOptions,
+    };
+
     const assets = await graphToSerialAssetsAsync(
       config,
       {

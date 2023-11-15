@@ -223,10 +223,14 @@ class Chunk {
     return computedAsyncModulePaths;
   }
   getAdjustedSourceMapUrl(serializerConfig) {
+    var _this$options$seriali;
     // Metro really only accounts for development, so we'll use the defaults here.
     if (this.options.dev) {
       var _this$options$sourceM;
       return (_this$options$sourceM = this.options.sourceMapUrl) !== null && _this$options$sourceM !== void 0 ? _this$options$sourceM : null;
+    }
+    if (((_this$options$seriali = this.options.serializerOptions) === null || _this$options$seriali === void 0 ? void 0 : _this$options$seriali.includeSourceMaps) !== true) {
+      return null;
     }
     if (this.options.inlineSourceMap || !this.options.sourceMapUrl) {
       var _this$options$sourceM2;
