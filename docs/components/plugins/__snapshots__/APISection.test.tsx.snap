@@ -7,7 +7,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#component"
     >
       <span
@@ -57,7 +57,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationbutton"
       >
         <span
@@ -295,7 +295,7 @@ for more details.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#props"
       >
         <span
@@ -346,7 +346,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#buttonstyle"
           >
             <span
@@ -430,7 +430,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#buttontype"
           >
             <span
@@ -514,7 +514,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#cornerradius"
           >
             <span
@@ -606,7 +606,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#onpress"
           >
             <span
@@ -700,7 +700,7 @@ in here.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#style"
           >
             <span
@@ -830,7 +830,7 @@ properties.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#inherited-props"
         >
           <span
@@ -901,7 +901,7 @@ properties.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#methods"
     >
       <span
@@ -951,7 +951,7 @@ properties.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#getcredentialstateasyncuser"
       >
         <span
@@ -1219,7 +1219,7 @@ value depending on the state of the credential.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#isavailableasync"
       >
         <span
@@ -1355,7 +1355,7 @@ value depending on the state of the credential.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#refreshasyncoptions"
       >
         <span
@@ -1588,7 +1588,7 @@ refresh operation.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#signinasyncoptions"
       >
         <span
@@ -1868,7 +1868,7 @@ sign-in operation.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#signoutasyncoptions"
       >
         <span
@@ -2132,7 +2132,7 @@ sign-out operation.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#event-subscriptions"
     >
       <span
@@ -2182,7 +2182,7 @@ sign-out operation.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#addrevokelistenerlistener"
       >
         <span
@@ -2346,7 +2346,7 @@ sign-out operation.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#types"
     >
       <span
@@ -2396,7 +2396,7 @@ sign-out operation.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationcredential"
       >
         <span
@@ -2921,7 +2921,7 @@ developers.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationfullname"
       >
         <span
@@ -3228,7 +3228,7 @@ may be
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationrefreshoptions"
       >
         <span
@@ -3538,7 +3538,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationsigninoptions"
       >
         <span
@@ -3869,7 +3869,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationsignoutoptions"
       >
         <span
@@ -4109,7 +4109,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#subscription"
       >
         <span
@@ -4225,7 +4225,7 @@ OAuth 2.0 protocol
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#enums"
     >
       <span
@@ -4275,7 +4275,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationbuttonstyle"
       >
         <span
@@ -4348,7 +4348,7 @@ OAuth 2.0 protocol
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#white"
         >
           <span
@@ -4416,7 +4416,7 @@ OAuth 2.0 protocol
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#white_outline"
         >
           <span
@@ -4484,7 +4484,7 @@ OAuth 2.0 protocol
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#black"
         >
           <span
@@ -4553,7 +4553,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationbuttontype"
       >
         <span
@@ -4626,7 +4626,7 @@ OAuth 2.0 protocol
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#sign_in"
         >
           <span
@@ -4694,7 +4694,7 @@ OAuth 2.0 protocol
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#continue"
         >
           <span
@@ -4795,7 +4795,7 @@ OAuth 2.0 protocol
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#sign_up"
         >
           <span
@@ -4864,7 +4864,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationcredentialstate"
       >
         <span
@@ -4990,7 +4990,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#revoked"
         >
           <span
@@ -5052,7 +5052,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#authorized"
         >
           <span
@@ -5114,7 +5114,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#not_found"
         >
           <span
@@ -5176,7 +5176,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#transferred"
         >
           <span
@@ -5239,7 +5239,7 @@ for more details.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationoperation"
       >
         <span
@@ -5294,7 +5294,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#implicit"
         >
           <span
@@ -5362,7 +5362,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#login"
         >
           <span
@@ -5424,7 +5424,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#refresh"
         >
           <span
@@ -5486,7 +5486,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#logout"
         >
           <span
@@ -5549,7 +5549,7 @@ for more details.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationscope"
       >
         <span
@@ -5719,7 +5719,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#full_name"
         >
           <span
@@ -5781,7 +5781,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#email"
         >
           <span
@@ -5844,7 +5844,7 @@ for more details.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#appleauthenticationuserdetectionstatus"
       >
         <span
@@ -5958,7 +5958,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#unsupported"
         >
           <span
@@ -6026,7 +6026,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#unknown"
         >
           <span
@@ -6094,7 +6094,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#likely_real"
         >
           <span
@@ -6165,7 +6165,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#component"
     >
       <span
@@ -6215,7 +6215,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodescanner"
       >
         <span
@@ -6295,7 +6295,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#props"
       >
         <span
@@ -6346,7 +6346,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#barcodetypes"
           >
             <span
@@ -6469,7 +6469,7 @@ minimize battery usage.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#onbarcodescanned"
           >
             <span
@@ -6630,7 +6630,7 @@ data has been retrieved.
           data-heading="true"
         >
           <a
-            class="css-1y48vg3"
+            class="css-1yk6eqh"
             href="#type"
           >
             <span
@@ -6764,7 +6764,7 @@ Same as
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#inherited-props"
         >
           <span
@@ -6835,7 +6835,7 @@ Same as
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#hooks"
     >
       <span
@@ -6885,7 +6885,7 @@ Same as
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#usepermissionsoptions"
       >
         <span
@@ -7201,7 +7201,7 @@ This uses both
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#methods"
     >
       <span
@@ -7251,7 +7251,7 @@ This uses both
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodescannergetpermissionsasync"
       >
         <span
@@ -7390,7 +7390,7 @@ This uses both
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodescannerrequestpermissionsasync"
       >
         <span
@@ -7551,7 +7551,7 @@ This uses both
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodescannerscanfromurlasyncurl-barcodetypes"
       >
         <span
@@ -7840,7 +7840,7 @@ code.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#interfaces"
     >
       <span
@@ -7890,7 +7890,7 @@ code.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#permissionresponse"
       >
         <span
@@ -8133,7 +8133,7 @@ in order to enable/disable the permission.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#types"
     >
       <span
@@ -8183,7 +8183,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodebounds"
       >
         <span
@@ -8348,7 +8348,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodeevent"
       >
         <span
@@ -8490,7 +8490,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodeeventcallbackarguments"
       >
         <span
@@ -8612,7 +8612,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodepoint"
       >
         <span
@@ -8788,7 +8788,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodescannedcallback"
       >
         <span
@@ -8913,7 +8913,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodescannerresult"
       >
         <span
@@ -9192,7 +9192,7 @@ you don't get this value.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#barcodesize"
       >
         <span
@@ -9347,7 +9347,7 @@ you don't get this value.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#permissionhookoptions"
       >
         <span
@@ -9425,7 +9425,7 @@ you don't get this value.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#enums"
     >
       <span
@@ -9475,7 +9475,7 @@ you don't get this value.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#permissionstatus"
       >
         <span
@@ -9530,7 +9530,7 @@ you don't get this value.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#denied"
         >
           <span
@@ -9598,7 +9598,7 @@ you don't get this value.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#granted"
         >
           <span
@@ -9666,7 +9666,7 @@ you don't get this value.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#undetermined"
         >
           <span
@@ -9737,7 +9737,7 @@ exports[`APISection expo-pedometer 1`] = `
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#methods"
     >
       <span
@@ -9787,7 +9787,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#getpermissionsasync"
       >
         <span
@@ -9941,7 +9941,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#getstepcountasyncstart-end"
       >
         <span
@@ -10255,7 +10255,7 @@ a start date that is more than seven days in the past returns only the available
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#isavailableasync"
       >
         <span
@@ -10385,7 +10385,7 @@ available on this device.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#requestpermissionsasync"
       >
         <span
@@ -10506,7 +10506,7 @@ available on this device.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#watchstepcountcallback"
       >
         <span
@@ -10723,7 +10723,7 @@ provided with a single argument that is
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#interfaces"
     >
       <span
@@ -10773,7 +10773,7 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#permissionresponse"
       >
         <span
@@ -11016,7 +11016,7 @@ in order to enable/disable the permission.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#types"
     >
       <span
@@ -11066,7 +11066,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#pedometerresult"
       >
         <span
@@ -11188,7 +11188,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#pedometerupdatecallback"
       >
         <span
@@ -11319,7 +11319,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#permissionexpiration"
       >
         <span
@@ -11406,7 +11406,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#subscription"
       >
         <span
@@ -11522,7 +11522,7 @@ in order to enable/disable the permission.
     data-heading="true"
   >
     <a
-      class="css-1y48vg3"
+      class="css-1yk6eqh"
       href="#enums"
     >
       <span
@@ -11572,7 +11572,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y48vg3"
+        class="css-1yk6eqh"
         href="#permissionstatus"
       >
         <span
@@ -11627,7 +11627,7 @@ in order to enable/disable the permission.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#denied"
         >
           <span
@@ -11695,7 +11695,7 @@ in order to enable/disable the permission.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#granted"
         >
           <span
@@ -11763,7 +11763,7 @@ in order to enable/disable the permission.
         data-heading="true"
       >
         <a
-          class="css-1y48vg3"
+          class="css-1yk6eqh"
           href="#undetermined"
         >
           <span

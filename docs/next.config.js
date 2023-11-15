@@ -49,6 +49,7 @@ export default {
     reactRemoveProperties: true,
     removeConsole,
   },
+  output: 'export',
   poweredByHeader: false,
   webpack: (config, options) => {
     // Add support for MDX with our custom loader
