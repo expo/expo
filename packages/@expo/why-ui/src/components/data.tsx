@@ -18,9 +18,9 @@ export type MetroJsonModule = {
 
   // Added later
   id?: string;
-  absolutePath?: string;
-  isEntry?: boolean;
-  isNodeModule?: boolean;
+  absolutePath: string;
+  isEntry: boolean;
+  isNodeModule: boolean;
 };
 
 export type JsonGraph = [string, MetroJsonModule[], { dependencies: MetroJsonModule[] }, any];

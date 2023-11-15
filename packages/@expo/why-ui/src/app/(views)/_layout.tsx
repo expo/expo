@@ -14,14 +14,11 @@ export default function Layout() {
     const root = options.projectRoot;
 
     return modules.map((m) => {
-      const absolutePath = root + '/' + m.path;
-      const isEntry = absoluteEntryFilePath === absolutePath;
+      // const absolutePath = root + '/' + m.path;
+      // const isEntry = absoluteEntryFilePath === absolutePath;
       return {
         ...m,
         id: m.path,
-        absolutePath,
-        isEntry,
-        isNodeModule: m.path.includes('node_modules'),
       };
     });
     // return modules.filter((dep) => {

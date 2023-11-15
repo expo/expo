@@ -180,13 +180,7 @@ export async function instantiateMetroAsync(
 
   const original = metroConfig.serializer.customSerializer;
 
-  const bundles: {
-    date: number;
-    entryPoint: string;
-    preModules: any; //ReadonlyArray<Module>;
-    graph: any; // ReadOnlyGraph;
-    options: any; // SerializerOptions;
-  }[] = [];
+  const bundles: any[] = [];
   metroConfig.serializer.customSerializer = (
     entryPoint: string,
     preModules: any, //ReadonlyArray<Module>,
@@ -194,7 +188,7 @@ export async function instantiateMetroAsync(
     options: any // SerializerOptions,
   ) => {
     // console.log('push bundle', entryPoint);
-    bundles.push({ entryPoint, preModules, graph, options, date: Date.now() });
+    bundles.push(toJson(projectRoot, entryPoint, preModules, graph, options));
     return original(entryPoint, preModules, graph, options);
   };
 
@@ -238,15 +232,7 @@ export async function instantiateMetroAsync(
         const jsonResults = JSON.stringify(
           {
             version: 1,
-            graphs: bundles.map((bundle) =>
-              toJson(
-                projectRoot,
-                bundle.entryPoint,
-                bundle.preModules,
-                bundle.graph,
-                bundle.options
-              )
-            ),
+            graphs: bundles.map((bundle) => bundle),
           },
           null,
           2
@@ -311,62 +297,7 @@ export function isWatchEnabled() {
 
 const sourceMapString = require('metro/src/DeltaBundler/Serializers/sourceMapString');
 import path from 'path';
-import { Module } from 'metro';
-
-function modifyDep(projectRoot, mod: Module, options, dropSource = false) {
-  return {
-    dependencies: [...mod.dependencies.entries()].map(([key, value]) => {
-      return path.relative(projectRoot, value.absolutePath);
-    }),
-    // dependencies: Object.fromEntries(
-    //   [...mod.dependencies.entries()].map(([key, value]) => {
-    //     return [key, value];
-    //   })
-    // ),
-    getSource: mod.getSource().toString(),
-    size: mod.output.reduce((acc, { data }) => acc + data.code.length, 0),
-    inverseDependencies: Array.from(mod.inverseDependencies).map((fp) =>
-      path.relative(projectRoot, fp)
-    ),
-    path: path.relative(projectRoot, mod.path),
-    output: mod.output.map((output) => ({
-      type: output.type,
-      data: {
-        ...output.data,
-        ...(dropSource
-          ? { map: [], code: '...', functionMap: {} }
-          : {
-              map: sourceMapString([mod], {
-                processModuleFilter: () => true,
-                excludeSource: false,
-                shouldAddToIgnoreList: options.shouldAddToIgnoreList,
-              }),
-            }),
-      },
-    })),
-  };
-}
-
-function simplifyGraph(projectRoot, { transformOptions, ...graph }, options, dropSource = false) {
-  return {
-    ...graph,
-    dependencies: [...graph.dependencies.entries()].slice(0, 100).map(([key, value]) => {
-      return modifyDep(projectRoot, value, options, dropSource);
-    }),
-    // dependencies: Object.fromEntries(
-    //   [...graph.dependencies.entries()].map(([key, value]) => {
-    //     return [key, modifyDep(value, dropSource)];
-    //   })
-    // ),
-    entryPoints: [...graph.entryPoints.entries()],
-    // transformOptions: {
-    //   ...graph.transformOptions,
-    //   customTransformOptions: {
-    //     ...graph.transformOptions?.customTransformOptions,
-    //   },
-    // },
-  };
-}
+import { Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 
 // function storeFixture(name: string, obj: any) {
 //   const filePath = path.join(
@@ -376,12 +307,70 @@ function simplifyGraph(projectRoot, { transformOptions, ...graph }, options, dro
 //   fs.writeFileSync(filePath, JSON.stringify(obj, null, 2));
 // }
 
-function toJson(projectRoot: string, entryFile: string, preModules, graph, options) {
+function toJson(
+  projectRoot: string,
+  entryFile: string,
+  preModules: Module[],
+  graph: ReadOnlyGraph,
+  options: SerializerOptions
+) {
   const dropSource = false;
+
+  function modifyDep(mod: Module) {
+    return {
+      dependencies: [...mod.dependencies.entries()].map(([key, value]) => {
+        return path.relative(projectRoot, value.absolutePath);
+      }),
+      // dependencies: Object.fromEntries(
+      //   [...mod.dependencies.entries()].map(([key, value]) => {
+      //     return [key, value];
+      //   })
+      // ),
+      getSource: mod.getSource().toString(),
+      size: mod.output.reduce((acc, { data }) => acc + data.code.length, 0),
+      inverseDependencies: Array.from(mod.inverseDependencies)
+        .filter((fp) => {
+          return graph.dependencies.get(fp) != null;
+        })
+        .map((fp) => path.relative(projectRoot, fp)),
+      path: path.relative(projectRoot, mod.path),
+      output: mod.output.map((output) => ({
+        type: output.type,
+        data: {
+          ...output.data,
+          ...(dropSource
+            ? { map: [], code: '...', functionMap: {} }
+            : {
+                map: sourceMapString([mod], {
+                  processModuleFilter: () => true,
+                  excludeSource: false,
+                  shouldAddToIgnoreList: options.shouldAddToIgnoreList,
+                }),
+              }),
+        },
+      })),
+
+      absolutePath: mod.path,
+      isNodeModule: mod.path.match(/node_modules/) != null,
+      isEntry:
+        entryFile === mod.path || options.runBeforeMainModule.includes(mod.path) || undefined,
+    };
+  }
+
+  function simplifyGraph({ transformOptions, ...graph }) {
+    return {
+      ...graph,
+      dependencies: [...graph.dependencies.entries()].map(([key, value]) => {
+        return modifyDep(value);
+      }),
+      entryPoints: [...graph.entryPoints.entries()],
+    };
+  }
+
   return [
     entryFile,
-    preModules.map((mod) => modifyDep(projectRoot, mod, options, dropSource)),
-    simplifyGraph(projectRoot, graph, options, dropSource),
+    preModules.map((mod) => modifyDep(mod, options)),
+    simplifyGraph(graph),
     {
       ...options,
       processModuleFilter: '[Function: processModuleFilter]',
@@ -390,22 +379,4 @@ function toJson(projectRoot: string, entryFile: string, preModules, graph, optio
       shouldAddToIgnoreList: '[Function: shouldAddToIgnoreList]',
     },
   ];
-
-  //   console.log('DATA:\n\n');
-  //   console.log(require('util').inspect(json, { depth: 5000 }));
-  //   console.log('\n\n....');
-
-  //   const hashContents = crypto.createHash('sha256').update(JSON.stringify(json)).digest('hex');
-
-  //   const platform =
-  //     graph.transformOptions?.platform ??
-  //     ((options.sourceUrl ? new URL(options.sourceUrl).searchParams.get('platform') : '') ||
-  //       'unknown_platform');
-
-  //   storeFixture(
-  //     [path.basename(entryFile).replace(/\.[tj]sx?/, ''), platform, hashContents]
-  //       .filter(Boolean)
-  //       .join('-'),
-  //     json
-  //   );
 }
