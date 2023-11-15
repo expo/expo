@@ -62,6 +62,7 @@ function createModuleTree(paths: MetroJsonModule[]): Dataset[] {
       group.label = group.label + '/' + child.label;
       group.absolutePath = child.absolutePath;
       group.groups = child.groups;
+      group.moduleHref = child.moduleHref;
 
       foldSingleChildGroups(group); // recursively fold single child groups
     } else {
@@ -131,6 +132,16 @@ export const MetroTreemap: React.FC = () => {
             content: group.tip,
           });
         }}
+        onGroupSecondaryClick={(event) => {
+          const { group } = event;
+          console.log('open:', group.moduleHref);
+          setContextMenuGroup(group);
+          event.preventDefault();
+          router.push({
+            pathname: '/module/[id]',
+            params: { id: group.moduleHref },
+          });
+        }}
       />
     ),
     [data]
@@ -141,14 +152,13 @@ export const MetroTreemap: React.FC = () => {
         modal
         onOpenChange={(open) => {
           if (!open) {
+            console.log('invalidate');
             setContextMenuGroup(null);
           }
-        }}>
-        <ContextMenuTrigger  asChild> */}
+        }}> */}
       {tree}
-      {/* </ContextMenuTrigger>
 
-        <ContextMenuContent>
+      {/* <ContextMenuContent forceMount={true}>
           <ContextMenuItem disabled={!contextMenuGroup?.moduleHref}>Inspect</ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu> */}
@@ -218,6 +228,7 @@ export const Treemap: React.FC<TreemapProps> = (props) => {
         vars.titleBarShown = false;
       },
       groupColorDecorator(options, properties, variables) {
+        variables.labelColor = '#fff';
         variables.groupColor = {
           model: 'hsla',
           h: 0,
@@ -276,7 +287,7 @@ export const Treemap: React.FC<TreemapProps> = (props) => {
     });
   };
 
-  const jsx = useMemo(() => <div {...props} ref={nodeRef} />, []);
+  const jsx = useMemo(() => <div className="flex flex-1" ref={nodeRef} />, []);
   return jsx;
 };
 

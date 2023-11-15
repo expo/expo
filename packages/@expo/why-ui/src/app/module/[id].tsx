@@ -57,24 +57,15 @@ function DependencyInfo({
   inverseDependencies,
   output,
   path,
+  absolutePath,
   dependencies,
 }: MetroJsonModule) {
   const jsModules = output.filter(({ type }) => type.startsWith('js/'));
 
-  const items = [
-    <BaconCode
-      dependencies={{}}
-      className={'language-' + getExtension(path)}
-      metastring=""
-      children={getSource}
-    />,
-    <BaconCode
-      dependencies={{}}
-      className="language-js"
-      metastring=""
-      children={jsModules[0].data.code}
-    />,
-  ];
+  const codeBlocks = React.useMemo(
+    () => <CodeBody {...{ getSource, output, path }} />,
+    [getSource, output, path]
+  );
   return (
     <div className="flex flex-1 bg-[#000] border-l border-l-[#ffffff1a]">
       <div className="flex flex-1 flex-col">
@@ -85,17 +76,34 @@ function DependencyInfo({
               <Button variant="ghost">← Go Back</Button>
             </Link>
 
-            <Button
-              className="text-[#6272a4]"
-              variant="ghost"
-              onClick={() => {
-                inspectSourcemaps({
-                  code: jsModules[0].data.code,
-                  sourcemaps: jsModules[0].data.map,
-                });
-              }}>
-              Source Maps →
-            </Button>
+            <span>
+              <Button
+                className="text-[#6272a4]"
+                variant="ghost"
+                onClick={() => {
+                  fetch('/open-stack-frame', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                      file: absolutePath,
+                      lineNumber: 0,
+                    }),
+                  });
+                }}>
+                Editor
+              </Button>
+
+              <Button
+                className="text-[#6272a4]"
+                variant="ghost"
+                onClick={() => {
+                  inspectSourcemaps({
+                    code: jsModules[0].data.code,
+                    sourcemaps: jsModules[0].data.map,
+                  });
+                }}>
+                Source Maps →
+              </Button>
+            </span>
           </div>
           <div className="flex flex-1 flex-row p-2 px-6 border-b border-b-[#ffffff1a] justify-between items-center">
             {/* <FileIcon className="w-4 text-slate-50" /> */}
@@ -115,15 +123,46 @@ function DependencyInfo({
         </span>
 
         {/* Body */}
-        <div className="flex flex-1 relative">
-          <div className="absolute top-0 left-0 bottom-0 right-0 flex flex-1 flex-row">
-            {items.map((code, i) => (
-              <div key={String(i)} className="max-w-[50%] w-[50%] h-full flex flex-1  bg-[#282a36]">
-                {code}
-              </div>
-            ))}
+        {codeBlocks}
+
+        {/* Footer */}
+      </div>
+    </div>
+  );
+}
+
+function CodeBody({
+  getSource,
+  output,
+  path,
+}: Pick<MetroJsonModule, 'getSource' | 'output' | 'path'>) {
+  const jsModules = output.filter(({ type }) => type.startsWith('js/'));
+
+  const items = React.useMemo(
+    () => [
+      <BaconCode
+        dependencies={{}}
+        className={'language-' + getExtension(path)}
+        metastring=""
+        children={getSource}
+      />,
+      <BaconCode
+        dependencies={{}}
+        className="language-js"
+        metastring=""
+        children={jsModules[0].data.code}
+      />,
+    ],
+    []
+  );
+  return (
+    <div className="flex flex-1 relative">
+      <div className="absolute top-0 left-0 bottom-0 right-0 flex flex-1 flex-row">
+        {items.map((code, i) => (
+          <div key={String(i)} className="max-w-[50%] w-[50%] h-full flex flex-1  bg-[#282a36]">
+            {code}
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );
