@@ -1,13 +1,14 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
 import FoamTree from '@carrotsearch/foamtree';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+
 import { MetroJsonModule } from '../data';
-import { useFilteredModules } from '../deps-context';
 import { formatSize } from '../data-table';
-import classNames from 'classnames';
-// import { useWindowDimensions } from 'react-native';
+import { useFilteredModules } from '../deps-context';
+import { Tooltip } from './tooltip';
+import { router } from 'expo-router';
 
 interface TreemapProps {
-  data: MetroJsonModule[]; // Replace with a more specific type as per your data structure
+  data: Dataset[]; // Replace with a more specific type as per your data structure
   highlightGroups?: Set<any>; // Specify the type for the elements of the Set
   onGroupSecondaryClick?: (event: any) => void; // Replace 'any' with a more specific type
   onGroupHover?: (event: any) => void;
@@ -22,6 +23,7 @@ type Dataset = {
   groups: Dataset[];
   ratio: number;
   tip: string;
+  moduleHref?: string;
 };
 
 // Given a list of modules with filepaths `{ absolutePath: string }[]`, create a recursive tree structure of modules `{ absolutePath: string, groups: T[] }[]`
@@ -31,7 +33,9 @@ function createModuleTree(paths: MetroJsonModule[]): Dataset[] {
   paths.forEach((pathObj) => {
     const parts = pathObj.absolutePath.split('/').filter(Boolean);
     let current = root;
+
     parts.forEach((part, index) => {
+      const isLast = index === parts.length - 1;
       let next = current.groups.find((g) => g.absolutePath === part);
 
       if (!next) {
@@ -39,20 +43,32 @@ function createModuleTree(paths: MetroJsonModule[]): Dataset[] {
         current.groups.push(next);
       }
 
-      if (index === parts.length - 1) {
+      if (isLast) {
         next.absolutePath = pathObj.absolutePath;
+        next.moduleHref = pathObj.path;
         next.weight = pathObj.size;
       } else {
         next.weight += pathObj.size;
       }
 
-      if (index === parts.length - 1) {
-        next.absolutePath = pathObj.absolutePath;
-      }
-
       current = next;
     });
   });
+
+  const foldSingleChildGroups = (group: Dataset) => {
+    if (group.groups.length === 1) {
+      const child = group.groups[0];
+      group.weight = child.weight;
+      group.label = group.label + '/' + child.label;
+      group.absolutePath = child.absolutePath;
+      group.groups = child.groups;
+
+      foldSingleChildGroups(group); // recursively fold single child groups
+    } else {
+      group.groups.forEach(foldSingleChildGroups);
+    }
+  };
+  foldSingleChildGroups(root);
 
   root.weight = root.groups.reduce((acc, g) => acc + g.weight, 0);
 
@@ -79,67 +95,66 @@ function createModuleTree(paths: MetroJsonModule[]): Dataset[] {
 
   return root.groups;
 }
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
 
 export const MetroTreemap: React.FC = () => {
   const [tooltip, setTooltip] = useState<null | {
     content: string;
   }>(null);
-
-  const tooltipRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Follow mouse cursor
-    const onMouseMove = (e: MouseEvent) => {
-      if (tooltipRef.current) {
-        tooltipRef.current.style.left = `${e.clientX + 24}px`;
-        tooltipRef.current.style.top = `${e.clientY + 24}px`;
-      }
-    };
-    window.addEventListener('mousemove', onMouseMove);
-    return () => {
-      window.removeEventListener('mousemove', onMouseMove);
-    };
-  }, [tooltipRef]);
+  const [contextMenuGroup, setContextMenuGroup] = useState<null | Dataset>(null);
 
   const modules = useFilteredModules();
-  const data = useMemo(() => createModuleTree(modules), [modules]);
+  const data = useMemo(
+    () =>
+      createModuleTree(
+        modules.filter((v) =>
+          // Remove non-standard modules to prevent shifting the weight scales
+          v.absolutePath.startsWith('/')
+        )
+      ),
+    [modules]
+  );
 
-  return (
-    <>
+  const tree = useMemo(
+    () => (
       <Treemap
         data={data}
         className="flex flex-1"
-        // highlightGroups={this.highlightedModules}
-        // weightProp={store.activeSize}
-        // onMouseLeave={this.handleMouseLeaveTreemap}
         onGroupHover={(event) => {
           const { group } = event;
-          // console.log('group', group);
           setTooltip({
             content: group.tip,
           });
-          // if (group) {
-          //   this.setState({
-          //     showTooltip: true,
-          //     tooltipContent: this.getTooltipContent(group)
-          //   });
-          // } else {
-          //   this.setState({showTooltip: false});
-          // }
         }}
-        // onGroupSecondaryClick={this.handleTreemapGroupSecondaryClick}
-        // onResize={this.handleResize}
       />
+    ),
+    [data]
+  );
+  return (
+    <div className="flex flex-1">
+      {/* <ContextMenu
+        modal
+        onOpenChange={(open) => {
+          if (!open) {
+            setContextMenuGroup(null);
+          }
+        }}>
+        <ContextMenuTrigger  asChild> */}
+      {tree}
+      {/* </ContextMenuTrigger>
 
-      <div
-        ref={tooltipRef}
-        className={classNames(
-          'fixed flex items-center justify-center select-none pointer-events-none',
-          !tooltip && 'hidden'
-        )}>
-        <div className="bg-black p-4 rounded-md shadow-md">{tooltip?.content}</div>
-      </div>
-    </>
+        <ContextMenuContent>
+          <ContextMenuItem disabled={!contextMenuGroup?.moduleHref}>Inspect</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu> */}
+
+      <Tooltip visible={!!tooltip}>{tooltip?.content}</Tooltip>
+    </div>
   );
 };
 
@@ -150,8 +165,7 @@ export const Treemap: React.FC<TreemapProps> = (props) => {
   // return null;
   const nodeRef = useRef<HTMLDivElement>(null);
   const treemapRef = useRef<any>(null); // Replace 'any' with a more specific type
-  const [zoomOutDisabled, setZoomOutDisabled] = useState(false);
-  const [chunkNamePartIndex, setChunkNamePartIndex] = useState(0);
+  const zoomOutDisabled = useRef(false);
 
   useEffect(() => {
     if (nodeRef.current) {
@@ -171,7 +185,6 @@ export const Treemap: React.FC<TreemapProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    // findChunkNamePartIndex();
     treemapRef.current?.set({
       dataObject: { groups: data },
     });
@@ -180,28 +193,6 @@ export const Treemap: React.FC<TreemapProps> = (props) => {
   useEffect(() => {
     setTimeout(() => treemapRef.current?.redraw(), 0);
   }, [highlightGroups]);
-
-  // const dims = useWindowDimensions();
-
-  // useEffect(() => {
-  //   treemapRef.current?.resize();
-
-  //   if (onResize) {
-  //     onResize();
-  //   }
-  // }, [dims]);
-
-  const getGroupRoot = (group) => {
-    let nextParent;
-    while (!group.isAsset && (nextParent = treemapRef.current.get('hierarchy', group).parent)) {
-      group = nextParent;
-    }
-    return group;
-  };
-
-  const getChunkNamePart = (chunkLabel) => {
-    return chunkLabel.split(/[^a-z0-9]/iu)[chunkNamePartIndex] || chunkLabel;
-  };
 
   const createTreemap = () => {
     return new FoamTree({
@@ -227,33 +218,13 @@ export const Treemap: React.FC<TreemapProps> = (props) => {
         vars.titleBarShown = false;
       },
       groupColorDecorator(options, properties, variables) {
-        // const root = getGroupRoot(properties.group);
-        // const chunkName = getChunkNamePart(root.label);
-        // const hash = /[^0-9]/u.test(chunkName)
-        //   ? hashCode(chunkName)
-        //   : (parseInt(chunkName) / 1000) * 360;
-        // variables.groupColor = {
-        //   model: 'hsla',
-        //   h: Math.round(Math.abs(hash) % 360),
-        //   s: 60,
-        //   l: 50,
-        //   a: 0.9,
-        // };
-        // const module = properties.group;
-        // if (highlightGroups && highlightGroups.has(module)) {
-        //   variables.groupColor = {
-        //     model: 'rgba',
-        //     r: 255,
-        //     g: 0,
-        //     b: 0,
-        //     a: 0.8,
-        //   };
-        // } else if (highlightGroups && highlightGroups.size > 0) {
-        //   // this means a search (e.g.) is active, but this module
-        //   // does not match; gray it out
-        //   // https://github.com/webpack-contrib/webpack-bundle-analyzer/issues/553
-        //   variables.groupColor.s = 10;
-        // }
+        variables.groupColor = {
+          model: 'hsla',
+          h: 0,
+          s: 0,
+          l: 20,
+          a: 0.9,
+        };
       },
       /**
        * Handle Foamtree's "group clicked" event
@@ -268,10 +239,10 @@ export const Treemap: React.FC<TreemapProps> = (props) => {
           return;
         }
 
-        setZoomOutDisabled(false);
+        zoomOutDisabled.current = false;
+
         this.zoom(event.group);
       },
-      onGroupDoubleClick: preventDefault,
       onGroupHover(event) {
         // Ignoring hovering on `FoamTree` branding group and the root group
         if (event.group && (event.group.attribution || event.group === this.get('dataObject'))) {
@@ -286,65 +257,24 @@ export const Treemap: React.FC<TreemapProps> = (props) => {
           onGroupHover(event);
         }
       },
+      onGroupDoubleClick: preventDefault,
       onGroupMouseWheel(event) {
         const { scale } = this.get('viewport');
         const isZoomOut = event.delta < 0;
 
         if (isZoomOut) {
-          if (zoomOutDisabled) return preventDefault(event);
+          if (zoomOutDisabled.current) return preventDefault(event);
           if (scale < 1) {
-            setZoomOutDisabled(true);
+            zoomOutDisabled.current = true;
+
             preventDefault(event);
           }
         } else {
-          setZoomOutDisabled(false);
+          zoomOutDisabled.current = false;
         }
       },
     });
   };
-
-  const findChunkNamePartIndex = () => {
-    const splitChunkNames = data.map((chunk) => chunk.label.split(/[^a-z0-9]/iu));
-    const longestSplitName = Math.max(...splitChunkNames.map((parts) => parts.length));
-    const namePart = {
-      index: 0,
-      votes: 0,
-    };
-    for (let i = longestSplitName - 1; i >= 0; i--) {
-      const identifierVotes = {
-        name: 0,
-        hash: 0,
-        ext: 0,
-      };
-      let lastChunkPart = '';
-      for (const splitChunkName of splitChunkNames) {
-        const part = splitChunkName[i];
-        if (part === undefined || part === '') {
-          continue;
-        }
-        if (part === lastChunkPart) {
-          identifierVotes.ext++;
-        } else if (
-          /[a-z]/u.test(part) &&
-          /[0-9]/u.test(part) &&
-          part.length === lastChunkPart.length
-        ) {
-          identifierVotes.hash++;
-        } else if (/^[a-z]+$/iu.test(part) || /^[0-9]+$/u.test(part)) {
-          identifierVotes.name++;
-        }
-        lastChunkPart = part;
-      }
-      if (identifierVotes.name >= namePart.votes) {
-        namePart.index = i;
-        namePart.votes = identifierVotes.name;
-      }
-    }
-    // this.chunkNamePartIndex = namePart.index;
-    setChunkNamePartIndex(namePart.index);
-  };
-
-  // Define other utility functions like createTreemap, findChunkNamePartIndex, etc., here
 
   const jsx = useMemo(() => <div {...props} ref={nodeRef} />, []);
   return jsx;
@@ -355,14 +285,4 @@ export default Treemap;
 const preventDefault = (event: any) => {
   // Replace 'any' with a more specific event type
   event.preventDefault();
-};
-
-const hashCode = (str: string) => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const code = str.charCodeAt(i);
-    hash = (hash << 5) - hash + code;
-    hash &= hash; // Convert to 32bit integer
-  }
-  return hash;
 };
