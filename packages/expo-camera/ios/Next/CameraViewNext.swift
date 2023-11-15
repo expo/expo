@@ -562,6 +562,20 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     if let maxFileSize = options.maxFileSize {
       videoFileOutput.maxRecordedFileSize = Int64(maxFileSize)
     }
+    
+    if let codec = options.codec {
+      let codecType = codec.codecType()
+      if videoFileOutput.availableVideoCodecTypes.contains(codecType) {
+        videoFileOutput.setOutputSettings([AVVideoCodecKey: codecType], for: connection)
+        self.videoCodecType = codecType
+      } else {
+        promise.reject(CameraRecordingException(self.videoCodecType?.rawValue))
+
+        self.cleanupMovieFileCapture()
+        self.videoRecordedPromise = nil
+        self.isValidVideoOptions = false
+      }
+    }
   }
 
   func updateSessionAudioIsMuted() {

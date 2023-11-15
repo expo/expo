@@ -4,7 +4,7 @@ import * as BarCodeScanner from 'expo-barcode-scanner';
 import {
   BarCodePoint,
   BarCodeScanningResult,
-  Camera,
+  CameraView,
   CameraCapturedPicture,
   CameraMode,
   CameraType,
@@ -73,13 +73,13 @@ export default class CameraScreen extends React.Component<object, State> {
     recording: false,
   };
 
-  camera?: Camera;
+  camera?: CameraView;
 
   componentDidMount() {
     if (Platform.OS !== 'web') {
       this.ensureDirectoryExistsAsync();
     }
-    Camera.requestCameraPermissionsAsync().then(({ status }) => {
+    CameraView.requestCameraPermissionsAsync().then(({ status }) => {
       this.setState({ permission: status, permissionsGranted: status === 'granted' });
     });
   }
@@ -287,7 +287,7 @@ export default class CameraScreen extends React.Component<object, State> {
 
   renderCamera = () => (
     <View style={{ flex: 1 }}>
-      <Camera
+      <CameraView
         ref={(ref) => (this.camera = ref!)}
         style={styles.camera}
         onCameraReady={() => {
@@ -309,7 +309,7 @@ export default class CameraScreen extends React.Component<object, State> {
         onBarCodeScanned={this.state.barcodeScanning ? this.onBarCodeScanned : undefined}>
         {this.renderTopBar()}
         {this.renderBottomBar()}
-      </Camera>
+      </CameraView>
       {this.state.barcodeScanning && this.renderBarCode()}
       {this.state.showMoreOptions && this.renderMoreOptions()}
     </View>

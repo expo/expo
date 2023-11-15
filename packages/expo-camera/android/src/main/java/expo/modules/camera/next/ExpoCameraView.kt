@@ -1,11 +1,12 @@
 package expo.modules.camera.next
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.CameraMetadata
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -33,6 +34,7 @@ import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import expo.modules.camera.BarCodeScannedEvent
 import expo.modules.camera.CameraMountErrorEvent
@@ -206,7 +208,11 @@ class ExpoCameraView(
       .build()
 
     recorder?.let {
+      if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        return
+      }
       activeRecording = it.prepareRecording(context, fileOutputOptions)
+        .withAudioEnabled()
         .start(ContextCompat.getMainExecutor(context)) { event ->
           when (event) {
             is VideoRecordEvent.Finalize -> {
@@ -255,7 +261,7 @@ class ExpoCameraView(
         val cameraInfo = cameraProvider.availableCameraInfos.filter {
           Camera2CameraInfo
             .from(it)
-            .getCameraCharacteristic(CameraCharacteristics.LENS_FACING) == CameraMetadata.LENS_FACING_BACK
+            .getCameraCharacteristic(CameraCharacteristics.LENS_FACING) == lenFacing.mapToCharacteristic()
         }
 
         val videoCapture = createVideoCapture(cameraInfo)
@@ -328,6 +334,7 @@ class ExpoCameraView(
 
     return VideoCapture.Builder(recorder)
       .setMirrorMode(MirrorMode.MIRROR_MODE_ON_FRONT_ONLY)
+      .setVideoStabilizationEnabled(true)
       .build()
   }
 
@@ -337,6 +344,7 @@ class ExpoCameraView(
         CameraState.Type.OPEN -> {
           onCameraReady(Unit)
         }
+
         else -> {}
       }
     }

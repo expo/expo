@@ -158,11 +158,6 @@ export type CameraRecordingOptions = {
      */
     mirror?: boolean;
     /**
-     * Only works if `useCamera2Api` is set to `true`. This option specifies a desired video bitrate. For example, `5*1000*1000` would be 5Mbps.
-     * @platform android
-     */
-    videoBitrate?: number;
-    /**
      * This option specifies what codec to use when recording the video. See [`VideoCodec`](#videocodec) for the possible values.
      * @platform ios
      */

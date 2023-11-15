@@ -21,7 +21,7 @@ import {
   PermissionResponse,
   VideoCodec,
 } from './Camera.types';
-import ExponentCamera from './ExpoCamera';
+import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 
@@ -72,7 +72,7 @@ function _onPictureSaved({
   }
 }
 
-export default class Camera extends React.Component<CameraProps> {
+export default class CameraView extends React.Component<CameraProps> {
   /**
    * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
    */
@@ -158,8 +158,8 @@ export default class Camera extends React.Component<CameraProps> {
    * ```
    */
   static useCameraPermissions = createPermissionHook({
-    getMethod: Camera.getCameraPermissionsAsync,
-    requestMethod: Camera.requestCameraPermissionsAsync,
+    getMethod: CameraView.getCameraPermissionsAsync,
+    requestMethod: CameraView.requestCameraPermissionsAsync,
   });
 
   // @needsAudit
@@ -192,8 +192,8 @@ export default class Camera extends React.Component<CameraProps> {
    * ```
    */
   static useMicrophonePermissions = createPermissionHook({
-    getMethod: Camera.getMicrophonePermissionsAsync,
-    requestMethod: Camera.requestMicrophonePermissionsAsync,
+    getMethod: CameraView.getMicrophonePermissionsAsync,
+    requestMethod: CameraView.requestMicrophonePermissionsAsync,
   });
 
   _cameraHandle?: number | null;
@@ -233,7 +233,7 @@ export default class Camera extends React.Component<CameraProps> {
     if (!options) {
       options = { barCodeTypes: [] };
     }
-    if (Platform.OS === 'ios' && Camera.isModernBarcodeScannerAvailable) {
+    if (Platform.OS === 'ios' && CameraView.isModernBarcodeScannerAvailable) {
       await CameraManager.launchModernScanner(options);
     }
   }
@@ -328,7 +328,7 @@ export default class Camera extends React.Component<CameraProps> {
       : undefined;
 
     return (
-      <ExponentCamera
+      <ExpoCamera
         {...nativeProps}
         ref={this._cameraRef}
         onCameraReady={this._onCameraReady}
@@ -346,4 +346,4 @@ export const {
   requestCameraPermissionsAsync,
   getMicrophonePermissionsAsync,
   requestMicrophonePermissionsAsync,
-} = Camera;
+} = CameraView;

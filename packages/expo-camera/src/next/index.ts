@@ -1,9 +1,9 @@
-export { default as Camera } from './Camera';
+export { default as CameraView } from './CameraView';
 export {
   getCameraPermissionsAsync,
   requestCameraPermissionsAsync,
   getMicrophonePermissionsAsync,
   requestMicrophonePermissionsAsync,
-} from './Camera';
+} from './CameraView';
 
 export * from './Camera.types';
