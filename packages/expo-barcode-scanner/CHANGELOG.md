@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- `BarCodeScannerResult` now returns an additional `raw` field corresponding to the barcode value as it was encoded in the barcode without parsing. Will always be undefined on iOS.
+
 ## 12.8.0 — 2023-10-17
 
 ### 🛠 Breaking changes

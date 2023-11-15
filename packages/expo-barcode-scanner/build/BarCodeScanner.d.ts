@@ -41,9 +41,15 @@ export type BarCodeScannerResult = {
      */
     type: string;
     /**
-     * The information encoded in the bar code.
+     * The parsed information encoded in the bar code.
      */
     data: string;
+    /**
+     * The raw information encoded in the bar code.
+     * May be different from `data` depending on the barcode type.
+     * Will always be undefined on iOS.
+     */
+    raw: string;
     /**
      * The [BarCodeBounds](#barcodebounds) object.
      * `bounds` in some case will be representing an empty rectangle.

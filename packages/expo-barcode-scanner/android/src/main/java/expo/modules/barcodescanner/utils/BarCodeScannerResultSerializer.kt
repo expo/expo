@@ -9,6 +9,7 @@ object BarCodeScannerResultSerializer {
   fun toBundle(result: BarCodeScannerResult, density: Float) =
     Bundle().apply {
       putString("data", result.value)
+      putString("raw", result.raw)
       putInt("type", result.type)
       val cornerPointsAndBoundingBox = getCornerPointsAndBoundingBox(result.cornerPoints, result.boundingBox, density)
       putParcelableArrayList("cornerPoints", cornerPointsAndBoundingBox.first)

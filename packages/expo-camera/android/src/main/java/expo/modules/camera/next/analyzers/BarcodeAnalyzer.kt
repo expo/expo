@@ -39,8 +39,9 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, private val formats: L
             return@addOnSuccessListener
           }
           val barcode = barcodes.first()
+          val raw = barcode.rawValue ?: barcode.rawBytes?.let { String(it) }
           val value = if (barcode.valueType == Barcode.TYPE_CONTACT_INFO) {
-            barcode.rawValue ?: barcode.rawBytes?.let { String(it) }
+            raw
           } else {
             barcode.displayValue
           }
@@ -52,7 +53,7 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, private val formats: L
             }
           }
 
-          onComplete(BarCodeScannerResult(barcode.format, value, cornerPoints, image.width, image.height))
+          onComplete(BarCodeScannerResult(barcode.format, value, raw, cornerPoints, image.width, image.height))
         }
         .addOnFailureListener {
           Log.d("SCANNER", it.cause?.message ?: "Barcode scanning failed")
