@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 12.2.0 — 2023-11-14
+
+### 🐛 Bug fixes
+
+- Fixed the `transactionExclusiveAsync` does not support CRSQLite. ([#25370](https://github.com/expo/expo/pull/25370) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
 - Build `crsqlite` from source using the correct architectures. ([#25363](https://github.com/expo/expo/pull/25363) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 12.1.0 — 2023-11-10

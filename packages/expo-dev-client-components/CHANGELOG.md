@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.7.0 — 2023-11-14
+
+### 💡 Others
+
 - Removed backward compatible code for deprecated SDKs. ([#25154](https://github.com/expo/expo/pull/25154) by [@kudo](https://github.com/kudo))
 
 ## 1.6.1 — 2023-09-04

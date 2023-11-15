@@ -4,9 +4,6 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -14,6 +11,13 @@
 ### 💡 Others
 
 - `BarCodeScannerResult` now returns an additional `raw` field corresponding to the barcode value as it was encoded in the barcode without parsing. Will always be undefined on iOS.
+
+## 12.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 12.8.0 — 2023-10-17
 

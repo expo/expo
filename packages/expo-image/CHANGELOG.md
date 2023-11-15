@@ -4,12 +4,22 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
+- [Android] The stability of the memory cache key generation has been improved. ([#25372](https://github.com/expo/expo/pull/25372) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
