@@ -54,7 +54,7 @@ Any reference to `process.env.EXPO_PUBLIC_API_URL` will be substituted for the a
 
 > `EXPO_PUBLIC_` variable replacement is available in SDK 49 and higher. See notes for [SDK 48 and lower](/guides/environment-variables#environment-variables-in-sdk-48-and-lower).
 
-> Regardless of naming convention, build profiles that use the Expo Development Client (e.g., `developmentClient: true`) cannot use these env values declared in `eas.json` from the build's runtime.  For more info, see [below](#how-do-environment-variables-work-for-my-expo-development-client-builds).
+> Regardless of naming convention, build profiles that use the Expo Development Client (that is, where `developmentClient: true`) cannot use env values declared in `eas.json` from that build's runtime. For more info, see [below](#how-do-environment-variables-work-for-my-expo-development-client-builds).
 
 ### For use by your Expo config
 
@@ -87,7 +87,7 @@ module.exports = {
 
 > All environment variables in your **eas.json** build profile are available when evaluating **app.config.js**. It's a good practice to only use the `EXPO_PUBLIC_` prefix for variables used within your application code.
 
-> Build profiles that use the Expo Development Client (e.g., `developmentClient: true`) will also reference the running metro server's enviroment variables even when resolving **app.config.js**.
+> Note that the same limitations when using the Expo Development Client apply to their use in **ap.config.js**. For more information, see [below](#how-do-environment-variables-work-for-my-expo-development-client-builds).
 
 ### For use by other build steps
 
