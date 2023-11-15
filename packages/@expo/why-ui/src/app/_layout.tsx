@@ -15,7 +15,7 @@ export default function Layout() {
   console.log('Layout');
 
   return (
-    <div className="bg-[#191A20] flex flex-1 flex-col">
+    <div className="bg-black flex flex-1 flex-col">
       <CliDataProvider>
         <LoadedLayout />
       </CliDataProvider>
@@ -48,7 +48,7 @@ function LoadedLayoutInner({ data }: { data: ExpoServerResponse }) {
   }, [latest]);
 
   return (
-    <GraphProvider value={{ modules: deps }}>
+    <GraphProvider value={{ modules: deps, options: latest[3], absoluteEntryFilePath: latest[0] }}>
       <Slot />
     </GraphProvider>
   );

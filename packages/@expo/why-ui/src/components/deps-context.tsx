@@ -1,7 +1,11 @@
 import React from 'react';
 import { MetroJsonModule } from './data';
 
-export const graphContext = React.createContext<{ modules: MetroJsonModule[] }>(null);
+export const graphContext = React.createContext<{
+  absoluteEntryFilePath: string;
+  modules: MetroJsonModule[];
+  options: { serverRoot?: string; projectRoot: string };
+}>(null);
 
 export function GraphProvider({ children, value }) {
   return <graphContext.Provider value={value}>{children}</graphContext.Provider>;

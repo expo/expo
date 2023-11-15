@@ -15,6 +15,11 @@ export type MetroJsonModule = {
       map: string;
     };
   }[];
+
+  // Added later
+  id?: string;
+  absolutePath?: string;
+  isEntry?: boolean;
 };
 
 export type JsonGraph = [string, MetroJsonModule[], { dependencies: MetroJsonModule[] }, any];

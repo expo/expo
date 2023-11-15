@@ -5,22 +5,34 @@ import Checkbox from 'expo-checkbox';
 import { Button } from '@/components/ui/button';
 
 export default function Layout() {
-  const { modules } = useGraph();
+  const { modules, absoluteEntryFilePath, options } = useGraph();
 
   const [showNodeModules, setShowNodeModules] = React.useState(true);
   const [showVirtual, setShowVirtual] = React.useState(false);
 
   const visibleDeps = React.useMemo(() => {
-    return modules.filter((dep) => {
-      if (!showNodeModules && dep.path.includes('node_modules')) {
-        return false;
-      }
-      if (!showVirtual && dep.output[0].type === 'js/script/virtual') {
-        return false;
-      }
-      return true;
+    const root = options.projectRoot;
+
+    return modules.map((m) => {
+      const absolutePath = root + '/' + m.path;
+      const isEntry = absoluteEntryFilePath === absolutePath;
+      return {
+        ...m,
+        id: m.path,
+        absolutePath,
+        isEntry,
+      };
     });
-  }, [modules, showNodeModules, showVirtual]);
+    // return modules.filter((dep) => {
+    //   if (!showNodeModules && dep.path.includes('node_modules')) {
+    //     return false;
+    //   }
+    //   if (!showVirtual && dep.output[0].type === 'js/script/virtual') {
+    //     return false;
+    //   }
+    //   return true;
+    // });
+  }, [options, modules, showNodeModules, showVirtual]);
 
   return (
     <FilteredModulesContext.Provider value={visibleDeps}>

@@ -126,7 +126,7 @@ function serializeForSourcemapsVisualizer(code: string, map: string) {
   return btoa(binary);
 }
 
-function formatSize(size: number) {
+export function formatSize(size: number) {
   if (size < 1024) {
     return size + 'B';
   } else if (size < 1024 * 1024) {
