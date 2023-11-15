@@ -110,8 +110,13 @@ describe('get', () => {
   });
 });
 describe('_getForce', () => {
+  const originalError = console.error;
   beforeEach(() => {
     mockEnv();
+    console.error = jest.fn();
+  });
+  afterEach(() => {
+    console.error = originalError;
   });
 
   it(`returns the value of the environment variable`, () => {
@@ -176,6 +181,7 @@ describe('_getForce', () => {
   });
 
   it(`cascades env files (default)`, () => {
+    delete process.env.NODE_ENV; // Jest is setting `NODE_ENV=test`, make sure to unset it
     const envRuntime = createControlledEnvironment();
     vol.fromJSON(
       {
@@ -191,6 +197,9 @@ describe('_getForce', () => {
         FOO: 'default-local',
       },
     });
+    expect(console.error).toBeCalledWith(
+      expect.stringContaining('Proceeding without mode-specific .env')
+    );
   });
 
   it(`skips modifying the environment with dotenv if disabled with EXPO_NO_DOTENV`, () => {
