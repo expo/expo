@@ -36,7 +36,7 @@ export function DependenciesList({ modules }: { modules: MetroJsonModule[] }) {
   );
 }
 
-export function DependencyInfo({ getSource, output, path }: MetroJsonModule) {
+export function DependencyInfo({ getSource, inverseDependencies, output, path }: MetroJsonModule) {
   const jsModules = output.filter(({ type }) => type.startsWith('js/'));
 
   const items = [

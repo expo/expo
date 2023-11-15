@@ -5,6 +5,7 @@ export type MetroJsonModule = {
   getSource: string;
   path: string;
   size: number;
+  inverseDependencies: string[];
   output: {
     type: 'js/script/virtual' | string;
     data: {
@@ -50,29 +51,6 @@ export function useFetchedServerData() {
     },
   });
 }
-
-// export function useFetchedServerData(): ExpoServerResponse | null {
-//   const [data, setData] = React.useState<any>(null);
-//   const [data, setData] = React.useState<any>(null);
-
-//   React.useEffect(() => {
-//     fetch(new URL(url, origin), {
-//       // Cross-origin request...
-//       // mode: 'no-cors',
-//     })
-//       .then((response) => {
-//         if (!response.ok) {
-//           throw new Error(
-//             'Network response was not ok: ' + response.status + ' ' + response.statusText
-//           );
-//         }
-//         return response.json();
-//       })
-//       .then((data) => setData(data));
-//   }, []);
-
-//   return data;
-// }
 
 export function CliDataProvider({ children }) {
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;

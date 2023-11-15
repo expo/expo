@@ -34,10 +34,7 @@ function LoadedLayout() {
   //   return <h1 className="text-slate-200">No data, perform a build and reload...</h1>;
   // }
 
-  const data = {
-    version: 1,
-    graphs: [require('fixture.json').graph],
-  };
+  const data = require('fixture.json');
   return <LoadedLayoutInner data={data} />;
 }
 

@@ -1,7 +1,7 @@
 {
   "name": "@expo/sandbox",
   "version": "0.0.0",
-  "main": "expo-router/entry",
+  "main": "./index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",

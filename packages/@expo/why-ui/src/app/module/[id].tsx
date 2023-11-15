@@ -17,7 +17,7 @@ export default function ModuleInspection() {
   return <DependencyInfo {...selected} />;
 }
 
-function DependencyInfo({ getSource, output, path }: MetroJsonModule) {
+function DependencyInfo({ getSource, inverseDependencies, output, path }: MetroJsonModule) {
   const jsModules = output.filter(({ type }) => type.startsWith('js/'));
 
   const items = [
@@ -76,6 +76,18 @@ function DependencyInfo({ getSource, output, path }: MetroJsonModule) {
               </div>
             ))}
           </div>
+        </div>
+
+        <div className="flex flex-1 max-h-24 flex-col overflow-y-scroll">
+          <h3 className="text-slate-50 font-bold">Inverse Dependencies</h3>
+          {inverseDependencies.map((absolutePath) => (
+            <Link
+              href={{ pathname: '/module/[id]', params: { id: absolutePath } }}
+              key={absolutePath}
+              className="text-slate-50 text-md font-bold">
+              {absolutePath}
+            </Link>
+          ))}
         </div>
       </div>
     </div>

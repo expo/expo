@@ -235,25 +235,25 @@ export async function instantiateMetroAsync(
       try {
         allowCrossOrigin(req, res);
 
-        res.setHeader('Content-Type', 'application/json');
-        res.end(
-          JSON.stringify(
-            {
-              version: 1,
-              graphs: bundles.map((bundle) =>
-                toJson(
-                  projectRoot,
-                  bundle.entryPoint,
-                  bundle.preModules,
-                  bundle.graph,
-                  bundle.options
-                )
-              ),
-            },
-            null,
-            2
-          )
+        const jsonResults = JSON.stringify(
+          {
+            version: 1,
+            graphs: bundles.map((bundle) =>
+              toJson(
+                projectRoot,
+                bundle.entryPoint,
+                bundle.preModules,
+                bundle.graph,
+                bundle.options
+              )
+            ),
+          },
+          null,
+          2
         );
+        console.log(jsonResults);
+        res.setHeader('Content-Type', 'application/json');
+        res.end(jsonResults);
         return;
       } catch (error) {
         console.log('ERROR:', error);
@@ -311,8 +311,9 @@ export function isWatchEnabled() {
 
 const sourceMapString = require('metro/src/DeltaBundler/Serializers/sourceMapString');
 import path from 'path';
+import { Module } from 'metro';
 
-function modifyDep(projectRoot, mod, options, dropSource = false) {
+function modifyDep(projectRoot, mod: Module, options, dropSource = false) {
   return {
     dependencies: [...mod.dependencies.entries()].map(([key, value]) => {
       return path.relative(projectRoot, value.absolutePath);
@@ -324,7 +325,9 @@ function modifyDep(projectRoot, mod, options, dropSource = false) {
     // ),
     getSource: mod.getSource().toString(),
     size: mod.output.reduce((acc, { data }) => acc + data.code.length, 0),
-    inverseDependencies: Array.from(mod.inverseDependencies),
+    inverseDependencies: Array.from(mod.inverseDependencies).map((fp) =>
+      path.relative(projectRoot, fp)
+    ),
     path: path.relative(projectRoot, mod.path),
     output: mod.output.map((output) => ({
       type: output.type,
