@@ -1,0 +1,37 @@
+{
+  "name": "@expo/babel-preset-cli",
+  "version": "0.3.1",
+  "description": "The Babel preset for Expo CLI packages",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo-cli.git",
+    "directory": "packages/babel-preset-cli"
+  },
+  "keywords": [
+    "babel-preset"
+  ],
+  "author": "Expo <support@expo.dev>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo-cli/issues"
+  },
+  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/babel-preset-cli#readme",
+  "dependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-export-namespace-from": "^7.12.13",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.7.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.7.5",
+    "@babel/plugin-transform-modules-commonjs": "^7.5.0",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-typescript": "^7.3.3",
+    "babel-plugin-dynamic-import-node": "^2.3.3"
+  },
+  "devDependencies": {
+    "jest-snapshot-serializer-raw": "^1.1.0"
+  }
+}
