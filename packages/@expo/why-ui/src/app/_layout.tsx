@@ -1,0 +1,58 @@
+import { Slot } from 'expo-router';
+import React from 'react';
+
+import { GraphProvider } from '../components/deps-context';
+import { CliDataProvider, ExpoServerResponse, useFetchedServerData } from '../components/data';
+
+import '@/global.css';
+
+export default function Layout() {
+  // const fixture = useFetchedServerData();
+  // if (!fixture) {
+  //   return null;
+  // }
+
+  console.log('Layout');
+
+  return (
+    <div className="bg-[#191A20] flex flex-1 flex-col">
+      <CliDataProvider>
+        <LoadedLayout />
+      </CliDataProvider>
+    </div>
+  );
+}
+
+function LoadedLayout() {
+  // const { status, data, error, isFetching } = useFetchedServerData();
+  // // console.log('status, data, error, isFetching', status, data, error, isFetching);
+
+  // if (isFetching) {
+  //   return <h1 className="text-slate-200">Loading...</h1>;
+  // }
+  // if (!data) {
+  //   return <h1 className="text-slate-200">No data, perform a build and reload...</h1>;
+  // }
+
+  const data = {
+    version: 1,
+    graphs: [require('fixture.json').graph],
+  };
+  return <LoadedLayoutInner data={data} />;
+}
+
+function LoadedLayoutInner({ data }: { data: ExpoServerResponse }) {
+  const latest = data.graphs[data.graphs.length - 1];
+  const deps = React.useMemo(() => {
+    return [...latest[1], ...latest[2].dependencies].map((dep, index) => ({
+      ...dep,
+      index,
+    }));
+  }, [latest]);
+
+  return (
+    <GraphProvider value={{ modules: deps }}>
+      <Slot />
+    </GraphProvider>
+  );
+}

@@ -29,7 +29,10 @@
   "devDependencies": {
     "@tanstack/react-query": "^5.8.3",
     "autoprefixer": "^10.4.16",
+    "classnames": "^2.3.2",
     "expo-router": "^2.0.12",
+    "prism-react-renderer": "^2.2.0",
+    "prismjs": "^1.29.0",
     "tailwind": "^4.0.0"
   },
   "publishConfig": {
