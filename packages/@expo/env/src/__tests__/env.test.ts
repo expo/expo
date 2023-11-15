@@ -2,29 +2,27 @@ import { vol, fs } from 'memfs';
 
 import { createControlledEnvironment, getFiles } from '../env';
 
-beforeEach(() => {
-  vol.reset();
-});
-
-const originalEnv = process.env;
-
-function resetEnv() {
-  process.env = originalEnv;
-  delete process.env.EXPO_NO_DOTENV;
+/** The original reference to `process.env`, containing the actual environment variables. */
+const originalEnv = process.env as Readonly<NodeJS.ProcessEnv>;
+/** Mock the environment variables, to be edited within tests */
+function mockEnv() {
+  process.env = { ...originalEnv } as NodeJS.ProcessEnv;
 }
 
 beforeEach(() => {
-  resetEnv();
+  vol.reset();
+  mockEnv();
 });
 afterAll(() => {
-  resetEnv();
+  // Clear the mocked environment, reusing the original object instance
+  process.env = originalEnv;
 });
 
 describe(getFiles, () => {
   const originalError = console.error;
   beforeEach(() => {
     console.error = jest.fn();
-    resetEnv();
+    mockEnv();
   });
   afterEach(() => {
     console.error = originalError;
@@ -79,7 +77,7 @@ describe(getFiles, () => {
 
 describe('get', () => {
   beforeEach(() => {
-    resetEnv();
+    mockEnv();
   });
 
   it(`memoizes`, () => {
@@ -116,7 +114,7 @@ describe('get', () => {
 });
 describe('_getForce', () => {
   beforeEach(() => {
-    resetEnv();
+    mockEnv();
   });
 
   it(`returns the value of the environment variable`, () => {
