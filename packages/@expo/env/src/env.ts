@@ -136,7 +136,11 @@ export function createControlledEnvironment() {
       }
     }
 
-    process.env = { ...process.env, ...envInfo.env };
+    for (const key of Object.keys(envInfo.env)) {
+      // Avoid creating a new object, mutate it instead as this causes problems in Bun
+      process.env[key] = envInfo.env[key];
+    }
+
     return process.env;
   }
 
