@@ -1,23 +1,23 @@
 PODS:
   - boost (1.76.0)
   - DoubleConversion (1.1.6)
-  - EASClient (0.10.0):
+  - EASClient (0.11.0):
     - ExpoModulesCore
-  - EASClient/Tests (0.10.0):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
-  - EXJSONUtils (0.11.0)
-  - EXJSONUtils/Tests (0.11.0)
-  - EXManifests (0.11.0):
-    - ExpoModulesCore
-  - EXManifests/Tests (0.11.0):
+  - EASClient/Tests (0.11.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (50.0.0-alpha.6):
+  - EXJSONUtils (0.12.0)
+  - EXJSONUtils/Tests (0.12.0)
+  - EXManifests (0.12.0):
     - ExpoModulesCore
-  - expo-dev-launcher (3.3.0):
+  - EXManifests/Tests (0.12.0):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+  - Expo (50.0.0-alpha.7):
+    - ExpoModulesCore
+  - expo-dev-launcher (3.4.0):
     - EXManifests
-    - expo-dev-launcher/Main (= 3.3.0)
+    - expo-dev-launcher/Main (= 3.4.0)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -25,7 +25,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Main (3.3.0):
+  - expo-dev-launcher/Main (3.4.0):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -35,7 +35,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-launcher/Tests (3.3.0):
+  - expo-dev-launcher/Tests (3.4.0):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -49,7 +49,7 @@ PODS:
     - React-Core
     - React-CoreModules
     - React-RCTAppDelegate
-  - expo-dev-launcher/Unsafe (3.3.0):
+  - expo-dev-launcher/Unsafe (3.4.0):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -58,76 +58,76 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTAppDelegate
-  - expo-dev-menu (4.3.0):
-    - expo-dev-menu/Main (= 4.3.0)
-    - expo-dev-menu/ReactNativeCompatibles (= 4.3.0)
+  - expo-dev-menu (4.4.0):
+    - expo-dev-menu/Main (= 4.4.0)
+    - expo-dev-menu/ReactNativeCompatibles (= 4.4.0)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - expo-dev-menu-interface (1.5.0)
-  - expo-dev-menu-interface/Tests (1.5.0):
+  - expo-dev-menu-interface (1.6.0)
+  - expo-dev-menu-interface/Tests (1.6.0):
     - Nimble
     - Quick
-  - expo-dev-menu/Main (4.3.0):
+  - expo-dev-menu/Main (4.4.0):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - expo-dev-menu/ReactNativeCompatibles (4.3.0):
+  - expo-dev-menu/ReactNativeCompatibles (4.4.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - expo-dev-menu/SafeAreaView (4.3.0):
+  - expo-dev-menu/SafeAreaView (4.4.0):
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - expo-dev-menu/Tests (4.3.0):
+  - expo-dev-menu/Tests (4.4.0):
     - ExpoModulesTestCore
     - Nimble
     - Quick
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/UITests (4.3.0):
+  - expo-dev-menu/UITests (4.4.0):
     - RCT-Folly (= 2021.07.22.00)
     - React
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/Vendored (4.3.0):
+  - expo-dev-menu/Vendored (4.4.0):
     - expo-dev-menu/SafeAreaView
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - ExpoClipboard (4.7.0):
+  - ExpoClipboard (4.8.0):
     - ExpoModulesCore
-  - ExpoClipboard/Tests (4.7.0):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
-  - ExpoFileSystem (15.8.0):
-    - ExpoModulesCore
-  - ExpoFileSystem/Tests (15.8.0):
+  - ExpoClipboard/Tests (4.8.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoModulesCore (1.9.0):
+  - ExpoFileSystem (15.9.0):
+    - ExpoModulesCore
+  - ExpoFileSystem/Tests (15.9.0):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+  - ExpoModulesCore (1.10.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (1.9.0):
+  - ExpoModulesCore/Tests (1.10.0):
     - ExpoModulesTestCore
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesTestCore (0.15.0):
+  - ExpoModulesTestCore (0.16.0):
     - ExpoModulesCore
     - Nimble (~> 9.2.0)
     - Quick (~> 5.0.0)
     - React-jsc
-  - EXStructuredHeaders (3.6.0)
-  - EXStructuredHeaders/Tests (3.6.0)
-  - EXUpdates (0.22.0):
+  - EXStructuredHeaders (3.7.0)
+  - EXStructuredHeaders/Tests (3.7.0)
+  - EXUpdates (0.23.0):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -137,7 +137,7 @@ PODS:
     - ReachabilitySwift
     - React-Core
     - sqlite3 (~> 3.42.0)
-  - EXUpdates/Tests (0.22.0):
+  - EXUpdates/Tests (0.23.0):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -148,7 +148,7 @@ PODS:
     - ReachabilitySwift
     - React-Core
     - sqlite3 (~> 3.42.0)
-  - EXUpdatesInterface (0.14.0)
+  - EXUpdatesInterface (0.15.0)
   - FBLazyVector (0.72.5)
   - FBReactNativeSpec (0.72.5):
     - RCT-Folly (= 2021.07.22.00)
@@ -756,20 +756,20 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  EASClient: b98df462964e03ad48a44615e0141d8d25bfc4d4
-  EXJSONUtils: d15120ce0e8967b0822880162039dd75e5867086
-  EXManifests: b658c34011f90e3379b515fb50680acb49ba099a
-  Expo: ec3dff9f00792f6a2a4ec9b867c8575ad48f919e
-  expo-dev-launcher: 7a385c386d234a3f89da44f26d7a9b55a738b424
-  expo-dev-menu: 34540486be3c20631add98a06c13880e5b1b7a6b
-  expo-dev-menu-interface: 38090d6fda00360c1d9bf28ee6f553e7c073774b
-  ExpoClipboard: f0beee97ddfe5d3376d9e2d6ff72300be6a07d70
-  ExpoFileSystem: 5014f25f212972b797ce29dbbae8dceb1f4fae31
-  ExpoModulesCore: d712760b77977a3454bf310c7b97e90bd00ae16d
-  ExpoModulesTestCore: 8770f86c0229785aeea49317bc0854836bf8e484
-  EXStructuredHeaders: b88446922ba65b0c42defc5b409e0789b672d396
-  EXUpdates: 099aa69757127697453372c53ed121ac973a97ce
-  EXUpdatesInterface: defbda79f841a0dec9588f2cbf9fdfed52583667
+  EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
+  EXJSONUtils: d138005ee11b84fc4e3bf7119a160034db5d5e20
+  EXManifests: 17fbf8ed7e987cdbc6b93064f427a1bca4732088
+  Expo: 97df3b68de6c485f894dbae821666bec8435e144
+  expo-dev-launcher: a7525a50a580d319309f27c49685920386551071
+  expo-dev-menu: bde507a4305f84117848f0fcee680f38d80e52b9
+  expo-dev-menu-interface: 05d08cc56649636de77253583b4bbb73adce7680
+  ExpoClipboard: b8f76767b0dbaefb3be7adbf85049fd85861d527
+  ExpoFileSystem: 1bc21c70ab0bf505cd6bef97c5b008618bfb72f2
+  ExpoModulesCore: 2f35478e307578d2cee0674e2f15dace619894fd
+  ExpoModulesTestCore: 0b9d2b1eb1565eac757cbe49b5209bc22aa12f29
+  EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
+  EXUpdates: 272cd1e357bb810cc5b380d9f0fcde8ed50ebae7
+  EXUpdatesInterface: 4f787eeabc62c258f978ea4865c67adfb6b2f19f
   FBLazyVector: 71803c074f6325f10b5ec891c443b6bbabef0ca7
   FBReactNativeSpec: 5baf832d8aaaf9057c0a5cb6a7f46bfc85d347cb
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
