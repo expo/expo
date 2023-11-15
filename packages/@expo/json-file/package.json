@@ -1,0 +1,43 @@
+{
+  "name": "@expo/json-file",
+  "version": "8.2.37",
+  "description": "A module for reading, writing, and manipulating JSON files",
+  "main": "build/JsonFile.js",
+  "scripts": {
+    "watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc",
+    "prepare": "yarn run clean && yarn build",
+    "clean": "rimraf build ./tsconfig.tsbuildinfo",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo-cli.git",
+    "directory": "packages/json-file"
+  },
+  "keywords": [
+    "json"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo-cli/issues"
+  },
+  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/json-file#readme",
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+    "@babel/code-frame": "~7.10.4",
+    "json5": "^2.2.2",
+    "write-file-atomic": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/babel__code-frame": "^7.0.1",
+    "@types/json5": "^2.2.0",
+    "@types/write-file-atomic": "^2.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
