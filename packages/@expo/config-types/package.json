@@ -35,7 +35,7 @@
     "build"
   ],
   "devDependencies": {
-    "@expo/babel-preset-cli": "^0.2.24",
+    "@expo/babel-preset-cli": "^0.3.1",
     "json-schema-to-typescript": "^10.0.0",
     "ts-node": "^10.9.1"
   },
