@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import prettyBytes from 'pretty-bytes';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 
-import { Log } from '../log';
 import { BundleAssetWithFileHashes } from './fork-bundleAsync';
+import { Log } from '../log';
 
 export type ManifestAsset = { fileHashes: string[]; files: string[]; hash: string };
 

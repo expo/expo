@@ -3,14 +3,20 @@ import { LoadOptions } from '@expo/metro-config';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import Metro, { MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import { ConfigT } from 'metro-config';
 import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
 import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
+import type { TransformInputOptions } from 'metro/src/DeltaBundler/types';
 import IncrementalBundler from 'metro/src/IncrementalBundler';
-import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import Server from 'metro/src/Server';
+import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
+import type {
+  ResolverInputOptions,
+  BundleOptions as MetroBundleOptions,
+} from 'metro/src/shared/types';
+import { ConfigT } from 'metro-config';
 import path from 'path';
 
+import { isEnableHermesManaged, maybeThrowFromInconsistentEngineAsync } from './exportHermes';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import {
@@ -18,11 +24,6 @@ import {
   getBaseUrlFromExpoConfig,
   getMetroDirectBundleOptions,
 } from '../start/server/middleware/metroOptions';
-import { isEnableHermesManaged, maybeThrowFromInconsistentEngineAsync } from './exportHermes';
-
-import type { ResolverInputOptions } from 'metro/src/shared/types';
-import type { TransformInputOptions } from 'metro/src/DeltaBundler/types';
-import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 
 export type MetroDevServerOptions = LoadOptions;
 
@@ -245,7 +246,7 @@ function isMetroServerInstance(metro: Metro.Server): metro is Metro.Server & {
     }
   ): Promise<string>;
   _getEntryPointAbsolutePath(entryFile: string): string;
-  _getSortedModules(graph: ReadOnlyGraph): Array<Module<MixedOutput>>;
+  _getSortedModules(graph: ReadOnlyGraph): Module<MixedOutput>[];
 } {
   return '_shouldAddModuleToIgnoreList' in metro;
 }
@@ -320,7 +321,7 @@ async function forkMetroBuildAsync(
   );
 
   if (options.serializerOptions?.output === 'static') {
-    let parsed = typeof bundle === 'string' ? JSON.parse(bundle) : bundle;
+    const parsed = typeof bundle === 'string' ? JSON.parse(bundle) : bundle;
 
     assert(
       'artifacts' in parsed && Array.isArray(parsed.artifacts),
@@ -331,7 +332,7 @@ async function forkMetroBuildAsync(
 
   assert(typeof bundle === 'string', 'Expected serializer to return a string.');
 
-  let bundleCode = bundle;
+  const bundleCode = bundle;
   let bundleMap = null;
 
   if (!bundleMap) {

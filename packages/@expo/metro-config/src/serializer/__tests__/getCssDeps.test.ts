@@ -1,5 +1,6 @@
-import { getCssSerialAssets, fileNameFromContents, JSModule } from '../getCssDeps';
 import CountingSet from 'metro/src/lib/CountingSet';
+
+import { getCssSerialAssets, fileNameFromContents, JSModule } from '../getCssDeps';
 
 describe(fileNameFromContents, () => {
   it('returns the filename from the filepath', () => {

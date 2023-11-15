@@ -88,7 +88,7 @@ describe('serializes', () => {
         const bundle = await serializeTo({
           options: {
             dev: false,
-            platform: platform,
+            platform,
             hermes: false,
             // output: 'static',
             sourceMaps: false,

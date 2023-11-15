@@ -2,36 +2,24 @@ import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 import path from 'path';
 
+import { createMetadataJson } from './createMetadataJson';
 import { exportAssetsAsync } from './exportAssets';
 import { unstable_exportStaticAsync } from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { createBundlesAsync } from './fork-bundleAsync';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
+import { copyPublicFolderAsync } from './publicFolder';
 import { Options } from './resolveOptions';
+import { ExportAssetMap, getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
 import { createAssetMap, createSourceMapDebugHtml } from './writeContents';
 import * as Log from '../log';
+import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
-import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
-import { createMetadataJson } from './createMetadataJson';
-import { ExportAssetMap, getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
-import { copyPublicFolderAsync } from './publicFolder';
 
-/**
- * The structure of the outputDir will be:
- *
- * ```
- * ├── assets
- * │   └── *
- * ├── bundles
- * │   ├── android-01ee6e3ab3e8c16a4d926c91808d5320.js
- * │   └── ios-ee8206cc754d3f7aa9123b7f909d94ea.js
- * └── metadata.json
- * ```
- */
 export async function exportAppAsync(
   projectRoot: string,
   {
@@ -103,8 +91,6 @@ export async function exportAppAsync(
   const bundleEntries = Object.entries(bundles);
   // Can be empty during web-only SSG.
   if (bundleEntries.length) {
-    // TODO: Improve logging the bundle sizes
-
     // TODO: Use same asset system across platforms again.
     const { assets, embeddedHashSet } = await exportAssetsAsync(projectRoot, {
       files,

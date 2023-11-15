@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import { env } from '../utils/env';
 import { copyAsync } from '../utils/dir';
+import { env } from '../utils/env';
 
 const debug = require('debug')('expo:public-folder') as typeof console.log;
 

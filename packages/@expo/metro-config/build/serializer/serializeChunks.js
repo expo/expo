@@ -174,19 +174,24 @@ class Chunk {
     });
   }
   getFilenameForConfig(serializerConfig) {
-    return this.getFilename(this.options.dev ? '' : this.serializeToCodeWithTemplates(serializerConfig));
+    return this.getFilename(this.options.dev ? '' : this.serializeToCodeWithTemplates(serializerConfig, {
+      // Disable source maps when creating a sha to reduce the number of possible changes that could
+      // influence the cache hit.
+      serializerOptions: {
+        includeSourceMaps: false
+      },
+      sourceMapUrl: undefined
+    }));
   }
   serializeToCodeWithTemplates(serializerConfig, options = {}) {
     var _serializerConfig$get, _serializerConfig$get2;
     const entryFile = this.name;
-    const fileName = _path().default.basename(entryFile, '.js');
     const jsSplitBundle = (0, _baseJSBundle().baseJSBundleWithDependencies)(entryFile, [...this.preModules.values()], [...this.deps], {
       ...this.options,
       runBeforeMainModule: (_serializerConfig$get = serializerConfig === null || serializerConfig === void 0 ? void 0 : (_serializerConfig$get2 = serializerConfig.getModulesRunBeforeMainModule) === null || _serializerConfig$get2 === void 0 ? void 0 : _serializerConfig$get2.call(serializerConfig, _path().default.relative(this.options.projectRoot, entryFile))) !== null && _serializerConfig$get !== void 0 ? _serializerConfig$get : [],
       runModule: !this.isVendor && !this.isAsync,
       modulesOnly: this.preModules.size === 0,
       platform: this.getPlatform(),
-      sourceMapUrl: `${fileName}.map`,
       baseUrl: (0, _baseJSBundle().getBaseUrlOption)(this.graph, this.options),
       splitChunks: (0, _baseJSBundle().getSplitChunksOption)(this.graph, this.options),
       skipWrapping: true,
@@ -218,10 +223,14 @@ class Chunk {
     return computedAsyncModulePaths;
   }
   getAdjustedSourceMapUrl(serializerConfig) {
+    var _this$options$seriali;
     // Metro really only accounts for development, so we'll use the defaults here.
     if (this.options.dev) {
       var _this$options$sourceM;
       return (_this$options$sourceM = this.options.sourceMapUrl) !== null && _this$options$sourceM !== void 0 ? _this$options$sourceM : null;
+    }
+    if (!((_this$options$seriali = this.options.serializerOptions) !== null && _this$options$seriali !== void 0 && _this$options$seriali.includeSourceMaps)) {
+      return null;
     }
     if (this.options.inlineSourceMap || !this.options.sourceMapUrl) {
       var _this$options$sourceM2;

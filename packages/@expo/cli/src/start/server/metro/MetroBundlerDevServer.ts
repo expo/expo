@@ -20,6 +20,7 @@ import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { getRouterDirectoryWithManifest, isApiRouteConvention } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
@@ -47,7 +48,6 @@ import {
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
-import { ExportAssetMap } from '../../../export/saveAssets';
 
 export class ForwardHtmlError extends CommandError {
   constructor(

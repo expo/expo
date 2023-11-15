@@ -5,7 +5,7 @@ import { SerialAsset } from './serializerAssets';
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 export type SerializerParameters = [
     string,
-    ReadonlyArray<Module>,
+    readonly Module[],
     ReadOnlyGraph,
     ExpoSerializerOptions
 ];

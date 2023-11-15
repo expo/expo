@@ -1,5 +1,5 @@
-import { wrapModule } from '../js';
 import { parseModule, projectRoot } from './mini-metro';
+import { wrapModule } from '../js';
 
 jest.mock('fs');
 
@@ -9,7 +9,7 @@ function helpWrap(src: string, options: Partial<Parameters<typeof wrapModule>[1]
     createModuleId: (m) => m,
     dev: true,
     includeAsyncPaths: false,
-    projectRoot: projectRoot,
+    projectRoot,
     serverRoot: projectRoot,
     skipWrapping: false,
     sourceUrl: 'http://localhost:8081/index.bundle?platform=web&dev=true&minify=false',

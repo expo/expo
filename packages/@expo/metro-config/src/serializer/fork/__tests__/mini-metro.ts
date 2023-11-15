@@ -1,8 +1,8 @@
 import * as babel from '@babel/core';
 import { Dependency, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+import collectDependencies from 'metro/src/ModuleGraph/worker/collectDependencies';
 import CountingSet from 'metro/src/lib/CountingSet';
 import countLines from 'metro/src/lib/countLines';
-import collectDependencies from 'metro/src/ModuleGraph/worker/collectDependencies';
 import * as path from 'path';
 
 export const projectRoot = '/app/';
@@ -18,139 +18,149 @@ function toDependencyMap(...deps: Dependency[]): Map<string, Dependency> {
 }
 
 export function microBundle({
-    fs, 
-    entry,
-    resolve = (from, id) => {
-        for (const ext of ['', '.js', '.ts', '.tsx']) {
-            const next = path.join(path.dirname(from), id) + ext
-            if (fs[next]) {
-                return next
-            }
-        }
-        if (id === 'expo-mock/async-require' && !fs['expo-mock/async-require']) {
-            fs['expo-mock/async-require'] = `
+  fs,
+  entry,
+  resolve = (from, id) => {
+    for (const ext of ['', '.js', '.ts', '.tsx']) {
+      const next = path.join(path.dirname(from), id) + ext;
+      if (fs[next]) {
+        return next;
+      }
+    }
+    if (id === 'expo-mock/async-require' && !fs['expo-mock/async-require']) {
+      fs['expo-mock/async-require'] = `
                 module.exports = () => 'MOCK'
-            `
-            return 'expo-mock/async-require'
-        }
+            `;
+      return 'expo-mock/async-require';
+    }
 
-        throw new Error(`Cannot resolve ${id} from ${from}. Available files: ${Object.keys(fs).join(', ')}`)
-    },
-    options = {
-    },
+    throw new Error(
+      `Cannot resolve ${id} from ${from}. Available files: ${Object.keys(fs).join(', ')}`
+    );
+  },
+  options = {},
 }: {
-    fs: Record<string, string>,
-    entry?: string,
-    resolve?: (from: string, id: string) => string,
-    options?: {
-        dev?: boolean,
-        platform?: string,
-        baseUrl?: string;
-        output?: 'static',
-        hermes?: boolean,
-        sourceMaps?: boolean,
-    }
-}): [string, readonly Module<MixedOutput>[], ReadOnlyGraph<MixedOutput>,SerializerOptions<MixedOutput> ] {
+  fs: Record<string, string>;
+  entry?: string;
+  resolve?: (from: string, id: string) => string;
+  options?: {
+    dev?: boolean;
+    platform?: string;
+    baseUrl?: string;
+    output?: 'static';
+    hermes?: boolean;
+    sourceMaps?: boolean;
+  };
+}): [
+  string,
+  readonly Module<MixedOutput>[],
+  ReadOnlyGraph<MixedOutput>,
+  SerializerOptions<MixedOutput>,
+] {
+  if (!entry) {
+    entry = Object.keys(fs).find((key) => key.match(/(\.\/)?index\.[tj]sx?/));
     if (!entry) {
-        entry = Object.keys(fs).find((key) => key.match(/(\.\/)?index\.[tj]sx?/))
-        if (!entry) { 
-            throw new Error('No entrypoint found and cannot infer one from the mock fs: ' + Object.keys(fs).join(', '))
-        }
+      throw new Error(
+        'No entrypoint found and cannot infer one from the mock fs: ' + Object.keys(fs).join(', ')
+      );
     }
-    
-    const modules = new Map<string, Module>();
-    const visited = new Set<string>();
+  }
 
-    function recurseWith(queue: string[], parent?: Module) {
-       
+  const modules = new Map<string, Module>();
+  const visited = new Set<string>();
+
+  function recurseWith(queue: string[], parent?: Module) {
     while (queue.length) {
-        const id = queue.shift()!;
-        const absPath = path.join(projectRoot, id)
-        if (visited.has(absPath)) {
-            modules.get(absPath)?.inverseDependencies.add(parent?.path);
-            continue;
-        }
-        visited.add(absPath);
-        const code = fs[id];
-        if (!code) {
-            throw new Error(`File not found: ${id}`);
-        }
-        const module = parseModule(id, code);
-        modules.set(absPath, module);
-        
-        if (parent?.path) {
-            module.inverseDependencies.add(parent.path);
-        }
+      const id = queue.shift()!;
+      const absPath = path.join(projectRoot, id);
+      if (visited.has(absPath)) {
+        modules.get(absPath)?.inverseDependencies.add(parent?.path);
+        continue;
+      }
+      visited.add(absPath);
+      const code = fs[id];
+      if (!code) {
+        throw new Error(`File not found: ${id}`);
+      }
+      const module = parseModule(id, code);
+      modules.set(absPath, module);
 
-        // @ts-ignore
-        for (const dep of module.dependencies.values()) {
-            const resolved = resolve(id, dep.data.name);
-            recurseWith([resolved], module);
-        }
+      if (parent?.path) {
+        module.inverseDependencies.add(parent.path);
+      }
+
+      // @ts-ignore
+      for (const dep of module.dependencies.values()) {
+        const resolved = resolve(id, dep.data.name);
+        recurseWith([resolved], module);
+      }
     }
-}
-recurseWith([entry]);
+  }
+  recurseWith([entry]);
 
-const absEntry = path.join(projectRoot, entry);
-const dev = options.dev ?? true;
-    return [
-        // entryPoint: string, 
-        absEntry,
-        // preModules: readonly Module<MixedOutput>[], 
-        [],
-        // graph: ReadOnlyGraph<MixedOutput>, 
-        {
-dependencies: modules,
-entryPoints: new Set([absEntry]),
-transformOptions: {
-    hot: false,
-    minify: false,
-    dev,
-    type: 'module',
-    unstable_transformProfile: options.hermes ? 'hermes-stable' : 'default',
-    platform: options.platform ?? 'web',
-    customTransformOptions: {
-        __proto__: null,
-        baseUrl: options.baseUrl,
-        engine: options.hermes ? 'hermes' : undefined,
-    }
-},
-
+  const absEntry = path.join(projectRoot, entry);
+  const dev = options.dev ?? true;
+  return [
+    // entryPoint: string,
+    absEntry,
+    // preModules: readonly Module<MixedOutput>[],
+    [],
+    // graph: ReadOnlyGraph<MixedOutput>,
+    {
+      dependencies: modules,
+      entryPoints: new Set([absEntry]),
+      transformOptions: {
+        hot: false,
+        minify: false,
+        dev,
+        type: 'module',
+        unstable_transformProfile: options.hermes ? 'hermes-stable' : 'default',
+        platform: options.platform ?? 'web',
+        customTransformOptions: {
+          __proto__: null,
+          baseUrl: options.baseUrl,
+          engine: options.hermes ? 'hermes' : undefined,
         },
-        // options: SerializerOptions<MixedOutput>
-        {
-            // @ts-ignore
-serializerOptions: (options.output || options.hermes || options.sourceMaps) ? {
-    output: options.output,
-    includeBytecode: options.hermes,
-    includeSourceMaps: options.sourceMaps
-} : undefined,
+      },
+    },
+    // options: SerializerOptions<MixedOutput>
+    {
+      // @ts-ignore
+      serializerOptions:
+        options.output || options.hermes || options.sourceMaps
+          ? {
+              output: options.output,
+              includeBytecode: options.hermes,
+              includeSourceMaps: options.sourceMaps,
+            }
+          : undefined,
 
-sourceMapUrl: options.sourceMaps ? 'https://localhost:8081/indedx.bundle?dev=false' : undefined,
-            asyncRequireModulePath: 'expo-mock/async-require',
-            
-            createModuleId(filePath) {
-                return filePath as unknown as number;
-            },
-            dev,
-            getRunModuleStatement(moduleId) {
-                return `TEST_RUN_MODULE(${JSON.stringify(moduleId)});`;
-            },
-            includeAsyncPaths: dev,
-            shouldAddToIgnoreList(module) {
-                return false;
-            },
-            modulesOnly: false,
-            processModuleFilter(module) {
-                return true;
-            },
-            projectRoot,
-            runBeforeMainModule: [],
-            runModule: true,
-            serverRoot: projectRoot,
+      sourceMapUrl: options.sourceMaps
+        ? 'https://localhost:8081/indedx.bundle?dev=false'
+        : undefined,
+      asyncRequireModulePath: 'expo-mock/async-require',
 
-        }
-    ]
+      createModuleId(filePath) {
+        return filePath as unknown as number;
+      },
+      dev,
+      getRunModuleStatement(moduleId) {
+        return `TEST_RUN_MODULE(${JSON.stringify(moduleId)});`;
+      },
+      includeAsyncPaths: dev,
+      shouldAddToIgnoreList(module) {
+        return false;
+      },
+      modulesOnly: false,
+      processModuleFilter(module) {
+        return true;
+      },
+      projectRoot,
+      runBeforeMainModule: [],
+      runModule: true,
+      serverRoot: projectRoot,
+    },
+  ];
 }
 
 // A small version of the Metro transformer to easily create dependency mocks from a string of code.

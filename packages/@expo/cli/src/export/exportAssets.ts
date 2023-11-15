@@ -1,7 +1,7 @@
 import { ExpoConfig } from '@expo/config';
+import fs from 'fs';
 import minimatch from 'minimatch';
 import path from 'path';
-import fs from 'fs';
 
 import { BundleOutput } from './fork-bundleAsync';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
