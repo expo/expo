@@ -259,10 +259,6 @@ class Chunk {
       return this.options.sourceMapUrl ?? null;
     }
 
-    if (!this.options.serializerOptions?.includeSourceMaps) {
-      return null;
-    }
-
     if (this.options.inlineSourceMap || !this.options.sourceMapUrl) {
       return this.options.sourceMapUrl ?? null;
     }
