@@ -81,7 +81,6 @@ describe('get', () => {
   });
 
   it(`memoizes`, () => {
-    delete process.env.FOO;
     const envRuntime = createControlledEnvironment();
     vol.fromJSON(
       {
@@ -118,8 +117,6 @@ describe('_getForce', () => {
   });
 
   it(`returns the value of the environment variable`, () => {
-    delete process.env.FOO;
-
     const envRuntime = createControlledEnvironment();
     vol.fromJSON(
       {
@@ -137,7 +134,6 @@ describe('_getForce', () => {
   });
 
   it(`cascades env files (development)`, () => {
-    delete process.env.FOO;
     process.env.NODE_ENV = 'development';
     const envRuntime = createControlledEnvironment();
     vol.fromJSON(
@@ -161,7 +157,6 @@ describe('_getForce', () => {
   });
 
   it(`cascades env files (production)`, () => {
-    delete process.env.FOO;
     process.env.NODE_ENV = 'production';
     const envRuntime = createControlledEnvironment();
     vol.fromJSON(
@@ -183,7 +178,6 @@ describe('_getForce', () => {
   });
 
   it(`cascades env files (default)`, () => {
-    delete process.env.FOO;
     const envRuntime = createControlledEnvironment();
     vol.fromJSON(
       {
@@ -202,7 +196,6 @@ describe('_getForce', () => {
   });
 
   it(`skips modifying the environment with dotenv if disabled with EXPO_NO_DOTENV`, () => {
-    delete process.env.FOO;
     process.env.EXPO_NO_DOTENV = '1';
     const envRuntime = createControlledEnvironment();
     vol.fromJSON(
