@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
+  PaginationState,
   SortingState,
   VisibilityState,
   flexRender,
@@ -15,14 +16,12 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -37,7 +36,7 @@ import {
 import { MetroJsonModule } from './data';
 import { router } from 'expo-router';
 
-export function formatSize(size: number) {
+function formatSize(size: number) {
   if (size < 1024) {
     return size + 'B';
   } else if (size < 1024 * 1024) {
@@ -48,26 +47,6 @@ export function formatSize(size: number) {
 }
 
 export const columns: ColumnDef<MetroJsonModule>[] = [
-  //   {
-  //     id: 'select',
-  //     header: ({ table }) => (
-  //       <Checkbox
-  //         checked={table.getIsAllPageRowsSelected()}
-  //         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //         aria-label="Select all"
-  //       />
-  //     ),
-  //     cell: ({ row }) => (
-  //       <Checkbox
-  //         checked={row.getIsSelected()}
-  //         onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //         aria-label="Select row"
-  //       />
-  //     ),
-  //     enableSorting: false,
-  //     enableHiding: false,
-  //   },
-
   {
     accessorKey: 'path',
     header: 'Path',
@@ -108,6 +87,7 @@ export const columns: ColumnDef<MetroJsonModule>[] = [
       return <div className="text-center">{row.getValue('index')}</div>;
     },
   },
+
   {
     accessorKey: 'size',
 
@@ -142,13 +122,14 @@ export const columns: ColumnDef<MetroJsonModule>[] = [
       return <div className="text-right font-medium">{amount}</div>;
     },
   },
-
+  {
+    id: 'isNodeModule',
+    accessorKey: 'isNodeModule',
+  },
   {
     id: 'actions',
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original;
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -188,9 +169,14 @@ export const columns: ColumnDef<MetroJsonModule>[] = [
 
 export function DataTableDemo({ data }: { data: MetroJsonModule[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [pageState, setPageState] = React.useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: Math.min(200, data.length),
+  });
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    isNodeModule: false,
+  });
 
   const table = useReactTable({
     data,
@@ -202,51 +188,80 @@ export function DataTableDemo({ data }: { data: MetroJsonModule[] }) {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPageState,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
+      pagination: {
+        pageIndex: pageState.pageIndex,
+        pageSize: pageState.pageSize,
+      },
     },
   });
 
   return (
     <div className="w-full p-4">
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Filter modules..."
           value={(table.getColumn('path')?.getFilterValue() as string) ?? ''}
           onChange={(event) => table.getColumn('path')?.setFilterValue(event.target.value)}
           className="max-w-sm"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
+        <div className="flex gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide() && !['isNodeModule'].includes(column.id))
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}>
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Filters <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {[{ name: 'Node Modules', value: 'isNodeModule' }].map((column) => {
+                const tableColumn = table.getColumn(column.value);
+                const active = tableColumn?.getFilterValue() !== false;
                 return (
                   <DropdownMenuCheckboxItem
-                    key={column.id}
+                    key={column.value}
                     className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}>
-                    {column.id}
+                    checked={active}
+                    onCheckedChange={(value) => {
+                      tableColumn.setFilterValue(value ? undefined : false);
+                    }}>
+                    {column.name}
                   </DropdownMenuCheckboxItem>
                 );
               })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md relative border overflow-auto h-[70vh]">
         <Table>
-          <TableHeader>
+          <TableHeader className="sticky top-0 z-10">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -261,7 +276,7 @@ export function DataTableDemo({ data }: { data: MetroJsonModule[] }) {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className="overflow-auto h-[400px]">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>

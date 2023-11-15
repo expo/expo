@@ -21,6 +21,7 @@ export default function Layout() {
         id: m.path,
         absolutePath,
         isEntry,
+        isNodeModule: m.path.includes('node_modules'),
       };
     });
     // return modules.filter((dep) => {
