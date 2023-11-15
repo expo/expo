@@ -14,7 +14,6 @@ import android.util.Base64
 import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
-import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.Promise
