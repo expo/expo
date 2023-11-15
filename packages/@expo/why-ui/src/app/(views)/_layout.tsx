@@ -2,6 +2,7 @@ import { Link, Slot, Tabs } from 'expo-router';
 import { FilteredModulesContext, useGraph } from '../../components/deps-context';
 import React from 'react';
 import Checkbox from 'expo-checkbox';
+import { Button } from '@/components/ui/button';
 
 export default function Layout() {
   const { modules } = useGraph();
@@ -25,6 +26,7 @@ export default function Layout() {
     <FilteredModulesContext.Provider value={visibleDeps}>
       <div className="flex flex-1 flex-col">
         {/* Header */}
+        <Button>Test</Button>
         <div className="flex p-3 gap-2 border-b border-b-[#ffffff1a] flex-col justify-between flex-wrap">
           <div className="flex-row">
             <h3 className="text-slate-50 font-bold">Expo JS Bundle</h3>

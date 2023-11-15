@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "expo start -p web",
     "build": "expo export -p web --output-dir build",
-    "prepare": "yarn run clean && yarn build",
+    "prepublishOnly": "yarn run clean && yarn build",
     "clean": "rimraf build ./tsconfig.tsbuildinfo",
     "lint": "eslint .",
     "test": "jest"
@@ -25,7 +25,14 @@
   "files": [
     "build"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.0.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "lucide-react": "^0.292.0",
+    "tailwind-merge": "^2.0.0",
+    "tailwindcss-animate": "^1.0.7"
+  },
   "devDependencies": {
     "@tanstack/react-query": "^5.8.3",
     "autoprefixer": "^10.4.16",
