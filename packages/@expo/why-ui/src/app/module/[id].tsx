@@ -97,13 +97,13 @@ function DependencyInfo({
               Source Maps →
             </Button>
           </div>
-          <div className="flex flex-1 flex-row p-2 border-b border-b-[#ffffff1a] justify-between">
+          <div className="flex flex-1 flex-row p-2 px-6 border-b border-b-[#ffffff1a] justify-between items-center">
             {/* <FileIcon className="w-4 text-slate-50" /> */}
             <span className="text-slate-50 text-lg font-bold">File: {path}</span>
             <SelectScrollable parents={inverseDependencies} />
           </div>
 
-          <div className="flex flex-1 flex-row p-2 items-center justify-center">
+          <div className="flex flex-1 flex-row p-2 px-6 items-center justify-center">
             <div className="flex flex-1 items-center">
               <p className="flex text-slate-50 font-bold text-lg">Source</p>
             </div>
