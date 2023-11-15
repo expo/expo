@@ -12,6 +12,7 @@ const path = require('path');
 
 const root = path.join(projectRoot, '../../..');
 
+config.resolver.unstable_enablePackageExports = true;
 config.watchFolders = [projectRoot, ...['packages', 'node_modules'].map((v) => path.join(root, v))];
 
 config.resolver.blockList = [

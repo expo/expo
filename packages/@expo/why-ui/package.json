@@ -26,6 +26,8 @@
     "build"
   ],
   "dependencies": {
+    "@radix-ui/react-checkbox": "^1.0.4",
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
@@ -35,6 +37,7 @@
   },
   "devDependencies": {
     "@tanstack/react-query": "^5.8.3",
+    "@tanstack/react-table": "^8.10.7",
     "autoprefixer": "^10.4.16",
     "classnames": "^2.3.2",
     "prism-react-renderer": "^2.2.0",
