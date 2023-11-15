@@ -14,6 +14,7 @@ export type StartOptions = {
   nonPersistent?: boolean;
   maxWorkers?: number;
   platforms?: ExpoConfig['platforms'];
+  isExpoRouterModuleEnabled?: boolean;
 };
 
 export const printHelp = (): void => {
@@ -30,7 +31,10 @@ export const printItem = (text: string): string =>
   `${BLT} ` + wrapAnsi(text, getTerminalColumns()).trimStart();
 
 export function printUsage(
-  options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>,
+  options: Pick<
+    StartOptions,
+    'devClient' | 'isWebSocketsEnabled' | 'platforms' | 'isExpoRouterModuleEnabled'
+  >,
   { verbose }: { verbose: boolean }
 ) {
   const isMac = process.platform === 'darwin';
@@ -64,6 +68,7 @@ export function printUsage(
       { key: 'o', msg: 'open project code in your editor' },
       { key: 'c', msg: 'show project QR' },
       {},
+      !!options.isExpoRouterModuleEnabled && { key: 'l', msg: 'list all expo-router routes' },
     ]);
   } else {
     logCommandsTable([

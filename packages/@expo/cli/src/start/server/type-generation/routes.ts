@@ -76,7 +76,7 @@ export async function setupTypedRoutes({
   if (await directoryExistsAsync(routerDirectory)) {
     // Do we need to walk the entire tree on startup?
     // Idea: Store the list of files in the last write, then simply check Git for what files have changed
-    await walk(routerDirectory, addFilePath);
+    await walkThroughDirectoryAsync(routerDirectory, addFilePath);
   }
 
   regenerateRouterDotTS(
@@ -250,12 +250,15 @@ export const setToUnionType = <T>(set: Set<T>) => {
 /**
  * Recursively walk a directory and call the callback with the file path.
  */
-async function walk(directory: string, callback: (filePath: string) => void) {
+export async function walkThroughDirectoryAsync(
+  directory: string,
+  callback: (filePath: string) => void
+) {
   const files = await fs.readdir(directory);
   for (const file of files) {
     const p = path.join(directory, file);
     if ((await fs.stat(p)).isDirectory()) {
-      await walk(p, callback);
+      await walkThroughDirectoryAsync(p, callback);
     } else {
       // Normalise the paths so they are easier to convert to URLs
       const normalizedPath = p.replaceAll(path.sep, '/');

@@ -1,3 +1,4 @@
+import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
 import { KeyPressHandler } from './KeyPressHandler';
@@ -41,10 +42,16 @@ export async function startInterfaceAsync(
   const actions = new DevServerManagerActions(devServerManager);
 
   const isWebSocketsEnabled = devServerManager.getDefaultDevServer()?.isTargetingNative();
+  const { pkg, exp } = getConfig(devServerManager.projectRoot);
 
-  const usageOptions = {
+  const usageOptions: Pick<
+    StartOptions,
+    'devClient' | 'platforms' | 'isExpoRouterModuleEnabled' | 'isWebSocketsEnabled'
+  > = {
     isWebSocketsEnabled,
     devClient: devServerManager.options.devClient,
+    // TODO: check if there is a better way to determine if expo-router is being used in the project
+    isExpoRouterModuleEnabled: pkg.dependencies?.['expo-router'] !== undefined,
     ...options,
   };
 
@@ -192,6 +199,10 @@ export async function startInterfaceAsync(
       case 'o':
         Log.log(`${BLT} Opening the editor...`);
         return openInEditorAsync(devServerManager.projectRoot);
+      case 'l':
+        if (usageOptions.isExpoRouterModuleEnabled) {
+          return actions.listAllRoutesAsync(exp);
+        }
     }
   };
 

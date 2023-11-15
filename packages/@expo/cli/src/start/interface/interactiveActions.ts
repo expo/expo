@@ -1,9 +1,11 @@
+import { ExpoConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 
 import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
 import * as Log from '../../log';
 import { delayAsync } from '../../utils/delay';
+import { directoryExistsAsync } from '../../utils/dir';
 import { learnMore } from '../../utils/link';
 import { openBrowserAsync } from '../../utils/open';
 import { ExpoChoice, selectAsync } from '../../utils/prompts';
@@ -12,10 +14,12 @@ import {
   addReactDevToolsReloadListener,
   startReactDevToolsProxyAsync,
 } from '../server/ReactDevToolsProxy';
+import { getRouterDirectoryWithManifest } from '../server/metro/router';
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
 } from '../server/middleware/inspector/JsInspector';
+import { getTypedRoutesUtils, walkThroughDirectoryAsync } from '../server/type-generation/routes';
 
 const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
 
@@ -180,5 +184,32 @@ export class DevServerManagerActions {
   toggleDevMenu() {
     Log.log(`${BLT} Toggling dev menu`);
     this.devServerManager.broadcastMessage('devMenu');
+  }
+
+  async listAllRoutesAsync(exp: ExpoConfig) {
+    Log.log(`${BLT} Listing all routes`);
+    const directory = getRouterDirectoryWithManifest(this.devServerManager.projectRoot, exp);
+    const { dynamicRoutes, staticRoutes, addFilePath } = getTypedRoutesUtils(directory);
+
+    if (await directoryExistsAsync(directory)) {
+      await walkThroughDirectoryAsync(directory, addFilePath);
+    }
+
+    // TODO: maybe sort the routes?
+    if (dynamicRoutes.size > 0) {
+      Log.log(`${BLT} dynamic routes:`);
+
+      for (const [dynamicRoute] of dynamicRoutes) {
+        Log.log(`- ${dynamicRoute}`);
+      }
+    }
+
+    if (staticRoutes.size > 0) {
+      Log.log(`${BLT} static routes:`);
+
+      for (const [staticRoute] of staticRoutes) {
+        Log.log(`- ${staticRoute}`);
+      }
+    }
   }
 }
