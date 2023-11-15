@@ -25,10 +25,12 @@
   "files": [
     "build"
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "expo-router": "^3.0.0"
+    "@tanstack/react-query": "^5.8.3",
+    "autoprefixer": "^10.4.16",
+    "expo-router": "^2.0.12",
+    "tailwind": "^4.0.0"
   },
   "publishConfig": {
     "access": "public"

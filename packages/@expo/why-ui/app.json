@@ -5,6 +5,7 @@
     "output": "single"
   },
   "experiments": {
-    "baseUrl": "/_expo/why/"
+    "baseUrl": "/_expo/why/",
+    "tsconfigPaths": true
   }
 }
