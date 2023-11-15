@@ -133,7 +133,7 @@ function endsInNull(path: string) {
 // Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
 // for reasons I'm not totally clear on, those redirects do not work
 const RENAMED_PAGES: Record<string, string> = {
-  // Redirects after creating /home route
+  // Redirects after creating Home pages and route
   '/next-steps/additional-resources/': '/additional-resources/',
   '/get-started/create-a-new-app/': '/get-started/create-a-project',
   '/guides/config-plugins/': '/config-plugins/introduction/',
@@ -161,6 +161,13 @@ const RENAMED_PAGES: Record<string, string> = {
   '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
   '/get-started/errors/': '/debugging/errors-and-warnings/',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
+  '/home/develop/user-interface/safe-areas': '/develop/user-interface/safe-areas/',
+  '/home/develop/development-builds/installation': '/develop/development-builds/create-a-build/',
+  '/home/debugging/tools/': '/debugging/tools/',
+  '/home/navigation/installation': '/routing/introduction/',
+  '/home/authentication': '/develop/authentication/',
+  '/home/get-started/create-a-project': '/get-started/create-a-project/',
+  '/home/core-concepts/': '/core-concepts/',
 
   // Redirects after organizing docs in Guides
   '/bare/hello-world/': '/bare/overview/',
@@ -170,6 +177,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/using-bugsnag/': '/guides/overview/',
   '/build/automating-submissions/': '/build/automate-submissions/',
   '/workflow/run-on-device/': '/build/internal-distribution/',
+  '/guides/': '/guides/overview/',
+  '/archive/workflow/customizing/': '/workflow/customizing/',
+  '/errors-and-warnings/': '/debugging/errors-and-warnings/',
 
   // EAS Build
   '/build-reference/eas-json/': '/eas/json/#eas-build',
@@ -308,19 +318,33 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Deleted or removed guides
   '/guides/using-clojurescript/': '/guides/',
+  '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup/',
+  '/guides/using-custom-fonts/': '/develop/user-interface/fonts/',
+  '/workflow/already-used-react-native/': '/workflow/overview/',
+  '/guides/setup-native-firebase/': '/guides/using-firebase/',
+  '/development/installation/': '/develop/development-builds/create-a-build/',
+  '/guides/routing-and-navigation/': '/routing/introduction/',
+  '/router/reference/api-routes': '/preview/api-routes/',
+  '/build-reference/custom-build-config/': '/custom-builds/get-started/',
+  '/eas-update/migrate-codepush-to-eas-update/': '/eas-update/codepush/',
 
   // Redirects from old to new tutorial
   '/tutorial/planning/': '/tutorial/introduction/',
   '/tutorial/sharing/': '/tutorial/introduction/',
   '/tutorial/text/': '/tutorial/introduction/',
+  '/tutorial/button': '/tutorial/introduction/',
 
-  // Redirects for removed /archived pages
+  // Redirects for removed/archived pages
   '/archived/': '/archive/',
   '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
   '/expokit/eject/': '/archive/glossary/#eject',
   '/expokit/expokit/': '/archive/glossary/#expokit',
   '/submit/classic-builds/': '/submit/introduction/',
   '/archive/adhoc-builds/': '/develop/development-builds/introduction/',
+  '/technical-specs/expo-updates-0/': '/technical-specs/expo-updates-1/',
+  '/development/extending-the-dev-menu/': '/develop/development-builds/development-workflows/',
+  '/more/latest': '/versions/latest/',
+  '/archive/expokit/overview/': '/archive/glossary/',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
@@ -339,6 +363,10 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/firebase-recaptcha/': '/guides/using-firebase/',
   '/versions/latest/sdk/amplitude/': '/guides/using-analytics/',
   '/versions/latest/sdk/util/': '/versions/latest/',
+  '/versions/v45.0.0/sdk/google-sign-in': '/guides/google-authentication/',
+  '/versions/v44.0.0/sdk/google/': '/guides/google-authentication/',
+  '/versions/latest/sdk/error-recovery/': '/versions/latest/',
+
   // Push notifications
   '/config/app/': '/workflow/configuration/',
   '/versions/latest/sdk/settings/': '/versions/latest/',
@@ -367,9 +395,4 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/advance/platform-specific-modules': '/router/advanced/platform-specific-modules/',
   '/router/advance/shared-routes': '/router/advanced/shared-routes/',
   '/router/advance/router-settings': '/router/advanced/router-settings/',
-
-  // Note (@aman): The following redirect is temporary until Guides section has an overview
-  '/guides/': '/workflow/customizing/',
-  '/archive/workflow/customizing/': '/workflow/customizing/',
-  '/errors-and-warnings/': '/debugging/errors-and-warnings/',
 };
