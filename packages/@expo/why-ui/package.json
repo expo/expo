@@ -1,0 +1,36 @@
+{
+  "name": "@expo/why-ui",
+  "version": "0.0.0",
+  "description": "Expo CLI devtool plugin for inspecting the intermediate bundler state",
+  "main": "expo-router/entry",
+  "scripts": {
+    "watch": "expo start -p web",
+    "build": "expo export -p web --output-dir build",
+    "prepare": "yarn run clean && yarn build",
+    "clean": "rimraf build ./tsconfig.tsbuildinfo",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/why-ui"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/why-ui#readme",
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+    "expo-router": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "platforms": ["web"],
+  "web": {
+    "bundler": "metro",
+    "output": "single"
+  },
+  "experiments": {
+    "baseUrl": "/_expo/why/"
+  }
+}
