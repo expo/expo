@@ -232,7 +232,7 @@ export async function instantiateMetroAsync(
         const jsonResults = JSON.stringify(
           {
             version: 1,
-            graphs: bundles.map((bundle) => bundle),
+            graphs: bundles.slice(0, 1).map((bundle) => bundle),
           },
           null,
           2
