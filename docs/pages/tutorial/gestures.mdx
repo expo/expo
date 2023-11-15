@@ -135,7 +135,7 @@ const scaleImage = useSharedValue(imageSize);
 
 Creating a shared value using the `useSharedValue()` hook has many advantages. It helps to mutate a piece of data and allows running animations based on the current value.
 A shared value can be accessed and modified using the `.value` property. It will scale the initial value of `scaleImage` so that when a user double-taps the sticker,
-it scales to twice its original size. To do this, we will create an and call it `doubleTap`, and this object will use the `Gesture.Tap()` to animate the transition while scaling the sticker image. The `numberOfTaps` method determines how many taps are required.
+it scales to twice its original size. To do this, we will create an object and call it `doubleTap`, and this object will use the `Gesture.Tap()` to animate the transition while scaling the sticker image. The `numberOfTaps` method determines how many taps are required.
 
 Create the following object in the `<EmojiSticker>` component:
 
@@ -224,7 +224,7 @@ Let's take a look at our app on iOS, Android and the web:
 
 ## Add a pan gesture
 
-A pan gesture allows recognizing a dragging gesture and tracking its movement. We will use this gesture handler to drag the sticker across the image.
+A pan gesture allows recognizing a dragging gesture and tracking its movement. We will use it to drag the sticker across the image.
 
 In the **EmojiSticker.js**, replace the `<View>` component with the `<Animated.View>` component.
 
