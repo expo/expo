@@ -34,7 +34,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { MetroJsonModule } from './data';
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 
 function formatSize(size: number) {
   if (size < 1024) {
@@ -57,7 +57,11 @@ export const columns: ColumnDef<MetroJsonModule>[] = [
       const isEntry = row.original.isEntry;
       return (
         <span className="gap-2 flex">
-          <span>{row.getValue('path')}</span>
+          <Link
+            className="text-slate-50"
+            href={{ pathname: '/module/[id]', params: { id: row.original.path } }}>
+            {row.getValue('path')}
+          </Link>
           {isVirtual && (
             <Badge variant="secondary" className="text-xs">
               Virtual

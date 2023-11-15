@@ -10,9 +10,11 @@ export default function ModuleInspection() {
   const { modules } = useGraph();
   const p = decodeURIComponent(id);
   const selected = modules.find((m) => m.path === p);
+  console.log('selected', selected, p);
   if (!selected) {
     return null;
   }
+  // http://localhost:8082/module/..%2F..%2Fpackages%2F%40expo%2Fmetro-runtime%2Fsrc%2Fasync-require%2FloadBundle.ts
 
   return <DependencyInfo {...selected} />;
 }
