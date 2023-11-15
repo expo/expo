@@ -1,9 +1,37 @@
-import { Link, useLocalSearchParams } from 'expo-router';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Link, router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 
 import { BaconCode } from '../../components/code';
 import { MetroJsonModule } from '../../components/data';
 import { useGraph } from '../../components/deps-context';
+import { Button } from '@/components/ui/button';
+
+export function SelectScrollable({ parents }: { parents: string[] }) {
+  return (
+    <Select
+      onValueChange={(value) => {
+        router.push({ pathname: '/module/[id]', params: { id: value } });
+      }}>
+      <SelectTrigger className="w-[280px]">
+        <SelectValue placeholder="Select a parent" />
+      </SelectTrigger>
+      <SelectContent>
+        {parents.map((parent) => (
+          <SelectItem key={parent} value={parent}>
+            {parent}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
 
 export default function ModuleInspection() {
   const { id } = useLocalSearchParams();
@@ -19,36 +47,47 @@ export default function ModuleInspection() {
   return <DependencyInfo {...selected} />;
 }
 
-function DependencyInfo({ getSource, inverseDependencies, output, path }: MetroJsonModule) {
+function getExtension(path: string) {
+  const match = path.match(/\.([^.]+)$/);
+  return match?.[1] ?? 'js';
+}
+
+function DependencyInfo({
+  getSource,
+  inverseDependencies,
+  output,
+  path,
+  dependencies,
+}: MetroJsonModule) {
   const jsModules = output.filter(({ type }) => type.startsWith('js/'));
 
   const items = [
     <BaconCode
-      className={'language-' + (path.match(/\.tsx?$/) ? 'tsx' : 'js')}
+      dependencies={{}}
+      className={'language-' + getExtension(path)}
       metastring=""
       children={getSource}
     />,
-    <BaconCode className="language-js" metastring="" children={jsModules[0].data.code} />,
+    <BaconCode
+      dependencies={{}}
+      className="language-js"
+      metastring=""
+      children={jsModules[0].data.code}
+    />,
   ];
   return (
-    <div className="flex flex-1 bg-[#191A20] border-l border-l-[#ffffff1a]">
+    <div className="flex flex-1 bg-[#000] border-l border-l-[#ffffff1a]">
       <div className="flex flex-1 flex-col">
         {/* Header */}
         <span className="flex border-b border-b-[#ffffff1a] flex-col justify-between">
-          <div className="flex flex-1 flex-row p-2 border-b border-b-[#ffffff1a]">
-            {/* <FileIcon className="w-4 text-slate-50" /> */}
-            <span className="text-slate-50 text-lg font-bold">File: {path}</span>
-          </div>
-
           <div className="flex flex-1 flex-row p-2 items-center justify-between border-b border-b-[#ffffff1a]">
-            <Link
-              href="/"
-              className="text-[#6272a4] active:text-slate-50 hover:underline text-md font-bold pr-2">
-              ← Go Back
+            <Link href="/" className="text-[#6272a4]">
+              <Button variant="ghost">← Go Back</Button>
             </Link>
 
-            <p
-              className="text-[#6272a4] active:text-slate-50 text-md hover:underline font-bold cursor-pointer"
+            <Button
+              className="text-[#6272a4]"
+              variant="ghost"
               onClick={() => {
                 inspectSourcemaps({
                   code: jsModules[0].data.code,
@@ -56,13 +95,19 @@ function DependencyInfo({ getSource, inverseDependencies, output, path }: MetroJ
                 });
               }}>
               Source Maps →
-            </p>
+            </Button>
+          </div>
+          <div className="flex flex-1 flex-row p-2 border-b border-b-[#ffffff1a] justify-between">
+            {/* <FileIcon className="w-4 text-slate-50" /> */}
+            <span className="text-slate-50 text-lg font-bold">File: {path}</span>
+            <SelectScrollable parents={inverseDependencies} />
           </div>
 
           <div className="flex flex-1 flex-row p-2 items-center justify-center">
             <div className="flex flex-1 items-center">
               <p className="flex text-slate-50 font-bold text-lg">Source</p>
             </div>
+
             <div className="flex flex-1">
               <p className="flex text-slate-50 font-bold text-lg">Output</p>
             </div>
@@ -78,18 +123,6 @@ function DependencyInfo({ getSource, inverseDependencies, output, path }: MetroJ
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="flex flex-1 max-h-24 flex-col overflow-y-scroll">
-          <h3 className="text-slate-50 font-bold">Inverse Dependencies</h3>
-          {inverseDependencies.map((absolutePath) => (
-            <Link
-              href={{ pathname: '/module/[id]', params: { id: absolutePath } }}
-              key={absolutePath}
-              className="text-slate-50 text-md font-bold">
-              {absolutePath}
-            </Link>
-          ))}
         </div>
       </div>
     </div>

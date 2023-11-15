@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import { Link } from 'expo-router';
 import { Prism, Highlight, themes } from 'prism-react-renderer';
 
 (typeof global !== 'undefined' ? global : window).Prism = Prism;
@@ -7,22 +8,7 @@ require('prismjs/components/prism-shell-session');
 require('prismjs/components/prism-json');
 require('prismjs/components/prism-json5');
 require('prismjs/components/prism-css-extras.min');
-
-// src/themes/dracula.ts
-const terminalTheme = {
-  plain: {
-    color: '#F8F8F2',
-    backgroundColor: '#000000',
-  },
-  styles: [
-    {
-      types: ['comment', 'command'],
-      style: {
-        color: 'rgb(98, 114, 164)',
-      },
-    },
-  ],
-};
+require('prismjs/components/prism-css-extras.min');
 
 const remapLanguages: Record<string, string> = {
   'objective-c': 'objc',
@@ -130,6 +116,7 @@ export function BaconCode(props: {
   className: string;
   // "app.config.ts"
   metastring: string;
+  dependencies?: Record<string, string>;
 }) {
   let lang = props.className?.slice(9).toLowerCase() ?? 'txt';
   const isTerminal = ['terminal', 'term'].includes(lang.toLowerCase());
@@ -174,10 +161,7 @@ export function BaconCode(props: {
         </span>
       )}
 
-      <Highlight
-        theme={isTerminal ? terminalTheme : draculaPlusJson}
-        code={props.children.trim()}
-        language={lang}>
+      <Highlight theme={draculaPlusJson} code={props.children.trim()} language={lang}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <pre
             style={style}
@@ -186,24 +170,33 @@ export function BaconCode(props: {
               isTerminal && 'bg-black'
             )}>
             {tokens.map((line, i) => {
-              const isComment =
-                isTerminal &&
-                line.find((line) => line.content === '#' && line.types.includes('shell-symbol'));
-              const isCommand = isTerminal && !isComment;
               return (
                 <div key={i} {...getLineProps({ line })} className="inline">
                   {/* Line Number */}
                   <span className="w-8 inline-block select-none opacity-50">{i + 1}</span>
-                  {isCommand && <span className="token output text-[#69C2CF] select-none">𝝠 </span>}
                   {line.map((token, key) => {
                     const { className, ...props } = getTokenProps({ token });
-                    return (
-                      <span
-                        key={key}
-                        {...props}
-                        className={cn(className, isComment && 'select-none')}
-                      />
-                    );
+
+                    // const isStringToken =
+                    //   token.types.length === 1 && token.types.includes('string');
+                    // const possibleRequireName = isStringToken ? unQuote(token.content) : null;
+                    // const isRequire = possibleRequireName
+                    //   ? props.dependencies[possibleRequireName]
+                    //   : null;
+                    const isRequire = null;
+                    // console.log('token', token);
+
+                    const jsx = <span key={key} {...props} className={cn(className)} />;
+                    if (isRequire) {
+                      return (
+                        <Link
+                          asChild
+                          href={{ pathname: '/module/[id]', params: { id: isRequire } }}>
+                          {jsx}
+                        </Link>
+                      );
+                    }
+                    return jsx;
                   })}
                 </div>
               );
@@ -213,4 +206,8 @@ export function BaconCode(props: {
       </Highlight>
     </div>
   );
+}
+
+function unQuote(str: string) {
+  return str.replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
 }
