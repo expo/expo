@@ -180,6 +180,25 @@ describe('_getForce', () => {
     });
   });
 
+  it(`cascades env files (test)`, () => {
+    process.env.NODE_ENV = 'test'; // Jest is setting `NODE_ENV=test`, just for clarity
+    const envRuntime = createControlledEnvironment();
+    vol.fromJSON(
+      {
+        '.env': 'FOO=default',
+        '.env.local': 'FOO=default-local',
+      },
+      '/'
+    );
+
+    expect(envRuntime._getForce('/')).toEqual({
+      files: ['/.env'],
+      env: {
+        FOO: 'default',
+      },
+    });
+  });
+
   it(`cascades env files (default)`, () => {
     delete process.env.NODE_ENV; // Jest is setting `NODE_ENV=test`, make sure to unset it
     const envRuntime = createControlledEnvironment();
