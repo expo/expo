@@ -19,7 +19,6 @@ describe(getMetroDirectBundleOptions, () => {
       minify: false,
       platform: 'ios',
       unstable_transformProfile: 'default',
-      serializerOptions: {},
     });
   });
   it(`injects source url if serializer options are provided`, () => {
@@ -46,11 +45,6 @@ describe(getMetroDirectBundleOptions, () => {
       minify: false,
       platform: 'ios',
       unstable_transformProfile: 'default',
-      serializerOptions: {
-        includeSourceMaps: true,
-      },
-      sourceMapUrl:
-        'http://localhost:8081/index.js.map?platform=ios&dev=true&hot=false&serializer.map=true',
     });
   });
 });
