@@ -14,3 +14,22 @@
 </p>
 
 <!-- Body -->
+
+## 🏁 Setup
+
+Install `@expo/babel-preset-cli` in your project.
+
+```sh
+yarn add @expo/babel-preset-cli
+```
+
+## ⚽️ Usage
+
+```js babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['@expo/babel-preset-cli'],
+  };
+};
+```

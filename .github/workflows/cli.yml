@@ -5,6 +5,7 @@ on:
     branches: [main, 'sdk-*']
     paths:
       - .github/workflows/cli.yml
+      - packages/@expo/babel-preset-cli/**
       - packages/@expo/cli/**
       - packages/@expo/metro-runtime/**
       - packages/@expo/metro-config/src/**
@@ -20,6 +21,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/cli.yml
+      - packages/@expo/babel-preset-cli/**
       - packages/@expo/cli/**
       - packages/@expo/metro-runtime/**
       - packages/@expo/metro-config/src/**

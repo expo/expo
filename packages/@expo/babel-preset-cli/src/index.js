@@ -18,7 +18,7 @@ module.exports = () => ({
     [
       require('@babel/plugin-transform-modules-commonjs'),
       {
-        lazy: /* istanbul ignore next */ source => true,
+        lazy: /* istanbul ignore next */ (source) => true,
       },
     ],
     require('@babel/plugin-proposal-optional-chaining'),

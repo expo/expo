@@ -2,14 +2,15 @@
   "name": "@expo/babel-preset-cli",
   "version": "0.3.1",
   "description": "The Babel preset for Expo CLI packages",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
+    "lint": "eslint .",
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo-cli.git",
-    "directory": "packages/babel-preset-cli"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/babel-preset-cli"
   },
   "keywords": [
     "babel-preset"
@@ -17,9 +18,12 @@
   "author": "Expo <support@expo.dev>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/expo/expo-cli/issues"
+    "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/babel-preset-cli#readme",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/babel-preset-cli#readme",
+  "files": [
+    "src/index.js"
+  ],
   "dependencies": {
     "@babel/core": "^7.4.5",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
