@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- On `Android`, handle using files from `SAF` correctly.
+- On `Android`, handle using files from `SAF` correctly. ([#25389](https://github.com/expo/expo/pull/25389) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
