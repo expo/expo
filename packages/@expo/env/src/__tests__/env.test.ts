@@ -52,6 +52,11 @@ describe(getFiles, () => {
   });
   it(`gets no files when dotenv is disabled`, () => {
     process.env.EXPO_NO_DOTENV = '1';
+
+    // If this test fails, it means that the test environment is not set-up properly.
+    // Environment variables are leaking between "originalEnv" and "process.env", causing unexpected test failures/passes.
+    expect(originalEnv.EXPO_NO_DOTENV).toBeUndefined();
+
     ['development', 'production', 'test'].forEach((mode) => {
       expect(getFiles(mode)).toEqual([]);
     });
