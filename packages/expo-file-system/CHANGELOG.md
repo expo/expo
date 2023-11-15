@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `Android`, handle using files from `SAF` correctly. ([#25389](https://github.com/expo/expo/pull/25389) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 15.9.0 — 2023-11-14
