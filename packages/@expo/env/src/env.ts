@@ -23,8 +23,6 @@ export function isEnabled(): boolean {
 }
 
 export function createControlledEnvironment() {
-  const IS_DEBUG = require('debug').enabled('expo:env');
-
   let userDefinedEnvironment: NodeJS.ProcessEnv | undefined = undefined;
   let memo: { env: NodeJS.ProcessEnv; files: string[] } | undefined = undefined;
 
@@ -44,44 +42,43 @@ export function createControlledEnvironment() {
     // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
     const dotenvFiles = getFiles(process.env.NODE_ENV, options);
 
-    const loadedEnvFiles: string[] = [];
-    const parsed: dotenv.DotenvParseOutput = {};
-
     // Load environment variables from .env* files. Suppress warnings using silent
-    // if this file is missing. dotenv will never modify any environment variables
-    // that have already been set. Variable expansion is supported in .env files.
+    // if this file is missing. Dotenv will only parse the environment variables,
+    // `@expo/env` will set the resulting variables to the current process.
+    // Variable expansion is supported in .env files, and executed as final step.
     // https://github.com/motdotla/dotenv
     // https://github.com/motdotla/dotenv-expand
-    dotenvFiles.forEach((dotenvFile) => {
+    const parsedEnv: dotenv.DotenvParseOutput = {};
+    const loadedEnvFiles: string[] = [];
+
+    // Iterate over each dotenv file in lowest prio to highest prio order.
+    // This allows us to simply overwrite the parsed values with the higher prio file.
+    dotenvFiles.reverse().forEach((dotenvFile) => {
       const absoluteDotenvFile = path.resolve(projectRoot, dotenvFile);
       if (!fs.existsSync(absoluteDotenvFile)) {
         return;
       }
+
       try {
-        const results = expand(
-          dotenv.config({
-            debug: IS_DEBUG,
-            path: absoluteDotenvFile,
-            // We will handle overriding ourselves to allow for HMR.
-            override: true,
-          })
-        );
-        if (results.parsed) {
+        const result = dotenv.parse(fs.readFileSync(absoluteDotenvFile, 'utf-8'));
+
+        if (!result) {
+          debug(`Failed to load environment variables from: ${absoluteDotenvFile}%s`);
+        } else {
           loadedEnvFiles.push(absoluteDotenvFile);
           debug(`Loaded environment variables from: ${absoluteDotenvFile}`);
 
-          for (const key of Object.keys(results.parsed || {})) {
-            if (
-              typeof parsed[key] === 'undefined' &&
-              // Custom override logic to prevent overriding variables that
-              // were set before the CLI process began.
-              typeof userDefinedEnvironment?.[key] === 'undefined'
-            ) {
-              parsed[key] = results.parsed[key];
+          for (const key of Object.keys(result)) {
+            if (typeof userDefinedEnvironment?.[key] !== 'undefined') {
+              debug(`"${key}" is already defined and IS NOT overwritten by: ${absoluteDotenvFile}`);
+            } else {
+              if (typeof parsedEnv[key] !== 'undefined') {
+                debug(`"${key}" is already defined and overwritten by: ${absoluteDotenvFile}`);
+              }
+
+              parsedEnv[key] = result[key];
             }
           }
-        } else {
-          debug(`Failed to load environment variables from: ${absoluteDotenvFile}`);
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -98,7 +95,17 @@ export function createControlledEnvironment() {
       debug(`No environment variables loaded from .env files.`);
     }
 
-    return { env: parsed, files: loadedEnvFiles };
+    const expandedEnv = expand({
+      parsed: parsedEnv,
+      // When expanding variables, defined in the current environment,
+      // the current environment value is used over the defined value in the .env file.
+      ignoreProcessEnv: options.force,
+    });
+    if (expandedEnv.error) {
+      throw expandedEnv.error;
+    }
+
+    return { env: expandedEnv.parsed || parsedEnv, files: loadedEnvFiles.reverse() };
   }
 
   /** Get the environment variables without mutating the environment. This returns memoized values unless the `force` property is provided. */

@@ -63,7 +63,6 @@ function isEnabled() {
   return !(0, _getenv().boolish)('EXPO_NO_DOTENV', false);
 }
 function createControlledEnvironment() {
-  const IS_DEBUG = require('debug').enabled('expo:env');
   let userDefinedEnvironment = undefined;
   let memo = undefined;
   function _getForce(projectRoot, options = {}) {
@@ -82,40 +81,41 @@ function createControlledEnvironment() {
 
     // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
     const dotenvFiles = getFiles(process.env.NODE_ENV, options);
-    const loadedEnvFiles = [];
-    const parsed = {};
 
     // Load environment variables from .env* files. Suppress warnings using silent
-    // if this file is missing. dotenv will never modify any environment variables
-    // that have already been set. Variable expansion is supported in .env files.
+    // if this file is missing. Dotenv will only parse the environment variables,
+    // `@expo/env` will set the resulting variables to the current process.
+    // Variable expansion is supported in .env files, and executed as final step.
     // https://github.com/motdotla/dotenv
     // https://github.com/motdotla/dotenv-expand
-    dotenvFiles.forEach(dotenvFile => {
+    const parsedEnv = {};
+    const loadedEnvFiles = [];
+
+    // Iterate over each dotenv file in lowest prio to highest prio order.
+    // This allows us to simply overwrite the parsed values with the higher prio file.
+    dotenvFiles.reverse().forEach(dotenvFile => {
       const absoluteDotenvFile = path().resolve(projectRoot, dotenvFile);
       if (!fs().existsSync(absoluteDotenvFile)) {
         return;
       }
       try {
-        const results = (0, _dotenvExpand().expand)(dotenv().config({
-          debug: IS_DEBUG,
-          path: absoluteDotenvFile,
-          // We will handle overriding ourselves to allow for HMR.
-          override: true
-        }));
-        if (results.parsed) {
+        const result = dotenv().parse(fs().readFileSync(absoluteDotenvFile, 'utf-8'));
+        if (!result) {
+          debug(`Failed to load environment variables from: ${absoluteDotenvFile}%s`);
+        } else {
           loadedEnvFiles.push(absoluteDotenvFile);
           debug(`Loaded environment variables from: ${absoluteDotenvFile}`);
-          for (const key of Object.keys(results.parsed || {})) {
+          for (const key of Object.keys(result)) {
             var _userDefinedEnvironme;
-            if (typeof parsed[key] === 'undefined' &&
-            // Custom override logic to prevent overriding variables that
-            // were set before the CLI process began.
-            typeof ((_userDefinedEnvironme = userDefinedEnvironment) === null || _userDefinedEnvironme === void 0 ? void 0 : _userDefinedEnvironme[key]) === 'undefined') {
-              parsed[key] = results.parsed[key];
+            if (typeof ((_userDefinedEnvironme = userDefinedEnvironment) === null || _userDefinedEnvironme === void 0 ? void 0 : _userDefinedEnvironme[key]) !== 'undefined') {
+              debug(`"${key}" is already defined and IS NOT overwritten by: ${absoluteDotenvFile}`);
+            } else {
+              if (typeof parsedEnv[key] !== 'undefined') {
+                debug(`"${key}" is already defined and overwritten by: ${absoluteDotenvFile}`);
+              }
+              parsedEnv[key] = result[key];
             }
           }
-        } else {
-          debug(`Failed to load environment variables from: ${absoluteDotenvFile}`);
         }
       } catch (error) {
         if (error instanceof Error) {
@@ -128,9 +128,18 @@ function createControlledEnvironment() {
     if (!loadedEnvFiles.length) {
       debug(`No environment variables loaded from .env files.`);
     }
+    const expandedEnv = (0, _dotenvExpand().expand)({
+      parsed: parsedEnv,
+      // When expanding variables, defined in the current environment,
+      // the current environment value is used over the defined value in the .env file.
+      ignoreProcessEnv: options.force
+    });
+    if (expandedEnv.error) {
+      throw expandedEnv.error;
+    }
     return {
-      env: parsed,
-      files: loadedEnvFiles
+      env: expandedEnv.parsed || parsedEnv,
+      files: loadedEnvFiles.reverse()
     };
   }
 
@@ -164,10 +173,10 @@ function createControlledEnvironment() {
         console.log(_chalk().default.gray('env: export', keys.join(' ')));
       }
     }
-    process.env = {
-      ...process.env,
-      ...envInfo.env
-    };
+    for (const key of Object.keys(envInfo.env)) {
+      // Avoid creating a new object, mutate it instead as this causes problems in Bun
+      process.env[key] = envInfo.env[key];
+    }
     return process.env;
   }
   return {
