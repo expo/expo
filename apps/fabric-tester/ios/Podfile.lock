@@ -1,27 +1,27 @@
 PODS:
   - boost (1.76.0)
   - DoubleConversion (1.1.6)
-  - EXAV (13.8.0):
+  - EXAV (13.9.0):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
-  - EXConstants (15.2.0):
+  - EXConstants (15.3.0):
     - ExpoModulesCore
-  - EXFont (11.8.0):
+  - EXFont (11.9.0):
     - ExpoModulesCore
-  - EXJSONUtils (0.11.0)
-  - EXManifests (0.11.0):
+  - EXJSONUtils (0.12.0)
+  - EXManifests (0.12.0):
     - ExpoModulesCore
-  - Expo (50.0.0-alpha.6):
+  - Expo (50.0.0-alpha.7):
     - ExpoModulesCore
-  - expo-dev-client (3.2.0):
+  - expo-dev-client (3.3.0):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (3.3.0):
+  - expo-dev-launcher (3.4.0):
     - EXManifests
-    - expo-dev-launcher/Main (= 3.3.0)
+    - expo-dev-launcher/Main (= 3.4.0)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -42,7 +42,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Main (3.3.0):
+  - expo-dev-launcher/Main (3.4.0):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -65,7 +65,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Unsafe (3.3.0):
+  - expo-dev-launcher/Unsafe (3.4.0):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -87,9 +87,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu (4.3.0):
-    - expo-dev-menu/Main (= 4.3.0)
-    - expo-dev-menu/ReactNativeCompatibles (= 4.3.0)
+  - expo-dev-menu (4.4.0):
+    - expo-dev-menu/Main (= 4.4.0)
+    - expo-dev-menu/ReactNativeCompatibles (= 4.4.0)
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
     - RCTRequired
@@ -105,8 +105,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu-interface (1.5.0)
-  - expo-dev-menu/Main (4.3.0):
+  - expo-dev-menu-interface (1.6.0)
+  - expo-dev-menu/Main (4.4.0):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
@@ -126,7 +126,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/ReactNativeCompatibles (4.3.0):
+  - expo-dev-menu/ReactNativeCompatibles (4.4.0):
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
     - RCTRequired
@@ -142,7 +142,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (4.3.0):
+  - expo-dev-menu/SafeAreaView (4.4.0):
     - ExpoModulesCore
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
@@ -159,7 +159,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Vendored (4.3.0):
+  - expo-dev-menu/Vendored (4.4.0):
     - expo-dev-menu/SafeAreaView
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
@@ -176,29 +176,29 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoAppleAuthentication (6.2.0):
+  - ExpoAppleAuthentication (6.3.0):
     - ExpoModulesCore
-  - ExpoApplication (5.6.0):
+  - ExpoApplication (5.7.0):
     - ExpoModulesCore
-  - ExpoBlur (12.8.0):
+  - ExpoBlur (12.9.0):
     - ExpoModulesCore
-  - ExpoCamera (13.8.0):
+  - ExpoCamera (13.9.0):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - ExpoFileSystem (15.8.0):
+  - ExpoFileSystem (15.9.0):
     - ExpoModulesCore
-  - ExpoImage (1.6.0):
+  - ExpoImage (1.9.0):
     - ExpoModulesCore
     - SDWebImage (~> 5.17.0)
     - SDWebImageAVIFCoder (~> 0.10.1)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.13.0)
-  - ExpoKeepAwake (12.7.0):
+  - ExpoKeepAwake (12.8.0):
     - ExpoModulesCore
-  - ExpoLinearGradient (12.6.0):
+  - ExpoLinearGradient (12.7.0):
     - ExpoModulesCore
-  - ExpoModulesCore (1.9.0):
+  - ExpoModulesCore (1.10.0):
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
     - RCTRequired
@@ -215,7 +215,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - EXSplashScreen (0.24.0):
+  - EXSplashScreen (0.25.0):
     - ExpoModulesCore
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
@@ -232,7 +232,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - EXUpdatesInterface (0.14.0)
+  - EXUpdatesInterface (0.15.0)
   - FBLazyVector (0.72.5)
   - fmt (6.2.1)
   - glog (0.3.5)
@@ -1485,27 +1485,27 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  EXAV: 6e2524617053a4590b0ef46a4fcb9a13d97bac8a
-  EXConstants: 230de23b26974884686d49205e6822a02b6dd6d0
-  EXFont: e5fa244ad8c8d6fcf3a215e1fdcaedbc9b580aad
-  EXJSONUtils: d15120ce0e8967b0822880162039dd75e5867086
-  EXManifests: b658c34011f90e3379b515fb50680acb49ba099a
-  Expo: ec3dff9f00792f6a2a4ec9b867c8575ad48f919e
-  expo-dev-client: 52d4f47611a8d584cd51dcab48c01c9b7cb974aa
-  expo-dev-launcher: e237bb24b6f8a62de2eb5f80845f21adea6f0777
-  expo-dev-menu: f6381776dade419e368269fdc321b58f9761bd01
-  expo-dev-menu-interface: 38090d6fda00360c1d9bf28ee6f553e7c073774b
-  ExpoAppleAuthentication: 7676bc4d7b02362d1127b2b264d3a0ca649e4b8c
-  ExpoApplication: d181a88964679df7241ff101e7be1802758c5b9a
-  ExpoBlur: fd3aefb4b4f3acaaa1ca2406cf9a98351ec5ffc4
-  ExpoCamera: ca563f22e6418a63ae420424e94d032ec1b7b7d1
-  ExpoFileSystem: 5014f25f212972b797ce29dbbae8dceb1f4fae31
-  ExpoImage: a02f1b0c514f3521c8b442a93687f927ef2c0d8d
-  ExpoKeepAwake: 11a6adc67b21af7a520ee62fe9a014eca6871884
-  ExpoLinearGradient: 04e65c5a1bc2eb79953a8636537ef2cbfa743b5b
-  ExpoModulesCore: ed05dcd391d071fa2b56fff8c78c30ebbc1e57b7
-  EXSplashScreen: 6f109a5fbb15d0cae6890845000e9d3ec4470879
-  EXUpdatesInterface: defbda79f841a0dec9588f2cbf9fdfed52583667
+  EXAV: 4ddc18b96735a71cfeaebabeaacf77dc9fd2cb52
+  EXConstants: adcf913f005bb3a6eba1f89c34090bed5a0b89f7
+  EXFont: 0a688bc37845f2665376c8c93a822fe5483dae37
+  EXJSONUtils: d138005ee11b84fc4e3bf7119a160034db5d5e20
+  EXManifests: 17fbf8ed7e987cdbc6b93064f427a1bca4732088
+  Expo: 97df3b68de6c485f894dbae821666bec8435e144
+  expo-dev-client: 820f881c0dc8a0f1f4cd1e35a35469d1d0fbc798
+  expo-dev-launcher: 54b0e9353449baf614310942fc98e66ca4eba90a
+  expo-dev-menu: 63ffbad3ee76e5482b8d757ed0ce8b41f205a5da
+  expo-dev-menu-interface: 05d08cc56649636de77253583b4bbb73adce7680
+  ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
+  ExpoApplication: 729c272c3217ecd40aabba16c4d5536148ed466b
+  ExpoBlur: 6c4602d729a492663b0916e5862b334a23157f0a
+  ExpoCamera: c13580cc0964c9e462f76579a0de9f468a9c6e73
+  ExpoFileSystem: 1bc21c70ab0bf505cd6bef97c5b008618bfb72f2
+  ExpoImage: cfaa9c379a3467c7863a187a1059c220b27a0741
+  ExpoKeepAwake: ed71bfe0e6ecd38e337586ba6e1ba27a56eb373b
+  ExpoLinearGradient: 6ff7b35f824f18f77d9c3ad3ee09fe0b4229e669
+  ExpoModulesCore: a3e5466023f208238af430a4d019c46e3f77fae7
+  EXSplashScreen: e2b252accf78b99435008f06d66999b1f4d2a0e3
+  EXUpdatesInterface: 4f787eeabc62c258f978ea4865c67adfb6b2f19f
   FBLazyVector: 71803c074f6325f10b5ec891c443b6bbabef0ca7
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
@@ -1537,7 +1537,7 @@ SPEC CHECKSUMS:
   React-perflogger: cd8886513f68e1c135a1e79d20575c6489641597
   React-RCTActionSheet: 726d2615ca62a77ce3e2c13d87f65379cdc73498
   React-RCTAnimation: 8f2716b881c37c64858e4ecee0f58bfa57ff9afd
-  React-RCTAppDelegate: b20ac934c511b8f7a5ec30e789e6ac8102c40de8
+  React-RCTAppDelegate: bc5de473a9dafdb1eb249e11450adcece7b7f9ad
   React-RCTBlob: dfaa933231c3497915bbcc9d98fcff7b6b60582c
   React-RCTFabric: a7c36529eb41d7ba14751c30ddbc35732e74a5c1
   React-RCTImage: 747e3d7b656a67470f9c234baedb8d41bbc4e745
