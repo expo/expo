@@ -172,7 +172,7 @@ async function getAsync(file, key, defaultValue, options) {
         return object[key];
     }
     if (defaultValue === undefined) {
-        throw new JsonFileError_1.default(`No value at key path "${key}" in JSON object from: ${file}`);
+        throw new JsonFileError_1.default(`No value at key path "${String(key)}" in JSON object from: ${file}`);
     }
     return defaultValue;
 }

@@ -202,7 +202,7 @@ async function getAsync<TJSONObject extends JSONObject, K extends keyof TJSONObj
     return object[key];
   }
   if (defaultValue === undefined) {
-    throw new JsonFileError(`No value at key path "${key}" in JSON object from: ${file}`);
+    throw new JsonFileError(`No value at key path "${String(key)}" in JSON object from: ${file}`);
   }
   return defaultValue;
 }
