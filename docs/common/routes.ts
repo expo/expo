@@ -65,3 +65,11 @@ export const getPageSection = (path: string) => {
 
   return 'home';
 };
+
+export const getCanonicalUrl = (path: string) => {
+  if (isReferencePath(path)) {
+    return `https://docs.expo.dev${Utilities.replaceVersionInUrl(path, 'latest')}`;
+  } else {
+    return `https://docs.expo.dev${path}`;
+  }
+};
