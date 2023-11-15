@@ -49,6 +49,7 @@
     "sudo-prompt": "9.1.1"
   },
   "devDependencies": {
+    "@expo/babel-preset-cli": "^0.3.1",
     "@types/npm-package-arg": "^6.1.0",
     "@types/rimraf": "^3.0.0",
     "@types/split": "^1.0.0",

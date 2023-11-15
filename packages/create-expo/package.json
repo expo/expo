@@ -34,6 +34,7 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
+    "@expo/babel-preset-cli": "^0.3.1",
     "@expo/json-file": "8.2.37",
     "@expo/package-manager": "^1.1.1",
     "@expo/spawn-async": "^1.7.0",

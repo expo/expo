@@ -44,6 +44,7 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
+    "@expo/babel-preset-cli": "^0.3.1",
     "@types/find-up": "^4.0.0",
     "glob": "^7.1.7",
     "temp-dir": "^2.0.0"
