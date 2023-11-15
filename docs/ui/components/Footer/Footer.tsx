@@ -70,7 +70,7 @@ export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPa
           ) : (
             <div className="w-full" />
           )}
-        </div >
+        </div>
       )}
       <div className="flex flex-row max-md-gutters:flex-col">
         <UL className="flex-1 !mt-0 !ml-0 mb-5 !list-none">
