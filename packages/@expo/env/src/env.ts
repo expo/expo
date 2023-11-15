@@ -6,7 +6,7 @@
  */
 import chalk from 'chalk';
 import * as dotenv from 'dotenv';
-import { expand } from 'dotenv-expand';
+import { expand as dotenvExpand } from 'dotenv-expand';
 import * as fs from 'fs';
 import { boolish } from 'getenv';
 import * as path from 'path';
@@ -52,7 +52,7 @@ export function createControlledEnvironment() {
     const loadedEnvFiles: string[] = [];
 
     // Iterate over each dotenv file in lowest prio to highest prio order.
-    // This allows us to simply overwrite the parsed values with the higher prio file.
+    // This step won't write to the process.env, but will overwrite the parsed envs.
     dotenvFiles.reverse().forEach((dotenvFile) => {
       const absoluteDotenvFile = path.resolve(projectRoot, dotenvFile);
       if (!fs.existsSync(absoluteDotenvFile)) {
@@ -95,17 +95,31 @@ export function createControlledEnvironment() {
       debug(`No environment variables loaded from .env files.`);
     }
 
-    const expandedEnv = expand({
-      parsed: parsedEnv,
-      // When expanding variables, defined in the current environment,
-      // the current environment value is used over the defined value in the .env file.
-      ignoreProcessEnv: options.force,
+    return { env: _expandEnv(parsedEnv), files: loadedEnvFiles.reverse() };
+  }
+
+  /** Expand environment variables based on the current and parsed envs */
+  function _expandEnv(parsedEnv: Record<string, string>) {
+    const expandedEnv: Record<string, string> = {};
+
+    // When not ignoring `process.env`, values from the parsed env are overwritten by the current env if defined.
+    // We handle this ourselves, expansion should always use the current state of "current + parsed env".
+    const allExpandedEnv = dotenvExpand({
+      parsed: { ...process.env, ...parsedEnv } as Record<string, string>,
+      ignoreProcessEnv: true,
     });
-    if (expandedEnv.error) {
-      throw expandedEnv.error;
+
+    if (allExpandedEnv.error) {
+      console.error(`Failed to expand environment variables: ${allExpandedEnv.error}`);
     }
 
-    return { env: expandedEnv.parsed || parsedEnv, files: loadedEnvFiles.reverse() };
+    for (const key of Object.keys(parsedEnv)) {
+      if (allExpandedEnv.parsed?.[key]) {
+        expandedEnv[key] = allExpandedEnv.parsed[key];
+      }
+    }
+
+    return expandedEnv;
   }
 
   /** Get the environment variables without mutating the environment. This returns memoized values unless the `force` property is provided. */

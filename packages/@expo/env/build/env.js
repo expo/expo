@@ -92,7 +92,7 @@ function createControlledEnvironment() {
     const loadedEnvFiles = [];
 
     // Iterate over each dotenv file in lowest prio to highest prio order.
-    // This allows us to simply overwrite the parsed values with the higher prio file.
+    // This step won't write to the process.env, but will overwrite the parsed envs.
     dotenvFiles.reverse().forEach(dotenvFile => {
       const absoluteDotenvFile = path().resolve(projectRoot, dotenvFile);
       if (!fs().existsSync(absoluteDotenvFile)) {
@@ -128,19 +128,35 @@ function createControlledEnvironment() {
     if (!loadedEnvFiles.length) {
       debug(`No environment variables loaded from .env files.`);
     }
-    const expandedEnv = (0, _dotenvExpand().expand)({
-      parsed: parsedEnv,
-      // When expanding variables, defined in the current environment,
-      // the current environment value is used over the defined value in the .env file.
-      ignoreProcessEnv: options.force
-    });
-    if (expandedEnv.error) {
-      throw expandedEnv.error;
-    }
     return {
-      env: expandedEnv.parsed || parsedEnv,
+      env: _expandEnv(parsedEnv),
       files: loadedEnvFiles.reverse()
     };
+  }
+
+  /** Expand environment variables based on the current and parsed envs */
+  function _expandEnv(parsedEnv) {
+    const expandedEnv = {};
+
+    // When not ignoring `process.env`, values from the parsed env are overwritten by the current env if defined.
+    // We handle this ourselves, expansion should always use the current state of "current + parsed env".
+    const allExpandedEnv = (0, _dotenvExpand().expand)({
+      parsed: {
+        ...process.env,
+        ...parsedEnv
+      },
+      ignoreProcessEnv: true
+    });
+    if (allExpandedEnv.error) {
+      console.error(`Failed to expand environment variables: ${allExpandedEnv.error}`);
+    }
+    for (const key of Object.keys(parsedEnv)) {
+      var _allExpandedEnv$parse;
+      if ((_allExpandedEnv$parse = allExpandedEnv.parsed) !== null && _allExpandedEnv$parse !== void 0 && _allExpandedEnv$parse[key]) {
+        expandedEnv[key] = allExpandedEnv.parsed[key];
+      }
+    }
+    return expandedEnv;
   }
 
   /** Get the environment variables without mutating the environment. This returns memoized values unless the `force` property is provided. */

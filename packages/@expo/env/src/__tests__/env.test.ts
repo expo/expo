@@ -246,9 +246,12 @@ describe('_getForce', () => {
     const envRuntime = createControlledEnvironment();
     vol.fromJSON(
       {
-        '.env': 'TEST_EXPAND=.env',
-        '.env.development': 'TEST_EXPAND=.env.development',
-        '.env.local': 'TEST_EXPAND=${USER_DEFINED}',
+        '.env': ['TEST_EXPAND=.env', 'TEST_VALUE_ENV=test'].join('\n'),
+        '.env.development': [
+          'TEST_EXPAND=.env.development',
+          'TEST_INTERMEDIATE=${TEST_VALUE_ENV}',
+        ].join('\n'),
+        '.env.local': ['TEST_EXPAND=${USER_DEFINED}'].join('\n'),
       },
       '/'
     );
@@ -257,6 +260,8 @@ describe('_getForce', () => {
       files: ['/.env.local', '/.env.development', '/.env'],
       env: {
         TEST_EXPAND: 'user-defined',
+        TEST_VALUE_ENV: 'test',
+        TEST_INTERMEDIATE: 'test',
       },
     });
   });
