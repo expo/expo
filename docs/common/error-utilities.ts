@@ -327,6 +327,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/reference/api-routes': '/preview/api-routes/',
   '/build-reference/custom-build-config/': '/custom-builds/get-started/',
   '/eas-update/migrate-codepush-to-eas-update/': '/eas-update/codepush/',
+  '/guides/testing-on-devices': '/build/internal-distribution/',
 
   // Redirects from old to new tutorial
   '/tutorial/planning/': '/tutorial/introduction/',
