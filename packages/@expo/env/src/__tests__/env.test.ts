@@ -221,6 +221,45 @@ describe('_getForce', () => {
     );
   });
 
+  it('expands variables', () => {
+    process.env.USER_DEFINED = 'user-defined';
+    const envRuntime = createControlledEnvironment();
+    vol.fromJSON(
+      {
+        '.env': 'TEST_EXPAND=${USER_DEFINED}',
+      },
+      '/'
+    );
+
+    expect(envRuntime._getForce('/')).toEqual({
+      files: ['/.env'],
+      env: {
+        TEST_EXPAND: 'user-defined',
+      },
+    });
+  });
+
+  it('expands variables from cascading env files (development)', () => {
+    process.env.USER_DEFINED = 'user-defined';
+    process.env.NODE_ENV = 'development';
+    const envRuntime = createControlledEnvironment();
+    vol.fromJSON(
+      {
+        '.env': 'TEST_EXPAND=.env',
+        '.env.development': 'TEST_EXPAND=.env.development',
+        '.env.local': 'TEST_EXPAND=${USER_DEFINED}',
+      },
+      '/'
+    );
+
+    expect(envRuntime._getForce('/')).toEqual({
+      files: ['/.env.local', '/.env.development', '/.env'],
+      env: {
+        TEST_EXPAND: 'user-defined',
+      },
+    });
+  });
+
   it(`skips modifying the environment with dotenv if disabled with EXPO_NO_DOTENV`, () => {
     process.env.EXPO_NO_DOTENV = '1';
     const envRuntime = createControlledEnvironment();
