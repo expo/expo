@@ -6,6 +6,7 @@ import expo.modules.camera.next.records.BarCodeSettings
 import expo.modules.camera.next.records.CameraMode
 import expo.modules.camera.next.records.CameraType
 import expo.modules.camera.next.records.FlashMode
+import expo.modules.camera.next.records.VideoQuality
 import expo.modules.camera.next.tasks.ResolveTakenPicture
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.EmulatorUtilities
@@ -104,14 +105,20 @@ class CameraViewNextModule : Module() {
         view.mute = muted ?: false
       }
 
-      Prop("barCodeScannerSettings") { view, settings: BarCodeSettings? ->
+      Prop("videoQuality") { view, quality: VideoQuality? ->
+        quality?.let {
+          view.videoQuality = it
+        }
+      }
+
+      Prop("barcodeScannerSettings") { view, settings: BarCodeSettings? ->
         if (settings == null) {
           return@Prop
         }
         view.setBarCodeScannerSettings(settings)
       }
 
-      Prop("barCodeScannerEnabled") { view, barCodeScannerEnabled: Boolean? ->
+      Prop("barcodeScannerEnabled") { view, barCodeScannerEnabled: Boolean? ->
         view.setShouldScanBarCodes(barCodeScannerEnabled ?: false)
       }
 

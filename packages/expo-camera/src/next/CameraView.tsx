@@ -17,7 +17,7 @@ import {
   CameraType,
   CameraViewRef,
   ModernScanningOptions,
-  ModernBarCodeScanningResult,
+  ModernBarcodeScanningResult,
   PermissionResponse,
   VideoCodec,
 } from './Camera.types';
@@ -239,9 +239,9 @@ export default class CameraView extends React.Component<CameraProps> {
   }
 
   static onModernBarcodeScanned(
-    listener: (event: ModernBarCodeScanningResult) => void
+    listener: (event: ModernBarcodeScanningResult) => void
   ): Subscription {
-    return emitter.addListener<ModernBarCodeScanningResult>('onModernBarcodeScanned', listener);
+    return emitter.addListener<ModernBarcodeScanningResult>('onModernBarcodeScanned', listener);
   }
 
   /**
@@ -323,8 +323,8 @@ export default class CameraView extends React.Component<CameraProps> {
   render() {
     const nativeProps = ensureNativeProps(this.props);
 
-    const onBarCodeScanned = this.props.onBarCodeScanned
-      ? this._onObjectDetected(this.props.onBarCodeScanned)
+    const onBarcodeScanned = this.props.onBarcodeScanned
+      ? this._onObjectDetected(this.props.onBarcodeScanned)
       : undefined;
 
     return (
@@ -333,7 +333,7 @@ export default class CameraView extends React.Component<CameraProps> {
         ref={this._cameraRef}
         onCameraReady={this._onCameraReady}
         onMountError={this._onMountError}
-        onBarCodeScanned={onBarCodeScanned}
+        onBarcodeScanned={onBarcodeScanned}
         onPictureSaved={_onPictureSaved}
         onResponsiveOrientationChanged={this._onResponsiveOrientationChanged}
       />

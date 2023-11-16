@@ -15,7 +15,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   // MARK: - Properties
 
-  private lazy var barCodeScanner = createBarCodeScanner()
+  private var barcodeScanner: BarcodeScanner!
   private var previewLayer = PreviewView()
   private var isValidVideoOptions = true
   private var videoCodecType: AVVideoCodecType?
@@ -37,10 +37,12 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       updateResponsiveOrientation()
     }
   }
+  
+  var videoQuality: VideoQuality = .video1080p
 
-  var isScanningBarCodes = false {
+  var isScanningBarcodes = false {
     didSet {
-      barCodeScanner.setIsEnabled(isScanningBarCodes)
+      barcodeScanner.setIsEnabled(isScanningBarcodes)
     }
   }
 
@@ -92,7 +94,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   let onCameraReady = EventDispatcher()
   let onMountError = EventDispatcher()
   let onPictureSaved = EventDispatcher()
-  let onBarCodeScanned = EventDispatcher()
+  let onBarcodeScanned = EventDispatcher()
   let onResponsiveOrientationChanged = EventDispatcher()
 
   private var deviceOrientation: UIInterfaceOrientation {
@@ -104,6 +106,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     lifecycleManager = appContext?.legacyModule(implementing: EXAppLifecycleService.self)
     fileSystem = appContext?.legacyModule(implementing: EXFileSystemInterface.self)
     permissionsManager = appContext?.legacyModule(implementing: EXPermissionsInterface.self)
+    barcodeScanner = createBarcodeScanner()
     #if !targetEnvironment(simulator)
     setupPreview()
     #endif
@@ -208,7 +211,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       self.addErrorNotification()
 
       self.sessionQueue.asyncAfter(deadline: .now() + round(50 / 1_000_000)) {
-        self.barCodeScanner.maybeStartBarCodeScanning()
+        self.barcodeScanner.maybeStartBarCodeScanning()
         self.ensureSessionConfiguration()
         self.session.commitConfiguration()
         self.session.startRunning()
@@ -258,8 +261,8 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  func setBarCodeScannerSettings(settings: BarcodeSettings) {
-    barCodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
+  func setBarcodeScannerSettings(settings: BarcodeSettings) {
+    barcodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
   }
 
   func updateResponsiveOrientation() {
@@ -526,7 +529,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
           }
         }
 
-        let preset = options.quality?.toPreset() ?? .high
+        let preset = self.videoQuality.toPreset() ?? .high
         self.updateSessionPreset(preset: preset)
 
         guard let fileSystem = self.fileSystem else {
@@ -682,7 +685,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  func updateSessionPreset(preset: AVCaptureSession.Preset) {
+func updateSessionPreset(preset: AVCaptureSession.Preset) {
     #if !targetEnvironment(simulator)
     if self.session.canSetSessionPreset(preset) {
       self.session.sessionPreset = preset
@@ -748,7 +751,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       }
       self.session.commitConfiguration()
 
-      self.barCodeScanner.stopBarCodeScanning()
+      self.barcodeScanner.stopBarCodeScanning()
       self.motionManager.stopAccelerometerUpdates()
       self.session.stopRunning()
     }
@@ -768,11 +771,16 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  private func createBarCodeScanner() -> BarcodeScanner {
+  private func createBarcodeScanner() -> BarcodeScanner {
     let scanner = BarcodeScanner(session: session, sessionQueue: sessionQueue)
     scanner.onBarcodeScanned = { [weak self] body in
-      if let body = body as? [String: Any] {
-        self?.onBarCodeScanned(body)
+      guard let self else {
+        return
+      }
+      print(body)
+      if let body {
+        print(body)
+        self.onBarcodeScanned(body)
       }
     }
 

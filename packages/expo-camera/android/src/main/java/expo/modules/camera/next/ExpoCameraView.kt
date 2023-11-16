@@ -43,6 +43,7 @@ import expo.modules.camera.next.records.BarcodeType
 import expo.modules.camera.next.records.CameraMode
 import expo.modules.camera.next.records.CameraType
 import expo.modules.camera.next.records.FlashMode
+import expo.modules.camera.next.records.VideoQuality
 import expo.modules.camera.next.tasks.ResolveTakenPicture
 import expo.modules.camera.next.utils.FileSystemUtils
 import expo.modules.camera.utils.mapX
@@ -93,6 +94,12 @@ class ExpoCameraView(
     }
 
   var cameraMode: CameraMode = CameraMode.PICTURE
+    set(value) {
+      field = value
+      createCamera()
+    }
+
+  var videoQuality: VideoQuality = VideoQuality.VIDEO1080P
     set(value) {
       field = value
       createCamera()
@@ -182,7 +189,6 @@ class ExpoCameraView(
       .setFileSizeLimit(options.maxFileSize.toLong())
       .setDurationLimitMillis(options.maxDuration.toLong())
       .build()
-
     recorder?.let {
       if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
         return
@@ -290,9 +296,9 @@ class ExpoCameraView(
 
   private fun createVideoCapture(info: List<CameraInfo>): VideoCapture<Recorder> {
     val supportedQualities = QualitySelector.getSupportedQualities(info[0])
-
-    val filteredQualities = arrayListOf(Quality.UHD, Quality.FHD, Quality.HD, Quality.SD)
+    val filteredQualities = arrayListOf(videoQuality.mapToQuality())
       .filter { supportedQualities.contains(it) }
+
     val qualitySelector = QualitySelector.fromOrderedList(filteredQualities)
 
     val recorder = Recorder.Builder()
@@ -327,7 +333,6 @@ class ExpoCameraView(
 
   fun setBarCodeScannerSettings(settings: BarCodeSettings?) {
     barcodeFormats = settings?.barcodeTypes ?: emptyList()
-    createCamera()
   }
 
   private fun getDeviceOrientation() =
@@ -427,7 +432,6 @@ class ExpoCameraView(
       }
     })
     addView(previewView)
-    createCamera()
   }
 
   fun onPictureSaved(response: Bundle) {

@@ -31,7 +31,7 @@ enum class VideoQuality(val value: String) : Enumerable {
   VIDEO480P("480p"),
   VIDEO4X3("4:3");
 
-  fun mapToQuality() = when(this) {
+  fun mapToQuality(): Quality = when(this) {
     VIDEO2160P -> Quality.UHD
     VIDEO1080P -> Quality.FHD
     VIDEO720P -> Quality.HD

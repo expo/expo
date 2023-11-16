@@ -2,8 +2,8 @@ import Ionicons from '@expo/vector-icons/build/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import {
-  BarCodePoint,
-  BarCodeScanningResult,
+  BarcodePoint,
+  BarcodeScanningResult,
   CameraView,
   CameraCapturedPicture,
   CameraMode,
@@ -44,7 +44,7 @@ interface State {
   barcodeScanning: boolean;
   mute: boolean;
   torchEnabled: boolean;
-  cornerPoints?: BarCodePoint[];
+  cornerPoints?: BarcodePoint[];
   barcodeData: string;
   newPhotos: boolean;
   permissionsGranted: boolean;
@@ -161,7 +161,7 @@ export default class CameraScreen extends React.Component<object, State> {
     this.setState({ newPhotos: true });
   };
 
-  onBarCodeScanned = (code: BarCodeScanningResult) => {
+  onBarcodeScanned = (code: BarcodeScanningResult) => {
     console.log('Found: ', code);
     this.setState(() => ({
       barcodeData: code.data,
@@ -265,7 +265,7 @@ export default class CameraScreen extends React.Component<object, State> {
   );
 
   renderBarCode = () => {
-    const origin: BarCodePoint | undefined = this.state.cornerPoints
+    const origin: BarcodePoint | undefined = this.state.cornerPoints
       ? this.state.cornerPoints[0]
       : undefined;
     return (
@@ -299,14 +299,15 @@ export default class CameraScreen extends React.Component<object, State> {
         mode={this.state.mode}
         mute={this.state.mute}
         zoom={this.state.zoom}
+        videoQuality="2160p"
         onMountError={this.handleMountError}
-        barCodeScannerSettings={{
+        barcodeScannerSettings={{
           barCodeTypes: [
             BarCodeScanner.Constants.BarCodeType.qr,
             BarCodeScanner.Constants.BarCodeType.pdf417,
           ],
         }}
-        onBarCodeScanned={this.state.barcodeScanning ? this.onBarCodeScanned : undefined}>
+        onBarcodeScanned={this.state.barcodeScanning ? this.onBarcodeScanned : undefined}>
         {this.renderTopBar()}
         {this.renderBottomBar()}
       </CameraView>
