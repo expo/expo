@@ -1,10 +1,6 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _default = `// Build integration with EAS
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = `// Build integration with EAS
 
 import java.nio.file.Paths
 
@@ -79,5 +75,3 @@ tasks.whenTaskAdded {
   }
 }
 `;
-exports.default = _default;
-//# sourceMappingURL=EasBuildGradleScript.js.map

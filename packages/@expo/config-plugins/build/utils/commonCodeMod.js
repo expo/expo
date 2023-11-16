@@ -1,11 +1,6 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.insertContentsAtOffset = insertContentsAtOffset;
-exports.replaceContentsWithOffset = replaceContentsWithOffset;
-exports.searchFromOffset = searchFromOffset;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.searchFromOffset = exports.replaceContentsWithOffset = exports.insertContentsAtOffset = void 0;
 /**
  * Insert contents at given offset
  * @param srcContents source contents
@@ -14,20 +9,21 @@ exports.searchFromOffset = searchFromOffset;
  * @returns updated contents
  */
 function insertContentsAtOffset(srcContents, insertion, offset) {
-  const srcContentsLength = srcContents.length;
-  if (offset < 0 || offset > srcContentsLength) {
-    throw new Error('Invalid parameters.');
-  }
-  if (offset === 0) {
-    return `${insertion}${srcContents}`;
-  } else if (offset === srcContentsLength) {
-    return `${srcContents}${insertion}`;
-  }
-  const prefix = srcContents.substring(0, offset);
-  const suffix = srcContents.substring(offset);
-  return `${prefix}${insertion}${suffix}`;
+    const srcContentsLength = srcContents.length;
+    if (offset < 0 || offset > srcContentsLength) {
+        throw new Error('Invalid parameters.');
+    }
+    if (offset === 0) {
+        return `${insertion}${srcContents}`;
+    }
+    else if (offset === srcContentsLength) {
+        return `${srcContents}${insertion}`;
+    }
+    const prefix = srcContents.substring(0, offset);
+    const suffix = srcContents.substring(offset);
+    return `${prefix}${insertion}${suffix}`;
 }
-
+exports.insertContentsAtOffset = insertContentsAtOffset;
 /**
  * Replace contents at given start and end offset
  *
@@ -38,15 +34,19 @@ function insertContentsAtOffset(srcContents, insertion, offset) {
  * @returns updated contents
  */
 function replaceContentsWithOffset(contents, replacement, startOffset, endOffset) {
-  const contentsLength = contents.length;
-  if (startOffset < 0 || endOffset < 0 || startOffset >= contentsLength || endOffset >= contentsLength || startOffset > endOffset) {
-    throw new Error('Invalid parameters.');
-  }
-  const prefix = contents.substring(0, startOffset);
-  const suffix = contents.substring(endOffset + 1);
-  return `${prefix}${replacement}${suffix}`;
+    const contentsLength = contents.length;
+    if (startOffset < 0 ||
+        endOffset < 0 ||
+        startOffset >= contentsLength ||
+        endOffset >= contentsLength ||
+        startOffset > endOffset) {
+        throw new Error('Invalid parameters.');
+    }
+    const prefix = contents.substring(0, startOffset);
+    const suffix = contents.substring(endOffset + 1);
+    return `${prefix}${replacement}${suffix}`;
 }
-
+exports.replaceContentsWithOffset = replaceContentsWithOffset;
 /**
  * String.prototype.search() with offset support
  *
@@ -56,8 +56,8 @@ function replaceContentsWithOffset(contents, replacement, startOffset, endOffset
  * @returns The index of the first match between the regular expression and the given string, or -1 if no match was found.
  */
 function searchFromOffset(source, regexp, offset) {
-  const target = source.substring(offset);
-  const matchedIndex = target.search(regexp);
-  return matchedIndex < 0 ? matchedIndex : matchedIndex + offset;
+    const target = source.substring(offset);
+    const matchedIndex = target.search(regexp);
+    return matchedIndex < 0 ? matchedIndex : matchedIndex + offset;
 }
-//# sourceMappingURL=commonCodeMod.js.map
+exports.searchFromOffset = searchFromOffset;

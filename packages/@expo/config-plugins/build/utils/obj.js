@@ -1,20 +1,17 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.get = get;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.get = void 0;
 /** `lodash.get` */
 function get(obj, key) {
-  const branches = key.split('.');
-  let current = obj;
-  let branch;
-  while (branch = branches.shift()) {
-    if (!(branch in current)) {
-      return undefined;
+    const branches = key.split('.');
+    let current = obj;
+    let branch;
+    while ((branch = branches.shift())) {
+        if (!(branch in current)) {
+            return undefined;
+        }
+        current = current[branch];
     }
-    current = current[branch];
-  }
-  return current;
+    return current;
 }
-//# sourceMappingURL=obj.js.map
+exports.get = get;

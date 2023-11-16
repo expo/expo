@@ -1,222 +1,181 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
 });
-exports.compileModsAsync = compileModsAsync;
-exports.evalModsAsync = evalModsAsync;
-exports.withDefaultBaseMods = withDefaultBaseMods;
-exports.withIntrospectionBaseMods = withIntrospectionBaseMods;
-function _debug() {
-  const data = _interopRequireDefault(require("debug"));
-  _debug = function () {
-    return data;
-  };
-  return data;
-}
-function _path() {
-  const data = _interopRequireDefault(require("path"));
-  _path = function () {
-    return data;
-  };
-  return data;
-}
-function _createBaseMod() {
-  const data = require("./createBaseMod");
-  _createBaseMod = function () {
-    return data;
-  };
-  return data;
-}
-function _withAndroidBaseMods() {
-  const data = require("./withAndroidBaseMods");
-  _withAndroidBaseMods = function () {
-    return data;
-  };
-  return data;
-}
-function _withIosBaseMods() {
-  const data = require("./withIosBaseMods");
-  _withIosBaseMods = function () {
-    return data;
-  };
-  return data;
-}
-function _Xcodeproj() {
-  const data = require("../ios/utils/Xcodeproj");
-  _Xcodeproj = function () {
-    return data;
-  };
-  return data;
-}
-function _errors() {
-  const data = require("../utils/errors");
-  _errors = function () {
-    return data;
-  };
-  return data;
-}
-function Warnings() {
-  const data = _interopRequireWildcard(require("../utils/warnings"));
-  Warnings = function () {
-    return data;
-  };
-  return data;
-}
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-const debug = (0, _debug().default)('expo:config-plugins:mod-compiler');
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.evalModsAsync = exports.compileModsAsync = exports.withIntrospectionBaseMods = exports.withDefaultBaseMods = void 0;
+const debug_1 = __importDefault(require("debug"));
+const path_1 = __importDefault(require("path"));
+const createBaseMod_1 = require("./createBaseMod");
+const withAndroidBaseMods_1 = require("./withAndroidBaseMods");
+const withIosBaseMods_1 = require("./withIosBaseMods");
+const Xcodeproj_1 = require("../ios/utils/Xcodeproj");
+const errors_1 = require("../utils/errors");
+const Warnings = __importStar(require("../utils/warnings"));
+const debug = (0, debug_1.default)('expo:config-plugins:mod-compiler');
 function withDefaultBaseMods(config, props = {}) {
-  config = (0, _withIosBaseMods().withIosBaseMods)(config, props);
-  config = (0, _withAndroidBaseMods().withAndroidBaseMods)(config, props);
-  return config;
+    config = (0, withIosBaseMods_1.withIosBaseMods)(config, props);
+    config = (0, withAndroidBaseMods_1.withAndroidBaseMods)(config, props);
+    return config;
 }
-
+exports.withDefaultBaseMods = withDefaultBaseMods;
 /**
  * Get a prebuild config that safely evaluates mods without persisting any changes to the file system.
  * Currently this only supports infoPlist, entitlements, androidManifest, strings, gradleProperties, and expoPlist mods.
  * This plugin should be evaluated directly:
  */
 function withIntrospectionBaseMods(config, props = {}) {
-  config = (0, _withIosBaseMods().withIosBaseMods)(config, {
-    saveToInternal: true,
-    // This writing optimization can be skipped since we never write in introspection mode.
-    // Including empty mods will ensure that all mods get introspected.
-    skipEmptyMod: false,
-    ...props
-  });
-  config = (0, _withAndroidBaseMods().withAndroidBaseMods)(config, {
-    saveToInternal: true,
-    skipEmptyMod: false,
-    ...props
-  });
-  if (config.mods) {
-    // Remove all mods that don't have an introspection base mod, for instance `dangerous` mods.
-    for (const platform of Object.keys(config.mods)) {
-      // const platformPreserve = preserve[platform];
-      for (const key of Object.keys(config.mods[platform] || {})) {
-        var _config$mods$platform, _config$mods$platform2;
-        // @ts-ignore
-        if (!((_config$mods$platform = config.mods[platform]) !== null && _config$mods$platform !== void 0 && (_config$mods$platform2 = _config$mods$platform[key]) !== null && _config$mods$platform2 !== void 0 && _config$mods$platform2.isIntrospective)) {
-          var _config$mods$platform3;
-          debug(`removing non-idempotent mod: ${platform}.${key}`);
-          // @ts-ignore
-          (_config$mods$platform3 = config.mods[platform]) === null || _config$mods$platform3 === void 0 ? true : delete _config$mods$platform3[key];
+    config = (0, withIosBaseMods_1.withIosBaseMods)(config, {
+        saveToInternal: true,
+        // This writing optimization can be skipped since we never write in introspection mode.
+        // Including empty mods will ensure that all mods get introspected.
+        skipEmptyMod: false,
+        ...props,
+    });
+    config = (0, withAndroidBaseMods_1.withAndroidBaseMods)(config, {
+        saveToInternal: true,
+        skipEmptyMod: false,
+        ...props,
+    });
+    if (config.mods) {
+        // Remove all mods that don't have an introspection base mod, for instance `dangerous` mods.
+        for (const platform of Object.keys(config.mods)) {
+            // const platformPreserve = preserve[platform];
+            for (const key of Object.keys(config.mods[platform] || {})) {
+                // @ts-ignore
+                if (!config.mods[platform]?.[key]?.isIntrospective) {
+                    debug(`removing non-idempotent mod: ${platform}.${key}`);
+                    // @ts-ignore
+                    delete config.mods[platform]?.[key];
+                }
+            }
         }
-      }
     }
-  }
-  return config;
+    return config;
 }
-
+exports.withIntrospectionBaseMods = withIntrospectionBaseMods;
 /**
  *
  * @param projectRoot
  * @param config
  */
 async function compileModsAsync(config, props) {
-  if (props.introspect === true) {
-    config = withIntrospectionBaseMods(config);
-  } else {
-    config = withDefaultBaseMods(config);
-  }
-  return await evalModsAsync(config, props);
-}
-function sortMods(commands, order) {
-  const allKeys = commands.map(([key]) => key);
-  const completeOrder = [...new Set([...order, ...allKeys])];
-  const sorted = [];
-  while (completeOrder.length) {
-    const group = completeOrder.shift();
-    const commandSet = commands.find(([key]) => key === group);
-    if (commandSet) {
-      sorted.push(commandSet);
+    if (props.introspect === true) {
+        config = withIntrospectionBaseMods(config);
     }
-  }
-  return sorted;
+    else {
+        config = withDefaultBaseMods(config);
+    }
+    return await evalModsAsync(config, props);
 }
-function getRawClone({
-  mods,
-  ...config
-}) {
-  // Configs should be fully serializable, so we can clone them without worrying about
-  // the mods.
-  return Object.freeze(JSON.parse(JSON.stringify(config)));
+exports.compileModsAsync = compileModsAsync;
+function sortMods(commands, order) {
+    const allKeys = commands.map(([key]) => key);
+    const completeOrder = [...new Set([...order, ...allKeys])];
+    const sorted = [];
+    while (completeOrder.length) {
+        const group = completeOrder.shift();
+        const commandSet = commands.find(([key]) => key === group);
+        if (commandSet) {
+            sorted.push(commandSet);
+        }
+    }
+    return sorted;
+}
+function getRawClone({ mods, ...config }) {
+    // Configs should be fully serializable, so we can clone them without worrying about
+    // the mods.
+    return Object.freeze(JSON.parse(JSON.stringify(config)));
 }
 const orders = {
-  ios: [
-  // dangerous runs first
-  'dangerous',
-  // run the XcodeProject mod second because many plugins attempt to read from it.
-  'xcodeproj']
+    ios: [
+        // dangerous runs first
+        'dangerous',
+        // run the XcodeProject mod second because many plugins attempt to read from it.
+        'xcodeproj',
+    ],
 };
 /**
  * A generic plugin compiler.
  *
  * @param config
  */
-async function evalModsAsync(config, {
-  projectRoot,
-  introspect,
-  platforms,
-  assertMissingModProviders,
-  ignoreExistingNativeFiles = false
-}) {
-  const modRawConfig = getRawClone(config);
-  for (const [platformName, platform] of Object.entries((_config$mods = config.mods) !== null && _config$mods !== void 0 ? _config$mods : {})) {
-    var _config$mods;
-    if (platforms && !platforms.includes(platformName)) {
-      debug(`skip platform: ${platformName}`);
-      continue;
-    }
-    let entries = Object.entries(platform);
-    if (entries.length) {
-      var _orders$platformName;
-      // Move dangerous item to the first position if it exists, this ensures that all dangerous code runs first.
-      entries = sortMods(entries, (_orders$platformName = orders[platformName]) !== null && _orders$platformName !== void 0 ? _orders$platformName : ['dangerous']);
-      debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
-      const platformProjectRoot = _path().default.join(projectRoot, platformName);
-      const projectName = platformName === 'ios' ? (0, _Xcodeproj().getHackyProjectName)(projectRoot, config) : undefined;
-      for (const [modName, mod] of entries) {
-        const modRequest = {
-          projectRoot,
-          projectName,
-          platformProjectRoot,
-          platform: platformName,
-          modName,
-          introspect: !!introspect,
-          ignoreExistingNativeFiles
-        };
-        if (!mod.isProvider) {
-          // In strict mode, throw an error.
-          const errorMessage = `Initial base modifier for "${platformName}.${modName}" is not a provider and therefore will not provide modResults to child mods`;
-          if (assertMissingModProviders !== false) {
-            throw new (_errors().PluginError)(errorMessage, 'MISSING_PROVIDER');
-          } else {
-            Warnings().addWarningForPlatform(platformName, `${platformName}.${modName}`, `Skipping: Initial base modifier for "${platformName}.${modName}" is not a provider and therefore will not provide modResults to child mods. This may be due to an outdated version of Expo CLI.`);
-            // In loose mode, just skip the mod entirely.
+async function evalModsAsync(config, { projectRoot, introspect, platforms, assertMissingModProviders, ignoreExistingNativeFiles = false, }) {
+    const modRawConfig = getRawClone(config);
+    for (const [platformName, platform] of Object.entries(config.mods ?? {})) {
+        if (platforms && !platforms.includes(platformName)) {
+            debug(`skip platform: ${platformName}`);
             continue;
-          }
         }
-        const results = await mod({
-          ...config,
-          modResults: null,
-          modRequest,
-          modRawConfig
-        });
-
-        // Sanity check to help locate non compliant mods.
-        config = (0, _createBaseMod().assertModResults)(results, platformName, modName);
-        // @ts-ignore: `modResults` is added for modifications
-        delete config.modResults;
-        // @ts-ignore: `modRequest` is added for modifications
-        delete config.modRequest;
-        // @ts-ignore: `modRawConfig` is added for modifications
-        delete config.modRawConfig;
-      }
+        let entries = Object.entries(platform);
+        if (entries.length) {
+            // Move dangerous item to the first position if it exists, this ensures that all dangerous code runs first.
+            entries = sortMods(entries, orders[platformName] ?? ['dangerous']);
+            debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
+            const platformProjectRoot = path_1.default.join(projectRoot, platformName);
+            const projectName = platformName === 'ios' ? (0, Xcodeproj_1.getHackyProjectName)(projectRoot, config) : undefined;
+            for (const [modName, mod] of entries) {
+                const modRequest = {
+                    projectRoot,
+                    projectName,
+                    platformProjectRoot,
+                    platform: platformName,
+                    modName,
+                    introspect: !!introspect,
+                    ignoreExistingNativeFiles,
+                };
+                if (!mod.isProvider) {
+                    // In strict mode, throw an error.
+                    const errorMessage = `Initial base modifier for "${platformName}.${modName}" is not a provider and therefore will not provide modResults to child mods`;
+                    if (assertMissingModProviders !== false) {
+                        throw new errors_1.PluginError(errorMessage, 'MISSING_PROVIDER');
+                    }
+                    else {
+                        Warnings.addWarningForPlatform(platformName, `${platformName}.${modName}`, `Skipping: Initial base modifier for "${platformName}.${modName}" is not a provider and therefore will not provide modResults to child mods. This may be due to an outdated version of Expo CLI.`);
+                        // In loose mode, just skip the mod entirely.
+                        continue;
+                    }
+                }
+                const results = await mod({
+                    ...config,
+                    modResults: null,
+                    modRequest,
+                    modRawConfig,
+                });
+                // Sanity check to help locate non compliant mods.
+                config = (0, createBaseMod_1.assertModResults)(results, platformName, modName);
+                // @ts-ignore: `modResults` is added for modifications
+                delete config.modResults;
+                // @ts-ignore: `modRequest` is added for modifications
+                delete config.modRequest;
+                // @ts-ignore: `modRawConfig` is added for modifications
+                delete config.modRawConfig;
+            }
+        }
     }
-  }
-  return config;
+    return config;
 }
-//# sourceMappingURL=mod-compiler.js.map
+exports.evalModsAsync = evalModsAsync;

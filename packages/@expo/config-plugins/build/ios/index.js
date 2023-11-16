@@ -1,329 +1,72 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
 });
-exports.Entitlements = exports.DeviceFamily = exports.BundleIdentifier = exports.BuildScheme = exports.BuildProperties = exports.Bitcode = void 0;
-Object.defineProperty(exports, "ExpoPlist", {
-  enumerable: true,
-  get: function () {
-    return _IosConfig().ExpoPlist;
-  }
-});
-exports.Google = void 0;
-Object.defineProperty(exports, "InfoPlist", {
-  enumerable: true,
-  get: function () {
-    return _IosConfig().InfoPlist;
-  }
-});
-exports.XcodeUtils = exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Swift = exports.Scheme = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.Permissions = exports.Paths = exports.Orientation = exports.Name = exports.Maps = exports.Locales = void 0;
-function Bitcode() {
-  const data = _interopRequireWildcard(require("./Bitcode"));
-  Bitcode = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Bitcode", {
-  enumerable: true,
-  get: function () {
-    return Bitcode();
-  }
-});
-function BuildProperties() {
-  const data = _interopRequireWildcard(require("./BuildProperties"));
-  BuildProperties = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "BuildProperties", {
-  enumerable: true,
-  get: function () {
-    return BuildProperties();
-  }
-});
-function BuildScheme() {
-  const data = _interopRequireWildcard(require("./BuildScheme"));
-  BuildScheme = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "BuildScheme", {
-  enumerable: true,
-  get: function () {
-    return BuildScheme();
-  }
-});
-function BundleIdentifier() {
-  const data = _interopRequireWildcard(require("./BundleIdentifier"));
-  BundleIdentifier = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "BundleIdentifier", {
-  enumerable: true,
-  get: function () {
-    return BundleIdentifier();
-  }
-});
-function DeviceFamily() {
-  const data = _interopRequireWildcard(require("./DeviceFamily"));
-  DeviceFamily = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "DeviceFamily", {
-  enumerable: true,
-  get: function () {
-    return DeviceFamily();
-  }
-});
-function Entitlements() {
-  const data = _interopRequireWildcard(require("./Entitlements"));
-  Entitlements = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Entitlements", {
-  enumerable: true,
-  get: function () {
-    return Entitlements();
-  }
-});
-function Google() {
-  const data = _interopRequireWildcard(require("./Google"));
-  Google = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Google", {
-  enumerable: true,
-  get: function () {
-    return Google();
-  }
-});
-function _IosConfig() {
-  const data = require("./IosConfig.types");
-  _IosConfig = function () {
-    return data;
-  };
-  return data;
-}
-function Locales() {
-  const data = _interopRequireWildcard(require("./Locales"));
-  Locales = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Locales", {
-  enumerable: true,
-  get: function () {
-    return Locales();
-  }
-});
-function Maps() {
-  const data = _interopRequireWildcard(require("./Maps"));
-  Maps = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Maps", {
-  enumerable: true,
-  get: function () {
-    return Maps();
-  }
-});
-function Name() {
-  const data = _interopRequireWildcard(require("./Name"));
-  Name = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Name", {
-  enumerable: true,
-  get: function () {
-    return Name();
-  }
-});
-function Orientation() {
-  const data = _interopRequireWildcard(require("./Orientation"));
-  Orientation = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Orientation", {
-  enumerable: true,
-  get: function () {
-    return Orientation();
-  }
-});
-function Paths() {
-  const data = _interopRequireWildcard(require("./Paths"));
-  Paths = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Paths", {
-  enumerable: true,
-  get: function () {
-    return Paths();
-  }
-});
-function Permissions() {
-  const data = _interopRequireWildcard(require("./Permissions"));
-  Permissions = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Permissions", {
-  enumerable: true,
-  get: function () {
-    return Permissions();
-  }
-});
-function ProvisioningProfile() {
-  const data = _interopRequireWildcard(require("./ProvisioningProfile"));
-  ProvisioningProfile = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "ProvisioningProfile", {
-  enumerable: true,
-  get: function () {
-    return ProvisioningProfile();
-  }
-});
-function RequiresFullScreen() {
-  const data = _interopRequireWildcard(require("./RequiresFullScreen"));
-  RequiresFullScreen = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "RequiresFullScreen", {
-  enumerable: true,
-  get: function () {
-    return RequiresFullScreen();
-  }
-});
-function Scheme() {
-  const data = _interopRequireWildcard(require("./Scheme"));
-  Scheme = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Scheme", {
-  enumerable: true,
-  get: function () {
-    return Scheme();
-  }
-});
-function Swift() {
-  const data = _interopRequireWildcard(require("./Swift"));
-  Swift = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Swift", {
-  enumerable: true,
-  get: function () {
-    return Swift();
-  }
-});
-function Target() {
-  const data = _interopRequireWildcard(require("./Target"));
-  Target = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Target", {
-  enumerable: true,
-  get: function () {
-    return Target();
-  }
-});
-function Updates() {
-  const data = _interopRequireWildcard(require("./Updates"));
-  Updates = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Updates", {
-  enumerable: true,
-  get: function () {
-    return Updates();
-  }
-});
-function UsesNonExemptEncryption() {
-  const data = _interopRequireWildcard(require("./UsesNonExemptEncryption"));
-  UsesNonExemptEncryption = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "UsesNonExemptEncryption", {
-  enumerable: true,
-  get: function () {
-    return UsesNonExemptEncryption();
-  }
-});
-function Version() {
-  const data = _interopRequireWildcard(require("./Version"));
-  Version = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "Version", {
-  enumerable: true,
-  get: function () {
-    return Version();
-  }
-});
-function XcodeProjectFile() {
-  const data = _interopRequireWildcard(require("./XcodeProjectFile"));
-  XcodeProjectFile = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "XcodeProjectFile", {
-  enumerable: true,
-  get: function () {
-    return XcodeProjectFile();
-  }
-});
-function XcodeUtils() {
-  const data = _interopRequireWildcard(require("./utils/Xcodeproj"));
-  XcodeUtils = function () {
-    return data;
-  };
-  return data;
-}
-Object.defineProperty(exports, "XcodeUtils", {
-  enumerable: true,
-  get: function () {
-    return XcodeUtils();
-  }
-});
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-//# sourceMappingURL=index.js.map
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Swift = exports.Scheme = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.Orientation = exports.Name = exports.Locales = exports.Maps = exports.Google = exports.DeviceFamily = exports.BuildScheme = exports.BuildProperties = exports.BundleIdentifier = exports.Bitcode = exports.XcodeUtils = exports.Permissions = exports.Paths = exports.Entitlements = void 0;
+const Bitcode = __importStar(require("./Bitcode"));
+exports.Bitcode = Bitcode;
+const BuildProperties = __importStar(require("./BuildProperties"));
+exports.BuildProperties = BuildProperties;
+const BuildScheme = __importStar(require("./BuildScheme"));
+exports.BuildScheme = BuildScheme;
+const BundleIdentifier = __importStar(require("./BundleIdentifier"));
+exports.BundleIdentifier = BundleIdentifier;
+const DeviceFamily = __importStar(require("./DeviceFamily"));
+exports.DeviceFamily = DeviceFamily;
+const Entitlements = __importStar(require("./Entitlements"));
+exports.Entitlements = Entitlements;
+const Google = __importStar(require("./Google"));
+exports.Google = Google;
+const Locales = __importStar(require("./Locales"));
+exports.Locales = Locales;
+const Maps = __importStar(require("./Maps"));
+exports.Maps = Maps;
+const Name = __importStar(require("./Name"));
+exports.Name = Name;
+const Orientation = __importStar(require("./Orientation"));
+exports.Orientation = Orientation;
+const Paths = __importStar(require("./Paths"));
+exports.Paths = Paths;
+const Permissions = __importStar(require("./Permissions"));
+exports.Permissions = Permissions;
+const ProvisioningProfile = __importStar(require("./ProvisioningProfile"));
+exports.ProvisioningProfile = ProvisioningProfile;
+const RequiresFullScreen = __importStar(require("./RequiresFullScreen"));
+exports.RequiresFullScreen = RequiresFullScreen;
+const Scheme = __importStar(require("./Scheme"));
+exports.Scheme = Scheme;
+const Swift = __importStar(require("./Swift"));
+exports.Swift = Swift;
+const Target = __importStar(require("./Target"));
+exports.Target = Target;
+const Updates = __importStar(require("./Updates"));
+exports.Updates = Updates;
+const UsesNonExemptEncryption = __importStar(require("./UsesNonExemptEncryption"));
+exports.UsesNonExemptEncryption = UsesNonExemptEncryption;
+const Version = __importStar(require("./Version"));
+exports.Version = Version;
+const XcodeProjectFile = __importStar(require("./XcodeProjectFile"));
+exports.XcodeProjectFile = XcodeProjectFile;
+const XcodeUtils = __importStar(require("./utils/Xcodeproj"));
+exports.XcodeUtils = XcodeUtils;

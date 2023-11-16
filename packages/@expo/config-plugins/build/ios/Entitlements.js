@@ -1,129 +1,76 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.ensureApplicationTargetEntitlementsFileConfigured = ensureApplicationTargetEntitlementsFileConfigured;
-exports.getEntitlementsPath = getEntitlementsPath;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ensureApplicationTargetEntitlementsFileConfigured = exports.getEntitlementsPath = exports.setAssociatedDomains = exports.withAssociatedDomains = void 0;
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+const slash_1 = __importDefault(require("slash"));
+const Target_1 = require("./Target");
+const Xcodeproj_1 = require("./utils/Xcodeproj");
+const string_1 = require("./utils/string");
+const ios_plugins_1 = require("../plugins/ios-plugins");
+exports.withAssociatedDomains = (0, ios_plugins_1.createEntitlementsPlugin)(setAssociatedDomains, 'withAssociatedDomains');
+function setAssociatedDomains(config, { 'com.apple.developer.associated-domains': _, ...entitlementsPlist }) {
+    if (config.ios?.associatedDomains) {
+        return {
+            ...entitlementsPlist,
+            'com.apple.developer.associated-domains': config.ios.associatedDomains,
+        };
+    }
+    return entitlementsPlist;
+}
 exports.setAssociatedDomains = setAssociatedDomains;
-exports.withAssociatedDomains = void 0;
-function _fs() {
-  const data = _interopRequireDefault(require("fs"));
-  _fs = function () {
-    return data;
-  };
-  return data;
+function getEntitlementsPath(projectRoot, { targetName, buildConfiguration = 'Release', } = {}) {
+    const project = (0, Xcodeproj_1.getPbxproj)(projectRoot);
+    const xcBuildConfiguration = (0, Target_1.getXCBuildConfigurationFromPbxproj)(project, {
+        targetName,
+        buildConfiguration,
+    });
+    if (!xcBuildConfiguration) {
+        return null;
+    }
+    const entitlementsPath = getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration);
+    return entitlementsPath && fs_1.default.existsSync(entitlementsPath) ? entitlementsPath : null;
 }
-function _path() {
-  const data = _interopRequireDefault(require("path"));
-  _path = function () {
-    return data;
-  };
-  return data;
-}
-function _slash() {
-  const data = _interopRequireDefault(require("slash"));
-  _slash = function () {
-    return data;
-  };
-  return data;
-}
-function _Target() {
-  const data = require("./Target");
-  _Target = function () {
-    return data;
-  };
-  return data;
-}
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
-    return data;
-  };
-  return data;
-}
-function _string() {
-  const data = require("./utils/string");
-  _string = function () {
-    return data;
-  };
-  return data;
-}
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-const withAssociatedDomains = (0, _iosPlugins().createEntitlementsPlugin)(setAssociatedDomains, 'withAssociatedDomains');
-exports.withAssociatedDomains = withAssociatedDomains;
-function setAssociatedDomains(config, {
-  'com.apple.developer.associated-domains': _,
-  ...entitlementsPlist
-}) {
-  var _config$ios;
-  if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.associatedDomains) {
-    return {
-      ...entitlementsPlist,
-      'com.apple.developer.associated-domains': config.ios.associatedDomains
-    };
-  }
-  return entitlementsPlist;
-}
-function getEntitlementsPath(projectRoot, {
-  targetName,
-  buildConfiguration = 'Release'
-} = {}) {
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot);
-  const xcBuildConfiguration = (0, _Target().getXCBuildConfigurationFromPbxproj)(project, {
-    targetName,
-    buildConfiguration
-  });
-  if (!xcBuildConfiguration) {
-    return null;
-  }
-  const entitlementsPath = getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration);
-  return entitlementsPath && _fs().default.existsSync(entitlementsPath) ? entitlementsPath : null;
-}
+exports.getEntitlementsPath = getEntitlementsPath;
 function getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration) {
-  var _xcBuildConfiguration;
-  const entitlementsPathRaw = xcBuildConfiguration === null || xcBuildConfiguration === void 0 ? void 0 : (_xcBuildConfiguration = xcBuildConfiguration.buildSettings) === null || _xcBuildConfiguration === void 0 ? void 0 : _xcBuildConfiguration.CODE_SIGN_ENTITLEMENTS;
-  if (entitlementsPathRaw) {
-    return _path().default.normalize(_path().default.join(projectRoot, 'ios', (0, _string().trimQuotes)(entitlementsPathRaw)));
-  } else {
-    return null;
-  }
+    const entitlementsPathRaw = xcBuildConfiguration?.buildSettings?.CODE_SIGN_ENTITLEMENTS;
+    if (entitlementsPathRaw) {
+        return path_1.default.normalize(path_1.default.join(projectRoot, 'ios', (0, string_1.trimQuotes)(entitlementsPathRaw)));
+    }
+    else {
+        return null;
+    }
 }
 function ensureApplicationTargetEntitlementsFileConfigured(projectRoot) {
-  const project = (0, _Xcodeproj().getPbxproj)(projectRoot);
-  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
-  const productName = (0, _Xcodeproj().getProductName)(project);
-  const [, applicationTarget] = (0, _Target().findFirstNativeTarget)(project);
-  const buildConfigurations = (0, _Xcodeproj().getBuildConfigurationsForListId)(project, applicationTarget.buildConfigurationList);
-  let hasChangesToWrite = false;
-  for (const [, xcBuildConfiguration] of buildConfigurations) {
-    const oldEntitlementPath = getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration);
-    if (oldEntitlementPath && _fs().default.existsSync(oldEntitlementPath)) {
-      return;
+    const project = (0, Xcodeproj_1.getPbxproj)(projectRoot);
+    const projectName = (0, Xcodeproj_1.getProjectName)(projectRoot);
+    const productName = (0, Xcodeproj_1.getProductName)(project);
+    const [, applicationTarget] = (0, Target_1.findFirstNativeTarget)(project);
+    const buildConfigurations = (0, Xcodeproj_1.getBuildConfigurationsForListId)(project, applicationTarget.buildConfigurationList);
+    let hasChangesToWrite = false;
+    for (const [, xcBuildConfiguration] of buildConfigurations) {
+        const oldEntitlementPath = getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration);
+        if (oldEntitlementPath && fs_1.default.existsSync(oldEntitlementPath)) {
+            return;
+        }
+        hasChangesToWrite = true;
+        // Use posix formatted path, even on Windows
+        const entitlementsRelativePath = (0, slash_1.default)(path_1.default.join(projectName, `${productName}.entitlements`));
+        const entitlementsPath = path_1.default.normalize(path_1.default.join(projectRoot, 'ios', entitlementsRelativePath));
+        fs_1.default.mkdirSync(path_1.default.dirname(entitlementsPath), { recursive: true });
+        if (!fs_1.default.existsSync(entitlementsPath)) {
+            fs_1.default.writeFileSync(entitlementsPath, ENTITLEMENTS_TEMPLATE);
+        }
+        xcBuildConfiguration.buildSettings.CODE_SIGN_ENTITLEMENTS = entitlementsRelativePath;
     }
-    hasChangesToWrite = true;
-    // Use posix formatted path, even on Windows
-    const entitlementsRelativePath = (0, _slash().default)(_path().default.join(projectName, `${productName}.entitlements`));
-    const entitlementsPath = _path().default.normalize(_path().default.join(projectRoot, 'ios', entitlementsRelativePath));
-    _fs().default.mkdirSync(_path().default.dirname(entitlementsPath), {
-      recursive: true
-    });
-    if (!_fs().default.existsSync(entitlementsPath)) {
-      _fs().default.writeFileSync(entitlementsPath, ENTITLEMENTS_TEMPLATE);
+    if (hasChangesToWrite) {
+        fs_1.default.writeFileSync(project.filepath, project.writeSync());
     }
-    xcBuildConfiguration.buildSettings.CODE_SIGN_ENTITLEMENTS = entitlementsRelativePath;
-  }
-  if (hasChangesToWrite) {
-    _fs().default.writeFileSync(project.filepath, project.writeSync());
-  }
 }
+exports.ensureApplicationTargetEntitlementsFileConfigured = ensureApplicationTargetEntitlementsFileConfigured;
 const ENTITLEMENTS_TEMPLATE = `
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -132,4 +79,3 @@ const ENTITLEMENTS_TEMPLATE = `
 </dict>
 </plist>
 `;
-//# sourceMappingURL=Entitlements.js.map

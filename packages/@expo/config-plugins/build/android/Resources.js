@@ -1,62 +1,37 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.buildResourceGroup = buildResourceGroup;
-exports.buildResourceItem = buildResourceItem;
-exports.ensureDefaultResourceXML = ensureDefaultResourceXML;
-exports.findResourceGroup = findResourceGroup;
-exports.getObjectAsResourceGroup = getObjectAsResourceGroup;
-exports.getObjectAsResourceItems = getObjectAsResourceItems;
-exports.getResourceItemsAsObject = getResourceItemsAsObject;
-exports.readResourcesXMLAsync = readResourcesXMLAsync;
-function _XML() {
-  const data = require("../utils/XML");
-  _XML = function () {
-    return data;
-  };
-  return data;
-}
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getObjectAsResourceGroup = exports.getObjectAsResourceItems = exports.getResourceItemsAsObject = exports.findResourceGroup = exports.buildResourceGroup = exports.buildResourceItem = exports.ensureDefaultResourceXML = exports.readResourcesXMLAsync = void 0;
+const XML_1 = require("../utils/XML");
 const fallbackResourceString = `<?xml version="1.0" encoding="utf-8"?><resources></resources>`;
-
 /**
  * Read an XML file while providing a default fallback for resource files.
  *
  * @param options path to the XML file, returns a fallback XML if the path doesn't exist.
  */
-async function readResourcesXMLAsync({
-  path,
-  fallback = fallbackResourceString
-}) {
-  const xml = await (0, _XML().readXMLAsync)({
-    path,
-    fallback
-  });
-  // Ensure the type is expected.
-  if (!xml.resources) {
-    xml.resources = {};
-  }
-  return xml;
+async function readResourcesXMLAsync({ path, fallback = fallbackResourceString, }) {
+    const xml = await (0, XML_1.readXMLAsync)({ path, fallback });
+    // Ensure the type is expected.
+    if (!xml.resources) {
+        xml.resources = {};
+    }
+    return xml;
 }
-
+exports.readResourcesXMLAsync = readResourcesXMLAsync;
 /**
  * Ensure the provided xml has a `resources` object (the expected shape).
  *
  * @param xml
  */
 function ensureDefaultResourceXML(xml) {
-  if (!xml) {
-    xml = {
-      resources: {}
-    };
-  }
-  if (!xml.resources) {
-    xml.resources = {};
-  }
-  return xml;
+    if (!xml) {
+        xml = { resources: {} };
+    }
+    if (!xml.resources) {
+        xml.resources = {};
+    }
+    return xml;
 }
-
+exports.ensureDefaultResourceXML = ensureDefaultResourceXML;
 /**
  * Build a `ResourceItemXML` given its `name` and `value`. This makes things a bit more readable.
  *
@@ -65,50 +40,35 @@ function ensureDefaultResourceXML(xml) {
  *
  * @param props name and value strings.
  */
-function buildResourceItem({
-  name,
-  value,
-  targetApi,
-  translatable
-}) {
-  const item = {
-    $: {
-      name
-    },
-    _: value
-  };
-  if (targetApi) {
-    item.$['tools:targetApi'] = targetApi;
-  }
-  if (translatable !== undefined) {
-    item.$['translatable'] = String(translatable);
-  }
-  return item;
-}
-function buildResourceGroup(parent) {
-  var _parent$items;
-  return {
-    $: {
-      name: parent.name,
-      parent: parent.parent
-    },
-    item: (_parent$items = parent.items) !== null && _parent$items !== void 0 ? _parent$items : []
-  };
-}
-function findResourceGroup(xml, group) {
-  var _xml$filter, _xml$filter$call;
-  const app = xml === null || xml === void 0 ? void 0 : (_xml$filter = xml.filter) === null || _xml$filter === void 0 ? void 0 : (_xml$filter$call = _xml$filter.call(xml, ({
-    $: head
-  }) => {
-    let matches = head.name === group.name;
-    if (group.parent != null && matches) {
-      matches = head.parent === group.parent;
+function buildResourceItem({ name, value, targetApi, translatable, }) {
+    const item = { $: { name }, _: value };
+    if (targetApi) {
+        item.$['tools:targetApi'] = targetApi;
     }
-    return matches;
-  })) === null || _xml$filter$call === void 0 ? void 0 : _xml$filter$call[0];
-  return app !== null && app !== void 0 ? app : null;
+    if (translatable !== undefined) {
+        item.$['translatable'] = String(translatable);
+    }
+    return item;
 }
-
+exports.buildResourceItem = buildResourceItem;
+function buildResourceGroup(parent) {
+    return {
+        $: { name: parent.name, parent: parent.parent },
+        item: parent.items ?? [],
+    };
+}
+exports.buildResourceGroup = buildResourceGroup;
+function findResourceGroup(xml, group) {
+    const app = xml?.filter?.(({ $: head }) => {
+        let matches = head.name === group.name;
+        if (group.parent != null && matches) {
+            matches = head.parent === group.parent;
+        }
+        return matches;
+    })?.[0];
+    return app ?? null;
+}
+exports.findResourceGroup = findResourceGroup;
 /**
  * Helper to convert a basic XML object into a simple k/v pair.
  *
@@ -116,12 +76,12 @@ function findResourceGroup(xml, group) {
  * @returns
  */
 function getResourceItemsAsObject(xml) {
-  return xml.reduce((prev, curr) => ({
-    ...prev,
-    [curr.$.name]: curr._
-  }), {});
+    return xml.reduce((prev, curr) => ({
+        ...prev,
+        [curr.$.name]: curr._,
+    }), {});
 }
-
+exports.getResourceItemsAsObject = getResourceItemsAsObject;
 /**
  * Helper to convert a basic k/v object to a ResourceItemXML array.
  *
@@ -129,20 +89,19 @@ function getResourceItemsAsObject(xml) {
  * @returns
  */
 function getObjectAsResourceItems(obj) {
-  return Object.entries(obj).map(([name, value]) => ({
-    $: {
-      name
-    },
-    _: value
-  }));
+    return Object.entries(obj).map(([name, value]) => ({
+        $: { name },
+        _: value,
+    }));
 }
+exports.getObjectAsResourceItems = getObjectAsResourceItems;
 function getObjectAsResourceGroup(group) {
-  return {
-    $: {
-      name: group.name,
-      parent: group.parent
-    },
-    item: getObjectAsResourceItems(group.item)
-  };
+    return {
+        $: {
+            name: group.name,
+            parent: group.parent,
+        },
+        item: getObjectAsResourceItems(group.item),
+    };
 }
-//# sourceMappingURL=Resources.js.map
+exports.getObjectAsResourceGroup = getObjectAsResourceGroup;

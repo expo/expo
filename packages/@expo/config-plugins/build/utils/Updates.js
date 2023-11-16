@@ -1,214 +1,182 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
 });
-exports.getAppVersion = getAppVersion;
-exports.getExpoUpdatesPackageVersion = getExpoUpdatesPackageVersion;
-exports.getNativeVersion = getNativeVersion;
-exports.getRuntimeVersionAsync = getRuntimeVersionAsync;
-exports.getRuntimeVersionNullableAsync = getRuntimeVersionNullableAsync;
-exports.getSDKVersion = getSDKVersion;
-exports.getUpdateUrl = getUpdateUrl;
-exports.getUpdatesCheckOnLaunch = getUpdatesCheckOnLaunch;
-exports.getUpdatesCodeSigningCertificate = getUpdatesCodeSigningCertificate;
-exports.getUpdatesCodeSigningMetadata = getUpdatesCodeSigningMetadata;
-exports.getUpdatesCodeSigningMetadataStringified = getUpdatesCodeSigningMetadataStringified;
-exports.getUpdatesEnabled = getUpdatesEnabled;
-exports.getUpdatesRequestHeaders = getUpdatesRequestHeaders;
-exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringified;
-exports.getUpdatesTimeout = getUpdatesTimeout;
-function Fingerprint() {
-  const data = _interopRequireWildcard(require("@expo/fingerprint"));
-  Fingerprint = function () {
-    return data;
-  };
-  return data;
-}
-function _sdkRuntimeVersions() {
-  const data = require("@expo/sdk-runtime-versions");
-  _sdkRuntimeVersions = function () {
-    return data;
-  };
-  return data;
-}
-function _fs() {
-  const data = _interopRequireDefault(require("fs"));
-  _fs = function () {
-    return data;
-  };
-  return data;
-}
-function _getenv() {
-  const data = require("getenv");
-  _getenv = function () {
-    return data;
-  };
-  return data;
-}
-function _path() {
-  const data = _interopRequireDefault(require("path"));
-  _path = function () {
-    return data;
-  };
-  return data;
-}
-function _resolveFrom() {
-  const data = _interopRequireDefault(require("resolve-from"));
-  _resolveFrom = function () {
-    return data;
-  };
-  return data;
-}
-function _semver() {
-  const data = _interopRequireDefault(require("semver"));
-  _semver = function () {
-    return data;
-  };
-  return data;
-}
-function _() {
-  const data = require("..");
-  _ = function () {
-    return data;
-  };
-  return data;
-}
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getUpdatesRequestHeadersStringified = exports.getUpdatesRequestHeaders = exports.getUpdatesCodeSigningMetadataStringified = exports.getUpdatesCodeSigningMetadata = exports.getUpdatesCodeSigningCertificate = exports.getUpdatesCheckOnLaunch = exports.getUpdatesTimeout = exports.getUpdatesEnabled = exports.getSDKVersion = exports.getRuntimeVersionAsync = exports.getRuntimeVersionNullableAsync = exports.getNativeVersion = exports.getAppVersion = exports.getUpdateUrl = exports.getExpoUpdatesPackageVersion = void 0;
+const Fingerprint = __importStar(require("@expo/fingerprint"));
+const sdk_runtime_versions_1 = require("@expo/sdk-runtime-versions");
+const fs_1 = __importDefault(require("fs"));
+const getenv_1 = require("getenv");
+const path_1 = __importDefault(require("path"));
+const resolve_from_1 = __importDefault(require("resolve-from"));
+const semver_1 = __importDefault(require("semver"));
+const __1 = require("..");
 function getExpoUpdatesPackageVersion(projectRoot) {
-  const expoUpdatesPackageJsonPath = _resolveFrom().default.silent(projectRoot, 'expo-updates/package.json');
-  if (!expoUpdatesPackageJsonPath || !_fs().default.existsSync(expoUpdatesPackageJsonPath)) {
-    return null;
-  }
-  const packageJson = JSON.parse(_fs().default.readFileSync(expoUpdatesPackageJsonPath, 'utf8'));
-  return packageJson.version;
+    const expoUpdatesPackageJsonPath = resolve_from_1.default.silent(projectRoot, 'expo-updates/package.json');
+    if (!expoUpdatesPackageJsonPath || !fs_1.default.existsSync(expoUpdatesPackageJsonPath)) {
+        return null;
+    }
+    const packageJson = JSON.parse(fs_1.default.readFileSync(expoUpdatesPackageJsonPath, 'utf8'));
+    return packageJson.version;
 }
+exports.getExpoUpdatesPackageVersion = getExpoUpdatesPackageVersion;
 function getUpdateUrl(config) {
-  var _config$updates$url, _config$updates;
-  return (_config$updates$url = (_config$updates = config.updates) === null || _config$updates === void 0 ? void 0 : _config$updates.url) !== null && _config$updates$url !== void 0 ? _config$updates$url : null;
+    return config.updates?.url ?? null;
 }
+exports.getUpdateUrl = getUpdateUrl;
 function getAppVersion(config) {
-  var _config$version;
-  return (_config$version = config.version) !== null && _config$version !== void 0 ? _config$version : '1.0.0';
+    return config.version ?? '1.0.0';
 }
+exports.getAppVersion = getAppVersion;
 function getNativeVersion(config, platform) {
-  const version = _().IOSConfig.Version.getVersion(config);
-  switch (platform) {
-    case 'ios':
-      {
-        const buildNumber = _().IOSConfig.Version.getBuildNumber(config);
-        return `${version}(${buildNumber})`;
-      }
-    case 'android':
-      {
-        const versionCode = _().AndroidConfig.Version.getVersionCode(config);
-        return `${version}(${versionCode})`;
-      }
-    default:
-      {
-        throw new Error(`"${platform}" is not a supported platform. Choose either "ios" or "android".`);
-      }
-  }
+    const version = __1.IOSConfig.Version.getVersion(config);
+    switch (platform) {
+        case 'ios': {
+            const buildNumber = __1.IOSConfig.Version.getBuildNumber(config);
+            return `${version}(${buildNumber})`;
+        }
+        case 'android': {
+            const versionCode = __1.AndroidConfig.Version.getVersionCode(config);
+            return `${version}(${versionCode})`;
+        }
+        default: {
+            throw new Error(`"${platform}" is not a supported platform. Choose either "ios" or "android".`);
+        }
+    }
 }
+exports.getNativeVersion = getNativeVersion;
 async function getRuntimeVersionNullableAsync(...[projectRoot, config, platform]) {
-  try {
-    return await getRuntimeVersionAsync(projectRoot, config, platform);
-  } catch (e) {
-    if ((0, _getenv().boolish)('EXPO_DEBUG', false)) {
-      console.log(e);
+    try {
+        return await getRuntimeVersionAsync(projectRoot, config, platform);
     }
-    return null;
-  }
+    catch (e) {
+        if ((0, getenv_1.boolish)('EXPO_DEBUG', false)) {
+            console.log(e);
+        }
+        return null;
+    }
 }
+exports.getRuntimeVersionNullableAsync = getRuntimeVersionNullableAsync;
 async function getRuntimeVersionAsync(projectRoot, config, platform) {
-  var _config$platform$runt, _config$platform;
-  const runtimeVersion = (_config$platform$runt = (_config$platform = config[platform]) === null || _config$platform === void 0 ? void 0 : _config$platform.runtimeVersion) !== null && _config$platform$runt !== void 0 ? _config$platform$runt : config.runtimeVersion;
-  if (!runtimeVersion) {
-    return null;
-  }
-  if (typeof runtimeVersion === 'string') {
-    return runtimeVersion;
-  } else if (runtimeVersion.policy === 'appVersion') {
-    return getAppVersion(config);
-  } else if (runtimeVersion.policy === 'nativeVersion') {
-    return getNativeVersion(config, platform);
-  } else if (runtimeVersion.policy === 'sdkVersion') {
-    if (!config.sdkVersion) {
-      throw new Error("An SDK version must be defined when using the 'sdkVersion' runtime policy.");
+    const runtimeVersion = config[platform]?.runtimeVersion ?? config.runtimeVersion;
+    if (!runtimeVersion) {
+        return null;
     }
-    return (0, _sdkRuntimeVersions().getRuntimeVersionForSDKVersion)(config.sdkVersion);
-  } else if (runtimeVersion.policy === 'fingerprintExperimental') {
-    console.warn("Use of the experimental 'fingerprintExperimental' runtime policy may result in unexpected system behavior.");
-    return await Fingerprint().createProjectHashAsync(projectRoot);
-  }
-  throw new Error(`"${typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion}" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprintExperimental" policy.`);
+    if (typeof runtimeVersion === 'string') {
+        return runtimeVersion;
+    }
+    else if (runtimeVersion.policy === 'appVersion') {
+        return getAppVersion(config);
+    }
+    else if (runtimeVersion.policy === 'nativeVersion') {
+        return getNativeVersion(config, platform);
+    }
+    else if (runtimeVersion.policy === 'sdkVersion') {
+        if (!config.sdkVersion) {
+            throw new Error("An SDK version must be defined when using the 'sdkVersion' runtime policy.");
+        }
+        return (0, sdk_runtime_versions_1.getRuntimeVersionForSDKVersion)(config.sdkVersion);
+    }
+    else if (runtimeVersion.policy === 'fingerprintExperimental') {
+        console.warn("Use of the experimental 'fingerprintExperimental' runtime policy may result in unexpected system behavior.");
+        return await Fingerprint.createProjectHashAsync(projectRoot);
+    }
+    throw new Error(`"${typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion}" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprintExperimental" policy.`);
 }
+exports.getRuntimeVersionAsync = getRuntimeVersionAsync;
 function getSDKVersion(config) {
-  return typeof config.sdkVersion === 'string' ? config.sdkVersion : null;
+    return typeof config.sdkVersion === 'string' ? config.sdkVersion : null;
 }
+exports.getSDKVersion = getSDKVersion;
 function getUpdatesEnabled(config) {
-  var _config$updates2;
-  // allow override of enabled property
-  if (((_config$updates2 = config.updates) === null || _config$updates2 === void 0 ? void 0 : _config$updates2.enabled) !== undefined) {
-    return config.updates.enabled;
-  }
-  return getUpdateUrl(config) !== null;
-}
-function getUpdatesTimeout(config) {
-  var _config$updates$fallb, _config$updates3;
-  return (_config$updates$fallb = (_config$updates3 = config.updates) === null || _config$updates3 === void 0 ? void 0 : _config$updates3.fallbackToCacheTimeout) !== null && _config$updates$fallb !== void 0 ? _config$updates$fallb : 0;
-}
-function getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion) {
-  var _config$updates4, _config$updates5, _config$updates6, _config$updates7;
-  if (((_config$updates4 = config.updates) === null || _config$updates4 === void 0 ? void 0 : _config$updates4.checkAutomatically) === 'ON_ERROR_RECOVERY') {
-    // native 'ERROR_RECOVERY_ONLY' option was only introduced in 0.11.x
-    if (expoUpdatesPackageVersion && _semver().default.gte(expoUpdatesPackageVersion, '0.11.0')) {
-      return 'ERROR_RECOVERY_ONLY';
+    // allow override of enabled property
+    if (config.updates?.enabled !== undefined) {
+        return config.updates.enabled;
     }
-    return 'NEVER';
-  } else if (((_config$updates5 = config.updates) === null || _config$updates5 === void 0 ? void 0 : _config$updates5.checkAutomatically) === 'ON_LOAD') {
+    return getUpdateUrl(config) !== null;
+}
+exports.getUpdatesEnabled = getUpdatesEnabled;
+function getUpdatesTimeout(config) {
+    return config.updates?.fallbackToCacheTimeout ?? 0;
+}
+exports.getUpdatesTimeout = getUpdatesTimeout;
+function getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion) {
+    if (config.updates?.checkAutomatically === 'ON_ERROR_RECOVERY') {
+        // native 'ERROR_RECOVERY_ONLY' option was only introduced in 0.11.x
+        if (expoUpdatesPackageVersion && semver_1.default.gte(expoUpdatesPackageVersion, '0.11.0')) {
+            return 'ERROR_RECOVERY_ONLY';
+        }
+        return 'NEVER';
+    }
+    else if (config.updates?.checkAutomatically === 'ON_LOAD') {
+        return 'ALWAYS';
+    }
+    else if (config.updates?.checkAutomatically === 'WIFI_ONLY') {
+        return 'WIFI_ONLY';
+    }
+    else if (config.updates?.checkAutomatically === 'NEVER') {
+        return 'NEVER';
+    }
     return 'ALWAYS';
-  } else if (((_config$updates6 = config.updates) === null || _config$updates6 === void 0 ? void 0 : _config$updates6.checkAutomatically) === 'WIFI_ONLY') {
-    return 'WIFI_ONLY';
-  } else if (((_config$updates7 = config.updates) === null || _config$updates7 === void 0 ? void 0 : _config$updates7.checkAutomatically) === 'NEVER') {
-    return 'NEVER';
-  }
-  return 'ALWAYS';
 }
+exports.getUpdatesCheckOnLaunch = getUpdatesCheckOnLaunch;
 function getUpdatesCodeSigningCertificate(projectRoot, config) {
-  var _config$updates8;
-  const codeSigningCertificatePath = (_config$updates8 = config.updates) === null || _config$updates8 === void 0 ? void 0 : _config$updates8.codeSigningCertificate;
-  if (!codeSigningCertificatePath) {
-    return undefined;
-  }
-  const finalPath = _path().default.join(projectRoot, codeSigningCertificatePath);
-  if (!_fs().default.existsSync(finalPath)) {
-    throw new Error(`File not found at \`updates.codeSigningCertificate\` path: ${finalPath}`);
-  }
-  return _fs().default.readFileSync(finalPath, 'utf8');
+    const codeSigningCertificatePath = config.updates?.codeSigningCertificate;
+    if (!codeSigningCertificatePath) {
+        return undefined;
+    }
+    const finalPath = path_1.default.join(projectRoot, codeSigningCertificatePath);
+    if (!fs_1.default.existsSync(finalPath)) {
+        throw new Error(`File not found at \`updates.codeSigningCertificate\` path: ${finalPath}`);
+    }
+    return fs_1.default.readFileSync(finalPath, 'utf8');
 }
+exports.getUpdatesCodeSigningCertificate = getUpdatesCodeSigningCertificate;
 function getUpdatesCodeSigningMetadata(config) {
-  var _config$updates9;
-  return (_config$updates9 = config.updates) === null || _config$updates9 === void 0 ? void 0 : _config$updates9.codeSigningMetadata;
+    return config.updates?.codeSigningMetadata;
 }
+exports.getUpdatesCodeSigningMetadata = getUpdatesCodeSigningMetadata;
 function getUpdatesCodeSigningMetadataStringified(config) {
-  const metadata = getUpdatesCodeSigningMetadata(config);
-  if (!metadata) {
-    return undefined;
-  }
-  return JSON.stringify(metadata);
+    const metadata = getUpdatesCodeSigningMetadata(config);
+    if (!metadata) {
+        return undefined;
+    }
+    return JSON.stringify(metadata);
 }
+exports.getUpdatesCodeSigningMetadataStringified = getUpdatesCodeSigningMetadataStringified;
 function getUpdatesRequestHeaders(config) {
-  var _config$updates10;
-  return (_config$updates10 = config.updates) === null || _config$updates10 === void 0 ? void 0 : _config$updates10.requestHeaders;
+    return config.updates?.requestHeaders;
 }
+exports.getUpdatesRequestHeaders = getUpdatesRequestHeaders;
 function getUpdatesRequestHeadersStringified(config) {
-  const metadata = getUpdatesRequestHeaders(config);
-  if (!metadata) {
-    return undefined;
-  }
-  return JSON.stringify(metadata);
+    const metadata = getUpdatesRequestHeaders(config);
+    if (!metadata) {
+        return undefined;
+    }
+    return JSON.stringify(metadata);
 }
-//# sourceMappingURL=Updates.js.map
+exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringified;
