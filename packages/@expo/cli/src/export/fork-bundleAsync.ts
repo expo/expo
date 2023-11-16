@@ -17,6 +17,7 @@ import { ConfigT } from 'metro-config';
 import path from 'path';
 
 import { isEnableHermesManaged, maybeThrowFromInconsistentEngineAsync } from './exportHermes';
+import { Log } from '../log';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import {
@@ -321,13 +322,21 @@ async function forkMetroBuildAsync(
   );
 
   if (options.serializerOptions?.output === 'static') {
-    const parsed = typeof bundle === 'string' ? JSON.parse(bundle) : bundle;
+    try {
+      const parsed = typeof bundle === 'string' ? JSON.parse(bundle) : bundle;
 
-    assert(
-      'artifacts' in parsed && Array.isArray(parsed.artifacts),
-      'Expected serializer to return an object with key artifacts to contain an array of serial assets.'
-    );
-    return parsed;
+      assert(
+        'artifacts' in parsed && Array.isArray(parsed.artifacts),
+        'Expected serializer to return an object with key artifacts to contain an array of serial assets.'
+      );
+      return parsed;
+    } catch (error: any) {
+      Log.error(
+        'Serializer did not return expected format. The project copy of `expo/metro-config` may be out of date. Error: ' +
+          error.message
+      );
+      Log.warn('Proceeding with legacy serializer behavior.');
+    }
   }
 
   assert(typeof bundle === 'string', 'Expected serializer to return a string.');
