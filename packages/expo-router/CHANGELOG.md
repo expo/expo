@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Change default CSS reset to align with `react-native-web@0.19.8`.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
