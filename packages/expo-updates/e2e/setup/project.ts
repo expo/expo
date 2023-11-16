@@ -196,18 +196,23 @@ async function preparePackageJson(
   const dependenciesPath = path.join(projectRoot, 'dependencies');
   await fs.mkdir(dependenciesPath);
 
-  for (const dependencyName of expoDependencyNames) {
-    console.log(`Packing ${dependencyName}...`);
-    const result = await packExpoDependency(
-      repoRoot,
-      projectRoot,
-      dependenciesPath,
-      dependencyName
-    );
-    expoResolutions[dependencyName] = result.dependency;
-    expoVersions[dependencyName] = result.dependency;
-  }
-  console.log('Done packing dependencies.');
+  console.time('Done packing dependencies.');
+  await Promise.all(
+    expoDependencyNames.map(async (dependencyName) => {
+      console.log(`Packing ${dependencyName}...`);
+      console.time(`Packing ${dependencyName}`);
+      const result = await packExpoDependency(
+        repoRoot,
+        projectRoot,
+        dependenciesPath,
+        dependencyName
+      );
+      expoResolutions[dependencyName] = result.dependency;
+      expoVersions[dependencyName] = result.dependency;
+      console.timeEnd(`Packing ${dependencyName}`);
+    })
+  );
+  console.timeEnd('Done packing dependencies.');
 
   const extraScriptsGenerateTestUpdateBundlesPart = shouldGenerateTestUpdateBundles
     ? {
@@ -449,6 +454,7 @@ export function transformAppJsonForUpdatesDisabledE2E(
 }
 
 async function configureUpdatesSigningAsync(projectRoot: string) {
+  console.time('generate and configure code signing');
   // generate and configure code signing
   await spawnAsync(
     'yarn',
@@ -466,6 +472,7 @@ async function configureUpdatesSigningAsync(projectRoot: string) {
     ],
     { cwd: projectRoot, stdio: 'inherit' }
   );
+
   await spawnAsync(
     'yarn',
     [
@@ -480,6 +487,8 @@ async function configureUpdatesSigningAsync(projectRoot: string) {
   );
   // Archive the keys so that they are not filtered out when uploading to EAS
   await spawnAsync('tar', ['cf', 'keys.tar', 'keys'], { cwd: projectRoot, stdio: 'inherit' });
+
+  console.timeEnd('generate and configure code signing');
 }
 
 export async function initAsync(
