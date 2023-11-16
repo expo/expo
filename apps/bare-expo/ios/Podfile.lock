@@ -1950,7 +1950,7 @@ SPEC CHECKSUMS:
   Expo: 97df3b68de6c485f894dbae821666bec8435e144
   expo-dev-client: 820f881c0dc8a0f1f4cd1e35a35469d1d0fbc798
   expo-dev-launcher: ddd4c74d4192526603cf004baf47b445d5372410
-  expo-dev-menu: 8f8b3ddb6714b94e26448d070ad35a53695e9ddd
+  expo-dev-menu: 9fc863259e3178e3c65ccdc2515bf3f6ba9e9512
   expo-dev-menu-interface: 05d08cc56649636de77253583b4bbb73adce7680
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
   ExpoApplication: 729c272c3217ecd40aabba16c4d5536148ed466b
@@ -1977,7 +1977,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: 80da146f602b14cc42077b93305ccd1c20fb9d55
   ExpoMailComposer: 1f980bbdd0647500178625f453e509cef1282d43
   ExpoMaps: e9e83d84c3af7c25fc4a139917239881e319e08a
-  ExpoModulesCore: 46ef28f0458ce6e377b1e4716f85f4fa465ab8e4
+  ExpoModulesCore: 9f8a0e08e339ba3e380417aebbdbbe63a209d953
   ExpoModulesTestCore: 83c21efaf5e0440bb79ba8065573d203db3186a9
   ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
   ExpoPrint: e7ecdd682436eb5a74b744c4ce36dc490df851b7
@@ -2069,7 +2069,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 3942382593f104af226ad9c56e16166960c7ae30
   RNFlashList: 4b4b6b093afc0df60ae08f9cbf6ccd4c836c667a
   RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
-  RNReanimated: 11cb84f23cf2443b8bf1806b83d77dd470e23158
+  RNReanimated: c046ff2e19c02d82ed13ade91e6d452552adccce
   RNScreens: 5f4df9babb21d30723580377b5f52d9f9baf0005
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
