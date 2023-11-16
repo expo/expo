@@ -138,7 +138,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
       [self _finishLoadWithError:errorMessage];
       return;
     }
-    assetUrl = [self _saveBase64UrlToTempFile:_url];
+    assetUrl = temporaryFileUrl;
   }
 
   AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:assetUrl options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];

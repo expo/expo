@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix base64 audio playback on iOS 17.
+
 ### 💡 Others
 
 ## 13.9.0 — 2023-11-14
