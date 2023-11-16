@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- Update E2E tests to use local copies of `@expo/metro-config`, `@expo/env`, `@expo/config`.
 - Add e2e tests for disabled mode. ([#25301](https://github.com/expo/expo/pull/25301) by [@wschurman](https://github.com/wschurman))
 - Modify E2E manual test for asset exclusion. ([#25406](https://github.com/expo/expo/pull/25406) by [@douglowder](https://github.com/douglowder))
 

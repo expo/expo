@@ -11,8 +11,11 @@ const dirName = __dirname; /* eslint-disable-line */
 const expoDependencyNames = [
   'expo',
   '@expo/cli',
+  '@expo/config',
   '@expo/config-plugins',
   '@expo/config-types',
+  '@expo/env',
+  '@expo/metro-config',
   '@expo/prebuild-config',
   'expo-application',
   'expo-av',
