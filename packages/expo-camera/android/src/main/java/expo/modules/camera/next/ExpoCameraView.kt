@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
 import android.os.Bundle
@@ -15,16 +14,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraInfo
+import androidx.camera.core.CameraSelector
 import androidx.camera.core.CameraState
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
-import androidx.camera.core.MirrorMode
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
-import androidx.camera.core.resolutionselector.AspectRatioStrategy
-import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.FileOutputOptions
 import androidx.camera.video.Quality
@@ -80,6 +77,7 @@ class ExpoCameraView(
   var camera: Camera? = null
   var activeRecording: Recording? = null
 
+  private val providerFuture = ProcessCameraProvider.getInstance(context)
   private var imageCaptureUseCase: ImageCapture? = null
   private var imageAnalysisUseCase: ImageAnalysis? = null
   private var recorder: Recorder? = null
@@ -130,39 +128,15 @@ class ExpoCameraView(
     val height = bottom - top
 
     previewView.layout(0, 0, width, height)
-    previewView.setBackgroundColor(Color.BLACK)
-    if (changed) {
-      createCamera()
-    }
+    postInvalidate(left, top, right, bottom)
   }
 
   override fun onViewAdded(child: View) {
-    // react adds children to containers at the beginning of children list and that moves pre-react added preview to the end of that list
-    // above would cause preview (TextureView that covers all available space) to be rendered at the top of children stack
-    // while we need this preview to be rendered last beneath all other children
-
-    // child is not preview
     if (previewView === child) {
       return
     }
-
-    // bring to front all non-preview children
-    val childrenToBeReordered = mutableListOf<View>()
-    for (i in 0 until this.childCount) {
-      val childView = getChildAt(i)
-      if (i == 0 && childView === previewView) {
-        // preview is already first in children list - do not reorder anything
-        return
-      }
-      if (childView !== previewView) {
-        childrenToBeReordered.add(childView)
-      }
-    }
-    for (childView in childrenToBeReordered) {
-      bringChildToFront(childView)
-    }
-    previewView.requestLayout()
-    previewView.invalidate()
+    removeView(previewView)
+    addView(previewView, 0)
   }
 
   fun takePicture(options: PictureOptions, promise: Promise, cacheDirectory: File) {
@@ -197,7 +171,9 @@ class ExpoCameraView(
   }
 
   fun setTorchEnabled(enabled: Boolean) {
-    camera?.cameraControl?.enableTorch(enabled)
+    if (camera?.cameraInfo?.hasFlashUnit() == true) {
+      camera?.cameraControl?.enableTorch(enabled)
+    }
   }
 
   fun record(options: RecordingOptions, promise: Promise, cacheDirectory: File) {
@@ -241,8 +217,6 @@ class ExpoCameraView(
 
   @SuppressLint("UnsafeOptInUsageError")
   private fun createCamera() {
-    val providerFuture = ProcessCameraProvider.getInstance(context)
-
     providerFuture.addListener(
       {
         val cameraProvider: ProcessCameraProvider = providerFuture.get()
@@ -253,7 +227,9 @@ class ExpoCameraView(
             it.setSurfaceProvider(previewView.surfaceProvider)
           }
 
-        val cameraSelector = lenFacing.mapToSelector()
+        val cameraSelector = CameraSelector.Builder()
+          .requireLensFacing(lenFacing.mapToCharacteristic())
+          .build()
 
         imageCaptureUseCase = ImageCapture.Builder()
           .build()
@@ -300,11 +276,6 @@ class ExpoCameraView(
   private fun createImageAnalyzer(): ImageAnalysis =
     ImageAnalysis.Builder()
       .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-      .setResolutionSelector(
-        ResolutionSelector.Builder()
-          .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
-          .build()
-      )
       .build()
       .also { analyzer ->
         if (shouldScanBarCodes) {
@@ -333,7 +304,6 @@ class ExpoCameraView(
       }
 
     return VideoCapture.Builder(recorder)
-      .setMirrorMode(MirrorMode.MIRROR_MODE_ON_FRONT_ONLY)
       .setVideoStabilizationEnabled(true)
       .build()
   }
@@ -365,9 +335,6 @@ class ExpoCameraView(
 
   private fun transformBarCodeScannerResultToViewCoordinates(barCode: BarCodeScannerResult) {
     val cornerPoints = barCode.cornerPoints
-
-    val cameraWidth = barCode.referenceImageHeight
-    val cameraHeight = barCode.referenceImageWidth
     val previewWidth = previewView.width
     val previewHeight = previewView.height
 
@@ -382,27 +349,18 @@ class ExpoCameraView(
       cornerPoints.mapX { barCode.referenceImageWidth - cornerPoints[it] }
     }
 
-    val scaleX = if (portrait) {
-      previewWidth / cameraHeight.toFloat()
-    } else {
-      previewWidth / cameraWidth.toFloat()
-    }
-    val scaleY = if (portrait) {
-      previewHeight / cameraWidth.toFloat()
-    } else {
-      previewHeight / cameraHeight.toFloat()
-    }
-
     cornerPoints.mapX {
-      (cornerPoints[it] * scaleX)
+      (cornerPoints[it] * previewWidth / barCode.referenceImageWidth.toFloat())
         .roundToInt()
     }
     cornerPoints.mapY {
-      (cornerPoints[it] * scaleY)
+      (cornerPoints[it] * previewHeight / barCode.referenceImageHeight.toFloat())
         .roundToInt()
     }
 
     barCode.cornerPoints = cornerPoints
+    barCode.referenceImageHeight = height
+    barCode.referenceImageWidth = width
   }
 
   private fun getCornerPointsAndBoundingBox(cornerPoints: List<Int>, boundingBox: BoundingBox): Pair<ArrayList<Bundle>, Bundle> {
@@ -458,7 +416,6 @@ class ExpoCameraView(
   override fun getPreviewSizeAsArray() = intArrayOf(previewView.width, previewView.height)
 
   init {
-    isChildrenDrawingOrderEnabled = true
     previewView.setOnHierarchyChangeListener(object : OnHierarchyChangeListener {
       override fun onChildViewRemoved(parent: View?, child: View?) = Unit
       override fun onChildViewAdded(parent: View?, child: View?) {
