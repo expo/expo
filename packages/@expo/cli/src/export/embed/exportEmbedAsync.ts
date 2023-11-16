@@ -12,6 +12,7 @@ import {
   getBaseUrlFromExpoConfig,
   getMetroDirectBundleOptions,
 } from '../../start/server/middleware/metroOptions';
+import { removeAsync } from '../../utils/dir';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { profile } from '../../utils/profile';
 import { isEnableHermesManaged } from '../exportHermes';
@@ -21,6 +22,9 @@ import { persistMetroAssetsAsync } from '../persistMetroAssets';
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
+
+  // Ensure we delete the old bundle to trigger a failure if the bundle cannot be created.
+  await removeAsync(options.bundleOutput);
 
   const { bundle, assets } = await exportEmbedBundleAsync(projectRoot, options);
 
@@ -103,6 +107,13 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
       bundle,
       assets: outputAssets,
     };
+  } catch (error: any) {
+    // Log using Xcode error format so the errors are picked up by xcodebuild.
+    // https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Log-errors-and-warnings-from-your-script
+    if (options.platform === 'ios') {
+      console.error('error: ' + error.message);
+    }
+    throw error;
   } finally {
     server.end();
   }

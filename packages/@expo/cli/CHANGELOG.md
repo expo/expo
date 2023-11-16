@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Ensure invalid production iOS builds fail more predictably.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
