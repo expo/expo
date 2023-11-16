@@ -69,6 +69,11 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
   external fun drainJSEventLoop()
 
   /**
+   * Informs C++ that runtime was deallocated.
+   */
+  external fun wasDeallocated()
+
+  /**
    * Returns a `JavaScriptModuleObject` that is a bridge between [expo.modules.kotlin.modules.Module]
    * and HostObject exported via JSI.
    *

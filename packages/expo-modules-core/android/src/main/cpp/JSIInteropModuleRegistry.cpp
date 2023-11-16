@@ -30,6 +30,7 @@ void JSIInteropModuleRegistry::registerNatives() {
                    makeNativeMethod("global", JSIInteropModuleRegistry::global),
                    makeNativeMethod("createObject", JSIInteropModuleRegistry::createObject),
                    makeNativeMethod("drainJSEventLoop", JSIInteropModuleRegistry::drainJSEventLoop),
+                   makeNativeMethod("wasDeallocated", JSIInteropModuleRegistry::jniWasDeallocated),
                  });
 }
 
@@ -187,5 +188,9 @@ void JSIInteropModuleRegistry::registerSharedObject(
       "registerSharedObject"
     );
   method(javaPart_, std::move(native), std::move(js));
+}
+
+void JSIInteropModuleRegistry::jniWasDeallocated() {
+  wasDeallocated = true;
 }
 } // namespace expo
