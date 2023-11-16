@@ -76,6 +76,12 @@ export default function App() {
         width={100}
         style={{ height: 100, width: 100 }}
       />
+      <Image
+        source={require('./embeddedAssets/coffee-prep.jpg')}
+        height={100}
+        width={100}
+        style={{ height: 100, width: 100 }}
+      />
       <Text style={styles.titleText}>Updates JS API test</Text>
       <Text> </Text>
       <Text>{runTypeMessage}</Text>
