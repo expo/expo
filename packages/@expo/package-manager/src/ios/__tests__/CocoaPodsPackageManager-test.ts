@@ -1,4 +1,4 @@
-/* eslint-env jest */
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -10,7 +10,6 @@ import {
   getPodRepoUpdateMessage,
   getPodUpdateMessage,
 } from '../CocoaPodsPackageManager';
-import spawnAsync from '@expo/spawn-async';
 
 const projectRoot = getTemporaryPath();
 
@@ -25,7 +24,9 @@ jest.mock('@expo/spawn-async');
 
 const originalForceColor = process.env.FORCE_COLOR;
 
-beforeEach(() => {
+beforeAll(() => {
+  // Need to reset the modules, since FORCE_COLOR is cached inside `supports-color`
+  jest.resetModules();
   process.env.FORCE_COLOR = '1';
 });
 
