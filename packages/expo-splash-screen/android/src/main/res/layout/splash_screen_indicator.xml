@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/indicator"
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_marginStart="16dp"
+android:layout_marginEnd="16dp"
+android:layout_marginBottom="16dp"
+android:layout_gravity="bottom">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#4E4E4E"
+        app:cardCornerRadius="8dp">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textFontWeight="600"
+            android:padding="8dp"
+            android:text="System splash screen still shows up on production." />
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:textSize="10dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+
+            android:textColor="#FFFFFF"
+            android:text="Call SplashScreen.hide() as soon as your initial screen loads to improve user experience." /></LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</FrameLayout>
