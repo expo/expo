@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Drop `crypto` usage on web.
+
 ## 15.3.0 — 2023-11-14
 
 ### 🛠 Breaking changes
