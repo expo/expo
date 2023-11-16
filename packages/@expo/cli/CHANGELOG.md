@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent log-spew when running prebuild in debug mode.
+
 ### 💡 Others
 
 ## 0.15.0 — 2023-11-14
