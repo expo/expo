@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Replace `@expo/babel-preset-cli` with `babel-preset-expo`.
+
 ## 9.9.0 — 2023-11-14
 
 ### 🛠 Breaking changes
