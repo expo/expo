@@ -7,10 +7,10 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "typecheck": "expo-module typecheck",
-    "test": "expo-module test",
     "prepare": "expo-module prepare",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "prepublishOnly": "expo-module prepublishOnly",
+    "test": "expo-module test",
+    "typecheck": "expo-module typecheck"
   },
   "repository": {
     "type": "git",
@@ -46,8 +46,8 @@
     "sucrase": "^3.20.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^3.3.0",
-    "@types/require-from-string": "^1.2.1"
+    "@types/require-from-string": "^1.2.1",
+    "expo-module-scripts": "^3.3.0"
   },
   "publishConfig": {
     "access": "public"
