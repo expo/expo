@@ -9,6 +9,7 @@ import path from 'path';
 const dirName = __dirname; /* eslint-disable-line */
 
 const expoDependencyNames = [
+  'babel-preset-expo',
   'expo',
   '@expo/cli',
   '@expo/config',
