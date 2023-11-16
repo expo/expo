@@ -1,14 +1,9 @@
-import { View, Image } from 'react-native';
-import { PanGestureHandler, TapGestureHandler } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  useAnimatedGestureHandler,
   withSpring,
 } from 'react-native-reanimated';
-
-const AnimatedImage = Animated.createAnimatedComponent(Image);
-const AnimatedView = Animated.createAnimatedComponent(View);
 
 export default function EmojiSticker({ imageSize, stickerSource }) {
   const translateX = useSharedValue(0);
@@ -22,24 +17,19 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
     };
   });
 
-  const onDoubleTap = useAnimatedGestureHandler({
-    onActive: () => {
+  const doubleTap = Gesture.Tap()
+    .numberOfTaps(2)
+    .onStart(() => {
       if (scaleImage.value !== imageSize * 2) {
         scaleImage.value = scaleImage.value * 2;
       }
-    },
-  });
+    });
 
-  const onDrag = useAnimatedGestureHandler({
-    onStart: (event, context) => {
-      context.translateX = translateX.value;
-      context.translateY = translateY.value;
-    },
-    onActive: (event, context) => {
-      translateX.value = event.translationX + context.translateX;
-      translateY.value = event.translationY + context.translateY;
-    },
-  });
+  const drag = Gesture.Pan()
+    .onChange((event) => {
+      translateX.value += event.changeX;
+      translateY.value += event.changeY;
+    });
 
   const containerStyle = useAnimatedStyle(() => {
     return {
@@ -55,16 +45,16 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
   });
 
   return (
-    <PanGestureHandler onGestureEvent={onDrag}>
-      <AnimatedView style={[containerStyle, { top: -350 }]}>
-        <TapGestureHandler onGestureEvent={onDoubleTap} numberOfTaps={2}>
-          <AnimatedImage
+    <GestureDetector gesture={drag}>
+      <Animated.View style={[containerStyle, { top: -350 }]}>
+        <GestureDetector gesture={doubleTap}>
+          <Animated.Image
             source={stickerSource}
             resizeMode="contain"
             style={[imageStyle, { width: imageSize, height: imageSize }]}
           />
-        </TapGestureHandler>
-      </AnimatedView>
-    </PanGestureHandler>
+        </GestureDetector>
+      </Animated.View>
+    </GestureDetector>
   );
 }
