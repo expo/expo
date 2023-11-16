@@ -536,6 +536,13 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .encodeQuality(100)
         .apply(propOptions)
 
+      tintColor?.let {
+        val tintColorOptions = RequestOptions().apply {
+          set(CustomOptions.tintColor, it)
+        }
+        request.apply(tintColorOptions)
+      }
+
       val cookie = Trace.getNextCookieValue()
       beginAsyncTraceBlock(Trace.tag, Trace.loadNewImageBlock, cookie)
       newTarget.setCookie(cookie)
