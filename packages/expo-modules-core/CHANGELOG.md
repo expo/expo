@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Prevent the app from crashing during reloading when an unfinished promise tries to execute.
+
 ### 💡 Others
 
 ## 1.10.0 — 2023-11-14
