@@ -131,7 +131,9 @@ describe(getPodRepoUpdateMessage, () => {
 
 describe('installAsync', () => {
   it(`does pod repo update automatically when the Podfile.lock is malformed`, async () => {
-    const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
+    // Reload the Cocoapods package manager to ensure colors are enabled
+    const { CocoaPodsPackageManager: ReloadedManager } = require('../CocoaPodsPackageManager');
+    const manager = new ReloadedManager({ cwd: projectRoot });
 
     manager._runAsync = jest.fn((commands: string[]) => {
       const cmd = commands.join(' ');
