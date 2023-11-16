@@ -101,7 +101,8 @@ redirects[build-reference/build-webhook]=eas/webhooks/
 redirects[distribution/webhooks]=eas/webhooks/
 redirects[distribution/turtle-cli]=archive/classic-updates/turtle-cli/
 redirects[distribution/app-signing]=app-signing/app-credentials/
-redirects[guides/adhoc-builds]=archived/adhoc-builds/
+redirects[guides/adhoc-builds]=develop/development-builds/introduction/
+rediects[archive/adhoc-builds]=develop/development-builds/introduction/
 
 # clients is now development
 redirects[clients/distribution-for-ios]=develop/development-builds/create-a-build/
@@ -139,11 +140,11 @@ redirects[development/develop-your-project]=develop/development-builds/use-devel
 redirects[develop/development-builds/installation/]=develop/development-builds/create-a-build/
 
 # Guides that have been deleted
-redirects[guides/using-gatsby]=/
+redirects[guides/using-gatsby]=guides/overview
 redirects[guides/testing-on-devices]=workflow/run-on-device
 redirects[distribution/uploading-apps]=submit/introduction
 redirects[guides/setup-native-firebase/]=guides/using-firebase
-redirects[guides/using-clojurescript/]=/
+redirects[guides/using-clojurescript/]=guides/overview
 redirects[distribution/hosting-your-app/]=distribution/publishing-websites/
 
 # Redirects after adding Home to the docs
@@ -170,7 +171,7 @@ redirects[workflow/glossary-of-terms/]=more/glossary-of-terms/
 redirects[develop/development-builds/installation/]=develop/development-builds/create-a-build/
 rediects[get-started/errors/]=debugging/errors-and-warnings/
 rediects[develop/development-builds/parallel-installation]=build-reference/variants/
-redirects[/home/develop/user-interface/safe-areas]=develop/user-interface/safe-areas/
+redirects[home/develop/user-interface/safe-areas]=develop/user-interface/safe-areas/
 
 # Redirects after Guides organization
 redirects[guides/]=guides/overview/
@@ -207,24 +208,40 @@ redirects[technical-specs/expo-updates-0/]=technical-specs/expo-updates-1/
 redirects[development/extending-the-dev-menu/]=develop/development-builds/development-workflows/
 redirects[archive/expokit/eject/]=archive/glossary/
 redirects[archive/expokit/overview/]=archive/glossary/
+redirects[expokit/overview/]=archive/glossary/
 redirects[more/latest]=versions/latest/
 redirects[router/reference/api-routes]=preview/api-routes/
 redirects[versions/latest/sdk/error-recovery/]=versions/latest/
 redirects[eas-update/eas-update-with-local-build/]=eas-update/build-locally/
 redirects[bare/existing-apps/]=bare/installing-expo-modules/
-redirects[bare/exploring-bare-workflow/]=/bare/overview/
+redirects[bare/exploring-bare-workflow/]=bare/overview/
 redirects[home/develop/development-builds/installation]=develop/development-builds/create-a-build/
 redirects[t/cant-upgrade-to-the-lastest-expo-cli-3-19-2]=faq/
 redirects[build-reference/custom-build-config/]=custom-builds/get-started/
 redirects[home/debugging/tools/]=debugging/tools/
 redirects[workflow/run-on-device/]=build/internal-distribution/
 redirects[build-reference/how-tos/]=build-reference/private-npm-packages
-redirects[home/navigation/installation/]=/routing/introduction/
+redirects[home/navigation/installation/]=routing/introduction/
 redirects[home/authentication]=develop/authentication/
+redirects[home/develop/user-interface/app-icons]=develop/user-interface/app-icons/
 redirects[eas-update/migrate-codepush-to-eas-update/]=eas-update/codepush/
 redirects[home/get-started/create-a-project]=get-started/create-a-project/
 redirects[home/core-concepts/]=core-concepts/
 redirects[guides/testing-on-devices]=build/internal-distribution/
+redirects[router/advance/root-layout]=router/advanced/root-layout/
+redirects[router/advance/stack]=router/advanced/stack/
+redirects[router/advance/tabs]=router/advanced/tabs/
+redirects[router/advance/drawer]=router/advanced/drawer/
+redirects[router/advance/nesting-navigators]=router/advanced/nesting-navigators/
+redirects[router/advance/modal]=router/advanced/modals/
+redirects[router/advance/platform-specific-modules]=router/advanced/platform-specific-modules/
+redirects[router/advance/shared-routes]=router/advanced/shared-routes/
+redirects[router/advance/router-setttings]=router/advanced/router-settings/
+redirects[home/config-plugins/plugins-and-mods]=config-plugins/plugins-and-mods/
+redirects[home/unit-testing/]=develop/unit-testing/
+redirects[home/config-plugins/introduction/]=config-plugins/introduction/
+redirects[technical-specs/latest/]=technical-specs/expo-updates-1/
+redirects[guides/education]='additional-resources/'
 
 # We should change this redirect to a more general EAS guide later
 redirects[guides/setting-up-continuous-integration]=build/building-on-ci

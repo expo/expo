@@ -168,18 +168,10 @@ const RENAMED_PAGES: Record<string, string> = {
   '/home/authentication': '/develop/authentication/',
   '/home/get-started/create-a-project': '/get-started/create-a-project/',
   '/home/core-concepts/': '/core-concepts/',
-
-  // Redirects after organizing docs in Guides
-  '/bare/hello-world/': '/bare/overview/',
-  '/guides/errors/': '/debugging/runtime-issues/',
-  '/guides/using-graphql/': '/guides/overview/',
-  '/guides/using-styled-components/': '/guides/overview/',
-  '/guides/using-bugsnag/': '/guides/overview/',
-  '/build/automating-submissions/': '/build/automate-submissions/',
-  '/workflow/run-on-device/': '/build/internal-distribution/',
-  '/guides/': '/guides/overview/',
-  '/archive/workflow/customizing/': '/workflow/customizing/',
-  '/errors-and-warnings/': '/debugging/errors-and-warnings/',
+  '/home/config-plugins/plugins-and-mods': '/config-plugins/plugins-and-mods/',
+  '/home/unit-testing/': '/develop/unit-testing/',
+  '/home/config-plugins/introduction/': '/config-plugins/introduction/',
+  '/home/develop/user-interface/app-icons': '/develop/user-interface/app-icons/',
 
   // EAS Build
   '/build-reference/eas-json/': '/eas/json/#eas-build',
@@ -282,8 +274,60 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v43.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
 
-  // Redirect Gatsby guide to index guides page
-  '/guides/using-gatsby/': '/guides/',
+  // Redirect bare guides to unified workflow guides
+  '/bare/using-libraries/': '/workflow/using-libraries/',
+  '/bare/exploring-bare-workflow/': '/bare/overview/',
+  '/bare/existing-apps/': '/bare/installing-expo-modules/',
+  '/bare/installing-unimodules/': '/bare/installing-expo-modules/',
+  '/bare/using-web/': '/workflow/web/',
+  '/guides/running-in-the-browser/': '/workflow/web/',
+  '/bare/unimodules-full-list/': '/bare/overview/',
+  '/bare/updating-your-app/': '/eas-update/updating-your-app/',
+
+  // Consolidate distribution
+  '/distribution/security/': '/app-signing/security/',
+  '/distribution/uploading-apps/': '/submit/introduction/',
+  '/versions/latest/distribution/uploading-apps/': '/submit/introduction/',
+
+  // Redirects for removed/archived pages or guides
+  '/archived/': '/archive/',
+  '/guides/using-gatsby/': '/guides/overview',
+  '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
+  '/expokit/eject/': '/archive/glossary/#eject',
+  '/expokit/expokit/': '/archive/glossary/#expokit',
+  '/submit/classic-builds/': '/submit/introduction/',
+  '/archive/adhoc-builds/': '/develop/development-builds/introduction/',
+  '/technical-specs/expo-updates-0/': '/technical-specs/expo-updates-1/',
+  '/technical-specs/latest/': '/technical-specs/expo-updates-1/',
+  '/development/extending-the-dev-menu/': '/develop/development-builds/development-workflows/',
+  '/more/latest': '/versions/latest/',
+  '/archive/expokit/overview/': '/archive/glossary/',
+  '/expokit/overview/': '/archive/glossary/',
+  '/tutorial/planning/': '/tutorial/introduction/',
+  '/tutorial/sharing/': '/tutorial/introduction/',
+  '/tutorial/text/': '/tutorial/introduction/',
+  '/tutorial/button': '/tutorial/introduction/',
+  '/guides/using-clojurescript/': '/guides/overview',
+  '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup/',
+  '/guides/using-custom-fonts/': '/develop/user-interface/fonts/',
+  '/workflow/already-used-react-native/': '/workflow/overview/',
+  '/guides/setup-native-firebase/': '/guides/using-firebase/',
+  '/development/installation/': '/develop/development-builds/create-a-build/',
+  '/guides/routing-and-navigation/': '/routing/introduction/',
+  '/router/reference/api-routes': '/preview/api-routes/',
+  '/build-reference/custom-build-config/': '/custom-builds/get-started/',
+  '/eas-update/migrate-codepush-to-eas-update/': '/eas-update/codepush/',
+  '/guides/testing-on-devices': '/build/internal-distribution/',
+  '/bare/hello-world/': '/bare/overview/',
+  '/guides/errors/': '/debugging/runtime-issues/',
+  '/guides/using-graphql/': '/guides/overview/',
+  '/guides/using-styled-components/': '/guides/overview/',
+  '/guides/using-bugsnag/': '/guides/overview/',
+  '/build/automating-submissions/': '/build/automate-submissions/',
+  '/workflow/run-on-device/': '/build/internal-distribution/',
+  '/guides/': '/guides/overview/',
+  '/archive/workflow/customizing/': '/workflow/customizing/',
+  '/errors-and-warnings/': '/debugging/errors-and-warnings/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
@@ -300,52 +344,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
-
-  // Redirect bare guides to unified workflow guides
-  '/bare/using-libraries/': '/workflow/using-libraries/',
-  '/bare/exploring-bare-workflow/': '/bare/overview/',
-  '/bare/existing-apps/': '/bare/installing-expo-modules/',
-  '/bare/installing-unimodules/': '/bare/installing-expo-modules/',
-  '/bare/using-web/': '/workflow/web/',
-  '/guides/running-in-the-browser/': '/workflow/web/',
-  '/bare/unimodules-full-list/': '/bare/overview/',
-  '/bare/updating-your-app/': '/eas-update/updating-your-app/',
-
-  // Consolidate distribution
-  '/distribution/security/': '/app-signing/security/',
-  '/distribution/uploading-apps/': '/submit/introduction/',
-  '/versions/latest/distribution/uploading-apps/': '/submit/introduction/',
-
-  // Deleted or removed guides
-  '/guides/using-clojurescript/': '/guides/',
-  '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup/',
-  '/guides/using-custom-fonts/': '/develop/user-interface/fonts/',
-  '/workflow/already-used-react-native/': '/workflow/overview/',
-  '/guides/setup-native-firebase/': '/guides/using-firebase/',
-  '/development/installation/': '/develop/development-builds/create-a-build/',
-  '/guides/routing-and-navigation/': '/routing/introduction/',
-  '/router/reference/api-routes': '/preview/api-routes/',
-  '/build-reference/custom-build-config/': '/custom-builds/get-started/',
-  '/eas-update/migrate-codepush-to-eas-update/': '/eas-update/codepush/',
-  '/guides/testing-on-devices': '/build/internal-distribution/',
-
-  // Redirects from old to new tutorial
-  '/tutorial/planning/': '/tutorial/introduction/',
-  '/tutorial/sharing/': '/tutorial/introduction/',
-  '/tutorial/text/': '/tutorial/introduction/',
-  '/tutorial/button': '/tutorial/introduction/',
-
-  // Redirects for removed/archived pages
-  '/archived/': '/archive/',
-  '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
-  '/expokit/eject/': '/archive/glossary/#eject',
-  '/expokit/expokit/': '/archive/glossary/#expokit',
-  '/submit/classic-builds/': '/submit/introduction/',
-  '/archive/adhoc-builds/': '/develop/development-builds/introduction/',
-  '/technical-specs/expo-updates-0/': '/technical-specs/expo-updates-1/',
-  '/development/extending-the-dev-menu/': '/develop/development-builds/development-workflows/',
-  '/more/latest': '/versions/latest/',
-  '/archive/expokit/overview/': '/archive/glossary/',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
