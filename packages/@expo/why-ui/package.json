@@ -5,9 +5,9 @@
   "main": "expo-router/entry",
   "scripts": {
     "watch": "expo start -p web",
-    "build": "expo export -p web --output-dir build",
+    "build": "expo export -p web",
     "prepublishOnly": "yarn run clean && yarn build",
-    "clean": "rimraf build ./tsconfig.tsbuildinfo",
+    "clean": "rimraf dist ./tsconfig.tsbuildinfo",
     "lint": "eslint .",
     "test": "jest"
   },
@@ -23,7 +23,9 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/why-ui#readme",
   "files": [
-    "build"
+    "dist",
+    "expo-module.config.json",
+    "!dist/fixture.json"
   ],
   "dependencies": {
     "@carrotsearch/foamtree": "^3.5.1",

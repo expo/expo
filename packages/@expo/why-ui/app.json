@@ -5,7 +5,7 @@
     "output": "single"
   },
   "experiments": {
-    "baseUrl": "/_expo/why/",
+    "baseUrl": "/_expo/plugins/@expo/why-ui",
     "tsconfigPaths": true
   }
 }

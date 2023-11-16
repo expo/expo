@@ -1,5 +1,3 @@
-import { Platform, uuid } from 'expo-modules-core';
-
 import {
   ExecutionEnvironment,
   NativeConstants,
@@ -15,10 +13,10 @@ declare let navigator: Navigator;
 declare let location: Location;
 declare let localStorage: Storage;
 
-const _sessionId = uuid.v4();
+const _sessionId = (Date.now() + '-' + Math.floor(Math.random() * 1000000000)).toString();
 
 function getBrowserName(): string | undefined {
-  if (Platform.isDOMAvailable) {
+  if (typeof navigator !== 'undefined' && typeof navigator.userAgent === 'string') {
     const agent = navigator.userAgent.toLowerCase();
     if (agent.includes('edge')) {
       return 'Edge';
@@ -55,7 +53,7 @@ export default {
     try {
       installationId = localStorage.getItem(ID_KEY);
       if (installationId == null || typeof installationId !== 'string') {
-        installationId = uuid.v4();
+        installationId = (Date.now() + '-' + Math.floor(Math.random() * 1000000000)).toString();
         localStorage.setItem(ID_KEY, installationId as string);
       }
     } catch {
@@ -68,10 +66,10 @@ export default {
     return _sessionId;
   },
   get platform(): PlatformManifest {
-    return { web: Platform.isDOMAvailable ? { ua: navigator.userAgent } : undefined };
+    return { web: typeof navigator !== 'undefined' ? { ua: navigator.userAgent } : undefined };
   },
   get isHeadless(): boolean {
-    if (!Platform.isDOMAvailable) return true;
+    if (typeof navigator === 'undefined') return true;
 
     return /\bHeadlessChrome\//.test(navigator.userAgent);
   },
@@ -83,7 +81,7 @@ export default {
     return (this.manifest as any)!.sdkVersion || null;
   },
   get linkingUri(): string {
-    if (Platform.isDOMAvailable) {
+    if (typeof location !== 'undefined') {
       // On native this is `exp://`
       // On web we should use the protocol and hostname (location.origin)
       return location.origin;
@@ -123,7 +121,7 @@ export default {
     return null;
   },
   get experienceUrl(): string {
-    if (Platform.isDOMAvailable) {
+    if (typeof location !== 'undefined') {
       return location.origin;
     } else {
       return '';
@@ -133,7 +131,7 @@ export default {
     return __DEV__;
   },
   async getWebViewUserAgentAsync(): Promise<string | null> {
-    if (Platform.isDOMAvailable) {
+    if (typeof navigator !== 'undefined') {
       return navigator.userAgent;
     } else {
       return null;

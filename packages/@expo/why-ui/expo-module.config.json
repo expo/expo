@@ -1,0 +1,6 @@
+{
+    "platforms": ["devtools"],
+    "devtools": {
+        "webpageRoot": "dist"
+    }
+}
