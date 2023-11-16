@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Add state machine procedure serial runner. ([#25386](https://github.com/expo/expo/pull/25386) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

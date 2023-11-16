@@ -36,11 +36,13 @@ function TestButton(props: { testID: string; onPress: () => void }) {
 export default function App() {
   const [numAssetFiles, setNumAssetFiles] = React.useState(0);
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
-  const [active, setActive] = React.useState(false);
+  const [numActive, setNumActive] = React.useState(0);
   const [lastUpdateEventType, setLastUpdateEventType] = React.useState('');
   const [extraParamsString, setExtraParamsString] = React.useState('');
   const [nativeStateContextString, setNativeStateContextString] = React.useState('{}');
   const [isRollback, setIsRollback] = React.useState(false);
+  const [didCheckAndDownloadHappenInParallel, setDidCheckAndDownloadHappenInParallel] =
+    React.useState(false);
 
   const {
     currentlyRunning,
@@ -49,6 +51,8 @@ export default function App() {
     isUpdateAvailable,
     isUpdatePending,
     checkError,
+    isChecking,
+    isDownloading,
   } = Updates.useUpdates();
 
   Updates.useUpdateEvents((event) => {
@@ -65,94 +69,76 @@ export default function App() {
     }
   }, [isUpdateAvailable]);
 
-  const handleReadNativeStateContext = () => {
-    const handleAsync = async () => {
-      setActive(true);
-      const state = await Updates.getNativeStateMachineContextAsync();
-      setNativeStateContextString(JSON.stringify(state));
-      await delay(1000);
-      setActive(false);
-    };
-    handleAsync().catch((e) => {
+  // Record if checking an downloading happen in parallel (they shouldn't)
+  React.useEffect(() => {
+    if (isChecking && isDownloading) {
+      setDidCheckAndDownloadHappenInParallel(true);
+    }
+  }, [isChecking, isDownloading]);
+
+  const runBlockAsync = (block: () => Promise<void>) => async () => {
+    setNumActive((n) => n + 1);
+    try {
+      await block();
+    } catch (e) {
       console.warn(e);
-    });
+    } finally {
+      setNumActive((n) => n - 1);
+    }
   };
 
-  const handleSetExtraParams = () => {
-    const handleAsync = async () => {
-      setActive(true);
-      await Updates.setExtraParamAsync('testsetnull', 'testvalue');
-      await Updates.setExtraParamAsync('testsetnull', null);
-      await Updates.setExtraParamAsync('testparam', 'testvalue');
-      const params = await Updates.getExtraParamsAsync();
-      setExtraParamsString(JSON.stringify(params, null, 2));
-      await delay(1000);
-      setActive(false);
-    };
-    handleAsync().catch((e) => {
-      console.warn(e);
-    });
-  };
+  const handleReadNativeStateContext = runBlockAsync(async () => {
+    const state = await Updates.getNativeStateMachineContextAsync();
+    setNativeStateContextString(JSON.stringify(state));
+  });
 
-  const handleReadAssetFiles = () => {
-    const handleAsync = async () => {
-      setActive(true);
-      const numFiles = await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
-      await delay(1000);
-      setNumAssetFiles(numFiles);
-      setActive(false);
-    };
-    handleAsync().catch((e) => {
-      console.warn(e);
-    });
-  };
+  const handleSetExtraParams = runBlockAsync(async () => {
+    await Updates.setExtraParamAsync('testsetnull', 'testvalue');
+    await Updates.setExtraParamAsync('testsetnull', null);
+    await Updates.setExtraParamAsync('testparam', 'testvalue');
+    const params = await Updates.getExtraParamsAsync();
+    setExtraParamsString(JSON.stringify(params, null, 2));
+  });
 
-  const handleClearAssetFiles = () => {
-    const handleAsync = async () => {
-      setActive(true);
-      await NativeModulesProxy.ExpoUpdatesE2ETest.clearInternalAssetsFolderAsync();
-      const numFiles = await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
-      await delay(1000);
-      setNumAssetFiles(numFiles);
-      setActive(false);
-    };
-    handleAsync().catch((e) => {
-      console.warn(e);
-    });
-  };
+  const handleReadAssetFiles = runBlockAsync(async () => {
+    const numFiles = await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    setNumAssetFiles(numFiles);
+  });
 
-  const handleReadLogEntries = () => {
-    const handleAsync = async () => {
-      setActive(true);
-      const logEntries = await Updates.readLogEntriesAsync(60000);
-      await delay(1000);
-      setLogs(logEntries);
-      setActive(false);
-    };
-    handleAsync().catch((e) => {
-      console.warn(e);
-    });
-  };
+  const handleClearAssetFiles = runBlockAsync(async () => {
+    await NativeModulesProxy.ExpoUpdatesE2ETest.clearInternalAssetsFolderAsync();
+    const numFiles = await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    setNumAssetFiles(numFiles);
+  });
 
-  const handleClearLogEntries = () => {
-    const handleAsync = async () => {
-      setActive(true);
-      await Updates.clearLogEntriesAsync();
-      await delay(1000);
-      setActive(false);
-    };
-    handleAsync().catch((e) => {
-      console.warn(e);
-    });
-  };
+  const handleReadLogEntries = runBlockAsync(async () => {
+    const logEntries = await Updates.readLogEntriesAsync(60000);
+    setLogs(logEntries);
+  });
 
-  const handleCheckForUpdate = () => {
-    Updates.checkForUpdateAsync();
-  };
+  const handleClearLogEntries = runBlockAsync(async () => {
+    await Updates.clearLogEntriesAsync();
+  });
 
-  const handleDownloadUpdate = () => {
-    Updates.fetchUpdateAsync();
-  };
+  const handleCheckForUpdate = runBlockAsync(async () => {
+    await Updates.checkForUpdateAsync();
+  });
+
+  const handleDownloadUpdate = runBlockAsync(async () => {
+    await Updates.fetchUpdateAsync();
+  });
+
+  const handleCheckAndDownloadAtSameTime = runBlockAsync(async () => {
+    await Promise.all([
+      Updates.checkForUpdateAsync(),
+      Updates.fetchUpdateAsync(),
+      Updates.checkForUpdateAsync(),
+      Updates.fetchUpdateAsync(),
+      Updates.checkForUpdateAsync(),
+      Updates.fetchUpdateAsync(),
+      Updates.checkForUpdateAsync(),
+    ]);
+  });
 
   const logsToString = (logs: UpdatesLogEntry[]) =>
     JSON.stringify(
@@ -167,6 +153,11 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <TestValue testID="numActive" value={`${numActive}`} />
+      <TestValue
+        testID="didCheckAndDownloadHappenInParallel"
+        value={`${didCheckAndDownloadHappenInParallel}`}
+      />
       <TestValue testID="lastUpdateEventType" value={`${lastUpdateEventType}`} />
       <TestValue testID="updateString" value="test" />
       <TestValue testID="updateID" value={`${Updates.updateId}`} />
@@ -222,7 +213,7 @@ export default function App() {
         </Text>
       </ScrollView>
 
-      {active ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
+      {numActive > 0 ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
       <View style={{ flexDirection: 'row' }}>
         <View>
           <TestButton testID="readAssetFiles" onPress={handleReadAssetFiles} />
@@ -235,6 +226,10 @@ export default function App() {
           <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />
           <TestButton testID="setExtraParams" onPress={handleSetExtraParams} />
           <TestButton testID="readNativeStateContext" onPress={handleReadNativeStateContext} />
+          <TestButton
+            testID="triggerParallelFetchAndDownload"
+            onPress={handleCheckAndDownloadAtSameTime}
+          />
         </View>
       </View>
 
@@ -242,17 +237,6 @@ export default function App() {
     </View>
   );
 }
-
-/**
- * Promise wrapper for setTimeout()
- * @param {delay} timeout Timeout in ms
- * @returns a Promise that resolves after the timeout has elapsed
- */
-const delay = (timeout: number) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, timeout);
-  });
-};
 
 const styles = StyleSheet.create({
   container: {

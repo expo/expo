@@ -46,7 +46,7 @@ class UpdatesModule : Module() {
       UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
       val constants = mutableMapOf<String, Any>()
       try {
-        val constantsForModule = UpdatesController.instance.getConstantsForModule(context)
+        val constantsForModule = UpdatesController.instance.getConstantsForModule()
         val launchedUpdate = constantsForModule.launchedUpdate
         val embeddedUpdate = constantsForModule.embeddedUpdate
         val isEmbeddedLaunch = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
@@ -93,7 +93,6 @@ class UpdatesModule : Module() {
 
     AsyncFunction("reload") { promise: Promise ->
       UpdatesController.instance.relaunchReactApplicationForModule(
-        context,
         object : IUpdatesController.ModuleCallback<Unit> {
           override fun onSuccess(result: Unit) {
             promise.resolve(null)
@@ -121,7 +120,6 @@ class UpdatesModule : Module() {
 
     AsyncFunction("checkForUpdateAsync") { promise: Promise ->
       UpdatesController.instance.checkForUpdate(
-        context,
         object : IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult> {
           override fun onSuccess(result: IUpdatesController.CheckForUpdateResult) {
             when (result) {
@@ -170,7 +168,6 @@ class UpdatesModule : Module() {
 
     AsyncFunction("fetchUpdateAsync") { promise: Promise ->
       UpdatesController.instance.fetchUpdate(
-        context,
         object : IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult> {
           override fun onSuccess(result: IUpdatesController.FetchUpdateResult) {
             when (result) {

@@ -39,7 +39,7 @@ class UpdatesController {
           val updatesConfiguration = UpdatesConfiguration(context, null)
           EnabledUpdatesController(context, updatesConfiguration, updatesDirectory)
         } else {
-          DisabledUpdatesController(updatesDirectoryException, UpdatesConfiguration.isMissingRuntimeVersion(context, configuration))
+          DisabledUpdatesController(context, updatesDirectoryException, UpdatesConfiguration.isMissingRuntimeVersion(context, configuration))
         }
       }
     }
@@ -81,7 +81,7 @@ class UpdatesController {
     @JvmStatic fun initialize(context: Context, configuration: Map<String, Any>? = null) {
       if (singletonInstance == null) {
         initializeWithoutStarting(context, configuration)
-        singletonInstance!!.start(context)
+        singletonInstance!!.start()
       }
     }
   }

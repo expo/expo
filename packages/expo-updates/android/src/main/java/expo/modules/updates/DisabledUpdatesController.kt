@@ -18,7 +18,11 @@ import java.io.File
  * - Internal database initialization errors
  * - Configuration errors (missing required configuration)
  */
-class DisabledUpdatesController(private val fatalException: Exception?, private val isMissingRuntimeVersion: Boolean) : IUpdatesController {
+class DisabledUpdatesController(
+  private val context: Context,
+  private val fatalException: Exception?,
+  private val isMissingRuntimeVersion: Boolean
+) : IUpdatesController {
   private var isStarted = false
   private var launcher: Launcher? = null
   private var isLoaderTaskFinished = false
@@ -46,7 +50,7 @@ class DisabledUpdatesController(private val fatalException: Exception?, private 
   override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {}
 
   @Synchronized
-  override fun start(context: Context) {
+  override fun start() {
     if (isStarted) {
       return
     }
@@ -60,7 +64,7 @@ class DisabledUpdatesController(private val fatalException: Exception?, private 
 
   class UpdatesDisabledException(message: String) : CodedException(message)
 
-  override fun getConstantsForModule(context: Context): IUpdatesController.UpdatesModuleConstants {
+  override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launcher?.launchedUpdate,
       embeddedUpdate = null,
@@ -76,7 +80,7 @@ class DisabledUpdatesController(private val fatalException: Exception?, private 
     )
   }
 
-  override fun relaunchReactApplicationForModule(context: Context, callback: IUpdatesController.ModuleCallback<Unit>) {
+  override fun relaunchReactApplicationForModule(callback: IUpdatesController.ModuleCallback<Unit>) {
     callback.onFailure(UpdatesDisabledException("You cannot reload when expo-updates is not enabled."))
   }
 
@@ -85,14 +89,12 @@ class DisabledUpdatesController(private val fatalException: Exception?, private 
   }
 
   override fun checkForUpdate(
-    context: Context,
     callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>
   ) {
     callback.onFailure(UpdatesDisabledException("You cannot check for updates when expo-updates is not enabled."))
   }
 
   override fun fetchUpdate(
-    context: Context,
     callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>
   ) {
     callback.onFailure(UpdatesDisabledException("You cannot fetch update when expo-updates is not enabled."))
