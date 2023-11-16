@@ -4,12 +4,13 @@ import os from 'os';
 import path from 'path';
 import stripAnsi from 'strip-ansi';
 
-import { mockSpawnPromise, mockedSpawnAsync } from '../../__tests__/spawn-utils';
+import { mockSpawnPromise } from '../../__tests__/spawn-utils';
 import {
   CocoaPodsPackageManager,
   getPodRepoUpdateMessage,
   getPodUpdateMessage,
 } from '../CocoaPodsPackageManager';
+import spawnAsync from '@expo/spawn-async';
 
 const projectRoot = getTemporaryPath();
 
@@ -237,7 +238,9 @@ it(`gets the cocoapods version`, async () => {
   const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
   const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
 
-  mockedSpawnAsync.mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' })));
+  jest
+    .mocked(spawnAsync)
+    .mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' })));
 
   expect(await manager.versionAsync()).toBe('1.9.1');
 });
@@ -246,7 +249,9 @@ it(`can detect if the CLI is installed`, async () => {
   const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
   const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
 
-  mockedSpawnAsync.mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' })));
+  jest
+    .mocked(spawnAsync)
+    .mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' })));
 
   expect(await manager.isCLIInstalledAsync()).toBe(true);
 });
