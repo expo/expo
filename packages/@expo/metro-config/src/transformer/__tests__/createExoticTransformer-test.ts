@@ -1,8 +1,6 @@
 import { vol } from 'memfs';
 import path from 'path';
 
-import { createExoticTransformer } from '../createExoticTransformer';
-
 const projectRoot = '/';
 
 jest.mock('../createMultiRuleTransformer', () => {
@@ -42,7 +40,7 @@ function mockProject() {
     projectRoot
   );
 }
-describe(createExoticTransformer, () => {
+describe('createExoticTransformer', () => {
   beforeEach(() => {
     mockProject();
   });
@@ -51,7 +49,8 @@ describe(createExoticTransformer, () => {
   });
   const projectRoot = '/';
   it(`adds support for custom node_modules`, () => {
-    const { transform } = createExoticTransformer({
+    // Import the exotic transformer, after the project is mocked
+    const { transform } = require('../createExoticTransformer').createExoticTransformer({
       nodeModulesPaths: ['node_modules', 'foobar'],
       transpileModules: ['bacon-super-custom'],
     });
