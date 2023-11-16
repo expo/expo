@@ -1,18 +1,8 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getAccountUsername = getAccountUsername;
-function _getUserState() {
-  const data = require("./getUserState");
-  _getUserState = function () {
-    return data;
-  };
-  return data;
-}
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getAccountUsername = void 0;
+const getUserState_1 = require("./getUserState");
 const ANONYMOUS_USERNAME = 'anonymous';
-
 /**
  * Get the owner of the project from the manifest if specified, falling back to a bunch of different things
  * which may or may not be the owner of the project.
@@ -21,13 +11,12 @@ const ANONYMOUS_USERNAME = 'anonymous';
  * the EAS project ID, falling back to the `owner` field.
  */
 function getAccountUsername(manifest = {}) {
-  var _getUserState$read$au;
-  // TODO: Must match what's generated in Expo Go.
-  const username = manifest.owner || process.env.EXPO_CLI_USERNAME || process.env.EAS_BUILD_USERNAME;
-  if (username) {
-    return username;
-  }
-  // Statically get the username from the global user state.
-  return ((_getUserState$read$au = (0, _getUserState().getUserState)().read().auth) === null || _getUserState$read$au === void 0 ? void 0 : _getUserState$read$au.username) || ANONYMOUS_USERNAME;
+    // TODO: Must match what's generated in Expo Go.
+    const username = manifest.owner || process.env.EXPO_CLI_USERNAME || process.env.EAS_BUILD_USERNAME;
+    if (username) {
+        return username;
+    }
+    // Statically get the username from the global user state.
+    return (0, getUserState_1.getUserState)().read().auth?.username || ANONYMOUS_USERNAME;
 }
-//# sourceMappingURL=getAccountUsername.js.map
+exports.getAccountUsername = getAccountUsername;

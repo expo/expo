@@ -4,12 +4,13 @@
   "description": "A library for interacting with the app.json",
   "main": "build/index.js",
   "scripts": {
-    "watch": "tsc --watch --preserveWatchOutput",
-    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
-    "prepare": "yarn run clean && yarn build",
-    "clean": "rimraf build ./tsconfig.tsbuildinfo",
-    "lint": "eslint .",
-    "test": "jest"
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "typecheck": "expo-module typecheck",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "repository": {
     "type": "git",
@@ -45,6 +46,7 @@
     "sucrase": "^3.20.0"
   },
   "devDependencies": {
+    "expo-module-scripts": "^3.3.0",
     "@types/require-from-string": "^1.2.1"
   },
   "publishConfig": {
