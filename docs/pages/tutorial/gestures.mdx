@@ -86,13 +86,14 @@ Open the **EmojiSticker.js** file in the **components** directory. Inside it, im
 import Animated from 'react-native-reanimated';
 ```
 
-To make a double tap gesture work, we will apply animations to the `<Animated.Image>` component.
+The `Animated` component looks at the `style` prop of the component. It also determines which values to animate and applies updates to create an animation.
 
-The `Animated` components look at the `style` prop of the component. Then they determine which values to animate, and apply updates to create an animation.
-
-Reanimated exports animated components such as `<Animated.View>`, `<Animated.Text>`, or `<Animated.ScrollView>`. You can create custom animated components by using the `Animated.createAnimatedComponent()` method.
+Reanimated exports animated components such as `<Animated.View>`, `<Animated.Text>`, or `<Animated.ScrollView>`. We will apply animations to the `<Animated.Image>` component to make a double tap gesture work.
 
 Replace the `<Image>` component with `<Animated.Image>`.
+
+
+
 
 {/* prettier-ignore */}
 ```jsx EmojiSticker.js
@@ -109,7 +110,7 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
 }
 ```
 
-> For a complete reference on the animated component API, refer to the [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/core/createAnimatedComponent) documentation.
+> For a complete reference on the animated component API, see [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/core/createAnimatedComponent) documentation.
 
 </Step>
 
@@ -135,7 +136,7 @@ const scaleImage = useSharedValue(imageSize);
 
 Creating a shared value using the `useSharedValue()` hook has many advantages. It helps to mutate a piece of data and allows running animations based on the current value.
 A shared value can be accessed and modified using the `.value` property. It will scale the initial value of `scaleImage` so that when a user double-taps the sticker,
-it scales to twice its original size. To do this, we will create an object and call it `doubleTap`, and this object will use the `Gesture.Tap()` to animate the transition while scaling the sticker image. The `numberOfTaps` method determines how many taps are required.
+it scales to twice its original size. To do this, we will create an object and call it `doubleTap`. This object will use the `Gesture.Tap()` to animate the transition while scaling the sticker image. The `numberOfTaps` method determines how many taps are required.
 
 Create the following object in the `<EmojiSticker>` component:
 
@@ -272,7 +273,7 @@ Create a `drag` object to handle the pan gesture.
     });
 ```
 
-The `onChange()` callback accepts `event` as parameter. `changeX` and `changeY` properties hold the change in position since the last event. Use them to update the values stored in `translateX` and `translateY`.
+The `onChange()` callback accepts `event` as a parameter. `changeX` and `changeY` properties hold the change in position since the last event. They are used to update the values stored in `translateX` and `translateY`.
 
 Next, use the `useAnimatedStyle()` hook to return an array of transforms. For the `<Animated.View>` component, we need to set the `transform` property to the `translateX` and `translateY` values. This will change the sticker's position when the gesture is active.
 
