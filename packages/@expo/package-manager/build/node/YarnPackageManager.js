@@ -57,4 +57,3 @@ class YarnPackageManager extends BasePackageManager_1.BasePackageManager {
     }
 }
 exports.YarnPackageManager = YarnPackageManager;
-//# sourceMappingURL=YarnPackageManager.js.map

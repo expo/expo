@@ -59,4 +59,3 @@ function findPnpmWorkspaceRoot(projectRoot) {
     return null;
 }
 exports.findPnpmWorkspaceRoot = findPnpmWorkspaceRoot;
-//# sourceMappingURL=nodeWorkspaces.js.map

@@ -61,4 +61,3 @@ class BasePackageManager {
     }
 }
 exports.BasePackageManager = BasePackageManager;
-//# sourceMappingURL=BasePackageManager.js.map

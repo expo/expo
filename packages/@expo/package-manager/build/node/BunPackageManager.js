@@ -51,4 +51,3 @@ class BunPackageManager extends BasePackageManager_1.BasePackageManager {
     }
 }
 exports.BunPackageManager = BunPackageManager;
-//# sourceMappingURL=BunPackageManager.js.map

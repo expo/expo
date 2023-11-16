@@ -54,4 +54,3 @@ async function spawnSudoAsync(command, spawnOptions) {
     }
 }
 exports.spawnSudoAsync = spawnSudoAsync;
-//# sourceMappingURL=spawn.js.map
