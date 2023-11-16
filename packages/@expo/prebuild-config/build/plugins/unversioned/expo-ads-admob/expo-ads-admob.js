@@ -1,33 +1,9 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, "__esModule", { value: true });
+const withAndroidAdMob_1 = require("./withAndroidAdMob");
+const withIosAdMob_1 = require("./withIosAdMob");
+const createLegacyPlugin_1 = require("../createLegacyPlugin");
+exports.default = (0, createLegacyPlugin_1.createLegacyPlugin)({
+    packageName: 'expo-ads-admob',
+    fallback: [withAndroidAdMob_1.withAndroidAdMob, withIosAdMob_1.withIosAdMob],
 });
-exports.default = void 0;
-function _withAndroidAdMob() {
-  const data = require("./withAndroidAdMob");
-  _withAndroidAdMob = function () {
-    return data;
-  };
-  return data;
-}
-function _withIosAdMob() {
-  const data = require("./withIosAdMob");
-  _withIosAdMob = function () {
-    return data;
-  };
-  return data;
-}
-function _createLegacyPlugin() {
-  const data = require("../createLegacyPlugin");
-  _createLegacyPlugin = function () {
-    return data;
-  };
-  return data;
-}
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
-  packageName: 'expo-ads-admob',
-  fallback: [_withAndroidAdMob().withAndroidAdMob, _withIosAdMob().withIosAdMob]
-});
-exports.default = _default;
-//# sourceMappingURL=expo-ads-admob.js.map

@@ -4,12 +4,13 @@
   "description": "Get the prebuild config",
   "main": "build/index.js",
   "scripts": {
-    "watch": "tsc --watch --preserveWatchOutput",
-    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
-    "prepare": "yarn run clean && yarn build",
-    "clean": "rimraf build ./tsconfig.tsbuildinfo",
-    "lint": "eslint .",
-    "test": "jest"
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "test": "expo-module test",
+    "typecheck": "expo-module typecheck"
   },
   "repository": {
     "type": "git",
@@ -47,6 +48,7 @@
     "xml2js": "0.6.0"
   },
   "peerDependencies": {
+    "expo-module-scripts": "^3.3.0",
     "expo-modules-autolinking": ">=0.8.1"
   },
   "publishConfig": {

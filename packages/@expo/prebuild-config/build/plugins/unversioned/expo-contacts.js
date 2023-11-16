@@ -1,42 +1,23 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-function _configPlugins() {
-  const data = require("@expo/config-plugins");
-  _configPlugins = function () {
-    return data;
-  };
-  return data;
-}
-function _createLegacyPlugin() {
-  const data = require("./createLegacyPlugin");
-  _createLegacyPlugin = function () {
-    return data;
-  };
-  return data;
-}
-const withAccessesContactNotes = config => {
-  return (0, _configPlugins().withEntitlementsPlist)(config, config => {
-    config.modResults = setAccessesContactNotes(config, config.modResults);
-    return config;
-  });
+Object.defineProperty(exports, "__esModule", { value: true });
+const config_plugins_1 = require("@expo/config-plugins");
+const createLegacyPlugin_1 = require("./createLegacyPlugin");
+const withAccessesContactNotes = (config) => {
+    return (0, config_plugins_1.withEntitlementsPlist)(config, (config) => {
+        config.modResults = setAccessesContactNotes(config, config.modResults);
+        return config;
+    });
 };
 function setAccessesContactNotes(config, entitlementsPlist) {
-  var _config$ios;
-  if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.accessesContactNotes) {
-    return {
-      ...entitlementsPlist,
-      'com.apple.developer.contacts.notes': true
-    };
-  }
-  return entitlementsPlist;
+    if (config.ios?.accessesContactNotes) {
+        return {
+            ...entitlementsPlist,
+            'com.apple.developer.contacts.notes': true,
+        };
+    }
+    return entitlementsPlist;
 }
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
-  packageName: 'expo-contacts',
-  fallback: withAccessesContactNotes
+exports.default = (0, createLegacyPlugin_1.createLegacyPlugin)({
+    packageName: 'expo-contacts',
+    fallback: withAccessesContactNotes,
 });
-exports.default = _default;
-//# sourceMappingURL=expo-contacts.js.map
