@@ -59,19 +59,19 @@ async function createTestUpdateBundles(
       'utf-8'
     );
     const manifest = JSON.parse(manifestJsonString);
-    const iosBundlePath = path.join(projectRoot, 'dist', manifest.fileMetadata.ios.bundle);
-    const androidBundlePath = path.join(projectRoot, 'dist', manifest.fileMetadata.android.bundle);
-    const iosBundleDestPath = path.join(testUpdateBundlesPath, path.basename(iosBundlePath));
-    const androidBundleDestPath = path.join(
-      testUpdateBundlesPath,
-      path.basename(androidBundlePath)
-    );
-    await fs.copyFile(iosBundlePath, iosBundleDestPath);
-    await fs.copyFile(androidBundlePath, androidBundleDestPath);
-    testUpdateJson[notifyString] = {
-      ios: path.basename(iosBundlePath),
-      android: path.basename(androidBundlePath),
-    };
+
+    const platforms = platform ? [platform] : ['ios', 'android'];
+
+    if (!testUpdateJson[notifyString]) {
+      testUpdateJson[notifyString] = {};
+    }
+
+    for (const platform of platforms) {
+      const bundlePath = path.join(projectRoot, 'dist', manifest.fileMetadata[platform].bundle);
+      const bundleDestPath = path.join(testUpdateBundlesPath, path.basename(bundlePath));
+      await fs.copyFile(bundlePath, bundleDestPath);
+      testUpdateJson[notifyString][platform] = path.basename(bundlePath);
+    }
   }
   const testUpdateBundlesJsonPath = path.join(testUpdateBundlesPath, 'test-updates.json');
   await fs.writeFile(testUpdateBundlesJsonPath, JSON.stringify(testUpdateJson, null, 2), 'utf-8');
