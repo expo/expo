@@ -1,6 +1,5 @@
 package expo.modules.updates
 
-import android.content.Context
 import android.os.Bundle
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
@@ -48,7 +47,7 @@ interface IUpdatesController {
    * the application's lifecycle.
    * @param context the base context of the application, ideally a [ReactApplication]
    */
-  fun start(context: Context)
+  fun start()
 
   interface ModuleCallback<T> {
     fun onSuccess(result: T)
@@ -80,9 +79,9 @@ interface IUpdatesController {
      */
     val isMissingRuntimeVersion: Boolean,
   )
-  fun getConstantsForModule(context: Context): UpdatesModuleConstants
+  fun getConstantsForModule(): UpdatesModuleConstants
 
-  fun relaunchReactApplicationForModule(context: Context, callback: ModuleCallback<Unit>)
+  fun relaunchReactApplicationForModule(callback: ModuleCallback<Unit>)
 
   fun getNativeStateMachineContext(callback: ModuleCallback<UpdatesStateContext>)
 
@@ -99,7 +98,7 @@ interface IUpdatesController {
     class RollBackToEmbedded(val commitTime: Date) : CheckForUpdateResult(Status.ROLL_BACK_TO_EMBEDDED)
     class ErrorResult(val error: Exception, val message: String) : CheckForUpdateResult(Status.ERROR)
   }
-  fun checkForUpdate(context: Context, callback: ModuleCallback<CheckForUpdateResult>)
+  fun checkForUpdate(callback: ModuleCallback<CheckForUpdateResult>)
 
   sealed class FetchUpdateResult(private val status: Status) {
     private enum class Status {
@@ -114,7 +113,7 @@ interface IUpdatesController {
     class RollBackToEmbedded : FetchUpdateResult(Status.ROLL_BACK_TO_EMBEDDED)
     class ErrorResult(val error: Exception) : FetchUpdateResult(Status.ERROR)
   }
-  fun fetchUpdate(context: Context, callback: ModuleCallback<FetchUpdateResult>)
+  fun fetchUpdate(callback: ModuleCallback<FetchUpdateResult>)
 
   fun getExtraParams(callback: ModuleCallback<Bundle>)
 
