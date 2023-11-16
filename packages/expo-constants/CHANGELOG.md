@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Drop `crypto` usage on web.
+- Drop `crypto` usage on web. ([#25411](https://github.com/expo/expo/pull/25411) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 15.3.0 — 2023-11-14
 
