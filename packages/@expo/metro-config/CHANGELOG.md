@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Replace `@expo/babel-preset-cli` with `expo-module-scripts`.
+
 ## 0.15.0 — 2023-11-14
 
 ### 🛠 Breaking changes
