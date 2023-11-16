@@ -2,7 +2,6 @@ package expo.modules.image.records
 
 import android.content.Context
 import android.net.Uri
-import android.util.TypedValue
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders

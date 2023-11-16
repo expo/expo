@@ -16,7 +16,7 @@ import expo.modules.image.CustomOptions
  * We have to use the intrinsicWidth/Height from the Picture to render the image at a high enough resolution, but at the same time we want to return the actual
  * preferred width and height of the SVG to JS. This class allows us to do that.
  */
-class SVGPircureDrowable(picture: Picture, val svgIntrinsicWidth: Int, val svgIntrinsicHeight: Int) : PictureDrawable(picture)
+class SVGPictureDrawable(picture: Picture, val svgIntrinsicWidth: Int, val svgIntrinsicHeight: Int) : PictureDrawable(picture)
 
 /**
  * Convert the [SVG]'s internal representation to an Android-compatible one ([Picture]).
@@ -35,7 +35,7 @@ class SVGDrawableTranscoder(val context: Context) : ResourceTranscoder<SVG?, Dra
       applyTintColor(svgData, tintColor)
     }
 
-    val picture = SVGPircureDrowable(
+    val picture = SVGPictureDrawable(
       svgData.renderToPicture(),
       intrinsicWidth,
       intrinsicHeight
