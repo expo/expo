@@ -25,6 +25,12 @@ function transformAppJson(appJson: any, projectName: string, runtimeVersion: str
       ...appJson.expo,
       name: projectName,
       runtimeVersion,
+      extra: {
+        ...appJson.extra,
+        updates: {
+          assetPatternsToBeBundled: ['assetsInUpdates/*'],
+        },
+      },
       updates: {
         ...appJson.expo.updates,
         requestHeaders: {
@@ -58,5 +64,5 @@ function transformAppJson(appJson: any, projectName: string, runtimeVersion: str
     transformAppJson,
   });
 
-  await setupManualTestAppAsync(projectRoot);
+  await setupManualTestAppAsync(projectRoot, repoRoot);
 })();

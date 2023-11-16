@@ -23,7 +23,7 @@ mkdir $WORKING_DIR_ROOT
 - From the Expo repo root directory, execute
 
 ```bash
-node packages/expo-updates/e2e/setup/create-eas-project.js
+./packages/expo-updates/e2e/setup/create-eas-project.ts
 ```
 
 - Change to the `TEST_PROJECT_ROOT` location above.
