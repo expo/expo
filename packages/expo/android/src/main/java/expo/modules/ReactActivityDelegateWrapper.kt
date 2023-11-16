@@ -135,7 +135,7 @@ class ReactActivityDelegateWrapper(
       // the calls to `createRootView()` or `getMainComponentName()` have no chances to be our wrapped methods.
       // Instead we intercept `ReactActivityDelegate.onCreate` and replace the `mReactDelegate` with our version.
       // That's not ideal but works.
-      val launchOptions = composeLaunchOptions()
+      val launchOptions = composeLaunchOptions() as Bundle? // composeLaunchOptions() is nullable but older react-native declares as nonnull.
       val reactDelegate = object : ReactDelegate(
         plainActivity, reactNativeHost, mainComponentName, launchOptions
       ) {
