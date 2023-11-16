@@ -86,7 +86,7 @@ async function packExpoDependency(
 
   await spawnAsync('npm', ['pack', '--pack-destination', destPath], {
     cwd: dependencyPath,
-    stdio: 'ignore',
+    stdio: 'pipe',
   });
 
   // Ensure the file was created as expected
