@@ -70,7 +70,7 @@ export type BarCodeScannerResult = {
    * May be different from `data` depending on the barcode type.
    * Will always be undefined on iOS.
    */
-  raw: string;
+  raw?: string;
   /**
    * The [BarCodeBounds](#barcodebounds) object.
    * `bounds` in some case will be representing an empty rectangle.
