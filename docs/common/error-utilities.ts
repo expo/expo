@@ -328,6 +328,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/': '/guides/overview/',
   '/archive/workflow/customizing/': '/workflow/customizing/',
   '/errors-and-warnings/': '/debugging/errors-and-warnings/',
+  '/guides/education': '/additional-resources/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
