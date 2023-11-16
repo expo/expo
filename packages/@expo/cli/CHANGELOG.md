@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Ensure invalid production iOS builds fail more predictably.
+- Add first-class Xcode IDE hints for Metro bundling errors during production iOS builds from Xcode.
 
 ### 🐛 Bug fixes
 
