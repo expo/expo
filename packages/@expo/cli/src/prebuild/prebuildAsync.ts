@@ -126,8 +126,18 @@ export async function prebuildAsync(
     }
   }
 
-  // Apply Expo config to native projects
-  const configSyncingStep = logNewSection('Running prebuild');
+  // Apply Expo config to native projects. Prevent log-spew from ora when running in debug mode.
+  const configSyncingStep: { succeed(text?: string): unknown; fail(text?: string): unknown } =
+    env.EXPO_DEBUG
+      ? {
+          succeed(text) {
+            Log.log(text!);
+          },
+          fail(text) {
+            Log.error(text!);
+          },
+        }
+      : logNewSection('Running prebuild');
   try {
     await profile(configureProjectAsync)(projectRoot, {
       platforms: options.platforms,
