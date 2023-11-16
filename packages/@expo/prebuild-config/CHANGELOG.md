@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Replace `@expo/babel-preset-cli` with `expo-module-scripts`.
+- Replace `@expo/babel-preset-cli` with `expo-module-scripts`. ([#25423](https://github.com/expo/expo/pull/25423) by [@byCedric](https://github.com/byCedric))
 
 ## 6.6.0 — 2023-11-14
 
