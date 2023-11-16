@@ -117,7 +117,6 @@ export default function MetroTreemap() {
     () => (
       <Treemap
         data={data}
-        className="flex flex-1"
         onGroupHover={(event) => {
           const { group } = event;
           setTooltip({

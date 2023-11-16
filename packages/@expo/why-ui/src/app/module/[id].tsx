@@ -34,7 +34,7 @@ export function SelectScrollable({ parents }: { parents: string[] }) {
 }
 
 export default function ModuleInspection() {
-  const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const { modules } = useGraph();
   const p = decodeURIComponent(id);
   const selected = modules.find((m) => m.path === p);
