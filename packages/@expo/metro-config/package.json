@@ -4,12 +4,13 @@
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
   "scripts": {
-    "watch": "tsc --watch --preserveWatchOutput",
-    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
-    "prepare": "yarn run clean && yarn build",
-    "clean": "rimraf build ./tsconfig.tsbuildinfo",
-    "lint": "eslint .",
-    "test": "jest"
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "test": "expo-module test",
+    "typecheck": "expo-module typecheck"
   },
   "repository": {
     "type": "git",
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
+    "expo-module-scripts": "^3.3.0",
     "sass": "^1.60.0"
   },
   "publishConfig": {
