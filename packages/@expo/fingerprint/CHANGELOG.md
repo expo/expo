@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Replace `@expo/babel-preset-cli` with `expo-module-scripts`.
+
 ## 0.4.1 — 2023-11-14
 
 _This version does not introduce any user-facing changes._
