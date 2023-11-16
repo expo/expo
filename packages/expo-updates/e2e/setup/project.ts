@@ -114,6 +114,7 @@ async function packExpoDependency(
 
 async function copyCommonFixturesToProject(
   projectRoot: string,
+  fileList: string[],
   {
     appJsFileName,
     repoRoot,
@@ -132,23 +133,12 @@ async function copyCommonFixturesToProject(
   // pack up project files
   const projectFilesSourcePath = path.join(dirName, '..', 'fixtures', 'project_files');
   const projectFilesTarballPath = path.join(projectRoot, 'project_files.tgz');
-  await spawnAsync(
-    'tar',
-    [
-      'zcf',
-      projectFilesTarballPath,
-      'tsconfig.json',
-      '.detoxrc.json',
-      'eas.json',
-      'eas-hooks',
-      'e2e',
-      'scripts',
-    ],
-    {
-      cwd: projectFilesSourcePath,
-      stdio: 'inherit',
-    }
-  );
+  const tarArgs = ['zcf', projectFilesTarballPath, ...fileList];
+
+  await spawnAsync('tar', tarArgs, {
+    cwd: projectFilesSourcePath,
+    stdio: 'inherit',
+  });
 
   // unpack project files in project directory
   await spawnAsync('tar', ['zxf', projectFilesTarballPath], {
@@ -199,7 +189,8 @@ async function preparePackageJson(
   projectRoot: string,
   repoRoot: string,
   configureE2E: boolean,
-  isTV: boolean
+  isTV: boolean,
+  shouldGenerateTestUpdateBundles: boolean
 ) {
   // Create the project subfolder to hold NPM tarballs built from the current state of the repo
   const dependenciesPath = path.join(projectRoot, 'dependencies');
@@ -218,6 +209,22 @@ async function preparePackageJson(
   }
   console.log('Done packing dependencies.');
 
+  const extraScriptsGenerateTestUpdateBundlesPart = shouldGenerateTestUpdateBundles
+    ? {
+        'generate-test-update-bundles': 'npx ts-node ./scripts/generate-test-update-bundles',
+      }
+    : {
+        'generate-test-update-bundles': 'echo 1',
+      };
+
+  const extraScriptsAssetExclusion = {
+    'reset-to-embedded': 'npx ts-node ./scripts/reset-app.ts App.tsx.embedded',
+    'set-to-update-1':
+      'npx ts-node ./scripts/reset-app.ts App.tsx.update1; eas update --branch=main --message=Update1',
+    'set-to-update-2':
+      'npx ts-node ./scripts/reset-app.ts App.tsx.update2; eas update --branch=main --message=Update2',
+  };
+
   // Additional scripts and dependencies for Detox testing
   const extraScripts = configureE2E
     ? {
@@ -231,17 +238,15 @@ async function preparePackageJson(
         'detox:ios:release:test': 'detox test -c ios.release',
         'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
-        'generate-test-update-bundles': 'node scripts/generate-test-update-bundles.js',
+        ...extraScriptsGenerateTestUpdateBundlesPart,
       }
-    : {};
+    : extraScriptsAssetExclusion;
 
   const extraDevDependencies = configureE2E
     ? {
         '@config-plugins/detox': '^5.0.1',
         '@types/express': '^4.17.17',
         '@types/jest': '^29.4.0',
-        '@types/react': '~18.0.14',
-        '@types/react-native': '~0.70.6',
         detox: '^20.4.0',
         express: '^4.18.2',
         'form-data': '^4.0.0',
@@ -249,7 +254,6 @@ async function preparePackageJson(
         'jest-circus': '^29.3.1',
         prettier: '^2.8.1',
         'ts-jest': '^29.0.5',
-        typescript: '^4.6.3',
       }
     : {};
 
@@ -272,6 +276,10 @@ async function preparePackageJson(
       ...packageJson.dependencies,
     },
     devDependencies: {
+      '@types/react': '~18.0.14',
+      '@types/react-native': '~0.70.6',
+      'ts-node': '^10.9.1',
+      typescript: '^4.6.3',
       ...extraDevDependencies,
       ...packageJson.devDependencies,
     },
@@ -412,6 +420,34 @@ function transformAppJsonForE2E(
   };
 }
 
+/**
+ * Modifies app.json in the updates-disabled E2E test app to add the properties we need
+ */
+export function transformAppJsonForUpdatesDisabledE2E(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string
+) {
+  const plugins: any[] = ['expo-updates', '@config-plugins/detox'];
+  return {
+    ...appJson,
+    expo: {
+      ...appJson.expo,
+      name: projectName,
+      owner: 'expo-ci',
+      runtimeVersion,
+      plugins,
+      android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
+      ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
+      extra: {
+        eas: {
+          projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
+        },
+      },
+    },
+  };
+}
+
 async function configureUpdatesSigningAsync(projectRoot: string) {
   // generate and configure code signing
   await spawnAsync(
@@ -455,6 +491,8 @@ export async function initAsync(
     configureE2E = true,
     transformAppJson = transformAppJsonForE2E,
     isTV = false,
+    shouldGenerateTestUpdateBundles = true,
+    shouldConfigureCodeSigning = true,
   }: {
     repoRoot: string;
     runtimeVersion: string;
@@ -467,6 +505,8 @@ export async function initAsync(
       isTV: boolean
     ) => void;
     isTV?: boolean;
+    shouldGenerateTestUpdateBundles?: boolean;
+    shouldConfigureCodeSigning?: boolean;
   }
 ) {
   console.log('Creating expo app');
@@ -508,12 +548,18 @@ export async function initAsync(
   // We are done with template tarball
   await fs.rm(localTSTemplatePathName);
 
-  let cleanupLocalUpdatesModule;
+  let cleanupLocalUpdatesModule: (() => Promise<void>) | undefined;
   if (configureE2E) {
     cleanupLocalUpdatesModule = await prepareLocalUpdatesModule(repoRoot);
   }
 
-  await preparePackageJson(projectRoot, repoRoot, configureE2E, isTV);
+  await preparePackageJson(
+    projectRoot,
+    repoRoot,
+    configureE2E,
+    isTV,
+    shouldGenerateTestUpdateBundles
+  );
 
   // Now we do NPM install
   await spawnAsync('yarn', [], {
@@ -526,7 +572,7 @@ export async function initAsync(
   appJson = transformAppJson(appJson, projectName, runtimeVersion, isTV);
   await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
 
-  if (configureE2E) {
+  if (configureE2E && shouldConfigureCodeSigning) {
     await configureUpdatesSigningAsync(projectRoot);
   }
 
@@ -578,7 +624,7 @@ export async function initAsync(
   // enable proguard on Android
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
-    '\nandroid.enableProguardInReleaseBuilds=true\nandroid.kotlinVersion=1.8.20',
+    '\nandroid.enableProguardInReleaseBuilds=true\nandroid.kotlinVersion=1.8.20\nEXPO_UPDATES_NATIVE_DEBUG=true',
     'utf-8'
   );
 
@@ -601,7 +647,11 @@ export async function setupE2EAppAsync(
   projectRoot: string,
   { localCliBin, repoRoot, isTV = false }: { localCliBin: string; repoRoot: string; isTV?: boolean }
 ) {
-  await copyCommonFixturesToProject(projectRoot, { appJsFileName: 'App.tsx', repoRoot, isTV });
+  await copyCommonFixturesToProject(
+    projectRoot,
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'scripts'],
+    { appJsFileName: 'App.tsx', repoRoot, isTV }
+  );
 
   // copy png assets and install extra package
   await fs.copyFile(
@@ -620,17 +670,59 @@ export async function setupE2EAppAsync(
   );
 }
 
-export async function setupManualTestAppAsync(projectRoot: string) {
-  // Copy API test app to project
-  await fs.rm(path.join(projectRoot, 'App.tsx'));
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'App-apitest.tsx'),
-    path.join(projectRoot, 'App.tsx')
+export async function setupManualTestAppAsync(projectRoot: string, repoRoot: string) {
+  // Copy API test app and other fixtures to project
+  await copyCommonFixturesToProject(
+    projectRoot,
+    ['tsconfig.json', 'assetsInUpdates', 'embeddedAssets', 'scripts'],
+    { appJsFileName: 'App-apitest.tsx', repoRoot, isTV: false }
   );
-  // Copy tsconfig.json to project
-  await fs.rm(path.join(projectRoot, 'tsconfig.json'));
+
+  // disable JS debugging on Android
+  const mainApplicationPath = path.join(
+    projectRoot,
+    'android',
+    'app',
+    'src',
+    'main',
+    'java',
+    'com',
+    'douglowderexpo',
+    'MyUpdateableApp',
+    'MainApplication.java'
+  );
+  const mainApplicationText = await fs.readFile(mainApplicationPath, { encoding: 'utf-8' });
+  const mainApplicationTextModified = mainApplicationText.replace('BuildConfig.DEBUG', 'false');
+  await fs.writeFile(mainApplicationPath, mainApplicationTextModified, { encoding: 'utf-8' });
+}
+
+export async function setupUpdatesDisabledE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+) {
+  await copyCommonFixturesToProject(
+    projectRoot,
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'scripts'],
+    {
+      appJsFileName: 'App-updates-disabled.tsx',
+      repoRoot,
+      isTV: false,
+    }
+  );
+
+  // copy png assets and install extra package
   await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'project_files', 'tsconfig.json'),
-    path.join(projectRoot, 'tsconfig.json')
+    path.resolve(dirName, '..', 'fixtures', 'test.png'),
+    path.join(projectRoot, 'test.png')
+  );
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // Copy Detox test file to e2e/tests directory
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'Updates-disabled.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
   );
 }

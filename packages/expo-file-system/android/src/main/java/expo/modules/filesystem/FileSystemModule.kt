@@ -823,23 +823,34 @@ open class FileSystemModule : Module() {
     if (!documentFile.exists()) {
       return
     }
-    if (!outputDir.exists() && !outputDir.mkdirs()) {
+    if (!outputDir.isDirectory) {
+      outputDir.parentFile?.let {
+        if (!it.exists() && !it.mkdirs()) {
+          throw IOException("Couldn't create folder in output dir.")
+        }
+      }
+    } else if (!outputDir.exists() && !outputDir.mkdirs()) {
       throw IOException("Couldn't create folder in output dir.")
     }
+
     if (documentFile.isDirectory) {
       for (file in documentFile.listFiles()) {
-        documentFile.name?.let {
-          transformFilesFromSAF(file, File(outputDir, it), copy)
-        }
+        transformFilesFromSAF(file, outputDir, copy)
       }
       if (!copy) {
         documentFile.delete()
       }
       return
     }
+
     documentFile.name?.let {
-      val newFile = File(outputDir.path, it)
-      context.contentResolver.openInputStream(documentFile.uri).use { `in` -> FileOutputStream(newFile).use { out -> IOUtils.copy(`in`, out) } }
+      val newFile = if (outputDir.isDirectory) {
+        File(outputDir.path, it)
+      } else {
+        File(outputDir.path)
+      }
+      context.contentResolver.openInputStream(documentFile.uri)
+        .use { `in` -> FileOutputStream(newFile).use { out -> IOUtils.copy(`in`, out) } }
       if (!copy) {
         documentFile.delete()
       }

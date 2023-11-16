@@ -1,6 +1,7 @@
+#!/usr/bin/env yarn --silent ts-node --transpile-only
+
 const spawnAsync = require('@expo/spawn-async');
 const fs = require('fs/promises');
-const glob = require('glob');
 const path = require('path');
 
 const projectRoot = path.resolve(__dirname, '..');
@@ -24,7 +25,7 @@ createTestUpdateBundles(projectRoot, notifyStrings);
  * Since Hermes bundles are bytecode and not readable JS, we instead pre-generate Hermes bundles
  * corresponding to each test case, and save them in the `test-update-bundles` directory in the test app.
  */
-async function createTestUpdateBundles(projectRoot, notifyStrings) {
+async function createTestUpdateBundles(projectRoot: string, notifyStrings: string[]) {
   // export update for test server to host
   await createUpdateBundleAsync(projectRoot);
 
@@ -37,7 +38,7 @@ async function createTestUpdateBundles(projectRoot, notifyStrings) {
   await fs.mkdir(testUpdateBundlesPath);
   const appJsPath = path.join(projectRoot, 'App.tsx');
   const originalAppJs = await fs.readFile(appJsPath, 'utf-8');
-  const testUpdateJson = {};
+  const testUpdateJson: { [k: string]: any } = {};
   for (const notifyString of ['test', ...notifyStrings]) {
     console.log(`Creating bundle for string '${notifyString}'...`);
     const modifiedAppJs = originalAppJs.replace(
@@ -73,7 +74,7 @@ async function createTestUpdateBundles(projectRoot, notifyStrings) {
   console.log('Done creating test bundles');
 }
 
-async function createUpdateBundleAsync(projectRoot, localCliBin) {
+async function createUpdateBundleAsync(projectRoot: string) {
   await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
   await spawnAsync('npx', ['expo', 'export'], {
     cwd: projectRoot,
