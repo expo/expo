@@ -1,6 +1,7 @@
 package expo.modules.updates.launcher
 
 import android.content.Context
+import android.net.Uri
 import android.text.format.DateUtils
 import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
@@ -54,7 +55,13 @@ class DatabaseLauncherTest {
     db.assetDao().insertAssets(listOf(testAsset), testUpdate)
 
     val launcher = DatabaseLauncher(
-      UpdatesConfiguration(null, null),
+      UpdatesConfiguration(
+        null,
+        mapOf(
+          "updateUrl" to Uri.parse("https://example.com"),
+          "hasEmbeddedUpdate" to false,
+        )
+      ),
       File("test"),
       FileDownloader(context),
       SelectionPolicy(

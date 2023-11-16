@@ -4,6 +4,19 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Add e2e tests for disabled mode. ([#25301](https://github.com/expo/expo/pull/25301) by [@wschurman](https://github.com/wschurman))
+- Modify E2E manual test for asset exclusion. ([#25406](https://github.com/expo/expo/pull/25406) by [@douglowder](https://github.com/douglowder))
+
+## 0.23.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Split updates controllers depending on configuration, changing native public API. ([#25085](https://github.com/expo/expo/pull/25085), [#25192](https://github.com/expo/expo/pull/25192) by [@wschurman](https://github.com/wschurman))
 - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
@@ -11,12 +24,14 @@
 ### 🎉 New features
 
 - [iOS] Make asset exclusion work. ([#25216](https://github.com/expo/expo/pull/25216) by [@douglowder](https://github.com/douglowder))
+- [Android] Asset exclusion on Android part 1. ([#25277](https://github.com/expo/expo/pull/25277) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 - [iOS] Fix the E2E tests. ([#24865](https://github.com/expo/expo/pull/24865) by [@douglowder](https://github.com/douglowder))
 - [Android] Simplify UpdatesUtils.parseDateString, fix UpdatesLoggingTest. ([#24951](https://github.com/expo/expo/pull/24951) by [@douglowder](https://github.com/douglowder))
 - [iOS] Fix expo-localization tvOS compile, add CI. ([#25082](https://github.com/expo/expo/pull/25082) by [@douglowder](https://github.com/douglowder))
+- Fix instrumentation tests. ([#25367](https://github.com/expo/expo/pull/25367) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
@@ -28,6 +43,9 @@
 - Remove ability for embedded manifests to be legacy manifests. ([#25195](https://github.com/expo/expo/pull/25195) by [@wschurman](https://github.com/wschurman))
 - Convert e2e setup scripts to typescript. ([#25271](https://github.com/expo/expo/pull/25271) by [@wschurman](https://github.com/wschurman))
 
+### ⚠️ Notices
+
+- Deprecated `useUpdateEvents()` and `addListener()` in favor of the new `useUpdates()` API. ([#25345](https://github.com/expo/expo/pull/25345) by [@douglowder](https://github.com/douglowder))
 
 ## 0.18.17 — 2023-10-25
 

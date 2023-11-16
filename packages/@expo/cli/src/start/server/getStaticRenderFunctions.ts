@@ -47,6 +47,7 @@ type StaticRenderOptions = {
   platform?: string;
   environment?: 'node';
   engine?: 'hermes';
+  baseUrl: string;
 };
 
 const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
@@ -62,10 +63,10 @@ const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredMod
 });
 
 /** @returns the js file contents required to generate the static generation function. */
-export async function getStaticRenderFunctionsContentAsync(
+async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
   devServerUrl: string,
-  { dev = false, minify = false, environment }: StaticRenderOptions = {}
+  { dev = false, minify = false, environment, baseUrl }: StaticRenderOptions
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const requiredModuleId = getRenderModuleId(root);
@@ -77,7 +78,12 @@ export async function getStaticRenderFunctionsContentAsync(
     moduleId = await moveStaticRenderFunction(projectRoot, requiredModuleId);
   }
 
-  return requireFileContentsWithMetro(root, devServerUrl, moduleId, { dev, minify, environment });
+  return requireFileContentsWithMetro(root, devServerUrl, moduleId, {
+    dev,
+    minify,
+    environment,
+    baseUrl,
+  });
 }
 
 async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
@@ -108,7 +114,8 @@ export async function createMetroEndpointAsync(
     minify = false,
     environment,
     engine = 'hermes',
-  }: StaticRenderOptions = {}
+    baseUrl,
+  }: StaticRenderOptions
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
@@ -122,6 +129,7 @@ export async function createMetroEndpointAsync(
     environment,
     lazy: false,
     minify,
+    baseUrl,
   });
 
   const url = new URL(urlFragment.replace(/^\//, ''), devServerUrl).toString();
@@ -129,7 +137,7 @@ export async function createMetroEndpointAsync(
   return url;
 }
 
-export class MetroNodeError extends Error {
+class MetroNodeError extends Error {
   constructor(
     message: string,
     public rawObject: any
@@ -142,7 +150,7 @@ export async function requireFileContentsWithMetro(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  props: StaticRenderOptions = {}
+  props: StaticRenderOptions
 ): Promise<string> {
   const url = await createMetroEndpointAsync(projectRoot, devServerUrl, absoluteFilePath, props);
 
@@ -168,25 +176,10 @@ export async function requireFileContentsWithMetro(
   return wrapBundle(content);
 }
 
-export async function requireWithMetro<T extends Record<string, (...args: any[]) => Promise<any>>>(
-  projectRoot: string,
-  devServerUrl: string,
-  absoluteFilePath: string,
-  options: StaticRenderOptions = {}
-): Promise<T> {
-  const content = await requireFileContentsWithMetro(
-    projectRoot,
-    devServerUrl,
-    absoluteFilePath,
-    options
-  );
-  return evalMetroAndWrapFunctions<T>(projectRoot, content);
-}
-
 export async function getStaticRenderFunctions(
   projectRoot: string,
   devServerUrl: string,
-  options: StaticRenderOptions = {}
+  options: StaticRenderOptions
 ): Promise<Record<string, (...args: any[]) => Promise<any>>> {
   const scriptContents = await getStaticRenderFunctionsContentAsync(
     projectRoot,
@@ -197,7 +190,7 @@ export async function getStaticRenderFunctions(
   return evalMetroAndWrapFunctions(projectRoot, scriptContents);
 }
 
-export function evalMetroAndWrapFunctions<T = Record<string, (...args: any[]) => Promise<any>>>(
+function evalMetroAndWrapFunctions<T = Record<string, (...args: any[]) => Promise<any>>>(
   projectRoot: string,
   script: string
 ): Promise<T> {

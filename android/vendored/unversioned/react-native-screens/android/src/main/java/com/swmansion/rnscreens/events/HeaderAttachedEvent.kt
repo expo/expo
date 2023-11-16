@@ -1,10 +1,10 @@
 package com.swmansion.rnscreens.events
 
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
-import com.facebook.react.uimanager.events.RCTEventEmitter
 
-class HeaderAttachedEvent(viewId: Int) : Event<ScreenAppearEvent>(viewId) {
+class HeaderAttachedEvent(surfaceId: Int, viewId: Int) : Event<ScreenAppearEvent>(surfaceId, viewId) {
     override fun getEventName(): String {
         return EVENT_NAME
     }
@@ -14,9 +14,7 @@ class HeaderAttachedEvent(viewId: Int) : Event<ScreenAppearEvent>(viewId) {
         return 0
     }
 
-    override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-        rctEventEmitter.receiveEvent(viewTag, eventName, Arguments.createMap())
-    }
+    override fun getEventData(): WritableMap? = Arguments.createMap()
 
     companion object {
         const val EVENT_NAME = "topAttached"

@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.10.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
 
@@ -22,6 +32,7 @@
 - [Android] Improve boot time on low-end devices. ([#25267](https://github.com/expo/expo/pull/25267) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Improve performance of enum and map converters. ([#25272](https://github.com/expo/expo/pull/25272) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Improve logic responsible for obtaining converters that slow down the startup time. ([#25273](https://github.com/expo/expo/pull/25273) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Improving the creation process of views for better performance. ([#25274](https://github.com/expo/expo/pull/25274) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

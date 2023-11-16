@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 12.2.0 — 2023-11-14
+
+### 🐛 Bug fixes
+
+- Fixed the `transactionExclusiveAsync` does not support CRSQLite. ([#25370](https://github.com/expo/expo/pull/25370) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Build `crsqlite` from source using the correct architectures. ([#25363](https://github.com/expo/expo/pull/25363) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.1.0 — 2023-11-10
+
+### 🎉 New features
+
+- Improved performance on the `expo-sqlite/next` API. ([#25314](https://github.com/expo/expo/pull/25314) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fix crash issues in `sqlite/next`. ([#25295](https://github.com/expo/expo/pull/25295) by [@kudo](https://github.com/kudo))
+- Fix `executeSqlAsync` to accept null properly as arguments. ([#24761](https://github.com/expo/expo/pull/24761) by [@spencerc99](https://github.com/spencerc99))
+- Fixed `useSQLiteContext()` and `finalizeUnusedStatementsBeforeClosing` issues in `expo-sqlite/next` API. ([#25328](https://github.com/expo/expo/pull/25328) by [@kudo](https://github.com/kudo))
+
 ## 12.0.0 — 2023-11-06
 
 ### 🛠 Breaking changes

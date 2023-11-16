@@ -1,4 +1,4 @@
-import { getMetroDirectBundleOptions, createBundleUrlPath } from '../metroOptions';
+import { createBundleUrlPath, getMetroDirectBundleOptions } from '../metroOptions';
 
 describe(getMetroDirectBundleOptions, () => {
   it(`returns basic options`, () => {
@@ -7,10 +7,12 @@ describe(getMetroDirectBundleOptions, () => {
         mainModuleName: '/index.js',
         mode: 'development',
         platform: 'ios',
+        baseUrl: '/foo/',
       })
     ).toEqual({
       customResolverOptions: {},
-      customTransformOptions: { preserveEnvVars: false },
+      customTransformOptions: { preserveEnvVars: false, baseUrl: '/foo/' },
+      serializerOptions: {},
       dev: true,
       entryFile: '/index.js',
       inlineSourceMap: false,
@@ -32,6 +34,11 @@ describe(getMetroDirectBundleOptions, () => {
         'http://localhost:8081/index.js.bundle?platform=ios&dev=true&hot=false&serializer.map=true',
       customResolverOptions: {},
       customTransformOptions: { preserveEnvVars: false },
+      serializerOptions: {
+        includeMaps: true,
+      },
+      sourceMapUrl:
+        'http://localhost:8081/index.js.map?platform=ios&dev=true&hot=false&serializer.map=true',
       dev: true,
       entryFile: '/index.js',
       inlineSourceMap: false,
@@ -50,5 +57,17 @@ describe(createBundleUrlPath, () => {
         platform: 'ios',
       })
     ).toEqual('/index.bundle?platform=ios&dev=true&hot=false');
+  });
+  it(`returns basic options with baseUrl as a fully qualified URL`, () => {
+    expect(
+      createBundleUrlPath({
+        mainModuleName: 'index',
+        mode: 'development',
+        platform: 'ios',
+        baseUrl: 'https://localhost:8081/dist/',
+      })
+    ).toEqual(
+      '/index.bundle?platform=ios&dev=true&hot=false&transform.baseUrl=https%3A%2F%2Flocalhost%3A8081%2Fdist%2F'
+    );
   });
 });

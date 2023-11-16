@@ -29,18 +29,21 @@ const debug = require('debug')('expo:metro:transformer:postcss');
 export async function transformPostCssModule(
   projectRoot: string,
   { src, filename }: { src: string; filename: string }
-): Promise<string> {
+): Promise<{ src: string; hasPostcss: boolean }> {
   const inputConfig = resolvePostcssConfig(projectRoot);
 
   if (!inputConfig) {
-    return src;
+    return { src, hasPostcss: false };
   }
 
-  return await processWithPostcssInputConfigAsync(projectRoot, {
-    inputConfig,
-    src,
-    filename,
-  });
+  return {
+    src: await processWithPostcssInputConfigAsync(projectRoot, {
+      inputConfig,
+      src,
+      filename,
+    }),
+    hasPostcss: true,
+  };
 }
 
 async function processWithPostcssInputConfigAsync(

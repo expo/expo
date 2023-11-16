@@ -4,11 +4,25 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.15.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
 - `npx expo prebuild` will only install Node dependencies if the `dependencies` have changed. ([#25211](https://github.com/expo/expo/pull/25211) by [@EvanBacon](https://github.com/EvanBacon))
 - `npx expo prebuild` will no longer modify `devDependencies` of the `package.json`. ([#25211](https://github.com/expo/expo/pull/25211) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
+- Rename `basePath` to `baseUrl` and expose to bundles with `process.env.EXPO_BASE_URL`. ([#25305](https://github.com/expo/expo/pull/25305) by [@EvanBacon](https://github.com/EvanBacon))
+- Rename `--dump-sourcemap` to `--source-maps` with `-s` alias in `expo export`. ([#25303](https://github.com/expo/expo/pull/25303) by [@EvanBacon](https://github.com/EvanBacon))
+- Bundle static websites +2x faster. ([#25312](https://github.com/expo/expo/pull/25312) by [@EvanBacon](https://github.com/EvanBacon))
+- Add package exports, and blocklist support to fast resolver. ([#25260](https://github.com/expo/expo/pull/25260) by [@EvanBacon](https://github.com/EvanBacon))
 - Move environment variables production inlining to `babel-preset-expo` to support source maps. ([#25239](https://github.com/expo/expo/pull/25239) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for chaining the Metro resolver locally. ([#25148](https://github.com/expo/expo/pull/25148) by [@EvanBacon](https://github.com/EvanBacon))
 - Pass engine to transformer for production bundling. ([#25175](https://github.com/expo/expo/pull/25175) by [@EvanBacon](https://github.com/EvanBacon))
@@ -21,14 +35,21 @@
 
 ### 🐛 Bug fixes
 
+- Disable bundle splitting on native platforms. ([#25366](https://github.com/expo/expo/pull/25366) by [@EvanBacon](https://github.com/EvanBacon))
+- Ensure cache can be cleared with static web exports. ([#25335](https://github.com/expo/expo/pull/25335) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix server-rendering errors. ([#25247](https://github.com/expo/expo/pull/25247) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix native polyfill import. ([#25203](https://github.com/expo/expo/pull/25203) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix API Routes not updating in `src/app` directory. ([#24968](https://github.com/expo/expo/pull/24968) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent `npx expo export` and `npx expo export:embed` from hanging with file watchers. ([#24952](https://github.com/expo/expo/pull/24952) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent `Runtime.callFunctionOn` messages from Vscode debugger to avoid Hermes crashes. ([#25270](https://github.com/expo/expo/pull/25270) by [@byCedric](https://github.com/byCedric))
+- Handle command input errors better. ([#25329](https://github.com/expo/expo/pull/25329) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
+- Add E2E Tailwind tests. ([#25339](https://github.com/expo/expo/pull/25339) by [@EvanBacon](https://github.com/EvanBacon))
+- Collapse re-export of `react-native/Libraries/Image/AssetRegistry` to `@react-native/assets-registry/registry`. ([#25265](https://github.com/expo/expo/pull/25265) by [@EvanBacon](https://github.com/EvanBacon))
+- Refactor html serializer. ([#25304](https://github.com/expo/expo/pull/25304) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix prebuild messages. ([#25279](https://github.com/expo/expo/pull/25279) by [@EvanBacon](https://github.com/EvanBacon))
 - Pull in source for Metro asset persisting for iOS and Android. ([#25278](https://github.com/expo/expo/pull/25278) by [@EvanBacon](https://github.com/EvanBacon))
 - Add more types. ([#25245](https://github.com/expo/expo/pull/25245) by [@EvanBacon](https://github.com/EvanBacon))
 - Unify Metro config functions. ([#25257](https://github.com/expo/expo/pull/25257) by [@EvanBacon](https://github.com/EvanBacon))

@@ -3,13 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stripBasePath = exports.getMatchableRouteConfigs = exports.getUrlWithReactNavigationConcessions = void 0;
+exports.stripBaseUrl = exports.getMatchableRouteConfigs = exports.getUrlWithReactNavigationConcessions = void 0;
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
-const expo_constants_1 = __importDefault(require("expo-constants"));
 const findFocusedRoute_1 = require("./findFocusedRoute");
 const validatePathConfig_1 = __importDefault(require("./validatePathConfig"));
 const matchers_1 = require("../matchers");
-function getUrlWithReactNavigationConcessions(path, basePath = expo_constants_1.default.expoConfig?.experiments?.basePath) {
+function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_BASE_URL) {
     let parsed;
     try {
         parsed = new URL(path, 'https://phony.example');
@@ -25,9 +24,9 @@ function getUrlWithReactNavigationConcessions(path, basePath = expo_constants_1.
     // Make sure there is a trailing slash
     return {
         // The slashes are at the end, not the beginning
-        nonstandardPathname: stripBasePath(pathname, basePath).replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
+        nonstandardPathname: stripBaseUrl(pathname, baseUrl).replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
         // React Navigation doesn't support hashes, so here
-        inputPathnameWithoutHash: stripBasePath(path, basePath).replace(/#.*$/, ''),
+        inputPathnameWithoutHash: stripBaseUrl(path, baseUrl).replace(/#.*$/, ''),
     };
 }
 exports.getUrlWithReactNavigationConcessions = getUrlWithReactNavigationConcessions;
@@ -545,23 +544,23 @@ const parseQueryParams = (path, parseConfig) => {
     }
     return Object.keys(params).length ? params : undefined;
 };
-const basePathCache = new Map();
-function getBasePathRegex(basePath) {
-    if (basePathCache.has(basePath)) {
-        return basePathCache.get(basePath);
+const baseUrlCache = new Map();
+function getBaseUrlRegex(baseUrl) {
+    if (baseUrlCache.has(baseUrl)) {
+        return baseUrlCache.get(baseUrl);
     }
-    const regex = new RegExp(`^\\/?${(0, escape_string_regexp_1.default)(basePath)}`, 'g');
-    basePathCache.set(basePath, regex);
+    const regex = new RegExp(`^\\/?${(0, escape_string_regexp_1.default)(baseUrl)}`, 'g');
+    baseUrlCache.set(baseUrl, regex);
     return regex;
 }
-function stripBasePath(path, basePath = expo_constants_1.default.expoConfig?.experiments?.basePath) {
+function stripBaseUrl(path, baseUrl = process.env.EXPO_BASE_URL) {
     if (process.env.NODE_ENV !== 'development') {
-        if (basePath) {
-            const reg = getBasePathRegex(basePath);
+        if (baseUrl) {
+            const reg = getBaseUrlRegex(baseUrl);
             return path.replace(/^\/+/g, '/').replace(reg, '');
         }
     }
     return path;
 }
-exports.stripBasePath = stripBasePath;
+exports.stripBaseUrl = stripBaseUrl;
 //# sourceMappingURL=getStateFromPath.js.map

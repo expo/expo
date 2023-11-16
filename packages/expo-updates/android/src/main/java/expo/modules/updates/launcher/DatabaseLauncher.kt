@@ -100,7 +100,7 @@ class DatabaseLauncher(
 
     val assetEntities = database.assetDao().loadAssetsForUpdate(launchedUpdate!!.id)
 
-    localAssetFiles = mutableMapOf<AssetEntity, String>().apply {
+    localAssetFiles = embeddedAssetFileMap(context).apply {
       for (asset in assetEntities) {
         if (asset.id == launchAsset.id) {
           // we took care of this one above
@@ -135,7 +135,7 @@ class DatabaseLauncher(
     val filteredLaunchableUpdates = mutableListOf<UpdateEntity>()
     for (update in launchableUpdates) {
       if (update.status == UpdateStatus.EMBEDDED) {
-        if (embeddedUpdateManifest != null && embeddedUpdateManifest.updateEntity!!.id != update.id) {
+        if (embeddedUpdateManifest != null && embeddedUpdateManifest.updateEntity.id != update.id) {
           continue
         }
       }
@@ -145,8 +145,30 @@ class DatabaseLauncher(
     return selectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters)
   }
 
-  internal fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, context: Context): File? {
-    val assetFile = File(updatesDirectory, asset.relativePath)
+  private fun embeddedAssetFileMap(context: Context): MutableMap<AssetEntity, String> {
+    val embeddedManifest = EmbeddedManifest.get(context, this.configuration)
+    val embeddedAssets: List<AssetEntity> = embeddedManifest?.assetEntityList ?: listOf()
+    return mutableMapOf<AssetEntity, String>().apply {
+      for (asset in embeddedAssets) {
+        if (asset.isLaunchAsset) {
+          continue
+        }
+        val filename = asset.relativePath
+        if (filename != null) {
+          val embeddedAssetFilename = asset.embeddedAssetFilename
+          val file = if (embeddedAssetFilename != null) {
+            File(embeddedAssetFilename)
+          } else {
+            File(updatesDirectory, asset.relativePath!!)
+          }
+          this[asset] = Uri.fromFile(file).toString()
+        }
+      }
+    }
+  }
+
+  fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, context: Context): File? {
+    val assetFile = File(updatesDirectory, asset.relativePath ?: "")
     var assetFileExists = assetFile.exists()
     if (!assetFileExists) {
       // something has gone wrong, we're missing this asset
@@ -195,7 +217,7 @@ class DatabaseLauncher(
 
           override fun onSuccess(assetEntity: AssetEntity, isNew: Boolean) {
             database.assetDao().updateAsset(assetEntity)
-            val assetFileLocal = File(updatesDirectory, assetEntity.relativePath)
+            val assetFileLocal = File(updatesDirectory, assetEntity.relativePath!!)
             maybeFinish(assetEntity, if (assetFileLocal.exists()) assetFileLocal else null)
           }
         }

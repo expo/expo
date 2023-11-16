@@ -4,14 +4,40 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🎉 New features
 
+- [Android] The stability of the memory cache key generation has been improved. ([#25372](https://github.com/expo/expo/pull/25372) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Collapse re-export of `react-native/Libraries/Image/AssetRegistry` to `@react-native/assets-registry/registry`. ([#25265](https://github.com/expo/expo/pull/25265) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 1.8.0 — 2023-11-13
+
+### 🎉 New features
+
+- Return a promise in the `prefetch` method. ([#25196](https://github.com/expo/expo/pull/25196) by [@gkasdorf](https://github.com/gkasdorf))
+- [Android] Added `autoplay` prop and `startAnimating()` and `stopAnimating()` functions to reflect changes made to iOS in [#25008](https://github.com/expo/expo/pull/25008). ([#25124](https://github.com/expo/expo/pull/25124) by [@gkasdorf](https://github.com/gkasdorf))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix `contentFit` not working for `SVG` images. ([#25187](https://github.com/expo/expo/pull/25187) by [@behenate](https://github.com/behenate))
+- [iOS] Start loading the image before the view mounts to fix issues with the PagerView. ([#25343](https://github.com/expo/expo/pull/25343) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fix `SVG` not scaling correctly in the release mode. ([#25326](https://github.com/expo/expo/pull/25326) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix incorrect `intrinsicSize` returned for SVGs. ([#25048](https://github.com/expo/expo/pull/25048) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
