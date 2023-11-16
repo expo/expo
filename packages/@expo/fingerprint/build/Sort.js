@@ -24,4 +24,3 @@ function sortSources(sources) {
     });
 }
 exports.sortSources = sortSources;
-//# sourceMappingURL=Sort.js.map

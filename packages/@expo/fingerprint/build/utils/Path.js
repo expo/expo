@@ -23,4 +23,3 @@ function isIgnoredPath(filePath, ignorePaths, minimatchOptions = { dot: true }) 
     return result;
 }
 exports.isIgnoredPath = isIgnoredPath;
-//# sourceMappingURL=Path.js.map
