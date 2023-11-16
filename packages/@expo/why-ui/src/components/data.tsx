@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 export type MetroJsonModule = {
@@ -30,10 +31,6 @@ export type MetroJsonModule = {
 
 export type JsonGraph = [string, MetroJsonModule[], { dependencies: MetroJsonModule[] }, any];
 
-// export function getData() {
-//   return fixture;
-// }
-
 export type ExpoServerResponse = {
   version: 1;
   graphs: JsonGraph[];
@@ -41,7 +38,6 @@ export type ExpoServerResponse = {
 
 const origin = null; //'http://localhost:8081';
 
-import { useQuery, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

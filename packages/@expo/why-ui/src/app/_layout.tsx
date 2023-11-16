@@ -1,8 +1,8 @@
 import { Slot } from 'expo-router';
 import React from 'react';
 
-import { GraphProvider } from '../components/deps-context';
-import { CliDataProvider, ExpoServerResponse, useFetchedServerData } from '../components/data';
+import { GraphProvider } from '@/components/deps-context';
+import { CliDataProvider, ExpoServerResponse, useFetchedServerData } from '@/components/data';
 
 import '@/global.css';
 

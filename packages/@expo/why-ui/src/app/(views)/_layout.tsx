@@ -1,37 +1,21 @@
-import { Link, Navigator, Slot, Tabs } from 'expo-router';
-import { FilteredModulesContext, useGraph } from '../../components/deps-context';
-import React from 'react';
-import Checkbox from 'expo-checkbox';
-import { Button } from '@/components/ui/button';
 import classNames from 'classnames';
+import { Link, Navigator, Slot } from 'expo-router';
+import React from 'react';
+
+import { FilteredModulesContext, useGraph } from '@/components/deps-context';
+import { Button } from '@/components/ui/button';
 
 export default function Layout() {
-  const { modules, absoluteEntryFilePath, options } = useGraph();
-
-  const [showNodeModules, setShowNodeModules] = React.useState(true);
-  const [showVirtual, setShowVirtual] = React.useState(false);
+  const { modules, options } = useGraph();
 
   const visibleDeps = React.useMemo(() => {
-    const root = options.projectRoot;
-
     return modules.map((m) => {
-      // const absolutePath = root + '/' + m.path;
-      // const isEntry = absoluteEntryFilePath === absolutePath;
       return {
         ...m,
         id: m.path,
       };
     });
-    // return modules.filter((dep) => {
-    //   if (!showNodeModules && dep.path.includes('node_modules')) {
-    //     return false;
-    //   }
-    //   if (!showVirtual && dep.output[0].type === 'js/script/virtual') {
-    //     return false;
-    //   }
-    //   return true;
-    // });
-  }, [options, modules, showNodeModules, showVirtual]);
+  }, [options, modules]);
 
   return (
     <FilteredModulesContext.Provider value={visibleDeps}>

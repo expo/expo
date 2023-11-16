@@ -8,9 +8,9 @@ import {
 import { Link, router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 
-import { BaconCode } from '../../components/code';
-import { MetroJsonModule } from '../../components/data';
-import { useGraph } from '../../components/deps-context';
+import { BaconCode } from '@/components/code';
+import { MetroJsonModule } from '@/components/data';
+import { useGraph } from '@/components/deps-context';
 import { Button } from '@/components/ui/button';
 
 export function SelectScrollable({ parents }: { parents: string[] }) {
