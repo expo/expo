@@ -18,15 +18,12 @@ const expoDependencyChunks = [
   [
     'babel-preset-expo',
     'expo-application',
-    'expo-av',
     'expo-device',
     'expo-eas-client',
     'expo-file-system',
     'expo-font',
-    'expo-image',
     'expo-json-utils',
     'expo-keep-awake',
-    'expo-localization',
     'expo-manifests',
     'expo-splash-screen',
     'expo-status-bar',
@@ -201,8 +198,12 @@ async function preparePackageJson(
   const dependenciesPath = path.join(projectRoot, 'dependencies');
   await fs.mkdir(dependenciesPath);
 
+  const tvDependencyChunk = isTV ? ['expo-av', 'expo-image', 'expo-localization'] : [];
+
+  const allDependencyChunks = [...expoDependencyChunks, tvDependencyChunk];
+
   console.time('Done packing dependencies');
-  for (const dependencyChunk of expoDependencyChunks) {
+  for (const dependencyChunk of allDependencyChunks) {
     await Promise.all(
       dependencyChunk.map(async (dependencyName) => {
         console.log(`Packing ${dependencyName}...`);
