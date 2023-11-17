@@ -1411,84 +1411,84 @@
   dependencies:
     lodash "^4.17.4"
 
-"@expo/ngrok-bin-darwin-arm64@2.3.40":
-  version "2.3.40"
-  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-darwin-arm64/-/ngrok-bin-darwin-arm64-2.3.40.tgz#f9306e15339dfe57a4bce07b4b0fb1a22d9bd35e"
-  integrity sha512-Zij81v/bIsVBvgXgYS71xbi/3lqKfVEfr7rId8BsHO3Ec1nQcp/I+729W3KX9PUHzWlXCLxOKZ3uF4jL/TcNbg==
+"@expo/ngrok-bin-darwin-arm64@2.3.41":
+  version "2.3.41"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-darwin-arm64/-/ngrok-bin-darwin-arm64-2.3.41.tgz#d6b4a15be00f1166dc1d8dc99d0c773dc5e72048"
+  integrity sha512-TPf95xp6SkvbRONZjltTOFcCJbmzAH7lrQ36Dv+djrOckWGPVq4HCur48YAeiGDqspmFEmqZ7ykD5c/bDfRFOA==
 
-"@expo/ngrok-bin-darwin-x64@2.3.40":
-  version "2.3.40"
-  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-darwin-x64/-/ngrok-bin-darwin-x64-2.3.40.tgz#86d64ad118d3e07b348636d3407dcf58ea746025"
-  integrity sha512-nqGLfxIjZBoT79VDk5mqaHQKCWkunSi486zGLeB8Ye8Qar1yo4STFwks+DqTbnGD5ItArQz2LzKRVE4YXuJFuw==
+"@expo/ngrok-bin-darwin-x64@2.3.41":
+  version "2.3.41"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-darwin-x64/-/ngrok-bin-darwin-x64-2.3.41.tgz#ff006f92c01887070d2302c67455c53d43ccb9f1"
+  integrity sha512-29QZHfX4Ec0p0pQF5UrqiP2/Qe7t2rI96o+5b8045VCEl9AEAKHceGuyo+jfUDR4FSQBGFLSDb06xy8ghL3ZYA==
 
-"@expo/ngrok-bin-freebsd-ia32@2.3.40":
-  version "2.3.40"
-  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-freebsd-ia32/-/ngrok-bin-freebsd-ia32-2.3.40.tgz#86720a356658faea149489831a9d4952611d3f12"
-  integrity sha512-Ji3jZaOuIZO+ege23kZZAAEPUYkF+6mCpghb16b28Is1QHOSl2L4foDnAcWyzSEiBihMicxWltaQyaaxA0fdgw==
+"@expo/ngrok-bin-freebsd-ia32@2.3.41":
+  version "2.3.41"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-freebsd-ia32/-/ngrok-bin-freebsd-ia32-2.3.41.tgz#c488ce27823c199e2876eb80c5049856a0541b1d"
+  integrity sha512-YYXgwNZ+p0aIrwgb+1/RxJbsWhGEzBDBhZulKg1VB7tKDAd2C8uGnbK1rOCuZy013iOUsJDXaj9U5QKc13iIXw==
 
-"@expo/ngrok-bin-freebsd-x64@2.3.40":
-  version "2.3.40"
-  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-freebsd-x64/-/ngrok-bin-freebsd-x64-2.3.40.tgz#16b6f456bb561c984711ce34b592b66f373a077e"
-  integrity sha512-mVnzKGQmOyXimZx6udoiyo3ZTYLZnPShlTySaDP0tqQ0vYz4ZscgvaYpMmDSPrsP/YG2owmKgzmOE2V+ycD8qA==
+"@expo/ngrok-bin-freebsd-x64@2.3.41":
+  version "2.3.41"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-freebsd-x64/-/ngrok-bin-freebsd-x64-2.3.41.tgz#9e17cf0b4cd76dd1050db40463dfc9fc9b43938c"
+  integrity sha512-1Ei6K8BB+3etmmBT0tXYC4dyVkJMigT4ELbRTF5jKfw1pblqeXM9Qpf3p8851PTlH142S3bockCeO39rSkOnkg==
 
-"@expo/ngrok-bin-linux-arm64@2.3.40":
-  version "2.3.40"
-  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-linux-arm64/-/ngrok-bin-linux-arm64-2.3.40.tgz#97d8404bf35c47f03a96635616c7b423db848478"
-  integrity sha512-S6kbnRqsVXHo/bWNxc0jfq33aQQRsGWjb6e7SvZ2DgXsPFLn27cfK0eHD96uCssARDVhzPsc+VU/B3d8C1DT5A==
+"@expo/ngrok-bin-linux-arm64@2.3.41":
+  version "2.3.41"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-linux-arm64/-/ngrok-bin-linux-arm64-2.3.41.tgz#dc7c761b7f12d8baae997565c360939b34da78f0"
+  integrity sha512-eC8GA/xPcmQJy4h+g2FlkuQB3lf5DjITy8Y6GyydmPYMByjUYAGEXe0brOcP893aalAzRqbNOAjSuAw1lcCLSQ==
 
-"@expo/ngrok-bin-linux-arm@2.3.40":
-  version "2.3.40"
-  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-linux-arm/-/ngrok-bin-linux-arm-2.3.40.tgz#a8342eb76c0d47dc208abec4c0cb548c2ac01fda"
-  integrity sha512-Je1QBd7x0hbZa4T3gZbVgD0cSzstpJ7Mu0+dM2lOB+vm3bd603yHtD0RlLdqARJFhPTE1M2zLd68gCEeZ5fRgQ==
+"@expo/ngrok-bin-linux-arm@2.3.41":
+  version "2.3.41"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-linux-arm/-/ngrok-bin-linux-arm-2.3.41.tgz#c914a3e86d166e0595d13b3e501535bf441834ca"
+  integrity sha512-B6+rW/+tEi7ZrKWQGkRzlwmKo7c1WJhNODFBSgkF/Sj9PmmNhBz67mer91S2+6nNt5pfcwLLd61CjtWfR1LUHQ==
 
-"@expo/ngrok-bin-linux-ia32@2.3.40":
-  version "2.3.40"
-  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-linux-ia32/-/ngrok-bin-linux-ia32-2.3.40.tgz#dad55f4fd5f223b1439fba4aa66d057b04349515"
-  integrity sha512-gPY5zv5Fu+TkCm5iZolXQbu7e5hc7fTllIKn/zJQxxZs/WCvSxyB5ip6vQcHiavu/kjr0HtNciPX/guXvWENkg==
+"@expo/ngrok-bin-linux-ia32@2.3.41":
+  version "2.3.41"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-linux-ia32/-/ngrok-bin-linux-ia32-2.3.41.tgz#5079fc5aa2f886d6e33a25e913ec240be57eac73"
+  integrity sha512-w5Cy31wSz4jYnygEHS7eRizR1yt8s9TX6kHlkjzayIiRTFRb2E1qD2l0/4T2w0LJpBjM5ZFPaaKqsNWgCUIEow==
 
-"@expo/ngrok-bin-linux-x64@2.3.40":
-  version "2.3.40"
-  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-linux-x64/-/ngrok-bin-linux-x64-2.3.40.tgz#0038534284cf6db3e23e6cf412c855f04bd0f746"
-  integrity sha512-yOuwpOmMe6RGnk9ninlM7Zg1EiF81ptFOcFmT61PDOA4gK8/ttZKTMkDQiq0DZdcXUyE0HCr83EglJZTnHIzPA==
+"@expo/ngrok-bin-linux-x64@2.3.41":
+  version "2.3.41"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-linux-x64/-/ngrok-bin-linux-x64-2.3.41.tgz#34c117c14b3d82f6d51cd25df025d9679d866577"
+  integrity sha512-LcU3MbYHv7Sn2eFz8Yzo2rXduufOvX1/hILSirwCkH+9G8PYzpwp2TeGqVWuO+EmvtBe6NEYwgdQjJjN6I4L1A==
 
-"@expo/ngrok-bin-sunos-x64@2.3.40":
-  version "2.3.40"
-  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-sunos-x64/-/ngrok-bin-sunos-x64-2.3.40.tgz#ffe19fa2142a7c3a87386903184638fcf6ad1651"
-  integrity sha512-0itEIQ7KsxRbF9nJk6tt0Ey+9TDC5H7krOsy3t7DPx01EvtaiEdMyhmE1XWjBtwr8+BaY9CpEhUWkx4iCcE4cw==
+"@expo/ngrok-bin-sunos-x64@2.3.41":
+  version "2.3.41"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-sunos-x64/-/ngrok-bin-sunos-x64-2.3.41.tgz#8ab01f96344d5c2aae2944009fbea67aed74c022"
+  integrity sha512-bcOj45BLhiV2PayNmLmEVZlFMhEiiGpOr36BXC0XSL+cHUZHd6uNaS28AaZdz95lrRzGpeb0hAF8cuJjo6nq4g==
 
-"@expo/ngrok-bin-win32-ia32@2.3.40":
-  version "2.3.40"
-  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-win32-ia32/-/ngrok-bin-win32-ia32-2.3.40.tgz#d8f4e6123b160627a9b7662be183c89212fa366b"
-  integrity sha512-RAunwOAskfU0R5mYlxxB+bihLJ4nLRx5/x+q5nIq1muYmaqLvGtkQQHZKzgHJANJ7ZIbzfJY57IN2UICpibgIQ==
+"@expo/ngrok-bin-win32-ia32@2.3.41":
+  version "2.3.41"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-win32-ia32/-/ngrok-bin-win32-ia32-2.3.41.tgz#b5fbcd49f2ae38fdb4105f8248159dc75c9ba9e3"
+  integrity sha512-0+vPbKvUA+a9ERgiAknmZCiWA3AnM5c6beI+51LqmjKEM4iAAlDmfXNJ89aAbvZMUtBNwEPHzJHnaM4s2SeBhA==
 
-"@expo/ngrok-bin-win32-x64@2.3.40":
-  version "2.3.40"
-  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-win32-x64/-/ngrok-bin-win32-x64-2.3.40.tgz#d497c9cb5a235f5bc04d6b9df4474e2000cc0a61"
-  integrity sha512-a8xtUxX/Ftp2ho+/+VR5GCg0ttP9MNzYj58TVjfiKMkl4mVrbFVIzEinRzmy7PhiOWxqGQSCOdzEfa6C2G4nEA==
+"@expo/ngrok-bin-win32-x64@2.3.41":
+  version "2.3.41"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin-win32-x64/-/ngrok-bin-win32-x64-2.3.41.tgz#91c56b695c9c8d81424a335795e204d7bd011fcf"
+  integrity sha512-mncsPRaG462LiYrM8mQT8OYe3/i44m3N/NzUeieYpGi8+pCOo8TIC23kR9P93CVkbM9mmXsy3X6hq91a8FWBdA==
 
-"@expo/ngrok-bin@2.3.40":
-  version "2.3.40"
-  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin/-/ngrok-bin-2.3.40.tgz#bfdbd4a32fd71275d5153f859cb4594eec665de7"
-  integrity sha512-40GK1CY1QLPDHSQS7Fd36CJeZgMwtbeezkgp4tzfExVRVtWw30jOBCsM7TBB9IqEmmX7C/XwG47scMQHCnMw8A==
+"@expo/ngrok-bin@2.3.42":
+  version "2.3.42"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok-bin/-/ngrok-bin-2.3.42.tgz#bcaa9f77ebb2e0f3b9be3ae99dd66d363242a96b"
+  integrity sha512-kyhORGwv9XpbPeNIrX6QZ9wDVCDOScyTwxeS+ScNmUqYoZqD9LRmEqF7bpDh5VonTsrXgWrGl7wD2++oSHcaTQ==
   optionalDependencies:
-    "@expo/ngrok-bin-darwin-arm64" "2.3.40"
-    "@expo/ngrok-bin-darwin-x64" "2.3.40"
-    "@expo/ngrok-bin-freebsd-ia32" "2.3.40"
-    "@expo/ngrok-bin-freebsd-x64" "2.3.40"
-    "@expo/ngrok-bin-linux-arm" "2.3.40"
-    "@expo/ngrok-bin-linux-arm64" "2.3.40"
-    "@expo/ngrok-bin-linux-ia32" "2.3.40"
-    "@expo/ngrok-bin-linux-x64" "2.3.40"
-    "@expo/ngrok-bin-sunos-x64" "2.3.40"
-    "@expo/ngrok-bin-win32-ia32" "2.3.40"
-    "@expo/ngrok-bin-win32-x64" "2.3.40"
+    "@expo/ngrok-bin-darwin-arm64" "2.3.41"
+    "@expo/ngrok-bin-darwin-x64" "2.3.41"
+    "@expo/ngrok-bin-freebsd-ia32" "2.3.41"
+    "@expo/ngrok-bin-freebsd-x64" "2.3.41"
+    "@expo/ngrok-bin-linux-arm" "2.3.41"
+    "@expo/ngrok-bin-linux-arm64" "2.3.41"
+    "@expo/ngrok-bin-linux-ia32" "2.3.41"
+    "@expo/ngrok-bin-linux-x64" "2.3.41"
+    "@expo/ngrok-bin-sunos-x64" "2.3.41"
+    "@expo/ngrok-bin-win32-ia32" "2.3.41"
+    "@expo/ngrok-bin-win32-x64" "2.3.41"
 
-"@expo/ngrok@4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@expo/ngrok/-/ngrok-4.1.0.tgz#d013ecc694c69132ba72d56562c42f7dc22bd517"
-  integrity sha512-PrtWxBt/SnOF1jZkf7oWznhEPFrmYKKeJPLVRKnEBd/y4eUYfoiNIXOzflIzhdrMubjWVI+pFuPJ6nkjVL95/Q==
+"@expo/ngrok@4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@expo/ngrok/-/ngrok-4.1.3.tgz#a3dc692958f3f48a5221e30f4a8c3648c79e8450"
+  integrity sha512-AESYaROGIGKWwWmUyQoUXcbvaUZjmpecC5buArXxYou+RID813F8T0Y5jQ2HUY49mZpYfJiy9oh4VSN37GgrXA==
   dependencies:
-    "@expo/ngrok-bin" "2.3.40"
+    "@expo/ngrok-bin" "2.3.42"
     got "^11.5.1"
     uuid "^3.3.2"
     yaml "^1.10.0"
@@ -9466,6 +9466,22 @@ expo-2d-context@^0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/expo-2d-context/-/expo-2d-context-0.0.2.tgz#7aeea5b146b3f7091ca7d17fcf7a713024ef82f5"
   integrity sha512-W4TCuTBXZgvAHhQ15u0fpQiBVw14u4vIDcUv/hk2PBA9a3HYav+1lQp2+dCXLM2DXUjV5T4POY+VlePBWBORhw==
+  dependencies:
+    adaptive-bezier-curve "1.0.3"
+    adaptive-quadratic-curve "1.0.2"
+    color-convert "^1.9.3"
+    css-font-parser "0.2.3"
+    domexception "1.0.1"
+    earcut "2.1.1"
+    gl-matrix "^2.4.0"
+    parse-bmfont-ascii "1.0.6"
+    string-format "0.5.0"
+    tess2 "^1.0.0"
+
+expo-2d-context@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/expo-2d-context/-/expo-2d-context-0.0.4.tgz#4aebc0158484a47f958f9790a48fbb0c7c846e7d"
+  integrity sha512-zO76moHHUHblHX965yzitqUdsVUFv9wEGPi6zxIJhOxzBwHEXPE/U5EcVWVvP5hyEHg/BeJ2k6C5lg3v5ntZpw==
   dependencies:
     adaptive-bezier-curve "1.0.3"
     adaptive-quadratic-curve "1.0.2"
