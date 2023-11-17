@@ -4,12 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Add state machine procedure serial runner. ([#25386](https://github.com/expo/expo/pull/25386) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+- Update E2E tests to use local copies of `@expo/metro-config`, `@expo/env`, `@expo/config`. ([#25430](https://github.com/expo/expo/pull/25430) by [@EvanBacon](https://github.com/EvanBacon))
 - Add e2e tests for disabled mode. ([#25301](https://github.com/expo/expo/pull/25301) by [@wschurman](https://github.com/wschurman))
 - Modify E2E manual test for asset exclusion. ([#25406](https://github.com/expo/expo/pull/25406) by [@douglowder](https://github.com/douglowder))
 

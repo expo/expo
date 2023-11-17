@@ -1,6 +1,7 @@
 #!/usr/bin/env yarn --silent ts-node --transpile-only
 
 import spawnAsync from '@expo/spawn-async';
+import { rmSync, existsSync } from 'fs';
 import fs from 'fs/promises';
 import glob from 'glob';
 import nullthrows from 'nullthrows';
@@ -8,35 +9,36 @@ import path from 'path';
 
 const dirName = __dirname; /* eslint-disable-line */
 
-const expoDependencyNames = [
-  'expo',
-  '@expo/cli',
-  '@expo/config-plugins',
-  '@expo/config-types',
-  '@expo/prebuild-config',
-  'expo-application',
-  'expo-av',
-  'expo-constants',
-  'expo-device',
-  'expo-eas-client',
-  'expo-file-system',
-  'expo-font',
-  'expo-image',
-  'expo-json-utils',
-  'expo-keep-awake',
-  'expo-localization',
-  'expo-manifests',
-  'expo-modules-autolinking',
-  'expo-modules-core',
-  'expo-splash-screen',
-  'expo-status-bar',
-  'expo-structured-headers',
-  'expo-updates',
-  'expo-updates-interface',
+// Package dependencies in chunks based on peer dependencies.
+const expoDependencyChunks = [
+  ['@expo/config-types', '@expo/env'],
+  ['@expo/config'],
+  ['@expo/cli', '@expo/config-plugins', 'expo', 'expo-modules-core', 'expo-modules-autolinking'],
+  ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
+  [
+    'babel-preset-expo',
+    'expo-application',
+    'expo-av',
+    'expo-device',
+    'expo-eas-client',
+    'expo-file-system',
+    'expo-font',
+    'expo-image',
+    'expo-json-utils',
+    'expo-keep-awake',
+    'expo-localization',
+    'expo-manifests',
+    'expo-splash-screen',
+    'expo-status-bar',
+    'expo-structured-headers',
+    'expo-updates',
+    'expo-updates-interface',
+  ],
 ];
 
+const expoDependencyNames: string[] = expoDependencyChunks.flat();
+
 const expoResolutions = {};
-const expoVersions = {};
 
 /**
  * Executes `npm pack` on one of the Expo packages used in updates E2E
@@ -84,10 +86,16 @@ async function packExpoDependency(
     )
   );
 
-  await spawnAsync('npm', ['pack', '--pack-destination', destPath], {
-    cwd: dependencyPath,
-    stdio: 'ignore',
-  });
+  try {
+    await spawnAsync('npm', ['pack', '--pack-destination', destPath], {
+      cwd: dependencyPath,
+      stdio: process.env.CI ? 'ignore' : 'pipe',
+    });
+  } finally {
+    // Restore the original package JSON
+    await fs.copyFile(packageJsonCopyPath, packageJsonPath);
+    await fs.rm(packageJsonCopyPath);
+  }
 
   // Ensure the file was created as expected
   const dependencyTarballName =
@@ -100,12 +108,9 @@ async function packExpoDependency(
     throw new Error(`Failed to locate packed ${dependencyName} in ${destPath}`);
   }
 
-  // Restore the original package JSON
-  await fs.copyFile(packageJsonCopyPath, packageJsonPath);
-  await fs.rm(packageJsonCopyPath);
-
   // Return the dependency in the form needed by package.json, as a relative path
   const dependency = `.${path.sep}${path.relative(projectRoot, dependencyTarballPath)}`;
+
   return {
     dependency,
     e2eVersion,
@@ -196,18 +201,24 @@ async function preparePackageJson(
   const dependenciesPath = path.join(projectRoot, 'dependencies');
   await fs.mkdir(dependenciesPath);
 
-  for (const dependencyName of expoDependencyNames) {
-    console.log(`Packing ${dependencyName}...`);
-    const result = await packExpoDependency(
-      repoRoot,
-      projectRoot,
-      dependenciesPath,
-      dependencyName
+  console.time('Done packing dependencies');
+  for (const dependencyChunk of expoDependencyChunks) {
+    await Promise.all(
+      dependencyChunk.map(async (dependencyName) => {
+        console.log(`Packing ${dependencyName}...`);
+        console.time(`Packaged ${dependencyName}`);
+        const result = await packExpoDependency(
+          repoRoot,
+          projectRoot,
+          dependenciesPath,
+          dependencyName
+        );
+        expoResolutions[dependencyName] = result.dependency;
+        console.timeEnd(`Packaged ${dependencyName}`);
+      })
     );
-    expoResolutions[dependencyName] = result.dependency;
-    expoVersions[dependencyName] = result.dependency;
   }
-  console.log('Done packing dependencies.');
+  console.timeEnd('Done packing dependencies');
 
   const extraScriptsGenerateTestUpdateBundlesPart = shouldGenerateTestUpdateBundles
     ? {
@@ -449,6 +460,7 @@ export function transformAppJsonForUpdatesDisabledE2E(
 }
 
 async function configureUpdatesSigningAsync(projectRoot: string) {
+  console.time('generate and configure code signing');
   // generate and configure code signing
   await spawnAsync(
     'yarn',
@@ -466,6 +478,7 @@ async function configureUpdatesSigningAsync(projectRoot: string) {
     ],
     { cwd: projectRoot, stdio: 'inherit' }
   );
+
   await spawnAsync(
     'yarn',
     [
@@ -480,6 +493,8 @@ async function configureUpdatesSigningAsync(projectRoot: string) {
   );
   // Archive the keys so that they are not filtered out when uploading to EAS
   await spawnAsync('tar', ['cf', 'keys.tar', 'keys'], { cwd: projectRoot, stdio: 'inherit' });
+
+  console.timeEnd('generate and configure code signing');
 }
 
 export async function initAsync(
@@ -512,6 +527,11 @@ export async function initAsync(
   console.log('Creating expo app');
   const workingDir = path.dirname(projectRoot);
   const projectName = path.basename(projectRoot);
+
+  if (!process.env.CI && existsSync(projectRoot)) {
+    console.log(`Deleting existing project at ${projectRoot}...`);
+    rmSync(projectRoot, { recursive: true, force: true });
+  }
 
   // pack typescript template
   const templateName = 'expo-template-blank-typescript';
@@ -561,7 +581,7 @@ export async function initAsync(
     shouldGenerateTestUpdateBundles
   );
 
-  // Now we do NPM install
+  // Install node modules with local tarballs
   await spawnAsync('yarn', [], {
     cwd: projectRoot,
     stdio: 'inherit',
@@ -612,7 +632,6 @@ export async function initAsync(
   let packageJsonString = await fs.readFile(packageJsonPath, 'utf-8');
   const packageJson = JSON.parse(packageJsonString);
   packageJson.dependencies.expo = packageJson.resolutions.expo;
-  packageJson.dependencies['expo-splash-screen'] = packageJson.resolutions['expo-splash-screen'];
   packageJsonString = JSON.stringify(packageJson, null, 2);
   await fs.rm(packageJsonPath);
   await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');

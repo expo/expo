@@ -308,6 +308,15 @@ jsi::Function MethodMetadata::toAsyncFunction(
       const jsi::Value *args,
       size_t count
     ) -> jsi::Value {
+      /**
+       * Halt execution during cleaning phase as modules and js context will be deallocated soon.
+       * The output of this method doesn't matter.
+       * We added that check to prevent the app from crashing when users reload their apps.
+       */
+      if (moduleRegistry->wasDeallocated) {
+        return jsi::Value::undefined();
+      }
+
       JNIEnv *env = jni::Environment::current();
 
       /**

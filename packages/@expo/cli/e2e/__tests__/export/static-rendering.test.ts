@@ -197,7 +197,9 @@ describe('exports static', () => {
     );
     // The Expo style reset
     expect(indexHtml.querySelector('html > head > style#expo-reset')?.innerHTML).toEqual(
-      expect.stringContaining('#root,body{display:flex}')
+      expect.stringContaining(
+        '#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}'
+      )
     );
 
     expect(
