@@ -4,7 +4,6 @@ import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAsset
 import assert from 'assert';
 import Metro, { MixedOutput, Module, ReadOnlyGraph } from 'metro';
 import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
-import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import type { TransformInputOptions } from 'metro/src/DeltaBundler/types';
 import IncrementalBundler from 'metro/src/IncrementalBundler';
 import Server from 'metro/src/Server';
@@ -17,7 +16,6 @@ import { ConfigT } from 'metro-config';
 import path from 'path';
 
 import { isEnableHermesManaged, maybeThrowFromInconsistentEngineAsync } from './exportHermes';
-import { Log } from '../log';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import {
@@ -260,6 +258,10 @@ async function forkMetroBuildAsync(
     throw new Error('Expected Metro server instance to have private functions exposed.');
   }
 
+  if (options.serializerOptions?.output !== 'static') {
+    throw new Error('Only multi-serializer output is supported.');
+  }
+
   const {
     entryFile,
     graphOptions,
@@ -321,63 +323,18 @@ async function forkMetroBuildAsync(
     bundleOptions
   );
 
-  if (options.serializerOptions?.output === 'static') {
-    try {
-      const parsed = typeof bundle === 'string' ? JSON.parse(bundle) : bundle;
+  try {
+    const parsed = typeof bundle === 'string' ? JSON.parse(bundle) : bundle;
 
-      assert(
-        'artifacts' in parsed && Array.isArray(parsed.artifacts),
-        'Expected serializer to return an object with key artifacts to contain an array of serial assets.'
-      );
-      return parsed;
-    } catch (error: any) {
-      Log.error(
-        'Serializer did not return expected format. The project copy of `expo/metro-config` may be out of date. Error: ' +
-          error.message
-      );
-      Log.warn('Proceeding with legacy serializer behavior.');
-    }
-  }
-
-  assert(typeof bundle === 'string', 'Expected serializer to return a string.');
-
-  const bundleCode = bundle;
-  let bundleMap = null;
-
-  if (!bundleMap) {
-    bundleMap = sourceMapString(
-      [
-        ...(prepend as unknown as Module<MixedOutput>[]),
-        ...metro._getSortedModules(graph as unknown as ReadOnlyGraph),
-      ],
-      {
-        excludeSource: serializerOptions.excludeSource,
-        processModuleFilter: metro._config.serializer.processModuleFilter,
-        shouldAddToIgnoreList: bundleOptions.shouldAddToIgnoreList,
-      }
+    assert(
+      'artifacts' in parsed && Array.isArray(parsed.artifacts),
+      'Expected serializer to return an object with key artifacts to contain an array of serial assets.'
+    );
+    return parsed;
+  } catch (error: any) {
+    throw new Error(
+      'Serializer did not return expected format. The project copy of `expo/metro-config` may be out of date. Error: ' +
+        error.message
     );
   }
-
-  // Hack to make the single bundle use the multi-bundle pipeline.
-  // TODO: Only support multi-bundle output format in the future.
-  return {
-    artifacts: [
-      {
-        filename: 'index.js',
-        originFilename: 'index.js',
-        source: bundleCode,
-        type: 'js',
-        metadata: {},
-      },
-      {
-        filename: 'index.js.map',
-        originFilename: 'index.js.map',
-        source: bundleMap,
-        type: 'map',
-        metadata: {},
-      },
-    ],
-
-    assets: await getAssets(metro, options),
-  };
 }
