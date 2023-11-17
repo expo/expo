@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add Node-specific Babel and Jest configurations.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
