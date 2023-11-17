@@ -547,7 +547,7 @@ export async function initAsync(
 
   // initialize project (do not do NPM install, we do that later)
   await spawnAsync(
-    'bun',
+    'yarn',
     [
       'create',
       'expo-app',
