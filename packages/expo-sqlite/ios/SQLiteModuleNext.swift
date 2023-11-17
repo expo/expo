@@ -432,7 +432,7 @@ public final class SQLiteModuleNext: Module {
 
     switch type {
     case SQLITE_INTEGER:
-      return sqlite3_column_int(instance, index)
+      return sqlite3_column_int64(instance, index)
     case SQLITE_FLOAT:
       return sqlite3_column_double(instance, index)
     case SQLITE_TEXT:
@@ -460,8 +460,8 @@ public final class SQLiteModuleNext: Module {
       sqlite3_bind_null(instance, index)
     case _ as NSNull:
       sqlite3_bind_null(instance, index)
-    case let param as Int:
-      sqlite3_bind_int(instance, index, Int32(param))
+    case let param as Int64:
+      sqlite3_bind_int64(instance, index, Int64(param))
     case let param as Double:
       sqlite3_bind_double(instance, index, param)
     case let param as String:
