@@ -128,7 +128,7 @@ redirects[eas-metadata]=eas/metadata/
 redirects[eas-metadata/introduction]=eas/metadata/
 redirects[eas-metadata/getting-started]=eas/metadata/getting-started/
 # EAS Build
-redirects[build-reference/eas-json]=eas/json/#eas-build
+redirects[build-reference/eas-json]=eas/json/
 
 # Development builds
 redirects[development/build]=develop/development-builds/create-a-build/
@@ -192,8 +192,8 @@ redirects[push-notifications/using-fcm/]=push-notifications/push-notifications-s
 redirects[guides/using-custom-fonts/]=develop/user-interface/fonts/
 
 # Redirects reported from SEO tools list (MOZ, SEMRush, GSC, etc.)
-redirects[versions/v46.0.0/sdk/permissions#permissionresponse]=guides/permissions
-redirects[development/development-workflows/#deep-linking-urls]=development/development-workflows/
+redirects[versions/v46.0.0/sdk/permissions]=guides/permissions
+redirects[development/development-workflows/]=develop/development-builds/development-workflows/
 redirects[bare/installing-unimodules/]=bare/installing-expo-modules/
 redirects[versions/latest/sdk/admob]=versions/latest/
 redirects[workflow/publishing/]=archive/classic-updates/publishing/
@@ -201,7 +201,7 @@ redirects[workflow/already-used-react-native/]=workflow/overview/
 redirects[guides/setup-native-firebase/]=guides/using-firebase/
 redirects[eas-update/how-eas-update-works]=eas-update/how-it-works/
 redirects[development/installation/]=develop/development-builds/create-a-build/
-redircets[bare/updating-your-app/]=eas-update/updating-your-app/
+redirects[bare/updating-your-app/]=eas-update/updating-your-app/
 redirects[versions/latest/introduction/managed-vs-bare/]=archive/managed-vs-bare
 redirects[classic/turtle-cli/]=archive/classic-updates/turtle-cli/
 redirects[technical-specs/expo-updates-0/]=technical-specs/expo-updates-1/
@@ -241,7 +241,7 @@ redirects[home/config-plugins/plugins-and-mods]=config-plugins/plugins-and-mods/
 redirects[home/unit-testing/]=develop/unit-testing/
 redirects[home/config-plugins/introduction/]=config-plugins/introduction/
 redirects[technical-specs/latest/]=technical-specs/expo-updates-1/
-redirects[guides/education]='additional-resources/'
+redirects[guides/education]=additional-resources/
 
 # We should change this redirect to a more general EAS guide later
 redirects[guides/setting-up-continuous-integration]=build/building-on-ci
