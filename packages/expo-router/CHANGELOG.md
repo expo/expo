@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Disable suspense loader in production. ([#25436](https://github.com/expo/expo/pull/25436) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 3.2.0 — 2023-11-14
 
 ### 🛠 Breaking changes

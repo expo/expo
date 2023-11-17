@@ -189,7 +189,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     includeSourceMaps,
     baseUrl,
     mainModuleName,
+    isExporting,
   }: {
+    isExporting: boolean;
     mode: string;
     minify?: boolean;
     includeSourceMaps?: boolean;
@@ -207,6 +209,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         mainModuleName ?? resolveMainModuleName(this.projectRoot, { platform: 'web' }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
       baseUrl,
+      isExporting,
     });
 
     const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
@@ -274,7 +277,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mode,
       minify = mode !== 'development',
       baseUrl,
+      isExporting,
     }: {
+      isExporting: boolean;
       mode: 'development' | 'production';
       minify?: boolean;
       baseUrl: string;
@@ -287,6 +292,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mainModuleName: resolveMainModuleName(this.projectRoot, { platform: 'web' }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
       baseUrl,
+      isExporting,
     });
 
     const bundleStaticHtml = async (): Promise<string> => {
@@ -307,7 +313,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     const [{ artifacts: resources }, staticHtml] = await Promise.all([
-      this.getStaticResourcesAsync({ mode, minify, baseUrl }),
+      this.getStaticResourcesAsync({ isExporting, mode, minify, baseUrl }),
       bundleStaticHtml(),
     ]);
     const content = serializeHtmlWithAssets({
@@ -443,6 +449,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
             getStaticPageAsync: (pathname) => {
               return this.getStaticPageAsync(pathname, {
+                isExporting: !!options.isExporting,
                 mode: options.mode ?? 'development',
                 minify: options.minify,
                 baseUrl,
