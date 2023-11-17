@@ -4,34 +4,42 @@ on:
   workflow_dispatch: {}
   pull_request:
     paths:
-      - .github/workflows/updates-e2e-basic.yml
+      - .github/workflows/updates-e2e.yml
       - packages/@expo/cli/**
       - packages/@expo/config-plugins/**
-      - packages/@expo/config-types/**
+      - packages/@expo/env/**
+      - packages/@expo/metro-config/**
+      - packages/@expo/prebuild-config/**
+      - packages/expo/**
+      - packages/expo-font/**
       - packages/expo-json-utils/**
       - packages/expo-manifests/**
+      - packages/expo-modules-autolinking/**
       - packages/expo-modules-core/**
+      - packages/expo-splash-screen/**
       - packages/expo-structured-headers/**
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
-      - packages/expo/android/**
-      - packages/expo/ios/**
       - templates/expo-template-bare-minimum/**
   push:
     branches: [main, 'sdk-*']
     paths:
-      - .github/workflows/updates-e2e-basic.yml
+      - .github/workflows/updates-e2e.yml
       - packages/@expo/cli/**
       - packages/@expo/config-plugins/**
-      - packages/@expo/config-types/**
+      - packages/@expo/env/**
+      - packages/@expo/metro-config/**
+      - packages/@expo/prebuild-config/**
+      - packages/expo/**
+      - packages/expo-font/**
       - packages/expo-json-utils/**
       - packages/expo-manifests/**
+      - packages/expo-modules-autolinking/**
       - packages/expo-modules-core/**
+      - packages/expo-splash-screen/**
       - packages/expo-structured-headers/**
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
-      - packages/expo/android/**
-      - packages/expo/ios/**
       - templates/expo-template-bare-minimum/**
 
 concurrency:
