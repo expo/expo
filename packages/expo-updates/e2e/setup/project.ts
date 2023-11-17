@@ -13,12 +13,18 @@ const dirName = __dirname; /* eslint-disable-line */
 const expoDependencyChunks = [
   ['@expo/config-types', '@expo/env'],
   ['@expo/config'],
-  ['@expo/cli', '@expo/config-plugins', 'expo', 'expo-modules-core', 'expo-modules-autolinking'],
+  [
+    '@expo/cli',
+    '@expo/config-plugins',
+    'expo',
+    'expo-asset',
+    'expo-modules-core',
+    'expo-modules-autolinking',
+  ],
   ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
   [
     'babel-preset-expo',
     'expo-application',
-    'expo-asset',
     'expo-device',
     'expo-eas-client',
     'expo-file-system',
@@ -583,16 +589,16 @@ export async function initAsync(
     shouldGenerateTestUpdateBundles
   );
 
+  // configure app.json
+  let appJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'app.json'), 'utf-8'));
+  appJson = transformAppJson(appJson, projectName, runtimeVersion, isTV);
+  await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
+
   // Install node modules with local tarballs
   await spawnAsync('yarn', [], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
-
-  // configure app.json
-  let appJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'app.json'), 'utf-8'));
-  appJson = transformAppJson(appJson, projectName, runtimeVersion, isTV);
-  await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
 
   if (configureE2E && shouldConfigureCodeSigning) {
     await configureUpdatesSigningAsync(projectRoot);
