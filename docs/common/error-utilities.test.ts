@@ -53,10 +53,10 @@ test('adds forward slash to end of path', () => {
 });
 
 test('redirects old versions to latest', () => {
-  const redirectPath = '/versions/v32.0.0/sdk/admob/';
+  const redirectPath = '/versions/v32.0.0/sdk/camera/';
   const newPath = getRedirectPath(redirectPath);
 
-  expect(newPath).toEqual('/versions/latest/sdk/admob/');
+  expect(newPath).toEqual('/versions/latest/sdk/camera/');
 });
 
 test('redirects versionless SDK paths to new version', () => {
