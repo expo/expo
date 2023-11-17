@@ -52,7 +52,7 @@ jobs:
           - platform: tvos
             mode: disabled
     runs-on: ubuntu-22.04
-    timeout-minutes: 40
+    timeout-minutes: 60
     env:
       UPDATES_PORT: 4747
     steps:
