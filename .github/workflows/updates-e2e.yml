@@ -11,6 +11,7 @@ on:
       - packages/@expo/metro-config/**
       - packages/@expo/prebuild-config/**
       - packages/expo/**
+      - packages/expo-asset/**
       - packages/expo-font/**
       - packages/expo-json-utils/**
       - packages/expo-manifests/**
@@ -31,6 +32,7 @@ on:
       - packages/@expo/metro-config/**
       - packages/@expo/prebuild-config/**
       - packages/expo/**
+      - packages/expo-asset/**
       - packages/expo-font/**
       - packages/expo-json-utils/**
       - packages/expo-manifests/**

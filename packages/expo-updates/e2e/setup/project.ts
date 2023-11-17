@@ -18,6 +18,7 @@ const expoDependencyChunks = [
   [
     'babel-preset-expo',
     'expo-application',
+    'expo-asset',
     'expo-device',
     'expo-eas-client',
     'expo-file-system',
