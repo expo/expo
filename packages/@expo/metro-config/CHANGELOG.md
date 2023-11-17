@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing dependency. ([#25446](https://github.com/expo/expo/pull/25446) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.15.0 — 2023-11-14
