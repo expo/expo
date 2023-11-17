@@ -11,10 +11,12 @@ const dirName = __dirname; /* eslint-disable-line */
 
 // Package dependencies in chunks based on peer dependencies.
 const expoDependencyChunks = [
-  ['@expo/config-types'],
+  ['@expo/config-types', '@expo/env'],
+  ['@expo/config'],
   ['@expo/cli', '@expo/config-plugins', 'expo', 'expo-modules-core', 'expo-modules-autolinking'],
-  ['@expo/prebuild-config', 'expo-constants'],
+  ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
   [
+    'babel-preset-expo',
     'expo-application',
     'expo-av',
     'expo-device',
