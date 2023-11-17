@@ -42,6 +42,7 @@
     "getenv": "^1.0.0",
     "jsc-safe-url": "^0.2.4",
     "lightningcss": "~1.19.0",
+    "path-to-regexp": "~1.8.0",
     "postcss": "~8.4.21",
     "resolve-from": "^5.0.0",
     "sucrase": "^3.20.0"
