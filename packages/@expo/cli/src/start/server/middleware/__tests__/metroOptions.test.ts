@@ -35,7 +35,7 @@ describe(getMetroDirectBundleOptions, () => {
       customResolverOptions: {},
       customTransformOptions: { preserveEnvVars: false },
       serializerOptions: {
-        includeMaps: true,
+        includeSourceMaps: true,
       },
       sourceMapUrl:
         'http://localhost:8081/index.js.map?platform=ios&dev=true&hot=false&serializer.map=true',

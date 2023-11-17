@@ -18,7 +18,7 @@ export function createMetadataJson({
   embeddedHashSet,
 }: {
   bundles: Partial<Record<BundlePlatform, Pick<BundleOutput, 'assets'>>>;
-  fileNames: Record<string, string | undefined>;
+  fileNames: Record<string, string[]>;
   embeddedHashSet?: Set<string>;
 }): {
   version: 0;
@@ -37,7 +37,8 @@ export function createMetadataJson({
           ...metadata,
           [platform]: {
             // Get the filename for each platform's bundle.
-            bundle: path.join('bundles', fileNames[platform]!),
+            // TODO: Add multi-bundle support to EAS Update!!
+            bundle: fileNames[platform][0],
             // Collect all of the assets and convert them to the serial format.
             assets: bundle.assets
               .filter((asset) => !embeddedHashSet || !embeddedHashSet.has(asset.hash))

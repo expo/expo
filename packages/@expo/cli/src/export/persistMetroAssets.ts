@@ -163,7 +163,6 @@ export function copyInBatchesAsync(filesToCopy: Record<string, string>) {
         const dest = filesToCopy[src];
         copy(src, dest, copyNext);
       } else {
-        Log.log('Persisted assets');
         resolve();
       }
     };

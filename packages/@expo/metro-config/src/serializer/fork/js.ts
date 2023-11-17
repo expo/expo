@@ -16,8 +16,6 @@ import { addParamsToDefineCall } from 'metro-transform-plugins';
 import type { JsOutput } from 'metro-transform-worker';
 import path from 'path';
 
-import { getExportPathForDependencyWithOptions } from '../exportPath';
-
 export type Options = {
   createModuleId: (module: string) => number | string;
   dev: boolean;
@@ -25,10 +23,9 @@ export type Options = {
   projectRoot: string;
   serverRoot: string;
   sourceUrl: string | undefined;
-  platform: string;
-  baseUrl: string;
   splitChunks: boolean;
-  //   ...
+  skipWrapping: boolean;
+  computedAsyncModulePaths: Record<string, string> | null;
 };
 
 export function wrapModule(
@@ -42,7 +39,10 @@ export function wrapModule(
   }
 
   const { params, paths } = getModuleParams(module, options);
-  const src = addParamsToDefineCall(output.data.code, ...params);
+  let src = output.data.code;
+  if (!options.skipWrapping) {
+    src = addParamsToDefineCall(output.data.code, ...params);
+  }
 
   return { src, paths };
 }
@@ -55,11 +55,10 @@ export function getModuleParams(
     | 'sourceUrl'
     | 'includeAsyncPaths'
     | 'serverRoot'
-    | 'platform'
-    | 'baseUrl'
     | 'splitChunks'
     | 'dev'
     | 'projectRoot'
+    | 'computedAsyncModulePaths'
   >
 ): { params: any[]; paths: Record<string, string> } {
   const moduleId = options.createModuleId(module.path);
@@ -98,13 +97,10 @@ export function getModuleParams(
             '.bundle?' +
             searchParams.toString();
         }
-      } else if (options.splitChunks) {
+      } else if (options.splitChunks && options.computedAsyncModulePaths != null) {
         hasPaths = true;
-        // NOTE(EvanBacon): Custom block for bundle splitting in production according to how `expo export` works
-        // TODO: Add content hash
-        paths[id] =
-          (options.baseUrl ?? '/') +
-          getExportPathForDependencyWithOptions(dependency.absolutePath, options);
+        // A template string that we'll match and replace later when we know the content hash for a given path.
+        paths[id] = options.computedAsyncModulePaths[dependency.absolutePath];
       }
     }
     return id;

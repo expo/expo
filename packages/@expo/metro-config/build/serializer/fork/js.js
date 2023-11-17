@@ -36,13 +36,6 @@ function _path() {
   };
   return data;
 }
-function _exportPath() {
-  const data = require("../exportPath");
-  _exportPath = function () {
-    return data;
-  };
-  return data;
-}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * Copyright © 2022 650 Industries.
@@ -67,7 +60,10 @@ function wrapModule(module, options) {
     params,
     paths
   } = getModuleParams(module, options);
-  const src = (0, _metroTransformPlugins().addParamsToDefineCall)(output.data.code, ...params);
+  let src = output.data.code;
+  if (!options.skipWrapping) {
+    src = (0, _metroTransformPlugins().addParamsToDefineCall)(output.data.code, ...params);
+  }
   return {
     src,
     paths
@@ -103,12 +99,10 @@ function getModuleParams(module, options) {
           // Strip the file extension
           _path().default.basename(bundlePath, _path().default.extname(bundlePath))) + '.bundle?' + searchParams.toString();
         }
-      } else if (options.splitChunks) {
-        var _options$baseUrl;
+      } else if (options.splitChunks && options.computedAsyncModulePaths != null) {
         hasPaths = true;
-        // NOTE(EvanBacon): Custom block for bundle splitting in production according to how `expo export` works
-        // TODO: Add content hash
-        paths[id] = ((_options$baseUrl = options.baseUrl) !== null && _options$baseUrl !== void 0 ? _options$baseUrl : '/') + (0, _exportPath().getExportPathForDependencyWithOptions)(dependency.absolutePath, options);
+        // A template string that we'll match and replace later when we know the content hash for a given path.
+        paths[id] = options.computedAsyncModulePaths[dependency.absolutePath];
       }
     }
     return id;

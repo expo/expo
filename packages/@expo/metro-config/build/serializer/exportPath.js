@@ -28,6 +28,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function getExportPathForDependencyWithOptions(dependencyPath, {
   platform,
+  src,
   serverRoot
 }) {
   const bundlePath = _path().default.relative(serverRoot, dependencyPath);
@@ -36,12 +37,8 @@ function getExportPathForDependencyWithOptions(dependencyPath, {
   _path().default.basename(bundlePath, _path().default.extname(bundlePath)));
   const name = (0, _getCssDeps().fileNameFromContents)({
     filepath: relativePathname,
-    // TODO: Add content hash
-    src: relativePathname
+    src
   });
-  return `_expo/static/js/${platform}/` +
-  // make filename safe
-  // dependency.data.data.key.replace(/[^a-z0-9]/gi, '_') +
-  name + '.js';
+  return `_expo/static/js/${platform}/${name}.js`;
 }
 //# sourceMappingURL=exportPath.js.map
