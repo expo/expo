@@ -1,11 +1,10 @@
 import type { DynamicConvention, RouteNode } from './Route';
 
 export async function loadStaticParamsAsync(route: RouteNode): Promise<RouteNode> {
-  route.children = (
-    await Promise.all(
-      route.children.map((route) => loadStaticParamsRecursive(route, { parentParams: {} }))
-    )
-  ).flat();
+  const expandedChildren = await Promise.all(
+    route.children.map((route) => loadStaticParamsRecursive(route, { parentParams: {} }))
+  );
+  route.children = expandedChildren.flat();
   return route;
 }
 
@@ -114,16 +113,48 @@ function assertStaticParamsType(params: any): asserts params is Record<string, s
   }
 }
 
-function assertStaticParams(route: RouteNode, params: Record<string, string | string[]>) {
-  const matches = route.dynamic!.every((dynamic) => {
+function formatExpected(expected: string[], received: Record<string, any>): string {
+  const total = {
+    ...received,
+  };
+  for (const item of expected) {
+    if (total[item] == null) {
+      total[item] = String(total[item]);
+    } else {
+      total[item] = `"${total[item]}"`;
+    }
+  }
+
+  return [
+    '{',
+    Object.entries(total)
+      .map(([key, value]) => `  "${key}": ${value}`)
+      .join(',\n'),
+    '}',
+  ].join('\n');
+}
+
+export function assertStaticParams(
+  route: Pick<RouteNode, 'contextKey' | 'dynamic'>,
+  params: Record<string, string | string[]>
+) {
+  // Type checking
+  if (!route.dynamic) {
+    throw new Error('assertStaticParams() must be called on a dynamic route.');
+  }
+  const matches = route.dynamic.every((dynamic) => {
     const value = params[dynamic.name];
     return value !== undefined && value !== null;
   });
   if (!matches) {
+    const plural = route.dynamic.length > 1 ? 's' : '';
+    const expected = route.dynamic.map((dynamic) => dynamic.name);
     throw new Error(
-      `generateStaticParams() must return an array of params that match the dynamic route. Received ${JSON.stringify(
-        params
-      )}`
+      `[${
+        route.contextKey
+      }]: generateStaticParams() must return an array of params that match the dynamic route${plural}. Expected non-nullish values for key${plural}: ${expected
+        .map((v) => `"${v}"`)
+        .join(', ')}.\nReceived:\n${formatExpected(expected, params)}`
     );
   }
 
@@ -152,18 +183,16 @@ function assertStaticParams(route: RouteNode, params: Record<string, string | st
     }
   };
 
-  route.dynamic!.forEach((dynamic) => {
-    const value = params[dynamic.name];
+  // `[shape]/bar/[...colors]` -> `[shape]`, `[...colors]`
+  for (const dynamic of route.dynamic) {
+    let parameter = params[dynamic.name];
     if (dynamic.deep) {
-      // TODO: We could split strings by `/` and use that too.
-      if (!Array.isArray(value)) {
-        validateSingleParam(dynamic, value, true);
-      } else {
-        validateSingleParam(dynamic, value.filter(Boolean).join('/'), true);
+      if (Array.isArray(parameter)) {
+        parameter = parameter.filter(Boolean).join('/');
       }
+      validateSingleParam(dynamic, parameter, true);
     } else {
-      validateSingleParam(dynamic, value);
+      validateSingleParam(dynamic, parameter);
     }
-    return value !== undefined && value !== null;
-  });
+  }
 }

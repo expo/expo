@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loadStaticParamsAsync = void 0;
+exports.assertStaticParams = exports.loadStaticParamsAsync = void 0;
 async function loadStaticParamsAsync(route) {
     route.children = (await Promise.all(route.children.map((route) => loadStaticParamsRecursive(route, { parentParams: {} })))).flat();
     return route;
@@ -90,6 +90,9 @@ function assertStaticParamsType(params) {
     }
 }
 function assertStaticParams(route, params) {
+    if (!route.dynamic) {
+        throw new Error('assertStaticParams() must be called on a dynamic route.');
+    }
     const matches = route.dynamic.every((dynamic) => {
         const value = params[dynamic.name];
         return value !== undefined && value !== null;
@@ -109,21 +112,19 @@ function assertStaticParams(route, params) {
             throw new Error(`generateStaticParams() for route "${route.contextKey}" expected param "${dynamic.name}" not to be empty while parsing "${value}".`);
         }
     };
-    route.dynamic.forEach((dynamic) => {
-        const value = params[dynamic.name];
+    // `[shape]/bar/[...colors]` -> `[shape]`, `[...colors]`
+    for (const dynamic of route.dynamic) {
+        let parameter = params[dynamic.name];
         if (dynamic.deep) {
-            // TODO: We could split strings by `/` and use that too.
-            if (!Array.isArray(value)) {
-                validateSingleParam(dynamic, value, true);
+            if (Array.isArray(parameter)) {
+                parameter = parameter.filter(Boolean).join('/');
             }
-            else {
-                validateSingleParam(dynamic, value.filter(Boolean).join('/'), true);
-            }
+            validateSingleParam(dynamic, parameter, true);
         }
         else {
-            validateSingleParam(dynamic, value);
+            validateSingleParam(dynamic, parameter);
         }
-        return value !== undefined && value !== null;
-    });
+    }
 }
+exports.assertStaticParams = assertStaticParams;
 //# sourceMappingURL=loadStaticParamsAsync.js.map
