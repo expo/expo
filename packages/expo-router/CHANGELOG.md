@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix traversing `generateStaticParams`.
+
 ### 💡 Others
 
 ## 3.2.0 — 2023-11-14

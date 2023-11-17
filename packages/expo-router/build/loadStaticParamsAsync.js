@@ -1,16 +1,94 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loadStaticParamsAsync = void 0;
-async function recurseAndFlattenNodes(nodes, props, func) {
-    const tarr = await Promise.all(nodes.map((node) => func(node, props)).flat());
-    return tarr.filter(Boolean);
-}
 async function loadStaticParamsAsync(route) {
-    const processed = (await Promise.all(route.children.map((route) => loadStaticParamsRecursive(route, { parentParams: {} })))).flat();
-    route.children = processed;
+    route.children = (await Promise.all(route.children.map((route) => loadStaticParamsRecursive(route, { parentParams: {} })))).flat();
     return route;
 }
 exports.loadStaticParamsAsync = loadStaticParamsAsync;
+async function loadStaticParamsRecursive(route, props) {
+    if (!route?.dynamic && !route?.children?.length) {
+        return [route];
+    }
+    const loaded = await route.loadRoute();
+    let staticParams = [];
+    if (loaded.generateStaticParams) {
+        staticParams = await loaded.generateStaticParams({
+            params: props.parentParams || {},
+        });
+        assertStaticParamsType(staticParams);
+        // Assert that at least one param from each matches the dynamic route.
+        staticParams.forEach((params) => assertStaticParams(route, params));
+    }
+    const traverseForNode = async (nextParams) => {
+        const nextChildren = [];
+        for (const child of route.children) {
+            const children = await loadStaticParamsRecursive(child, {
+                ...props,
+                parentParams: nextParams,
+            });
+            nextChildren.push(...children);
+        }
+        return uniqBy(nextChildren, (i) => i.route);
+    };
+    if (!staticParams.length) {
+        const nextParams = {
+            ...props.parentParams,
+        };
+        route.children = await traverseForNode(nextParams);
+        return [route];
+    }
+    const createParsedRouteName = (input, params) => {
+        let parsedRouteName = input;
+        route.dynamic?.map((query) => {
+            const param = params[query.name];
+            const formattedParameter = Array.isArray(param) ? param.join('/') : param;
+            if (query.deep) {
+                parsedRouteName = parsedRouteName.replace(`[...${query.name}]`, formattedParameter);
+            }
+            else {
+                parsedRouteName = parsedRouteName.replace(`[${query.name}]`, param);
+            }
+        });
+        return parsedRouteName;
+    };
+    const generatedRoutes = await Promise.all(staticParams.map(async (params) => {
+        const nextParams = {
+            ...props.parentParams,
+            ...params,
+        };
+        const dynamicChildren = await traverseForNode(nextParams);
+        const parsedRoute = createParsedRouteName(route.route, params);
+        const generatedContextKey = createParsedRouteName(route.contextKey, params);
+        return {
+            ...route,
+            // TODO: Add a new field for this
+            contextKey: generatedContextKey,
+            // Convert the dynamic route to a static route.
+            dynamic: null,
+            route: parsedRoute,
+            children: dynamicChildren,
+        };
+    }));
+    return [route, ...generatedRoutes];
+}
+/** lodash.uniqBy */
+function uniqBy(array, key) {
+    const seen = {};
+    return array.filter((item) => {
+        const k = key(item);
+        if (seen[k]) {
+            return false;
+        }
+        seen[k] = true;
+        return true;
+    });
+}
+function assertStaticParamsType(params) {
+    if (!Array.isArray(params)) {
+        throw new Error(`generateStaticParams() must return an array of params, received ${params}`);
+    }
+}
 function assertStaticParams(route, params) {
     const matches = route.dynamic.every((dynamic) => {
         const value = params[dynamic.name];
@@ -47,75 +125,5 @@ function assertStaticParams(route, params) {
         }
         return value !== undefined && value !== null;
     });
-}
-/** lodash.uniqBy */
-function uniqBy(array, key) {
-    const seen = {};
-    return array.filter((item) => {
-        const k = key(item);
-        if (seen[k]) {
-            return false;
-        }
-        seen[k] = true;
-        return true;
-    });
-}
-async function loadStaticParamsRecursive(route, props) {
-    if (!route?.dynamic && !route?.children?.length) {
-        return [route];
-    }
-    const loaded = await route.loadRoute();
-    let staticParams = [];
-    if (loaded.generateStaticParams) {
-        staticParams = await loaded.generateStaticParams({
-            params: props.parentParams || {},
-        });
-        if (!Array.isArray(staticParams)) {
-            throw new Error(`generateStaticParams() must return an array of params, received ${staticParams}`);
-        }
-        // Assert that at least one param from each matches the dynamic route.
-        staticParams.forEach((params) => assertStaticParams(route, params));
-    }
-    route.children = uniqBy((await recurseAndFlattenNodes([...route.children], {
-        ...props,
-        parentParams: {
-            ...props.parentParams,
-            ...staticParams,
-        },
-    }, loadStaticParamsRecursive)).flat(), (i) => i.route);
-    const createParsedRouteName = (input, params) => {
-        let parsedRouteName = input;
-        route.dynamic?.map((query) => {
-            const param = params[query.name];
-            const formattedParameter = Array.isArray(param) ? param.join('/') : param;
-            if (query.deep) {
-                parsedRouteName = parsedRouteName.replace(`[...${query.name}]`, formattedParameter);
-            }
-            else {
-                parsedRouteName = parsedRouteName.replace(`[${query.name}]`, param);
-            }
-        });
-        return parsedRouteName;
-    };
-    const generatedRoutes = await Promise.all(staticParams.map(async (params) => {
-        const parsedRoute = createParsedRouteName(route.route, params);
-        const generatedContextKey = createParsedRouteName(route.contextKey, params);
-        return {
-            ...route,
-            // TODO: Add a new field for this
-            contextKey: generatedContextKey,
-            // Convert the dynamic route to a static route.
-            dynamic: null,
-            route: parsedRoute,
-            children: uniqBy((await recurseAndFlattenNodes([...route.children], {
-                ...props,
-                parentParams: {
-                    ...props.parentParams,
-                    ...staticParams,
-                },
-            }, loadStaticParamsRecursive)).flat(), (i) => i.route),
-        };
-    }));
-    return [route, ...generatedRoutes];
 }
 //# sourceMappingURL=loadStaticParamsAsync.js.map
