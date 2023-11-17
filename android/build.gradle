@@ -20,7 +20,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath libs.android.gradle.plugin
+    classpath expoLibs.android.gradle.plugin
     classpath 'com.google.gms:google-services:4.3.5'
     classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.6'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"

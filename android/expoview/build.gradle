@@ -267,9 +267,9 @@ dependencies {
   api 'com.google.firebase:firebase-crashlytics-ndk:18.3.6'
   api "androidx.room:room-runtime:2.1.0"
 
-  api(libs.fresco.animated.gif)
-  api(libs.fresco.animated.webp)
-  api(libs.fresco.webpsupport)
+  api(expoLibs.fresco.animated.gif)
+  api(expoLibs.fresco.animated.webp)
+  api(expoLibs.fresco.webpsupport)
 
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-analytics:17.0.0'
