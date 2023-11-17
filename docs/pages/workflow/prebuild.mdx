@@ -24,7 +24,16 @@ We highly recommend using prebuild for the reasons listed in the [pitch](#pitch)
 
 ### Usage with EAS Build
 
-You can configure EAS Build to run `npx expo prebuild` before building by [using the managed preset](/build-reference/ios-builds/).
+If your project does not contain **ios** and **android** folders, then EAS Build will run Prebuild to generate your native code just before compilation. This is the default for any project started from `npx create-expo-app`.
+
+If you have a project that contains **android** and **ios** folders, then EAS Build will not run Prebuild by default in order to avoid overwriting any changes you've made to your native code.
+
+If you sometimes run `npx expo prebuild`, `npx expo run:android`, or `npx expo run:ios` locally to troubleshoot your native code but still want EAS Build to continue running Prebuild to generate fresh native projects during build, then you should add the **android** and **ios** folders to your **.gitignore** or **.easignore** files:
+
+  ```diff .gitignore
+  + android
+  + ios
+  ```
 
 ### Usage with Expo CLI run commands
 
