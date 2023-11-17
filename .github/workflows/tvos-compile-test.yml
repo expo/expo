@@ -2,24 +2,6 @@ name: tvOS Compile EAS
 
 on:
   workflow_dispatch: {}
-  pull_request:
-    paths:
-      - .github/workflows/updates-e2e-basic.yml
-      - packages/@expo/cli/**
-      - packages/@expo/config-plugins/**
-      - packages/@expo/config-types/**
-      - packages/expo-av/**
-      - packages/expo-image/**
-      - packages/expo-json-utils/**
-      - packages/expo-localization/**
-      - packages/expo-manifests/**
-      - packages/expo-modules-core/**
-      - packages/expo-structured-headers/**
-      - packages/expo-updates-interface/**
-      - packages/expo-updates/**
-      - packages/expo/android/**
-      - packages/expo/ios/**
-      - templates/expo-template-bare-minimum/**
   push:
     branches: [main, 'sdk-*']
     paths:
