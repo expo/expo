@@ -2236,7 +2236,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.2.1):
     - ExpoModulesCore
-  - Expo (49.0.18):
+  - Expo (49.0.19):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.1.0):
     - ExpoModulesCore
@@ -4911,7 +4911,7 @@ SPEC CHECKSUMS:
   EXMediaLibrary: 8ac14ce76f266026b10cac2ab049debe032d7ae7
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
   EXPermissions: 4f80cf527001aa408a22eddf076e61465ea71d5a
-  Expo: f446f9811b9dfc0abc05a1613966c8475bc6795e
+  Expo: a59f2050f877ba152880213082a440d4e9832ccc
   ExpoAppleAuthentication: 7bdf1a2962ebfe9b00eb4183a17b78d736e57185
   ExpoBattery: e9d7a71960cbc40733d956a29f8ba240173feb08
   ExpoBlur: a2c90bdfa4ff9f459cdb0f83191bddf020e3e2db
