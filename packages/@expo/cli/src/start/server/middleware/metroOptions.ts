@@ -38,12 +38,14 @@ function withDefaults({
   mode = 'development',
   minify = mode === 'production',
   preserveEnvVars = env.EXPO_NO_CLIENT_ENV_VARS,
+  lazy,
   ...props
 }: ExpoMetroOptions): ExpoMetroOptions {
   return {
     mode,
     minify,
     preserveEnvVars,
+    lazy: !props.isExporting && lazy,
     ...props,
   };
 }
@@ -164,7 +166,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   });
 
   // Lazy bundling must be disabled for bundle splitting to work.
-  if (!isExporting) {
+  if (!isExporting && lazy) {
     queryParams.append('lazy', String(lazy));
   }
 

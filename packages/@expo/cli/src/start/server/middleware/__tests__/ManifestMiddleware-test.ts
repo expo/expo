@@ -188,7 +188,7 @@ describe('_getBundleUrl', () => {
         platform: 'ios',
       })
     ).toEqual(
-      'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&minify=true'
+      'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&lazy=true&minify=true'
     );
 
     expect(constructUrl).toHaveBeenCalledWith({ hostname: undefined, scheme: 'http' });
