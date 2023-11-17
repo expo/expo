@@ -192,7 +192,7 @@ redirects[push-notifications/using-fcm/]=push-notifications/push-notifications-s
 redirects[guides/using-custom-fonts/]=develop/user-interface/fonts/
 
 # Redirects reported from SEO tools list (MOZ, SEMRush, GSC, etc.)
-redirects[versions/v46.0.0/sdk/permissions#permissionresponse]=versions/v46.0.0
+redirects[versions/v46.0.0/sdk/permissions#permissionresponse]=guides/permissions
 redirects[development/development-workflows/#deep-linking-urls]=development/development-workflows/
 redirects[bare/installing-unimodules/]=bare/installing-expo-modules/
 redirects[versions/latest/sdk/admob]=versions/latest/
