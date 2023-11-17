@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Disable suspense loader in production.
+
 ## 3.2.0 — 2023-11-14
 
 ### 🛠 Breaking changes

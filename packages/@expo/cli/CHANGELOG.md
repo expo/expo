@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- Ensure we disable lazy bundling when exporting.
+
 ## 0.15.0 — 2023-11-14
 
 ### 🛠 Breaking changes
