@@ -14,7 +14,9 @@ const notifyStrings = [
   'test-assets-1',
 ];
 
-createTestUpdateBundles(projectRoot, notifyStrings);
+const platform = process.argv[2];
+
+createTestUpdateBundles(projectRoot, notifyStrings, platform);
 
 ///////////////////////////////////////////////////////////////
 
@@ -25,9 +27,13 @@ createTestUpdateBundles(projectRoot, notifyStrings);
  * Since Hermes bundles are bytecode and not readable JS, we instead pre-generate Hermes bundles
  * corresponding to each test case, and save them in the `test-update-bundles` directory in the test app.
  */
-async function createTestUpdateBundles(projectRoot: string, notifyStrings: string[]) {
+async function createTestUpdateBundles(
+  projectRoot: string,
+  notifyStrings: string[],
+  platform?: string
+) {
   // export update for test server to host
-  await createUpdateBundleAsync(projectRoot);
+  await createUpdateBundleAsync(projectRoot, platform);
 
   // move exported update to "updates" directory for EAS testing
   await fs.rm(path.join(projectRoot, 'updates'), { recursive: true, force: true });
@@ -47,25 +53,25 @@ async function createTestUpdateBundles(projectRoot: string, notifyStrings: strin
     );
     await fs.rm(appJsPath);
     await fs.writeFile(appJsPath, modifiedAppJs, 'utf-8');
-    await createUpdateBundleAsync(projectRoot);
+    await createUpdateBundleAsync(projectRoot, platform);
     const manifestJsonString = await fs.readFile(
       path.join(projectRoot, 'dist', 'metadata.json'),
       'utf-8'
     );
     const manifest = JSON.parse(manifestJsonString);
-    const iosBundlePath = path.join(projectRoot, 'dist', manifest.fileMetadata.ios.bundle);
-    const androidBundlePath = path.join(projectRoot, 'dist', manifest.fileMetadata.android.bundle);
-    const iosBundleDestPath = path.join(testUpdateBundlesPath, path.basename(iosBundlePath));
-    const androidBundleDestPath = path.join(
-      testUpdateBundlesPath,
-      path.basename(androidBundlePath)
-    );
-    await fs.copyFile(iosBundlePath, iosBundleDestPath);
-    await fs.copyFile(androidBundlePath, androidBundleDestPath);
-    testUpdateJson[notifyString] = {
-      ios: path.basename(iosBundlePath),
-      android: path.basename(androidBundlePath),
-    };
+
+    const platforms = platform ? [platform] : ['ios', 'android'];
+
+    if (!testUpdateJson[notifyString]) {
+      testUpdateJson[notifyString] = {};
+    }
+
+    for (const platform of platforms) {
+      const bundlePath = path.join(projectRoot, 'dist', manifest.fileMetadata[platform].bundle);
+      const bundleDestPath = path.join(testUpdateBundlesPath, path.basename(bundlePath));
+      await fs.copyFile(bundlePath, bundleDestPath);
+      testUpdateJson[notifyString][platform] = path.basename(bundlePath);
+    }
   }
   const testUpdateBundlesJsonPath = path.join(testUpdateBundlesPath, 'test-updates.json');
   await fs.writeFile(testUpdateBundlesJsonPath, JSON.stringify(testUpdateJson, null, 2), 'utf-8');
@@ -74,9 +80,13 @@ async function createTestUpdateBundles(projectRoot: string, notifyStrings: strin
   console.log('Done creating test bundles');
 }
 
-async function createUpdateBundleAsync(projectRoot: string) {
+async function createUpdateBundleAsync(projectRoot: string, platform?: string) {
   await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
-  await spawnAsync('npx', ['expo', 'export'], {
+  const args = ['expo', 'export'];
+  if (platform) {
+    args.push('--platform', platform);
+  }
+  await spawnAsync('npx', args, {
     cwd: projectRoot,
     stdio: 'inherit',
   });
