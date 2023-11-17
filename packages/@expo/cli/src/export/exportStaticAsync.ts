@@ -135,7 +135,13 @@ async function exportFromServerAsync(
   assert(devServer instanceof MetroBundlerDevServer);
 
   const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
-    devServer.getStaticResourcesAsync({ mode: 'production', minify, includeSourceMaps, baseUrl }),
+    devServer.getStaticResourcesAsync({
+      isExporting: true,
+      mode: 'production',
+      minify,
+      includeSourceMaps,
+      baseUrl,
+    }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
       minify,
@@ -276,9 +282,6 @@ export function getPathVariations(routePath: string): string[] {
     }
 
     const [head, ...rest] = segments;
-
-    if (head.startsWith('(foo,foo')) {
-    }
 
     if (matchGroupName(head)) {
       const groups = head.slice(1, -1).split(',');

@@ -148,6 +148,7 @@ async function bundleProductionMetroClientAsync(
         serializerOutput: 'static',
         serializerIncludeBytecode: isHermes,
         baseUrl: getBaseUrlFromExpoConfig(expoConfig),
+        isExporting: true,
       }),
       bundleType: 'bundle',
       inlineSourceMap: false,

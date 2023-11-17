@@ -130,6 +130,7 @@ export async function createMetroEndpointAsync(
     lazy: false,
     minify,
     baseUrl,
+    isExporting: true,
   });
 
   const url = new URL(urlFragment.replace(/^\//, ''), devServerUrl).toString();
