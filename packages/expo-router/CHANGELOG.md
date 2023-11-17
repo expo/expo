@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix traversing `generateStaticParams`. ([#25440](https://github.com/expo/expo/pull/25440) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 - Disable suspense loader in production. ([#25436](https://github.com/expo/expo/pull/25436) by [@EvanBacon](https://github.com/EvanBacon))

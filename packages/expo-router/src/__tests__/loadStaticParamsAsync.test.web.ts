@@ -1,6 +1,6 @@
 import { RouteNode } from '../Route';
 import { getExactRoutes } from '../getRoutes';
-import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
+import { loadStaticParamsAsync, assertStaticParams } from '../loadStaticParamsAsync';
 import { RequireContext } from '../types';
 
 function createMockContextModule(map: Record<string, Record<string, any>> = {}) {
@@ -19,6 +19,53 @@ function dropFunctions({ loadRoute, ...node }: RouteNode) {
     children: node.children.map(dropFunctions),
   };
 }
+
+describe(assertStaticParams, () => {
+  it(`asserts parameters do not match supported dynamic properties`, () => {
+    expect(() =>
+      assertStaticParams(
+        {
+          contextKey: './[post].tsx',
+          dynamic: [{ deep: false, name: 'post' }],
+        },
+        {
+          shape: 'square',
+        }
+      )
+    ).toThrowErrorMatchingInlineSnapshot(`
+      "[./[post].tsx]: generateStaticParams() must return an array of params that match the dynamic route. Expected non-nullish values for key: "post".
+      Received:
+      {
+        "shape": square,
+        "post": undefined
+      }"
+    `);
+  });
+  it(`asserts nullish parameters`, () => {
+    expect(() =>
+      assertStaticParams(
+        {
+          contextKey: './[post]/[other].tsx',
+          dynamic: [
+            { deep: false, name: 'post' },
+            { deep: false, name: 'other' },
+          ],
+        },
+        {
+          // @ts-expect-error: expected
+          post: null,
+        }
+      )
+    ).toThrowErrorMatchingInlineSnapshot(`
+      "[./[post]/[other].tsx]: generateStaticParams() must return an array of params that match the dynamic routes. Expected non-nullish values for keys: "post", "other".
+      Received:
+      {
+        "post": null,
+        "other": undefined
+      }"
+    `);
+  });
+});
 
 describe(loadStaticParamsAsync, () => {
   it(`evaluates a single dynamic param`, async () => {
@@ -75,22 +122,26 @@ describe(loadStaticParamsAsync, () => {
   });
 
   it(`evaluates with nested dynamic routes`, async () => {
+    const generateStaticParamsParent = jest.fn(async () => {
+      return ['red', 'blue'].map((color) => ({
+        color,
+      }));
+    });
+    const generateStaticParams = jest.fn(async ({ params }) => {
+      return ['square', 'triangle'].map((shape) => ({
+        ...params,
+        shape,
+      }));
+    });
     const ctx = createMockContextModule({
       './_layout.tsx': { default() {} },
       './[color]/[shape].tsx': {
         default() {},
-        async generateStaticParams({ params }) {
-          return ['square', 'triangle'].map((shape) => ({
-            ...params,
-            shape,
-          }));
-        },
+        generateStaticParams,
       },
       './[color]/_layout.tsx': {
         default() {},
-        generateStaticParams() {
-          return ['red', 'blue'].map((color) => ({ color }));
-        },
+        generateStaticParams: generateStaticParamsParent,
       },
     });
     const route = getExactRoutes(ctx);
@@ -129,18 +180,6 @@ describe(loadStaticParamsAsync, () => {
               contextKey: './[color]/[shape].tsx',
               dynamic: [{ deep: false, name: 'shape' }],
               route: '[shape]',
-            },
-            {
-              children: [],
-              contextKey: './[color]/square.tsx',
-              dynamic: null,
-              route: 'square',
-            },
-            {
-              children: [],
-              contextKey: './[color]/triangle.tsx',
-              dynamic: null,
-              route: 'triangle',
             },
           ],
           contextKey: './[color]/_layout.tsx',
@@ -206,6 +245,13 @@ describe(loadStaticParamsAsync, () => {
       initialRouteName: undefined,
       route: '',
     });
+
+    expect(generateStaticParamsParent).toBeCalledTimes(1);
+    expect(generateStaticParamsParent).toHaveBeenNthCalledWith(1, { params: {} });
+
+    expect(generateStaticParams).toBeCalledTimes(2);
+    expect(generateStaticParams).toHaveBeenNthCalledWith(1, { params: { color: 'red' } });
+    expect(generateStaticParams).toHaveBeenNthCalledWith(2, { params: { color: 'blue' } });
   });
 
   it(`throws when required parameter is missing`, async () => {
@@ -219,9 +265,13 @@ describe(loadStaticParamsAsync, () => {
         },
       })
     )!;
-    await expect(loadStaticParamsAsync(routes)).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"generateStaticParams() must return an array of params that match the dynamic route. Received {}"`
-    );
+    await expect(loadStaticParamsAsync(routes)).rejects.toThrowErrorMatchingInlineSnapshot(`
+      "[./post/[post].tsx]: generateStaticParams() must return an array of params that match the dynamic route. Expected non-nullish values for key: "post".
+      Received:
+      {
+        "post": undefined
+      }"
+    `);
   });
 
   it(`preserves API routes`, async () => {
@@ -552,9 +602,13 @@ describe(loadStaticParamsAsync, () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"generateStaticParams() for route "./post/[...post].tsx" expected param "post" not to be empty while parsing "/"."`
     );
-    await expect(loadWithParam([{ post: null }])).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"generateStaticParams() must return an array of params that match the dynamic route. Received {"post":null}"`
-    );
+    await expect(loadWithParam([{ post: null }])).rejects.toThrowErrorMatchingInlineSnapshot(`
+      "[./post/[...post].tsx]: generateStaticParams() must return an array of params that match the dynamic route. Expected non-nullish values for key: "post".
+      Received:
+      {
+        "post": null
+      }"
+    `);
     await expect(loadWithParam([{ post: false }])).rejects.toThrowErrorMatchingInlineSnapshot(
       `"generateStaticParams() for route "./post/[...post].tsx" expected param "post" to be of type string, instead found "boolean" while parsing "false"."`
     );
