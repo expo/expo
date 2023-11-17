@@ -169,8 +169,8 @@ redirects[debugging/]=debugging/runtime-issues/
 redirects[debugging/runtime-issue/]=debugging/runtime-issues/
 redirects[workflow/glossary-of-terms/]=more/glossary-of-terms/
 redirects[develop/development-builds/installation/]=develop/development-builds/create-a-build/
-rediects[get-started/errors/]=debugging/errors-and-warnings/
-rediects[develop/development-builds/parallel-installation]=build-reference/variants/
+redirects[get-started/errors/]=debugging/errors-and-warnings/
+redirects[develop/development-builds/parallel-installation]=build-reference/variants/
 redirects[home/develop/user-interface/safe-areas]=develop/user-interface/safe-areas/
 
 # Redirects after Guides organization
@@ -199,7 +199,7 @@ redirects[versions/latest/sdk/admob]=versions/latest/
 redirects[workflow/publishing/]=archive/classic-updates/publishing/
 redirects[workflow/already-used-react-native/]=workflow/overview/
 redirects[guides/setup-native-firebase/]=guides/using-firebase/
-rediects[eas-update/how-eas-update-works]=eas-update/how-it-works/
+redirects[eas-update/how-eas-update-works]=eas-update/how-it-works/
 redirects[development/installation/]=develop/development-builds/create-a-build/
 redircets[bare/updating-your-app/]=eas-update/updating-your-app/
 redirects[versions/latest/introduction/managed-vs-bare/]=archive/managed-vs-bare
