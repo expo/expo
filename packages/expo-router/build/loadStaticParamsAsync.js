@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.assertStaticParams = exports.loadStaticParamsAsync = void 0;
 async function loadStaticParamsAsync(route) {
-    route.children = (await Promise.all(route.children.map((route) => loadStaticParamsRecursive(route, { parentParams: {} })))).flat();
+    const expandedChildren = await Promise.all(route.children.map((route) => loadStaticParamsRecursive(route, { parentParams: {} })));
+    route.children = expandedChildren.flat();
     return route;
 }
 exports.loadStaticParamsAsync = loadStaticParamsAsync;
@@ -89,7 +90,28 @@ function assertStaticParamsType(params) {
         throw new Error(`generateStaticParams() must return an array of params, received ${params}`);
     }
 }
+function formatExpected(expected, received) {
+    const total = {
+        ...received,
+    };
+    for (const item of expected) {
+        if (total[item] == null) {
+            total[item] = String(total[item]);
+        }
+        else {
+            total[item] = `"${total[item]}"`;
+        }
+    }
+    return [
+        '{',
+        Object.entries(total)
+            .map(([key, value]) => `  "${key}": ${value}`)
+            .join(',\n'),
+        '}',
+    ].join('\n');
+}
 function assertStaticParams(route, params) {
+    // Type checking
     if (!route.dynamic) {
         throw new Error('assertStaticParams() must be called on a dynamic route.');
     }
@@ -98,7 +120,11 @@ function assertStaticParams(route, params) {
         return value !== undefined && value !== null;
     });
     if (!matches) {
-        throw new Error(`generateStaticParams() must return an array of params that match the dynamic route. Received ${JSON.stringify(params)}`);
+        const plural = route.dynamic.length > 1 ? 's' : '';
+        const expected = route.dynamic.map((dynamic) => dynamic.name);
+        throw new Error(`[${route.contextKey}]: generateStaticParams() must return an array of params that match the dynamic route${plural}. Expected non-nullish values for key${plural}: ${expected
+            .map((v) => `"${v}"`)
+            .join(', ')}.\nReceived:\n${formatExpected(expected, params)}`);
     }
     const validateSingleParam = (dynamic, value, allowMultipleSegments) => {
         if (typeof value !== 'string') {
