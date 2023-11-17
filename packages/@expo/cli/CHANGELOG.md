@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Change default CSS reset in template HTML to align with `react-native-web@0.19.8`. ([#25429](https://github.com/expo/expo/pull/25429) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - Ensure invalid production iOS builds fail more predictably. ([#25410](https://github.com/expo/expo/pull/25410) by [@EvanBacon](https://github.com/EvanBacon))
