@@ -37,7 +37,6 @@ const expoDependencyChunks = [
 const expoDependencyNames: string[] = expoDependencyChunks.flat();
 
 const expoResolutions = {};
-const expoVersions = {};
 
 /**
  * Executes `npm pack` on one of the Expo packages used in updates E2E
@@ -200,7 +199,7 @@ async function preparePackageJson(
   const dependenciesPath = path.join(projectRoot, 'dependencies');
   await fs.mkdir(dependenciesPath);
 
-  console.time('Done packing dependencies.');
+  console.time('Done packing dependencies');
   for (const dependencyChunk of expoDependencyChunks) {
     await Promise.all(
       dependencyChunk.map(async (dependencyName) => {
@@ -213,12 +212,11 @@ async function preparePackageJson(
           dependencyName
         );
         expoResolutions[dependencyName] = result.dependency;
-        expoVersions[dependencyName] = result.dependency;
         console.timeEnd(`Packaged ${dependencyName}`);
       })
     );
   }
-  console.timeEnd('Done packing dependencies.');
+  console.timeEnd('Done packing dependencies');
 
   const extraScriptsGenerateTestUpdateBundlesPart = shouldGenerateTestUpdateBundles
     ? {
@@ -549,7 +547,7 @@ export async function initAsync(
 
   // initialize project (do not do NPM install, we do that later)
   await spawnAsync(
-    'yarn',
+    'bun',
     [
       'create',
       'expo-app',
@@ -581,7 +579,7 @@ export async function initAsync(
     shouldGenerateTestUpdateBundles
   );
 
-  // Now we do NPM install
+  // Install node modules with local tarballs
   await spawnAsync('yarn', [], {
     cwd: projectRoot,
     stdio: 'inherit',
@@ -632,7 +630,6 @@ export async function initAsync(
   let packageJsonString = await fs.readFile(packageJsonPath, 'utf-8');
   const packageJson = JSON.parse(packageJsonString);
   packageJson.dependencies.expo = packageJson.resolutions.expo;
-  packageJson.dependencies['expo-splash-screen'] = packageJson.resolutions['expo-splash-screen'];
   packageJsonString = JSON.stringify(packageJson, null, 2);
   await fs.rm(packageJsonPath);
   await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
