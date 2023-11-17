@@ -31,6 +31,7 @@ export type ExpoMetroOptions = {
   engine?: 'hermes';
   preserveEnvVars?: boolean;
   baseUrl?: string;
+  isExporting: boolean;
 };
 
 function withDefaults({
@@ -77,13 +78,14 @@ export function getMetroDirectBundleOptions(
     engine,
     preserveEnvVars,
     baseUrl,
+    isExporting,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
   const isHermes = engine === 'hermes';
 
-  if (!dev && platform !== 'web') {
-    debug('Disabling lazy bundling for non-web platform in production mode');
+  if (isExporting) {
+    debug('Disabling lazy bundling for export build');
     options.lazy = false;
   }
 
@@ -150,6 +152,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     engine,
     preserveEnvVars,
     baseUrl,
+    isExporting,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -161,7 +164,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   });
 
   // Lazy bundling must be disabled for bundle splitting to work.
-  if (lazy && !dev) {
+  if (!isExporting) {
     queryParams.append('lazy', String(lazy));
   }
 
