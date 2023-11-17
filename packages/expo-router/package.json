@@ -6,6 +6,9 @@
   "license": "MIT",
   "main": "build/index",
   "types": "build/index.d.ts",
+  "sideEffects": [
+    "entry.js"
+  ],
   "files": [
     "assets",
     "build",
