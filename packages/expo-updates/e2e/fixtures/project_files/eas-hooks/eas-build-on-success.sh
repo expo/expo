@@ -42,7 +42,7 @@ if [ -f "keys.tar" ]; then
 fi
 
 # Generate test bundles
-yarn generate-test-update-bundles
+yarn generate-test-update-bundles $EAS_BUILD_PLATFORM
 
 if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
   # Start emulator

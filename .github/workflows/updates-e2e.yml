@@ -72,9 +72,6 @@ jobs:
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🛠 Build local Expo CLI
-        working-directory: packages/@expo/cli
-        run: yarn prepare
       - name: Build expo-updates CLI
         working-directory: packages/expo-updates
         run: yarn build:cli
