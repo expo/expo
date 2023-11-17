@@ -102,7 +102,7 @@ redirects[distribution/webhooks]=eas/webhooks/
 redirects[distribution/turtle-cli]=archive/classic-updates/turtle-cli/
 redirects[distribution/app-signing]=app-signing/app-credentials/
 redirects[guides/adhoc-builds]=develop/development-builds/introduction/
-rediects[archive/adhoc-builds]=develop/development-builds/introduction/
+redirects[archive/adhoc-builds]=develop/development-builds/introduction/
 
 # clients is now development
 redirects[clients/distribution-for-ios]=develop/development-builds/create-a-build/
