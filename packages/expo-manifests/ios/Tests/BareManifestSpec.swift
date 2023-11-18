@@ -9,7 +9,7 @@ enum ManifestTestError: Error {
 }
 
 class BareManifestSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("instantiation") {
       it("instantiates and reads properties") {
         let manifestJson = "{\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":1609975977832}"

@@ -7,7 +7,7 @@ import ExpoModulesTestCore
 import EXManifests
 
 class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var update1: Update!
     var update2: Update!
     var update3: Update!
