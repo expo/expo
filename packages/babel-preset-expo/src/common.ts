@@ -52,6 +52,10 @@ export function getIsDev(caller: any) {
   return process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
 }
 
+export function getIsFastRefreshEnabled(caller: any) {
+  return caller?.isFastRefreshEnabled ?? false;
+}
+
 export function getIsProd(caller: any) {
   if (caller?.isDev != null) return caller.isDev === false;
 

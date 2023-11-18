@@ -33,6 +33,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
   const results = transformer.transform({
     filename: 'foo.js',
     options: {
+      globalPrefix: '',
       enableBabelRuntime: true,
       enableBabelRCLookup: true,
       dev: true,
@@ -72,7 +73,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
     $RefreshReg$(_c, "App");"
   `);
 
-  expect(babel.parseSync).toBeCalledWith(
+  expect(babel.transformSync).toBeCalledWith(
     fixture,
     expect.objectContaining({
       ast: true,
