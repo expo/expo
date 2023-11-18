@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `expo-sqlite/next` integer overflow crashes on iOS. ([#25322](https://github.com/expo/expo/pull/25322) by [@peterferguson](https://github.com/peterferguson))
-
 ### 💡 Others
+
+## 12.2.1 — 2023-11-18
+
+### 🐛 Bug fixes
+
+- Fixed `expo-sqlite/next` integer overflow crashes on iOS. ([#25322](https://github.com/expo/expo/pull/25322) by [@peterferguson](https://github.com/peterferguson))
 
 ## 12.2.0 — 2023-11-14
 
