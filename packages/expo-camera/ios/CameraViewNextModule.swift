@@ -36,7 +36,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
       }
       return false
     }
-    
+
     // swiftlint:disable:next closure_body_length
     View(CameraViewNext.self) {
       Events(cameraNextEvents)
@@ -80,7 +80,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
       Prop("mute") { (view, muted: Bool) in
         view.isMuted = muted
       }
-      
+
       Prop("videoQuality") { (view, quality: VideoQuality) in
         view.videoQuality = quality
       }
@@ -164,7 +164,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
   }
 
   @available(iOS 16.0, *)
-  @MainActor 
+  @MainActor
   private func launchModernScanner(with options: VisionScannerOptions?) {
     let symbologies = options?.toSymbology() ?? [.qr]
     let controller = DataScannerViewController(

@@ -15,7 +15,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   // MARK: - Properties
 
-  private var barcodeScanner: BarcodeScanner!
+  private lazy var barcodeScanner = createBarcodeScanner()
   private var previewLayer = PreviewView()
   private var isValidVideoOptions = true
   private var videoCodecType: AVVideoCodecType?
@@ -37,7 +37,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       updateResponsiveOrientation()
     }
   }
-  
+
   var videoQuality: VideoQuality = .video1080p
 
   var isScanningBarcodes = false {
@@ -105,7 +105,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     super.init(appContext: appContext)
     lifecycleManager = appContext?.legacyModule(implementing: EXAppLifecycleService.self)
     fileSystem = appContext?.legacyModule(implementing: EXFileSystemInterface.self)
-    barcodeScanner = createBarcodeScanner()
     permissionsManager = appContext?.legacyModule(implementing: EXPermissionsInterface.self)
     #if !targetEnvironment(simulator)
     setupPreview()
@@ -563,7 +562,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     if let maxFileSize = options.maxFileSize {
       videoFileOutput.maxRecordedFileSize = Int64(maxFileSize)
     }
-    
+
     if let codec = options.codec {
       let codecType = codec.codecType()
       if videoFileOutput.availableVideoCodecTypes.contains(codecType) {
@@ -776,9 +775,7 @@ func updateSessionPreset(preset: AVCaptureSession.Preset) {
       guard let self else {
         return
       }
-      print(body)
       if let body {
-        print(body)
         self.onBarcodeScanned(body)
       }
     }

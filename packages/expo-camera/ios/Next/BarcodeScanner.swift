@@ -177,7 +177,7 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
 
     session.commitConfiguration()
   }
-  
+
   func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
     guard let settings = settings[BARCODE_TYPES_KEY], let metadataOutput else {
       return
