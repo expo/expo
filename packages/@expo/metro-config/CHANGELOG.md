@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Moved `react-refresh` babel plugin from Metro to `babel-preset-expo`.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

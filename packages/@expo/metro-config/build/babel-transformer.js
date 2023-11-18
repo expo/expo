@@ -151,8 +151,8 @@ const transform = ({
         engine: (_options$customTransf4 = options.customTransformOptions) === null || _options$customTransf4 === void 0 ? void 0 : _options$customTransf4.engine,
         // Provide the project root for accurately reading the Expo config.
         projectRoot: options.projectRoot,
-        // Detect if fast refresh should be enabled or not. This is disabled in node modules and server environments.
-        isFastRefreshEnabled: options.hot && options.dev && !isServer && !isNodeModule
+        isNodeModule,
+        isHMREnabled: options.hot
       }
     };
     const useBabelCore = isTypeScriptSource(filename) || isTSXSource(filename) || !options.hermesParser;

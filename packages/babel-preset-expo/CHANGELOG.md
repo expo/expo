@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Moved `react-refresh` babel plugin from Metro/Webpack to `babel-preset-expo`.
+
 ### 🐛 Bug fixes
+
+- Prevent enabling `react-refresh` in server environments.
 
 ### 💡 Others
 

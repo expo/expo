@@ -149,8 +149,9 @@ const transform: BabelTransformer['transform'] = ({
         // Provide the project root for accurately reading the Expo config.
         projectRoot: options.projectRoot,
 
-        // Detect if fast refresh should be enabled or not. This is disabled in node modules and server environments.
-        isFastRefreshEnabled: options.hot && options.dev && !isServer && !isNodeModule,
+        isNodeModule,
+
+        isHMREnabled: options.hot,
       },
     };
 

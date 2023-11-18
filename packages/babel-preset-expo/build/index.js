@@ -113,7 +113,13 @@ function babelPresetExpo(api, options = {}) {
         extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
     }
     if (isFastRefreshEnabled) {
-        extraPlugins.push(require('react-refresh/babel'));
+        extraPlugins.push([
+            require('react-refresh/babel'),
+            {
+                // We perform the env check to enable `isFastRefreshEnabled`.
+                skipEnvCheck: true,
+            },
+        ]);
     }
     return {
         presets: [
