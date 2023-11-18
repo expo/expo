@@ -76,7 +76,7 @@ class UpdatesStateMachine(
   private fun transition(event: UpdatesStateEvent): Boolean {
     val allowedEvents: Set<UpdatesStateEventType> = updatesStateAllowedEvents[state] ?: setOf()
     if (!allowedEvents.contains(event.type)) {
-      // Optionally put an assert here when testing to catch bad state transitions in E2E tests
+      assert(false) { "UpdatesState: invalid transition requested: state = $state, event = ${event.type}" }
       return false
     }
     state = updatesStateTransitions[event.type] ?: UpdatesStateValue.Idle
