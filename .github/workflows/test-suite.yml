@@ -197,11 +197,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: 🔨 Use JDK 11
+      - name: 🔨 Use JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches

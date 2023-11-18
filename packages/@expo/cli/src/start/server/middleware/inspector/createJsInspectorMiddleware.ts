@@ -18,7 +18,7 @@ export default function createJsInspectorMiddleware(): NextHandleFunction {
 
     const app = await queryInspectorAppAsync(origin, applicationId);
     if (!app) {
-      res.writeHead(404).end('Unable to find inspector target from metro-inspector-proxy');
+      res.writeHead(404).end('Unable to find inspector target from @react-native/dev-middleware');
       console.warn(
         chalk.yellow(
           'No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine.'

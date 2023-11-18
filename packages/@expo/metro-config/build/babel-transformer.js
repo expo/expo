@@ -1,15 +1,15 @@
 "use strict";
 
-function _inlineRequires() {
-  const data = _interopRequireDefault(require("babel-preset-fbjs/plugins/inline-requires"));
-  _inlineRequires = function () {
+function _hmr() {
+  const data = _interopRequireDefault(require("@react-native/babel-preset/src/configs/hmr"));
+  _hmr = function () {
     return data;
   };
   return data;
 }
-function _hmr() {
-  const data = _interopRequireDefault(require("metro-react-native-babel-preset/src/configs/hmr"));
-  _hmr = function () {
+function _inlineRequires() {
+  const data = _interopRequireDefault(require("babel-preset-fbjs/plugins/inline-requires"));
+  _inlineRequires = function () {
     return data;
   };
   return data;
@@ -73,7 +73,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const cacheKeyParts = [_nodeFs().default.readFileSync(__filename), require('babel-preset-fbjs/package.json').version];
 
-// TS detection conditions copied from metro-react-native-babel-preset
+// TS detection conditions copied from @react-native/babel-preset
 function isTypeScriptSource(fileName) {
   return !!fileName && fileName.endsWith('.ts');
 }

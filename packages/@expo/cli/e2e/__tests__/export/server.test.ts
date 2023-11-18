@@ -21,7 +21,8 @@ describe('server-output', () => {
           EXPO_USE_STATIC: 'server',
           E2E_ROUTER_SRC: 'server',
           E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
+          // TODO: Reenable this after investigating unstable_getRealPath
+          EXPO_USE_FAST_RESOLVER: 'false',
         },
       });
     },

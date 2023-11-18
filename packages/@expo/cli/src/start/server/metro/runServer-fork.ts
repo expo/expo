@@ -10,13 +10,10 @@ import Metro, { RunServerOptions, Server } from 'metro';
 import MetroHmrServer from 'metro/src/HmrServer';
 import createWebsocketServer from 'metro/src/lib/createWebsocketServer';
 import { ConfigT } from 'metro-config';
-import { InspectorProxy } from 'metro-inspector-proxy';
 import { parse } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
-import { createInspectorProxy, ExpoInspectorProxy } from './inspector-proxy';
 import { Log } from '../../../log';
-import { env } from '../../../utils/env';
 import { getRunningProcess } from '../../../utils/getRunningProcess';
 import type { ConnectAppType } from '../middleware/server.types';
 
@@ -55,13 +52,6 @@ export const runServer = async (
   assert(typeof (middleware as any).use === 'function');
   const serverApp = middleware as ConnectAppType;
 
-  let inspectorProxy: InspectorProxy | ExpoInspectorProxy | null = null;
-  if (config.server.runInspectorProxy && !env.EXPO_NO_INSPECTOR_PROXY) {
-    inspectorProxy = createInspectorProxy(metroBundler, config.projectRoot);
-  } else if (config.server.runInspectorProxy) {
-    inspectorProxy = new InspectorProxy(config.projectRoot);
-  }
-
   let httpServer: http.Server | https.Server;
 
   if (secureServerOptions != null) {
@@ -95,7 +85,6 @@ export const runServer = async (
       }
 
       Object.assign(websocketEndpoints, {
-        ...(inspectorProxy ? { ...inspectorProxy.createWebSocketListeners(httpServer) } : {}),
         // @ts-expect-error: incorrect types
         '/hot': createWebsocketServer({
           websocketServer: new MetroHmrServer(
@@ -116,14 +105,6 @@ export const runServer = async (
           socket.destroy();
         }
       });
-
-      if (inspectorProxy) {
-        // TODO(hypuk): Refactor inspectorProxy.processRequest into separate request handlers
-        // so that we could provide routes (/json/list and /json/version) here.
-        // Currently this causes Metro to give warning about T31407894.
-        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-        serverApp.use(inspectorProxy.processRequest.bind(inspectorProxy));
-      }
 
       resolve({ server: httpServer, metro: metroServer });
     });

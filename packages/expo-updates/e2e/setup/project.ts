@@ -658,7 +658,25 @@ export async function initAsync(
   // Append additional Proguard rule for Detox 20
   await fs.appendFile(
     path.join(projectRoot, 'android', 'app', 'proguard-rules.pro'),
-    '\n-keep class org.apache.commons.** { *; }\n',
+    [
+      '',
+      '-keep class org.apache.commons.** { *; }',
+      '-dontwarn androidx.appcompat.graphics.drawable.DrawableWrapper',
+      '-dontwarn com.facebook.react.views.slider.**',
+      '',
+    ].join('\n'),
+    'utf-8'
+  );
+  await fs.appendFile(
+    path.join(projectRoot, 'android', 'app', 'build.gradle'),
+    [
+      '',
+      '// [Detox] AGP 8 fixed the `testProguardFiles` for androidTest',
+      'android.buildTypes.release {',
+      '   testProguardFiles "proguard-rules.pro"',
+      '}',
+      '',
+    ].join('\n'),
     'utf-8'
   );
 
