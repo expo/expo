@@ -19,7 +19,7 @@ import abi49_0_0.expo.modules.kotlin.modules.ModuleDefinition
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-import abi49_0_0.host.exp.expoview.R
+import host.exp.expoview.R
 
 // must be kept in sync with https://github.com/facebook/react-native/blob/main/ReactAndroid/src/main/java/com/facebook/react/modules/i18nmanager/I18nUtil.java
 private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"

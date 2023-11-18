@@ -1,6 +1,7 @@
+import type { Device as MetroDevice } from '@react-native/dev-middleware';
+import MetroProxy from '@react-native/dev-middleware/dist/inspector-proxy/InspectorProxy';
 import type { Server as HttpServer, IncomingMessage, ServerResponse } from 'http';
 import type { Server as HttpsServer } from 'https';
-import type { InspectorProxy as MetroProxy, Device as MetroDevice } from 'metro-inspector-proxy';
 import { parse } from 'url';
 import WS, { Server as WSServer } from 'ws';
 
@@ -95,7 +96,7 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
         if (oldDevice) {
           debug('Device reconnected: device=%s, app=%s, id=%s', deviceName, appName, deviceId);
           // See: https://github.com/facebook/metro/pull/991
-          // @ts-expect-error - Newly introduced method coming to metro-inspector-proxy soon
+          // @ts-expect-error - Newly introduced method coming to @react-native/dev-middleware soon
           oldDevice.handleDuplicateDeviceConnection(newDevice);
         } else {
           debug('New device connected: device=%s, app=%s, id=%s', deviceName, appName, deviceId);

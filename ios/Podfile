@@ -61,8 +61,6 @@ abstract_target 'Expo Go' do
   )
 
   post_install do |installer|
-    # Workaround build error for Folly
-    __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
 
     # Disabled as of CocoaPods 1.8.0.beta1 since pods_project seems to be nil
     # installer.pods_project.main_group.tab_width = '2';
@@ -74,6 +72,21 @@ abstract_target 'Expo Go' do
       # Run postinstalls actions for versioned dependencies.
       # These actions are specified in `versioned-react-native/ABI*/postinstalls.rb` files.
       run_versioned_postinstalls!(pod_name, target_installation_result)
+
+      # Needed for Reanimated to compile
+      if pod_name == 'React-hermes' || pod_name == 'hermes-engine'
+        target_installation_result.native_target.build_configurations.each do |config|
+          if "Debug" == config.name
+            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "HERMES_ENABLE_DEBUGGER=1"
+          end
+        end
+      end
+
+      # Set `REACT_NATIVE_PATH` to react-native submodule
+      target_installation_result.native_target.build_configurations.each do |config|
+        config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", '../react-native-lab/react-native/packages/react-native')
+      end
 
       # This is necessary for Xcode 14 that by default signs resource bundles when building for the device.
       target_installation_result.resource_bundle_targets.each do |resource_bundle_target|

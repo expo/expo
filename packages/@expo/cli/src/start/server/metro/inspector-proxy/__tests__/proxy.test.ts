@@ -1,6 +1,6 @@
+import MetroProxy from '@react-native/dev-middleware/dist/inspector-proxy/InspectorProxy';
 import connect from 'connect';
 import http from 'http';
-import { InspectorProxy as MetroProxy } from 'metro-inspector-proxy';
 import fetch from 'node-fetch';
 import { parse } from 'url';
 import WS from 'ws';

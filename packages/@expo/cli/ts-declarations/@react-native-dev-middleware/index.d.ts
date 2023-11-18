@@ -1,10 +1,9 @@
-declare module 'metro-inspector-proxy/src/Device' {
-  import { Device } from 'metro-inspector-proxy';
-  export = Device;
+declare module '@react-native/dev-middleware/dist/inspector-proxy/Device' {
+  import { Device } from '@react-native/dev-middleware';
+  export default Device;
 }
 
-declare module 'metro-inspector-proxy' {
-  import WS from 'ws';
+declare module '@react-native/dev-middleware/dist/inspector-proxy/InspectorProxy' {
   import type { Server as HttpsServer } from 'https';
   import type {
     IncomingMessage as HttpRequest,
@@ -12,41 +11,7 @@ declare module 'metro-inspector-proxy' {
     Server as HttpServer,
   } from 'http';
 
-  type Middleware = (error?: Error) => any;
-
-  /**
-   * Page information received from the device. New page is created for
-   * each new instance of VM and can appear when user reloads React Native
-   * application.
-   */
-  type Page = {
-    id: string;
-    title: string;
-    vm: string;
-    app: string;
-
-    // Allow objects too
-    [key: string]: string;
-  };
-
-  type DebuggerInfo = {
-    // Debugger web socket connection
-    socket: WS;
-    // If we replaced address (like '10.0.2.2') to localhost we need to store original
-    // address because Chrome uses URL or urlRegex params (instead of scriptId) to set breakpoints.
-    originalSourceURLAddress?: string;
-    prependedFilePrefix: boolean;
-    pageId: string;
-
-    // Allow objects too
-    [key: string]: string;
-  };
-
-  type PageDescription = any;
-
-  function runInspectorProxy(port: number, projectRoot: string): void;
-
-  class InspectorProxy {
+  export default class InspectorProxy {
     /** Root of the project used for relative to absolute source path conversion. */
     _projectRoot: string;
     /** Maps device ID to Device instance. */
@@ -101,6 +66,44 @@ declare module 'metro-inspector-proxy' {
      */
     _createDebuggerConnectionWSServer(): WS.Server;
   }
+}
+
+declare module '@react-native/dev-middleware' {
+  import WS from 'ws';
+
+  type Middleware = (error?: Error) => any;
+
+  /**
+   * Page information received from the device. New page is created for
+   * each new instance of VM and can appear when user reloads React Native
+   * application.
+   */
+  type Page = {
+    id: string;
+    title: string;
+    vm: string;
+    app: string;
+
+    // Allow objects too
+    [key: string]: string;
+  };
+
+  type DebuggerInfo = {
+    // Debugger web socket connection
+    socket: WS;
+    // If we replaced address (like '10.0.2.2') to localhost we need to store original
+    // address because Chrome uses URL or urlRegex params (instead of scriptId) to set breakpoints.
+    originalSourceURLAddress?: string;
+    prependedFilePrefix: boolean;
+    pageId: string;
+
+    // Allow objects too
+    [key: string]: string;
+  };
+
+  type PageDescription = any;
+
+  function runInspectorProxy(port: number, projectRoot: string): void;
 
   class Device {
     /** ID of the device. */

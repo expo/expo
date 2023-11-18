@@ -6,7 +6,7 @@ import android.os.Bundle
 import abi49_0_0.expo.modules.core.interfaces.ReactActivityLifecycleListener
 import abi49_0_0.expo.modules.systemui.singletons.SystemUI
 
-import abi49_0_0.host.exp.expoview.R
+import expo.modules.systemui.R
 
 class SystemUIReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
   override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {

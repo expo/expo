@@ -15,7 +15,6 @@
 #import <memory>
 
 #import <React/CoreModulesPlugins.h>
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <ReactCommon/RCTTurboModuleManager.h>

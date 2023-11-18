@@ -2,7 +2,6 @@
 
 buildscript {
     ext {
-        gradlePluginVersion = '7.4.2'
         kotlinVersion = '1.8.10'
     }
     repositories {
@@ -11,7 +10,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
+        classpath "com.android.tools.build:gradle"
         classpath 'de.undercouch:gradle-download-task:5.0.1'
         classpath "com.facebook.react:react-native-gradle-plugin"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"

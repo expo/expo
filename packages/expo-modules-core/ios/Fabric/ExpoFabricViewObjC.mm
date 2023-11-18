@@ -12,7 +12,6 @@
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTComponentViewRegistry.h>
-#import <butter/map.h>
 #endif
 
 #ifdef __cplusplus

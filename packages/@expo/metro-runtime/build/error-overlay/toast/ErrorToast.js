@@ -108,7 +108,11 @@ const countStyles = react_native_1.StyleSheet.create({
         lineHeight: 18,
         textAlign: 'center',
         fontWeight: '600',
-        textShadow: `0px 0px 3px ${LogBoxStyle.getBackgroundColor(0.8)}`,
+        ...react_native_1.Platform.select({
+            web: {
+                textShadow: `0px 0px 3px ${LogBoxStyle.getBackgroundColor(0.8)}`,
+            },
+        }),
     },
 });
 const dismissStyles = react_native_1.StyleSheet.create({

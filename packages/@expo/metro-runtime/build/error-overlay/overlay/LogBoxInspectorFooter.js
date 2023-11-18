@@ -91,7 +91,11 @@ const buttonStyles = react_native_1.StyleSheet.create({
 const styles = react_native_1.StyleSheet.create({
     root: {
         backgroundColor: LogBoxStyle.getBackgroundColor(1),
-        boxShadow: `0 -2px 0 2px #000`,
+        ...react_native_1.Platform.select({
+            web: {
+                boxShadow: `0 -2px 0 2px #000`,
+            },
+        }),
         flexDirection: 'row',
     },
     button: {

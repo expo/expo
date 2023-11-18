@@ -80,6 +80,6 @@
     "expo-module-scripts": "^3.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.72.5"
+    "react-native": "0.73.0-rc.4"
   }
 }

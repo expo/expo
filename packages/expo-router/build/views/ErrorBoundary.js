@@ -133,7 +133,11 @@ const styles = react_native_1.StyleSheet.create({
         }),
     },
     buttonInner: {
-        transitionDuration: '100ms',
+        ...react_native_1.Platform.select({
+            web: {
+                transitionDuration: '100ms',
+            },
+        }),
         paddingVertical: 12,
         paddingHorizontal: 24,
         borderColor: 'white',

@@ -139,7 +139,7 @@ public class ReactAndroidCodeTransformer {
             BlockStmt stmt = JavaParser.parseBlock(getCallMethodReflectionBlock(
                 "host.exp.exponent.ReactNativeStaticHelpers",
                 "\"getBundleUrlForActivityId\", int.class, String.class, String.class, String.class, boolean.class, boolean.class",
-                "null, mSettings.exponentActivityId, host, mainModuleID, type.typeID(), getDevMode(), getJSMinifyMode()",
+                "null, mSettings.getExponentActivityId(), host, mainModuleID, type.typeID(), getDevMode(), getJSMinifyMode()",
                 "return (String) ",
                 "return null;"));
             n.setBody(stmt);
@@ -186,7 +186,7 @@ public class ReactAndroidCodeTransformer {
           case "showDevOptionsDialog":
             return showDevOptionsDialog(n);
           case "getExponentActivityId":
-            n.setBody(JavaParser.parseBlock("{return mDevServerHelper.mSettings.exponentActivityId;}"));
+            n.setBody(JavaParser.parseBlock("{return mDevServerHelper.mSettings.getExponentActivityId();}"));
             return n;
         }
 
@@ -270,6 +270,15 @@ public class ReactAndroidCodeTransformer {
             emptyBlockStmt.addOrphanComment(new LineComment(" mPreferences.edit().putBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, enabled).apply();"));
             n.setBody(emptyBlockStmt);
             return n;
+          case "isHotModuleReplacementEnabled":
+            n.setPublic(true);
+            return n;
+          case "setHotModuleReplacementEnabled":
+            n.setPublic(true);
+            return n;
+          case "getPackagerConnectionSettings":
+            n.setPublic(true);
+            return n;
         }
 
         return n;
@@ -277,7 +286,47 @@ public class ReactAndroidCodeTransformer {
 
       @Override
       String modifySource(String source) {
-        return addBeforeEndOfClass(source, "public int exponentActivityId = -1;");
+        // Make DevInternalSettings class "public"
+        source = source.replace("\nclass DevInternalSettings", "\npublic class DevInternalSettings");
+
+        return addBeforeEndOfClass(source, """
+          public int exponentActivityId = -1;
+
+          public void setExponentActivityId(int value) {
+              exponentActivityId = value;
+          }
+
+          public int getExponentActivityId(){
+              return exponentActivityId;
+          }
+        """);
+      }
+    });
+
+    FILES_TO_MODIFY.put("modules/debug/interfaces/DeveloperSettings.java", new MethodVisitor() {
+
+      @Override
+      public Node visit(String methodName, MethodDeclaration n) {
+        return n;
+      }
+
+      @Override
+      String modifySource(String source) {
+        return addBeforeEndOfClass(source, "int getExponentActivityId();");
+      }
+    });
+
+    FILES_TO_MODIFY.put("TurboReactPackage.java", new MethodVisitor() {
+
+        @Override
+      public Node visit(String methodName, MethodDeclaration n) {
+        switch (methodName) {
+          case "getNativeModuleIterator":
+            n.setPublic(true);
+            return n;
+        }
+
+        return n;
       }
     });
   }

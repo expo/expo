@@ -443,12 +443,8 @@ exports[`built-in plugins compiles mods 1`] = `
       "ITSAppUsesNonExemptEncryption": true,
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
-        "NSAllowsArbitraryLoads": true,
-        "NSExceptionDomains": {
-          "localhost": {
-            "NSExceptionAllowsInsecureHTTPLoads": true,
-          },
-        },
+        "NSAllowsArbitraryLoads": false,
+        "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",
@@ -677,18 +673,6 @@ exports[`built-in plugins introspects mods 1`] = `
             "key": "android.enableJetifier",
             "type": "property",
             "value": "true",
-          },
-          {
-            "type": "empty",
-          },
-          {
-            "type": "comment",
-            "value": "Version of flipper SDK to use with React Native",
-          },
-          {
-            "key": "FLIPPER_VERSION",
-            "type": "property",
-            "value": "0.182.0",
           },
           {
             "type": "empty",
@@ -1251,12 +1235,8 @@ exports[`built-in plugins introspects mods 1`] = `
           "ITSAppUsesNonExemptEncryption": true,
           "LSRequiresIPhoneOS": true,
           "NSAppTransportSecurity": {
-            "NSAllowsArbitraryLoads": true,
-            "NSExceptionDomains": {
-              "localhost": {
-                "NSExceptionAllowsInsecureHTTPLoads": true,
-              },
-            },
+            "NSAllowsArbitraryLoads": false,
+            "NSAllowsLocalNetworking": true,
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
           "UILaunchStoryboardName": "SplashScreen",
@@ -1721,12 +1701,8 @@ exports[`built-in plugins introspects mods 1`] = `
       "ITSAppUsesNonExemptEncryption": true,
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
-        "NSAllowsArbitraryLoads": true,
-        "NSExceptionDomains": {
-          "localhost": {
-            "NSExceptionAllowsInsecureHTTPLoads": true,
-          },
-        },
+        "NSAllowsArbitraryLoads": false,
+        "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",

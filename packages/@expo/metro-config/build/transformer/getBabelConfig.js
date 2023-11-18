@@ -86,8 +86,8 @@ const getBabelRC = function () {
         ...presetOptions
       } = options;
 
-      // Use `babel-preset-expo` instead of `metro-react-native-babel-preset`.
-      const presetPath = (_ref = (_resolveFrom$silent = _resolveFrom().default.silent(projectRoot, 'babel-preset-expo')) !== null && _resolveFrom$silent !== void 0 ? _resolveFrom$silent : _resolveFrom().default.silent(projectRoot, 'metro-react-native-babel-preset')) !== null && _ref !== void 0 ? _ref : require.resolve('babel-preset-expo');
+      // Use `babel-preset-expo` instead of `@react-native/babel-preset`.
+      const presetPath = (_ref = (_resolveFrom$silent = _resolveFrom().default.silent(projectRoot, 'babel-preset-expo')) !== null && _resolveFrom$silent !== void 0 ? _resolveFrom$silent : _resolveFrom().default.silent(projectRoot, '@react-native/babel-preset')) !== null && _ref !== void 0 ? _ref : require.resolve('babel-preset-expo');
       babelRC.presets = [[require(presetPath), {
         // Default to React 17 automatic JSX transform.
         jsxRuntime: 'automatic',
@@ -139,7 +139,7 @@ function getBabelConfig(filename, options, plugins = []) {
         config.plugins = [];
       }
       // Add react refresh runtime.
-      // NOTICE: keep in sync with 'metro-react-native-babel-preset/src/configs/hmr'.
+      // NOTICE: keep in sync with '@react-native/babel-preset/src/configs/hmr'.
       config.plugins.push(_resolveFrom().default.silent(options.projectRoot, 'react-refresh/babel'));
     }
   }

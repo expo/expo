@@ -461,7 +461,7 @@ abstract class ReactNativeActivity :
     val devSettings =
       mReactInstanceManager.callRecursive("getDevSupportManager")!!.callRecursive("getDevSettings")
     if (devSettings != null) {
-      devSettings.setField("exponentActivityId", activityId)
+      devSettings.call("setExponentActivityId", activityId)
       if (devSettings.call("isRemoteJSDebugEnabled") as Boolean) {
         if (manifest?.jsEngine == "hermes") {
           // Disable remote debugging when running on Hermes

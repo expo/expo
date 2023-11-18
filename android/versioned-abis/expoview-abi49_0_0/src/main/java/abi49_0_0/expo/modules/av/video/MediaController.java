@@ -24,7 +24,7 @@ import java.lang.ref.WeakReference;
 import java.util.Formatter;
 import java.util.Locale;
 
-import abi49_0_0.host.exp.expoview.R;
+import expo.modules.av.R;
 import abi49_0_0.expo.modules.av.player.PlayerDataControl;
 
 // Based on https://www.brightec.co.uk/ideas/custom-android-media-controller
@@ -413,9 +413,9 @@ public class MediaController extends FrameLayout {
     }
 
     if (mPlayer.isPlaying()) {
-      mPauseButton.setImageResource(R.drawable.exo_controls_pause);
+      mPauseButton.setImageResource(com.google.android.exoplayer2.ui.R.drawable.exo_controls_pause);
     } else {
-      mPauseButton.setImageResource(R.drawable.exo_controls_play);
+      mPauseButton.setImageResource(com.google.android.exoplayer2.ui.R.drawable.exo_controls_play);
     }
   }
 
