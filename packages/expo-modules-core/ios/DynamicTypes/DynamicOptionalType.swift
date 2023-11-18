@@ -56,7 +56,7 @@ internal protocol AnyOptional {
  */
 extension Optional: AnyOptional {
   static func getWrappedDynamicType() -> AnyDynamicType {
-    return DynamicType(Wrapped.self)
+    return ~Wrapped.self
   }
 
   static func isNil(_ object: Wrapped) -> Bool {

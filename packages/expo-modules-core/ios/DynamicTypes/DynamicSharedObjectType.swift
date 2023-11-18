@@ -4,7 +4,7 @@
  A dynamic type representing the `SharedObject` type and its subclasses.
  */
 internal struct DynamicSharedObjectType: AnyDynamicType {
-  let innerType: SharedObject.Type
+  let innerType: AnySharedObject.Type
 
   /**
    A unique identifier of the wrapped type.
@@ -13,7 +13,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
     return ObjectIdentifier(innerType)
   }
 
-  init(innerType: SharedObject.Type) {
+  init(innerType: AnySharedObject.Type) {
     self.innerType = innerType
   }
 

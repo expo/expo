@@ -4,6 +4,12 @@ public protocol AnySharedObject: AnyArgument {
   var sharedObjectId: SharedObjectId { get }
 }
 
+extension AnySharedObject {
+  public static func getDynamicType() -> AnyDynamicType {
+    return DynamicSharedObjectType(innerType: Self.self)
+  }
+}
+
 open class SharedObject: AnySharedObject {
   /**
    An identifier of the native shared object that maps to the JavaScript object.

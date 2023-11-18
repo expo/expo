@@ -51,6 +51,6 @@ internal protocol AnyArray {
  */
 extension Array: AnyArray {
   static func getElementDynamicType() -> AnyDynamicType {
-    return DynamicType(Element.self)
+    return ~Element.self
   }
 }

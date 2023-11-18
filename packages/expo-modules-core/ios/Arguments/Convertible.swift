@@ -14,5 +14,11 @@ public protocol Convertible: AnyArgument {
   static func convert(from value: Any?, appContext: AppContext) throws -> Self
 }
 
+extension Convertible {
+  public static func getDynamicType() -> AnyDynamicType {
+    return DynamicConvertibleType(innerType: Self.self)
+  }
+}
+
 @available(*, deprecated, renamed: "Convertible")
 public typealias ConvertibleArgument = Convertible

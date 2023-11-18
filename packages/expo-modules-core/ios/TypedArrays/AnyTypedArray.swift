@@ -9,3 +9,10 @@ internal protocol AnyTypedArray: AnyArgument {
    */
   init(_ jsTypedArray: JavaScriptTypedArray)
 }
+
+// Extend the protocol to provide custom dynamic type
+extension AnyTypedArray {
+  public static func getDynamicType() -> AnyDynamicType {
+    return DynamicTypedArrayType(innerType: Self.self)
+  }
+}
