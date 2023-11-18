@@ -105,8 +105,8 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     super.init(appContext: appContext)
     lifecycleManager = appContext?.legacyModule(implementing: EXAppLifecycleService.self)
     fileSystem = appContext?.legacyModule(implementing: EXFileSystemInterface.self)
-    permissionsManager = appContext?.legacyModule(implementing: EXPermissionsInterface.self)
     barcodeScanner = createBarcodeScanner()
+    permissionsManager = appContext?.legacyModule(implementing: EXPermissionsInterface.self)
     #if !targetEnvironment(simulator)
     setupPreview()
     #endif
@@ -139,7 +139,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   public func onAppForegrounded() {
     if !session.isRunning {
       sessionQueue.async {
-        self.ensureSessionConfiguration()
         self.session.startRunning()
       }
     }
@@ -212,7 +211,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
       self.sessionQueue.asyncAfter(deadline: .now() + round(50 / 1_000_000)) {
         self.barcodeScanner.maybeStartBarCodeScanning()
-        self.ensureSessionConfiguration()
         self.session.commitConfiguration()
         self.session.startRunning()
         self.onCameraReady()
@@ -642,6 +640,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   public override func removeFromSuperview() {
     lifecycleManager?.unregisterAppLifecycleListener(self)
+    self.stopSession()
     super.removeFromSuperview()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
   }

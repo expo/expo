@@ -2,7 +2,7 @@ package expo.modules.camera.next
 
 import android.Manifest
 import android.util.Log
-import expo.modules.camera.next.records.BarCodeSettings
+import expo.modules.camera.next.records.BarcodeSettings
 import expo.modules.camera.next.records.CameraMode
 import expo.modules.camera.next.records.CameraType
 import expo.modules.camera.next.records.FlashMode
@@ -25,7 +25,7 @@ import java.io.File
 val cameraEvents = arrayOf(
   "onCameraReady",
   "onMountError",
-  "onBarCodeScanned",
+  "onBarcodeScanned",
   "onFacesDetected",
   "onFaceDetectionError",
   "onPictureSaved"
@@ -111,7 +111,7 @@ class CameraViewNextModule : Module() {
         }
       }
 
-      Prop("barcodeScannerSettings") { view, settings: BarCodeSettings? ->
+      Prop("barcodeScannerSettings") { view, settings: BarcodeSettings? ->
         if (settings == null) {
           return@Prop
         }
@@ -119,7 +119,7 @@ class CameraViewNextModule : Module() {
       }
 
       Prop("barcodeScannerEnabled") { view, barCodeScannerEnabled: Boolean? ->
-        view.setShouldScanBarCodes(barCodeScannerEnabled ?: false)
+        view.setShouldScanBarcodes(barCodeScannerEnabled ?: false)
       }
 
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->

@@ -4,7 +4,7 @@ import AVFoundation
 import ExpoModulesCore
 import VisionKit
 
-let cameraNextEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcodeScanned", "onFacesDetected", "onResponsiveOrientationChanged"]
+let cameraNextEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcodeScanned", "onResponsiveOrientationChanged"]
 
 struct ScannerContext {
   var delegate: Any?

@@ -24,7 +24,6 @@ import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.FileOutputOptions
-import androidx.camera.video.Quality
 import androidx.camera.video.QualitySelector
 import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
@@ -33,12 +32,12 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import expo.modules.camera.BarCodeScannedEvent
+import expo.modules.camera.BarcodeScannedEvent
 import expo.modules.camera.CameraMountErrorEvent
 import expo.modules.camera.PictureSavedEvent
 import expo.modules.camera.next.analyzers.BarcodeAnalyzer
 import expo.modules.camera.next.analyzers.toByteArray
-import expo.modules.camera.next.records.BarCodeSettings
+import expo.modules.camera.next.records.BarcodeSettings
 import expo.modules.camera.next.records.BarcodeType
 import expo.modules.camera.next.records.CameraMode
 import expo.modules.camera.next.records.CameraType
@@ -109,7 +108,7 @@ class ExpoCameraView(
 
   private val onCameraReady by EventDispatcher<Unit>()
   private val onMountError by EventDispatcher<CameraMountErrorEvent>()
-  private val onBarCodeScanned by EventDispatcher<BarCodeScannedEvent>(
+  private val onBarcodeScanned by EventDispatcher<BarcodeScannedEvent>(
     /**
      * We want every distinct barcode to be reported to the JS listener.
      * If we return some static value as a coalescing key there may be two barcode events
@@ -128,7 +127,7 @@ class ExpoCameraView(
   )
 
   // Scanning-related properties
-  private var shouldScanBarCodes = false
+  private var shouldScanBarcodes = false
 
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     val width = right - left
@@ -284,11 +283,11 @@ class ExpoCameraView(
       .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
       .build()
       .also { analyzer ->
-        if (shouldScanBarCodes) {
+        if (shouldScanBarcodes) {
           analyzer.setAnalyzer(
             ContextCompat.getMainExecutor(context),
             BarcodeAnalyzer(lenFacing, barcodeFormats) {
-              onBarCodeScanned(it)
+              onBarcodeScanned(it)
             }
           )
         }
@@ -326,20 +325,20 @@ class ExpoCameraView(
     }
   }
 
-  fun setShouldScanBarCodes(shouldScanBarCodes: Boolean) {
-    this.shouldScanBarCodes = shouldScanBarCodes
+  fun setShouldScanBarcodes(shouldScanBarCodes: Boolean) {
+    this.shouldScanBarcodes = shouldScanBarCodes
     createCamera()
   }
 
-  fun setBarCodeScannerSettings(settings: BarCodeSettings?) {
+  fun setBarCodeScannerSettings(settings: BarcodeSettings?) {
     barcodeFormats = settings?.barcodeTypes ?: emptyList()
   }
 
   private fun getDeviceOrientation() =
     (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
 
-  private fun transformBarCodeScannerResultToViewCoordinates(barCode: BarCodeScannerResult) {
-    val cornerPoints = barCode.cornerPoints
+  private fun transformBarcodeScannerResultToViewCoordinates(barcode: BarCodeScannerResult) {
+    val cornerPoints = barcode.cornerPoints
     val previewWidth = previewView.width
     val previewHeight = previewView.height
 
@@ -348,24 +347,24 @@ class ExpoCameraView(
     val landscape = getDeviceOrientation() % 2 != 0
 
     if (facingFront && portrait) {
-      cornerPoints.mapY { barCode.referenceImageHeight - cornerPoints[it] }
+      cornerPoints.mapY { barcode.referenceImageHeight - cornerPoints[it] }
     }
     if (facingFront && landscape) {
-      cornerPoints.mapX { barCode.referenceImageWidth - cornerPoints[it] }
+      cornerPoints.mapX { barcode.referenceImageWidth - cornerPoints[it] }
     }
 
     cornerPoints.mapX {
-      (cornerPoints[it] * previewWidth / barCode.referenceImageWidth.toFloat())
+      (cornerPoints[it] * previewWidth / barcode.referenceImageWidth.toFloat())
         .roundToInt()
     }
     cornerPoints.mapY {
-      (cornerPoints[it] * previewHeight / barCode.referenceImageHeight.toFloat())
+      (cornerPoints[it] * previewHeight / barcode.referenceImageHeight.toFloat())
         .roundToInt()
     }
 
-    barCode.cornerPoints = cornerPoints
-    barCode.referenceImageHeight = height
-    barCode.referenceImageWidth = width
+    barcode.cornerPoints = cornerPoints
+    barcode.referenceImageHeight = height
+    barcode.referenceImageWidth = width
   }
 
   private fun getCornerPointsAndBoundingBox(cornerPoints: List<Int>, boundingBox: BoundingBox): Pair<ArrayList<Bundle>, Bundle> {
@@ -400,15 +399,15 @@ class ExpoCameraView(
     return convertedCornerPoints to boundingBoxBundle
   }
 
-  private fun onBarCodeScanned(barCode: BarCodeScannerResult) {
-    if (shouldScanBarCodes) {
-      transformBarCodeScannerResultToViewCoordinates(barCode)
-      val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(barCode.cornerPoints, barCode.boundingBox)
-      onBarCodeScanned(
-        BarCodeScannedEvent(
+  private fun onBarcodeScanned(barcode: BarCodeScannerResult) {
+    if (shouldScanBarcodes) {
+      transformBarcodeScannerResultToViewCoordinates(barcode)
+      val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(barcode.cornerPoints, barcode.boundingBox)
+      onBarcodeScanned(
+        BarcodeScannedEvent(
           target = id,
-          data = barCode.value,
-          type = barCode.type,
+          data = barcode.value,
+          type = barcode.type,
           cornerPoints = cornerPoints,
           boundingBox = boundingBox
         )

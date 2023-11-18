@@ -1,7 +1,6 @@
 package expo.modules.camera.next.records
 
 import android.hardware.camera2.CameraMetadata
-import android.media.CamcorderProfile
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.video.Quality
@@ -57,7 +56,7 @@ enum class CameraMode(val value: String) : Enumerable {
   VIDEO("video")
 }
 
-data class BarCodeSettings(
+data class BarcodeSettings(
   val barcodeTypes: List<BarcodeType>,
   val interval: Double?
 ) : Record
