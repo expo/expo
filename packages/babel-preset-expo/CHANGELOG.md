@@ -6,11 +6,11 @@
 
 ### 🎉 New features
 
-- Moved `react-refresh` babel plugin from Metro/Webpack to `babel-preset-expo`.
+- Moved `react-refresh` babel plugin from Metro/Webpack to `babel-preset-expo`. ([#25461](https://github.com/expo/expo/pull/25461) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
-- Prevent enabling `react-refresh` in server environments.
+- Prevent enabling `react-refresh` in server environments. ([#25461](https://github.com/expo/expo/pull/25461) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
