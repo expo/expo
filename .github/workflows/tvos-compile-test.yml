@@ -2,6 +2,9 @@ name: tvOS Compile EAS
 
 on:
   workflow_dispatch: {}
+  pull_request:
+    paths:
+      - .github/workflows/tvos-compile-test.yml
   push:
     branches: [main, 'sdk-*']
     paths:
