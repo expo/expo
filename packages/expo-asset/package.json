@@ -37,7 +37,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@react-native/assets-registry": "~0.72.0",
+    "@react-native/assets-registry": "~0.73.1",
     "blueimp-md5": "^2.10.0",
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",

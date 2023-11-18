@@ -1,5 +1,5 @@
+import { Device as MetroDevice } from '@react-native/dev-middleware';
 import Protocol from 'devtools-protocol';
-import { Device as MetroDevice } from 'metro-inspector-proxy';
 
 import { CdpMessage, DeviceRequest, InspectorHandler } from './types';
 import { ExpoDebuggerInfo } from '../device';
@@ -11,7 +11,7 @@ const FILE_PREFIX = 'file://';
 
 /**
  * Some debug clients does not support fetching source maps by URL.
- * By default, the `metro-inspector-proxy` inlines the source map as base64 string.
+ * By default, the `@react-native/dev-middleware` inlines the source map as base64 string.
  * Unfortunately, that causes a multi-second delay in VS Code (±5s).
  * This handler disables inlining the source maps for VS Code only.
  */
@@ -58,7 +58,7 @@ export class VscodeDebuggerScriptParsedHandler implements InspectorHandler {
       }
     }
 
-    // Block `metro-inspector-proxy`'s default source map inlining
+    // Block `@react-native/dev-middleware`'s default source map inlining
     return true;
   }
 }

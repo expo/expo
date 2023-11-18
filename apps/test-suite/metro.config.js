@@ -50,15 +50,11 @@ module.exports = {
       // Exclude react-native-lab from haste map.
       // Because react-native versions may be different between node_modules/react-native and react-native-lab,
       // we should use the one from node_modules for bare-expo.
-      /\bnode_modules\/react-native\//,
       /\breact-native-lab\/react-native\/node_modules\b/,
     ],
   },
   serializer: {
     ...baseConfig.serializer,
-    getModulesRunBeforeMainModule: () => [
-      require.resolve(path.join(reactNativeRoot, 'Libraries/Core/InitializeCore')),
-    ],
     getPolyfills: () => require(path.join(reactNativeRoot, 'rn-get-polyfills'))(),
   },
 };

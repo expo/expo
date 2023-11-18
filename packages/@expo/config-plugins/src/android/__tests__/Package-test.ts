@@ -97,7 +97,7 @@ describe(renamePackageOnDiskForType, () => {
     });
 
     const results = vol.toJSON();
-    expect(results['/android/app/src/debug/java/com/bacon/foobar/ReactNativeFlipper.java']).toMatch(
+    expect(results['/android/app/src/main/java/com/bacon/foobar/MainActivity.java']).toMatch(
       /package com.bacon.foobar;/
     );
   });
