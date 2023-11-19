@@ -3178,7 +3178,7 @@ SPEC CHECKSUMS:
   ABI49_0_0React-CoreModules: 9fe343840b8c8f65e75c3a79a7772688f950b987
   ABI49_0_0React-cxxreact: 3a050577e60e5ed0bf9c7c6e304f4bc35218fc19
   ABI49_0_0React-debug: d964e2660e1f189b51ddc117d38c69c3430d7000
-  ABI49_0_0React-hermes: 7dca2731d1e87779b1e6d0e7f13e8a47aaff1814
+  ABI49_0_0React-hermes: dd5d24d6ff6d2f354136670806cd6767455f6826
   ABI49_0_0React-jsc: 681c9e048a4cac7fe6bad3b44068092fb653c7d4
   ABI49_0_0React-jsi: 99f8cecdf41a3bc6066be55cb0662a8c954de1c3
   ABI49_0_0React-jsiexecutor: f1ade9eb9dffdf94ab12da79ede4e975ecebc199
