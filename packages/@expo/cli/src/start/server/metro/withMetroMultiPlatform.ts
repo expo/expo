@@ -460,7 +460,7 @@ export function withExtendedResolver(
     const H = require('metro-file-map/src/constants');
 
     TreeFS.prototype.getSha1 = function (mixedPath: string): string {
-      let fileMetadata = this._getFileData(mixedPath);
+      const fileMetadata = this._getFileData(mixedPath);
       const data = fileMetadata && fileMetadata[H.SHA1];
       if (!data) {
         return mixedPath;
@@ -478,7 +478,7 @@ export function withExtendedResolver(
       res: unknown
     ): Promise<void> {
       // eslint-disable-next-line node/no-deprecated-api
-      const urlObj = new URL(decodeURI(req.url), 'http://localhost:8081/');
+      const urlObj = new URL(decodeURI(req.url), 'http://e');
       let [, assetPath] =
         (urlObj && urlObj.pathname && urlObj.pathname.match(/^\/assets\/(.+)$/)) || [];
 
