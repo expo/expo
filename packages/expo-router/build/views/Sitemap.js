@@ -169,7 +169,11 @@ const styles = react_native_1.StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        transitionDuration: '100ms',
+        ...react_native_1.Platform.select({
+            web: {
+                transitionDuration: '100ms',
+            },
+        }),
     },
     filename: { color: 'white', fontSize: 20, marginLeft: 12 },
     virtual: { textAlign: 'right', color: 'white' },

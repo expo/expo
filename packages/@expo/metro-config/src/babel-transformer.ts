@@ -21,7 +21,7 @@ const cacheKeyParts = [
   require('babel-preset-fbjs/package.json').version,
 ];
 
-// TS detection conditions copied from metro-react-native-babel-preset
+// TS detection conditions copied from @react-native/babel-preset
 function isTypeScriptSource(fileName: string): boolean {
   return fileName?.endsWith('.ts');
 }

@@ -87,10 +87,7 @@ export class EventEmitter {
     }
 
     if ('remove' in nativeEmitterSubscription) {
-      // `react-native-web@0.17.1` doesn't support `removeSubscription`
       nativeEmitterSubscription.remove();
-    } else if ('removeSubscription' in this._eventEmitter) {
-      this._eventEmitter.removeSubscription(nativeEmitterSubscription!);
     }
     this._listenerCount--;
 

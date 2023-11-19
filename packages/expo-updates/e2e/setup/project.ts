@@ -13,20 +13,24 @@ const dirName = __dirname; /* eslint-disable-line */
 const expoDependencyChunks = [
   ['@expo/config-types', '@expo/env'],
   ['@expo/config'],
-  ['@expo/cli', '@expo/config-plugins', 'expo', 'expo-modules-core', 'expo-modules-autolinking'],
+  [
+    '@expo/cli',
+    '@expo/config-plugins',
+    'expo',
+    'expo-asset',
+    'expo-modules-core',
+    'expo-modules-autolinking',
+  ],
   ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
   [
     'babel-preset-expo',
     'expo-application',
-    'expo-av',
     'expo-device',
     'expo-eas-client',
     'expo-file-system',
     'expo-font',
-    'expo-image',
     'expo-json-utils',
     'expo-keep-awake',
-    'expo-localization',
     'expo-manifests',
     'expo-splash-screen',
     'expo-status-bar',
@@ -201,8 +205,12 @@ async function preparePackageJson(
   const dependenciesPath = path.join(projectRoot, 'dependencies');
   await fs.mkdir(dependenciesPath);
 
+  const tvDependencyChunk = isTV ? ['expo-av', 'expo-image', 'expo-localization'] : [];
+
+  const allDependencyChunks = [...expoDependencyChunks, tvDependencyChunk];
+
   console.time('Done packing dependencies');
-  for (const dependencyChunk of expoDependencyChunks) {
+  for (const dependencyChunk of allDependencyChunks) {
     await Promise.all(
       dependencyChunk.map(async (dependencyName) => {
         console.log(`Packing ${dependencyName}...`);
@@ -581,16 +589,16 @@ export async function initAsync(
     shouldGenerateTestUpdateBundles
   );
 
+  // configure app.json
+  let appJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'app.json'), 'utf-8'));
+  appJson = transformAppJson(appJson, projectName, runtimeVersion, isTV);
+  await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
+
   // Install node modules with local tarballs
   await spawnAsync('yarn', [], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
-
-  // configure app.json
-  let appJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'app.json'), 'utf-8'));
-  appJson = transformAppJson(appJson, projectName, runtimeVersion, isTV);
-  await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
 
   if (configureE2E && shouldConfigureCodeSigning) {
     await configureUpdatesSigningAsync(projectRoot);
@@ -650,7 +658,25 @@ export async function initAsync(
   // Append additional Proguard rule for Detox 20
   await fs.appendFile(
     path.join(projectRoot, 'android', 'app', 'proguard-rules.pro'),
-    '\n-keep class org.apache.commons.** { *; }\n',
+    [
+      '',
+      '-keep class org.apache.commons.** { *; }',
+      '-dontwarn androidx.appcompat.graphics.drawable.DrawableWrapper',
+      '-dontwarn com.facebook.react.views.slider.**',
+      '',
+    ].join('\n'),
+    'utf-8'
+  );
+  await fs.appendFile(
+    path.join(projectRoot, 'android', 'app', 'build.gradle'),
+    [
+      '',
+      '// [Detox] AGP 8 fixed the `testProguardFiles` for androidTest',
+      'android.buildTypes.release {',
+      '   testProguardFiles "proguard-rules.pro"',
+      '}',
+      '',
+    ].join('\n'),
     'utf-8'
   );
 

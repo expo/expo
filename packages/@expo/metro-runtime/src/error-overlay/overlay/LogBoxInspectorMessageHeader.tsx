@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import type { LogLevel } from '../Data/LogBoxLog';
 import type { Message } from '../Data/parseLogBoxLog';
@@ -59,7 +59,11 @@ export function LogBoxInspectorMessageHeader(props: Props) {
 const styles = StyleSheet.create({
   body: {
     backgroundColor: LogBoxStyle.getBackgroundColor(1),
-    boxShadow: `0 2px 0 2px #00000080`,
+    ...Platform.select({
+      web: {
+        boxShadow: `0 2px 0 2px #00000080`,
+      },
+    }),
   },
   bodyText: {
     color: LogBoxStyle.getTextColor(1),
