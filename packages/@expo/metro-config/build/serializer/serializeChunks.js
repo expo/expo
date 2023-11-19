@@ -147,6 +147,9 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
   };
 }
 class Chunk {
+  // Chunks that are required to be loaded synchronously before this chunk.
+  // These are included in the HTML as <script> tags.
+
   constructor(name, entries, graph, options, isAsync = false, isVendor = false) {
     this.name = name;
     this.entries = entries;
@@ -156,8 +159,6 @@ class Chunk {
     this.isVendor = isVendor;
     _defineProperty(this, "deps", new Set());
     _defineProperty(this, "preModules", new Set());
-    // Chunks that are required to be loaded synchronously before this chunk.
-    // These are included in the HTML as <script> tags.
     _defineProperty(this, "requiredChunks", new Set());
     this.deps = new Set(entries);
   }
