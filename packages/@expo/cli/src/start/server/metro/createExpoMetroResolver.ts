@@ -110,8 +110,7 @@ export function createFastResolver({
         paths: context.nodeModulesPaths as string[],
         extensions,
         conditions,
-        // @ts-ignore
-        realpathSync: context.unstable_getRealPath,
+        // realpathSync: context.unstable_getRealPath,
         packageFilter(pkg) {
           // set the pkg.main to the first available field in context.mainFields
           for (const field of context.mainFields) {

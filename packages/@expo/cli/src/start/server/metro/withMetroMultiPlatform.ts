@@ -415,7 +415,8 @@ export function withExtendedResolver(
           nodeModulesPaths.push(tsconfig.baseUrl);
         }
 
-        context.nodeModulesPaths = nodeModulesPaths;
+        // TODO: Prevent unnecessary duplicates better.
+        context.nodeModulesPaths = [...new Set(nodeModulesPaths)];
       }
 
       // TODO: We can drop this in the next version upgrade (SDK 50).
@@ -423,6 +424,10 @@ export function withExtendedResolver(
 
       // Disable throwing errors when a file is outside of haste map.
       if (env._EXPO_NO_METRO_FILE_MAP_ERRORS) {
+        context.doesFileExist = (filePath: string) => {
+          return fs.existsSync(filePath);
+        };
+
         context.resolveAsset = (dirPath: string, assetName: string, extension: string) => {
           const basePath = dirPath + path.sep + assetName;
           const assets = [

@@ -1,0 +1,18 @@
+diff --git a/node_modules/metro/src/Assets.js b/node_modules/metro/src/Assets.js
+index af14a3a..dc8c8bf 100644
+--- a/node_modules/metro/src/Assets.js
++++ b/node_modules/metro/src/Assets.js
+@@ -235,9 +235,10 @@ async function getAsset(
+     );
+   }
+   if (!pathBelongsToRoots(absolutePath, [projectRoot, ...watchFolders])) {
+-    throw new Error(
+-      `'${relativePath}' could not be found, because it cannot be found in the project root or any watch folder`
+-    );
++    console.warn(`Asset '${relativePath}' is not a watched file and won't trigger an automatic update, because is is not in the project root or any watch folder`)
++    // throw new Error(
++    //   `'${relativePath}' could not be found, because it cannot be found in the project root or any watch folder`
++    // );
+   }
+   const record = await getAbsoluteAssetRecord(absolutePath, platform);
+   for (let i = 0; i < record.scales.length; i++) {

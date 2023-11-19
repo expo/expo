@@ -1,0 +1,47 @@
+diff --git a/node_modules/metro-file-map/src/lib/TreeFS.js b/node_modules/metro-file-map/src/lib/TreeFS.js
+index dbeda0f..eefdacc 100644
+--- a/node_modules/metro-file-map/src/lib/TreeFS.js
++++ b/node_modules/metro-file-map/src/lib/TreeFS.js
+@@ -155,8 +155,40 @@ class TreeFS {
+     };
+   }
+   getSha1(mixedPath) {
+-    const fileMetadata = this._getFileData(mixedPath);
+-    return (fileMetadata && fileMetadata[_constants.default.SHA1]) ?? null;
++    let fileMetadata = this._getFileData(mixedPath);
++    const data = fileMetadata && fileMetadata[_constants.default.SHA1];
++    if (!data) {
++      // console.log('missing:', mixedPath);
++      // Watch file if it doesn't exist
++      const stat = require('fs').statSync(mixedPath);
++      const sha1 = mixedPath; // + require('fs').readFileSync(mixedPath, 'utf8');
++      this.addOrModify(mixedPath, [
++        /* id */ mixedPath,
++        // /* mtime */ ?number,
++        stat.mtimeMs,
++        // /* size */ number,
++        stat.size,
++        // /* visited */ 0 | 1,
++        0,
++        // /* dependencies */ string,
++        '',
++        // /* sha1 */ ?string,
++        sha1,
++        // /* symlink */ 0 | 1 | string, // string specifies target, if known
++        0,
++      ]);
++ 
++      if (!sha1) {
++        console.log('found but no sha', mixedPath);
++      }
++      return sha1;
++ 
++      // fileMetadata = this._getFileData(mixedPath);
++    }
++ 
++    return data;
++    // const fileMetadata = this._getFileData(mixedPath);
++    // return (fileMetadata && fileMetadata[_constants.default.SHA1]) ?? null;
+   }
+   exists(mixedPath) {
+     const result = this._getFileData(mixedPath);

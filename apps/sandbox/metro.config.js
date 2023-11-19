@@ -9,6 +9,8 @@ const path = require('path');
 
 const root = path.join(__dirname, '../..');
 
+config.resolver.unstable_enablePackageExports = true;
+
 if (process.env._EXPO_NO_METRO_FILE_MAP_ERRORS) {
   config.watchFolders = [__dirname];
 
