@@ -9,10 +9,10 @@
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
 
 // @ts-expect-error
+import makeHMRConfig from '@react-native/babel-preset/src/configs/hmr';
+// @ts-expect-error
 import inlineRequiresPlugin from 'babel-preset-fbjs/plugins/inline-requires';
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
-// @ts-expect-error
-import makeHMRConfig from 'metro-react-native-babel-preset/src/configs/hmr';
 import assert from 'node:assert';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -31,7 +31,7 @@ const cacheKeyParts = [
   require('babel-preset-fbjs/package.json').version,
 ];
 
-// TS detection conditions copied from metro-react-native-babel-preset
+// TS detection conditions copied from @react-native/babel-preset
 function isTypeScriptSource(fileName: string): boolean {
   return !!fileName && fileName.endsWith('.ts');
 }
@@ -221,6 +221,12 @@ const transform: BabelTransformer['transform'] = ({
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
         isServer: options.customTransformOptions?.environment === 'node',
+
+        // The base url to make requests from, used for hosting from non-standard locations.
+        baseUrl:
+          typeof options.customTransformOptions?.baseUrl === 'string'
+            ? decodeURI(options.customTransformOptions.baseUrl)
+            : '',
 
         isDev: options.dev,
 

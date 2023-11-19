@@ -1,7 +1,10 @@
+import { ExpoConfig } from '@expo/config';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import resolveFrom from 'resolve-from';
 
 import { env } from '../../../utils/env';
+
+const debug = require('debug')('expo:metro:options') as typeof console.log;
 
 export function shouldEnableAsyncImports(projectRoot: string): boolean {
   if (env.EXPO_NO_METRO_LAZY) {
@@ -23,28 +26,47 @@ export type ExpoMetroOptions = {
   environment?: string;
   serializerOutput?: 'static';
   serializerIncludeMaps?: boolean;
+  serializerIncludeBytecode?: boolean;
   lazy?: boolean;
   engine?: 'hermes';
   preserveEnvVars?: boolean;
+  baseUrl?: string;
+  isExporting: boolean;
 };
 
 function withDefaults({
   mode = 'development',
   minify = mode === 'production',
   preserveEnvVars = env.EXPO_NO_CLIENT_ENV_VARS,
+  lazy,
   ...props
 }: ExpoMetroOptions): ExpoMetroOptions {
   return {
     mode,
     minify,
     preserveEnvVars,
+    lazy: !props.isExporting && lazy,
     ...props,
   };
 }
 
+export type SerializerOptions = {
+  includeSourceMaps?: boolean;
+  includeBytecode?: boolean;
+  output?: 'static';
+};
+
+export type ExpoMetroBundleOptions = MetroBundleOptions & {
+  serializerOptions?: SerializerOptions;
+};
+
+export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
+  return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
+}
+
 export function getMetroDirectBundleOptions(
   options: ExpoMetroOptions
-): Partial<MetroBundleOptions> {
+): Partial<ExpoMetroBundleOptions> {
   const {
     mainModuleName,
     platform,
@@ -53,25 +75,41 @@ export function getMetroDirectBundleOptions(
     environment,
     serializerOutput,
     serializerIncludeMaps,
+    serializerIncludeBytecode,
     lazy,
     engine,
     preserveEnvVars,
+    baseUrl,
+    isExporting,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
   const isHermes = engine === 'hermes';
 
+  if (isExporting) {
+    debug('Disabling lazy bundling for export build');
+    options.lazy = false;
+  }
+
   let fakeSourceUrl: string | undefined;
+  let fakeSourceMapUrl: string | undefined;
 
   // TODO: Upstream support to Metro for passing custom serializer options.
-  if (serializerIncludeMaps != null || serializerOutput != null) {
+  if (
+    serializerIncludeMaps != null ||
+    serializerOutput != null ||
+    serializerIncludeBytecode != null
+  ) {
     fakeSourceUrl = new URL(
       createBundleUrlPath(options).replace(/^\//, ''),
       'http://localhost:8081'
     ).toString();
+    if (serializerIncludeMaps) {
+      fakeSourceMapUrl = fakeSourceUrl.replace('.bundle?', '.map?');
+    }
   }
 
-  const bundleOptions: Partial<MetroBundleOptions> = {
+  const bundleOptions: Partial<ExpoMetroBundleOptions> = {
     platform,
     entryFile: mainModuleName,
     dev,
@@ -84,12 +122,19 @@ export function getMetroDirectBundleOptions(
       engine,
       preserveEnvVars,
       environment,
+      baseUrl,
     },
     customResolverOptions: {
       __proto__: null,
       environment,
     },
+    sourceMapUrl: fakeSourceMapUrl,
     sourceUrl: fakeSourceUrl,
+    serializerOptions: {
+      output: serializerOutput,
+      includeSourceMaps: serializerIncludeMaps,
+      includeBytecode: serializerIncludeBytecode,
+    },
   };
 
   return bundleOptions;
@@ -104,19 +149,24 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     environment,
     serializerOutput,
     serializerIncludeMaps,
+    serializerIncludeBytecode,
     lazy,
     engine,
     preserveEnvVars,
+    baseUrl,
+    isExporting,
   } = withDefaults(options);
 
+  const dev = String(mode !== 'production');
   const queryParams = new URLSearchParams({
     platform: encodeURIComponent(platform),
-    dev: String(mode !== 'production'),
+    dev,
     // TODO: Is this still needed?
     hot: String(false),
   });
 
-  if (lazy) {
+  // Lazy bundling must be disabled for bundle splitting to work.
+  if (!isExporting && lazy) {
     queryParams.append('lazy', String(lazy));
   }
 
@@ -131,6 +181,9 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   if (preserveEnvVars) {
     queryParams.append('transform.preserveEnvVars', String(preserveEnvVars));
   }
+  if (baseUrl) {
+    queryParams.append('transform.baseUrl', baseUrl);
+  }
 
   if (environment) {
     queryParams.append('resolver.environment', environment);
@@ -142,6 +195,9 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   }
   if (serializerIncludeMaps) {
     queryParams.append('serializer.map', String(serializerIncludeMaps));
+  }
+  if (serializerIncludeBytecode) {
+    queryParams.append('serializer.bytecode', String(serializerIncludeBytecode));
   }
 
   return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;

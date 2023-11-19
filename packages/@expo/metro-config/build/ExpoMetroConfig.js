@@ -67,6 +67,13 @@ function _metroConfig() {
   };
   return data;
 }
+function _os() {
+  const data = _interopRequireDefault(require("os"));
+  _os = function () {
+    return data;
+  };
+  return data;
+}
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
@@ -91,6 +98,13 @@ function _customizeFrame() {
 function _env2() {
   const data = require("./env");
   _env2 = function () {
+    return data;
+  };
+  return data;
+}
+function _fileStore() {
+  const data = require("./file-store");
+  _fileStore = function () {
     return data;
   };
   return data;
@@ -151,6 +165,40 @@ function getAssetPlugins(projectRoot) {
   return [hashAssetFilesPath];
 }
 let hasWarnedAboutExotic = false;
+
+// Patch Metro's graph to support always parsing certain modules. This enables
+// things like Tailwind CSS which update based on their own heuristics.
+function patchMetroGraphToSupportUncachedModules() {
+  const {
+    Graph
+  } = require('metro/src/DeltaBundler/Graph');
+  const original_traverseDependencies = Graph.prototype.traverseDependencies;
+  if (!original_traverseDependencies.__patched) {
+    original_traverseDependencies.__patched = true;
+    Graph.prototype.traverseDependencies = function (paths, options) {
+      this.dependencies.forEach(dependency => {
+        // Find any dependencies that have been marked as `skipCache` and ensure they are invalidated.
+        // `skipCache` is set when a CSS module is found by PostCSS.
+        if (dependency.output.find(file => {
+          var _file$data$css;
+          return (_file$data$css = file.data.css) === null || _file$data$css === void 0 ? void 0 : _file$data$css.skipCache;
+        }) && !paths.includes(dependency.path)) {
+          // Ensure we invalidate the `unstable_transformResultKey` (input hash) so the module isn't removed in
+          // the Graph._processModule method.
+          dependency.unstable_transformResultKey = dependency.unstable_transformResultKey + '.';
+
+          // Add the path to the list of modified paths so it gets run through the transformer again,
+          // this will ensure it is passed to PostCSS -> Tailwind.
+          paths.push(dependency.path);
+        }
+      });
+      // Invoke the original method with the new paths to ensure the standard behavior is preserved.
+      return original_traverseDependencies.call(this, paths, options);
+    };
+    // Ensure we don't patch the method twice.
+    Graph.prototype.traverseDependencies.__patched = true;
+  }
+}
 function getDefaultConfig(projectRoot, {
   mode,
   isCSSEnabled = true
@@ -159,6 +207,9 @@ function getDefaultConfig(projectRoot, {
     getDefaultConfig: getDefaultMetroConfig,
     mergeConfig
   } = (0, _metroConfig2().importMetroConfig)(projectRoot);
+  if (isCSSEnabled) {
+    patchMetroGraphToSupportUncachedModules();
+  }
   const isExotic = mode === 'exotic' || _env2().env.EXPO_USE_EXOTIC;
   if (isExotic && !hasWarnedAboutExotic) {
     hasWarnedAboutExotic = true;
@@ -219,6 +270,9 @@ function getDefaultConfig(projectRoot, {
     reporter,
     ...metroDefaultValues
   } = getDefaultMetroConfig.getDefaultValues(projectRoot);
+  const cacheStore = new (_fileStore().FileStore)({
+    root: _path().default.join(_os().default.tmpdir(), 'metro-cache')
+  });
 
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
   // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
@@ -240,6 +294,7 @@ function getDefaultConfig(projectRoot, {
       sourceExts,
       nodeModulesPaths
     },
+    cacheStores: [cacheStore],
     watcher: {
       // strip starting dot from env files
       additionalExts: envFiles.map(file => file.replace(/^\./, ''))
@@ -289,7 +344,7 @@ function getDefaultConfig(projectRoot, {
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: require.resolve('./babel-transformer'),
-      assetRegistryPath: 'react-native/Libraries/Image/AssetRegistry',
+      assetRegistryPath: '@react-native/assets-registry/registry',
       assetPlugins: getAssetPlugins(projectRoot),
       getTransformOptions: async () => ({
         transform: {

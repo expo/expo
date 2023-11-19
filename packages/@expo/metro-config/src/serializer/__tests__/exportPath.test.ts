@@ -24,8 +24,9 @@ describe(getExportPathForDependencyWithOptions, () => {
         {
           serverRoot: '/Users/evanbacon/Documents/GitHub/expo-router/apps/sandbox',
           platform: 'web',
+          src: 'xxx',
         }
       )
-    ).toBe('_expo/static/js/web/external-4df81b27e74f4b9adcab7bc5a479cb7a.js');
+    ).toBe('_expo/static/js/web/external-f561aaf6ef0bf14d4208bb46a4ccb3ad.js');
   });
 });

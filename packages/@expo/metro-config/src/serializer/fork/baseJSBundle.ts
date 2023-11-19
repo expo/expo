@@ -21,12 +21,21 @@ export type Bundle = {
   modules: ModuleMap;
   post: string;
   pre: string;
-  _expoSplitBundlePaths: [number, Record<string, string>][];
+};
+
+export type ExpoSerializerOptions = SerializerOptions & {
+  serializerOptions?: {
+    baseUrl?: string;
+    skipWrapping?: boolean;
+    output?: string;
+    includeBytecode?: boolean;
+    includeSourceMaps?: boolean;
+  };
 };
 
 export function getPlatformOption(
   graph: Pick<ReadOnlyGraph, 'transformOptions'>,
-  options: SerializerOptions
+  options: Pick<SerializerOptions, 'sourceUrl'>
 ): string | null {
   if (graph.transformOptions?.platform != null) {
     return graph.transformOptions.platform;
@@ -42,11 +51,34 @@ export function getPlatformOption(
   return url.searchParams.get('platform') ?? null;
 }
 
+export function getSplitChunksOption(
+  graph: Pick<ReadOnlyGraph, 'transformOptions'>,
+  options: Pick<SerializerOptions, 'includeAsyncPaths' | 'sourceUrl'>
+): boolean {
+  // Only enable when the entire bundle is being split, and only run on web.
+  return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
+}
+
+export function getBaseUrlOption(
+  graph: Pick<ReadOnlyGraph, 'transformOptions'>,
+  options: Pick<ExpoSerializerOptions, 'serializerOptions'>
+): string {
+  const baseUrl = graph.transformOptions?.customTransformOptions?.baseUrl;
+  if (typeof baseUrl === 'string') {
+    // This tells us that the value came over a URL and may be encoded.
+    const mayBeEncoded = options.serializerOptions == null;
+    const option = mayBeEncoded ? decodeURIComponent(baseUrl) : baseUrl;
+
+    return option.replace(/\/+$/, '') + '/';
+  }
+  return '/';
+}
+
 export function baseJSBundle(
   entryPoint: string,
   preModules: readonly Module[],
   graph: Pick<ReadOnlyGraph, 'dependencies' | 'transformOptions'>,
-  options: SerializerOptions
+  options: ExpoSerializerOptions
 ): Bundle {
   const platform = getPlatformOption(graph, options);
   if (platform == null) {
@@ -55,7 +87,11 @@ export function baseJSBundle(
 
   return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
     ...options,
+    baseUrl: getBaseUrlOption(graph, options),
+    splitChunks: getSplitChunksOption(graph, options),
     platform,
+    skipWrapping: !!options.serializerOptions?.skipWrapping,
+    computedAsyncModulePaths: null,
   });
 }
 
@@ -63,7 +99,13 @@ export function baseJSBundleWithDependencies(
   entryPoint: string,
   preModules: readonly Module[],
   dependencies: Module<MixedOutput>[],
-  options: SerializerOptions & { platform: string }
+  options: ExpoSerializerOptions & {
+    platform: string;
+    baseUrl: string;
+    splitChunks: boolean;
+    skipWrapping: boolean;
+    computedAsyncModulePaths: Record<string, string> | null;
+  }
 ): Bundle {
   for (const module of dependencies) {
     options.createModuleId(module.path);
@@ -78,6 +120,10 @@ export function baseJSBundleWithDependencies(
     serverRoot: options.serverRoot,
     sourceUrl: options.sourceUrl,
     platform: options.platform,
+    baseUrl: options.baseUrl,
+    splitChunks: options.splitChunks,
+    skipWrapping: options.skipWrapping,
+    computedAsyncModulePaths: options.computedAsyncModulePaths,
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested
@@ -103,8 +149,12 @@ export function baseJSBundleWithDependencies(
       runBeforeMainModule: options.runBeforeMainModule,
       runModule: options.runModule,
       shouldAddToIgnoreList: options.shouldAddToIgnoreList,
-      sourceMapUrl: options.sourceMapUrl,
-      sourceUrl: options.sourceUrl,
+      sourceMapUrl:
+        options.serializerOptions?.includeSourceMaps === false ? undefined : options.sourceMapUrl,
+      // This directive doesn't make a lot of sense in the context of a large single bundle that represent
+      // multiple files. It's usually used for things like TypeScript where you want the file name to appear with a
+      // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web.
+      sourceUrl: options.platform === 'web' ? undefined : options.sourceUrl,
     }),
     processModulesOptions
   )
@@ -122,9 +172,5 @@ export function baseJSBundleWithDependencies(
       id,
       typeof code === 'number' ? code : code.src,
     ]) as ModuleMap,
-    _expoSplitBundlePaths: mods.map(([id, code]) => [
-      id,
-      typeof code === 'number' ? {} : code.paths,
-    ]) as [number, Record<string, string>][],
   };
 }

@@ -131,6 +131,7 @@ const home = [
 const general = [
   makeSection('', [makePage('guides/overview.mdx')]),
   makeSection('Development process', [
+    makePage('workflow/overview.mdx'),
     makePage('workflow/configuration.mdx'),
     makePage('guides/local-app-development.mdx'),
     makePage('workflow/using-libraries.mdx'),
@@ -377,6 +378,7 @@ const general = [
         makePage('guides/configuring-js-engines.mdx'),
         makePage('guides/using-bun.mdx'),
         makePage('guides/editing-richtext.mdx'),
+        makePage('guides/store-assets.mdx'),
       ]),
       makeSection('Integrations', [
         makePage('guides/using-analytics.mdx'),

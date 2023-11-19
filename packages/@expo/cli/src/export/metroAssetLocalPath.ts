@@ -13,22 +13,22 @@ import path from 'path';
 
 export function getAssetLocalPath(
   asset: Pick<AssetData, 'type' | 'httpServerLocation' | 'name'>,
-  { basePath, scale, platform }: { basePath?: string; scale: number; platform: string }
+  { baseUrl, scale, platform }: { baseUrl?: string; scale: number; platform: string }
 ): string {
   if (platform === 'android') {
-    return getAssetLocalPathAndroid(asset, { basePath, scale });
+    return getAssetLocalPathAndroid(asset, { baseUrl, scale });
   }
-  return getAssetLocalPathDefault(asset, { basePath, scale });
+  return getAssetLocalPathDefault(asset, { baseUrl, scale });
 }
 
 function getAssetLocalPathAndroid(
   asset: Pick<AssetData, 'type' | 'httpServerLocation' | 'name'>,
   {
-    basePath,
+    baseUrl,
     scale,
   }: {
-    // TODO: basePath support
-    basePath?: string;
+    // TODO: baseUrl support
+    baseUrl?: string;
     scale: number;
   }
 ): string {
@@ -39,12 +39,12 @@ function getAssetLocalPathAndroid(
 
 function getAssetLocalPathDefault(
   asset: Pick<AssetData, 'type' | 'httpServerLocation' | 'name'>,
-  { basePath, scale }: { basePath?: string; scale: number }
+  { baseUrl, scale }: { baseUrl?: string; scale: number }
 ): string {
   const suffix = scale === 1 ? '' : `@${scale}x`;
   const fileName = `${asset.name + suffix}.${asset.type}`;
 
-  const adjustedHttpServerLocation = stripAssetPrefix(asset.httpServerLocation, basePath);
+  const adjustedHttpServerLocation = stripAssetPrefix(asset.httpServerLocation, baseUrl);
   return path.join(
     // Assets can have relative paths outside of the project root.
     // Replace `../` with `_` to make sure they don't end up outside of
@@ -54,14 +54,14 @@ function getAssetLocalPathDefault(
   );
 }
 
-export function stripAssetPrefix(path: string, basePath?: string) {
+export function stripAssetPrefix(path: string, baseUrl?: string) {
   path = path.replace(/\/assets\?export_path=(.*)/, '$1');
 
   // TODO: Windows?
-  if (basePath) {
+  if (baseUrl) {
     return path.replace(/^\/+/g, '').replace(
       new RegExp(
-        `^${basePath
+        `^${baseUrl
           .replace(/^\/+/g, '')
           .replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
           .replace(/-/g, '\\x2d')}`,
@@ -113,7 +113,7 @@ function getAndroidResourceFolderName(asset: Pick<AssetData, 'type'>, scale: num
 }
 
 function getResourceIdentifier(asset: Pick<AssetData, 'httpServerLocation' | 'name'>): string {
-  const folderPath = getBasePath(asset);
+  const folderPath = getBaseUrl(asset);
   return `${folderPath}/${asset.name}`
     .toLowerCase()
     .replace(/\//g, '_') // Encode folder structure in file name
@@ -121,10 +121,10 @@ function getResourceIdentifier(asset: Pick<AssetData, 'httpServerLocation' | 'na
     .replace(/^assets_/, ''); // Remove "assets_" prefix
 }
 
-function getBasePath(asset: Pick<AssetData, 'httpServerLocation'>): string {
-  let basePath = asset.httpServerLocation;
-  if (basePath[0] === '/') {
-    basePath = basePath.substring(1);
+function getBaseUrl(asset: Pick<AssetData, 'httpServerLocation'>): string {
+  let baseUrl = asset.httpServerLocation;
+  if (baseUrl[0] === '/') {
+    baseUrl = baseUrl.substring(1);
   }
-  return basePath;
+  return baseUrl;
 }

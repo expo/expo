@@ -1,15 +1,15 @@
 "use strict";
 
-function _inlineRequires() {
-  const data = _interopRequireDefault(require("babel-preset-fbjs/plugins/inline-requires"));
-  _inlineRequires = function () {
+function _hmr() {
+  const data = _interopRequireDefault(require("@react-native/babel-preset/src/configs/hmr"));
+  _hmr = function () {
     return data;
   };
   return data;
 }
-function _hmr() {
-  const data = _interopRequireDefault(require("metro-react-native-babel-preset/src/configs/hmr"));
-  _hmr = function () {
+function _inlineRequires() {
+  const data = _interopRequireDefault(require("babel-preset-fbjs/plugins/inline-requires"));
+  _inlineRequires = function () {
     return data;
   };
   return data;
@@ -73,7 +73,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const cacheKeyParts = [_nodeFs().default.readFileSync(__filename), require('babel-preset-fbjs/package.json').version];
 
-// TS detection conditions copied from metro-react-native-babel-preset
+// TS detection conditions copied from @react-native/babel-preset
 function isTypeScriptSource(fileName) {
   return !!fileName && fileName.endsWith('.ts');
 }
@@ -232,7 +232,7 @@ const transform = ({
   // Ensure the default babel preset is Expo.
   options.extendsBabelConfigPath = (_getBabelPresetExpo = getBabelPresetExpo(options.projectRoot)) !== null && _getBabelPresetExpo !== void 0 ? _getBabelPresetExpo : undefined;
   try {
-    var _options$customTransf, _options$customTransf2, _options$customTransf3;
+    var _options$customTransf, _options$customTransf2, _options$customTransf3, _options$customTransf4;
     const babelConfig = {
       // ES modules require sourceType='module' but OSS may not always want that
       sourceType: 'unambiguous',
@@ -245,14 +245,16 @@ const transform = ({
         // Empower the babel preset to know the env it's bundling for.
         // Metro automatically updates the cache to account for the custom transform options.
         isServer: ((_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment) === 'node',
+        // The base url to make requests from, used for hosting from non-standard locations.
+        baseUrl: typeof ((_options$customTransf2 = options.customTransformOptions) === null || _options$customTransf2 === void 0 ? void 0 : _options$customTransf2.baseUrl) === 'string' ? decodeURI(options.customTransformOptions.baseUrl) : '',
         isDev: options.dev,
         // This value indicates if the user has disabled the feature or not.
         // Other criteria may still cause the feature to be disabled, but all inputs used are
         // already considered in the cache key.
-        preserveEnvVars: isCustomTruthy((_options$customTransf2 = options.customTransformOptions) === null || _options$customTransf2 === void 0 ? void 0 : _options$customTransf2.preserveEnvVars) ? true : undefined,
+        preserveEnvVars: isCustomTruthy((_options$customTransf3 = options.customTransformOptions) === null || _options$customTransf3 === void 0 ? void 0 : _options$customTransf3.preserveEnvVars) ? true : undefined,
         // Pass the engine to babel so we can automatically transpile for the correct
         // target environment.
-        engine: (_options$customTransf3 = options.customTransformOptions) === null || _options$customTransf3 === void 0 ? void 0 : _options$customTransf3.engine,
+        engine: (_options$customTransf4 = options.customTransformOptions) === null || _options$customTransf4 === void 0 ? void 0 : _options$customTransf4.engine,
         // Provide the project root for accurately reading the Expo config.
         projectRoot: options.projectRoot
       },

@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-config",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
   "scripts": {
@@ -28,6 +28,7 @@
   "files": [
     "build",
     "transformer",
+    "file-store",
     "babel-transformer"
   ],
   "dependencies": {
@@ -41,13 +42,14 @@
     "getenv": "^1.0.0",
     "jsc-safe-url": "^0.2.4",
     "lightningcss": "~1.19.0",
+    "path-to-regexp": "~1.8.0",
     "postcss": "~8.4.21",
     "resolve-from": "^5.0.0",
     "sucrase": "^3.20.0"
   },
   "peerDependencies": {
     "@babel/core": "*",
-    "metro-react-native-babel-preset": "*"
+    "@react-native/babel-preset": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",

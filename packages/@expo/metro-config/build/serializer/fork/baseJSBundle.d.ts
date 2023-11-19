@@ -14,10 +14,24 @@ export type Bundle = {
     modules: ModuleMap;
     post: string;
     pre: string;
-    _expoSplitBundlePaths: [number, Record<string, string>][];
 };
-export declare function getPlatformOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: SerializerOptions): string | null;
-export declare function baseJSBundle(entryPoint: string, preModules: readonly Module[], graph: Pick<ReadOnlyGraph, 'dependencies' | 'transformOptions'>, options: SerializerOptions): Bundle;
-export declare function baseJSBundleWithDependencies(entryPoint: string, preModules: readonly Module[], dependencies: Module<MixedOutput>[], options: SerializerOptions & {
+export type ExpoSerializerOptions = SerializerOptions & {
+    serializerOptions?: {
+        baseUrl?: string;
+        skipWrapping?: boolean;
+        output?: string;
+        includeBytecode?: boolean;
+        includeSourceMaps?: boolean;
+    };
+};
+export declare function getPlatformOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: Pick<SerializerOptions, 'sourceUrl'>): string | null;
+export declare function getSplitChunksOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: Pick<SerializerOptions, 'includeAsyncPaths' | 'sourceUrl'>): boolean;
+export declare function getBaseUrlOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: Pick<ExpoSerializerOptions, 'serializerOptions'>): string;
+export declare function baseJSBundle(entryPoint: string, preModules: readonly Module[], graph: Pick<ReadOnlyGraph, 'dependencies' | 'transformOptions'>, options: ExpoSerializerOptions): Bundle;
+export declare function baseJSBundleWithDependencies(entryPoint: string, preModules: readonly Module[], dependencies: Module<MixedOutput>[], options: ExpoSerializerOptions & {
     platform: string;
+    baseUrl: string;
+    splitChunks: boolean;
+    skipWrapping: boolean;
+    computedAsyncModulePaths: Record<string, string> | null;
 }): Bundle;

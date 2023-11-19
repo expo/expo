@@ -24,7 +24,8 @@ describe('exports static without sourcemaps', () => {
           E2E_ROUTER_SRC: 'url-polyfill',
           _EXPO_NO_METRO_FILE_MAP_ERRORS: '1',
           E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
+          // TODO: Reenable this after investigating unstable_getRealPath
+          EXPO_USE_FAST_RESOLVER: 'false',
         },
       });
     },

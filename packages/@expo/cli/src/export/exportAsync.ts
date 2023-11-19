@@ -21,5 +21,5 @@ export async function exportAsync(projectRoot: string, options: Options) {
   FileNotifier.stopAll();
 
   // Final notes
-  Log.log(`Export was successful. Your exported files can be found in ${options.outputDir}`);
+  Log.log(`App exported to: ${options.outputDir}`);
 }

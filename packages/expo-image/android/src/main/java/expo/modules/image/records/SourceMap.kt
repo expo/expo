@@ -38,15 +38,6 @@ data class SourceMap(
 
   private fun isLocalFileUri() = parsedUri?.scheme?.startsWith("file") ?: false
 
-  private fun isSvg(): Boolean {
-    var lastDotIndex = parsedUri?.toString()?.lastIndexOf('.')
-    // if the path has no file extension and no . at all (e.g. file://path/to/file) return false
-    if (lastDotIndex == -1 || lastDotIndex == null) {
-      return false
-    }
-    return parsedUri?.toString()?.substring(lastDotIndex)?.startsWith(".svg") ?: false
-  }
-
   fun isBlurhash() = parsedUri?.scheme?.startsWith("blurhash") ?: false
 
   fun isThumbhash() = parsedUri?.scheme?.startsWith("thumbhash") ?: false
@@ -111,7 +102,7 @@ data class SourceMap(
 
         // Override the size for local assets (apart from SVGs). This ensures that
         // resizeMode "center" displays the image in the correct size.
-        if (width != 0 && height != 0 && !isSvg()) {
+        if (width != 0 && height != 0) {
           override((width * scale).toInt(), (height * scale).toInt())
         }
 

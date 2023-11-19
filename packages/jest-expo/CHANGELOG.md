@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 50.0.0-alpha.4 — 2023-11-14
+
+### 🎉 New features
+
 - Install `URL` API support on the global for native. ([#24941](https://github.com/expo/expo/pull/24941) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
@@ -14,6 +22,7 @@
 
 ### 💡 Others
 
+- Collapse re-export of `react-native/Libraries/Image/AssetRegistry` to `@react-native/assets-registry/registry`. ([#25265](https://github.com/expo/expo/pull/25265) by [@EvanBacon](https://github.com/EvanBacon))
 - Renamed `ExponentCamera` to `ExpoCamera`. ([#22604](https://github.com/expo/expo/pull/22604) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 50.0.0-alpha.3 — 2023-10-17

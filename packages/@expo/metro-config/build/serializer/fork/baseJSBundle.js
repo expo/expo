@@ -5,7 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.baseJSBundle = baseJSBundle;
 exports.baseJSBundleWithDependencies = baseJSBundleWithDependencies;
+exports.getBaseUrlOption = getBaseUrlOption;
 exports.getPlatformOption = getPlatformOption;
+exports.getSplitChunksOption = getSplitChunksOption;
 function _jscSafeUrl() {
   const data = require("jsc-safe-url");
   _jscSafeUrl = function () {
@@ -51,17 +53,38 @@ function getPlatformOption(graph, options) {
   const url = new URL(sourceUrl, 'https://expo.dev');
   return (_url$searchParams$get = url.searchParams.get('platform')) !== null && _url$searchParams$get !== void 0 ? _url$searchParams$get : null;
 }
+function getSplitChunksOption(graph, options) {
+  // Only enable when the entire bundle is being split, and only run on web.
+  return !options.includeAsyncPaths && getPlatformOption(graph, options) === 'web';
+}
+function getBaseUrlOption(graph, options) {
+  var _graph$transformOptio2, _graph$transformOptio3;
+  const baseUrl = (_graph$transformOptio2 = graph.transformOptions) === null || _graph$transformOptio2 === void 0 ? void 0 : (_graph$transformOptio3 = _graph$transformOptio2.customTransformOptions) === null || _graph$transformOptio3 === void 0 ? void 0 : _graph$transformOptio3.baseUrl;
+  if (typeof baseUrl === 'string') {
+    // This tells us that the value came over a URL and may be encoded.
+    const mayBeEncoded = options.serializerOptions == null;
+    const option = mayBeEncoded ? decodeURIComponent(baseUrl) : baseUrl;
+    return option.replace(/\/+$/, '') + '/';
+  }
+  return '/';
+}
 function baseJSBundle(entryPoint, preModules, graph, options) {
+  var _options$serializerOp;
   const platform = getPlatformOption(graph, options);
   if (platform == null) {
     throw new Error('platform could not be determined for Metro bundle');
   }
   return baseJSBundleWithDependencies(entryPoint, preModules, [...graph.dependencies.values()], {
     ...options,
-    platform
+    baseUrl: getBaseUrlOption(graph, options),
+    splitChunks: getSplitChunksOption(graph, options),
+    platform,
+    skipWrapping: !!((_options$serializerOp = options.serializerOptions) !== null && _options$serializerOp !== void 0 && _options$serializerOp.skipWrapping),
+    computedAsyncModulePaths: null
   });
 }
 function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, options) {
+  var _options$serializerOp2;
   for (const module of dependencies) {
     options.createModuleId(module.path);
   }
@@ -73,7 +96,11 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
     projectRoot: options.projectRoot,
     serverRoot: options.serverRoot,
     sourceUrl: options.sourceUrl,
-    platform: options.platform
+    platform: options.platform,
+    baseUrl: options.baseUrl,
+    splitChunks: options.splitChunks,
+    skipWrapping: options.skipWrapping,
+    computedAsyncModulePaths: options.computedAsyncModulePaths
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested
@@ -90,15 +117,17 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
     runBeforeMainModule: options.runBeforeMainModule,
     runModule: options.runModule,
     shouldAddToIgnoreList: options.shouldAddToIgnoreList,
-    sourceMapUrl: options.sourceMapUrl,
-    sourceUrl: options.sourceUrl
+    sourceMapUrl: ((_options$serializerOp2 = options.serializerOptions) === null || _options$serializerOp2 === void 0 ? void 0 : _options$serializerOp2.includeSourceMaps) === false ? undefined : options.sourceMapUrl,
+    // This directive doesn't make a lot of sense in the context of a large single bundle that represent
+    // multiple files. It's usually used for things like TypeScript where you want the file name to appear with a
+    // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web.
+    sourceUrl: options.platform === 'web' ? undefined : options.sourceUrl
   }), processModulesOptions).map(([, code]) => code.src).join('\n');
   const mods = (0, _processModules().processModules)([...dependencies], processModulesOptions).map(([module, code]) => [options.createModuleId(module.path), code]);
   return {
     pre: preCode,
     post: postCode,
-    modules: mods.map(([id, code]) => [id, typeof code === 'number' ? code : code.src]),
-    _expoSplitBundlePaths: mods.map(([id, code]) => [id, typeof code === 'number' ? {} : code.paths])
+    modules: mods.map(([id, code]) => [id, typeof code === 'number' ? code : code.src])
   };
 }
 //# sourceMappingURL=baseJSBundle.js.map
