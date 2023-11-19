@@ -25,7 +25,7 @@ import { directoryExistsSync, fileExistsSync } from '../../../utils/dir';
  *
  * @returns Transformed `package.json` contents.
  */
-export type PackageFilter = (pkg: PackageJSON, file: string, dir: string) => PackageJSON;
+type PackageFilter = (pkg: PackageJSON, file: string, dir: string) => PackageJSON;
 
 /**
  * Allows transforming a path within a package.
@@ -36,9 +36,9 @@ export type PackageFilter = (pkg: PackageJSON, file: string, dir: string) => Pac
  *
  * @returns Relative path that will be joined from the `package.json` location.
  */
-export type PathFilter = (pkg: PackageJSON, path: string, relativePath: string) => string;
+type PathFilter = (pkg: PackageJSON, path: string, relativePath: string) => string;
 
-export type ResolverOptions = {
+type ResolverOptions = {
   /** Directory to begin resolving from. */
   basedir: string;
   /** List of export conditions. */
@@ -78,15 +78,10 @@ export type ResolverOptions = {
 
 type UpstreamResolveOptionsWithConditions = UpstreamResolveOptions & ResolverOptions;
 
-export type SyncResolver = (path: string, options: ResolverOptions) => string;
-export type AsyncResolver = (path: string, options: ResolverOptions) => Promise<string>;
-
-export type Resolver = SyncResolver | AsyncResolver;
-
-const defaultResolver: SyncResolver = (
-  path,
-  { enablePackageExports, blockList = [], ...options }
-) => {
+const defaultResolver = (
+  path: string,
+  { enablePackageExports, blockList = [], ...options }: Omit<ResolverOptions, 'defaultResolver'>
+): string => {
   // @ts-expect-error
   const resolveOptions: UpstreamResolveOptionsWithConditions = {
     ...options,
