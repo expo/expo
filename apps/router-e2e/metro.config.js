@@ -17,7 +17,7 @@ config.resolver.blockList = [
   ...config.resolver.blockList,
 
   /node_modules\/@react-navigation\/native-stack\/node_modules\/@react-navigation\//,
-  /packages\/expo-router\/node_modules\/@react-navigation/,
+  /\/expo-router\/node_modules\/@react-navigation/,
   /node_modules\/pretty-format\/node_modules\/react-is/,
 ];
 
