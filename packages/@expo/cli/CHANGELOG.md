@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix test resolver for SDK 50.
 - Prevent log-spew when running prebuild in debug mode. ([#25434](https://github.com/expo/expo/pull/25434) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
