@@ -663,6 +663,9 @@ export async function initAsync(
       '-keep class org.apache.commons.** { *; }',
       '-dontwarn androidx.appcompat.graphics.drawable.DrawableWrapper',
       '-dontwarn com.facebook.react.views.slider.**',
+      '-dontwarn javax.lang.model.element.Modifier',
+      '-dontwarn org.checkerframework.checker.nullness.qual.EnsuresNonNullIf',
+      '-dontwarn org.checkerframework.dataflow.qual.Pure',
       '',
     ].join('\n'),
     'utf-8'
