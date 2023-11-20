@@ -35,8 +35,8 @@ export const Header = ({
             openInNewTab
             theme="quaternary"
             className="px-2 text-secondary"
-            href="https://blog.expo.dev">
-            Blog
+            href="https://expo.dev/changelog">
+            Changelog
           </Button>
           <Button
             openInNewTab
@@ -45,14 +45,6 @@ export const Header = ({
             className="px-2 text-secondary"
             href="https://expo.dev/mailing-list/signup">
             Newsletter
-          </Button>
-          <Button
-            openInNewTab
-            theme="quaternary"
-            css={hideOnMobileStyle}
-            className="px-2 text-secondary"
-            href="https://expo.dev/changelog">
-            Changelog
           </Button>
           <Button
             openInNewTab
