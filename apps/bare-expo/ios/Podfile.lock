@@ -1363,7 +1363,7 @@ PODS:
     - React-perflogger (= 0.73.0-rc.4)
   - RNCAsyncStorage (1.18.2):
     - React-Core
-  - RNCMaskedView (0.2.9):
+  - RNCMaskedView (0.3.0):
     - React-Core
   - RNCPicker (2.5.1):
     - React-Core
@@ -2064,7 +2064,7 @@ SPEC CHECKSUMS:
   React-utils: 90f8d89937d2e04a941b9ce91b241034f5b4115a
   ReactCommon: 1be3b68d3f445d84dc3a8b10f38b1ef3a1fae6fc
   RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
-  RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
+  RNCMaskedView: f7c74478c83c4fdfc5cf4df51f80c0dd5cf125c6
   RNCPicker: 529d564911e93598cc399b56cc0769ce3675f8c8
   RNDateTimePicker: 3942382593f104af226ad9c56e16166960c7ae30
   RNFlashList: 4b4b6b093afc0df60ae08f9cbf6ccd4c836c667a
