@@ -2020,7 +2020,7 @@ PODS:
   - React-Mapbuffer (0.73.0-rc.4):
     - glog
     - React-debug
-  - react-native-netinfo (9.3.10):
+  - react-native-netinfo (11.1.0):
     - React-Core
   - react-native-pager-view (6.2.0):
     - React-Core
@@ -3284,7 +3284,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 1c589accb47d99cd7c6e20590b34b489bd2b6594
   EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
   EXTaskManager: 81b2dfaaba6d9f9a4bc3e3e2a786a98004eb9e98
-  EXUpdates: e9f30b5fde2bbeabaf340081ecae3eca3a3312c2
+  EXUpdates: 7cadb6e8aa941a409d1110c49ebf6d106cf52943
   EXUpdatesInterface: 4f787eeabc62c258f978ea4865c67adfb6b2f19f
   FBAEMKit: 4763aa27b8f69eb9d2c274189e91388de1dbd88a
   FBAudienceNetwork: 03e273f66b70756be7d060927111af97b7641b06
@@ -3345,7 +3345,7 @@ SPEC CHECKSUMS:
   React-jsinspector: d73cab717d8339f4f9519023415ca3416407cfbf
   React-logger: ad5efbc68ad8d9d2ba3de2010fd0d44c06ac1705
   React-Mapbuffer: bd11535c681b3d60cf5c0c05acb7b8c7f0841d50
-  react-native-netinfo: ccbe1085dffd16592791d550189772e13bf479e2
+  react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
   react-native-pager-view: 0ccb8bf60e2ebd38b1f3669fa3650ecce81db2df
   react-native-safe-area-context: 36cc67648134e89465663b8172336a19eeda493d
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
