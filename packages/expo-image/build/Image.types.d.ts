@@ -386,5 +386,33 @@ export type ImageProgressEventData = {
 export type ImageErrorEventData = {
     error: string;
 };
+/**
+ * An object that is a reference to a native image instance.
+ */
+export declare class ImageRef {
+    /**
+     * Logical width of the image. Multiply it by the value in the `scale` property to get the width in pixels.
+     */
+    width: number;
+    /**
+     * Logical height of the image. Multiply it by the value in the `scale` property to get the height in pixels.
+     */
+    height: number;
+    /**
+     * If you load an image from a file whose name includes the `@2x` modifier, the scale is set to **2.0**.
+     * All other images are assumed to have a scale factor of **1.0**.
+     * If you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
+     */
+    scale: number;
+    /**
+     * Media type (also known as MIME type) of the image, based on its format.
+     * Returns `null` when the format is unknown or not supported.
+     */
+    mediaType: string | null;
+    /**
+     * Whether the referenced image is an animated image.
+     */
+    isAnimated?: boolean;
+}
 export {};
 //# sourceMappingURL=Image.types.d.ts.map

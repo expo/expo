@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import ExpoImage, { ExpoImageModule } from './ExpoImage';
-import { ImageProps } from './Image.types';
+import { ImageProps, ImageRef, ImageSource } from './Image.types';
 import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
 import { resolveSources } from './utils/resolveSources';
 
@@ -15,6 +15,11 @@ export class Image extends React.PureComponent<ImageProps> {
     super(props);
     this.nativeViewRef = React.createRef();
   }
+
+  /**
+   * @hidden
+   */
+  static Image = ExpoImageModule.Image;
 
   /**
    * Preloads images at the given URLs that can be later used in the image view.
@@ -88,6 +93,15 @@ export class Image extends React.PureComponent<ImageProps> {
    */
   async stopAnimating(): Promise<void> {
     await this.nativeViewRef.current.stopAnimating();
+  }
+
+  /**
+   * Loads an image from the given source to memory and resolves to
+   * an object that references the native image instance.
+   * @platform ios
+   */
+  static loadAsync(source: ImageSource): Promise<ImageRef> {
+    return ExpoImageModule.loadAsync(source);
   }
 
   render() {

@@ -16,6 +16,20 @@ const ANIMATED_IMAGE_SOURCE = {
 
 export async function test(t, { setPortalChild, cleanupPortal }) {
   t.describe('Image', () => {
+    t.it('loads the image', async () => {
+      const image = await Image.loadAsync(REMOTE_SOURCE);
+
+      t.expect(image).toBeDefined();
+      t.expect(image instanceof Image.Image).toBe(true);
+      t.expect(image.width).toBeGreaterThan(0);
+      t.expect(image.height).toBeGreaterThan(0);
+      t.expect(image.scale).toBe(1);
+      t.expect(image.isAnimated).toBe(false);
+      t.expect(image.mediaType).toBe('image/jpeg');
+    });
+  });
+
+  t.describe('ImageView', () => {
     t.afterEach(async () => {
       await cleanupPortal();
     });
