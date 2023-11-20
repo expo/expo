@@ -18,12 +18,16 @@ import java.io.File
 class NoDatabaseLauncher @JvmOverloads constructor(
   context: Context,
   fatalException: Exception? = null
-) : Launcher {
-  override val bundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME
-  override val launchedUpdate = null
-  override val launchAssetFile = null
-  override val localAssetFiles = null
-  override val isUsingEmbeddedAssets = true
+) {
+  fun launch(): LauncherResult {
+    return LauncherResult(
+      bundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME,
+      launchedUpdate = null,
+      launchAssetFile = null,
+      localAssetFiles = null,
+      isUsingEmbeddedAssets = true
+    )
+  }
 
   private fun writeErrorToLog(context: Context, fatalException: Exception) {
     try {

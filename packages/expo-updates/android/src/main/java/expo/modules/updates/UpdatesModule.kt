@@ -7,6 +7,7 @@ import android.util.Log
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.updates.logging.UpdatesErrorCode
@@ -86,18 +87,8 @@ class UpdatesModule : Module() {
       constants
     }
 
-    AsyncFunction("reload") { promise: Promise ->
-      UpdatesController.instance.relaunchReactApplicationForModule(
-        object : IUpdatesController.ModuleCallback<Unit> {
-          override fun onSuccess(result: Unit) {
-            promise.resolve(null)
-          }
-
-          override fun onFailure(exception: CodedException) {
-            promise.reject(exception)
-          }
-        }
-      )
+    AsyncFunction("reload") Coroutine { ->
+      UpdatesController.instance.relaunchReactApplicationForModule()
     }
 
     // Used internally by useUpdates() to get its initial state
@@ -113,124 +104,74 @@ class UpdatesModule : Module() {
       })
     }
 
-    AsyncFunction("checkForUpdateAsync") { promise: Promise ->
-      UpdatesController.instance.checkForUpdate(
-        object : IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult> {
-          override fun onSuccess(result: IUpdatesController.CheckForUpdateResult) {
-            when (result) {
-              is IUpdatesController.CheckForUpdateResult.ErrorResult -> {
-                promise.reject("ERR_UPDATES_CHECK", result.message, result.error)
-                Log.e(TAG, result.message, result.error)
-              }
-              is IUpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
-                promise.resolve(
-                  Bundle().apply {
-                    putBoolean("isRollBackToEmbedded", false)
-                    putBoolean("isAvailable", false)
-                    putString("reason", result.reason.value)
-                  }
-                )
-              }
-              is IUpdatesController.CheckForUpdateResult.RollBackToEmbedded -> {
-                promise.resolve(
-                  Bundle().apply {
-                    putBoolean("isRollBackToEmbedded", true)
-                    putBoolean("isAvailable", false)
-                  }
-                )
-              }
-              is IUpdatesController.CheckForUpdateResult.UpdateAvailable -> {
-                promise.resolve(
-                  Bundle().apply {
-                    putBoolean("isRollBackToEmbedded", false)
-                    putBoolean("isAvailable", true)
-                    putString(
-                      "manifestString",
-                      result.updateManifest.manifest.toString()
-                    )
-                  }
-                )
-              }
-            }
-          }
-
-          override fun onFailure(exception: CodedException) {
-            promise.reject(exception)
+    AsyncFunction("checkForUpdateAsync") Coroutine { ->
+      when (val result = UpdatesController.instance.checkForUpdate()) {
+        is IUpdatesController.CheckForUpdateResult.ErrorResult -> {
+          Log.e(TAG, result.message, result.error)
+          throw CodedException("ERR_UPDATES_CHECK", result.message, result.error)
+        }
+        is IUpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", false)
+            putBoolean("isAvailable", false)
+            putString("reason", result.reason.value)
           }
         }
-      )
-    }
-
-    AsyncFunction("fetchUpdateAsync") { promise: Promise ->
-      UpdatesController.instance.fetchUpdate(
-        object : IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult> {
-          override fun onSuccess(result: IUpdatesController.FetchUpdateResult) {
-            when (result) {
-              is IUpdatesController.FetchUpdateResult.ErrorResult -> {
-                promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", result.error)
-              }
-              is IUpdatesController.FetchUpdateResult.Failure -> {
-                promise.resolve(
-                  Bundle().apply {
-                    putBoolean("isRollBackToEmbedded", false)
-                    putBoolean("isNew", false)
-                  }
-                )
-              }
-              is IUpdatesController.FetchUpdateResult.RollBackToEmbedded -> {
-                promise.resolve(
-                  Bundle().apply {
-                    putBoolean("isRollBackToEmbedded", true)
-                    putBoolean("isNew", false)
-                  }
-                )
-              }
-              is IUpdatesController.FetchUpdateResult.Success -> {
-                promise.resolve(
-                  Bundle().apply {
-                    putBoolean("isRollBackToEmbedded", false)
-                    putBoolean("isNew", true)
-                    putString("manifestString", result.update.manifest.toString())
-                  }
-                )
-              }
-            }
-          }
-
-          override fun onFailure(exception: CodedException) {
-            promise.reject(exception)
+        is IUpdatesController.CheckForUpdateResult.RollBackToEmbedded -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", true)
+            putBoolean("isAvailable", false)
           }
         }
-      )
+        is IUpdatesController.CheckForUpdateResult.UpdateAvailable -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", false)
+            putBoolean("isAvailable", true)
+            putString(
+              "manifestString",
+              result.updateManifest.manifest.toString()
+            )
+          }
+        }
+      }
     }
 
-    AsyncFunction("getExtraParamsAsync") { promise: Promise ->
+    AsyncFunction("fetchUpdateAsync") Coroutine { ->
+      val result = UpdatesController.instance.fetchUpdate()
+      when (result) {
+        is IUpdatesController.FetchUpdateResult.ErrorResult -> {
+          throw CodedException("ERR_UPDATES_FETCH", "Failed to download new update", result.error)
+        }
+        is IUpdatesController.FetchUpdateResult.Failure -> {
+          Bundle().apply {
+              putBoolean("isRollBackToEmbedded", false)
+              putBoolean("isNew", false)
+            }
+        }
+        is IUpdatesController.FetchUpdateResult.RollBackToEmbedded -> {
+          Bundle().apply {
+              putBoolean("isRollBackToEmbedded", true)
+              putBoolean("isNew", false)
+            }
+        }
+        is IUpdatesController.FetchUpdateResult.Success -> {
+          Bundle().apply {
+              putBoolean("isRollBackToEmbedded", false)
+              putBoolean("isNew", true)
+              putString("manifestString", result.update.manifest.toString())
+            }
+        }
+      }
+    }
+
+    AsyncFunction("getExtraParamsAsync") Coroutine { ->
       logger.debug("Called getExtraParamsAsync")
-      UpdatesController.instance.getExtraParams(object : IUpdatesController.ModuleCallback<Bundle> {
-        override fun onSuccess(result: Bundle) {
-          promise.resolve(result)
-        }
-
-        override fun onFailure(exception: CodedException) {
-          promise.reject(exception)
-        }
-      })
+      UpdatesController.instance.getExtraParams()
     }
 
-    AsyncFunction("setExtraParamAsync") { key: String, value: String?, promise: Promise ->
+    AsyncFunction("setExtraParamAsync") Coroutine { key: String, value: String? ->
       logger.debug("Called setExtraParamAsync with key = $key, value = $value")
-      UpdatesController.instance.setExtraParam(
-        key, value,
-        object : IUpdatesController.ModuleCallback<Unit> {
-          override fun onSuccess(result: Unit) {
-            promise.resolve(null)
-          }
-
-          override fun onFailure(exception: CodedException) {
-            promise.reject(exception)
-          }
-        }
-      )
+      UpdatesController.instance.setExtraParam(key, value)
     }
 
     AsyncFunction("readLogEntriesAsync") { maxAge: Long, promise: Promise ->

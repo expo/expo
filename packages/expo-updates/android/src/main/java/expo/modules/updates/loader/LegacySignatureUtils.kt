@@ -11,65 +11,55 @@ import java.security.spec.X509EncodedKeySpec
 
 private const val EXPO_PUBLIC_KEY_URL = "https://exp.host/--/manifest-public-key"
 
-interface RSASignatureListener {
-  fun onError(exception: Exception, isNetworkError: Boolean)
-  fun onCompleted(isValid: Boolean)
-}
+class RSAException(val isNetworkError: Boolean, cause: Exception) : Exception(cause)
 
-fun verifyExpoPublicRSASignature(
+data class RSASignatureResult(val isValid: Boolean)
+
+suspend fun verifyExpoPublicRSASignature(
   fileDownloader: FileDownloader,
   data: String,
   signature: String,
-  listener: RSASignatureListener
-) {
-  fetchExpoPublicKeyAndVerifyPublicRSASignature(true, data, signature, fileDownloader, listener)
+): RSASignatureResult {
+  return fetchExpoPublicKeyAndVerifyPublicRSASignature(true, data, signature, fileDownloader)
 }
 
 // On first attempt use cache. If verification fails try a second attempt without
 // cache in case the keys were actually rotated.
 // On second attempt reject promise if it fails.
-private fun fetchExpoPublicKeyAndVerifyPublicRSASignature(
+private suspend fun fetchExpoPublicKeyAndVerifyPublicRSASignature(
   isFirstAttempt: Boolean,
   plainText: String,
   cipherText: String,
   fileDownloader: FileDownloader,
-  listener: RSASignatureListener
-) {
+): RSASignatureResult {
   val cacheControl = if (isFirstAttempt) CacheControl.FORCE_CACHE else CacheControl.FORCE_NETWORK
   val request = Request.Builder()
     .url(EXPO_PUBLIC_KEY_URL)
     .cacheControl(cacheControl)
     .build()
-  fileDownloader.downloadData(
-    request,
-    object : Callback {
-      override fun onFailure(call: Call, e: IOException) {
-        listener.onError(e, true)
-      }
+  val response = try {
+    fileDownloader.downloadData(request)
+  } catch (e: IOException) {
+    throw RSAException(true, e)
+  }
 
-      @Throws(IOException::class)
-      override fun onResponse(call: Call, response: Response) {
-        val exception: Exception = try {
-          val isValid = verifyPublicRSASignature(response.body!!.string(), plainText, cipherText)
-          listener.onCompleted(isValid)
-          return
-        } catch (e: Exception) {
-          e
-        }
-        if (isFirstAttempt) {
-          fetchExpoPublicKeyAndVerifyPublicRSASignature(
-            false,
-            plainText,
-            cipherText,
-            fileDownloader,
-            listener
-          )
-        } else {
-          listener.onError(exception, false)
-        }
-      }
-    }
-  )
+  val exception: Exception = try {
+    val isValid = verifyPublicRSASignature(response.body!!.string(), plainText, cipherText)
+    return RSASignatureResult(isValid)
+  } catch (e: Exception) {
+    e
+  }
+
+  if (isFirstAttempt) {
+    return fetchExpoPublicKeyAndVerifyPublicRSASignature(
+      false,
+      plainText,
+      cipherText,
+      fileDownloader,
+    )
+  } else {
+    throw RSAException(false, exception)
+  }
 }
 
 @Throws(

@@ -8,7 +8,7 @@ import expo.modules.updates.statemachine.UpdatesStateValue
  * State machine state may only be mutated in subclasses of this class to ensure serial
  * (well-defined) ordering of state transitions.
  */
-abstract class StateMachineProcedure {
+abstract class StateMachineProcedure<T> {
   interface StateMachineProcedureContext {
     /**
      * Transition the state machine forward to a new state.
@@ -28,12 +28,7 @@ abstract class StateMachineProcedure {
   }
 
   interface ProcedureContext : StateMachineProcedureContext {
-    /**
-     * Must be called when the StateMachineProcedure is done updating the state machine. Usually
-     * at the end of work in the run method.
-     */
-    fun onComplete()
   }
 
-  abstract fun run(procedureContext: ProcedureContext)
+  abstract suspend fun run(procedureContext: ProcedureContext): T
 }

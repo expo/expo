@@ -4,9 +4,10 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.lang.RuntimeException
 
 /**
@@ -100,11 +101,17 @@ internal class ErrorRecoveryHandler(
       }
       Task.LAUNCH_NEW_UPDATE -> {
         logger.info("UpdatesErrorRecovery: launching new update")
-        tryRelaunchFromCache()
+        // TODO(wschurman) audit this globalscope
+        GlobalScope.launch {
+          tryRelaunchFromCache()
+        }
       } // only called after a new update is downloaded and added to the cache, so the implementation is equivalent
       Task.LAUNCH_CACHED_UPDATE -> {
         logger.info("UpdatesErrorRecovery: falling back to older update")
-        tryRelaunchFromCache()
+        // TODO(wschurman) audit this globalscope
+        GlobalScope.launch {
+          tryRelaunchFromCache()
+        }
       }
       Task.CRASH -> {
         logger.error("UpdatesErrorRecovery: could not recover from error, crashing", UpdatesErrorCode.Unknown)
@@ -145,7 +152,10 @@ internal class ErrorRecoveryHandler(
       if (delegate.getRemoteLoadStatus() != ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING) {
         // Start a download; the delegate will push a new message to the handler when the download
         // has finished
-        delegate.loadRemoteUpdate()
+        // TODO(wschurman) audit this globalscope
+        GlobalScope.launch {
+          delegate.loadRemoteUpdate()
+        }
       }
       postDelayed({ handleRemoteLoadStatusChanged(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE) }, REMOTE_LOAD_TIMEOUT_MS)
     } else {
@@ -155,24 +165,23 @@ internal class ErrorRecoveryHandler(
     }
   }
 
-  private fun tryRelaunchFromCache() {
-    delegate.relaunch(object : Launcher.LauncherCallback {
-      override fun onFailure(e: Exception) {
-        // post to our looper, in case we're on a different thread now
-        post {
-          encounteredErrors.add(e)
-          pipeline.removeAll(setOf(Task.LAUNCH_NEW_UPDATE, Task.LAUNCH_CACHED_UPDATE))
-          runNextTask()
-        }
+  private suspend fun tryRelaunchFromCache() {
+    try {
+      delegate.relaunch()
+    } catch (e: Exception) {
+      // post to our looper, in case we're on a different thread now
+      post {
+        encounteredErrors.add(e)
+        pipeline.removeAll(setOf(Task.LAUNCH_NEW_UPDATE, Task.LAUNCH_CACHED_UPDATE))
+        runNextTask()
       }
+      return
+    }
 
-      override fun onSuccess() {
-        // post to our looper, in case we're on a different thread now
-        post {
-          isPipelineRunning = false
-        }
-      }
-    })
+    // post to our looper, in case we're on a different thread now
+    post {
+      isPipelineRunning = false
+    }
   }
 
   private fun crash() {

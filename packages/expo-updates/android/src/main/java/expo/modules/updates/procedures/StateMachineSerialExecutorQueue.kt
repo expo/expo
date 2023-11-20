@@ -2,67 +2,66 @@ package expo.modules.updates.procedures
 
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 /**
  * A serial task queue, where each task is an asynchronous task. Guarantees that all queued tasks
  * are run sequentially.
  */
-class StateMachineSerialExecutorQueue(private val stateMachineProcedureContext: StateMachineProcedure.StateMachineProcedureContext) {
-  private data class MethodInvocationHolder(val procedure: StateMachineProcedure, val onMethodInvocationComplete: MethodInvocationHolder.() -> Unit) {
-    fun execute(procedureContext: StateMachineProcedure.StateMachineProcedureContext) {
-      procedure.run(object : StateMachineProcedure.ProcedureContext {
-        private var isCompleted = false
+class StateMachineSerialExecutorQueue(
+  private val stateMachineProcedureContext: StateMachineProcedure.StateMachineProcedureContext
+) {
 
-        override fun onComplete() {
-          isCompleted = true
-          onMethodInvocationComplete(this@MethodInvocationHolder)
-        }
+  data class MethodInvocationHolder<T>(val procedure: StateMachineProcedure<T>, val coroutineScope: CoroutineScope) {
+    suspend fun execute(procedureContext: StateMachineProcedure.StateMachineProcedureContext): T {
+      return procedure.run(object : StateMachineProcedure.ProcedureContext {
+        // TODO(wschurman) check if coroutine disposed instead of isComplete
 
         override fun processStateEvent(event: UpdatesStateEvent) {
-          if (isCompleted) {
-            throw Exception("Cannot set state after procedure completion")
-          }
           procedureContext.processStateEvent(event)
         }
 
         @Deprecated("Avoid needing to access current state to know how to transition to next state")
         override fun getCurrentState(): UpdatesStateValue {
-          if (isCompleted) {
-            throw Exception("Cannot get state after procedure completion")
-          }
           return procedureContext.getCurrentState()
         }
 
         override fun resetState() {
-          if (isCompleted) {
-            throw Exception("Cannot reset state after procedure completion")
-          }
           procedureContext.resetState()
         }
       })
     }
   }
 
-  private val internalQueue = ArrayDeque<MethodInvocationHolder>()
+  data class MethodInvocation(val methodInvocationHolder: MethodInvocationHolder<*>, val onComplete: (result: Any?) -> Unit)
+  private val internalQueue = ArrayDeque<MethodInvocation>()
 
-  private var currentMethodInvocation: MethodInvocationHolder? = null
+  private var currentMethodInvocation: MethodInvocation? = null
 
   /**
    * Queue a procedure for execution.
    */
-  fun queueExecution(stateMachineProcedure: StateMachineProcedure) {
-    internalQueue.add(
-      MethodInvocationHolder(stateMachineProcedure) {
-        assert(currentMethodInvocation == this)
-        currentMethodInvocation = null
+  suspend fun <T>queueExecution(stateMachineProcedure: StateMachineProcedure<T>): T {
+    return coroutineScope {
+      suspendCancellableCoroutine { callback ->
+        internalQueue.add(MethodInvocation(
+          MethodInvocationHolder(stateMachineProcedure, this)
+        ) {
+          callback.resume(it as T)
+          currentMethodInvocation = null
+          maybeProcessQueue()
+        })
+
         maybeProcessQueue()
       }
-    )
-
-    maybeProcessQueue()
+    }
   }
 
-  @Synchronized
   private fun maybeProcessQueue() {
     if (currentMethodInvocation != null) {
       return
@@ -70,6 +69,10 @@ class StateMachineSerialExecutorQueue(private val stateMachineProcedureContext: 
 
     val nextMethodInvocation = internalQueue.removeFirstOrNull() ?: return
     currentMethodInvocation = nextMethodInvocation
-    nextMethodInvocation.execute(stateMachineProcedureContext) // need to make sure this is asynchronous
+
+    nextMethodInvocation.methodInvocationHolder.coroutineScope.launch {
+      val result = nextMethodInvocation.methodInvocationHolder.execute(stateMachineProcedureContext) // need to make sure this is asynchronous
+      nextMethodInvocation.onComplete(result)
+    }
   }
 }

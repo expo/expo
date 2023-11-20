@@ -45,13 +45,13 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
         constants["channel"] = configuration.requestHeaders["expo-channel-name"] ?: ""
         constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
 
-        val launchedUpdate = appLoaderLocal.launcher.launchedUpdate
+        val launchedUpdate = appLoaderLocal.launcherResult.launchedUpdate
         if (launchedUpdate != null) {
           constants["updateId"] = launchedUpdate.id.toString()
           constants["commitTime"] = launchedUpdate.commitTime.time
           constants["manifestString"] = launchedUpdate.manifest.toString()
         }
-        val localAssetFiles = appLoaderLocal.launcher.localAssetFiles
+        val localAssetFiles = appLoaderLocal.launcherResult.localAssetFiles
         if (localAssetFiles != null) {
           val localAssets = mutableMapOf<String, String>()
           for (asset in localAssetFiles.keys) {

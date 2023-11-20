@@ -2,21 +2,24 @@ package expo.modules.updates.launcher
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
-import expo.modules.updates.launcher.Launcher.LauncherCallback
+import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.updates.loader.FileDownloader
-import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.LoaderFiles
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import java.io.File
 import java.util.*
 
@@ -38,89 +41,93 @@ import java.util.*
  * launched after a newer one has been launched.
  */
 class DatabaseLauncher(
+  private val context: Context,
+  private val database: UpdatesDatabase,
   private val configuration: UpdatesConfiguration,
   private val updatesDirectory: File?,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy
-) : Launcher {
+) {
+  private val logger = UpdatesLogger(context)
   private val loaderFiles: LoaderFiles = LoaderFiles()
-  override var launchedUpdate: UpdateEntity? = null
-    private set
-  override var launchAssetFile: String? = null
-    private set
-  override var bundleAssetName: String? = null
-    private set
-  override var localAssetFiles: MutableMap<AssetEntity, String>? = null
-    private set
-  override val isUsingEmbeddedAssets: Boolean
-    get() = localAssetFiles == null
 
-  private var assetsToDownload = 0
-  private var assetsToDownloadFinished = 0
-  private var launchAssetException: Exception? = null
-  private var callback: LauncherCallback? = null
-  private var logger: UpdatesLogger? = null
+  suspend fun launch(): LauncherResult {
+    val launchedUpdate = getLaunchableUpdate() ?: throw Exception("No launchable update was found. If this is a bare workflow app, make sure you have configured expo-updates correctly in android/app/build.gradle.")
 
-  @Synchronized
-  fun launch(database: UpdatesDatabase, context: Context, callback: LauncherCallback?) {
-    if (this.callback != null) {
-      throw AssertionError("DatabaseLauncher has already started. Create a new instance in order to launch a new version.")
-    }
-    this.callback = callback
-    this.logger = UpdatesLogger(context)
+    database.updateDao().markUpdateAccessed(launchedUpdate)
 
-    launchedUpdate = getLaunchableUpdate(database, context)
-    if (launchedUpdate == null) {
-      this.callback!!.onFailure(Exception("No launchable update was found. If this is a bare workflow app, make sure you have configured expo-updates correctly in android/app/build.gradle."))
-      return
-    }
-
-    database.updateDao().markUpdateAccessed(launchedUpdate!!)
-    if (launchedUpdate!!.status == UpdateStatus.DEVELOPMENT) {
-      this.callback!!.onSuccess()
-      return
+    if (launchedUpdate.status == UpdateStatus.EMBEDDED) {
+      return LauncherResult(
+        launchedUpdate = launchedUpdate,
+        launchAssetFile = null,
+        bundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME,
+        localAssetFiles = null,
+        isUsingEmbeddedAssets = true
+      )
+    } else if (launchedUpdate.status == UpdateStatus.DEVELOPMENT) {
+      return LauncherResult(
+        launchedUpdate = launchedUpdate,
+        launchAssetFile = null,
+        bundleAssetName = null,
+        localAssetFiles = null,
+        isUsingEmbeddedAssets = true
+      )
     }
 
     // verify that we have all assets on disk
     // according to the database, we should, but something could have gone wrong on disk
-    val launchAsset = database.updateDao().loadLaunchAsset(launchedUpdate!!.id)
+    val launchAsset = database.updateDao().loadLaunchAsset(launchedUpdate.id)
     if (launchAsset.relativePath == null) {
       throw AssertionError("Launch Asset relativePath should not be null")
     }
+    var launchAssetFile = ensureAssetExists(launchAsset, database, context)?.toString()
 
-    val launchAssetFile = ensureAssetExists(launchAsset, database, context)
-    if (launchAssetFile != null) {
-      this.launchAssetFile = launchAssetFile.toString()
-    }
+    val assetEntities = database.assetDao().loadAssetsForUpdate(launchedUpdate.id)
 
-    val assetEntities = database.assetDao().loadAssetsForUpdate(launchedUpdate!!.id)
+    val localAssetFiles = coroutineScope {
+      val embeddedAssetMap = embeddedAssetFileMap(context)
 
-    localAssetFiles = embeddedAssetFileMap(context).apply {
-      for (asset in assetEntities) {
-        if (asset.id == launchAsset.id) {
-          // we took care of this one above
-          continue
-        }
-        val filename = asset.relativePath
-        if (filename != null) {
-          val assetFile = ensureAssetExists(asset, database, context)
-          if (assetFile != null) {
-            this[asset] = Uri.fromFile(assetFile).toString()
+      assetEntities.map { asset ->
+        async {
+          if (asset.id == launchAsset.id) {
+            // we took care of this one above
+            return@async
+          }
+          val filename = asset.relativePath
+          if (filename != null) {
+            val assetFile = ensureAssetExists(asset, database, context)
+            if (asset.isLaunchAsset) {
+              launchAssetFile = if (assetFile == null) {
+                Log.e(TAG, "Could not launch; failed to load update from disk or network")
+                null
+              } else {
+                assetFile.toString()
+              }
+            }
+            if (assetFile != null) {
+              embeddedAssetMap[asset] = Uri.fromFile(assetFile).toString()
+            }
           }
         }
-      }
+      }.awaitAll()
+
+      embeddedAssetMap
     }
 
-    if (assetsToDownload == 0) {
-      if (this.launchAssetFile == null) {
-        this.callback!!.onFailure(Exception("mLaunchAssetFile was immediately null; this should never happen"))
-      } else {
-        this.callback!!.onSuccess()
-      }
+    if (launchAssetFile == null) {
+      throw Exception("launch asset is unexpectedly null")
     }
+
+    return LauncherResult(
+      launchedUpdate = launchedUpdate,
+      launchAssetFile = launchAssetFile,
+      bundleAssetName = null,
+      localAssetFiles = localAssetFiles,
+      isUsingEmbeddedAssets = false
+    )
   }
 
-  fun getLaunchableUpdate(database: UpdatesDatabase, context: Context): UpdateEntity? {
+  fun getLaunchableUpdate(): UpdateEntity? {
     val launchableUpdates = database.updateDao().loadLaunchableUpdatesForScope(configuration.scopeKey)
 
     // We can only run an update marked as embedded if it's actually the update embedded in the
@@ -165,90 +172,56 @@ class DatabaseLauncher(
     }
   }
 
-  fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, context: Context): File? {
+  private suspend fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, context: Context): File? {
     val assetFile = File(updatesDirectory, asset.relativePath ?: "")
-    var assetFileExists = assetFile.exists()
-    if (!assetFileExists) {
-      // something has gone wrong, we're missing this asset
-      // first we check to see if a copy is embedded in the binary
-      val embeddedUpdateManifest = EmbeddedManifest.get(context, configuration)
-      if (embeddedUpdateManifest != null) {
-        val embeddedAssets = embeddedUpdateManifest.assetEntityList
-        var matchingEmbeddedAsset: AssetEntity? = null
-        for (embeddedAsset in embeddedAssets) {
-          if (embeddedAsset.key != null && embeddedAsset.key == asset.key) {
-            matchingEmbeddedAsset = embeddedAsset
-            break
-          }
-        }
+    val assetFileExists = assetFile.exists()
+    if (assetFileExists) {
+      return assetFile
+    }
 
-        if (matchingEmbeddedAsset != null) {
-          try {
-            val hash = loaderFiles.copyAssetAndGetHash(matchingEmbeddedAsset, assetFile, context)
-            if (Arrays.equals(hash, asset.hash)) {
-              assetFileExists = true
-            }
-          } catch (e: Exception) {
-            // things are really not going our way...
-            logger?.error("Failed to copy matching embedded asset", UpdatesErrorCode.AssetsFailedToLoad, e)
+    // something has gone wrong, we're missing this asset
+    // first we check to see if a copy is embedded in the binary
+    val embeddedUpdateManifest = EmbeddedManifest.get(context, configuration)
+    if (embeddedUpdateManifest != null) {
+      val embeddedAssets = embeddedUpdateManifest.assetEntityList
+      var matchingEmbeddedAsset: AssetEntity? = null
+      for (embeddedAsset in embeddedAssets) {
+        if (embeddedAsset.key != null && embeddedAsset.key == asset.key) {
+          matchingEmbeddedAsset = embeddedAsset
+          break
+        }
+      }
+
+      if (matchingEmbeddedAsset != null) {
+        try {
+          val hash = loaderFiles.copyAssetAndGetHash(matchingEmbeddedAsset, assetFile, context)
+          if (Arrays.equals(hash, asset.hash)) {
+            return assetFile
           }
+        } catch (e: Exception) {
+          // things are really not going our way...
+          Log.e(TAG, "Failed to copy matching embedded asset", e)
         }
       }
     }
 
-    return if (!assetFileExists) {
-      // we still don't have the asset locally, so try downloading it remotely
-      assetsToDownload++
-      fileDownloader.downloadAsset(
+    // we still don't have the asset locally, so try downloading it remotely
+    try {
+      val assetDownloadResult = fileDownloader.downloadAsset(
         asset,
         updatesDirectory,
         configuration,
         context,
-        object : AssetDownloadCallback {
-          override fun onFailure(e: Exception, assetEntity: AssetEntity) {
-            logger?.error("Failed to load asset from disk or network", UpdatesErrorCode.AssetsFailedToLoad, e)
-            if (assetEntity.isLaunchAsset) {
-              launchAssetException = e
-            }
-            maybeFinish(assetEntity, null)
-          }
-
-          override fun onSuccess(assetEntity: AssetEntity, isNew: Boolean) {
-            database.assetDao().updateAsset(assetEntity)
-            val assetFileLocal = File(updatesDirectory, assetEntity.relativePath!!)
-            maybeFinish(assetEntity, if (assetFileLocal.exists()) assetFileLocal else null)
-          }
-        }
       )
-      null
-    } else {
-      assetFile
-    }
-  }
-
-  @Synchronized
-  private fun maybeFinish(asset: AssetEntity, assetFile: File?) {
-    assetsToDownloadFinished++
-    if (asset.isLaunchAsset) {
-      launchAssetFile = if (assetFile == null) {
-        logger?.error("Could not launch; failed to load update from disk or network", UpdatesErrorCode.UpdateFailedToLoad)
-        null
+      database.assetDao().updateAsset(assetDownloadResult.assetEntity)
+      val assetFileLocal = File(updatesDirectory, assetDownloadResult.assetEntity.relativePath!!)
+      return if (assetFileLocal.exists()) assetFileLocal else null
+    } catch (e: Exception) {
+      Log.e(TAG, "Failed to load asset from disk or network", e)
+      if (asset.isLaunchAsset) {
+        throw e
       } else {
-        assetFile.toString()
-      }
-    } else {
-      if (assetFile != null) {
-        localAssetFiles!![asset] = assetFile.toString()
-      }
-    }
-    if (assetsToDownloadFinished == assetsToDownload) {
-      if (launchAssetFile == null) {
-        if (launchAssetException == null) {
-          launchAssetException = Exception("Launcher mLaunchAssetFile is unexpectedly null")
-        }
-        callback!!.onFailure(launchAssetException!!)
-      } else {
-        callback!!.onSuccess()
+        return null
       }
     }
   }

@@ -81,7 +81,7 @@ interface IUpdatesController {
   )
   fun getConstantsForModule(): UpdatesModuleConstants
 
-  fun relaunchReactApplicationForModule(callback: ModuleCallback<Unit>)
+  suspend fun relaunchReactApplicationForModule()
 
   fun getNativeStateMachineContext(callback: ModuleCallback<UpdatesStateContext>)
 
@@ -98,7 +98,7 @@ interface IUpdatesController {
     class RollBackToEmbedded(val commitTime: Date) : CheckForUpdateResult(Status.ROLL_BACK_TO_EMBEDDED)
     class ErrorResult(val error: Exception, val message: String) : CheckForUpdateResult(Status.ERROR)
   }
-  fun checkForUpdate(callback: ModuleCallback<CheckForUpdateResult>)
+  suspend fun checkForUpdate(): CheckForUpdateResult
 
   sealed class FetchUpdateResult(private val status: Status) {
     private enum class Status {
@@ -113,9 +113,9 @@ interface IUpdatesController {
     class RollBackToEmbedded : FetchUpdateResult(Status.ROLL_BACK_TO_EMBEDDED)
     class ErrorResult(val error: Exception) : FetchUpdateResult(Status.ERROR)
   }
-  fun fetchUpdate(callback: ModuleCallback<FetchUpdateResult>)
+  suspend fun fetchUpdate(): FetchUpdateResult
 
-  fun getExtraParams(callback: ModuleCallback<Bundle>)
+  suspend fun getExtraParams(): Bundle
 
-  fun setExtraParam(key: String, value: String?, callback: ModuleCallback<Unit>)
+  suspend fun setExtraParam(key: String, value: String?)
 }

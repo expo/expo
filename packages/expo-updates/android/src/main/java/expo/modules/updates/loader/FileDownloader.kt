@@ -30,7 +30,10 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.*
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.security.cert.CertificateException
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.resume
 
 /**
  * Utility class that holds all the logic for downloading data and files, such as update manifests
@@ -46,60 +49,35 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
   )
   private val logger = UpdatesLogger(context)
 
-  interface FileDownloadCallback {
-    fun onFailure(e: Exception)
-    fun onSuccess(file: File, hash: ByteArray)
-  }
+  data class FileDownloadResult(val file: File, val hash: ByteArray)
 
-  interface RemoteUpdateDownloadCallback {
-    fun onFailure(message: String, e: Exception)
-    fun onSuccess(updateResponse: UpdateResponse)
-  }
+  data class AssetDownloadResult(val assetEntity: AssetEntity, val isNew: Boolean)
 
-  interface AssetDownloadCallback {
-    fun onFailure(e: Exception, assetEntity: AssetEntity)
-    fun onSuccess(assetEntity: AssetEntity, isNew: Boolean)
-  }
-
-  private fun downloadFileAndVerifyHashAndWriteToPath(
+  private suspend fun downloadFileAndVerifyHashAndWriteToPath(
     request: Request,
     expectedBase64URLEncodedSHA256Hash: String?,
     destination: File,
-    callback: FileDownloadCallback
-  ) {
-    downloadData(
-      request,
-      object : Callback {
-        override fun onFailure(call: Call, e: IOException) {
-          callback.onFailure(e)
-        }
+  ): FileDownloadResult {
+    val response = downloadData(request)
+    if (!response.isSuccessful) {
+      throw Exception(
+        "Network request failed: " + response.body!!
+          .string()
+      )
+    }
 
-        @Throws(IOException::class)
-        override fun onResponse(call: Call, response: Response) {
-          if (!response.isSuccessful) {
-            callback.onFailure(
-              Exception(
-                "Network request failed: " + response.body!!
-                  .string()
-              )
-            )
-            return
-          }
-          try {
-            response.body!!.byteStream().use { inputStream ->
-              val hash = UpdatesUtils.verifySHA256AndWriteToFile(inputStream, destination, expectedBase64URLEncodedSHA256Hash)
-              callback.onSuccess(destination, hash)
-            }
-          } catch (e: Exception) {
-            logger.error("Failed to download file to destination $destination: ${e.localizedMessage}", UpdatesErrorCode.AssetsFailedToLoad, e)
-            callback.onFailure(e)
-          }
-        }
+    try {
+      return response.body!!.byteStream().use { inputStream ->
+        val hash = UpdatesUtils.verifySHA256AndWriteToFile(inputStream, destination, expectedBase64URLEncodedSHA256Hash)
+        FileDownloadResult(destination, hash)
       }
-    )
+    } catch (e: Exception) {
+      logger.error("Failed to download file to destination $destination: ${e.localizedMessage}", UpdatesErrorCode.AssetsFailedToLoad, e)
+      throw e
+    }
   }
 
-  internal fun parseRemoteUpdateResponse(response: Response, configuration: UpdatesConfiguration, callback: RemoteUpdateDownloadCallback) {
+  internal suspend fun parseRemoteUpdateResponse(response: Response, configuration: UpdatesConfiguration): UpdateResponse {
     val responseHeaders = response.headers
     val responseHeaderData = ResponseHeaderData(
       protocolVersionRaw = responseHeaders["expo-protocol-version"],
@@ -113,23 +91,19 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       // If the protocol version greater than 0, we support returning a 204 and no body to mean no-op.
       // A 204 has no content-type.
       if (responseHeaderData.protocolVersion != null && responseHeaderData.protocolVersion > 0) {
-        callback.onSuccess(
-          UpdateResponse(
-            responseHeaderData = responseHeaderData,
-            manifestUpdateResponsePart = null,
-            directiveUpdateResponsePart = null
-          )
+        return UpdateResponse(
+          responseHeaderData = responseHeaderData,
+          manifestUpdateResponsePart = null,
+          directiveUpdateResponsePart = null
         )
-        return
       }
 
       val message = "Missing body in remote update"
       logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
-      callback.onFailure(
+      throw Exception(
         message,
         IOException(message)
       )
-      return
     }
 
     val contentType = response.header("content-type") ?: ""
@@ -139,14 +113,13 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       if (boundaryParameter == null) {
         val message = "Missing boundary in multipart remote update content-type"
         logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
-        callback.onFailure(
+        throw Exception(
           message,
           IOException(message)
         )
-        return
       }
 
-      parseMultipartRemoteUpdateResponse(responseBody, responseHeaderData, boundaryParameter, configuration, callback)
+      return parseMultipartRemoteUpdateResponse(responseBody, responseHeaderData, boundaryParameter, configuration)
     } else {
       val manifestResponseInfo = ResponsePartInfo(
         responseHeaderData = responseHeaderData,
@@ -156,26 +129,16 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         body = response.body!!.string()
       )
 
-      parseManifest(
+      val manifestUpdateResponsePart = parseManifest(
         manifestResponseInfo,
         null,
         null,
         configuration,
-        object : ParseManifestCallback {
-          override fun onFailure(message: String, e: Exception) {
-            callback.onFailure(message, e)
-          }
-
-          override fun onSuccess(manifestUpdateResponsePart: UpdateResponsePart.ManifestUpdateResponsePart) {
-            callback.onSuccess(
-              UpdateResponse(
-                responseHeaderData = responseHeaderData,
-                manifestUpdateResponsePart = manifestUpdateResponsePart,
-                directiveUpdateResponsePart = null
-              )
-            )
-          }
-        }
+      )
+      return UpdateResponse(
+        responseHeaderData = responseHeaderData,
+        manifestUpdateResponsePart = manifestUpdateResponsePart,
+        directiveUpdateResponsePart = null
       )
     }
   }
@@ -195,7 +158,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     return headers.toHeaders()
   }
 
-  private fun parseMultipartRemoteUpdateResponse(responseBody: ResponseBody, responseHeaderData: ResponseHeaderData, boundary: String, configuration: UpdatesConfiguration, callback: RemoteUpdateDownloadCallback) {
+  private suspend fun parseMultipartRemoteUpdateResponse(responseBody: ResponseBody, responseHeaderData: ResponseHeaderData, boundary: String, configuration: UpdatesConfiguration): UpdateResponse {
     var manifestPartBodyAndHeaders: Pair<String, Headers>? = null
     var extensionsBody: String? = null
     var certificateChainString: String? = null
@@ -230,11 +193,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     } catch (e: Exception) {
       val message = "Error while reading multipart remote update response"
       logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
-      callback.onFailure(
-        message,
-        e
-      )
-      return
+      throw Exception(message, e)
     }
 
     val extensions = try {
@@ -242,19 +201,14 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     } catch (e: Exception) {
       val message = "Failed to parse multipart remote update extensions"
       logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
-      callback.onFailure(
-        message,
-        e
-      )
-      return
+      throw Exception(message, e)
     }
 
     // in v0 compatibility mode require a manifest
     if (configuration.enableExpoUpdatesProtocolV0CompatibilityMode && manifestPartBodyAndHeaders == null) {
       val message = "Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the update being a rollback or other directive."
       logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
-      callback.onFailure(message, IOException(message))
-      return
+      throw Exception(message, IOException(message))
     }
 
     val manifestResponseInfo = manifestPartBodyAndHeaders?.let {
@@ -282,88 +236,26 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       }
     }
 
-    var parseManifestResponse: UpdateResponsePart.ManifestUpdateResponsePart? = null
-    var parseDirectiveResponse: UpdateResponsePart.DirectiveUpdateResponsePart? = null
-    var didError = false
-
-    // need to parse the directive and manifest in parallel, to do so use this common callback.
-    // would be a great place to have better coroutine stuff
-    val maybeFinish = {
-      if (!didError) {
-        val isManifestDone = manifestResponseInfo == null || parseManifestResponse != null
-        val isDirectiveDone = directiveResponseInfo == null || parseDirectiveResponse != null
-
-        if (isManifestDone && isDirectiveDone) {
-          callback.onSuccess(
-            UpdateResponse(
-              responseHeaderData = responseHeaderData,
-              manifestUpdateResponsePart = parseManifestResponse,
-              directiveUpdateResponsePart = parseDirectiveResponse
-            )
-          )
-        }
-      }
+    val directiveUpdateResponsePart = directiveResponseInfo?.let {
+      parseDirective(it, certificateChainString, configuration)
     }
 
-    if (directiveResponseInfo != null) {
-      parseDirective(
-        directiveResponseInfo,
-        certificateChainString,
-        configuration,
-        object : ParseDirectiveCallback {
-          override fun onFailure(message: String, e: Exception) {
-            if (!didError) {
-              didError = true
-              callback.onFailure(message, e)
-            }
-          }
-
-          override fun onSuccess(directiveUpdateResponsePart: UpdateResponsePart.DirectiveUpdateResponsePart) {
-            parseDirectiveResponse = directiveUpdateResponsePart
-            maybeFinish()
-          }
-        }
-      )
+    val manifestUpdateResponsePart = manifestResponseInfo?.let {
+      parseManifest(it, extensions, certificateChainString, configuration)
     }
 
-    if (manifestResponseInfo != null) {
-      parseManifest(
-        manifestResponseInfo,
-        extensions,
-        certificateChainString,
-        configuration,
-        object : ParseManifestCallback {
-          override fun onFailure(message: String, e: Exception) {
-            if (!didError) {
-              didError = true
-              callback.onFailure(message, e)
-            }
-          }
-          override fun onSuccess(manifestUpdateResponsePart: UpdateResponsePart.ManifestUpdateResponsePart) {
-            parseManifestResponse = manifestUpdateResponsePart
-            maybeFinish()
-          }
-        }
-      )
-    }
-
-    // if both parts are empty, we still want to finish
-    if (manifestResponseInfo == null && directiveResponseInfo == null) {
-      maybeFinish()
-    }
-  }
-
-  interface ParseDirectiveCallback {
-    fun onFailure(message: String, e: Exception)
-    fun onSuccess(directiveUpdateResponsePart: UpdateResponsePart.DirectiveUpdateResponsePart)
+    return UpdateResponse(
+      responseHeaderData = responseHeaderData,
+      manifestUpdateResponsePart = manifestUpdateResponsePart,
+      directiveUpdateResponsePart = directiveUpdateResponsePart
+    )
   }
 
   private fun parseDirective(
     directiveResponsePartInfo: ResponsePartInfo,
     certificateChainFromManifestResponse: String?,
     configuration: UpdatesConfiguration,
-    callback: ParseDirectiveCallback
-  ) {
+  ): UpdateResponsePart.DirectiveUpdateResponsePart {
     try {
       val body = directiveResponsePartInfo.body
 
@@ -373,56 +265,45 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       //    has the correct info for code signing. If the code signing certificate doesn't specify a particular
       //    project, it is assumed to be valid for all projects
       // 3. consider the directive verified if both of these pass
-      try {
-        configuration.codeSigningConfiguration?.let { codeSigningConfiguration ->
-          val signatureValidationResult = codeSigningConfiguration.validateSignature(
-            directiveResponsePartInfo.responsePartHeaderData.signature,
-            body.toByteArray(),
-            certificateChainFromManifestResponse,
-          )
-          if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
-            throw IOException("Directive download was successful, but signature was incorrect")
-          }
+      configuration.codeSigningConfiguration?.let { codeSigningConfiguration ->
+        val signatureValidationResult = codeSigningConfiguration.validateSignature(
+          directiveResponsePartInfo.responsePartHeaderData.signature,
+          body.toByteArray(),
+          certificateChainFromManifestResponse,
+        )
+        if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
+          throw IOException("Directive download was successful, but signature was incorrect")
+        }
 
-          if (signatureValidationResult.validationResult != ValidationResult.SKIPPED) {
-            val directiveForProjectInformation = UpdateDirective.fromJSONString(body)
-            signatureValidationResult.expoProjectInformation?.let { expoProjectInformation ->
-              if (expoProjectInformation.projectId != directiveForProjectInformation.signingInfo?.easProjectId ||
-                expoProjectInformation.scopeKey != directiveForProjectInformation.signingInfo.scopeKey
-              ) {
-                throw CertificateException("Invalid certificate for directive project ID or scope key")
-              }
+        if (signatureValidationResult.validationResult != ValidationResult.SKIPPED) {
+          val directiveForProjectInformation = UpdateDirective.fromJSONString(body)
+          signatureValidationResult.expoProjectInformation?.let { expoProjectInformation ->
+            if (expoProjectInformation.projectId != directiveForProjectInformation.signingInfo?.easProjectId ||
+              expoProjectInformation.scopeKey != directiveForProjectInformation.signingInfo.scopeKey
+            ) {
+              throw CertificateException("Invalid certificate for directive project ID or scope key")
             }
           }
         }
-      } catch (e: Exception) {
-        callback.onFailure(e.message!!, e)
-        return
       }
 
-      callback.onSuccess(UpdateResponsePart.DirectiveUpdateResponsePart(UpdateDirective.fromJSONString(body)))
+      return UpdateResponsePart.DirectiveUpdateResponsePart(UpdateDirective.fromJSONString(body))
     } catch (e: Exception) {
       val message = "Failed to parse directive data: ${e.localizedMessage}"
       logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
-      callback.onFailure(
+      throw Exception(
         message,
         e
       )
     }
   }
 
-  interface ParseManifestCallback {
-    fun onFailure(message: String, e: Exception)
-    fun onSuccess(manifestUpdateResponsePart: UpdateResponsePart.ManifestUpdateResponsePart)
-  }
-
-  private fun parseManifest(
+  private suspend fun parseManifest(
     manifestResponseInfo: ResponsePartInfo,
     extensions: JSONObject?,
     certificateChainFromManifestResponse: String?,
     configuration: UpdatesConfiguration,
-    callback: ParseManifestCallback
-  ) {
+  ): UpdateResponsePart.ManifestUpdateResponsePart {
     try {
       val updateResponseJson = extractUpdateResponseJson(manifestResponseInfo.body, configuration)
       val isSignatureInBody =
@@ -452,46 +333,42 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       // We should treat these manifests as unsigned rather than signed with an invalid signature.
       val isUnsignedFromXDL = "UNSIGNED" == signature
       if (signature != null && !isUnsignedFromXDL) {
-        verifyExpoPublicRSASignature(
-          this@FileDownloader,
-          manifestString,
-          signature,
-          object : RSASignatureListener {
-            override fun onError(exception: Exception, isNetworkError: Boolean) {
-              callback.onFailure("Could not validate signed manifest", exception)
-            }
+        val rsaSignatureResult = try {
+          verifyExpoPublicRSASignature(
+            this@FileDownloader,
+            manifestString,
+            signature,
+          )
+        } catch (e: RSAException) {
+          throw Exception("Could not validate signed manifest", e)
+        }
 
-            override fun onCompleted(isValid: Boolean) {
-              if (isValid) {
-                try {
-                  checkCodeSigningAndCreateManifest(
-                    bodyString = manifestResponseInfo.body,
-                    preManifest = preManifest,
-                    responseHeaderData = manifestResponseInfo.responseHeaderData,
-                    responsePartHeaderData = manifestResponseInfo.responsePartHeaderData,
-                    extensions = extensions,
-                    certificateChainFromManifestResponse = certificateChainFromManifestResponse,
-                    isVerified = true,
-                    configuration = configuration,
-                    logger = logger,
-                    callback = callback
-                  )
-                } catch (e: Exception) {
-                  callback.onFailure("Failed to parse manifest data", e)
-                }
-              } else {
-                val message = "Manifest signature is invalid; aborting"
-                logger.error(message, UpdatesErrorCode.UpdateHasInvalidSignature)
-                callback.onFailure(
-                  message,
-                  Exception("Manifest signature is invalid")
-                )
-              }
-            }
+        if (rsaSignatureResult.isValid) {
+          try {
+            return checkCodeSigningAndCreateManifest(
+              bodyString = manifestResponseInfo.body,
+              preManifest = preManifest,
+              responseHeaderData = manifestResponseInfo.responseHeaderData,
+              responsePartHeaderData = manifestResponseInfo.responsePartHeaderData,
+              extensions = extensions,
+              certificateChainFromManifestResponse = certificateChainFromManifestResponse,
+              isVerified = true,
+              configuration = configuration,
+              logger = logger,
+            )
+          } catch (e: Exception) {
+            throw Exception("Failed to parse manifest data", e)
           }
-        )
+        } else {
+          val message = "Manifest signature is invalid; aborting"
+          logger.error(message, UpdatesErrorCode.UpdateHasInvalidSignature)
+          throw Exception(
+            message,
+            Exception("Manifest signature is invalid")
+          )
+        }
       } else {
-        checkCodeSigningAndCreateManifest(
+        return checkCodeSigningAndCreateManifest(
           bodyString = manifestResponseInfo.body,
           preManifest = preManifest,
           responseHeaderData = manifestResponseInfo.responseHeaderData,
@@ -501,127 +378,98 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
           isVerified = false,
           configuration = configuration,
           logger = logger,
-          callback = callback
         )
       }
     } catch (e: Exception) {
       val message = "Failed to parse manifest data: ${e.localizedMessage}"
       logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
-      callback.onFailure(
+      throw Exception(
         message,
         e
       )
     }
   }
 
-  fun downloadRemoteUpdate(
+  suspend fun downloadRemoteUpdate(
     configuration: UpdatesConfiguration,
     extraHeaders: JSONObject?,
     context: Context,
-    callback: RemoteUpdateDownloadCallback
-  ) {
-    try {
-      downloadData(
-        createRequestForRemoteUpdate(configuration, extraHeaders, context),
-        object : Callback {
-          override fun onFailure(call: Call, e: IOException) {
-            val message = "Failed to download remote update from URL: ${configuration.updateUrl}: ${e.localizedMessage}"
-            logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
-            callback.onFailure(
-              message,
-              e
-            )
-          }
-
-          @Throws(IOException::class)
-          override fun onResponse(call: Call, response: Response) {
-            if (!response.isSuccessful) {
-              val message = "Failed to download remote update from URL: ${configuration.updateUrl}"
-              logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
-              callback.onFailure(
-                message,
-                Exception(response.body!!.string())
-              )
-              return
-            }
-
-            parseRemoteUpdateResponse(response, configuration, callback)
-          }
-        }
-      )
-    } catch (e: Exception) {
+  ): UpdateResponse {
+    val response = try {
+      downloadData(createRequestForRemoteUpdate(configuration, extraHeaders, context))
+    } catch (e: IOException) {
       val message = "Failed to download remote update from URL: ${configuration.updateUrl}: ${e.localizedMessage}"
       logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
-      callback.onFailure(
-        message,
-        e
-      )
+      throw Exception(message, e)
     }
+
+    if (!response.isSuccessful) {
+      val message = "Failed to download remote update from URL: ${configuration.updateUrl}"
+      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
+      throw Exception(message, Exception(response.body!!.string()))
+    }
+
+    return parseRemoteUpdateResponse(response, configuration)
   }
 
-  fun downloadAsset(
+  suspend fun downloadAsset(
     asset: AssetEntity,
     destinationDirectory: File?,
     configuration: UpdatesConfiguration,
     context: Context,
-    callback: AssetDownloadCallback
-  ) {
+  ): AssetDownloadResult {
     if (asset.url == null) {
       val message = "Could not download asset " + asset.key + " with no URL"
       logger.error(message, UpdatesErrorCode.AssetsFailedToLoad)
-      callback.onFailure(Exception(message), asset)
-      return
+      throw Exception(message)
     }
     val filename = UpdatesUtils.createFilenameForAsset(asset)
     val path = File(destinationDirectory, filename)
     if (path.exists()) {
       asset.relativePath = filename
-      callback.onSuccess(asset, false)
+      return AssetDownloadResult(asset, false)
     } else {
       try {
-        downloadFileAndVerifyHashAndWriteToPath(
+        val result = downloadFileAndVerifyHashAndWriteToPath(
           createRequestForAsset(asset, configuration, context),
           asset.expectedHash,
           path,
-          object : FileDownloadCallback {
-            override fun onFailure(e: Exception) {
-              callback.onFailure(e, asset)
-            }
-
-            override fun onSuccess(file: File, hash: ByteArray) {
-              asset.downloadTime = Date()
-              asset.relativePath = filename
-              asset.hash = hash
-              callback.onSuccess(asset, true)
-            }
-          }
         )
+
+        asset.downloadTime = Date()
+        asset.relativePath = filename
+        asset.hash = result.hash
+        return AssetDownloadResult(asset, true)
       } catch (e: Exception) {
         logger.error("Failed to download asset ${asset.key}: ${e.localizedMessage}", UpdatesErrorCode.AssetsFailedToLoad, e)
-        callback.onFailure(e, asset)
+        throw e
       }
     }
   }
 
-  fun downloadData(request: Request, callback: Callback) {
-    downloadData(request, callback, false)
+  suspend inline fun Request.await(okHttpClient: OkHttpClient): Response {
+    return suspendCancellableCoroutine { callback ->
+      okHttpClient.newCall(this).enqueue(object : Callback {
+        override fun onResponse(call: Call, response: Response) {
+          callback.resume(response)
+        }
+
+        override fun onFailure(call: Call, e: IOException) {
+          if (callback.isCancelled) {
+            return
+          }
+          callback.resumeWithException(e)
+        }
+      })
+    }
   }
 
-  private fun downloadData(request: Request, callback: Callback, isRetry: Boolean) {
-    client.newCall(request).enqueue(object : Callback {
-      override fun onFailure(call: Call, e: IOException) {
-        if (isRetry) {
-          callback.onFailure(call, e)
-        } else {
-          downloadData(request, callback, true)
-        }
-      }
-
-      @Throws(IOException::class)
-      override fun onResponse(call: Call, response: Response) {
-        callback.onResponse(call, response)
-      }
-    })
+  suspend fun downloadData(request: Request): Response {
+    return try {
+      request.await(client)
+    } catch (e: IOException) {
+      request.await(client)
+    }
   }
 
   companion object {
@@ -641,8 +489,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       isVerified: Boolean,
       configuration: UpdatesConfiguration,
       logger: UpdatesLogger,
-      callback: ParseManifestCallback
-    ) {
+    ): UpdateResponsePart.ManifestUpdateResponsePart {
       if (configuration.expectsSignedManifest) {
         preManifest.put("isVerified", isVerified)
       }
@@ -685,17 +532,14 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         }
       } catch (e: Exception) {
         logger.error(e.message!!, UpdatesErrorCode.UpdateCodeSigningError)
-        callback.onFailure(e.message!!, e)
-        return
+        throw e
       }
 
       val updateManifest = ManifestFactory.getManifest(preManifest, responseHeaderData, extensions, configuration)
       if (!SelectionPolicies.matchesFilters(updateManifest.updateEntity!!, responseHeaderData.manifestFilters)) {
-        val message =
-          "Downloaded manifest is invalid; provides filters that do not match its content"
-        callback.onFailure(message, Exception(message))
+        throw Exception("Downloaded manifest is invalid; provides filters that do not match its content")
       } else {
-        callback.onSuccess(UpdateResponsePart.ManifestUpdateResponsePart(updateManifest))
+        return UpdateResponsePart.ManifestUpdateResponsePart(updateManifest)
       }
     }
 

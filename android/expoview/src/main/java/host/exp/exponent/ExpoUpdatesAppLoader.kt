@@ -11,16 +11,16 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.entity.UpdateEntity
-import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.LoaderTask
-import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.loader.LoaderTask.RemoteUpdateStatus
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.manifests.core.Manifest
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_ALGORITHM_KEY
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_KEY_ID_KEY
 import expo.modules.updates.codesigning.CodeSigningAlgorithm
+import expo.modules.updates.db.entity.AssetEntity
+import expo.modules.updates.launcher.LauncherResult
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -31,6 +31,8 @@ import host.exp.exponent.kernel.ExpoViewKernel
 import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.kernel.KernelConfig
 import host.exp.exponent.storage.ExponentSharedPreferences
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -105,7 +107,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   lateinit var fileDownloader: FileDownloader
     private set
 
-  lateinit var launcher: Launcher
+  lateinit var launcherResult: LauncherResult
     private set
 
   private fun updateStatus(status: AppLoaderStatus) {
@@ -176,123 +178,136 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     updatesConfiguration = configuration
     updatesDirectory = directory
     this.selectionPolicy = selectionPolicy
-    LoaderTask(
-      configuration,
-      databaseHolder,
-      directory,
-      fileDownloader,
-      selectionPolicy,
-      object : LoaderTaskCallback {
-        private var didAbort = false
-        override fun onFailure(e: Exception) {
-          if (didAbort) {
-            return
-          }
-          var exception = e
-          try {
-            val errorJson = JSONObject(e.message!!)
-            exception = ManifestException(e, manifestUrl, errorJson)
-          } catch (ex: Exception) {
-            // do nothing, expected if the error payload does not come from a conformant server
-          }
-          callback.onError(exception)
-        }
 
-        override fun onFinishedAllLoading() {}
+    GlobalScope.launch {
+      var didAbort = false
+      val loaderTaskResult = try {
+        LoaderTask(
+          context,
+          configuration,
+          databaseHolder,
+          directory,
+          fileDownloader,
+          selectionPolicy
+        ).load(object : LoaderTask.LoaderTaskCallbacks {
+          override fun onCachedUpdateLoaded(update: UpdateEntity): Boolean {
+            val manifest = Manifest.fromManifestJson(update.manifest)
+            setShouldShowAppLoaderStatus(manifest)
+            if (manifest.isUsingDeveloperTool()) {
+              return false
+            } else {
+              try {
+                val experienceKey = ExperienceKey.fromManifest(manifest)
+                // if previous run of this app failed due to a loading error, we want to make sure to check for remote updates
+                val experienceMetadata = exponentSharedPreferences.getExperienceMetadata(experienceKey)
+                if (experienceMetadata != null && experienceMetadata.optBoolean(
+                    ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR
+                  )
+                ) {
+                  return false
+                }
+              } catch (e: Exception) {
+                return true
+              }
+            }
+            return true
+          }
 
-        override fun onCachedUpdateLoaded(update: UpdateEntity): Boolean {
-          val manifest = Manifest.fromManifestJson(update.manifest)
-          setShouldShowAppLoaderStatus(manifest)
-          if (manifest.isUsingDeveloperTool()) {
-            return false
-          } else {
+          override fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest) {
+            // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
+            // so we need to check the compatibility here
+            val sdkVersion = updateManifest.manifest.getExpoGoSDKVersion()
+            if (!isValidSdkVersion(sdkVersion)) {
+              callback.onError(formatExceptionForIncompatibleSdk(sdkVersion))
+              didAbort = true
+              return
+            }
+            setShouldShowAppLoaderStatus(updateManifest.manifest)
+            callback.onOptimisticManifest(updateManifest.manifest)
+            updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE)
+          }
+
+          override fun onRemoteCheckForUpdateStarted() {}
+
+          override fun onRemoteCheckForUpdateFinished(result: LoaderTask.RemoteCheckResult) {}
+
+          override fun onRemoteUpdateLoadStarted() {}
+
+          override fun onRemoteUpdateAssetLoaded(
+            asset: AssetEntity,
+            successfulAssetCount: Int,
+            failedAssetCount: Int,
+            totalAssetCount: Int
+          ) {}
+
+          override fun onRemoteUpdateFinished(
+            status: RemoteUpdateStatus,
+            update: UpdateEntity?,
+            exception: Exception?
+          ) {
+            if (didAbort) {
+              return
+            }
             try {
-              val experienceKey = ExperienceKey.fromManifest(manifest)
-              // if previous run of this app failed due to a loading error, we want to make sure to check for remote updates
-              val experienceMetadata = exponentSharedPreferences.getExperienceMetadata(experienceKey)
-              if (experienceMetadata != null && experienceMetadata.optBoolean(
-                  ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR
-                )
-              ) {
-                return false
+              val jsonParams = JSONObject()
+              when (status) {
+                RemoteUpdateStatus.ERROR -> {
+                  if (exception == null) {
+                    throw AssertionError("Background update with error status must have a nonnull exception object")
+                  }
+                  jsonParams.put("type", UPDATE_ERROR_EVENT)
+                  jsonParams.put("message", exception.message)
+                }
+                RemoteUpdateStatus.UPDATE_AVAILABLE -> {
+                  if (update == null) {
+                    throw AssertionError("Background update with error status must have a nonnull update object")
+                  }
+                  jsonParams.put("type", UPDATE_AVAILABLE_EVENT)
+                  jsonParams.put("manifestString", update.manifest.toString())
+                }
+                RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {
+                  jsonParams.put("type", UPDATE_NO_UPDATE_AVAILABLE_EVENT)
+                }
               }
+              callback.emitEvent(jsonParams)
             } catch (e: Exception) {
-              return true
+              Log.e(TAG, "Failed to emit event to JS", e)
             }
           }
-          return true
+        })
+      } catch (e: Exception) {
+        if (didAbort) {
+          return@launch
         }
-
-        override fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest) {
-          // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
-          // so we need to check the compatibility here
-          val sdkVersion = updateManifest.manifest.getExpoGoSDKVersion()
-          if (!isValidSdkVersion(sdkVersion)) {
-            callback.onError(formatExceptionForIncompatibleSdk(sdkVersion))
-            didAbort = true
-            return
-          }
-          setShouldShowAppLoaderStatus(updateManifest.manifest)
-          callback.onOptimisticManifest(updateManifest.manifest)
-          updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE)
+        var exception = e
+        try {
+          val errorJson = JSONObject(e.message!!)
+          exception = ManifestException(e, manifestUrl, errorJson)
+        } catch (ex: Exception) {
+          // do nothing, expected if the error payload does not come from a conformant server
         }
-
-        override fun onSuccess(launcher: Launcher, isUpToDate: Boolean) {
-          if (didAbort) {
-            return
-          }
-          this@ExpoUpdatesAppLoader.launcher = launcher
-          this@ExpoUpdatesAppLoader.isUpToDate = isUpToDate
-          try {
-            val manifestJson = processManifestJson(launcher.launchedUpdate!!.manifest)
-            val manifest = Manifest.fromManifestJson(manifestJson)
-            callback.onManifestCompleted(manifest)
-
-            // ReactAndroid will load the bundle on its own in development mode
-            if (!manifest.isDevelopmentMode()) {
-              callback.onBundleCompleted(launcher.launchAssetFile!!)
-            }
-          } catch (e: Exception) {
-            callback.onError(e)
-          }
-        }
-
-        override fun onRemoteUpdateFinished(
-          status: RemoteUpdateStatus,
-          update: UpdateEntity?,
-          exception: Exception?
-        ) {
-          if (didAbort) {
-            return
-          }
-          try {
-            val jsonParams = JSONObject()
-            when (status) {
-              RemoteUpdateStatus.ERROR -> {
-                if (exception == null) {
-                  throw AssertionError("Background update with error status must have a nonnull exception object")
-                }
-                jsonParams.put("type", UPDATE_ERROR_EVENT)
-                jsonParams.put("message", exception.message)
-              }
-              RemoteUpdateStatus.UPDATE_AVAILABLE -> {
-                if (update == null) {
-                  throw AssertionError("Background update with error status must have a nonnull update object")
-                }
-                jsonParams.put("type", UPDATE_AVAILABLE_EVENT)
-                jsonParams.put("manifestString", update.manifest.toString())
-              }
-              RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {
-                jsonParams.put("type", UPDATE_NO_UPDATE_AVAILABLE_EVENT)
-              }
-            }
-            callback.emitEvent(jsonParams)
-          } catch (e: Exception) {
-            Log.e(TAG, "Failed to emit event to JS", e)
-          }
-        }
+        callback.onError(exception)
+        return@launch
       }
-    ).start(context)
+
+      if (didAbort) {
+        return@launch
+      }
+      this@ExpoUpdatesAppLoader.launcherResult = loaderTaskResult.launcherResult
+      this@ExpoUpdatesAppLoader.isUpToDate = isUpToDate
+      try {
+        val manifestJson = processManifestJson(launcherResult.launchedUpdate!!.manifest)
+        val manifest = Manifest.fromManifestJson(manifestJson)
+        callback.onManifestCompleted(manifest)
+
+        // ReactAndroid will load the bundle on its own in development mode
+        if (!manifest.isDevelopmentMode()) {
+          callback.onBundleCompleted(launcherResult.launchAssetFile!!)
+        }
+      } catch (e: Exception) {
+        callback.onError(e)
+      }
+    }
   }
 
   @Throws(JSONException::class)
