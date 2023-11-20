@@ -468,7 +468,7 @@ class LoaderTask(
     }
   }
 
-  private fun runReaper() {
+  private suspend fun runReaper() {
     AsyncTask.execute {
       synchronized(this@LoaderTask) {
         val finalizedLaunchedUpdate = finalizedLauncher?.launchedUpdate

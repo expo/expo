@@ -60,7 +60,7 @@ class DatabaseLauncher(
   private var callback: LauncherCallback? = null
 
   @Synchronized
-  fun launch(database: UpdatesDatabase, context: Context, callback: LauncherCallback?) {
+  suspend fun launch(database: UpdatesDatabase, context: Context, callback: LauncherCallback?) {
     if (this.callback != null) {
       throw AssertionError("DatabaseLauncher has already started. Create a new instance in order to launch a new version.")
     }
@@ -125,7 +125,7 @@ class DatabaseLauncher(
     }
   }
 
-  fun getLaunchableUpdate(database: UpdatesDatabase, context: Context): UpdateEntity? {
+  suspend fun getLaunchableUpdate(database: UpdatesDatabase, context: Context): UpdateEntity? {
     val launchableUpdates = database.updateDao().loadLaunchableUpdatesForScope(configuration.scopeKey)
 
     // We can only run an update marked as embedded if it's actually the update embedded in the

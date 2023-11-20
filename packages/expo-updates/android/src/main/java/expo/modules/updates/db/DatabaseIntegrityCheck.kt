@@ -6,7 +6,7 @@ import expo.modules.updates.db.enums.UpdateStatus
 import java.io.File
 
 open class DatabaseIntegrityCheck {
-  fun run(database: UpdatesDatabase, updatesDirectory: File?, embeddedUpdate: UpdateEntity?) {
+  suspend fun run(database: UpdatesDatabase, updatesDirectory: File?, embeddedUpdate: UpdateEntity?) {
     val assets = database.assetDao().loadAllAssets()
 
     val missingAssets = mutableListOf<AssetEntity>()

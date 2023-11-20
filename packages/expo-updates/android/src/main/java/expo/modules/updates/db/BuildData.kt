@@ -31,7 +31,7 @@ import org.json.JSONObject
 object BuildData {
   private var staticBuildDataKey = "staticBuildData"
 
-  fun ensureBuildDataIsConsistent(
+  suspend fun ensureBuildDataIsConsistent(
     updatesConfiguration: UpdatesConfiguration,
     database: UpdatesDatabase,
   ) {
@@ -45,7 +45,7 @@ object BuildData {
     }
   }
 
-  fun clearAllUpdatesFromDatabase(database: UpdatesDatabase) {
+  suspend fun clearAllUpdatesFromDatabase(database: UpdatesDatabase) {
     val allUpdates = database.updateDao().loadAllUpdates()
     database.updateDao().deleteUpdates(allUpdates)
   }

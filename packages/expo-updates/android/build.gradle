@@ -162,9 +162,10 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 
-  def room_version = "2.4.2"
+  def room_version = "2.6.0"
 
   implementation "androidx.room:room-runtime:$room_version"
+  implementation "androidx.room:room-ktx:$room_version"
   kapt "androidx.room:room-compiler:$room_version"
 
   implementation("com.squareup.okhttp3:okhttp:4.9.2")

@@ -17,7 +17,7 @@ import java.io.File
 object Reaper {
   private val TAG = Reaper::class.java.simpleName
 
-  @JvmStatic fun reapUnusedUpdates(
+  suspend fun reapUnusedUpdates(
     configuration: UpdatesConfiguration,
     database: UpdatesDatabase,
     updatesDirectory: File?,

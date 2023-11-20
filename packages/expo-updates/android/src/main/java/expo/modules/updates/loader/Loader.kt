@@ -169,7 +169,7 @@ abstract class Loader protected constructor(
   }
 
   // private helper methods
-  private fun processUpdateManifest(updateManifest: UpdateManifest) {
+  private suspend fun processUpdateManifest(updateManifest: UpdateManifest) {
     if (updateManifest.isDevelopmentMode) {
       // insert into database but don't try to load any assets;
       // the RN runtime will take care of that and we don't want to cache anything
