@@ -12,11 +12,11 @@ import { ensureApplicationTargetEntitlementsFileConfigured } from '../ios/Entitl
 import { InfoPlist } from '../ios/IosConfig.types';
 import { getPbxproj } from '../ios/utils/Xcodeproj';
 import { getInfoPlistPathFromPbxproj } from '../ios/utils/getInfoPlistPath';
-import { fileExists } from '../utils/modules';
+import { fileExists, writeIfDifferentAsync } from '../utils/modules';
 import { sortObject } from '../utils/sortObject';
 import { addWarningIOS } from '../utils/warnings';
 
-const { readFile, writeFile } = promises;
+const { readFile } = promises;
 
 type IosModName = keyof Required<ModConfig>['ios'];
 
@@ -72,7 +72,7 @@ const defaultProviders = {
       return Paths.getFileInfo(filePath);
     },
     async write(filePath: string, { modResults: { contents } }) {
-      await writeFile(filePath, contents);
+      await writeIfDifferentAsync(filePath, contents);
     },
   }),
   // Append a rule to supply Expo.plist data to mods on `mods.ios.expoPlist`
@@ -96,7 +96,7 @@ const defaultProviders = {
       if (introspect) {
         return;
       }
-      await writeFile(filePath, plist.build(sortObject(modResults)));
+      await writeIfDifferentAsync(filePath, plist.build(sortObject(modResults)));
     },
   }),
   // Append a rule to supply .xcodeproj data to mods on `mods.ios.xcodeproj`
@@ -110,7 +110,7 @@ const defaultProviders = {
       return project;
     },
     async write(filePath, { modResults }) {
-      await writeFile(filePath, modResults.writeSync());
+      await writeIfDifferentAsync(filePath, modResults.writeSync());
     },
   }),
   // Append a rule to supply Info.plist data to mods on `mods.ios.infoPlist`
@@ -198,7 +198,7 @@ const defaultProviders = {
         return;
       }
 
-      await writeFile(filePath, plist.build(sortObject(config.modResults)));
+      await writeIfDifferentAsync(filePath, plist.build(sortObject(config.modResults)));
     },
   }),
   // Append a rule to supply .entitlements data to mods on `mods.ios.entitlements`
@@ -262,7 +262,7 @@ const defaultProviders = {
         return;
       }
 
-      await writeFile(filePath, plist.build(sortObject(config.modResults)));
+      await writeIfDifferentAsync(filePath, plist.build(sortObject(config.modResults)));
     },
   }),
 

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Skip writing iOS files if they contents haven't changed to minimize the chance of Xcode cache invalidation.
+
 ## 7.7.0 — 2023-11-14
 
 ### 🐛 Bug fixes

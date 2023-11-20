@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.directoryExistsAsync = directoryExistsAsync;
 exports.fileExists = fileExists;
 exports.fileExistsAsync = fileExistsAsync;
+exports.writeIfDifferentAsync = writeIfDifferentAsync;
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
   _fs = function () {
@@ -14,6 +15,8 @@ function _fs() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+const debug = require('debug')('expo:config-plugins:fs');
+
 /**
  * A non-failing version of async FS stat.
  *
@@ -40,5 +43,17 @@ function fileExists(file) {
   } catch {
     return false;
   }
+}
+
+// An optimization to attempt to prevent Xcode cache invalidation on files that don't change.
+async function writeIfDifferentAsync(filePath, contents) {
+  if (!fileExists(filePath)) {
+    const existing = await _fs().default.promises.readFile(filePath, 'utf8');
+    if (existing === contents) {
+      debug(`Skipping writing unchanged file: ${filePath}`);
+      return;
+    }
+  }
+  await _fs().default.promises.writeFile(filePath, contents);
 }
 //# sourceMappingURL=modules.js.map
