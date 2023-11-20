@@ -27,8 +27,7 @@ public final class FileSystemModule: Module {
     Constants {
       return [
         "documentDirectory": documentDirectory?.absoluteString,
-        "cacheDirectory": cacheDirectory?.absoluteString,
-        "bundleDirectory": Bundle.main.bundlePath
+        "cacheDirectory": cacheDirectory?.absoluteString
       ]
     }
 

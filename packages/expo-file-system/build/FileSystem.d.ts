@@ -11,7 +11,6 @@ export declare const documentDirectory: string | null;
  * Example uses are for downloaded or generated files that the app just needs for one-time usage.
  */
 export declare const cacheDirectory: string | null;
-export declare const bundledAssets: string | null, bundleDirectory: string | null;
 /**
  * Get metadata information about a file, directory or external content/asset.
  * @param fileUri URI to the file or directory. See [supported URI schemes](#supported-uri-schemes).

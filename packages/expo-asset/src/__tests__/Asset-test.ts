@@ -4,9 +4,7 @@ jest.mock('expo-file-system', () => {
   const FileSystem = jest.requireActual('expo-file-system');
   return {
     ...FileSystem,
-    bundleDirectory: 'file:///Expo.app/',
     cacheDirectory: 'file:///Caches/Expo.app/',
-    bundledAssets: ['asset_test1.png'],
     getInfoAsync: jest.fn(),
     downloadAsync: jest.fn(),
   };

@@ -54,9 +54,6 @@ export const documentDirectory = normalizeEndingSlash(ExponentFileSystem.documen
  */
 export const cacheDirectory = normalizeEndingSlash(ExponentFileSystem.cacheDirectory);
 
-// @docsMissing
-export const { bundledAssets, bundleDirectory } = ExponentFileSystem;
-
 /**
  * Get metadata information about a file, directory or external content/asset.
  * @param fileUri URI to the file or directory. See [supported URI schemes](#supported-uri-schemes).
