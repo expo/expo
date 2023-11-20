@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On `Android`, use `addInterceptor` instead of `addNetworkInterceptor` in `downloadResumableStartAsync`. ([#24702](https://github.com/expo/expo/pull/24702) by [@alanhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 15.4.5 — 2023-11-20
+
+### 🐛 Bug fixes
+
+- On `Android`, use `addInterceptor` instead of `addNetworkInterceptor` in `downloadResumableStartAsync`. ([#24702](https://github.com/expo/expo/pull/24702) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 15.4.4 — 2023-08-29
 

@@ -35,7 +35,7 @@
   "expo-device": "~5.4.0",
   "expo-document-picker": "~11.5.4",
   "expo-face-detector": "~12.2.0",
-  "expo-file-system": "~15.4.4",
+  "expo-file-system": "~15.4.5",
   "expo-font": "~11.4.0",
   "expo-gl": "~13.0.1",
   "expo-google-app-auth": "~8.3.0",
