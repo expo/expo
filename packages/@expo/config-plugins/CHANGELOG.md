@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- `ios.bundleIdentifier` will now only be set on the main `.pbxproj` file, using the serial `withXcodeProject` modifier.
+
 ### 💡 Others
 
 ## 7.7.0 — 2023-11-14

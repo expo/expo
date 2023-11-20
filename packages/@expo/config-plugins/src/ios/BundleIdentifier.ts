@@ -9,25 +9,25 @@ import { getAllInfoPlistPaths, getAllPBXProjectPaths, getPBXProjectPath } from '
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
 import { ConfigurationSectionEntry, getBuildConfigurationsForListId } from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
-import { ConfigPlugin } from '../Plugin.types';
-import { withDangerousMod } from '../plugins/withDangerousMod';
+import { ConfigPlugin, XcodeProject } from '../Plugin.types';
+import { withXcodeProject } from '../plugins/ios-plugins';
 
 export const withBundleIdentifier: ConfigPlugin<{ bundleIdentifier?: string }> = (
   config,
   { bundleIdentifier }
 ) => {
-  return withDangerousMod(config, [
-    'ios',
-    async (config) => {
-      const bundleId = bundleIdentifier ?? config.ios?.bundleIdentifier;
-      assert(
-        bundleId,
-        '`bundleIdentifier` must be defined in the app config (`expo.ios.bundleIdentifier`) or passed to the plugin `withBundleIdentifier`.'
-      );
-      await setBundleIdentifierForPbxproj(config.modRequest.projectRoot, bundleId!);
-      return config;
-    },
-  ]);
+  return withXcodeProject(config, async (config) => {
+    const bundleId = bundleIdentifier ?? config.ios?.bundleIdentifier;
+    // Should never happen.
+    assert(
+      bundleId,
+      '`bundleIdentifier` must be defined in the app config (`ios.bundleIdentifier`) or passed to the plugin `withBundleIdentifier`.'
+    );
+
+    config.modResults = updateBundleIdentifierForPbxprojObject(config.modResults, bundleId);
+
+    return config;
+  });
 };
 
 function getBundleIdentifier(config: Pick<ExpoConfig, 'ios'>): string | null {
@@ -131,7 +131,24 @@ function updateBundleIdentifierForPbxproj(
 ): void {
   const project = xcode.project(pbxprojPath);
   project.parseSync();
+  fs.writeFileSync(
+    pbxprojPath,
+    updateBundleIdentifierForPbxprojObject(project, bundleIdentifier, updateProductName).writeSync()
+  );
+}
 
+/**
+ * Updates the bundle identifier for a given pbxproj
+ *
+ * @param {string} project pbxproj file
+ * @param {string} bundleIdentifier Bundle identifier to set in the pbxproj
+ * @param {boolean} [updateProductName=true]  Whether to update PRODUCT_NAME
+ */
+function updateBundleIdentifierForPbxprojObject(
+  project: XcodeProject,
+  bundleIdentifier: string,
+  updateProductName: boolean = true
+) {
   const [, nativeTarget] = findFirstNativeTarget(project);
 
   getBuildConfigurationsForListId(project, nativeTarget.buildConfigurationList).forEach(
@@ -150,7 +167,7 @@ function updateBundleIdentifierForPbxproj(
       }
     }
   );
-  fs.writeFileSync(pbxprojPath, project.writeSync());
+  return project;
 }
 
 /**
