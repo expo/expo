@@ -103,6 +103,5 @@ abstract_target 'BareExpoMain' do
     )
 
     pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
-    pod 'Nimble', :podspec => './../../../ios/Nimble.podspec'
   end
 end

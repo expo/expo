@@ -11,7 +11,7 @@ import ExpoModulesTestCore
  NOTE: Each test registers the module because only registered modules can capture events.
  */
 class ModuleEventListenersSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var appContext: AppContext!
 
     beforeEach {

@@ -9,7 +9,7 @@ import EXManifests
 class UpdatesConfigSpecForBundle {}
 
 class UpdatesConfigSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("instantiation from plist") {
       it("instantiates") {
         let bundle = Bundle(for: UpdatesConfigSpecForBundle.self)

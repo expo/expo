@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import EXUpdates
 
 class ResponseHeaderDataSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("dictionaryWithStructuredHeader") {
       it("SupportedTypes") {
         let header = "string=\"string-0000\", true=?1, false=?0, integer=47, decimal=47.5"
