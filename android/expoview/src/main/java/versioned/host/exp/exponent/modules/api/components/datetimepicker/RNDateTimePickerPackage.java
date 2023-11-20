@@ -12,8 +12,6 @@ import com.facebook.react.module.model.ReactModuleInfoProvider;
 import java.util.HashMap;
 import java.util.Map;
 
-import host.exp.expoview.BuildConfig;
-
 public class RNDateTimePickerPackage extends TurboReactPackage {
   @Nullable
   @Override

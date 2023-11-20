@@ -30,9 +30,6 @@ import android.widget.DatePicker;
 
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.TimeZone;
-
-import host.exp.expoview.R;
 
 @SuppressLint("ValidFragment")
 public class RNDatePickerDialogFragment extends DialogFragment {
@@ -97,8 +94,6 @@ public class RNDatePickerDialogFragment extends DialogFragment {
 
   private DatePickerDialog createDialog(Bundle args) {
     Context activityContext = getActivity();
-    final Calendar c = Calendar.getInstance();
-
     DatePickerDialog dialog = getDialog(args, activityContext, mOnDateSetListener);
 
     if (args != null) {
@@ -111,60 +106,37 @@ public class RNDatePickerDialogFragment extends DialogFragment {
     }
 
     final DatePicker datePicker = dialog.getDatePicker();
+    final long minDate = Common.minDateWithTimeZone(args);
+    final long maxDate = Common.maxDateWithTimeZone(args);
 
-    Integer timeZoneOffsetInMilliseconds = getTimeZoneOffset(args);
-    if (timeZoneOffsetInMilliseconds != null) {
-      c.setTimeZone(TimeZone.getTimeZone("GMT"));
-    }
-
-    if (args != null && args.containsKey(RNConstants.ARG_MINDATE)) {
-      // Set minDate to the beginning of the day. We need this because of clowniness in datepicker
-      // that causes it to throw an exception if minDate is greater than the internal timestamp
-      // that it generates from the y/m/d passed in the constructor.
-      c.setTimeInMillis(args.getLong(RNConstants.ARG_MINDATE));
-      c.set(Calendar.HOUR_OF_DAY, 0);
-      c.set(Calendar.MINUTE, 0);
-      c.set(Calendar.SECOND, 0);
-      c.set(Calendar.MILLISECOND, 0);
-      datePicker.setMinDate(c.getTimeInMillis() - getOffset(c, timeZoneOffsetInMilliseconds));
+    if (args.containsKey(RNConstants.ARG_MINDATE)) {
+      datePicker.setMinDate(minDate);
     } else {
       // This is to work around a bug in DatePickerDialog where it doesn't display a title showing
       // the date under certain conditions.
       datePicker.setMinDate(RNConstants.DEFAULT_MIN_DATE);
     }
-    if (args != null && args.containsKey(RNConstants.ARG_MAXDATE)) {
-      // Set maxDate to the end of the day, same reason as for minDate.
-      c.setTimeInMillis(args.getLong(RNConstants.ARG_MAXDATE));
-      c.set(Calendar.HOUR_OF_DAY, 23);
-      c.set(Calendar.MINUTE, 59);
-      c.set(Calendar.SECOND, 59);
-      c.set(Calendar.MILLISECOND, 999);
-      datePicker.setMaxDate(c.getTimeInMillis() - getOffset(c, timeZoneOffsetInMilliseconds));
+    if (args.containsKey(RNConstants.ARG_MAXDATE)) {
+      datePicker.setMaxDate(maxDate);
     }
 
-    if (args != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-      && (args.containsKey(RNConstants.ARG_MAXDATE) || args.containsKey(RNConstants.ARG_MINDATE))) {
-      datePicker.setOnDateChangedListener(new KeepDateInRangeListener(args));
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && (args.containsKey(RNConstants.ARG_MAXDATE) || args.containsKey(RNConstants.ARG_MINDATE))) {
+      datePicker.setOnDateChangedListener((view, year, monthOfYear, dayOfMonth) -> {
+        Calendar calendar = Calendar.getInstance(Common.getTimeZone(args));
+        calendar.set(year, monthOfYear, dayOfMonth, 0, 0, 0);
+        long timestamp = Math.min(Math.max(calendar.getTimeInMillis(), minDate), maxDate);
+        calendar.setTimeInMillis(timestamp);
+        if (datePicker.getYear() != calendar.get(Calendar.YEAR) || datePicker.getMonth() != calendar.get(Calendar.MONTH) || datePicker.getDayOfMonth() != calendar.get(Calendar.DAY_OF_MONTH)) {
+          datePicker.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        }
+      });
+    }
+
+    if (args.containsKey(RNConstants.ARG_TESTID)) {
+      datePicker.setTag(args.getString(RNConstants.ARG_TESTID));
     }
 
     return dialog;
-  }
-
-  private static Integer getTimeZoneOffset(Bundle args) {
-    if (args != null && args.containsKey(RNConstants.ARG_TZOFFSET_MINS)) {
-      long timeZoneOffsetInMinutesFallback = args.getLong(RNConstants.ARG_TZOFFSET_MINS);
-      int timeZoneOffsetInMinutes = args.getInt(RNConstants.ARG_TZOFFSET_MINS, (int) timeZoneOffsetInMinutesFallback);
-      return timeZoneOffsetInMinutes * 60000;
-    }
-
-    return null;
-  }
-
-  private static int getOffset(Calendar c, Integer timeZoneOffsetInMilliseconds) {
-    if (timeZoneOffsetInMilliseconds != null) {
-      return TimeZone.getDefault().getOffset(c.getTimeInMillis()) - timeZoneOffsetInMilliseconds;
-    }
-    return 0;
   }
 
   @Override

@@ -26,8 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import host.exp.expoview.R;
-
 @SuppressWarnings("ValidFragment")
 public class RNTimePickerDialogFragment extends DialogFragment {
   private TimePickerDialog instance;

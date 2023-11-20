@@ -31,7 +31,17 @@
   YGNodeMarkDirty(self.yogaNode);
 }
 
-static YGSize RNDateTimePickerShadowViewMeasure(YGNodeConstRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
+- (void)setTimeZoneOffsetInMinutes:(NSInteger)timeZoneOffsetInMinutes {
+  _timeZoneOffsetInMinutes = timeZoneOffsetInMinutes;
+  YGNodeMarkDirty(self.yogaNode);
+}
+
+- (void)setTimeZoneName:(NSString *)timeZoneName {
+  _timeZoneName = timeZoneName;
+  YGNodeMarkDirty(self.yogaNode);
+}
+
+static YGSize RNDateTimePickerShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
 {
   RNDateTimePickerShadowView *shadowPickerView = (__bridge RNDateTimePickerShadowView *)YGNodeGetContext(node);
 
@@ -40,13 +50,28 @@ static YGSize RNDateTimePickerShadowViewMeasure(YGNodeConstRef node, float width
     [shadowPickerView.picker setDate:shadowPickerView.date];
     [shadowPickerView.picker setDatePickerMode:shadowPickerView.mode];
     [shadowPickerView.picker setLocale:shadowPickerView.locale];
+    [shadowPickerView.picker setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:shadowPickerView.timeZoneOffsetInMinutes * 60]];
+
+    if (shadowPickerView.timeZoneName) {
+      NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:shadowPickerView.timeZoneName];
+      if (timeZone != nil) {
+        [shadowPickerView.picker setTimeZone:timeZone];
+      } else {
+        RCTLogWarn(@"'%@' does not exist in NSTimeZone.knownTimeZoneNames. Falling back to localTimeZone=%@", shadowPickerView.timeZoneName, NSTimeZone.localTimeZone.name);
+        [shadowPickerView.picker setTimeZone:NSTimeZone.localTimeZone];
+      }
+    } else {
+      [shadowPickerView.picker setTimeZone:NSTimeZone.localTimeZone];
+    }
+
     if (@available(iOS 14.0, *)) {
       [shadowPickerView.picker setPreferredDatePickerStyle:shadowPickerView.displayIOS];
     }
-	size = [shadowPickerView.picker sizeThatFits:UILayoutFittingCompressedSize];
-	size.width += 10;
+
+    size = [shadowPickerView.picker sizeThatFits:UILayoutFittingCompressedSize];
+    size.width += 10;
   });
-  
+
   return (YGSize){
     RCTYogaFloatFromCoreGraphicsFloat(size.width),
     RCTYogaFloatFromCoreGraphicsFloat(size.height)
