@@ -3296,7 +3296,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: 99a495094b10a57eeb3ae8efa1665700ad0bdaa6
   FirebaseCoreInternal: bca76517fe1ed381e989f5e7d8abb0da8d85bed3
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  glog: 41ce6388c5f672fccb3c8bfdf07807de1e2fcecc
   Google-Maps-iOS-Utils: f77eab4c4326d7e6a277f8e23a0232402731913a
   Google-Mobile-Ads-SDK: 976fdf273815674eed30b8aafffedb3c25b055e4
   GoogleAppMeasurement: 079d7632810e9d9704a99932547ba1554acc4342
