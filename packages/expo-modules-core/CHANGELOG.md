@@ -13,7 +13,7 @@
 ### 💡 Others
 
 - [iOS] Made dynamic types creation faster. ([#25390](https://github.com/expo/expo/pull/25390) by [@tsapeta](https://github.com/tsapeta))
-- Add `bundleDirectory` to `AppContextConfig`.
+- [iOS] Add `bundleDirectory` to `AppContextConfig`. ([#25479](https://github.com/expo/expo/pull/25479) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 1.10.0 — 2023-11-14
 
