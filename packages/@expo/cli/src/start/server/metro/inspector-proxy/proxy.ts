@@ -1,5 +1,7 @@
-import type { Device as MetroDevice } from '@react-native/dev-middleware';
-import MetroProxy from '@react-native/dev-middleware/dist/inspector-proxy/InspectorProxy';
+import type {
+  unstable_Device as MetroDevice,
+  unstable_InspectorProxy as MetroProxy,
+} from '@react-native/dev-middleware';
 import type { Server as HttpServer, IncomingMessage, ServerResponse } from 'http';
 import type { Server as HttpsServer } from 'https';
 import { parse } from 'url';
@@ -24,7 +26,6 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   ) {
     // monkey-patch the device list to expose it within the metro inspector
     // See https://github.com/facebook/metro/pull/991
-    // @ts-expect-error - Device ID is changing from `number` to `string`
     this.metroProxy._devices = this.devices;
 
     // force httpEndpointMiddleware to be bound to this proxy instance
@@ -53,7 +54,11 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/#endpoints */
-  public processRequest(req: IncomingMessage, res: ServerResponse, next: (error?: Error) => any) {
+  public processRequest(
+    req: IncomingMessage,
+    res: ServerResponse,
+    next: (error?: Error | null) => any
+  ) {
     this.metroProxy.processRequest(req, res, next);
   }
 
@@ -95,8 +100,6 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
 
         if (oldDevice) {
           debug('Device reconnected: device=%s, app=%s, id=%s', deviceName, appName, deviceId);
-          // See: https://github.com/facebook/metro/pull/991
-          // @ts-expect-error - Newly introduced method coming to @react-native/dev-middleware soon
           oldDevice.handleDuplicateDeviceConnection(newDevice);
         } else {
           debug('New device connected: device=%s, app=%s, id=%s', deviceName, appName, deviceId);
