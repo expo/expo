@@ -77,7 +77,7 @@ private extension DispatchQueue {
 }
 
 class ErrorRecoverySpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     func setUp() -> (DispatchQueue, ErrorRecovery) {
       let testQueue = DispatchQueue(label: "expo.errorRecoveryTestQueue")
       return (testQueue, ErrorRecovery(errorRecoveryQueue: testQueue, remoteLoadTimeout: 500))

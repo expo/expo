@@ -226,8 +226,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoModulesTestCore (0.16.0):
     - ExpoModulesCore
-    - Nimble (~> 9.2.0)
-    - Quick (~> 5.0.0)
+    - Nimble (~> 13.0.0)
+    - Quick (~> 7.3.0)
     - React-hermes
   - ExpoNetwork (5.8.0):
     - ExpoModulesCore
@@ -319,7 +319,7 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
-  - Nimble (9.2.1)
+  - Nimble (13.0.0)
   - OHHTTPStubs (9.1.0):
     - OHHTTPStubs/Default (= 9.1.0)
   - OHHTTPStubs/Core (9.1.0)
@@ -333,7 +333,7 @@ PODS:
   - OHHTTPStubs/NSURLSession (9.1.0):
     - OHHTTPStubs/Core
   - OHHTTPStubs/OHPathHelpers (9.1.0)
-  - Quick (5.0.1)
+  - Quick (7.3.0)
   - RCT-Folly (2022.05.16.00):
     - boost
     - DoubleConversion
@@ -1516,7 +1516,6 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
-  - Nimble (from `./../../../ios/Nimble.podspec`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -1589,6 +1588,7 @@ SPEC REPOS:
     - libevent
     - libvmaf
     - libwebp
+    - Nimble
     - OHHTTPStubs
     - Quick
     - SDWebImage
@@ -1809,8 +1809,6 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2023-09-26-RNv0.73.0-ee2922a50fb719bdb378025d95dbd32ad93cd679
-  Nimble:
-    :podspec: "./../../../ios/Nimble.podspec"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -1933,7 +1931,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 26fad476bfa736552bbfa698a06cc530475c1505
-  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
+  DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
   EXAV: 4ddc18b96735a71cfeaebabeaacf77dc9fd2cb52
   EXBarCodeScanner: 2c2fee40a33902612792b2f0de4e9da40f080613
@@ -1978,7 +1976,7 @@ SPEC CHECKSUMS:
   ExpoMailComposer: 1f980bbdd0647500178625f453e509cef1282d43
   ExpoMaps: e9e83d84c3af7c25fc4a139917239881e319e08a
   ExpoModulesCore: 9f8a0e08e339ba3e380417aebbdbbe63a209d953
-  ExpoModulesTestCore: 83c21efaf5e0440bb79ba8065573d203db3186a9
+  ExpoModulesTestCore: dc4fb42e754da2127b7b4d37513788a70e3bfcc4
   ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
   ExpoPrint: e7ecdd682436eb5a74b744c4ce36dc490df851b7
   ExpoRandom: f0cd58e154e463d913462f3b445870b12d1c2f12
@@ -2003,7 +2001,7 @@ SPEC CHECKSUMS:
   FBLazyVector: c30d7c84d9d25e99f0d6832ae0849f73a4a69658
   FBReactNativeSpec: 3b6d7f04af21b203b4c2d6c5065e55d9acfb10f7
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
+  glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: c8106a2b9250a6fd1157c520ed0928cddb0bb90e
@@ -2012,9 +2010,9 @@ SPEC CHECKSUMS:
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libvmaf: 27f523f1e63c694d14d534cd0fddd2fab0ae8711
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  Nimble: d954d0accfd082f2225e62d71008440493e318f4
+  Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
-  Quick: 749aa754fd1e7d984f2000fe051e18a3a9809179
+  Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 473398596b8d6758a8a37bd6ceb233fd8fd4fe2f
   RCTTypeSafety: beea8b7842072402d6cd0d183bd0e6f8022c4124
@@ -2082,6 +2080,6 @@ SPEC CHECKSUMS:
   Yoga: 3125dd507e33de31a96f0723e36fd92417844521
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 74a0c94d229b0f59c1f2e600aef218a66cad6bd4
+PODFILE CHECKSUM: f25025f67ea11b94e7d9346c35ac31dfcd6677fc
 
 COCOAPODS: 1.14.2

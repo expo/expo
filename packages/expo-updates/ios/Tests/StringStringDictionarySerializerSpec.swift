@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import EXUpdates
 
 class StringStringDictionarySerializerSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("serialization") {
       it("validates") {
         expect(try StringStringDictionarySerializer.serialize(dictionary: ["hello": "world"])) == "hello=\"world\""

@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 final class EitherSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext.create()
 
     describe("Either") {

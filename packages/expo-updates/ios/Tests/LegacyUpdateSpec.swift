@@ -7,17 +7,17 @@ import ExpoModulesTestCore
 import EXManifests
 
 class LegacyUpdateSpec : ExpoSpec {
-  let config = try! UpdatesConfig.config(fromDictionary: [
+  static let config = try! UpdatesConfig.config(fromDictionary: [
     UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
     UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
   ])
-  let selfHostedConfig = try! UpdatesConfig.config(fromDictionary: [
+  static let selfHostedConfig = try! UpdatesConfig.config(fromDictionary: [
     UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://esamelson.github.io/self-hosting-test/ios-index.json",
     UpdatesConfig.EXUpdatesConfigSDKVersionKey: "38.0.0"
   ])
-  let database = UpdatesDatabase()
+  static let database = UpdatesDatabase()
 
-  override func spec() {
+  override class func spec() {
     describe("bundledAssetBaseUrl") {
       it("expo domain") {
         let manifest = LegacyManifest(rawManifestJSON: [:])

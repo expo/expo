@@ -4,7 +4,7 @@ import ExpoModulesTestCore
 @testable import ExpoFileSystem
 
 class EXFileSystemSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let fileSystem = EXFileSystem()
 
     describe("percentEncodedURLFromURIString") {

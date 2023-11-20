@@ -3,73 +3,71 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class PersistentFileLogSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
+    let log = PersistentFileLog(category: "dev.expo.modules.test.persistentlog")
+
     beforeEach {
-      self.clearEntriesSync()
+      self.clearEntriesSync(log: log)
     }
 
     it("cleared file has 0 entries") {
-      let entries = self.log.readEntries()
-      expect(entries.count).to(be(0))
+      let entries = log.readEntries()
+      expect(entries.count).to(equal(0))
     }
 
     it("append one entry works") {
-      self.appendEntrySync(entry: "Test string 1")
-      let entries = self.log.readEntries()
+      appendEntrySync(log: log, entry: "Test string 1")
+      let entries = log.readEntries()
       expect(entries).notTo(beNil())
-      expect(entries.count).to(be(1))
+      expect(entries.count).to(equal(1))
       expect(entries[0]).to(equal("Test string 1"))
     }
 
     it("append three entries works") {
-      self.appendEntrySync(entry: "Test string 1")
-      self.appendEntrySync(entry: "Test string 2")
-      self.appendEntrySync(entry: "Test string 3")
-      let entries = self.log.readEntries()
-      expect(entries.count).to(be(3))
+      appendEntrySync(log: log, entry: "Test string 1")
+      appendEntrySync(log: log, entry: "Test string 2")
+      appendEntrySync(log: log, entry: "Test string 3")
+      let entries = log.readEntries()
+      expect(entries.count).to(equal(3))
       expect(entries[0]).to(equal("Test string 1"))
       expect(entries[1]).to(equal("Test string 2"))
     }
 
     it("filter entries works") {
-      self.appendEntrySync(entry: "Test string 1")
-      self.appendEntrySync(entry: "Test string 2")
-      self.appendEntrySync(entry: "Test string 3")
-      self.filterEntriesSync { entry in
+      appendEntrySync(log: log, entry: "Test string 1")
+      appendEntrySync(log: log, entry: "Test string 2")
+      appendEntrySync(log: log, entry: "Test string 3")
+      filterEntriesSync(log: log) { entry in
         entry.contains("2")
       }
-      let entries = self.log.readEntries()
+      let entries = log.readEntries()
       expect(entries).notTo(beNil())
-      expect(entries.count).to(be(1))
+      expect(entries.count).to(equal(1))
       expect(entries[0]).to(equal("Test string 2"))
     }
   }
 
-  // Private fields and methods
-
-  let log = PersistentFileLog(category: "dev.expo.modules.test.persistentlog")
-
-  func clearEntriesSync() {
-    let expectation = self.expectation(description: "entries cleared")
+  static func clearEntriesSync(log: PersistentFileLog) {
+    var didClear = false
     log.clearEntries { _ in
-      expectation.fulfill()
+      didClear = true
     }
-    wait(for: [expectation], timeout: 0.5)
+    expect(didClear).toEventually(beTrue(), timeout: .milliseconds(500))
   }
 
-  func filterEntriesSync(filter: @escaping PersistentFileLogFilter) {
-    let expectation = self.expectation(description: "entries filtered")
+  static func filterEntriesSync(log: PersistentFileLog, filter: @escaping PersistentFileLogFilter) {
+    var didPurge = false
     log.purgeEntriesNotMatchingFilter(filter: filter) { _ in
-      expectation.fulfill()
+      didPurge = true
     }
-    wait(for: [expectation], timeout: 0.5)
+    expect(didPurge).toEventually(beTrue(), timeout: .milliseconds(500))
   }
 
-  func appendEntrySync(entry: String) {
-    let expectation = self.expectation(description: "entry appended")
+  static func appendEntrySync(log: PersistentFileLog, entry: String) {
+    var didAppend = false
     log.appendEntry(entry: entry) { _ in
-      expectation.fulfill()
+      didAppend = true
     }
-    wait(for: [expectation], timeout: 0.5)
+    expect(didAppend).toEventually(beTrue(), timeout: .milliseconds(500))
   }
 }

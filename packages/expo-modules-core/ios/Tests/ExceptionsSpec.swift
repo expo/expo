@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 final class ExceptionsSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     it("has name") {
       let error = TestException()
       expect(error.name) == "TestException"
@@ -73,7 +73,7 @@ final class ExceptionsSpec: ExpoSpec {
       let b = TestException().causedBy(a)
       let c = TestException().causedBy(b)
 
-      expect(c.rootCause) === a
+      expect(c.rootCause as! TestException) === a
     }
   }
 }

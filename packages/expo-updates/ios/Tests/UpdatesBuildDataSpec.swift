@@ -7,7 +7,7 @@ import ExpoModulesTestCore
 import EXManifests
 
 class UpdatesBuildDataSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let scopeKey = "test"
 
     var testDatabaseDir: URL!

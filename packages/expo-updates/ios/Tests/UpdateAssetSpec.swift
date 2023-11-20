@@ -7,7 +7,7 @@ import ExpoModulesTestCore
 import EXManifests
 
 class UpdateAssetSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("filename") {
       it("is overridable") {
         let asset1 = UpdateAsset(key: nil, type: "bundle")

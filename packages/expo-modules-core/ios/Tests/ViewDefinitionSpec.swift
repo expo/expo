@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 final class ViewDefinitionSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("View") {
       it("creates a view") {
         let definition = View(UIImageView.self) {}

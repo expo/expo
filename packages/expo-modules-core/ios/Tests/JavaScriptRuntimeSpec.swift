@@ -3,7 +3,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class JavaScriptRuntimeSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let runtime = JavaScriptRuntime()
 
     it("has global object accessible") {

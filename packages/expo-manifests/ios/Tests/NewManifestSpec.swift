@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import EXManifests
 
 class NewManifestSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("instantiation") {
       it("instantiates and reads properties") {
         let manifestJson = "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://classic-assets.eascdn.net/%40esamelson%2Fnative-component-list%2F39.0.0%2F01c86fd863cfee878068eebd40f165df-39.0.0-ios.js\",\"contentType\":\"application/javascript\"}}"

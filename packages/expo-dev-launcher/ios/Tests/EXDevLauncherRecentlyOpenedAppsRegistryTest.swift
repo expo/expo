@@ -4,7 +4,7 @@ import Nimble
 @testable import EXDevLauncher
 
 class EXDevLauncherRecentlyOpenedAppsRegistryTest: QuickSpec {
-  override func spec() {
+  override class func spec() {
     let appsRegistry = EXDevLauncherRecentlyOpenedAppsRegistry()
 
     beforeEach {
@@ -25,11 +25,11 @@ class EXDevLauncherRecentlyOpenedAppsRegistryTest: QuickSpec {
       let openedApps = appsRegistry.recentlyOpenedApps()
 
       expect(openedApps.count).to(equal(2))
-      
+
       expect(openedApps.filter { appEntry in
         appEntry["url"] as! String == url1
       }.count).to(equal(1))
-      
+
       expect(openedApps.filter { appEntry in
         appEntry["url"] as! String == url2
       }.count).to(equal(1))

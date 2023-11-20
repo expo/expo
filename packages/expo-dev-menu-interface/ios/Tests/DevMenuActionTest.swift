@@ -4,7 +4,7 @@ import Nimble
 @testable import EXDevMenuInterface
 
 class DevMenuActionTest: QuickSpec {
-  override func spec() {
+  override class func spec() {
     it("Action should be serializable") {
       let action = DevMenuAction(withId: "action-1", {})
       action.isAvailable = { true }

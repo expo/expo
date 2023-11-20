@@ -18,7 +18,7 @@ class TestStateChangeDelegate: UpdatesStateChangeDelegate {
 }
 
 class UpdatesStateMachineSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("default state") {
       it("instantiates") {
         let testStateChangeDelegate = TestStateChangeDelegate()

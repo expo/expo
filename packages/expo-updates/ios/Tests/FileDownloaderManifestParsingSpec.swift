@@ -13,7 +13,7 @@ private extension Data {
 }
 
 class FileDownloaderManifestParsingSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let database = UpdatesDatabase()
     
     describe("manifest parsing") {

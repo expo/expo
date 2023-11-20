@@ -38,7 +38,7 @@ class AppLauncherWithDatabaseMock : AppLauncherWithDatabase {
 }
 
 class AppLauncherWithDatabaseSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
 
