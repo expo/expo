@@ -64,7 +64,7 @@ function setParams(params = {}) {
 }
 exports.setParams = setParams;
 function linkTo(href, event) {
-    if ((0, url_1.hasUrlProtocolPrefix)(href)) {
+    if ((0, url_1.shouldLinkExternally)(href)) {
         Linking.openURL(href);
         return;
     }
