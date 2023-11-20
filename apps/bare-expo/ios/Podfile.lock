@@ -1931,7 +1931,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 26fad476bfa736552bbfa698a06cc530475c1505
-  DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
+  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   EASClient: b550a8d3d3d9d1211ba71eabf789cb46c7e92b3c
   EXAV: 4ddc18b96735a71cfeaebabeaacf77dc9fd2cb52
   EXBarCodeScanner: 2c2fee40a33902612792b2f0de4e9da40f080613
@@ -2001,7 +2001,7 @@ SPEC CHECKSUMS:
   FBLazyVector: c30d7c84d9d25e99f0d6832ae0849f73a4a69658
   FBReactNativeSpec: 3b6d7f04af21b203b4c2d6c5065e55d9acfb10f7
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   GoogleMaps: a146f275ee429d14822178c7a841c03366ec92a1
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: c8106a2b9250a6fd1157c520ed0928cddb0bb90e
