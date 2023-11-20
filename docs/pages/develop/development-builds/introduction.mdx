@@ -5,6 +5,8 @@ description: Development builds of your app are Debug builds of your project. It
 ---
 
 import Video from '~/components/plugins/Video';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 Building your project with Expo allows you to make most changes in JavaScript. This helps iterate quickly and safely and allows your team to [achieve web-like iteration speeds](https://blog.expo.dev/javascript-driven-development-with-custom-runtimes-eda87d574c9d) by dividing your application into:
 
@@ -25,4 +27,11 @@ You can think of a development build as your fully customizable version of Expo 
 
 The [`expo-dev-client`](https://www.npmjs.com/package/expo-dev-client) package replaces the default in-app development tools UI that React Native provides (the [Dev Menu](https://reactnative.dev/docs/debugging#accessing-the-dev-menu)) with [a more powerful and extensible UI](/debugging/tools/#developer-menu) and adds a launcher UI, so you can launch updates (such as from [PR previews](/develop/development-builds/development-workflows/#pr-previews)) and switch between development servers without needing to rebuild the app binary.
 
-> **info** If you are looking to learn how to compile and build your app locally when using Expo, see [Local app development](/guides/local-app-development/).
+## Next steps
+
+<BoxLink
+  title="Local app development"
+  description="If you are looking to learn how to compile and build your app locally when using Expo."
+  href="/guides/local-app-development/"
+  Icon={BookOpen02Icon}
+/>
