@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 final class JavaScriptObjectSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let runtime = JavaScriptRuntime()
     var object: JavaScriptObject?
 
