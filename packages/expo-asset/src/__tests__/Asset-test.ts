@@ -10,6 +10,22 @@ jest.mock('expo-file-system', () => {
   };
 });
 
+jest.mock('expo-modules-core', () => {
+  const ModulesCore = jest.requireActual('expo-modules-core');
+  return {
+    ...ModulesCore,
+    NativeModulesProxy: {
+      ...ModulesCore.NativeModulesProxy,
+      ExpoUpdates: {
+        ...ModulesCore.NativeModulesProxy.ExpoUpdates,
+        localAssets: {
+          test1: 'file:///Expo.app/asset_test1.png',
+        },
+      },
+    },
+  };
+});
+
 jest.mock('@react-native/assets-registry/registry', () => ({
   getAssetByID: jest.fn(),
 }));
@@ -223,14 +239,6 @@ if (Platform.OS === 'web') {
 
 describe('embedding', () => {
   beforeAll(() => {
-    jest.doMock('expo-constants', () => {
-      const Constants = jest.requireActual('expo-constants');
-      return {
-        ...Constants,
-        appOwnership: 'standalone',
-        manifest: {},
-      };
-    });
     // @ts-ignore: the type declaration marks __DEV__ as read-only
     __DEV__ = false;
   });
