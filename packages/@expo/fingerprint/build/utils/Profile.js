@@ -40,3 +40,4 @@ function profile(fn, functionName = fn.name) {
     });
 }
 exports.profile = profile;
+//# sourceMappingURL=Profile.js.map

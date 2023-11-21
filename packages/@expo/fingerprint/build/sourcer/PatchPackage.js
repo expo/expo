@@ -16,3 +16,4 @@ async function getPatchPackageSourcesAsync(projectRoot, options) {
     return [];
 }
 exports.getPatchPackageSourcesAsync = getPatchPackageSourcesAsync;
+//# sourceMappingURL=PatchPackage.js.map

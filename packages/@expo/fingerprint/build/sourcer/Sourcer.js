@@ -39,3 +39,4 @@ async function getHashSourcesAsync(projectRoot, options) {
     return [].concat(...results);
 }
 exports.getHashSourcesAsync = getHashSourcesAsync;
+//# sourceMappingURL=Sourcer.js.map

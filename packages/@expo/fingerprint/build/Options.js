@@ -74,3 +74,4 @@ async function collectIgnorePathsAsync(projectRoot, options) {
     catch { }
     return ignorePaths;
 }
+//# sourceMappingURL=Options.js.map

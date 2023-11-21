@@ -103,3 +103,4 @@ function stripRncliAutolinkingAbsolutePaths(dependency, root) {
         }
     }
 }
+//# sourceMappingURL=Bare.js.map
