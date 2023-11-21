@@ -222,7 +222,7 @@ class DevLauncherController private constructor() :
       }
 
     intent?.let {
-      val shouldTryToLaunchLastOpenedBundle = getMetadataValue(context, "DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE").toBoolean()
+      val shouldTryToLaunchLastOpenedBundle = getMetadataValue(context, "DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE", "true").toBoolean()
       val lastOpenedApp = recentlyOpedAppsRegistry.getMostRecentApp()
       if (shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null && intent.action == Intent.ACTION_MAIN) {
         coroutineScope.launch {
@@ -338,11 +338,11 @@ class DevLauncherController private constructor() :
     internal var sAdditionalPackages: List<ReactPackage>? = null
 
     @JvmStatic
-    fun getMetadataValue(context: Context, key: String): String {
+    fun getMetadataValue(context: Context, key: String, defaultValue: String = ""): String {
       val packageManager = context.packageManager
       val packageName = context.packageName
       val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-      var metaDataValue = ""
+      var metaDataValue = defaultValue
 
       if (applicationInfo.metaData != null) {
         val value = applicationInfo.metaData.get(key)

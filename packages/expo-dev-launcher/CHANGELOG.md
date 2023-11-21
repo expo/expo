@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Launch directly into the previously opened project by default. ([#25500](https://github.com/expo/expo/pull/25500) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
