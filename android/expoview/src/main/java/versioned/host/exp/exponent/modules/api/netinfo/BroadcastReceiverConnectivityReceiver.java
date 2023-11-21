@@ -39,7 +39,12 @@ public class BroadcastReceiverConnectivityReceiver extends ConnectivityReceiver 
     public void register() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(CONNECTIVITY_ACTION);
-        getReactContext().registerReceiver(mConnectivityBroadcastReceiver, filter);
+        NetInfoUtils.compatRegisterReceiver(
+                getReactContext(),
+                mConnectivityBroadcastReceiver,
+                filter,
+                false
+        );
         mConnectivityBroadcastReceiver.setRegistered(true);
         updateAndSendConnectionType();
     }

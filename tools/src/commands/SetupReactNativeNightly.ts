@@ -34,7 +34,6 @@ async function main() {
   const pinnedPackages = {
     'react-native': nightlyVersion,
     '@react-native-async-storage/async-storage': '~1.19.1', // fix AGP 8 build error
-    '@react-native-community/netinfo': '~9.4.1', // fix AGP 8 build error
   };
   await addPinnedPackagesAsync(pinnedPackages);
 
