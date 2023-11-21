@@ -51,7 +51,7 @@ public class VideoThumbnailsModule: Module {
     guard let data = image.jpegData(compressionQuality: CGFloat(quality)) else {
       throw CorruptedImageDataException()
     }
-    
+
     guard let fileUrl else {
       throw ImageWriteFailedException("Unrecognised url \(fileUrl?.path)")
     }
