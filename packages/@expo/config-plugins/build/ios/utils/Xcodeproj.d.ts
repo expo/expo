@@ -1,3 +1,9 @@
+/**
+ * Copyright © 2023-present 650 Industries, Inc. (aka Expo)
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 import { ExpoConfig } from '@expo/config-types';
 import xcode, { PBXFile, PBXGroup, PBXNativeTarget, PBXProject, XCBuildConfiguration, XCConfigurationList, XcodeProject } from 'xcode';
 export type ProjectSectionEntry = [string, PBXProject];
@@ -84,3 +90,4 @@ export declare function isBuildConfig([, sectionItem]: ConfigurationSectionEntry
 export declare function isNotTestHost([, sectionItem]: ConfigurationSectionEntry): boolean;
 export declare function isNotComment([key]: ConfigurationSectionEntry | ProjectSectionEntry | ConfigurationListEntry | NativeTargetSectionEntry): boolean;
 export declare function unquote(value: string): string;
+export declare function resolveXcodeBuildSetting(value: string, lookup: (buildSetting: string) => string | undefined): string;

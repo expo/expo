@@ -7,7 +7,7 @@ import ExpoModulesTestCore
 import EXManifests
 
 class SelectionPolicyFilterAwareSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var updateDefault1: Update!
     var updateDefault2: Update!
     var updateRollout0: Update!

@@ -913,8 +913,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoModulesTestCore (0.16.0):
     - ExpoModulesCore
-    - Nimble (~> 9.2.0)
-    - Quick (~> 5.0.0)
+    - Nimble (~> 13.0.0)
+    - Quick (~> 7.3.0)
     - React-hermes
   - ExpoNetwork (5.8.0):
     - ExpoModulesCore
@@ -1143,9 +1143,9 @@ PODS:
     - nanopb/encode (= 2.30909.0)
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
-  - Nimble (9.2.1)
+  - Nimble (13.0.0)
   - PromisesObjC (2.3.1)
-  - Quick (5.0.1)
+  - Quick (7.3.0)
   - RCT-Folly (2022.05.16.00):
     - boost
     - DoubleConversion
@@ -2020,7 +2020,7 @@ PODS:
   - React-Mapbuffer (0.73.0-rc.4):
     - glog
     - React-debug
-  - react-native-netinfo (9.3.10):
+  - react-native-netinfo (11.1.0):
     - React-Core
   - react-native-pager-view (6.2.0):
     - React-Core
@@ -2484,7 +2484,6 @@ DEPENDENCIES:
   - libevent (~> 2.1.12)
   - lottie-react-native (from `./vendored/unversioned/lottie-react-native`)
   - MBProgressHUD (~> 1.2.0)
-  - Nimble (from `./Nimble.podspec`)
   - RCT-Folly (from `../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../react-native-lab/react-native/packages/react-native/Libraries/RCTRequired`)
@@ -2580,6 +2579,7 @@ SPEC REPOS:
     - lottie-ios
     - MBProgressHUD
     - nanopb
+    - Nimble
     - PromisesObjC
     - Quick
     - ReachabilitySwift
@@ -2976,8 +2976,6 @@ EXTERNAL SOURCES:
     :podspec: vendored/common/JKBigInteger.podspec.json
   lottie-react-native:
     :path: "./vendored/unversioned/lottie-react-native"
-  Nimble:
-    :podspec: "./Nimble.podspec"
   RCT-Folly:
     :podspec: "../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -3263,7 +3261,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: 80da146f602b14cc42077b93305ccd1c20fb9d55
   ExpoMailComposer: 1f980bbdd0647500178625f453e509cef1282d43
   ExpoModulesCore: 0fe70281431a0eb3b60fc6ae7a40bc36bd2bafc9
-  ExpoModulesTestCore: 83c21efaf5e0440bb79ba8065573d203db3186a9
+  ExpoModulesTestCore: dc4fb42e754da2127b7b4d37513788a70e3bfcc4
   ExpoNetwork: 97d7774ab8f62e35f08db77fbef0388d5e1f2c76
   ExpoPrint: e7ecdd682436eb5a74b744c4ce36dc490df851b7
   ExpoRandom: f0cd58e154e463d913462f3b445870b12d1c2f12
@@ -3284,7 +3282,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 1c589accb47d99cd7c6e20590b34b489bd2b6594
   EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
   EXTaskManager: 81b2dfaaba6d9f9a4bc3e3e2a786a98004eb9e98
-  EXUpdates: e9f30b5fde2bbeabaf340081ecae3eca3a3312c2
+  EXUpdates: 7cadb6e8aa941a409d1110c49ebf6d106cf52943
   EXUpdatesInterface: 4f787eeabc62c258f978ea4865c67adfb6b2f19f
   FBAEMKit: 4763aa27b8f69eb9d2c274189e91388de1dbd88a
   FBAudienceNetwork: 03e273f66b70756be7d060927111af97b7641b06
@@ -3319,9 +3317,9 @@ SPEC CHECKSUMS:
   lottie-react-native: 3d6f1b0db1fd9e18b92af1fbfbf67037611bae67
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
-  Nimble: d954d0accfd082f2225e62d71008440493e318f4
+  Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
-  Quick: 749aa754fd1e7d984f2000fe051e18a3a9809179
+  Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
   RCT-Folly: 083a526bd53c2f793ebe3ff554c3b5eb12a93505
   RCTRequired: 4a5ff26b210f396ceddaf5bbd47155853968bbc5
   RCTTypeSafety: 71151d64dfb2b550476d71b6d69a67a347173a91
@@ -3345,7 +3343,7 @@ SPEC CHECKSUMS:
   React-jsinspector: d73cab717d8339f4f9519023415ca3416407cfbf
   React-logger: ad5efbc68ad8d9d2ba3de2010fd0d44c06ac1705
   React-Mapbuffer: bd11535c681b3d60cf5c0c05acb7b8c7f0841d50
-  react-native-netinfo: ccbe1085dffd16592791d550189772e13bf479e2
+  react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
   react-native-pager-view: 0ccb8bf60e2ebd38b1f3669fa3650ecce81db2df
   react-native-safe-area-context: 36cc67648134e89465663b8172336a19eeda493d
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
@@ -3397,6 +3395,6 @@ SPEC CHECKSUMS:
   Yoga: 625f10a8ed5dbc5933ea3a96a0f04c8cd6ae25aa
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: c0751b2ff670e6709c139ab02ac188b434cbcfa5
+PODFILE CHECKSUM: b47270c5bb886bd7b10c355c587521e10ec38e2c
 
 COCOAPODS: 1.14.2

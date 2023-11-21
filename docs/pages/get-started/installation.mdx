@@ -5,7 +5,6 @@ description: Learn how to get started creating a new universal app with Expo.
 
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { ExpoGoLogo } from '@expo/styleguide';
 import { CALLOUT } from '~/ui/components/Text';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
 
@@ -15,6 +14,7 @@ To develop applications with Expo, make sure to check out the following requirem
 
 To use Expo, you need to have the following tools installed on your machine:
 
+{/* prettier-ignore */}
 - [Node.js LTS release](https://nodejs.org/en/) - Only Node.js LTS releases (even-numbered) are recommended.
   <CALLOUT theme="secondary">As Node.js [officially states](https://nodejs.org/en/about/releases/), "Production applications should only use Active LTS or Maintenance LTS releases". You can install Node.js using a version management tool (such as `nvm` or `volta` or any other of your choice) to switch between different Node.js versions.</CALLOUT>
 - [Git](https://git-scm.com) for source control.
@@ -59,12 +59,3 @@ After installing Node.js, you can use `npx` to create a new app.
 If you are using Yarn, you can bootstrap a new app using the following command:
 
 <Terminal cmd={['$ yarn create expo']} />
-
-## Next step
-
-<BoxLink
-  title="Expo Go"
-  description="Now that Expo CLI is working, in the next step, let's learn about one of the fastest ways to test your project using Expo Go."
-  Icon={ExpoGoLogo}
-  href="/get-started/expo-go"
-/>

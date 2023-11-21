@@ -297,14 +297,15 @@ async function preparePackageJson(
     devDependencies: {
       '@types/react': '~18.0.14',
       '@types/react-native': '~0.70.6',
-      'ts-node': '^10.9.1',
-      typescript: '^4.6.3',
       ...extraDevDependencies,
       ...packageJson.devDependencies,
+      'ts-node': '10.9.1',
+      typescript: '5.2.2',
     },
     resolutions: {
       ...expoResolutions,
       ...packageJson.resolutions,
+      typescript: '5.2.2',
     },
   };
 
@@ -318,7 +319,7 @@ async function preparePackageJson(
       },
       expo: {
         install: {
-          exclude: ['react-native'],
+          exclude: ['react-native', 'typescript'],
         },
       },
     };
@@ -663,6 +664,9 @@ export async function initAsync(
       '-keep class org.apache.commons.** { *; }',
       '-dontwarn androidx.appcompat.graphics.drawable.DrawableWrapper',
       '-dontwarn com.facebook.react.views.slider.**',
+      '-dontwarn javax.lang.model.element.Modifier',
+      '-dontwarn org.checkerframework.checker.nullness.qual.EnsuresNonNullIf',
+      '-dontwarn org.checkerframework.dataflow.qual.Pure',
       '',
     ].join('\n'),
     'utf-8'

@@ -6,7 +6,7 @@ import EXManifests
 @testable import EXUpdates
 
 class UpdatesDatabaseSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
     var manifest: NewManifest!

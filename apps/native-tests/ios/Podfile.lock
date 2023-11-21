@@ -135,8 +135,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoModulesTestCore (0.16.0):
     - ExpoModulesCore
-    - Nimble (~> 9.2.0)
-    - Quick (~> 5.0.0)
+    - Nimble (~> 13.0.0)
+    - Quick (~> 7.3.0)
     - React-jsc
   - EXStructuredHeaders (3.7.0)
   - EXStructuredHeaders/Tests (3.7.0)
@@ -174,7 +174,7 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.73.0-rc.4)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - Nimble (9.2.1)
+  - Nimble (13.0.0)
   - OHHTTPStubs (9.1.0):
     - OHHTTPStubs/Default (= 9.1.0)
   - OHHTTPStubs/Core (9.1.0)
@@ -188,7 +188,7 @@ PODS:
   - OHHTTPStubs/NSURLSession (9.1.0):
     - OHHTTPStubs/Core
   - OHHTTPStubs/OHPathHelpers (9.1.0)
-  - Quick (5.0.0)
+  - Quick (7.3.0)
   - RCT-Folly (2022.05.16.00):
     - boost
     - DoubleConversion
@@ -1176,7 +1176,6 @@ DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - Nimble (from `./../../../ios/Nimble.podspec`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -1225,6 +1224,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - fmt
+    - Nimble
     - OHHTTPStubs
     - Quick
     - ReachabilitySwift
@@ -1281,8 +1281,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
-  Nimble:
-    :podspec: "./../../../ios/Nimble.podspec"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -1381,7 +1379,7 @@ SPEC CHECKSUMS:
   ExpoClipboard: b8f76767b0dbaefb3be7adbf85049fd85861d527
   ExpoFileSystem: 1bc21c70ab0bf505cd6bef97c5b008618bfb72f2
   ExpoModulesCore: 9f8a0e08e339ba3e380417aebbdbbe63a209d953
-  ExpoModulesTestCore: 0b9d2b1eb1565eac757cbe49b5209bc22aa12f29
+  ExpoModulesTestCore: 4e0c432576cde9adadcb9f26e4ec1c75fce7fe4d
   EXStructuredHeaders: 3b8ec10c65a4607dc976b6cdfa5136d2ea2ece19
   EXUpdates: 26727287397b145865fed259ac5cbef61c100469
   EXUpdatesInterface: 4f787eeabc62c258f978ea4865c67adfb6b2f19f
@@ -1389,9 +1387,9 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 040ca3a4e4b4a8ddf492f6c8fe5dd57d8143d776
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
-  Nimble: d954d0accfd082f2225e62d71008440493e318f4
+  Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
-  Quick: f58aae30d750b27918005b93d870c187353a7bf0
+  Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 473398596b8d6758a8a37bd6ceb233fd8fd4fe2f
   RCTTypeSafety: beea8b7842072402d6cd0d183bd0e6f8022c4124
@@ -1438,6 +1436,6 @@ SPEC CHECKSUMS:
   sqlite3: f163dbbb7aa3339ad8fc622782c2d9d7b72f7e9c
   Yoga: 3125dd507e33de31a96f0723e36fd92417844521
 
-PODFILE CHECKSUM: 6c750de4d9dbebb41a022631648cb3c5c9eafdba
+PODFILE CHECKSUM: 32b16f07653241ea742140d21bd83f8950e87c9a
 
 COCOAPODS: 1.14.2
