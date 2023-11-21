@@ -26,8 +26,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   private var videoStabilizationMode: AVCaptureVideoStabilizationMode?
   private var errorNotification: NSObjectProtocol?
 
-  private lazy var cacheDirectory = appContext?.config.cacheDirectory
-
   // MARK: Property Observers
   var responsiveWhenOrientationLocked = false {
     didSet {
