@@ -3,16 +3,16 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-Object.defineProperty(exports, "parseSync", {
-  enumerable: true,
-  get: function () {
-    return _core().parseSync;
-  }
-});
 Object.defineProperty(exports, "transformFromAstSync", {
   enumerable: true,
   get: function () {
     return _core().transformFromAstSync;
+  }
+});
+Object.defineProperty(exports, "transformSync", {
+  enumerable: true,
+  get: function () {
+    return _core().transformSync;
   }
 });
 function _core() {

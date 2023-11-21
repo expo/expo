@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getInlineEnvVarsEnabled = exports.getIsServer = exports.getBaseUrl = exports.getIsProd = exports.getIsDev = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
+exports.getInlineEnvVarsEnabled = exports.getIsServer = exports.getBaseUrl = exports.getIsNodeModule = exports.getIsProd = exports.getIsFastRefreshEnabled = exports.getIsDev = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
 function hasModule(name) {
     try {
         return !!require.resolve(name);
@@ -59,6 +59,12 @@ function getIsDev(caller) {
     return process.env.BABEL_ENV === 'development' || process.env.NODE_ENV === 'development';
 }
 exports.getIsDev = getIsDev;
+function getIsFastRefreshEnabled(caller) {
+    if (!caller)
+        return false;
+    return caller.isHMREnabled && !caller.isServer && !caller.isNodeModule && getIsDev(caller);
+}
+exports.getIsFastRefreshEnabled = getIsFastRefreshEnabled;
 function getIsProd(caller) {
     if (caller?.isDev != null)
         return caller.isDev === false;
@@ -66,6 +72,10 @@ function getIsProd(caller) {
     return process.env.BABEL_ENV === 'production' || process.env.NODE_ENV === 'production';
 }
 exports.getIsProd = getIsProd;
+function getIsNodeModule(caller) {
+    return caller?.isNodeModule ?? false;
+}
+exports.getIsNodeModule = getIsNodeModule;
 function getBaseUrl(caller) {
     return caller?.baseUrl ?? '';
 }
@@ -78,9 +88,10 @@ function getInlineEnvVarsEnabled(caller) {
     const isWebpack = getBundler(caller) === 'webpack';
     const isDev = getIsDev(caller);
     const isServer = getIsServer(caller);
+    const isNodeModule = getIsNodeModule(caller);
     const preserveEnvVars = caller?.preserveEnvVars;
     // Development env vars are added in the serializer to avoid caching issues in development.
     // Servers have env vars left as-is to read from the environment.
-    return !isWebpack && !isDev && !isServer && !preserveEnvVars;
+    return !isNodeModule && !isWebpack && !isDev && !isServer && !preserveEnvVars;
 }
 exports.getInlineEnvVarsEnabled = getInlineEnvVarsEnabled;

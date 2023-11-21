@@ -149,7 +149,13 @@ it(`does not inline environment variables inside of node modules`, () => {
 
   const options = {
     ...DEF_OPTIONS,
-    filename: '/node_modules/foo/bar.js',
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'ios',
+      isDev: true,
+      isNodeModule: true,
+    }),
   };
 
   const sourceCode = `
