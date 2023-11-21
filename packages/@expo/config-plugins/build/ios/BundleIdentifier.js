@@ -83,7 +83,7 @@ const withBundleIdentifier = (config, {
     const bundleId = bundleIdentifier !== null && bundleIdentifier !== void 0 ? bundleIdentifier : (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.bundleIdentifier;
     // Should never happen.
     (0, _assert().default)(bundleId, '`bundleIdentifier` must be defined in the app config (`ios.bundleIdentifier`) or passed to the plugin `withBundleIdentifier`.');
-    config.modResults = updateBundleIdentifierForPbxprojObject(config.modResults, bundleId);
+    config.modResults = updateBundleIdentifierForPbxprojObject(config.modResults, bundleId, false);
     return config;
   });
 };

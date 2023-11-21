@@ -28,7 +28,7 @@ export const withBundleIdentifier: ConfigPlugin<{ bundleIdentifier?: string }> =
       '`bundleIdentifier` must be defined in the app config (`ios.bundleIdentifier`) or passed to the plugin `withBundleIdentifier`.'
     );
 
-    config.modResults = updateBundleIdentifierForPbxprojObject(config.modResults, bundleId);
+    config.modResults = updateBundleIdentifierForPbxprojObject(config.modResults, bundleId, false);
 
     return config;
   });
