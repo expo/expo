@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- Remove unused Metro `extraNodeModules` augmentation for web resolution in favor of standard aliases.
 - Ensure we disable lazy bundling when exporting. ([#25436](https://github.com/expo/expo/pull/25436) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.15.0 — 2023-11-14
