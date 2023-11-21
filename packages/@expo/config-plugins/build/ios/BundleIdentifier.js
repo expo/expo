@@ -148,15 +148,7 @@ function getProductBundleIdentifierFromBuildConfiguration(xcBuildConfiguration) 
   const bundleIdentifierRaw = xcBuildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER;
   if (bundleIdentifierRaw) {
     const bundleIdentifier = (0, _string().trimQuotes)(bundleIdentifierRaw);
-    // it's possible to use interpolation for the bundle identifier
-    // the most common case is when the last part of the id is set to `$(PRODUCT_NAME:rfc1034identifier)`
-    // in this case, PRODUCT_NAME should be replaced with its value
-    // the `rfc1034identifier` modifier replaces all non-alphanumeric characters with dashes
-    const bundleIdentifierParts = bundleIdentifier.split('.');
-    if (bundleIdentifierParts[bundleIdentifierParts.length - 1] === '$(PRODUCT_NAME:rfc1034identifier)' && xcBuildConfiguration.buildSettings.PRODUCT_NAME) {
-      bundleIdentifierParts[bundleIdentifierParts.length - 1] = xcBuildConfiguration.buildSettings.PRODUCT_NAME.replace(/[^a-zA-Z0-9]/g, '-');
-    }
-    return bundleIdentifierParts.join('.');
+    return (0, _Xcodeproj().resolveXcodeBuildSetting)(bundleIdentifier, setting => xcBuildConfiguration.buildSettings[setting]);
   } else {
     return null;
   }

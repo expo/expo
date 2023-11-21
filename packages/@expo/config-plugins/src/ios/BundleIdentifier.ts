@@ -7,7 +7,11 @@ import xcode, { XCBuildConfiguration } from 'xcode';
 import { InfoPlist } from './IosConfig.types';
 import { getAllInfoPlistPaths, getAllPBXProjectPaths, getPBXProjectPath } from './Paths';
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
-import { ConfigurationSectionEntry, getBuildConfigurationsForListId } from './utils/Xcodeproj';
+import {
+  ConfigurationSectionEntry,
+  getBuildConfigurationsForListId,
+  resolveXcodeBuildSetting,
+} from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
 import { ConfigPlugin, XcodeProject } from '../Plugin.types';
 import { withXcodeProject } from '../plugins/ios-plugins';
@@ -98,20 +102,10 @@ function getProductBundleIdentifierFromBuildConfiguration(
   const bundleIdentifierRaw = xcBuildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER;
   if (bundleIdentifierRaw) {
     const bundleIdentifier = trimQuotes(bundleIdentifierRaw);
-    // it's possible to use interpolation for the bundle identifier
-    // the most common case is when the last part of the id is set to `$(PRODUCT_NAME:rfc1034identifier)`
-    // in this case, PRODUCT_NAME should be replaced with its value
-    // the `rfc1034identifier` modifier replaces all non-alphanumeric characters with dashes
-    const bundleIdentifierParts = bundleIdentifier.split('.');
-    if (
-      bundleIdentifierParts[bundleIdentifierParts.length - 1] ===
-        '$(PRODUCT_NAME:rfc1034identifier)' &&
-      xcBuildConfiguration.buildSettings.PRODUCT_NAME
-    ) {
-      bundleIdentifierParts[bundleIdentifierParts.length - 1] =
-        xcBuildConfiguration.buildSettings.PRODUCT_NAME.replace(/[^a-zA-Z0-9]/g, '-');
-    }
-    return bundleIdentifierParts.join('.');
+    return resolveXcodeBuildSetting(
+      bundleIdentifier,
+      (setting) => xcBuildConfiguration.buildSettings[setting] as string | undefined
+    );
   } else {
     return null;
   }
