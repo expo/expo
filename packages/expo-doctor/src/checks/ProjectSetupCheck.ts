@@ -28,14 +28,14 @@ export class ProjectSetupCheck implements DoctorCheck {
     // ** multiple lock file check **
 
     const lockfileCheckResults = await Promise.all(
-      ['pnpm-lock.yaml', 'yarn.lock', 'package-lock.json'].map(lockfile => {
+      ['pnpm-lock.yaml', 'yarn.lock', 'package-lock.json'].map((lockfile) => {
         return { lockfile, exists: fs.existsSync(`${projectRoot}/${lockfile}`) };
       })
     );
 
     const lockfiles = lockfileCheckResults
-      .filter(result => result.exists)
-      .map(result => result.lockfile);
+      .filter((result) => result.exists)
+      .map((result) => result.lockfile);
 
     if (lockfiles.length > 1) {
       issues.push(

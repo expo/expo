@@ -68,7 +68,7 @@ export class DirectPackageInstallCheck extends DoctorMultiCheck<DirectPackageIns
     const issues: string[] = [];
 
     // ** check for dependencies that should only be transitive **
-    checkItems.forEach(checkItem => {
+    checkItems.forEach((checkItem) => {
       const packageName = checkItem.packageName;
       if (pkg.dependencies?.[packageName] || pkg.devDependencies?.[packageName]) {
         issues.push(checkItem.getMessage(packageName));

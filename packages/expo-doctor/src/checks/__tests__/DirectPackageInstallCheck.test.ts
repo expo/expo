@@ -51,7 +51,7 @@ describe('runAsync', () => {
 
   const dependencyLocations = ['dependencies', 'devDependencies'];
 
-  dependencyLocations.forEach(dependencyLocation => {
+  dependencyLocations.forEach((dependencyLocation) => {
     it(`returns result with isSuccessful = true if ${dependencyLocation} does not contain a dependency that should only be installed by another Expo package`, async () => {
       const check = new DirectPackageInstallCheck();
       const result = await check.runAsync({
@@ -61,7 +61,7 @@ describe('runAsync', () => {
       expect(result.isSuccessful).toBeTruthy();
     });
 
-    directPackageInstallCheckItems.forEach(transitiveOnlyDependency => {
+    directPackageInstallCheckItems.forEach((transitiveOnlyDependency) => {
       it(`returns result with isSuccessful = false if ${dependencyLocation} contains ${transitiveOnlyDependency.packageName}`, async () => {
         const check = new DirectPackageInstallCheck();
         const result = await check.runAsync({

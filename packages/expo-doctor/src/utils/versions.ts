@@ -11,6 +11,7 @@ export function ltSdkVersion(expJson: Pick<ExpoConfig, 'sdkVersion'>, sdkVersion
   }
   try {
     return semver.lt(expJson.sdkVersion, sdkVersion);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     throw new Error(
       //'INVALID_VERSION',

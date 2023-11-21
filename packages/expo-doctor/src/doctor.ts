@@ -97,7 +97,7 @@ export async function runChecksAsync(
   onCheckComplete: (checkRunnerJob: DoctorCheckRunnerJob) => void
 ): Promise<DoctorCheckRunnerJob[]> {
   return await Promise.all(
-    checks.map(check =>
+    checks.map((check) =>
       (async function () {
         const job = { check } as DoctorCheckRunnerJob;
         try {
@@ -150,7 +150,7 @@ export async function actionAsync(projectRoot: string) {
   const checkParams = { exp, pkg, projectRoot };
 
   const filteredChecks = checks.filter(
-    check =>
+    (check) =>
       checkParams.exp.sdkVersion === 'UNVERSIONED' ||
       semver.satisfies(checkParams.exp.sdkVersion!, check.sdkVersionRange)
   );
@@ -161,13 +161,13 @@ export async function actionAsync(projectRoot: string) {
 
   spinner.stop();
 
-  if (jobs.some(job => !job.result.isSuccessful)) {
-    if (jobs.some(job => job.result.issues?.length)) {
+  if (jobs.some((job) => !job.result.isSuccessful)) {
+    if (jobs.some((job) => job.result.issues?.length)) {
       Log.log();
       Log.log(chalk.underline('Detailed check results:'));
       Log.log();
       // actual issues will output in order of the sequence of tests, due to rules of Promise.all()
-      jobs.forEach(job => printFailedCheckIssueAndAdvice(job));
+      jobs.forEach((job) => printFailedCheckIssueAndAdvice(job));
     }
     Log.exit(chalk.red('One or more checks failed, indicating possible issues with the project.'));
   } else {

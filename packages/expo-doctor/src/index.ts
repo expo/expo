@@ -19,11 +19,11 @@ const packageJson = () => require('../package.json');
 async function run() {
   const args = process.argv.slice(2);
 
-  if (args.some(arg => ['-v', '--version'].includes(arg))) {
+  if (args.some((arg) => ['-v', '--version'].includes(arg))) {
     logVersionAndExit();
   }
 
-  if (args.some(arg => ['-h', '--help'].includes(arg))) {
+  if (args.some((arg) => ['-h', '--help'].includes(arg))) {
     logHelpAndExit();
   }
 

@@ -1,6 +1,6 @@
+import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { getDeepDependenciesWarningAsync } from '../utils/explainDependencies';
 import { getRemoteVersionsForSdkAsync } from '../utils/getRemoteVersionsForSdkAsync';
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export class SupportPackageVersionCheck implements DoctorCheck {
   description =
@@ -19,16 +19,16 @@ export class SupportPackageVersionCheck implements DoctorCheck {
       '@expo/config-plugins',
       '@expo/prebuild-config',
       '@expo/metro-config',
-    ].filter(pkg => versionsForSdk[pkg]);
+    ].filter((pkg) => versionsForSdk[pkg]);
 
     // check that a specific semver is installed for each package
     const possibleWarnings = await Promise.all(
-      supportPackagesToValidate.map(pkg =>
+      supportPackagesToValidate.map((pkg) =>
         getDeepDependenciesWarningAsync({ name: pkg, version: versionsForSdk[pkg] }, projectRoot)
       )
     );
 
-    possibleWarnings.forEach(possibleWarning => {
+    possibleWarnings.forEach((possibleWarning) => {
       if (possibleWarning) {
         issues.push(possibleWarning);
       }

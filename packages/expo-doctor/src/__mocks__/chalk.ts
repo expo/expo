@@ -8,11 +8,11 @@ type ChalkMock = jest.Mock<string, [string]> & {
   yellow?: jest.Mock<string, [string]>;
 };
 
-const green = jest.fn(str => str);
-const red = jest.fn(str => str);
-const yellow = jest.fn(str => str);
+const green = jest.fn((str) => str);
+const red = jest.fn((str) => str);
+const yellow = jest.fn((str) => str);
 
-const chalk: ChalkMock = jest.fn(str => str);
+const chalk: ChalkMock = jest.fn((str) => str);
 chalk.green = green;
 chalk.red = red;
 chalk.yellow = yellow;

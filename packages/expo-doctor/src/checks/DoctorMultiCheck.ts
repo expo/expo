@@ -9,7 +9,8 @@ export interface DoctorMultiCheckItemBase {
 
 //
 export abstract class DoctorMultiCheck<TCheckItem extends DoctorMultiCheckItemBase>
-  implements DoctorCheck {
+  implements DoctorCheck
+{
   abstract readonly checkItems: TCheckItem[];
 
   abstract description: string;
@@ -24,7 +25,7 @@ export abstract class DoctorMultiCheck<TCheckItem extends DoctorMultiCheckItemBa
 
   async runAsync(params: DoctorCheckParams): Promise<DoctorCheckResult> {
     const filteredCheckItems = this.checkItems.filter(
-      check =>
+      (check) =>
         params.exp.sdkVersion === 'UNVERSIONED' ||
         semver.satisfies(params.exp.sdkVersion!, check.sdkVersionRange)
     );

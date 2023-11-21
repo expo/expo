@@ -4,6 +4,8 @@
   "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
     "outDir": "./build",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "typeRoots": [
       "ts-declarations",
       "../../expo-module-scripts/ts-declarations",

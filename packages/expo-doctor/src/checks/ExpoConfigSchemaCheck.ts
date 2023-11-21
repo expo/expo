@@ -1,8 +1,8 @@
 import { configFilename } from '@expo/config';
 
+import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { getSchemaAsync } from '../api/getSchemaAsync';
 import { validateWithSchemaAsync } from '../utils/schema';
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export class ExpoConfigSchemaCheck implements DoctorCheck {
   description = 'Check Expo config (app.json/ app.config.js) schema';

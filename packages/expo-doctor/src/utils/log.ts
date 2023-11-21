@@ -24,7 +24,7 @@ export function exception(e: Error): void {
 }
 
 export function warn(...message: string[]): void {
-  console.warn(...message.map(value => chalk.yellow(value)));
+  console.warn(...message.map((value) => chalk.yellow(value)));
 }
 
 export function log(...message: string[]): void {

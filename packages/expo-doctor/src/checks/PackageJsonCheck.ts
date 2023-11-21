@@ -18,7 +18,7 @@ export class PackageJsonCheck implements DoctorCheck {
     const bins = fs.existsSync(nodeModulesBinPath)
       ? fs.readdirSync(nodeModulesBinPath)
       : ['expo', 'react-native'];
-    const binsThatExistInScripts = pkg.scripts ? bins.filter(value => pkg.scripts[value]) : [];
+    const binsThatExistInScripts = pkg.scripts ? bins.filter((value) => pkg.scripts[value]) : [];
     if (binsThatExistInScripts.length) {
       issues.push(
         `The following scripts in package.json conflict with the contents of node_modules/.bin: ${binsThatExistInScripts.join(

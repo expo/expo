@@ -13,7 +13,7 @@ const WARN_NPM_VERSION_RANGES = ['>= 5.0.0 < 5.7.0'];
 const BAD_NPM_VERSION_RANGES = ['>= 5.0.0 <= 5.0.3'];
 
 function _isNpmVersionWithinRanges(npmVersion: string, ranges: string[]) {
-  return ranges.some(range => semver.satisfies(npmVersion, range));
+  return ranges.some((range) => semver.satisfies(npmVersion, range));
 }
 
 async function checkNpmVersionAsync(): Promise<string | null> {
