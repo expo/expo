@@ -1,22 +1,34 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.withExpoUpdates = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.withExpoUpdates = exports.default = void 0;
+function _configPlugins() {
+  const data = require("@expo/config-plugins");
+  _configPlugins = function () {
+    return data;
+  };
+  return data;
+}
 // Local unversioned updates plugin
+
 const packageName = 'expo-updates';
-const withExpoUpdates = (config) => {
-    return (0, config_plugins_1.withStaticPlugin)(config, {
-        _isLegacyPlugin: true,
-        // Pass props to the static plugin if it exists.
-        plugin: packageName,
-        // If the static plugin isn't found, use the unversioned one.
-        fallback: (0, config_plugins_1.createRunOncePlugin)((config) => withUnversionedUpdates(config), packageName),
-    });
+const withExpoUpdates = config => {
+  return (0, _configPlugins().withStaticPlugin)(config, {
+    _isLegacyPlugin: true,
+    // Pass props to the static plugin if it exists.
+    plugin: packageName,
+    // If the static plugin isn't found, use the unversioned one.
+    fallback: (0, _configPlugins().createRunOncePlugin)(config => withUnversionedUpdates(config), packageName)
+  });
 };
 exports.withExpoUpdates = withExpoUpdates;
-const withUnversionedUpdates = (config) => {
-    config = config_plugins_1.AndroidConfig.Updates.withUpdates(config);
-    config = config_plugins_1.IOSConfig.Updates.withUpdates(config);
-    return config;
+const withUnversionedUpdates = config => {
+  config = _configPlugins().AndroidConfig.Updates.withUpdates(config);
+  config = _configPlugins().IOSConfig.Updates.withUpdates(config);
+  return config;
 };
-exports.default = exports.withExpoUpdates;
+var _default = withExpoUpdates;
+exports.default = _default;
+//# sourceMappingURL=expo-updates.js.map

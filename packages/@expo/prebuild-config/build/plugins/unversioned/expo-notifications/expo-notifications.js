@@ -1,22 +1,43 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const config_plugins_1 = require("@expo/config-plugins");
-const withAndroidNotifications_1 = require("./withAndroidNotifications");
-const createLegacyPlugin_1 = require("../createLegacyPlugin");
-const withNotificationsEntitlement = (config, mode) => {
-    return (0, config_plugins_1.withEntitlementsPlist)(config, (config) => {
-        config.modResults['aps-environment'] = mode;
-        return config;
-    });
-};
-exports.default = (0, createLegacyPlugin_1.createLegacyPlugin)({
-    packageName: 'expo-notifications',
-    fallback: [
-        // Android
-        withAndroidNotifications_1.withNotificationManifest,
-        withAndroidNotifications_1.withNotificationIconColor,
-        withAndroidNotifications_1.withNotificationIcons,
-        // iOS
-        [withNotificationsEntitlement, 'development'],
-    ],
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
+exports.default = void 0;
+function _configPlugins() {
+  const data = require("@expo/config-plugins");
+  _configPlugins = function () {
+    return data;
+  };
+  return data;
+}
+function _withAndroidNotifications() {
+  const data = require("./withAndroidNotifications");
+  _withAndroidNotifications = function () {
+    return data;
+  };
+  return data;
+}
+function _createLegacyPlugin() {
+  const data = require("../createLegacyPlugin");
+  _createLegacyPlugin = function () {
+    return data;
+  };
+  return data;
+}
+const withNotificationsEntitlement = (config, mode) => {
+  return (0, _configPlugins().withEntitlementsPlist)(config, config => {
+    config.modResults['aps-environment'] = mode;
+    return config;
+  });
+};
+var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+  packageName: 'expo-notifications',
+  fallback: [
+  // Android
+  _withAndroidNotifications().withNotificationManifest, _withAndroidNotifications().withNotificationIconColor, _withAndroidNotifications().withNotificationIcons,
+  // iOS
+  [withNotificationsEntitlement, 'development']]
+});
+exports.default = _default;
+//# sourceMappingURL=expo-notifications.js.map

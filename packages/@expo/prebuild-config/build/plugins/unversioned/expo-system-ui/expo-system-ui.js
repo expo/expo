@@ -1,16 +1,47 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const withAndroidRootViewBackgroundColor_1 = require("./withAndroidRootViewBackgroundColor");
-const withAndroidUserInterfaceStyle_1 = require("./withAndroidUserInterfaceStyle");
-const withIosRootViewBackgroundColor_1 = require("./withIosRootViewBackgroundColor");
-const withIosUserInterfaceStyle_1 = require("./withIosUserInterfaceStyle");
-const createLegacyPlugin_1 = require("../createLegacyPlugin");
-exports.default = (0, createLegacyPlugin_1.createLegacyPlugin)({
-    packageName: 'expo-system-ui',
-    fallback: [
-        withAndroidRootViewBackgroundColor_1.withAndroidRootViewBackgroundColor,
-        withIosRootViewBackgroundColor_1.withIosRootViewBackgroundColor,
-        withAndroidUserInterfaceStyle_1.withAndroidUserInterfaceStyle,
-        withIosUserInterfaceStyle_1.withIosUserInterfaceStyle,
-    ],
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
+exports.default = void 0;
+function _withAndroidRootViewBackgroundColor() {
+  const data = require("./withAndroidRootViewBackgroundColor");
+  _withAndroidRootViewBackgroundColor = function () {
+    return data;
+  };
+  return data;
+}
+function _withAndroidUserInterfaceStyle() {
+  const data = require("./withAndroidUserInterfaceStyle");
+  _withAndroidUserInterfaceStyle = function () {
+    return data;
+  };
+  return data;
+}
+function _withIosRootViewBackgroundColor() {
+  const data = require("./withIosRootViewBackgroundColor");
+  _withIosRootViewBackgroundColor = function () {
+    return data;
+  };
+  return data;
+}
+function _withIosUserInterfaceStyle() {
+  const data = require("./withIosUserInterfaceStyle");
+  _withIosUserInterfaceStyle = function () {
+    return data;
+  };
+  return data;
+}
+function _createLegacyPlugin() {
+  const data = require("../createLegacyPlugin");
+  _createLegacyPlugin = function () {
+    return data;
+  };
+  return data;
+}
+var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+  packageName: 'expo-system-ui',
+  fallback: [_withAndroidRootViewBackgroundColor().withAndroidRootViewBackgroundColor, _withIosRootViewBackgroundColor().withIosRootViewBackgroundColor, _withAndroidUserInterfaceStyle().withAndroidUserInterfaceStyle, _withIosUserInterfaceStyle().withIosUserInterfaceStyle]
+});
+exports.default = _default;
+//# sourceMappingURL=expo-system-ui.js.map

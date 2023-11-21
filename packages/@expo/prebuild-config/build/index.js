@@ -1,21 +1,34 @@
 "use strict";
-/* eslint-disable import/export */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var _exportNames = {
+  getPrebuildConfigAsync: true
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPrebuildConfigAsync = void 0;
-var getPrebuildConfig_1 = require("./getPrebuildConfig");
-Object.defineProperty(exports, "getPrebuildConfigAsync", { enumerable: true, get: function () { return getPrebuildConfig_1.getPrebuildConfigAsync; } });
-__exportStar(require("./plugins/withDefaultPlugins"), exports);
+Object.defineProperty(exports, "getPrebuildConfigAsync", {
+  enumerable: true,
+  get: function () {
+    return _getPrebuildConfig().getPrebuildConfigAsync;
+  }
+});
+function _getPrebuildConfig() {
+  const data = require("./getPrebuildConfig");
+  _getPrebuildConfig = function () {
+    return data;
+  };
+  return data;
+}
+var _withDefaultPlugins = require("./plugins/withDefaultPlugins");
+Object.keys(_withDefaultPlugins).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _withDefaultPlugins[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _withDefaultPlugins[key];
+    }
+  });
+});
+//# sourceMappingURL=index.js.map

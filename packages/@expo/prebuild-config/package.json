@@ -4,10 +4,10 @@
   "description": "Get the prebuild config",
   "main": "build/index.js",
   "scripts": {
-    "build": "expo-module build",
+    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module prepare",
+    "prepare": "expo-module clean && yarn run build",
     "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck"

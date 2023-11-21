@@ -1,9 +1,33 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const withAndroidSplashScreen_1 = require("./withAndroidSplashScreen");
-const withIosSplashScreen_1 = require("./withIosSplashScreen");
-const createLegacyPlugin_1 = require("../createLegacyPlugin");
-exports.default = (0, createLegacyPlugin_1.createLegacyPlugin)({
-    packageName: 'expo-splash-screen',
-    fallback: [withAndroidSplashScreen_1.withAndroidSplashScreen, withIosSplashScreen_1.withIosSplashScreen],
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
+exports.default = void 0;
+function _withAndroidSplashScreen() {
+  const data = require("./withAndroidSplashScreen");
+  _withAndroidSplashScreen = function () {
+    return data;
+  };
+  return data;
+}
+function _withIosSplashScreen() {
+  const data = require("./withIosSplashScreen");
+  _withIosSplashScreen = function () {
+    return data;
+  };
+  return data;
+}
+function _createLegacyPlugin() {
+  const data = require("../createLegacyPlugin");
+  _createLegacyPlugin = function () {
+    return data;
+  };
+  return data;
+}
+var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+  packageName: 'expo-splash-screen',
+  fallback: [_withAndroidSplashScreen().withAndroidSplashScreen, _withIosSplashScreen().withIosSplashScreen]
+});
+exports.default = _default;
+//# sourceMappingURL=expo-splash-screen.js.map
