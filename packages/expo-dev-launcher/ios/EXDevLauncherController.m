@@ -256,7 +256,8 @@
     return;
   }
 
-  BOOL shouldTryToLaunchLastOpenedBundle = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
+  NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
+  BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
   if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
     [self loadApp:_lastOpenedAppUrl withProjectUrl:nil onSuccess:nil onError:^(NSError *error) {
        __weak typeof(self) weakSelf = self;
@@ -264,7 +265,7 @@
          typeof(self) self = weakSelf;
          if (!self) {
            return;
-         } 
+         }
 
          [self navigateToLauncher];
        });
