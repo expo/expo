@@ -4,6 +4,9 @@
 
 ### 🛠 Breaking changes
 
+- `tsconfig.json` attribute `baseUrl` will no longer default to enabled when `paths` are defined.
+- `tsconfig.json` attribute `baseUrl` will now be resolved _before_ node modules instead of after.
+- `tsconfig.json` attribute `baseUrl` will no longer be resolved if a group from `paths` are matched first.
 - Change default CSS reset in template HTML to align with `react-native-web@0.19.8`. ([#25429](https://github.com/expo/expo/pull/25429) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features

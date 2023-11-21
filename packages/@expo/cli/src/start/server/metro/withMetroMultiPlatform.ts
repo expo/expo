@@ -160,7 +160,8 @@ export function withExtendedResolver(
   let tsConfigResolve = tsconfig?.paths
     ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
         paths: tsconfig.paths ?? {},
-        baseUrl: tsconfig.baseUrl,
+        baseUrl: tsconfig.baseUrl ?? config.projectRoot,
+        hasBaseUrl: !!tsconfig.baseUrl,
       })
     : null;
 
@@ -181,7 +182,8 @@ export function withExtendedResolver(
             debug('Enabling tsconfig.json paths support');
             tsConfigResolve = resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
               paths: tsConfigPaths.paths ?? {},
-              baseUrl: tsConfigPaths.baseUrl,
+              baseUrl: tsConfigPaths.baseUrl ?? config.projectRoot,
+              hasBaseUrl: !!tsConfigPaths.baseUrl,
             });
           } else {
             debug('Disabling tsconfig.json paths support');
@@ -388,34 +390,6 @@ export function withExtendedResolver(
         if (!env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE && platform && platform in preferredMainFields) {
           context.mainFields = preferredMainFields[platform];
         }
-      }
-
-      // TODO: We may be able to remove this in the future, it's doing no harm
-      // by staying here.
-      // Conditionally remap `react-native` to `react-native-web`
-      if (platform && platform in extraNodeModules) {
-        context.extraNodeModules = {
-          ...extraNodeModules[platform],
-          ...context.extraNodeModules,
-        };
-      }
-
-      if (tsconfig?.baseUrl && isTsconfigPathsEnabled) {
-        const nodeModulesPaths: string[] = [...immutableContext.nodeModulesPaths];
-
-        if (isFastResolverEnabled) {
-          // add last to ensure node modules are resolved first
-          nodeModulesPaths.push(
-            path.isAbsolute(tsconfig.baseUrl)
-              ? tsconfig.baseUrl
-              : path.join(config.projectRoot, tsconfig.baseUrl)
-          );
-        } else {
-          // add last to ensure node modules are resolved first
-          nodeModulesPaths.push(tsconfig.baseUrl);
-        }
-
-        context.nodeModulesPaths = nodeModulesPaths;
       }
 
       // TODO: We can drop this in the next version upgrade (SDK 50).
