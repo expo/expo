@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 
-import { asMock } from '../../__tests__/asMock';
+import { mockSpawnPromise } from '../../__tests__/spawn-utils';
 import { InstalledDependencyVersionCheck } from '../InstalledDependencyVersionCheck';
 
 // required by runAsync
@@ -14,9 +14,13 @@ const additionalProjectProps = {
 
 describe('runAsync', () => {
   it('returns result with isSuccessful = true if check passes', async () => {
-    asMock(spawnAsync).mockResolvedValueOnce({
-      stdout: '',
-    } as any);
+    jest.mocked(spawnAsync).mockImplementation(() =>
+      mockSpawnPromise(
+        Promise.resolve({
+          stdout: '',
+        })
+      )
+    );
     const check = new InstalledDependencyVersionCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
@@ -27,9 +31,13 @@ describe('runAsync', () => {
 
   // CI=1 is required to prevent interactive prompt asking to fix the dependencies
   it('calls npx expo install --check with CI=1 env variable', async () => {
-    const mockSpawnAsync = asMock(spawnAsync).mockResolvedValueOnce({
-      stdout: '',
-    } as any);
+    const mockSpawnAsync = jest.mocked(spawnAsync).mockImplementation(() =>
+      mockSpawnPromise(
+        Promise.resolve({
+          stdout: '',
+        })
+      )
+    );
     const check = new InstalledDependencyVersionCheck();
     await check.runAsync({ projectRoot: '/path/to/project', ...additionalProjectProps });
     expect(mockSpawnAsync.mock.calls[0][0]).toBe('npx');
@@ -38,12 +46,12 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = false if check fails', async () => {
-    asMock(spawnAsync).mockImplementationOnce(() => {
+    jest.mocked(spawnAsync).mockImplementation(() => {
       const error: any = new Error();
       error.stderr = 'error';
       error.stdout = '';
       error.status = 1;
-      throw error;
+      return mockSpawnPromise(Promise.reject(error));
     });
     const check = new InstalledDependencyVersionCheck();
     const result = await check.runAsync({
@@ -54,12 +62,12 @@ describe('runAsync', () => {
   });
 
   it('pushes npx expo install --check stderr to issues list', async () => {
-    asMock(spawnAsync).mockImplementationOnce(() => {
+    jest.mocked(spawnAsync).mockImplementation(() => {
       const error: any = new Error();
       error.stderr = 'error';
       error.stdout = '';
       error.status = 1;
-      throw error;
+      return mockSpawnPromise(Promise.reject(error));
     });
     const check = new InstalledDependencyVersionCheck();
     const result = await check.runAsync({

@@ -1,7 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 
-import { asMock } from '../../__tests__/asMock';
+import { mockSpawnPromise } from '../../__tests__/spawn-utils';
 import { ProjectSetupCheck } from '../ProjectSetupCheck';
 
 jest.mock('fs');
@@ -41,14 +41,22 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = false with ios/ android folders and config plugins present, not in gitignore', async () => {
-    asMock(spawnAsync)
-      .mockResolvedValueOnce({
-        status: 0,
-        stdout: '',
-      } as any)
-      .mockRejectedValueOnce({
-        status: -1,
+    jest
+      .mocked(spawnAsync)
+      .mockImplementationOnce(() =>
+        mockSpawnPromise(
+          Promise.resolve({
+            status: 0,
+            stdout: '',
+          })
+        )
+      )
+      .mockImplementationOnce(() => {
+        const error: any = new Error();
+        error.status = -1;
+        return mockSpawnPromise(Promise.reject(error));
       });
+
     vol.fromJSON({
       [projectRoot + '/ios/Podfile']: 'test',
     });
@@ -66,15 +74,14 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = true with ios/ android folders and config plugins present, in gitignore', async () => {
-    asMock(spawnAsync)
-      .mockResolvedValueOnce({
-        status: 0,
-        stdout: '',
-      } as any)
-      .mockResolvedValueOnce({
-        status: 0,
-        stdout: '',
-      } as any);
+    jest.mocked(spawnAsync).mockImplementation(() =>
+      mockSpawnPromise(
+        Promise.resolve({
+          status: 0,
+          stdout: '',
+        })
+      )
+    );
     vol.fromJSON({
       [projectRoot + '/ios/Podfile']: 'test',
     });
