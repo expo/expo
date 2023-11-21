@@ -237,7 +237,8 @@ async function preparePackageJson(
       };
 
   const extraScriptsAssetExclusion = {
-    'reset-to-embedded': 'npx ts-node ./scripts/reset-app.ts App.tsx.embedded',
+    'reset-to-embedded':
+      'npx ts-node ./scripts/reset-app.ts App.tsx.embedded; (rm -rf android/build android/app/build)',
     'set-to-update-1':
       'npx ts-node ./scripts/reset-app.ts App.tsx.update1; eas update --branch=main --message=Update1',
     'set-to-update-2':

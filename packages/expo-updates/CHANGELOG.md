@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [Android] Asset exclusion on Android part 2. ([#25504](https://github.com/expo/expo/pull/25504) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
