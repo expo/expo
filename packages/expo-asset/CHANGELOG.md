@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Removed references to legacy `bundleDirectory` and `bundledAssets` constants from `expo-file-system` that were used only in standalone apps. ([#25484](https://github.com/expo/expo/pull/25484) by [@tsapeta](https://github.com/tsapeta))
+- Removed references to legacy `bundledAssets` constant from `expo-file-system` that was used only in standalone apps. ([#25484](https://github.com/expo/expo/pull/25484) by [@tsapeta](https://github.com/tsapeta))
 
 ## 8.14.0 — 2023-11-14
 

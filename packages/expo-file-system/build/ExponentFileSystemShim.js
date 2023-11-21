@@ -8,6 +8,9 @@ const platformModule = {
     get cacheDirectory() {
         return null;
     },
+    get bundleDirectory() {
+        return null;
+    },
     addListener(eventName) { },
     removeListeners(count) { },
 };

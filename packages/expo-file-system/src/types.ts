@@ -4,6 +4,7 @@ export interface ExponentFileSystemModule {
   readonly name: 'ExponentFileSystem';
   readonly documentDirectory: string | null;
   readonly cacheDirectory: string | null;
+  readonly bundleDirectory: string | null;
   readonly getInfoAsync?: PlatformMethod;
   readonly readAsStringAsync?: PlatformMethod;
   readonly writeAsStringAsync?: PlatformMethod;

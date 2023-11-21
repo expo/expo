@@ -12,6 +12,10 @@ export declare const documentDirectory: string | null;
  */
 export declare const cacheDirectory: string | null;
 /**
+ * URI to the directory where assets bundled with the application are stored.
+ */
+export declare const bundleDirectory: string | null;
+/**
  * Get metadata information about a file, directory or external content/asset.
  * @param fileUri URI to the file or directory. See [supported URI schemes](#supported-uri-schemes).
  * @param options A map of options represented by [`InfoOptions`](#infooptions) type.
