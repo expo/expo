@@ -244,7 +244,7 @@ private func generatePictureForSimulator(
   appContext: AppContext?,
   options: TakePictureOptionsNext
 ) throws -> [String: Any?] {
-  let path = FileSystemUtilities.generatePath(
+  let path = FileSystemUtilities.generatePathInCache(
     appContext,
     in: "Camera",
     ext: ".jpg"
