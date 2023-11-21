@@ -79,7 +79,6 @@ describe(withExtendedResolver, () => {
         sourceExts: ['mjs', 'ts', 'tsx', 'js', 'jsx', 'json', 'css'],
         customResolverOptions: {},
         originModulePath: expect.anything(),
-        getPackageMainPath: expect.any(Function),
       }),
       'react-native',
       platform

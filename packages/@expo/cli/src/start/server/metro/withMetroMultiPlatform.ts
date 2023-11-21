@@ -364,11 +364,9 @@ export function withExtendedResolver(
       moduleName: string,
       platform: string | null
     ): CustomResolutionContext => {
-      const context = {
+      const context: Mutable<CustomResolutionContext> = {
         ...immutableContext,
-      } as Mutable<ResolutionContext> & {
-        mainFields: string[];
-        customResolverOptions?: Record<string, string>;
+        preferNativePlatform: platform !== 'web',
       };
 
       if (context.customResolverOptions?.environment === 'node') {
@@ -392,22 +390,7 @@ export function withExtendedResolver(
         }
       }
 
-      // TODO: We can drop this in the next version upgrade (SDK 50).
-      const mainFields: string[] = context.mainFields;
-
-      return {
-        ...context,
-        preferNativePlatform: platform !== 'web',
-        // Passing `mainFields` directly won't be considered (in certain version of Metro)
-        // we need to extend the `getPackageMainPath` directly to
-        // use platform specific `mainFields`.
-        // @ts-ignore
-        getPackageMainPath(packageJsonPath) {
-          // @ts-expect-error: mainFields is not on type
-          const package_ = context.moduleCache.getPackage(packageJsonPath);
-          return package_.getMain(mainFields);
-        },
-      };
+      return context;
     }
   );
 
