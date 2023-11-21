@@ -297,14 +297,15 @@ async function preparePackageJson(
     devDependencies: {
       '@types/react': '~18.0.14',
       '@types/react-native': '~0.70.6',
-      'ts-node': '^10.9.1',
-      typescript: '^4.6.3',
       ...extraDevDependencies,
       ...packageJson.devDependencies,
+      'ts-node': '10.9.1',
+      typescript: '5.2.2',
     },
     resolutions: {
       ...expoResolutions,
       ...packageJson.resolutions,
+      typescript: '5.2.2',
     },
   };
 
@@ -318,7 +319,7 @@ async function preparePackageJson(
       },
       expo: {
         install: {
-          exclude: ['react-native'],
+          exclude: ['react-native', 'typescript'],
         },
       },
     };
