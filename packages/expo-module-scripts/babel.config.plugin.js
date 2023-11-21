@@ -1,6 +1,6 @@
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
-   plugins: ['@babel/plugin-transform-flow-strip-types'],
+    plugins: ['@babel/plugin-transform-flow-strip-types'],
   };
 };

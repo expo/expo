@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add Node-specific Babel and Jest configurations. ([#25458](https://github.com/expo/expo/pull/25458) by [@byCedric](https://github.com/byCedric))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
