@@ -63,12 +63,12 @@ public final class SQLiteModule: Module {
   }
 
   private func pathForDatabaseName(name: String) -> URL? {
-    guard let fileSystem = appContext?.fileSystem else {
+    guard let path = appContext?.config.documentDirectory?.path else {
       return nil
     }
-
-    let directory = URL(string: fileSystem.documentDirectory)?.appendingPathComponent("SQLite")
-    fileSystem.ensureDirExists(withPath: directory?.absoluteString)
+    let directory = URL(string: path)?.appendingPathComponent("SQLite")
+    let fileUtils = FileSystemUtilities(appContext: appContext)
+    fileUtils.ensureDirExists(at: directory)
 
     return directory?.appendingPathComponent(name)
   }

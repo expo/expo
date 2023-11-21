@@ -10,7 +10,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   // MARK: - Legacy Modules
 
   private var lifecycleManager: EXAppLifecycleService?
-  private var fileSystem: EXFileSystemInterface?
   private var permissionsManager: EXPermissionsInterface?
 
   // MARK: - Properties
@@ -112,7 +111,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     lifecycleManager = appContext?.legacyModule(implementing: EXAppLifecycleService.self)
-    fileSystem = appContext?.legacyModule(implementing: EXFileSystemInterface.self)
     permissionsManager = appContext?.legacyModule(implementing: EXPermissionsInterface.self)
     #if !targetEnvironment(simulator)
     setupPreview()
@@ -424,12 +422,11 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     let croppedSize = AVMakeRect(aspectRatio: previewSize, insideRect: cropRect)
 
     takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
-
-    guard let path = fileSystem?.generatePath(
-      inDirectory: fileSystem?.cachesDirectory.appending("/Camera"),
-      withExtension: ".jpg") else {
-      return
-    }
+    
+    let fileUtils = FileSystemUtilities(appContext: appContext)
+    let path = fileUtils.generatePath(
+      in: appContext?.config.cacheDirectory?.appendingPathComponent("Camera"),
+      with: ".jpg")
 
     let width = takenImage.size.width
     let height = takenImage.size.height
@@ -534,17 +531,14 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
           }
         }
 
-        guard let fileSystem = self.fileSystem else {
-          promise.reject(Exceptions.FileSystemModuleNotFound())
-          return
-        }
+        let fileUtils = FileSystemUtilities(appContext: self.appContext)
 
         if !self.isValidVideoOptions {
           return
         }
 
-        let directory = fileSystem.cachesDirectory.appending("/Camera")
-        let path = fileSystem.generatePath(inDirectory: directory, withExtension: ".mov")
+        let directory = self.appContext?.config.cacheDirectory?.appendingPathComponent("Camera")
+        let path = fileUtils.generatePath(in: directory, with: ".mov")
         let fileUrl = URL(fileURLWithPath: path)
         self.videoRecordedPromise = promise
 

@@ -57,10 +57,8 @@ public class ImageManipulatorModule: Module {
     guard let imageLoader = self.appContext?.imageLoader else {
       return callback(.failure(ImageLoaderNotFoundException()))
     }
-    guard let fileSystem = self.appContext?.fileSystem else {
-      return callback(.failure(FileSystemNotFoundException()))
-    }
-    guard fileSystem.permissions(forURI: url).contains(.read) else {
+    let fileUtils = FileSystemUtilities(appContext: appContext)
+    guard fileUtils.permissions(for: url).contains(.read) else {
       return callback(.failure(FileSystemReadPermissionException(url.absoluteString)))
     }
 
@@ -99,14 +97,16 @@ public class ImageManipulatorModule: Module {
    Saves the image as a file.
    */
   internal func saveImage(_ image: UIImage, options: ManipulateOptions) throws -> SaveImageResult {
-    guard let fileSystem = self.appContext?.fileSystem else {
+    guard let cachesDirectory = self.appContext?.config.cacheDirectory else {
       throw FileSystemNotFoundException()
     }
-    let directory = URL(fileURLWithPath: fileSystem.cachesDirectory).appendingPathComponent("ImageManipulator")
+    
+    let directory = URL(fileURLWithPath: cachesDirectory.path).appendingPathComponent("ImageManipulator")
     let filename = UUID().uuidString.appending(options.format.fileExtension)
     let fileUrl = directory.appendingPathComponent(filename)
 
-    fileSystem.ensureDirExists(withPath: directory.path)
+    let fileSystemUtilities = FileSystemUtilities(appContext: appContext)
+    fileSystemUtilities.ensureDirExists(at: directory)
 
     guard let data = imageData(from: image, format: options.format, compression: options.compress) else {
       throw CorruptedImageDataException()

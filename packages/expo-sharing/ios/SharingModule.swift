@@ -6,14 +6,10 @@ public final class SharingModule: Module {
     Name("ExpoSharing")
 
     AsyncFunction("shareAsync") { (url: URL, options: SharingOptions, promise: Promise) in
-      guard let filePermissions: EXFilePermissionModuleInterface =
-        appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self)
-      else {
-        throw FilePermissionModuleException()
-      }
-
-      let grantedPermissions = filePermissions.getPathPermissions(url.relativePath)
-      guard grantedPermissions.rawValue >= EXFileSystemPermissionFlags.read.rawValue else {
+      let fileUtils = FileSystemUtilities(appContext: appContext)
+      let grantedPermissions = fileUtils.permissions(for: url)
+      
+      guard grantedPermissions.contains(.read) else {
         throw FilePermissionException()
       }
 

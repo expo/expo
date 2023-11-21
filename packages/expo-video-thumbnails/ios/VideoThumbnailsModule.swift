@@ -12,11 +12,8 @@ public class VideoThumbnailsModule: Module {
 
   internal func getVideoThumbnail(sourceFilename: URL, options: VideoThumbnailsOptions) throws -> [String: Any] {
     if sourceFilename.isFileURL {
-      guard let fileSystem = self.appContext?.fileSystem else {
-        throw Exceptions.FileSystemModuleNotFound()
-      }
-
-      guard fileSystem.permissions(forURI: sourceFilename).contains(.read) else {
+      let fileUtils = FileSystemUtilities(appContext: appContext)
+      guard fileUtils.permissions(for: sourceFilename).contains(.read) else {
         throw FileSystemReadPermissionException(sourceFilename.absoluteString)
       }
     }
@@ -44,15 +41,16 @@ public class VideoThumbnailsModule: Module {
   Saves the image as a file.
   */
   internal func saveImage(image: UIImage, quality: Double) throws -> URL {
-    guard let fileSystem = self.appContext?.fileSystem else {
-      throw Exceptions.FileSystemModuleNotFound()
+    guard let cachesDirectory = appContext?.config.cacheDirectory else {
+      throw CorruptedImageDataException()
     }
 
-    let directory = URL(fileURLWithPath: fileSystem.cachesDirectory).appendingPathComponent("VideoThumbnails")
+    let directory = URL(fileURLWithPath: cachesDirectory.path).appendingPathComponent("VideoThumbnails")
     let fileName = UUID().uuidString.appending(".jpg")
     let fileUrl = directory.appendingPathComponent(fileName)
 
-    fileSystem.ensureDirExists(withPath: directory.path)
+    let fileUtils = FileSystemUtilities(appContext: appContext)
+    fileUtils.ensureDirExists(at: directory)
 
     guard let data = image.jpegData(compressionQuality: CGFloat(quality)) else {
       throw CorruptedImageDataException()
