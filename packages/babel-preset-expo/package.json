@@ -12,7 +12,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+    "prepare": "expo-module clean && expo-module build",
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "repository": {
