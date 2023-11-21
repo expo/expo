@@ -109,3 +109,112 @@ of the build in the PR's checks. A link to the build will be available in the ch
   alt="EAS Build check details on a GitHub PR"
   src="/static/images/eas-build/build-from-github/gh-check-details.png"
 />
+
+
+### Build using GitHub PR labels
+
+You can take your build automation further by automatically building your Expo project when you push code to GitHub.
+
+#### Prerequisites
+
+To kick off builds automatically from GitHub, the following must be true: 
+
+- An Expo user in the organization must have a linked GitHub user with access to the target repository. Check your [user settings page](https://expo.dev/settings#connections) to make sure your GitHub user is linked.
+- The Expo account must have an active subscription for the feature preview.
+- You must accept the permissions requested by the [Expo GitHub app](https://github.com/settings/installations).
+- You must have valid credentials either configured locally in your repository or hosted on EAS that
+  you set up when running your first build with `eas-cli`
+
+#### Set up build triggers
+
+To configure when EAS builds your app from GitHub, you can set up build triggers. We allow you to build when pushing to a branch, pull request, and Git tag.  
+
+
+Open your Expo project in the dashboard. To create a build trigger, scroll down to the "Build
+triggers" section of the project GitHub settings page and click "New Build Trigger".
+
+<ImageSpotlight
+  alt="The build triggers section on the Expo project GitHub settings page"
+  src="/static/images/eas-build/build-from-github/empty-build-triggers-table.png"
+/>
+
+When you click the "New Build Trigger" button, you'll be presented with a form to configure how this build should run.
+
+These patterns can include wildcards represented by asterisks (`*`), which can match any character
+and number of characters inside the pattern. For example, `releases/*` can match `releases/`,
+`release/1234`, `release/genesis`, and so on. If you specify the pattern as a sole asterisk (`*`),
+all branches/tags will be matched.
+
+<ImageSpotlight
+  alt="The default state of the new build trigger form"
+  src="/static/images/eas-build/build-from-github/empty-build-trigger-form.png"
+/>
+
+You can also configure triggers for specific platforms and build profiles. If you select multiple
+platforms, a separate trigger will be made for each.
+
+<ImageSpotlight
+  alt="A filled-out version of the new build trigger form"
+  src="/static/images/eas-build/build-from-github/filled-build-trigger-form.png"
+/>
+
+<ImageSpotlight
+  alt="The build triggers section on the Expo project GitHub settings page filled with build triggers"
+  src="/static/images/eas-build/build-from-github/filled-build-triggers-table.png"
+/>
+
+When you push to a branch or tag, you can find the builds by looking at the “Checks” section on a
+commit.
+
+<ImageSpotlight
+  alt="The GitHub checks section on a branch commit"
+  src="/static/images/eas-build/build-from-github/builds-executed-automatically-on-branch.png"
+/>
+
+<ImageSpotlight
+  alt="The GitHub checks section on a tag commit"
+  src="/static/images/eas-build/build-from-github/tag-triggered-build.png"
+/>
+
+For pull requests, you can configure a “target branch pattern”. This is the destination branch of
+the pull request you want to build. The same rules apply for wildcards here as well.
+
+<ImageSpotlight
+  alt="The build trigger form for pull request"
+  src="/static/images/eas-build/build-from-github/pull-request-trigger-form.png"
+/>
+
+When you push to a pull request with a source and target branch matching this trigger, you'll find
+these builds in the checks section of the pull request:
+
+<ImageSpotlight
+  alt="The GitHub checks section on a pull request"
+  src="/static/images/eas-build/build-from-github/pull-request-triggered-build.png"
+/>
+
+> **Note:** To trigger builds from a pull request, the pull request's author must be a collaborator
+> on the GitHub repository. If you want to build pull requests from external contributors, apply a
+> PR Label.
+
+#### Managing build triggers
+
+On your project's GitHub settings page on expo.dev, you can click the options button to the right of
+a build trigger row to manage that trigger. You can disable, edit, or delete the trigger from here.
+
+<ImageSpotlight
+  alt="Manage GitHub build trigger with the options button"
+  src="/static/images/eas-build/build-from-github/managing-build-triggers.png"
+/>
+
+### Troubleshooting
+
+- When things go wrong, we'll comment on the commit we attempted to build with some error information. We also show the latest result in the build triggers UI, which includes error information when you hover the “Error” tag.
+
+<ImageSpotlight
+  alt="Status UI on the build trigger UI"
+  src="/static/images/eas-build/build-from-github/trigger-troubleshooting-status.png"
+/>
+
+- It's also important to double-check that everything in the [Prerequisites](https://www.notion.so/Prerequisites-f9d476ee187b419ba505217ccb39a809?pvs=21) section is true when trying to build.
+- Confirm that your configured base directory is accurate if you're using a monorepo setup.
+- Is your configured build profile correct? If a matching profile can't be found in eas.json, the build will not dispatch.
