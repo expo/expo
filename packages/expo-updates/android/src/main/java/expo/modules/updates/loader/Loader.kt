@@ -11,6 +11,7 @@ import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.UpdateManifest
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import java.io.File
 import java.util.Date
@@ -157,7 +158,7 @@ abstract class Loader(
       val finishedAssetList = mutableListOf<AssetEntity>()
       val assetTotal = assetList.size
 
-      val assetResults = assetList.map { assetEntityCur ->
+      assetList.map { assetEntityCur ->
         async {
           var assetEntity = assetEntityCur
           val matchingDbEntry = database.assetDao().loadAssetWithKey(assetEntity.key)
@@ -213,7 +214,7 @@ abstract class Loader(
           )
           return@async Pair(assetEntity, if (assetDownloadResult.isNew) Loader.AssetLoadResult.FINISHED else Loader.AssetLoadResult.ALREADY_EXISTS)
         }
-      }
+      }.awaitAll()
 
       assert(finishedAssetList.size + erroredAssetList.size + existingAssetList.size == assetTotal) { "incorrect asset count" }
 
