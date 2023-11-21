@@ -1,24 +1,70 @@
 "use strict";
-/* eslint-disable import/export */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var _exportNames = {
+  getAccountUsername: true
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAccountUsername = void 0;
-__exportStar(require("./Config"), exports);
-__exportStar(require("./Config.types"), exports);
-__exportStar(require("./getExpoSDKVersion"), exports);
-__exportStar(require("./Errors"), exports);
-var getAccountUsername_1 = require("./getAccountUsername");
-Object.defineProperty(exports, "getAccountUsername", { enumerable: true, get: function () { return getAccountUsername_1.getAccountUsername; } });
+Object.defineProperty(exports, "getAccountUsername", {
+  enumerable: true,
+  get: function () {
+    return _getAccountUsername().getAccountUsername;
+  }
+});
+var _Config = require("./Config");
+Object.keys(_Config).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _Config[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _Config[key];
+    }
+  });
+});
+var _Config2 = require("./Config.types");
+Object.keys(_Config2).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _Config2[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _Config2[key];
+    }
+  });
+});
+var _getExpoSDKVersion = require("./getExpoSDKVersion");
+Object.keys(_getExpoSDKVersion).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _getExpoSDKVersion[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _getExpoSDKVersion[key];
+    }
+  });
+});
+var _Errors = require("./Errors");
+Object.keys(_Errors).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _Errors[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _Errors[key];
+    }
+  });
+});
+function _getAccountUsername() {
+  const data = require("./getAccountUsername");
+  _getAccountUsername = function () {
+    return data;
+  };
+  return data;
+}
+//# sourceMappingURL=index.js.map

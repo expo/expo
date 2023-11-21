@@ -1,15 +1,53 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveConfigExport = exports.evalConfig = void 0;
-const fs_1 = require("fs");
-const require_from_string_1 = __importDefault(require("require-from-string"));
-const sucrase_1 = require("sucrase");
-const Errors_1 = require("./Errors");
-const Serialize_1 = require("./Serialize");
-const environment_1 = require("./environment");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.evalConfig = evalConfig;
+exports.resolveConfigExport = resolveConfigExport;
+function _fs() {
+  const data = require("fs");
+  _fs = function () {
+    return data;
+  };
+  return data;
+}
+function _requireFromString() {
+  const data = _interopRequireDefault(require("require-from-string"));
+  _requireFromString = function () {
+    return data;
+  };
+  return data;
+}
+function _sucrase() {
+  const data = require("sucrase");
+  _sucrase = function () {
+    return data;
+  };
+  return data;
+}
+function _Errors() {
+  const data = require("./Errors");
+  _Errors = function () {
+    return data;
+  };
+  return data;
+}
+function _Serialize() {
+  const data = require("./Serialize");
+  _Serialize = function () {
+    return data;
+  };
+  return data;
+}
+function _environment() {
+  const data = require("./environment");
+  _environment = function () {
+    return data;
+  };
+  return data;
+}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * Transpile and evaluate the dynamic config object.
  * This method is shared between the standard reading method in getConfig, and the headless script.
@@ -18,64 +56,77 @@ const environment_1 = require("./environment");
  * @returns the serialized and evaluated config along with the exported object type (object or function).
  */
 function evalConfig(configFile, request) {
-    const contents = (0, fs_1.readFileSync)(configFile, 'utf8');
-    let result;
-    try {
-        const { code } = (0, sucrase_1.transform)(contents, {
-            filePath: configFile,
-            transforms: ['typescript', 'imports'],
-        });
-        result = (0, require_from_string_1.default)(code, configFile);
+  const contents = (0, _fs().readFileSync)(configFile, 'utf8');
+  let result;
+  try {
+    const {
+      code
+    } = (0, _sucrase().transform)(contents, {
+      filePath: configFile,
+      transforms: ['typescript', 'imports']
+    });
+    result = (0, _requireFromString().default)(code, configFile);
+  } catch (error) {
+    const location = extractLocationFromSyntaxError(error);
+
+    // Apply a code frame preview to the error if possible, sucrase doesn't do this by default.
+    if (location) {
+      const {
+        codeFrameColumns
+      } = require('@babel/code-frame');
+      const codeFrame = codeFrameColumns(contents, {
+        start: error.loc
+      }, {
+        highlightCode: true
+      });
+      error.codeFrame = codeFrame;
+      error.message += `\n${codeFrame}`;
+    } else {
+      const importantStack = extractImportantStackFromNodeError(error);
+      if (importantStack) {
+        error.message += `\n${importantStack}`;
+      }
     }
-    catch (error) {
-        const location = extractLocationFromSyntaxError(error);
-        // Apply a code frame preview to the error if possible, sucrase doesn't do this by default.
-        if (location) {
-            const { codeFrameColumns } = require('@babel/code-frame');
-            const codeFrame = codeFrameColumns(contents, { start: error.loc }, { highlightCode: true });
-            error.codeFrame = codeFrame;
-            error.message += `\n${codeFrame}`;
-        }
-        else {
-            const importantStack = extractImportantStackFromNodeError(error);
-            if (importantStack) {
-                error.message += `\n${importantStack}`;
-            }
-        }
-        throw error;
-    }
-    return resolveConfigExport(result, configFile, request);
+    throw error;
+  }
+  return resolveConfigExport(result, configFile, request);
 }
-exports.evalConfig = evalConfig;
 function extractLocationFromSyntaxError(error) {
-    // sucrase provides the `loc` object
-    if (error.loc) {
-        return error.loc;
-    }
-    // `SyntaxError`s provide the `lineNumber` and `columnNumber` properties
-    if ('lineNumber' in error && 'columnNumber' in error) {
-        return { line: error.lineNumber, column: error.columnNumber };
-    }
-    return null;
+  // sucrase provides the `loc` object
+  if (error.loc) {
+    return error.loc;
+  }
+
+  // `SyntaxError`s provide the `lineNumber` and `columnNumber` properties
+  if ('lineNumber' in error && 'columnNumber' in error) {
+    return {
+      line: error.lineNumber,
+      column: error.columnNumber
+    };
+  }
+  return null;
 }
+
 // These kinda errors often come from syntax errors in files that were imported by the main file.
 // An example is a module that includes an import statement.
 function extractImportantStackFromNodeError(error) {
-    if (isSyntaxError(error)) {
-        const traces = error.stack?.split('\n').filter((line) => !line.startsWith('    at '));
-        if (!traces)
-            return null;
-        // Remove redundant line
-        if (traces[traces.length - 1].startsWith('SyntaxError:')) {
-            traces.pop();
-        }
-        return traces.join('\n');
+  if (isSyntaxError(error)) {
+    var _error$stack;
+    const traces = (_error$stack = error.stack) === null || _error$stack === void 0 ? void 0 : _error$stack.split('\n').filter(line => !line.startsWith('    at '));
+    if (!traces) return null;
+
+    // Remove redundant line
+    if (traces[traces.length - 1].startsWith('SyntaxError:')) {
+      traces.pop();
     }
-    return null;
+    return traces.join('\n');
+  }
+  return null;
 }
 function isSyntaxError(error) {
-    return error instanceof SyntaxError || error.constructor.name === 'SyntaxError';
+  return error instanceof SyntaxError || error.constructor.name === 'SyntaxError';
 }
+
 /**
  * - Resolve the exported contents of an Expo config (be it default or module.exports)
  * - Assert no promise exports
@@ -87,40 +138,46 @@ function isSyntaxError(error) {
  * @param request
  */
 function resolveConfigExport(result, configFile, request) {
-    // add key to static config that we'll check for after the dynamic is evaluated
-    // to see if the static config was used in determining the dynamic
-    const hasBaseStaticConfig = environment_1.NON_STANDARD_SYMBOL;
-    if (request?.config) {
-        // @ts-ignore
-        request.config[hasBaseStaticConfig] = true;
-    }
-    if (result.default != null) {
-        result = result.default;
-    }
-    const exportedObjectType = typeof result;
-    if (typeof result === 'function') {
-        result = result(request);
-    }
-    if (result instanceof Promise) {
-        throw new Errors_1.ConfigError(`Config file ${configFile} cannot return a Promise.`, 'INVALID_CONFIG');
-    }
-    // If the key is not added, it suggests that the static config was not used as the base for the dynamic.
-    // note(Keith): This is the most common way to use static and dynamic config together, but not the only way.
-    // Hence, this is only output from getConfig() for informational purposes for use by tools like Expo Doctor
-    // to suggest that there *may* be a problem.
-    const mayHaveUnusedStaticConfig = 
+  var _request$config, _result, _result2;
+  // add key to static config that we'll check for after the dynamic is evaluated
+  // to see if the static config was used in determining the dynamic
+  const hasBaseStaticConfig = _environment().NON_STANDARD_SYMBOL;
+  if (request !== null && request !== void 0 && request.config) {
     // @ts-ignore
-    request?.config?.[hasBaseStaticConfig] && !result?.[hasBaseStaticConfig];
-    if (result) {
-        delete result._hasBaseStaticConfig;
-    }
-    // If the expo object exists, ignore all other values.
-    if (result?.expo) {
-        result = (0, Serialize_1.serializeSkippingMods)(result.expo);
-    }
-    else {
-        result = (0, Serialize_1.serializeSkippingMods)(result);
-    }
-    return { config: result, exportedObjectType, mayHaveUnusedStaticConfig };
+    request.config[hasBaseStaticConfig] = true;
+  }
+  if (result.default != null) {
+    result = result.default;
+  }
+  const exportedObjectType = typeof result;
+  if (typeof result === 'function') {
+    result = result(request);
+  }
+  if (result instanceof Promise) {
+    throw new (_Errors().ConfigError)(`Config file ${configFile} cannot return a Promise.`, 'INVALID_CONFIG');
+  }
+
+  // If the key is not added, it suggests that the static config was not used as the base for the dynamic.
+  // note(Keith): This is the most common way to use static and dynamic config together, but not the only way.
+  // Hence, this is only output from getConfig() for informational purposes for use by tools like Expo Doctor
+  // to suggest that there *may* be a problem.
+  const mayHaveUnusedStaticConfig =
+  // @ts-ignore
+  (request === null || request === void 0 ? void 0 : (_request$config = request.config) === null || _request$config === void 0 ? void 0 : _request$config[hasBaseStaticConfig]) && !((_result = result) !== null && _result !== void 0 && _result[hasBaseStaticConfig]);
+  if (result) {
+    delete result._hasBaseStaticConfig;
+  }
+
+  // If the expo object exists, ignore all other values.
+  if ((_result2 = result) !== null && _result2 !== void 0 && _result2.expo) {
+    result = (0, _Serialize().serializeSkippingMods)(result.expo);
+  } else {
+    result = (0, _Serialize().serializeSkippingMods)(result);
+  }
+  return {
+    config: result,
+    exportedObjectType,
+    mayHaveUnusedStaticConfig
+  };
 }
-exports.resolveConfigExport = resolveConfigExport;
+//# sourceMappingURL=evalConfig.js.map
