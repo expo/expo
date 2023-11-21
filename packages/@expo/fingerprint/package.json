@@ -17,6 +17,9 @@
   "bin": {
     "fingerprint": "bin/cli.js"
   },
+  "files": [
+    "build"
+  ],
   "keywords": [
     "expo",
     "react-native",
