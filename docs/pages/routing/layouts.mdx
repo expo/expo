@@ -4,9 +4,8 @@ description: Learn how to define shared UI elements such as tab bars and headers
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
-import { GithubIcon, BookOpen02Icon, Rocket02Icon } from '@expo/styleguide-icons';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { CODE } from '~/ui/components/Text';
 
 By default, routes fill the entire screen. Moving between them is a full-page transition with no animation. In native apps, users expect shared elements like headers and tab bars to persist between pages. These are created using **layout routes**.
 
@@ -128,7 +127,7 @@ Learn more about the built-in layouts:
 
 ## Advanced
 
-Expo Router supports additional conventions and systems to build complex UIs that native app users expect. These are not required to use Expo Router, but are available if you need them.
+Expo Router supports additional conventions and systems to build complex UIs that native app users expect. These are not required to use Expo Router but are available if you need them.
 
 <BoxLink
   title="Nesting navigators"
@@ -142,13 +141,4 @@ Expo Router supports additional conventions and systems to build complex UIs tha
   Icon={BookOpen02Icon}
   description="Create routes which appear in multiple places simultaneously, while using the same URL."
   href="/router/advanced/shared-routes"
-/>
-
-## Next steps
-
-<BoxLink
-  title="Appearance elements"
-  Icon={BookOpen02Icon}
-  description="Learn how to use a splash screen, fonts and images in your app that is using Expo Router."
-  href="/routing/appearance/"
 />
