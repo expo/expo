@@ -25,3 +25,4 @@ __exportStar(require("./utils/nodeManagers"), exports);
 __exportStar(require("./utils/nodeWorkspaces"), exports);
 var yarn_1 = require("./utils/yarn");
 Object.defineProperty(exports, "isYarnOfflineAsync", { enumerable: true, get: function () { return yarn_1.isYarnOfflineAsync; } });
+//# sourceMappingURL=index.js.map

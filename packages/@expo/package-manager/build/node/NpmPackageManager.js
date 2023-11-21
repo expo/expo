@@ -109,3 +109,4 @@ class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
     }
 }
 exports.NpmPackageManager = NpmPackageManager;
+//# sourceMappingURL=NpmPackageManager.js.map

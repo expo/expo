@@ -58,3 +58,4 @@ class PnpmPackageManager extends BasePackageManager_1.BasePackageManager {
     }
 }
 exports.PnpmPackageManager = PnpmPackageManager;
+//# sourceMappingURL=PnpmPackageManager.js.map

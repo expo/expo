@@ -401,3 +401,4 @@ function getImprovedPodInstallError(error, { cwd = process.cwd() }) {
     return new CocoaPodsError('Command `pod install` failed.', 'COMMAND_FAILED', error);
 }
 exports.getImprovedPodInstallError = getImprovedPodInstallError;
+//# sourceMappingURL=CocoaPodsPackageManager.js.map
