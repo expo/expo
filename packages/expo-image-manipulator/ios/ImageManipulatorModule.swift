@@ -57,8 +57,7 @@ public class ImageManipulatorModule: Module {
     guard let imageLoader = self.appContext?.imageLoader else {
       return callback(.failure(ImageLoaderNotFoundException()))
     }
-    let fileUtils = FileSystemUtilities(appContext: appContext)
-    guard fileUtils.permissions(for: url).contains(.read) else {
+    guard FileSystemUtilities.permissions(appContext, for: url).contains(.read) else {
       return callback(.failure(FileSystemReadPermissionException(url.absoluteString)))
     }
 
@@ -105,8 +104,7 @@ public class ImageManipulatorModule: Module {
     let filename = UUID().uuidString.appending(options.format.fileExtension)
     let fileUrl = directory.appendingPathComponent(filename)
 
-    let fileSystemUtilities = FileSystemUtilities(appContext: appContext)
-    fileSystemUtilities.ensureDirExists(at: directory)
+    FileSystemUtilities.ensureDirExists(at: directory)
 
     guard let data = imageData(from: image, format: options.format, compression: options.compress) else {
       throw CorruptedImageDataException()

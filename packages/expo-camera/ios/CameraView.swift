@@ -528,10 +528,10 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
     takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
 
-    let fileUtils = FileSystemUtilities(appContext: appContext)
-    let path = fileUtils.generatePath(
-      in: appContext?.config.cacheDirectory?.appendingPathComponent("Camera"),
-      with: ".jpg")
+    let path = FileSystemUtilities.generatePath(
+      appContext,
+      in: "Camera",
+      ext: ".jpg")
 
     if path.isEmpty {
       return
@@ -651,14 +651,12 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       let preset = options.quality?.toPreset() ?? .high
       updateSessionPreset(preset: preset)
 
-      let fileUtils = FileSystemUtilities(appContext: appContext)
       if !self.isValidVideoOptions {
         return
       }
 
       sessionQueue.async {
-        let directory = self.cacheDirectory?.appendingPathComponent("Camera")
-        let path = fileUtils.generatePath(in: directory, with: ".mov")
+        let path = FileSystemUtilities.generatePath(self.appContext, in: "Camera", ext: ".mov")
         let fileUrl = URL(fileURLWithPath: path)
         self.videoRecordedPromise = promise
 

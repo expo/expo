@@ -6,8 +6,7 @@ public final class SharingModule: Module {
     Name("ExpoSharing")
 
     AsyncFunction("shareAsync") { (url: URL, options: SharingOptions, promise: Promise) in
-      let fileUtils = FileSystemUtilities(appContext: appContext)
-      let grantedPermissions = fileUtils.permissions(for: url)
+      let grantedPermissions = FileSystemUtilities.permissions(appContext, for: url)
 
       guard grantedPermissions.contains(.read) else {
         throw FilePermissionException()

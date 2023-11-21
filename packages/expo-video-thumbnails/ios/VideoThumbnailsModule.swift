@@ -12,8 +12,7 @@ public class VideoThumbnailsModule: Module {
 
   internal func getVideoThumbnail(sourceFilename: URL, options: VideoThumbnailsOptions) throws -> [String: Any] {
     if sourceFilename.isFileURL {
-      let fileUtils = FileSystemUtilities(appContext: appContext)
-      guard fileUtils.permissions(for: sourceFilename).contains(.read) else {
+      guard FileSystemUtilities.permissions(appContext, for: sourceFilename).contains(.read) else {
         throw FileSystemReadPermissionException(sourceFilename.absoluteString)
       }
     }
@@ -45,8 +44,7 @@ public class VideoThumbnailsModule: Module {
     let fileName = UUID().uuidString.appending(".jpg")
     let fileUrl = directory?.appendingPathComponent(fileName)
 
-    let fileUtils = FileSystemUtilities(appContext: appContext)
-    fileUtils.ensureDirExists(at: directory)
+    FileSystemUtilities.ensureDirExists(at: directory)
 
     guard let data = image.jpegData(compressionQuality: CGFloat(quality)) else {
       throw CorruptedImageDataException()

@@ -7,13 +7,8 @@ public enum FileSystemPermissionFlags {
 }
 
 public struct FileSystemUtilities {
-  private let appContext: AppContext?
-
-  public init(appContext: AppContext?) {
-    self.appContext = appContext
-  }
-
-  public func ensureDirExists(at url: URL?) -> Bool {
+  @discardableResult
+  public static func ensureDirExists(at url: URL?) -> Bool {
     guard let url else {
       return false
     }
@@ -30,16 +25,16 @@ public struct FileSystemUtilities {
     return true
   }
 
-  public func generatePath(in directory: URL?, with ext: String) -> String {
-    guard let directory else {
+  public static func generatePath(_ appContext: AppContext?, in directory: String, ext: String) -> String {
+    guard let appContext, let dirPath = appContext.config.cacheDirectory?.appendingPathComponent(directory) else {
       return ""
     }
     let fileName = UUID().uuidString.appending(ext)
-    _ = ensureDirExists(at: directory)
-    return directory.appendingPathComponent(fileName).path
+    ensureDirExists(at: dirPath)
+    return dirPath.appendingPathComponent(fileName).path
   }
 
-  public func permissions(for uri: URL) -> [FileSystemPermissionFlags] {
+  public static func permissions(_ appContext: AppContext?, for uri: URL) -> [FileSystemPermissionFlags] {
     guard let scheme = uri.scheme else {
       return [.none]
     }
@@ -50,21 +45,21 @@ public struct FileSystemUtilities {
     }
 
     if scheme == "file" {
-      return getPathPermissions(for: uri)
+      return getPathPermissions(appContext, for: uri)
     }
 
     return [.none]
   }
 
-  private func getPathPermissions(for path: URL) -> [FileSystemPermissionFlags] {
-    let permissionForInternalDirs = getInternalPathPermissions(for: path)
+  private static func getPathPermissions(_ appContext: AppContext?, for path: URL) -> [FileSystemPermissionFlags] {
+    let permissionForInternalDirs = getInternalPathPermissions(appContext, for: path)
     if !permissionForInternalDirs.contains(.none) {
       return permissionForInternalDirs
     }
     return getExternalPathPermissions(path)
   }
 
-  private func getInternalPathPermissions(for url: URL) -> [FileSystemPermissionFlags] {
+  private static func getInternalPathPermissions(_ appContext: AppContext?, for url: URL) -> [FileSystemPermissionFlags] {
     guard let appContext else {
       return [.none]
     }
@@ -89,7 +84,7 @@ public struct FileSystemUtilities {
     return [.none]
   }
 
-  private func getExternalPathPermissions(_ url: URL) -> [FileSystemPermissionFlags] {
+  private static func getExternalPathPermissions(_ url: URL) -> [FileSystemPermissionFlags] {
     var filePermissions: [FileSystemPermissionFlags] = []
 
     if FileManager.default.isReadableFile(atPath: url.path) {

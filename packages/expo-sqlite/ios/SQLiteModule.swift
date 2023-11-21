@@ -67,8 +67,7 @@ public final class SQLiteModule: Module {
       return nil
     }
     let directory = URL(string: path)?.appendingPathComponent("SQLite")
-    let fileUtils = FileSystemUtilities(appContext: appContext)
-    fileUtils.ensureDirExists(at: directory)
+    FileSystemUtilities.ensureDirExists(at: directory)
 
     return directory?.appendingPathComponent(name)
   }
