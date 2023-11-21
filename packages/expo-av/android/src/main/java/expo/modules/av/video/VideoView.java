@@ -21,7 +21,6 @@ import kotlin.Unit;
 
 @SuppressLint("ViewConstructor")
 public class VideoView extends FrameLayout implements AudioEventHandler, FullscreenVideoPlayerPresentationChangeListener, PlayerData.FullscreenPresenter {
-
   private final Runnable mMediaControllerUpdater = new Runnable() {
     @Override
     public void run() {
@@ -44,7 +43,8 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
 
   private PlayerData mPlayerData = null;
 
-  private ReadableArguments mLastSource;
+  private ReadableArguments mLastSource;  
+  private ReadableArguments drmConfigs;
   private ScalableType mResizeMode = ScalableType.LEFT_TOP;
   private boolean mUseNativeControls = false;
   private Boolean mOverridingUseNativeControls = null;
@@ -360,7 +360,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     statusToInitiallySet.putAll(mStatusToSet);
     mStatusToSet = new Bundle();
 
-    mPlayerData = PlayerData.createUnloadedPlayerData(mAVModule, getContext(), source, statusToInitiallySet);
+    mPlayerData = PlayerData.createUnloadedPlayerData(mAVModule, getContext(), source, drmConfigs,statusToInitiallySet);
 
     mPlayerData.setErrorListener(new PlayerData.ErrorListener() {
       @Override
@@ -433,6 +433,9 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
         callOnError(error);
       }
     });
+  }
+  public void setDRM(final ReadableArguments drm) {
+    drmConfigs = drm;
   }
 
   void setResizeMode(final ScalableType resizeMode) {

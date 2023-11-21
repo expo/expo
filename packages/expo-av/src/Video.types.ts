@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import { ImageProps, ViewProps, StyleProp, ViewStyle } from 'react-native';
 
 import {
@@ -6,6 +7,7 @@ import {
   AVPlaybackSource,
   AVPlaybackStatus,
   AVPlaybackStatusToSet,
+  DRMConfig,
 } from './AV';
 
 // @needsAudit
@@ -109,6 +111,10 @@ export type VideoProps = {
    * lists of the video formats supported on iOS.
    */
   source?: AVPlaybackSource;
+  /**
+   * DRM
+   */
+  drm?: DRMConfig;
   /**
    * The source of an optional image to display over the video while it is loading. The following forms are supported:
    * - A dictionary of the form `{ uri: 'http://path/to/file' }` with a network URL pointing to an image file on the web.
@@ -265,6 +271,7 @@ export type VideoProps = {
  */
 export type VideoNativeProps = {
   source?: AVPlaybackNativeSource | null;
+  drm?: DRMConfig | null;
   resizeMode?: unknown;
   status?: AVPlaybackStatusToSet;
   onLoadStart?: () => void;
@@ -273,6 +280,7 @@ export type VideoNativeProps = {
   onStatusUpdate?: (event: { nativeEvent: AVPlaybackStatus }) => void;
   onReadyForDisplay?: (event: { nativeEvent: VideoReadyForDisplayEvent }) => void;
   onFullscreenUpdate?: (event: { nativeEvent: VideoFullscreenUpdateEvent }) => void;
+  onGetLicense?: (event: { nativeEvent: any }) => void;
   useNativeControls?: boolean;
   videoStyle?: StyleProp<ViewStyle>;
 } & ViewProps;

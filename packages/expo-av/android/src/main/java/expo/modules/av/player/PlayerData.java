@@ -205,7 +205,7 @@ public abstract class PlayerData implements AudioEventHandler {
     }
   }
 
-  public static PlayerData createUnloadedPlayerData(final AVManagerInterface avModule, final Context context, final ReadableArguments source, final Bundle status) {
+  public static PlayerData createUnloadedPlayerData(final AVManagerInterface avModule, final Context context, final ReadableArguments source, final ReadableArguments drmConfigs ,final Bundle status) {
     final String uriString = source.getString(STATUS_URI_KEY_PATH);
     Map requestHeaders = null;
     if (source.containsKey(STATUS_HEADERS_KEY_PATH)) {
@@ -219,7 +219,7 @@ public abstract class PlayerData implements AudioEventHandler {
       && Objects.equals(status.getString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH), MediaPlayerData.IMPLEMENTATION_NAME)) {
       return new MediaPlayerData(avModule, context, uri, requestHeaders);
     } else {
-      return new SimpleExoPlayerData(avModule, context, uri, uriOverridingExtension, requestHeaders);
+      return new SimpleExoPlayerData(avModule, context, uri, uriOverridingExtension, requestHeaders, drmConfigs);
     }
   }
 

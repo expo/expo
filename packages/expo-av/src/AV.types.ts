@@ -68,6 +68,17 @@ export type AVPlaybackNativeSource = {
   headers?: Record<string, string>;
 };
 
+/**
+ * @hidden
+ */
+export type DRMConfig = {
+  type: string;
+  licenseServer: string;
+  headers?: Record<string, string>;
+  base64Certificate: boolean;
+  certificateUrl: string;
+  getLicense?: (...args: any[]) => void;
+}
 // @needsAudit
 /**
  * Object passed to the `onMetadataUpdate` function.
