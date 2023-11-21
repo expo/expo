@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- `ios.bundleIdentifier` will now only be set on the main `.pbxproj` file, using the serial `withXcodeProject` modifier.
+- `ios.bundleIdentifier` will now only be set on the main `.pbxproj` file, using the serial `withXcodeProject` modifier. ([#25490](https://github.com/expo/expo/pull/25490) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
