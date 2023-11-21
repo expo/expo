@@ -96,10 +96,10 @@ class LoaderTask(
     fun onCachedUpdateLoaded(update: UpdateEntity): Boolean
 
     fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest)
-    fun onRemoteCheckForUpdateStarted() {}
-    fun onRemoteCheckForUpdateFinished(result: LoaderTask.RemoteCheckResult) {}
-    fun onRemoteUpdateLoadStarted() {}
-    fun onRemoteUpdateAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) {}
+    fun onRemoteCheckForUpdateStarted()
+    fun onRemoteCheckForUpdateFinished(result: LoaderTask.RemoteCheckResult)
+    fun onRemoteUpdateLoadStarted()
+    fun onRemoteUpdateAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
     fun onRemoteUpdateFinished(
       status: LoaderTask.RemoteUpdateStatus,
       update: UpdateEntity?,

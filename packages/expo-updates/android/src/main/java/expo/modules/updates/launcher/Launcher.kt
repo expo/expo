@@ -30,12 +30,3 @@ data class LauncherResult(
    */
   val isUsingEmbeddedAssets: Boolean,
 )
-
-/**
- * Provides an interface through which an update can be launched from disk. Classes that implement
- * this interface are responsible for selecting an eligible update to launch, ensuring all
- * required assets are present, and providing the fields here.
- */
-interface Launcher {
-  suspend fun launch(): LauncherResult
-}

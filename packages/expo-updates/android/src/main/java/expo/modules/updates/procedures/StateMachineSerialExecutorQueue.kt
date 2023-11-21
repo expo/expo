@@ -2,14 +2,21 @@ package expo.modules.updates.procedures
 
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 /**
  * A serial task queue, where each task is an asynchronous task. Guarantees that all queued tasks
  * are run sequentially.
  */
-class StateMachineSerialExecutorQueue(private val stateMachineProcedureContext: StateMachineProcedure.StateMachineProcedureContext) {
+class StateMachineSerialExecutorQueue(
+  private val coroutineScope: CoroutineScope,
+  private val stateMachineProcedureContext: StateMachineProcedure.StateMachineProcedureContext
+) {
+
   private data class MethodInvocationHolder(val procedure: StateMachineProcedure, val onMethodInvocationComplete: MethodInvocationHolder.() -> Unit) {
-    fun execute(procedureContext: StateMachineProcedure.StateMachineProcedureContext) {
+    suspend fun execute(procedureContext: StateMachineProcedure.StateMachineProcedureContext) {
       procedure.run(object : StateMachineProcedure.ProcedureContext {
         private var isCompleted = false
 
@@ -70,6 +77,9 @@ class StateMachineSerialExecutorQueue(private val stateMachineProcedureContext: 
 
     val nextMethodInvocation = internalQueue.removeFirstOrNull() ?: return
     currentMethodInvocation = nextMethodInvocation
-    nextMethodInvocation.execute(stateMachineProcedureContext) // need to make sure this is asynchronous
+
+    coroutineScope.launch {
+      nextMethodInvocation.execute(stateMachineProcedureContext) // need to make sure this is asynchronous
+    }
   }
 }

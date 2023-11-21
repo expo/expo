@@ -10,7 +10,7 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.errorrecovery.ErrorRecovery
 import expo.modules.updates.errorrecovery.ErrorRecoveryDelegate
-import expo.modules.updates.launcher.Launcher
+import expo.modules.updates.launcher.LauncherResult
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.Loader
@@ -58,22 +58,22 @@ class StartupProcedure(
 
   private lateinit var procedureContext: ProcedureContext
 
-  var launcher: Launcher? = null
+  var launcherResult: LauncherResult? = null
     private set
-  fun setLauncher(launcher: Launcher) {
-    this.launcher = launcher
+  fun setLauncherResult(launcherResult: LauncherResult) {
+    this.launcherResult = launcherResult
   }
 
   val launchAssetFile
-    get() = launcher?.launchAssetFile
+    get() = launcherResult?.launchAssetFile
   val bundleAssetName: String?
-    get() = launcher?.bundleAssetName
+    get() = launcherResult?.bundleAssetName
   val localAssetFiles: Map<AssetEntity, String>?
-    get() = launcher?.localAssetFiles
+    get() = launcherResult?.localAssetFiles
   val isUsingEmbeddedAssets: Boolean
-    get() = launcher?.isUsingEmbeddedAssets ?: false
+    get() = launcherResult?.isUsingEmbeddedAssets ?: false
   val launchedUpdate: UpdateEntity?
-    get() = launcher?.launchedUpdate
+    get() = launcherResult?.launchedUpdate
 
   var isEmergencyLaunch = false
     private set
@@ -91,148 +91,139 @@ class StartupProcedure(
   }
 
   private val loaderTask = LoaderTask(
+    context,
     updatesConfiguration,
     databaseHolder,
     updatesDirectory,
     fileDownloader,
     selectionPolicy,
-    object : LoaderTask.LoaderTaskCallback {
-      override fun onFailure(e: Exception) {
-        logger.error("UpdatesController loaderTask onFailure: ${e.localizedMessage}", UpdatesErrorCode.None)
-        launcher = NoDatabaseLauncher(context, e)
-        isEmergencyLaunch = true
-        notifyController()
-      }
-
-      override fun onSuccess(launcher: Launcher, isUpToDate: Boolean) {
-        if (remoteLoadStatus == ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING && isUpToDate) {
-          remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
-        }
-        this@StartupProcedure.launcher = launcher
-        notifyController()
-      }
-
-      override fun onFinishedAllLoading() {
-        procedureContext.onComplete()
-      }
-
-      override fun onCachedUpdateLoaded(update: UpdateEntity): Boolean {
-        return true
-      }
-
-      override fun onRemoteCheckForUpdateStarted() {
-        procedureContext.processStateEvent(UpdatesStateEvent.Check())
-      }
-
-      override fun onRemoteCheckForUpdateFinished(result: LoaderTask.RemoteCheckResult) {
-        val event = when (result) {
-          is LoaderTask.RemoteCheckResult.NoUpdateAvailable -> UpdatesStateEvent.CheckCompleteUnavailable()
-          is LoaderTask.RemoteCheckResult.UpdateAvailable -> UpdatesStateEvent.CheckCompleteWithUpdate(result.manifest)
-          is LoaderTask.RemoteCheckResult.RollBackToEmbedded -> UpdatesStateEvent.CheckCompleteWithRollback(result.commitTime)
-        }
-        procedureContext.processStateEvent(event)
-      }
-
-      override fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest) {
-        remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
-      }
-
-      override fun onRemoteUpdateLoadStarted() {
-        procedureContext.processStateEvent(UpdatesStateEvent.Download())
-      }
-
-      override fun onRemoteUpdateAssetLoaded(
-        asset: AssetEntity,
-        successfulAssetCount: Int,
-        failedAssetCount: Int,
-        totalAssetCount: Int
-      ) {
-        val body = mapOf(
-          "assetInfo" to mapOf(
-            "name" to asset.embeddedAssetFilename,
-            "successfulAssetCount" to successfulAssetCount,
-            "failedAssetCount" to failedAssetCount,
-            "totalAssetCount" to totalAssetCount
-          )
-        )
-        logger.info("AppController appLoaderTask didLoadAsset: $body", UpdatesErrorCode.None, null, asset.expectedHash)
-      }
-
-      override fun onRemoteUpdateFinished(
-        status: LoaderTask.RemoteUpdateStatus,
-        update: UpdateEntity?,
-        exception: Exception?
-      ) {
-        when (status) {
-          LoaderTask.RemoteUpdateStatus.ERROR -> {
-            if (exception == null) {
-              throw AssertionError("Background update with error status must have a nonnull exception object")
-            }
-            logger.error("UpdatesController onBackgroundUpdateFinished: Error: ${exception.localizedMessage}", UpdatesErrorCode.Unknown, exception)
-            remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
-            callback.onLegacyJSEvent(StartupProcedureCallback.LegacyJSEvent.Error(exception))
-
-            // Since errors can happen through a number of paths, we do these checks
-            // to make sure the state machine is valid
-            when (procedureContext.getCurrentState()) {
-              UpdatesStateValue.Idle -> {
-                procedureContext.processStateEvent(UpdatesStateEvent.Download())
-                procedureContext.processStateEvent(
-                  UpdatesStateEvent.DownloadError(exception.message ?: "")
-                )
-              }
-              UpdatesStateValue.Checking -> {
-                procedureContext.processStateEvent(
-                  UpdatesStateEvent.CheckError(exception.message ?: "")
-                )
-              }
-              else -> {
-                // .downloading
-                procedureContext.processStateEvent(
-                  UpdatesStateEvent.DownloadError(exception.message ?: "")
-                )
-              }
-            }
-          }
-          LoaderTask.RemoteUpdateStatus.UPDATE_AVAILABLE -> {
-            if (update == null) {
-              throw AssertionError("Background update with error status must have a nonnull update object")
-            }
-            remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
-            logger.info("UpdatesController onBackgroundUpdateFinished: Update available", UpdatesErrorCode.None)
-            callback.onLegacyJSEvent(StartupProcedureCallback.LegacyJSEvent.UpdateAvailable(update.manifest))
-            procedureContext.processStateEvent(
-              UpdatesStateEvent.DownloadCompleteWithUpdate(update.manifest)
-            )
-          }
-          LoaderTask.RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {
-            remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
-            logger.error("UpdatesController onBackgroundUpdateFinished: No update available", UpdatesErrorCode.NoUpdatesAvailable)
-            callback.onLegacyJSEvent(StartupProcedureCallback.LegacyJSEvent.NoUpdateAvailable())
-            // TODO: handle rollbacks properly, but this works for now
-            if (procedureContext.getCurrentState() == UpdatesStateValue.Downloading) {
-              procedureContext.processStateEvent(UpdatesStateEvent.DownloadComplete())
-            }
-          }
-        }
-        errorRecovery.notifyNewRemoteLoadStatus(remoteLoadStatus)
-      }
-    }
   )
 
-  override fun run(procedureContext: ProcedureContext) {
+  override suspend fun run(procedureContext: ProcedureContext) {
     this.procedureContext = procedureContext
     initializeDatabaseHandler()
     initializeErrorRecovery()
-    loaderTask.start(context)
-  }
 
-  @Synchronized
-  private fun notifyController() {
-    if (launcher == null) {
-      throw AssertionError("UpdatesController.notifyController was called with a null launcher, which is an error. This method should only be called when an update is ready to launch.")
+    val loaderTaskResult = try {
+      loaderTask.load(object : LoaderTask.LoaderTaskCallbacks {
+        override fun onFinishedAllLoading() {
+          procedureContext.onComplete()
+        }
+
+        override fun onCachedUpdateLoaded(update: UpdateEntity): Boolean {
+          return true
+        }
+
+        override fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest) {
+          remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
+        }
+
+        override fun onRemoteCheckForUpdateStarted() {
+          procedureContext.processStateEvent(UpdatesStateEvent.Check())
+        }
+
+        override fun onRemoteCheckForUpdateFinished(result: LoaderTask.RemoteCheckResult) {
+          val event = when (result) {
+            is LoaderTask.RemoteCheckResult.NoUpdateAvailable -> UpdatesStateEvent.CheckCompleteUnavailable()
+            is LoaderTask.RemoteCheckResult.UpdateAvailable -> UpdatesStateEvent.CheckCompleteWithUpdate(result.manifest)
+            is LoaderTask.RemoteCheckResult.RollBackToEmbedded -> UpdatesStateEvent.CheckCompleteWithRollback(result.commitTime)
+          }
+          procedureContext.processStateEvent(event)
+        }
+
+        override fun onRemoteUpdateLoadStarted() {
+          procedureContext.processStateEvent(UpdatesStateEvent.Download())
+        }
+
+        override fun onRemoteUpdateAssetLoaded(
+          asset: AssetEntity,
+          successfulAssetCount: Int,
+          failedAssetCount: Int,
+          totalAssetCount: Int
+        ) {
+          val body = mapOf(
+            "assetInfo" to mapOf(
+              "name" to asset.embeddedAssetFilename,
+              "successfulAssetCount" to successfulAssetCount,
+              "failedAssetCount" to failedAssetCount,
+              "totalAssetCount" to totalAssetCount
+            )
+          )
+          logger.info("AppController appLoaderTask didLoadAsset: $body", UpdatesErrorCode.None, null, asset.expectedHash)
+        }
+
+        override fun onRemoteUpdateFinished(
+          status: LoaderTask.RemoteUpdateStatus,
+          update: UpdateEntity?,
+          exception: Exception?
+        ) {
+          when (status) {
+            LoaderTask.RemoteUpdateStatus.ERROR -> {
+              if (exception == null) {
+                throw AssertionError("Background update with error status must have a nonnull exception object")
+              }
+              logger.error("UpdatesController onBackgroundUpdateFinished: Error: ${exception.localizedMessage}", UpdatesErrorCode.Unknown, exception)
+              remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
+              callback.onLegacyJSEvent(StartupProcedureCallback.LegacyJSEvent.Error(exception))
+
+              // Since errors can happen through a number of paths, we do these checks
+              // to make sure the state machine is valid
+              when (procedureContext.getCurrentState()) {
+                UpdatesStateValue.Idle -> {
+                  procedureContext.processStateEvent(UpdatesStateEvent.Download())
+                  procedureContext.processStateEvent(
+                    UpdatesStateEvent.DownloadError(exception.message ?: "")
+                  )
+                }
+                UpdatesStateValue.Checking -> {
+                  procedureContext.processStateEvent(
+                    UpdatesStateEvent.CheckError(exception.message ?: "")
+                  )
+                }
+                else -> {
+                  // .downloading
+                  procedureContext.processStateEvent(
+                    UpdatesStateEvent.DownloadError(exception.message ?: "")
+                  )
+                }
+              }
+            }
+            LoaderTask.RemoteUpdateStatus.UPDATE_AVAILABLE -> {
+              if (update == null) {
+                throw AssertionError("Background update with error status must have a nonnull update object")
+              }
+              remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
+              logger.info("UpdatesController onBackgroundUpdateFinished: Update available", UpdatesErrorCode.None)
+              callback.onLegacyJSEvent(StartupProcedureCallback.LegacyJSEvent.UpdateAvailable(update.manifest))
+              procedureContext.processStateEvent(
+                UpdatesStateEvent.DownloadCompleteWithUpdate(update.manifest)
+              )
+            }
+            LoaderTask.RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {
+              remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
+              logger.error("UpdatesController onBackgroundUpdateFinished: No update available", UpdatesErrorCode.NoUpdatesAvailable)
+              callback.onLegacyJSEvent(StartupProcedureCallback.LegacyJSEvent.NoUpdateAvailable())
+              // TODO: handle rollbacks properly, but this works for now
+              if (procedureContext.getCurrentState() == UpdatesStateValue.Downloading) {
+                procedureContext.processStateEvent(UpdatesStateEvent.DownloadComplete())
+              }
+            }
+          }
+          errorRecovery.notifyNewRemoteLoadStatus(remoteLoadStatus)
+        }
+      })
+    } catch (e: Exception) {
+      logger.error("UpdatesController loaderTask onFailure: ${e.localizedMessage}", UpdatesErrorCode.None)
+      launcherResult = NoDatabaseLauncher(context, e).launch()
+      isEmergencyLaunch = true
+      callback.onFinished()
+      return
     }
 
+    if (remoteLoadStatus == ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING && loaderTaskResult.isUpToDate) {
+      remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
+    }
+    launcherResult = loaderTaskResult.launcherResult
     callback.onFinished()
   }
 

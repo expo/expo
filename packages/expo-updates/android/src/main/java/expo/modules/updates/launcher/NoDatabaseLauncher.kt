@@ -18,8 +18,8 @@ import java.io.File
 class NoDatabaseLauncher @JvmOverloads constructor(
   context: Context,
   fatalException: Exception? = null
-) : Launcher {
-  override suspend fun launch(): LauncherResult {
+) {
+  fun launch(): LauncherResult {
     return LauncherResult(
       bundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME,
       launchedUpdate = null,
