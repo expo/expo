@@ -41,19 +41,19 @@ public class VideoThumbnailsModule: Module {
   Saves the image as a file.
   */
   internal func saveImage(image: UIImage, quality: Double) throws -> URL {
-    guard let cachesDirectory = appContext?.config.cacheDirectory else {
-      throw CorruptedImageDataException()
-    }
-
-    let directory = URL(fileURLWithPath: cachesDirectory.path).appendingPathComponent("VideoThumbnails")
+    let directory = appContext?.config.cacheDirectory?.appendingPathComponent("VideoThumbnails")
     let fileName = UUID().uuidString.appending(".jpg")
-    let fileUrl = directory.appendingPathComponent(fileName)
+    let fileUrl = directory?.appendingPathComponent(fileName)
 
     let fileUtils = FileSystemUtilities(appContext: appContext)
     fileUtils.ensureDirExists(at: directory)
 
     guard let data = image.jpegData(compressionQuality: CGFloat(quality)) else {
       throw CorruptedImageDataException()
+    }
+    
+    guard let fileUrl else {
+      throw ImageWriteFailedException("Unrecognised url \(fileUrl?.path)")
     }
 
     do {
