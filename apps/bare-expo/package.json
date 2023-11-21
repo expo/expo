@@ -61,16 +61,8 @@
   "dependencies": {
     "@babel/runtime": "^7.20.0",
     "@react-native-async-storage/async-storage": "1.18.2",
-<<<<<<< HEAD
-    "@react-native-community/datetimepicker": "7.2.0",
-    "@react-native-community/netinfo": "11.1.0",
-||||||| parent of 390ace9f00 ([ios][android] Update datepicker)
-    "@react-native-community/datetimepicker": "7.2.0",
-    "@react-native-community/netinfo": "9.3.10",
-=======
     "@react-native-community/datetimepicker": "7.6.1",
-    "@react-native-community/netinfo": "9.3.10",
->>>>>>> 390ace9f00 ([ios][android] Update datepicker)
+    "@react-native-community/netinfo": "11.1.0",
     "@react-native-community/slider": "4.4.2",
     "@react-native-masked-view/masked-view": "0.3.0",
     "@react-native-picker/picker": "2.5.1",

@@ -28,7 +28,7 @@ public class RNDateTimePickerPackage extends TurboReactPackage {
   @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
     return () -> {
-      boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+      boolean isTurboModule = host.exp.expoview.BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
       final Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
       moduleInfos.put(
         DatePickerModule.NAME,

@@ -74,7 +74,7 @@ public class RNDatePickerDialogFragment extends DialogFragment {
     if (display == RNDatePickerDisplay.SPINNER) {
       return new RNDismissableDatePickerDialog(
         activityContext,
-        R.style.SpinnerDatePickerDialog,
+        host.exp.expoview.R.style.SpinnerDatePickerDialog,
         onDateSetListener,
         year,
         month,
