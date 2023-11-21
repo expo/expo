@@ -132,23 +132,12 @@ export function withExtendedResolver(
       })
     : defaultResolver;
 
-  const extraNodeModules: { [key: string]: Record<string, string> } = {};
-
   const aliases: { [key: string]: Record<string, string> } = {
     web: {
       'react-native': 'react-native-web',
       'react-native/index': 'react-native-web',
     },
   };
-
-  // TODO: We can probably drop this resolution hack.
-  const isWebEnabled = platforms.includes('web');
-  if (isWebEnabled) {
-    // Allow `react-native-web` to be optional when web is not enabled but path aliases is.
-    extraNodeModules['web'] = {
-      'react-native': path.resolve(require.resolve('react-native-web/package.json'), '..'),
-    };
-  }
 
   const preferredMainFields: { [key: string]: string[] } = {
     // Defaults from Expo Webpack. Most packages using `react-native` don't support web
@@ -388,16 +377,6 @@ export function withExtendedResolver(
         if (!env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE && platform && platform in preferredMainFields) {
           context.mainFields = preferredMainFields[platform];
         }
-      }
-
-      // TODO: We may be able to remove this in the future, it's doing no harm
-      // by staying here.
-      // Conditionally remap `react-native` to `react-native-web`
-      if (platform && platform in extraNodeModules) {
-        context.extraNodeModules = {
-          ...extraNodeModules[platform],
-          ...context.extraNodeModules,
-        };
       }
 
       if (tsconfig?.baseUrl && isTsconfigPathsEnabled) {
