@@ -1,38 +1,48 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.withGradleProperties = exports.withSettingsGradle = exports.withAppBuildGradle = exports.withProjectBuildGradle = exports.withMainApplication = exports.withMainActivity = exports.withAndroidStyles = exports.withAndroidColorsNight = exports.withAndroidColors = exports.withStringsXml = exports.withAndroidManifest = exports.createStringsXmlPlugin = exports.createAndroidManifestPlugin = void 0;
-const withMod_1 = require("./withMod");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createAndroidManifestPlugin = createAndroidManifestPlugin;
+exports.createStringsXmlPlugin = createStringsXmlPlugin;
+exports.withStringsXml = exports.withSettingsGradle = exports.withProjectBuildGradle = exports.withMainApplication = exports.withMainActivity = exports.withGradleProperties = exports.withAppBuildGradle = exports.withAndroidStyles = exports.withAndroidManifest = exports.withAndroidColorsNight = exports.withAndroidColors = void 0;
+function _withMod() {
+  const data = require("./withMod");
+  _withMod = function () {
+    return data;
+  };
+  return data;
+}
 /**
  * Helper method for creating mods from existing config functions.
  *
  * @param action
  */
 function createAndroidManifestPlugin(action, name) {
-    const withUnknown = (config) => (0, exports.withAndroidManifest)(config, async (config) => {
-        config.modResults = await action(config, config.modResults);
-        return config;
+  const withUnknown = config => withAndroidManifest(config, async config => {
+    config.modResults = await action(config, config.modResults);
+    return config;
+  });
+  if (name) {
+    Object.defineProperty(withUnknown, 'name', {
+      value: name
     });
-    if (name) {
-        Object.defineProperty(withUnknown, 'name', {
-            value: name,
-        });
-    }
-    return withUnknown;
+  }
+  return withUnknown;
 }
-exports.createAndroidManifestPlugin = createAndroidManifestPlugin;
 function createStringsXmlPlugin(action, name) {
-    const withUnknown = (config) => (0, exports.withStringsXml)(config, async (config) => {
-        config.modResults = await action(config, config.modResults);
-        return config;
+  const withUnknown = config => withStringsXml(config, async config => {
+    config.modResults = await action(config, config.modResults);
+    return config;
+  });
+  if (name) {
+    Object.defineProperty(withUnknown, 'name', {
+      value: name
     });
-    if (name) {
-        Object.defineProperty(withUnknown, 'name', {
-            value: name,
-        });
-    }
-    return withUnknown;
+  }
+  return withUnknown;
 }
-exports.createStringsXmlPlugin = createStringsXmlPlugin;
+
 /**
  * Provides the AndroidManifest.xml for modification.
  *
@@ -40,150 +50,161 @@ exports.createStringsXmlPlugin = createStringsXmlPlugin;
  * @param action
  */
 const withAndroidManifest = (config, action) => {
-    return (0, withMod_1.withMod)(config, {
-        platform: 'android',
-        mod: 'manifest',
-        action,
-    });
+  return (0, _withMod().withMod)(config, {
+    platform: 'android',
+    mod: 'manifest',
+    action
+  });
 };
-exports.withAndroidManifest = withAndroidManifest;
+
 /**
  * Provides the strings.xml for modification.
  *
  * @param config
  * @param action
  */
+exports.withAndroidManifest = withAndroidManifest;
 const withStringsXml = (config, action) => {
-    return (0, withMod_1.withMod)(config, {
-        platform: 'android',
-        mod: 'strings',
-        action,
-    });
+  return (0, _withMod().withMod)(config, {
+    platform: 'android',
+    mod: 'strings',
+    action
+  });
 };
-exports.withStringsXml = withStringsXml;
+
 /**
  * Provides the `android/app/src/main/res/values/colors.xml` as JSON (parsed with [`xml2js`](https://www.npmjs.com/package/xml2js)).
  *
  * @param config
  * @param action
  */
+exports.withStringsXml = withStringsXml;
 const withAndroidColors = (config, action) => {
-    return (0, withMod_1.withMod)(config, {
-        platform: 'android',
-        mod: 'colors',
-        action,
-    });
+  return (0, _withMod().withMod)(config, {
+    platform: 'android',
+    mod: 'colors',
+    action
+  });
 };
-exports.withAndroidColors = withAndroidColors;
+
 /**
  * Provides the `android/app/src/main/res/values-night/colors.xml` as JSON (parsed with [`xml2js`](https://www.npmjs.com/package/xml2js)).
  *
  * @param config
  * @param action
  */
+exports.withAndroidColors = withAndroidColors;
 const withAndroidColorsNight = (config, action) => {
-    return (0, withMod_1.withMod)(config, {
-        platform: 'android',
-        mod: 'colorsNight',
-        action,
-    });
+  return (0, _withMod().withMod)(config, {
+    platform: 'android',
+    mod: 'colorsNight',
+    action
+  });
 };
-exports.withAndroidColorsNight = withAndroidColorsNight;
+
 /**
  * Provides the `android/app/src/main/res/values/styles.xml` as JSON (parsed with [`xml2js`](https://www.npmjs.com/package/xml2js)).
  *
  * @param config
  * @param action
  */
+exports.withAndroidColorsNight = withAndroidColorsNight;
 const withAndroidStyles = (config, action) => {
-    return (0, withMod_1.withMod)(config, {
-        platform: 'android',
-        mod: 'styles',
-        action,
-    });
+  return (0, _withMod().withMod)(config, {
+    platform: 'android',
+    mod: 'styles',
+    action
+  });
 };
-exports.withAndroidStyles = withAndroidStyles;
+
 /**
  * Provides the project MainActivity for modification.
  *
  * @param config
  * @param action
  */
+exports.withAndroidStyles = withAndroidStyles;
 const withMainActivity = (config, action) => {
-    return (0, withMod_1.withMod)(config, {
-        platform: 'android',
-        mod: 'mainActivity',
-        action,
-    });
+  return (0, _withMod().withMod)(config, {
+    platform: 'android',
+    mod: 'mainActivity',
+    action
+  });
 };
-exports.withMainActivity = withMainActivity;
+
 /**
  * Provides the project MainApplication for modification.
  *
  * @param config
  * @param action
  */
+exports.withMainActivity = withMainActivity;
 const withMainApplication = (config, action) => {
-    return (0, withMod_1.withMod)(config, {
-        platform: 'android',
-        mod: 'mainApplication',
-        action,
-    });
+  return (0, _withMod().withMod)(config, {
+    platform: 'android',
+    mod: 'mainApplication',
+    action
+  });
 };
-exports.withMainApplication = withMainApplication;
+
 /**
  * Provides the project /build.gradle for modification.
  *
  * @param config
  * @param action
  */
+exports.withMainApplication = withMainApplication;
 const withProjectBuildGradle = (config, action) => {
-    return (0, withMod_1.withMod)(config, {
-        platform: 'android',
-        mod: 'projectBuildGradle',
-        action,
-    });
+  return (0, _withMod().withMod)(config, {
+    platform: 'android',
+    mod: 'projectBuildGradle',
+    action
+  });
 };
-exports.withProjectBuildGradle = withProjectBuildGradle;
+
 /**
  * Provides the app/build.gradle for modification.
  *
  * @param config
  * @param action
  */
+exports.withProjectBuildGradle = withProjectBuildGradle;
 const withAppBuildGradle = (config, action) => {
-    return (0, withMod_1.withMod)(config, {
-        platform: 'android',
-        mod: 'appBuildGradle',
-        action,
-    });
+  return (0, _withMod().withMod)(config, {
+    platform: 'android',
+    mod: 'appBuildGradle',
+    action
+  });
 };
-exports.withAppBuildGradle = withAppBuildGradle;
+
 /**
  * Provides the /settings.gradle for modification.
  *
  * @param config
  * @param action
  */
+exports.withAppBuildGradle = withAppBuildGradle;
 const withSettingsGradle = (config, action) => {
-    return (0, withMod_1.withMod)(config, {
-        platform: 'android',
-        mod: 'settingsGradle',
-        action,
-    });
+  return (0, _withMod().withMod)(config, {
+    platform: 'android',
+    mod: 'settingsGradle',
+    action
+  });
 };
-exports.withSettingsGradle = withSettingsGradle;
+
 /**
  * Provides the /gradle.properties for modification.
  *
  * @param config
  * @param action
  */
+exports.withSettingsGradle = withSettingsGradle;
 const withGradleProperties = (config, action) => {
-    return (0, withMod_1.withMod)(config, {
-        platform: 'android',
-        mod: 'gradleProperties',
-        action,
-    });
+  return (0, _withMod().withMod)(config, {
+    platform: 'android',
+    mod: 'gradleProperties',
+    action
+  });
 };
 exports.withGradleProperties = withGradleProperties;
+//# sourceMappingURL=android-plugins.js.map

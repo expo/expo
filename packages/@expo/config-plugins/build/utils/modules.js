@@ -1,37 +1,44 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.fileExists = exports.directoryExistsAsync = exports.fileExistsAsync = void 0;
-const fs_1 = __importDefault(require("fs"));
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.directoryExistsAsync = directoryExistsAsync;
+exports.fileExists = fileExists;
+exports.fileExistsAsync = fileExistsAsync;
+function _fs() {
+  const data = _interopRequireDefault(require("fs"));
+  _fs = function () {
+    return data;
+  };
+  return data;
+}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * A non-failing version of async FS stat.
  *
  * @param file
  */
 async function statAsync(file) {
-    try {
-        return await fs_1.default.promises.stat(file);
-    }
-    catch {
-        return null;
-    }
+  try {
+    return await _fs().default.promises.stat(file);
+  } catch {
+    return null;
+  }
 }
 async function fileExistsAsync(file) {
-    return (await statAsync(file))?.isFile() ?? false;
+  var _await$statAsync$isFi, _await$statAsync;
+  return (_await$statAsync$isFi = (_await$statAsync = await statAsync(file)) === null || _await$statAsync === void 0 ? void 0 : _await$statAsync.isFile()) !== null && _await$statAsync$isFi !== void 0 ? _await$statAsync$isFi : false;
 }
-exports.fileExistsAsync = fileExistsAsync;
 async function directoryExistsAsync(file) {
-    return (await statAsync(file))?.isDirectory() ?? false;
+  var _await$statAsync$isDi, _await$statAsync2;
+  return (_await$statAsync$isDi = (_await$statAsync2 = await statAsync(file)) === null || _await$statAsync2 === void 0 ? void 0 : _await$statAsync2.isDirectory()) !== null && _await$statAsync$isDi !== void 0 ? _await$statAsync$isDi : false;
 }
-exports.directoryExistsAsync = directoryExistsAsync;
 function fileExists(file) {
-    try {
-        return fs_1.default.statSync(file).isFile();
-    }
-    catch {
-        return false;
-    }
+  try {
+    return _fs().default.statSync(file).isFile();
+  } catch {
+    return false;
+  }
 }
-exports.fileExists = fileExists;
+//# sourceMappingURL=modules.js.map
