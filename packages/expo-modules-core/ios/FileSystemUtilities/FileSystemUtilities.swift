@@ -8,11 +8,11 @@ public enum FileSystemPermissionFlags {
 
 public struct FileSystemUtilities {
   private let appContext: AppContext?
-  
+
   public init(appContext: AppContext?) {
     self.appContext = appContext
   }
-  
+
   public func ensureDirExists(at url: URL?) -> Bool {
     guard let url else {
       return false
@@ -26,10 +26,10 @@ public struct FileSystemUtilities {
         return false
       }
     }
-    
+
     return true
   }
-  
+
   public func generatePath(in directory: URL?, with ext: String) -> String {
     guard let directory else {
       return ""
@@ -38,24 +38,24 @@ public struct FileSystemUtilities {
     _ = ensureDirExists(at: directory)
     return directory.appendingPathComponent(fileName).path
   }
-  
+
   public func permissions(for uri: URL) -> [FileSystemPermissionFlags] {
     guard let scheme = uri.scheme else {
       return [.none]
     }
     let validSchemas = ["assets-library", "http", "https", "ph"]
-    
+
     if validSchemas.contains(scheme) {
       return [.read]
     }
-    
+
     if scheme == "file" {
       return getPathPermissions(for: uri)
     }
-    
+
     return [.none]
   }
-  
+
   private func getPathPermissions(for path: URL) -> [FileSystemPermissionFlags] {
     let permissionForInternalDirs = getInternalPathPermissions(for: path)
     if !permissionForInternalDirs.contains(.none) {
@@ -63,15 +63,15 @@ public struct FileSystemUtilities {
     }
     return getExternalPathPermissions(path)
   }
-  
+
   private func getInternalPathPermissions(for url: URL) -> [FileSystemPermissionFlags] {
     guard let appContext else {
       return [.none]
     }
-    
+
     let scopedDirs = [appContext.config.cacheDirectory, appContext.config.documentDirectory]
     let standardizedPath = url.standardized.path
-    
+
     for dir in scopedDirs {
       guard let dir else {
         continue
@@ -80,26 +80,26 @@ public struct FileSystemUtilities {
         return [.read, .write]
       }
     }
-    
+
     let bundleDirectory = Bundle.main.bundlePath
     if url.path.hasPrefix(bundleDirectory + "/") {
       return [.read]
     }
-    
+
     return [.none]
   }
-  
+
   private func getExternalPathPermissions(_ url: URL) -> [FileSystemPermissionFlags] {
     var filePermissions: [FileSystemPermissionFlags] = []
-    
+
     if FileManager.default.isReadableFile(atPath: url.path) {
       filePermissions.append(.read)
     }
-    
+
     if FileManager.default.isWritableFile(atPath: url.path) {
       filePermissions.append(.write)
     }
-    
+
     return filePermissions
   }
 }
