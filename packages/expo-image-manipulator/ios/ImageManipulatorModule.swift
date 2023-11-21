@@ -100,7 +100,7 @@ public class ImageManipulatorModule: Module {
     guard let cachesDirectory = self.appContext?.config.cacheDirectory else {
       throw FileSystemNotFoundException()
     }
-    
+
     let directory = URL(fileURLWithPath: cachesDirectory.path).appendingPathComponent("ImageManipulator")
     let filename = UUID().uuidString.appending(options.format.fileExtension)
     let fileUrl = directory.appendingPathComponent(filename)

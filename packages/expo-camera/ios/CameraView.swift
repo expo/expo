@@ -25,7 +25,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   private var photoCaptureOptions: TakePictureOptions?
   private var videoStabilizationMode: AVCaptureVideoStabilizationMode?
   private var errorNotification: NSObjectProtocol?
-  
+
   private lazy var cacheDirectory = appContext?.config.cacheDirectory
 
   // MARK: Property Observers
@@ -532,7 +532,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     let path = fileUtils.generatePath(
       in: appContext?.config.cacheDirectory?.appendingPathComponent("Camera"),
       with: ".jpg")
-    
+
     if path.isEmpty {
       return
     }

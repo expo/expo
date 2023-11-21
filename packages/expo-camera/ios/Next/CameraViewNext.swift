@@ -422,7 +422,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     let croppedSize = AVMakeRect(aspectRatio: previewSize, insideRect: cropRect)
 
     takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
-    
+
     let fileUtils = FileSystemUtilities(appContext: appContext)
     let path = fileUtils.generatePath(
       in: appContext?.config.cacheDirectory?.appendingPathComponent("Camera"),
