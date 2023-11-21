@@ -4,14 +4,12 @@ import android.content.Context
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.UpdatesDatabase
-import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
-import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
 import expo.modules.updates.UpdatesUtils
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.AssertionError
-import java.lang.Exception
 import java.util.*
+import kotlin.Exception
 
 /**
  * Subclass of [Loader] which handles copying the embedded update's assets into the
@@ -41,53 +39,46 @@ class EmbeddedLoader internal constructor(
   ) : this(context, configuration, database, updatesDirectory, LoaderFiles()) {
   }
 
-  override fun loadRemoteUpdate(
+  override suspend fun loadRemoteUpdate(
     context: Context,
     database: UpdatesDatabase,
-    configuration: UpdatesConfiguration,
-    callback: RemoteUpdateDownloadCallback
-  ) {
+    configuration: UpdatesConfiguration
+  ): UpdateResponse {
     val updateManifest = loaderFiles.readEmbeddedManifest(this.context, this.configuration)
     if (updateManifest != null) {
-      callback.onSuccess(
-        UpdateResponse(
-          responseHeaderData = null,
-          manifestUpdateResponsePart = UpdateResponsePart.ManifestUpdateResponsePart(updateManifest),
-          directiveUpdateResponsePart = null
-        )
+      return UpdateResponse(
+        responseHeaderData = null,
+        manifestUpdateResponsePart = UpdateResponsePart.ManifestUpdateResponsePart(updateManifest),
+        directiveUpdateResponsePart = null
       )
     } else {
-      val message = "Embedded manifest is null"
-      callback.onFailure(message, Exception(message))
+      throw Exception("Embedded manifest is null")
     }
   }
 
-  override fun loadAsset(
+  override suspend fun loadAsset(
     context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
-    configuration: UpdatesConfiguration,
-    callback: AssetDownloadCallback
-  ) {
+    configuration: UpdatesConfiguration
+  ): FileDownloader.AssetDownloadResult {
     val filename = UpdatesUtils.createFilenameForAsset(assetEntity)
     val destination = File(updatesDirectory, filename)
 
     if (loaderFiles.fileExists(destination)) {
       assetEntity.relativePath = filename
-      callback.onSuccess(assetEntity, false)
+      return FileDownloader.AssetDownloadResult(assetEntity, false)
     } else {
       try {
         assetEntity.hash = loaderFiles.copyAssetAndGetHash(assetEntity, destination, context)
         assetEntity.downloadTime = Date()
         assetEntity.relativePath = filename
-        callback.onSuccess(assetEntity, true)
+        return FileDownloader.AssetDownloadResult(assetEntity, true)
       } catch (e: FileNotFoundException) {
         throw AssertionError(
           "APK bundle must contain the expected embedded asset " +
             if (assetEntity.embeddedAssetFilename != null) assetEntity.embeddedAssetFilename else assetEntity.resourcesFilename
         )
-      } catch (e: Exception) {
-        callback.onFailure(e, assetEntity)
       }
     }
   }
