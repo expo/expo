@@ -48,7 +48,7 @@ class DatabaseLauncher(
   private val loaderFiles: LoaderFiles = LoaderFiles()
 
   override suspend fun launch(): LauncherResult {
-    val launchedUpdate = getLaunchableUpdate(database, context) ?: throw Exception("No launchable update was found. If this is a bare workflow app, make sure you have configured expo-updates correctly in android/app/build.gradle.")
+    val launchedUpdate = getLaunchableUpdate() ?: throw Exception("No launchable update was found. If this is a bare workflow app, make sure you have configured expo-updates correctly in android/app/build.gradle.")
 
     database.updateDao().markUpdateAccessed(launchedUpdate)
 
@@ -123,7 +123,7 @@ class DatabaseLauncher(
     )
   }
 
-  fun getLaunchableUpdate(database: UpdatesDatabase, context: Context): UpdateEntity? {
+  fun getLaunchableUpdate(): UpdateEntity? {
     val launchableUpdates = database.updateDao().loadLaunchableUpdatesForScope(configuration.scopeKey)
 
     // We can only run an update marked as embedded if it's actually the update embedded in the
@@ -165,9 +165,7 @@ class DatabaseLauncher(
     }
   }
 
-
-
-  suspend fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, context: Context): File? {
+  private suspend fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, context: Context): File? {
     val assetFile = File(updatesDirectory, asset.relativePath ?: "")
     val assetFileExists = assetFile.exists()
     if (assetFileExists) {
