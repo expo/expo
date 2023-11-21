@@ -1,4 +1,4 @@
-import { configFilename } from '@expo/config';
+import { getConfigFilePaths } from '@expo/config';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { getSchemaAsync } from '../api/getSchemaAsync';
@@ -14,21 +14,24 @@ export class ExpoConfigSchemaCheck implements DoctorCheck {
 
     const schema = await getSchemaAsync(exp.sdkVersion!);
 
-    const configName = configFilename(projectRoot);
+    const configPaths = getConfigFilePaths(projectRoot);
 
-    const { schemaErrorMessage, assetsErrorMessage } = await validateWithSchemaAsync(
-      projectRoot,
-      exp,
-      schema,
-      configName,
-      true
-    );
+    // this check can only validate a static config
+    if (configPaths.staticConfigPath) {
+      const { schemaErrorMessage, assetsErrorMessage } = await validateWithSchemaAsync(
+        projectRoot,
+        exp,
+        schema,
+        configPaths.staticConfigPath,
+        true
+      );
 
-    if (schemaErrorMessage) {
-      issues.push(schemaErrorMessage!);
-    }
-    if (assetsErrorMessage) {
-      issues.push(assetsErrorMessage!);
+      if (schemaErrorMessage) {
+        issues.push(schemaErrorMessage!);
+      }
+      if (assetsErrorMessage) {
+        issues.push(assetsErrorMessage!);
+      }
     }
 
     return {
