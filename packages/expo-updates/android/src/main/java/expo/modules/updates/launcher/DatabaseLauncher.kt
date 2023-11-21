@@ -2,7 +2,6 @@ package expo.modules.updates.launcher
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.UpdatesDatabase
@@ -152,7 +151,7 @@ class DatabaseLauncher(
         }
         val filename = UpdatesUtils.createFilenameForAsset(asset)
         asset.relativePath = filename
-        val assetFile = File(updatesDirectory, asset.relativePath)
+        val assetFile = File(updatesDirectory, filename)
         if (!assetFile.exists()) {
           loaderFiles.copyAssetAndGetHash(asset, assetFile, context)
         }
@@ -232,7 +231,7 @@ class DatabaseLauncher(
     assetsToDownloadFinished++
     if (asset.isLaunchAsset) {
       launchAssetFile = if (assetFile == null) {
-        logger?.error( "Could not launch; failed to load update from disk or network", UpdatesErrorCode.UpdateFailedToLoad)
+        logger?.error("Could not launch; failed to load update from disk or network", UpdatesErrorCode.UpdateFailedToLoad)
         null
       } else {
         assetFile.toString()
