@@ -129,9 +129,6 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
         nodeModulesPaths: ['/node_modules', '/src'],
-        extraNodeModules: {
-          'react-native': expect.stringContaining('node_modules/react-native-web'),
-        },
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
       }),
@@ -166,9 +163,6 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
         nodeModulesPaths: ['/node_modules'],
-        extraNodeModules: {
-          'react-native': expect.stringContaining('node_modules/react-native-web'),
-        },
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
       }),
@@ -207,9 +201,6 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
         nodeModulesPaths: ['/node_modules'],
-        extraNodeModules: {
-          'react-native': expect.stringContaining('node_modules/react-native-web'),
-        },
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
       }),
@@ -243,9 +234,6 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toBeCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
-        extraNodeModules: {
-          'react-native': expect.stringContaining('node_modules/react-native-web'),
-        },
         mainFields: ['main', 'module'],
         preferNativePlatform: false,
         // Moved mjs to the back
