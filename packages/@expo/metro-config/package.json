@@ -34,10 +34,10 @@
     "babel-transformer"
   ],
   "dependencies": {
-    "babel-preset-fbjs": "^3.4.0",
     "@expo/config": "~8.4.0",
     "@expo/env": "~0.1.0",
     "@expo/json-file": "~8.2.37",
+    "babel-preset-fbjs": "^3.4.0",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
     "find-yarn-workspace-root": "~2.0.0",
@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
+    "@types/path-to-regexp": "^1.7.0",
     "expo-module-scripts": "^3.3.0",
     "sass": "^1.60.0"
   },

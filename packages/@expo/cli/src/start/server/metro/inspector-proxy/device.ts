@@ -1,4 +1,4 @@
-import type { DebuggerInfo, Device as MetroDevice } from '@react-native/dev-middleware';
+import type { DebuggerInfo, unstable_Device as MetroDevice } from '@react-native/dev-middleware';
 import fetch from 'node-fetch';
 import type WS from 'ws';
 
