@@ -1222,7 +1222,7 @@ PODS:
     - React-Core
   - react-native-view-shot (3.8.0):
     - React-Core
-  - react-native-webview (13.6.2):
+  - react-native-webview (13.6.3):
     - React-Core
   - React-nativeconfig (0.73.0-rc.5)
   - React-NativeModulesApple (0.73.0-rc.5):
@@ -2070,7 +2070,7 @@ SPEC CHECKSUMS:
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
-  react-native-webview: 8fc09f66a1a5b16bbe37c3878fda27d5982bb776
+  react-native-webview: 88293a0f23eca8465c0433c023ec632930e644d0
   React-nativeconfig: 59e6f9ddeb9d884de486d850a783b92cfebbe1b5
   React-NativeModulesApple: 0ab07d1155f6f522c6557532e89182d021717e7d
   React-perflogger: 3c8953940b170732c1365c23aeef5fd50245d9fe
@@ -2097,7 +2097,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 3942382593f104af226ad9c56e16166960c7ae30
   RNFlashList: 4b4b6b093afc0df60ae08f9cbf6ccd4c836c667a
   RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
-  RNReanimated: 44d8524115fc3a5e809609a302944055934e3611
+  RNReanimated: 11cb84f23cf2443b8bf1806b83d77dd470e23158
   RNScreens: 5f4df9babb21d30723580377b5f52d9f9baf0005
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
