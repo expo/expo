@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Move `babel-plugin-module-resolver` alias for `react-native-vector-icons` to `@expo/vector-icons` to individual implementations in Metro (via `@expo/cli`) and `jest-expo`.
+- Move `babel-plugin-module-resolver` alias for `react-native-vector-icons` to `@expo/vector-icons` to individual implementations in Metro (via `@expo/cli`) and `jest-expo`. ([#25512](https://github.com/expo/expo/pull/25512) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
