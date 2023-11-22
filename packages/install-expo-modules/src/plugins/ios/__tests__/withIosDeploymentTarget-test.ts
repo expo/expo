@@ -12,8 +12,9 @@ jest.mock('resolve-from');
 describe(updateDeploymentTargetPodfile, () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    const mockResolve = resolveFrom.silent as jest.MockedFunction<typeof resolveFrom.silent>;
-    mockResolve.mockReturnValue('/app/node_modules/react-native/scripts/react_native_pods.rb');
+    jest
+      .mocked(resolveFrom.silent)
+      .mockReturnValue('/app/node_modules/react-native/scripts/react_native_pods.rb');
   });
 
   it('should update deployment target in Podfile', async () => {
@@ -44,7 +45,7 @@ end
 def min_ios_version_supported
   return '12.4'
 end`;
-    (fs.promises.readFile as jest.Mock).mockResolvedValue(reactNativePodsRubyContent);
+    jest.mocked(fs.promises.readFile).mockResolvedValue(reactNativePodsRubyContent);
     const contents = `\
 platform :ios, min_ios_version_supported
 
@@ -121,7 +122,7 @@ end
 def min_ios_version_supported
   return '12.4'
 end`;
-    (fs.promises.readFile as jest.Mock).mockResolvedValue(reactNativePodsRubyContent);
+    jest.mocked(fs.promises.readFile).mockResolvedValue(reactNativePodsRubyContent);
     const contents = `\
 platform :ios, min_ios_version_supported
 
@@ -139,13 +140,14 @@ end
 describe(shouldUpdateDeployTargetPodfileAsync, () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    const mockResolve = resolveFrom.silent as jest.MockedFunction<typeof resolveFrom.silent>;
-    mockResolve.mockReturnValue('/app/node_modules/react-native/scripts/react_native_pods.rb');
+    jest
+      .mocked(resolveFrom.silent)
+      .mockReturnValue('/app/node_modules/react-native/scripts/react_native_pods.rb');
   });
 
   it('should returns true when target version is higher than current version', async () => {
     const podfileContent = `platform :ios, '11.0'`;
-    (fs.promises.readFile as jest.Mock).mockResolvedValue(podfileContent);
+    jest.mocked(fs.promises.readFile).mockResolvedValue(podfileContent);
 
     const result = await shouldUpdateDeployTargetPodfileAsync('/app', '13.0');
     expect(result).toBe(true);
@@ -153,7 +155,7 @@ describe(shouldUpdateDeployTargetPodfileAsync, () => {
 
   it('should returns false when target version is equal to current version', async () => {
     const podfileContent = `platform :ios, '12.4'`;
-    (fs.promises.readFile as jest.Mock).mockResolvedValue(podfileContent);
+    jest.mocked(fs.promises.readFile).mockResolvedValue(podfileContent);
 
     const result = await shouldUpdateDeployTargetPodfileAsync('/app', '12.4');
     expect(result).toBe(false);
@@ -161,12 +163,12 @@ describe(shouldUpdateDeployTargetPodfileAsync, () => {
 
   it('should returns true when target version is higher than min_ios_version_supported version', async () => {
     const podfileContent = `platform :ios, min_ios_version_supported`;
-    (fs.promises.readFile as jest.Mock).mockResolvedValueOnce(podfileContent);
+    jest.mocked(fs.promises.readFile).mockResolvedValueOnce(podfileContent);
     const reactNativePodsRubyContent = `\
 def min_ios_version_supported
   return '12.4'
 end`;
-    (fs.promises.readFile as jest.Mock).mockResolvedValueOnce(reactNativePodsRubyContent);
+    jest.mocked(fs.promises.readFile).mockResolvedValueOnce(reactNativePodsRubyContent);
 
     const result = await shouldUpdateDeployTargetPodfileAsync('/app', '13.0');
     expect(result).toBe(true);
@@ -174,12 +176,12 @@ end`;
 
   it('should returns false when target version is equal to min_ios_version_supported version', async () => {
     const podfileContent = `platform :ios, min_ios_version_supported`;
-    (fs.promises.readFile as jest.Mock).mockResolvedValueOnce(podfileContent);
+    jest.mocked(fs.promises.readFile).mockResolvedValueOnce(podfileContent);
     const reactNativePodsRubyContent = `\
 def min_ios_version_supported
   return '12.4'
 end`;
-    (fs.promises.readFile as jest.Mock).mockResolvedValueOnce(reactNativePodsRubyContent);
+    jest.mocked(fs.promises.readFile).mockResolvedValueOnce(reactNativePodsRubyContent);
 
     const result = await shouldUpdateDeployTargetPodfileAsync('/app', '12.4');
     expect(result).toBe(false);
@@ -187,7 +189,7 @@ end`;
 
   it('should show a warning when the Podfile content is not supported', async () => {
     const podfileContent = `platform :ios, something || '14.0'`;
-    (fs.promises.readFile as jest.Mock).mockResolvedValue(podfileContent);
+    jest.mocked(fs.promises.readFile).mockResolvedValue(podfileContent);
     const spy = jest.spyOn(console, 'warn');
     await shouldUpdateDeployTargetPodfileAsync('/app', '13.0');
     expect(spy).toBeCalled();
