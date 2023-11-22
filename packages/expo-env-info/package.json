@@ -33,7 +33,8 @@
     "clean": "rimraf ./build/"
   },
   "devDependencies": {
-    "@types/envinfo": "^7.8.1"
+    "@types/envinfo": "^7.8.1",
+    "expo-module-scripts": "^3.3.0"
   },
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
