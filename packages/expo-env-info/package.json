@@ -17,9 +17,7 @@
   },
   "author": "Expo <support@expo.dev>",
   "license": "MIT",
-  "bin": {
-    "expo-env-info": "./build/index.js"
-  },
+  "bin": "./build/index.js",
   "files": [
     "build"
   ],
