@@ -26,7 +26,7 @@ describe(loadTsConfigPathsAsync, () => {
       },
       '/'
     );
-    expect(await loadTsConfigPathsAsync('/')).toEqual({ baseUrl: '/', paths: undefined });
+    expect(await loadTsConfigPathsAsync('/')).toEqual({ baseUrl: undefined, paths: undefined });
   });
   it(`returns jsconfig paths`, async () => {
     vol.fromJSON(
