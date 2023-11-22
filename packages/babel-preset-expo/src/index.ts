@@ -133,11 +133,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     );
   }
 
-  const aliasPlugin = getAliasPlugin();
-  if (aliasPlugin) {
-    extraPlugins.push(aliasPlugin);
-  }
-
   // Allow jest tests to redefine the environment variables.
   if (process.env.NODE_ENV !== 'test') {
     extraPlugins.push([
@@ -265,20 +260,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         platformOptions.reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
     ].filter(Boolean) as PluginItem[],
   };
-}
-
-function getAliasPlugin(): PluginItem | null {
-  if (!hasModule('@expo/vector-icons')) {
-    return null;
-  }
-  return [
-    require.resolve('babel-plugin-module-resolver'),
-    {
-      alias: {
-        'react-native-vector-icons': '@expo/vector-icons',
-      },
-    },
-  ];
 }
 
 export default babelPresetExpo;

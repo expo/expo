@@ -79,10 +79,6 @@ function babelPresetExpo(api, options = {}) {
     if (platformOptions.useTransformReactJSXExperimental != null) {
         throw new Error(`babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`);
     }
-    const aliasPlugin = getAliasPlugin();
-    if (aliasPlugin) {
-        extraPlugins.push(aliasPlugin);
-    }
     // Allow jest tests to redefine the environment variables.
     if (process.env.NODE_ENV !== 'test') {
         extraPlugins.push([
@@ -195,19 +191,6 @@ function babelPresetExpo(api, options = {}) {
                 platformOptions.reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
         ].filter(Boolean),
     };
-}
-function getAliasPlugin() {
-    if (!(0, common_1.hasModule)('@expo/vector-icons')) {
-        return null;
-    }
-    return [
-        require.resolve('babel-plugin-module-resolver'),
-        {
-            alias: {
-                'react-native-vector-icons': '@expo/vector-icons',
-            },
-        },
-    ];
 }
 exports.default = babelPresetExpo;
 module.exports = babelPresetExpo;
