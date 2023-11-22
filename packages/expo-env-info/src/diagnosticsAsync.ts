@@ -42,7 +42,7 @@ export async function isInsideProjectAsync(projectRoot: string): Promise<boolean
       constants.F_OK
     );
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
