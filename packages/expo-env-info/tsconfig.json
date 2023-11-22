@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base",
+  "include": [
+    "src/**/*.ts"
+  ],
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "rootDir": "src",
+    "declaration": false,
+    "composite": false,
+    "module": "es2020",
+  },
+  "exclude": [
+    "**/__mocks__/*",
+    "**/__tests__/*"
+  ]
+}
