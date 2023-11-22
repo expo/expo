@@ -99,13 +99,11 @@ export function withExtendedResolver(
   config: ConfigT,
   {
     tsconfig,
-    platforms,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isExporting,
   }: {
     tsconfig: TsConfigPaths | null;
-    platforms: string[];
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
@@ -138,6 +136,14 @@ export function withExtendedResolver(
       'react-native/index': 'react-native-web',
     },
   };
+
+  const universalAliases: [RegExp, string][] = [];
+
+  // This package is currently always installed as it is included in the `expo` package.
+  if (resolveFrom.silent(config.projectRoot, '@expo/vector-icons')) {
+    debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
+    universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
+  }
 
   const preferredMainFields: { [key: string]: string[] } = {
     // Defaults from Expo Webpack. Most packages using `react-native` don't support web
@@ -275,6 +281,19 @@ export function withExtendedResolver(
       if (platform && platform in aliases && aliases[platform][moduleName]) {
         const redirectedModuleName = aliases[platform][moduleName];
         return getStrictResolver(context, platform)(redirectedModuleName);
+      }
+
+      for (const [matcher, alias] of universalAliases) {
+        const match = moduleName.match(matcher);
+        if (match) {
+          const aliasedModule = alias.replace(
+            /\$(\d+)/g,
+            (_, index) => match[parseInt(index, 10)] ?? ''
+          );
+          const doResolve = getStrictResolver(context, platform);
+          debug(`Alias "${moduleName}" to "${aliasedModule}"`);
+          return doResolve(aliasedModule);
+        }
       }
 
       return null;
@@ -485,7 +504,6 @@ export async function withMetroMultiPlatformAsync(
     tsconfig,
     isExporting,
     isTsconfigPathsEnabled,
-    platforms: expoConfigPlatforms,
     isFastResolverEnabled,
   });
 }
