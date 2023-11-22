@@ -2,7 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 import path from 'path';
 
-import { mockSpawnPromise, mockedSpawnAsync } from '../../__tests__/spawn-utils';
+import { mockSpawnPromise } from '../../__tests__/spawn-utils';
 import { BunPackageManager } from '../BunPackageManager';
 
 jest.mock('@expo/spawn-async');
@@ -104,9 +104,9 @@ describe('BunPackageManager', () => {
 
   describe('versionAsync', () => {
     it('returns version from bun', async () => {
-      mockedSpawnAsync.mockImplementation(() =>
-        mockSpawnPromise(Promise.resolve({ stdout: '4.2.0\n' }))
-      );
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '4.2.0\n' })));
 
       const bun = new BunPackageManager({ cwd: projectRoot });
 
@@ -117,9 +117,11 @@ describe('BunPackageManager', () => {
 
   describe('getConfigAsync', () => {
     it('returns a configuration key from bun', async () => {
-      mockedSpawnAsync.mockImplementation(() =>
-        mockSpawnPromise(Promise.resolve({ stdout: 'https://custom.registry.org/\n' }))
-      );
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation(() =>
+          mockSpawnPromise(Promise.resolve({ stdout: 'https://custom.registry.org/\n' }))
+        );
 
       const bun = new BunPackageManager({ cwd: projectRoot });
 

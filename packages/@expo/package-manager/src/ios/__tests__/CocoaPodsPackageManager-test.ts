@@ -1,10 +1,10 @@
-/* eslint-env jest */
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import stripAnsi from 'strip-ansi';
 
-import { mockSpawnPromise, mockedSpawnAsync } from '../../__tests__/spawn-utils';
+import { mockSpawnPromise } from '../../__tests__/spawn-utils';
 import {
   CocoaPodsPackageManager,
   getPodRepoUpdateMessage,
@@ -23,13 +23,19 @@ function getRoot(...args) {
 jest.mock('@expo/spawn-async');
 
 const originalForceColor = process.env.FORCE_COLOR;
+const originalConsoleWarn = console.warn;
 
-beforeEach(() => {
+beforeAll(() => {
+  // Need to reset the modules, since FORCE_COLOR is cached inside `supports-color`
+  jest.resetModules();
   process.env.FORCE_COLOR = '1';
+  // Hide lots of warn statements from the output
+  console.warn = jest.fn();
 });
 
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
+  console.warn = originalConsoleWarn;
 });
 
 const fakePodRepoUpdateErrorOutput = {
@@ -125,8 +131,9 @@ describe(getPodRepoUpdateMessage, () => {
 
 describe('installAsync', () => {
   it(`does pod repo update automatically when the Podfile.lock is malformed`, async () => {
-    const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
-    const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
+    // Reload the Cocoapods package manager to ensure colors are enabled
+    const { CocoaPodsPackageManager: ReloadedManager } = require('../CocoaPodsPackageManager');
+    const manager = new ReloadedManager({ cwd: projectRoot });
 
     manager._runAsync = jest.fn((commands: string[]) => {
       const cmd = commands.join(' ');
@@ -164,7 +171,6 @@ describe('installAsync', () => {
   });
 
   it(`auto updates malformed package versions`, async () => {
-    const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
     const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
 
     let invokedOnce = false;
@@ -198,7 +204,6 @@ describe('installAsync', () => {
   });
 
   it(`runs install as expected`, async () => {
-    const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
     const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
 
     manager._runAsync = jest.fn((commands: string[]) => {
@@ -234,19 +239,21 @@ it(`throws for unimplemented methods`, async () => {
 });
 
 it(`gets the cocoapods version`, async () => {
-  const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
   const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
 
-  mockedSpawnAsync.mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' })));
+  jest
+    .mocked(spawnAsync)
+    .mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' })));
 
   expect(await manager.versionAsync()).toBe('1.9.1');
 });
 
 it(`can detect if the CLI is installed`, async () => {
-  const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
   const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
 
-  mockedSpawnAsync.mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' })));
+  jest
+    .mocked(spawnAsync)
+    .mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' })));
 
   expect(await manager.isCLIInstalledAsync()).toBe(true);
 });
@@ -257,7 +264,6 @@ it(`can get the directory of a pods project`, async () => {
   await fs.ensureDir(iosRoot);
 
   // first test when no pod project exists
-  const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
   expect(CocoaPodsPackageManager.getPodProjectRoot(projectRoot)).toBe(null);
 
   // next test the ios/ folder

@@ -1,17 +1,9 @@
-import spawnAsync, { SpawnPromise, SpawnResult } from '@expo/spawn-async';
+import { SpawnPromise, SpawnResult } from '@expo/spawn-async';
 
 /** The shared spawn child object, used to assert resolve values in tests */
 export const STUB_SPAWN_CHILD = { type: 'child' };
 /** The shared spawn result object, used to assert resolve values in tests */
 export const STUB_SPAWN_RESULT = { type: 'spawn' };
-
-/**
- * The type-mocked spawn async to use.
- * Do not use `mockedSpawnAsync.mock(Resolved|Rejected)value` directly.
- * That method will not provide a `.child` property to the returned promise.
- * Use `mockedSpawnAsync.mockImplementation(mockSpawnPromise(Promise))` instead.
- */
-export const mockedSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
 
 /**
  * Mock a spawn promise by adding a `child` property to the provided promise.
