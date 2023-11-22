@@ -12,7 +12,7 @@
   "description": "Fetch Expo project information for GitHub issue diagnostics",
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo-cli.git",
+    "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-env-info"
   },
   "author": "Expo <support@expo.dev>",
