@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Add Picture in Picture support.
+- [iOS] Add Picture in Picture support. ([#25522](https://github.com/expo/expo/pull/25522) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
