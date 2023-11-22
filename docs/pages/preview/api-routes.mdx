@@ -8,8 +8,7 @@ description: Learn how to create server functions with Expo Router.
 import { FileTree } from '~/ui/components/FileTree';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 Expo Router enables you to write server code for all platforms, right in your **app** directory.
 
@@ -388,7 +387,7 @@ module.exports = createRequestHandler({
 
 <Step label="2">
 
-Create a Vercel configuration file at the root of your project to redirect all requests to the server function.
+Create a Vercel configuration file (**vercel.json**) at the root of your project to redirect all requests to the server function.
 
 <Tabs>
 <Tab label="vercel.json v2">
@@ -430,12 +429,13 @@ Create a Vercel configuration file at the root of your project to redirect all r
 }
 ```
 
-The **legacy** version of the `vercel.json` needs a `@vercel/static-build` runtime to serve your assets from the `dist/` output folder.
+The **legacy** version of the **vercel.json** needs a `@vercel/static-build` runtime to serve your assets from the **dist** output directory.
 
 </Tab>
 <Tab label="vercel.json v3">
 
-> **warning** When used as is, this `vercel.json` configuration makes server code in `/dist/_expo/functions/*` publicly accessible.
+{/* prettier-ignore */}
+> **warning** When used as is, this **vercel.json** configuration makes server code in **/dist/_expo/functions/&#42;** publicly accessible.
 
 ```json vercel.json
 {
@@ -463,8 +463,7 @@ The **legacy** version of the `vercel.json` needs a `@vercel/static-build` runti
 }
 ```
 
-The newer version of the `vercel.json` does not use `routes` and `builds` configuration options anymore,
-and serves your public assets from the `dist/` output folder automatically.
+The newer version of the **vercel.json** does not use `routes` and `builds` configuration options anymore, and serves your public assets from the **dist** output directory automatically.
 
 </Tab>
 </Tabs>
@@ -473,8 +472,7 @@ and serves your public assets from the `dist/` output folder automatically.
 
 <Step label="3">
 
-After you have created the configuration files, add a `vercel-build` script to your **package.json** file
-and set it to `expo export -p web`.
+After you have created the configuration files, add a `vercel-build` script to your **package.json** file and set it to `expo export -p web`.
 
 </Step>
 
@@ -495,10 +493,9 @@ You can now visit your website at the URL provided by the Vercel CLI.
 
 </Step>
 
-
 ## Known limitations
 
-There are a number of known features that are not currently supported in the API Routes beta release.
+Several known features are not currently supported in the API Routes beta release.
 
 ### No dynamic imports
 
