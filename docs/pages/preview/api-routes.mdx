@@ -430,8 +430,7 @@ Create a Vercel configuration file at the root of your project to redirect all r
 }
 ```
 
-The **legacy** version of the `vercel.json` needs a `@vercel/static-build` option to publish our public assets
-in `dist/`.
+The **legacy** version of the `vercel.json` needs a `@vercel/static-build` runtime to serve your assets from the `dist/` output folder.
 
 </Tab>
 <Tab label="vercel.json v3">
@@ -465,7 +464,7 @@ in `dist/`.
 ```
 
 The newer version of the `vercel.json` does not use `routes` and `builds` configuration options anymore,
-and handles our public files in `dist/` automatically.
+and serves your public assets from the `dist/` output folder automatically.
 
 </Tab>
 </Tabs>
@@ -495,7 +494,6 @@ Deploy to Vercel with the [Vercel CLI](https://vercel.com/docs/cli).
 You can now visit your website at the URL provided by the Vercel CLI.
 
 </Step>
-
 
 
 ## Known limitations
