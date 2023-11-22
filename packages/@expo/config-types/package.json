@@ -5,14 +5,15 @@
   "types": "build/ExpoConfig.d.ts",
   "main": "build/ExpoConfig.js",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-module tsc",
     "clean": "expo-module clean",
     "generate": "ts-node ./scripts/generate.ts",
     "lint": "expo-module lint",
-    "prepare": "expo-module prepare",
+    "prepare": "expo-module clean && expo-module tsc",
     "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
-    "typecheck": "expo-module typecheck"
+    "typecheck": "expo-module typecheck",
+    "watch": "expo-module tsc --watch --preserveWatchOutput"
   },
   "repository": {
     "type": "git",
