@@ -160,7 +160,8 @@ export function withExtendedResolver(
   let tsConfigResolve = tsconfig?.paths
     ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
         paths: tsconfig.paths ?? {},
-        baseUrl: tsconfig.baseUrl,
+        baseUrl: tsconfig.baseUrl ?? config.projectRoot,
+        hasBaseUrl: !!tsconfig.baseUrl,
       })
     : null;
 
@@ -181,7 +182,8 @@ export function withExtendedResolver(
             debug('Enabling tsconfig.json paths support');
             tsConfigResolve = resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
               paths: tsConfigPaths.paths ?? {},
-              baseUrl: tsConfigPaths.baseUrl,
+              baseUrl: tsConfigPaths.baseUrl ?? config.projectRoot,
+              hasBaseUrl: !!tsConfigPaths.baseUrl,
             });
           } else {
             debug('Disabling tsconfig.json paths support');
@@ -348,11 +350,9 @@ export function withExtendedResolver(
       moduleName: string,
       platform: string | null
     ): CustomResolutionContext => {
-      const context = {
+      const context: Mutable<CustomResolutionContext> = {
         ...immutableContext,
-      } as Mutable<ResolutionContext> & {
-        mainFields: string[];
-        customResolverOptions?: Record<string, string>;
+        preferNativePlatform: platform !== 'web',
       };
 
       if (context.customResolverOptions?.environment === 'node') {
@@ -376,50 +376,7 @@ export function withExtendedResolver(
         }
       }
 
-      // TODO: We may be able to remove this in the future, it's doing no harm
-      // by staying here.
-      // Conditionally remap `react-native` to `react-native-web`
-      if (platform && platform in extraNodeModules) {
-        context.extraNodeModules = {
-          ...extraNodeModules[platform],
-          ...context.extraNodeModules,
-        };
-      }
-
-      if (tsconfig?.baseUrl && isTsconfigPathsEnabled) {
-        const nodeModulesPaths: string[] = [...immutableContext.nodeModulesPaths];
-
-        if (isFastResolverEnabled) {
-          // add last to ensure node modules are resolved first
-          nodeModulesPaths.push(
-            path.isAbsolute(tsconfig.baseUrl)
-              ? tsconfig.baseUrl
-              : path.join(config.projectRoot, tsconfig.baseUrl)
-          );
-        } else {
-          // add last to ensure node modules are resolved first
-          nodeModulesPaths.push(tsconfig.baseUrl);
-        }
-
-        context.nodeModulesPaths = nodeModulesPaths;
-      }
-
-      // TODO: We can drop this in the next version upgrade (SDK 50).
-      const mainFields: string[] = context.mainFields;
-
-      return {
-        ...context,
-        preferNativePlatform: platform !== 'web',
-        // Passing `mainFields` directly won't be considered (in certain version of Metro)
-        // we need to extend the `getPackageMainPath` directly to
-        // use platform specific `mainFields`.
-        // @ts-ignore
-        getPackageMainPath(packageJsonPath) {
-          // @ts-expect-error: mainFields is not on type
-          const package_ = context.moduleCache.getPackage(packageJsonPath);
-          return package_.getMain(mainFields);
-        },
-      };
+      return context;
     }
   );
 
