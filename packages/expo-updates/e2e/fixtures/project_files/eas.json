@@ -24,7 +24,7 @@
       },
       "android": {
         "image": "ubuntu-22.04-jdk-17-ndk-r21e",
-        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+        "gradleCommand": ":app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug",
         "withoutCredentials": true,
         "resourceClass": "large"
       },
