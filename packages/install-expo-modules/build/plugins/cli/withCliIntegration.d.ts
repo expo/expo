@@ -1,0 +1,10 @@
+import { ConfigPlugin } from '@expo/config-plugins';
+import { PBXShellScriptBuildPhase } from 'xcparse';
+export declare const withCliIntegration: ConfigPlugin;
+export declare function updateAndroidGradleFile(contents: string): string;
+export declare function updateBabelConfig(contents: string): string;
+export declare function updateMetroConfig(contents: string): string;
+export declare function updateVirtualMetroEntryAndroid(contents: string): string;
+export declare function updateVirtualMetroEntryIos(contents: string): string;
+export declare function updateIosXcodeProjectBuildPhase(section: PBXShellScriptBuildPhase): PBXShellScriptBuildPhase;
+export declare function updateGitIgnore(contents: string): string;

@@ -1,0 +1,61 @@
+{
+  "name": "install-expo-modules",
+  "version": "0.6.4",
+  "description": "Tools to install expo-modules for existing react-native projects",
+  "main": "build",
+  "scripts": {
+    "watch": "tsc --watch --preserveWatchOutput",
+    "watch:ncc": "yarn run build -w",
+    "build": "ncc build ./src/index.ts -o build/",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "prepare": "yarn run clean && yarn run build:prod",
+    "clean": "rimraf build ./tsconfig.tsbuildinfo",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "bin": {
+    "install-expo-modules": "./build/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo-cli.git",
+    "directory": "packages/install-expo-modules"
+  },
+  "keywords": [
+    "expo",
+    "expo-modules",
+    "npx",
+    "react-native",
+    "react"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo-cli/issues"
+  },
+  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/install-expo-modules#readme",
+  "files": [
+    "build",
+    "!*/__tests__/*"
+  ],
+  "dependencies": {
+    "@expo/config": "~8.0.0",
+    "@expo/config-plugins": "~6.0.0",
+    "@expo/package-manager": "0.0.56",
+    "chalk": "^4.1.2",
+    "commander": "2.20.0",
+    "find-up": "^5.0.0",
+    "glob": "7.1.6",
+    "prompts": "^2.3.2",
+    "resolve-from": "^5.0.0",
+    "semver": "7.3.2",
+    "terminal-link": "^2.1.1",
+    "xcparse": "^0.0.3"
+  },
+  "devDependencies": {
+    "@types/prompts": "^2.0.6",
+    "@types/semver": "^6.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
