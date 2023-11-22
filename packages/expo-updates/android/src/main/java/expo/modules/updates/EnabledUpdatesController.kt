@@ -14,7 +14,6 @@ import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.db.BuildData
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.UpdatesDatabase
-import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
@@ -29,6 +28,8 @@ import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEventType
 import expo.modules.updates.statemachine.UpdatesStateMachine
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -74,12 +75,6 @@ class EnabledUpdatesController(
     selectionPolicy,
     logger,
     object : StartupProcedure.StartupProcedureCallback {
-      @Synchronized
-      override fun onFinished() {
-        isStartupFinished = true
-        (this as java.lang.Object).notify()
-      }
-
       override fun onLegacyJSEvent(event: StartupProcedure.StartupProcedureCallback.LegacyJSEvent) {
         when (event) {
           is StartupProcedure.StartupProcedureCallback.LegacyJSEvent.Error -> sendLegacyUpdateEventToJS(
@@ -98,8 +93,8 @@ class EnabledUpdatesController(
         }
       }
 
-      override fun onRequestRelaunch(shouldRunReaper: Boolean, callback: LauncherCallback) {
-        relaunchReactApplication(shouldRunReaper, callback)
+      override suspend fun onRequestRelaunch(shouldRunReaper: Boolean) {
+        relaunchReactApplication(shouldRunReaper)
       }
     }
   )
@@ -132,8 +127,7 @@ class EnabledUpdatesController(
     startupProcedure.onDidCreateReactInstanceManager(reactInstanceManager)
   }
 
-  @Synchronized
-  override fun start() {
+  override suspend fun start() {
     if (isStarted) {
       return
     }
@@ -144,10 +138,19 @@ class EnabledUpdatesController(
     BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseHolder.database)
     databaseHolder.releaseDatabase()
 
-    stateMachine.queueExecution(startupProcedure)
+    val startupProcedureResult = stateMachine.queueExecution(startupProcedure)
+
+    if (startupProcedureResult.shouldPerformAdditionalBackgroundLoad) {
+      GlobalScope.launch {
+        fetchUpdate()
+      }
+    }
+
+    isStartupFinished = true
+    (this as java.lang.Object).notify()
   }
 
-  private fun relaunchReactApplication(shouldRunReaper: Boolean, callback: LauncherCallback) {
+  private suspend fun relaunchReactApplication(shouldRunReaper: Boolean) {
     val procedure = RelaunchProcedure(
       context,
       updatesConfiguration,
@@ -156,10 +159,9 @@ class EnabledUpdatesController(
       fileDownloader,
       selectionPolicy,
       reactNativeHost,
-      getCurrentLauncher = { startupProcedure.launcher!! },
-      setCurrentLauncher = { currentLauncher -> startupProcedure.setLauncher(currentLauncher) },
+      getCurrentLauncherResult = { startupProcedure.launcherResult!! },
+      setCurrentLauncherResult = { currentLauncherResult -> startupProcedure.setLauncherResult(currentLauncherResult) },
       shouldRunReaper = shouldRunReaper,
-      callback
     )
     stateMachine.queueExecution(procedure)
   }
@@ -192,85 +194,63 @@ class EnabledUpdatesController(
     )
   }
 
-  override fun relaunchReactApplicationForModule(callback: IUpdatesController.ModuleCallback<Unit>) {
+  override suspend fun relaunchReactApplicationForModule() {
     val canRelaunch = launchedUpdate != null
     if (!canRelaunch) {
-      callback.onFailure(object : CodedException("ERR_UPDATES_RELOAD", "Cannot relaunch without a launched update.", null) {})
-    } else {
-      relaunchReactApplication(
-        shouldRunReaper = true,
-        object : LauncherCallback {
-          override fun onFailure(e: Exception) {
-            callback.onFailure(e.toCodedException())
-          }
-
-          override fun onSuccess() {
-            callback.onSuccess(Unit)
-          }
-        }
-      )
+      throw CodedException("ERR_UPDATES_RELOAD", "Cannot relaunch without a launched update.", null)
     }
+    relaunchReactApplication(shouldRunReaper = true)
   }
 
   override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {
     callback.onSuccess(stateMachine.context)
   }
 
-  override fun checkForUpdate(callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>) {
-    val procedure = CheckForUpdateProcedure(context, updatesConfiguration, databaseHolder, logger, fileDownloader, selectionPolicy, launchedUpdate) {
-      callback.onSuccess(it)
-    }
-    stateMachine.queueExecution(procedure)
+  override suspend fun checkForUpdate(): IUpdatesController.CheckForUpdateResult {
+    val procedure = CheckForUpdateProcedure(context, updatesConfiguration, databaseHolder, logger, fileDownloader, selectionPolicy, launchedUpdate)
+    return stateMachine.queueExecution(procedure)
   }
 
-  override fun fetchUpdate(callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>) {
-    val procedure = FetchUpdateProcedure(context, updatesConfiguration, databaseHolder, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate) {
-      callback.onSuccess(it)
-    }
-    stateMachine.queueExecution(procedure)
+  override suspend fun fetchUpdate(): IUpdatesController.FetchUpdateResult {
+    val procedure = FetchUpdateProcedure(context, updatesConfiguration, databaseHolder, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate)
+    return stateMachine.queueExecution(procedure)
   }
 
-  override fun getExtraParams(callback: IUpdatesController.ModuleCallback<Bundle>) {
-    AsyncTask.execute {
-      try {
-        val result = ManifestMetadata.getExtraParams(
-          databaseHolder.database,
-          updatesConfiguration,
-        )
-        databaseHolder.releaseDatabase()
-        val resultMap = when (result) {
-          null -> Bundle()
-          else -> {
-            Bundle().apply {
-              result.forEach {
-                putString(it.key, it.value)
-              }
+  override suspend fun getExtraParams(): Bundle {
+    try {
+      val result = ManifestMetadata.getExtraParams(
+        databaseHolder.database,
+        updatesConfiguration,
+      )
+      databaseHolder.releaseDatabase()
+      return when (result) {
+        null -> Bundle()
+        else -> {
+          Bundle().apply {
+            result.forEach {
+              putString(it.key, it.value)
             }
           }
         }
-        callback.onSuccess(resultMap)
-      } catch (e: Exception) {
-        databaseHolder.releaseDatabase()
-        callback.onFailure(e.toCodedException())
       }
+    } catch (e: Exception) {
+      databaseHolder.releaseDatabase()
+      throw e
     }
   }
 
-  override fun setExtraParam(key: String, value: String?, callback: IUpdatesController.ModuleCallback<Unit>) {
-    AsyncTask.execute {
-      try {
-        ManifestMetadata.setExtraParam(
-          databaseHolder.database,
-          updatesConfiguration,
-          key,
-          value
-        )
-        databaseHolder.releaseDatabase()
-        callback.onSuccess(Unit)
-      } catch (e: Exception) {
-        databaseHolder.releaseDatabase()
-        callback.onFailure(e.toCodedException())
-      }
+  override suspend fun setExtraParam(key: String, value: String?) {
+    try {
+      ManifestMetadata.setExtraParam(
+        databaseHolder.database,
+        updatesConfiguration,
+        key,
+        value
+      )
+      databaseHolder.releaseDatabase()
+    } catch (e: Exception) {
+      databaseHolder.releaseDatabase()
+      throw e
     }
   }
 

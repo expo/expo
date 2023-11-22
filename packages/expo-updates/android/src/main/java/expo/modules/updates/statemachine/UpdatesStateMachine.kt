@@ -4,6 +4,7 @@ import android.content.Context
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.StateMachineProcedure
 import expo.modules.updates.procedures.StateMachineSerialExecutorQueue
+import kotlinx.coroutines.CoroutineScope
 import java.util.Date
 
 /**
@@ -31,8 +32,8 @@ class UpdatesStateMachine(
   /**
    * Queue a StateMachineProcedure procedure for serial execution.
    */
-  fun queueExecution(stateMachineProcedure: StateMachineProcedure) {
-    serialExecutorQueue.queueExecution(stateMachineProcedure)
+  suspend fun <T>queueExecution(stateMachineProcedure: StateMachineProcedure<T>): T {
+    return serialExecutorQueue.queueExecution(stateMachineProcedure)
   }
 
   private val logger = UpdatesLogger(androidContext)

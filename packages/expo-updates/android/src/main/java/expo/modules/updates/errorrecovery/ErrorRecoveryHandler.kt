@@ -4,7 +4,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import java.lang.RuntimeException
@@ -155,24 +154,23 @@ internal class ErrorRecoveryHandler(
     }
   }
 
-  private fun tryRelaunchFromCache() {
-    delegate.relaunch(object : Launcher.LauncherCallback {
-      override fun onFailure(e: Exception) {
-        // post to our looper, in case we're on a different thread now
-        post {
-          encounteredErrors.add(e)
-          pipeline.removeAll(setOf(Task.LAUNCH_NEW_UPDATE, Task.LAUNCH_CACHED_UPDATE))
-          runNextTask()
-        }
+  private suspend fun tryRelaunchFromCache() {
+    try {
+      delegate.relaunch()
+    } catch (e: Exception) {
+      // post to our looper, in case we're on a different thread now
+      post {
+        encounteredErrors.add(e)
+        pipeline.removeAll(setOf(Task.LAUNCH_NEW_UPDATE, Task.LAUNCH_CACHED_UPDATE))
+        runNextTask()
       }
+      return
+    }
 
-      override fun onSuccess() {
-        // post to our looper, in case we're on a different thread now
-        post {
-          isPipelineRunning = false
-        }
-      }
-    })
+    // post to our looper, in case we're on a different thread now
+    post {
+      isPipelineRunning = false
+    }
   }
 
   private fun crash() {

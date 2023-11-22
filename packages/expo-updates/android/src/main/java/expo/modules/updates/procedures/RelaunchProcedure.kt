@@ -11,10 +11,13 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
 import expo.modules.updates.launcher.DatabaseLauncher
-import expo.modules.updates.launcher.Launcher
+import expo.modules.updates.launcher.LauncherResult
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -26,79 +29,64 @@ class RelaunchProcedure(
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
   private val reactNativeHost: WeakReference<ReactNativeHost>?,
-  private val getCurrentLauncher: () -> Launcher,
-  private val setCurrentLauncher: (launcher: Launcher) -> Unit,
+  private val getCurrentLauncherResult: () -> LauncherResult,
+  private val setCurrentLauncherResult: (launcherResult: LauncherResult) -> Unit,
   private val shouldRunReaper: Boolean,
-  private val callback: Launcher.LauncherCallback,
-) : StateMachineProcedure() {
-  override fun run(procedureContext: ProcedureContext) {
+) : StateMachineProcedure<Unit>() {
+  override suspend fun run(procedureContext: ProcedureContext) {
     val host = reactNativeHost?.get()
-    if (host == null) {
-      callback.onFailure(Exception("Could not reload application. Ensure you have passed the correct instance of ReactApplication into UpdatesController.initialize()."))
-      return
-    }
+      ?: throw Exception("Could not reload application. Ensure you have passed the correct instance of ReactApplication into UpdatesController.initialize().")
 
     procedureContext.processStateEvent(UpdatesStateEvent.Restart())
 
-    val oldLaunchAssetFile = getCurrentLauncher().launchAssetFile
+    val oldLaunchAssetFile = getCurrentLauncherResult().launchAssetFile
 
-    val newLauncher = DatabaseLauncher(
+    val newLauncherResult = DatabaseLauncher(
+      context,
+      databaseHolder.database,
       updatesConfiguration,
       updatesDirectory,
       fileDownloader,
       selectionPolicy
-    )
-    newLauncher.launch(
-      databaseHolder.database,
-      context,
-      object : Launcher.LauncherCallback {
-        override fun onFailure(e: Exception) {
-          callback.onFailure(e)
-          procedureContext.onComplete()
-        }
+    ).launch()
 
-        override fun onSuccess() {
-          setCurrentLauncher(newLauncher)
-          databaseHolder.releaseDatabase()
+    setCurrentLauncherResult(newLauncherResult)
+    databaseHolder.releaseDatabase()
 
-          val instanceManager = host.reactInstanceManager
+    val instanceManager = host.reactInstanceManager
 
-          val newLaunchAssetFile = getCurrentLauncher().launchAssetFile
-          if (newLaunchAssetFile != null && newLaunchAssetFile != oldLaunchAssetFile) {
-            // Unfortunately, even though RN exposes a way to reload an application,
-            // it assumes that the JS bundle will stay at the same location throughout
-            // the entire lifecycle of the app. Since we need to change the location of
-            // the bundle, we need to use reflection to set an otherwise inaccessible
-            // field of the ReactInstanceManager.
-            try {
-              val newJSBundleLoader = JSBundleLoader.createFileLoader(newLaunchAssetFile)
-              val jsBundleLoaderField = instanceManager.javaClass.getDeclaredField("mBundleLoader")
-              jsBundleLoaderField.isAccessible = true
-              jsBundleLoaderField[instanceManager] = newJSBundleLoader
-            } catch (e: Exception) {
-              Log.e(TAG, "Could not reset JSBundleLoader in ReactInstanceManager", e)
-            }
-          }
-          callback.onSuccess()
-          val handler = Handler(Looper.getMainLooper())
-          handler.post { instanceManager.recreateReactContextInBackground() }
-          if (shouldRunReaper) {
-            runReaper()
-          }
-          procedureContext.resetState()
-          procedureContext.onComplete()
-        }
+    val newLaunchAssetFile = newLauncherResult.launchAssetFile
+    if (newLaunchAssetFile != null && newLaunchAssetFile != oldLaunchAssetFile) {
+      // Unfortunately, even though RN exposes a way to reload an application,
+      // it assumes that the JS bundle will stay at the same location throughout
+      // the entire lifecycle of the app. Since we need to change the location of
+      // the bundle, we need to use reflection to set an otherwise inaccessible
+      // field of the ReactInstanceManager.
+      try {
+        val newJSBundleLoader = JSBundleLoader.createFileLoader(newLaunchAssetFile)
+        val jsBundleLoaderField = instanceManager.javaClass.getDeclaredField("mBundleLoader")
+        jsBundleLoaderField.isAccessible = true
+        jsBundleLoaderField[instanceManager] = newJSBundleLoader
+      } catch (e: Exception) {
+        Log.e(TAG, "Could not reset JSBundleLoader in ReactInstanceManager", e)
       }
-    )
+    }
+    val handler = Handler(Looper.getMainLooper())
+    handler.post { instanceManager.recreateReactContextInBackground() }
+    if (shouldRunReaper) {
+      runReaper()
+    }
+    procedureContext.resetState()
   }
 
   private fun runReaper() {
-    AsyncTask.execute {
+    @OptIn(DelicateCoroutinesApi::class)
+    GlobalScope.launch {
       Reaper.reapUnusedUpdates(
         updatesConfiguration,
         databaseHolder.database,
         updatesDirectory,
-        getCurrentLauncher().launchedUpdate,
+        getCurrentLauncherResult().launchedUpdate,
         selectionPolicy
       )
       databaseHolder.releaseDatabase()

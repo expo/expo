@@ -1,7 +1,6 @@
 package expo.modules.updates.errorrecovery
 
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.launcher.Launcher
 
 /**
  * Interface for a delegate that will execute the actions prescribed by the error recovery
@@ -15,8 +14,8 @@ interface ErrorRecoveryDelegate {
     NEW_UPDATE_LOADED
   }
 
-  fun loadRemoteUpdate()
-  fun relaunch(callback: Launcher.LauncherCallback)
+  suspend fun loadRemoteUpdate()
+  suspend fun relaunch()
   fun throwException(exception: Exception)
 
   fun markFailedLaunchForLaunchedUpdate()

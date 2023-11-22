@@ -13,8 +13,9 @@ import expo.modules.updates.errorrecovery.ErrorRecoveryDelegate
 import expo.modules.updates.launcher.LauncherResult
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.loader.FileDownloader
-import expo.modules.updates.loader.Loader
+import expo.modules.updates.loader.LoaderStatusCallbacks
 import expo.modules.updates.loader.LoaderTask
+import expo.modules.updates.loader.OnUpdateResponseLoadedResult
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
@@ -27,6 +28,8 @@ import expo.modules.updates.statemachine.UpdatesStateValue
 import org.json.JSONObject
 import java.io.File
 
+data class StartupProcedureResult(val launcherResult: LauncherResult, val shouldPerformAdditionalBackgroundLoad: Boolean)
+
 class StartupProcedure(
   private val context: Context,
   private val updatesConfiguration: UpdatesConfiguration,
@@ -36,10 +39,8 @@ class StartupProcedure(
   private val selectionPolicy: SelectionPolicy,
   private val logger: UpdatesLogger,
   private val callback: StartupProcedureCallback
-) : StateMachineProcedure() {
+) : StateMachineProcedure<StartupProcedureResult>() {
   interface StartupProcedureCallback {
-    fun onFinished()
-
     sealed class LegacyJSEvent(private val type: Type) {
       private enum class Type {
         ERROR,
@@ -53,7 +54,7 @@ class StartupProcedure(
     }
     fun onLegacyJSEvent(event: LegacyJSEvent)
 
-    fun onRequestRelaunch(shouldRunReaper: Boolean, callback: Launcher.LauncherCallback)
+    suspend fun onRequestRelaunch(shouldRunReaper: Boolean)
   }
 
   private lateinit var procedureContext: ProcedureContext
@@ -99,17 +100,13 @@ class StartupProcedure(
     selectionPolicy,
   )
 
-  override suspend fun run(procedureContext: ProcedureContext) {
+  override suspend fun run(procedureContext: ProcedureContext): StartupProcedureResult {
     this.procedureContext = procedureContext
     initializeDatabaseHandler()
     initializeErrorRecovery()
 
     val loaderTaskResult = try {
       loaderTask.load(object : LoaderTask.LoaderTaskCallbacks {
-        override fun onFinishedAllLoading() {
-          procedureContext.onComplete()
-        }
-
         override fun onCachedUpdateLoaded(update: UpdateEntity): Boolean {
           return true
         }
@@ -216,15 +213,14 @@ class StartupProcedure(
       logger.error("UpdatesController loaderTask onFailure: ${e.localizedMessage}", UpdatesErrorCode.None)
       launcherResult = NoDatabaseLauncher(context, e).launch()
       isEmergencyLaunch = true
-      callback.onFinished()
-      return
+      return StartupProcedureResult(launcherResult!!, shouldPerformAdditionalBackgroundLoad = false)
     }
 
     if (remoteLoadStatus == ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING && loaderTaskResult.isUpToDate) {
       remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
     }
     launcherResult = loaderTaskResult.launcherResult
-    callback.onFinished()
+    return StartupProcedureResult(launcherResult!!, shouldPerformAdditionalBackgroundLoad = loaderTaskResult.shouldPerformAdditionalBackgroundLoad)
   }
 
   fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
@@ -241,47 +237,51 @@ class StartupProcedure(
 
   private fun initializeErrorRecovery() {
     errorRecovery.initialize(object : ErrorRecoveryDelegate {
-      override fun loadRemoteUpdate() {
-        if (loaderTask.isRunning) {
+      override suspend fun loadRemoteUpdate() {
+        if (launcherResult === null) {
           return
         }
         remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
         val remoteLoader = RemoteLoader(context, updatesConfiguration, databaseHolder.database, fileDownloader, updatesDirectory, launchedUpdate)
-        remoteLoader.start(object : Loader.LoaderCallback {
-          override fun onFailure(e: Exception) {
-            logger.error("UpdatesController loadRemoteUpdate onFailure: ${e.localizedMessage}", UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
-            setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
-            databaseHolder.releaseDatabase()
-          }
+        val loaderResult = try {
+          remoteLoader.load(object : LoaderStatusCallbacks {
+            override fun onAssetLoaded(
+              asset: AssetEntity,
+              successfulAssetCount: Int,
+              failedAssetCount: Int,
+              totalAssetCount: Int
+            ) {}
 
-          override fun onSuccess(loaderResult: Loader.LoaderResult) {
-            setRemoteLoadStatus(
-              if (loaderResult.updateEntity != null || loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
-              else ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
-            )
-            databaseHolder.releaseDatabase()
-          }
+            override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): OnUpdateResponseLoadedResult {
+              val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+              if (updateDirective != null) {
+                return OnUpdateResponseLoadedResult(
+                  shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+                    is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
+                    is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
+                  }
+                )
+              }
 
-          override fun onAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) { }
-
-          override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
-            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-            if (updateDirective != null) {
-              return Loader.OnUpdateResponseLoadedResult(
-                shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
-                  is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
-                  is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
-                }
-              )
+              val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+              return OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(updateManifest.updateEntity, launchedUpdate, updateResponse.responseHeaderData?.manifestFilters))
             }
+          })
+        } catch (e: Exception) {
+          logger.error("UpdatesController loadRemoteUpdate onFailure: ${e.localizedMessage}", UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
+          setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
+          databaseHolder.releaseDatabase()
+          return
+        }
 
-            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-            return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(updateManifest.updateEntity, launchedUpdate, updateResponse.responseHeaderData?.manifestFilters))
-          }
-        })
+        setRemoteLoadStatus(
+          if (loaderResult.updateEntity != null || loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
+          else ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
+        )
+        databaseHolder.releaseDatabase()
       }
 
-      override fun relaunch(callback: Launcher.LauncherCallback) { this@StartupProcedure.callback.onRequestRelaunch(shouldRunReaper = false, callback) }
+      override suspend fun relaunch() { this@StartupProcedure.callback.onRequestRelaunch(shouldRunReaper = false) }
       override fun throwException(exception: Exception) { throw exception }
 
       override fun markFailedLaunchForLaunchedUpdate() {

@@ -78,7 +78,7 @@ class UpdatesController {
      * @param context the base context of the application, ideally a [ReactApplication]
      * @param configuration map of configuration pairs to override those from AndroidManifest.xml
      */
-    @JvmStatic fun initialize(context: Context, configuration: Map<String, Any>? = null) {
+    @JvmStatic suspend fun initialize(context: Context, configuration: Map<String, Any>? = null) {
       if (singletonInstance == null) {
         initializeWithoutStarting(context, configuration)
         singletonInstance!!.start()

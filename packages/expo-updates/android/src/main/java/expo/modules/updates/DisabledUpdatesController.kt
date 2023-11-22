@@ -80,36 +80,31 @@ class DisabledUpdatesController(
     )
   }
 
-  override fun relaunchReactApplicationForModule(callback: IUpdatesController.ModuleCallback<Unit>) {
-    callback.onFailure(UpdatesDisabledException("You cannot reload when expo-updates is not enabled."))
+  override suspend fun relaunchReactApplicationForModule() {
+    throw UpdatesDisabledException("You cannot reload when expo-updates is not enabled.")
   }
 
   override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {
     callback.onFailure(UpdatesDisabledException("You cannot check for updates when expo-updates is not enabled."))
   }
 
-  override fun checkForUpdate(
-    callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>
-  ) {
-    callback.onFailure(UpdatesDisabledException("You cannot check for updates when expo-updates is not enabled."))
+  override suspend fun checkForUpdate(): IUpdatesController.CheckForUpdateResult {
+    throw UpdatesDisabledException("You cannot check for updates when expo-updates is not enabled.")
   }
 
-  override fun fetchUpdate(
-    callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>
-  ) {
-    callback.onFailure(UpdatesDisabledException("You cannot fetch update when expo-updates is not enabled."))
+  override suspend fun fetchUpdate(): IUpdatesController.FetchUpdateResult {
+    throw UpdatesDisabledException("You cannot fetch update when expo-updates is not enabled.")
   }
 
-  override fun getExtraParams(callback: IUpdatesController.ModuleCallback<Bundle>) {
-    callback.onFailure(UpdatesDisabledException("You cannot use extra params when expo-updates is not enabled."))
+  override suspend fun getExtraParams(): Bundle {
+    throw UpdatesDisabledException("You cannot use extra params when expo-updates is not enabled.")
   }
 
-  override fun setExtraParam(
+  override suspend fun setExtraParam(
     key: String,
     value: String?,
-    callback: IUpdatesController.ModuleCallback<Unit>
   ) {
-    callback.onFailure(UpdatesDisabledException("You cannot use extra params when expo-updates is not enabled."))
+    throw UpdatesDisabledException("You cannot use extra params when expo-updates is not enabled.")
   }
 
   @Synchronized

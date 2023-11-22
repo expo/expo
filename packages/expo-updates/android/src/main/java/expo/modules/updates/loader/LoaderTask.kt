@@ -26,7 +26,11 @@ import org.json.JSONObject
 import java.io.File
 import java.util.Date
 
-data class LoaderTaskResult(val launcherResult: LauncherResult, val isUpToDate: Boolean)
+data class LoaderTaskResult(
+  val launcherResult: LauncherResult,
+  val isUpToDate: Boolean,
+  val shouldPerformAdditionalBackgroundLoad: Boolean,
+)
 
 class LoaderTask(
   private val context: Context,
@@ -80,13 +84,6 @@ class LoaderTask(
 
   interface LoaderTaskCallbacks {
     /**
-     * This method is called after the loader task finishes doing all work. Note that it may have
-     * "succeeded" before this with a loader, yet this method may still be called after the launch
-     * to signal that all work is done (loading a remote update after the launch wait timeout has occurred).
-     */
-    fun onFinishedAllLoading()
-
-    /**
      * This method gives the calling class a backdoor option to ignore the cached update and force
      * a remote load if it decides the cached update is not runnable. Returning false from this
      * callback will force a remote load, overriding the timeout and configuration settings for
@@ -101,7 +98,7 @@ class LoaderTask(
     fun onRemoteUpdateLoadStarted()
     fun onRemoteUpdateAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int)
     fun onRemoteUpdateFinished(
-      status: LoaderTask.RemoteUpdateStatus,
+      status: RemoteUpdateStatus,
       update: UpdateEntity?,
       exception: Exception?
     )
@@ -114,6 +111,7 @@ class LoaderTask(
     var timerExpired = false
     var ignoreTimer = false
     var isUpToDate = false
+    var shouldPerformAdditionalBackgroundLoad = false
 
     val finalLauncherResult = coroutineScope {
       select {
@@ -126,7 +124,6 @@ class LoaderTask(
             // What to do in this case depends on whether or not we're trying to load a remote update.
             // If we are, then we should wait for the task to finish. If not, we need to fail here.
             if (!shouldCheckForUpdate) {
-              callbacks.onFinishedAllLoading()
               throw e
             }
             null
@@ -137,16 +134,7 @@ class LoaderTask(
           if (timerExpired && candidateLauncherResult !== null) {
             // we still want to fetch the update when the timer has expired but only the cached
             // update has been loaded, but we want to do so in the background and it be a "fire and forget"
-            @OptIn(DelicateCoroutinesApi::class)
-            GlobalScope.launch {
-              try {
-                launchRemoteUpdate(null, true, callbacks)
-                callbacks.onFinishedAllLoading()
-              } catch (e: Exception) {
-                // ignore errors in the "fire and forget" background load
-                callbacks.onFinishedAllLoading()
-              }
-            }
+            shouldPerformAdditionalBackgroundLoad = true
             return@async candidateLauncherResult
           }
 
@@ -159,13 +147,11 @@ class LoaderTask(
             val backgroundLauncherResult = try {
               launchRemoteUpdate(null, false, callbacks)
             } catch (e: Exception) {
-              callbacks.onFinishedAllLoading()
               throw e
             }
 
             candidateLauncherResult = backgroundLauncherResult.launcherResult
             isUpToDate = backgroundLauncherResult.isUpToDate
-            callbacks.onFinishedAllLoading()
             return@async candidateLauncherResult
           }
 
@@ -173,17 +159,14 @@ class LoaderTask(
             val backgroundLauncherResult = try {
               launchRemoteUpdate(candidateLauncherResult?.launchedUpdate, hasTaskAlreadyLaunched = timerExpired, callbacks)
             } catch (e: Exception) {
-              callbacks.onFinishedAllLoading()
               throw e
             }
 
             candidateLauncherResult = backgroundLauncherResult.launcherResult
             isUpToDate = backgroundLauncherResult.isUpToDate
-            callbacks.onFinishedAllLoading()
             return@async candidateLauncherResult
           }
 
-          callbacks.onFinishedAllLoading()
           return@async candidateLauncherResult
         }.onAwait { it }
 
@@ -209,7 +192,8 @@ class LoaderTask(
 
     return LoaderTaskResult(
       launcherResult = finalLauncherResult ?: throw Exception("LoaderTask encountered an unexpected error and could not launch an update."),
-      isUpToDate = isUpToDate
+      isUpToDate = isUpToDate,
+      shouldPerformAdditionalBackgroundLoad = shouldPerformAdditionalBackgroundLoad
     )
   }
 
@@ -336,7 +320,7 @@ class LoaderTask(
       })
     } catch (e: Exception) {
       databaseHolder.releaseDatabase()
-      callbacks.onRemoteUpdateFinished(LoaderTask.RemoteUpdateStatus.ERROR, null, e)
+      callbacks.onRemoteUpdateFinished(RemoteUpdateStatus.ERROR, null, e)
       Log.e(TAG, "Failed to download remote update", e)
       throw e
     }
@@ -373,13 +357,13 @@ class LoaderTask(
     if (hasTaskAlreadyLaunched) {
       if (availableUpdate == null) {
         callbacks.onRemoteUpdateFinished(
-          LoaderTask.RemoteUpdateStatus.NO_UPDATE_AVAILABLE,
+          RemoteUpdateStatus.NO_UPDATE_AVAILABLE,
           null,
           null
         )
       } else {
         callbacks.onRemoteUpdateFinished(
-          LoaderTask.RemoteUpdateStatus.UPDATE_AVAILABLE,
+          RemoteUpdateStatus.UPDATE_AVAILABLE,
           availableUpdate,
           null
         )
@@ -394,15 +378,18 @@ class LoaderTask(
       return
     }
 
-    val database = databaseHolder.database
-    Reaper.reapUnusedUpdates(
-      configuration,
-      database,
-      directory,
-      finalLauncherResult.launchedUpdate,
-      selectionPolicy
-    )
-    databaseHolder.releaseDatabase()
+    @OptIn(DelicateCoroutinesApi::class)
+    GlobalScope.launch {
+      val database = databaseHolder.database
+      Reaper.reapUnusedUpdates(
+        configuration,
+        database,
+        directory,
+        finalLauncherResult.launchedUpdate,
+        selectionPolicy
+      )
+      databaseHolder.releaseDatabase()
+    }
   }
 
   companion object {
