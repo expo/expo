@@ -1,0 +1,121 @@
+---
+title: New Architecture
+description: Learn about React Native's "New Architecture" and how and why to migrate to it
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+
+The New Architecture is a name that we use to describe a completely refactoring of the internals of React Native, to solve for limitations of the original React Native architecture that were discovered over years of usage in production at Meta and the community.
+
+In this guide, we'll talk about how to use the New Architecture in Expo projects today.
+
+To learn more about the ideas and motivations behind the New Architecture, we recommend the following resources:
+
+<BoxLink
+  title="Introduction to the New Architecture"
+  description="A starting point for exploring the various topics related to the New Architecture."
+  href="https://reactnative.dev/docs/the-new-architecture/landing-page"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Why a New Architecture"
+  description="A high level overview of the motivations behind the New Architecture."
+  href="https://reactnative.dev/docs/the-new-architecture/why"
+  Icon={BookOpen02Icon}
+/>
+
+## Why invest in migrating to the New Architecture?
+
+The New Architecture is the future of React Native — yet, for many apps, there may not be many immediate benefits to migrating today. You may want to think of migrating to the New Architecture as an investment in the future of your app, rather than as a way to immediately improve your app.
+
+The changes that come with the New Architecture address technical debt of the original implementation and unlock possibilities for solving long standing issues in React Native, such as interoperability with synchronous native APIs (eg: `UITableView`), and pave the way for for [concurrent React support](https://react.dev/blog/2022/03/29/react-v18#what-is-concurrent-react).
+
+## Initializing a new project with the New Architecture
+
+The easiest way to get started with the New Architecture is to use the `with-new-arch` template when creating a new project:
+
+<Terminal cmd={['$ npx create-expo-app@latest -e with-new-arch']} />
+
+## Enabling the New Architecture in an existing project
+
+> Note: `expo-updates` does not yet support the New Architecture. If you use `expo-updates` in your project, you will need to remove it before continuing.
+
+You can enable the New Architecture in your app using the [expo-build-properties](/versions/latest/sdk/build-properties/) config plugin:
+
+<Step label="1">
+
+Install `expo-build-properties`:
+
+<Terminal cmd={['$ npx expo install expo-build-properties']} />
+
+</Step>
+
+<Step label="2">
+
+Set `newArchEnabled` on target platforms
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": true
+          },
+          "android": {
+            "newArchEnabled": true
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+</Step>
+
+<Step label="3">
+
+Run prebuild and compile your project.
+
+<Terminal cmd={['$ npx expo prebuild --clean', '$ npx expo run:android # or ios', '$ eas build -p android # or ios']} />
+
+</Step>
+
+If the build succeeds, you'll now be running your app with the New Architecture! Depending on the native modules you use, your app may work properly immediately.
+
+Now you can tap around your app and test it out. For most non-trivial apps, you're likely to encounter some issues, such as missing native views that haven't been implemented for the New Architecture yet. Many of the issues you encounter are actionable and can be resolved with some configuration or code changes. We recommend reading the ["Using the compatibility layer"]() and [Troubleshooting](#troubleshooting) sections below for more information.
+
+<Collapsible summary="Are you enabling the New Architecture in a bare React Native app?">
+
+Refer to the ["Prerequisites for Applications" section of the React Native documentation](https://reactnative.dev/docs/new-architecture-app-intro) for instructions on how to enable the New Architecture in your project.
+
+</Collapsible>
+
+## Using the compatibility layer
+
+TODO: write about the compatibility layer here
+
+## Troubleshooting
+
+Meta and Expo are working towards making the New Architecture the default for all new apps and ensuring that it as easy as possible to migrate existing apps. However, the New Architecture isn't just a name — many of the internals of React Native have been re-architected and rebuilt from the ground up. As a result, you may encounter issues when enabling the New Architecture in your app. The following is some advice for troubleshooting these issues.
+
+<Collapsible summary="My build failed after enabling the New Architecture">
+
+TODO - any common problems we can address here?
+
+</Collapsible>
+
+<Collapsible summary="Still stuck? Ask for help!">
+
+TODO - instructions for submitting a good, actionable bug report or getting help (eg: on Discord?)
+
+</Collapsible>
+
