@@ -65,7 +65,9 @@ export function createInspectorDeviceClass(
       if (oldDebugger) {
         oldDebugger.socket.removeAllListeners();
         this._deviceSocket.close();
-        newDevice.handleDebuggerConnection(oldDebugger.socket, oldDebugger.pageId);
+        newDevice.handleDebuggerConnection(oldDebugger.socket, oldDebugger.pageId, {
+          userAgent: oldDebugger.userAgent,
+        });
       }
     }
 
