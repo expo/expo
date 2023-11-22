@@ -5,14 +5,15 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-module tsc",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && expo-module build",
+    "prepare": "expo-module clean && expo-module tsc",
     "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
     "test:e2e": "yarn run prepare && expo-module test --config e2e/jest.config.js",
-    "typecheck": "expo-module typecheck"
+    "typecheck": "expo-module typecheck",
+    "watch": "expo-module tsc --watch"
   },
   "bin": {
     "fingerprint": "bin/cli.js"
