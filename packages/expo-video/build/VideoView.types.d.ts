@@ -79,6 +79,28 @@ export interface VideoViewProps extends ViewProps {
         dx?: number;
         dy?: number;
     } | undefined;
+    /**
+     * Determines the callback to call after the video enters Picture in Picture mode.
+     * @platform ios
+     */
+    onPictureInPictureStart?: () => void;
+    /**
+     * Determines the callback to call after the video exits Picture in Picture mode.
+     * @platform ios
+     */
+    onPictureInPictureStop?: () => void;
+    /**
+     * Determines whether the player should allow Picture in Picture.
+     * @default false
+     * @platform ios
+     */
+    allowsPictureInPicture?: boolean;
+    /**
+     * Determines whether the player should start Picture in Picture automatically when the app is minimized.
+     * @default false
+     * @platform ios
+     */
+    startsPictureInPictureAutomatically?: boolean;
 }
 export {};
 //# sourceMappingURL=VideoView.types.d.ts.map

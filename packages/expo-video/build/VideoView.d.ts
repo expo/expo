@@ -5,6 +5,8 @@ export declare class VideoView extends PureComponent<VideoViewProps> {
     nativeRef: import("react").RefObject<any>;
     enterFullscreen(): void;
     exitFullscreen(): void;
+    startPictureInPicture(): Promise<any>;
+    stopPictureInPicture(): Promise<any>;
     render(): ReactNode;
 }
 //# sourceMappingURL=VideoView.d.ts.map

@@ -21,6 +21,14 @@ export class VideoView extends PureComponent<VideoViewProps> {
     this.nativeRef.current?.exitFullscreen();
   }
 
+  async startPictureInPicture() {
+    return this.nativeRef.current?.startPictureInPicture();
+  }
+
+  async stopPictureInPicture() {
+    return this.nativeRef.current?.stopPictureInPicture();
+  }
+
   render(): ReactNode {
     const { player, ...props } = this.props;
     const playerId = getPlayerId(player);

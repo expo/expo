@@ -13,12 +13,41 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   }
 
   var isFullscreen: Bool = false
+  var startPictureInPictureAutomatically = false {
+    didSet {
+      if #available(iOS 14.2, *) {
+        playerViewController.canStartPictureInPictureAutomaticallyFromInline = startPictureInPictureAutomatically
+      }
+    }
+  }
+
+  var allowPictureInPicture: Bool = false {
+    didSet {
+      if (allowPictureInPicture) {
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+          try audioSession.setCategory(.playback, mode: .default)
+          try audioSession.setActive(true)
+        } catch {
+          print("Failed ot set audio session category. This might break picture in picture functionality")
+        }
+      }
+      playerViewController.allowsPictureInPicturePlayback = allowPictureInPicture
+    }
+  }
+
+  let onPictureInPictureStart = EventDispatcher()
+  let onPictureInPictureStop = EventDispatcher()
 
   public override var bounds: CGRect {
     didSet {
       playerViewController.view.frame = self.bounds
     }
   }
+
+  lazy var supportsPictureInPicture: Bool = {
+    return AVPictureInPictureController.isPictureInPictureSupported()
+  }()
 
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -55,6 +84,31 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     }
   }
 
+  func startPictureInPicture(promise: Promise) {
+    if (!supportsPictureInPicture) {
+      promise.reject(PictureInPictureUnsupportedException())
+      return
+    }
+
+    let selectorName = "startPictureInPicture"
+    let selectorToStartPictureInPicture = NSSelectorFromString(selectorName)
+
+    if playerViewController.responds(to: selectorToStartPictureInPicture) {
+      playerViewController.perform(selectorToStartPictureInPicture)
+    }
+    promise.resolve(nil)
+  }
+
+  func stopPictureInPicture() {
+    let selectorName = "stopPictureInPicture"
+    let selectorToStopPictureInPicture = NSSelectorFromString(selectorName)
+
+    if playerViewController.responds(to: selectorToStopPictureInPicture) {
+      playerViewController.perform(selectorToStopPictureInPicture)
+    }
+  }
+
+
   // MARK: - AVPlayerViewControllerDelegate
 
   public func playerViewController(
@@ -80,5 +134,13 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
         self.isFullscreen = false
       }
     }
+  }
+
+  public func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) {
+    onPictureInPictureStart()
+  }
+
+  public func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
+    onPictureInPictureStop()
   }
 }

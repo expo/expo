@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add Picture in Picture support.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
