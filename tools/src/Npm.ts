@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import glob from 'glob-promise';
 
-import { spawnAsync, spawnJSONCommandAsync } from './Utils';
+import { spawnAsync, spawnJSONCommandAsync, SpawnOptions } from './Utils';
 
 export const EXPO_DEVELOPERS_TEAM_NAME = 'expo:developers';
 
@@ -29,6 +29,36 @@ export type PackageViewType = null | {
   [key: string]: unknown;
 };
 
+export type ProfileType = null | {
+  name: string;
+  email: string;
+  tfa: {
+    pending: boolean;
+    mode: string;
+  };
+  [key: string]: unknown;
+};
+
+/**
+ * Represents an object returned by `npm pack --json`.
+ */
+export type PackResult = {
+  id: string;
+  name: string;
+  version: string;
+  size: number;
+  unpackedSize: number;
+  shasum: string;
+  integrity: string;
+  filename: string;
+  files: {
+    path: string;
+    size: number;
+    mode: number;
+  }[];
+  entryCount: number;
+};
+
 /**
  * Runs `npm view` for package with given name. Returns null if package is not published yet.
  */
@@ -42,6 +72,17 @@ export async function getPackageViewAsync(
       version ? `${packageName}@${version}` : packageName,
       '--json',
     ]);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Runs `npm profile get`. Returns null if user is not authenticated.
+ */
+export async function getProfileAsync(): Promise<ProfileType> {
+  try {
+    return await spawnJSONCommandAsync('npm', ['profile', 'get', '--json']);
   } catch {
     return null;
   }
@@ -68,20 +109,44 @@ export async function downloadPackageTarballAsync(
 }
 
 /**
+ * Creates a tarball from a package.
+ */
+export async function packToTarballAsync(packageDir: string): Promise<PackResult> {
+  const [result] = await spawnJSONCommandAsync<PackResult[]>('npm', ['pack', '--json'], {
+    cwd: packageDir,
+  });
+  return result;
+}
+
+type PublishOptions = {
+  source?: string;
+  tagName?: string;
+  dryRun?: boolean;
+  spawnOptions?: SpawnOptions;
+};
+
+/**
  * Publishes a package at given directory to the global npm registry.
  */
 export async function publishPackageAsync(
   packageDir: string,
-  tagName: string = 'latest',
-  dryRun: boolean = false
+  options: PublishOptions = {}
 ): Promise<void> {
-  const args = ['publish', '--tag', tagName, '--access', 'public'];
+  const args = [
+    'publish',
+    options.source ?? '.',
+    '--tag',
+    options.tagName ?? 'latest',
+    '--access',
+    'public',
+  ];
 
-  if (dryRun) {
+  if (options.dryRun) {
     args.push('--dry-run');
   }
   await spawnAsync('npm', args, {
     cwd: packageDir,
+    ...options.spawnOptions,
   });
 }
 

@@ -5,7 +5,7 @@ import path from 'path';
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
-import { Parcel, TaskArgs } from '../types';
+import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 const { magenta, green, gray, cyan } = chalk;
@@ -20,7 +20,7 @@ export const updateBundledNativeModulesFile = new Task<TaskArgs>(
     dependsOn: [selectPackagesToPublish],
     filesToStage: ['packages/expo/bundledNativeModules.json'],
   },
-  async (parcels: Parcel[]) => {
+  async (parcels: Parcel[], options: CommandOptions) => {
     const bundledNativeModulesPath = path.join(EXPO_DIR, 'packages/expo/bundledNativeModules.json');
     const bundledNativeModules = await JsonFile.readAsync<Record<string, string>>(
       bundledNativeModulesPath
@@ -30,7 +30,8 @@ export const updateBundledNativeModulesFile = new Task<TaskArgs>(
 
     for (const { pkg, state } of parcels) {
       const currentRange = bundledNativeModules[pkg.packageName];
-      const newRange = `~${state.releaseVersion}`;
+      const rangePrefix = options.canary ? '' : '~';
+      const newRange = rangePrefix + state.releaseVersion;
 
       if (!currentRange) {
         logger.log('  ', green(pkg.packageName), gray('is not defined.'));
