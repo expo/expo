@@ -3,6 +3,10 @@
   "version": "1.0.5",
   "preferGlobal": true,
   "type": "module",
+  "bin": "./build/index.js",
+  "files": [
+    "build"
+  ],
   "keywords": [
     "expo",
     "ios",
@@ -10,17 +14,6 @@
     "android"
   ],
   "description": "Fetch Expo project information for GitHub issue diagnostics",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-env-info"
-  },
-  "author": "Expo <support@expo.dev>",
-  "license": "MIT",
-  "bin": "./build/index.js",
-  "files": [
-    "build"
-  ],
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
@@ -30,6 +23,17 @@
     "test": "expo-module test",
     "watch": "yarn run build -w"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-env-info"
+  },
+  "author": "Expo <support@expo.dev>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-env-info#readme",
   "devDependencies": {
     "@types/envinfo": "^7.8.1",
     "expo-module-scripts": "^3.3.0"
