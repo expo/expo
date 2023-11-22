@@ -25,6 +25,11 @@ describe('bare project test', () => {
     await spawnAsync('bunx', ['create-expo-app', '-t', 'bare-minimum', projectName], {
       stdio: 'inherit',
       cwd: tmpDir,
+      env: {
+        ...process.env,
+        // Do not inherit the package manager from this repository
+        npm_config_user_agent: undefined,
+      },
     });
   });
 
