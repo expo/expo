@@ -244,39 +244,10 @@ export function withExtendedResolver(
       );
     },
 
-    // Node.js built-ins get empty externals on web
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      if (
-        isFastResolverEnabled ||
-        // is web
-        platform !== 'web' ||
-        // Skip when targeting server runtimes
-        context.customResolverOptions?.environment === 'node' ||
-        // This transform only applies to Node.js built-ins
-        !isNodeExternal(moduleName)
-      ) {
-        return null;
-      }
-
-      // Perform optional resolve first. If the module doesn't exist (no module in the node_modules)
-      // then we can mock the file to use an empty module.
-      const result = getOptionalResolver(context, platform)(moduleName);
-      return (
-        result ?? {
-          // In this case, mock the file to use an empty module.
-          type: 'empty',
-        }
-      );
-    },
-
     // Node.js externals support
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      if (
-        // is web
-        platform !== 'web' ||
-        // Only apply to server runtimes
-        context.customResolverOptions?.environment !== 'node'
-      ) {
+      // This is a web-only feature, we may extend the shimming to native platforms in the future.
+      if (platform !== 'web') {
         return null;
       }
 
@@ -284,10 +255,26 @@ export function withExtendedResolver(
       if (!moduleId) {
         return null;
       }
+
+      if (
+        // In browser runtimes, we want to either resolve a local node module by the same name, or shim the module to
+        // prevent crashing when Node.js built-ins are imported.
+        context.customResolverOptions?.environment !== 'node'
+      ) {
+        // Perform optional resolve first. If the module doesn't exist (no module in the node_modules)
+        // then we can mock the file to use an empty module.
+        const result = getOptionalResolver(context, platform)(moduleName);
+        return (
+          result ?? {
+            // In this case, mock the file to use an empty module.
+            type: 'empty',
+          }
+        );
+      }
+
       const redirectedModuleName = getNodeExternalModuleId(context.originModulePath, moduleId);
       debug(`Redirecting Node.js external "${moduleId}" to "${redirectedModuleName}"`);
-      const doResolve = getStrictResolver(context, platform);
-      return doResolve(redirectedModuleName);
+      return getStrictResolver(context, platform)(redirectedModuleName);
     },
 
     // Basic moduleId aliases
@@ -296,8 +283,7 @@ export function withExtendedResolver(
       // a way that doesn't require Babel to resolve the alias.
       if (platform && platform in aliases && aliases[platform][moduleName]) {
         const redirectedModuleName = aliases[platform][moduleName];
-        const doResolve = getStrictResolver(context, platform);
-        return doResolve(redirectedModuleName);
+        return getStrictResolver(context, platform)(redirectedModuleName);
       }
 
       return null;
