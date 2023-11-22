@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo-cli.git",
+    "url": "https://github.com/expo/expo.git",
     "directory": "packages/install-expo-modules"
   },
   "keywords": [
@@ -31,9 +31,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/expo/expo-cli/issues"
+    "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/install-expo-modules#readme",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/install-expo-modules#readme",
   "files": [
     "build",
     "!*/__tests__/*"
