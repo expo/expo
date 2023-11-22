@@ -99,13 +99,11 @@ export function withExtendedResolver(
   config: ConfigT,
   {
     tsconfig,
-    platforms,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isExporting,
   }: {
     tsconfig: TsConfigPaths | null;
-    platforms: string[];
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
@@ -132,8 +130,6 @@ export function withExtendedResolver(
       })
     : defaultResolver;
 
-  const extraNodeModules: { [key: string]: Record<string, string> } = {};
-
   const aliases: { [key: string]: Record<string, string> } = {
     web: {
       'react-native': 'react-native-web',
@@ -147,15 +143,6 @@ export function withExtendedResolver(
   if (resolveFrom.silent(config.projectRoot, '@expo/vector-icons')) {
     debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
     universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
-  }
-
-  // TODO: We can probably drop this resolution hack.
-  const isWebEnabled = platforms.includes('web');
-  if (isWebEnabled) {
-    // Allow `react-native-web` to be optional when web is not enabled but path aliases is.
-    extraNodeModules['web'] = {
-      'react-native': path.resolve(require.resolve('react-native-web/package.json'), '..'),
-    };
   }
 
   const preferredMainFields: { [key: string]: string[] } = {
@@ -517,7 +504,6 @@ export async function withMetroMultiPlatformAsync(
     tsconfig,
     isExporting,
     isTsconfigPathsEnabled,
-    platforms: expoConfigPlatforms,
     isFastResolverEnabled,
   });
 }

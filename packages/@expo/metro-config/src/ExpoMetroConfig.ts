@@ -140,7 +140,6 @@ export function getDefaultConfig(
 
   const pkg = getPackageJson(projectRoot);
   const watchFolders = getWatchFolders(projectRoot);
-  // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
   const nodeModulesPaths = getModulesPaths(projectRoot);
   if (env.EXPO_DEBUG) {
     console.log();
