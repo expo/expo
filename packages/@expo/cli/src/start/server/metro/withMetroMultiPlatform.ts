@@ -141,6 +141,14 @@ export function withExtendedResolver(
     },
   };
 
+  const universalAliases: Record<string, string> = {};
+
+  // This package is currently always installed as it is included in the `expo` package.
+  if (resolveFrom.silent(config.projectRoot, '@expo/vector-icons')) {
+    debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
+    universalAliases['react-native-vector-icons'] = '@expo/vector-icons';
+  }
+
   // TODO: We can probably drop this resolution hack.
   const isWebEnabled = platforms.includes('web');
   if (isWebEnabled) {
@@ -298,6 +306,12 @@ export function withExtendedResolver(
         const redirectedModuleName = aliases[platform][moduleName];
         const doResolve = getStrictResolver(context, platform);
         return doResolve(redirectedModuleName);
+      }
+
+      // Alias `react-native-vector-icons` to `@expo/vector-icons` on all platforms if installed.
+      const alias = universalAliases[moduleName];
+      if (alias) {
+        return getStrictResolver(context, platform)(alias);
       }
 
       return null;
