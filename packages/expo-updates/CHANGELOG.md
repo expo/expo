@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Add state machine procedure serial runner. ([#25386](https://github.com/expo/expo/pull/25386) by [@wschurman](https://github.com/wschurman))
+- Add state machine procedure serial runner. ([#25386](https://github.com/expo/expo/pull/25386), [#25431](https://github.com/expo/expo/pull/25431) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
 

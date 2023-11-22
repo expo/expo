@@ -275,6 +275,8 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+- (void)appLoaderTaskDidFinishAllLoading:(EXUpdatesAppLoaderTask *)appLoaderTask {}
+
 #pragma mark - internal
 
 + (NSURL *)_httpUrlFromManifestUrl:(NSURL *)url
