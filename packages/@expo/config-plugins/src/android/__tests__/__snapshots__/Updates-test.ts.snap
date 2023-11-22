@@ -2,6 +2,7 @@
 
 exports[`Android Updates config ensureBuildGradleContainsConfigurationScript adds create-manifest-android.gradle line to build.gradle 1`] = `
 "apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()

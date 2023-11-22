@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - [Android] Asset exclusion on Android part 2. ([#25504](https://github.com/expo/expo/pull/25504) by [@douglowder](https://github.com/douglowder))
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
