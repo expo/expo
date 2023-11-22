@@ -17,6 +17,10 @@ class PageSelectedEvent(viewTag: Int, private val mPosition: Int) : Event<PageSe
         return EVENT_NAME
     }
 
+    override fun canCoalesce(): Boolean {
+      return false
+    }
+
     override fun dispatch(rctEventEmitter: RCTEventEmitter) {
         rctEventEmitter.receiveEvent(viewTag, eventName, serializeEventData())
     }
