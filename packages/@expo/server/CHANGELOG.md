@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add Vercel adapter.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
