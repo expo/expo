@@ -8,7 +8,9 @@ import { createProjectHashAsync } from '../../src/Fingerprint';
 jest.mock('../../src/sourcer/ExpoConfigLoader', () => ({
   // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
   getExpoConfigLoaderPath: jest.fn(() =>
-    path.resolve(__dirname, '..', '..', 'build', 'sourcer', 'ExpoConfigLoader.js')
+    jest
+      .requireActual('path')
+      .resolve(__dirname, '..', '..', 'build', 'sourcer', 'ExpoConfigLoader.js')
   ),
 }));
 
@@ -23,6 +25,11 @@ describe('bare project test', () => {
     await spawnAsync('bunx', ['create-expo-app', '-t', 'bare-minimum', projectName], {
       stdio: 'inherit',
       cwd: tmpDir,
+      env: {
+        ...process.env,
+        // Do not inherit the package manager from this repository
+        npm_config_user_agent: undefined,
+      },
     });
   });
 

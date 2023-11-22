@@ -14,7 +14,9 @@ import { getHashSourcesAsync } from '../../src/sourcer/Sourcer';
 jest.mock('../../src/sourcer/ExpoConfigLoader', () => ({
   // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
   getExpoConfigLoaderPath: jest.fn(() =>
-    path.resolve(__dirname, '..', '..', 'build', 'sourcer', 'ExpoConfigLoader.js')
+    jest
+      .requireActual('path')
+      .resolve(__dirname, '..', '..', 'build', 'sourcer', 'ExpoConfigLoader.js')
   ),
 }));
 
@@ -29,6 +31,11 @@ describe('managed project test', () => {
     await spawnAsync('bunx', ['create-expo-app', '-t', 'blank', projectName], {
       stdio: 'inherit',
       cwd: tmpDir,
+      env: {
+        ...process.env,
+        // Do not inherit the package manager from this repository
+        npm_config_user_agent: undefined,
+      },
     });
   });
 
@@ -142,6 +149,11 @@ describe(`getHashSourcesAsync - managed project`, () => {
     await spawnAsync('bunx', ['create-expo-app', '-t', 'blank@sdk-49', projectName], {
       stdio: 'inherit',
       cwd: tmpDir,
+      env: {
+        ...process.env,
+        // Do not inherit the package manager from this repository
+        npm_config_user_agent: undefined,
+      },
     });
 
     // Pin the `expo` package version to prevent the latest version breaking snapshots
