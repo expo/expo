@@ -165,7 +165,7 @@ describe(shouldUpdateDeployTargetPodfileAsync, () => {
     const podfileContent = `platform :ios, min_ios_version_supported`;
     jest.mocked(fs.promises.readFile).mockResolvedValueOnce(podfileContent);
     const reactNativePodsRubyContent = `\
-def min_ios_version_supported
+def self.min_ios_version_supported
   return '12.4'
 end`;
     jest.mocked(fs.promises.readFile).mockResolvedValueOnce(reactNativePodsRubyContent);
@@ -178,7 +178,7 @@ end`;
     const podfileContent = `platform :ios, min_ios_version_supported`;
     jest.mocked(fs.promises.readFile).mockResolvedValueOnce(podfileContent);
     const reactNativePodsRubyContent = `\
-def min_ios_version_supported
+def self.min_ios_version_supported
   return '12.4'
 end`;
     jest.mocked(fs.promises.readFile).mockResolvedValueOnce(reactNativePodsRubyContent);
