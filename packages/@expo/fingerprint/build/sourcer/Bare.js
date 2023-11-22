@@ -74,11 +74,16 @@ async function getRncliAutolinkingSourcesAsync(projectRoot, options) {
         const reasons = ['bareRncliAutolinking'];
         const autolinkingConfig = {};
         for (const [depName, depData] of Object.entries(config.dependencies)) {
-            stripRncliAutolinkingAbsolutePaths(depData, root);
-            const filePath = depData.root;
-            debug(`Adding react-native-cli autolinking dir - ${chalk_1.default.dim(filePath)}`);
-            results.push({ type: 'dir', filePath, reasons });
-            autolinkingConfig[depName] = depData;
+            try {
+                stripRncliAutolinkingAbsolutePaths(depData, root);
+                const filePath = depData.root;
+                debug(`Adding react-native-cli autolinking dir - ${chalk_1.default.dim(filePath)}`);
+                results.push({ type: 'dir', filePath, reasons });
+                autolinkingConfig[depName] = depData;
+            }
+            catch (e) {
+                debug(chalk_1.default.red(`Error adding react-native-cli autolinking dir - ${depName}.\n${e}`));
+            }
         }
         results.push({
             type: 'contents',
@@ -88,7 +93,8 @@ async function getRncliAutolinkingSourcesAsync(projectRoot, options) {
         });
         return results;
     }
-    catch {
+    catch (e) {
+        debug(chalk_1.default.red(`Error adding react-native-cli autolinking sources.\n${e}`));
         return [];
     }
 }
@@ -97,7 +103,8 @@ function stripRncliAutolinkingAbsolutePaths(dependency, root) {
     (0, assert_1.default)(dependency.root);
     const dependencyRoot = dependency.root;
     dependency.root = path_1.default.relative(root, dependencyRoot);
-    for (const platformData of Object.values(dependency.platforms)) {
+    const platforms = Object.values(dependency.platforms).filter((platform) => platform !== null);
+    for (const platformData of Object.values(platforms)) {
         for (const [key, value] of Object.entries(platformData)) {
             platformData[key] = value.startsWith?.(dependencyRoot) ? path_1.default.relative(root, value) : value;
         }
