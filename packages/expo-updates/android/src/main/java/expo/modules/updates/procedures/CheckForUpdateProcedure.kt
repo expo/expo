@@ -106,7 +106,7 @@ class CheckForUpdateProcedure(
                   LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER
                 )
               )
-              UpdatesStateEvent.CheckCompleteUnavailable()
+              procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
               procedureContext.onComplete()
               return
             }
