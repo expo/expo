@@ -21,9 +21,13 @@ extension StripeSdk : PKPaymentAuthorizationViewControllerDelegate, STPApplePayC
                 if let error = error {
                     self.createPlatformPayPaymentMethodResolver?(Errors.createError(ErrorType.Failed, error))
                 } else {
-                    let promiseResult = [
-                        "token": token != nil ? Mappers.mapFromToken(token: token!.splitApplePayAddressByNewline()) : [:]
+                    var promiseResult = [
+                        "token": token != nil ? Mappers.mapFromToken(token: token!.splitApplePayAddressByNewline()) : [:],
                     ]
+                    if let shippingContact = payment.shippingContact {
+                        promiseResult["shippingContact"] = Mappers.mapFromShippingContact(shippingContact: shippingContact)
+                    }
+
                     self.createPlatformPayPaymentMethodResolver?(promiseResult)
                 }
                 completion(PKPaymentAuthorizationResult.init(status: .success, errors: nil))
@@ -33,9 +37,13 @@ extension StripeSdk : PKPaymentAuthorizationViewControllerDelegate, STPApplePayC
                 if let error = error {
                     self.createPlatformPayPaymentMethodResolver?(Errors.createError(ErrorType.Failed, error))
                 } else {
-                    let promiseResult = [
+                    var promiseResult = [
                         "paymentMethod": Mappers.mapFromPaymentMethod(paymentMethod?.splitApplePayAddressByNewline()) ?? [:]
                     ]
+                    if let shippingContact = payment.shippingContact {
+                        promiseResult["shippingContact"] = Mappers.mapFromShippingContact(shippingContact: shippingContact)
+                    }
+                    
                     self.createPlatformPayPaymentMethodResolver?(promiseResult)
                 }
                 completion(PKPaymentAuthorizationResult.init(status: .success, errors: nil))
@@ -122,10 +130,6 @@ extension StripeSdk : PKPaymentAuthorizationViewControllerDelegate, STPApplePayC
         didSelect shippingMethod: PKShippingMethod,
         handler: @escaping (PKPaymentRequestShippingMethodUpdate) -> Void
     ) {
-        if (self.hasLegacyApplePayListeners) {
-            // Legacy, remove when useApplePay hook is removed
-            sendEvent(withName: "onDidSetShippingMethod", body: ["shippingMethod": Mappers.mapFromShippingMethod(shippingMethod: shippingMethod)])
-        }
         if let callback = self.shippingMethodUpdateJSCallback {
             self.shippingMethodUpdateCompletion = handler
             callback(["shippingMethod": Mappers.mapFromShippingMethod(shippingMethod: shippingMethod)])
@@ -141,10 +145,6 @@ extension StripeSdk : PKPaymentAuthorizationViewControllerDelegate, STPApplePayC
         didSelectShippingContact contact: PKContact,
         handler: @escaping (PKPaymentRequestShippingContactUpdate) -> Void
     ) {
-        if (self.hasLegacyApplePayListeners) {
-            // Legacy, remove when useApplePay hook is removed
-            sendEvent(withName: "onDidSetShippingContact", body: ["shippingContact": Mappers.mapFromShippingContact(shippingContact: contact)])
-        }
         if let callback = self.shippingContactUpdateJSCallback {
             self.shippingContactUpdateCompletion = handler
             callback(["shippingContact": Mappers.mapFromShippingContact(shippingContact: contact)])
@@ -165,15 +165,13 @@ extension StripeSdk : PKPaymentAuthorizationViewControllerDelegate, STPApplePayC
         paymentInformation: PKPayment,
         completion: @escaping STPIntentClientSecretCompletionBlock
     ) {
+        self.confirmApplePayPaymentMethod = paymentMethod
         if let clientSecret = self.confirmApplePayPaymentClientSecret {
             completion(clientSecret, nil)
         } else if let clientSecret = self.confirmApplePaySetupClientSecret {
             completion(clientSecret, nil)
         } else {
-            self.applePayCompletionCallback = completion
-            let method = Mappers.mapFromPaymentMethod(paymentMethod.splitApplePayAddressByNewline())
-            self.deprecatedApplePayRequestResolver?(Mappers.createResult("paymentMethod", method))
-            self.deprecatedApplePayRequestRejecter = nil
+            RCTMakeAndLogError("Tried to complete Apple Pay payment, but no client secret was found.", nil, nil)
         }
     }
     
@@ -210,10 +208,15 @@ extension StripeSdk : PKPaymentAuthorizationViewControllerDelegate, STPApplePayC
                         }
 
                         if let paymentIntent = paymentIntent {
-                            resolve(Mappers.createResult("paymentIntent", Mappers.mapFromPaymentIntent(paymentIntent: paymentIntent)))
+                            let result = Mappers.mapFromPaymentIntent(paymentIntent: paymentIntent)
+                            if (paymentIntent.paymentMethod == nil) {
+                                result.setValue(Mappers.mapFromPaymentMethod(self.confirmApplePayPaymentMethod), forKey: "paymentMethod")
+                            }
+                            resolve(Mappers.createResult("paymentIntent", result))
                         } else {
                             resolve(Mappers.createResult("paymentIntent", nil))
                         }
+                        self.confirmApplePayPaymentMethod = nil
                     }
                 } else if let clientSecret = self.confirmApplePaySetupClientSecret {
                     STPAPIClient.shared.retrieveSetupIntent(withClientSecret: clientSecret) { (setupIntent, error) in
@@ -227,50 +230,39 @@ extension StripeSdk : PKPaymentAuthorizationViewControllerDelegate, STPApplePayC
                         }
 
                         if let setupIntent = setupIntent {
-                            resolve(Mappers.createResult("setupIntent", Mappers.mapFromSetupIntent(setupIntent: setupIntent)))
+                            let result = Mappers.mapFromSetupIntent(setupIntent: setupIntent)
+                            if (setupIntent.paymentMethod == nil) {
+                                result.setValue(Mappers.mapFromPaymentMethod(self.confirmApplePayPaymentMethod), forKey: "paymentMethod")
+                            }
+                            resolve(Mappers.createResult("setupIntent", result))
                         } else {
                             resolve(Mappers.createResult("setupIntent", nil))
                         }
+                        self.confirmApplePayPaymentMethod = nil
                     }
                 }
-                
-            } else {
-                deprecatedConfirmApplePayPaymentResolver?([])
             }
             break
         case .error:
             if let resolve = self.confirmApplePayResolver {
                 resolve(Errors.createError(ErrorType.Failed, error as NSError?))
-            } else {
-                let message = "Payment not completed"
-                deprecatedApplePayCompletionRejecter?(ErrorType.Failed, message, nil)
-                deprecatedApplePayRequestRejecter?(ErrorType.Failed, message, nil)
             }
             break
         case .userCancellation:
             let message = "The payment has been canceled"
             if let resolve = self.confirmApplePayResolver {
                 resolve(Errors.createError(ErrorType.Canceled, message))
-            } else {
-                deprecatedApplePayCompletionRejecter?(ErrorType.Canceled, message, nil)
-                deprecatedApplePayRequestRejecter?(ErrorType.Canceled, message, nil)
             }
             break
         @unknown default:
             if let resolve = self.confirmApplePayResolver {
                 resolve(Errors.createError(ErrorType.Unknown, error as NSError?))
-            } else {
-                let message = "Payment not completed"
-                deprecatedApplePayCompletionRejecter?(ErrorType.Unknown, message, nil)
-                deprecatedApplePayRequestRejecter?(ErrorType.Unknown, message, nil)
             }
             break
         }
         confirmApplePayResolver = nil
         confirmApplePayPaymentClientSecret = nil
         confirmApplePaySetupClientSecret = nil
-        deprecatedApplePayCompletionRejecter = nil
-        deprecatedApplePayRequestRejecter = nil
     }
     
 }

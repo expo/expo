@@ -91,6 +91,14 @@ class AddressSheetView: UIView {
         switch (presentationStyle) {
         case "fullscreen":
             return .fullScreen
+        case "pageSheet":
+            return .pageSheet
+        case "formSheet":
+            return .formSheet
+        case "automatic":
+            return .automatic
+        case "overFullScreen":
+            return .overFullScreen
         case "popover":
             fallthrough
         default:

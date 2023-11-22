@@ -293,6 +293,7 @@ class Mappers {
         case STPPaymentMethodType.payPal: return "PayPal"
         case STPPaymentMethodType.affirm: return "Affirm"
         case STPPaymentMethodType.cashApp: return "CashApp"
+        case STPPaymentMethodType.revolutPay: return "RevolutPay"
         case STPPaymentMethodType.unknown: return "Unknown"
         default: return "Unknown"
         }
@@ -324,6 +325,7 @@ class Mappers {
             case "PayPal": return STPPaymentMethodType.payPal
             case "Affirm": return STPPaymentMethodType.affirm
             case "CashApp": return STPPaymentMethodType.cashApp
+            case "RevolutPay": return STPPaymentMethodType.revolutPay
             default: return STPPaymentMethodType.unknown
             }
         }
@@ -357,6 +359,7 @@ class Mappers {
         if let address = shipping.address {
             addressDetails = [
                 "city": address.city ?? NSNull(),
+                "state": address.state ?? NSNull(),
                 "country": address.country ?? NSNull(),
                 "line1": address.line1 ?? NSNull(),
                 "line2":address.line2 ?? NSNull(),
@@ -450,14 +453,16 @@ class Mappers {
                     "voucherURL": it.oxxoDisplayDetails?.hostedVoucherURL.absoluteString ?? NSNull(),
                     "voucherNumber": it.oxxoDisplayDetails?.number ?? NSNull(),
                 ]
-// TODO: Not supported on Android
-//            case .boletoDisplayDetails:
-//                return [
-//                    "type": "boletoVoucher",
-//                    "expiration": it.boletoDisplayDetails?.expiresAt.timeIntervalSince1970.description ?? NSNull(),
-//                    "voucherURL": it.boletoDisplayDetails?.hostedVoucherURL.absoluteString ?? NSNull(),
-//                    "voucherNumber": it.boletoDisplayDetails?.number ?? NSNull(),
-//                ]
+            case .boletoDisplayDetails:
+                return [
+                    "type": "boletoVoucher",
+                    "voucherURL": it.boletoDisplayDetails?.hostedVoucherURL.absoluteString ?? NSNull(),
+                ]
+            case .konbiniDisplayDetails:
+                return [
+                    "type": "konbiniVoucher",
+                    "voucherURL": it.konbiniDisplayDetails?.hostedVoucherURL.absoluteString ?? NSNull(),
+                ]
             default: // .useStripeSDK, .BLIKAuthorize, .unknown
                 return nil
             }
@@ -753,7 +758,7 @@ class Mappers {
     }
 
     @available(iOS 13.0, *)
-    class func mapToUserInterfaceStyle(_ style: String) -> PaymentSheet.UserInterfaceStyle {
+    class func mapToUserInterfaceStyle(_ style: String?) -> PaymentSheet.UserInterfaceStyle {
         switch style {
         case "alwaysDark": return PaymentSheet.UserInterfaceStyle.alwaysDark
         case "alwaysLight": return PaymentSheet.UserInterfaceStyle.alwaysLight

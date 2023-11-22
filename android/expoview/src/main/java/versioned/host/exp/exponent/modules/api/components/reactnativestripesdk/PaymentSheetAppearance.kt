@@ -22,9 +22,11 @@ fun buildPaymentSheetAppearance(userParams: Bundle?, context: Context): PaymentS
 }
 
 private fun buildTypography(fontParams: Bundle?, context: Context): PaymentSheet.Typography {
+  val scale = getDoubleOrNull(fontParams, PaymentSheetAppearanceKeys.SCALE)
+  val resId = getFontResId(fontParams, PaymentSheetAppearanceKeys.FAMILY, PaymentSheet.Typography.default.fontResId, context)
   return PaymentSheet.Typography.default.copy(
-    sizeScaleFactor = getFloatOr(fontParams, PaymentSheetAppearanceKeys.SCALE, PaymentSheet.Typography.default.sizeScaleFactor),
-    fontResId = getFontResId(fontParams, PaymentSheetAppearanceKeys.FAMILY, PaymentSheet.Typography.default.fontResId, context)
+    sizeScaleFactor = scale?.toFloat() ?: PaymentSheet.Typography.default.sizeScaleFactor,
+    fontResId = resId
   )
 }
 
@@ -105,20 +107,49 @@ private fun buildPrimaryButtonColors(colorParams: Bundle, default: PaymentSheet.
   )
 }
 
-private fun getFloatOr(bundle: Bundle?, key: String, defaultValue: Float): Float {
-  return if (bundle?.containsKey(key) == true) {
-    bundle.getFloat(key, bundle.getInt(key).toFloat())
-  } else {
-    defaultValue
+private fun getDoubleOrNull(bundle: Bundle?, key: String): Double? {
+  if (bundle?.containsKey(key) == true) {
+    val valueOfUnknownType = bundle.get(key)
+    if (valueOfUnknownType is Double) {
+      return valueOfUnknownType
+    } else if (valueOfUnknownType is Int) {
+      return valueOfUnknownType.toDouble()
+    } else if (valueOfUnknownType is Float) {
+      return valueOfUnknownType.toDouble()
+    }
   }
+
+  return null
+}
+
+private fun getFloatOr(bundle: Bundle?, key: String, defaultValue: Float): Float {
+  if (bundle?.containsKey(key) == true) {
+    val valueOfUnknownType = bundle.get(key)
+    if (valueOfUnknownType is Float) {
+      return valueOfUnknownType
+    } else if (valueOfUnknownType is Int) {
+      return valueOfUnknownType.toFloat()
+    } else if (valueOfUnknownType is Double) {
+      return valueOfUnknownType.toFloat()
+    }
+  }
+
+  return defaultValue
 }
 
 private fun getFloatOrNull(bundle: Bundle?, key: String): Float? {
-  return if (bundle?.containsKey(key) == true) {
-    bundle.getFloat(key, bundle.getInt(key).toFloat())
-  } else {
-    null
+  if (bundle?.containsKey(key) == true) {
+    val valueOfUnknownType = bundle.get(key)
+    if (valueOfUnknownType is Float) {
+      return valueOfUnknownType
+    } else if (valueOfUnknownType is Int) {
+      return valueOfUnknownType.toFloat()
+    } else if (valueOfUnknownType is Double) {
+      return valueOfUnknownType.toFloat()
+    }
   }
+
+  return null
 }
 
 @Throws(PaymentSheetAppearanceException::class)

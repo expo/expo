@@ -270,6 +270,8 @@ class PaymentLauncherFragment(
   private fun isNextActionSuccessState(nextAction: StripeIntent.NextActionType?): Boolean {
     return when (nextAction) {
       StripeIntent.NextActionType.DisplayOxxoDetails,
+      StripeIntent.NextActionType.DisplayBoletoDetails,
+      StripeIntent.NextActionType.DisplayKonbiniDetails,
       StripeIntent.NextActionType.VerifyWithMicrodeposits -> true
       StripeIntent.NextActionType.RedirectToUrl,
       StripeIntent.NextActionType.UseStripeSdk,
@@ -278,6 +280,7 @@ class PaymentLauncherFragment(
       StripeIntent.NextActionType.WeChatPayRedirect,
       StripeIntent.NextActionType.UpiAwaitNotification,
       StripeIntent.NextActionType.CashAppRedirect,
+      StripeIntent.NextActionType.SwishRedirect,
       null, -> false
     }
   }

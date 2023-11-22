@@ -17,25 +17,11 @@ class ApplePayButtonView: UIView {
     @objc var borderRadius: NSNumber?
     @objc var disabled = false
     
-    func doesNothing(_: Optional<Dictionary<AnyHashable, Any>>) {
-        return
-    }
-    
     @objc func handleApplePayButtonTapped() {
-        if onPressAction != nil {
-            onPressAction!(["true": true])
-            // JS Callbacks are all no-ops since in legacy code (useApplePay hook),
-            // this behavior is controlled via the onDidSetShippingMethod and onDidSetShippingContact
-            // events
-            stripeSdk?.shippingMethodUpdateJSCallback = doesNothing
-            stripeSdk?.shippingContactUpdateJSCallback = doesNothing
-            stripeSdk?.couponCodeEnteredJSCallback = doesNothing
-        } else {
-            stripeSdk?.shippingMethodUpdateJSCallback = onShippingMethodSelectedAction
-            stripeSdk?.shippingContactUpdateJSCallback = onShippingContactSelectedAction
-            stripeSdk?.couponCodeEnteredJSCallback = onCouponCodeEnteredAction
-            stripeSdk?.platformPayOrderTrackingJSCallback = onOrderTrackingAction
-        }
+        stripeSdk?.shippingMethodUpdateJSCallback = onShippingMethodSelectedAction
+        stripeSdk?.shippingContactUpdateJSCallback = onShippingContactSelectedAction
+        stripeSdk?.couponCodeEnteredJSCallback = onCouponCodeEnteredAction
+        stripeSdk?.platformPayOrderTrackingJSCallback = onOrderTrackingAction
     }
     
     override func didSetProps(_ changedProps: [String]!) {

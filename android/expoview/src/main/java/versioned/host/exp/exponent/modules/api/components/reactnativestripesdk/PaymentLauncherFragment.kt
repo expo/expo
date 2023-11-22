@@ -34,7 +34,9 @@ class PaymentLauncherFragment(
   private val setupIntentClientSecret: String? = null,
   private val confirmSetupParams: ConfirmSetupIntentParams? = null,
   // Used when handling the next action on a payment intent
-  private val handleNextActionClientSecret: String? = null,
+  private val handleNextActionPaymentIntentClientSecret: String? = null,
+  // Used when handling the next action on a setup intent
+  private val handleNextActionSetupIntentClientSecret: String? = null,
 ) : Fragment() {
   private lateinit var paymentLauncher: PaymentLauncher
 
@@ -88,19 +90,40 @@ class PaymentLauncherFragment(
     /**
      * Helper-constructor used for handling the next action on a payment intent
      */
-    fun forNextAction(context: ReactApplicationContext,
+    fun forNextActionPayment(context: ReactApplicationContext,
                       stripe: Stripe,
                       publishableKey: String,
                       stripeAccountId: String?,
                       promise: Promise,
-                      handleNextActionClientSecret: String): PaymentLauncherFragment {
+                      handleNextActionPaymentIntentClientSecret: String): PaymentLauncherFragment {
       val paymentLauncherFragment = PaymentLauncherFragment(
         context,
         stripe,
         publishableKey,
         stripeAccountId,
         promise,
-        handleNextActionClientSecret = handleNextActionClientSecret,
+        handleNextActionPaymentIntentClientSecret = handleNextActionPaymentIntentClientSecret,
+      )
+      addFragment(paymentLauncherFragment, context, promise)
+      return paymentLauncherFragment
+    }
+
+    /**
+     * Helper-constructor used for handling the next action on a setup intent
+     */
+    fun forNextActionSetup(context: ReactApplicationContext,
+                      stripe: Stripe,
+                      publishableKey: String,
+                      stripeAccountId: String?,
+                      promise: Promise,
+                      handleNextActionSetupIntentClientSecret: String): PaymentLauncherFragment {
+      val paymentLauncherFragment = PaymentLauncherFragment(
+        context,
+        stripe,
+        publishableKey,
+        stripeAccountId,
+        promise,
+        handleNextActionSetupIntentClientSecret = handleNextActionSetupIntentClientSecret,
       )
       addFragment(paymentLauncherFragment, context, promise)
       return paymentLauncherFragment
@@ -130,8 +153,10 @@ class PaymentLauncherFragment(
       paymentLauncher.confirm(confirmPaymentParams)
     } else if (setupIntentClientSecret != null && confirmSetupParams != null) {
       paymentLauncher.confirm(confirmSetupParams)
-    } else if (handleNextActionClientSecret != null) {
-      paymentLauncher.handleNextActionForPaymentIntent(handleNextActionClientSecret)
+    } else if (handleNextActionPaymentIntentClientSecret != null) {
+      paymentLauncher.handleNextActionForPaymentIntent(handleNextActionPaymentIntentClientSecret)
+    } else if (handleNextActionSetupIntentClientSecret != null) {
+      paymentLauncher.handleNextActionForSetupIntent(handleNextActionSetupIntentClientSecret)
     } else {
       throw Exception("Invalid parameters provided to PaymentLauncher. Ensure that you are providing the correct client secret and setup params (if necessary).")
     }
@@ -146,10 +171,12 @@ class PaymentLauncherFragment(
         is PaymentResult.Completed -> {
           if (paymentIntentClientSecret != null) {
             retrievePaymentIntent(paymentIntentClientSecret, stripeAccountId)
-          } else if (handleNextActionClientSecret != null) {
-            retrievePaymentIntent(handleNextActionClientSecret, stripeAccountId)
+          } else if (handleNextActionPaymentIntentClientSecret != null) {
+            retrievePaymentIntent(handleNextActionPaymentIntentClientSecret, stripeAccountId)
           } else if (setupIntentClientSecret != null) {
             retrieveSetupIntent(setupIntentClientSecret, stripeAccountId)
+          } else if (handleNextActionSetupIntentClientSecret != null) {
+            retrieveSetupIntent(handleNextActionSetupIntentClientSecret, stripeAccountId)
           } else {
             throw Exception("Failed to create Payment Launcher. No client secret provided.")
           }
@@ -255,6 +282,8 @@ class PaymentLauncherFragment(
   private fun isNextActionSuccessState(nextAction: StripeIntent.NextActionType?): Boolean {
     return when (nextAction) {
       StripeIntent.NextActionType.DisplayOxxoDetails,
+      StripeIntent.NextActionType.DisplayBoletoDetails,
+      StripeIntent.NextActionType.DisplayKonbiniDetails,
       StripeIntent.NextActionType.VerifyWithMicrodeposits -> true
       StripeIntent.NextActionType.RedirectToUrl,
       StripeIntent.NextActionType.UseStripeSdk,
@@ -263,6 +292,7 @@ class PaymentLauncherFragment(
       StripeIntent.NextActionType.WeChatPayRedirect,
       StripeIntent.NextActionType.UpiAwaitNotification,
       StripeIntent.NextActionType.CashAppRedirect,
+      StripeIntent.NextActionType.SwishRedirect,
       null, -> false
     }
   }
