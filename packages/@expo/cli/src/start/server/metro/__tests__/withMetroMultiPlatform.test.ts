@@ -79,7 +79,6 @@ describe(withExtendedResolver, () => {
         sourceExts: ['mjs', 'ts', 'tsx', 'js', 'jsx', 'json', 'css'],
         customResolverOptions: {},
         originModulePath: expect.anything(),
-        getPackageMainPath: expect.any(Function),
       }),
       'react-native',
       platform
@@ -100,19 +99,20 @@ describe(withExtendedResolver, () => {
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
     expect(getResolveFunc()).toBeCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+
+    expect(getResolveFunc()).toHaveBeenNthCalledWith(
+      1,
       expect.objectContaining({
-        nodeModulesPaths: ['/node_modules', '/src'],
         extraNodeModules: {},
         mainFields: ['react-native', 'browser', 'main'],
         preferNativePlatform: true,
       }),
-      'react-native',
+      '/src/react-native',
       platform
     );
   });
 
-  it(`resolves to react-native-web on web`, async () => {
+  it(`does not alias react-native-web in initial resolution with baseUrl on web`, async () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
@@ -128,7 +128,33 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toBeCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
-        nodeModulesPaths: ['/node_modules', '/src'],
+        mainFields: ['browser', 'module', 'main'],
+        preferNativePlatform: false,
+      }),
+      '/src/react-native',
+      platform
+    );
+  });
+
+  it(`resolves to react-native-web on web`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      platforms: ['ios', 'web'],
+      tsconfig: {
+        // No baseUrl
+        paths: { '/*': ['*'] },
+      },
+      isTsconfigPathsEnabled: true,
+    });
+
+    const platform = 'web';
+
+    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toBeCalledWith(
+      expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
       }),
@@ -162,7 +188,6 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toBeCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
-        nodeModulesPaths: ['/node_modules'],
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
       }),
