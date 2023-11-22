@@ -1,8 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  preset: '../../jest/unit-test-config',
-  rootDir: path.resolve(__dirname),
+  ...require('expo-module-scripts/jest-preset-cli'),
   displayName: require('./package').name,
+  rootDir: path.resolve(__dirname),
   roots: ['src'],
 };

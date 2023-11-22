@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.base",
+  "extends": "../../tsconfig.node",
   "compilerOptions": {
     "outDir": "build",
     "rootDir": "src",
