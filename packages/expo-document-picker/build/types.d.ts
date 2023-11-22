@@ -64,16 +64,10 @@ export type DocumentPickerResult = {
      */
     output?: FileList | null;
 } & (DocumentPickerSuccessResult | DocumentPickerCanceledResult);
-/**
- * @hidden
- */
 export type DocumentPickerSuccessResult = {
     canceled: false;
     assets: DocumentPickerAsset[];
 };
-/**
- * @hidden
- */
 export type DocumentPickerCanceledResult = {
     canceled: true;
     assets: null;
