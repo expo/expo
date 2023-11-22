@@ -9,13 +9,15 @@
 #define SkGraphics_DEFINED
 
 #include "include/core/SkRefCnt.h"
+#include "include/private/base/SkAPI.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 
 class SkData;
 class SkImageGenerator;
 class SkOpenTypeSVGDecoder;
-class SkPath;
 class SkTraceMemoryDump;
 
 class SK_API SkGraphics {
@@ -73,6 +75,13 @@ public:
      *  draws to be recreated, since they will no longer be in the cache.
      */
     static void PurgeFontCache();
+
+    /**
+     *  If the strike cache is above the cache limit, attempt to purge strikes
+     *  with pinners. This should be called after clients release locks on
+     *  pinned strikes.
+     */
+    static void PurgePinnedFontCache();
 
     /**
      *  This function returns the memory used for temporary images and other resources.
@@ -142,37 +151,6 @@ public:
             std::unique_ptr<SkOpenTypeSVGDecoder> (*)(const uint8_t* svg, size_t length);
     static OpenTypeSVGDecoderFactory SetOpenTypeSVGDecoderFactory(OpenTypeSVGDecoderFactory);
     static OpenTypeSVGDecoderFactory GetOpenTypeSVGDecoderFactory();
-
-    /**
-     *  Call early in main() to allow Skia to use a JIT to accelerate CPU-bound operations.
-     */
-    static void AllowJIT();
-
-    /**
-     *  To override the default AA algorithm choice in the CPU backend, provide a function that
-     *  returns whether to use analytic (true) or supersampled (false) for a given path.
-     *
-     *  NOTE: This is a temporary API, intended for migration of all clients to one algorithm,
-     *        and should not be used.
-     */
-    typedef bool (*PathAnalyticAADeciderProc)(const SkPath&);
-    static void SetPathAnalyticAADecider(PathAnalyticAADeciderProc);
-
-    /*
-     *  Similar to above, but simply forces the CPU backend to always use analytic AA.
-     *
-     *  NOTE: This is a temporary API, intended for migration of all clients to one algorithm.
-     *        If the PathAnalyticAADeciderProc is *also* set, this setting has no effect.
-     *        Unlike that API, this function is thread-safe.
-     */
-    static void SetForceAnalyticAA(bool);
-};
-
-class SkAutoGraphics {
-public:
-    SkAutoGraphics() {
-        SkGraphics::Init();
-    }
 };
 
 #endif

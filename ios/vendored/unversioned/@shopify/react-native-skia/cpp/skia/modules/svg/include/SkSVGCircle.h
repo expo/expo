@@ -13,7 +13,7 @@
 
 struct SkPoint;
 
-class SkSVGCircle final : public SkSVGShape {
+class SK_API SkSVGCircle final : public SkSVGShape {
 public:
     static sk_sp<SkSVGCircle> Make() { return sk_sp<SkSVGCircle>(new SkSVGCircle()); }
 

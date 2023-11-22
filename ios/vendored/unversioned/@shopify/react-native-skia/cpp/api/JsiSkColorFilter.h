@@ -23,7 +23,7 @@ public:
       : JsiSkWrappingSkPtrHostObject<SkColorFilter>(std::move(context),
                                                     std::move(colorFilter)) {}
 
-  EXPORT_JSI_API_TYPENAME(JsiSkColorFilter, "ColorFilter")
+  EXPORT_JSI_API_TYPENAME(JsiSkColorFilter, ColorFilter)
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkColorFilter, dispose))
 };
 

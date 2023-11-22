@@ -2,12 +2,12 @@ package com.shopify.reactnative.skia;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 
 import com.facebook.jni.annotations.DoNotStrip;
-import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.views.view.ReactViewGroup;
 
 public abstract class SkiaBaseView extends ReactViewGroup implements TextureView.SurfaceTextureListener {
@@ -16,16 +16,51 @@ public abstract class SkiaBaseView extends ReactViewGroup implements TextureView
     private Surface mSurface;
     private TextureView mTexture;
 
-    public SkiaBaseView(Context context) {
+    private String tag = "SkiaView";
+
+    private boolean manageTexture = false;
+
+    public SkiaBaseView(Context context, boolean manageTexture) {
         super(context);
+        this.manageTexture = manageTexture;
         mTexture = new TextureView(context);
         mTexture.setSurfaceTextureListener(this);
         mTexture.setOpaque(false);
         addView(mTexture);
     }
 
+    public void destroySurface() {
+        if (mSurface != null) {
+            Log.i(tag, "destroySurface");
+            surfaceDestroyed();
+            mSurface.release();
+            mSurface = null;
+        }
+    }
+
+    private void createSurfaceTexture() {
+        if (manageTexture) {
+            // This API Level is >= 26, we created our own SurfaceTexture to have a faster time to first frame
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                Log.i(tag, "Create SurfaceTexture");
+                SurfaceTexture surface = new SurfaceTexture(false);
+                mTexture.setSurfaceTexture(surface);
+                this.onSurfaceTextureAvailable(surface, this.getMeasuredWidth(), this.getMeasuredHeight());
+            }
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (this.getMeasuredWidth() == 0) {
+            createSurfaceTexture();
+        }
+    }
+
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        Log.i(tag, "onLayout " + this.getMeasuredWidth() + "/" + this.getMeasuredHeight());
         super.onLayout(changed, left, top, right, bottom);
         mTexture.layout(0, 0, this.getMeasuredWidth(), this.getMeasuredHeight());
     }
@@ -102,33 +137,33 @@ public abstract class SkiaBaseView extends ReactViewGroup implements TextureView
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        Log.i(tag, "onSurfaceTextureAvailable " + width + "/" + height);
         mSurface = new Surface(surface);
         surfaceAvailable(mSurface, width, height);
     }
 
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+        Log.i(tag, "onSurfaceTextureSizeChanged " + width + "/" + height);
         surfaceSizeChanged(width, height);
     }
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        // Notify the native side
-        surfaceDestroyed();
+        Log.i(tag, "onSurfaceTextureDestroyed");
         // https://developer.android.com/reference/android/view/TextureView.SurfaceTextureListener#onSurfaceTextureDestroyed(android.graphics.SurfaceTexture)
-        // Invoked when the specified SurfaceTexture is about to be destroyed. If returns true,
-        // no rendering should happen inside the surface texture after this method is invoked.
-        // We've measured this and it seems like we need to call release and return true - and
-        // then handle the issue with this being ripped out underneath the native layer in the C++
-        // code.
-        mSurface.release();
-        // Return true - we promise that no more rendering will be done now.
-        return true;
+        destroySurface();
+        createSurfaceTexture();
+        return false;
     }
 
+    //private long _prevTimestamp = 0;
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-        // Nothing special to do here
+//        long timestamp = surface.getTimestamp();
+//        long frameDuration = (timestamp - _prevTimestamp)/1000000;
+//        Log.i(tag, "onSurfaceTextureUpdated "+frameDuration+"ms");
+//        _prevTimestamp = timestamp;
     }
 
     protected abstract void surfaceAvailable(Object surface, int width, int height);

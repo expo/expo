@@ -60,6 +60,7 @@ public:
     return jsiWidths;
   }
 
+  // TODO: deprecate
   JSI_HOST_FUNCTION(getTextWidth) {
     auto str = arguments[0].asString(runtime).utf8(runtime);
     auto numGlyphIDs = getObject()->countText(str.c_str(), str.length(),
@@ -83,6 +84,21 @@ public:
                                    nullptr, nullptr);
     }
     return jsi::Value(std::accumulate(widthPtrs.begin(), widthPtrs.end(), 0));
+  }
+
+  JSI_HOST_FUNCTION(measureText) {
+    auto str = arguments[0].asString(runtime).utf8(runtime);
+    SkRect bounds;
+    if (count > 1) {
+      auto paint = JsiSkPaint::fromValue(runtime, arguments[1]);
+      getObject()->measureText(str.c_str(), str.length(), SkTextEncoding::kUTF8,
+                               &bounds, paint.get());
+    } else {
+      getObject()->measureText(str.c_str(), str.length(), SkTextEncoding::kUTF8,
+                               &bounds);
+    }
+    return jsi::Object::createFromHostObject(
+        runtime, std::make_shared<JsiSkRect>(getContext(), std::move(bounds)));
   }
 
   JSI_HOST_FUNCTION(getMetrics) {
@@ -239,7 +255,7 @@ public:
     return jsi::Value::undefined();
   }
 
-  EXPORT_JSI_API_TYPENAME(JsiSkFont, "Font")
+  EXPORT_JSI_API_TYPENAME(JsiSkFont, Font)
 
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkFont, getSize),
                        JSI_EXPORT_FUNC(JsiSkFont, getMetrics),
@@ -260,6 +276,7 @@ public:
                        JSI_EXPORT_FUNC(JsiSkFont, setTypeface),
                        JSI_EXPORT_FUNC(JsiSkFont, getGlyphWidths),
                        JSI_EXPORT_FUNC(JsiSkFont, getTextWidth),
+                       JSI_EXPORT_FUNC(JsiSkFont, measureText),
                        JSI_EXPORT_FUNC(JsiSkFont, dispose))
 
   JsiSkFont(std::shared_ptr<RNSkPlatformContext> context, const SkFont &font)

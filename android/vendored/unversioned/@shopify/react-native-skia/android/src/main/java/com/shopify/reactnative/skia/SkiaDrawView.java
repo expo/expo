@@ -11,7 +11,7 @@ public class SkiaDrawView extends SkiaBaseView {
     private HybridData mHybridData;
 
     public SkiaDrawView(Context context) {
-        super(context);
+        super(context, false);
         RNSkiaModule skiaModule = ((ReactContext) context).getNativeModule(RNSkiaModule.class);
         mHybridData = initHybrid(skiaModule.getSkiaManager());
     }
@@ -41,5 +41,4 @@ public class SkiaDrawView extends SkiaBaseView {
     protected native void registerView(int nativeId);
 
     protected native void unregisterView();
-
 }

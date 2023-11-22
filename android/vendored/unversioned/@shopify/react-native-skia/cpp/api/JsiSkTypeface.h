@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include <jsi/jsi.h>
 
@@ -22,12 +23,33 @@ namespace jsi = facebook::jsi;
 
 class JsiSkTypeface : public JsiSkWrappingSkPtrHostObject<SkTypeface> {
 public:
-  EXPORT_JSI_API_TYPENAME(JsiSkTypeface, "Typeface")
-  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkTypeface, dispose))
+  EXPORT_JSI_API_TYPENAME(JsiSkTypeface, Typeface)
+  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkTypeface, getGlyphIDs),
+                       JSI_EXPORT_FUNC(JsiSkTypeface, dispose))
 
   JsiSkTypeface(std::shared_ptr<RNSkPlatformContext> context,
                 sk_sp<SkTypeface> typeface)
       : JsiSkWrappingSkPtrHostObject(std::move(context), std::move(typeface)) {}
+
+  JSI_HOST_FUNCTION(getGlyphIDs) {
+    auto str = arguments[0].asString(runtime).utf8(runtime);
+    int numGlyphIDs =
+        count > 1 && !arguments[1].isNull() && !arguments[1].isUndefined()
+            ? static_cast<int>(arguments[1].asNumber())
+            : getObject()->textToGlyphs(str.c_str(), str.length(),
+                                        SkTextEncoding::kUTF8, nullptr, 0);
+    std::vector<SkGlyphID> glyphIDs;
+    glyphIDs.resize(numGlyphIDs);
+    getObject()->textToGlyphs(str.c_str(), str.length(), SkTextEncoding::kUTF8,
+                              static_cast<SkGlyphID *>(glyphIDs.data()),
+                              numGlyphIDs);
+    auto jsiGlyphIDs = jsi::Array(runtime, numGlyphIDs);
+    for (int i = 0; i < numGlyphIDs; i++) {
+      jsiGlyphIDs.setValueAtIndex(runtime, i,
+                                  jsi::Value(static_cast<int>(glyphIDs[i])));
+    }
+    return jsiGlyphIDs;
+  }
 
   /**
    Returns the jsi object from a host object of this type
