@@ -9,7 +9,7 @@
     "test": "jest",
     "lint": "eslint .",
     "report": "react-native-bundle-visualizer --entry-file __generated__/AppEntry.js",
-    "start": "expo start",
+    "start": "expo start --port 80",
     "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml"
   },
   "author": "Expo",
