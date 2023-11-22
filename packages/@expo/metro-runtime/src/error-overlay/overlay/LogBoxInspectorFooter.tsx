@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useSelectedLog } from '../Data/LogContext';
 import * as LogBoxStyle from '../UI/LogBoxStyle';
@@ -91,7 +91,11 @@ const buttonStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   root: {
     backgroundColor: LogBoxStyle.getBackgroundColor(1),
-    boxShadow: `0 -2px 0 2px #000`,
+    ...Platform.select({
+      web: {
+        boxShadow: `0 -2px 0 2px #000`,
+      },
+    }),
     flexDirection: 'row',
   },
   button: {

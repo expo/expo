@@ -4,7 +4,7 @@ import ExpoModulesTestCore
 @testable import EXDevMenu
 
 class DevMenuInternalModuleTest: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext.create()
     let module = DevMenuInternalModule(appContext: appContext)
 

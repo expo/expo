@@ -13,7 +13,7 @@ export const TESTS = [
   'LinearGradient',
   'Constants',
   // 'Contacts',
-  'Crypto',
+  // 'Crypto',
   // 'GLView',
   'Haptics',
   'Localization',

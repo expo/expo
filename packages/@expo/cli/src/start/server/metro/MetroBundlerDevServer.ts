@@ -20,6 +20,7 @@ import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { getRouterDirectoryWithManifest, isApiRouteConvention } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { ExportAssetMap } from '../../../export/saveAssets';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
@@ -102,10 +103,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // This does not contain the API routes info.
     prerenderManifest: ExpoRouterServerManifestV1;
     baseUrl: string;
-  }) {
+  }): Promise<{ files: ExportAssetMap; manifest: ExpoRouterServerManifestV1<string> }> {
     const manifest = await this.getExpoRouterRoutesManifestAsync({ appDir });
 
-    const files: Map<string, string> = new Map();
+    const files: ExportAssetMap = new Map();
 
     for (const route of manifest.apiRoutes) {
       const filepath = path.join(appDir, route.file);
@@ -120,7 +121,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         outputDir,
         path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js'))
       );
-      files.set(artifactFilename, contents!);
+      if (contents) {
+        files.set(artifactFilename, { contents });
+      }
       // Remap the manifest files to represent the output files.
       route.file = artifactFilename;
     }
@@ -185,13 +188,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticResourcesAsync({
     mode,
     minify = mode !== 'development',
-    includeMaps,
+    includeSourceMaps,
     baseUrl,
     mainModuleName,
+    isExporting,
   }: {
+    isExporting: boolean;
     mode: string;
     minify?: boolean;
-    includeMaps?: boolean;
+    includeSourceMaps?: boolean;
     baseUrl?: string;
     mainModuleName?: string;
   }): Promise<{ artifacts: SerialAsset[]; assets?: AssetData[] }> {
@@ -201,11 +206,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       minify,
       environment: 'client',
       serializerOutput: 'static',
-      serializerIncludeMaps: includeMaps,
+      serializerIncludeMaps: includeSourceMaps,
       mainModuleName:
         mainModuleName ?? resolveMainModuleName(this.projectRoot, { platform: 'web' }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
       baseUrl,
+      isExporting,
     });
 
     const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
@@ -273,7 +279,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mode,
       minify = mode !== 'development',
       baseUrl,
+      isExporting,
     }: {
+      isExporting: boolean;
       mode: 'development' | 'production';
       minify?: boolean;
       baseUrl: string;
@@ -286,6 +294,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mainModuleName: resolveMainModuleName(this.projectRoot, { platform: 'web' }),
       lazy: shouldEnableAsyncImports(this.projectRoot),
       baseUrl,
+      isExporting,
     });
 
     const bundleStaticHtml = async (): Promise<string> => {
@@ -306,7 +315,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     const [{ artifacts: resources }, staticHtml] = await Promise.all([
-      this.getStaticResourcesAsync({ mode, minify, baseUrl }),
+      this.getStaticResourcesAsync({ isExporting, mode, minify, baseUrl }),
       bundleStaticHtml(),
     ]);
     const content = serializeHtmlWithAssets({
@@ -442,6 +451,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
             getStaticPageAsync: (pathname) => {
               return this.getStaticPageAsync(pathname, {
+                isExporting: !!options.isExporting,
                 mode: options.mode ?? 'development',
                 minify: options.minify,
                 baseUrl,

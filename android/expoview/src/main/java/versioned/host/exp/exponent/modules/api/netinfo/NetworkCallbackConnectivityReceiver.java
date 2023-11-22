@@ -104,7 +104,15 @@ public class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
             if (network != null) {
                 // This may return null per API docs, and is deprecated, but for older APIs (< VERSION_CODES.P)
                 // we need it to test for suspended internet
-                networkInfo = getConnectivityManager().getNetworkInfo(network);
+                try {
+                    networkInfo = getConnectivityManager().getNetworkInfo(network);
+                } catch (SecurityException e) {
+                // Android 11 may throw a 'package does not belong' security exception here.
+                // Google fixed Android 14, 13 and 12 with the issue where Chaland Jean patched those versions.
+                // Android 11 is too old, so that's why we have to catch this exception here to be safe.
+               //  https://android.googlesource.com/platform/frameworks/base/+/249be21013e389837f5b2beb7d36890b25ecfaaf%5E%21/
+                    networkInfo = null;
+                }
             }
 
             // Check to see if the network is temporarily unavailable or if airplane mode is toggled on
@@ -142,9 +150,16 @@ public class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
 
     private void asyncUpdateAndSend(int delay) {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            mCapabilities = getConnectivityManager().getNetworkCapabilities(mNetwork);
-            updateAndSend();
-
+            try {
+                mCapabilities = getConnectivityManager().getNetworkCapabilities(mNetwork);
+                updateAndSend();
+            } catch (SecurityException e) {
+                // Android 11 may throw a 'package does not belong' security exception here.
+                // Google fixed Android 14, 13 and 12 with the issue where Chaland Jean patched those versions.
+                // Android 11 is too old, so that's why we have to catch this exception here to be safe.
+               //  https://android.googlesource.com/platform/frameworks/base/+/249be21013e389837f5b2beb7d36890b25ecfaaf%5E%21/
+                // We need to catch this to prevent app crash.
+            }
         }, delay);
     }
 

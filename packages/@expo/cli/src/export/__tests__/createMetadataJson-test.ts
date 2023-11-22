@@ -4,9 +4,7 @@ describe(createMetadataJson, () => {
   it(`writes metadata without file hashes`, async () => {
     // Should not throw
     await createMetadataJson({
-      fileNames: {
-        ios: 'ios-xxfooxxbarxx.js',
-      },
+      fileNames: { ios: ['_expo/static/js/ios/ios-xxfooxxbarxx.js', 'other'] },
       bundles: {
         ios: {
           assets: [{ type: 'font' } as any],
@@ -16,9 +14,8 @@ describe(createMetadataJson, () => {
   });
   it(`writes metadata manifest`, async () => {
     const metadata = await createMetadataJson({
-      fileNames: {
-        ios: 'ios-xxfooxxbarxx.js',
-      },
+      fileNames: { ios: ['_expo/static/js/ios/ios-xxfooxxbarxx.js', 'other'] },
+
       bundles: {
         ios: {
           assets: [{ type: 'image', fileHashes: ['foobar', 'other'] } as any],
@@ -40,7 +37,7 @@ describe(createMetadataJson, () => {
               path: 'assets/other',
             },
           ],
-          bundle: 'bundles/ios-xxfooxxbarxx.js',
+          bundle: '_expo/static/js/ios/ios-xxfooxxbarxx.js',
         },
       },
       version: expect.any(Number),
@@ -49,7 +46,7 @@ describe(createMetadataJson, () => {
   it(`writes metadata manifest with excluded assets`, async () => {
     const metadata = await createMetadataJson({
       fileNames: {
-        ios: 'ios-xxfooxxbarxx.js',
+        ios: ['ios-xxfooxxbarxx.js'],
       },
       bundles: {
         ios: {
@@ -64,7 +61,7 @@ describe(createMetadataJson, () => {
       fileMetadata: {
         ios: {
           assets: [],
-          bundle: 'bundles/ios-xxfooxxbarxx.js',
+          bundle: 'ios-xxfooxxbarxx.js',
         },
       },
       version: expect.any(Number),

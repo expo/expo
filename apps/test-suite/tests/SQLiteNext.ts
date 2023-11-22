@@ -48,6 +48,18 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       await db.closeAsync();
     });
 
+    it('should support bigger integers than int32_t', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      const value = 1700007974511;
+      const row = await db.getAsync<{ value: number }>(`SELECT ${value} as value`);
+      expect(row['value']).toBe(value);
+      const row2 = await db.getAsync<{ value: number }>('SELECT $value as value', {
+        $value: value,
+      });
+      expect(row2['value']).toBe(value);
+      await db.closeAsync();
+    });
+
     it('should support PRAGMA statements', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`

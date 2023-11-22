@@ -29,9 +29,6 @@ function getBrowserName() {
     return undefined;
 }
 export default {
-    get name() {
-        return 'ExponentConstants';
-    },
     get appOwnership() {
         return null;
     },
@@ -106,7 +103,7 @@ export default {
         return null;
     },
     get manifest() {
-        // This is defined by @expo/webpack-config.
+        // This is defined by @expo/webpack-config or babel-preset-expo.
         // If your site is bundled with a different config then you may not have access to the app.json automatically.
         return process.env.APP_MANIFEST || {};
     },

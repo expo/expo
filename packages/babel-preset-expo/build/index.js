@@ -18,6 +18,7 @@ function babelPresetExpo(api, options = {}) {
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
     const isDev = api.caller(common_1.getIsDev);
+    const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const baseUrl = api.caller(common_1.getBaseUrl);
     // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
     // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
@@ -43,11 +44,11 @@ function babelPresetExpo(api, options = {}) {
         platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-stable' : 'default';
     }
     // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
-    // `metro-react-native-babel-preset` will handle it.
+    // `@react-native/babel-preset` will handle it.
     const lazyImportsOption = platformOptions?.lazyImports;
     const extraPlugins = [];
     if (engine !== 'hermes') {
-        // `metro-react-native-babel-preset` configures this plugin with `{ loose: true }`, which breaks all
+        // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
         // getters and setters in spread objects. We need to add this plugin ourself without that option.
         // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
         extraPlugins.push([
@@ -78,10 +79,6 @@ function babelPresetExpo(api, options = {}) {
     if (platformOptions.useTransformReactJSXExperimental != null) {
         throw new Error(`babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`);
     }
-    const aliasPlugin = getAliasPlugin();
-    if (aliasPlugin) {
-        extraPlugins.push(aliasPlugin);
-    }
     // Allow jest tests to redefine the environment variables.
     if (process.env.NODE_ENV !== 'test') {
         extraPlugins.push([
@@ -111,14 +108,23 @@ function babelPresetExpo(api, options = {}) {
     if ((0, common_1.hasModule)('expo-router')) {
         extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
     }
+    if (isFastRefreshEnabled) {
+        extraPlugins.push([
+            require('react-refresh/babel'),
+            {
+                // We perform the env check to enable `isFastRefreshEnabled`.
+                skipEnvCheck: true,
+            },
+        ]);
+    }
     return {
         presets: [
             [
                 // We use `require` here instead of directly using the package name because we want to
-                // specifically use the `metro-react-native-babel-preset` installed by this package (ex:
+                // specifically use the `@react-native/babel-preset` installed by this package (ex:
                 // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
                 // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
-                require('metro-react-native-babel-preset'),
+                require('@react-native/babel-preset'),
                 {
                     // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
                     disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
@@ -144,7 +150,7 @@ function babelPresetExpo(api, options = {}) {
                             // behavior) or are in the blacklist.
                             return !(importModuleSpecifier.includes('./') || lazyImports_1.lazyImports.has(importModuleSpecifier));
                         }
-                        : // Pass the option directly to `metro-react-native-babel-preset`, which in turn
+                        : // Pass the option directly to `@react-native/babel-preset`, which in turn
                             // passes it to `babel-plugin-transform-modules-commonjs`
                             lazyImportsOption,
                 },
@@ -185,19 +191,6 @@ function babelPresetExpo(api, options = {}) {
                 platformOptions.reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
         ].filter(Boolean),
     };
-}
-function getAliasPlugin() {
-    if (!(0, common_1.hasModule)('@expo/vector-icons')) {
-        return null;
-    }
-    return [
-        require.resolve('babel-plugin-module-resolver'),
-        {
-            alias: {
-                'react-native-vector-icons': '@expo/vector-icons',
-            },
-        },
-    ];
 }
 exports.default = babelPresetExpo;
 module.exports = babelPresetExpo;
