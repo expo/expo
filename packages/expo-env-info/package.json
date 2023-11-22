@@ -24,13 +24,13 @@
     "build"
   ],
   "scripts": {
-    "prepare": "yarn run clean && yarn run build:prod",
-    "lint": "eslint .",
-    "watch": "yarn run build -w",
-    "test": "jest",
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
-    "clean": "rimraf ./build/"
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "prepare": "expo-module clean && yarn run build:prod",
+    "test": "expo-module test",
+    "watch": "yarn run build -w"
   },
   "devDependencies": {
     "@types/envinfo": "^7.8.1",
