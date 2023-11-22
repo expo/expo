@@ -1,45 +1,52 @@
 /*
- * Copyright 2017 Google Inc.
+ * Copyright 2023 Google LLC
  *
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
 
-#ifndef SkDeferredDisplayListRecorder_DEFINED
-#define SkDeferredDisplayListRecorder_DEFINED
+#ifndef GrDeferredDisplayListRecorder_DEFINED
+#define GrDeferredDisplayListRecorder_DEFINED
 
-#include "include/core/SkDeferredDisplayList.h"
-#include "include/core/SkImage.h"
-#include "include/core/SkImageInfo.h"
 #include "include/core/SkRefCnt.h"
-#include "include/core/SkSurfaceCharacterization.h"
 #include "include/core/SkTypes.h"
+#include "include/private/chromium/GrDeferredDisplayList.h"
+#include "include/private/chromium/GrSurfaceCharacterization.h"
 
 class GrBackendFormat;
-class GrBackendTexture;
 class GrRecordingContext;
+class GrRenderTargetProxy;
 class GrYUVABackendTextureInfo;
 class SkCanvas;
+class SkColorSpace;
+class SkImage;
+class GrPromiseImageTexture;
 class SkSurface;
+enum SkAlphaType : int;
+enum SkColorType : int;
+enum GrSurfaceOrigin : int;
+namespace skgpu {
+enum class Mipmapped : bool;
+}
 
 /*
  * This class is intended to be used as:
- *   Get an SkSurfaceCharacterization representing the intended gpu-backed destination SkSurface
- *   Create one of these (an SkDeferredDisplayListRecorder) on the stack
+ *   Get a GrSurfaceCharacterization representing the intended gpu-backed destination SkSurface
+ *   Create one of these (a GrDeferredDisplayListRecorder) on the stack
  *   Get the canvas and render into it
- *   Snap off and hold on to an SkDeferredDisplayList
- *   Once your app actually needs the pixels, call SkSurface::draw(SkDeferredDisplayList*)
+ *   Snap off and hold on to a GrDeferredDisplayList
+ *   Once your app actually needs the pixels, call skgpu::ganesh::DrawDDL(GrDeferredDisplayList*)
  *
  * This class never accesses the GPU but performs all the cpu work it can. It
  * is thread-safe (i.e., one can break a scene into tiles and perform their cpu-side
  * work in parallel ahead of time).
  */
-class SK_API SkDeferredDisplayListRecorder {
+class SK_API GrDeferredDisplayListRecorder {
 public:
-    SkDeferredDisplayListRecorder(const SkSurfaceCharacterization&);
-    ~SkDeferredDisplayListRecorder();
+    GrDeferredDisplayListRecorder(const GrSurfaceCharacterization&);
+    ~GrDeferredDisplayListRecorder();
 
-    const SkSurfaceCharacterization& characterization() const {
+    const GrSurfaceCharacterization& characterization() const {
         return fCharacterization;
     }
 
@@ -48,12 +55,11 @@ public:
     // Note: ownership of the SkCanvas is not transferred via this call.
     SkCanvas* getCanvas();
 
-    sk_sp<SkDeferredDisplayList> detach();
+    sk_sp<GrDeferredDisplayList> detach();
 
-#if defined(SK_GANESH)
     using PromiseImageTextureContext = void*;
     using PromiseImageTextureFulfillProc =
-            sk_sp<SkPromiseImageTexture> (*)(PromiseImageTextureContext);
+            sk_sp<GrPromiseImageTexture> (*)(PromiseImageTextureContext);
     using PromiseImageTextureReleaseProc = void (*)(PromiseImageTextureContext);
 
 #ifndef SK_MAKE_PROMISE_TEXTURE_DISABLE_LEGACY_API
@@ -61,7 +67,7 @@ public:
     sk_sp<SkImage> makePromiseTexture(const GrBackendFormat& backendFormat,
                                       int width,
                                       int height,
-                                      GrMipmapped mipmapped,
+                                      skgpu::Mipmapped mipmapped,
                                       GrSurfaceOrigin origin,
                                       SkColorType colorType,
                                       SkAlphaType alphaType,
@@ -77,22 +83,19 @@ public:
                                           PromiseImageTextureReleaseProc textureReleaseProc,
                                           PromiseImageTextureContext textureContexts[]);
 #endif // SK_MAKE_PROMISE_TEXTURE_DISABLE_LEGACY_API
-#endif // defined(SK_GANESH)
+
 
 private:
-    SkDeferredDisplayListRecorder(const SkDeferredDisplayListRecorder&) = delete;
-    SkDeferredDisplayListRecorder& operator=(const SkDeferredDisplayListRecorder&) = delete;
+    GrDeferredDisplayListRecorder(const GrDeferredDisplayListRecorder&) = delete;
+    GrDeferredDisplayListRecorder& operator=(const GrDeferredDisplayListRecorder&) = delete;
 
     bool init();
 
-    const SkSurfaceCharacterization             fCharacterization;
-
-#if defined(SK_GANESH)
+    const GrSurfaceCharacterization             fCharacterization;
     sk_sp<GrRecordingContext>                   fContext;
     sk_sp<GrRenderTargetProxy>                  fTargetProxy;
-    sk_sp<SkDeferredDisplayList::LazyProxyData> fLazyProxyData;
+    sk_sp<GrDeferredDisplayList::LazyProxyData> fLazyProxyData;
     sk_sp<SkSurface>                            fSurface;
-#endif
 };
 
 #endif

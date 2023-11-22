@@ -1,35 +1,37 @@
 /*
- * Copyright 2017 Google Inc.
+ * Copyright 2023 Google LLC
  *
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
 
-#ifndef SkSurfaceCharacterization_DEFINED
-#define SkSurfaceCharacterization_DEFINED
+#ifndef GrSurfaceCharacterization_DEFINED
+#define GrSurfaceCharacterization_DEFINED
 
-
-#include "include/core/SkColorSpace.h"
+#include "include/core/SkColorSpace.h" // IWYU pragma: keep
+#include "include/core/SkColorType.h"
 #include "include/core/SkImageInfo.h"
 #include "include/core/SkRefCnt.h"
+#include "include/core/SkSize.h"
 #include "include/core/SkSurfaceProps.h"
-
-class SkColorSpace;
-
-
-#if defined(SK_GANESH)
+#include "include/core/SkTypes.h"
+#include "include/gpu/GpuTypes.h"
 #include "include/gpu/GrBackendSurface.h"
 #include "include/gpu/GrContextThreadSafeProxy.h"
 #include "include/gpu/GrTypes.h"
+#include "include/private/base/SkDebug.h"
 
-/** \class SkSurfaceCharacterization
+#include <cstddef>
+#include <utility>
+
+/** \class GrSurfaceCharacterization
     A surface characterization contains all the information Ganesh requires to makes its internal
-    rendering decisions. When passed into a SkDeferredDisplayListRecorder it will copy the
-    data and pass it on to the SkDeferredDisplayList if/when it is created. Note that both of
+    rendering decisions. When passed into a GrDeferredDisplayListRecorder it will copy the
+    data and pass it on to the GrDeferredDisplayList if/when it is created. Note that both of
     those objects (the Recorder and the DisplayList) will take a ref on the
     GrContextThreadSafeProxy and SkColorSpace objects.
 */
-class SK_API SkSurfaceCharacterization {
+class SK_API GrSurfaceCharacterization {
 public:
     enum class Textureable : bool { kNo = false, kYes = true };
     enum class MipMapped : bool { kNo = false, kYes = true };
@@ -41,7 +43,7 @@ public:
     // This flag indicates if the surface is wrapping a raw Vulkan secondary command buffer.
     enum class VulkanSecondaryCBCompatible : bool { kNo = false, kYes = true };
 
-    SkSurfaceCharacterization()
+    GrSurfaceCharacterization()
             : fCacheMaxResourceBytes(0)
             , fOrigin(kBottomLeft_GrSurfaceOrigin)
             , fSampleCnt(0)
@@ -53,13 +55,13 @@ public:
             , fSurfaceProps(0, kUnknown_SkPixelGeometry) {
     }
 
-    SkSurfaceCharacterization(SkSurfaceCharacterization&&) = default;
-    SkSurfaceCharacterization& operator=(SkSurfaceCharacterization&&) = default;
+    GrSurfaceCharacterization(GrSurfaceCharacterization&&) = default;
+    GrSurfaceCharacterization& operator=(GrSurfaceCharacterization&&) = default;
 
-    SkSurfaceCharacterization(const SkSurfaceCharacterization&) = default;
-    SkSurfaceCharacterization& operator=(const SkSurfaceCharacterization& other) = default;
-    bool operator==(const SkSurfaceCharacterization& other) const;
-    bool operator!=(const SkSurfaceCharacterization& other) const {
+    GrSurfaceCharacterization(const GrSurfaceCharacterization&) = default;
+    GrSurfaceCharacterization& operator=(const GrSurfaceCharacterization& other) = default;
+    bool operator==(const GrSurfaceCharacterization& other) const;
+    bool operator!=(const GrSurfaceCharacterization& other) const {
         return !(*this == other);
     }
 
@@ -67,24 +69,24 @@ public:
      * Return a new surface characterization with the only difference being a different width
      * and height
      */
-    SkSurfaceCharacterization createResized(int width, int height) const;
+    GrSurfaceCharacterization createResized(int width, int height) const;
 
     /*
      * Return a new surface characterization with only a replaced color space
      */
-    SkSurfaceCharacterization createColorSpace(sk_sp<SkColorSpace>) const;
+    GrSurfaceCharacterization createColorSpace(sk_sp<SkColorSpace>) const;
 
     /*
      * Return a new surface characterization with the backend format replaced. A colorType
      * must also be supplied to indicate the interpretation of the new format.
      */
-    SkSurfaceCharacterization createBackendFormat(SkColorType colorType,
+    GrSurfaceCharacterization createBackendFormat(SkColorType colorType,
                                                   const GrBackendFormat& backendFormat) const;
 
     /*
      * Return a new surface characterization with just a different use of FBO0 (in GL)
      */
-    SkSurfaceCharacterization createFBO0(bool usesGLFBO0) const;
+    GrSurfaceCharacterization createFBO0(bool usesGLFBO0) const;
 
     GrContextThreadSafeProxy* contextInfo() const { return fContextInfo.get(); }
     sk_sp<GrContextThreadSafeProxy> refContextInfo() const { return fContextInfo; }
@@ -121,12 +123,12 @@ private:
     friend class SkSurface_Ganesh;           // for 'set' & 'config'
     friend class GrVkSecondaryCBDrawContext; // for 'set' & 'config'
     friend class GrContextThreadSafeProxy; // for private ctor
-    friend class SkDeferredDisplayListRecorder; // for 'config'
+    friend class GrDeferredDisplayListRecorder; // for 'config'
     friend class SkSurface; // for 'config'
 
     SkDEBUGCODE(void validate() const;)
 
-    SkSurfaceCharacterization(sk_sp<GrContextThreadSafeProxy> contextInfo,
+    GrSurfaceCharacterization(sk_sp<GrContextThreadSafeProxy> contextInfo,
                               size_t cacheMaxResourceBytes,
                               const SkImageInfo& ii,
                               const GrBackendFormat& backendFormat,
@@ -142,7 +144,7 @@ private:
             : fContextInfo(std::move(contextInfo))
             , fCacheMaxResourceBytes(cacheMaxResourceBytes)
             , fImageInfo(ii)
-            , fBackendFormat(backendFormat)
+            , fBackendFormat(std::move(backendFormat))
             , fOrigin(origin)
             , fSampleCnt(sampleCnt)
             , fIsTextureable(isTextureable)
@@ -180,7 +182,7 @@ private:
             fCacheMaxResourceBytes = cacheMaxResourceBytes;
 
             fImageInfo = ii;
-            fBackendFormat = backendFormat;
+            fBackendFormat = std::move(backendFormat);
             fOrigin = origin;
             fSampleCnt = sampleCnt;
             fIsTextureable = isTextureable;
@@ -209,55 +211,5 @@ private:
     GrProtected                     fIsProtected;
     SkSurfaceProps                  fSurfaceProps;
 };
-
-#else// !defined(SK_GANESH)
-class GrBackendFormat;
-
-class SK_API SkSurfaceCharacterization {
-public:
-    SkSurfaceCharacterization() : fSurfaceProps(0, kUnknown_SkPixelGeometry) { }
-
-    SkSurfaceCharacterization createResized(int width, int height) const {
-        return *this;
-    }
-
-    SkSurfaceCharacterization createColorSpace(sk_sp<SkColorSpace>) const {
-        return *this;
-    }
-
-    SkSurfaceCharacterization createBackendFormat(SkColorType, const GrBackendFormat&) const {
-        return *this;
-    }
-
-    SkSurfaceCharacterization createFBO0(bool usesGLFBO0) const {
-        return *this;
-    }
-
-    bool operator==(const SkSurfaceCharacterization& other) const { return false; }
-    bool operator!=(const SkSurfaceCharacterization& other) const {
-        return !(*this == other);
-    }
-
-    size_t cacheMaxResourceBytes() const { return 0; }
-
-    bool isValid() const { return false; }
-
-    int width() const { return 0; }
-    int height() const { return 0; }
-    int stencilCount() const { return 0; }
-    bool isTextureable() const { return false; }
-    bool isMipMapped() const { return false; }
-    bool usesGLFBO0() const { return false; }
-    bool vkRTSupportsAttachmentInput() const { return false; }
-    bool vulkanSecondaryCBCompatible() const { return false; }
-    SkColorSpace* colorSpace() const { return nullptr; }
-    sk_sp<SkColorSpace> refColorSpace() const { return nullptr; }
-    const SkSurfaceProps& surfaceProps()const { return fSurfaceProps; }
-
-private:
-    SkSurfaceProps fSurfaceProps;
-};
-
-#endif
 
 #endif

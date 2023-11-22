@@ -11,7 +11,7 @@
 #include "modules/svg/include/SkSVGFe.h"
 #include "modules/svg/include/SkSVGTypes.h"
 
-class SkSVGFeTurbulence : public SkSVGFe {
+class SK_API SkSVGFeTurbulence : public SkSVGFe {
 public:
     static sk_sp<SkSVGFeTurbulence> Make() {
         return sk_sp<SkSVGFeTurbulence>(new SkSVGFeTurbulence());

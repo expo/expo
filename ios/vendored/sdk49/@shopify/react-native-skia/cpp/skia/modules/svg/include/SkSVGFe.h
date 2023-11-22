@@ -15,7 +15,7 @@
 class SkImageFilter;
 class SkSVGFilterContext;
 
-class SkSVGFe : public SkSVGHiddenContainer {
+class SK_API SkSVGFe : public SkSVGHiddenContainer {
 public:
     static bool IsFilterEffect(const sk_sp<SkSVGNode>& node) {
         switch (node->tag()) {

@@ -8,18 +8,17 @@
 #ifndef SkFontMgr_DEFINED
 #define SkFontMgr_DEFINED
 
-#include "include/core/SkFontArguments.h"
-#include "include/core/SkFontStyle.h"
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkTypes.h"
 
 #include <memory>
 
 class SkData;
-class SkFontData;
+class SkFontStyle;
 class SkStreamAsset;
 class SkString;
 class SkTypeface;
+struct SkFontArguments;
 
 class SK_API SkFontStyleSet : public SkRefCnt {
 public:
