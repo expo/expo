@@ -40,7 +40,10 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
     transformer: {
       ...defaultConfig.transformer,
       // Ignore file-relative Babel configurations and apply only the project's
-      // NOTE: This is not used correctly in the upstream: https://github.com/facebook/react-native/blob/753bb2094d95c8eb2152d2a2c1f0b67bbeec36de/packages/react-native-babel-transformer/src/index.js#L81
+      // NOTE: The Metro transformer still searches for and uses .babelrc and .babelrc.js files:
+      // https://github.com/facebook/react-native/blob/753bb2094d95c8eb2152d2a2c1f0b67bbeec36de/packages/react-native-babel-transformer/src/index.js#L81
+      // This is in contrast with Babel, which reads only babel.config.json before evaluating its
+      // "babelrc" option: https://babeljs.io/docs/options#configfile
       enableBabelRCLookup: false,
     },
   };
