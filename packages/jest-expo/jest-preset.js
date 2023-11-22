@@ -11,6 +11,7 @@ const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
 jestPreset.moduleNameMapper = {
   ...(jestPreset.moduleNameMapper || {}),
   '^react-native-vector-icons$': '@expo/vector-icons',
+  '^react-native-vector-icons/(.*)': '@expo/vector-icons/$1',
 };
 
 // transform

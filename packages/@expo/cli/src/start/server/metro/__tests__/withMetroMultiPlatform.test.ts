@@ -166,6 +166,36 @@ describe(withExtendedResolver, () => {
     });
   });
 
+  it(`resolves nested imports to @expo/vector-icons on any platform`, async () => {
+    vol.fromJSON(
+      {
+        'node_modules/@react-native/assets-registry/registry.js': '',
+        'node_modules/@expo/vector-icons/index.js': '',
+      },
+      '/'
+    );
+
+    ['ios', 'web'].forEach((platform) => {
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+        platforms: ['ios', 'web'],
+        tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
+        isTsconfigPathsEnabled: true,
+      });
+
+      modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        'react-native-vector-icons/FontAwesome',
+        platform
+      );
+
+      expect(getResolveFunc()).toBeCalledWith(
+        expect.anything(),
+        '@expo/vector-icons/FontAwesome',
+        platform
+      );
+    });
+  });
+
   it(`does not alias react-native-vector-icons if @expo/vector-icons is not installed`, async () => {
     vol.fromJSON(
       {
@@ -193,34 +223,6 @@ describe(withExtendedResolver, () => {
         platform
       );
     });
-  });
-
-  it(`does not alias sub paths of react-native-vector-icons`, async () => {
-    vol.fromJSON(
-      {
-        'node_modules/@react-native/assets-registry/registry.js': '',
-        'node_modules/@expo/vector-icons/index.js': '',
-      },
-      '/'
-    );
-    const platform = 'ios';
-    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
-      tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
-      isTsconfigPathsEnabled: true,
-    });
-
-    modified.resolver.resolveRequest!(
-      getDefaultRequestContext(),
-      'react-native-vector-icons/index.js',
-      platform
-    );
-
-    expect(getResolveFunc()).toBeCalledWith(
-      expect.anything(),
-      'react-native-vector-icons/index.js',
-      platform
-    );
   });
 
   it(`allows importing @expo/vector-icons`, async () => {
