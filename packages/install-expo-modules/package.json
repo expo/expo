@@ -14,9 +14,10 @@
     "typecheck": "expo-module typecheck",
     "watch": "yarn run build --watch"
   },
-  "bin": {
-    "install-expo-modules": "./build/index.js"
-  },
+  "bin": "./build/index.js",
+  "files": [
+    "build"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
@@ -34,10 +35,6 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/install-expo-modules#readme",
-  "files": [
-    "build",
-    "!*/__tests__/*"
-  ],
   "dependencies": {
     "@expo/config": "~8.0.0",
     "@expo/config-plugins": "~6.0.0",
