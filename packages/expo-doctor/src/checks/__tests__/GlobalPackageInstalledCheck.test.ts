@@ -1,4 +1,3 @@
-import { asMock } from '../../__tests__/asMock';
 import { getDeepDependenciesWarningAsync } from '../../utils/explainDependencies';
 import { GlobalPackageInstalledCheck } from '../GlobalPackageInstalledCheck';
 
@@ -15,7 +14,7 @@ const additionalProjectProps = {
 
 describe('runAsync', () => {
   it('returns result with isSuccessful = true if check passes', async () => {
-    asMock(getDeepDependenciesWarningAsync).mockResolvedValueOnce(null);
+    jest.mocked(getDeepDependenciesWarningAsync).mockResolvedValueOnce(null);
     const check = new GlobalPackageInstalledCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
@@ -25,7 +24,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = false if check fails', async () => {
-    asMock(getDeepDependenciesWarningAsync).mockResolvedValueOnce('warning');
+    jest.mocked(getDeepDependenciesWarningAsync).mockResolvedValueOnce('warning');
     const check = new GlobalPackageInstalledCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
@@ -35,7 +34,7 @@ describe('runAsync', () => {
   });
 
   it('returns result with advice to remove expo-cli if check fails', async () => {
-    asMock(getDeepDependenciesWarningAsync).mockResolvedValueOnce('warning');
+    jest.mocked(getDeepDependenciesWarningAsync).mockResolvedValueOnce('warning');
     const check = new GlobalPackageInstalledCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',

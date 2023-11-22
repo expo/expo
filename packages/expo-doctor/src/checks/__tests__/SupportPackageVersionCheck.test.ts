@@ -1,4 +1,3 @@
-import { asMock } from '../../__tests__/asMock';
 import { getDeepDependenciesWarningAsync } from '../../utils/explainDependencies';
 import { getRemoteVersionsForSdkAsync } from '../../utils/getRemoteVersionsForSdkAsync';
 import { SupportPackageVersionCheck } from '../SupportPackageVersionCheck';
@@ -18,13 +17,13 @@ const additionalProjectProps = {
 
 describe('runAsync', () => {
   it('returns result with isSuccessful = true if check passes', async () => {
-    asMock(getRemoteVersionsForSdkAsync).mockResolvedValueOnce({
+    jest.mocked(getRemoteVersionsForSdkAsync).mockResolvedValueOnce({
       'expo-modules-autolinking': '1.0.0',
       '@expo/config-plugins': '1.0.0',
       '@expo/prebuild-config': '1.0.0',
       '@expo/metro-config': '1.0.0',
     });
-    asMock(getDeepDependenciesWarningAsync).mockResolvedValueOnce(null);
+    jest.mocked(getDeepDependenciesWarningAsync).mockResolvedValueOnce(null);
     const check = new SupportPackageVersionCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',
@@ -34,13 +33,13 @@ describe('runAsync', () => {
   });
 
   it('returns result with isSuccessful = false if check fails', async () => {
-    asMock(getRemoteVersionsForSdkAsync).mockResolvedValueOnce({
+    jest.mocked(getRemoteVersionsForSdkAsync).mockResolvedValueOnce({
       'expo-modules-autolinking': '1.0.0',
       '@expo/config-plugins': '1.0.0',
       '@expo/prebuild-config': '1.0.0',
       '@expo/metro-config': '1.0.0',
     });
-    asMock(getDeepDependenciesWarningAsync).mockResolvedValueOnce('warning');
+    jest.mocked(getDeepDependenciesWarningAsync).mockResolvedValueOnce('warning');
     const check = new SupportPackageVersionCheck();
     const result = await check.runAsync({
       projectRoot: '/path/to/project',

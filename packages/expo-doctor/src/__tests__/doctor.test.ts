@@ -1,4 +1,3 @@
-import { asMock } from '../__tests__/asMock';
 import { DoctorCheck } from '../checks/checks.types';
 import {
   printCheckResultSummaryOnComplete,
@@ -126,79 +125,83 @@ describe(runChecksAsync, () => {
 
 describe(printCheckResultSummaryOnComplete, () => {
   it(`Prints test description with checkmark if test is successful`, () => {
-    asMock(Log.log).mockReset();
+    jest.mocked(Log.log).mockReset();
     printCheckResultSummaryOnComplete({
       result: { isSuccessful: true, issues: [], advice: '' },
       check: new MockSuccessfulCheck(),
       duration: 0,
     });
-    expect(asMock(Log.log)).toHaveBeenCalledWith(expect.stringMatching('✔ Mock successful check'));
+    expect(jest.mocked(Log.log)).toHaveBeenCalledWith(
+      expect.stringMatching('✔ Mock successful check')
+    );
   });
 
   it(`Prints test description with x if test is not successful`, () => {
-    asMock(Log.log).mockReset();
+    jest.mocked(Log.log).mockReset();
     printCheckResultSummaryOnComplete({
       result: { isSuccessful: false, issues: [], advice: '' },
       check: new MockFailedCheck(),
       duration: 0,
     });
-    expect(asMock(Log.log)).toHaveBeenCalledWith(expect.stringContaining('✖ Mock failed check'));
+    expect(jest.mocked(Log.log)).toHaveBeenCalledWith(
+      expect.stringContaining('✖ Mock failed check')
+    );
   });
 
   it(`Prints error if check throws an unexpected error`, () => {
-    asMock(Log.error).mockReset();
-    asMock(Log.exception).mockReset();
+    jest.mocked(Log.error).mockReset();
+    jest.mocked(Log.exception).mockReset();
     printCheckResultSummaryOnComplete({
       result: { isSuccessful: false, issues: [], advice: '' },
       check: new MockFailedCheck(),
       duration: 0,
       error: new Error('Some error'),
     });
-    expect(asMock(Log.error).mock.calls[0][0]).toContain('Unexpected error while running');
-    expect(asMock(Log.exception).mock.calls[0][0].message).toContain('Some error');
+    expect(jest.mocked(Log.error).mock.calls[0][0]).toContain('Unexpected error while running');
+    expect(jest.mocked(Log.exception).mock.calls[0][0].message).toContain('Some error');
   });
 });
 
 describe(printFailedCheckIssueAndAdvice, () => {
   it(`Does not print when check is successful`, () => {
-    asMock(Log.log).mockReset();
+    jest.mocked(Log.log).mockReset();
     printFailedCheckIssueAndAdvice({
       result: { isSuccessful: true, issues: [], advice: '' },
       check: new MockSuccessfulCheck(),
       duration: 0,
     });
-    expect(asMock(Log.log)).not.toHaveBeenCalled();
+    expect(jest.mocked(Log.log)).not.toHaveBeenCalled();
   });
 
   // these errors print in-line so they're easier to associate with the origianl check
   it(`Does not print when check throws an error`, () => {
-    asMock(Log.log).mockReset();
+    jest.mocked(Log.log).mockReset();
     printFailedCheckIssueAndAdvice({
       result: { isSuccessful: false, issues: [], advice: '' },
       check: new MockUnexpectedThrowCheck(),
       error: new Error('Some error'),
       duration: 0,
     });
-    expect(asMock(Log.log)).not.toHaveBeenCalled();
+    expect(jest.mocked(Log.log)).not.toHaveBeenCalled();
   });
 
   it(`Prints issues when check fails`, () => {
-    asMock(Log.warn).mockReset();
+    jest.mocked(Log.warn).mockReset();
     printFailedCheckIssueAndAdvice({
       result: { isSuccessful: false, issues: ['issue1', 'issue2'], advice: '' },
       check: new MockFailedCheck(),
       duration: 0,
     });
-    expect(asMock(Log.warn).mock.calls[0][0]).toContain('issue1');
-    expect(asMock(Log.warn).mock.calls[1][0]).toContain('issue2');
+    expect(jest.mocked(Log.warn).mock.calls[0][0]).toContain('issue1');
+    expect(jest.mocked(Log.warn).mock.calls[1][0]).toContain('issue2');
   });
   it(`Prints advice when check fails if available`, () => {
-    asMock(Log.log).mockReset();
+    jest.mocked(Log.log).mockReset();
     printFailedCheckIssueAndAdvice({
       result: { isSuccessful: false, issues: ['issue1'], advice: 'advice' },
       check: new MockFailedCheck(),
       duration: 0,
     });
-    expect(asMock(Log.log).mock.calls[0][0]).toContain('advice');
+    expect(jest.mocked(Log.log).mock.calls[0][0]).toContain('advice');
   });
 });
