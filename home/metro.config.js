@@ -1,6 +1,7 @@
 const { createMetroConfiguration } = require('expo-yarn-workspaces');
 const path = require('path');
 
+/* global __dirname */
 const baseConfig = createMetroConfiguration(__dirname);
 
 // To test home from Expo Go, the react-native js source is from our fork.
