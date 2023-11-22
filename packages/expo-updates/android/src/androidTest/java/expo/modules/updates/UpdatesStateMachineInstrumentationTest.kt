@@ -13,6 +13,7 @@ import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.lang.reflect.Field
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.util.Date
 
@@ -21,7 +22,12 @@ class UpdatesStateMachineInstrumentationTest {
   private fun UpdatesStateMachine.processEventTest(event: UpdatesStateEvent) {
     val method: Method = UpdatesStateMachine::class.java.getDeclaredMethod("processEvent", UpdatesStateEvent::class.java)
     method.isAccessible = true
-    method.invoke(this, event)
+
+    try {
+      method.invoke(this, event)
+    } catch (e: InvocationTargetException) {
+      throw e.targetException
+    }
   }
 
   private fun UpdatesStateMachine.getState(): UpdatesStateValue {
@@ -164,10 +170,16 @@ class UpdatesStateMachineInstrumentationTest {
     val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender)
     machine.processEventTest(UpdatesStateEvent.Check())
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
+
     // Test invalid transitions and ensure that state does not change
-    machine.processEventTest(UpdatesStateEvent.Download())
+    Assert.assertThrows(AssertionError::class.java) {
+      machine.processEventTest(UpdatesStateEvent.Download())
+    }
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
-    machine.processEventTest(UpdatesStateEvent.DownloadComplete())
+
+    Assert.assertThrows(AssertionError::class.java) {
+      machine.processEventTest(UpdatesStateEvent.DownloadComplete())
+    }
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
   }
 }
