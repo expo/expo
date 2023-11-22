@@ -46,7 +46,7 @@ const extractDefaultPropValue = (
 ): string | undefined => {
   const annotationDefault = getTagData('default', comment);
   if (annotationDefault) {
-    return getCommentContent(annotationDefault.content);
+    return getCommentContent(annotationDefault.content, true);
   }
   return defaultProps?.type?.declaration?.children?.filter(
     (defaultProp: PropData) => defaultProp.name === name
