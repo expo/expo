@@ -150,7 +150,7 @@
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.27.0",
     "react-native-svg": "13.9.0",
-    "react-native-view-shot": "3.7.0",
+    "react-native-view-shot": "3.8.0",
     "react-native-web": "~0.19.6",
     "react-native-webview": "13.6.2",
     "react-navigation": "^4.4.0",
