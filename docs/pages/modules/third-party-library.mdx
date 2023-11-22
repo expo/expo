@@ -3,6 +3,7 @@ title: Use third-party native libraries in Expo
 description: Learn how to create a simple wrapper around two separate native libraries using Expo Modules.
 ---
 
+import { CODE } from '~/ui/components/Text';
 import { Collapsible } from '~/ui/components/Collapsible';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
@@ -95,9 +96,9 @@ dependencies {
     # Swift/Objective-C compatibility
 ```
 
-<Collapsible summary="Are you trying to use a .framework dependency?">
+<Collapsible summary={<>Are you trying to use a <CODE>.framework</CODE> dependency?</>}>
 
-On iOS you can also use dependencies bundled as a framework by using the `vendored_framework` config option.
+On iOS, you can also use dependencies bundled as a framework by using the `vendored_framework` config option.
 
 ```diff ios/ExpoRadialChart.podspec
     s.static_framework = true
@@ -108,11 +109,9 @@ On iOS you can also use dependencies bundled as a framework by using the `vendor
 
 </Collapsible>
 
-<Collapsible summary="Are you trying to use a .aar dependency?">
+<Collapsible summary={<>Are you trying to use a <CODE>.aar</CODE> dependency?</>}>
 
-Create a `libs` folder in the `android` folder of your Expo module. Place your `aar` file there.
-
-Next add the folder as a repository like so:
+Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the folder as a repository:
 
 ```diff android/build.grade
   repositories {
@@ -123,7 +122,7 @@ Next add the folder as a repository like so:
   }
 ```
 
-Last, add the dependency to the `dependencies` list (using a package path, not a filename, but note the `@aar` at the end):
+Finally, add the dependency to the `dependencies` list. Instead of the filename, use the package path, which includes the `@aar` at the end:
 
 ```diff android/build.grade
 dependencies {
