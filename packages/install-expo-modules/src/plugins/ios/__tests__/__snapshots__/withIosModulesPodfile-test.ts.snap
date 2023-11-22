@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`withIosModulesPodfile sdkVersion snapshots sdkVersion 43.0.0 1`] = `
-"require File.join(File.dirname(\`node --print \\"require.resolve('expo/package.json')\\"\`), \\"scripts/autolinking\\")
+"require File.join(File.dirname(\`node --print "require.resolve('expo/package.json')"\`), "scripts/autolinking")
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
@@ -11,7 +11,7 @@ target 'HelloWorld' do
   use_expo_modules!
   config = use_native_modules!
 
-  use_react_native!(:path => config[\\"reactNativePath\\"])
+  use_react_native!(:path => config["reactNativePath"])
 
   target 'HelloWorldTests' do
     inherit! :complete
@@ -40,7 +40,7 @@ end
 `;
 
 exports[`withIosModulesPodfile sdkVersion snapshots sdkVersion 44.0.0 1`] = `
-"require File.join(File.dirname(\`node --print \\"require.resolve('expo/package.json')\\"\`), \\"scripts/autolinking\\")
+"require File.join(File.dirname(\`node --print "require.resolve('expo/package.json')"\`), "scripts/autolinking")
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
@@ -57,7 +57,7 @@ target 'HelloWorld' do
   end
   config = use_native_modules!
 
-  use_react_native!(:path => config[\\"reactNativePath\\"])
+  use_react_native!(:path => config["reactNativePath"])
 
   target 'HelloWorldTests' do
     inherit! :complete

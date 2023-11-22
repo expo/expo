@@ -14,7 +14,7 @@ exports[`withIosModulesAppDelegate sdkVersion snapshots sdkVersion 43.0.0 1`] = 
 `;
 
 exports[`withIosModulesAppDelegate sdkVersion snapshots sdkVersion 43.0.0 2`] = `
-"#import \\"AppDelegate.h\\"
+"#import "AppDelegate.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -30,7 +30,7 @@ exports[`withIosModulesAppDelegate sdkVersion snapshots sdkVersion 43.0.0 2`] = 
 
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
-                                               moduleName:@\\"RN0633\\"
+                                               moduleName:@"RN0633"
                                                initialProperties:nil];
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
@@ -47,9 +47,9 @@ exports[`withIosModulesAppDelegate sdkVersion snapshots sdkVersion 43.0.0 2`] = 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
 #else
-  return [[NSBundle mainBundle] URLForResource:@\\"main\\" withExtension:@\\"jsbundle\\"];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
 }
 
@@ -66,7 +66,7 @@ class AppDelegate: AppDelegateWrapper, RCTBridgeDelegate {
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     let bridge = RCTBridge(delegate: self, launchOptions: launchOptions)!
-    let rootView = RCTRootView(bridge: bridge, moduleName: \\"HelloWorld\\", initialProperties: nil)
+    let rootView = RCTRootView(bridge: bridge, moduleName: "HelloWorld", initialProperties: nil)
 
     if #available(iOS 13.0, *) {
       rootView.backgroundColor = UIColor.systemBackground
@@ -85,9 +85,9 @@ class AppDelegate: AppDelegateWrapper, RCTBridgeDelegate {
 
   func sourceURL(for bridge: RCTBridge!) -> URL! {
     #if DEBUG
-    return RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: \\"index\\", fallbackResource: nil)
+    return RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
     #else
-    return Bundle.main.url(forResource: \\"main\\", withExtension: \\"jsBundle\\")
+    return Bundle.main.url(forResource: "main", withExtension: "jsBundle")
     #endif
   }
 }
@@ -108,7 +108,7 @@ exports[`withIosModulesAppDelegate sdkVersion snapshots sdkVersion 44.0.0 1`] = 
 `;
 
 exports[`withIosModulesAppDelegate sdkVersion snapshots sdkVersion 44.0.0 2`] = `
-"#import \\"AppDelegate.h\\"
+"#import "AppDelegate.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -124,7 +124,7 @@ exports[`withIosModulesAppDelegate sdkVersion snapshots sdkVersion 44.0.0 2`] = 
 
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge
-                                               moduleName:@\\"RN0633\\"
+                                               moduleName:@"RN0633"
                                                initialProperties:nil];
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
@@ -141,9 +141,9 @@ exports[`withIosModulesAppDelegate sdkVersion snapshots sdkVersion 44.0.0 2`] = 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@\\"index\\" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
 #else
-  return [[NSBundle mainBundle] URLForResource:@\\"main\\" withExtension:@\\"jsbundle\\"];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
 }
 
@@ -160,7 +160,7 @@ class AppDelegate: AppDelegateWrapper, RCTBridgeDelegate {
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     let bridge = reactDelegate.createBridge(delegate: self, launchOptions: launchOptions)!
-    let rootView = reactDelegate.createRootView(bridge: bridge, moduleName: \\"HelloWorld\\", initialProperties: nil)
+    let rootView = reactDelegate.createRootView(bridge: bridge, moduleName: "HelloWorld", initialProperties: nil)
 
     if #available(iOS 13.0, *) {
       rootView.backgroundColor = UIColor.systemBackground
@@ -179,9 +179,9 @@ class AppDelegate: AppDelegateWrapper, RCTBridgeDelegate {
 
   func sourceURL(for bridge: RCTBridge!) -> URL! {
     #if DEBUG
-    return RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: \\"index\\", fallbackResource: nil)
+    return RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
     #else
-    return Bundle.main.url(forResource: \\"main\\", withExtension: \\"jsBundle\\")
+    return Bundle.main.url(forResource: "main", withExtension: "jsBundle")
     #endif
   }
 }
