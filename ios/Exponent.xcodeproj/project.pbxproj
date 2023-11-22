@@ -1440,8 +1440,6 @@
 			children = (
 				2520E83821ABEEF100D900A4 /* EXScopedFilePermissionModule.h */,
 				2520E83921ABEEF100D900A4 /* EXScopedFilePermissionModule.m */,
-				2596F06922201A9400DEEFF9 /* EXScopedFileSystemModule.h */,
-				2596F06A22201A9400DEEFF9 /* EXScopedFileSystemModule.m */,
 			);
 			path = EXScopedFileSystem;
 			sourceTree = "<group>";

@@ -25,8 +25,10 @@ export const documentDirectory = normalizeEndingSlash(ExponentFileSystem.documen
  * Example uses are for downloaded or generated files that the app just needs for one-time usage.
  */
 export const cacheDirectory = normalizeEndingSlash(ExponentFileSystem.cacheDirectory);
-// @docsMissing
-export const { bundledAssets, bundleDirectory } = ExponentFileSystem;
+/**
+ * URI to the directory where assets bundled with the application are stored.
+ */
+export const bundleDirectory = normalizeEndingSlash(ExponentFileSystem.bundleDirectory);
 /**
  * Get metadata information about a file, directory or external content/asset.
  * @param fileUri URI to the file or directory. See [supported URI schemes](#supported-uri-schemes).
