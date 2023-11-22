@@ -9,6 +9,7 @@ import { FileTree } from '~/ui/components/FileTree';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
 
 Expo Router enables you to write server code for all platforms, right in your **app** directory.
 
@@ -363,6 +364,139 @@ You can now visit your website at the URL provided by Netlify CLI. Running `netl
 If you're using any environment variables or **.env** files, add them to Netlify. You can do this by going to the **Site settings** and adding them to the **Build & deploy** section.
 
 </Step>
+
+### Vercel
+
+> **warning** This is experimental and subject to breaking changes. We have no continuous tests against this configuration.
+
+<Step label="1">
+
+Create a server entry file. All requests will be delegated through this middleware. The exact file location is important.
+
+```js api/index.js
+const { createRequestHandler } = require('@expo/server/adapter/vercel');
+
+module.exports = createRequestHandler({
+  /* @info Points to the root `dist/` (output) folder */
+  build: require('path').join(__dirname, '../../dist'),
+  /* @end */
+  mode: process.env.NODE_ENV,
+});
+```
+
+</Step>
+
+<Step label="2">
+
+Create a Vercel configuration file at the root of your project to redirect all requests to the server function.
+
+<Tabs>
+<Tab label="vercel.json v2">
+
+```json vercel.json
+{
+  "version": 2,
+  "outputDirectory": "dist",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["dist/**"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/_expo/functions/.*",
+      "dest": "/404",
+      "status": 404
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.js"
+    }
+  ]
+}
+```
+
+The **legacy** version of the `vercel.json` needs a `@vercel/static-build` option to publish our public assets
+in `dist/`.
+
+</Tab>
+<Tab label="vercel.json v3">
+
+> **warning** When used as is, this `vercel.json` configuration makes server code in `/dist/_expo/functions/*` publicly accessible.
+
+```json vercel.json
+{
+  "buildCommand": "expo export -p web",
+  "outputDirectory": "dist",
+  "functions": {
+    "api/index.js": {
+      "runtime": "@vercel/node@3.0.11",
+      "includeFiles": "dist/**"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/_expo/functions/(.*)",
+      "destination": "/404",
+      "statusCode": 404
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.js"
+    }
+  ]
+}
+```
+
+The newer version of the `vercel.json` does not use `routes` and `builds` configuration options anymore,
+and handles our public files in `dist/` automatically.
+
+</Tab>
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+After you have created the configuration files, add a `vercel-build` script to your **package.json** file
+and set it to `expo export -p web`.
+
+</Step>
+
+<Step label="4">
+
+Deploy to Vercel with the [Vercel CLI](https://vercel.com/docs/cli).
+
+<Terminal
+  cmd={[
+    '# Install the Vercel CLI globally if needed.',
+    '$ npm install vercel -g',
+    '# Deploy the website.',
+    '$ vercel deploy',
+  ]}
+/>
+
+You can now visit your website at the URL provided by the Vercel CLI.
+
+</Step>
+
+
 
 ## Known limitations
 
