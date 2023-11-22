@@ -35,6 +35,12 @@ The New Architecture is the future of React Native — yet, for many apps, there
 
 The changes that come with the New Architecture address technical debt of the original implementation and unlock possibilities for solving long standing issues in React Native, such as interoperability with synchronous native APIs (eg: `UITableView`), and pave the way for for [concurrent React support](https://react.dev/blog/2022/03/29/react-v18#what-is-concurrent-react).
 
+## Expo tools and the New Architecture
+
+As of SDK 49, all `expo-*` packages in the [Expo SDK](/versions/latest/) support the New Architecture, with the exception of `expo-updates`. We plan to add support for `expo-updates` in SDK 51.
+
+Additionally, all third-party modules written using the [Expo Modules API](/modules/overview/) support the New Architecture by default! So if you have built your own native modules using this API, no additional work is needed to use them with the New Architecture.
+
 ## Initializing a new project with the New Architecture
 
 The easiest way to get started with the New Architecture is to use the `with-new-arch` template when creating a new project:
