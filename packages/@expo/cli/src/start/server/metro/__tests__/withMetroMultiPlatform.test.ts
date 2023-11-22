@@ -60,7 +60,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
       tsconfig: null,
       isTsconfigPathsEnabled: false,
     });
@@ -89,7 +88,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
       tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
       isTsconfigPathsEnabled: true,
     });
@@ -116,7 +114,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
       tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
       isTsconfigPathsEnabled: true,
     });
@@ -140,12 +137,8 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
-      tsconfig: {
-        // No baseUrl
-        paths: { '/*': ['*'] },
-      },
-      isTsconfigPathsEnabled: true,
+      tsconfig: {},
+      isTsconfigPathsEnabled: false,
     });
 
     const platform = 'web';
@@ -174,9 +167,8 @@ describe(withExtendedResolver, () => {
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-        platforms: ['ios', 'web'],
-        tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
-        isTsconfigPathsEnabled: true,
+        tsconfig: {},
+        isTsconfigPathsEnabled: false,
       });
 
       modified.resolver.resolveRequest!(
@@ -200,9 +192,8 @@ describe(withExtendedResolver, () => {
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-        platforms: ['ios', 'web'],
-        tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
-        isTsconfigPathsEnabled: true,
+        tsconfig: {},
+        isTsconfigPathsEnabled: false,
       });
 
       modified.resolver.resolveRequest!(
@@ -229,8 +220,7 @@ describe(withExtendedResolver, () => {
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-        platforms: ['ios', 'web'],
-        tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
+        tsconfig: {},
         isTsconfigPathsEnabled: true,
       });
 
@@ -258,8 +248,7 @@ describe(withExtendedResolver, () => {
     );
     const platform = 'ios';
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
-      tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
+      tsconfig: {},
       isTsconfigPathsEnabled: true,
     });
 
@@ -276,7 +265,6 @@ describe(withExtendedResolver, () => {
     });
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
       tsconfig: null,
       isTsconfigPathsEnabled: false,
     });
@@ -312,7 +300,6 @@ describe(withExtendedResolver, () => {
     });
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
       tsconfig: null,
       isTsconfigPathsEnabled: false,
     });
@@ -342,7 +329,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
       tsconfig: null,
       isTsconfigPathsEnabled: false,
     });
