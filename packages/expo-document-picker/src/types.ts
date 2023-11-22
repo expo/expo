@@ -51,36 +51,45 @@ export type DocumentPickerAsset = {
   file?: File;
 };
 
-// @needsAudit @docsMissing
-export type DocumentPickerResult = {
+/**
+ * Type representing successful and canceled document pick result.
+ */
+export type DocumentPickerResult = DocumentPickerSuccessResult | DocumentPickerCanceledResult;
+
+/**
+ * Type representing successful pick result.
+ */
+export type DocumentPickerSuccessResult = {
   /**
-   * Boolean flag which shows if request was canceled. If asset data have been returned this should
-   * always be `false`.
+   * If asset data have been returned this should always be `false`.
    */
-  canceled: boolean;
+  canceled: false;
   /**
-   * An array of picked assets or `null` when the request was canceled.
+   * An array of picked assets.
    */
-  assets: DocumentPickerAsset[] | null;
+  assets: DocumentPickerAsset[];
   /**
    * `FileList` object for the parity with web File API.
    * @platform web
    */
-  output?: FileList | null;
-} & (DocumentPickerSuccessResult | DocumentPickerCanceledResult);
-
-/**
- * @hidden
- */
-export type DocumentPickerSuccessResult = {
-  canceled: false;
-  assets: DocumentPickerAsset[];
+  output?: FileList;
 };
 
 /**
- * @hidden
+ * Type representing canceled pick result.
  */
 export type DocumentPickerCanceledResult = {
+  /**
+   *  Always `true` when the request was canceled.
+   */
   canceled: true;
+  /**
+   *  Always `null` when the request was canceled.
+   */
   assets: null;
+  /**
+   * Always `null` when the request was canceled.
+   * @platform web
+   */
+  output?: null;
 };
