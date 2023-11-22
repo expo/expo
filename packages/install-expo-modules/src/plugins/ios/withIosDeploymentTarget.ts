@@ -18,7 +18,7 @@ export const withIosDeploymentTarget: IosDeploymentTargetConfigPlugin = (config,
 const withIosDeploymentTargetPodfile: IosDeploymentTargetConfigPlugin = (config, props) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       const podfile = path.join(config.modRequest.platformProjectRoot, 'Podfile');
       let contents = await fs.promises.readFile(podfile, 'utf8');
       contents = await updateDeploymentTargetPodfile(
@@ -129,7 +129,7 @@ export async function lookupReactNativeMinIosVersionSupported(
 }
 
 const withIosDeploymentTargetXcodeProject: IosDeploymentTargetConfigPlugin = (config, props) => {
-  return withXCParseXcodeProject(config, config => {
+  return withXCParseXcodeProject(config, (config) => {
     config.modResults = updateDeploymentTargetXcodeProject(
       config.modResults,
       props.deploymentTarget

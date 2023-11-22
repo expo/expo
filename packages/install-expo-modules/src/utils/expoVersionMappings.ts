@@ -56,7 +56,7 @@ export function getDefaultSdkVersion(projectRoot: string): VersionInfo {
     throw new Error(`Unable to find react-native package - projectRoot[${projectRoot}]`);
   }
   const reactNativeVersion = require(reactNativePackageJsonPath).version;
-  const versionInfo = ExpoVersionMappings.find(info =>
+  const versionInfo = ExpoVersionMappings.find((info) =>
     semver.satisfies(reactNativeVersion, info.reactNativeVersionRange)
   );
   if (!versionInfo) {
@@ -72,5 +72,5 @@ export function getLatestSdkVersion(): VersionInfo {
 }
 
 export function getVersionInfo(sdkVersion: string): VersionInfo | null {
-  return ExpoVersionMappings.find(info => info.expoSdkVersion === sdkVersion) ?? null;
+  return ExpoVersionMappings.find((info) => info.expoSdkVersion === sdkVersion) ?? null;
 }

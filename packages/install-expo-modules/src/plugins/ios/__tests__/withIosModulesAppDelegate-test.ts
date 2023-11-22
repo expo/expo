@@ -89,7 +89,7 @@ describe('withIosModulesAppDelegate sdkVersion snapshots', () => {
     fs.readFileSync(path.join(fixturesPath, 'AppDelegate.swift'), 'utf8'),
   ];
 
-  ['43.0.0', '44.0.0'].forEach(sdkVersion => {
+  ['43.0.0', '44.0.0'].forEach((sdkVersion) => {
     it(`sdkVersion ${sdkVersion}`, () => {
       expect(updateModulesAppDelegateObjcHeader(objcHeaderFixture, sdkVersion)).toMatchSnapshot();
       expect(updateModulesAppDelegateObjcImpl(objcImplFixture, sdkVersion)).toMatchSnapshot();

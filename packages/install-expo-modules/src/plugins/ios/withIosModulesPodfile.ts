@@ -5,10 +5,10 @@ import semver from 'semver';
 
 const { getProjectName } = IOSConfig.XcodeUtils;
 
-export const withIosModulesPodfile: ConfigPlugin = config => {
+export const withIosModulesPodfile: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       const podfile = path.join(config.modRequest.platformProjectRoot, 'Podfile');
       let contents = await fs.promises.readFile(podfile, 'utf8');
       const projectName = getProjectName(config.modRequest.projectRoot);

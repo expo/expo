@@ -34,7 +34,7 @@ export const withAndroidGradlePluginVersion: ConfigPlugin<{ androidAgpVersion: s
   config,
   prop
 ) => {
-  return withProjectBuildGradle(config, config => {
+  return withProjectBuildGradle(config, (config) => {
     if (config.modResults.language !== 'groovy') {
       throw new Error('Cannot setup kotlin because the build.gradle is not groovy');
     }

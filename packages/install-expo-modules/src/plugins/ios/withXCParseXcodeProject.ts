@@ -11,7 +11,7 @@ export interface BuildSettingsExtended extends BuildSettings {
 
 const MOD_NAME = 'xcparseXcodeproj';
 
-export const withXCParseXcodeProjectBaseMod: ConfigPlugin = config => {
+export const withXCParseXcodeProjectBaseMod: ConfigPlugin = (config) => {
   return BaseMods.withGeneratedBaseMods(config, {
     platform: 'ios',
     skipEmptyMod: false,

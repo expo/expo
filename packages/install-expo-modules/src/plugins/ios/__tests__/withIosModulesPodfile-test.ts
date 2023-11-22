@@ -41,7 +41,7 @@ describe(updatePodfile, () => {
 describe('withIosModulesPodfile sdkVersion snapshots', () => {
   const podfileFixture = fs.readFileSync(path.join(__dirname, 'fixtures', 'Podfile'), 'utf-8');
 
-  ['43.0.0', '44.0.0'].forEach(sdkVersion => {
+  ['43.0.0', '44.0.0'].forEach((sdkVersion) => {
     it(`sdkVersion ${sdkVersion}`, () => {
       expect(updatePodfile(podfileFixture, 'HelloWorld', sdkVersion)).toMatchSnapshot();
     });

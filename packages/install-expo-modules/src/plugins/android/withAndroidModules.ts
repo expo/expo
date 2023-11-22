@@ -3,7 +3,7 @@ import { ConfigPlugin, withPlugins, withSettingsGradle } from '@expo/config-plug
 import { withAndroidModulesMainActivity } from './withAndroidModulesMainActivity';
 import { withAndroidModulesMainApplication } from './withAndroidModulesMainApplication';
 
-export const withAndroidModules: ConfigPlugin = config => {
+export const withAndroidModules: ConfigPlugin = (config) => {
   return withPlugins(config, [
     withAndroidModulesMainApplication,
     withAndroidModulesMainActivity,
@@ -11,8 +11,8 @@ export const withAndroidModules: ConfigPlugin = config => {
   ]);
 };
 
-const withAndroidModulesSettingGradle: ConfigPlugin = config => {
-  return withSettingsGradle(config, config => {
+const withAndroidModulesSettingGradle: ConfigPlugin = (config) => {
+  return withSettingsGradle(config, (config) => {
     if (config.modResults.contents.match('useExpoModules()')) {
       return config;
     }

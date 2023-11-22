@@ -13,7 +13,7 @@ import { ISA, PBXShellScriptBuildPhase } from 'xcparse';
 
 import { withXCParseXcodeProject } from '../ios/withXCParseXcodeProject';
 
-export const withCliIntegration: ConfigPlugin = config => {
+export const withCliIntegration: ConfigPlugin = (config) => {
   return withPlugins(config, [
     withCliAndroidGradle,
     withCliAndroidMainApplication,
@@ -25,8 +25,8 @@ export const withCliIntegration: ConfigPlugin = config => {
   ]);
 };
 
-const withCliAndroidGradle: ConfigPlugin = config => {
-  return withAppBuildGradle(config, config => {
+const withCliAndroidGradle: ConfigPlugin = (config) => {
+  return withAppBuildGradle(config, (config) => {
     if (config.modResults.language !== 'groovy') {
       throw new Error('Cannot setup kotlin because the build.gradle is not groovy');
     }
@@ -35,22 +35,22 @@ const withCliAndroidGradle: ConfigPlugin = config => {
   });
 };
 
-const withCliAndroidMainApplication: ConfigPlugin = config => {
-  return withMainApplication(config, config => {
+const withCliAndroidMainApplication: ConfigPlugin = (config) => {
+  return withMainApplication(config, (config) => {
     config.modResults.contents = updateVirtualMetroEntryAndroid(config.modResults.contents);
     return config;
   });
 };
 
-const withCliIosAppDelegate: ConfigPlugin = config => {
-  return withAppDelegate(config, config => {
+const withCliIosAppDelegate: ConfigPlugin = (config) => {
+  return withAppDelegate(config, (config) => {
     config.modResults.contents = updateVirtualMetroEntryIos(config.modResults.contents);
     return config;
   });
 };
 
-const withCliIosXcodeProject: ConfigPlugin = config => {
-  return withXCParseXcodeProject(config, config => {
+const withCliIosXcodeProject: ConfigPlugin = (config) => {
+  return withXCParseXcodeProject(config, (config) => {
     const pbxproj = config.modResults;
     for (const section of Object.values(pbxproj.objects ?? {})) {
       if (section.isa === ISA.PBXShellScriptBuildPhase) {
@@ -61,10 +61,10 @@ const withCliIosXcodeProject: ConfigPlugin = config => {
   });
 };
 
-const withCliBabelConfig: ConfigPlugin = config => {
+const withCliBabelConfig: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       const babelConfigPath = path.join(config.modRequest.projectRoot, 'babel.config.js');
       let contents = await fs.promises.readFile(babelConfigPath, 'utf8');
       contents = updateBabelConfig(contents);
@@ -74,10 +74,10 @@ const withCliBabelConfig: ConfigPlugin = config => {
   ]);
 };
 
-const withCliMetroConfig: ConfigPlugin = config => {
+const withCliMetroConfig: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       const metroConfigPath = path.join(config.modRequest.projectRoot, 'metro.config.js');
       let contents = await fs.promises.readFile(metroConfigPath, 'utf8');
       contents = updateMetroConfig(contents);
@@ -87,10 +87,10 @@ const withCliMetroConfig: ConfigPlugin = config => {
   ]);
 };
 
-const withCliGitIgnore: ConfigPlugin = config => {
+const withCliGitIgnore: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       const gitIgnorePath = path.join(config.modRequest.projectRoot, '.gitignore');
       let contents = await fs.promises.readFile(gitIgnorePath, 'utf8');
       contents = updateGitIgnore(contents);
@@ -118,7 +118,8 @@ export function updateBabelConfig(contents: string): string {
 }
 
 export function updateMetroConfig(contents: string): string {
-  const searchPattern = /^const \{\s*getDefaultConfig, mergeConfig\s*\} = require\('@react-native\/metro-config'\);$/m;
+  const searchPattern =
+    /^const \{\s*getDefaultConfig, mergeConfig\s*\} = require\('@react-native\/metro-config'\);$/m;
   if (!contents.match(searchPattern)) {
     console.warn(
       '⚠️  Unrecognized `metro.config.js` content, will skip the process to update `metro.config.js`. Please manually update the contents to use the `getDefaultConfig()` from `expo/metro-config`.'

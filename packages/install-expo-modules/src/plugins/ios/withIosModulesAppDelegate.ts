@@ -13,8 +13,8 @@ import {
   withXCParseXcodeProject,
 } from './withXCParseXcodeProject';
 
-export const withIosModulesAppDelegate: ConfigPlugin = config => {
-  return withAppDelegate(config, config => {
+export const withIosModulesAppDelegate: ConfigPlugin = (config) => {
+  return withAppDelegate(config, (config) => {
     config.modResults.contents = ['objc', 'objcpp'].includes(config.modResults.language)
       ? updateModulesAppDelegateObjcImpl(config.modResults.contents, config.sdkVersion)
       : updateModulesAppDelegateSwift(config.modResults.contents, config.sdkVersion);
@@ -22,10 +22,10 @@ export const withIosModulesAppDelegate: ConfigPlugin = config => {
   });
 };
 
-export const withIosModulesAppDelegateObjcHeader: ConfigPlugin = config => {
+export const withIosModulesAppDelegateObjcHeader: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       try {
         const appDelegateObjcHeaderPath = IOSConfig.Paths.getAppDelegateObjcHeaderFilePath(
           config.modRequest.projectRoot
@@ -39,8 +39,8 @@ export const withIosModulesAppDelegateObjcHeader: ConfigPlugin = config => {
   ]);
 };
 
-export const withIosModulesSwiftBridgingHeader: ConfigPlugin = config => {
-  return withXCParseXcodeProject(config, async config => {
+export const withIosModulesSwiftBridgingHeader: ConfigPlugin = (config) => {
+  return withXCParseXcodeProject(config, async (config) => {
     const bridgingHeaderFileName = getDesignatedSwiftBridgingHeaderFileReference(config.modResults);
     if (!bridgingHeaderFileName) {
       return config;

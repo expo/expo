@@ -7,7 +7,7 @@ import {
 } from './withIosModulesAppDelegate';
 import { withIosModulesPodfile } from './withIosModulesPodfile';
 
-export const withIosModules: ConfigPlugin = config => {
+export const withIosModules: ConfigPlugin = (config) => {
   return withPlugins(config, [
     withIosModulesAppDelegate,
     withIosModulesAppDelegateObjcHeader,

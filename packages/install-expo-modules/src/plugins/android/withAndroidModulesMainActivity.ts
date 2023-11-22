@@ -6,8 +6,8 @@ import {
 } from '@expo/config-plugins/build/android/codeMod';
 import { replaceContentsWithOffset } from '@expo/config-plugins/build/utils/commonCodeMod';
 
-export const withAndroidModulesMainActivity: ConfigPlugin = config => {
-  return withMainActivity(config, config => {
+export const withAndroidModulesMainActivity: ConfigPlugin = (config) => {
+  return withMainActivity(config, (config) => {
     config.modResults.contents = setModulesMainActivity(
       config.modResults.contents,
       config.modResults.language
