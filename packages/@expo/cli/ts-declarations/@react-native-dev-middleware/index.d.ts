@@ -1,9 +1,5 @@
-declare module '@react-native/dev-middleware/dist/inspector-proxy/Device' {
-  import { Device } from '@react-native/dev-middleware';
-  export default Device;
-}
-
-declare module '@react-native/dev-middleware/dist/inspector-proxy/InspectorProxy' {
+declare module '@react-native/dev-middleware' {
+  import WS from 'ws';
   import type { Server as HttpsServer } from 'https';
   import type {
     IncomingMessage as HttpRequest,
@@ -11,7 +7,7 @@ declare module '@react-native/dev-middleware/dist/inspector-proxy/InspectorProxy
     Server as HttpServer,
   } from 'http';
 
-  export default class InspectorProxy {
+  class unstable_InspectorProxy {
     /** Root of the project used for relative to absolute source path conversion. */
     _projectRoot: string;
     /** Maps device ID to Device instance. */
@@ -66,10 +62,6 @@ declare module '@react-native/dev-middleware/dist/inspector-proxy/InspectorProxy
      */
     _createDebuggerConnectionWSServer(): WS.Server;
   }
-}
-
-declare module '@react-native/dev-middleware' {
-  import WS from 'ws';
 
   type Middleware = (error?: Error) => any;
 
@@ -105,7 +97,7 @@ declare module '@react-native/dev-middleware' {
 
   function runInspectorProxy(port: number, projectRoot: string): void;
 
-  class Device {
+  class unstable_Device {
     /** ID of the device. */
     _id: number;
     /** Name of the device. */
