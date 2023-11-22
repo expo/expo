@@ -8,6 +8,10 @@ import { Button } from '@/components/ui/button';
 export default function Layout() {
   const { modules, options } = useGraph();
 
+  console.log(
+    'total time:',
+    modules.reduce((acc, m) => acc + (m.output[0]?.data.profiling?.duration ?? 0), 0)
+  );
   const visibleDeps = React.useMemo(() => {
     return modules.map((m) => {
       return {

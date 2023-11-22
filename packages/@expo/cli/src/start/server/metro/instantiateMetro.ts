@@ -237,7 +237,7 @@ export async function instantiateMetroAsync(
           null,
           2
         );
-        console.log(jsonResults);
+        // console.log(jsonResults);
         res.setHeader('Content-Type', 'application/json');
         res.end(jsonResults);
         return;
