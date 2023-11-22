@@ -6,6 +6,7 @@
  */
 import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
+import fs from 'fs';
 
 import jestResolver from './createJResolver';
 import { isNodeExternal } from './externals';
@@ -14,6 +15,22 @@ import { formatFileCandidates } from './formatFileCandidates';
 class FailedToResolvePathError extends Error {}
 
 class ShimModuleError extends Error {}
+
+var realpathFS =
+  process.platform !== 'win32' && fs.realpathSync && typeof fs.realpathSync.native === 'function'
+    ? fs.realpathSync.native
+    : fs.realpathSync;
+
+function realpathSync(x: string) {
+  try {
+    return realpathFS(x);
+  } catch (realpathErr: any) {
+    if (realpathErr.code !== 'ENOENT') {
+      throw realpathErr;
+    }
+  }
+  return x;
+}
 
 export function createFastResolver({
   preserveSymlinks,
@@ -110,7 +127,10 @@ export function createFastResolver({
         paths: context.nodeModulesPaths as string[],
         extensions,
         conditions,
-        // realpathSync: context.unstable_getRealPath,
+
+        realpathSync(file: string): string {
+          return context.unstable_getRealPath?.(file) ?? realpathSync(file);
+        },
         packageFilter(pkg) {
           // set the pkg.main to the first available field in context.mainFields
           for (const field of context.mainFields) {

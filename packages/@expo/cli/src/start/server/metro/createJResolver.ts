@@ -73,7 +73,12 @@ type ResolverOptions = {
   blockList: RegExp[];
 } & Pick<
   UpstreamResolveOptions,
-  'readPackageSync' | 'moduleDirectory' | 'extensions' | 'preserveSymlinks' | 'includeCoreModules'
+  | 'readPackageSync'
+  | 'realpathSync'
+  | 'moduleDirectory'
+  | 'extensions'
+  | 'preserveSymlinks'
+  | 'includeCoreModules'
 >;
 
 type UpstreamResolveOptionsWithConditions = UpstreamResolveOptions & ResolverOptions;
