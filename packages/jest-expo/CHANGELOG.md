@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Alias `react-native-vector-icons` to `@expo/vector-icons` in the Metro resolver.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
