@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.base",
+  "extends": "../../tsconfig.node",
   "include": [
     "src/**/*.ts"
   ],
@@ -9,6 +9,7 @@
     "declaration": false,
     "composite": false,
     "module": "es2020",
+    "moduleResolution": "node"
   },
   "exclude": [
     "**/__mocks__/*",
