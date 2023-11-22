@@ -8,7 +8,9 @@ import { createProjectHashAsync } from '../../src/Fingerprint';
 jest.mock('../../src/sourcer/ExpoConfigLoader', () => ({
   // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
   getExpoConfigLoaderPath: jest.fn(() =>
-    path.resolve(__dirname, '..', '..', 'build', 'sourcer', 'ExpoConfigLoader.js')
+    jest
+      .requireActual('path')
+      .resolve(__dirname, '..', '..', 'build', 'sourcer', 'ExpoConfigLoader.js')
   ),
 }));
 
