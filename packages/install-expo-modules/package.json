@@ -4,14 +4,15 @@
   "description": "Tools to install expo-modules for existing react-native projects",
   "main": "build",
   "scripts": {
-    "watch": "tsc --watch --preserveWatchOutput",
-    "watch:ncc": "yarn run build -w",
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
-    "prepare": "yarn run clean && yarn run build:prod",
-    "clean": "rimraf build ./tsconfig.tsbuildinfo",
-    "lint": "eslint .",
-    "test": "jest"
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "prepare": "expo-module clean && yarn run build:prod",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "test": "expo-module test",
+    "typecheck": "expo-module typecheck",
+    "watch": "yarn run build --watch"
   },
   "bin": {
     "install-expo-modules": "./build/index.js"
