@@ -66,6 +66,9 @@ class LottieAnimationViewManager :
          view.setFailureListener {
             LottieAnimationViewManagerImpl.sendAnimationFailureEvent(view, it)
         }
+        view.addLottieOnCompositionLoadedListener {
+            LottieAnimationViewManagerImpl.sendAnimationLoadedEvent(view)
+        }
         view.addAnimatorListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
                 //do nothing
