@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add Vercel adapter.
+- Add Vercel adapter. ([#25539](https://github.com/expo/expo/pull/25539) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
