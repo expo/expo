@@ -23,7 +23,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   var allowPictureInPicture: Bool = false {
     didSet {
-      if (allowPictureInPicture) {
+      if allowPictureInPicture {
         let audioSession = AVAudioSession.sharedInstance()
         do {
           try audioSession.setCategory(.playback, mode: .default)
@@ -85,7 +85,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   }
 
   func startPictureInPicture(promise: Promise) {
-    if (!supportsPictureInPicture) {
+    if !supportsPictureInPicture {
       promise.reject(PictureInPictureUnsupportedException())
       return
     }
@@ -107,7 +107,6 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
       playerViewController.perform(selectorToStopPictureInPicture)
     }
   }
-
 
   // MARK: - AVPlayerViewControllerDelegate
 

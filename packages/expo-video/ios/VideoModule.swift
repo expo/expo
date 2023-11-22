@@ -52,7 +52,7 @@ public final class VideoModule: Module {
       }
 
       Prop("startsPictureInPictureAutomatically") { (view, startsPictureInPictureAutomatically: Bool?) in
-        view.startPictureInPictureAutomatically = startsPictureInPictureAutomatically ?? false;
+        view.startPictureInPictureAutomatically = startsPictureInPictureAutomatically ?? false
       }
 
       AsyncFunction("enterFullscreen") { view in
@@ -64,7 +64,7 @@ public final class VideoModule: Module {
       }
 
       AsyncFunction("startPictureInPicture") { (view: VideoView, promise: Promise) in
-          view.startPictureInPicture(promise: promise)
+        view.startPictureInPicture(promise: promise)
       }
 
       AsyncFunction("stopPictureInPicture") { (view: VideoView) in
