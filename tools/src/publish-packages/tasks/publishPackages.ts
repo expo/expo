@@ -9,6 +9,7 @@ import * as Npm from '../../Npm';
 import { Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { checkPackageAccess } from './checkPackageAccess';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 const { green, cyan, yellow } = chalk;
@@ -19,7 +20,7 @@ const { green, cyan, yellow } = chalk;
 export const publishPackages = new Task<TaskArgs>(
   {
     name: 'publishPackages',
-    dependsOn: [selectPackagesToPublish],
+    dependsOn: [selectPackagesToPublish, checkPackageAccess],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
     logger.info('\n🚀 Publishing packages...');

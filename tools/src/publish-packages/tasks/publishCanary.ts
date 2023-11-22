@@ -7,6 +7,7 @@ import { sdkVersionAsync } from '../../ProjectVersions';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
+import { checkPackageAccess } from './checkPackageAccess';
 import { loadRequestedParcels } from './loadRequestedParcels';
 import { packPackageToTarball } from './packPackageToTarball';
 import { publishPackages } from './publishPackages';
@@ -60,6 +61,7 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       checkEnvironmentTask,
       loadRequestedParcels,
       prepareCanaries,
+      checkPackageAccess,
       updatePackageVersions,
       updateBundledNativeModulesFile,
       updateModuleTemplate,
