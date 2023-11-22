@@ -36,9 +36,9 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/install-expo-modules#readme",
   "dependencies": {
-    "@expo/config": "~8.0.0",
-    "@expo/config-plugins": "~6.0.0",
-    "@expo/package-manager": "0.0.56",
+    "@expo/config": "^8.4.0",
+    "@expo/config-plugins": "^7.7.0",
+    "@expo/package-manager": "^1.0.3",
     "chalk": "^4.1.2",
     "commander": "2.20.0",
     "find-up": "^5.0.0",
