@@ -1,4 +1,4 @@
-import MetroProxy from '@react-native/dev-middleware/dist/inspector-proxy/InspectorProxy';
+import { unstable_InspectorProxy as MetroProxy } from '@react-native/dev-middleware';
 import connect from 'connect';
 import http from 'http';
 import fetch from 'node-fetch';

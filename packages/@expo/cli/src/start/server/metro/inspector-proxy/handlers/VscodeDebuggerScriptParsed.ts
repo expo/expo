@@ -1,4 +1,4 @@
-import { Device as MetroDevice } from '@react-native/dev-middleware';
+import { unstable_Device as MetroDevice } from '@react-native/dev-middleware';
 import Protocol from 'devtools-protocol';
 
 import { CdpMessage, DeviceRequest, InspectorHandler } from './types';
