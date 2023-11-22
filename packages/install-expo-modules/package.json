@@ -53,7 +53,8 @@
   },
   "devDependencies": {
     "@types/prompts": "^2.0.6",
-    "@types/semver": "^6.0.0"
+    "@types/semver": "^6.0.0",
+    "expo-module-scripts": "^3.3.0"
   },
   "publishConfig": {
     "access": "public"
