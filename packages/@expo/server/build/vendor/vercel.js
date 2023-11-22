@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.respond = exports.convertRequest = exports.convertHeaders = exports.createRequestHandler = void 0;
+// NOTE: VercelRequest/VercelResponse wrap http primitives in Node
+// plus some helper inputs and outputs, which we don't need to define
+// our interface types
 const node_1 = require("@remix-run/node");
 const __1 = require("..");
 const environment_1 = require("../environment");

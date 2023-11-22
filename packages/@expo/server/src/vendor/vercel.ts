@@ -1,30 +1,24 @@
 // NOTE: VercelRequest/VercelResponse wrap http primitives in Node
 // plus some helper inputs and outputs, which we don't need to define
 // our interface types
-import * as http from 'http';
-
 import {
   AbortController,
   Headers,
   RequestInit,
   writeReadableStreamToWritable,
 } from '@remix-run/node';
+import * as http from 'http';
 
 import { createRequestHandler as createExpoHandler } from '..';
 import { ExpoRequest, ExpoResponse } from '../environment';
 
-export type RequestHandler = (
-  req: http.IncomingMessage,
-  res: http.ServerResponse,
-) => Promise<void>;
+export type RequestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => Promise<void>;
 
 /**
  * Returns a request handler for Vercel's Node.js runtime that serves the
  * response using Remix.
  */
-export function createRequestHandler(
-  { build }: { build: string }
-): RequestHandler {
+export function createRequestHandler({ build }: { build: string }): RequestHandler {
   const handleRequest = createExpoHandler(build);
 
   return async (req, res) => {
@@ -77,11 +71,7 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
 
 export async function respond(res: http.ServerResponse, expoRes: ExpoResponse): Promise<void> {
   res.statusMessage = expoRes.statusText;
-  res.writeHead(
-    expoRes.status,
-    expoRes.statusText,
-    expoRes.headers.raw(),
-  );
+  res.writeHead(expoRes.status, expoRes.statusText, expoRes.headers.raw());
 
   if (expoRes.body) {
     await writeReadableStreamToWritable(expoRes.body, res);
