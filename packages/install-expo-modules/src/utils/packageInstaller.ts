@@ -9,12 +9,16 @@ import semver from 'semver';
  * @param pkg package name
  */
 function installPackageNonInteractiveAsync(projectRoot: string, pkg: string) {
-  const isYarn = PackageManager.isUsingYarn(projectRoot);
-  const packageManager = PackageManager.createForProject(projectRoot);
-  if (isYarn) {
-    return packageManager.addWithParametersAsync([pkg], ['--non-interactive']);
-  } else {
-    return packageManager.addAsync(pkg);
+  const manager = PackageManager.createForProject(projectRoot);
+
+  switch (manager.name) {
+    case 'yarn':
+      return manager.addAsync([pkg, '--non-interactive']);
+
+    case 'bun':
+    case 'npm':
+    case 'pnpm':
+      return manager.addAsync([pkg]);
   }
 }
 
