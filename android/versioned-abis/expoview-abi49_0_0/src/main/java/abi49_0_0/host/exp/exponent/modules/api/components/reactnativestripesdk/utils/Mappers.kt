@@ -520,6 +520,24 @@ internal fun mapNextAction(type: NextActionType?, data: NextActionData?): Writab
     NextActionType.CashAppRedirect, NextActionType.BlikAuthorize, NextActionType.UseStripeSdk, NextActionType.UpiAwaitNotification, null -> {
       return null
     }
+    NextActionType.DisplayBoletoDetails -> {
+      (data as? NextActionData.DisplayBoletoDetails)?.let {
+        nextActionMap.putString("type", "boletoVoucher")
+        nextActionMap.putString("voucherURL", it.hostedVoucherUrl)
+      }
+    }
+    NextActionType.DisplayKonbiniDetails -> {
+      (data as? NextActionData.DisplayKonbiniDetails)?.let {
+        nextActionMap.putString("type", "konbiniVoucher")
+        nextActionMap.putString("voucherURL", it.hostedVoucherUrl)
+      }
+    }
+    NextActionType.SwishRedirect -> {
+      (data as? NextActionData.SwishRedirect)?.let {
+        nextActionMap.putString("type", "swishRedirect")
+        nextActionMap.putString("mobileAuthUrl", it.mobileAuthUrl)
+      }
+    }
   }
   return nextActionMap
 }
