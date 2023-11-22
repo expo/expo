@@ -32,3 +32,4 @@ class EmptyJsonFileError extends JsonFileError {
     }
 }
 exports.EmptyJsonFileError = EmptyJsonFileError;
+//# sourceMappingURL=JsonFileError.js.map

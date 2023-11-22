@@ -280,3 +280,4 @@ function assertEmptyJsonString(json, file) {
         throw new JsonFileError_1.EmptyJsonFileError(file);
     }
 }
+//# sourceMappingURL=JsonFile.js.map
