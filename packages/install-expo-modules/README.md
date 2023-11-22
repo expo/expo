@@ -5,14 +5,6 @@
 
 <p align="center">A tool for existing React Native projects to adopt <a href="https://docs.expo.dev/versions/latest/">expo-modules and SDK easier</a>.</p>
 
-<p align="center">
-  <img src="https://flat.badgen.net/packagephobia/install/install-expo-modules">
-
-  <a href="https://www.npmjs.com/package/install-expo-modules">
-    <img src="https://flat.badgen.net/npm/dw/install-expo-modules" target="_blank" />
-  </a>
-</p>
-
 <!-- Body -->
 
 # Usage
