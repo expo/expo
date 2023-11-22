@@ -289,7 +289,28 @@ extension UpdatesStateContext {
 internal class UpdatesStateMachine {
   private let logger = UpdatesLogger()
 
+  private lazy var serialExecutorQueue: StateMachineSerialExecutorQueue = {
+    return StateMachineSerialExecutorQueue(stateMachineProcedureContext: StateMachineProcedureContext(
+      processStateEventCallback: { event in
+        self.processEvent(event)
+      },
+      getCurrentStateCallback: {
+        return self.state
+      },
+      resetStateCallback: {
+        return self.reset()
+      }
+    ))
+  }()
+
   // MARK: - Public methods and properties
+
+  /**
+   Queue a StateMachineProcedure procedure for serial execution.
+   */
+  func queueExecution(stateMachineProcedure: StateMachineProcedure) {
+    serialExecutorQueue.queueExecution(stateMachineProcedure: stateMachineProcedure)
+  }
 
   /**
    In production, this is the AppController instance.
@@ -299,7 +320,10 @@ internal class UpdatesStateMachine {
   /**
    The current state
    */
-  internal var state: UpdatesStateValue = .idle
+  private var state: UpdatesStateValue = .idle
+  internal func getStateForTesting() -> UpdatesStateValue {
+    return state
+  }
 
   /**
    The context
@@ -307,21 +331,22 @@ internal class UpdatesStateMachine {
   internal var context: UpdatesStateContext = UpdatesStateContext()
 
   /**
-   Called after the app restarts (reloadAsync()) to reset the machine to its
-   starting state.
+   Reset the machine to its starting state. Should only be called after the app restarts (reloadAsync()).
    */
-  internal func reset() {
+  private func reset() {
     state = .idle
     context = UpdatesStateContext()
     logger.info(message: "Updates state is reset, state = \(state), context = \(context)")
     sendChangeEventToJS()
   }
+  internal func resetForTesting() {
+    reset()
+  }
 
   /**
-   Called by AppLoaderTask delegate methods in AppController during the initial
-   background check for updates, and called by checkForUpdateAsync(), fetchUpdateAsync(), and reloadAsync().
+   Transition the state machine forward to a new state.
    */
-  internal func processEvent(_ event: UpdatesStateEvent) {
+  private func processEvent(_ event: UpdatesStateEvent) {
     // Execute state transition
     if transition(event) {
       // Only change context if transition succeeds
@@ -330,6 +355,9 @@ internal class UpdatesStateMachine {
       // Send change event
       sendChangeEventToJS(event)
     }
+  }
+  internal func processEventForTesting(_ event: UpdatesStateEvent) {
+    processEvent(event)
   }
 
   // MARK: - Private methods
@@ -435,7 +463,7 @@ internal class UpdatesStateMachine {
    If the machine receives an unexpected event, an assertion failure will occur
    and the app will crash.
    */
-  static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEventType>] = [
+  private static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEventType>] = [
     .idle: [.check, .download, .restart],
     .checking: [.checkCompleteAvailable, .checkCompleteUnavailable, .checkError],
     .downloading: [.downloadComplete, .downloadError],
@@ -446,7 +474,7 @@ internal class UpdatesStateMachine {
    For this state machine, each event has only one destination state that the
    machine will transition to.
    */
-  static let updatesStateTransitions: [UpdatesStateEventType: UpdatesStateValue] = [
+  private static let updatesStateTransitions: [UpdatesStateEventType: UpdatesStateValue] = [
     .check: .checking,
     .checkCompleteAvailable: .idle,
     .checkCompleteUnavailable: .idle,
