@@ -18,6 +18,7 @@
     "fingerprint": "bin/cli.js"
   },
   "files": [
+    "bin",
     "build"
   ],
   "keywords": [
