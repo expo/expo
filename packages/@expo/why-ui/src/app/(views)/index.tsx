@@ -34,7 +34,11 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { Link, router } from 'expo-router';
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
+import ArrowUpDown from 'lucide-react/dist/esm/icons/arrow-up-down';
+import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down';
+import MoreHorizontal from 'lucide-react/dist/esm/icons/more-horizontal';
+// import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
+// import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
 
 export function formatSize(size: number) {
@@ -109,6 +113,9 @@ export const columns: ColumnDef<MetroJsonModule>[] = [
   {
     accessorKey: 'duration',
     header: ({ column }) => {
+      // const total = column.getAggregationFn()(
+      //   column.getSortedRows().map((row) => row.getValue('duration'))
+      // );
       return (
         <Button
           variant="ghost"
