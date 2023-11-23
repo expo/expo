@@ -10,6 +10,7 @@ import {
   CameraType,
   FlashMode,
   PermissionStatus,
+  Camera,
 } from 'expo-camera/next';
 import * as FileSystem from 'expo-file-system';
 import React from 'react';
@@ -79,7 +80,7 @@ export default class CameraScreen extends React.Component<object, State> {
     if (Platform.OS !== 'web') {
       this.ensureDirectoryExistsAsync();
     }
-    CameraView.requestCameraPermissionsAsync().then(({ status }) => {
+    Camera.requestCameraPermissionsAsync().then(({ status }) => {
       this.setState({ permission: status, permissionsGranted: status === 'granted' });
     });
   }

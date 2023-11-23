@@ -106,8 +106,10 @@ class CameraViewNextModule : Module() {
       }
 
       Prop("videoQuality") { view, quality: VideoQuality? ->
-        quality?.let {
-          view.videoQuality = it
+        if (quality != null) {
+          view.videoQuality = quality
+        } else {
+          view.videoQuality = VideoQuality.VIDEO1080P
         }
       }
 

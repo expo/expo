@@ -31,8 +31,6 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     if #available(iOS 15.4, *) {
       zxingBarcodeReaders[AVMetadataObject.ObjectType.codabar] = ZXCodaBarReader()
     }
-
-    super.init()
   }
 
   func setSettings(_ newSettings: [String: [AVMetadataObject.ObjectType]]) {

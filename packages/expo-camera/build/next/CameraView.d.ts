@@ -1,7 +1,7 @@
 import { Subscription } from 'expo-modules-core';
 import * as React from 'react';
 import { Ref } from 'react';
-import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraType, CameraViewRef, ModernScanningOptions, ModernBarcodeScanningResult, PermissionResponse, VideoCodec } from './Camera.types';
+import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraViewRef, ModernScanningOptions, ModernBarcodeScanningResult, VideoCodec } from './Camera.types';
 export default class CameraView extends React.Component<CameraProps> {
     /**
      * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
@@ -15,11 +15,6 @@ export default class CameraView extends React.Component<CameraProps> {
      */
     static isAvailableAsync(): Promise<boolean>;
     /**
-     * Returns a list of camera types `['front', 'back']`. This is useful for desktop browsers which only have front-facing cameras.
-     * @platform web
-     */
-    static getAvailableCameraTypesAsync(): Promise<CameraType[]>;
-    /**
      * Queries the device for the available video codecs that can be used in video recording.
      * @return A promise that resolves to a list of strings that represents available codecs.
      * @platform ios
@@ -30,48 +25,6 @@ export default class CameraView extends React.Component<CameraProps> {
         flashMode: Record<number | typeof Symbol.iterator | "link" | "search" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at" | "toString" | "valueOf", string | undefined>;
     };
     static defaultProps: CameraProps;
-    /**
-     * Checks user's permissions for accessing camera.
-     * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-     */
-    static getCameraPermissionsAsync(): Promise<PermissionResponse>;
-    /**
-     * Asks the user to grant permissions for accessing camera.
-     * On iOS this will require apps to specify an `NSCameraUsageDescription` entry in the **Info.plist**.
-     * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-     */
-    static requestCameraPermissionsAsync(): Promise<PermissionResponse>;
-    /**
-     * Check or request permissions to access the camera.
-     * This uses both `requestCameraPermissionsAsync` and `getCameraPermissionsAsync` to interact with the permissions.
-     *
-     * @example
-     * ```ts
-     * const [status, requestPermission] = Camera.useCameraPermissions();
-     * ```
-     */
-    static useCameraPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
-    /**
-     * Checks user's permissions for accessing microphone.
-     * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-     */
-    static getMicrophonePermissionsAsync(): Promise<PermissionResponse>;
-    /**
-     * Asks the user to grant permissions for accessing the microphone.
-     * On iOS this will require apps to specify an `NSMicrophoneUsageDescription` entry in the **Info.plist**.
-     * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-     */
-    static requestMicrophonePermissionsAsync(): Promise<PermissionResponse>;
-    /**
-     * Check or request permissions to access the microphone.
-     * This uses both `requestMicrophonePermissionsAsync` and `getMicrophonePermissionsAsync` to interact with the permissions.
-     *
-     * @example
-     * ```ts
-     * const [status, requestPermission] = Camera.useMicrophonePermissions();
-     * ```
-     */
-    static useMicrophonePermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
     _cameraHandle?: number | null;
     _cameraRef: React.RefObject<CameraViewRef>;
     _lastEvents: {
@@ -135,5 +88,4 @@ export default class CameraView extends React.Component<CameraProps> {
     _setReference: (ref: Ref<CameraViewRef>) => void;
     render(): JSX.Element;
 }
-export declare const getCameraPermissionsAsync: typeof CameraView.getCameraPermissionsAsync, requestCameraPermissionsAsync: typeof CameraView.requestCameraPermissionsAsync, getMicrophonePermissionsAsync: typeof CameraView.getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync: typeof CameraView.requestMicrophonePermissionsAsync;
 //# sourceMappingURL=CameraView.d.ts.map

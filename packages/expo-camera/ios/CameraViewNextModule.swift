@@ -161,6 +161,10 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
         reject: promise.legacyRejecter
       )
     }
+    
+    AsyncFunction("getAvailableVideoCodecsAsync") { () -> [String] in
+      return getAvailableVideoCodecs()
+    }
   }
 
   @available(iOS 16.0, *)
@@ -185,6 +189,33 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
 
   func onItemScanned(result: [String: Any]) {
     sendEvent("onModernBarcodeScanned", result)
+  }
+  
+  private func getAvailableVideoCodecs() -> [String] {
+    let session = AVCaptureSession()
+
+    session.beginConfiguration()
+
+    guard let captureDevice = ExpoCameraUtils.device(
+      with: AVMediaType.video,
+      preferring: AVCaptureDevice.Position.front) else {
+      return []
+    }
+    guard let deviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
+      return []
+    }
+    if session.canAddInput(deviceInput) {
+      session.addInput(deviceInput)
+    }
+
+    session.commitConfiguration()
+
+    let movieFileOutput = AVCaptureMovieFileOutput()
+
+    if session.canAddOutput(movieFileOutput) {
+      session.addOutput(movieFileOutput)
+    }
+    return movieFileOutput.availableVideoCodecTypes.map { $0.rawValue }
   }
 }
 

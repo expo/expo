@@ -38,7 +38,15 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  var videoQuality: VideoQuality = .video1080p
+  var videoQuality: VideoQuality = .video1080p {
+    didSet {
+      if self.session.sessionPreset != videoQuality.toPreset() {
+        self.sessionQueue.async {
+          self.updateSessionPreset(preset: self.videoQuality.toPreset())
+        }
+      }
+    }
+  }
 
   var isScanningBarcodes = false {
     didSet {
@@ -526,9 +534,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
           }
         }
 
-        let preset = self.videoQuality.toPreset() ?? .high
-        self.updateSessionPreset(preset: preset)
-
         guard let fileSystem = self.fileSystem else {
           promise.reject(Exceptions.FileSystemModuleNotFound())
           return
@@ -686,7 +691,9 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 func updateSessionPreset(preset: AVCaptureSession.Preset) {
     #if !targetEnvironment(simulator)
     if self.session.canSetSessionPreset(preset) {
+      self.session.beginConfiguration()
       self.session.sessionPreset = preset
+      self.session.commitConfiguration()
     }
     #endif
   }
@@ -747,9 +754,9 @@ func updateSessionPreset(preset: AVCaptureSession.Preset) {
       for output in self.session.outputs {
         self.session.removeOutput(output)
       }
+      self.barcodeScanner.stopBarCodeScanning()
       self.session.commitConfiguration()
 
-      self.barcodeScanner.stopBarCodeScanning()
       self.motionManager.stopAccelerometerUpdates()
       self.session.stopRunning()
     }

@@ -1,4 +1,4 @@
-import { createPermissionHook, Platform, UnavailabilityError, EventEmitter, } from 'expo-modules-core';
+import { Platform, UnavailabilityError, EventEmitter } from 'expo-modules-core';
 import * as React from 'react';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
@@ -52,16 +52,6 @@ export default class CameraView extends React.Component {
         }
         return await CameraManager.isAvailableAsync();
     }
-    /**
-     * Returns a list of camera types `['front', 'back']`. This is useful for desktop browsers which only have front-facing cameras.
-     * @platform web
-     */
-    static async getAvailableCameraTypesAsync() {
-        if (!CameraManager.getAvailableCameraTypesAsync) {
-            throw new UnavailabilityError('expo-camera', 'getAvailableCameraTypesAsync');
-        }
-        return await CameraManager.getAvailableCameraTypesAsync();
-    }
     // @needsAudit
     /**
      * Queries the device for the available video codecs that can be used in video recording.
@@ -83,68 +73,6 @@ export default class CameraView extends React.Component {
         mode: 'picture',
         flashMode: 'off',
     };
-    // @needsAudit
-    /**
-     * Checks user's permissions for accessing camera.
-     * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-     */
-    static async getCameraPermissionsAsync() {
-        return CameraManager.getCameraPermissionsAsync();
-    }
-    // @needsAudit
-    /**
-     * Asks the user to grant permissions for accessing camera.
-     * On iOS this will require apps to specify an `NSCameraUsageDescription` entry in the **Info.plist**.
-     * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-     */
-    static async requestCameraPermissionsAsync() {
-        return CameraManager.requestCameraPermissionsAsync();
-    }
-    // @needsAudit
-    /**
-     * Check or request permissions to access the camera.
-     * This uses both `requestCameraPermissionsAsync` and `getCameraPermissionsAsync` to interact with the permissions.
-     *
-     * @example
-     * ```ts
-     * const [status, requestPermission] = Camera.useCameraPermissions();
-     * ```
-     */
-    static useCameraPermissions = createPermissionHook({
-        getMethod: CameraView.getCameraPermissionsAsync,
-        requestMethod: CameraView.requestCameraPermissionsAsync,
-    });
-    // @needsAudit
-    /**
-     * Checks user's permissions for accessing microphone.
-     * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-     */
-    static async getMicrophonePermissionsAsync() {
-        return CameraManager.getMicrophonePermissionsAsync();
-    }
-    // @needsAudit
-    /**
-     * Asks the user to grant permissions for accessing the microphone.
-     * On iOS this will require apps to specify an `NSMicrophoneUsageDescription` entry in the **Info.plist**.
-     * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-     */
-    static async requestMicrophonePermissionsAsync() {
-        return CameraManager.requestMicrophonePermissionsAsync();
-    }
-    // @needsAudit
-    /**
-     * Check or request permissions to access the microphone.
-     * This uses both `requestMicrophonePermissionsAsync` and `getMicrophonePermissionsAsync` to interact with the permissions.
-     *
-     * @example
-     * ```ts
-     * const [status, requestPermission] = Camera.useMicrophonePermissions();
-     * ```
-     */
-    static useMicrophonePermissions = createPermissionHook({
-        getMethod: CameraView.getMicrophonePermissionsAsync,
-        requestMethod: CameraView.requestMicrophonePermissionsAsync,
-    });
     _cameraHandle;
     _cameraRef = React.createRef();
     _lastEvents = {};
@@ -233,16 +161,12 @@ export default class CameraView extends React.Component {
         }
     };
     _setReference = (ref) => {
-        // if (ref) {
-        //   this._cameraRef
-        //   // TODO(Bacon): Unify these - perhaps with hooks?
-        //   if (Platform.OS === 'web') {
-        //     this._cameraHandle = ref as any;
-        //   }
-        // } else {
-        //   this._cameraRef = null;
-        //   this._cameraHandle = null;
-        // }
+        if (ref) {
+            // TODO(Bacon): Unify these - perhaps with hooks?
+            if (Platform.OS === 'web') {
+                this._cameraHandle = ref;
+            }
+        }
     };
     render() {
         const nativeProps = ensureNativeProps(this.props);
@@ -252,5 +176,4 @@ export default class CameraView extends React.Component {
         return (<ExpoCamera {...nativeProps} ref={this._cameraRef} onCameraReady={this._onCameraReady} onMountError={this._onMountError} onBarcodeScanned={onBarcodeScanned} onPictureSaved={_onPictureSaved} onResponsiveOrientationChanged={this._onResponsiveOrientationChanged}/>);
     }
 }
-export const { getCameraPermissionsAsync, requestCameraPermissionsAsync, getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync, } = CameraView;
 //# sourceMappingURL=CameraView.js.map
