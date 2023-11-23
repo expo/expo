@@ -19,13 +19,7 @@ export type CameraMode = 'picture' | 'video';
  * This option specifies what codec to use when recording a video.
  * @platform ios
  */
-export enum VideoCodec {
-  H264 = 'avc1',
-  HEVC = 'hvc1',
-  JPEG = 'jpeg',
-  AppleProRes422 = 'apcn',
-  AppleProRes4444 = 'ap4h',
-}
+export type VideoCodec = 'avc1' | 'hvc1' | 'jpeg' | 'apcn' | 'ap4h';
 
 /**
  * This option specifies the stabilization mode to use when recording a video.
@@ -173,22 +167,11 @@ export type CameraRecordingOptions = {
    */
   maxFileSize?: number;
   /**
-   * Specify the quality of recorded video. Use one of [`VideoQuality.<value>`](#videoquality).
-   * Possible values: for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480).
-   * If the chosen quality is not available for a device, the highest available is chosen.
-   */
-  quality?: VideoQuality;
-  /**
    * If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default,
    * but you can reverse that back by setting this to `true`. On Android, this is handled in the user's device settings.
    * @platform ios
    */
   mirror?: boolean;
-  /**
-   * Only works if `useCamera2Api` is set to `true`. This option specifies a desired video bitrate. For example, `5*1000*1000` would be 5Mbps.
-   * @platform android
-   */
-  videoBitrate?: number;
   /**
    * This option specifies what codec to use when recording the video. See [`VideoCodec`](#videocodec) for the possible values.
    * @platform ios
@@ -231,7 +214,7 @@ export type Point = {
   y: number;
 };
 
-export type BarCodeSize = {
+export type BarcodeSize = {
   /**
    * The height value.
    */
@@ -246,21 +229,21 @@ export type BarCodeSize = {
  * These coordinates are represented in the coordinate space of the camera source (e.g. when you
  * are using the camera view, these values are adjusted to the dimensions of the view).
  */
-export type BarCodePoint = Point;
+export type BarcodePoint = Point;
 
-export type BarCodeBounds = {
+export type BarcodeBounds = {
   /**
    * The origin point of the bounding box.
    */
-  origin: BarCodePoint;
+  origin: BarcodePoint;
   /**
    * The size of the bounding box.
    */
-  size: BarCodeSize;
+  size: BarcodeSize;
 };
 
 // @needsAudit
-export type BarCodeScanningResult = {
+export type BarcodeScanningResult = {
   /**
    * The barcode type.
    */
@@ -274,17 +257,17 @@ export type BarCodeScanningResult = {
    * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`
    * you don't get this value.
    */
-  cornerPoints: BarCodePoint[];
+  cornerPoints: BarcodePoint[];
   /**
    * The [BarCodeBounds](#barcodebounds) object.
    * `bounds` in some case will be representing an empty rectangle.
    * Moreover, `bounds` doesn't have to bound the whole barcode.
    * For some types, they will represent the area used by the scanner.
    */
-  bounds: BarCodeBounds;
+  bounds: BarcodeBounds;
 };
 
-export type ModernBarCodeScanningResult = Omit<BarCodeScanningResult, 'bounds'>;
+export type ModernBarcodeScanningResult = Omit<BarcodeScanningResult, 'bounds'>;
 
 /**
  * @hidden
@@ -328,6 +311,12 @@ export type CameraProps = ViewProps & {
    */
   mute?: boolean;
   /**
+   * Specify the quality of recorded video. Use one of [`VideoQuality.<value>`](#videoquality).
+   * Possible values: for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480).
+   * If the chosen quality is not available for a device, the highest available is chosen.
+   */
+  videoQuality?: VideoQuality;
+  /**
    * A boolean to enable or disable the torch
    * @default false
    */
@@ -358,7 +347,7 @@ export type CameraProps = ViewProps & {
    * />
    * ```
    */
-  barCodeScannerSettings?: BarCodeSettings;
+  barcodeScannerSettings?: BarcodeSettings;
   /**
    * Callback that is invoked when a bar code has been successfully scanned. The callback is provided with
    * an object of the [`BarCodeScanningResult`](#barcodescanningresult) shape, where the `type`
@@ -367,7 +356,7 @@ export type CameraProps = ViewProps & {
    * for supported values.
    * @param scanningResult
    */
-  onBarCodeScanned?: (scanningResult: BarCodeScanningResult) => void;
+  onBarcodeScanned?: (scanningResult: BarcodeScanningResult) => void;
   /**
    * A URL for an image to be shown while the camera is loading.
    * @platform web
@@ -403,21 +392,21 @@ export type CameraNativeProps = {
   ref?: Ref<CameraViewRef>;
   onCameraReady?: CameraReadyListener;
   onMountError?: MountErrorListener;
-  onBarCodeScanned?: (event: { nativeEvent: BarCodeScanningResult }) => void;
+  onBarcodeScanned?: (event: { nativeEvent: BarcodeScanningResult }) => void;
   onPictureSaved?: PictureSavedListener;
   onResponsiveOrientationChanged?: ResponsiveOrientationChangedListener;
   type?: string;
   flashMode?: string;
   enableTorch?: boolean;
   zoom?: number;
-  barCodeScannerSettings?: BarCodeSettings;
-  barCodeScannerEnabled?: boolean;
+  barcodeScannerSettings?: BarcodeSettings;
+  barcodeScannerEnabled?: boolean;
   poster?: string;
   responsiveOrientationWhenOrientationLocked?: boolean;
 };
 
 // @docsMissing
-export type BarCodeSettings = {
+export type BarcodeSettings = {
   barCodeTypes: BarCodeType[];
   interval?: number;
 };
