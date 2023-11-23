@@ -12,7 +12,7 @@ if (!Fingerprint) {
 
 (async () => {
   if (process.argv.length !== 3 && process.argv.length !== 4) {
-    console.log(`Usage: ${path.basename(process.argv[1])} projectRoot`);
+    console.log(`Usage: ${path.basename(process.argv[1])} projectRoot [fingerprintFileToDiff]`);
     process.exit(1);
   }
 
