@@ -244,13 +244,12 @@ private func generatePictureForSimulator(
   appContext: AppContext?,
   options: TakePictureOptionsNext
 ) throws -> [String: Any?] {
-  guard let fileSystem = appContext?.fileSystem else {
-    throw Exceptions.FileSystemModuleNotFound()
-  }
-  let path = fileSystem.generatePath(
-    inDirectory: fileSystem.cachesDirectory.appending("/Camera"),
-    withExtension: ".jpg"
+  let path = FileSystemUtilities.generatePathInCache(
+    appContext,
+    in: "Camera",
+    extension: ".jpg"
   )
+
   let generatedPhoto = ExpoCameraUtilsNext.generatePhoto(of: CGSize(width: 200, height: 200))
   guard let photoData = generatedPhoto.jpegData(compressionQuality: options.quality) else {
     throw CameraInvalidPhotoData()
