@@ -30,7 +30,7 @@ export class YarnPackageManager extends BasePackageManager {
   installAsync(flags: string[] = []) {
     return createPendingSpawnAsync(
       () => this.withOfflineFlagAsync(['install']),
-      (args) => this.runAsync([...args, ...flags])
+      (args) => this.spawnAsync([...args, ...flags])
     );
   }
 
@@ -41,7 +41,7 @@ export class YarnPackageManager extends BasePackageManager {
 
     return createPendingSpawnAsync(
       () => this.withOfflineFlagAsync(['add', ...namesOrFlags]),
-      (args) => this.runAsync(args)
+      (args) => this.spawnAsync(args)
     );
   }
 
@@ -52,7 +52,7 @@ export class YarnPackageManager extends BasePackageManager {
 
     return createPendingSpawnAsync(
       () => this.withOfflineFlagAsync(['add', '--dev', ...namesOrFlags]),
-      (args) => this.runAsync(args)
+      (args) => this.spawnAsync(args)
     );
   }
 
@@ -63,19 +63,19 @@ export class YarnPackageManager extends BasePackageManager {
 
     return createPendingSpawnAsync(
       () => this.withOfflineFlagAsync(['global', 'add', ...namesOrFlags]),
-      (args) => this.runAsync(args)
+      (args) => this.spawnAsync(args)
     );
   }
 
   removeAsync(namesOrFlags: string[]) {
-    return this.runAsync(['remove', ...namesOrFlags]);
+    return this.spawnAsync(['remove', ...namesOrFlags]);
   }
 
   removeDevAsync(namesOrFlags: string[]) {
-    return this.runAsync(['remove', ...namesOrFlags]);
+    return this.spawnAsync(['remove', ...namesOrFlags]);
   }
 
   removeGlobalAsync(namesOrFlags: string[]) {
-    return this.runAsync(['global', 'remove', ...namesOrFlags]);
+    return this.spawnAsync(['global', 'remove', ...namesOrFlags]);
   }
 }

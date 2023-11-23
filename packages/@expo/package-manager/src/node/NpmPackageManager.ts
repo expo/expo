@@ -36,8 +36,8 @@ export class NpmPackageManager extends BasePackageManager {
       () => this.updatePackageFileAsync(versioned, 'dependencies'),
       () =>
         !unversioned.length
-          ? this.runAsync(['install', ...flags])
-          : this.runAsync(['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)])
+          ? this.spawnAsync(['install', ...flags])
+          : this.spawnAsync(['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)])
     );
   }
 
@@ -52,8 +52,8 @@ export class NpmPackageManager extends BasePackageManager {
       () => this.updatePackageFileAsync(versioned, 'devDependencies'),
       () =>
         !unversioned.length
-          ? this.runAsync(['install', ...flags])
-          : this.runAsync([
+          ? this.spawnAsync(['install', ...flags])
+          : this.spawnAsync([
               'install',
               '--save-dev',
               ...flags,
@@ -67,19 +67,19 @@ export class NpmPackageManager extends BasePackageManager {
       return this.installAsync();
     }
 
-    return this.runAsync(['install', '--global', ...namesOrFlags]);
+    return this.spawnAsync(['install', '--global', ...namesOrFlags]);
   }
 
   removeAsync(namesOrFlags: string[]) {
-    return this.runAsync(['uninstall', ...namesOrFlags]);
+    return this.spawnAsync(['uninstall', ...namesOrFlags]);
   }
 
   removeDevAsync(namesOrFlags: string[]) {
-    return this.runAsync(['uninstall', '--save-dev', ...namesOrFlags]);
+    return this.spawnAsync(['uninstall', '--save-dev', ...namesOrFlags]);
   }
 
   removeGlobalAsync(namesOrFlags: string[]) {
-    return this.runAsync(['uninstall', '--global', ...namesOrFlags]);
+    return this.spawnAsync(['uninstall', '--global', ...namesOrFlags]);
   }
 
   /**

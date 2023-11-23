@@ -49,17 +49,18 @@ describe('YarnPackageManager', () => {
     });
   });
 
-  describe('runAsync', () => {
+  describe('spawnAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();
       const yarn = new YarnPackageManager({ cwd: projectRoot, log });
-      await yarn.runAsync(['install', '--some-flag']);
+      await yarn.spawnAsync(['install', '--some-flag']);
+
       expect(log).toHaveBeenCalledWith('> yarn install --some-flag');
     });
 
     it('inherits stdio output without silent', async () => {
       const yarn = new YarnPackageManager({ cwd: projectRoot });
-      await yarn.runAsync(['install']);
+      await yarn.spawnAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -70,7 +71,7 @@ describe('YarnPackageManager', () => {
 
     it('does not inherit stdio with silent', async () => {
       const yarn = new YarnPackageManager({ cwd: projectRoot, silent: true });
-      await yarn.runAsync(['install']);
+      await yarn.spawnAsync(['install']);
 
       expect(spawnAsync).toBeCalledWith(
         expect.anything(),
@@ -81,7 +82,7 @@ describe('YarnPackageManager', () => {
 
     it('adds a single package with custom parameters', async () => {
       const yarn = new YarnPackageManager({ cwd: projectRoot });
-      await yarn.runAsync(['add', '--peer', '@babel/core']);
+      await yarn.spawnAsync(['add', '--peer', '@babel/core']);
 
       expect(spawnAsync).toBeCalledWith(
         'yarnpkg',
@@ -92,7 +93,7 @@ describe('YarnPackageManager', () => {
 
     it('adds multiple packages with custom parameters', async () => {
       const yarn = new YarnPackageManager({ cwd: projectRoot });
-      await yarn.runAsync(['add', '--peer', '@babel/core', '@babel/runtime']);
+      await yarn.spawnAsync(['add', '--peer', '@babel/core', '@babel/runtime']);
 
       expect(spawnAsync).toBeCalledWith(
         'yarnpkg',
@@ -422,6 +423,7 @@ describe('YarnPackageManager', () => {
 
       const yarn = new YarnPackageManager({ cwd: projectRoot });
       const root = yarn.workspaceRoot();
+
       expect(root).toBeInstanceOf(YarnPackageManager);
       expect(root).not.toBe(yarn);
     });

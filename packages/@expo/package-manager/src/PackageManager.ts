@@ -23,7 +23,7 @@ export interface PackageManager {
   readonly options: PackageManagerOptions;
 
   /** Run any command using the package manager */
-  runAsync(command: string[]): SpawnPromise<SpawnResult>;
+  spawnAsync(command: string[]): SpawnPromise<SpawnResult>;
 
   /** Get the version of the used package manager */
   versionAsync(): Promise<string>;
