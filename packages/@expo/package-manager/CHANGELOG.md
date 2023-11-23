@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Repurpose `runAsync` to execute package scripts. ([#25550](https://github.com/expo/expo/pull/25550) by [@byCedric](https://github.com/byCedric))
+
 ### 🎉 New features
+
+- Rename `runAsync` to `spawnAsync`. ([#25550](https://github.com/expo/expo/pull/25550) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
