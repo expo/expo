@@ -4,6 +4,7 @@
 /packages/@expo/prebuild-config                 @EvanBacon
 /packages/@expo/config-plugins                  @EvanBacon @brentvatne
 /packages/@expo/config-types                    @EvanBacon @douglowder
+/packages/@expo/json-file                       @EvanBacon @bycedric
 /packages/@expo/metro-config                    @EvanBacon @bycedric @marklawlor
 /packages/@expo/metro-runtime                   @EvanBacon @bycedric @marklawlor
 /packages/@expo/package-manager                 @EvanBacon @bycedric
