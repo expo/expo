@@ -19,6 +19,7 @@
 - Add e2e tests for disabled mode. ([#25301](https://github.com/expo/expo/pull/25301) by [@wschurman](https://github.com/wschurman))
 - Modify E2E manual test for asset exclusion. ([#25406](https://github.com/expo/expo/pull/25406) by [@douglowder](https://github.com/douglowder))
 - Move tvOS compile test out of updates E2E test matrix. ([#25438](https://github.com/expo/expo/pull/25438) by [@douglowder](https://github.com/douglowder))
+- Assert valid state transitions in debug. ([#25474](https://github.com/expo/expo/pull/25474) by [@wschurman](https://github.com/wschurman))
 
 ## 0.23.0 — 2023-11-14
 
