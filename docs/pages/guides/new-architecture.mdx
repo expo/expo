@@ -9,7 +9,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-The New Architecture is a name that we use to describe a completely refactoring of the internals of React Native, to solve for limitations of the original React Native architecture that were discovered over years of usage in production at Meta and the community.
+The New Architecture is a name that we use to describe a complete refactoring of the internals of React Native, to solve limitations of the original React Native architecture that were discovered over years of usage in production at Meta and other companies.
 
 In this guide, we'll talk about how to use the New Architecture in Expo projects today.
 
@@ -33,13 +33,13 @@ To learn more about the ideas and motivations behind the New Architecture, we re
 
 The New Architecture is the future of React Native — yet, for many apps, there may not be many immediate benefits to migrating today. You may want to think of migrating to the New Architecture as an investment in the future of your app, rather than as a way to immediately improve your app.
 
-The changes that come with the New Architecture address technical debt of the original implementation and unlock possibilities for solving long standing issues in React Native, such as interoperability with synchronous native APIs (eg: `UITableView`), and pave the way for for [concurrent React support](https://react.dev/blog/2022/03/29/react-v18#what-is-concurrent-react).
+The changes that come with the New Architecture address technical debt of the original implementation and unlock possibilities for solving long standing issues in React Native, such as interoperability with synchronous native APIs (eg: `UITableView`), and pave the way for [concurrent React support](https://react.dev/blog/2022/03/29/react-v18#what-is-concurrent-react).
 
 ## Expo tools and the New Architecture
 
 As of SDK 49, all `expo-*` packages in the [Expo SDK](/versions/latest/) support the New Architecture, with the exception of `expo-updates`. We plan to add support for `expo-updates` in SDK 51.
 
-Additionally, all third-party modules written using the [Expo Modules API](/modules/overview/) support the New Architecture by default! So if you have built your own native modules using this API, no additional work is needed to use them with the New Architecture.
+Additionally, all modules written using the [Expo Modules API](/modules/overview/) support the New Architecture by default! So if you have built your own native modules using this API, no additional work is needed to use them with the New Architecture.
 
 ## Initializing a new project with the New Architecture
 
@@ -97,7 +97,7 @@ Run prebuild and compile your project.
 
 If the build succeeds, you'll now be running your app with the New Architecture! Depending on the native modules you use, your app may work properly immediately.
 
-Now you can tap around your app and test it out. For most non-trivial apps, you're likely to encounter some issues, such as missing native views that haven't been implemented for the New Architecture yet. Many of the issues you encounter are actionable and can be resolved with some configuration or code changes. We recommend reading the ["Using the compatibility layer"]() and [Troubleshooting](#troubleshooting) sections below for more information.
+Now you can tap around your app and test it out. For most non-trivial apps, you're likely to encounter some issues, such as missing native views that haven't been implemented for the New Architecture yet. Many of the issues you encounter are actionable and can be resolved with some configuration or code changes. We recommend reading the ["Using the compatibility layer"](#using-the-compatibility-layer) and [Troubleshooting](#troubleshooting) sections below for more information.
 
 <Collapsible summary="Are you enabling the New Architecture in a bare React Native app?">
 
