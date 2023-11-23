@@ -116,7 +116,6 @@ class SimpleExoPlayerData extends PlayerData
   @Override
   public void load(final Bundle status, final LoadCompletionListener loadCompletionListener) {
     mLoadCompletionListener = loadCompletionListener;
-    Log.e("TEST", "HERE");
     final Context context = mAVModule.getContext();
     final BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter.Builder(context).build();
     final TrackSelector trackSelector = new DefaultTrackSelector(context, new AdaptiveTrackSelection.Factory());
@@ -126,30 +125,16 @@ class SimpleExoPlayerData extends PlayerData
          .setTrackSelector(trackSelector)
          .setBandwidthMeter(bandwidthMeter)
          .build();
-     MediaItem mediaItem = null;
-     if(drmUUID == null){
-       mediaItem = new MediaItem.Builder()
-         .setUri(mUri)
-         .build();
-     }else{
-       MediaItem.DrmConfiguration.Builder drmConfigBuilder = new MediaItem.DrmConfiguration.Builder(drmUUID).setLicenseUri(drmLicenseUrl).setLicenseRequestHeaders(drmLicenseHeader);
-       mediaItem = new MediaItem.Builder()
-         .setUri(mUri)
-         .setDrmConfiguration(drmConfigBuilder.build())
-         .build();
-     }
 
 
+    DefaultHttpDataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory();
 
-    DefaultHttpDataSource.Factory defaultHttpDataSourceFactory = new DefaultHttpDataSource.Factory();
-
-    DashMediaSource mediaSource = new DashMediaSource.Factory(new DefaultDashChunkSource.Factory(defaultHttpDataSourceFactory),
-      defaultHttpDataSourceFactory)
-      .createMediaSource(mediaItem);
+    MediaSource mediaSource = buildMediaSource(mUri,mOverridingExtension,dataSourceFactory);
     mSimpleExoPlayer.setMediaSource(mediaSource);
     mSimpleExoPlayer.addListener(this);
-    mSimpleExoPlayer.prepare((MediaSource) mediaSource);
-
+    mSimpleExoPlayer.setPlayWhenReady(true);
+    mSimpleExoPlayer.prepare();
+    setStatus(status,null);
   }
 
   @Override
@@ -460,7 +445,41 @@ class SimpleExoPlayerData extends PlayerData
               }
               setDrmLicenseHeader(map);//
           }
-          // videoView.setUseTextureView(false);
+      }
+    }
+  }
+  private MediaSource buildMediaSource(@NonNull Uri uri, String overrideExtension, DataSource.Factory factory) {
+    try {
+      if (uri.getScheme() == null) {
+        int resourceId = mReactContext.getResources().getIdentifier(uri.toString(), "raw", mReactContext.getPackageName());
+        DataSpec dataSpec = new DataSpec(RawResourceDataSource.buildRawResourceUri(resourceId));
+        final RawResourceDataSource rawResourceDataSource = new RawResourceDataSource(mReactContext);
+        rawResourceDataSource.open(dataSpec);
+        uri = rawResourceDataSource.getUri();
+      }
+    } catch (Exception e) {
+      Log.e(TAG, "Error reading raw resource from ExoPlayer", e);
+    }
+    MediaItem mediaItem = MediaItem.fromUri(uri);
+    if(drmUUID != null){
+      MediaItem.DrmConfiguration.Builder drmConfigBuilder = new MediaItem.DrmConfiguration.Builder(drmUUID).setLicenseUri(drmLicenseUrl).setLicenseRequestHeaders(drmLicenseHeader);
+      mediaItem = new MediaItem.Builder()
+        .setUri(uri)
+        .setDrmConfiguration(drmConfigBuilder.build())
+        .build();
+    }
+    @C.ContentType int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(String.valueOf(uri)) : Util.inferContentType("." + overrideExtension);
+    switch (type) {
+      case C.TYPE_SS:
+        return new SsMediaSource.Factory(new DefaultSsChunkSource.Factory(factory), factory).createMediaSource(mediaItem);
+      case C.TYPE_DASH:
+        return new DashMediaSource.Factory(new DefaultDashChunkSource.Factory(factory), factory).createMediaSource(mediaItem);
+      case C.TYPE_HLS:
+        return new HlsMediaSource.Factory(factory).createMediaSource(mediaItem);
+      case C.TYPE_OTHER:
+        return new ProgressiveMediaSource.Factory(factory).createMediaSource(mediaItem);
+      default: {
+        throw new IllegalStateException("Content of this type is unsupported at the moment. Unsupported type: " + type);
       }
     }
   }
