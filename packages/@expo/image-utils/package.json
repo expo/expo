@@ -11,6 +11,7 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
     "test:e2e": "yarn run prepare && expo-module test --config e2e/jest.config.js",
+    "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch --preserveWatchOutput"
   },
   "repository": {
