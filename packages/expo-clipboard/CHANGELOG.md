@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix path traversal vulnerability in `getFileForUri` function.
+
 ### 💡 Others
 
 ## 4.8.0 — 2023-11-14
