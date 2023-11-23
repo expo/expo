@@ -4,5 +4,5 @@ module.exports = {
   preset: 'ts-jest',
   displayName: require('./package').name,
   rootDir: __dirname,
-  roots: ['src'],
+  roots: ['src', 'e2e'],
 };
