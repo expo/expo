@@ -91,9 +91,31 @@ export function resolvePackageManager(
 }
 
 /**
+ * Resolve the currently used node package manager.
+ * This is done through the `npm_config_user_agent` environment variable.
+ */
+export function resolveCurrentPackageManager(): NodePackageManager['name'] | null {
+  const userAgent = process.env.npm_config_user_agent || '';
+
+  if (userAgent.startsWith('bun')) {
+    return 'bun';
+  } else if (userAgent.startsWith('npm')) {
+    return 'npm';
+  } else if (userAgent.startsWith('pnpm')) {
+    return 'pnpm';
+  } else if (userAgent.startsWith('yarn')) {
+    return 'yarn';
+  }
+
+  return null;
+}
+
+/**
  * This creates a Node package manager from the provided options.
- * If these options are not provided, it will infer the package manager from lockfiles.
- * When no package manager is found, it falls back to npm.
+ * If these options are not provided, it will resolve the package manager based on these rules:
+ *   1. Resolve the package manager based on the currently used package manager (process.env.npm_config_user_agent)
+ *   2. If none, resolve the package manager based on the lockfiles in the project root
+ *   3. If none, fallback to npm
  */
 export function createForProject(
   projectRoot: string,
@@ -109,7 +131,9 @@ export function createForProject(
     return new BunPackageManager({ cwd: projectRoot, ...options });
   }
 
-  switch (resolvePackageManager(projectRoot)) {
+  const resolvedManager = resolveCurrentPackageManager() ?? resolvePackageManager(projectRoot);
+
+  switch (resolvedManager) {
     case 'npm':
       return new NpmPackageManager({ cwd: projectRoot, ...options });
     case 'pnpm':
