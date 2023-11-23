@@ -121,8 +121,6 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       event = UpdatesStateEventCheckCompleteWithUpdate(manifest: manifest)
     case .rollBackToEmbedded(let commitTime):
       event = UpdatesStateEventCheckCompleteWithRollback(rollbackCommitTime: commitTime)
-    case .error(let error):
-      event = UpdatesStateEventCheckError(message: error.localizedDescription)
     }
     self.procedureContext.processStateEvent(event)
   }
