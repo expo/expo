@@ -49,6 +49,10 @@ import {
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 
+import { registerRuntime } from '../metroRegister';
+
+registerRuntime();
+
 export class ForwardHtmlError extends CommandError {
   constructor(
     message: string,

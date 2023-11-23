@@ -182,6 +182,7 @@ export async function getStaticRenderFunctions(
   devServerUrl: string,
   options: StaticRenderOptions
 ): Promise<Record<string, (...args: any[]) => Promise<any>>> {
+  return require('expo-router/node/render');
   const scriptContents = await getStaticRenderFunctionsContentAsync(
     projectRoot,
     devServerUrl,
