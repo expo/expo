@@ -72,6 +72,10 @@ export abstract class BasePackageManager implements PackageManager {
     return spawnAsync(this.bin, command, this.options);
   }
 
+  async runAsync(scriptAndFlags: string[]) {
+    return await this.spawnAsync(['run', ...scriptAndFlags]);
+  }
+
   async versionAsync() {
     return await this.spawnAsync(['--version']).then(({ stdout }) => stdout.trim());
   }

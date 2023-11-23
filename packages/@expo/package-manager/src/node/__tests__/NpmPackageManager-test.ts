@@ -112,6 +112,28 @@ describe('NpmPackageManager', () => {
     });
   });
 
+  describe('runAsync', () => {
+    it('runs a package script by name', async () => {
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+      await npm.runAsync(['test']);
+
+      expect(spawnAsync).toBeCalledWith('npm', ['run', 'test'], expect.anything());
+    });
+
+    it('runs a package script with name and flags', async () => {
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+      await npm.runAsync(['lint', '--max-warnings', '0']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'npm',
+        // Npm requires -- to pass flags to the script
+        // See: https://docs.npmjs.com/cli/v10/commands/npm-run-script#description
+        ['run', 'lint', '--', '--max-warnings', '0'],
+        expect.anything()
+      );
+    });
+  });
+
   describe('versionAsync', () => {
     it('returns version from npm', async () => {
       jest

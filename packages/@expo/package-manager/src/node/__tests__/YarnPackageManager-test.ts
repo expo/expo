@@ -103,6 +103,26 @@ describe('YarnPackageManager', () => {
     });
   });
 
+  describe('runAsync', () => {
+    it('runs a package script by name', async () => {
+      const yarn = new YarnPackageManager({ cwd: projectRoot });
+      await yarn.runAsync(['test']);
+
+      expect(spawnAsync).toBeCalledWith('yarnpkg', ['run', 'test'], expect.anything());
+    });
+
+    it('runs a package script with name and flags', async () => {
+      const yarn = new YarnPackageManager({ cwd: projectRoot });
+      await yarn.runAsync(['lint', '--max-warnings', '0']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'yarnpkg',
+        ['run', 'lint', '--max-warnings', '0'],
+        expect.anything()
+      );
+    });
+  });
+
   describe('versionAsync', () => {
     it('returns version from yarn', async () => {
       jest

@@ -117,6 +117,26 @@ describe('PnpmPackageManager', () => {
     });
   });
 
+  describe('runAsync', () => {
+    it('runs a package script by name', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.runAsync(['test']);
+
+      expect(spawnAsync).toBeCalledWith('pnpm', ['run', 'test'], expect.anything());
+    });
+
+    it('runs a package script with name and flags', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.runAsync(['lint', '--max-warnings', '0']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['run', 'lint', '--max-warnings', '0'],
+        expect.anything()
+      );
+    });
+  });
+
   describe('versionAsync', () => {
     it('returns version from pnpm', async () => {
       jest

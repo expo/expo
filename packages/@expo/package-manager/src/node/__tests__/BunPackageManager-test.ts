@@ -103,6 +103,26 @@ describe('BunPackageManager', () => {
     });
   });
 
+  describe('runAsync', () => {
+    it('runs a package script by name', async () => {
+      const bun = new BunPackageManager({ cwd: projectRoot });
+      await bun.runAsync(['test']);
+
+      expect(spawnAsync).toBeCalledWith('bun', ['run', 'test'], expect.anything());
+    });
+
+    it('runs a package script with name and flags', async () => {
+      const bun = new BunPackageManager({ cwd: projectRoot });
+      await bun.runAsync(['lint', '--max-warnings', '0']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'bun',
+        ['run', 'lint', '--max-warnings', '0'],
+        expect.anything()
+      );
+    });
+  });
+
   describe('versionAsync', () => {
     it('returns version from bun', async () => {
       jest

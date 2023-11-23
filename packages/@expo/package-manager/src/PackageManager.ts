@@ -22,9 +22,11 @@ export interface PackageManager {
   /** The options for this package manager */
   readonly options: PackageManagerOptions;
 
-  /** Run any command using the package manager */
+  /** Execute the package manager with any any command */
   spawnAsync(command: string[]): SpawnPromise<SpawnResult>;
 
+  /** Run a `package.json` script with optional flags using the package manager */
+  runAsync(scriptAndFlags: string[]): Promise<SpawnResult>;
   /** Get the version of the used package manager */
   versionAsync(): Promise<string>;
   /** Get a single configuration property from the package manager */

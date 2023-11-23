@@ -25,6 +25,16 @@ export class NpmPackageManager extends BasePackageManager {
     return null;
   }
 
+  runAsync(scriptAndFlags: string[]) {
+    const [script, ...flags] = scriptAndFlags;
+
+    // Npm requires -- to pass flags to the script
+    // See: https://docs.npmjs.com/cli/v10/commands/npm-run-script#description
+    return flags.length
+      ? this.spawnAsync(['run', script, '--', ...flags])
+      : this.spawnAsync(['run', script]);
+  }
+
   addAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
