@@ -121,11 +121,6 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       event = UpdatesStateEventCheckCompleteWithUpdate(manifest: manifest)
     case .rollBackToEmbedded(let commitTime):
       event = UpdatesStateEventCheckCompleteWithRollback(rollbackCommitTime: commitTime)
-    case .error:
-      // skip updating state when this delegate method reports an error since this can be called either during
-      // the check or download phase of the AppLoaderTask, and either way the failure state will be recorded with the delegate
-      // call to didFinishBackgroundUpdateWithStatus
-      return
     }
     self.procedureContext.processStateEvent(event)
   }

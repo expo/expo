@@ -72,8 +72,8 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("checkForUpdateAsync") { (promise: Promise) in
-      AppController.sharedInstance.checkForUpdate { remoteCheckResult in
-        switch remoteCheckResult {
+      AppController.sharedInstance.checkForUpdate { checkForUpdateResult in
+        switch checkForUpdateResult {
         case .noUpdateAvailable(let reason):
           promise.resolve([
             "isAvailable": false,
