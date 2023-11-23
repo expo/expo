@@ -40,6 +40,9 @@ class BasePackageManager {
         this.log?.(`> ${this.name} ${command.join(' ')}`);
         return (0, spawn_async_1.default)(this.bin, command, this.options);
     }
+    async runAsync(scriptAndFlags) {
+        return await this.spawnAsync(['run', ...scriptAndFlags]);
+    }
     async versionAsync() {
         return await this.spawnAsync(['--version']).then(({ stdout }) => stdout.trim());
     }
