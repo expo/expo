@@ -1354,23 +1354,6 @@
     tmp "^0.0.33"
     tslib "^1.10.0"
 
-"@expo/image-utils@0.3.22":
-  version "0.3.22"
-  resolved "https://registry.yarnpkg.com/@expo/image-utils/-/image-utils-0.3.22.tgz#3a45fb2e268d20fcc761c87bca3aca7fd8e24260"
-  integrity sha512-uzq+RERAtkWypOFOLssFnXXqEqKjNj9eXN7e97d/EXUAojNcLDoXc0sL+F5B1I4qtlsnhX01kcpoIBBZD8wZNQ==
-  dependencies:
-    "@expo/spawn-async" "1.5.0"
-    chalk "^4.0.0"
-    fs-extra "9.0.0"
-    getenv "^1.0.0"
-    jimp-compact "0.16.1"
-    mime "^2.4.4"
-    node-fetch "^2.6.0"
-    parse-png "^2.1.0"
-    resolve-from "^5.0.0"
-    semver "7.3.2"
-    tempy "0.3.0"
-
 "@expo/multipart-body-parser@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@expo/multipart-body-parser/-/multipart-body-parser-1.0.0.tgz#7227bab9cfe9d4baea925b748a3212e0239ba55d"
