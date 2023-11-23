@@ -25,11 +25,11 @@ public struct FileSystemUtilities {
     return true
   }
 
-  public static func generatePathInCache(_ appContext: AppContext?, in directory: String, ext: String) -> String {
+  public static func generatePathInCache(_ appContext: AppContext?, in directory: String, extension: String) -> String {
     guard let appContext, let dirPath = appContext.config.cacheDirectory?.appendingPathComponent(directory) else {
       return ""
     }
-    let fileName = UUID().uuidString.appending(ext)
+    let fileName = UUID().uuidString.appending(`extension`)
     ensureDirExists(at: dirPath)
     return dirPath.appendingPathComponent(fileName).path
   }

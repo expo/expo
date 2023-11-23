@@ -247,7 +247,7 @@ private func generatePictureForSimulator(
   let path = FileSystemUtilities.generatePathInCache(
     appContext,
     in: "Camera",
-    ext: ".jpg"
+    extension: ".jpg"
   )
 
   let generatedPhoto = ExpoCameraUtilsNext.generatePhoto(of: CGSize(width: 200, height: 200))

@@ -529,7 +529,8 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     let path = FileSystemUtilities.generatePathInCache(
       appContext,
       in: "Camera",
-      ext: ".jpg")
+      extension: ".jpg"
+    )
 
     if path.isEmpty {
       return
@@ -654,7 +655,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       }
 
       sessionQueue.async {
-        let path = FileSystemUtilities.generatePathInCache(self.appContext, in: "Camera", ext: ".mov")
+        let path = FileSystemUtilities.generatePathInCache(self.appContext, in: "Camera", extension: ".mov")
         let fileUrl = URL(fileURLWithPath: path)
         self.videoRecordedPromise = promise
 

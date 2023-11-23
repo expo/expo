@@ -51,7 +51,7 @@ public class VideoThumbnailsModule: Module {
     }
 
     guard let fileUrl else {
-      throw ImageWriteFailedException("Unrecognised url \(fileUrl?.path)")
+      throw ImageWriteFailedException("Unrecognized url \(fileUrl?.path)")
     }
 
     do {
