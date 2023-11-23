@@ -216,7 +216,7 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
       lastFrameTimeStamp = curFrameTimeStamp
 
       if let videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer),
-       let videoFrameImage = ZXCGImageLuminanceSource.createImage(from: videoFrame) {
+      let videoFrameImage = ZXCGImageLuminanceSource.createImage(from: videoFrame) {
         self.scanBarcodes(from: videoFrameImage) { barCodeScannerResult in
           self.onBarcodeScanned?(BarcodeScannerUtils.zxResultToDictionary(barCodeScannerResult))
         }

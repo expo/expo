@@ -161,7 +161,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
         reject: promise.legacyRejecter
       )
     }
-    
+
     AsyncFunction("getAvailableVideoCodecsAsync") { () -> [String] in
       return getAvailableVideoCodecs()
     }
@@ -190,7 +190,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
   func onItemScanned(result: [String: Any]) {
     sendEvent("onModernBarcodeScanned", result)
   }
-  
+
   private func getAvailableVideoCodecs() -> [String] {
     let session = AVCaptureSession()
 
