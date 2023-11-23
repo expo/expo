@@ -91,7 +91,7 @@ function generateFromPNGs(pngs) {
     return Buffer.concat(arr, len);
 }
 async function generateAsync(buffers) {
-    const pngs = await Promise.all(buffers.map(x => (0, parse_png_1.default)(x)));
+    const pngs = await Promise.all(buffers.map((x) => (0, parse_png_1.default)(x)));
     return generateFromPNGs(pngs);
 }
 exports.generateAsync = generateAsync;

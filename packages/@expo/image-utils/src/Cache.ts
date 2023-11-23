@@ -61,8 +61,8 @@ export async function cacheImageAsync(
 ): Promise<void> {
   try {
     await writeFile(resolve(cacheKeys[cacheKey], fileName), buffer);
-  } catch ({ message }) {
-    console.warn(`Error caching image: "${fileName}". ${message}`);
+  } catch (error: any) {
+    console.warn(`Error caching image: "${fileName}". ${error.message}`);
   }
 }
 

@@ -26,9 +26,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.compositeImagesAsync = exports.generateFaviconAsync = exports.generateImageAsync = void 0;
+exports.getPngInfo = exports.compositeImagesAsync = exports.generateFaviconAsync = exports.generateImageAsync = void 0;
 const chalk_1 = __importDefault(require("chalk"));
+const fs_1 = __importDefault(require("fs"));
 const mime_1 = __importDefault(require("mime"));
+const parse_png_1 = __importDefault(require("parse-png"));
 const Cache = __importStar(require("./Cache"));
 const Download = __importStar(require("./Download"));
 const Ico = __importStar(require("./Ico"));
@@ -100,8 +102,8 @@ async function resizeAsync(imageOptions) {
         }
         return await sharpBuffer.png().toBuffer();
     }
-    catch ({ message }) {
-        throw new Error(`It was not possible to generate splash screen '${imageOptions.src}'. ${message}`);
+    catch (error) {
+        throw new Error(`It was not possible to generate splash screen '${imageOptions.src}'. ${error.message}`);
     }
 }
 async function getSharpAsync() {
@@ -184,4 +186,8 @@ async function compositeImagesAsync({ foreground, background, x = 0, y = 0, }) {
         .toBuffer();
 }
 exports.compositeImagesAsync = compositeImagesAsync;
+async function getPngInfo(src) {
+    return await (0, parse_png_1.default)(fs_1.default.readFileSync(src));
+}
+exports.getPngInfo = getPngInfo;
 //# sourceMappingURL=Image.js.map

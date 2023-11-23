@@ -22,3 +22,11 @@ export declare function compositeImagesAsync({ foreground, background, x, y, }: 
     x?: number;
     y?: number;
 }): Promise<Buffer>;
+type PNGInfo = {
+    data: Buffer;
+    width: number;
+    height: number;
+    bpp: number;
+};
+export declare function getPngInfo(src: string): Promise<PNGInfo>;
+export {};

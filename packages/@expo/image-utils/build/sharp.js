@@ -15,7 +15,7 @@ async function resizeBufferAsync(buffer, sizes) {
     const sharp = await findSharpInstanceAsync();
     const metadata = await sharp(buffer).metadata();
     // Create buffer for each size
-    const resizedBuffers = await Promise.all(sizes.map(dimension => {
+    const resizedBuffers = await Promise.all(sizes.map((dimension) => {
         const density = (dimension / Math.max(metadata.width, metadata.height)) * metadata.density;
         return sharp(buffer, {
             density: isNaN(density) ? undefined : Math.ceil(density),

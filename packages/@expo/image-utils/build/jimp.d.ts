@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import Jimp from 'jimp-compact';
 import { ResizeOptions, SharpCommandOptions, SharpGlobalOptions } from './sharp.types';
-declare type JimpGlobalOptions = Omit<SharpGlobalOptions, 'input'> & {
+type JimpGlobalOptions = Omit<SharpGlobalOptions, 'input'> & {
     input: string | Buffer | Jimp;
     originalInput: string;
 };

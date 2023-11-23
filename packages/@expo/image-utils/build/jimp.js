@@ -44,7 +44,7 @@ exports.resizeBufferAsync = resizeBufferAsync;
 function convertFormat(format) {
     if (typeof format === 'undefined')
         return format;
-    const input = format === null || format === void 0 ? void 0 : format.toLowerCase();
+    const input = format?.toLowerCase();
     switch (input) {
         case 'png':
         case 'webp':
@@ -103,7 +103,7 @@ function circleAsync(jimp) {
         x: jimp.bitmap.width / 2,
         y: jimp.bitmap.height / 2,
     };
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         jimp.scanQuiet(0, 0, jimp.bitmap.width, jimp.bitmap.height, (x, y, idx) => {
             const curR = Math.sqrt(Math.pow(x - center.x, 2) + Math.pow(y - center.y, 2));
             if (radius - curR <= 0.0) {

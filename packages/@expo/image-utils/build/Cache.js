@@ -47,8 +47,8 @@ async function cacheImageAsync(fileName, buffer, cacheKey) {
     try {
         await (0, fs_extra_1.writeFile)((0, path_1.resolve)(cacheKeys[cacheKey], fileName), buffer);
     }
-    catch ({ message }) {
-        console.warn(`Error caching image: "${fileName}". ${message}`);
+    catch (error) {
+        console.warn(`Error caching image: "${fileName}". ${error.message}`);
     }
 }
 exports.cacheImageAsync = cacheImageAsync;

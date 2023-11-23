@@ -1,5 +1,5 @@
 import { ImageFormat, ResizeMode } from './Image.types';
-export declare type SharpGlobalOptions = {
+export type SharpGlobalOptions = {
     compressionLevel?: '';
     format?: ImageFormat;
     input: string;
@@ -10,16 +10,16 @@ export declare type SharpGlobalOptions = {
     withMetadata?: boolean;
     [key: string]: string | number | boolean | undefined | null;
 };
-export declare type SharpCommandOptions = RemoveAlphaOptions | ResizeOptions | FlattenOptions;
-export declare type FlattenOptions = {
+export type SharpCommandOptions = RemoveAlphaOptions | ResizeOptions | FlattenOptions;
+export type FlattenOptions = {
     operation: 'flatten';
     background: string;
 };
-export declare type RemoveAlphaOptions = {
+export type RemoveAlphaOptions = {
     operation: 'removeAlpha';
 };
-export declare type Position = 'center' | 'centre' | 'north' | 'east' | 'south' | 'west' | 'northeast' | 'southeast' | 'southwest' | 'northwest' | 'top' | 'right' | 'bottom' | 'left' | 'right top' | 'right bottom' | 'left bottom' | 'left top' | 'entropy' | 'attention';
-export declare type ResizeOptions = {
+export type Position = 'center' | 'centre' | 'north' | 'east' | 'south' | 'west' | 'northeast' | 'southeast' | 'southwest' | 'northwest' | 'top' | 'right' | 'bottom' | 'left' | 'right top' | 'right bottom' | 'left bottom' | 'left top' | 'entropy' | 'attention';
+export type ResizeOptions = {
     operation: 'resize';
     background?: string;
     fastShrinkOnLoad?: boolean;
@@ -30,6 +30,6 @@ export declare type ResizeOptions = {
     width: number;
     withoutEnlargement?: boolean;
 };
-export declare type Options = object | {
+export type Options = object | {
     [key: string]: boolean | number | string | undefined;
 };
