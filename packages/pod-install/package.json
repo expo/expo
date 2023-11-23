@@ -1,0 +1,41 @@
+{
+  "name": "pod-install",
+  "version": "0.1.39",
+  "main": "build",
+  "keywords": [
+    "cocoapods",
+    "pod-install",
+    "npx",
+    "ios"
+  ],
+  "description": "Ensure CocoaPods are installed in your project",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo-cli.git"
+  },
+  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/pod-install",
+  "author": "Expo <support@expo.dev>",
+  "license": "MIT",
+  "bin": {
+    "pod-install": "./build/index.js"
+  },
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "prepare": "yarn run clean && yarn run build:prod",
+    "lint": "eslint .",
+    "watch": "tsc --watch --preserveWatchOutput",
+    "watch:ncc": "yarn run build -w",
+    "build": "ncc build ./src/index.ts -o build/",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "clean": "rimraf ./build/"
+  },
+  "devDependencies": {
+    "@expo/package-manager": "0.0.56",
+    "chalk": "^4.0.0",
+    "commander": "2.20.0",
+    "terminal-link": "^2.1.1",
+    "update-check": "1.5.3"
+  }
+}
