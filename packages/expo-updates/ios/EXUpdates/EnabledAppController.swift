@@ -256,7 +256,7 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
   }
 
   public func checkForUpdate(
-    success successBlockArg: @escaping (_ remoteCheckResult: RemoteCheckResult) -> Void,
+    success successBlockArg: @escaping (_ checkForUpdateResult: CheckForUpdateResult) -> Void,
     error errorBlockArg: @escaping (_ error: Exception) -> Void
   ) {
     let procedure = CheckForUpdateProcedure(
@@ -266,8 +266,8 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
       logger: self.logger
     ) {
       return self.startupProcedure.launchedUpdate()
-    } successBlock: { remoteCheckResult in
-      successBlockArg(remoteCheckResult)
+    } successBlock: { checkForUpdateResult in
+      successBlockArg(checkForUpdateResult)
     } errorBlock: { error in
       errorBlockArg(error)
     }

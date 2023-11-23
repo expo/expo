@@ -368,11 +368,7 @@ internal class UpdatesStateMachine {
   private func transition(_ event: UpdatesStateEvent) -> Bool {
     let allowedEvents: Set<UpdatesStateEventType> = UpdatesStateMachine.updatesStateAllowedEvents[state] ?? []
     if !allowedEvents.contains(event.type) {
-      // Uncomment the line below to halt execution on invalid state transitions,
-      // very useful for testing
-      /*
       assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
-       */
       return false
     }
     // Successful transition

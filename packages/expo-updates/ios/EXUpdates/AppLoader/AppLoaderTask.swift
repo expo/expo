@@ -68,7 +68,6 @@ public enum RemoteCheckResult {
   case noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason)
   case updateAvailable(manifest: [String: Any])
   case rollBackToEmbedded(commitTime: Date)
-  case error(error: Error)
 }
 
 public protocol AppLoaderTaskSwiftDelegate: AnyObject {
@@ -448,11 +447,6 @@ public final class AppLoaderTask: NSObject {
     } success: { updateResponse in
       completion(nil, updateResponse)
     } error: { error in
-      if let swiftDelegate = self.swiftDelegate {
-        self.delegateQueue.async {
-          swiftDelegate.appLoaderTask(self, didFinishCheckingForRemoteUpdateWithRemoteCheckResult: RemoteCheckResult.error(error: error))
-        }
-      }
       completion(error, nil)
     }
   }

@@ -120,15 +120,17 @@ class UpdatesStateMachineSpec: ExpoSpec {
         // In .checking state, download events should be ignored,
         // state should not change, context should not change,
         // no events should be sent to JS
-        machine.processEventForTesting(UpdatesStateEventDownload())
+        expect(machine.processEventForTesting(UpdatesStateEventDownload())).to(throwAssertion())
 
         expect(machine.getStateForTesting()) == .checking
         expect(testStateChangeDelegate.lastEventType).to(beNil())
         expect(testStateChangeDelegate.lastEventBody).to(beNil())
 
-        machine.processEventForTesting(UpdatesStateEventDownloadCompleteWithUpdate(manifest: [
-          "updateId": "0000-xxxx"
-        ]))
+        expect(
+          machine.processEventForTesting(UpdatesStateEventDownloadCompleteWithUpdate(manifest: [
+            "updateId": "0000-xxxx"
+          ]))
+        ).to(throwAssertion())
 
         expect(machine.getStateForTesting()) == .checking
         expect(machine.context.downloadedManifest).to(beNil())
@@ -139,13 +141,13 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(machine.getStateForTesting()) == .restarting
 
         // If restarting, all events should be ignored
-        machine.processEventForTesting(UpdatesStateEventCheck())
+        expect(machine.processEventForTesting(UpdatesStateEventCheck())).to(throwAssertion())
         expect(machine.getStateForTesting()) == .restarting
 
-        machine.processEventForTesting(UpdatesStateEventDownload())
+        expect(machine.processEventForTesting(UpdatesStateEventDownload())).to(throwAssertion())
         expect(machine.getStateForTesting()) == .restarting
 
-        machine.processEventForTesting(UpdatesStateEventDownloadComplete())
+        expect(machine.processEventForTesting(UpdatesStateEventDownloadComplete())).to(throwAssertion())
         expect(machine.getStateForTesting()) == .restarting
       }
     }

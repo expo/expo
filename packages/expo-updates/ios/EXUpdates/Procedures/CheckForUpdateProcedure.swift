@@ -10,7 +10,7 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
   private let selectionPolicy: SelectionPolicy
   private let logger: UpdatesLogger
   private let getLaunchedUpdate: () -> Update?
-  private let successBlock: (_ remoteCheckResult: RemoteCheckResult) -> Void
+  private let successBlock: (_ checkForUpdateResult: CheckForUpdateResult) -> Void
   private let errorBlock: (_ error: Exception) -> Void
 
   init(
@@ -19,7 +19,7 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
     selectionPolicy: SelectionPolicy,
     logger: UpdatesLogger,
     getLaunchedUpdate: @escaping () -> Update?,
-    successBlock: @escaping (_: RemoteCheckResult) -> Void,
+    successBlock: @escaping (_: CheckForUpdateResult) -> Void,
     errorBlock: @escaping (_: Exception) -> Void
   ) {
     self.database = database
@@ -53,20 +53,20 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
           if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
             switch updateDirective {
             case is NoUpdateAvailableUpdateDirective:
-              self.successBlock(RemoteCheckResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.noUpdateAvailableOnServer))
+              self.successBlock(CheckForUpdateResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.noUpdateAvailableOnServer))
               procedureContext.processStateEvent(UpdatesStateEventCheckComplete())
               procedureContext.onComplete()
               return
             case let rollBackUpdateDirective as RollBackToEmbeddedUpdateDirective:
               if !self.config.hasEmbeddedUpdate {
-                self.successBlock(RemoteCheckResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.rollbackNoEmbedded))
+                self.successBlock(CheckForUpdateResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.rollbackNoEmbedded))
                 procedureContext.processStateEvent(UpdatesStateEventCheckComplete())
                 procedureContext.onComplete()
                 return
               }
 
               guard let embeddedUpdate = embeddedUpdate else {
-                self.successBlock(RemoteCheckResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.rollbackNoEmbedded))
+                self.successBlock(CheckForUpdateResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.rollbackNoEmbedded))
                 procedureContext.processStateEvent(UpdatesStateEventCheckComplete())
                 procedureContext.onComplete()
                 return
@@ -78,29 +78,25 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
                 launchedUpdate: launchedUpdate,
                 filters: manifestFilters
               ) {
-                self.successBlock(RemoteCheckResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.rollbackRejectedBySelectionPolicy))
+                self.successBlock(CheckForUpdateResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.rollbackRejectedBySelectionPolicy))
                 procedureContext.processStateEvent(UpdatesStateEventCheckComplete())
                 procedureContext.onComplete()
                 return
               }
 
-              self.successBlock(RemoteCheckResult.rollBackToEmbedded(commitTime: rollBackUpdateDirective.commitTime))
+              self.successBlock(CheckForUpdateResult.rollBackToEmbedded(commitTime: rollBackUpdateDirective.commitTime))
               procedureContext.processStateEvent(
                 UpdatesStateEventCheckCompleteWithRollback(rollbackCommitTime: rollBackUpdateDirective.commitTime)
               )
               procedureContext.onComplete()
               return
             default:
-              let error = UpdatesUnsupportedDirectiveException()
-              procedureContext.processStateEvent(UpdatesStateEventCheckError(message: error.localizedDescription))
-              self.successBlock(RemoteCheckResult.error(error: error))
-              procedureContext.onComplete()
-              return
+              assertionFailure("Unhandled directive type")
             }
           }
 
           guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
-            self.successBlock(RemoteCheckResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.noUpdateAvailableOnServer))
+            self.successBlock(CheckForUpdateResult.noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason.noUpdateAvailableOnServer))
             procedureContext.processStateEvent(UpdatesStateEventCheckComplete())
             procedureContext.onComplete()
             return
@@ -132,7 +128,7 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
           }
 
           if shouldLaunch {
-            self.successBlock(RemoteCheckResult.updateAvailable(manifest: update.manifest.rawManifestJSON()))
+            self.successBlock(CheckForUpdateResult.updateAvailable(manifest: update.manifest.rawManifestJSON()))
             procedureContext.processStateEvent(UpdatesStateEventCheckCompleteWithUpdate(manifest: update.manifest.rawManifestJSON()))
             procedureContext.onComplete()
             return
@@ -141,13 +137,13 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
           let reason = failedPreviously ?
             RemoteCheckResultNotAvailableReason.updatePreviouslyFailed :
             RemoteCheckResultNotAvailableReason.updateRejectedBySelectionPolicy
-          self.successBlock(RemoteCheckResult.noUpdateAvailable(reason: reason))
+          self.successBlock(CheckForUpdateResult.noUpdateAvailable(reason: reason))
           procedureContext.processStateEvent(UpdatesStateEventCheckComplete())
           procedureContext.onComplete()
           return
         } errorBlock: { error in
           procedureContext.processStateEvent(UpdatesStateEventCheckError(message: error.localizedDescription))
-          self.successBlock(RemoteCheckResult.error(error: error))
+          self.successBlock(CheckForUpdateResult.error(error: error))
           procedureContext.onComplete()
           return
       }

@@ -293,7 +293,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     errorBlockArg(NotAvailableInDevClientException())
   }
 
-  public func checkForUpdate(success successBlockArg: @escaping (RemoteCheckResult) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
+  public func checkForUpdate(success successBlockArg: @escaping (CheckForUpdateResult) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
     errorBlockArg(NotAvailableInDevClientException())
   }
 
