@@ -114,6 +114,6 @@ function generateFromPNGs(pngs: PNG[]): Buffer {
 }
 
 export async function generateAsync(buffers: Buffer[]): Promise<Buffer> {
-  const pngs: PNG[] = await Promise.all(buffers.map(x => parsePng(x)));
+  const pngs: PNG[] = await Promise.all(buffers.map((x) => parsePng(x)));
   return generateFromPNGs(pngs);
 }

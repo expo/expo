@@ -18,7 +18,7 @@ type JimpGlobalOptions = Omit<SharpGlobalOptions, 'input'> & {
 
 export async function resizeBufferAsync(buffer: Buffer, sizes: number[]): Promise<Buffer[]> {
   return Promise.all(
-    sizes.map(async size => {
+    sizes.map(async (size) => {
       // Parse the buffer each time to prevent mutable copies.
       // Parse the buffer each time to prevent mutable copies.
       const jimpImage = await Jimp.read(buffer);
@@ -97,7 +97,7 @@ export function circleAsync(jimp: Jimp): Promise<Jimp> {
     y: jimp.bitmap.height / 2,
   };
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     jimp.scanQuiet(
       0,
       0,
