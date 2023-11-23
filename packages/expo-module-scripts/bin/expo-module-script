@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+'use strict';
+
+const { createForProject } = require('@expo/package-manager');
+const manager = createForProject(process.cwd());
+
+manager.runAsync(process.argv.slice(2));
