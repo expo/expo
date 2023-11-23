@@ -1,40 +1,44 @@
 {
   "name": "pod-install",
   "version": "0.1.39",
-  "main": "build",
+  "description": "Ensure CocoaPods are installed in your project",
+  "main": "./build/index.js",
+  "scripts": {
+    "build": "ncc build ./src/index.ts -o build/",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "prepare": "expo-module clean && yarn run build:prod",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "test": "expo-module test",
+    "typecheck": "expo-module typecheck",
+    "watch": "yarn run build --watch"
+  },
+  "bin": "./build/index.js",
+  "files": [
+    "build"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
   "keywords": [
     "cocoapods",
     "pod-install",
     "npx",
     "ios"
   ],
-  "description": "Ensure CocoaPods are installed in your project",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo-cli.git"
-  },
-  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/pod-install",
-  "author": "Expo <support@expo.dev>",
   "license": "MIT",
-  "bin": {
-    "pod-install": "./build/index.js"
+  "homepage": "https://github.com/expo/expo/tree/main/packages/pod-install",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
   },
-  "files": [
-    "build"
-  ],
-  "scripts": {
-    "prepare": "yarn run clean && yarn run build:prod",
-    "lint": "eslint .",
-    "watch": "tsc --watch --preserveWatchOutput",
-    "watch:ncc": "yarn run build -w",
-    "build": "ncc build ./src/index.ts -o build/",
-    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
-    "clean": "rimraf ./build/"
-  },
+  "author": "Expo <support@expo.dev>",
   "devDependencies": {
     "@expo/package-manager": "0.0.56",
     "chalk": "^4.0.0",
     "commander": "2.20.0",
+    "expo-module-scripts": "^3.3.0",
     "terminal-link": "^2.1.1",
     "update-check": "1.5.3"
   }
