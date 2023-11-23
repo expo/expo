@@ -1,0 +1,31 @@
+{
+  "configurations": [
+    {
+      "type": "node",
+      "name": "Launch CLI",
+      "request": "launch",
+      "program": "${workspaceFolder}/packages/@expo/cli/build/bin/cli",
+      "cwd": "/Users/cedric/Desktop/test-envfiles",
+      "args": ["start"],
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "bun",
+      "name": "Attach CLI (bun)",
+      "request": "attach",
+      "url": "ws://localhost:6499/jqbkw2gq74f",
+      "stopOnEntry": false
+    },
+    {
+      "type": "node",
+      "name": "Test current file",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/packages/@expo/prebuild-config",
+      "runtimeArgs": ["test", "--runInBand", "${fileBasenameNoExtension}"],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    }
+  ]
+}

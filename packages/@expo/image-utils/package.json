@@ -1,0 +1,51 @@
+{
+  "name": "@expo/image-utils",
+  "version": "0.3.23",
+  "description": "A package used by Expo CLI for processing images",
+  "main": "build/index.js",
+  "scripts": {
+    "watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc",
+    "test": "jest",
+    "prepare": "yarn run clean && yarn build",
+    "clean": "rimraf build ./tsconfig.tsbuildinfo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo-cli.git",
+    "directory": "packages/image-utils"
+  },
+  "keywords": [
+    "json"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo-cli/issues"
+  },
+  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/image-utils#readme",
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+    "@expo/spawn-async": "1.5.0",
+    "chalk": "^4.0.0",
+    "fs-extra": "9.0.0",
+    "getenv": "^1.0.0",
+    "jimp-compact": "0.16.1",
+    "mime": "^2.4.4",
+    "node-fetch": "^2.6.0",
+    "parse-png": "^2.1.0",
+    "resolve-from": "^5.0.0",
+    "semver": "7.3.2",
+    "tempy": "0.3.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.1",
+    "@types/getenv": "^0.7.0",
+    "@types/node-fetch": "^2.6.5",
+    "@types/semver": "^6.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
