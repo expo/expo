@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { CocoaPodsPackageManager } from '@expo/package-manager/build/CocoaPodsPackageManager';
+import { CocoaPodsPackageManager } from '@expo/package-manager/build/ios/CocoaPodsPackageManager';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import { existsSync, readFileSync } from 'fs';

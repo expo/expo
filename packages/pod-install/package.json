@@ -10,7 +10,6 @@
     "lint": "expo-module lint",
     "prepare": "expo-module clean && yarn run build:prod",
     "prepublishOnly": "expo-module prepublishOnly",
-    "test": "expo-module test",
     "typecheck": "expo-module typecheck",
     "watch": "yarn run build --watch"
   },
@@ -28,18 +27,18 @@
     "npx",
     "ios"
   ],
+  "author": "Expo <support@expo.dev>",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/pod-install",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "author": "Expo <support@expo.dev>",
   "devDependencies": {
-    "@expo/package-manager": "0.0.56",
+    "@expo/package-manager": "^1.3.0",
     "chalk": "^4.0.0",
     "commander": "2.20.0",
     "expo-module-scripts": "^3.3.0",
     "terminal-link": "^2.1.1",
-    "update-check": "1.5.3"
+    "update-check": "1.5.4"
   }
 }
