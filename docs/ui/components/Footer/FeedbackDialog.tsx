@@ -103,7 +103,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                       <LABEL>Feedback</LABEL>
                       <Textarea
                         className="h-[180px] resize-none"
-                        characterLimit={500}
+                        characterLimit={1000}
                         value={feedback}
                         onChange={event => {
                           setFeedback(event.target.value);
