@@ -103,9 +103,8 @@ function stripRncliAutolinkingAbsolutePaths(dependency, root) {
     (0, assert_1.default)(dependency.root);
     const dependencyRoot = dependency.root;
     dependency.root = path_1.default.relative(root, dependencyRoot);
-    const platforms = Object.values(dependency.platforms).filter((platform) => platform !== null);
-    for (const platformData of Object.values(platforms)) {
-        for (const [key, value] of Object.entries(platformData)) {
+    for (const platformData of Object.values(dependency.platforms)) {
+        for (const [key, value] of Object.entries(platformData ?? {})) {
             platformData[key] = value.startsWith?.(dependencyRoot) ? path_1.default.relative(root, value) : value;
         }
     }
