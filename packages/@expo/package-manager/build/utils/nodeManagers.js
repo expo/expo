@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createForProject = exports.resolvePackageManager = exports.findWorkspaceRoot = exports.RESOLUTION_ORDER = void 0;
+exports.createForProject = exports.resolveCurrentPackageManager = exports.resolvePackageManager = exports.findWorkspaceRoot = exports.RESOLUTION_ORDER = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const nodeWorkspaces_1 = require("./nodeWorkspaces");
@@ -64,9 +64,32 @@ function resolvePackageManager(projectRoot, preferredManager) {
 }
 exports.resolvePackageManager = resolvePackageManager;
 /**
+ * Resolve the currently used node package manager.
+ * This is done through the `npm_config_user_agent` environment variable.
+ */
+function resolveCurrentPackageManager() {
+    const userAgent = process.env.npm_config_user_agent || '';
+    if (userAgent.startsWith('bun')) {
+        return 'bun';
+    }
+    else if (userAgent.startsWith('npm')) {
+        return 'npm';
+    }
+    else if (userAgent.startsWith('pnpm')) {
+        return 'pnpm';
+    }
+    else if (userAgent.startsWith('yarn')) {
+        return 'yarn';
+    }
+    return null;
+}
+exports.resolveCurrentPackageManager = resolveCurrentPackageManager;
+/**
  * This creates a Node package manager from the provided options.
- * If these options are not provided, it will infer the package manager from lockfiles.
- * When no package manager is found, it falls back to npm.
+ * If these options are not provided, it will resolve the package manager based on these rules:
+ *   1. Resolve the package manager based on the currently used package manager (process.env.npm_config_user_agent)
+ *   2. If none, resolve the package manager based on the lockfiles in the project root
+ *   3. If none, fallback to npm
  */
 function createForProject(projectRoot, options = {}) {
     if (options.npm) {
@@ -81,7 +104,8 @@ function createForProject(projectRoot, options = {}) {
     else if (options.bun) {
         return new BunPackageManager_1.BunPackageManager({ cwd: projectRoot, ...options });
     }
-    switch (resolvePackageManager(projectRoot)) {
+    const resolvedManager = resolveCurrentPackageManager() ?? resolvePackageManager(projectRoot);
+    switch (resolvedManager) {
         case 'npm':
             return new NpmPackageManager_1.NpmPackageManager({ cwd: projectRoot, ...options });
         case 'pnpm':
