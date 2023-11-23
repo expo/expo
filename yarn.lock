@@ -4674,6 +4674,11 @@
   resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.2.tgz#1a62f89525723dde24ba1b01b092bf5df8ad4d39"
   integrity sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==
 
+"@types/semver@^6.0.0":
+  version "6.2.7"
+  resolved "https://registry.yarnpkg.com/@types/semver/-/semver-6.2.7.tgz#473fb8d63ea04f7511c699fb9b96830c51e8a53d"
+  integrity sha512-blctEWbzUFzQx799RZjzzIdBJOXmE37YYEyDtKkx5Dg+V7o/zyyAxLPiI98A2jdTtDgxZleMdfV+7p8WbRJ1OQ==
+
 "@types/semver@^7.3.12", "@types/semver@^7.5.0":
   version "7.5.0"
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.5.0.tgz#591c1ce3a702c45ee15f47a42ade72c2fd78978a"
@@ -20821,6 +20826,11 @@ xcode@^3.0.1:
   dependencies:
     simple-plist "^1.1.0"
     uuid "^7.0.3"
+
+xcparse@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/xcparse/-/xcparse-0.0.3.tgz#abc2dbe07e0550c14c1b670c41d05dcbe3cfd10b"
+  integrity sha512-/HgjZ1o81gudtNHt5a/EGEyMa991WZjZqu8ryPWJ1UtG4NRJyQ2AthR8MaqD6nN7UnCe7IcFShMm5oEA/S9nEQ==
 
 xml-js@^1.6.11:
   version "1.6.11"
