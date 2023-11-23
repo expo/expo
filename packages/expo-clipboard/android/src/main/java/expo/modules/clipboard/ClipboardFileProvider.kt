@@ -348,7 +348,7 @@ class ClipboardFileProvider : ContentProvider() {
       } catch (e: IOException) {
         throw java.lang.IllegalArgumentException("Failed to resolve canonical path for $file")
       }
-      if (!file.path.startsWith(root.path)) {
+      if (!file.startsWith(root)) {
         throw SecurityException("Resolved path jumped beyond configured root")
       }
       return file
