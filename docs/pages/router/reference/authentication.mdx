@@ -49,8 +49,8 @@ import { useStorageState } from './useStorageState';
 const AuthContext = React.createContext<{ 
   signIn: () => void; 
   signOut: () => void;
-  session?: string | null,
-  isLoading: boolean
+  session?: string | null;
+  isLoading: boolean;
 }>({
   signIn: () => null,
   signOut: () => null,
