@@ -426,7 +426,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   public void loadForSound(final ReadableArguments source, final ReadableArguments status, final Promise promise) {
     getUIManager().runOnUiQueueThread(() -> {
       final int key = mSoundMapKeyCount++;
-      final PlayerData data = PlayerData.createUnloadedPlayerData(this, mContext, source, status.toBundle());
+      final PlayerData data = PlayerData.createUnloadedPlayerData(this, mContext, source, null,status.toBundle());
       data.setErrorListener(new PlayerData.ErrorListener() {
         @Override
         public void onError(final String error) {
