@@ -33,8 +33,8 @@ export function convertNativeProps(props?: CameraProps): CameraNativeProps {
 export function ensureNativeProps(props?: CameraProps): CameraNativeProps {
   const newProps = convertNativeProps(props);
 
-  if (newProps.onBarCodeScanned) {
-    newProps.barCodeScannerEnabled = true;
+  if (newProps.onBarcodeScanned) {
+    newProps.barcodeScannerEnabled = true;
   }
 
   if (Platform.OS !== 'web') {

@@ -1,10 +1,10 @@
-import { Camera } from 'expo-camera/next';
+import { CameraView } from 'expo-camera/next';
 import { useEffect } from 'react';
-import { View, Button } from 'react-native';
+import { View, Button, Platform, Text } from 'react-native';
 
 export default function CameraScreenNextBarcode() {
   useEffect(() => {
-    const subscription = Camera.onModernBarcodeScanned((event) => {
+    const subscription = CameraView.onModernBarcodeScanned((event) => {
       console.log(event);
     });
 
@@ -12,12 +12,20 @@ export default function CameraScreenNextBarcode() {
   }, []);
 
   async function launchScanner() {
-    if (Camera.isModernBarcodeScannerAvailable) {
-      await Camera.launchModernScanner({
+    if (CameraView.isModernBarcodeScannerAvailable) {
+      await CameraView.launchModernScanner({
         barCodeTypes: ['qr'],
         isHighlightingEnabled: true,
       });
     }
+  }
+
+  if (Platform.OS === 'android') {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 22, fontWeight: 'bold' }}>This API is unavailable on Android</Text>
+      </View>
+    );
   }
 
   return (

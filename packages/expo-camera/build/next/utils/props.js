@@ -22,8 +22,8 @@ export function convertNativeProps(props) {
 }
 export function ensureNativeProps(props) {
     const newProps = convertNativeProps(props);
-    if (newProps.onBarCodeScanned) {
-        newProps.barCodeScannerEnabled = true;
+    if (newProps.onBarcodeScanned) {
+        newProps.barcodeScannerEnabled = true;
     }
     if (Platform.OS !== 'web') {
         delete newProps.poster;

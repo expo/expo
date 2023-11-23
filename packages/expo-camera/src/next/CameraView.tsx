@@ -1,10 +1,4 @@
-import {
-  createPermissionHook,
-  Platform,
-  UnavailabilityError,
-  EventEmitter,
-  Subscription,
-} from 'expo-modules-core';
+import { Platform, UnavailabilityError, EventEmitter, Subscription } from 'expo-modules-core';
 import * as React from 'react';
 import { Ref } from 'react';
 
@@ -14,14 +8,12 @@ import {
   CameraPictureOptions,
   CameraProps,
   CameraRecordingOptions,
-  CameraType,
   CameraViewRef,
   ModernScanningOptions,
-  ModernBarCodeScanningResult,
-  PermissionResponse,
+  ModernBarcodeScanningResult,
   VideoCodec,
 } from './Camera.types';
-import ExponentCamera from './ExpoCamera';
+import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 
@@ -72,7 +64,7 @@ function _onPictureSaved({
   }
 }
 
-export default class Camera extends React.Component<CameraProps> {
+export default class CameraView extends React.Component<CameraProps> {
   /**
    * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
    */
@@ -89,18 +81,6 @@ export default class Camera extends React.Component<CameraProps> {
     }
 
     return await CameraManager.isAvailableAsync();
-  }
-
-  /**
-   * Returns a list of camera types `['front', 'back']`. This is useful for desktop browsers which only have front-facing cameras.
-   * @platform web
-   */
-  static async getAvailableCameraTypesAsync(): Promise<CameraType[]> {
-    if (!CameraManager.getAvailableCameraTypesAsync) {
-      throw new UnavailabilityError('expo-camera', 'getAvailableCameraTypesAsync');
-    }
-
-    return await CameraManager.getAvailableCameraTypesAsync();
   }
 
   // @needsAudit
@@ -127,74 +107,6 @@ export default class Camera extends React.Component<CameraProps> {
     mode: 'picture',
     flashMode: 'off',
   };
-
-  // @needsAudit
-  /**
-   * Checks user's permissions for accessing camera.
-   * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-   */
-  static async getCameraPermissionsAsync(): Promise<PermissionResponse> {
-    return CameraManager.getCameraPermissionsAsync();
-  }
-
-  // @needsAudit
-  /**
-   * Asks the user to grant permissions for accessing camera.
-   * On iOS this will require apps to specify an `NSCameraUsageDescription` entry in the **Info.plist**.
-   * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-   */
-  static async requestCameraPermissionsAsync(): Promise<PermissionResponse> {
-    return CameraManager.requestCameraPermissionsAsync();
-  }
-
-  // @needsAudit
-  /**
-   * Check or request permissions to access the camera.
-   * This uses both `requestCameraPermissionsAsync` and `getCameraPermissionsAsync` to interact with the permissions.
-   *
-   * @example
-   * ```ts
-   * const [status, requestPermission] = Camera.useCameraPermissions();
-   * ```
-   */
-  static useCameraPermissions = createPermissionHook({
-    getMethod: Camera.getCameraPermissionsAsync,
-    requestMethod: Camera.requestCameraPermissionsAsync,
-  });
-
-  // @needsAudit
-  /**
-   * Checks user's permissions for accessing microphone.
-   * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-   */
-  static async getMicrophonePermissionsAsync(): Promise<PermissionResponse> {
-    return CameraManager.getMicrophonePermissionsAsync();
-  }
-
-  // @needsAudit
-  /**
-   * Asks the user to grant permissions for accessing the microphone.
-   * On iOS this will require apps to specify an `NSMicrophoneUsageDescription` entry in the **Info.plist**.
-   * @return A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
-   */
-  static async requestMicrophonePermissionsAsync(): Promise<PermissionResponse> {
-    return CameraManager.requestMicrophonePermissionsAsync();
-  }
-
-  // @needsAudit
-  /**
-   * Check or request permissions to access the microphone.
-   * This uses both `requestMicrophonePermissionsAsync` and `getMicrophonePermissionsAsync` to interact with the permissions.
-   *
-   * @example
-   * ```ts
-   * const [status, requestPermission] = Camera.useMicrophonePermissions();
-   * ```
-   */
-  static useMicrophonePermissions = createPermissionHook({
-    getMethod: Camera.getMicrophonePermissionsAsync,
-    requestMethod: Camera.requestMicrophonePermissionsAsync,
-  });
 
   _cameraHandle?: number | null;
   _cameraRef = React.createRef<CameraViewRef>();
@@ -233,15 +145,15 @@ export default class Camera extends React.Component<CameraProps> {
     if (!options) {
       options = { barCodeTypes: [] };
     }
-    if (Platform.OS === 'ios' && Camera.isModernBarcodeScannerAvailable) {
+    if (Platform.OS === 'ios' && CameraView.isModernBarcodeScannerAvailable) {
       await CameraManager.launchModernScanner(options);
     }
   }
 
   static onModernBarcodeScanned(
-    listener: (event: ModernBarCodeScanningResult) => void
+    listener: (event: ModernBarcodeScanningResult) => void
   ): Subscription {
-    return emitter.addListener<ModernBarCodeScanningResult>('onModernBarcodeScanned', listener);
+    return emitter.addListener<ModernBarcodeScanningResult>('onModernBarcodeScanned', listener);
   }
 
   /**
@@ -308,42 +220,30 @@ export default class Camera extends React.Component<CameraProps> {
     };
 
   _setReference = (ref: Ref<CameraViewRef>) => {
-    // if (ref) {
-    //   this._cameraRef
-    //   // TODO(Bacon): Unify these - perhaps with hooks?
-    //   if (Platform.OS === 'web') {
-    //     this._cameraHandle = ref as any;
-    //   }
-    // } else {
-    //   this._cameraRef = null;
-    //   this._cameraHandle = null;
-    // }
+    if (ref) {
+      // TODO(Bacon): Unify these - perhaps with hooks?
+      if (Platform.OS === 'web') {
+        this._cameraHandle = ref as any;
+      }
+    }
   };
 
   render() {
     const nativeProps = ensureNativeProps(this.props);
-
-    const onBarCodeScanned = this.props.onBarCodeScanned
-      ? this._onObjectDetected(this.props.onBarCodeScanned)
+    const onBarcodeScanned = this.props.onBarcodeScanned
+      ? this._onObjectDetected(this.props.onBarcodeScanned)
       : undefined;
 
     return (
-      <ExponentCamera
+      <ExpoCamera
         {...nativeProps}
         ref={this._cameraRef}
         onCameraReady={this._onCameraReady}
         onMountError={this._onMountError}
-        onBarCodeScanned={onBarCodeScanned}
+        onBarcodeScanned={onBarcodeScanned}
         onPictureSaved={_onPictureSaved}
         onResponsiveOrientationChanged={this._onResponsiveOrientationChanged}
       />
     );
   }
 }
-
-export const {
-  getCameraPermissionsAsync,
-  requestCameraPermissionsAsync,
-  getMicrophonePermissionsAsync,
-  requestMicrophonePermissionsAsync,
-} = Camera;

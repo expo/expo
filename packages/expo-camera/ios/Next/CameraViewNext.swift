@@ -15,7 +15,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   // MARK: - Properties
 
-  private lazy var barCodeScanner = createBarCodeScanner()
+  private lazy var barcodeScanner = createBarcodeScanner()
   private var previewLayer = PreviewView()
   private var isValidVideoOptions = true
   private var videoCodecType: AVVideoCodecType?
@@ -38,9 +38,19 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  var isScanningBarCodes = false {
+  var videoQuality: VideoQuality = .video1080p {
     didSet {
-      barCodeScanner.setIsEnabled(isScanningBarCodes)
+      if self.session.sessionPreset != videoQuality.toPreset() {
+        self.sessionQueue.async {
+          self.updateSessionPreset(preset: self.videoQuality.toPreset())
+        }
+      }
+    }
+  }
+
+  var isScanningBarcodes = false {
+    didSet {
+      barcodeScanner.setIsEnabled(isScanningBarcodes)
     }
   }
 
@@ -92,7 +102,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   let onCameraReady = EventDispatcher()
   let onMountError = EventDispatcher()
   let onPictureSaved = EventDispatcher()
-  let onBarCodeScanned = EventDispatcher()
+  let onBarcodeScanned = EventDispatcher()
   let onResponsiveOrientationChanged = EventDispatcher()
 
   private var deviceOrientation: UIInterfaceOrientation {
@@ -136,7 +146,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
   public func onAppForegrounded() {
     if !session.isRunning {
       sessionQueue.async {
-        self.ensureSessionConfiguration()
         self.session.startRunning()
       }
     }
@@ -208,8 +217,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       self.addErrorNotification()
 
       self.sessionQueue.asyncAfter(deadline: .now() + round(50 / 1_000_000)) {
-        self.barCodeScanner.maybeStartBarCodeScanning()
-        self.ensureSessionConfiguration()
+        self.barcodeScanner.maybeStartBarCodeScanning()
         self.session.commitConfiguration()
         self.session.startRunning()
         self.onCameraReady()
@@ -258,8 +266,8 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  func setBarCodeScannerSettings(settings: BarcodeSettings) {
-    barCodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
+  func setBarcodeScannerSettings(settings: BarcodeSettings) {
+    barcodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
   }
 
   func updateResponsiveOrientation() {
@@ -526,9 +534,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
           }
         }
 
-        let preset = options.quality?.toPreset() ?? .high
-        self.updateSessionPreset(preset: preset)
-
         guard let fileSystem = self.fileSystem else {
           promise.reject(Exceptions.FileSystemModuleNotFound())
           return
@@ -561,6 +566,20 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
     if let maxFileSize = options.maxFileSize {
       videoFileOutput.maxRecordedFileSize = Int64(maxFileSize)
+    }
+
+    if let codec = options.codec {
+      let codecType = codec.codecType()
+      if videoFileOutput.availableVideoCodecTypes.contains(codecType) {
+        videoFileOutput.setOutputSettings([AVVideoCodecKey: codecType], for: connection)
+        self.videoCodecType = codecType
+      } else {
+        promise.reject(CameraRecordingException(self.videoCodecType?.rawValue))
+
+        self.cleanupMovieFileCapture()
+        self.videoRecordedPromise = nil
+        self.isValidVideoOptions = false
+      }
     }
   }
 
@@ -625,6 +644,7 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
 
   public override func removeFromSuperview() {
     lifecycleManager?.unregisterAppLifecycleListener(self)
+    self.stopSession()
     super.removeFromSuperview()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
   }
@@ -668,10 +688,12 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  func updateSessionPreset(preset: AVCaptureSession.Preset) {
+func updateSessionPreset(preset: AVCaptureSession.Preset) {
     #if !targetEnvironment(simulator)
     if self.session.canSetSessionPreset(preset) {
+      self.session.beginConfiguration()
       self.session.sessionPreset = preset
+      self.session.commitConfiguration()
     }
     #endif
   }
@@ -732,9 +754,9 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
       for output in self.session.outputs {
         self.session.removeOutput(output)
       }
+      self.barcodeScanner.stopBarCodeScanning()
       self.session.commitConfiguration()
 
-      self.barCodeScanner.stopBarCodeScanning()
       self.motionManager.stopAccelerometerUpdates()
       self.session.stopRunning()
     }
@@ -754,11 +776,14 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
     }
   }
 
-  private func createBarCodeScanner() -> BarcodeScanner {
+  private func createBarcodeScanner() -> BarcodeScanner {
     let scanner = BarcodeScanner(session: session, sessionQueue: sessionQueue)
     scanner.onBarcodeScanned = { [weak self] body in
-      if let body = body as? [String: Any] {
-        self?.onBarCodeScanned(body)
+      guard let self else {
+        return
+      }
+      if let body {
+        self.onBarcodeScanned(body)
       }
     }
 

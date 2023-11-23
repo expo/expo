@@ -1,7 +1,9 @@
 package expo.modules.camera.next.records
 
+import android.hardware.camera2.CameraMetadata
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
+import androidx.camera.video.Quality
 import com.google.mlkit.vision.barcode.common.Barcode
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
@@ -13,6 +15,27 @@ enum class CameraType(val value: String) : Enumerable {
   fun mapToSelector() = when (this) {
     FRONT -> CameraSelector.DEFAULT_FRONT_CAMERA
     BACK -> CameraSelector.DEFAULT_BACK_CAMERA
+  }
+
+  fun mapToCharacteristic() = when (this) {
+    FRONT -> CameraMetadata.LENS_FACING_FRONT
+    BACK -> CameraMetadata.LENS_FACING_BACK
+  }
+}
+
+enum class VideoQuality(val value: String) : Enumerable {
+  VIDEO2160P("2160p"),
+  VIDEO1080P("1080p"),
+  VIDEO720P("720p"),
+  VIDEO480P("480p"),
+  VIDEO4X3("4:3");
+
+  fun mapToQuality(): Quality = when (this) {
+    VIDEO2160P -> Quality.UHD
+    VIDEO1080P -> Quality.FHD
+    VIDEO720P -> Quality.HD
+    VIDEO480P -> Quality.SD
+    VIDEO4X3 -> Quality.LOWEST
   }
 }
 
@@ -33,7 +56,7 @@ enum class CameraMode(val value: String) : Enumerable {
   VIDEO("video")
 }
 
-data class BarCodeSettings(
+data class BarcodeSettings(
   val barcodeTypes: List<BarcodeType>,
   val interval: Double?
 ) : Record

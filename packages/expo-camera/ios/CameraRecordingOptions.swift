@@ -6,7 +6,6 @@ struct CameraRecordingOptions: Record {
   @Field var quality: VideoQuality?
   @Field var mute: Bool = false
   @Field var mirror: Bool = false
-  @Field var videoBitrate: Double?
   @Field var codec: VideoCodec?
 }
 
