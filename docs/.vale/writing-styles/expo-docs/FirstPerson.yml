@@ -10,4 +10,5 @@ tokens:
   - (?:^|\s)I,\s
   - \bI'm\b
   - \bme\b
+  - \bmy\b
   - \bmine\b
