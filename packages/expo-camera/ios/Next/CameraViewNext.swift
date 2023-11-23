@@ -532,8 +532,6 @@ public class CameraViewNext: ExpoView, EXCameraInterface, EXAppLifecycleListener
           }
         }
 
-        let fileUtils = FileSystemUtilities(appContext: self.appContext)
-
         if !self.isValidVideoOptions {
           return
         }
