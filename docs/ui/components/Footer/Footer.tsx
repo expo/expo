@@ -10,7 +10,7 @@ import { NavigationRouteWithSection } from '~/types/common';
 import { P, FOOTNOTE, UL } from '~/ui/components/Text';
 
 type Props = {
-  title: string;
+  title?: string;
   sourceCodeUrl?: string;
   packageName?: string;
   previousPage?: NavigationRouteWithSection;
@@ -23,7 +23,12 @@ export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPa
   const isExpoPackage = packageName && packageName.startsWith('expo-');
 
   return (
-    <footer className="flex flex-col border-t border-default mt-10 pt-10 gap-8">
+    <footer
+      className={mergeClasses(
+        'flex flex-col gap-8',
+        title && 'pt-10 mt-10 border-t border-default',
+        !title && 'pt-2'
+      )}>
       {title && (previousPage || nextPage) && (
         <div
           className={mergeClasses(
@@ -72,13 +77,13 @@ export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPa
       )}
       <div className="flex flex-row justify-between max-md-gutters:flex-col max-md-gutters:gap-4">
         <div>
-          <PageVote pathname={router?.pathname} />
+          {title && <PageVote pathname={router?.pathname} />}
           <UL className="flex-1 !mt-0 !ml-0 !list-none">
-            <ForumsLink isAPIPage={isAPIPage} title={title} />
-            {isAPIPage && (
+            {title && <ForumsLink isAPIPage={isAPIPage} title={title} />}
+            {title && isAPIPage && (
               <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
             )}
-            {router?.pathname && <EditPageLink pathname={router.pathname} />}
+            {router?.pathname && title && <EditPageLink pathname={router.pathname} />}
           </UL>
         </div>
         <NewsletterSignUp />
