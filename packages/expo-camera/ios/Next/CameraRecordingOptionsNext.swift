@@ -5,6 +5,7 @@ struct CameraRecordingOptionsNext: Record {
   @Field var maxFileSize: Double?
   @Field var quality: VideoQuality?
   @Field var mirror: Bool = false
+  @Field var codec: VideoCodec?
 }
 
 enum VideoQualityNext: String, Enumerable {

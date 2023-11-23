@@ -4,8 +4,9 @@ import AVFoundation
 import ExpoModulesCore
 import VisionKit
 
+let cameraNextEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcodeScanned", "onResponsiveOrientationChanged"]
+
 struct ScannerContext {
-  var promise: Promise?
   var delegate: Any?
 }
 
@@ -35,10 +36,10 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
       }
       return false
     }
-    
+
     // swiftlint:disable:next closure_body_length
     View(CameraViewNext.self) {
-      Events(cameraEvents)
+      Events(cameraNextEvents)
 
       Prop("type") { (view, type: CameraTypeNext) in
         if view.presetCamera != type.toPosition() {
@@ -68,18 +69,20 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
         }
       }
 
-      Prop("barCodeScannerEnabled") { (view, scanBarCodes: Bool?) in
-        if view.isScanningBarCodes != scanBarCodes {
-          view.isScanningBarCodes = scanBarCodes ?? false
-        }
+      Prop("barcodeScannerEnabled") { (view, scanBarcodes: Bool?) in
+        view.isScanningBarcodes = scanBarcodes ?? false
       }
 
-      Prop("barCodeScannerSettings") { (view, settings: BarcodeSettings) in
-        view.setBarCodeScannerSettings(settings: settings)
+      Prop("barcodeScannerSettings") { (view, settings: BarcodeSettings) in
+        view.setBarcodeScannerSettings(settings: settings)
       }
 
       Prop("mute") { (view, muted: Bool) in
         view.isMuted = muted
+      }
+
+      Prop("videoQuality") { (view, quality: VideoQuality) in
+        view.videoQuality = quality
       }
 
       Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool) in
@@ -113,11 +116,11 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
       }.runOnQueue(.main)
     }
 
-    AsyncFunction("launchModernScanner") { (options: VisionScannerOptions?, promise: Promise) in
+    AsyncFunction("launchModernScanner") { (options: VisionScannerOptions?) in
       if #available(iOS 16.0, *) {
         try await MainActor.run {
           let delegate = VisionScannerDelegate(handler: self)
-          scannerContext = ScannerContext(promise: promise, delegate: delegate)
+          scannerContext = ScannerContext(delegate: delegate)
           launchModernScanner(with: options)
         }
       }
@@ -158,10 +161,14 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
         reject: promise.legacyRejecter
       )
     }
+
+    AsyncFunction("getAvailableVideoCodecsAsync") { () -> [String] in
+      return getAvailableVideoCodecs()
+    }
   }
 
   @available(iOS 16.0, *)
-  @MainActor 
+  @MainActor
   private func launchModernScanner(with options: VisionScannerOptions?) {
     let symbologies = options?.toSymbology() ?? [.qr]
     let controller = DataScannerViewController(
@@ -182,6 +189,33 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
 
   func onItemScanned(result: [String: Any]) {
     sendEvent("onModernBarcodeScanned", result)
+  }
+
+  private func getAvailableVideoCodecs() -> [String] {
+    let session = AVCaptureSession()
+
+    session.beginConfiguration()
+
+    guard let captureDevice = ExpoCameraUtils.device(
+      with: AVMediaType.video,
+      preferring: AVCaptureDevice.Position.front) else {
+      return []
+    }
+    guard let deviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
+      return []
+    }
+    if session.canAddInput(deviceInput) {
+      session.addInput(deviceInput)
+    }
+
+    session.commitConfiguration()
+
+    let movieFileOutput = AVCaptureMovieFileOutput()
+
+    if session.canAddOutput(movieFileOutput) {
+      session.addOutput(movieFileOutput)
+    }
+    return movieFileOutput.availableVideoCodecTypes.map { $0.rawValue }
   }
 }
 
