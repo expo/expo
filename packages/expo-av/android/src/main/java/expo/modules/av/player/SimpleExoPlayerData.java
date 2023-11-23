@@ -78,7 +78,7 @@ class SimpleExoPlayerData extends PlayerData
   private static final String PROP_DRM = "drm";
   private static final String PROP_DRM_TYPE = "type";
   private static final String PROP_DRM_LICENSESERVER = "licenseServer";
-  private static final String PROP_DRM_HEADERS = "headers";
+  private static final String PROP_DRM_HEADERS = "drmHeaders";
   private static final String IMPLEMENTATION_NAME = "SimpleExoPlayer";
   private static final String TAG = SimpleExoPlayerData.class.getSimpleName();
 
@@ -95,13 +95,14 @@ class SimpleExoPlayerData extends PlayerData
   private Map<String, String>  drmLicenseHeader = null;
   private final Context mReactContext;
 
-  SimpleExoPlayerData(final AVManagerInterface avModule, final Context context, final Uri uri, final String overridingExtension, final Map<String, Object> requestHeaders, final ReadableArguments drmConfigs) {
+  SimpleExoPlayerData(final AVManagerInterface avModule, final Context context, final Uri uri, final String overridingExtension, final Map<String, Object> requestHeaders ) {
     super(avModule, uri, requestHeaders);
     mReactContext = context;
     mOverridingExtension = overridingExtension;
-    if(drmConfigs != null){
-      this.setDRM(drmConfigs);
+    if(requestHeaders.containsKey(PROP_DRM)){
+      this.setDRM((Map<String, Object>) requestHeaders.get(PROP_DRM));
     }
+
   }
 
   @Override
@@ -119,7 +120,7 @@ class SimpleExoPlayerData extends PlayerData
     final Context context = mAVModule.getContext();
     final BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter.Builder(context).build();
     final TrackSelector trackSelector = new DefaultTrackSelector(context, new AdaptiveTrackSelection.Factory());
-
+    Log.d("Tets", drmLicenseUrl);
     // Create the player
      mSimpleExoPlayer = new SimpleExoPlayer.Builder(context)
          .setTrackSelector(trackSelector)
@@ -128,7 +129,6 @@ class SimpleExoPlayerData extends PlayerData
 
 
     DefaultHttpDataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory();
-
     MediaSource mediaSource = buildMediaSource(mUri,mOverridingExtension,dataSourceFactory);
     mSimpleExoPlayer.setMediaSource(mediaSource);
     mSimpleExoPlayer.addListener(this);
@@ -425,26 +425,27 @@ class SimpleExoPlayerData extends PlayerData
 
   // endregion
 
-  public void setDRM(final ReadableArguments drm) {
+  public void setDRM(final Map<String, Object>  drm) {
     if (drm != null) {
-      String drmType =drm.getString(PROP_DRM_TYPE);
-      String drmLicenseServer =  drm.getString(PROP_DRM_LICENSESERVER);
-      ReadableMap drmHeaders = (ReadableMap) drm.getMap(PROP_DRM_HEADERS);
+      String drmType =(String)drm.get(PROP_DRM_TYPE);
+      String drmLicenseServer =  (String)drm.get(PROP_DRM_LICENSESERVER);
+      HashMap<String,String> drmHeaders = (HashMap<String, String>) drm.get(PROP_DRM_HEADERS);
       if (drmType != null && drmLicenseServer != null && Util.getDrmUuid(drmType) != null) {
           UUID drmUUID = Util.getDrmUuid(drmType);
           setDrmType(drmUUID);//
           setDrmLicenseUrl(drmLicenseServer);//
-          if (drmHeaders != null) {
-            Map<String, String> map = new HashMap<>();
-
-            ReadableMapKeySetIterator itr = drmHeaders.keySetIterator();
-              while (itr.hasNextKey()) {
-                  String key = itr.nextKey();
-                map.put(key, drmHeaders.getString(key));
-
-              }
-              setDrmLicenseHeader(map);//
-          }
+          setDrmLicenseHeader(drmHeaders);
+//          if (drmHeaders != null) {
+//            Map<String, String> map = new HashMap<>();
+//
+//            ReadableMapKeySetIterator itr = drmHeaders.keySetIterator();
+//              while (itr.hasNextKey()) {
+//                  String key = itr.nextKey();
+//                map.put(key, drmHeaders.getString(key));
+//
+//              }
+//              setDrmLicenseHeader(map);//
+//          }
       }
     }
   }

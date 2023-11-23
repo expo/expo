@@ -66,6 +66,8 @@ export type AVPlaybackNativeSource = {
   uri: string;
   overridingExtension?: string | null;
   headers?: Record<string, string>;
+  drm?: string | null;
+
 };
 
 /**

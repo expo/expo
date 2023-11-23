@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ViewProps } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
-import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
+import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet, DRMConfig } from './AV';
 import ExponentAV from './ExponentAV';
 import { addFullscreenListener } from './FullscreenUtils.web';
 import {
@@ -13,6 +13,7 @@ import {
 
 type ExponentVideoProps = {
   source: AVPlaybackNativeSource | null;
+  drm: DRMConfig | null;
   resizeMode?: object;
   status?: AVPlaybackStatusToSet;
   useNativeControls?: boolean;

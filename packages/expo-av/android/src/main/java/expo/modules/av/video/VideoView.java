@@ -3,6 +3,7 @@ package expo.modules.av.video;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -344,7 +345,6 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     if (initialStatus != null) {
       mStatusToSet.putAll(initialStatus.toBundle());
     }
-
     final String uriString = source != null ? source.getString(PlayerData.STATUS_URI_KEY_PATH) : null;
 
     if (uriString == null) {
@@ -360,7 +360,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     statusToInitiallySet.putAll(mStatusToSet);
     mStatusToSet = new Bundle();
 
-    mPlayerData = PlayerData.createUnloadedPlayerData(mAVModule, getContext(), source, drmConfigs,statusToInitiallySet);
+    mPlayerData = PlayerData.createUnloadedPlayerData(mAVModule, getContext(), source,statusToInitiallySet);
 
     mPlayerData.setErrorListener(new PlayerData.ErrorListener() {
       @Override
