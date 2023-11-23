@@ -5,7 +5,11 @@ import { BunPackageManager } from '../../node/BunPackageManager';
 import { NpmPackageManager } from '../../node/NpmPackageManager';
 import { PnpmPackageManager } from '../../node/PnpmPackageManager';
 import { YarnPackageManager } from '../../node/YarnPackageManager';
-import { createForProject, resolvePackageManager } from '../nodeManagers';
+import {
+  createForProject,
+  resolveCurrentPackageManager,
+  resolvePackageManager,
+} from '../nodeManagers';
 import {
   BUN_LOCK_FILE,
   NPM_LOCK_FILE,
@@ -15,6 +19,18 @@ import {
 } from '../nodeWorkspaces';
 
 jest.mock('fs');
+
+/** Keep track of the original package manager used to execute the tests */
+let originalPackageManager = process.env.npm_config_user_agent;
+beforeAll(() => {
+  originalPackageManager = process.env.npm_config_user_agent;
+});
+beforeEach(() => {
+  delete process.env.npm_config_user_agent;
+});
+afterAll(() => {
+  process.env.npm_config_user_agent = originalPackageManager;
+});
 
 describe(createForProject, () => {
   const projectRoot = '/foo';
@@ -39,6 +55,22 @@ describe(createForProject, () => {
 
   it(`defaults to npm package manager`, () => {
     expect(createForProject(projectRoot)).toBeInstanceOf(NpmPackageManager);
+  });
+
+  it(`creates package manager from user agent`, () => {
+    process.env.npm_config_user_agent = 'bun/1.0.13 npm/? node/v20.8.0 darwin arm64';
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ name: 'project' }),
+        // Test that the lock files are ignored when using the user agent
+        [NPM_LOCK_FILE]: '',
+        [PNPM_LOCK_FILE]: '',
+        [YARN_LOCK_FILE]: '',
+      },
+      projectRoot
+    );
+
+    expect(createForProject(projectRoot)).toBeInstanceOf(BunPackageManager);
   });
 
   it(`creates npm package manager from project`, () => {
@@ -227,5 +259,32 @@ describe(resolvePackageManager, () => {
     // Due to the `yarn.lock` file being present when running `bun install --yarn`,
     // yarn can be returned as package manager when prefering `yarn`.
     expect(resolvePackageManager(projectRoot, 'yarn')).toBe('yarn');
+  });
+});
+
+describe(resolveCurrentPackageManager, () => {
+  it(`returns null when user agent is not set`, () => {
+    delete process.env.npm_config_user_agent;
+    expect(resolveCurrentPackageManager()).toBeNull();
+  });
+
+  it(`resolves bun package manager from user agent`, () => {
+    process.env.npm_config_user_agent = 'bun/1.0.13 npm/? node/v20.8.0 darwin arm64';
+    expect(resolveCurrentPackageManager()).toBe('bun');
+  });
+
+  it(`resolved npm package manager from user agent`, () => {
+    process.env.npm_config_user_agent = 'npm/10.2.3 node/v18.18.2 darwin arm64 workspaces/false';
+    expect(resolveCurrentPackageManager()).toBe('npm');
+  });
+
+  it(`resolved pnpm package manager from user agent`, () => {
+    process.env.npm_config_user_agent = 'pnpm/8.10.2 npm/? node/v18.18.2 darwin arm64';
+    expect(resolveCurrentPackageManager()).toBe('pnpm');
+  });
+
+  it(`resolved yarn package manager from user agent`, () => {
+    process.env.npm_config_user_agent = 'yarn/1.22.19 npm/? node/v18.18.2 darwin arm64';
+    expect(resolveCurrentPackageManager()).toBe('yarn');
   });
 });

@@ -19,8 +19,15 @@ export declare function findWorkspaceRoot(projectRoot: string, preferredManager?
  */
 export declare function resolvePackageManager(projectRoot: string, preferredManager?: NodePackageManager['name']): NodePackageManager['name'] | null;
 /**
+ * Resolve the currently used node package manager.
+ * This is done through the `npm_config_user_agent` environment variable.
+ */
+export declare function resolveCurrentPackageManager(): NodePackageManager['name'] | null;
+/**
  * This creates a Node package manager from the provided options.
- * If these options are not provided, it will infer the package manager from lockfiles.
- * When no package manager is found, it falls back to npm.
+ * If these options are not provided, it will resolve the package manager based on these rules:
+ *   1. Resolve the package manager based on the currently used package manager (process.env.npm_config_user_agent)
+ *   2. If none, resolve the package manager based on the lockfiles in the project root
+ *   3. If none, fallback to npm
  */
 export declare function createForProject(projectRoot: string, options?: NodePackageManagerForProject): NodePackageManager;

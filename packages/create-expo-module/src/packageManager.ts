@@ -1,4 +1,4 @@
-import spawnAsync from '@expo/spawn-async';
+import { createForProject } from '@expo/package-manager';
 
 import { PackageManagerName } from './resolvePackageManager';
 
@@ -7,8 +7,13 @@ export async function installDependencies(
   appPath: string,
   ...args: string[]
 ) {
-  await spawnAsync(packageManager, ['install', ...args], {
-    cwd: appPath,
-    stdio: 'ignore',
+  const manager = createForProject(appPath, {
+    silent: true,
+    bun: packageManager === 'bun',
+    npm: packageManager === 'npm',
+    pnpm: packageManager === 'pnpm',
+    yarn: packageManager === 'yarn',
   });
+
+  await manager.installAsync();
 }

@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Rename `runAsync` to `spawnAsync`. ([#25550](https://github.com/expo/expo/pull/25550) by [@byCedric](https://github.com/byCedric))
+- Add `resolveCurrentPackageManager` to detect the currently used node manager. ([#25552](https://github.com/expo/expo/pull/25552) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
