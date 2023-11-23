@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix path traversal vulnerability in `getFileForUri` function.
+- [Android] Fix path traversal vulnerability in `getFileForUri` function. ([#25549](https://github.com/expo/expo/pull/25549) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
