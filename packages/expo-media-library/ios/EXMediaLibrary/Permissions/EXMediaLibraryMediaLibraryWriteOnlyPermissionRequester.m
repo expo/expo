@@ -1,6 +1,6 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
-#import <EXMediaLibrary/EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.h>
+#import <ExpoMediaLibrary/EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.h>
 
 @implementation EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester
 

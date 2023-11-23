@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <EXMediaLibrary/EXMediaLibrary.h>
+#import <ExpoMediaLibrary/EXMediaLibrary.h>
 
 typedef void(^EXSaveToLibraryCallback)(id asset, NSError *error);
 

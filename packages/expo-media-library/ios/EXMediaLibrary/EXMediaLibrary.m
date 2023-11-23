@@ -5,10 +5,10 @@
 #import <AVFoundation/AVFoundation.h>
 #import <CoreServices/CoreServices.h>
 
-#import <EXMediaLibrary/EXMediaLibrary.h>
-#import <EXMediaLibrary/EXSaveToLibraryDelegate.h>
-#import <EXMediaLibrary/EXMediaLibraryMediaLibraryPermissionRequester.h>
-#import <EXMediaLibrary/EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.h>
+#import <ExpoMediaLibrary/EXMediaLibrary.h>
+#import <ExpoMediaLibrary/EXSaveToLibraryDelegate.h>
+#import <ExpoMediaLibrary/EXMediaLibraryMediaLibraryPermissionRequester.h>
+#import <ExpoMediaLibrary/EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.h>
 
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXUtilities.h>

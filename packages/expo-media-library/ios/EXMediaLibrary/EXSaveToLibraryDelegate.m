@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXMediaLibrary/EXSaveToLibraryDelegate.h>
+#import <ExpoMediaLibrary/EXSaveToLibraryDelegate.h>
 
 @interface EXSaveToLibraryDelegate ()
 
