@@ -2042,7 +2042,7 @@ PODS:
     - React-Core
   - react-native-slider (4.4.2):
     - React-Core
-  - react-native-webview (13.6.2):
+  - react-native-webview (13.6.3):
     - React-Core
   - React-nativeconfig (0.73.0-rc.5)
   - React-NativeModulesApple (0.73.0-rc.5):
@@ -3379,7 +3379,7 @@ SPEC CHECKSUMS:
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
   react-native-skia: 4753a9e236c5dfc73cfb98dccfff3496f12fd877
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
-  react-native-webview: 8fc09f66a1a5b16bbe37c3878fda27d5982bb776
+  react-native-webview: 88293a0f23eca8465c0433c023ec632930e644d0
   React-nativeconfig: 595d998504bfa4d7bdd1782cf8b9940b68eb8e26
   React-NativeModulesApple: 6d27beabaa71ef6e614da0b4141dbedefb6af14a
   React-perflogger: 0339cf3c65fd8d0286c316519316501fddf17339
