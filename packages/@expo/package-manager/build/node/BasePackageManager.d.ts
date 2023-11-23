@@ -23,7 +23,7 @@ export declare abstract class BasePackageManager implements PackageManager {
     abstract workspaceRoot(): PackageManager | null;
     /** Ensure the CWD is set to a non-empty string */
     protected ensureCwdDefined(method?: string): string;
-    runAsync(command: string[]): spawnAsync.SpawnPromise<spawnAsync.SpawnResult>;
+    spawnAsync(command: string[]): spawnAsync.SpawnPromise<spawnAsync.SpawnResult>;
     versionAsync(): Promise<string>;
     getConfigAsync(key: string): Promise<string>;
     removeLockfileAsync(): Promise<void>;

@@ -32,8 +32,8 @@ class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
         }
         const { flags, versioned, unversioned } = this.parsePackageSpecs(namesOrFlags);
         return (0, spawn_1.createPendingSpawnAsync)(() => this.updatePackageFileAsync(versioned, 'dependencies'), () => !unversioned.length
-            ? this.runAsync(['install', ...flags])
-            : this.runAsync(['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)]));
+            ? this.spawnAsync(['install', ...flags])
+            : this.spawnAsync(['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)]));
     }
     addDevAsync(namesOrFlags = []) {
         if (!namesOrFlags.length) {
@@ -41,8 +41,8 @@ class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
         }
         const { flags, versioned, unversioned } = this.parsePackageSpecs(namesOrFlags);
         return (0, spawn_1.createPendingSpawnAsync)(() => this.updatePackageFileAsync(versioned, 'devDependencies'), () => !unversioned.length
-            ? this.runAsync(['install', ...flags])
-            : this.runAsync([
+            ? this.spawnAsync(['install', ...flags])
+            : this.spawnAsync([
                 'install',
                 '--save-dev',
                 ...flags,
@@ -53,16 +53,16 @@ class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
         if (!namesOrFlags.length) {
             return this.installAsync();
         }
-        return this.runAsync(['install', '--global', ...namesOrFlags]);
+        return this.spawnAsync(['install', '--global', ...namesOrFlags]);
     }
     removeAsync(namesOrFlags) {
-        return this.runAsync(['uninstall', ...namesOrFlags]);
+        return this.spawnAsync(['uninstall', ...namesOrFlags]);
     }
     removeDevAsync(namesOrFlags) {
-        return this.runAsync(['uninstall', '--save-dev', ...namesOrFlags]);
+        return this.spawnAsync(['uninstall', '--save-dev', ...namesOrFlags]);
     }
     removeGlobalAsync(namesOrFlags) {
-        return this.runAsync(['uninstall', '--global', ...namesOrFlags]);
+        return this.spawnAsync(['uninstall', '--global', ...namesOrFlags]);
     }
     /**
      * Parse all package specifications from the names or flag list.
