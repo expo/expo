@@ -39,9 +39,7 @@ class VideoViewModule : Module() {
       //endregion
 
       //region Native only props -- set by Video.js
-//      Prop("drm") { view: VideoViewWrapper, drm: ReadableMap ->
-//        view.videoViewInstance.setDRM(MapArguments(drm.toHashMap()))
-//      }
+
       Prop("source") { view: VideoViewWrapper, source: ReadableMap ->
         view.videoViewInstance.setSource(MapArguments(source.toHashMap()))
       }

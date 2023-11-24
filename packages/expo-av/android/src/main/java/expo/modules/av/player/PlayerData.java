@@ -34,16 +34,6 @@ import expo.modules.interfaces.permissions.PermissionsStatus;
 public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_ANDROID_IMPLEMENTATION_KEY_PATH = "androidImplementation";
   static final String STATUS_HEADERS_KEY_PATH = "headers";
-
-  static final String STATUS_HEADERS_KEY_DRM_TYPE_PATH = "type";
-
-  static final String STATUS_HEADERS_KEY_DRM_LICENSE_SERVER_PATH = "licenseServer";
-
-  static final String STATUS_HEADERS_KEY_DRM_HEADERS_PATH = "drmHeaders";
-
-  static final String STATUS_HEADERS_KEY_DRM_CERTIFICATE_PATH = "base64Certificate";
-
-  static final String STATUS_HEADERS_KEY_DRM_CERTIFICATE_URL_PATH = "certificateUrl";
   static final String STATUS_IS_LOADED_KEY_PATH = "isLoaded";
   public static final String STATUS_URI_KEY_PATH = "uri";
   static final String STATUS_OVERRIDING_EXTENSION_KEY_PATH = "overridingExtension";
@@ -215,7 +205,7 @@ public abstract class PlayerData implements AudioEventHandler {
     }
   }
 
-  public static PlayerData createUnloadedPlayerData(final AVManagerInterface avModule, final Context context, final ReadableArguments source,final Bundle status) {
+  public static PlayerData createUnloadedPlayerData(final AVManagerInterface avModule, final Context context, final ReadableArguments source, final Bundle status) {
     final String uriString = source.getString(STATUS_URI_KEY_PATH);
     Map requestHeaders = null;
     if (source.containsKey(STATUS_HEADERS_KEY_PATH)) {

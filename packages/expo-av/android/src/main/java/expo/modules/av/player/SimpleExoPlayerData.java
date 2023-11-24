@@ -3,19 +3,10 @@ package expo.modules.av.player;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.common.MapBuilder;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.MediaItem;
@@ -23,6 +14,7 @@ import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.drm.DrmSessionEventListener;
 import com.google.android.exoplayer2.source.LoadEventInfo;
 import com.google.android.exoplayer2.source.MediaLoadData;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -30,17 +22,6 @@ import com.google.android.exoplayer2.source.MediaSourceEventListener;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
-import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
-import com.google.android.exoplayer2.drm.DrmSessionEventListener;
-import com.google.android.exoplayer2.drm.DrmSessionManager;
-import com.google.android.exoplayer2.*;
-import com.google.android.exoplayer2.source.dash.DashMediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
-import com.google.android.exoplayer2.drm.FrameworkMediaDrm;
-import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
-import com.google.android.exoplayer2.drm.UnsupportedDrmException;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
@@ -51,33 +32,28 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.HttpDataSource;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.RawResourceDataSource;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoSize;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.upstream.DefaultAllocator;
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioFocusNotAcquiredException;
-import expo.modules.av.R;
 import expo.modules.av.player.datasource.DataSourceFactoryProvider;
-import expo.modules.core.arguments.ReadableArguments;
 
 class SimpleExoPlayerData extends PlayerData
   implements Player.Listener, MediaSourceEventListener, DrmSessionEventListener {
 
   private static final String PROP_DRM = "drm";
   private static final String PROP_DRM_TYPE = "type";
-  private static final String PROP_DRM_LICENSESERVER = "licenseServer";
+  private static final String PROP_DRM_LICENSE_SERVER = "licenseServer";
   private static final String PROP_DRM_HEADERS = "drmHeaders";
   private static final String IMPLEMENTATION_NAME = "SimpleExoPlayer";
   private static final String TAG = SimpleExoPlayerData.class.getSimpleName();
@@ -117,19 +93,27 @@ class SimpleExoPlayerData extends PlayerData
   @Override
   public void load(final Bundle status, final LoadCompletionListener loadCompletionListener) {
     mLoadCompletionListener = loadCompletionListener;
+
     final Context context = mAVModule.getContext();
     final BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter.Builder(context).build();
     final TrackSelector trackSelector = new DefaultTrackSelector(context, new AdaptiveTrackSelection.Factory());
-    Log.d("Tets", drmLicenseUrl);
+
     // Create the player
      mSimpleExoPlayer = new SimpleExoPlayer.Builder(context)
          .setTrackSelector(trackSelector)
          .setBandwidthMeter(bandwidthMeter)
          .build();
 
-
-    DefaultHttpDataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory();
-    MediaSource mediaSource = buildMediaSource(mUri,mOverridingExtension,dataSourceFactory);
+    final DataSource.Factory dataSourceFactory = mAVModule.getModuleRegistry()
+      .getModule(DataSourceFactoryProvider.class)
+      .createFactory(
+        mReactContext,
+        mAVModule.getModuleRegistry(),
+        Util.getUserAgent(context, "yourApplicationName"),
+        mRequestHeaders,
+        bandwidthMeter.getTransferListener());
+//    DefaultHttpDataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory();
+    MediaSource mediaSource = buildMediaSource(mUri, mOverridingExtension, dataSourceFactory);
     mSimpleExoPlayer.setMediaSource(mediaSource);
     mSimpleExoPlayer.addListener(this);
     mSimpleExoPlayer.setPlayWhenReady(true);
@@ -428,24 +412,14 @@ class SimpleExoPlayerData extends PlayerData
   public void setDRM(final Map<String, Object>  drm) {
     if (drm != null) {
       String drmType =(String)drm.get(PROP_DRM_TYPE);
-      String drmLicenseServer =  (String)drm.get(PROP_DRM_LICENSESERVER);
+      String drmLicenseServer =  (String)drm.get(PROP_DRM_LICENSE_SERVER);
       HashMap<String,String> drmHeaders = (HashMap<String, String>) drm.get(PROP_DRM_HEADERS);
       if (drmType != null && drmLicenseServer != null && Util.getDrmUuid(drmType) != null) {
           UUID drmUUID = Util.getDrmUuid(drmType);
-          setDrmType(drmUUID);//
-          setDrmLicenseUrl(drmLicenseServer);//
+          setDrmType(drmUUID);
+          setDrmLicenseUrl(drmLicenseServer);
           setDrmLicenseHeader(drmHeaders);
-//          if (drmHeaders != null) {
-//            Map<String, String> map = new HashMap<>();
-//
-//            ReadableMapKeySetIterator itr = drmHeaders.keySetIterator();
-//              while (itr.hasNextKey()) {
-//                  String key = itr.nextKey();
-//                map.put(key, drmHeaders.getString(key));
-//
-//              }
-//              setDrmLicenseHeader(map);//
-//          }
+
       }
     }
   }
@@ -489,24 +463,12 @@ class SimpleExoPlayerData extends PlayerData
     this.drmUUID = drmType;
   }
 
-  public UUID getDrmType(){
-    return drmUUID;
-  }
-
   public void setDrmLicenseUrl(String licenseUrl) {
       this.drmLicenseUrl = licenseUrl;
   }
 
-  public String getDrmLicenseUrl() {
-    return this.drmLicenseUrl;
-  }
-
   public void setDrmLicenseHeader(Map<String, String> header){
       this.drmLicenseHeader = header;
-  }
-
-  public Map<String, String>  getDrmLicenseHeaders() {
-    return this.drmLicenseHeader;
   }
 
 }
