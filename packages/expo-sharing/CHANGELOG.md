@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - [iOS] Replace legacy `FileSystem` interfaces usage with core `FileSystemUtilities`. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes))
+- [Android] Replace legacy `FileSystem` interfaces usage with core `FilePermissionsUtilities`. ([#25578](https://github.com/expo/expo/pull/25578) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 11.9.0 — 2023-11-14
 
