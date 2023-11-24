@@ -65,9 +65,7 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   public createWebSocketListeners(server: HttpServer | HttpsServer): Record<string, WSServer> {
     // Initialize the server address from the metro server.
     // This is required to properly reference sourcemaps for the debugger.
-    this.metroProxy._serverAddressWithPort = ExpoInspectorProxy.normalizeServerAddress(
-      server.address()
-    );
+    this.metroProxy._serverBaseUrl = ExpoInspectorProxy.normalizeServerAddress(server.address());
 
     return {
       [WS_DEVICE_URL]: this.createDeviceWebSocketServer(),
@@ -163,7 +161,7 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
           // @ts-expect-error The `handleDebuggerConnectionWithType` is part of our device implementation, not Metro's device
           device.handleDebuggerConnectionWithType(socket, pageId, debuggerType);
         } else {
-          device.handleDebuggerConnection(socket, pageId);
+          device.handleDebuggerConnection(socket, pageId, { userAgent: debuggerType });
         }
 
         socket.on('close', () => {
