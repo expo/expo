@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed an issue that the whole react-native-community autolinking sources are missing when one library does not enable autolinking on a platform. ([#25542](https://github.com/expo/expo/pull/25542) by [@alfonsocj](https://github.com/alfonsocj))
+
 ### 💡 Others
 
 - Replace `@expo/babel-preset-cli` with `expo-module-scripts`. ([#25420](https://github.com/expo/expo/pull/25420) by [@byCedric](https://github.com/byCedric))
