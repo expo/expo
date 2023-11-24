@@ -83,12 +83,16 @@ export async function getRncliAutolinkingSourcesAsync(
     const reasons = ['bareRncliAutolinking'];
     const autolinkingConfig: Record<string, any> = {};
     for (const [depName, depData] of Object.entries<any>(config.dependencies)) {
-      stripRncliAutolinkingAbsolutePaths(depData, root);
-      const filePath = depData.root;
-      debug(`Adding react-native-cli autolinking dir - ${chalk.dim(filePath)}`);
-      results.push({ type: 'dir', filePath, reasons });
+      try {
+        stripRncliAutolinkingAbsolutePaths(depData, root);
+        const filePath = depData.root;
+        debug(`Adding react-native-cli autolinking dir - ${chalk.dim(filePath)}`);
+        results.push({ type: 'dir', filePath, reasons });
 
-      autolinkingConfig[depName] = depData;
+        autolinkingConfig[depName] = depData;
+      } catch (e) {
+        debug(chalk.red(`Error adding react-native-cli autolinking dir - ${depName}.\n${e}`));
+      }
     }
 
     results.push({
@@ -98,7 +102,8 @@ export async function getRncliAutolinkingSourcesAsync(
       reasons,
     });
     return results;
-  } catch {
+  } catch (e) {
+    debug(chalk.red(`Error adding react-native-cli autolinking sources.\n${e}`));
     return [];
   }
 }
@@ -108,7 +113,7 @@ function stripRncliAutolinkingAbsolutePaths(dependency: any, root: string): void
   const dependencyRoot = dependency.root;
   dependency.root = path.relative(root, dependencyRoot);
   for (const platformData of Object.values<any>(dependency.platforms)) {
-    for (const [key, value] of Object.entries<any>(platformData)) {
+    for (const [key, value] of Object.entries<any>(platformData ?? {})) {
       platformData[key] = value.startsWith?.(dependencyRoot) ? path.relative(root, value) : value;
     }
   }
