@@ -12,8 +12,6 @@ import com.facebook.react.module.model.ReactModuleInfoProvider;
 import java.util.HashMap;
 import java.util.Map;
 
-import host.exp.expoview.BuildConfig;
-
 public class RNDateTimePickerPackage extends TurboReactPackage {
   @Nullable
   @Override
@@ -30,7 +28,7 @@ public class RNDateTimePickerPackage extends TurboReactPackage {
   @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
     return () -> {
-      boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+      boolean isTurboModule = host.exp.expoview.BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
       final Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
       moduleInfos.put(
         DatePickerModule.NAME,

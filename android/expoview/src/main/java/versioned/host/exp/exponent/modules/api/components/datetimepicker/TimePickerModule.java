@@ -25,6 +25,8 @@ import androidx.fragment.app.FragmentManager;
 
 import static versioned.host.exp.exponent.modules.api.components.datetimepicker.Common.dismissDialog;
 
+import java.util.Calendar;
+
 /**
  * {@link NativeModule} that allows JS to show a native time picker dialog and get called back when
  * the user selects a time.
@@ -33,7 +35,7 @@ import static versioned.host.exp.exponent.modules.api.components.datetimepicker.
 public class TimePickerModule extends NativeModuleTimePickerSpec {
 
   @VisibleForTesting
-  public static final String NAME = "RNTimePicker";
+  public static final String NAME = "RNCTimePicker";
 
   public TimePickerModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -47,19 +49,27 @@ public class TimePickerModule extends NativeModuleTimePickerSpec {
 
   private class TimePickerDialogListener implements OnTimeSetListener, OnDismissListener, OnClickListener {
     private final Promise mPromise;
+    private final Bundle mArgs;
     private boolean mPromiseResolved = false;
 
-    public TimePickerDialogListener(Promise promise) {
+    public TimePickerDialogListener(Promise promise, Bundle arguments) {
       mPromise = promise;
+      mArgs = arguments;
     }
 
     @Override
     public void onTimeSet(TimePicker view, int hour, int minute) {
       if (!mPromiseResolved && getReactApplicationContext().hasActiveReactInstance()) {
+        final RNDate date = new RNDate(mArgs);
+        Calendar calendar = Calendar.getInstance(Common.getTimeZone(mArgs));
+        calendar.set(date.year(), date.month(), date.day(), hour, minute, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
         WritableMap result = new WritableNativeMap();
         result.putString("action", RNConstants.ACTION_TIME_SET);
-        result.putInt("hour", hour);
-        result.putInt("minute", minute);
+        result.putDouble("timestamp", calendar.getTimeInMillis());
+        result.putDouble("utcOffset", calendar.getTimeZone().getOffset(calendar.getTimeInMillis()) / 1000 / 60);
+
         mPromise.resolve(result);
         mPromiseResolved = true;
       }
@@ -105,35 +115,32 @@ public class TimePickerModule extends NativeModuleTimePickerSpec {
     // (for apps that use it for legacy reasons). This unfortunately leads to some code duplication.
     final FragmentManager fragmentManager = activity.getSupportFragmentManager();
 
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        RNTimePickerDialogFragment oldFragment =
-                (RNTimePickerDialogFragment) fragmentManager.findFragmentByTag(NAME);
+    UiThreadUtil.runOnUiThread(() -> {
+      RNTimePickerDialogFragment oldFragment =
+              (RNTimePickerDialogFragment) fragmentManager.findFragmentByTag(NAME);
 
-        if (oldFragment != null) {
-          oldFragment.update(createFragmentArguments(options));
-          return;
-        }
+      Bundle arguments = createFragmentArguments(options);
 
-        RNTimePickerDialogFragment fragment = new RNTimePickerDialogFragment();
-
-        fragment.setArguments(createFragmentArguments(options));
-
-        final TimePickerDialogListener listener = new TimePickerDialogListener(promise);
-        fragment.setOnDismissListener(listener);
-        fragment.setOnTimeSetListener(listener);
-        fragment.setOnNeutralButtonActionListener(listener);
-        fragment.show(fragmentManager, NAME);
+      if (oldFragment != null) {
+        oldFragment.update(arguments);
+        return;
       }
+
+      RNTimePickerDialogFragment fragment = new RNTimePickerDialogFragment();
+
+      fragment.setArguments(arguments);
+
+      final TimePickerDialogListener listener = new TimePickerDialogListener(promise, arguments);
+      fragment.setOnDismissListener(listener);
+      fragment.setOnTimeSetListener(listener);
+      fragment.setOnNeutralButtonActionListener(listener);
+      fragment.show(fragmentManager, NAME);
     });
   }
 
   private Bundle createFragmentArguments(ReadableMap options) {
-    final Bundle args = new Bundle();
-    if (options.hasKey(RNConstants.ARG_VALUE) && !options.isNull(RNConstants.ARG_VALUE)) {
-      args.putLong(RNConstants.ARG_VALUE, (long) options.getDouble(RNConstants.ARG_VALUE));
-    }
+    final Bundle args = Common.createFragmentArguments(options);
+
     if (options.hasKey(RNConstants.ARG_IS24HOUR) && !options.isNull(RNConstants.ARG_IS24HOUR)) {
       args.putBoolean(RNConstants.ARG_IS24HOUR, options.getBoolean(RNConstants.ARG_IS24HOUR));
     }
@@ -147,7 +154,7 @@ public class TimePickerModule extends NativeModuleTimePickerSpec {
       args.putInt(RNConstants.ARG_INTERVAL, options.getInt(RNConstants.ARG_INTERVAL));
     }
     if (options.hasKey(RNConstants.ARG_TZOFFSET_MINS) && !options.isNull(RNConstants.ARG_TZOFFSET_MINS)) {
-      args.putInt(RNConstants.ARG_TZOFFSET_MINS, options.getInt(RNConstants.ARG_TZOFFSET_MINS));
+      args.putLong(RNConstants.ARG_TZOFFSET_MINS, (long) options.getDouble(RNConstants.ARG_TZOFFSET_MINS));
     }
     return args;
   }
