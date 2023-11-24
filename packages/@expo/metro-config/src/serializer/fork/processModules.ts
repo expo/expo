@@ -20,9 +20,11 @@ export function processModules(
     projectRoot,
     serverRoot,
     sourceUrl,
-    platform,
+    splitChunks,
+    skipWrapping,
+    computedAsyncModulePaths,
   }: {
-    platform: string;
+    splitChunks: boolean;
     filter?: (module: Module) => boolean;
     createModuleId: (module: string) => number;
     dev: boolean;
@@ -30,6 +32,8 @@ export function processModules(
     projectRoot: string;
     serverRoot: string;
     sourceUrl: string | undefined;
+    skipWrapping: boolean;
+    computedAsyncModulePaths: Record<string, string> | null;
   }
 ): readonly [Module, { src: string; paths: Record<string, string> }][] {
   return [...modules]
@@ -38,13 +42,15 @@ export function processModules(
     .map((module: Module) => [
       module,
       wrapModule(module, {
-        platform,
+        splitChunks,
         createModuleId,
         dev,
         includeAsyncPaths,
         projectRoot,
         serverRoot,
         sourceUrl,
+        skipWrapping,
+        computedAsyncModulePaths,
       }),
     ]);
 }

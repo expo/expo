@@ -236,7 +236,9 @@ export * as default from './Animated';
     };
 
     function stablePaths(src) {
-      return src.replace(new RegExp(samplesPath, 'g'), '[mock]/worklet.js');
+      return src
+        .replace(new RegExp(samplesPath, 'g'), '[mock]/worklet.js')
+        .replace(/version:".*"/, 'version:"[GLOBAL]"');
     }
 
     const code = stablePaths(babel.transformFileSync(samplesPath, options)!.code);
@@ -254,7 +256,7 @@ export * as default from './Animated';
     ).toBe(code);
   });
 
-  it(`aliases @expo/vector-icons`, () => {
+  it(`does not alias @expo/vector-icons in the transformer`, () => {
     const options = {
       babelrc: false,
       presets: [preset],
@@ -272,8 +274,7 @@ imposter.import('react-native-vector-icons');
 `;
     const { code } = babel.transform(sourceCode, options)!;
 
-    expect(code).toMatch(/"@expo\/vector-icons"/);
-    expect(code).toMatchSnapshot();
+    expect(code).not.toMatch(/"@expo\/vector-icons"/);
   });
 
   it(`composes with babel-plugin-module-resolver`, () => {
@@ -301,7 +302,8 @@ import 'react-native-vector-icons';
     const { code } = babel.transform(sourceCode, options)!;
 
     expect(code).toMatch(/"react-native"/);
-    expect(code).toMatch(/"@expo\/vector-icons"/);
+    // This is aliased later in the resolver for faster lookups and better caching.
+    expect(code).toMatch(/react-native-vector-icons/);
     expect(code).toMatchSnapshot();
   });
 });

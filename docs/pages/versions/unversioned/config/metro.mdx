@@ -6,6 +6,7 @@ description: A reference of available configurations in Metro.
 import { Terminal } from '~/ui/components/Snippet';
 import { FileTree } from '~/ui/components/FileTree';
 import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Step } from '~/ui/components/Step';
 
 See more information about **metro.config.js** in the [customizing Metro guide](/guides/customizing-metro/).
 
@@ -219,26 +220,13 @@ Then, ensure [CSS is setup](#css) in the **metro.config.js** file.
 
 ### Tailwind
 
-> **info** Tailwind does not support native platforms, this is web-only.
+> **info** Standard Tailwind does not support native platforms. This is web-only. For universal support, use a compatible library like [Nativewind](https://www.nativewind.dev/).
 
-[Tailwind](https://tailwindcss.com/) can be used with Metro for web. However, due to the advanced caching system in Metro, the setup is a little different from the default Tailwind setup. The following files are modified:
+[Tailwind](https://tailwindcss.com/) can be used with Metro for web. The following files are required to be modified to set it up:
 
-<FileTree
-  files={[
-    'app.json',
-    'package.json',
-    'global.css',
-    'metro.config.js',
-    'tailwind.config.js',
-    'index.js',
-  ]}
-/>
+<FileTree files={['app.json', 'package.json', 'global.css', 'tailwind.config.js', 'index.js']} />
 
-To setup, install the `tailwindcss` package in your project:
-
-<Terminal cmd={['$ yarn add -D tailwindcss@^3.3.1']} />
-
-In your **app.json** ensure the project is using Metro for web:
+First, ensure you are using Metro for web in your **app.json**:
 
 ```json app.json
 {
@@ -250,16 +238,34 @@ In your **app.json** ensure the project is using Metro for web:
 }
 ```
 
-Create **global.css** in your project:
+Then, configure Tailwind according to the [Tailwind PostCSS docs](https://tailwindcss.com/docs/installation/using-postcss).
 
-```css global.css
-/* This file adds the requisite utility classes for Tailwind to work. */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+<Step label="1">
+
+Install `tailwindcss` and its peer dependencies, and create a **tailwind.config.js** file:
+
+<Terminal cmd={['$ yarn add --dev tailwindcss postcss autoprefixer', '$ npx tailwindcss init']} />
+
+</Step>
+
+<Step label="2">
+
+Add `tailwindcss` and `autoprefixer` to your **postcss.config.js** file:
+
+```js postcss.config.js
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
 ```
 
-Create **tailwind.config.js** in your project:
+</Step>
+
+<Step label="3">
+
+Add the paths to all of your template files in your **tailwind.config.js** file:
 
 ```js tailwind.config.js
 /** @type {import('tailwindcss').Config} */
@@ -277,43 +283,38 @@ module.exports = {
 };
 ```
 
-In **metro.config.js**, enable CSS support and run the Tailwind CLI:
+> Consider using a root `/src` directory to simplify this step. Learn more in [`src` directory](/router/reference/src-directory).
 
-```js metro.config.js
-const path = require('path');
-const { getDefaultConfig } = require('expo/metro-config');
-const tailwind = require('tailwindcss/lib/cli/build');
+</Step>
 
-module.exports = (async () => {
-  /** @type {import('expo/metro-config').MetroConfig} */
-  const config = getDefaultConfig(__dirname, {
-    // Enable CSS support.
-    isCSSEnabled: true,
-  });
+<Step label="4">
 
-  // Run Tailwind CLI to generate CSS files.
-  await tailwind.build({
-    '--input': path.relative(__dirname, './global.css'),
-    '--output': path.resolve(__dirname, 'node_modules/.cache/expo/tailwind/eval.css'),
-    '--watch': process.env.NODE_ENV === 'development' ? 'always' : false,
-    '--poll': true,
-  });
+Create **global.css** in your project and add directives for each of Tailwind's layers:
 
-  return config;
-})();
+```css global.css
+/* This file adds the requisite utility classes for Tailwind to work. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 ```
 
-In your app main entry file, add the following:
+Ensure you import this file in your root-most JavaScript file:
 
-```js index.js/App.js
-// Ensure we import the CSS for Tailwind so it's included in hot module reloads.
-const ctx = require.context(
-  // If this require.context is not inside the root directory (next to the package.json) then adjust this file path
-  // to resolve correctly.
-  './node_modules/.cache/expo/tailwind'
-);
-if (ctx.keys().length) ctx(ctx.keys()[0]);
+```js index.js
+import './global.css';
 ```
+
+> When using Expo Router, you can use **./index.js** or **./app/\_layout.js**. They both work the same.
+
+</Step>
+
+<Step label="5">
+
+Start your project by clearing the transform cache for good measure:
+
+<Terminal cmd={['$ npx expo --clear']} />
+
+</Step>
 
 #### Tailwind usage
 
@@ -341,6 +342,33 @@ export default function Page() {
     </View>
   );
 }
+```
+
+#### Tailwind troubleshooting
+
+If you have a custom `config.cacheStores` in your **metro.config.js**, you need to extend the Expo superclass of `FileStore`:
+
+```js metro.config.js
+// Import the Expo superclass which has support for PostCSS.
+const { FileStore } = require('@expo/metro-config/file-store');
+
+config.cacheStores = [
+  new FileStore({
+    root: '/path/to/custom/cache',
+  }),
+];
+
+module.exports = config;
+```
+
+Ensure you don't have CSS disabled in your **metro.config.js**:
+
+```js metro.config.js
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname, {
+  // Do not disable CSS support when using Tailwind.
+  isCSSEnabled: true,
+});
 ```
 
 ## Extending the Babel transformer
@@ -457,7 +485,7 @@ This can be used to emulate `externals` with custom imports. For example, if you
 
 ## Custom transforming
 
-> Transformations are heavily caches in Metro. If you update something, use the `--clear` flag to see updates, e.g. `npx expo start --clear`.
+> Transformations are heavily caches in Metro. If you update something, use the `--clear` flag to see updates. For example, `npx expo start --clear`.
 
 Metro doesn't have a very expressive plugin system for transforming files, instead opt to use the `babel.config.js` and caller object to customize the transformation.
 
@@ -496,7 +524,7 @@ module.exports = function (api) {
 };
 ```
 
-If the caller doesn't have `engine`, `platform`, `bundler`, etc. then ensure you are using `@expo/metro-config/babel-transformer` for the transformer. If you're using a custom transformer then it may need to extend the Expo transformer.
+If the caller doesn't have `engine`, `platform`, `bundler`, and so on, then ensure you are using `@expo/metro-config/babel-transformer` for the transformer. If you're using a custom transformer then it may need to extend the Expo transformer.
 
 Always try to implement custom logic in the resolver if possible, caching is much simpler and easier to reason about. For example, if you need to remap an import, it's simpler and faster to resolve to a static file with the resolver than to parse all possible import methods and remap them with the transformer.
 
@@ -504,7 +532,15 @@ Always use `babel-preset-expo` as the default Babel preset, this ensures the tra
 
 ## Node.js built-ins
 
-When bundling for a server environment, Expo's Metro config automatically supports externalizing Node.js built-in modules (`fs`, `path`, `node:crypto`, etc.) based on the current Node.js version. If the CLI is bundling for a browser environment, then built-ins will first check if the module is installed locally, then fallback on an empty shim. For example, if you install `path` for use in the browser, this can be used, otherwise the module will automatically be skipped.
+When bundling for a server environment, Expo's Metro config automatically supports externalizing Node.js built-in modules (`fs`, `path`, `node:crypto`, and more) based on the current Node.js version. If the CLI is bundling for a browser environment, then built-ins will first check if the module is installed locally, then fallback on an empty shim. For example, if you install `path` for use in the browser, this can be used, otherwise, the module will automatically be skipped.
+
+## Environment settings
+
+Expo's Metro config injects build settings that can be used in the client bundle via environment variables. All variables will be inlined and cannot be used dynamically. For example, `process.env["EXPO_BASE_URL"]` won't work.
+
+- `process.env.EXPO_BASE_URL` exposes the base URL defined in `experiments.baseUrl`. This is used in Expo Router to respect the production base URL for deployment.
+
+> These environment variables will not be defined in test environments!
 
 ## Bare workflow setup
 

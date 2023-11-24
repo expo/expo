@@ -97,7 +97,11 @@ extension ConcurrentFunctionDefinition: ViewDefinitionFunctionElement {
   public typealias ViewType = FirstArgType
 }
 
-extension UIView: AnyArgument {}
+extension UIView: AnyArgument {
+  public static func getDynamicType() -> AnyDynamicType {
+    return DynamicViewType(innerType: Self.self)
+  }
+}
 
 /**
  Creates a view definition describing the native view exported to React.

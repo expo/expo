@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 import { openDatabaseAsync, type Database } from './Database';
 import type { OpenOptions } from './NativeDatabase';
@@ -38,10 +38,15 @@ export interface SQLiteProviderProps {
   errorHandler?: (error: Error) => void;
 }
 
-// Create a context for the SQLite database
+/**
+ * Create a context for the SQLite database
+ */
 const SQLiteContext = createContext<Database | null>(null);
 
-// Create a provider component
+/**
+ * Context.Provider component that provides a SQLite database to all children.
+ * All descendants of this component will be able to access the database using the [`useSQLiteContext`](#usesqlitecontext) hook.
+ */
 export function SQLiteProvider({
   dbName,
   options,
@@ -50,7 +55,7 @@ export function SQLiteProvider({
   loadingFallback,
   errorHandler,
 }: SQLiteProviderProps) {
-  const [database, setDatabase] = useState<Database | null>(null);
+  const databaseRef = useRef<Database | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -58,19 +63,19 @@ export function SQLiteProvider({
     async function setup() {
       try {
         const db = await openDatabaseAsync(dbName, options);
-        setDatabase(db);
         if (initHandler != null) {
           await initHandler(db);
         }
+        databaseRef.current = db;
         setLoading(false);
       } catch (e) {
         setError(e);
       }
     }
 
-    async function teardown() {
+    async function teardown(db: Database | null) {
       try {
-        await database?.closeAsync();
+        await db?.closeAsync();
       } catch (e) {
         setError(e);
       }
@@ -79,7 +84,10 @@ export function SQLiteProvider({
     setup();
 
     return () => {
-      teardown();
+      const db = databaseRef.current;
+      teardown(db);
+      databaseRef.current = null;
+      setLoading(true);
     };
   }, [dbName, options, initHandler]);
 
@@ -92,14 +100,34 @@ export function SQLiteProvider({
     handler(error);
   }
 
-  if (loading) {
+  if (loading || !databaseRef.current) {
     return loadingFallback != null ? <>{loadingFallback}</> : null;
   }
-  return <SQLiteContext.Provider value={database}>{children}</SQLiteContext.Provider>;
+  return <SQLiteContext.Provider value={databaseRef.current}>{children}</SQLiteContext.Provider>;
 }
 
-// Create a hook for accessing the SQLite database context
-export function useSQLiteContext() {
+/**
+ * A global hook for accessing the SQLite database across components.
+ * This hook should only be used within a [`<SQLiteProvider>`](#sqliteprovider) component.
+ *
+ * @example
+ * ```tsx
+ * export default function App() {
+ *   return (
+ *     <SQLiteProvider dbName="test.db">
+ *       <Main />
+ *     </SQLiteProvider>
+ *   );
+ * }
+ *
+ * export function Main() {
+ *   const db = useSQLiteContext();
+ *   console.log('sqlite version', db.getSync('SELECT sqlite_version()'));
+ *   return <View />
+ * }
+ * ```
+ */
+export function useSQLiteContext(): Database {
   const context = useContext(SQLiteContext);
   if (context == null) {
     throw new Error('useSQLiteContext must be used within a <SQLiteProvider>');

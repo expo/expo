@@ -11,19 +11,19 @@ import java.util.Collections
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 
-class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(context) {
-    private val mStack = ArrayList<ScreenStackFragment>()
-    private val mDismissed: MutableSet<ScreenStackFragment> = HashSet()
+class ScreenStack(context: Context?) : ScreenContainer(context) {
+    private val mStack = ArrayList<ScreenStackFragmentWrapper>()
+    private val mDismissed: MutableSet<ScreenStackFragmentWrapper> = HashSet()
     private val drawingOpPool: MutableList<DrawingOp> = ArrayList()
     private var drawingOps: MutableList<DrawingOp> = ArrayList()
-    private var mTopScreen: ScreenStackFragment? = null
+    private var mTopScreen: ScreenStackFragmentWrapper? = null
     private var mRemovalTransitionStarted = false
     private var isDetachingCurrentScreen = false
     private var reverseLastTwoChildren = false
     private var previousChildrenCount = 0
     var goingForward = false
 
-    fun dismiss(screenFragment: ScreenStackFragment) {
+    fun dismiss(screenFragment: ScreenStackFragmentWrapper) {
         mDismissed.add(screenFragment)
         performUpdatesNow()
     }
@@ -34,9 +34,9 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
     val rootScreen: Screen
         get() {
             for (i in 0 until screenCount) {
-                val screen = getScreenAt(i)
-                if (!mDismissed.contains(screen.fragment)) {
-                    return screen
+                val screenWrapper = getScreenFragmentWrapperAt(i)
+                if (!mDismissed.contains(screenWrapper)) {
+                    return screenWrapper.screen
                 }
             }
             throw IllegalStateException("Stack has no root screen set")
@@ -64,13 +64,14 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
     }
 
     private fun dispatchOnFinishTransitioning() {
+        val surfaceId = UIManagerHelper.getSurfaceId(this)
         UIManagerHelper
             .getEventDispatcherForReactTag((context as ReactContext), id)
-            ?.dispatchEvent(StackFinishTransitioningEvent(id))
+            ?.dispatchEvent(StackFinishTransitioningEvent(surfaceId, id))
     }
 
     override fun removeScreenAt(index: Int) {
-        mDismissed.remove(getScreenAt(index).fragment)
+        mDismissed.remove(getScreenFragmentWrapperAt(index))
         super.removeScreenAt(index)
     }
 
@@ -79,18 +80,18 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
         super.removeAllScreens()
     }
 
-    override fun hasScreen(screenFragment: ScreenFragment?): Boolean =
-        super.hasScreen(screenFragment) && !mDismissed.contains(screenFragment)
+    override fun hasScreen(screenFragmentWrapper: ScreenFragmentWrapper?): Boolean =
+        super.hasScreen(screenFragmentWrapper) && !mDismissed.contains(screenFragmentWrapper)
 
     override fun onUpdate() {
         // When going back from a nested stack with a single screen on it, we may hit an edge case
         // when all screens are dismissed and no screen is to be displayed on top. We need to gracefully
         // handle the case of newTop being NULL, which happens in several places below
-        var newTop: ScreenStackFragment? = null // newTop is nullable, see the above comment ^
-        var visibleBottom: ScreenStackFragment? = null // this is only set if newTop has TRANSPARENT_MODAL presentation mode
+        var newTop: ScreenFragmentWrapper? = null // newTop is nullable, see the above comment ^
+        var visibleBottom: ScreenFragmentWrapper? = null // this is only set if newTop has TRANSPARENT_MODAL presentation mode
         isDetachingCurrentScreen = false // we reset it so the previous value is not used by mistake
         for (i in mScreenFragments.indices.reversed()) {
-            val screen = mScreenFragments[i]
+            val screen = getScreenFragmentWrapperAt(i)
             if (!mDismissed.contains(screen)) {
                 if (newTop == null) {
                     newTop = screen
@@ -177,43 +178,43 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
             }
 
             // remove all screens previously on stack
-            for (screen in mStack) {
-                if (!mScreenFragments.contains(screen) || mDismissed.contains(screen)) {
-                    it.remove(screen)
+            for (fragmentWrapper in mStack) {
+                if (!mScreenFragments.contains(fragmentWrapper) || mDismissed.contains(fragmentWrapper)) {
+                    it.remove(fragmentWrapper.fragment)
                 }
             }
-            for (screen in mScreenFragments) {
+            for (fragmentWrapper in mScreenFragments) {
                 // Stop detaching screens when reaching visible bottom. All screens above bottom should be
                 // visible.
-                if (screen === visibleBottom) {
+                if (fragmentWrapper === visibleBottom) {
                     break
                 }
                 // detach all screens that should not be visible
-                if (screen !== newTop && !mDismissed.contains(screen)) {
-                    it.remove(screen)
+                if (fragmentWrapper !== newTop && !mDismissed.contains(fragmentWrapper)) {
+                    it.remove(fragmentWrapper.fragment)
                 }
             }
 
             // attach screens that just became visible
-            if (visibleBottom != null && !visibleBottom.isAdded) {
+            if (visibleBottom != null && !visibleBottom.fragment.isAdded) {
                 val top = newTop
                 var beneathVisibleBottom = true
-                for (screen in mScreenFragments) {
+                for (fragmentWrapper in mScreenFragments) {
                     // ignore all screens beneath the visible bottom
                     if (beneathVisibleBottom) {
-                        beneathVisibleBottom = if (screen === visibleBottom) {
+                        beneathVisibleBottom = if (fragmentWrapper === visibleBottom) {
                             false
                         } else continue
                     }
                     // when first visible screen found, make all screens after that visible
-                    it.add(id, screen).runOnCommit { top?.screen?.bringToFront() }
+                    it.add(id, fragmentWrapper.fragment).runOnCommit { top?.screen?.bringToFront() }
                 }
-            } else if (newTop != null && !newTop.isAdded) {
-                it.add(id, newTop)
+            } else if (newTop != null && !newTop.fragment.isAdded) {
+                it.add(id, newTop.fragment)
             }
-            mTopScreen = newTop
+            mTopScreen = newTop as? ScreenStackFragmentWrapper
             mStack.clear()
-            mStack.addAll(mScreenFragments)
+            mStack.addAll(mScreenFragments.map { it as ScreenStackFragmentWrapper })
 
             turnOffA11yUnderTransparentScreen(visibleBottom)
 
@@ -222,17 +223,17 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
     }
 
     // only top visible screen should be accessible
-    private fun turnOffA11yUnderTransparentScreen(visibleBottom: ScreenStackFragment?) {
+    private fun turnOffA11yUnderTransparentScreen(visibleBottom: ScreenFragmentWrapper?) {
         if (mScreenFragments.size > 1 && visibleBottom != null) {
             mTopScreen?.let {
                 if (isTransparent(it)) {
                     val screenFragmentsBeneathTop = mScreenFragments.slice(0 until mScreenFragments.size - 1).asReversed()
                     // go from the top of the stack excluding the top screen
-                    for (screenFragment in screenFragmentsBeneathTop) {
-                        screenFragment.screen.changeAccessibilityMode(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
+                    for (fragmentWrapper in screenFragmentsBeneathTop) {
+                        fragmentWrapper.screen.changeAccessibilityMode(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
 
                         // don't change a11y below non-transparent screens
-                        if (screenFragment == visibleBottom) {
+                        if (fragmentWrapper == visibleBottom) {
                             break
                         }
                     }
@@ -325,11 +326,11 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
     }
 
     companion object {
-        private fun isTransparent(fragment: ScreenStackFragment): Boolean =
-            fragment.screen.stackPresentation === Screen.StackPresentation.TRANSPARENT_MODAL
+        private fun isTransparent(fragmentWrapper: ScreenFragmentWrapper): Boolean =
+            fragmentWrapper.screen.stackPresentation === Screen.StackPresentation.TRANSPARENT_MODAL
 
-        private fun needsDrawReordering(fragment: ScreenStackFragment): Boolean =
-            fragment.screen.stackAnimation === StackAnimation.SLIDE_FROM_BOTTOM ||
-                fragment.screen.stackAnimation === StackAnimation.FADE_FROM_BOTTOM
+        private fun needsDrawReordering(fragmentWrapper: ScreenFragmentWrapper): Boolean =
+            fragmentWrapper.screen.stackAnimation === StackAnimation.SLIDE_FROM_BOTTOM ||
+                fragmentWrapper.screen.stackAnimation === StackAnimation.FADE_FROM_BOTTOM
     }
 }

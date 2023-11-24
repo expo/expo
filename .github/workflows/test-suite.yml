@@ -109,7 +109,7 @@ jobs:
       - name: 🏗️ Build iOS project
         run: ./scripts/start-ios-e2e-test.ts --build
         working-directory: apps/bare-expo
-        timeout-minutes: 30
+        timeout-minutes: 45
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
@@ -196,12 +196,12 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
-      - name: 🔨 Use JDK 11
+          node-version: 18
+      - name: 🔨 Use JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches

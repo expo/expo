@@ -28,7 +28,7 @@ console.log('Calling InlineFuncFromFile()');
 console.log('Calling Boo.myFunc()');
 Boo.myFunc();
 
-_expoAsset.Asset.loadAsync([require("./assets/icon.png")]);
+_expoAsset.Asset.loadAsync([require('./assets/icon.png')]);
 }},{key:"render",value:
 
 function render(){
@@ -77,7 +77,7 @@ console.log('Calling InlineFuncFromFile()');
 console.log('Calling Boo.myFunc()');
 Boo().myFunc();
 
-_expoAsset().Asset.loadAsync([require("./assets/icon.png")]);
+_expoAsset().Asset.loadAsync([require('./assets/icon.png')]);
 }},{key:"render",value:
 
 function render(){
@@ -126,7 +126,7 @@ console.log('Calling InlineFuncFromFile()');
 console.log('Calling Boo.myFunc()');
 Boo.myFunc();
 
-_expoAsset.Asset.loadAsync([require("./assets/icon.png")]);
+_expoAsset.Asset.loadAsync([require('./assets/icon.png')]);
 }},{key:"render",value:
 
 function render(){
@@ -175,7 +175,7 @@ console.log('Calling InlineFuncFromFile()');
 console.log('Calling Boo.myFunc()');
 Boo.myFunc();
 
-_expoAsset.Asset.loadAsync([require("./assets/icon.png")]);
+_expoAsset.Asset.loadAsync([require('./assets/icon.png')]);
 }},{key:"render",value:
 
 function render(){
@@ -224,7 +224,7 @@ console.log('Calling InlineFuncFromFile()');
 console.log('Calling Boo.myFunc()');
 Boo().myFunc();
 
-_expoAsset.Asset.loadAsync([require("./assets/icon.png")]);
+_expoAsset.Asset.loadAsync([require('./assets/icon.png')]);
 }},{key:"render",value:
 
 function render(){
@@ -245,18 +245,10 @@ function unusedFunction(){
 (0,_reactRedux().connect)()(Lazy);exports.default=_default;"
 `;
 
-exports[`metro aliases @expo/vector-icons 1`] = `
-"
-require("@expo/vector-icons");
-require("@expo/vector-icons");
-imposter.require('react-native-vector-icons');
-imposter.import('react-native-vector-icons');"
-`;
-
 exports[`metro composes with babel-plugin-module-resolver 1`] = `
 "
 require("react-native");
-require("@expo/vector-icons");"
+require("react-native-vector-icons");"
 `;
 
 exports[`metro supports disabling reanimated 1`] = `
@@ -268,7 +260,7 @@ console.log("Hey I'm running on the UI thread");
 `;
 
 exports[`metro supports reanimated worklets 1`] = `
-"var _worklet_549132292534_init_data={code:"function someWorklet(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA,+EACA\\",\\"names\\":[],\\"sources\\":[\\"[mock]/worklet.js\\"]}",version:"3.5.4"};var
+"var _worklet_549132292534_init_data={code:"function someWorklet(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA,+EACA\\",\\"names\\":[],\\"sources\\":[\\"[mock]/worklet.js\\"]}",version:"[GLOBAL]"};var
 someWorklet=function(){var _e=[new global.Error(),1,-27];var someWorklet=function someWorklet(greeting){
 
 console.log("Hey I'm running on the UI thread");
@@ -282,18 +274,10 @@ exports[`metro uses the platform's react-native import 1`] = `
 var _reactNative=require("react-native");"
 `;
 
-exports[`metro+hermes aliases @expo/vector-icons 1`] = `
-"
-require("@expo/vector-icons");
-require("@expo/vector-icons");
-imposter.require('react-native-vector-icons');
-imposter.import('react-native-vector-icons');"
-`;
-
 exports[`metro+hermes composes with babel-plugin-module-resolver 1`] = `
 "
 require("react-native");
-require("@expo/vector-icons");"
+require("react-native-vector-icons");"
 `;
 
 exports[`metro+hermes supports disabling reanimated 1`] = `
@@ -305,7 +289,7 @@ console.log("Hey I'm running on the UI thread");
 `;
 
 exports[`metro+hermes supports reanimated worklets 1`] = `
-"var _worklet_549132292534_init_data={code:"function someWorklet(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA,+EACA\\",\\"names\\":[],\\"sources\\":[\\"[mock]/worklet.js\\"]}",version:"3.5.4"};var
+"var _worklet_549132292534_init_data={code:"function someWorklet(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA,+EACA\\",\\"names\\":[],\\"sources\\":[\\"[mock]/worklet.js\\"]}",version:"[GLOBAL]"};var
 someWorklet=function(){var _e=[new global.Error(),1,-27];var someWorklet=function(greeting){
 
 console.log("Hey I'm running on the UI thread");
@@ -319,18 +303,10 @@ exports[`metro+hermes uses the platform's react-native import 1`] = `
 var _reactNative=require("react-native");"
 `;
 
-exports[`webpack aliases @expo/vector-icons 1`] = `
-"
-import"@expo/vector-icons";
-require("@expo/vector-icons");
-imposter.require('react-native-vector-icons');
-imposter.import('react-native-vector-icons');"
-`;
-
 exports[`webpack composes with babel-plugin-module-resolver 1`] = `
 "
 import"react-native";
-import"@expo/vector-icons";"
+import'react-native-vector-icons';"
 `;
 
 exports[`webpack supports disabling reanimated 1`] = `
@@ -342,7 +318,7 @@ console.log("Hey I'm running on the UI thread");
 `;
 
 exports[`webpack supports reanimated worklets 1`] = `
-"var _worklet_549132292534_init_data={code:"function someWorklet(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA,+EACA\\",\\"names\\":[],\\"sources\\":[\\"[mock]/worklet.js\\"]}",version:"3.5.4"};var
+"var _worklet_549132292534_init_data={code:"function someWorklet(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"mappings\\":\\"AAAA,+EACA\\",\\"names\\":[],\\"sources\\":[\\"[mock]/worklet.js\\"]}",version:"[GLOBAL]"};var
 someWorklet=function(){var _e=[new global.Error(),1,-27];var someWorklet=function someWorklet(greeting){
 
 console.log("Hey I'm running on the UI thread");
@@ -350,8 +326,8 @@ console.log("Hey I'm running on the UI thread");
 `;
 
 exports[`webpack transpiles non-standard exports 1`] = `
-"import*as _default from"./Animated";export{_default as
-default};"
+"import*as _default from
+'./Animated';export{_default as default};"
 `;
 
 exports[`webpack uses the platform's react-native import 1`] = `"import View from"react-native-web/dist/exports/View";"`;

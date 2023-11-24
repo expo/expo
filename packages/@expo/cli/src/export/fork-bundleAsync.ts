@@ -1,22 +1,28 @@
 import { ExpoConfig, getConfigFilePaths, Platform, ProjectConfig } from '@expo/config';
-import type { LoadOptions } from '@expo/metro-config';
-import chalk from 'chalk';
-import Metro, { AssetData } from 'metro';
+import { LoadOptions } from '@expo/metro-config';
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import assert from 'assert';
+import Metro, { MixedOutput, Module, ReadOnlyGraph } from 'metro';
 import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
+import type { TransformInputOptions } from 'metro/src/DeltaBundler/types';
+import IncrementalBundler from 'metro/src/IncrementalBundler';
 import Server from 'metro/src/Server';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
-import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
+import type {
+  ResolverInputOptions,
+  BundleOptions as MetroBundleOptions,
+} from 'metro/src/shared/types';
 import { ConfigT } from 'metro-config';
+import path from 'path';
 
-import {
-  buildHermesBundleAsync,
-  isEnableHermesManaged,
-  maybeThrowFromInconsistentEngineAsync,
-} from './exportHermes';
-import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
+import { isEnableHermesManaged, maybeThrowFromInconsistentEngineAsync } from './exportHermes';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
-import { getMetroDirectBundleOptions } from '../start/server/middleware/metroOptions';
+import {
+  ExpoMetroBundleOptions,
+  getBaseUrlFromExpoConfig,
+  getMetroDirectBundleOptions,
+} from '../start/server/middleware/metroOptions';
 
 export type MetroDevServerOptions = LoadOptions;
 
@@ -32,11 +38,7 @@ export type BundleAssetWithFileHashes = Metro.AssetData & {
   fileHashes: string[]; // added by the hashAssets asset plugin
 };
 export type BundleOutput = {
-  code: string;
-  map: string;
-  hermesBytecodeBundle?: Uint8Array;
-  hermesSourcemap?: string;
-  css: CSSAsset[];
+  artifacts: SerialAsset[];
   assets: readonly BundleAssetWithFileHashes[];
 };
 
@@ -69,6 +71,7 @@ export async function createBundlesAsync(
     dev?: boolean;
     minify?: boolean;
     sourcemaps?: boolean;
+    entryPoint?: string;
   }
 ): Promise<Partial<Record<Platform, BundleOutput>>> {
   if (!bundleOptions.platforms.length) {
@@ -86,7 +89,8 @@ export async function createBundlesAsync(
     },
     bundleOptions.platforms.map((platform: Platform) => ({
       platform,
-      entryPoint: getEntryWithServerRoot(projectRoot, { platform, pkg }),
+      entryPoint:
+        bundleOptions.entryPoint ?? getEntryWithServerRoot(projectRoot, { platform, pkg }),
       sourcemaps: bundleOptions.sourcemaps,
       minify: bundleOptions.minify,
       dev: bundleOptions.dev,
@@ -127,17 +131,27 @@ async function bundleProductionMetroClientAsync(
   const buildAsync = async (bundle: BundleOptions): Promise<BundleOutput> => {
     const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;
     const isHermes = isEnableHermesManaged(expoConfig, bundle.platform);
+    if (isHermes) {
+      await assertEngineMismatchAsync(projectRoot, expoConfig, bundle.platform);
+    }
     const bundleOptions: MetroBundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
+      sourceMapUrl: bundle.sourceMapUrl,
       ...getMetroDirectBundleOptions({
         mainModuleName: bundle.entryPoint,
         platform: bundle.platform,
         mode: bundle.dev ? 'development' : 'production',
         engine: isHermes ? 'hermes' : undefined,
+        serializerIncludeMaps: bundle.sourcemaps,
+        // Bundle splitting on web-only for now.
+        // serializerOutput: bundle.platform === 'web' ? 'static' : undefined,
+        serializerOutput: 'static',
+        serializerIncludeBytecode: isHermes,
+        baseUrl: getBaseUrlFromExpoConfig(expoConfig),
+        isExporting: true,
       }),
       bundleType: 'bundle',
       inlineSourceMap: false,
-      sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
         reporter.update({
@@ -148,6 +162,7 @@ async function bundleProductionMetroClientAsync(
         });
       },
     };
+
     const bundleDetails = {
       ...bundleOptions,
       buildID,
@@ -158,17 +173,12 @@ async function bundleProductionMetroClientAsync(
       bundleDetails,
     });
     try {
-      const { code, map } = await metroServer.build(bundleOptions);
-      const [assets, css] = await Promise.all([
-        getAssets(metroServer, bundleOptions),
-        getCssModulesFromBundler(config, metroServer.getBundler(), bundleOptions),
-      ]);
-
+      const artifacts = await forkMetroBuildAsync(metroServer, bundleOptions);
       reporter.update({
         buildID,
         type: 'bundle_build_done',
       });
-      return { code, map, assets: assets as readonly BundleAssetWithFileHashes[], css };
+      return artifacts;
     } catch (error) {
       reporter.update({
         buildID,
@@ -179,39 +189,8 @@ async function bundleProductionMetroClientAsync(
     }
   };
 
-  const maybeAddHermesBundleAsync = async (
-    bundle: BundleOptions,
-    bundleOutput: BundleOutput
-  ): Promise<BundleOutput> => {
-    const { platform } = bundle;
-    const isHermesManaged = isEnableHermesManaged(expoConfig, platform);
-    if (isHermesManaged) {
-      const platformTag = chalk.bold(
-        { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform
-      );
-
-      reporter.terminal.log(`${platformTag} Building Hermes bytecode for the bundle`);
-
-      const hermesBundleOutput = await buildHermesBundleAsync(projectRoot, {
-        code: bundleOutput.code,
-        map: bundle.sourcemaps ? bundleOutput.map : null,
-        minify: bundle.minify ?? !bundle.dev,
-      });
-      bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;
-      bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap ?? undefined;
-    }
-    return bundleOutput;
-  };
-
   try {
-    const intermediateOutputs = await Promise.all(bundles.map((bundle) => buildAsync(bundle)));
-    const bundleOutputs: BundleOutput[] = [];
-    for (let i = 0; i < bundles.length; ++i) {
-      // hermesc does not support parallel building even we spawn processes.
-      // we should build them sequentially.
-      bundleOutputs.push(await maybeAddHermesBundleAsync(bundles[i], intermediateOutputs[i]));
-    }
-    return bundleOutputs;
+    return await Promise.all(bundles.map((bundle) => buildAsync(bundle)));
   } catch (error) {
     // New line so errors don't show up inline with the progress bar
     console.log('');
@@ -226,7 +205,7 @@ async function bundleProductionMetroClientAsync(
 export async function getAssets(
   metro: Metro.Server,
   options: MetroBundleOptions
-): Promise<readonly AssetData[]> {
+): Promise<readonly BundleAssetWithFileHashes[]> {
   const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions(options);
 
   // @ts-expect-error: _bundler isn't exposed on the type.
@@ -240,11 +219,123 @@ export async function getAssets(
   // @ts-expect-error
   const _config = metro._config as ConfigT;
 
-  return await getMetroAssets(dependencies, {
+  return getMetroAssets(dependencies, {
     processModuleFilter: _config.serializer.processModuleFilter,
     assetPlugins: _config.transformer.assetPlugins,
     platform: transformOptions.platform!,
     projectRoot: _config.projectRoot, // this._getServerRootDir(),
     publicPath: _config.transformer.publicPath,
   });
+}
+
+function isMetroServerInstance(metro: Metro.Server): metro is Metro.Server & {
+  _shouldAddModuleToIgnoreList: (module: Module<MixedOutput>) => boolean;
+  _bundler: IncrementalBundler;
+  _config: ConfigT;
+  _createModuleId: (path: string) => number;
+  _resolveRelativePath(
+    filePath: string,
+    {
+      relativeTo,
+      resolverOptions,
+      transformOptions,
+    }: {
+      relativeTo: 'project' | 'server';
+      resolverOptions: ResolverInputOptions;
+      transformOptions: TransformInputOptions;
+    }
+  ): Promise<string>;
+  _getEntryPointAbsolutePath(entryFile: string): string;
+  _getSortedModules(graph: ReadOnlyGraph): Module<MixedOutput>[];
+} {
+  return '_shouldAddModuleToIgnoreList' in metro;
+}
+
+async function forkMetroBuildAsync(
+  metro: Metro.Server,
+  options: ExpoMetroBundleOptions
+): Promise<{ artifacts: SerialAsset[]; assets: readonly BundleAssetWithFileHashes[] }> {
+  if (!isMetroServerInstance(metro)) {
+    throw new Error('Expected Metro server instance to have private functions exposed.');
+  }
+
+  if (options.serializerOptions?.output !== 'static') {
+    throw new Error('Only multi-serializer output is supported.');
+  }
+
+  const {
+    entryFile,
+    graphOptions,
+    onProgress,
+    resolverOptions,
+    serializerOptions,
+    transformOptions,
+  } = splitBundleOptions(options);
+
+  const { prepend, graph } = await metro._bundler.buildGraph(
+    entryFile,
+    transformOptions,
+    resolverOptions,
+    {
+      onProgress,
+      shallow: graphOptions.shallow,
+      // @ts-expect-error
+      lazy: graphOptions.lazy,
+    }
+  );
+
+  const entryPoint = metro._getEntryPointAbsolutePath(entryFile);
+
+  const bundleOptions = {
+    asyncRequireModulePath: await metro._resolveRelativePath(
+      metro._config.transformer.asyncRequireModulePath,
+      {
+        relativeTo: 'project',
+        resolverOptions,
+        transformOptions,
+      }
+    ),
+    processModuleFilter: metro._config.serializer.processModuleFilter,
+    createModuleId: metro._createModuleId,
+    getRunModuleStatement: metro._config.serializer.getRunModuleStatement,
+    dev: transformOptions.dev,
+    includeAsyncPaths: graphOptions.lazy,
+    projectRoot: metro._config.projectRoot,
+    modulesOnly: serializerOptions.modulesOnly,
+    runBeforeMainModule: metro._config.serializer.getModulesRunBeforeMainModule(
+      path.relative(metro._config.projectRoot, entryPoint)
+    ),
+    runModule: serializerOptions.runModule,
+    sourceMapUrl: serializerOptions.sourceMapUrl,
+    sourceUrl: serializerOptions.sourceUrl,
+    inlineSourceMap: serializerOptions.inlineSourceMap,
+    serverRoot: metro._config.server.unstable_serverRoot ?? metro._config.projectRoot,
+    shouldAddToIgnoreList: (module: Module<MixedOutput>) =>
+      metro._shouldAddModuleToIgnoreList(module),
+    // Custom options we pass to the serializer to emulate the URL query parameters.
+    serializerOptions: options.serializerOptions,
+  };
+
+  const bundle = await metro._config.serializer.customSerializer!(
+    entryPoint,
+    // @ts-expect-error: Metro is typed incorrectly
+    prepend,
+    graph,
+    bundleOptions
+  );
+
+  try {
+    const parsed = typeof bundle === 'string' ? JSON.parse(bundle) : bundle;
+
+    assert(
+      'artifacts' in parsed && Array.isArray(parsed.artifacts),
+      'Expected serializer to return an object with key artifacts to contain an array of serial assets.'
+    );
+    return parsed;
+  } catch (error: any) {
+    throw new Error(
+      'Serializer did not return expected format. The project copy of `expo/metro-config` may be out of date. Error: ' +
+        error.message
+    );
+  }
 }

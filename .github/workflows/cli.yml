@@ -11,6 +11,7 @@ on:
       - packages/@expo/config/src/**
       - packages/@expo/config-plugins/src/**
       - packages/@expo/env/src/**
+      - packages/@expo/json-file/src/**
       - packages/@expo/package-manager/src/**
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/server/src/**
@@ -26,6 +27,7 @@ on:
       - packages/@expo/config/src/**
       - packages/@expo/config-plugins/src/**
       - packages/@expo/env/src/**
+      - packages/@expo/json-file/src/**
       - packages/@expo/package-manager/src/**
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/server/src/**
@@ -53,7 +55,9 @@ jobs:
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
-          bun-version: 1.x
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -64,9 +68,6 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: 🔎 Type Check CLI
         run: yarn typecheck
-        working-directory: packages/@expo/cli
-      - name: 🛠 Build CLI
-        run: yarn prepare
         working-directory: packages/@expo/cli
       - name: E2E Test CLI
         run: yarn test:e2e

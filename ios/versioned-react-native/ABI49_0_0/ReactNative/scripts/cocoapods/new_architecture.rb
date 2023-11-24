@@ -108,7 +108,7 @@ class NewArchitectureHelper
 
 
         spec.dependency "React-Core"
-        spec.dependency "RCT-Folly", '2021.07.22.00'
+        spec.dependency "RCT-Folly", '2022.05.16.00'
 
         if new_arch_enabled
             current_config["OTHER_CPLUSPLUSFLAGS"] = @@new_arch_cpp_flags

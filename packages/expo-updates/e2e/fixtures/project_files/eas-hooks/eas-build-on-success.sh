@@ -23,7 +23,7 @@ if [[ "$TEST_TV_BUILD" == "1" ]]; then
   echo "TV built successfully" > ./logs/detox-tests.log
   exit 0
 fi
- 
+
 ANDROID_EMULATOR=pixel_4
 
 #export UPDATES_HOST=$(ifconfig -l | xargs -n1 ipconfig getifaddr)
@@ -37,9 +37,12 @@ export NO_FLIPPER=1
 mkdir ./logs
 
 # Unpack keys
-tar xf keys.tar
+if [ -f "keys.tar" ]; then
+  tar xf keys.tar
+fi
+
 # Generate test bundles
-yarn generate-test-update-bundles
+yarn generate-test-update-bundles $EAS_BUILD_PLATFORM
 
 if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
   # Start emulator

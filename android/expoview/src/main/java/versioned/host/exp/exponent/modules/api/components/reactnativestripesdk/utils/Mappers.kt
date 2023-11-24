@@ -124,6 +124,7 @@ internal fun mapPaymentMethodType(type: PaymentMethod.Type?): String {
     PaymentMethod.Type.PayPal -> "PayPal"
     PaymentMethod.Type.Affirm -> "Affirm"
     PaymentMethod.Type.CashAppPay -> "CashApp"
+    PaymentMethod.Type.RevolutPay -> "RevolutPay"
     else -> "Unknown"
   }
 }
@@ -154,6 +155,7 @@ internal fun mapToPaymentMethodType(type: String?): PaymentMethod.Type? {
     "PayPal" -> PaymentMethod.Type.PayPal
     "Affirm" -> PaymentMethod.Type.Affirm
     "CashApp" -> PaymentMethod.Type.CashAppPay
+    "RevolutPay" -> PaymentMethod.Type.RevolutPay
     else -> null
   }
 }
@@ -490,6 +492,24 @@ internal fun mapNextAction(type: NextActionType?, data: NextActionData?): Writab
     NextActionType.CashAppRedirect, NextActionType.BlikAuthorize, NextActionType.UseStripeSdk, NextActionType.UpiAwaitNotification,  null -> {
       return null
     }
+    NextActionType.DisplayBoletoDetails -> {
+      (data as? NextActionData.DisplayBoletoDetails)?.let {
+        nextActionMap.putString("type", "boletoVoucher")
+        nextActionMap.putString("voucherURL", it.hostedVoucherUrl)
+      }
+    }
+    NextActionType.DisplayKonbiniDetails -> {
+      (data as? NextActionData.DisplayKonbiniDetails)?.let {
+        nextActionMap.putString("type", "konbiniVoucher")
+        nextActionMap.putString("voucherURL", it.hostedVoucherUrl)
+      }
+    }
+    NextActionType.SwishRedirect -> {
+      (data as? NextActionData.SwishRedirect)?.let {
+        nextActionMap.putString("type", "swishRedirect")
+        nextActionMap.putString("mobileAuthUrl", it.mobileAuthUrl)
+      }
+    }
   }
   return nextActionMap
 }
@@ -807,11 +827,8 @@ internal fun mapFromSetupIntentResult(setupIntent: SetupIntent): WritableMap {
     map.putMap("lastSetupError", setupError)
   }
 
-  setupIntent.paymentMethodTypes.forEach { code ->
-    val type: PaymentMethod.Type? = PaymentMethod.Type.values().find {
-      code == it.code
-    }
-    type?.let {
+  for (code in setupIntent.paymentMethodTypes) {
+    PaymentMethod.Type.fromCode(code)?.let {
       paymentMethodTypes.pushString(mapPaymentMethodType(it))
     }
   }
@@ -850,15 +867,62 @@ fun toBundleObject(readableMap: ReadableMap?): Bundle {
       ReadableType.Null -> result.putString(key, null)
       ReadableType.Boolean -> result.putBoolean(key, readableMap.getBoolean(key))
       ReadableType.Number -> try {
-        result.putInt(key, readableMap.getInt(key))
+        val numAsInt = readableMap.getInt(key)
+        val numAsDouble = readableMap.getDouble(key)
+        if (numAsDouble - numAsInt != 0.0) {
+          result.putDouble(key, numAsDouble)
+        } else {
+          result.putInt(key, numAsInt)
+        }
       } catch (e: Exception) {
-        result.putDouble(key, readableMap.getDouble(key))
+        Log.e("toBundleException", "Failed to add number to bundle. Failed on: $key.")
       }
       ReadableType.String -> result.putString(key, readableMap.getString(key))
       ReadableType.Map -> result.putBundle(key, toBundleObject(readableMap.getMap(key)))
-      ReadableType.Array -> Log.e("toBundleException", "Cannot put arrays of objects into bundles. Failed on: $key.")
+      ReadableType.Array -> {
+        val list = readableMap.getArray(key)?.toArrayList()
+        if (list == null) {
+          result.putString(key, null)
+        } else if (list.isEmpty()) {
+          result.putStringArrayList(key, ArrayList())
+        } else {
+          when (list.first()) {
+            is String -> result.putStringArrayList(key, list as java.util.ArrayList<String>)
+            is Int -> result.putIntegerArrayList(key, list as java.util.ArrayList<Int>)
+            else -> Log.e("toBundleException", "Cannot put arrays of objects into bundles. Failed on: $key.")
+          }
+        }
+      }
       else -> Log.e("toBundleException", "Could not convert object with key: $key.")
     }
   }
   return result
+}
+
+internal fun mapFromShippingContact(googlePayResult: GooglePayResult): WritableMap {
+  val map = WritableNativeMap()
+  map.putString("emailAddress", googlePayResult.email)
+  val name = WritableNativeMap()
+  googlePayResult.name
+  name.putString("givenName", googlePayResult.shippingInformation?.name)
+  map.putMap("name", name)
+  googlePayResult.shippingInformation?.phone?.let {
+    map.putString("phoneNumber", it)
+  } ?: run {
+    map.putString("phoneNumber", googlePayResult?.phoneNumber)
+  }
+  val postalAddress = WritableNativeMap()
+  postalAddress.putString("city", googlePayResult.shippingInformation?.address?.city)
+  postalAddress.putString("country", googlePayResult.shippingInformation?.address?.country)
+  postalAddress.putString("postalCode", googlePayResult.shippingInformation?.address?.postalCode)
+  postalAddress.putString("state", googlePayResult.shippingInformation?.address?.state)
+  val line1: String? = googlePayResult.shippingInformation?.address?.line1
+  val line2: String? = googlePayResult.shippingInformation?.address?.line2
+  val street =
+    (if (line1 != null) "$line1" else "") +
+    (if (line2 != null) "\n$line2" else "")
+  postalAddress.putString("street", street)
+  postalAddress.putString("isoCountryCode", googlePayResult.shippingInformation?.address?.country)
+  map.putMap("postalAddress", postalAddress)
+  return map
 }

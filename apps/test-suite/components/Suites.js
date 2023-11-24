@@ -12,21 +12,7 @@ export default function Suites({ suites, done, numFailed, results }) {
 
   const keyExtractor = (item) => item.get('result').get('id');
 
-  const scrollToEnd = React.useMemo(
-    () => () => {
-      if (ref.current && ref.current.props.data.length > 0)
-        ref.current.scrollToEnd({ animated: false });
-    },
-    [ref]
-  );
-
-  React.useEffect(() => {
-    if (done && ref.current) {
-      scrollToEnd();
-    }
-  }, [ref, done]);
-
-  const ListFooterComponent = () => (
+  const ListHeaderComponent = () => (
     <DoneText done={done} numFailed={numFailed} results={results} />
   );
 
@@ -38,9 +24,7 @@ export default function Suites({ suites, done, numFailed, results }) {
       data={[...suites]}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
-      ListFooterComponent={ListFooterComponent}
-      onContentSizeChange={scrollToEnd}
-      onLayout={scrollToEnd}
+      ListHeaderComponent={ListHeaderComponent}
     />
   );
 }

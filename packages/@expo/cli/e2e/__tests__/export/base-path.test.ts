@@ -18,17 +18,18 @@ describe('static-rendering with a custom base path', () => {
     async () => {
       await ensurePortFreeAsync(8081);
 
-      const basePath = '/one/two';
-      process.env.EXPO_E2E_BASE_PATH = basePath;
+      const baseUrl = '/one/two';
+      process.env.EXPO_E2E_BASE_PATH = baseUrl;
       await execa('node', [bin, 'export', '-p', 'web', '--clear', '--output-dir', outputName], {
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
-          EXPO_E2E_BASE_PATH: basePath,
+          EXPO_E2E_BASE_PATH: baseUrl,
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
+          // TODO: Reenable this after investigating unstable_getRealPath
+          EXPO_USE_FAST_RESOLVER: 'false',
         },
       });
     },
@@ -155,7 +156,7 @@ describe('static-rendering with a custom base path', () => {
   );
 
   it(
-    'supports basePath in Links',
+    'supports baseUrl in Links',
     async () => {
       expect(
         (await getPageHtml(outputDir, 'links.html')).querySelector(

@@ -5,7 +5,7 @@ import type { RouterStore } from './router-store';
 import { ResultState } from '../fork/getStateFromPath';
 import { Href, resolveHref } from '../link/href';
 import { resolve } from '../link/path';
-import { hasUrlProtocolPrefix } from '../utils/url';
+import { shouldLinkExternally } from '../utils/url';
 
 function assertIsReady(store: RouterStore) {
   if (!store.navigationRef.isReady()) {
@@ -46,7 +46,7 @@ export function setParams(this: RouterStore, params: Record<string, string | num
 }
 
 export function linkTo(this: RouterStore, href: string, event?: string) {
-  if (hasUrlProtocolPrefix(href)) {
+  if (shouldLinkExternally(href)) {
     Linking.openURL(href);
     return;
   }
@@ -73,7 +73,7 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
 
   if (href.startsWith('.')) {
     // Resolve base path by merging the current segments with the params
-    const base =
+    let base =
       this.routeInfo?.segments
         ?.map((segment) => {
           if (!segment.startsWith('[')) return segment;
@@ -94,7 +94,11 @@ export function linkTo(this: RouterStore, href: string, event?: string) {
         .filter(Boolean)
         .join('/') ?? '/';
 
-    href = resolve(base + '/..', href);
+    if (!this.routeInfo?.isIndex) {
+      base += '/..';
+    }
+
+    href = resolve(base, href);
   }
 
   const state = this.linking.getStateFromPath!(href, this.linking.config);

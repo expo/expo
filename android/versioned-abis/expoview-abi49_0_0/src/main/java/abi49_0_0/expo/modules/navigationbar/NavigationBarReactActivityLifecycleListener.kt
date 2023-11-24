@@ -6,8 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import abi49_0_0.expo.modules.core.interfaces.ReactActivityLifecycleListener
 
-// this needs to stay for versioning to work
-import abi49_0_0.host.exp.expoview.R
+import expo.modules.navigationbar.R
 
 class NavigationBarReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
   override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {

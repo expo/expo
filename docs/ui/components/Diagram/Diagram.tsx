@@ -6,9 +6,10 @@ type Props = {
   source: string;
   alt: string;
   darkSource?: string;
+  disableSrcSet?: boolean;
 };
 
-export const Diagram = ({ source, darkSource, alt }: Props) => {
+export const Diagram = ({ source, darkSource, disableSrcSet, alt }: Props) => {
   const { themeName } = useTheme();
   const isDark = themeName === 'dark';
 
@@ -28,12 +29,16 @@ export const Diagram = ({ source, darkSource, alt }: Props) => {
     <div className="bg-default border relative border-default rounded-md overflow-hidden my-6 max-w-[750px] m-auto">
       <DotGrid />
       <picture className="relative">
-        {!isDark && <source srcSet={source.replace('.png', '.avif')} type="image/avif" />}
-        {darkSource && isDark && (
+        {!isDark && !disableSrcSet && (
+          <source srcSet={source.replace('.png', '.avif')} type="image/avif" />
+        )}
+        {darkSource && isDark && !disableSrcSet && (
           <source srcSet={darkSource.replace('.png', '.avif')} type="image/avif" />
         )}
-        {!isDark && <source srcSet={source.replace('.png', '.webp')} type="image/webp" />}
-        {darkSource && isDark && (
+        {!isDark && !disableSrcSet && (
+          <source srcSet={source.replace('.png', '.webp')} type="image/webp" />
+        )}
+        {darkSource && isDark && !disableSrcSet && (
           <source srcSet={darkSource.replace('.png', '.webp')} type="image/webp" />
         )}
         {darkSource && isDark && <source srcSet={darkSource} />}

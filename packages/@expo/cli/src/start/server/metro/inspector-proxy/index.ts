@@ -1,5 +1,7 @@
-import { InspectorProxy as MetroInspectorProxy } from 'metro-inspector-proxy';
-import Device from 'metro-inspector-proxy/src/Device';
+import {
+  unstable_InspectorProxy as MetroInspectorProxy,
+  unstable_Device as Device,
+} from '@react-native/dev-middleware';
 
 import { createInspectorDeviceClass } from './device';
 import { ExpoInspectorProxy } from './proxy';

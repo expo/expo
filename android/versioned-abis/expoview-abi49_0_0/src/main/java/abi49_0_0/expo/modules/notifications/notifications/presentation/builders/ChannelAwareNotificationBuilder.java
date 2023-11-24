@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import abi49_0_0.host.exp.expoview.R;
+import expo.modules.notifications.R;
 import abi49_0_0.expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelGroupManager;
 import abi49_0_0.expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelManager;
 import abi49_0_0.expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager;

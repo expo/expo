@@ -18,18 +18,21 @@
 #include <hermes/hermes.h>
 #endif
 
-#include <hermes/inspector/RuntimeAdapter.h>
-#include <hermes/inspector/chrome/Registration.h>
-
 namespace reanimated {
 
 using namespace facebook;
 using namespace react;
+#if REACT_NATIVE_MINOR_VERSION >= 73
+#if HERMES_ENABLE_DEBUGGER
+using namespace facebook::hermes::inspector_modern;
+#endif // HERMES_ENABLE_DEBUGGER
+#else
+using namespace facebook::hermes::inspector;
+#endif
 
 #if HERMES_ENABLE_DEBUGGER
 
-class HermesExecutorRuntimeAdapter
-    : public facebook::hermes::inspector::RuntimeAdapter {
+class HermesExecutorRuntimeAdapter : public RuntimeAdapter {
  public:
   explicit HermesExecutorRuntimeAdapter(
       facebook::hermes::HermesRuntime &hermesRuntime,
@@ -81,11 +84,9 @@ ReanimatedHermesRuntime::ReanimatedHermesRuntime(
   auto adapter =
       std::make_unique<HermesExecutorRuntimeAdapter>(*runtime_, jsQueue);
 #if REACT_NATIVE_MINOR_VERSION >= 71
-  debugToken_ = facebook::hermes::inspector::chrome::enableDebugging(
-      std::move(adapter), name);
+  debugToken_ = chrome::enableDebugging(std::move(adapter), name);
 #else
-  facebook::hermes::inspector::chrome::enableDebugging(
-      std::move(adapter), name);
+  chrome::enableDebugging(std::move(adapter), name);
 #endif // REACT_NATIVE_MINOR_VERSION
 #else
   // This is required by iOS, because there is an assertion in the destructor
@@ -93,7 +94,7 @@ ReanimatedHermesRuntime::ReanimatedHermesRuntime(
   jsQueue->quitSynchronous();
 #endif // HERMES_ENABLE_DEBUGGER
 
-#ifdef DEBUG
+#ifndef NDEBUG
   facebook::hermes::HermesRuntime *wrappedRuntime = runtime_.get();
   jsi::Value evalWithSourceMap = jsi::Function::createFromHostFunction(
       *runtime_,
@@ -120,16 +121,16 @@ ReanimatedHermesRuntime::ReanimatedHermesRuntime(
       });
   runtime_->global().setProperty(
       *runtime_, "evalWithSourceMap", evalWithSourceMap);
-#endif // DEBUG
+#endif // NDEBUG
 }
 
 ReanimatedHermesRuntime::~ReanimatedHermesRuntime() {
 #if HERMES_ENABLE_DEBUGGER
   // We have to disable debugging before the runtime is destroyed.
 #if REACT_NATIVE_MINOR_VERSION >= 71
-  facebook::hermes::inspector::chrome::disableDebugging(debugToken_);
+  chrome::disableDebugging(debugToken_);
 #else
-  facebook::hermes::inspector::chrome::disableDebugging(*runtime_);
+  chrome::disableDebugging(*runtime_);
 #endif // REACT_NATIVE_MINOR_VERSION
 #endif // HERMES_ENABLE_DEBUGGER
 }

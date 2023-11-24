@@ -30,6 +30,31 @@ export interface SQLiteProviderProps {
      */
     errorHandler?: (error: Error) => void;
 }
+/**
+ * Context.Provider component that provides a SQLite database to all children.
+ * All descendants of this component will be able to access the database using the [`useSQLiteContext`](#usesqlitecontext) hook.
+ */
 export declare function SQLiteProvider({ dbName, options, children, initHandler, loadingFallback, errorHandler, }: SQLiteProviderProps): JSX.Element | null;
+/**
+ * A global hook for accessing the SQLite database across components.
+ * This hook should only be used within a [`<SQLiteProvider>`](#sqliteprovider) component.
+ *
+ * @example
+ * ```tsx
+ * export default function App() {
+ *   return (
+ *     <SQLiteProvider dbName="test.db">
+ *       <Main />
+ *     </SQLiteProvider>
+ *   );
+ * }
+ *
+ * export function Main() {
+ *   const db = useSQLiteContext();
+ *   console.log('sqlite version', db.getSync('SELECT sqlite_version()'));
+ *   return <View />
+ * }
+ * ```
+ */
 export declare function useSQLiteContext(): Database;
 //# sourceMappingURL=hooks.d.ts.map

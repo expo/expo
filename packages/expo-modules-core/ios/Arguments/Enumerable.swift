@@ -24,6 +24,12 @@ public protocol Enumerable: AnyArgument, CaseIterable {
 @available(*, deprecated, renamed: "Enumerable")
 public typealias EnumArgument = Enumerable
 
+extension Enumerable {
+  public static func getDynamicType() -> AnyDynamicType {
+    return DynamicEnumType(innerType: Self.self)
+  }
+}
+
 /**
  Extension for `Enumerable` that also conforms to `RawRepresentable`.
  This constraint allows us to reference the associated `RawValue` type.

@@ -58,13 +58,13 @@ it('runs `npx expo export --help`', async () => {
 
       Options
         <dir>                      Directory of the Expo project. Default: Current working directory
-        --dev                      Configure static files for developing locally using a non-https server
         --output-dir <dir>         The directory to export the static files to. Default: dist
-        --max-workers <number>     Maximum number of tasks to allow the bundler to spawn
-        --dump-assetmap            Dump the asset map for further processing
-        --dump-sourcemap           Dump the source map for debugging the JS bundle
-        -p, --platform <platform>  Options: android, ios, web, all. Default: all
+        --dev                      Configure static files for developing locally using a non-https server
         --no-minify                Prevent minifying source
+        --max-workers <number>     Maximum number of tasks to allow the bundler to spawn
+        --dump-assetmap            Emit an asset map for further processing
+        -p, --platform <platform>  Options: android, ios, web, all. Default: all
+        -s, --source-maps          Emit JavaScript source maps
         -c, --clear                Clear the bundler cache
         -h, --help                 Usage info
     "
@@ -119,7 +119,7 @@ describe('server', () => {
                 path: 'assets/3858f62230ac3c915f300c664312c63f',
               },
             ],
-            bundle: expect.stringMatching(/bundles\/android-.*\.hbc/),
+            bundle: expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-.*\.hbc/),
           },
           ios: {
             assets: [
@@ -136,7 +136,7 @@ describe('server', () => {
                 path: 'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
               },
             ],
-            bundle: expect.stringMatching(/bundles\/ios-.*\.hbc/),
+            bundle: expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.hbc/),
           },
         },
         version: 0,
@@ -187,6 +187,12 @@ describe('server', () => {
 
       // If this changes then everything else probably changed as well.
       expect(files).toEqual([
+        expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc/),
+        expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc\.map/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc\.map/),
+        expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js\.map/),
         'assetmap.json',
         'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
         'assets/3858f62230ac3c915f300c664312c63f',
@@ -196,12 +202,6 @@ describe('server', () => {
         'assets/assets/icon@2x.png',
 
         'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
-        expect.stringMatching(/bundles\/android-[\w\d]+\.hbc/),
-        expect.stringMatching(/bundles\/android-[\w\d]+\.map/),
-        expect.stringMatching(/bundles\/ios-[\w\d]+\.hbc/),
-        expect.stringMatching(/bundles\/ios-[\w\d]+\.map/),
-        expect.stringMatching(/bundles\/web-[\w\d]+\.js/),
-        expect.stringMatching(/bundles\/web-[\w\d]+\.map/),
         'debug.html',
         'favicon.ico',
         'index.html',

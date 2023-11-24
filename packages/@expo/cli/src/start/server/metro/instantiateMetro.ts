@@ -84,17 +84,17 @@ export async function loadMetroConfigAsync(
       // This token will be used in the asset plugin to ensure the path is correct for writing locally.
       // @ts-expect-error: typed as readonly.
       config.transformer.publicPath = `/assets?export_path=${
-        (exp.experiments?.basePath ?? '') + '/assets'
+        (exp.experiments?.baseUrl ?? '') + '/assets'
       }`;
     } else {
       // @ts-expect-error: typed as readonly
       config.transformer.publicPath = '/assets/?unstable_path=.';
     }
   } else {
-    if (isExporting && exp.experiments?.basePath) {
+    if (isExporting && exp.experiments?.baseUrl) {
       // This token will be used in the asset plugin to ensure the path is correct for writing locally.
       // @ts-expect-error: typed as readonly.
-      config.transformer.publicPath = exp.experiments?.basePath;
+      config.transformer.publicPath = exp.experiments?.baseUrl;
     }
   }
 
@@ -181,7 +181,6 @@ export async function instantiateMetroAsync(
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
   const { server, metro } = await runServer(metroBundler, metroConfig, {
-    hmrEnabled: true,
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints,
     watch: !isExporting && isWatchEnabled(),
