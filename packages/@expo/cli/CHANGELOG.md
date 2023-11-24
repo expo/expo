@@ -26,6 +26,12 @@
 - Consolidate logic for resolving Node.js built-in shims in browser environments. ([#25511](https://github.com/expo/expo/pull/25511) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure we disable lazy bundling when exporting. ([#25436](https://github.com/expo/expo/pull/25436) by [@EvanBacon](https://github.com/EvanBacon))
 
+## 0.10.16 — 2023-11-24
+
+### 🐛 Bug fixes
+
+- Prevent additional logs from showing in `expo config --json`. ([#24192](https://github.com/expo/expo/pull/24192) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.15.0 — 2023-11-14
 
 ### 🛠 Breaking changes
