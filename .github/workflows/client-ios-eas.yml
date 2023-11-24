@@ -28,7 +28,6 @@ on:
       - secrets/**
       - fastlane/**
       - Gemfile.lock
-      - yarn.lock
   push:
     branches: [main, sdk-*]
     paths:
@@ -40,7 +39,6 @@ on:
       - secrets/**
       - fastlane/**
       - Gemfile.lock
-      - yarn.lock
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
