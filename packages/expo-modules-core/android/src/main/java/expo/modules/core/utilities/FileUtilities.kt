@@ -60,4 +60,5 @@ object FilePermissionsUtilities {
       context.filesDir.canonicalPath,
       context.cacheDir.canonicalPath
     )
+  
 }
