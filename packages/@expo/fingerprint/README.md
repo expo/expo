@@ -115,7 +115,17 @@ console.log(result);
 
 ## CLI Usage
 
+### Generate a fingerprint for a given project
+
 `npx @expo/fingerprint /path/to/projectRoot`
+
+### Generate a fingerprint for a given project and write it to a file
+
+`npx @expo/fingerprint /path/to/projectRoot > fingerprint.json`
+
+### Compare a fingerprint with the current project state
+
+`npx @expo/fingerprint /path/to/projectRoot fingerprint.json`
 
 ## Limitations
 
