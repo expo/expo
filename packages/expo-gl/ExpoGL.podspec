@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
   s.dependency 'ReactCommon/turbomodule/core'
 
-  s.compiler_flags = '-x objective-c++ -std=c++1z'
+  s.compiler_flags = '-x objective-c++ -std=c++20'
   s.pod_target_xcconfig = {
     'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) GLES_SILENCE_DEPRECATION=1'
   }

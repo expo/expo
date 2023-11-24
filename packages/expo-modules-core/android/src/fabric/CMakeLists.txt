@@ -12,7 +12,7 @@ add_library(fabric STATIC
 include("${REACT_NATIVE_DIR}/ReactAndroid/cmake-utils/folly-flags.cmake")
 
 target_compile_options(fabric PRIVATE
-  "-std=c++17"
+  "-std=c++20"
   ${folly_FLAGS}
 )
 
