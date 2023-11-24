@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add CLI parameter for diffing with an existing fingerprint file. ([#25565](https://github.com/expo/expo/pull/25565) by [@brentvatne](https://github.com/brentvatne))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
