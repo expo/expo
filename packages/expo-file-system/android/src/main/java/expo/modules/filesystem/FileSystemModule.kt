@@ -750,9 +750,8 @@ open class FileSystemModule : Module() {
     }
   }
 
-  private fun permissionsForPath(path: String?): EnumSet<Permission>? {
-    return if (path != null) appContext.filePermission.getPathPermissions(context, path) else null
-  }
+  private fun permissionsForPath(path: String?) =
+    appContext.filePermission.getPathPermissions(context, path)
 
   private fun permissionsForUri(uri: Uri) = when {
     uri.isSAFUri -> permissionsForSAFUri(uri)

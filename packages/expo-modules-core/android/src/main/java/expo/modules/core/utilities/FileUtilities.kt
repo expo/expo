@@ -28,8 +28,11 @@ object FileUtilities {
 }
 
 object FilePermissionsUtilities {
-  fun getPathPermissions(context: Context, path: String): EnumSet<Permission> =
+  fun getPathPermissions(context: Context, path: String?): EnumSet<Permission> = if (path == null) {
+    EnumSet.noneOf(Permission::class.java)
+  } else {
     getInternalPathPermissions(path, context) ?: getExternalPathPermissions(path)
+  }
 
   private fun getInternalPathPermissions(path: String, context: Context): EnumSet<Permission>? {
     return try {

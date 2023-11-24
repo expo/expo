@@ -89,7 +89,8 @@ class VideoThumbnailsModule : Module() {
     }
   }
 
-  private fun isAllowedToRead(url: String) = appContext.filePermission.getPathPermissions(context, url).contains(Permission.READ)
+  private fun isAllowedToRead(url: String) =
+    appContext.filePermission.getPathPermissions(context, url).contains(Permission.READ)
 
   private inline fun withModuleScope(promise: Promise, crossinline block: () -> Unit) = moduleCoroutineScope.launch {
     try {
