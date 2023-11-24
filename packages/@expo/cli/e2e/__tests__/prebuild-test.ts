@@ -79,7 +79,7 @@ it('runs `npx expo prebuild --help`', async () => {
       Options
         <dir>                                    Directory of the Expo project. Default: Current working directory
         --no-install                             Skip installing npm packages and CocoaPods
-        --clean                                  Delete the native folders and regenerate them before applying changes
+        --no-clean                               Skip deleting and regenerating the native folders before applying changes
         --npm                                    Use npm to install dependencies. Default when package-lock.json exists
         --yarn                                   Use Yarn to install dependencies. Default when yarn.lock exists
         --bun                                    Use bun to install dependencies. Default when bun.lockb exists

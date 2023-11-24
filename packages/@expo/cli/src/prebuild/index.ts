@@ -9,11 +9,11 @@ export const expoPrebuild: Command = async (argv) => {
     {
       // Types
       '--help': Boolean,
-      '--clean': Boolean,
       '--npm': Boolean,
       '--pnpm': Boolean,
       '--yarn': Boolean,
       '--bun': Boolean,
+      '--no-clean': Boolean,
       '--no-install': Boolean,
       '--template': String,
       '--platform': String,
@@ -22,6 +22,8 @@ export const expoPrebuild: Command = async (argv) => {
       '-h': '--help',
       '-p': '--platform',
       '-t': '--type',
+      // Deprecated
+      '--clean': Boolean,
     },
     argv
   );
@@ -33,7 +35,7 @@ export const expoPrebuild: Command = async (argv) => {
       [
         chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
         `--no-install                             Skip installing npm packages and CocoaPods`,
-        `--clean                                  Delete the native folders and regenerate them before applying changes`,
+        `--no-clean                               Skip deleting and regenerating the native folders before applying changes`,
         chalk`--npm                                    Use npm to install dependencies. {dim Default when package-lock.json exists}`,
         chalk`--yarn                                   Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
         chalk`--bun                                    Use bun to install dependencies. {dim Default when bun.lockb exists}`,
@@ -43,6 +45,12 @@ export const expoPrebuild: Command = async (argv) => {
         `--skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)`,
         `-h, --help                               Usage info`,
       ].join('\n')
+    );
+  }
+
+  if (args['--clean']) {
+    console.warn(
+      chalk.yellow`  {bold --clean} is deprecated, it's now the default behavior. To skip cleaning, use {bold --no-clean}`
     );
   }
 
@@ -63,7 +71,7 @@ export const expoPrebuild: Command = async (argv) => {
   return (() => {
     return prebuildAsync(getProjectRoot(args), {
       // Parsed options
-      clean: args['--clean'],
+      clean: !args['--no-clean'],
 
       packageManager: resolvePackageManagerOptions(args),
       install: !args['--no-install'],
