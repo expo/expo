@@ -17,11 +17,11 @@ import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.JavaScriptContextProvider
+import expo.modules.core.utilities.FilePermissionsUtilities
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.interfaces.filesystem.AppDirectoriesModuleInterface
-import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
 import expo.modules.interfaces.font.FontManagerInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
@@ -177,10 +177,9 @@ class AppContext(
     get() = legacyModule()
 
   /**
-   * Provides access to the file system manager from the legacy module registry.
+   * Access file system permissions utilities.
    */
-  val filePermission: FilePermissionModuleInterface?
-    get() = legacyModule()
+  val filePermission = FilePermissionsUtilities
 
   /**
    * Provides access to the scoped directories from the legacy module registry.

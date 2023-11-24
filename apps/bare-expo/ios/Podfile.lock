@@ -1977,7 +1977,7 @@ SPEC CHECKSUMS:
   EXNotifications: 1cbda734d622205cd72a0523a90e01dda0470edc
   Expo: 97df3b68de6c485f894dbae821666bec8435e144
   expo-dev-client: 820f881c0dc8a0f1f4cd1e35a35469d1d0fbc798
-  expo-dev-launcher: ddd4c74d4192526603cf004baf47b445d5372410
+  expo-dev-launcher: 8f353ad1c0e24a449581da76141bff672c28c729
   expo-dev-menu: 9fc863259e3178e3c65ccdc2515bf3f6ba9e9512
   expo-dev-menu-interface: 05d08cc56649636de77253583b4bbb73adce7680
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
@@ -1993,7 +1993,7 @@ SPEC CHECKSUMS:
   ExpoDevice: 30d5e44aff42048ab016fa0c37a51fdb6b1f8608
   ExpoDocumentPicker: a1a38f72993a4f0622d0c918d520b4ff640ba1cb
   ExpoFileSystem: 1bc21c70ab0bf505cd6bef97c5b008618bfb72f2
-  ExpoGL: 6037e72282fce9746e973c129628cff7f2ee44a6
+  ExpoGL: e452774bffdc758a6fe2dbff589234fa4026a4c3
   ExpoHaptics: 76961bc7692870eb8ddac0527260a7ecaf28300d
   ExpoImage: cfaa9c379a3467c7863a187a1059c220b27a0741
   ExpoImageManipulator: b9d5ddfe7f00932677b52b6d5bd667e41caf0b2d
