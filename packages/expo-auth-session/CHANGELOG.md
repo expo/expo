@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added dependency on `expo-application` as it's no longer a dependency of the `expo` package.
+
 ## 5.3.0 — 2023-11-14
 
 ### 💡 Others
