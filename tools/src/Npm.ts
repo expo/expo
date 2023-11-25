@@ -175,6 +175,23 @@ export async function getTeamMembersAsync(teamName: string): Promise<string[]> {
   return await spawnJSONCommandAsync('npm', ['team', 'ls', teamName, '--json']);
 }
 
+type TeamPackagesRecord = Record<string, 'read-only' | 'read-write'>;
+
+/**
+ * Resolves to a dictionary of packages and their access level added to the team.
+ */
+export async function getTeamPackagesAsync(
+  teamName: string = EXPO_DEVELOPERS_TEAM_NAME
+): Promise<TeamPackagesRecord> {
+  return await spawnJSONCommandAsync<TeamPackagesRecord>('npm', [
+    'access',
+    'list',
+    'packages',
+    teamName,
+    '--json',
+  ]);
+}
+
 /**
  * Adds a package to organization team granting access to everyone in the team.
  */

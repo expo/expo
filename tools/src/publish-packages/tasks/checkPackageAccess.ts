@@ -23,12 +23,14 @@ export const checkPackageAccess = new Task<TaskArgs>(
     return await runWithSpinner(
       'Checking write access to the packages',
       async (step): Promise<any> => {
-        const npmUser = await Npm.whoamiAsync();
+        const teamPackages = await Npm.getTeamPackagesAsync();
         const packagesWithoutAccess: string[] = [];
 
-        for (const { pkgView } of parcels) {
-          if (npmUser && pkgView && !isPackageMaintainer(pkgView, npmUser)) {
-            packagesWithoutAccess.push(pkgView.name);
+        for (const { pkg } of parcels) {
+          const packageName = pkg.packageName;
+
+          if (teamPackages[packageName] !== 'read-write') {
+            packagesWithoutAccess.push(packageName);
           }
         }
 
