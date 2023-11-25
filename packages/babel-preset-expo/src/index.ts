@@ -5,6 +5,7 @@ import {
   getBundler,
   getInlineEnvVarsEnabled,
   getIsDev,
+  getIsFastRefreshEnabled,
   getIsProd,
   hasModule,
 } from './common';
@@ -60,7 +61,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   let platform = api.caller((caller) => (caller as any)?.platform);
   const engine = api.caller((caller) => (caller as any)?.engine) ?? 'default';
   const isDev = api.caller(getIsDev);
+  const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const baseUrl = api.caller(getBaseUrl);
+
   // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
   // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
   const isProduction = api.caller(getIsProd);
@@ -130,11 +133,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     );
   }
 
-  const aliasPlugin = getAliasPlugin();
-  if (aliasPlugin) {
-    extraPlugins.push(aliasPlugin);
-  }
-
   // Allow jest tests to redefine the environment variables.
   if (process.env.NODE_ENV !== 'test') {
     extraPlugins.push([
@@ -167,6 +165,16 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   if (hasModule('expo-router')) {
     extraPlugins.push(expoRouterBabelPlugin);
+  }
+
+  if (isFastRefreshEnabled) {
+    extraPlugins.push([
+      require('react-refresh/babel'),
+      {
+        // We perform the env check to enable `isFastRefreshEnabled`.
+        skipEnvCheck: true,
+      },
+    ]);
   }
 
   return {
@@ -252,20 +260,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         platformOptions.reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
     ].filter(Boolean) as PluginItem[],
   };
-}
-
-function getAliasPlugin(): PluginItem | null {
-  if (!hasModule('@expo/vector-icons')) {
-    return null;
-  }
-  return [
-    require.resolve('babel-plugin-module-resolver'),
-    {
-      alias: {
-        'react-native-vector-icons': '@expo/vector-icons',
-      },
-    },
-  ];
 }
 
 export default babelPresetExpo;

@@ -43,6 +43,8 @@ enum class GooglePayErrorType {
 
 class PaymentSheetAppearanceException(message: String) : Exception(message)
 
+class PaymentSheetException(message: String) : Exception(message)
+
 internal fun mapError(code: String, message: String?, localizedMessage: String?, declineCode: String?, type: String?, stripeErrorCode: String?): WritableMap {
   val map: WritableMap = WritableNativeMap()
   val details: WritableMap = WritableNativeMap()

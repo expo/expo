@@ -372,8 +372,8 @@ describe('built-in plugins', () => {
       'android/app/proguard-rules.pro',
       'android/app/src/debug/AndroidManifest.xml',
       'android/app/src/main/AndroidManifest.xml',
-      'android/app/src/main/java/com/bacon/todo/MainActivity.java',
-      'android/app/src/main/java/com/bacon/todo/MainApplication.java',
+      'android/app/src/main/java/com/bacon/todo/MainActivity.kt',
+      'android/app/src/main/java/com/bacon/todo/MainApplication.kt',
       'android/app/src/main/res/drawable/rn_edit_text_material.xml',
       'android/app/src/main/res/drawable/splashscreen.xml',
       'android/app/src/main/res/values/colors.xml',
@@ -404,8 +404,8 @@ describe('built-in plugins', () => {
     );
     expect(after['ios/HelloWorld/GoogleService-Info.plist']).toBe(googleServiceInfoFixture);
 
-    expect(after['android/app/src/main/java/com/bacon/todo/MainApplication.java']).toMatch(
-      'package com.bacon.todo;'
+    expect(after['android/app/src/main/java/com/bacon/todo/MainApplication.kt']).toMatch(
+      'package com.bacon.todo'
     );
 
     expect(after['android/app/src/main/res/values/strings.xml']).toMatch(
@@ -527,8 +527,8 @@ describe('built-in plugins', () => {
       'android/app/proguard-rules.pro',
       'android/app/src/debug/AndroidManifest.xml',
       'android/app/src/main/AndroidManifest.xml',
-      'android/app/src/main/java/com/helloworld/MainActivity.java',
-      'android/app/src/main/java/com/helloworld/MainApplication.java',
+      'android/app/src/main/java/com/helloworld/MainActivity.kt',
+      'android/app/src/main/java/com/helloworld/MainApplication.kt',
       'android/app/src/main/res/drawable/rn_edit_text_material.xml',
       'android/app/src/main/res/drawable/splashscreen.xml',
       'android/app/src/main/res/values/colors.xml',
@@ -554,11 +554,11 @@ describe('built-in plugins', () => {
 
     expect(after['ios/HelloWorld/Info.plist']).toBe(rnFixture['ios/HelloWorld/Info.plist']);
 
-    expect(after['android/app/src/main/java/com/helloworld/MainApplication.java']).toBe(
-      rnFixture['android/app/src/main/java/com/helloworld/MainApplication.java']
+    expect(after['android/app/src/main/java/com/helloworld/MainApplication.kt']).toBe(
+      rnFixture['android/app/src/main/java/com/helloworld/MainApplication.kt']
     );
-    expect(after['android/app/src/main/java/com/helloworld/MainActivity.java']).toBe(
-      rnFixture['android/app/src/main/java/com/helloworld/MainActivity.java']
+    expect(after['android/app/src/main/java/com/helloworld/MainActivity.kt']).toBe(
+      rnFixture['android/app/src/main/java/com/helloworld/MainActivity.kt']
     );
     expect(after['android/app/src/main/res/values/styles.xml']).toMatch(
       rnFixture['android/app/src/main/res/values/styles.xml']

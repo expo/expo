@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 49.0.21 — 2023-11-24
+
+_This version does not introduce any user-facing changes._
 
 ## 49.0.20 — 2023-11-20
 

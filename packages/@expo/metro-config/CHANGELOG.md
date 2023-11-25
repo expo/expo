@@ -4,13 +4,19 @@
 
 ### 🛠 Breaking changes
 
+- Moved `react-refresh` babel plugin from Metro to `babel-preset-expo`. ([#25461](https://github.com/expo/expo/pull/25461) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
+
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
 - Add missing dependency. ([#25446](https://github.com/expo/expo/pull/25446) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
+
+- Replace `@expo/babel-preset-cli` with `expo-module-scripts`. ([#25421](https://github.com/expo/expo/pull/25421) by [@byCedric](https://github.com/byCedric))
 
 ## 0.15.0 — 2023-11-14
 

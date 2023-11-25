@@ -79,7 +79,7 @@ public class DisabledAppController: InternalAppControllerInterface {
   }
 
   public func checkForUpdate(
-    success successBlockArg: @escaping (RemoteCheckResult) -> Void,
+    success successBlockArg: @escaping (CheckForUpdateResult) -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
     errorBlockArg(UpdatesDisabledException())

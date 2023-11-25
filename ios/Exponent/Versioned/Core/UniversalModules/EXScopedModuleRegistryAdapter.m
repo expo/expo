@@ -5,7 +5,6 @@
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXSensorsManagerBinding.h"
 #import "EXConstantsBinding.h"
-#import "EXScopedFileSystemModule.h"
 #import "EXUnversioned.h"
 #import "EXScopedFilePermissionModule.h"
 #import "EXScopedFontLoader.h"
@@ -27,6 +26,8 @@
 #import "EXScopedNotificationPresentationModule.h"
 #import "EXScopedNotificationCategoriesModule.h"
 #import "EXScopedServerRegistrationModule.h"
+
+#import <ExpoFileSystem/EXFileSystem.h>
 
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
 #import <EXTaskManager/EXTaskManager.h>
@@ -56,18 +57,15 @@
 #endif
 
 #if __has_include(<ExpoFileSystem/EXFileSystem.h>)
-  EXScopedFileSystemModule *fileSystemModule;
   if (params[@"fileSystemDirectories"]) {
+    // Override the FileSystem module with custom document and cache directories
     NSString *documentDirectory = params[@"fileSystemDirectories"][@"documentDirectory"];
     NSString *cachesDirectory = params[@"fileSystemDirectories"][@"cachesDirectory"];
-    fileSystemModule = [[EXScopedFileSystemModule alloc] initWithDocumentDirectory:documentDirectory
-                                                                   cachesDirectory:cachesDirectory
-                                                                   bundleDirectory:nil];
-  } else {
-    fileSystemModule = [EXScopedFileSystemModule new];
+    EXFileSystem *fileSystemModule = [[EXFileSystem alloc] initWithDocumentDirectory:documentDirectory
+                                                                     cachesDirectory:cachesDirectory];
+    [moduleRegistry registerExportedModule:fileSystemModule];
+    [moduleRegistry registerInternalModule:fileSystemModule];
   }
-  [moduleRegistry registerExportedModule:fileSystemModule];
-  [moduleRegistry registerInternalModule:fileSystemModule];
 #endif
 
 #if __has_include(<EXFont/EXFontLoader.h>)

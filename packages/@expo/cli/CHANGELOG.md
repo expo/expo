@@ -4,12 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- `tsconfig.json` attribute `baseUrl` will no longer default to enabled when `paths` are defined. ([#25510](https://github.com/expo/expo/pull/25510) by [@EvanBacon](https://github.com/EvanBacon))
+- `tsconfig.json` attribute `baseUrl` will now be resolved _before_ node modules instead of after. ([#25510](https://github.com/expo/expo/pull/25510) by [@EvanBacon](https://github.com/EvanBacon))
+- `tsconfig.json` attribute `baseUrl` will no longer be resolved if a group from `paths` are matched first. ([#25510](https://github.com/expo/expo/pull/25510) by [@EvanBacon](https://github.com/EvanBacon))
 - Change default CSS reset in template HTML to align with `react-native-web@0.19.8`. ([#25429](https://github.com/expo/expo/pull/25429) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
+- Alias `react-native-vector-icons` to `@expo/vector-icons` in the Metro resolver. ([#25512](https://github.com/expo/expo/pull/25512) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure invalid production iOS builds fail more predictably. ([#25410](https://github.com/expo/expo/pull/25410) by [@EvanBacon](https://github.com/EvanBacon))
 - Add first-class Xcode IDE hints for Metro bundling errors during production iOS builds from Xcode. ([#25410](https://github.com/expo/expo/pull/25410) by [@EvanBacon](https://github.com/EvanBacon))
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
@@ -17,7 +22,15 @@
 
 ### 💡 Others
 
+- Remove unused Metro `extraNodeModules` augmentation for web resolution in favor of standard aliases. ([#25506](https://github.com/expo/expo/pull/25506) by [@EvanBacon](https://github.com/EvanBacon))
+- Consolidate logic for resolving Node.js built-in shims in browser environments. ([#25511](https://github.com/expo/expo/pull/25511) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure we disable lazy bundling when exporting. ([#25436](https://github.com/expo/expo/pull/25436) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.10.16 — 2023-11-24
+
+### 🐛 Bug fixes
+
+- Prevent additional logs from showing in `expo config --json`. ([#24192](https://github.com/expo/expo/pull/24192) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.15.0 — 2023-11-14
 

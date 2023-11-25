@@ -18,6 +18,7 @@ function babelPresetExpo(api, options = {}) {
     let platform = api.caller((caller) => caller?.platform);
     const engine = api.caller((caller) => caller?.engine) ?? 'default';
     const isDev = api.caller(common_1.getIsDev);
+    const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const baseUrl = api.caller(common_1.getBaseUrl);
     // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
     // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
@@ -78,10 +79,6 @@ function babelPresetExpo(api, options = {}) {
     if (platformOptions.useTransformReactJSXExperimental != null) {
         throw new Error(`babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`);
     }
-    const aliasPlugin = getAliasPlugin();
-    if (aliasPlugin) {
-        extraPlugins.push(aliasPlugin);
-    }
     // Allow jest tests to redefine the environment variables.
     if (process.env.NODE_ENV !== 'test') {
         extraPlugins.push([
@@ -110,6 +107,15 @@ function babelPresetExpo(api, options = {}) {
     }
     if ((0, common_1.hasModule)('expo-router')) {
         extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
+    }
+    if (isFastRefreshEnabled) {
+        extraPlugins.push([
+            require('react-refresh/babel'),
+            {
+                // We perform the env check to enable `isFastRefreshEnabled`.
+                skipEnvCheck: true,
+            },
+        ]);
     }
     return {
         presets: [
@@ -185,19 +191,6 @@ function babelPresetExpo(api, options = {}) {
                 platformOptions.reanimated !== false && [require.resolve('react-native-reanimated/plugin')],
         ].filter(Boolean),
     };
-}
-function getAliasPlugin() {
-    if (!(0, common_1.hasModule)('@expo/vector-icons')) {
-        return null;
-    }
-    return [
-        require.resolve('babel-plugin-module-resolver'),
-        {
-            alias: {
-                'react-native-vector-icons': '@expo/vector-icons',
-            },
-        },
-    ];
 }
 exports.default = babelPresetExpo;
 module.exports = babelPresetExpo;

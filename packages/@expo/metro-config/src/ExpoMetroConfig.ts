@@ -140,7 +140,6 @@ export function getDefaultConfig(
 
   const pkg = getPackageJson(projectRoot);
   const watchFolders = getWatchFolders(projectRoot);
-  // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
   const nodeModulesPaths = getModulesPaths(projectRoot);
   if (env.EXPO_DEBUG) {
     console.log();
@@ -229,11 +228,7 @@ export function getDefaultConfig(
     symbolicator: {
       customizeFrame: getDefaultCustomizeFrame(),
     },
-    transformerPath: isCSSEnabled
-      ? // Custom worker that adds CSS support for Metro web.
-        require.resolve('./transform-worker/transform-worker')
-      : metroDefaultValues.transformerPath,
-
+    transformerPath: require.resolve('./transform-worker/transform-worker'),
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
       // @ts-expect-error: not on type.

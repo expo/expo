@@ -304,7 +304,7 @@ Ensure you import this file in your root-most JavaScript file:
 import './global.css';
 ```
 
-> When using Expo Router, you can use **./index.js** or **./app/_layout.js**. They both work the same.
+> When using Expo Router, you can use **./index.js** or **./app/\_layout.js**. They both work the same.
 
 </Step>
 
@@ -344,7 +344,7 @@ export default function Page() {
 }
 ```
 
-#### Tailwind Troubleshooting
+#### Tailwind troubleshooting
 
 If you have a custom `config.cacheStores` in your **metro.config.js**, you need to extend the Expo superclass of `FileStore`:
 
@@ -485,7 +485,7 @@ This can be used to emulate `externals` with custom imports. For example, if you
 
 ## Custom transforming
 
-> Transformations are heavily caches in Metro. If you update something, use the `--clear` flag to see updates, e.g. `npx expo start --clear`.
+> Transformations are heavily caches in Metro. If you update something, use the `--clear` flag to see updates. For example, `npx expo start --clear`.
 
 Metro doesn't have a very expressive plugin system for transforming files, instead opt to use the `babel.config.js` and caller object to customize the transformation.
 
@@ -524,7 +524,7 @@ module.exports = function (api) {
 };
 ```
 
-If the caller doesn't have `engine`, `platform`, `bundler`, etc. then ensure you are using `@expo/metro-config/babel-transformer` for the transformer. If you're using a custom transformer then it may need to extend the Expo transformer.
+If the caller doesn't have `engine`, `platform`, `bundler`, and so on, then ensure you are using `@expo/metro-config/babel-transformer` for the transformer. If you're using a custom transformer then it may need to extend the Expo transformer.
 
 Always try to implement custom logic in the resolver if possible, caching is much simpler and easier to reason about. For example, if you need to remap an import, it's simpler and faster to resolve to a static file with the resolver than to parse all possible import methods and remap them with the transformer.
 
@@ -532,7 +532,7 @@ Always use `babel-preset-expo` as the default Babel preset, this ensures the tra
 
 ## Node.js built-ins
 
-When bundling for a server environment, Expo's Metro config automatically supports externalizing Node.js built-in modules (`fs`, `path`, `node:crypto`, etc.) based on the current Node.js version. If the CLI is bundling for a browser environment, then built-ins will first check if the module is installed locally, then fallback on an empty shim. For example, if you install `path` for use in the browser, this can be used, otherwise the module will automatically be skipped.
+When bundling for a server environment, Expo's Metro config automatically supports externalizing Node.js built-in modules (`fs`, `path`, `node:crypto`, and more) based on the current Node.js version. If the CLI is bundling for a browser environment, then built-ins will first check if the module is installed locally, then fallback on an empty shim. For example, if you install `path` for use in the browser, this can be used, otherwise, the module will automatically be skipped.
 
 ## Environment settings
 
