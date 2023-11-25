@@ -53,15 +53,3 @@ export const checkPackageAccess = new Task<TaskArgs>(
     );
   }
 );
-
-/**
- * Checks whether the user with given name is a maintainer of the package.
- *
- * Package view has a list of maintainers represented as a concatenation of the user name and his email,
- * e.g. `brentvatne <brentvatne@gmail.com>`.
- */
-function isPackageMaintainer(pkgView: NonNullable<Npm.PackageViewType>, user: string): boolean {
-  return pkgView.maintainers.some((maintainer) => {
-    return maintainer.startsWith(user + ' ');
-  });
-}
