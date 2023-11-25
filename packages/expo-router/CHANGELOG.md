@@ -14,6 +14,7 @@
 ### 🐛 Bug fixes
 
 - Fix traversing `generateStaticParams`. ([#25440](https://github.com/expo/expo/pull/25440) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix `state.routes.at is not a function` error on navigation.
 
 ### 💡 Others
 
