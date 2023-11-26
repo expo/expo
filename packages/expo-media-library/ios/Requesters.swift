@@ -1,4 +1,5 @@
 import ExpoModulesCore
+import Photos
 
 public class MediaLibraryPermissionRequester: DefaultMediaLibraryPermissionRequester,
                                               EXPermissionsRequester {
@@ -13,7 +14,7 @@ public class MediaLibraryWriteOnlyPermissionRequester: DefaultMediaLibraryPermis
     return "mediaLibraryWriteOnly"
   }
 
-  @available(iOS 14, *)
+  @available(iOS 14.0, *)
   override internal func accessLevel() -> PHAccessLevel {
     return PHAccessLevel.addOnly
   }
@@ -26,8 +27,8 @@ public class DefaultMediaLibraryPermissionRequester: NSObject {}
 extension DefaultMediaLibraryPermissionRequester {
   @objc
   public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
-    let authorizationHandler = { [weak self] (_: PHAuthorizationStatus) in
-      resolve(self?.getPermissions())
+    let authorizationHandler = { (_: PHAuthorizationStatus) in
+      resolve(self.getPermissions())
     }
     if #available(iOS 14.0, *) {
       PHPhotoLibrary.requestAuthorization(for: self.accessLevel(), handler: authorizationHandler)
@@ -45,37 +46,36 @@ extension DefaultMediaLibraryPermissionRequester {
       authorizationStatus = PHPhotoLibrary.authorizationStatus()
     }
 
-    var status: PermissionStatus
+    var status: EXPermissionStatus
     var scope: String
 
     switch authorizationStatus {
     case .authorized:
-      status = .granted
+      status = EXPermissionStatusGranted
       scope = "all"
     case .limited:
-      status = .granted
+      status = EXPermissionStatusGranted
       scope = "limited"
     case .denied, .restricted:
-      status = .denied
+      status = EXPermissionStatusDenied
       scope = "none"
     case .notDetermined:
       fallthrough
     @unknown default:
-      status = .undetermined
+      status = EXPermissionStatusUndetermined
       scope = "none"
     }
 
     return [
       "status": status.rawValue,
       "accessPrivileges": scope,
-      "granted": status == .granted
+      "granted": status == EXPermissionStatusGranted
     ]
   }
 
-  @available(iOS 14, *)
+  @available(iOS 14.0, *)
   @objc
   internal func accessLevel() -> PHAccessLevel {
     return PHAccessLevel.readWrite
   }
 }
-

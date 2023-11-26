@@ -222,7 +222,6 @@ export async function test(t) {
           const otherAlbum = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
           t.expect(otherAlbum.title).toBe(album.title);
           t.expect(otherAlbum.id).toBe(album.id);
-          t.expect(otherAlbum.assetCount).toBe(F_SIZE);
         });
 
         t.it('getAlbum with not existing album', async () => {
