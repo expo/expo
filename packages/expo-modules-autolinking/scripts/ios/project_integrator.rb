@@ -258,7 +258,7 @@ module Expo
         fi
       }
 
-      with_node --no-warnings --eval "require(\'expo-modules-autolinking\')(process.argv.slice(1))" generate-package-list #{args} --target "#{modules_provider_path}"
+      with_node --no-warnings --eval "require(require.resolve(\'expo-modules-autolinking\', { paths: [\'#{__dirname__}\']}))(process.argv.slice(1))" generate-package-list #{args} --target "#{modules_provider_path}"
       SUPPORT_SCRIPT
     end
 
