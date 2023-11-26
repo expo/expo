@@ -119,3 +119,21 @@ internal class PermissionsModuleNotFoundException: Exception {
     "Permissions module not found. Are you sure that Expo modules are properly linked?"
   }
 }
+
+internal class ExportSessionFailedException: Exception {
+  override var reason: String {
+    "Failed to export the requested video"
+  }
+}
+
+internal class ExportSessionCancelledException: Exception {
+  override var reason: String {
+    "Exporting session cancelled"
+  }
+}
+
+internal class ExportSessionUnknownException: Exception {
+  override var reason: String {
+    "Could not export the requested video"
+  }
+}

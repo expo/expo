@@ -346,11 +346,11 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
 
                 promise.resolve(result)
               case .failed:
-                promise.reject("E_EXPORT_FAILED", "Could not export the requested video.")
+                promise.reject(ExportSessionFailedException())
               case .cancelled:
-                promise.reject("E_EXPORT_FAILED", "Could not export the requested video.")
+                promise.reject(ExportSessionCancelledException())
               default:
-                promise.reject("E_EXPORT_FAILED", "Could not export the requested video.")
+                promise.reject(ExportSessionUnknownException())
               }
             }
           } else {
