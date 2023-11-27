@@ -1,4 +1,4 @@
-import { NavigationRouteContext, ParamListBase, RouteProp } from '@react-navigation/native';
+import { NavigationRouteContext } from '@react-navigation/native';
 import React from 'react';
 
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
