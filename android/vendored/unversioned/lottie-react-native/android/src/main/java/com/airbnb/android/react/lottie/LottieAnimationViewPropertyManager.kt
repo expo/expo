@@ -1,6 +1,8 @@
 package com.airbnb.android.react.lottie
 
 import android.graphics.ColorFilter
+import android.graphics.Typeface
+import android.net.Uri
 import android.util.Log
 import android.widget.ImageView
 import com.airbnb.lottie.LottieAnimationView
@@ -9,12 +11,16 @@ import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.RenderMode
 import com.airbnb.lottie.SimpleColorFilter
 import com.airbnb.lottie.TextDelegate
+import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.value.LottieValueCallback
+import com.facebook.react.BuildConfig
 import com.facebook.react.bridge.ColorPropConverter
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
+import com.facebook.react.views.text.ReactFontManager
+import com.facebook.react.views.text.TextAttributeProps.UNSET
 import com.facebook.react.util.RNLog
 import java.lang.ref.WeakReference
 import java.util.regex.Pattern
@@ -58,6 +64,29 @@ class LottieAnimationViewPropertyManager(view: LottieAnimationView) {
 
     init {
         viewWeakReference = WeakReference(view)
+
+        view.setFontAssetDelegate(object : FontAssetDelegate() {
+            override fun fetchFont(fontFamily: String): Typeface {
+                val typeface = ReactFontManager.getInstance()
+                    .getTypeface(fontFamily, UNSET, UNSET, view.context.assets)
+                return typeface?: Typeface.defaultFromStyle(400)
+            }
+        
+            override fun fetchFont(fontFamily: String, fontStyle: String, fontName: String): Typeface {
+                val weight = when (fontStyle) {
+                    "Thin" -> 100
+                    "Light" -> 200
+                    "Normal", "Regular" -> 400
+                    "Medium" -> 500
+                    "Bold" -> 700
+                    "Black" -> 900
+                    else -> UNSET
+                }
+                val typeface = ReactFontManager.getInstance()
+                    .getTypeface(fontName, UNSET, weight, view.context.assets)
+                return typeface?: Typeface.defaultFromStyle(400)
+            }
+        })
     }
 
     /**
@@ -94,8 +123,29 @@ class LottieAnimationViewPropertyManager(view: LottieAnimationView) {
             animationURL = null
         }
 
-        sourceDotLottie?.let {
-            view.setAnimationFromUrl(it, it.hashCode().toString())
+        sourceDotLottie?.let { assetName ->
+            val scheme = runCatching { Uri.parse(assetName).scheme }.getOrNull()
+
+            if (scheme != null) {
+                view.setAnimationFromUrl(assetName)
+                sourceDotLottie = null
+                return
+            }
+
+            // resource needs to be loaded in release mode: https://github.com/facebook/react-native/issues/24963#issuecomment-532168307
+            val resourceId = view.resources.getIdentifier(
+                assetName,
+                "raw",
+                view.context.packageName
+            )
+
+            if (resourceId == 0) {
+                RNLog.e("Animation for $assetName was not found in raw resources")
+                return
+            }
+
+            view.setAnimation(resourceId)
+            animationNameDirty = false
             sourceDotLottie = null
         }
 

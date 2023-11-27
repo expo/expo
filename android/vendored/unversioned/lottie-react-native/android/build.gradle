@@ -33,10 +33,12 @@ if (isNewArchitectureEnabled()) {
 }
 
 android {
-    def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
-    // Check AGP version for backward compatibility reasons
-    if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
+    // Conditional for compatibility with AGP <4.2.
+    if (project.android.hasProperty("namespace")) {
         namespace = "com.airbnb.android.react.lottie"
+    } else {
+        // print
+        println "DEPRECATION WARNING: The `namespace` property is not available in your version of AGP. Please upgrade to AGP 4.2+."
     }
 
     compileSdk getExtOrDefault('compileSdkVersion', 31)

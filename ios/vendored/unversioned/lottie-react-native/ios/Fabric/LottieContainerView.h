@@ -8,6 +8,7 @@
 @protocol LottieContainerViewDelegate
 - (void)onAnimationFinishWithIsCancelled:(BOOL)isCancelled;
 - (void)onAnimationFailureWithError:(NSString*)error;
+- (void)onAnimationLoaded;
 @end
 
 @interface LottieContainerView : RCTView
