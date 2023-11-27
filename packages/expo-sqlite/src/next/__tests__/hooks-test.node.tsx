@@ -36,10 +36,10 @@ describe(useSQLiteContext, () => {
     expect(result.current).toBe(firstResult);
   });
 
-  it('should run initHandler before rendering children', async () => {
-    const mockInitHandler = jest.fn();
+  it('should run onInit before rendering children', async () => {
+    const mockonInit = jest.fn();
     const wrapper = ({ children }) => (
-      <SQLiteProvider databaseName=":memory:" initHandler={mockInitHandler}>
+      <SQLiteProvider databaseName=":memory:" onInit={mockonInit}>
         {children}
       </SQLiteProvider>
     );
@@ -49,8 +49,8 @@ describe(useSQLiteContext, () => {
         expect(result).not.toBeNull();
       });
     });
-    expect(mockInitHandler).toHaveBeenCalled();
-    expect(mockInitHandler.mock.calls[0][0]).toBe(result.current);
+    expect(mockonInit).toHaveBeenCalled();
+    expect(mockonInit.mock.calls[0][0]).toBe(result.current);
   });
 
   it('should render custom loading fallback before database is ready', async () => {

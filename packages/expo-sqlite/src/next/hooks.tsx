@@ -23,7 +23,7 @@ export interface SQLiteProviderProps {
    * A custom initialization handler to run before rendering the children.
    * You can use this to run database migrations or other setup tasks.
    */
-  initHandler?: (db: SQLiteDatabase) => Promise<void>;
+  onInit?: (db: SQLiteDatabase) => Promise<void>;
 
   /**
    * A custom loading fallback to render before the database is ready.
@@ -51,7 +51,7 @@ export function SQLiteProvider({
   databaseName,
   options,
   children,
-  initHandler,
+  onInit,
   loadingFallback,
   onError,
 }: SQLiteProviderProps) {
@@ -63,8 +63,8 @@ export function SQLiteProvider({
     async function setup() {
       try {
         const db = await openDatabaseAsync(databaseName, options);
-        if (initHandler != null) {
-          await initHandler(db);
+        if (onInit != null) {
+          await onInit(db);
         }
         databaseRef.current = db;
         setLoading(false);
@@ -89,7 +89,7 @@ export function SQLiteProvider({
       databaseRef.current = null;
       setLoading(true);
     };
-  }, [databaseName, options, initHandler]);
+  }, [databaseName, options, onInit]);
 
   if (error != null) {
     const handler =
