@@ -246,7 +246,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/build-reference/how-tos/': '/build-reference/private-npm-packages/',
   '/get-started/': '/get-started/installation/',
   '/guides/detach/': '/archive/glossary/#detach',
-  '/workflow/snack/': 'https://snack.expo.dev/',
+  '/workflow/snack/': '/more/glossary-of-terms/#snack',
   '/eas/submit/': '/submit/introduction/',
   '/development/tools/expo-dev-client/':
     '/develop/development-builds/introduction/#what-is-expo-dev-client',

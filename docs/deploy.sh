@@ -301,6 +301,7 @@ redirects[push-notifications/]=push-notifications/overview/
 redirects[eas/submit]=submit/introduction/
 redirects[development/tools/expo-dev-client/]=develop/development-builds/introduction/
 redirects[develop/user-interface/custom-fonts/]=develop/user-interface/fonts/
+redirects[workflow/snack/]=/more/glossary-of-terms/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
