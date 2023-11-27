@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "@expo/config-types": "^50.0.0-alpha.1",
-    "@expo/fingerprint": "^0.4.0",
+    "@expo/fingerprint": "^0.5.0",
     "@expo/json-file": "~8.2.37",
     "@expo/plist": "^0.0.20",
     "@expo/sdk-runtime-versions": "^1.0.0",
