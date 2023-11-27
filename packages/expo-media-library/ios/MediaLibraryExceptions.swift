@@ -137,3 +137,9 @@ internal class ExportSessionUnknownException: Exception {
     "Could not export the requested video"
   }
 }
+
+internal class InvalidPathException: Exception {
+  override var reason: String {
+    "Failed to create video path"
+  }
+}

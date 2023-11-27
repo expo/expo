@@ -22,16 +22,6 @@ enum MediaType: String, Enumerable {
   }
 }
 
-enum SortByKey: String, Enumerable {
-  case `default`
-  case mediaType
-  case width
-  case height
-  case creationTime
-  case modificationTime
-  case duration
-}
-
 struct AlbumOptions: Record {
   @Field var includeSmartAlbums: Bool = false
 }

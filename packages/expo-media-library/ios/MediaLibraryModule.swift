@@ -9,6 +9,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
   private var delegates = Set<SaveToLibraryDelegate>()
   private var changeDelegate: PhotoLibraryObserver?
 
+  // swiftlint:disable:next cyclomatic_complexity
   public func definition() -> ModuleDefinition {
     Name("ExpoMediaLibrary")
 
@@ -32,7 +33,8 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           "height": "height",
           "duration": "duration"
         ],
-        "CHANGE_LISTENER_NAME": "mediaLibraryDidChange"]
+        "CHANGE_LISTENER_NAME": "mediaLibraryDidChange"
+      ]
     }
 
     OnCreate {
@@ -107,13 +109,14 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
 
       if localUrl.pathExtension.isEmpty {
-        throw FileExtensionException()
+        promise.reject(FileExtensionException())
+        return
       }
 
       let assetType = assetType(for: localUrl)
       let delegate = SaveToLibraryDelegate()
       delegates.insert(delegate)
-      let callback: SaveToLibraryCallback = { [weak self] _, _ in
+      let callback: SaveToLibraryCallback = { [weak self] _, error in
         guard let self else {
           return
         }
@@ -304,9 +307,9 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           result["localUri"] = contentInput?.fullSizeImageURL?.absoluteString
           result["orientation"] = contentInput?.fullSizeImageOrientation
           if !options.shouldDownloadFromNetwork {
-            result["isNetworkAsset"] = info[PHContentEditingInputResultIsInCloudKey] != nil
+            result["isNetworkAsset"] = info[PHContentEditingInputResultIsInCloudKey] != nil 
             ? info[PHContentEditingInputResultIsInCloudKey]
-            :false
+            : false
           }
 
           if let url = contentInput?.fullSizeImageURL, let ciImage = CIImage(contentsOf: url) {
@@ -322,9 +325,9 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           if let asset = asset as? AVComposition {
             let directory = self.appContext?.config.cacheDirectory?.appendingPathComponent("MediaLibrary")
             FileSystemUtilities.ensureDirExists(at: directory)
-            let videoOutputFileName = "slowMoVideo-\(arc4random() % 1000).mov"
+            let videoOutputFileName = "slowMoVideo-\(Int.random(in: 0...999)).mov"
             guard let videoFileOutputPath = directory?.appendingPathComponent(videoOutputFileName) else {
-              // TODO: ERROR
+              promise.reject(InvalidPathException())
               return
             }
 
@@ -428,7 +431,6 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
   }
 
   private func ensureAlbumWith(title: String, completion: @escaping (PHAssetCollection?, Error?) -> Void) {
-
     if let collection = getAlbum(with: title) {
       completion(collection, nil)
       return
