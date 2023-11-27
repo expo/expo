@@ -2,7 +2,7 @@
 
 ## Unpublished
 
-- Ensure search parameters are always decoded
+- Ensure search parameters are always decoded ([#25589](https://github.com/expo/expo/pull/25589) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🛠 Breaking changes
 
