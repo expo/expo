@@ -152,8 +152,7 @@ function walkConfigItems(route, focusedRoute, configs, { preserveDynamicRoutes, 
         pattern = inputPattern;
         if (route.params) {
             const params = processParamsWithUserSettings(configItem, route.params);
-            // TODO: Does this need to be a null check?
-            if (pattern) {
+            if (pattern !== undefined && pattern !== null) {
                 Object.assign(collectedParams, params);
             }
             if (deepEqual(focusedRoute, route)) {
