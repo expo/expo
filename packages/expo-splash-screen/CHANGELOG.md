@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removed 'The current activity is no longer available' warning on Android. ([#25608](https://github.com/expo/expo/pull/25608) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.25.0 — 2023-11-14
 
 ### 🛠 Breaking changes
