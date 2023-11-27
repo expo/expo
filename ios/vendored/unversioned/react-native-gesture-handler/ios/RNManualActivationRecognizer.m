@@ -10,8 +10,9 @@
 {
   if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _handler = gestureHandler;
-    self.delegate = self;
     _activePointers = 0;
+    self.delegate = self;
+    self.cancelsTouchesInView = NO;
   }
   return self;
 }

@@ -46,7 +46,11 @@ using namespace facebook::react;
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
 
   _buttonView.userEnabled = newProps.enabled;
+#if !TARGET_OS_TV
   _buttonView.exclusiveTouch = newProps.exclusive;
+#endif
+  _buttonView.hitTestEdgeInsets = UIEdgeInsetsMake(
+      -newProps.hitSlop.top, -newProps.hitSlop.left, -newProps.hitSlop.bottom, -newProps.hitSlop.right);
 
   [super updateProps:props oldProps:oldProps];
 }

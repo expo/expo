@@ -12,21 +12,29 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
 
 class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHandlerStateChangeEvent>() {
-  private var extraData: WritableMap? = null
+  private var dataBuilder: GestureHandlerEventDataBuilder<*>? = null
+  private var newState: Int = GestureHandler.STATE_UNDETERMINED
+  private var oldState: Int = GestureHandler.STATE_UNDETERMINED
+
   private fun <T : GestureHandler<T>> init(
     handler: T,
     newState: Int,
     oldState: Int,
-    dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
+    dataBuilder: GestureHandlerEventDataBuilder<T>,
   ) {
     super.init(handler.view!!.id)
-    extraData = createEventData(handler, dataExtractor, newState, oldState)
+    this.dataBuilder = dataBuilder
+    this.newState = newState
+    this.oldState = oldState
   }
 
   override fun onDispose() {
-    extraData = null
+    dataBuilder = null
+    newState = GestureHandler.STATE_UNDETERMINED
+    oldState = GestureHandler.STATE_UNDETERMINED
     EVENTS_POOL.release(this)
   }
 
@@ -39,7 +47,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
   override fun getCoalescingKey(): Short = 0
 
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, extraData)
+    rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, createEventData(dataBuilder!!, newState, oldState))
   }
 
   companion object {
@@ -51,20 +59,18 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
       handler: T,
       newState: Int,
       oldState: Int,
-      dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
+      dataBuilder: GestureHandlerEventDataBuilder<T>,
     ): RNGestureHandlerStateChangeEvent =
       (EVENTS_POOL.acquire() ?: RNGestureHandlerStateChangeEvent()).apply {
-        init(handler, newState, oldState, dataExtractor)
+        init(handler, newState, oldState, dataBuilder)
       }
 
-    fun <T : GestureHandler<T>> createEventData(
-      handler: T,
-      dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
+    fun createEventData(
+      dataBuilder: GestureHandlerEventDataBuilder<*>,
       newState: Int,
       oldState: Int,
     ): WritableMap = Arguments.createMap().apply {
-      dataExtractor?.extractEventData(handler, this)
-      putInt("handlerTag", handler.tag)
+      dataBuilder.buildEventData(this)
       putInt("state", newState)
       putInt("oldState", oldState)
     }
