@@ -424,22 +424,22 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
     appContext?.permissions?.getPermissionUsingRequesterClass(
       MediaLibraryPermissionRequester.self,
       resolve: { result in
-      if let permissions = result as? [String: Any] {
-        if permissions["status"] as? String != "granted" {
-          reject("E_NO_PERMISSIONS", "MEDIA_LIBRARY permission is required to do this operation.", nil)
-          return
-        }
-
-        if #available(iOS 14.0, *) {
-          if permissions["accessPrivileges"] as? String != "all" {
+        if let permissions = result as? [String: Any] {
+          if permissions["status"] as? String != "granted" {
             reject("E_NO_PERMISSIONS", "MEDIA_LIBRARY permission is required to do this operation.", nil)
             return
           }
+
+          if #available(iOS 14.0, *) {
+            if permissions["accessPrivileges"] as? String != "all" {
+              reject("E_NO_PERMISSIONS", "MEDIA_LIBRARY permission is required to do this operation.", nil)
+              return
+            }
+          }
+          block()
         }
-        block()
-      }
-    },
-    reject: reject)
+      },
+      reject: reject)
   }
 
   func didChange(_ changeInstance: PHChange) {

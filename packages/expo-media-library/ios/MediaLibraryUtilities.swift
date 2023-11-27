@@ -500,7 +500,6 @@ private func convertSortByKey(_ key: String) throws -> String? {
 func requesterClass(_ writeOnly: Bool) -> EXPermissionsRequester.Type {
   if writeOnly {
     return MediaLibraryWriteOnlyPermissionRequester.self
-  } else {
-    return MediaLibraryPermissionRequester.self
   }
+  return MediaLibraryPermissionRequester.self
 }

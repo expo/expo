@@ -1,15 +1,13 @@
 import ExpoModulesCore
 import Photos
 
-public class MediaLibraryPermissionRequester: DefaultMediaLibraryPermissionRequester,
-                                              EXPermissionsRequester {
+public class MediaLibraryPermissionRequester: DefaultMediaLibraryPermissionRequester, EXPermissionsRequester {
   public static func permissionType() -> String {
     return "mediaLibrary"
   }
 }
 
-public class MediaLibraryWriteOnlyPermissionRequester: DefaultMediaLibraryPermissionRequester,
-                                                       EXPermissionsRequester {
+public class MediaLibraryWriteOnlyPermissionRequester: DefaultMediaLibraryPermissionRequester, EXPermissionsRequester {
   public static func permissionType() -> String {
     return "mediaLibraryWriteOnly"
   }
@@ -19,8 +17,6 @@ public class MediaLibraryWriteOnlyPermissionRequester: DefaultMediaLibraryPermis
     return PHAccessLevel.addOnly
   }
 }
-
-// MARK: - Permission requesters shared implementation extracted to an extension (mixin pattern)
 
 public class DefaultMediaLibraryPermissionRequester: NSObject {}
 
