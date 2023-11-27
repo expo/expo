@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added dependency on `expo-application` as it's no longer a dependency of the `expo` package. ([#25583](https://github.com/expo/expo/pull/25583) by [@tsapeta](https://github.com/tsapeta))
+
 ## 5.3.0 — 2023-11-14
 
 ### 💡 Others
