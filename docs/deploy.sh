@@ -172,6 +172,7 @@ redirects[develop/development-builds/installation/]=develop/development-builds/c
 redirects[get-started/errors/]=debugging/errors-and-warnings/
 redirects[develop/development-builds/parallel-installation]=build-reference/variants/
 redirects[home/develop/user-interface/safe-areas]=develop/user-interface/safe-areas/
+redirects[home/develop/development-builds/introduction]=develop/development-builds/introduction/
 
 # Redirects after Guides organization
 redirects[guides/]=guides/overview/
@@ -297,6 +298,9 @@ redirects[versions/latest/introduction/faq/]=faq/
 
 # Redirects based on Sentry reports
 redirects[push-notifications/]=push-notifications/overview/
+redirects[eas/submit]=submit/introduction/
+redirects[development/tools/expo-dev-client/]=develop/development-builds/introduction/
+redirects[develop/user-interface/custom-fonts/]=develop/user-interface/fonts/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
