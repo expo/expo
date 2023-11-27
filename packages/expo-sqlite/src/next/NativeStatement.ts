@@ -5,7 +5,7 @@ export interface RunResult {
   /**
    * The last inserted row ID.
    */
-  lastInsertRowid: number;
+  lastInsertRowId: number;
 
   /**
    * The number of rows affected.

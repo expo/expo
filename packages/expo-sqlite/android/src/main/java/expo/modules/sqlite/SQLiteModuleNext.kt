@@ -219,7 +219,7 @@ class SQLiteModuleNext : Module() {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
     return mapOf(
-      "lastInsertRowid" to database.ref.sqlite3_last_insert_rowid().toInt(),
+      "lastInsertRowId" to database.ref.sqlite3_last_insert_rowid().toInt(),
       "changes" to database.ref.sqlite3_changes(),
     )
   }

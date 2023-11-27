@@ -229,7 +229,7 @@ public final class SQLiteModuleNext: Module {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
     return [
-      "lastInsertRowid": Int(sqlite3_last_insert_rowid(database.pointer)),
+      "lastInsertRowId": Int(sqlite3_last_insert_rowid(database.pointer)),
       "changes": Int(sqlite3_changes(database.pointer))
     ]
   }

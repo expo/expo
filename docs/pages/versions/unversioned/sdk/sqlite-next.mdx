@@ -41,7 +41,7 @@ INSERT INTO test (value, intValue) VALUES ('test3', 789);
 
 // `runAsync` is useful when you want to execute some write operations.
 const result = await db.runAsync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'aaa', 100);
-console.log(result.lastInsertRowid, result.changes);
+console.log(result.lastInsertRowId, result.changes);
 await db.runAsync('UPDATE test SET intValue = ? WHERE value = ?', 999, 'aaa'); // Binding unnamed parameters from variadic arguments
 await db.runAsync('UPDATE test SET intValue = ? WHERE value = ?', [999, 'aaa']); // Binding unnamed parameters from array
 await db.runAsync('DELETE FROM test WHERE value = $value', { $value: 'aaa' }); // Binding named parameters from object

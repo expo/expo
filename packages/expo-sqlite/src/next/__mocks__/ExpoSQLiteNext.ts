@@ -197,7 +197,7 @@ class NativeStatement {
     assert(this.sqlite3Stmt);
     const result = this.sqlite3Stmt.run(...params);
     return {
-      lastInsertRowid: Number(result.lastInsertRowid),
+      lastInsertRowId: Number(result.lastInsertRowId),
       changes: result.changes,
     };
   };

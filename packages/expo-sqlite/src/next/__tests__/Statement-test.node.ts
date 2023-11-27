@@ -28,7 +28,7 @@ describe(Statement, () => {
   it('runExec should return RunResult', async () => {
     const statement = await db.prepareAsync('INSERT INTO test (value, intValue) VALUES (?, ?)');
     const result = await statement.runAsync('hello', 111);
-    expect(result.lastInsertRowid).toBeDefined();
+    expect(result.lastInsertRowId).toBeDefined();
     expect(result.changes).toBe(1);
     await statement.finalizeAsync();
   });

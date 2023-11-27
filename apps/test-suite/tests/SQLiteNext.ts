@@ -588,7 +588,7 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
     it('Basic CRUD', () => {
       const result = db.runSync('INSERT INTO Users (name, k, j) VALUES (?, ?, ?)', 'aaa', 1, 2.3);
       expect(result.changes).toBe(1);
-      expect(result.lastInsertRowid > 0).toBeTruthy();
+      expect(result.lastInsertRowId > 0).toBeTruthy();
       expect(db.allSync<UserEntity>('SELECT * FROM Users').length).toBe(4);
       expect(db.getSync<UserEntity>('SELECT * FROM Users WHERE name = ?', 'aaa')).not.toBeNull();
 

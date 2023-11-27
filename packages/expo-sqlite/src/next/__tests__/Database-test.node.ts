@@ -47,7 +47,7 @@ describe('Database', () => {
       'test',
       123
     );
-    expect(result.lastInsertRowid).toBe(1);
+    expect(result.lastInsertRowId).toBe(1);
     expect(result.changes).toBe(1);
   });
 
