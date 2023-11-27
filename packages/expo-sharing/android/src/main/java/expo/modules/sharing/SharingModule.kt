@@ -84,8 +84,11 @@ class SharingModule : Module() {
     return File(path)
   }
 
-  private fun isAllowedToRead(url: String?) =
-    appContext.filePermission.getPathPermissions(context, url).contains(Permission.READ)
+  private fun isAllowedToRead(url: String?): Boolean {
+    val permissions = appContext.filePermission
+    return permissions?.getPathPermissions(context, url)?.contains(Permission.READ)
+      ?: false
+  }
 
   private fun createSharingIntent(uri: Uri, mimeType: String?) =
     Intent(Intent.ACTION_SEND).apply {

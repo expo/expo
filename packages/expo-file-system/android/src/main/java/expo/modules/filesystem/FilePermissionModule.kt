@@ -1,38 +1,20 @@
-package expo.modules.core.utilities
+package expo.modules.filesystem
 
 import android.content.Context
+import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
+import expo.modules.core.interfaces.InternalModule
 import expo.modules.interfaces.filesystem.Permission
 import java.io.File
 import java.io.IOException
-import java.util.EnumSet
-import java.util.UUID
+import java.util.*
 
-object FileUtilities {
-  @Throws(IOException::class)
-  fun ensureDirExists(dir: File): File {
-    if (!(dir.isDirectory || dir.mkdirs())) {
-      throw IOException("Couldn't create directory '$dir'")
-    }
-    return dir
-  }
+// The class needs to be 'open', because it's inherited in expoview
+open class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
+  override fun getExportedInterfaces(): List<Class<*>> =
+    listOf(FilePermissionModuleInterface::class.java)
 
-  @Throws(IOException::class)
-  fun generateOutputPath(internalDirectory: File, dirName: String, extension: String): String {
-    val directory = File("${internalDirectory}${File.separator}$dirName")
-    ensureDirExists(directory)
-    val filename = UUID.randomUUID().toString()
-    val path = "${directory}${File.separator}$filename"
-    val prefix = if (extension.startsWith(".")) extension else ".$extension"
-    return path + prefix
-  }
-}
-
-object FilePermissionsUtilities {
-  fun getPathPermissions(context: Context, path: String?): EnumSet<Permission> = if (path == null) {
-    EnumSet.noneOf(Permission::class.java)
-  } else {
+  override fun getPathPermissions(context: Context, path: String): EnumSet<Permission> =
     getInternalPathPermissions(path, context) ?: getExternalPathPermissions(path)
-  }
 
   private fun getInternalPathPermissions(path: String, context: Context): EnumSet<Permission>? {
     return try {
@@ -45,7 +27,7 @@ object FilePermissionsUtilities {
     }
   }
 
-  private fun getExternalPathPermissions(path: String): EnumSet<Permission> {
+  protected open fun getExternalPathPermissions(path: String): EnumSet<Permission> {
     val file = File(path)
     return EnumSet.noneOf(Permission::class.java).apply {
       if (file.canRead()) {
