@@ -96,6 +96,19 @@ export function useLocalSearchParams<
   return Object.fromEntries(
     Object.entries(params).map(([key, value]) => {
       try {
+        if (Array.isArray(value)) {
+          return [
+            key,
+            value.map((v) => {
+              try {
+                return decodeURIComponent(v);
+              } catch {
+                return v;
+              }
+            }),
+          ];
+        }
+
         return [key, decodeURIComponent(value as string)];
       } catch {
         return [key, value];
