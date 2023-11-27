@@ -126,7 +126,7 @@ function rewriteNavigationStateToParams(state, params = {}) {
     if (!state)
         return params;
     // We Should always have at least one route in the state
-    const lastRoute = state.routes.at(-1);
+    const lastRoute = state.routes[state.routes.length - 1];
     params.screen = lastRoute.name;
     // Weirdly, this always needs to be an object. If it's undefined, it won't work.
     params.params = lastRoute.params ? JSON.parse(JSON.stringify(lastRoute.params)) : {};
@@ -148,7 +148,7 @@ function getNavigatePushAction(state, rootState) {
 }
 function getNavigateReplaceAction(state, parentState, lastNavigatorSupportingReplace = parentState) {
     // We should always have at least one route in the state
-    const route = state.routes.at(-1);
+    const route = state.routes[state.routes.length - 1];
     // Only these navigators support replace
     if (parentState.type === 'stack' || parentState.type === 'tab') {
         lastNavigatorSupportingReplace = parentState;
