@@ -68,7 +68,7 @@ describe(getVersionedNativeModulesAsync, () => {
 
   it('skips api versions when requested', async () => {
     nock(getExpoApiBaseUrl())
-      .get('/v2/sdks/66.0.0/native-modules')
+      .get('/v2/sdks/50.0.0/native-modules')
       .reply(200, {
         data: [
           { npmPackage: 'expo-abc', versionRange: '~1.0.0' },
