@@ -51,8 +51,8 @@ jobs:
       - name: 🌳 Display pod environment
         run: pod env
         working-directory: apps/bare-expo/ios
-      - name: 🥥 Update boost, RCT-Folly and SocketRocket pods in apps/bare-expo/ios
-        run: pod update boost RCT-Folly SocketRocket --no-repo-update
+      - name: 🥥 Update RCT-Folly and SocketRocket pods in apps/bare-expo/ios
+        run: pod update RCT-Folly SocketRocket --no-repo-update
         working-directory: apps/bare-expo/ios
       - name: 🥥 Install pods in apps/bare-expo/ios
         run: npx pod-install

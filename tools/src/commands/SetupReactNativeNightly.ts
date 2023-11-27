@@ -33,22 +33,15 @@ async function main() {
   logger.info('Adding pinned packages:');
   const pinnedPackages = {
     'react-native': nightlyVersion,
-    '@react-native-async-storage/async-storage': '~1.19.1', // fix AGP 8 build error
   };
   await addPinnedPackagesAsync(pinnedPackages);
 
   logger.info('Yarning...');
   await workspaceInstallAsync();
 
-  await updateReactNativePackageAsync();
-
-  await patchAndroidBuildConfigAsync();
-  await patchReactNavigationAsync();
-  await patchDetoxAsync();
-  await patchReanimatedAsync();
-  await patchScreensAsync();
-  await patchGestureHandlerAsync();
-  await patchSafeAreaContextAsync();
+  await patchAndroidTurboModuleAsync();
+  // await patchAndroidBuildConfigAsync();
+  // await patchSafeAreaContextAsync();
 
   logger.info('Setting up Expo modules files');
   await updateExpoModulesAsync();
@@ -96,96 +89,34 @@ async function addPinnedPackagesAsync(packages: Record<string, string>) {
   await JsonFile.writeAsync(workspacePackageJsonPath, json);
 }
 
-async function updateReactNativePackageAsync() {
-  const reactNativeRoot = path.join(EXPO_DIR, 'node_modules', 'react-native');
-
-  // https://github.com/facebook/react-native/pull/38993
-  await transformFileAsync(path.join(reactNativeRoot, 'React-Core.podspec'), [
-    {
-      find: '"React/CxxLogUtils/*.h"',
-      replaceWith: '"React/Cxx*/*.h"',
-    },
-  ]);
-}
-
-async function patchReactNavigationAsync() {
-  await transformFileAsync(
-    path.join(EXPO_DIR, 'node_modules', '@react-navigation/elements', 'src/Header/Header.tsx'),
-    [
-      {
-        // Weird that the nightlies will break if pass `undefined` to the `transform` prop
-        find: 'style={[{ height, minHeight, maxHeight, opacity, transform }]}',
-        replaceWith:
-          'style={[{ height, minHeight, maxHeight, opacity, transform: transform ?? [] }]}',
-      },
-    ]
-  );
-}
-
-async function patchDetoxAsync() {
-  await transformFileAsync(
-    path.join(EXPO_DIR, 'node_modules', 'detox', 'android/detox/build.gradle'),
-    [
-      {
-        // namespace
-        find: /^(android \{[\s\S]*?)(\n})/gm,
-        replaceWith: '$1\n  namespace "com.wix.detox"\n$2',
-      },
-    ]
-  );
-}
-
-async function patchReanimatedAsync() {
-  await transformFileAsync(
+async function patchAndroidTurboModuleAsync() {
+  const nodeModulesDir = path.join(EXPO_DIR, 'node_modules');
+  const targetFiles = [
     path.join(
-      EXPO_DIR,
-      'node_modules',
+      nodeModulesDir,
       'react-native-reanimated',
-      'android/src/main/java/com/swmansion/reanimated/keyboardObserver/ReanimatedKeyboardEventListener.java'
+      'android/src/paper/java/com/swmansion/reanimated/NativeProxy.java'
     ),
-    [
-      {
-        // AGP 8 `nonTransitiveRClass`
-        find: /\bcom\.swmansion\.reanimated\.(R\.id\.action_bar_root)/g,
-        replaceWith: 'androidx.appcompat.$1',
-      },
-    ]
-  );
-}
-
-async function patchScreensAsync() {
-  await transformFileAsync(
     path.join(
-      EXPO_DIR,
-      'node_modules',
-      'react-native-screens',
-      'android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt'
+      nodeModulesDir,
+      'react-native-reanimated',
+      'android/src/fabric/java/com/swmansion/reanimated/NativeProxy.java'
     ),
-    [
-      {
-        // AGP 8 `nonTransitiveRClass`
-        find: /\b(R\.attr\.colorPrimary)/g,
-        replaceWith: 'android.$1',
-      },
-    ]
-  );
-}
-
-async function patchGestureHandlerAsync() {
-  await transformFileAsync(
     path.join(
-      EXPO_DIR,
-      'node_modules',
-      'react-native-gesture-handler',
-      'android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt'
+      nodeModulesDir,
+      '@shopify/react-native-skia',
+      'android/src/main/java/com/shopify/reactnative/skia/SkiaManager.java'
     ),
-    [
+  ];
+
+  for (const file of targetFiles) {
+    await transformFileAsync(file, [
       {
-        find: 'decorateRuntime(jsContext.get())',
-        replaceWith: 'decorateRuntime(jsContext!!.get())',
+        find: `import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;`,
+        replaceWith: 'import com.facebook.react.internal.turbomodule.core.CallInvokerHolderImpl;',
       },
-    ]
-  );
+    ]);
+  }
 }
 
 async function patchSafeAreaContextAsync() {
@@ -200,18 +131,10 @@ async function updateExpoModulesAsync() {
 
 async function updateBareExpoAsync(nightlyVersion: string) {
   const root = path.join(EXPO_DIR, 'apps', 'bare-expo');
+
+  // Flipper was removed in 0.74
   await transformFileAsync(path.join(root, 'ios', 'Podfile'), [
     {
-      find: /(platform :ios, )['"]13\.0['"]/g,
-      replaceWith: "$1'13.4'",
-    },
-    {
-      // __apply_Xcode_12_5_M1_post_install_workaround was removed in 0.73
-      find: '__apply_Xcode_12_5_M1_post_install_workaround(installer)',
-      replaceWith: '',
-    },
-    {
-      // Flipper was removed in 0.74
       find: `flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled`,
       replaceWith: '',
     },
@@ -220,18 +143,10 @@ async function updateBareExpoAsync(nightlyVersion: string) {
       replaceWith: '',
     },
   ]);
-
-  // flipper-integration
   await transformFileAsync(path.join(root, 'android', 'app', 'build.gradle'), [
     {
-      find: 'debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")',
-      replaceWith: 'debugImplementation("com.facebook.fresco:flipper-fresco-plugin:3.0.0")',
-    },
-  ]);
-  await transformFileAsync(path.join(root, 'android', 'gradle.properties'), [
-    {
-      find: /FLIPPER_VERSION=0\.182\.0/,
-      replaceWith: 'FLIPPER_VERSION=0.201.0',
+      find: `implementation("com.facebook.react:flipper-integration")`,
+      replaceWith: '',
     },
   ]);
 }
@@ -263,27 +178,6 @@ async function patchAndroidBuildConfigAsync() {
       {
         find: searchPattern,
         replaceWith: replacement,
-      },
-    ]);
-  }
-
-  const missingNamespaceModules = {
-    '@shopify/flash-list': 'com.shopify.reactnative.flash_list',
-    '@shopify/react-native-skia': 'com.shopify.reactnative.skia',
-    '@react-native-community/slider': 'com.reactnativecommunity.slider',
-    '@react-native-masked-view/masked-view': 'org.reactnative.maskedview',
-    '@react-native-picker/picker': 'com.reactnativecommunity.picker',
-    'react-native-maps': 'com.rnmaps.maps',
-    'react-native-pager-view': 'com.reactnativepagerview',
-    'react-native-view-shot': 'fr.greweb.reactnativeviewshot',
-    'react-native-webview': 'com.reactnativecommunity.webview',
-  };
-  for (const [module, namespace] of Object.entries(missingNamespaceModules)) {
-    const gradleFile = path.join(EXPO_DIR, 'node_modules', module, 'android', 'build.gradle');
-    await transformFileAsync(gradleFile, [
-      {
-        find: searchPattern,
-        replaceWith: `$1\n  namespace "${namespace}"\n$2`,
       },
     ]);
   }
