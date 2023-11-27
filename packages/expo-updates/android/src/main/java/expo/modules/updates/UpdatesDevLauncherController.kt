@@ -11,9 +11,11 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.DatabaseLauncher
-import expo.modules.updates.launcher.Launcher
+import expo.modules.updates.launcher.LauncherResult
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.Loader
+import expo.modules.updates.loader.LoaderStatusCallbacks
+import expo.modules.updates.loader.OnUpdateResponseLoadedResult
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
@@ -24,6 +26,8 @@ import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updatesinterface.UpdatesInterface
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.File
 
@@ -46,7 +50,7 @@ class UpdatesDevLauncherController(
 ) : IUpdatesController, UpdatesInterface {
   override val isEmergencyLaunch = updatesDirectoryException != null
 
-  private var launcher: Launcher? = null
+  private var launcherResult: LauncherResult? = null
 
   private var previousUpdatesConfiguration: UpdatesConfiguration? = null
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
@@ -84,16 +88,16 @@ class UpdatesDevLauncherController(
   }
 
   val launchedUpdate: UpdateEntity?
-    get() = launcher?.launchedUpdate
+    get() = launcherResult?.launchedUpdate
 
   private val localAssetFiles: Map<AssetEntity, String>?
-    get() = launcher?.localAssetFiles
+    get() = launcherResult?.localAssetFiles
 
   private val isUsingEmbeddedAssets: Boolean
-    get() = launcher?.isUsingEmbeddedAssets ?: false
+    get() = launcherResult?.isUsingEmbeddedAssets ?: false
 
   override fun reset() {
-    launcher = null
+    launcherResult = null
   }
 
   /**
@@ -122,56 +126,58 @@ class UpdatesDevLauncherController(
 
     setDevelopmentSelectionPolicy()
 
-    val loader = RemoteLoader(
-      context,
-      updatesConfiguration!!,
-      databaseHolder.database,
-      fileDownloader,
-      updatesDirectory,
-      null
-    )
-    loader.start(object : Loader.LoaderCallback {
-      override fun onFailure(e: Exception) {
+    GlobalScope.launch {
+      val loader = RemoteLoader(
+        context,
+        updatesConfiguration!!,
+        databaseHolder.database,
+        fileDownloader,
+        updatesDirectory,
+        null
+      )
+      val loaderResult = try {
+        loader.load(object : LoaderStatusCallbacks {
+          override fun onAssetLoaded(
+            asset: AssetEntity,
+            successfulAssetCount: Int,
+            failedAssetCount: Int,
+            totalAssetCount: Int
+          ) {
+            callback.onProgress(successfulAssetCount, failedAssetCount, totalAssetCount)
+          }
+
+          override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): OnUpdateResponseLoadedResult {
+            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+            if (updateDirective != null) {
+              return OnUpdateResponseLoadedResult(
+                shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+                  is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
+                  is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
+                }
+              )
+            }
+
+            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+            return OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(updateManifest.manifest.getRawJson()))
+          }
+
+        })
+      } catch (e: Exception) {
         databaseHolder.releaseDatabase()
         // reset controller's configuration to what it was before this request
         updatesConfiguration = previousUpdatesConfiguration
         callback.onFailure(e)
+        return@launch
       }
 
-      override fun onSuccess(loaderResult: Loader.LoaderResult) {
-        // the dev launcher doesn't handle roll back to embedded commands
-        databaseHolder.releaseDatabase()
-        if (loaderResult.updateEntity == null) {
-          callback.onSuccess(null)
-          return
-        }
-        launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, context, callback)
+      // the dev launcher doesn't handle roll back to embedded commands
+      databaseHolder.releaseDatabase()
+      if (loaderResult.updateEntity == null) {
+        callback.onSuccess(null)
+        return@launch
       }
-
-      override fun onAssetLoaded(
-        asset: AssetEntity,
-        successfulAssetCount: Int,
-        failedAssetCount: Int,
-        totalAssetCount: Int
-      ) {
-        callback.onProgress(successfulAssetCount, failedAssetCount, totalAssetCount)
-      }
-
-      override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
-        val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-        if (updateDirective != null) {
-          return Loader.OnUpdateResponseLoadedResult(
-            shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
-              is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
-              is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
-            }
-          )
-        }
-
-        val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-        return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(updateManifest.manifest.getRawJson()))
-      }
-    })
+      launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, context, callback)
+    }
   }
 
   private fun setDevelopmentSelectionPolicy() {
@@ -187,7 +193,7 @@ class UpdatesDevLauncherController(
     resetSelectionPolicyToDefault()
   }
 
-  private fun launchUpdate(
+  private suspend fun launchUpdate(
     update: UpdateEntity,
     configuration: UpdatesConfiguration,
     context: Context,
@@ -208,37 +214,35 @@ class UpdatesDevLauncherController(
     )
 
     val launcher = DatabaseLauncher(
+      context,
+      databaseHolder.database,
       configuration,
       updatesDirectory!!,
       fileDownloader,
       selectionPolicy
     )
-    launcher.launch(
-      databaseHolder.database, context,
-      object : Launcher.LauncherCallback {
-        override fun onFailure(e: Exception) {
-          databaseHolder.releaseDatabase()
-          // reset controller's configuration to what it was before this request
-          updatesConfiguration = previousUpdatesConfiguration
-          callback.onFailure(e)
-        }
+    val result = try {
+      launcher.launch()
+    } catch (e: Exception) {
+      databaseHolder.releaseDatabase()
+      // reset controller's configuration to what it was before this request
+      updatesConfiguration = previousUpdatesConfiguration
+      callback.onFailure(e)
+      return
+    }
 
-        override fun onSuccess() {
-          databaseHolder.releaseDatabase()
-          this@UpdatesDevLauncherController.launcher = launcher
-          callback.onSuccess(object : UpdatesInterface.Update {
-            override fun getManifest(): JSONObject {
-              return launcher.launchedUpdate!!.manifest
-            }
-
-            override fun getLaunchAssetPath(): String {
-              return launcher.launchAssetFile!!
-            }
-          })
-          runReaper()
-        }
+    databaseHolder.releaseDatabase()
+    this@UpdatesDevLauncherController.launcherResult = result
+    callback.onSuccess(object : UpdatesInterface.Update {
+      override fun getManifest(): JSONObject {
+        return result.launchedUpdate!!.manifest
       }
-    )
+
+      override fun getLaunchAssetPath(): String {
+        return result.launchAssetFile!!
+      }
+    })
+    runReaper()
   }
 
   private fun getDatabase(): UpdatesDatabase = databaseHolder.database
@@ -280,37 +284,27 @@ class UpdatesDevLauncherController(
     )
   }
 
-  override fun relaunchReactApplicationForModule(
-    callback: IUpdatesController.ModuleCallback<Unit>
-  ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot reload update in a development client"))
+  override suspend fun relaunchReactApplicationForModule(): Unit {
+    throw NotAvailableInDevClientException("Cannot reload update in a development client")
   }
 
   override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {
     callback.onSuccess(UpdatesStateContext())
   }
 
-  override fun checkForUpdate(
-    callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>
-  ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot check for update in a development client"))
+  override suspend fun checkForUpdate(): IUpdatesController.CheckForUpdateResult {
+    throw NotAvailableInDevClientException("Cannot check for update in a development client")
   }
 
-  override fun fetchUpdate(
-    callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>
-  ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot fetch update in a development client"))
+  override suspend fun fetchUpdate(): IUpdatesController.FetchUpdateResult {
+    throw NotAvailableInDevClientException("Cannot fetch update in a development client")
   }
 
-  override fun getExtraParams(callback: IUpdatesController.ModuleCallback<Bundle>) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot get extra params in a development client"))
+  override suspend fun getExtraParams(): Bundle {
+    throw NotAvailableInDevClientException("Cannot get extra params in a development client")
   }
 
-  override fun setExtraParam(
-    key: String,
-    value: String?,
-    callback: IUpdatesController.ModuleCallback<Unit>
-  ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot set extra params in a development client"))
+  override suspend fun setExtraParam(key: String, value: String?) {
+    throw NotAvailableInDevClientException("Cannot set extra params in a development client")
   }
 }

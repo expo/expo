@@ -44,10 +44,10 @@ class DatabaseLauncher(
   private val updatesDirectory: File?,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy
-) : Launcher {
+) {
   private val loaderFiles: LoaderFiles = LoaderFiles()
 
-  override suspend fun launch(): LauncherResult {
+  suspend fun launch(): LauncherResult {
     val launchedUpdate = getLaunchableUpdate() ?: throw Exception("No launchable update was found. If this is a bare workflow app, make sure you have configured expo-updates correctly in android/app/build.gradle.")
 
     database.updateDao().markUpdateAccessed(launchedUpdate)

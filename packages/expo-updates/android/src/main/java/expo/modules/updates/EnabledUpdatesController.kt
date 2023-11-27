@@ -28,6 +28,8 @@ import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEventType
 import expo.modules.updates.statemachine.UpdatesStateMachine
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -127,7 +129,7 @@ class EnabledUpdatesController(
     startupProcedure.onDidCreateReactInstanceManager(reactInstanceManager)
   }
 
-  override suspend fun start() {
+  override fun start() {
     if (isStarted) {
       return
     }
@@ -138,16 +140,18 @@ class EnabledUpdatesController(
     BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseHolder.database)
     databaseHolder.releaseDatabase()
 
-    val startupProcedureResult = stateMachine.queueExecution(startupProcedure)
+    CoroutineScope(Dispatchers.IO).launch {
+      val startupProcedureResult = stateMachine.queueExecution(startupProcedure)
 
-    if (startupProcedureResult.shouldPerformAdditionalBackgroundLoad) {
-      GlobalScope.launch {
-        fetchUpdate()
+      if (startupProcedureResult.shouldPerformAdditionalBackgroundLoad) {
+        GlobalScope.launch {
+          fetchUpdate()
+        }
       }
-    }
 
-    isStartupFinished = true
-    (this as java.lang.Object).notify()
+      isStartupFinished = true
+      (this as java.lang.Object).notify()
+    }
   }
 
   private suspend fun relaunchReactApplication(shouldRunReaper: Boolean) {

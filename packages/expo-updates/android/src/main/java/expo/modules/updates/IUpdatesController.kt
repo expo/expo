@@ -47,7 +47,7 @@ interface IUpdatesController {
    * the application's lifecycle.
    * @param context the base context of the application, ideally a [ReactApplication]
    */
-  suspend fun start()
+  fun start()
 
   interface ModuleCallback<T> {
     fun onSuccess(result: T)
