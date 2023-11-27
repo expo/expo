@@ -172,6 +172,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/home/unit-testing/': '/develop/unit-testing/',
   '/home/config-plugins/introduction/': '/config-plugins/introduction/',
   '/home/develop/user-interface/app-icons': '/develop/user-interface/app-icons/',
+  '/home/develop/development-builds/introduction/': '/develop/development-builds/introduction/',
 
   // EAS Build
   '/build-reference/eas-json/': '/eas/json/#eas-build',
@@ -245,6 +246,11 @@ const RENAMED_PAGES: Record<string, string> = {
   '/build-reference/how-tos/': '/build-reference/private-npm-packages/',
   '/get-started/': '/get-started/installation/',
   '/guides/detach/': '/archive/glossary/#detach',
+  '/workflow/snack/': '/more/glossary-of-terms/#snack',
+  '/eas/submit/': '/submit/introduction/',
+  '/development/tools/expo-dev-client/':
+    '/develop/development-builds/introduction/#what-is-expo-dev-client',
+  '/develop/user-interface/custom-fonts/': '/develop/user-interface/fonts/#use-a-custom-font',
 
   // Renaming a submit section
   '/submit/submit-ios': '/submit/ios/',
