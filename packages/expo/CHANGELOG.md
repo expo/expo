@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Removed the dependency on the `expo-application` package.
+- Removed the dependency on the `expo-application` package. ([#25583](https://github.com/expo/expo/pull/25583) by [@tsapeta](https://github.com/tsapeta))
 
 ## 49.0.21 — 2023-11-24
 
