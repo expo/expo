@@ -7,6 +7,9 @@ import { Input } from '~/ui/components/Form';
 import { A, CALLOUT, FOOTNOTE } from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
+const URL = isDev
+  ? `https://api.expo.dev/v2/mailchimp-mailing-list/subscribe`
+  : `http://api.expo.test/v2/mailchimp-mailing-list/subscribe`;
 
 export const NewsletterSignUp = () => {
   const [hasSubscribed, setHasSubscribed] = useLocalStorage({
@@ -22,7 +25,7 @@ export const NewsletterSignUp = () => {
 
   function signUp() {
     if (email.length > 3) {
-      fetch(`http://api.expo.${isDev ? 'test' : 'dev'}/v2/mailchimp-mailing-list/subscribe`, {
+      fetch(URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -8,6 +8,9 @@ import { Input, Textarea } from '~/ui/components/Form';
 import { CALLOUT, LABEL, RawH2 } from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
+const URL = isDev
+  ? `http://api.expo.test/v2/feedback/docs-send`
+  : `https://api.expo.dev/v2/feedback/docs-send`;
 
 type Props = {
   pathname?: string;
@@ -20,7 +23,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
   const [errors, setErrors] = useState<object[] | null>(null);
 
   function sendFeedback() {
-    fetch(`http://api.expo.${isDev ? 'test' : 'dev'}/v2/feedback/docs-send`, {
+    fetch(URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
