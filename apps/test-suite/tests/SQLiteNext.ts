@@ -400,7 +400,7 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
     });
   });
 
-  describe('transactionAsync', () => {
+  describe('withTransactionAsync', () => {
     let db: SQLite.Database;
 
     afterEach(async () => {
@@ -432,7 +432,7 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       }
 
       const userName = await fakeUserFetcher(1);
-      await db.transactionAsync(async () => {
+      await db.withTransactionAsync(async () => {
         await db.runAsync('INSERT INTO Users (name) VALUES (?)', [userName]);
         const result = await db.getAsync<UserEntity>('SELECT * FROM Users LIMIT 1');
         expect(result.name).toEqual('Tim Duncan');
@@ -446,7 +446,7 @@ DROP TABLE IF EXISTS Users;
 CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
 `);
 
-      await db.transactionAsync(async () => {
+      await db.withTransactionAsync(async () => {
         const statement = await db.prepareAsync('INSERT INTO Users (name) VALUES (?)');
         await Promise.all([
           statement.runAsync('aaa'),
@@ -472,7 +472,7 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
 
       let error = null;
       try {
-        await db.transactionAsync(async () => {
+        await db.withTransactionAsync(async () => {
           await db.runAsync('INSERT INTO Users (name) VALUES (?)', ['bbb']);
           await db.runAsync('INSERT INTO Users (name) VALUES (?)', ['ccc']);
           // exeuting invalid sql statement will throw an exception
@@ -486,7 +486,7 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       expect((await db.getAsync<any>('SELECT COUNT(*) FROM Users'))['COUNT(*)']).toBe(1);
     });
 
-    it('transactionAsync could possibly have other async queries interrupted inside the transaction', async () => {
+    it('withTransactionAsync could possibly have other async queries interrupted inside the transaction', async () => {
       db = await SQLite.openDatabaseAsync('test.db');
       await db.execAsync(`
 DROP TABLE IF EXISTS Users;
@@ -494,7 +494,7 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
 INSERT INTO Users (name) VALUES ('aaa');
   `);
 
-      const promise1 = db.transactionAsync(async () => {
+      const promise1 = db.withTransactionAsync(async () => {
         for (let i = 0; i < 10; ++i) {
           const result = await db?.getAsync<{ name: string }>('SELECT name FROM Users');
           if (result?.name !== 'aaa') {
@@ -526,7 +526,7 @@ INSERT INTO Users (name) VALUES ('aaa');
       expect(error.toString()).toMatch(/Exception from promise1: Expected aaa but received bbb/);
     });
 
-    it('transactionExclusiveAsync should execute a transaction atomically and abort other write query', async () => {
+    it('withTransactionExclusiveAsync should execute a transaction atomically and abort other write query', async () => {
       db = await SQLite.openDatabaseAsync('test.db');
       await db.execAsync(`
 DROP TABLE IF EXISTS Users;
@@ -534,7 +534,7 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
 INSERT INTO Users (name) VALUES ('aaa');
   `);
 
-      const promise1 = db.transactionExclusiveAsync(async (txn) => {
+      const promise1 = db.withTransactionExclusiveAsync(async (txn) => {
         for (let i = 0; i < 10; ++i) {
           const result = await txn.getAsync<{ name: string }>('SELECT name FROM Users');
           if (result?.name !== 'aaa') {
@@ -614,17 +614,17 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
       expect(results[2].name).toBe('Tim Duncan');
     });
 
-    it('transactionSync should commit changes', () => {
-      db.transactionSync(() => {
+    it('withTransactionSync should commit changes', () => {
+      db.withTransactionSync(() => {
         db?.runSync('INSERT INTO Users (name, k, j) VALUES (?, ?, ?)', 'aaa', 1, 2.3);
       });
       const results = db.allSync<UserEntity>('SELECT * FROM Users');
       expect(results.length).toBe(4);
     });
 
-    it('transactionSync should rollback changes when exceptions happen', () => {
+    it('withTransactionSync should rollback changes when exceptions happen', () => {
       expect(() => {
-        db?.transactionSync(() => {
+        db?.withTransactionSync(() => {
           db?.runSync('DELETE FROM Users');
           throw new Error('Exception inside transaction');
         });

@@ -21,8 +21,8 @@ export class Database {
   /**
    * Asynchronous call to return whether the database is currently in a transaction.
    */
-  public isInTransactionAsync(): Promise<boolean> {
-    return this.nativeDatabase.isInTransactionAsync();
+  public isInwithTransactionAsync(): Promise<boolean> {
+    return this.nativeDatabase.isInwithTransactionAsync();
   }
 
   /**
@@ -59,7 +59,7 @@ export class Database {
    * > **Note:** This transaction is not exclusive and can be interrupted by other async queries.
    * @example
    * ```ts
-   * db.transactionAsync(async () => {
+   * db.withTransactionAsync(async () => {
    *   await db.execAsync('UPDATE test SET name = "aaa"');
    *
    *   //
@@ -72,11 +72,11 @@ export class Database {
    * });
    * db.execAsync('UPDATE test SET name = "bbb"');
    * ```
-   * If you worry about the order of execution, use `transactionExclusiveAsync` instead.
+   * If you worry about the order of execution, use `withTransactionExclusiveAsync` instead.
    *
    * @param task An async function to execute within a transaction.
    */
-  public async transactionAsync(task: () => Promise<void>): Promise<void> {
+  public async withTransactionAsync(task: () => Promise<void>): Promise<void> {
     try {
       await this.execAsync('BEGIN');
       await task();
@@ -99,12 +99,14 @@ export class Database {
    *
    * @example
    * ```ts
-   * db.transactionExclusiveAsync(async (txn) => {
+   * db.withTransactionExclusiveAsync(async (txn) => {
    *   await txn.execAsync('UPDATE test SET name = "aaa"');
    * });
    * ```
    */
-  public async transactionExclusiveAsync(task: (txn: Transaction) => Promise<void>): Promise<void> {
+  public async withTransactionExclusiveAsync(
+    task: (txn: Transaction) => Promise<void>
+  ): Promise<void> {
     const transaction = await Transaction.createAsync(this);
     let error;
     try {
@@ -169,7 +171,7 @@ export class Database {
    *
    * @param task An async function to execute within a transaction.
    */
-  public transactionSync(task: () => void): void {
+  public withTransactionSync(task: () => void): void {
     try {
       this.execSync('BEGIN');
       task();
@@ -452,7 +454,7 @@ export function addDatabaseChangeListener(
 }
 
 /**
- * A new connection specific used for [`transactionExclusiveAsync`](#transactionexclusiveasynctask).
+ * A new connection specific used for [`withTransactionExclusiveAsync`](#withTransactionExclusiveAsynctask).
  * @hidden not going to pull all the database methods to the document.
  */
 class Transaction extends Database {

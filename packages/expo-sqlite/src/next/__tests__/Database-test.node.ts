@@ -93,27 +93,27 @@ describe('Database', () => {
     expect(results[2].intValue).toBe(123);
   });
 
-  it('transactionAsync should commit changes', async () => {
+  it('withTransactionAsync should commit changes', async () => {
     db = await openDatabaseAsync(':memory:');
     await db.execAsync(
       'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
     );
 
-    await db.transactionAsync(async () => {
+    await db.withTransactionAsync(async () => {
       await db?.runAsync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
     });
     const results = await db.allAsync<TestEntity>('SELECT * FROM test');
     expect(results.length).toBe(1);
   });
 
-  it('transactionAsync should rollback changes when exceptions happen', async () => {
+  it('withTransactionAsync should rollback changes when exceptions happen', async () => {
     db = await openDatabaseAsync(':memory:');
     await db.execAsync(
       'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
     );
 
     await expect(
-      db?.transactionAsync(async () => {
+      db?.withTransactionAsync(async () => {
         await db?.runAsync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
         throw new Error('Exception inside transaction');
       })
@@ -123,7 +123,7 @@ describe('Database', () => {
     expect(results.length).toBe(0);
   });
 
-  it('transactionAsync could possibly have other async queries interrupted inside the transaction', async () => {
+  it('withTransactionAsync could possibly have other async queries interrupted inside the transaction', async () => {
     db = await openDatabaseAsync('test.db');
     await db.execAsync(`
 DROP TABLE IF EXISTS Users;
@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
 INSERT INTO Users (name) VALUES ('aaa');
   `);
 
-    const promise1 = db.transactionAsync(async () => {
+    const promise1 = db.withTransactionAsync(async () => {
       for (let i = 0; i < 10; ++i) {
         const result = await db?.getAsync<{ name: string }>('SELECT name FROM Users');
         if (result?.name !== 'aaa') {
@@ -161,7 +161,7 @@ INSERT INTO Users (name) VALUES ('aaa');
     );
   });
 
-  it('transactionExclusiveAsync should execute a transaction atomically and abort other write query', async () => {
+  it('withTransactionExclusiveAsync should execute a transaction atomically and abort other write query', async () => {
     db = await openDatabaseAsync('test.db');
     await db.execAsync(`
 DROP TABLE IF EXISTS Users;
@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
 INSERT INTO Users (name) VALUES ('aaa');
   `);
 
-    const promise1 = db.transactionExclusiveAsync(async (txn) => {
+    const promise1 = db.withTransactionExclusiveAsync(async (txn) => {
       for (let i = 0; i < 10; ++i) {
         const result = await txn.getAsync<{ name: string }>('SELECT name FROM Users');
         if (result?.name !== 'aaa') {
@@ -246,27 +246,27 @@ describe('Database - Synchronous calls', () => {
     expect(results[2].intValue).toBe(123);
   });
 
-  it('transactionSync should commit changes', () => {
+  it('withTransactionSync should commit changes', () => {
     db = openDatabaseSync(':memory:');
     db.execSync(
       'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
     );
 
-    db.transactionSync(() => {
+    db.withTransactionSync(() => {
       db?.runSync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
     });
     const results = db.allSync<TestEntity>('SELECT * FROM test');
     expect(results.length).toBe(1);
   });
 
-  it('transactionSync should rollback changes when exceptions happen', () => {
+  it('withTransactionSync should rollback changes when exceptions happen', () => {
     db = openDatabaseSync(':memory:');
     db.execAsync(
       'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
     );
 
     expect(() => {
-      db?.transactionSync(() => {
+      db?.withTransactionSync(() => {
         db?.runSync('INSERT INTO test (value, intValue) VALUES (?, ?)', 'test', 123);
         throw new Error('Exception inside transaction');
       });
