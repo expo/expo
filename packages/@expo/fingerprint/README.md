@@ -79,7 +79,7 @@ bf8a3b08935f056270b1688333b02f1ef5fa25bf
 
 ### diffFingerprintChangesAsync
 
-Differentiate given `fingerprint` with the current project fingerprint state
+Diff the given `fingerprint` with the current project fingerprint state
 
 ```ts
 function diffFingerprintChangesAsync(fingerprint: Fingerprint, projectRoot: string, options?: Options): Promise<FingerprintSource[]>;
@@ -134,7 +134,7 @@ console.log(result);
 
 ### diffFingerprints
 
-Differentiate two fingerprints
+Find the diff between two fingerprints
 
 ```ts
 function diffFingerprints(fingerprint1: Fingerprint, fingerprint2: Fingerprint): FingerprintSource[];
@@ -158,7 +158,7 @@ function diffFingerprints(fingerprint1: Fingerprint, fingerprint2: Fingerprint):
 
 ### Include or exclude extra files in the **.fingerprintignore** file
 
-The fingerprint library has a default [`DEFAULT_IGNORE_PATHS`](https://github.com/expo/expo/blob/main/packages/%40expo/fingerprint/src/Options.ts#L9) to keep hashing speed and fingerprint result stability. If the default setup does not fit your workflow, you can either include or exclude files in a **.fingerprintignore** file inside your project root. The syntax of **.fingerprintignore** is similar to [.gitignore](https://git-scm.com/docs/gitignore#_pattern_format).
+The default paths [`DEFAULT_IGNORE_PATHS`](https://github.com/expo/expo/blob/main/packages/%40expo/fingerprint/src/Options.ts#L9) are designed for speed of hashing and for fingerprint result stability. If the default setup does not fit your workflow, you can either include or exclude files in a **.fingerprintignore** file inside your project root. The syntax of **.fingerprintignore** is similar to [**.gitignore**](https://git-scm.com/docs/gitignore#_pattern_format).
 
 In the following example of **.fingerprintignore**, it will ignore the whole **/app/ios** folder but still keep the **/app/ios/Podfile** and **/app/ios/Podfile.lock** 
 
