@@ -29,10 +29,8 @@ func stringifyMedia(mediaSubtypes: PHAssetMediaSubtype) -> [String] {
   subtypesDict["livePhoto"] = PHAssetMediaSubtype.photoLive
   subtypesDict["depthEffect"] = PHAssetMediaSubtype.photoDepthEffect
 
-  for (subtype, value) in subtypesDict {
-    if mediaSubtypes.contains(value) {
-      subtypes.append(subtype as String)
-    }
+  for (subtype, value) in subtypesDict where mediaSubtypes.contains(value) {
+    subtypes.append(subtype as String)
   }
   return subtypes
 }
@@ -98,9 +96,7 @@ func exportLocation(location: CLLocation?) -> [String: String]? {
 
 func assetIdFromLocalId(localId: String) -> String? {
   if let range = localId.range(of: "/.*", options: .regularExpression) {
-    let substring = String(localId[..<range.lowerBound])
-    return substring
-
+    return String(localId[..<range.lowerBound])
   }
   return nil
 }

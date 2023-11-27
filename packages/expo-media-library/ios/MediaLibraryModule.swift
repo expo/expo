@@ -296,77 +296,11 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         promise.resolve(nil)
         return
       }
-      var result = exportAssetInfo(asset: asset) ?? [:]
 
       if asset.mediaType == .image {
-        let imageOptions = PHContentEditingInputRequestOptions()
-        imageOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
-
-        asset.requestContentEditingInput(with: imageOptions) { contentInput, info in
-          result["localUri"] = contentInput?.fullSizeImageURL?.absoluteString
-          result["orientation"] = contentInput?.fullSizeImageOrientation
-          if !options.shouldDownloadFromNetwork {
-            result["isNetworkAsset"] = info[PHContentEditingInputResultIsInCloudKey] != nil
-            ? info[PHContentEditingInputResultIsInCloudKey]
-            : false
-          }
-
-          if let url = contentInput?.fullSizeImageURL, let ciImage = CIImage(contentsOf: url) {
-            result["exif"] = ciImage.properties
-          }
-          promise.resolve(result)
-        }
+        resolveImage(asset: asset, options: options, promise: promise)
       } else {
-        let videoOptions = PHVideoRequestOptions()
-        videoOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
-
-        PHImageManager.default().requestAVAsset(forVideo: asset, options: videoOptions) { asset, _, info in
-          guard let asset = asset as? AVComposition else {
-            let urlAsset = asset as? AVURLAsset
-            result["localUri"] = urlAsset?.url.absoluteString
-            if !options.shouldDownloadFromNetwork {
-              result["isNetworkAsset"] = info?[PHImageResultIsInCloudKey] != nil
-              ? info?[PHImageResultIsInCloudKey]
-              : false
-            }
-            promise.resolve(result)
-            return
-          }
-
-          let directory = self.appContext?.config.cacheDirectory?.appendingPathComponent("MediaLibrary")
-          FileSystemUtilities.ensureDirExists(at: directory)
-          let videoOutputFileName = "slowMoVideo-\(Int.random(in: 0...999)).mov"
-          guard let videoFileOutputPath = directory?.appendingPathComponent(videoOutputFileName) else {
-            promise.reject(InvalidPathException())
-            return
-          }
-
-          let videoFileOutputURL = URL(string: videoFileOutputPath.path)
-
-          let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality)
-          exporter?.outputURL = videoFileOutputURL
-          exporter?.outputFileType = AVFileType.mov
-          exporter?.shouldOptimizeForNetworkUse = true
-
-          exporter?.exportAsynchronously {
-            switch exporter?.status {
-            case .completed:
-              result["localUri"] = videoFileOutputURL?.absoluteString
-              if !options.shouldDownloadFromNetwork {
-                result["isNetworkAsset"] = info?[PHImageResultIsInCloudKey] != nil ? info?[PHImageResultIsInCloudKey]
-                : false
-              }
-
-              promise.resolve(result)
-            case .failed:
-              promise.reject(ExportSessionFailedException())
-            case .cancelled:
-              promise.reject(ExportSessionCancelledException())
-            default:
-              promise.reject(ExportSessionUnknownException())
-            }
-          }
-        }
+        resolveVideo(asset: asset, options: options, promise: promise)
       }
     }
 
@@ -398,6 +332,81 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
     }
   }
 
+  private func resolveImage(asset: PHAsset, options: AssetInfoOptions, promise: Promise) {
+    var result = exportAssetInfo(asset: asset) ?? [:]
+    let imageOptions = PHContentEditingInputRequestOptions()
+    imageOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
+
+    asset.requestContentEditingInput(with: imageOptions) { contentInput, info in
+      result["localUri"] = contentInput?.fullSizeImageURL?.absoluteString
+      result["orientation"] = contentInput?.fullSizeImageOrientation
+      if !options.shouldDownloadFromNetwork {
+        result["isNetworkAsset"] = info[PHContentEditingInputResultIsInCloudKey] != nil
+        ? info[PHContentEditingInputResultIsInCloudKey]
+        : false
+      }
+
+      if let url = contentInput?.fullSizeImageURL, let ciImage = CIImage(contentsOf: url) {
+        result["exif"] = ciImage.properties
+      }
+      promise.resolve(result)
+    }
+  }
+
+  private func resolveVideo(asset: PHAsset, options: AssetInfoOptions, promise: Promise) {
+    var result = exportAssetInfo(asset: asset) ?? [:]
+    let videoOptions = PHVideoRequestOptions()
+    videoOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
+
+    PHImageManager.default().requestAVAsset(forVideo: asset, options: videoOptions) { asset, _, info in
+      guard let asset = asset as? AVComposition else {
+        let urlAsset = asset as? AVURLAsset
+        result["localUri"] = urlAsset?.url.absoluteString
+        if !options.shouldDownloadFromNetwork {
+          result["isNetworkAsset"] = info?[PHImageResultIsInCloudKey] != nil
+          ? info?[PHImageResultIsInCloudKey]
+          : false
+        }
+        promise.resolve(result)
+        return
+      }
+
+      let directory = self.appContext?.config.cacheDirectory?.appendingPathComponent("MediaLibrary")
+      FileSystemUtilities.ensureDirExists(at: directory)
+      let videoOutputFileName = "slowMoVideo-\(Int.random(in: 0...999)).mov"
+      guard let videoFileOutputPath = directory?.appendingPathComponent(videoOutputFileName) else {
+        promise.reject(InvalidPathException())
+        return
+      }
+
+      let videoFileOutputURL = URL(string: videoFileOutputPath.path)
+
+      let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality)
+      exporter?.outputURL = videoFileOutputURL
+      exporter?.outputFileType = AVFileType.mov
+      exporter?.shouldOptimizeForNetworkUse = true
+
+      exporter?.exportAsynchronously {
+        switch exporter?.status {
+        case .completed:
+          result["localUri"] = videoFileOutputURL?.absoluteString
+          if !options.shouldDownloadFromNetwork {
+            result["isNetworkAsset"] = info?[PHImageResultIsInCloudKey] != nil ? info?[PHImageResultIsInCloudKey]
+            : false
+          }
+
+          promise.resolve(result)
+        case .failed:
+          promise.reject(ExportSessionFailedException())
+        case .cancelled:
+          promise.reject(ExportSessionCancelledException())
+        default:
+          promise.reject(ExportSessionUnknownException())
+        }
+      }
+    }
+  }
+
   private func checkPermissions(promise: Promise) -> Bool {
     guard let permissions = appContext?.permissions else {
       promise.reject(MediaLibraryPermissionsException())
@@ -414,7 +423,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
   private func runIfAllPermissionsWereGranted(reject: @escaping EXPromiseRejectBlock, block: @escaping () -> Void) {
     appContext?.permissions?.getPermissionUsingRequesterClass(MediaLibraryPermissionRequester.self, resolve: { result in
       if let permissions = result as? [String: Any] {
-        if permissions["status"] as! String != "granted" {
+        if permissions["status"] as? String != "granted" {
           reject("E_NO_PERMISSIONS", "MEDIA_LIBRARY permission is required to do this operation.", nil)
           return
         }
@@ -425,8 +434,8 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
             return
           }
         }
+        block()
       }
-      block()
     }, reject: reject)
   }
 
