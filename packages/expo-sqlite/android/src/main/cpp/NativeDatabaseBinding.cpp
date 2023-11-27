@@ -49,8 +49,8 @@ int NativeDatabaseBinding::sqlite3_close() {
 }
 
 std::string
-NativeDatabaseBinding::sqlite3_db_filename(const std::string &dbName) {
-  return ::sqlite3_db_filename(db, dbName.c_str());
+NativeDatabaseBinding::sqlite3_db_filename(const std::string &databaseName) {
+  return ::sqlite3_db_filename(db, databaseName.c_str());
 }
 
 int NativeDatabaseBinding::sqlite3_enable_load_extension(int onoff) {
@@ -128,14 +128,14 @@ NativeDatabaseBinding::initHybrid(jni::alias_ref<jhybridobject> jThis) {
 
 // static
 void NativeDatabaseBinding::OnUpdateHook(void *arg, int action,
-                                         char const *dbName,
+                                         char const *databaseName,
                                          char const *tableName,
                                          sqlite3_int64 rowId) {
   NativeDatabaseBinding *pThis = reinterpret_cast<NativeDatabaseBinding *>(arg);
   static const auto method =
       jni::findClassStatic("expo/modules/sqlite/NativeDatabaseBinding")
           ->getMethod<void(jint, jstring, jstring, jlong)>("onUpdate");
-  method(pThis->javaPart_, action, jni::make_jstring(dbName).get(),
+  method(pThis->javaPart_, action, jni::make_jstring(databaseName).get(),
          jni::make_jstring(tableName).get(), rowId);
 }
 

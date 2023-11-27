@@ -18,7 +18,7 @@ const emitter = new EventEmitter(ExpoSQLite);
  */
 export class SQLiteDatabase {
   constructor(
-    public readonly dbName: string,
+    public readonly databaseName: string,
     public readonly options: SQLiteOpenOptions,
     private readonly nativeDatabase: NativeDatabase
   ) {}
@@ -386,17 +386,17 @@ export class SQLiteDatabase {
 /**
  * Open a database.
  *
- * @param dbName The name of the database file to open.
+ * @param databaseName The name of the database file to open.
  * @param options Open options.
  */
 export async function openDatabaseAsync(
-  dbName: string,
+  databaseName: string,
   options?: SQLiteOpenOptions
 ): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, openOptions);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, openOptions);
   await nativeDatabase.initAsync();
-  return new SQLiteDatabase(dbName, openOptions, nativeDatabase);
+  return new SQLiteDatabase(databaseName, openOptions, nativeDatabase);
 }
 
 /**
@@ -404,23 +404,26 @@ export async function openDatabaseAsync(
  *
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
- * @param dbName The name of the database file to open.
+ * @param databaseName The name of the database file to open.
  * @param options Open options.
  */
-export function openDatabaseSync(dbName: string, options?: SQLiteOpenOptions): SQLiteDatabase {
+export function openDatabaseSync(
+  databaseName: string,
+  options?: SQLiteOpenOptions
+): SQLiteDatabase {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, openOptions);
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(databaseName, openOptions);
   nativeDatabase.initSync();
-  return new SQLiteDatabase(dbName, openOptions, nativeDatabase);
+  return new SQLiteDatabase(databaseName, openOptions, nativeDatabase);
 }
 
 /**
  * Delete a database file.
  *
- * @param dbName The name of the database file to delete.
+ * @param databaseName The name of the database file to delete.
  */
-export async function deleteDatabaseAsync(dbName: string): Promise<void> {
-  return await ExpoSQLite.deleteDatabaseAsync(dbName);
+export async function deleteDatabaseAsync(databaseName: string): Promise<void> {
+  return await ExpoSQLite.deleteDatabaseAsync(databaseName);
 }
 
 /**
@@ -428,10 +431,10 @@ export async function deleteDatabaseAsync(dbName: string): Promise<void> {
  *
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
- * @param dbName The name of the database file to delete.
+ * @param databaseName The name of the database file to delete.
  */
-export function deleteDatabaseSync(dbName: string): void {
-  return ExpoSQLite.deleteDatabaseSync(dbName);
+export function deleteDatabaseSync(databaseName: string): void {
+  return ExpoSQLite.deleteDatabaseSync(databaseName);
 }
 
 /**
@@ -439,7 +442,7 @@ export function deleteDatabaseSync(dbName: string): void {
  */
 export type DatabaseChangeEvent = {
   /** The database name. The value would be `main` by default and other database names if you use `ATTACH DATABASE` statement. */
-  dbName: string;
+  databaseName: string;
 
   /** The absolute file path to the database. */
   dbFilePath: string;
@@ -455,7 +458,7 @@ export type DatabaseChangeEvent = {
  * Add a listener for database changes.
  * > Note: to enable this feature, you must set [`enableChangeListener` to `true`](#sqliteopenoptions) when opening the database.
  *
- * @param listener A function that receives the `dbFilePath`, `dbName`, `tableName` and `rowId` of the modified data.
+ * @param listener A function that receives the `dbFilePath`, `databaseName`, `tableName` and `rowId` of the modified data.
  * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
  */
 export function addDatabaseChangeListener(
@@ -471,8 +474,8 @@ export function addDatabaseChangeListener(
 class Transaction extends SQLiteDatabase {
   public static async createAsync(db: SQLiteDatabase): Promise<Transaction> {
     const options = { ...db.options, useNewConnection: true };
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.dbName, options);
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databaseName, options);
     await nativeDatabase.initAsync();
-    return new Transaction(db.dbName, options, nativeDatabase);
+    return new Transaction(db.databaseName, options, nativeDatabase);
   }
 }

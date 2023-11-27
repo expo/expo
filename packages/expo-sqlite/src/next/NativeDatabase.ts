@@ -4,7 +4,7 @@ import { NativeStatement } from './NativeStatement';
  * A class that represents an instance of the SQLite database.
  */
 export declare class NativeDatabase {
-  constructor(dbName: string, options?: SQLiteOpenOptions);
+  constructor(databaseName: string, options?: SQLiteOpenOptions);
 
   //#region Asynchronous API
 

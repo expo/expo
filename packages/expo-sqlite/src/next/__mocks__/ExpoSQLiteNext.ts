@@ -20,7 +20,7 @@ export default {
   NativeDatabase: jest
     .fn()
     .mockImplementation(
-      (dbName: string, options?: SQLiteOpenOptions) => new NativeDatabase(dbName)
+      (databaseName: string, options?: SQLiteOpenOptions) => new NativeDatabase(databaseName)
     ),
 
   NativeStatement: jest.fn().mockImplementation(() => new NativeStatement()),
@@ -34,8 +34,8 @@ export default {
 class NativeDatabase {
   private readonly sqlite3Db: sqlite3.Database;
 
-  constructor(dbName: string) {
-    this.sqlite3Db = new sqlite3(dbName);
+  constructor(databaseName: string) {
+    this.sqlite3Db = new sqlite3(databaseName);
   }
 
   //#region Asynchronous API

@@ -39,22 +39,22 @@ public final class SQLiteModuleNext: Module {
       }
     }
 
-    AsyncFunction("deleteDatabaseAsync") { (dbName: String) in
-      try deleteDatabase(dbName: dbName)
+    AsyncFunction("deleteDatabaseAsync") { (databaseName: String) in
+      try deleteDatabase(databaseName: databaseName)
     }
-    Function("deleteDatabaseSync") { (dbName: String) in
-      try deleteDatabase(dbName: dbName)
+    Function("deleteDatabaseSync") { (databaseName: String) in
+      try deleteDatabase(databaseName: databaseName)
     }
 
     // swiftlint:disable:next closure_body_length
     Class(NativeDatabase.self) {
-      Constructor { (dbName: String, options: OpenDatabaseOptions) -> NativeDatabase in
-        guard let path = pathForDatabaseName(name: dbName) else {
+      Constructor { (databaseName: String, options: OpenDatabaseOptions) -> NativeDatabase in
+        guard let path = pathForDatabaseName(name: databaseName) else {
           throw DatabaseException()
         }
 
         // Try to find opened database for fast refresh
-        if let cachedDb = findCachedDatabase(where: { $0.dbName == dbName && $0.openOptions == options && !options.useNewConnection }) {
+        if let cachedDb = findCachedDatabase(where: { $0.databaseName == databaseName && $0.openOptions == options && !options.useNewConnection }) {
           return cachedDb
         }
 
@@ -63,7 +63,7 @@ public final class SQLiteModuleNext: Module {
           throw DatabaseException()
         }
 
-        let database = NativeDatabase(db, dbName: dbName, openOptions: options)
+        let database = NativeDatabase(db, databaseName: databaseName, openOptions: options)
         addCachedDatabase(database)
         return database
       }
@@ -346,26 +346,26 @@ public final class SQLiteModuleNext: Module {
     }
   }
 
-  private func deleteDatabase(dbName: String) throws {
-    if findCachedDatabase(where: { $0.dbName == dbName }) != nil {
-      throw DeleteDatabaseException(dbName)
+  private func deleteDatabase(databaseName: String) throws {
+    if findCachedDatabase(where: { $0.databaseName == databaseName }) != nil {
+      throw DeleteDatabaseException(databaseName)
     }
 
-    if dbName == MEMORY_DB_NAME {
+    if databaseName == MEMORY_DB_NAME {
       return
     }
-    guard let path = pathForDatabaseName(name: dbName) else {
+    guard let path = pathForDatabaseName(name: databaseName) else {
       throw Exceptions.FileSystemModuleNotFound()
     }
 
     if !FileManager.default.fileExists(atPath: path.absoluteString) {
-      throw DatabaseNotFoundException(dbName)
+      throw DatabaseNotFoundException(databaseName)
     }
 
     do {
       try FileManager.default.removeItem(atPath: path.absoluteString)
     } catch {
-      throw DeleteDatabaseFileException(dbName)
+      throw DeleteDatabaseFileException(databaseName)
     }
   }
 
@@ -373,7 +373,7 @@ public final class SQLiteModuleNext: Module {
     let contextPair = Unmanaged.passRetained(((self, database) as AnyObject))
     contextPairs.append(contextPair)
     // swiftlint:disable:next multiline_arguments
-    sqlite3_update_hook(database.pointer, { obj, action, dbName, tableName, rowId in
+    sqlite3_update_hook(database.pointer, { obj, action, databaseName, tableName, rowId in
       guard let obj,
         let tableName,
         let pair = Unmanaged<AnyObject>.fromOpaque(obj).takeUnretainedValue() as? (SQLiteModuleNext, NativeDatabase) else {
@@ -381,10 +381,10 @@ public final class SQLiteModuleNext: Module {
       }
       let selfInstance = pair.0
       let database = pair.1
-      let dbFilePath = sqlite3_db_filename(database.pointer, dbName)
-      if selfInstance.hasListeners, let dbName, let dbFilePath {
+      let dbFilePath = sqlite3_db_filename(database.pointer, databaseName)
+      if selfInstance.hasListeners, let databaseName, let dbFilePath {
         selfInstance.sendEvent("onDatabaseChange", [
-          "dbName": String(cString: UnsafePointer(dbName)),
+          "databaseName": String(cString: UnsafePointer(databaseName)),
           "dbFilePath": String(cString: UnsafePointer(dbFilePath)),
           "tableName": String(cString: UnsafePointer(tableName)),
           "rowId": rowId,

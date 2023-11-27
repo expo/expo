@@ -43,25 +43,25 @@ class SQLiteModuleNext : Module() {
       } catch (_: Throwable) {}
     }
 
-    AsyncFunction("deleteDatabaseAsync") { dbName: String ->
-      deleteDatabase(dbName)
+    AsyncFunction("deleteDatabaseAsync") { databaseName: String ->
+      deleteDatabase(databaseName)
     }
-    Function("deleteDatabaseSync") { dbName: String ->
-      deleteDatabase(dbName)
+    Function("deleteDatabaseSync") { databaseName: String ->
+      deleteDatabase(databaseName)
     }
 
     Class(NativeDatabase::class) {
-      Constructor { dbName: String, options: OpenDatabaseOptions ->
-        val dbPath = pathForDatabaseName(dbName)
+      Constructor { databaseName: String, options: OpenDatabaseOptions ->
+        val dbPath = pathForDatabaseName(databaseName)
 
         // Try to find opened database for fast refresh
-        findCachedDatabase { it.dbName == dbName && it.openOptions == options && !options.useNewConnection }?.let {
+        findCachedDatabase { it.databaseName == databaseName && it.openOptions == options && !options.useNewConnection }?.let {
           return@Constructor it
         }
 
-        val database = NativeDatabase(dbName, options)
+        val database = NativeDatabase(databaseName, options)
         if (database.ref.sqlite3_open(dbPath) != NativeDatabaseBinding.SQLITE_OK) {
-          throw OpenDatabaseException(dbName)
+          throw OpenDatabaseException(databaseName)
         }
         addCachedDatabase(database)
         return@Constructor database
@@ -315,15 +315,15 @@ class SQLiteModuleNext : Module() {
   }
 
   private fun addUpdateHook(database: NativeDatabase) {
-    database.ref.enableUpdateHook { dbName, tableName, operationType, rowID ->
+    database.ref.enableUpdateHook { databaseName, tableName, operationType, rowID ->
       if (!hasListeners) {
         return@enableUpdateHook
       }
-      val dbFilePath = database.ref.sqlite3_db_filename(dbName)
+      val dbFilePath = database.ref.sqlite3_db_filename(databaseName)
       sendEvent(
         "onDatabaseChange",
         bundleOf(
-          "dbName" to dbName,
+          "databaseName" to databaseName,
           "dbFilePath" to dbFilePath,
           "tableName" to tableName,
           "rowId" to rowID,
@@ -349,20 +349,20 @@ class SQLiteModuleNext : Module() {
     database.isClosed = true
   }
 
-  private fun deleteDatabase(dbName: String) {
-    findCachedDatabase { it.dbName == dbName }?.let {
-      throw DeleteDatabaseException(dbName)
+  private fun deleteDatabase(databaseName: String) {
+    findCachedDatabase { it.databaseName == databaseName }?.let {
+      throw DeleteDatabaseException(databaseName)
     }
 
-    if (dbName == MEMORY_DB_NAME) {
+    if (databaseName == MEMORY_DB_NAME) {
       return
     }
-    val dbFile = File(pathForDatabaseName(dbName))
+    val dbFile = File(pathForDatabaseName(databaseName))
     if (!dbFile.exists()) {
-      throw DatabaseNotFoundException(dbName)
+      throw DatabaseNotFoundException(databaseName)
     }
     if (!dbFile.delete()) {
-      throw DeleteDatabaseFileException(dbName)
+      throw DeleteDatabaseFileException(databaseName)
     }
   }
 

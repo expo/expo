@@ -7,7 +7,7 @@ export interface SQLiteProviderProps {
   /**
    * The name of the database file to open.
    */
-  dbName: string;
+  databaseName: string;
 
   /**
    * Open options.
@@ -48,7 +48,7 @@ const SQLiteContext = createContext<SQLiteDatabase | null>(null);
  * All descendants of this component will be able to access the database using the [`useSQLiteContext`](#usesqlitecontext) hook.
  */
 export function SQLiteProvider({
-  dbName,
+  databaseName,
   options,
   children,
   initHandler,
@@ -62,7 +62,7 @@ export function SQLiteProvider({
   useEffect(() => {
     async function setup() {
       try {
-        const db = await openDatabaseAsync(dbName, options);
+        const db = await openDatabaseAsync(databaseName, options);
         if (initHandler != null) {
           await initHandler(db);
         }
@@ -89,7 +89,7 @@ export function SQLiteProvider({
       databaseRef.current = null;
       setLoading(true);
     };
-  }, [dbName, options, initHandler]);
+  }, [databaseName, options, initHandler]);
 
   if (error != null) {
     const handler =
@@ -114,7 +114,7 @@ export function SQLiteProvider({
  * ```tsx
  * export default function App() {
  *   return (
- *     <SQLiteProvider dbName="test.db">
+ *     <SQLiteProvider databaseName="test.db">
  *       <Main />
  *     </SQLiteProvider>
  *   );
