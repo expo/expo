@@ -7,9 +7,11 @@ const emitter = new EventEmitter(ExpoSQLite);
  */
 export class Database {
     dbName;
+    options;
     nativeDatabase;
-    constructor(dbName, nativeDatabase) {
+    constructor(dbName, options, nativeDatabase) {
         this.dbName = dbName;
+        this.options = options;
         this.nativeDatabase = nativeDatabase;
     }
     /**
@@ -37,7 +39,6 @@ export class Database {
      * Prepare a SQL statement.
      *
      * @param source A string containing the SQL query.
-     * @returns A `Statement` object.
      */
     async prepareAsync(source) {
         const nativeStatement = new ExpoSQLite.NativeStatement();
@@ -97,6 +98,7 @@ export class Database {
      */
     async transactionExclusiveAsync(task) {
         const transaction = await Transaction.createAsync(this);
+        let error;
         try {
             await transaction.execAsync('BEGIN');
             await task(transaction);
@@ -104,10 +106,13 @@ export class Database {
         }
         catch (e) {
             await transaction.execAsync('ROLLBACK');
-            throw e;
+            error = e;
         }
         finally {
             await transaction.closeAsync();
+        }
+        if (error) {
+            throw error;
         }
     }
     /**
@@ -126,7 +131,8 @@ export class Database {
      * Execute all SQL queries in the supplied string.
      *
      * > **Note:** The queries are not escaped for you! Be careful when constructing your queries.
-     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     *
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
      * @param source A string containing all the SQL queries.
      */
@@ -136,10 +142,9 @@ export class Database {
     /**
      * Prepare a SQL statement.
      *
-     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
      * @param source A string containing the SQL query.
-     * @returns A `Statement` object.
      */
     prepareSync(source) {
         const nativeStatement = new ExpoSQLite.NativeStatement();
@@ -149,7 +154,7 @@ export class Database {
     /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
-     * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+     * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
      * @param task An async function to execute within a transaction.
      */
@@ -166,26 +171,30 @@ export class Database {
     }
     async runAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
+        let result;
         try {
-            return await statement.runAsync(...params);
+            result = await statement.runAsync(...params);
         }
         finally {
             await statement.finalizeAsync();
         }
+        return result;
     }
     async getAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
+        let result;
         try {
-            return await statement.getAsync(...params);
+            result = await statement.getAsync(...params);
         }
         finally {
             await statement.finalizeAsync();
         }
+        return result;
     }
     async *eachAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
         try {
-            yield* statement.eachAsync(...params);
+            yield* await statement.eachAsync(...params);
         }
         finally {
             await statement.finalizeAsync();
@@ -193,30 +202,36 @@ export class Database {
     }
     async allAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
+        let result;
         try {
-            return await statement.allAsync(...params);
+            result = await statement.allAsync(...params);
         }
         finally {
             await statement.finalizeAsync();
         }
+        return result;
     }
     runSync(source, ...params) {
         const statement = this.prepareSync(source);
+        let result;
         try {
-            return statement.runSync(...params);
+            result = statement.runSync(...params);
         }
         finally {
             statement.finalizeSync();
         }
+        return result;
     }
     getSync(source, ...params) {
         const statement = this.prepareSync(source);
+        let result;
         try {
-            return statement.getSync(...params);
+            result = statement.getSync(...params);
         }
         finally {
             statement.finalizeSync();
         }
+        return result;
     }
     *eachSync(source, ...params) {
         const statement = this.prepareSync(source);
@@ -229,12 +244,14 @@ export class Database {
     }
     allSync(source, ...params) {
         const statement = this.prepareSync(source);
+        let result;
         try {
-            return statement.allSync(...params);
+            result = statement.allSync(...params);
         }
         finally {
             statement.finalizeSync();
         }
+        return result;
     }
 }
 /**
@@ -242,26 +259,26 @@ export class Database {
  *
  * @param dbName The name of the database file to open.
  * @param options Open options.
- * @returns Database object.
  */
 export async function openDatabaseAsync(dbName, options) {
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, options ?? {});
+    const openOptions = options ?? {};
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, openOptions);
     await nativeDatabase.initAsync();
-    return new Database(dbName, nativeDatabase);
+    return new Database(dbName, openOptions, nativeDatabase);
 }
 /**
  * Open a database.
  *
- * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param dbName The name of the database file to open.
  * @param options Open options.
- * @returns Database object.
  */
 export function openDatabaseSync(dbName, options) {
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, options ?? {});
+    const openOptions = options ?? {};
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, openOptions);
     nativeDatabase.initSync();
-    return new Database(dbName, nativeDatabase);
+    return new Database(dbName, openOptions, nativeDatabase);
 }
 /**
  * Delete a database file.
@@ -274,7 +291,7 @@ export async function deleteDatabaseAsync(dbName) {
 /**
  * Delete a database file.
  *
- * > **Note:** Running heavy tasks with this function can block the JavaScript thread, affecting performance.
+ * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
  * @param dbName The name of the database file to delete.
  */
@@ -283,22 +300,24 @@ export function deleteDatabaseSync(dbName) {
 }
 /**
  * Add a listener for database changes.
- * > Note: to enable this feature, you must set `enableChangeListener` to `true` when opening the database.
+ * > Note: to enable this feature, you must set [`enableChangeListener` to `true`](#openoptions) when opening the database.
  *
- * @param listener A function that receives the `dbName`, `tableName` and `rowId` of the modified data.
+ * @param listener A function that receives the `dbFilePath`, `dbName`, `tableName` and `rowId` of the modified data.
  * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
  */
 export function addDatabaseChangeListener(listener) {
     return emitter.addListener('onDatabaseChange', listener);
 }
 /**
- * A new connection specific for `transactionExclusiveAsync`.
+ * A new connection specific used for [`transactionExclusiveAsync`](#transactionexclusiveasynctask).
+ * @hidden not going to pull all the database methods to the document.
  */
 class Transaction extends Database {
     static async createAsync(db) {
-        const nativeDatabase = new ExpoSQLite.NativeDatabase(db.dbName, { useNewConnection: true });
+        const options = { ...db.options, useNewConnection: true };
+        const nativeDatabase = new ExpoSQLite.NativeDatabase(db.dbName, options);
         await nativeDatabase.initAsync();
-        return new Transaction(db.dbName, nativeDatabase);
+        return new Transaction(db.dbName, options, nativeDatabase);
     }
 }
 //# sourceMappingURL=Database.js.map

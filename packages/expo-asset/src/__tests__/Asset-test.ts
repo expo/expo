@@ -4,15 +4,29 @@ jest.mock('expo-file-system', () => {
   const FileSystem = jest.requireActual('expo-file-system');
   return {
     ...FileSystem,
-    bundleDirectory: 'file:///Expo.app/',
     cacheDirectory: 'file:///Caches/Expo.app/',
-    bundledAssets: ['asset_test1.png'],
     getInfoAsync: jest.fn(),
     downloadAsync: jest.fn(),
   };
 });
 
-jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
+jest.mock('expo-modules-core', () => {
+  const ModulesCore = jest.requireActual('expo-modules-core');
+  return {
+    ...ModulesCore,
+    NativeModulesProxy: {
+      ...ModulesCore.NativeModulesProxy,
+      ExpoUpdates: {
+        ...ModulesCore.NativeModulesProxy.ExpoUpdates,
+        localAssets: {
+          test1: 'file:///Expo.app/asset_test1.png',
+        },
+      },
+    },
+  };
+});
+
+jest.mock('@react-native/assets-registry/registry', () => ({
   getAssetByID: jest.fn(),
 }));
 
@@ -107,7 +121,7 @@ if (Platform.OS !== 'web') {
   it(`creates assets from virtual modules`, () => {
     const { Asset } = require('../index');
 
-    const { getAssetByID } = require('react-native/Libraries/Image/AssetRegistry');
+    const { getAssetByID } = require('@react-native/assets-registry/registry');
     getAssetByID.mockReturnValueOnce(mockImageMetadata);
 
     const asset = Asset.fromModule(1);
@@ -118,7 +132,7 @@ if (Platform.OS !== 'web') {
 it(`throws when creating an asset from a missing module`, () => {
   const { Asset } = require('../index');
 
-  const { getAssetByID } = require('react-native/Libraries/Image/AssetRegistry');
+  const { getAssetByID } = require('@react-native/assets-registry/registry');
   getAssetByID.mockReturnValueOnce(undefined);
 
   expect(() => Asset.fromModule(2)).toThrowError();
@@ -225,14 +239,6 @@ if (Platform.OS === 'web') {
 
 describe('embedding', () => {
   beforeAll(() => {
-    jest.doMock('expo-constants', () => {
-      const Constants = jest.requireActual('expo-constants');
-      return {
-        ...Constants,
-        appOwnership: 'standalone',
-        manifest: {},
-      };
-    });
     // @ts-ignore: the type declaration marks __DEV__ as read-only
     __DEV__ = false;
   });

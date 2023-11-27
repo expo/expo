@@ -11,7 +11,7 @@
 #include "modules/svg/include/SkSVGFe.h"
 #include "modules/svg/include/SkSVGTypes.h"
 
-class SkSVGFeGaussianBlur : public SkSVGFe {
+class SK_API SkSVGFeGaussianBlur : public SkSVGFe {
 public:
     struct StdDeviation {
         SkSVGNumberType fX;

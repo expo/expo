@@ -39,8 +39,8 @@ function useLinkToPathProps(props) {
         }
     };
     return {
-        // Ensure there's always a value for href. Manually append the basePath to the href prop that shows in the static HTML.
-        href: (0, getPathFromState_1.appendBasePath)((0, matchers_1.stripGroupSegmentsFromPath)(props.href) || '/'),
+        // Ensure there's always a value for href. Manually append the baseUrl to the href prop that shows in the static HTML.
+        href: (0, getPathFromState_1.appendBaseUrl)((0, matchers_1.stripGroupSegmentsFromPath)(props.href) || '/'),
         role: 'link',
         onPress,
     };

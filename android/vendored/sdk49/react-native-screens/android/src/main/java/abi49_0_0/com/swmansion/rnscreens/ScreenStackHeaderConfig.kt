@@ -388,7 +388,7 @@ class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
 
         // set primary color as background by default
         val tv = TypedValue()
-        if (context.theme.resolveAttribute(R.attr.colorPrimary, tv, true)) {
+        if (context.theme.resolveAttribute(android.R.attr.colorPrimary, tv, true)) {
             toolbar.setBackgroundColor(tv.data)
         }
         toolbar.clipChildren = false

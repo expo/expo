@@ -34,7 +34,15 @@ const testElementValueAsync = async (testID: string) => {
   return attributes?.text || '';
 };
 
-const pressTestButtonAsync = async (testID: string) => await element(by.id(testID)).tap();
+const pressTestButtonAsync = async (testID: string) => {
+  await element(by.id(testID)).tap();
+};
+
+const waitForAsynchronousTaskCompletion = async (timeout: number = 1000) => {
+  await waitFor(element(by.id('numActive')))
+    .toHaveText('0')
+    .withTimeout(timeout);
+};
 
 const readLogEntriesAsync = async () => {
   await element(by.id('readLogEntries')).tap();
@@ -491,6 +499,8 @@ describe('JS API tests', () => {
 
     // Test extra params
     await pressTestButtonAsync('setExtraParams');
+    await waitForAsynchronousTaskCompletion();
+
     const extraParamsString = await testElementValueAsync('extraParamsString');
     console.warn(`extraParamsString = ${extraParamsString}`);
     jestExpect(extraParamsString).toContain('testparam');
@@ -499,11 +509,17 @@ describe('JS API tests', () => {
 
     Server.start(Update.serverPort, protocolVersion);
     await Server.serveSignedManifest(manifest, projectRoot);
+
     await pressTestButtonAsync('checkForUpdate');
+    console.warn(((await element(by.id('numActive')).getAttributes()) as any).text);
+    await waitForAsynchronousTaskCompletion();
+
     const availableUpdateID = await testElementValueAsync('availableUpdateID');
     jestExpect(availableUpdateID).toEqual(manifest.id);
+
     await pressTestButtonAsync('downloadUpdate');
-    await setTimeout(2000);
+    await waitForAsynchronousTaskCompletion();
+
     Server.stop();
     await device.terminateApp();
     await device.launchApp();
@@ -564,9 +580,7 @@ describe('JS API tests', () => {
 
     // Check for update, and expect isUpdateAvailable to be true
     await pressTestButtonAsync('checkForUpdate');
-    await pressTestButtonAsync('checkForUpdate');
-    await pressTestButtonAsync('checkForUpdate');
-    await pressTestButtonAsync('checkForUpdate');
+    await waitForAsynchronousTaskCompletion();
 
     const isUpdatePending2 = await testElementValueAsync('state.isUpdatePending');
     const isUpdateAvailable2 = await testElementValueAsync('state.isUpdateAvailable');
@@ -582,18 +596,13 @@ describe('JS API tests', () => {
 
     // Download update and expect isUpdatePending to be true
     await pressTestButtonAsync('downloadUpdate');
-    await pressTestButtonAsync('downloadUpdate');
-    await pressTestButtonAsync('downloadUpdate');
-    await pressTestButtonAsync('downloadUpdate');
+    await waitForAsynchronousTaskCompletion();
 
     const isUpdatePending3 = await testElementValueAsync('state.isUpdatePending');
     const isUpdateAvailable3 = await testElementValueAsync('state.isUpdateAvailable');
     const latestManifestId3 = await testElementValueAsync('state.latestManifest.id');
     const downloadedManifestId3 = await testElementValueAsync('state.downloadedManifest.id');
     const isRollback3 = await testElementValueAsync('state.isRollback');
-    await waitFor(element(by.id('activity')))
-      .not.toBeVisible()
-      .withTimeout(2000);
 
     console.warn(`isUpdatePending3 = ${isUpdatePending3}`);
     console.warn(`isUpdateAvailable3 = ${isUpdateAvailable3}`);
@@ -603,9 +612,8 @@ describe('JS API tests', () => {
 
     // Test native context reader
     await pressTestButtonAsync('readNativeStateContext');
-    await waitFor(element(by.id('activity')))
-      .not.toBeVisible()
-      .withTimeout(2000);
+    await waitForAsynchronousTaskCompletion();
+
     const nativeStateContextString = await testElementValueAsync('nativeStateContextString');
     const nativeStateContext = JSON.parse(nativeStateContextString);
     console.warn(`nativeStateContext = ${JSON.stringify(nativeStateContext, null, 2)}`);
@@ -640,6 +648,7 @@ describe('JS API tests', () => {
 
     // Check for update, and expect isRollback to be true
     await pressTestButtonAsync('checkForUpdate');
+    await waitForAsynchronousTaskCompletion();
 
     const isUpdatePending5 = await testElementValueAsync('state.isUpdatePending');
     const isUpdateAvailable5 = await testElementValueAsync('state.isUpdateAvailable');
@@ -720,6 +729,15 @@ describe('JS API tests', () => {
     jestExpect(latestManifestId5).toEqual('');
     jestExpect(downloadedManifestId5).toEqual('');
     jestExpect(rollbackCommitTime5).not.toEqual('');
+
+    // Check for update, and expect isRollback to be true
+    await pressTestButtonAsync('triggerParallelFetchAndDownload');
+    await waitForAsynchronousTaskCompletion(4000);
+
+    const didCheckAndDownloadHappenInParallel = await testElementValueAsync(
+      'didCheckAndDownloadHappenInParallel'
+    );
+    jestExpect(didCheckAndDownloadHappenInParallel).toEqual('false');
   });
 
   it('Receives expected events when update available on start', async () => {

@@ -24,6 +24,8 @@ class GooglePayLauncherFragment : Fragment() {
   private lateinit var mode: Mode
   private lateinit var configuration: GooglePayLauncher.Config
   private lateinit var currencyCode: String
+  private var amount: Int? = null
+  private var label: String? = null
   private lateinit var callback: (result: GooglePayLauncher.Result?, error: WritableMap?) -> Unit
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +49,8 @@ class GooglePayLauncherFragment : Fragment() {
     this.mode = mode
     this.callback = callback
     this.currencyCode = googlePayParams.getString("currencyCode") ?: "USD"
+    this.amount = getIntOrNull(googlePayParams, "amount")
+    this.label = googlePayParams.getString("label")
     this.configuration = GooglePayLauncher.Config(
       environment = if (googlePayParams.getBoolean("testEnv")) GooglePayEnvironment.Test else GooglePayEnvironment.Production,
       merchantCountryCode = googlePayParams.getString("merchantCountryCode").orEmpty(),
@@ -89,10 +93,10 @@ class GooglePayLauncherFragment : Fragment() {
     if (isReady) {
       when (mode) {
         Mode.ForSetup -> {
-          launcher.presentForSetupIntent(clientSecret, currencyCode)
+          launcher.presentForSetupIntent(clientSecret, currencyCode, amount?.toLong(), label)
         }
         Mode.ForPayment -> {
-          launcher.presentForPaymentIntent(clientSecret)
+          launcher.presentForPaymentIntent(clientSecret, label)
         }
       }
     } else {

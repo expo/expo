@@ -4,16 +4,17 @@
  A dynamic type representing the `SharedObject` type and its subclasses.
  */
 internal struct DynamicSharedObjectType: AnyDynamicType {
-  let innerType: SharedObject.Type
+  let innerType: AnySharedObject.Type
 
   /**
    A unique identifier of the wrapped type.
    */
-  let typeIdentifier: ObjectIdentifier
+  var typeIdentifier: ObjectIdentifier {
+    return ObjectIdentifier(innerType)
+  }
 
-  init<SharedObjectType: SharedObject>(innerType: SharedObjectType.Type) {
+  init(innerType: AnySharedObject.Type) {
     self.innerType = innerType
-    self.typeIdentifier = ObjectIdentifier(SharedObjectType.self)
   }
 
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {

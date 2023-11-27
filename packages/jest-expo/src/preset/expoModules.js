@@ -269,6 +269,9 @@ module.exports = {
           { name: 'clearDiskCache', argumentsCount: 0, key: 'clearDiskCache' },
           { name: 'clearMemoryCache', argumentsCount: 0, key: 'clearMemoryCache' },
           { name: 'prefetch', argumentsCount: 1, key: 'prefetch' },
+          { name: 'getCachePathAsync', argumentsCount: 1, key: 'getCachePathAsync' },
+          { name: 'startAnimating', argumentsCount: 0, key: 'startAnimating' },
+          { name: 'stopAnimating', argumentsCount: 0, key: 'stopAnimating' },
         ],
         ExpoImageManipulator: [
           { name: 'manipulateAsync', argumentsCount: 3, key: 'manipulateAsync' },
@@ -370,7 +373,7 @@ module.exports = {
           { name: 'getCurrentInput', argumentsCount: 0, key: 21 },
           { name: 'startAudioRecording', argumentsCount: 0, key: 22 },
         ],
-        ExponentCamera: [
+        ExpoCamera: [
           { name: 'getAvailablePictureSizes', argumentsCount: 2, key: 'getAvailablePictureSizes' },
           {
             name: 'getAvailableVideoCodecsAsync',
@@ -702,7 +705,7 @@ module.exports = {
           SortBy: { type: 'object' },
         },
         ExponentAV: { Qualities: { type: 'object' } },
-        ExponentCamera: {
+        ExpoCamera: {
           AutoFocus: { type: 'object' },
           FlashMode: { type: 'object' },
           Type: { type: 'object' },
@@ -735,7 +738,6 @@ module.exports = {
         },
         ExponentDeviceMotion: { Gravity: { type: 'number', mock: 9.8100004196167 } },
         ExponentFileSystem: {
-          bundledAssets: { type: 'object', mock: null },
           bundleDirectory: { type: 'object', mock: null },
           cacheDirectory: { type: 'string' },
           documentDirectory: { type: 'string' },
@@ -807,7 +809,7 @@ module.exports = {
           ],
         },
         ExpoLinearGradient: { propsNames: ['colors', 'endPoint', 'locations', 'startPoint'] },
-        ExponentCamera: {
+        ExpoCamera: {
           propsNames: [
             'autoFocus',
             'barCodeScannerEnabled',

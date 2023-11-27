@@ -12,7 +12,7 @@
 #include "modules/svg/include/SkSVGFe.h"
 #include "modules/svg/include/SkSVGTypes.h"
 
-class SkSVGFeColorMatrix final : public SkSVGFe {
+class SK_API SkSVGFeColorMatrix final : public SkSVGFe {
 public:
     static sk_sp<SkSVGFeColorMatrix> Make() {
         return sk_sp<SkSVGFeColorMatrix>(new SkSVGFeColorMatrix());

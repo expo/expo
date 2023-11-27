@@ -23,6 +23,8 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
  */
 export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
+ * > **warning** **Warning**: Experimental for web.
+ *
  * This class represents an audio recording. After creating an instance of this class, `prepareToRecordAsync`
  * must be called in order to record audio. Once recording is finished, call `stopAndUnloadAsync`. Note that
  * only one recorder is allowed to exist in the state between `prepareToRecordAsync` and `stopAndUnloadAsync`

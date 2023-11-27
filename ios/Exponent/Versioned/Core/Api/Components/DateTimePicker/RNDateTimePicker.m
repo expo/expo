@@ -41,7 +41,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)didChange
 {
   if (_onChange) {
-    _onChange(@{ @"timestamp": @(self.date.timeIntervalSince1970 * 1000.0) });
+    _onChange(@{ @"timestamp": @(self.date.timeIntervalSince1970 * 1000.0), @"utcOffset": @([self.timeZone secondsFromGMTForDate:self.date] / 60 )});
   }
 }
 

@@ -34,30 +34,32 @@ public class NativeProxy extends NativeProxyCommon {
 
         LayoutAnimations LayoutAnimations = new LayoutAnimations(context);
 
+        ReanimatedMessageQueueThread messageQueueThread = new ReanimatedMessageQueueThread();
+
         mHybridData =
                 initHybrid(
                         context.getJavaScriptContextHolder().get(),
                         holder,
-                        mScheduler,
+                        mAndroidUIScheduler,
                         LayoutAnimations,
+                        messageQueueThread,
                         fabricUIManager);
         prepareLayoutAnimations(LayoutAnimations);
-        ReanimatedMessageQueueThread messageQueueThread = new ReanimatedMessageQueueThread();
-        installJSIBindings(messageQueueThread, fabricUIManager);
+        installJSIBindings();
+        if (BuildConfig.DEBUG) {
+            checkCppVersion();
+        }
     }
 
     private native HybridData initHybrid(
             long jsContext,
             CallInvokerHolderImpl jsCallInvokerHolder,
-            Scheduler scheduler,
+            AndroidUIScheduler androidUIScheduler,
             LayoutAnimations LayoutAnimations,
-            FabricUIManager fabricUIManager);
-
-    private native void installJSIBindings(
             MessageQueueThread messageQueueThread,
             FabricUIManager fabricUIManager);
 
-    public native boolean isAnyHandlerWaitingForEvent(String eventName);
+    public native boolean isAnyHandlerWaitingForEvent(String eventName, int emitterReactTag);
 
     public native void performOperations();
 
@@ -82,6 +84,11 @@ public class NativeProxy extends NativeProxyCommon {
             }
 
             @Override
+            public boolean shouldAnimateExiting(int tag, boolean shouldAnimate) {
+                return false;
+            }
+
+            @Override
             public boolean hasAnimation(int tag, int type) {
                 return false;
             }
@@ -90,7 +97,10 @@ public class NativeProxy extends NativeProxyCommon {
             public void clearAnimationConfig(int tag) {}
 
             @Override
-            public void cancelAnimation(int tag, int type, boolean cancelled, boolean removeView) {}
+            public void cancelAnimation(int tag) {}
+
+            @Override
+            public void checkDuplicateSharedTag(int viewTag, int screenTag) {}
         };
     }
 }

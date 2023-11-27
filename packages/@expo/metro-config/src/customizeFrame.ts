@@ -44,6 +44,9 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     '@expo/metro-runtime/.+\\.ts',
     // Block upstream metro-runtime
     '/metro-runtime/.+\\.js$',
+
+    // Block all whatwg polyfills
+    'node_modules/whatwg-.+\\.js$',
   ].join('|')
 );
 

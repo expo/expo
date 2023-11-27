@@ -101,7 +101,7 @@ export interface WebViewStyle {
   /** @platform web */
   touchAction?: string;
   /** @platform web */
-  transformOrigin?: string;
+  transformOrigin?: string | (string | number)[];
   /** @platform web */
   transitionDelay?: string;
   /** @platform web */

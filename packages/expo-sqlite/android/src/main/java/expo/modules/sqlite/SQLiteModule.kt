@@ -2,9 +2,7 @@
 package expo.modules.sqlite
 
 import android.content.Context
-import android.util.Log
 import androidx.collection.ArrayMap
-import androidx.core.os.bundleOf
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -14,15 +12,12 @@ import java.util.*
 
 class SQLiteModule : Module() {
   private val cachedDatabase = ArrayMap<String, SQLite3Wrapper>()
-  private var hasListeners = false
 
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   override fun definition() = ModuleDefinition {
     Name("ExpoSQLite")
-
-    Events("onDatabaseChange")
 
     AsyncFunction("exec") { dbName: String, queries: List<Query>, readOnly: Boolean ->
       return@AsyncFunction execute(dbName, queries, readOnly)
@@ -46,28 +41,19 @@ class SQLiteModule : Module() {
 
     AsyncFunction("deleteAsync") { dbName: String ->
       if (cachedDatabase[dbName] != null) {
-        throw OpenDatabaseException(dbName)
+        throw DeleteDatabaseException(dbName)
       }
       val dbFile = File(pathForDatabaseName(dbName))
       if (!dbFile.exists()) {
         throw DatabaseNotFoundException(dbName)
       }
       if (!dbFile.delete()) {
-        throw DeleteDatabaseException(dbName)
+        throw DeleteDatabaseFileException(dbName)
       }
-    }
-
-    OnStartObserving {
-      hasListeners = true
-    }
-
-    OnStopObserving {
-      hasListeners = false
     }
 
     OnDestroy {
       cachedDatabase.values.forEach {
-        it.executeSql("SELECT crsql_finalize()", emptyList(), false)
         it.sqlite3_close()
       }
     }
@@ -96,48 +82,13 @@ class SQLiteModule : Module() {
 
     cachedDatabase.remove(dbName)
     val db = SQLite3Wrapper.open(path) ?: return null
-    loadExtensions(db)
-    addUpdateListener(db)
     cachedDatabase[dbName] = db
     return db
-  }
-
-  private fun loadExtensions(db: SQLite3Wrapper) {
-    var errCode = db.sqlite3_enable_load_extension(1)
-    if (errCode != SQLite3Wrapper.SQLITE_OK) {
-      Log.e(TAG, "Failed to enable sqlite3 extensions - errCode[$errCode]")
-      return
-    }
-    errCode = db.sqlite3_load_extension("libcrsqlite", "sqlite3_crsqlite_init")
-    if (errCode != SQLite3Wrapper.SQLITE_OK) {
-      Log.e(TAG, "Failed to load crsqlite extension - errCode[$errCode]")
-    }
   }
 
   private fun execute(dbName: String, queries: List<Query>, readOnly: Boolean): List<Any> {
     val db = openDatabase(dbName) ?: throw OpenDatabaseException(dbName)
     return queries.map { db.executeSql(it.sql, it.args, readOnly) }
-  }
-
-  private fun addUpdateListener(db: SQLite3Wrapper) {
-    db.enableUpdateHook { tableName: String, operationType: Int, rowID: Long ->
-      if (!hasListeners) {
-        return@enableUpdateHook
-      }
-      sendEvent(
-        "onDatabaseChange",
-        bundleOf(
-          "tableName" to tableName,
-          "rowId" to rowID,
-          "typeId" to when (operationType) {
-            9 -> SqlAction.DELETE.value
-            18 -> SqlAction.INSERT.value
-            23 -> SqlAction.UPDATE.value
-            else -> SqlAction.UNKNOWN.value
-          }
-        )
-      )
-    }
   }
 
   internal class SQLitePluginResult(
@@ -147,8 +98,4 @@ class SQLiteModule : Module() {
     val insertId: Long,
     val error: Throwable?
   )
-
-  companion object {
-    private val TAG = SQLiteModule::class.java.simpleName
-  }
 }

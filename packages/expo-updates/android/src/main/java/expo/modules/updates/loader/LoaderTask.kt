@@ -45,7 +45,7 @@ import java.util.Date
 class LoaderTask(
   private val configuration: UpdatesConfiguration,
   private val databaseHolder: DatabaseHolder,
-  private val directory: File?,
+  private val directory: File,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
   private val callback: LoaderTaskCallback
@@ -93,7 +93,24 @@ class LoaderTask(
   }
 
   interface LoaderTaskCallback {
+    /**
+     * Called when a failure has occurred during the load.
+     */
     fun onFailure(e: Exception)
+
+    /**
+     * Called when the loader task finishes with a launcher. Note that this doesn't indicate that
+     * the loader task is done running, it just may have reached the launch wait timeout and succeeded
+     * with a fallback loader.
+     */
+    fun onSuccess(launcher: Launcher, isUpToDate: Boolean)
+
+    /**
+     * This method is called after the loader task finishes doing all work. Note that it may have
+     * "succeeded" before this with a loader, yet this method may still be called after the launch
+     * to signal that all work is done (loading a remote update after the launch wait timeout has occurred).
+     */
+    fun onFinishedAllLoading()
 
     /**
      * This method gives the calling class a backdoor option to ignore the cached update and force
@@ -103,9 +120,8 @@ class LoaderTask(
      * LoaderTask proceed as usual.
      */
     fun onCachedUpdateLoaded(update: UpdateEntity): Boolean
-    fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest)
-    fun onSuccess(launcher: Launcher, isUpToDate: Boolean)
 
+    fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest)
     fun onRemoteCheckForUpdateStarted() {}
     fun onRemoteCheckForUpdateFinished(result: RemoteCheckResult) {}
     fun onRemoteUpdateLoadStarted() {}
@@ -117,7 +133,7 @@ class LoaderTask(
     )
   }
 
-  private interface Callback {
+  private interface LaunchUpdateCallback {
     fun onFailure(e: Exception)
     fun onSuccess()
   }
@@ -135,20 +151,6 @@ class LoaderTask(
   private var finalizedLauncher: Launcher? = null
 
   fun start(context: Context) {
-    if (!configuration.isEnabled) {
-      callback.onFailure(Exception("LoaderTask was passed a configuration object with updates disabled. You should load updates from an embedded source rather than calling LoaderTask, or enable updates in the configuration."))
-      return
-    }
-
-    if (configuration.updateUrl == null) {
-      callback.onFailure(Exception("LoaderTask was passed a configuration object with a null URL. You must pass a nonnull URL in order to use LoaderTask to load updates."))
-      return
-    }
-
-    if (directory == null) {
-      throw AssertionError("LoaderTask directory must be nonnull.")
-    }
-
     isRunning = true
 
     val shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdateOnLaunch(configuration, context)
@@ -162,15 +164,16 @@ class LoaderTask(
 
     launchFallbackUpdateFromDisk(
       context,
-      object : Callback {
+      object : LaunchUpdateCallback {
         private fun launchRemoteUpdate() {
           launchRemoteUpdateInBackground(
             context,
-            object : Callback {
+            object : LaunchUpdateCallback {
               override fun onFailure(e: Exception) {
                 finish(e)
                 isRunning = false
                 runReaper()
+                callback.onFinishedAllLoading()
               }
 
               override fun onSuccess() {
@@ -178,6 +181,7 @@ class LoaderTask(
                 finish(null)
                 isRunning = false
                 runReaper()
+                callback.onFinishedAllLoading()
               }
             }
           )
@@ -191,6 +195,7 @@ class LoaderTask(
           if (!shouldCheckForUpdate) {
             finish(e)
             isRunning = false
+            callback.onFinishedAllLoading()
           } else {
             launchRemoteUpdate()
           }
@@ -215,6 +220,7 @@ class LoaderTask(
             } else {
               isRunning = false
               runReaper()
+              callback.onFinishedAllLoading()
             }
           }
         }
@@ -280,7 +286,7 @@ class LoaderTask(
     stopTimer()
   }
 
-  private fun launchFallbackUpdateFromDisk(context: Context, diskUpdateCallback: Callback) {
+  private fun launchFallbackUpdateFromDisk(context: Context, diskUpdateCallback: LaunchUpdateCallback) {
     val database = databaseHolder.database
     val launcher = DatabaseLauncher(configuration, directory, fileDownloader, selectionPolicy)
     candidateLauncher = launcher
@@ -334,7 +340,7 @@ class LoaderTask(
     }
   }
 
-  private fun launchRemoteUpdateInBackground(context: Context, remoteUpdateCallback: Callback) {
+  private fun launchRemoteUpdateInBackground(context: Context, remoteUpdateCallback: LaunchUpdateCallback) {
     AsyncTask.execute {
       val database = databaseHolder.database
       callback.onRemoteCheckForUpdateStarted()
@@ -342,9 +348,9 @@ class LoaderTask(
         .start(object : LoaderCallback {
           override fun onFailure(e: Exception) {
             databaseHolder.releaseDatabase()
-            remoteUpdateCallback.onFailure(e)
             callback.onRemoteUpdateFinished(RemoteUpdateStatus.ERROR, null, e)
             Log.e(TAG, "Failed to download remote update", e)
+            remoteUpdateCallback.onFailure(e)
           }
 
           override fun onAssetLoaded(
@@ -438,7 +444,6 @@ class LoaderTask(
                     }
                     hasLaunched
                   }
-                  remoteUpdateCallback.onSuccess()
                   if (hasLaunchedSynchronized) {
                     if (availableUpdate == null) {
                       callback.onRemoteUpdateFinished(
@@ -454,6 +459,7 @@ class LoaderTask(
                       )
                     }
                   }
+                  remoteUpdateCallback.onSuccess()
                 }
               }
             )
@@ -465,13 +471,14 @@ class LoaderTask(
   private fun runReaper() {
     AsyncTask.execute {
       synchronized(this@LoaderTask) {
-        if (finalizedLauncher != null && finalizedLauncher!!.launchedUpdate != null) {
+        val finalizedLaunchedUpdate = finalizedLauncher?.launchedUpdate
+        if (finalizedLaunchedUpdate != null) {
           val database = databaseHolder.database
           Reaper.reapUnusedUpdates(
             configuration,
             database,
             directory,
-            finalizedLauncher!!.launchedUpdate,
+            finalizedLaunchedUpdate,
             selectionPolicy
           )
           databaseHolder.releaseDatabase()

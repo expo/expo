@@ -14,6 +14,7 @@ public class LayoutAnimations {
     static final int EXITING = 2;
     static final int LAYOUT = 3;
     static final int SHARED_ELEMENT_TRANSITION = 4;
+    static final int SHARED_ELEMENT_TRANSITION_PROGRESS = 5;
   }
 
   static {
@@ -39,21 +40,24 @@ public class LayoutAnimations {
 
   public native boolean hasAnimationForTag(int tag, int type);
 
+  public native boolean shouldAnimateExiting(int tag, boolean shouldAnimate);
+
+  public native void checkDuplicateSharedTag(int viewTag, int screenTag);
+
   public native void clearAnimationConfigForTag(int tag);
 
-  public native void cancelAnimationForTag(
-      int tag, int type, boolean cancelled, boolean removeView);
+  public native void cancelAnimationForTag(int tag);
 
   public native boolean isLayoutAnimationEnabled();
 
   public native int findPrecedingViewTagForTransition(int tag);
 
-  private void endLayoutAnimation(int tag, boolean cancelled, boolean removeView) {
+  private void endLayoutAnimation(int tag, boolean removeView) {
     AnimationsManager animationsManager = getAnimationsManager();
     if (animationsManager == null) {
       return;
     }
-    animationsManager.endLayoutAnimation(tag, cancelled, removeView);
+    animationsManager.endLayoutAnimation(tag, removeView);
   }
 
   private void progressLayoutAnimation(

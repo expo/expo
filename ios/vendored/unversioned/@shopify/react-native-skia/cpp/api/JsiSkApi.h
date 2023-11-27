@@ -6,12 +6,16 @@
 
 #include "JsiSkHostObjects.h"
 
+#include "JsiSkAnimatedImage.h"
+#include "JsiSkAnimatedImageFactory.h"
 #include "JsiSkColor.h"
 #include "JsiSkColorFilter.h"
 #include "JsiSkColorFilterFactory.h"
 #include "JsiSkContourMeasureIter.h"
 #include "JsiSkDataFactory.h"
 #include "JsiSkFont.h"
+#include "JsiSkFontMgr.h"
+#include "JsiSkFontMgrFactory.h"
 #include "JsiSkImage.h"
 #include "JsiSkImageFactory.h"
 #include "JsiSkImageFilter.h"
@@ -39,6 +43,7 @@
 #include "JsiSkShaderFactory.h"
 #include "JsiSkSurfaceFactory.h"
 #include "JsiSkTextBlobFactory.h"
+#include "JsiSkTypeFaceFontProviderFactory.h"
 #include "JsiSkTypeface.h"
 #include "JsiSkTypefaceFactory.h"
 #include "JsiSkVertices.h"
@@ -76,6 +81,8 @@ public:
     installReadonlyProperty("SVG", std::make_shared<JsiSkSVGFactory>(context));
     installReadonlyProperty("Image",
                             std::make_shared<JsiSkImageFactory>(context));
+    installReadonlyProperty(
+        "AnimatedImage", std::make_shared<JsiSkAnimatedImageFactory>(context));
     installReadonlyProperty("Typeface",
                             std::make_shared<JsiSkTypefaceFactory>(context));
     installReadonlyProperty("Data",
@@ -100,6 +107,11 @@ public:
                             std::make_shared<JsiSkSurfaceFactory>(context));
     installReadonlyProperty("Picture",
                             std::make_shared<JsiSkPictureFactory>(context));
+    installReadonlyProperty("FontMgr",
+                            std::make_shared<JsiSkFontMgrFactory>(context));
+    installReadonlyProperty(
+        "TypefaceFontProvider",
+        std::make_shared<JsiSkTypefaceFontProviderFactory>(context));
   }
 };
 } // namespace RNSkia

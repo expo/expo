@@ -6,7 +6,7 @@ import EXManifests
 @testable import EXUpdates
 
 class UpdatesDatabaseSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
     var manifest: NewManifest!
@@ -34,8 +34,9 @@ class UpdatesDatabaseSpec : ExpoSpec {
         "launchAsset": ["url": "https://url.to/bundle.js", "contentType": "application/javascript"]
       ])
 
-      config = UpdatesConfig.config(fromDictionary: [
-        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test"
+      config = try! UpdatesConfig.config(fromDictionary: [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
       ])
     }
     

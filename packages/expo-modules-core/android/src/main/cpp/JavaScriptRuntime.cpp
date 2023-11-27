@@ -17,11 +17,7 @@
 
 #else
 
-#if REACT_NATIVE_TARGET_VERSION >= 71
 #include <jsc/JSCRuntime.h>
-#else
-#include <jsi/JSCRuntime.h>
-#endif // REACT_NATIVE_TARGET_VERSION >= 71
 
 #endif
 
@@ -50,34 +46,16 @@ public:
   ~SyncCallInvoker() override = default;
 };
 
-#if REACT_NATIVE_TARGET_VERSION >= 73
-class SyncNativeMethodCallInvoker : public react::NativeMethodCallInvoker {
-public:
-  void invokeAsync(const std::string &methodName, std::function<void()> &&func) override {
-    func();
-  }
-
-  void invokeSync(const std::string &methodName, std::function<void()> &&func) override {
-    func();
-  }
-
-  ~SyncNativeMethodCallInvoker() override = default;
-};
-#else
-using SyncNativeMethodCallInvoker = SyncCallInvoker;
-#endif // REACT_NATIVE_TARGET_VERSION >= 73
-
 } // namespace
 
 JavaScriptRuntime::JavaScriptRuntime(
   JSIInteropModuleRegistry *jsiInteropModuleRegistry
 )
   : jsInvoker(std::make_shared<SyncCallInvoker>()),
-    nativeInvoker(std::make_shared<SyncNativeMethodCallInvoker>()),
     jsiInteropModuleRegistry(jsiInteropModuleRegistry) {
 #if !UNIT_TEST
   throw std::logic_error(
-    "The JavaScriptRuntime constructor is only avaiable when UNIT_TEST is defined.");
+    "The JavaScriptRuntime constructor is only available when UNIT_TEST is defined.");
 #else
 #if USE_HERMES
   auto config = ::hermes::vm::RuntimeConfig::Builder()
@@ -135,9 +113,8 @@ JavaScriptRuntime::JavaScriptRuntime(
 JavaScriptRuntime::JavaScriptRuntime(
   JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Runtime *runtime,
-  std::shared_ptr<react::CallInvoker> jsInvoker,
-  std::shared_ptr<NativeMethodCallInvokerCompatible> nativeInvoker
-) : jsInvoker(std::move(jsInvoker)), nativeInvoker(std::move(nativeInvoker)),
+  std::shared_ptr<react::CallInvoker> jsInvoker
+) : jsInvoker(std::move(jsInvoker)),
     jsiInteropModuleRegistry(jsiInteropModuleRegistry) {
   // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
   // In this code flow, the runtime should be owned by something else like the CatalystInstance.

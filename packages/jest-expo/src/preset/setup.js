@@ -40,6 +40,10 @@ const expoModules = {
   ...internalExpoModules,
 };
 
+// Mock the experience URL in development mode for asset setup
+expoModules.NativeUnimoduleProxy.modulesConstants.mockDefinition.ExponentConstants.experienceUrl.mock =
+  'exp://192.168.1.200:8081';
+
 function mock(property, customMock) {
   const propertyType = property.type;
   let mockValue;
@@ -128,7 +132,7 @@ try {
   }
 }
 
-jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
+jest.mock('@react-native/assets-registry/registry', () => ({
   registerAsset: jest.fn(() => 1),
   getAssetByID: jest.fn(() => ({
     fileSystemLocation: '/full/path/to/directory',
@@ -234,3 +238,6 @@ try {
     throw error;
   }
 }
+
+// Ensure the environment globals are installed before the first test runs.
+require('expo/build/winter');

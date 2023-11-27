@@ -56,12 +56,26 @@ internal object LottieAnimationViewManagerImpl {
     }
 
     @JvmStatic
+    fun sendAnimationLoadedEvent(view: LottieAnimationView) {
+        val screenContext = view.context as ThemedReactContext
+        val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(screenContext, view.id)
+        eventDispatcher?.dispatchEvent(
+            OnAnimationLoadedEvent(
+                screenContext.surfaceId,
+                view.id,
+            )
+        )
+    }
+
+    @JvmStatic
     fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
         return MapBuilder.of(
             OnAnimationFinishEvent.EVENT_NAME,
             MapBuilder.of("registrationName", "onAnimationFinish"),
             OnAnimationFailureEvent.EVENT_NAME,
             MapBuilder.of("registrationName", "onAnimationFailure"),
+            OnAnimationLoadedEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onAnimationLoaded"),
         )
     }
 

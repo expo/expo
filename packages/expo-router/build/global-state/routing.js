@@ -64,7 +64,7 @@ function setParams(params = {}) {
 }
 exports.setParams = setParams;
 function linkTo(href, event) {
-    if ((0, url_1.hasUrlProtocolPrefix)(href)) {
+    if ((0, url_1.shouldLinkExternally)(href)) {
         Linking.openURL(href);
         return;
     }
@@ -82,11 +82,29 @@ function linkTo(href, event) {
     }
     const rootState = navigationRef.getRootState();
     if (href.startsWith('.')) {
-        let base = this.linking.getPathFromState?.(rootState, {
-            screens: [],
-            preserveGroups: true,
-        }) ?? '';
-        if (base && !base.endsWith('/')) {
+        // Resolve base path by merging the current segments with the params
+        let base = this.routeInfo?.segments
+            ?.map((segment) => {
+            if (!segment.startsWith('['))
+                return segment;
+            if (segment.startsWith('[...')) {
+                segment = segment.slice(4, -1);
+                const params = this.routeInfo?.params?.[segment];
+                if (Array.isArray(params)) {
+                    return params.join('/');
+                }
+                else {
+                    return params?.split(',')?.join('/') ?? '';
+                }
+            }
+            else {
+                segment = segment.slice(1, -1);
+                return this.routeInfo?.params?.[segment];
+            }
+        })
+            .filter(Boolean)
+            .join('/') ?? '/';
+        if (!this.routeInfo?.isIndex) {
             base += '/..';
         }
         href = (0, path_1.resolve)(base, href);
@@ -108,7 +126,7 @@ function rewriteNavigationStateToParams(state, params = {}) {
     if (!state)
         return params;
     // We Should always have at least one route in the state
-    const lastRoute = state.routes.at(-1);
+    const lastRoute = state.routes[state.routes.length - 1];
     params.screen = lastRoute.name;
     // Weirdly, this always needs to be an object. If it's undefined, it won't work.
     params.params = lastRoute.params ? JSON.parse(JSON.stringify(lastRoute.params)) : {};
@@ -130,7 +148,7 @@ function getNavigatePushAction(state, rootState) {
 }
 function getNavigateReplaceAction(state, parentState, lastNavigatorSupportingReplace = parentState) {
     // We should always have at least one route in the state
-    const route = state.routes.at(-1);
+    const route = state.routes[state.routes.length - 1];
     // Only these navigators support replace
     if (parentState.type === 'stack' || parentState.type === 'tab') {
         lastNavigatorSupportingReplace = parentState;

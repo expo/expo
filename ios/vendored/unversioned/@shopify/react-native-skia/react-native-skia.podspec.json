@@ -1,6 +1,6 @@
 {
   "name": "react-native-skia",
-  "version": "0.1.196",
+  "version": "0.1.221",
   "summary": "High-performance React Native Graphics using Skia",
   "description": "@shopify/react-native-skia",
   "homepage": "https://github.com/shopify/react-native-skia",
@@ -9,11 +9,11 @@
     "Your Name": "yourname@email.com"
   },
   "platforms": {
-    "ios": "9.0"
+    "ios": "12.0"
   },
   "source": {
     "git": "https://github.com/shopify/react-native-skia/react-native-skia.git",
-    "tag": "0.1.196"
+    "tag": "0.1.221"
   },
   "requires_arc": true,
   "pod_target_xcconfig": {
@@ -30,7 +30,9 @@
     "vendored_frameworks": [
       "libs/ios/libskia.xcframework",
       "libs/ios/libsvg.xcframework",
-      "libs/ios/libskshaper.xcframework"
+      "libs/ios/libskshaper.xcframework",
+      "libs/ios/libskparagraph.xcframework",
+      "libs/ios/libskunicode.xcframework"
     ]
   },
   "source_files": [

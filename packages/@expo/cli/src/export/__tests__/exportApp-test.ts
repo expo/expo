@@ -22,10 +22,22 @@ jest.mock('../fork-bundleAsync', () => ({
         (prev, platform) => ({
           ...prev,
           [platform]: {
-            code: `var foo = true;`,
-            map: `${platform}_map`,
-            css: [
+            artifacts: [
               {
+                type: 'js',
+                originFilename: 'index.js',
+                filename: `_expo/static/js/${platform}/index-xxx.js`,
+                source:
+                  'var foo = true;\n//# sourceMappingURL=/_expo/static/js/ios/index-xxx.js.map\n',
+              },
+              {
+                type: 'map',
+                originFilename: 'index.js',
+                filename: `_expo/static/js/${platform}/index-xxx.js.map`,
+                source: `${platform}_map`,
+              },
+              {
+                type: 'css',
                 originFilename: 'styles.css',
                 filename: `_expo/static/css/bc6aa0a69dcebf8e8cac1faa76705756.css`,
                 source: '\ndiv {\n    background: cyan;\n}\n\n',
@@ -59,7 +71,7 @@ describe(exportAppAsync, () => {
     vol.fromJSON(
       {
         'icon.png': 'icon',
-        'package.json': JSON.stringify({ dependencies: { expo: '44.0.0' } }),
+        'package.json': JSON.stringify({ dependencies: { expo: '49.0.0' } }),
       },
       '/'
     );
@@ -70,20 +82,19 @@ describe(exportAppAsync, () => {
       platforms: ['ios'],
       dev: false,
       dumpAssetmap: true,
-      dumpSourcemap: true,
+      sourceMaps: true,
       clear: false,
       // publishOptions: {},
     });
 
     expect(vol.toJSON()).toStrictEqual({
-      // '/dist/_expo/static/css/bc6aa0a69dcebf8e8cac1faa76705756.css': expect.stringMatching(/cyan/),
+      '/dist/_expo/static/css/bc6aa0a69dcebf8e8cac1faa76705756.css': expect.stringMatching(/cyan/),
       '/dist/debug.html': expect.stringMatching(/<script/),
       '/dist/assetmap.json': expect.any(String),
       '/dist/assets/4e3f888fc8475f69fd5fa32f1ad5216a': 'icon',
-      '/dist/bundles/ios-4fe3891dcaca43901bd8797db78405e4.js':
-        expect.stringMatching(/sourceMappingURL/),
+      '/dist/_expo/static/js/ios/index-xxx.js': expect.stringMatching(/sourceMappingURL/),
       '/dist/metadata.json': expect.stringContaining('"fileMetadata"'),
-      '/dist/bundles/ios-4fe3891dcaca43901bd8797db78405e4.map': 'ios_map',
+      '/dist/_expo/static/js/ios/index-xxx.js.map': 'ios_map',
       '/icon.png': 'icon',
       '/package.json': expect.any(String),
     });

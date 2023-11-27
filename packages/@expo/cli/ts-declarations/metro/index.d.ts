@@ -21,7 +21,7 @@ declare module 'metro/src/HmrServer' {
     constructor(...args: any[]);
   }
 
-  module.exports = MetroHmrServer;
+  export default MetroHmrServer;
 }
 
 declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
@@ -32,6 +32,30 @@ declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
   export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject';
 
   export type AllowOptionalDependencies = boolean | AllowOptionalDependenciesWithOptions;
+
+  type BabelNodeFile = any;
+
+  export type CollectedDependencies = readonly {
+    ast: BabelNodeFile;
+    dependencyMapName: string;
+    dependencies: readonly Array<Dependency>;
+  };
+
+  export type Options = readonly {
+    asyncRequireModulePath: string;
+    dependencyMapName?: string;
+    dynamicRequires: DynamicRequiresBehavior;
+    inlineableCalls: readonly Array<string>;
+    keepRequireNames: boolean;
+    allowOptionalDependencies: AllowOptionalDependencies;
+    dependencyTransformer?: DependencyTransformer;
+    /** Enable `require.context` statements which can be used to import multiple files in a directory. */
+    unstable_allowRequireContext: boolean;
+  };
+
+  function collectDependencies(ast: BabelNodeFile, options: Options): CollectedDependencies;
+
+  export default collectDependencies;
 }
 
 declare module 'metro/src/DeltaBundler/types.flow' {
@@ -94,6 +118,27 @@ declare module 'metro/src/lib/createWebsocketServer' {
   }: HMROptions<TClient>): typeof import('ws').Server;
 
   module.exports = createWebsocketServer;
+}
+
+declare module 'metro/src/DeltaBundler/Serializers/sourceMapGenerator' {
+  import type { Module } from 'metro';
+
+  export type SourceMapGeneratorOptions = {
+    excludeSource: boolean;
+    processModuleFilter: (module: Module) => boolean;
+    shouldAddToIgnoreList: (module: Module) => boolean;
+  };
+}
+declare module 'metro/src/DeltaBundler/Serializers/sourceMapString' {
+  import type { SourceMapGeneratorOptions } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
+  import type { Module } from 'metro';
+
+  function sourceMapString(
+    modules: readonly Array<Module>,
+    options: SourceMapGeneratorOptions
+  ): string;
+
+  export default sourceMapString;
 }
 
 declare module 'metro/src/DeltaBundler/Serializers/getAssets' {
@@ -240,6 +285,17 @@ declare module 'metro/src/lib/bundleToString' {
     readonly code: string;
     readonly metadata: BundleMetadata;
   };
+}
+
+declare module 'metro/src/lib/getAppendScripts' {
+  function getAppendScripts(
+    entryPoint: string,
+    modules: readonly Module<MixedOutput>[],
+    options: SerializerOptions
+  ): Module<MixedOutput>[];
+
+  export default getAppendScripts;
+  module.exports = getAppendScripts;
 }
 
 declare module 'metro/src/IncrementalBundler' {

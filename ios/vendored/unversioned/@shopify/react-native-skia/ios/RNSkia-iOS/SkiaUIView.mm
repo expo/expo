@@ -1,6 +1,7 @@
 #import <React/RCTBridge.h>
 
 #import "SkiaUIView.h"
+#import <RNSkiaModule.h>
 
 #include <utility>
 #include <vector>
@@ -27,20 +28,31 @@
                                 factory {
   self = [super init];
   if (self) {
-    _manager = manager;
-    _nativeId = 0;
-    _debugMode = false;
-    _drawingMode = RNSkia::RNSkDrawingMode::Default;
-    _factory = factory;
-
-    // Listen to notifications about module invalidation
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(willInvalidateModules)
-               name:RCTBridgeWillInvalidateModulesNotification
-             object:nil];
+    [self initCommon:manager factory:factory];
   }
+  // Listen to notifications about module invalidation
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(willInvalidateModules)
+             name:RCTBridgeWillInvalidateModulesNotification
+           object:nil];
   return self;
+}
+
+- (void)initCommon:(RNSkia::RNSkManager *)manager
+           factory:(std::function<std::shared_ptr<RNSkBaseiOSView>(
+                        std::shared_ptr<RNSkia::RNSkPlatformContext>)>)factory {
+  _manager = manager;
+  _nativeId = 0;
+  _debugMode = false;
+  _drawingMode = RNSkia::RNSkDrawingMode::Default;
+  _factory = factory;
+}
+
+- (SkiaManager *)skiaManager {
+  auto bridge = [RCTBridge currentBridge];
+  auto skiaModule = (RNSkiaModule *)[bridge moduleForName:@"RNSkiaModule"];
+  return [skiaModule manager];
 }
 
 - (void)willInvalidateModules {
@@ -81,14 +93,34 @@
 }
 
 - (void)dealloc {
-  if (_manager != nullptr && _nativeId != 0) {
-    _manager->unregisterSkiaView(_nativeId);
-  }
-
+  [self unregisterView];
   [[NSNotificationCenter defaultCenter]
       removeObserver:self
                 name:RCTBridgeWillInvalidateModulesNotification
               object:nil];
+}
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (void)prepareForRecycle {
+  [super prepareForRecycle];
+  [self unregisterView];
+}
+
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask {
+  [super finalizeUpdates:updateMask];
+  if (updateMask == RNComponentViewUpdateMaskAll) {
+    // this flag is only set when the view is inserted and we want to set the
+    // manager here since the view could be recycled or the app could be
+    // refreshed and we would have a stale manager then
+    _manager = [[self skiaManager] skManager].get();
+  }
+}
+#endif // RCT_NEW_ARCH_ENABLED
+
+- (void)unregisterView {
+  if (_manager != nullptr && _nativeId != 0) {
+    _manager->unregisterSkiaView(_nativeId);
+  }
 
   assert(_impl == nullptr);
 }

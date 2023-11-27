@@ -243,6 +243,10 @@
 - (void)goTo:(NSInteger)index animated:(BOOL)animated {
     NSInteger numberOfPages = self.reactSubviews.count;
     
+    if (index == _currentIndex) {
+        return;
+    }
+    
     [self disableSwipe];
     
     _destinationIndex = index;

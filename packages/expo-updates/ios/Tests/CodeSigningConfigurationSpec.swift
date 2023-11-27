@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import EXUpdates
 
 class CodeSigningConfigurationSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     it("works with spearate certificate chain") {
       let leafCert = getTestCertificate(TestCertificate.chainLeaf)
       let intermediateCert = getTestCertificate(TestCertificate.chainIntermediate)

@@ -14,6 +14,7 @@ import abi49_0_0.host.exp.exponent.modules.api.notifications.channels.ScopedNoti
 import abi49_0_0.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider
 import abi49_0_0.host.exp.exponent.modules.universal.notifications.*
 import abi49_0_0.host.exp.exponent.modules.universal.sensors.*
+import abi49_0_0.host.exp.exponent.core.modules.ExpoGoUpdatesModule
 import java.lang.RuntimeException
 
 open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistryProvider?, modulesProvider: ModulesProvider? = null) :
@@ -46,9 +47,6 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     // Overriding expo-permissions ScopedPermissionsService
     moduleRegistry.registerInternalModule(ScopedPermissionsService(scopedContext, experienceKey))
 
-    // Overriding expo-updates UpdatesService
-    moduleRegistry.registerInternalModule(UpdatesBinding(scopedContext, experienceProperties))
-
     // Overriding expo-notifications classes
     moduleRegistry.registerExportedModule(ScopedNotificationsEmitter(scopedContext, experienceKey))
     moduleRegistry.registerExportedModule(ScopedNotificationsHandler(scopedContext, experienceKey))
@@ -78,7 +76,15 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
         moduleRegistry.registerExtraListener(otherModule as RegistryLifecycleListener)
       }
     }
-    return getNativeModulesFromModuleRegistry(reactContext, moduleRegistry)
+
+    return getNativeModulesFromModuleRegistry(
+      reactContext,
+      moduleRegistry
+    ) { appContext ->
+      appContext.registry.register(
+        ExpoGoUpdatesModule(experienceProperties),
+      )
+    }
   }
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {

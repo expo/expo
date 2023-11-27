@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 10.11.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 10.10.0 — 2023-10-17
 
 ### 🛠 Breaking changes
@@ -145,6 +151,4 @@ _This version does not introduce any user-facing changes._
 ## 8.2.0 — 2020-05-27
 
 *This version does not introduce any user-facing changes.*
-``````
-
 ```

@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import { copyAsync } from '../utils/dir';
 import { env } from '../utils/env';
 
 const debug = require('debug')('expo:public-folder') as typeof console.log;
@@ -18,4 +19,18 @@ export function getUserDefinedFile(projectRoot: string, possiblePaths: string[])
   }
 
   return null;
+}
+
+/**
+ * Copy the contents of the public folder into the output folder.
+ * This enables users to add static files like `favicon.ico` or `serve.json`.
+ *
+ * The contents of this folder are completely universal since they refer to
+ * static network requests which fall outside the scope of React Native's magic
+ * platform resolution patterns.
+ */
+export async function copyPublicFolderAsync(publicFolder: string, outputFolder: string) {
+  if (fs.existsSync(publicFolder)) {
+    await copyAsync(publicFolder, outputFolder);
+  }
 }

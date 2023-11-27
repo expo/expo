@@ -295,7 +295,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
               codec: '123',
             })
             .catch((error) => {
-              t.expect(error.message).toMatch(/(?=.*codec)(?=.*is not supported)/i);
+              t.expect(error.message).toMatch(/'123' is not present in VideoCodec enum/i);
             });
         });
 
