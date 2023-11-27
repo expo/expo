@@ -19,7 +19,7 @@
 ### 🐛 Bug fixes
 
 - Prevent log-spew when running prebuild in debug mode. ([#25434](https://github.com/expo/expo/pull/25434) by [@EvanBacon](https://github.com/EvanBacon))
-- Only use `bundledNativeModules.json` for dependencies validation when using canary versions.
+- Only use `bundledNativeModules.json` for dependencies validation when using canary versions. ([#25600](https://github.com/expo/expo/pull/25600) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
