@@ -164,7 +164,10 @@ func getAssetsBy(assetIds: [String]) -> PHFetchResult<PHAsset> {
   return PHAsset.fetchAssets(withLocalIdentifiers: assetIds, options: options)
 }
 
-func exportCollections(collections: PHFetchResult<PHCollection>, with options: PHFetchOptions, in folder: String?) -> [[String: Any?]?] {
+func exportCollections(
+  collections: PHFetchResult<PHCollection>,
+  with options: PHFetchOptions,
+  in folder: String?) -> [[String: Any?]?] {
   var albums = [[String: Any?]?]()
   collections.enumerateObjects { collection, _, _ in
     if let assetCollection = collection as? PHAssetCollection {
@@ -432,8 +435,8 @@ func getAssetsWithAfter(options: AssetWithOptions, collection: PHAssetCollection
     let startIndex = cursorIndex == NSNotFound ? 0 : cursorIndex + 1
     let endIndex = min(startIndex + options.first, totalCount)
 
-    for i in startIndex..<endIndex {
-      let asset = fetchResult.object(at: i)
+    for index in startIndex..<endIndex {
+      let asset = fetchResult.object(at: index)
       if let exportedAsset = exportAsset(asset: asset) {
         assets.append(exportedAsset)
       }
