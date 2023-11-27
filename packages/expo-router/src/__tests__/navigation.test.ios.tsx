@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import Constants from 'expo-constants';
 import React, { Text } from 'react-native';
 
@@ -924,4 +925,144 @@ it('will warn if a href provides duplicate parameters (wildcard)', async () => {
     1,
     "Route '/[...id]' with param 'id' was specified both in the path and as a param, removing from path"
   );
+});
+
+describe('consistent url encoding', () => {
+  it('can handle url encoded deep linking', async () => {
+    renderRouter(
+      {
+        '[param]': () => {
+          const local = useLocalSearchParams();
+          const global = useGlobalSearchParams();
+          return <Text testID="id">{JSON.stringify({ local, global })}</Text>;
+        },
+      },
+      {
+        initialUrl: '/start%26end',
+      }
+    );
+
+    const component = screen.getByTestId('id');
+    expect(screen).toHavePathname('/start%26end');
+    expect(screen).toHaveSearchParams({ param: 'start&end' });
+    expect(component).toHaveTextContent(
+      JSON.stringify({ local: { param: 'start&end' }, global: { param: 'start&end' } })
+    );
+  });
+
+  it('can handle %26 (percent sign) deep linking', async () => {
+    renderRouter(
+      {
+        '[param]': () => {
+          const local = useLocalSearchParams();
+          const global = useGlobalSearchParams();
+          return <Text testID="id">{JSON.stringify({ local, global })}</Text>;
+        },
+      },
+      {
+        initialUrl: '/start%25end',
+      }
+    );
+
+    const component = screen.getByTestId('id');
+    expect(screen).toHavePathname('/start%25end');
+    expect(screen).toHaveSearchParams({ param: 'start%end' });
+    expect(component).toHaveTextContent(
+      JSON.stringify({ local: { param: 'start%end' }, global: { param: 'start%end' } })
+    );
+  });
+
+  it('can handle deep linking urls with encoded search params ', async () => {
+    renderRouter(
+      {
+        test: () => {
+          const local = useLocalSearchParams();
+          const global = useGlobalSearchParams();
+          return <Text testID="id">{JSON.stringify({ local, global })}</Text>;
+        },
+      },
+      {
+        initialUrl: 'test?param=start%26end',
+      }
+    );
+
+    const component = screen.getByTestId('id');
+    expect(screen).toHavePathname('/test');
+    expect(screen).toHaveSearchParams({ param: 'start&end' });
+    expect(component).toHaveTextContent(
+      JSON.stringify({ local: { param: 'start&end' }, global: { param: 'start&end' } })
+    );
+  });
+
+  it('can handle deep linking to index with encoded search params ', async () => {
+    renderRouter(
+      {
+        index: () => {
+          const local = useLocalSearchParams();
+          const global = useGlobalSearchParams();
+          return <Text testID="id">{JSON.stringify({ local, global })}</Text>;
+        },
+      },
+      {
+        initialUrl: '/?param=start%26end',
+      }
+    );
+
+    const component = screen.getByTestId('id');
+    expect(screen).toHavePathname('/');
+    expect(screen).toHaveSearchParams({ param: 'start&end' });
+    expect(component).toHaveTextContent(
+      JSON.stringify({ local: { param: 'start&end' }, global: { param: 'start&end' } })
+    );
+  });
+
+  it('can handle url encoded linking', async () => {
+    renderRouter(
+      {
+        '[param]': () => <Text />,
+      },
+      {
+        initialUrl: '/test',
+      }
+    );
+
+    act(() => router.push('/start%20end'));
+
+    expect(screen).toHavePathname('/start%20end');
+    expect(screen).toHaveSearchParams({
+      param: 'start end',
+    });
+
+    act(() => router.push('/start%21end'));
+
+    expect(screen).toHavePathname('/start%21end');
+    expect(screen).toHaveSearchParams({
+      param: 'start!end',
+    });
+
+    act(() => router.back());
+
+    expect(screen).toHavePathname('/start%20end');
+    expect(screen).toHaveSearchParams({
+      param: 'start end',
+    });
+  });
+
+  it('can handle linking to index with encoded params', async () => {
+    renderRouter(
+      {
+        index: () => <Text />,
+        '[param]': () => <Text />,
+      },
+      {
+        initialUrl: '/test',
+      }
+    );
+
+    act(() => router.push('/?param=start%20end'));
+    expect(screen).toHavePathname('/');
+    expect(screen).toHaveSearchParams({
+      param: 'start end',
+    });
+  });
 });

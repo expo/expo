@@ -92,10 +92,14 @@ export function useGlobalSearchParams<
 export function useLocalSearchParams<
   TParams extends SearchParams = SearchParams,
 >(): Partial<TParams> {
-  return (useOptionalLocalRoute()?.params ?? ({} as any)) as Partial<TParams>;
-}
-
-function useOptionalLocalRoute<T extends RouteProp<ParamListBase>>(): T | undefined {
-  const route = React.useContext(NavigationRouteContext);
-  return route as T | undefined;
+  const params = React.useContext(NavigationRouteContext)?.params ?? {};
+  return Object.fromEntries(
+    Object.entries(params).map(([key, value]) => {
+      try {
+        return [key, decodeURIComponent(value as string)];
+      } catch {
+        return [key, value];
+      }
+    })
+  ) as Partial<TParams>;
 }
