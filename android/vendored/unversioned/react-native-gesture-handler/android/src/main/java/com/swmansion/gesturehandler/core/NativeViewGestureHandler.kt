@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.ScrollView
+import com.facebook.react.views.scroll.ReactScrollView
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.textinput.ReactEditText
 
@@ -75,6 +76,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       is NativeViewGestureHandlerHook -> this.hook = view
       is ReactEditText -> this.hook = EditTextHook(this, view)
       is ReactSwipeRefreshLayout -> this.hook = SwipeRefreshLayoutHook(this, view)
+      is ReactScrollView -> this.hook = ScrollViewHook()
     }
   }
 
@@ -120,6 +122,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       action = MotionEvent.ACTION_CANCEL
     }
     view!!.onTouchEvent(event)
+    event.recycle()
   }
 
   override fun onReset() {
@@ -246,5 +249,9 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       // - one to actually refresh
       // oh well  ¯\_(ツ)_/¯
     }
+  }
+
+  private class ScrollViewHook : NativeViewGestureHandlerHook {
+    override fun shouldCancelRootViewGestureHandlerIfNecessary() = true
   }
 }
