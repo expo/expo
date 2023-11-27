@@ -1065,4 +1065,28 @@ describe('consistent url encoding', () => {
       param: 'start end',
     });
   });
+
+  it('can handle url encoded param names', async () => {
+    renderRouter(
+      {
+        test: () => {
+          const local = useLocalSearchParams();
+          const global = useGlobalSearchParams();
+          return <Text testID="id">{JSON.stringify({ local, global })}</Text>;
+        },
+      },
+      {
+        initialUrl: '/test?par%20am=start%20end',
+      }
+    );
+
+    const component = screen.getByTestId('id');
+    expect(screen).toHavePathname('/test');
+    expect(screen).toHaveSearchParams({
+      'par am': 'start end',
+    });
+    expect(component).toHaveTextContent(
+      JSON.stringify({ local: { 'par am': 'start end' }, global: { 'par am': 'start end' } })
+    );
+  });
 });
