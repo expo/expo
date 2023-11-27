@@ -2,7 +2,7 @@
 
 ## Unpublished
 
-- Only mock `react-native-reanimated` if package is installed.
+- Only mock `react-native-reanimated` if package is installed. ([#25588](https://github.com/expo/expo/pull/25588) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🛠 Breaking changes
 
