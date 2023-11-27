@@ -35,7 +35,7 @@ export interface SQLiteProviderProps {
    * Handle errors from SQLiteProvider.
    * @default rethrow the error
    */
-  errorHandler?: (error: Error) => void;
+  onError?: (error: Error) => void;
 }
 
 /**
@@ -53,7 +53,7 @@ export function SQLiteProvider({
   children,
   initHandler,
   loadingFallback,
-  errorHandler,
+  onError,
 }: SQLiteProviderProps) {
   const databaseRef = useRef<SQLiteDatabase | null>(null);
   const [loading, setLoading] = useState(true);
@@ -93,7 +93,7 @@ export function SQLiteProvider({
 
   if (error != null) {
     const handler =
-      errorHandler ??
+      onError ??
       ((e) => {
         throw e;
       });

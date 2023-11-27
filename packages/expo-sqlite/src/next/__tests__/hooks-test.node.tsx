@@ -83,10 +83,10 @@ describe(useSQLiteContext, () => {
     expect(screen.queryByText(loadingText)).toBeNull();
   });
 
-  it('should call errorHandler from SQLiteProvider if failed to open database', async () => {
+  it('should call onError from SQLiteProvider if failed to open database', async () => {
     const mockErroHandler = jest.fn();
     render(
-      <SQLiteProvider databaseName="/nonexistent/nonexistent.db" errorHandler={mockErroHandler}>
+      <SQLiteProvider databaseName="/nonexistent/nonexistent.db" onError={mockErroHandler}>
         <View />
       </SQLiteProvider>
     );
