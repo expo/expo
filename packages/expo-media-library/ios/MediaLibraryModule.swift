@@ -421,7 +421,9 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
   }
 
   private func runIfAllPermissionsWereGranted(reject: @escaping EXPromiseRejectBlock, block: @escaping () -> Void) {
-    appContext?.permissions?.getPermissionUsingRequesterClass(MediaLibraryPermissionRequester.self, resolve: { result in
+    appContext?.permissions?.getPermissionUsingRequesterClass(
+      MediaLibraryPermissionRequester.self,
+      resolve: { result in
       if let permissions = result as? [String: Any] {
         if permissions["status"] as? String != "granted" {
           reject("E_NO_PERMISSIONS", "MEDIA_LIBRARY permission is required to do this operation.", nil)
@@ -436,7 +438,8 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         }
         block()
       }
-    }, reject: reject)
+    },
+    reject: reject)
   }
 
   func didChange(_ changeInstance: PHChange) {

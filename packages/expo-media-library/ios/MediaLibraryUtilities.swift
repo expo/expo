@@ -261,13 +261,16 @@ func assetType(for localUri: URL) -> PHAssetMediaType {
   let fileUTI: CFString?
 
   if #available(iOS 14.0, *) {
-    UTType(filenameExtension: localUri.pathExtension)
-    let type: CFString = UTType(filenameExtension: localUri.pathExtension)?.identifier as! CFString
-    fileUTI = type
+    if let type = UTType(filenameExtension: localUri.pathExtension)?.identifier as CFString? {
+      fileUTI = type
+    } else {
+      fileUTI = nil
+    }
   } else {
     fileUTI = UTTypeCreatePreferredIdentifierForTag(
       kUTTagClassFilenameExtension,
-      localUri.pathExtension as CFString, nil
+      localUri.pathExtension as CFString,
+      nil
     )?.takeUnretainedValue()
   }
 
@@ -414,7 +417,7 @@ func getAssetsWithAfter(options: AssetWithOptions, collection: PHAssetCollection
   var hasNextPage: Bool
 
   if fetchOptions.sortDescriptors?.isEmpty == true {
-    let startIndex = max(cursorIndex == NSNotFound ? totalCount - 1: cursorIndex - 1, -1)
+    let startIndex = max(cursorIndex == NSNotFound ? totalCount - 1 : cursorIndex - 1, -1)
     let endIndex = max(startIndex - options.first + 1, 0)
 
     for i in (endIndex...startIndex).reversed() {
