@@ -96,6 +96,7 @@ export async function getVersionedDependenciesAsync(
   const combinedKnownPackages = await getCombinedKnownVersionsAsync({
     projectRoot,
     sdkVersion: exp.sdkVersion,
+    skipRemoteVersions: await isExpoPreReleaseAsync(projectRoot),
   });
   // debug(`Known dependencies: %O`, combinedKnownPackages);
 
@@ -251,4 +252,9 @@ function findDependencyType(
   }
 
   return 'dependencies';
+}
+
+/** Check if the currently installed `expo` version is a pre-released (canary) version */
+async function isExpoPreReleaseAsync(projectRoot: string) {
+  return semver.prerelease(await getPackageVersionAsync(projectRoot, 'expo')) !== null;
 }
