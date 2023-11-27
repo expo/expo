@@ -664,9 +664,9 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
 `);
 
       const waitChangePromise = new Promise((resolve) => {
-        SQLite.addDatabaseChangeListener(({ databaseName, dbFilePath, tableName, rowId }) => {
+        SQLite.addDatabaseChangeListener(({ databaseName, databaseFilePath, tableName, rowId }) => {
           expect(databaseName).toEqual('main');
-          expect(path.basename(dbFilePath)).toEqual('test.db');
+          expect(path.basename(databaseFilePath)).toEqual('test.db');
           expect(tableName).toEqual('foo');
           expect(rowId).toBeDefined();
           resolve(null);

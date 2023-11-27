@@ -319,12 +319,12 @@ class SQLiteModuleNext : Module() {
       if (!hasListeners) {
         return@enableUpdateHook
       }
-      val dbFilePath = database.ref.sqlite3_db_filename(databaseName)
+      val databaseFilePath = database.ref.sqlite3_db_filename(databaseName)
       sendEvent(
         "onDatabaseChange",
         bundleOf(
           "databaseName" to databaseName,
-          "dbFilePath" to dbFilePath,
+          "databaseFilePath" to databaseFilePath,
           "tableName" to tableName,
           "rowId" to rowID,
           "typeId" to SQLAction.fromCode(operationType).value,

@@ -445,7 +445,7 @@ export type DatabaseChangeEvent = {
   databaseName: string;
 
   /** The absolute file path to the database. */
-  dbFilePath: string;
+  databaseFilePath: string;
 
   /** The table name. */
   tableName: string;
@@ -458,7 +458,7 @@ export type DatabaseChangeEvent = {
  * Add a listener for database changes.
  * > Note: to enable this feature, you must set [`enableChangeListener` to `true`](#sqliteopenoptions) when opening the database.
  *
- * @param listener A function that receives the `dbFilePath`, `databaseName`, `tableName` and `rowId` of the modified data.
+ * @param listener A function that receives the `databaseName`, `databaseFilePath`, `tableName` and `rowId` of the modified data.
  * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
  */
 export function addDatabaseChangeListener(

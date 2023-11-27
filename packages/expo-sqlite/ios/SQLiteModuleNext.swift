@@ -381,11 +381,11 @@ public final class SQLiteModuleNext: Module {
       }
       let selfInstance = pair.0
       let database = pair.1
-      let dbFilePath = sqlite3_db_filename(database.pointer, databaseName)
-      if selfInstance.hasListeners, let databaseName, let dbFilePath {
+      let databaseFilePath = sqlite3_db_filename(database.pointer, databaseName)
+      if selfInstance.hasListeners, let databaseName, let databaseFilePath {
         selfInstance.sendEvent("onDatabaseChange", [
           "databaseName": String(cString: UnsafePointer(databaseName)),
-          "dbFilePath": String(cString: UnsafePointer(dbFilePath)),
+          "databaseFilePath": String(cString: UnsafePointer(databaseFilePath)),
           "tableName": String(cString: UnsafePointer(tableName)),
           "rowId": rowId,
           "typeId": SQLAction.fromCode(value: action)
