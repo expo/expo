@@ -11,7 +11,7 @@
 #include "include/core/SkPath.h"
 #include "modules/svg/include/SkSVGShape.h"
 
-class SkSVGPath final : public SkSVGShape {
+class SK_API SkSVGPath final : public SkSVGShape {
 public:
     static sk_sp<SkSVGPath> Make() { return sk_sp<SkSVGPath>(new SkSVGPath()); }
 

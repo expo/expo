@@ -1,7 +1,5 @@
 package com.shopify.reactnative.skia;
 
-import android.app.Application;
-import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -10,7 +8,6 @@ import android.view.Choreographer;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,8 +18,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class PlatformContext {
     @DoNotStrip
@@ -34,6 +29,9 @@ public class PlatformContext {
     private boolean _isPaused = false;
 
     private final String TAG = "PlatformContext";
+
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+
 
     public PlatformContext(ReactContext reactContext) {
         mContext = reactContext;
@@ -66,9 +64,10 @@ public class PlatformContext {
         Choreographer.getInstance().postFrameCallback(frameCallback);
     }
 
+
     @DoNotStrip
     public void notifyTaskReadyOnMainThread() {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        mainHandler.post(new Runnable() {
             @Override
             public void run() {
                 notifyTaskReady();
@@ -83,7 +82,7 @@ public class PlatformContext {
 
     @DoNotStrip
     public void raise(final String message) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        mainHandler.post(new Runnable() {
             @Override
             public void run() {
                 mContext.handleException(new Exception(message));
@@ -97,7 +96,7 @@ public class PlatformContext {
             return;
         }
         _drawLoopActive = true;
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        mainHandler.post(new Runnable() {
             @Override
             public void run() {
                 postFrameLoop();
@@ -169,7 +168,7 @@ public class PlatformContext {
         Log.i(TAG, "Resume");
         if(_drawLoopActive) {
             // Restart draw loop
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
+            mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     postFrameLoop();

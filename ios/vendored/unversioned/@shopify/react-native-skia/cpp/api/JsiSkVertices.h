@@ -25,7 +25,7 @@ public:
       : JsiSkWrappingSkPtrHostObject<SkVertices>(std::move(context),
                                                  std::move(vertices)) {}
 
-  EXPORT_JSI_API_TYPENAME(JsiSkVertices, "Vertices")
+  EXPORT_JSI_API_TYPENAME(JsiSkVertices, Vertices)
 
   JSI_HOST_FUNCTION(bounds) {
     const auto &result = getObject()->bounds();

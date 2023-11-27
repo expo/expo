@@ -81,16 +81,6 @@ protected:
    */
   virtual void releaseResources() = 0;
 
-  /**
-   Throws a runtime error if this method is called after the object has been
-   disposed.
-   */
-  void ensureNotDisposed() {
-    if (_isDisposed) {
-      throw std::runtime_error("API Object accessed after it was disposed");
-    }
-  }
-
 private:
   void safeDispose() {
     if (!_isDisposed) {

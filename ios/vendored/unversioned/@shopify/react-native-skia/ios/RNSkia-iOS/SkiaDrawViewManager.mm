@@ -15,7 +15,7 @@ RCT_EXPORT_MODULE(SkiaDrawView)
 
 - (SkiaManager *)skiaManager {
   auto bridge = [RCTBridge currentBridge];
-  auto skiaModule = (RNSkiaModule *)[bridge moduleForName:@"RNSkia"];
+  auto skiaModule = (RNSkiaModule *)[bridge moduleForName:@"RNSkiaModule"];
   return [skiaModule manager];
 }
 

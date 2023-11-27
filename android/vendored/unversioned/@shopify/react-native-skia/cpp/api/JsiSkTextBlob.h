@@ -25,7 +25,7 @@ public:
       : JsiSkWrappingSkPtrHostObject<SkTextBlob>(std::move(context),
                                                  std::move(shader)) {}
 
-  EXPORT_JSI_API_TYPENAME(JsiSkTextBlob, "TextBlob")
+  EXPORT_JSI_API_TYPENAME(JsiSkTextBlob, TextBlob)
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkTextBlob, dispose))
 };
 } // namespace RNSkia

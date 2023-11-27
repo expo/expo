@@ -22,12 +22,9 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
 
 public class ViewScreenshotService {
     private static final long SURFACE_VIEW_READ_PIXELS_TIMEOUT = 5;
@@ -35,9 +32,14 @@ public class ViewScreenshotService {
 
     public static Bitmap makeViewScreenshotFromTag(ReactContext context, int tag) {
         UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
-        View view = uiManager.resolveView(tag);
+        View view = null;
+        try {
+            view = uiManager.resolveView(tag);
+        } catch (RuntimeException e) {
+            context.handleException(e);
+        }
         if (view == null) {
-            throw new RuntimeException("Could not resolve view from view tag " + tag);
+            return null;
         }
 
         // Measure and get size of view
@@ -91,7 +93,9 @@ public class ViewScreenshotService {
             }
 
             // Draw ourselves
+            canvas.saveLayerAlpha(null, Math.round(view.getAlpha() * 255));
             view.draw(canvas);
+            canvas.restore();
 
             // Enable children again
             for (int i = 0; i < visibleChildren.size(); i++) {
@@ -170,8 +174,8 @@ public class ViewScreenshotService {
 
         // Create a new matrix for translation
         final Matrix translateMatrix = new Matrix();
-        final float dx = view.getLeft() + view.getPaddingLeft() + view.getTranslationX();
-        final float dy = view.getTop() + view.getPaddingTop() + view.getTranslationY();
+        final float dx = view.getLeft() + view.getPaddingLeft();
+        final float dy = view.getTop() + view.getPaddingTop();
         translateMatrix.setTranslate(dx, dy);
 
         // Pre-concatenate the current matrix of the canvas with the translation and transformation matrices of the view

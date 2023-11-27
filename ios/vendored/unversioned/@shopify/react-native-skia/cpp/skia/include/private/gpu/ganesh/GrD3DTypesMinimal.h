@@ -48,7 +48,7 @@ struct GrD3DBackendSurfaceInfo {
     GrD3DTextureResourceInfo snapTextureResourceInfo() const;
 
     bool isProtected() const;
-#if GR_TEST_UTILS
+#if defined(GR_TEST_UTILS)
     bool operator==(const GrD3DBackendSurfaceInfo& that) const;
 #endif
 

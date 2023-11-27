@@ -11,7 +11,7 @@
 #include "modules/svg/include/SkSVGFe.h"
 #include "modules/svg/include/SkSVGTypes.h"
 
-class SkSVGFeFlood : public SkSVGFe {
+class SK_API SkSVGFeFlood : public SkSVGFe {
 public:
     static sk_sp<SkSVGFeFlood> Make() { return sk_sp<SkSVGFeFlood>(new SkSVGFeFlood()); }
 

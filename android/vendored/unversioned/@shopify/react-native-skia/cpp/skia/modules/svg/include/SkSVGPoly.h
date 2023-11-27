@@ -12,7 +12,7 @@
 #include "modules/svg/include/SkSVGShape.h"
 
 // Handles <polygon> and <polyline> elements.
-class SkSVGPoly final : public SkSVGShape {
+class SK_API SkSVGPoly final : public SkSVGShape {
 public:
     static sk_sp<SkSVGPoly> MakePolygon() {
         return sk_sp<SkSVGPoly>(new SkSVGPoly(SkSVGTag::kPolygon));

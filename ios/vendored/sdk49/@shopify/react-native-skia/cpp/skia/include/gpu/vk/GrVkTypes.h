@@ -34,7 +34,10 @@ struct GrVkYcbcrConversionInfo {
     }
     bool operator!=(const GrVkYcbcrConversionInfo& that) const { return !(*this == that); }
 
-    bool isValid() const { return fYcbcrModel != VK_SAMPLER_YCBCR_MODEL_CONVERSION_RGB_IDENTITY; }
+    bool isValid() const {
+        return fYcbcrModel != VK_SAMPLER_YCBCR_MODEL_CONVERSION_RGB_IDENTITY ||
+               fExternalFormat != 0;
+    }
 
     // Format of the source image. Must be set to VK_FORMAT_UNDEFINED for external images or
     // a valid image format otherwise.
@@ -79,7 +82,6 @@ struct GrVkImageInfo {
     bool                     fPartOfSwapchainOrAndroidWindow = false;
 #endif
 
-#if GR_TEST_UTILS
     bool operator==(const GrVkImageInfo& that) const {
         bool equal = fImage == that.fImage && fAlloc == that.fAlloc &&
                      fImageTiling == that.fImageTiling &&
@@ -97,7 +99,6 @@ struct GrVkImageInfo {
 #endif
         return equal;
     }
-#endif
 };
 
 using GrVkGetProc = skgpu::VulkanGetProc;

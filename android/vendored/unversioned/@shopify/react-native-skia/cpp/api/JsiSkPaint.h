@@ -25,7 +25,7 @@ namespace jsi = facebook::jsi;
 
 class JsiSkPaint : public JsiSkWrappingSharedPtrHostObject<SkPaint> {
 public:
-  EXPORT_JSI_API_TYPENAME(JsiSkPaint, "Paint")
+  EXPORT_JSI_API_TYPENAME(JsiSkPaint, Paint)
 
   JSI_HOST_FUNCTION(copy) {
     const auto *paint = getObject().get();
@@ -78,6 +78,12 @@ public:
   JSI_HOST_FUNCTION(setAntiAlias) {
     bool antiAliased = arguments[0].getBool();
     getObject()->setAntiAlias(antiAliased);
+    return jsi::Value::undefined();
+  }
+
+  JSI_HOST_FUNCTION(setDither) {
+    bool dithered = arguments[0].getBool();
+    getObject()->setDither(dithered);
     return jsi::Value::undefined();
   }
 
@@ -175,6 +181,7 @@ public:
                        JSI_EXPORT_FUNC(JsiSkPaint, setStrokeJoin),
                        JSI_EXPORT_FUNC(JsiSkPaint, setStrokeCap),
                        JSI_EXPORT_FUNC(JsiSkPaint, setAntiAlias),
+                       JSI_EXPORT_FUNC(JsiSkPaint, setDither),
                        JSI_EXPORT_FUNC(JsiSkPaint, setStrokeWidth),
                        JSI_EXPORT_FUNC(JsiSkPaint, setStyle),
                        JSI_EXPORT_FUNC(JsiSkPaint, setColor),

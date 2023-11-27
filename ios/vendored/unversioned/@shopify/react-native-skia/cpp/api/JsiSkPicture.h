@@ -60,7 +60,7 @@ public:
     return array;
   }
 
-  EXPORT_JSI_API_TYPENAME(JsiSkPicture, "Picture")
+  EXPORT_JSI_API_TYPENAME(JsiSkPicture, Picture)
 
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkPicture, makeShader),
                        JSI_EXPORT_FUNC(JsiSkPicture, serialize),

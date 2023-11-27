@@ -9,11 +9,12 @@
 #define SkTHash_DEFINED
 
 #include "include/core/SkTypes.h"
-#include "include/private/SkChecksum.h"
-#include "include/private/base/SkTemplates.h"
+#include "src/core/SkChecksum.h"
 
 #include <initializer_list>
+#include <memory>
 #include <new>
+#include <type_traits>
 #include <utility>
 
 namespace skia_private {
@@ -40,7 +41,7 @@ public:
         if (this != &that) {
             fCount     = that.fCount;
             fCapacity  = that.fCapacity;
-            fSlots.reset(that.fCapacity);
+            fSlots.reset(new Slot[that.fCapacity]);
             for (int i = 0; i < fCapacity; i++) {
                 fSlots[i] = that.fSlots[i];
             }
@@ -147,8 +148,8 @@ public:
 
         fCount = 0;
         fCapacity = capacity;
-        AutoTArray<Slot> oldSlots = std::move(fSlots);
-        fSlots = AutoTArray<Slot>(capacity);
+        std::unique_ptr<Slot[]> oldSlots = std::move(fSlots);
+        fSlots.reset(new Slot[capacity]);
 
         for (int i = 0; i < oldCapacity; i++) {
             Slot& s = oldSlots[i];
@@ -413,7 +414,7 @@ private:
 
     int fCount    = 0,
         fCapacity = 0;
-    AutoTArray<Slot> fSlots;
+    std::unique_ptr<Slot[]> fSlots;
 };
 
 // Maps K->V.  A more user-friendly wrapper around THashTable, suitable for most use cases.
@@ -488,15 +489,24 @@ public:
     }
 
     // Call fn on every key/value pair in the table.  You may mutate the value but not the key.
-    template <typename Fn>  // f(K, V*) or f(const K&, V*)
+    template <typename Fn,  // f(K, V*) or f(const K&, V*)
+              std::enable_if_t<std::is_invocable_v<Fn, K, V*>>* = nullptr>
     void foreach(Fn&& fn) {
-        fTable.foreach([&fn](Pair* p){ fn(p->first, &p->second); });
+        fTable.foreach([&fn](Pair* p) { fn(p->first, &p->second); });
     }
 
     // Call fn on every key/value pair in the table.  You may not mutate anything.
-    template <typename Fn>  // f(K, V), f(const K&, V), f(K, const V&) or f(const K&, const V&).
+    template <typename Fn,  // f(K, V), f(const K&, V), f(K, const V&) or f(const K&, const V&).
+              std::enable_if_t<std::is_invocable_v<Fn, K, V>>* = nullptr>
     void foreach(Fn&& fn) const {
-        fTable.foreach([&fn](const Pair& p){ fn(p.first, p.second); });
+        fTable.foreach([&fn](const Pair& p) { fn(p.first, p.second); });
+    }
+
+    // Call fn on every key/value pair in the table.  You may not mutate anything.
+    template <typename Fn,  // f(Pair), or f(const Pair&)
+              std::enable_if_t<std::is_invocable_v<Fn, Pair>>* = nullptr>
+    void foreach(Fn&& fn) const {
+        fTable.foreach([&fn](const Pair& p) { fn(p); });
     }
 
     // Dereferencing an iterator gives back a key-value pair, suitable for structured binding.

@@ -8,9 +8,10 @@
 #ifndef SkPictureRecorder_DEFINED
 #define SkPictureRecorder_DEFINED
 
-#include "include/core/SkBBHFactory.h"
-#include "include/core/SkPicture.h"
+#include "include/core/SkRect.h"
 #include "include/core/SkRefCnt.h"
+#include "include/core/SkScalar.h"
+#include "include/private/base/SkAPI.h"
 
 #include <memory>
 
@@ -20,9 +21,11 @@ namespace android {
 };
 #endif
 
+class SkBBHFactory;
+class SkBBoxHierarchy;
 class SkCanvas;
 class SkDrawable;
-class SkPictureRecord;
+class SkPicture;
 class SkRecord;
 class SkRecorder;
 
@@ -30,9 +33,6 @@ class SK_API SkPictureRecorder {
 public:
     SkPictureRecorder();
     ~SkPictureRecorder();
-
-    enum FinishFlags {
-    };
 
     /** Returns the canvas that records the drawing commands.
         @param bounds the cull rect used when recording this picture. Any drawing the falls outside
@@ -86,7 +86,7 @@ public:
      *  Unlike finishRecordingAsPicture(), which returns an immutable picture, the returned drawable
      *  may contain live references to other drawables (if they were added to the recording canvas)
      *  and therefore this drawable will reflect the current state of those nested drawables anytime
-     *  it is drawn or a new picture is snapped from it (by calling drawable->newPictureSnapshot()).
+     *  it is drawn or a new picture is snapped from it (by calling drawable->makePictureSnapshot()).
      */
     sk_sp<SkDrawable> finishRecordingAsDrawable();
 

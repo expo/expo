@@ -40,7 +40,7 @@ public:
     return jsi::Object::createFromHostObject(runtime, std::move(nextObject));
   }
 
-  EXPORT_JSI_API_TYPENAME(JsiSkContourMeasureIter, "ContourMeasureIter")
+  EXPORT_JSI_API_TYPENAME(JsiSkContourMeasureIter, ContourMeasureIter)
 
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkContourMeasureIter, next),
                        JSI_EXPORT_FUNC(JsiSkContourMeasureIter, dispose))

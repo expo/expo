@@ -19,7 +19,6 @@ struct SkGainmapInfo;
 
 /**
  * An interface that can be used to extract metadata from an encoded JPEG file.
- * TODO(https://crbug.com/1404000): Add interface for ICC profile and EXIF extraction.
  */
 class SK_API SkJpegMetadataDecoder {
 public:
@@ -47,6 +46,25 @@ public:
      * before the first StartOfScan). This may return nullptr.
      */
     static std::unique_ptr<SkJpegMetadataDecoder> Make(std::vector<Segment> headerSegments);
+
+    /**
+     * Return the Exif data attached to the image (if any) and nullptr otherwise. If |copyData| is
+     * false, then the returned SkData may directly reference the data provided when this object was
+     * created.
+     */
+    virtual sk_sp<SkData> getExifMetadata(bool copyData) const = 0;
+
+    /**
+     * Return the ICC profile of the image if any, and nullptr otherwise. If |copyData| is false,
+     * then the returned SkData may directly reference the data provided when this object was
+     * created.
+     */
+    virtual sk_sp<SkData> getICCProfileData(bool copyData) const = 0;
+
+    /**
+     * Return true if there is a possibility that this image contains a gainmap image.
+     */
+    virtual bool mightHaveGainmapImage() const = 0;
 
     /**
      * Given a JPEG encoded image |baseImageData|, return in |outGainmapImageData| the JPEG encoded

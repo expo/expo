@@ -71,7 +71,7 @@ public:
         @param sy  vertical scale factor
         @return    SkMatrix with scale
     */
-    static SkMatrix SK_WARN_UNUSED_RESULT Scale(SkScalar sx, SkScalar sy) {
+    [[nodiscard]] static SkMatrix Scale(SkScalar sx, SkScalar sy) {
         SkMatrix m;
         m.setScale(sx, sy);
         return m;
@@ -87,30 +87,30 @@ public:
         @param dy  vertical translation
         @return    SkMatrix with translation
     */
-    static SkMatrix SK_WARN_UNUSED_RESULT Translate(SkScalar dx, SkScalar dy) {
+    [[nodiscard]] static SkMatrix Translate(SkScalar dx, SkScalar dy) {
         SkMatrix m;
         m.setTranslate(dx, dy);
         return m;
     }
-    static SkMatrix SK_WARN_UNUSED_RESULT Translate(SkVector t) { return Translate(t.x(), t.y()); }
-    static SkMatrix SK_WARN_UNUSED_RESULT Translate(SkIVector t) { return Translate(t.x(), t.y()); }
+    [[nodiscard]] static SkMatrix Translate(SkVector t) { return Translate(t.x(), t.y()); }
+    [[nodiscard]] static SkMatrix Translate(SkIVector t) { return Translate(t.x(), t.y()); }
 
     /** Sets SkMatrix to rotate by |deg| about a pivot point at (0, 0).
 
         @param deg  rotation angle in degrees (positive rotates clockwise)
         @return     SkMatrix with rotation
     */
-    static SkMatrix SK_WARN_UNUSED_RESULT RotateDeg(SkScalar deg) {
+    [[nodiscard]] static SkMatrix RotateDeg(SkScalar deg) {
         SkMatrix m;
         m.setRotate(deg);
         return m;
     }
-    static SkMatrix SK_WARN_UNUSED_RESULT RotateDeg(SkScalar deg, SkPoint pt) {
+    [[nodiscard]] static SkMatrix RotateDeg(SkScalar deg, SkPoint pt) {
         SkMatrix m;
         m.setRotate(deg, pt.x(), pt.y());
         return m;
     }
-    static SkMatrix SK_WARN_UNUSED_RESULT RotateRad(SkScalar rad) {
+    [[nodiscard]] static SkMatrix RotateRad(SkScalar rad) {
         return RotateDeg(SkRadiansToDegrees(rad));
     }
 
@@ -120,7 +120,7 @@ public:
         @param ky  vertical skew factor
         @return    SkMatrix with skew
     */
-    static SkMatrix SK_WARN_UNUSED_RESULT Skew(SkScalar kx, SkScalar ky) {
+    [[nodiscard]] static SkMatrix Skew(SkScalar kx, SkScalar ky) {
         SkMatrix m;
         m.setSkew(kx, ky);
         return m;
@@ -153,8 +153,8 @@ public:
         @param mode How to handle the mapping
         @return     SkMatrix mapping src to dst
     */
-    static SkMatrix SK_WARN_UNUSED_RESULT RectToRect(const SkRect& src, const SkRect& dst,
-                                                     ScaleToFit mode = kFill_ScaleToFit) {
+    [[nodiscard]] static SkMatrix RectToRect(const SkRect& src, const SkRect& dst,
+                                             ScaleToFit mode = kFill_ScaleToFit) {
         return MakeRectToRect(src, dst, mode);
     }
 
@@ -175,9 +175,9 @@ public:
         @param pers2   perspective scale factor
         @return        SkMatrix constructed from parameters
     */
-    static SkMatrix SK_WARN_UNUSED_RESULT MakeAll(SkScalar scaleX, SkScalar skewX,  SkScalar transX,
-                                                  SkScalar skewY,  SkScalar scaleY, SkScalar transY,
-                                                  SkScalar pers0, SkScalar pers1, SkScalar pers2) {
+    [[nodiscard]] static SkMatrix MakeAll(SkScalar scaleX, SkScalar skewX,  SkScalar transX,
+                                          SkScalar skewY,  SkScalar scaleY, SkScalar transY,
+                                          SkScalar pers0, SkScalar pers1, SkScalar pers2) {
         SkMatrix m;
         m.setAll(scaleX, skewX, transX, skewY, scaleY, transY, pers0, pers1, pers2);
         return m;
@@ -1202,7 +1202,7 @@ public:
         @param inverse  storage for inverted SkMatrix; may be nullptr
         @return         true if SkMatrix can be inverted
     */
-    bool SK_WARN_UNUSED_RESULT invert(SkMatrix* inverse) const {
+    [[nodiscard]] bool invert(SkMatrix* inverse) const {
         // Allow the trivial case to be inlined.
         if (this->isIdentity()) {
             if (inverse) {
@@ -1237,7 +1237,7 @@ public:
         @param affine  storage for 3 by 2 affine matrix; may be nullptr
         @return        true if SkMatrix does not contain perspective
     */
-    bool SK_WARN_UNUSED_RESULT asAffine(SkScalar affine[6]) const;
+    [[nodiscard]] bool asAffine(SkScalar affine[6]) const;
 
     /** Sets SkMatrix to affine values, passed in column major order. Given affine,
         column, then row, as:
@@ -1705,7 +1705,7 @@ public:
         @param scaleFactors  storage for minimum and maximum scale factors
         @return              true if scale factors were computed correctly
     */
-    bool SK_WARN_UNUSED_RESULT getMinMaxScales(SkScalar scaleFactors[2]) const;
+    [[nodiscard]] bool getMinMaxScales(SkScalar scaleFactors[2]) const;
 
     /** Decomposes SkMatrix into scale components and whatever remains. Returns false if
         SkMatrix could not be decomposed.
@@ -1944,7 +1944,7 @@ private:
         return GetMapPtsProc(this->getType());
     }
 
-    bool SK_WARN_UNUSED_RESULT invertNonIdentity(SkMatrix* inverse) const;
+    [[nodiscard]] bool invertNonIdentity(SkMatrix* inverse) const;
 
     static bool Poly2Proc(const SkPoint[], SkMatrix*);
     static bool Poly3Proc(const SkPoint[], SkMatrix*);

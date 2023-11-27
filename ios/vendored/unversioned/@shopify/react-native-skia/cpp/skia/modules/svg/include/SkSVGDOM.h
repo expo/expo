@@ -22,7 +22,7 @@ class SkSVGNode;
 struct SkSVGPresentationContext;
 class SkSVGSVG;
 
-class SkSVGDOM : public SkRefCnt {
+class SK_API SkSVGDOM : public SkRefCnt {
 public:
     class Builder final {
     public:

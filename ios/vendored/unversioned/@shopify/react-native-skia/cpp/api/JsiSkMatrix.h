@@ -53,10 +53,24 @@ public:
     return thisValue.asObject(runtime);
   }
 
+  JSI_HOST_FUNCTION(postTranslate) {
+    auto x = arguments[0].asNumber();
+    auto y = arguments[1].asNumber();
+    getObject()->postTranslate(x, y);
+    return thisValue.asObject(runtime);
+  }
+
   JSI_HOST_FUNCTION(scale) {
     auto x = arguments[0].asNumber();
     auto y = count > 1 ? arguments[1].asNumber() : 1;
     getObject()->preScale(x, y);
+    return thisValue.asObject(runtime);
+  }
+
+  JSI_HOST_FUNCTION(postScale) {
+    auto x = arguments[0].asNumber();
+    auto y = count > 1 ? arguments[1].asNumber() : 1;
+    getObject()->postScale(x, y);
     return thisValue.asObject(runtime);
   }
 
@@ -67,9 +81,22 @@ public:
     return thisValue.asObject(runtime);
   }
 
+  JSI_HOST_FUNCTION(postSkew) {
+    auto x = arguments[0].asNumber();
+    auto y = arguments[1].asNumber();
+    getObject()->postSkew(x, y);
+    return thisValue.asObject(runtime);
+  }
+
   JSI_HOST_FUNCTION(rotate) {
     auto a = arguments[0].asNumber();
     getObject()->preRotate(SkRadiansToDegrees(a));
+    return thisValue.asObject(runtime);
+  }
+
+  JSI_HOST_FUNCTION(postRotate) {
+    auto a = arguments[0].asNumber();
+    getObject()->postRotate(SkRadiansToDegrees(a));
     return thisValue.asObject(runtime);
   }
 
@@ -86,13 +113,17 @@ public:
     return values;
   }
 
-  EXPORT_JSI_API_TYPENAME(JsiSkMatrix, "Matrix")
+  EXPORT_JSI_API_TYPENAME(JsiSkMatrix, Matrix)
 
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkMatrix, concat),
                        JSI_EXPORT_FUNC(JsiSkMatrix, translate),
+                       JSI_EXPORT_FUNC(JsiSkMatrix, postTranslate),
                        JSI_EXPORT_FUNC(JsiSkMatrix, scale),
+                       JSI_EXPORT_FUNC(JsiSkMatrix, postScale),
                        JSI_EXPORT_FUNC(JsiSkMatrix, skew),
+                       JSI_EXPORT_FUNC(JsiSkMatrix, postSkew),
                        JSI_EXPORT_FUNC(JsiSkMatrix, rotate),
+                       JSI_EXPORT_FUNC(JsiSkMatrix, postRotate),
                        JSI_EXPORT_FUNC(JsiSkMatrix, identity),
                        JSI_EXPORT_FUNC(JsiSkMatrix, get),
                        JSI_EXPORT_FUNC(JsiSkMatrix, dispose))

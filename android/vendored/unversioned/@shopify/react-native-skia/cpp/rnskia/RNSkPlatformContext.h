@@ -15,6 +15,7 @@
 #pragma clang diagnostic ignored "-Wdocumentation"
 
 #include "SkData.h"
+#include "SkFontMgr.h"
 #include "SkImage.h"
 #include "SkStream.h"
 #include "SkSurface.h"
@@ -131,6 +132,11 @@ public:
    * @return sk_sp<SkSurface>
    */
   virtual sk_sp<SkSurface> makeOffscreenSurface(int width, int height) = 0;
+
+  /**
+   * Return the Platform specific font manager
+   */
+  virtual sk_sp<SkFontMgr> createFontMgr() = 0;
 
   /**
    * Creates an skImage containing the screenshot of a native view and its

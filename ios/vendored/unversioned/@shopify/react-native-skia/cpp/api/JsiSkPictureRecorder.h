@@ -40,7 +40,7 @@ public:
         runtime, std::make_shared<JsiSkPicture>(getContext(), picture));
   }
 
-  EXPORT_JSI_API_TYPENAME(JsiSkPictureRecorder, "PictureRecorder")
+  EXPORT_JSI_API_TYPENAME(JsiSkPictureRecorder, PictureRecorder)
 
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkPictureRecorder, beginRecording),
                        JSI_EXPORT_FUNC(JsiSkPictureRecorder,

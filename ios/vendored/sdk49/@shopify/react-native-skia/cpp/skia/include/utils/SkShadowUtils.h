@@ -11,7 +11,6 @@
 #include "include/core/SkColor.h"
 #include "include/core/SkScalar.h"
 #include "include/core/SkTypes.h"
-#include "include/private/SkShadowFlags.h"
 
 #include <cstdint>
 
@@ -20,6 +19,21 @@ class SkMatrix;
 class SkPath;
 struct SkPoint3;
 struct SkRect;
+
+enum SkShadowFlags {
+    kNone_ShadowFlag = 0x00,
+    /** The occluding object is not opaque. Knowing that the occluder is opaque allows
+    * us to cull shadow geometry behind it and improve performance. */
+    kTransparentOccluder_ShadowFlag = 0x01,
+    /** Don't try to use analytic shadows. */
+    kGeometricOnly_ShadowFlag = 0x02,
+    /** Light position represents a direction, light radius is blur radius at elevation 1 */
+    kDirectionalLight_ShadowFlag = 0x04,
+    /** Concave paths will only use blur to generate the shadow */
+    kConcaveBlurOnly_ShadowFlag = 0x08,
+    /** mask for all shadow flags */
+    kAll_ShadowFlag = 0x0F
+};
 
 class SK_API SkShadowUtils {
 public:

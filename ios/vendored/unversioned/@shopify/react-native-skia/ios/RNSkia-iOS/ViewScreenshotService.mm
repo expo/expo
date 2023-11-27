@@ -24,6 +24,7 @@
   auto view = [_uiManager viewForReactTag:viewTag];
   if (view == NULL) {
     RCTFatal(RCTErrorWithMessage(@"Could not find view with tag"));
+    return nullptr;
   }
 
   // Get size

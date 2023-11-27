@@ -23,8 +23,6 @@
 #include <cstddef>
 #include <tuple>
 
-class GrImageContext;
-
 /**
  * SkYUVAInfo combined with per-plane SkColorTypes and row bytes. Fully specifies the SkPixmaps
  * for a YUVA image without the actual pixel memory and data.
@@ -54,9 +52,6 @@ public:
     public:
         /** Defaults to nothing supported. */
         constexpr SupportedDataTypes() = default;
-
-        /** Init based on texture formats supported by the context. */
-        SupportedDataTypes(const GrImageContext&);
 
         /** All legal combinations of PlaneConfig and DataType are supported. */
         static constexpr SupportedDataTypes All();

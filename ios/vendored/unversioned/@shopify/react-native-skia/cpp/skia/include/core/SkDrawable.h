@@ -93,7 +93,10 @@ public:
         return this->onSnapGpuDrawHandler(backendApi, matrix, clipBounds, bufferInfo);
     }
 
-    SkPicture* newPictureSnapshot();
+    /**
+     * Returns an SkPicture with the contents of this SkDrawable.
+     */
+    sk_sp<SkPicture> makePictureSnapshot();
 
     /**
      *  Return a unique value for this instance. If two calls to this return the same value,
@@ -166,7 +169,7 @@ protected:
      *  of their drawable. Note: this picture must draw the same as what would be drawn from
      *  onDraw().
      */
-    virtual SkPicture* onNewPictureSnapshot();
+    virtual sk_sp<SkPicture> onMakePictureSnapshot();
 
 private:
     int32_t fGenerationID;

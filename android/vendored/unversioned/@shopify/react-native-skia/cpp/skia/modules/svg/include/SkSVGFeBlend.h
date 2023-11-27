@@ -11,7 +11,7 @@
 #include "modules/svg/include/SkSVGFe.h"
 #include "modules/svg/include/SkSVGTypes.h"
 
-class SkSVGFeBlend : public SkSVGFe {
+class SK_API SkSVGFeBlend : public SkSVGFe {
 public:
     enum class Mode {
         kNormal,

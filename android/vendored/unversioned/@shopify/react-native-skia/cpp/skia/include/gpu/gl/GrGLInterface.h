@@ -68,7 +68,7 @@ public:
     void suppressErrorLogging();
 #endif
 
-#if GR_TEST_UTILS
+#if defined(GR_TEST_UTILS)
     GrGLInterface(const GrGLInterface& that)
             : fStandard(that.fStandard)
             , fExtensions(that.fExtensions)
@@ -331,7 +331,7 @@ public:
         GrGLFunction<GrGLEndTilingFn> fEndTiling;
     } fFunctions;
 
-#if GR_TEST_UTILS
+#if defined(GR_TEST_UTILS)
     // This exists for internal testing.
     virtual void abandon() const;
 #endif

@@ -7,7 +7,14 @@
 
 #include <JniPlatformContext.h>
 #include <RNSkPlatformContext.h>
-#include <SkiaOpenGLRenderer.h>
+#include <SkiaOpenGLSurfaceFactory.h>
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+
+#include "include/ports/SkFontMgr_android.h"
+
+#pragma clang diagnostic pop
 
 namespace RNSkia {
 namespace jsi = facebook::jsi;
@@ -38,7 +45,11 @@ public:
   }
 
   sk_sp<SkSurface> makeOffscreenSurface(int width, int height) override {
-    return MakeOffscreenGLSurface(width, height);
+    return SkiaOpenGLSurfaceFactory::makeOffscreenSurface(width, height);
+  }
+
+  sk_sp<SkFontMgr> createFontMgr() override {
+    return SkFontMgr_New_Android(nullptr);
   }
 
   void runOnMainThread(std::function<void()> task) override {

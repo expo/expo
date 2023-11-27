@@ -56,5 +56,24 @@ public:
         runtime,
         std::make_shared<JsiSkImageInfo>(std::move(context), imageInfo));
   }
+
+  JSI_PROPERTY_GET(width) { return static_cast<double>(getObject()->width()); }
+  JSI_PROPERTY_GET(height) {
+    return static_cast<double>(getObject()->height());
+  }
+  JSI_PROPERTY_GET(colorType) {
+    return static_cast<double>(getObject()->colorType());
+  }
+  JSI_PROPERTY_GET(alphaType) {
+    return static_cast<double>(getObject()->alphaType());
+  }
+
+  JSI_API_TYPENAME(ImageInfo);
+
+  JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkImageInfo, width),
+                              JSI_EXPORT_PROP_GET(JsiSkImageInfo, height),
+                              JSI_EXPORT_PROP_GET(JsiSkImageInfo, colorType),
+                              JSI_EXPORT_PROP_GET(JsiSkImageInfo, alphaType),
+                              JSI_EXPORT_PROP_GET(JsiSkImageInfo, __typename__))
 };
 } // namespace RNSkia

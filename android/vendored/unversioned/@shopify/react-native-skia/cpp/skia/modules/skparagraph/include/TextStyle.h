@@ -173,10 +173,12 @@ public:
     ParagraphPainter::SkPaintOrID getForegroundPaintOrID() const {
         return fForeground;
     }
-    void setForegroundColor(SkPaint paint) {
+    void setForegroundPaint(SkPaint paint) {
         fHasForeground = true;
         fForeground = std::move(paint);
     }
+    // DEPRECATED: prefer `setForegroundPaint`.
+    void setForegroundColor(SkPaint paint) { setForegroundPaint(paint); }
     // Set the foreground to a paint ID.  This is intended for use by clients
     // that implement a custom ParagraphPainter that can not accept an SkPaint.
     void setForegroundPaintID(ParagraphPainter::PaintID paintID) {
@@ -193,10 +195,12 @@ public:
     ParagraphPainter::SkPaintOrID getBackgroundPaintOrID() const {
         return fBackground;
     }
-    void setBackgroundColor(SkPaint paint) {
+    void setBackgroundPaint(SkPaint paint) {
         fHasBackground = true;
         fBackground = std::move(paint);
     }
+    // DEPRECATED: prefer `setBackgroundPaint`.
+    void setBackgroundColor(SkPaint paint) { setBackgroundPaint(paint); }
     void setBackgroundPaintID(ParagraphPainter::PaintID paintID) {
         fHasBackground = true;
         fBackground = paintID;

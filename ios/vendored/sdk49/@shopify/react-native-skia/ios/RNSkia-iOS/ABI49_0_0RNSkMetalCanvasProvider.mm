@@ -8,7 +8,9 @@
 #import "SkColorSpace.h"
 #import "SkSurface.h"
 
+#import <include/gpu/GrBackendSurface.h>
 #import <include/gpu/GrDirectContext.h>
+#import <include/gpu/ganesh/SkSurfaceGanesh.h>
 
 #pragma clang diagnostic pop
 
@@ -120,9 +122,9 @@ bool ABI49_0_0RNSkMetalCanvasProvider::renderToCanvas(
     fbInfo.fTexture.retain((__bridge void *)currentDrawable.texture);
 
     GrBackendRenderTarget backendRT(_layer.drawableSize.width,
-                                    _layer.drawableSize.height, 1, fbInfo);
+                                    _layer.drawableSize.height, fbInfo);
 
-    auto skSurface = SkSurface::MakeFromBackendRenderTarget(
+    auto skSurface = SkSurfaces::WrapBackendRenderTarget(
         renderContext->skContext.get(), backendRT, kTopLeft_GrSurfaceOrigin,
         kBGRA_8888_SkColorType, nullptr, nullptr);
 
@@ -135,7 +137,9 @@ bool ABI49_0_0RNSkMetalCanvasProvider::renderToCanvas(
     SkCanvas *canvas = skSurface->getCanvas();
     cb(canvas);
 
-    skSurface->flushAndSubmit();
+    if (auto dContext = GrAsDirectContext(skSurface->recordingContext())) {
+      dContext->flushAndSubmit();
+    }
 
     id<MTLCommandBuffer> commandBuffer(
         [renderContext->commandQueue commandBuffer]);

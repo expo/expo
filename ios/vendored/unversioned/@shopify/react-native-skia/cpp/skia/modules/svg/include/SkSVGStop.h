@@ -13,7 +13,7 @@
 
 class SkSVGLengthContext;
 
-class SkSVGStop : public SkSVGHiddenContainer {
+class SK_API SkSVGStop : public SkSVGHiddenContainer {
 public:
     static sk_sp<SkSVGStop> Make() {
         return sk_sp<SkSVGStop>(new SkSVGStop());

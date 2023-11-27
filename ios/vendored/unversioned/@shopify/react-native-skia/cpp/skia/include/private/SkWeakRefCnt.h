@@ -100,7 +100,7 @@ public:
         returns false, no strong reference could be created and the owner's
         reference is in the same state as before the call.
     */
-    bool SK_WARN_UNUSED_RESULT try_ref() const {
+    [[nodiscard]] bool try_ref() const {
         if (atomic_conditional_acquire_strong_ref() != 0) {
             // Acquire barrier (L/SL), if not provided above.
             // Prevents subsequent code from happening before the increment.

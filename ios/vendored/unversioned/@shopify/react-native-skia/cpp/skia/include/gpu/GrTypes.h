@@ -98,12 +98,17 @@ enum class GrBackendApi : unsigned {
     kVulkan,
     kMetal,
     kDirect3D,
-    kDawn,
+
     /**
      * Mock is a backend that does not draw anything. It is used for unit tests
      * and to measure CPU overhead.
      */
     kMock,
+
+    /**
+     * Ganesh doesn't support some context types (e.g. Dawn) and will return Unsupported.
+     */
+    kUnsupported,
 
     /**
      * Added here to support the legacy GrBackend enum value and clients who referenced it using
@@ -239,6 +244,16 @@ struct GrFlushInfo {
 enum class GrSemaphoresSubmitted : bool {
     kNo = false,
     kYes = true
+};
+
+enum class GrPurgeResourceOptions {
+    kAllResources,
+    kScratchResourcesOnly,
+};
+
+enum class GrSyncCpu : bool {
+    kNo = false,
+    kYes = true,
 };
 
 #endif

@@ -25,7 +25,7 @@ public:
       : JsiSkWrappingSkPtrHostObject<SkImageFilter>(std::move(context),
                                                     std::move(imageFilter)) {}
 
-  EXPORT_JSI_API_TYPENAME(JsiSkImageFilter, "ImageFilter")
+  EXPORT_JSI_API_TYPENAME(JsiSkImageFilter, ImageFilter)
 };
 
 } // namespace RNSkia

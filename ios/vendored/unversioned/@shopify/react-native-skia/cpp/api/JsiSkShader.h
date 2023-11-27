@@ -26,7 +26,7 @@ public:
       : JsiSkWrappingSkPtrHostObject<SkShader>(std::move(context),
                                                std::move(shader)) {}
 
-  EXPORT_JSI_API_TYPENAME(JsiSkShader, "Shader")
+  EXPORT_JSI_API_TYPENAME(JsiSkShader, Shader)
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkShader, dispose))
 };
 } // namespace RNSkia

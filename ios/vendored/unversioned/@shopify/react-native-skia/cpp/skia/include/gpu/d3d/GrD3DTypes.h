@@ -134,7 +134,7 @@ public:
      *  The caller must assume ownership of the object, and manage its reference count directly.
      *  No call to Release() will be made.
      */
-    T* SK_WARN_UNUSED_RESULT release() {
+    [[nodiscard]] T* release() {
         T* obj = fObject;
         fObject = nullptr;
         return obj;
@@ -216,7 +216,7 @@ struct GrD3DTextureResourceInfo {
             , fSampleQualityPattern(info.fSampleQualityPattern)
             , fProtected(info.fProtected) {}
 
-#if GR_TEST_UTILS
+#if defined(GR_TEST_UTILS)
     bool operator==(const GrD3DTextureResourceInfo& that) const {
         return fResource == that.fResource && fResourceState == that.fResourceState &&
                fFormat == that.fFormat && fSampleCount == that.fSampleCount &&

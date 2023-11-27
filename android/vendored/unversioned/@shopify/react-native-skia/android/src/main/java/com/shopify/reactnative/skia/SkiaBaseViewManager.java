@@ -7,7 +7,7 @@ import com.facebook.react.views.view.ReactViewManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public abstract class SkiaBaseViewManager extends ReactViewManager {
+public abstract class SkiaBaseViewManager<T extends SkiaBaseView> extends ReactViewManager {
 
     @Override
     public void setNativeId(@NonNull ReactViewGroup view, @Nullable String nativeId) {
@@ -17,18 +17,19 @@ public abstract class SkiaBaseViewManager extends ReactViewManager {
     }
 
     @ReactProp(name = "mode")
-    public void setMode(ReactViewGroup view, String mode) {
+    public void setMode(T view, String mode) {
         ((SkiaBaseView)view).setMode(mode);
     }
 
     @ReactProp(name = "debug")
-    public void setDebug(ReactViewGroup view, boolean show) {
+    public void setDebug(T view, boolean show) {
         ((SkiaBaseView)view).setDebugMode(show);
     }
 
     @Override
     public void onDropViewInstance(@NonNull ReactViewGroup view) {
         super.onDropViewInstance(view);
+        ((SkiaBaseView)view).destroySurface();
         ((SkiaBaseView)view).unregisterView();
     }
 }

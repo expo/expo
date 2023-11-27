@@ -13,7 +13,7 @@
 
 class SkSVGRenderContext;
 
-class SkSVGPattern final : public SkSVGHiddenContainer {
+class SK_API SkSVGPattern final : public SkSVGHiddenContainer {
 public:
     static sk_sp<SkSVGPattern> Make() {
         return sk_sp<SkSVGPattern>(new SkSVGPattern());

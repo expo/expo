@@ -16,7 +16,7 @@ class SkMatrix;
 class SkSVGRenderContext;
 class SkSVGStop;
 
-class SkSVGGradient : public SkSVGHiddenContainer {
+class SK_API SkSVGGradient : public SkSVGHiddenContainer {
 public:
     SVG_ATTR(Href, SkSVGIRI, SkSVGIRI())
     SVG_ATTR(GradientTransform, SkSVGTransformType, SkSVGTransformType(SkMatrix::I()))

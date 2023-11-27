@@ -5,7 +5,9 @@
 #import "SkColorSpace.h"
 #import "SkSurface.h"
 
+#import <include/gpu/GrBackendSurface.h>
 #import <include/gpu/GrDirectContext.h>
+#import <include/gpu/ganesh/SkSurfaceGanesh.h>
 
 #pragma clang diagnostic pop
 
@@ -44,7 +46,7 @@ sk_sp<SkSurface> MakeOffscreenMetalSurface(int width, int height) {
   GrBackendTexture backendTexture(width, height, GrMipMapped::kNo, info);
 
   // Create a SkSurface from the GrBackendTexture
-  auto surface = SkSurface::MakeFromBackendTexture(
+  auto surface = SkSurfaces::WrapBackendTexture(
       ctx->skiaContext.get(), backendTexture, kTopLeft_GrSurfaceOrigin, 0,
       kBGRA_8888_SkColorType, nullptr, nullptr,
       [](void *addr) { delete (OffscreenRenderContext *)addr; }, ctx);

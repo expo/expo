@@ -8,9 +8,13 @@
 #ifndef SkBBHFactory_DEFINED
 #define SkBBHFactory_DEFINED
 
-#include "include/core/SkRect.h"
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkTypes.h"
+
+// TODO(kjlubick) fix client users and then make this a forward declare
+#include "include/core/SkRect.h"  // IWYU pragma: keep
+
+#include <cstddef>
 #include <vector>
 
 class SkBBoxHierarchy : public SkRefCnt {

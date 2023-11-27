@@ -15,7 +15,7 @@
  * Implements support for <use> (reference) elements.
  * (https://www.w3.org/TR/SVG11/struct.html#UseElement)
  */
-class SkSVGUse final : public SkSVGTransformableNode {
+class SK_API SkSVGUse final : public SkSVGTransformableNode {
 public:
     static sk_sp<SkSVGUse> Make() { return sk_sp<SkSVGUse>(new SkSVGUse()); }
 

@@ -9,10 +9,13 @@
 #define skgpu_graphite_ContextOptions_DEFINED
 
 #include "include/private/base/SkAPI.h"
+#include "include/private/base/SkMath.h"
 
 namespace skgpu { class ShaderErrorHandler; }
 
 namespace skgpu::graphite {
+
+struct ContextOptionsPriv;
 
 struct SK_API ContextOptions {
     ContextOptions() {}
@@ -29,6 +32,14 @@ struct SK_API ContextOptions {
      * via SkDebugf and assert.
      */
     skgpu::ShaderErrorHandler* fShaderErrorHandler = nullptr;
+
+    /**
+     * Specifies the number of samples Graphite should use when performing internal draws with MSAA
+     * (hardware capabilities permitting).
+     *
+     * If <= 1, Graphite will disable internal code paths that use multisampling.
+     */
+    int fInternalMultisampleCount = 4;
 
     /**
      * Will the client make sure to only ever be executing one thread that uses the Context and all
@@ -66,22 +77,22 @@ struct SK_API ContextOptions {
     bool fAllowMultipleGlyphCacheTextures = true;
     bool fSupportBilerpFromGlyphAtlas = false;
 
-#if GRAPHITE_TEST_UTILS
+    /**
+     * Disable caching of glyph uploads at the start of each Recording. These can add additional
+     * overhead and are only necessary if Recordings are replayed or played out of order.
+     */
+    bool fDisableCachedGlyphUploads = false;
+
+    static constexpr size_t kDefaultContextBudget = 256 * (1 << 20);
+    /**
+     * What is the budget for GPU resources allocated and held by the Context.
+     */
+    size_t fGpuBudgetInBytes = kDefaultContextBudget;
+
     /**
      * Private options that are only meant for testing within Skia's tools.
      */
-
-    /**
-     * Maximum width and height of internal texture atlases.
-     */
-    int  fMaxTextureAtlasSize = 2048;
-
-    /**
-     * If true, will store a pointer in Recorder that points back to the Context
-     * that created it. Used by readPixels() and other methods that normally require a Context.
-     */
-    bool fStoreContextRefInRecorder = false;
-#endif
+    ContextOptionsPriv* fOptionsPriv = nullptr;
 };
 
 }  // namespace skgpu::graphite

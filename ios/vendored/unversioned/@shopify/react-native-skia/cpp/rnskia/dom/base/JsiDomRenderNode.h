@@ -206,7 +206,7 @@ protected:
         JsiPropId::get("blendMode"),  JsiPropId::get("strokeCap"),
         JsiPropId::get("strokeJoin"), JsiPropId::get("strokeMiter"),
         JsiPropId::get("style"),      JsiPropId::get("antiAlias"),
-        JsiPropId::get("opacity")};
+        JsiPropId::get("opacity"),    JsiPropId::get("dither")};
 
     // We'll invalidate paint if a prop change happened in a paint property
     if (std::find(paintProps.begin(), paintProps.end(), prop->getName()) !=

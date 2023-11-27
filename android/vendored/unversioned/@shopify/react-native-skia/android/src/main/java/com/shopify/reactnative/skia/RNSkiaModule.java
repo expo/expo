@@ -12,9 +12,9 @@ import com.facebook.react.module.annotations.ReactModule;
 
 import java.lang.ref.WeakReference;
 
-@ReactModule(name="RNSkia")
-public class RNSkiaModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
-    public static final String NAME = "RNSkia";
+@ReactModule(name="RNSkiaModule")
+public class RNSkiaModule extends NativeSkiaModuleSpec implements LifecycleEventListener {
+    public static final String NAME = "RNSkiaModule";
 
     private final WeakReference<ReactApplicationContext> weakReactContext;
     private SkiaManager skiaManager;

@@ -26,8 +26,6 @@ public:
 private:
     SkBlender() = default;
     friend class SkBlenderBase;
-
-    using INHERITED = SkFlattenable;
 };
 
 #endif

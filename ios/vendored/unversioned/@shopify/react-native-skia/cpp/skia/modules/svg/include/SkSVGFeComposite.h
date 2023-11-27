@@ -12,7 +12,7 @@
 #include "modules/svg/include/SkSVGFe.h"
 #include "modules/svg/include/SkSVGTypes.h"
 
-class SkSVGFeComposite final : public SkSVGFe {
+class SK_API SkSVGFeComposite final : public SkSVGFe {
 public:
     static sk_sp<SkSVGFeComposite> Make() {
         return sk_sp<SkSVGFeComposite>(new SkSVGFeComposite());

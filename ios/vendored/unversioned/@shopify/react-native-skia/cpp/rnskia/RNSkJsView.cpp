@@ -36,17 +36,41 @@ bool RNSkJsRenderer::tryRender(
 
 void RNSkJsRenderer::renderImmediate(
     std::shared_ptr<RNSkCanvasProvider> canvasProvider) {
+  // Get start time to be able to calculate animations etc.
   std::chrono::milliseconds ms =
       std::chrono::duration_cast<std::chrono::milliseconds>(
           std::chrono::system_clock::now().time_since_epoch());
-  canvasProvider->renderToCanvas([&](SkCanvas *canvas) {
-    // Create jsi canvas
-    auto jsiCanvas = std::make_shared<JsiSkCanvas>(_platformContext);
-    jsiCanvas->setCanvas(canvas);
 
-    drawInJsiCanvas(std::move(jsiCanvas), canvasProvider->getScaledWidth(),
-                    canvasProvider->getScaledHeight(), ms.count() / 1000);
+  std::condition_variable cv;
+  std::mutex m;
+  std::unique_lock<std::mutex> lock(m);
+
+  // We need to render on the javascript thread but block
+  // until we're done rendering. Render immediate is used
+  // to make images from the canvas.
+  _platformContext->runOnJavascriptThread([canvasProvider, ms, &cv, &m,
+                                           weakSelf = weak_from_this()]() {
+    // Lock
+    std::unique_lock<std::mutex> lock(m);
+
+    auto self = weakSelf.lock();
+    if (self) {
+      canvasProvider->renderToCanvas([self, ms,
+                                      canvasProvider](SkCanvas *canvas) {
+        // Create jsi canvas
+        auto jsiCanvas = std::make_shared<JsiSkCanvas>(self->_platformContext);
+        jsiCanvas->setCanvas(canvas);
+
+        self->drawInJsiCanvas(
+            std::move(jsiCanvas), canvasProvider->getScaledWidth(),
+            canvasProvider->getScaledHeight(), ms.count() / 1000);
+      });
+    }
+
+    cv.notify_one();
   });
+
+  cv.wait(lock);
 }
 
 void RNSkJsRenderer::setDrawCallback(
@@ -99,12 +123,13 @@ void RNSkJsRenderer::performDraw(
 
   if (_gpuDrawingLock->try_lock()) {
 
-    // Post drawing message to the render thread where the picture recorded
+    // Post drawing message to the main thread where the picture recorded
     // will be sent to the GPU/backend for rendering to screen.
+    // TODO: Which thread should we render on? I think it should be main thread!
     auto gpuLock = _gpuDrawingLock;
-    _platformContext->runOnRenderThread([weakSelf = weak_from_this(),
-                                         p = std::move(p), gpuLock,
-                                         canvasProvider]() {
+    _platformContext->runOnMainThread([weakSelf = weak_from_this(),
+                                       p = std::move(p), gpuLock,
+                                       canvasProvider]() {
       auto self = weakSelf.lock();
       if (self) {
         // Draw the picture recorded on the real GPU canvas

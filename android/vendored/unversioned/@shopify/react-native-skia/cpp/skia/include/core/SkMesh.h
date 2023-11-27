@@ -8,23 +8,24 @@
 #ifndef SkMesh_DEFINED
 #define SkMesh_DEFINED
 
-#include "include/core/SkTypes.h"
-
-#ifdef SK_ENABLE_SKSL
-#include "include/core/SkAlphaType.h"
+#include "include/core/SkData.h"
 #include "include/core/SkRect.h"
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkSpan.h"
 #include "include/core/SkString.h"
 #include "include/effects/SkRuntimeEffect.h"
+#include "include/private/base/SkAPI.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
 class GrDirectContext;
 class SkColorSpace;
-class SkData;
+enum SkAlphaType : int;
 
 namespace SkSL { struct Program; }
 
@@ -102,6 +103,7 @@ public:
     };
 
     using Uniform = SkRuntimeEffect::Uniform;
+    using Child = SkRuntimeEffect::Child;
 
     ~SkMeshSpecification();
 
@@ -166,13 +168,22 @@ public:
      */
     SkSpan<const Uniform> uniforms() const { return SkSpan(fUniforms); }
 
-    /** Returns pointer to the named uniform variable's description, or nullptr if not found. */
+    /**
+     * Provides basic info about individual children: names, indices and runtime effect type.
+     * TODO(b/40045302): SkMesh will currently reject mesh specifications that include child effects
+     */
+    SkSpan<const Child> children() const { return SkSpan(fChildren); }
+
+    /** Returns a pointer to the named child's description, or nullptr if not found. */
+    const Child* findChild(std::string_view name) const;
+
+    /** Returns a pointer to the named uniform variable's description, or nullptr if not found. */
     const Uniform* findUniform(std::string_view name) const;
 
-    /** Returns pointer to the named attribute, or nullptr if not found. */
+    /** Returns a pointer to the named attribute, or nullptr if not found. */
     const Attribute* findAttribute(std::string_view name) const;
 
-    /** Returns pointer to the named varying, or nullptr if not found. */
+    /** Returns a pointer to the named varying, or nullptr if not found. */
     const Varying* findVarying(std::string_view name) const;
 
     size_t stride() const { return fStride; }
@@ -200,6 +211,7 @@ private:
                         int passthroughLocalCoordsVaryingIndex,
                         uint32_t deadVaryingMask,
                         std::vector<Uniform> uniforms,
+                        std::vector<Child> children,
                         std::unique_ptr<const SkSL::Program>,
                         std::unique_ptr<const SkSL::Program>,
                         ColorType,
@@ -215,6 +227,7 @@ private:
     const std::vector<Attribute>               fAttributes;
     const std::vector<Varying>                 fVaryings;
     const std::vector<Uniform>                 fUniforms;
+    const std::vector<Child>                   fChildren;
     const std::unique_ptr<const SkSL::Program> fVS;
     const std::unique_ptr<const SkSL::Program> fFS;
     const size_t                               fStride;
@@ -230,18 +243,18 @@ private:
  * A vertex buffer, a topology, optionally an index buffer, and a compatible SkMeshSpecification.
  *
  * The data in the vertex buffer is expected to contain the attributes described by the spec
- * for vertexCount vertices beginning at vertexOffset. vertexOffset must be aligned to the
+ * for vertexCount vertices, beginning at vertexOffset. vertexOffset must be aligned to the
  * SkMeshSpecification's vertex stride. The size of the buffer must be at least vertexOffset +
  * spec->stride()*vertexCount (even if vertex attributes contains pad at the end of the stride). If
- * the specified bounds does not contain all the points output by the spec's vertex program when
- * applied to the vertices in the custom mesh then the result is undefined.
+ * the specified bounds do not contain all the points output by the spec's vertex program when
+ * applied to the vertices in the custom mesh, then the result is undefined.
  *
  * MakeIndexed may be used to create an indexed mesh. indexCount indices are read from the index
- * buffer at the specified offset which must be aligned to 2. The indices are always unsigned 16bit
- * integers. The index count must be at least 3.
+ * buffer at the specified offset, which must be aligned to 2. The indices are always unsigned
+ * 16-bit integers. The index count must be at least 3.
  *
- * If Make() is used the implicit index sequence is 0, 1, 2, 3, ... and vertexCount must be at least
- * 3.
+ * If Make() is used, the implicit index sequence is 0, 1, 2, 3, ... and vertexCount must be at
+ * least 3.
  *
  * Both Make() and MakeIndexed() take a SkData with the uniform values. See
  * SkMeshSpecification::uniformSize() and SkMeshSpecification::uniforms() for sizing and packing
@@ -249,7 +262,7 @@ private:
  */
 class SkMesh {
 public:
-    class IndexBuffer  : public SkRefCnt {
+    class IndexBuffer : public SkRefCnt {
     public:
         virtual size_t size() const = 0;
 
@@ -292,51 +305,11 @@ public:
     SkMesh& operator=(const SkMesh&);
     SkMesh& operator=(SkMesh&&);
 
-    /**
-     * Makes an index buffer to be used with SkMeshes. The buffer may be CPU- or GPU-backed
-     * depending on whether GrDirectContext* is nullptr.
-     *
-     * @param  GrDirectContext*  If nullptr a CPU-backed object is returned. Otherwise, the data is
-     *                           uploaded to the GPU and a GPU-backed buffer is returned. It may
-     *                           only be used to draw into SkSurfaces that are backed by the passed
-     *                           GrDirectContext.
-     * @param  data              The data used to populate the buffer, or nullptr to create a zero-
-     *                           initialized buffer.
-     * @param  size              Both the size of the data in 'data' and the size of the resulting
-     *                           buffer.
-     */
-    static sk_sp<IndexBuffer> MakeIndexBuffer(GrDirectContext*, const void* data, size_t size);
-
-    /**
-     * Makes a copy of an index buffer. The implementation currently only supports a CPU-backed
-     * source buffer.
-     */
-    static sk_sp<IndexBuffer> CopyIndexBuffer(GrDirectContext*, sk_sp<IndexBuffer>);
-
-    /**
-     * Makes a vertex buffer to be used with SkMeshes. The buffer may be CPU- or GPU-backed
-     * depending on whether GrDirectContext* is nullptr.
-     *
-     * @param  GrDirectContext*  If nullptr a CPU-backed object is returned. Otherwise, the data is
-     *                           uploaded to the GPU and a GPU-backed buffer is returned. It may
-     *                           only be used to draw into SkSurfaces that are backed by the passed
-     *                           GrDirectContext.
-     * @param  data              The data used to populate the buffer, or nullptr to create a zero-
-     *                           initialized buffer.
-     * @param  size              Both the size of the data in 'data' and the size of the resulting
-     *                           buffer.
-     */
-    static sk_sp<VertexBuffer> MakeVertexBuffer(GrDirectContext*, const void*, size_t size);
-
-    /**
-     * Makes a copy of a vertex buffer. The implementation currently only supports a CPU-backed
-     * source buffer.
-     */
-    static sk_sp<VertexBuffer> CopyVertexBuffer(GrDirectContext*, sk_sp<VertexBuffer>);
-
     enum class Mode { kTriangles, kTriangleStrip };
 
     struct Result;
+
+    using ChildPtr = SkRuntimeEffect::ChildPtr;
 
     /**
      * Creates a non-indexed SkMesh. The returned SkMesh can be tested for validity using
@@ -344,12 +317,15 @@ public:
      * If the mesh is invalid the returned string give contain the reason for the failure (e.g. the
      * vertex buffer was null or uniform data too small).
      */
+
+    // TODO(b/40045302): support for `children` is a work-in-progress
     static Result Make(sk_sp<SkMeshSpecification>,
                        Mode,
                        sk_sp<VertexBuffer>,
                        size_t vertexCount,
                        size_t vertexOffset,
                        sk_sp<const SkData> uniforms,
+                       SkSpan<ChildPtr> children,
                        const SkRect& bounds);
 
     /**
@@ -358,6 +334,8 @@ public:
      * If the mesh is invalid the returned string give contain the reason for the failure (e.g. the
      * index buffer was null or uniform data too small).
      */
+
+    // TODO(b/40045302): support for `children` is a work-in-progress
     static Result MakeIndexed(sk_sp<SkMeshSpecification>,
                               Mode,
                               sk_sp<VertexBuffer>,
@@ -367,6 +345,7 @@ public:
                               size_t indexCount,
                               size_t indexOffset,
                               sk_sp<const SkData> uniforms,
+                              SkSpan<ChildPtr> children,
                               const SkRect& bounds);
 
     sk_sp<SkMeshSpecification> refSpec() const { return fSpec; }
@@ -389,13 +368,13 @@ public:
     sk_sp<const SkData> refUniforms() const { return fUniforms; }
     const SkData* uniforms() const { return fUniforms.get(); }
 
+    SkSpan<const ChildPtr> children() const { return SkSpan(fChildren); }
+
     SkRect bounds() const { return fBounds; }
 
     bool isValid() const;
 
 private:
-    friend struct SkMeshPriv;
-
     std::tuple<bool, SkString> validate() const;
 
     sk_sp<SkMeshSpecification> fSpec;
@@ -404,6 +383,7 @@ private:
     sk_sp<IndexBuffer>  fIB;
 
     sk_sp<const SkData> fUniforms;
+    std::vector<ChildPtr> fChildren;
 
     size_t fVOffset = 0;  // Must be a multiple of spec->stride()
     size_t fVCount  = 0;
@@ -418,6 +398,36 @@ private:
 
 struct SkMesh::Result { SkMesh mesh; SkString error; };
 
-#endif  // SK_ENABLE_SKSL
+namespace SkMeshes {
+/**
+ * Makes a CPU-backed index buffer to be used with SkMeshes.
+ *
+ * @param  data              The data used to populate the buffer, or nullptr to create a zero-
+ *                           initialized buffer.
+ * @param  size              Both the size of the data in 'data' and the size of the resulting
+ *                           buffer.
+ */
+SK_API sk_sp<SkMesh::IndexBuffer> MakeIndexBuffer(const void* data, size_t size);
+
+/**
+ * Makes a copy of an index buffer. The copy will be CPU-backed.
+ */
+SK_API sk_sp<SkMesh::IndexBuffer> CopyIndexBuffer(sk_sp<SkMesh::IndexBuffer>);
+
+/**
+ * Makes a CPU-backed vertex buffer to be used with SkMeshes.
+ *
+ * @param  data              The data used to populate the buffer, or nullptr to create a zero-
+ *                           initialized buffer.
+ * @param  size              Both the size of the data in 'data' and the size of the resulting
+ *                           buffer.
+ */
+SK_API sk_sp<SkMesh::VertexBuffer> MakeVertexBuffer(const void*, size_t size);
+
+/**
+ * Makes a copy of a vertex buffer.  The copy will be CPU-backed.
+ */
+SK_API sk_sp<SkMesh::VertexBuffer> CopyVertexBuffer(sk_sp<SkMesh::VertexBuffer>);
+}  // namespace SkMeshes
 
 #endif

@@ -36,6 +36,7 @@ class GrResourceProvider;
 class SkData;
 class SkImage;
 class SkPixmap;
+class SkSurface;
 class SkTaskGroup;
 class SkTraceMemoryDump;
 enum SkColorType : int;
@@ -55,9 +56,13 @@ namespace skgpu {
 namespace sktext { namespace gpu { class StrikeCache; } }
 namespace wgpu { class Device; } // IWYU pragma: keep
 
+namespace SkSurfaces {
+enum class BackendSurfaceAccess;
+}
+
 class SK_API GrDirectContext : public GrRecordingContext {
 public:
-#ifdef SK_GL
+#if defined(SK_GL) && !defined(SK_DISABLE_LEGACY_GL_GRDIRECTCONTEXT_FACTORIES)
     /**
      * Creates a GrDirectContext for a backend context. If no GrGLInterface is provided then the
      * result of GrGLMakeNativeInterface() is used if it succeeds.
@@ -111,12 +116,6 @@ public:
     static sk_sp<GrDirectContext> MakeDirect3D(const GrD3DBackendContext&);
 #endif
 
-#ifdef SK_DAWN
-    static sk_sp<GrDirectContext> MakeDawn(const wgpu::Device&,
-                                           const GrContextOptions&);
-    static sk_sp<GrDirectContext> MakeDawn(const wgpu::Device&);
-#endif
-
     static sk_sp<GrDirectContext> MakeMock(const GrMockOptions*, const GrContextOptions&);
     static sk_sp<GrDirectContext> MakeMock(const GrMockOptions*);
 
@@ -166,12 +165,19 @@ public:
     void abandonContext() override;
 
     /**
-     * Returns true if the context was abandoned or if the if the backend specific context has
-     * gotten into an unrecoverarble, lost state (e.g. in Vulkan backend if we've gotten a
+     * Returns true if the context was abandoned or if the backend specific context has gotten into
+     * an unrecoverarble, lost state (e.g. in Vulkan backend if we've gotten a
      * VK_ERROR_DEVICE_LOST). If the backend context is lost, this call will also abandon this
      * context.
      */
     bool abandoned() override;
+
+    /**
+     * Returns true if the backend specific context has gotten into an unrecoverarble, lost state
+     * (e.g. in Vulkan backend if we've gotten a VK_ERROR_DEVICE_LOST). If the backend context is
+     * lost, this call will also abandon this context.
+     */
+    bool isDeviceLost();
 
     // TODO: Remove this from public after migrating Chrome.
     sk_sp<GrContextThreadSafeProxy> threadSafeProxy();
@@ -267,18 +273,19 @@ public:
     /**
      * Purge GPU resources that haven't been used in the past 'msNotUsed' milliseconds or are
      * otherwise marked for deletion, regardless of whether the context is under budget.
+
      *
-     * If 'scratchResourcesOnly' is true all unlocked scratch resources older than 'msNotUsed' will
-     * be purged but the unlocked resources with persistent data will remain. If
-     * 'scratchResourcesOnly' is false then all unlocked resources older than 'msNotUsed' will be
-     * purged.
-     *
-     * @param msNotUsed              Only unlocked resources not used in these last milliseconds
-     *                               will be cleaned up.
-     * @param scratchResourcesOnly   If true only unlocked scratch resources will be purged.
+     * @param msNotUsed   Only unlocked resources not used in these last milliseconds will be
+     *                    cleaned up.
+     * @param opts        Specify which resources should be cleaned up. If kScratchResourcesOnly
+     *                    then, all unlocked scratch resources older than 'msNotUsed' will be purged
+     *                    but the unlocked resources with persistent data will remain. If
+     *                    kAllResources
      */
-    void performDeferredCleanup(std::chrono::milliseconds msNotUsed,
-                                bool scratchResourcesOnly=false);
+
+    void performDeferredCleanup(
+            std::chrono::milliseconds msNotUsed,
+            GrPurgeResourceOptions opts = GrPurgeResourceOptions::kAllResources);
 
     // Temporary compatibility API for Android.
     void purgeResourcesNotUsedInMs(std::chrono::milliseconds msNotUsed) {
@@ -307,10 +314,10 @@ public:
      * ensure that resource usage is under budget (i.e., even if 'scratchResourcesOnly' is true
      * some resources with persistent data may be purged to be under budget).
      *
-     * @param scratchResourcesOnly   If true only unlocked scratch resources will be purged prior
-     *                               enforcing the budget requirements.
+     * @param opts If kScratchResourcesOnly only unlocked scratch resources will be purged prior
+     *             enforcing the budget requirements.
      */
-    void purgeUnlockedResources(bool scratchResourcesOnly);
+    void purgeUnlockedResources(GrPurgeResourceOptions opts);
 
     /**
      * Gets the maximum supported texture size.
@@ -326,6 +333,11 @@ public:
      * Can a SkImage be created with the given color type.
      */
     using GrRecordingContext::colorTypeSupportedAsImage;
+
+    /**
+     * Does this context support protected content?
+     */
+    using GrRecordingContext::supportsProtectedContent;
 
     /**
      * Can a SkSurface be created with the given color type. To check whether MSAA is supported
@@ -360,11 +372,11 @@ public:
     /**
      * Call to ensure all drawing to the context has been flushed and submitted to the underlying 3D
      * API. This is equivalent to calling GrContext::flush with a default GrFlushInfo followed by
-     * GrContext::submit(syncCpu).
+     * GrContext::submit(sync).
      */
-    void flushAndSubmit(bool syncCpu = false) {
+    void flushAndSubmit(GrSyncCpu sync = GrSyncCpu::kNo) {
         this->flush(GrFlushInfo());
-        this->submit(syncCpu);
+        this->submit(sync);
     }
 
     /**
@@ -386,7 +398,7 @@ public:
      * the GPU. Thus the client should not have the GPU wait on any of the semaphores passed in with
      * the GrFlushInfo. Regardless of whether semaphores were submitted to the GPU or not, the
      * client is still responsible for deleting any initialized semaphores.
-     * Regardleess of semaphore submission the context will still be flushed. It should be
+     * Regardless of semaphore submission the context will still be flushed. It should be
      * emphasized that a return value of GrSemaphoresSubmitted::kNo does not mean the flush did not
      * happen. It simply means there were no semaphores submitted to the GPU. A caller should only
      * take this as a failure if they passed in semaphores to be submitted.
@@ -408,9 +420,98 @@ public:
     void flush(sk_sp<const SkImage> image);
 
     /** Version of flush() that uses a default GrFlushInfo. Also submits the flushed work to the
-        GPU.
-    */
+     *   GPU.
+     */
     void flushAndSubmit(sk_sp<const SkImage> image);
+
+    /** Issues pending SkSurface commands to the GPU-backed API objects and resolves any SkSurface
+     *  MSAA. A call to GrDirectContext::submit is always required to ensure work is actually sent
+     *  to the gpu. Some specific API details:
+     *      GL: Commands are actually sent to the driver, but glFlush is never called. Thus some
+     *          sync objects from the flush will not be valid until a submission occurs.
+     *
+     *      Vulkan/Metal/D3D/Dawn: Commands are recorded to the backend APIs corresponding command
+     *          buffer or encoder objects. However, these objects are not sent to the gpu until a
+     *          submission occurs.
+     *
+     *  The work that is submitted to the GPU will be dependent on the BackendSurfaceAccess that is
+     *  passed in.
+     *
+     *  If BackendSurfaceAccess::kNoAccess is passed in all commands will be issued to the GPU.
+     *
+     *  If BackendSurfaceAccess::kPresent is passed in and the backend API is not Vulkan, it is
+     *  treated the same as kNoAccess. If the backend API is Vulkan, the VkImage that backs the
+     *  SkSurface will be transferred back to its original queue. If the SkSurface was created by
+     *  wrapping a VkImage, the queue will be set to the queue which was originally passed in on
+     *  the GrVkImageInfo. Additionally, if the original queue was not external or foreign the
+     *  layout of the VkImage will be set to VK_IMAGE_LAYOUT_PRESENT_SRC_KHR.
+     *
+     *  The GrFlushInfo describes additional options to flush. Please see documentation at
+     *  GrFlushInfo for more info.
+     *
+     *  If the return is GrSemaphoresSubmitted::kYes, only initialized GrBackendSemaphores will be
+     *  submitted to the gpu during the next submit call (it is possible Skia failed to create a
+     *  subset of the semaphores). The client should not wait on these semaphores until after submit
+     *  has been called, but must keep them alive until then. If a submit flag was passed in with
+     *  the flush these valid semaphores can we waited on immediately. If this call returns
+     *  GrSemaphoresSubmitted::kNo, the GPU backend will not submit any semaphores to be signaled on
+     *  the GPU. Thus the client should not have the GPU wait on any of the semaphores passed in
+     *  with the GrFlushInfo. Regardless of whether semaphores were submitted to the GPU or not, the
+     *  client is still responsible for deleting any initialized semaphores.
+     *  Regardless of semaphore submission the context will still be flushed. It should be
+     *  emphasized that a return value of GrSemaphoresSubmitted::kNo does not mean the flush did not
+     *  happen. It simply means there were no semaphores submitted to the GPU. A caller should only
+     *  take this as a failure if they passed in semaphores to be submitted.
+     *
+     *  Pending surface commands are flushed regardless of the return result.
+     *
+     *  @param surface  The GPU backed surface to be flushed. Has no effect on a CPU-backed surface.
+     *  @param access  type of access the call will do on the backend object after flush
+     *  @param info    flush options
+     */
+    GrSemaphoresSubmitted flush(SkSurface* surface,
+                                SkSurfaces::BackendSurfaceAccess access,
+                                const GrFlushInfo& info);
+
+    /**
+     *  Same as above except:
+     *
+     *  If a skgpu::MutableTextureState is passed in, at the end of the flush we will transition
+     *  the surface to be in the state requested by the skgpu::MutableTextureState. If the surface
+     *  (or SkImage or GrBackendSurface wrapping the same backend object) is used again after this
+     *  flush the state may be changed and no longer match what is requested here. This is often
+     *  used if the surface will be used for presenting or external use and the client wants backend
+     *  object to be prepped for that use. A finishedProc or semaphore on the GrFlushInfo will also
+     *  include the work for any requested state change.
+     *
+     *  If the backend API is Vulkan, the caller can set the skgpu::MutableTextureState's
+     *  VkImageLayout to VK_IMAGE_LAYOUT_UNDEFINED or queueFamilyIndex to VK_QUEUE_FAMILY_IGNORED to
+     *  tell Skia to not change those respective states.
+     *
+     *  @param surface  The GPU backed surface to be flushed. Has no effect on a CPU-backed surface.
+     *  @param info     flush options
+     *  @param newState optional state change request after flush
+     */
+    GrSemaphoresSubmitted flush(SkSurface* surface,
+                                const GrFlushInfo& info,
+                                const skgpu::MutableTextureState* newState = nullptr);
+
+    /** Call to ensure all reads/writes of the surface have been issued to the underlying 3D API.
+     *  Skia will correctly order its own draws and pixel operations. This must to be used to ensure
+     *  correct ordering when the surface backing store is accessed outside Skia (e.g. direct use of
+     *  the 3D API or a windowing system). This is equivalent to
+     *  calling ::flush with a default GrFlushInfo followed by ::submit(syncCpu).
+     *
+     *  Has no effect on a CPU-backed surface.
+     */
+    void flushAndSubmit(SkSurface* surface, GrSyncCpu sync = GrSyncCpu::kNo);
+
+    /**
+     * Flushes the given surface with the default GrFlushInfo.
+     *
+     *  Has no effect on a CPU-backed surface.
+     */
+    void flush(SkSurface* surface);
 
     /**
      * Submit outstanding work to the gpu from all previously un-submitted flushes. The return
@@ -423,10 +524,10 @@ public:
      * If it returns false, then those same semaphores will not have been submitted and we will not
      * try to submit them again. The caller is free to delete the semaphores at any time.
      *
-     * If the syncCpu flag is true this function will return once the gpu has finished with all
+     * If sync flag is GrSyncCpu::kYes, this function will return once the gpu has finished with all
      * submitted work.
      */
-    bool submit(bool syncCpu = false);
+    bool submit(GrSyncCpu sync = GrSyncCpu::kNo);
 
     /**
      * Checks whether any asynchronous work is complete and if so calls related callbacks.
@@ -444,7 +545,7 @@ public:
     /**
      * Retrieve the default GrBackendFormat for a given SkColorType and renderability.
      * It is guaranteed that this backend format will be the one used by the following
-     * SkColorType and SkSurfaceCharacterization-based createBackendTexture methods.
+     * SkColorType and GrSurfaceCharacterization-based createBackendTexture methods.
      *
      * The caller should check that the returned format is valid.
      */
@@ -474,93 +575,96 @@ public:
     GrBackendTexture createBackendTexture(int width,
                                           int height,
                                           const GrBackendFormat&,
-                                          GrMipmapped,
+                                          skgpu::Mipmapped,
                                           GrRenderable,
                                           GrProtected = GrProtected::kNo,
                                           std::string_view label = {});
 
-     /**
-      * If possible, create an uninitialized backend texture. The client should ensure that the
-      * returned backend texture is valid.
-      * If successful, the created backend texture will be compatible with the provided
-      * SkColorType.
-      * For the Vulkan backend the layout of the created VkImage will be:
-      *      VK_IMAGE_LAYOUT_UNDEFINED.
-      */
-     GrBackendTexture createBackendTexture(int width, int height,
-                                           SkColorType,
-                                           GrMipmapped,
-                                           GrRenderable,
-                                           GrProtected = GrProtected::kNo,
-                                           std::string_view label = {});
+    /**
+     * If possible, create an uninitialized backend texture. The client should ensure that the
+     * returned backend texture is valid.
+     * If successful, the created backend texture will be compatible with the provided
+     * SkColorType.
+     * For the Vulkan backend the layout of the created VkImage will be:
+     *      VK_IMAGE_LAYOUT_UNDEFINED.
+     */
+    GrBackendTexture createBackendTexture(int width,
+                                          int height,
+                                          SkColorType,
+                                          skgpu::Mipmapped,
+                                          GrRenderable,
+                                          GrProtected = GrProtected::kNo,
+                                          std::string_view label = {});
 
-     /**
-      * If possible, create a backend texture initialized to a particular color. The client should
-      * ensure that the returned backend texture is valid. The client can pass in a finishedProc
-      * to be notified when the data has been uploaded by the gpu and the texture can be deleted. The
-      * client is required to call `submit` to send the upload work to the gpu. The
-      * finishedProc will always get called even if we failed to create the GrBackendTexture.
-      * For the Vulkan backend the layout of the created VkImage will be:
-      *      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-      */
-     GrBackendTexture createBackendTexture(int width, int height,
-                                           const GrBackendFormat&,
-                                           const SkColor4f& color,
-                                           GrMipmapped,
-                                           GrRenderable,
-                                           GrProtected = GrProtected::kNo,
-                                           GrGpuFinishedProc finishedProc = nullptr,
-                                           GrGpuFinishedContext finishedContext = nullptr,
-                                           std::string_view label = {});
+    /**
+     * If possible, create a backend texture initialized to a particular color. The client should
+     * ensure that the returned backend texture is valid. The client can pass in a finishedProc
+     * to be notified when the data has been uploaded by the gpu and the texture can be deleted. The
+     * client is required to call `submit` to send the upload work to the gpu. The
+     * finishedProc will always get called even if we failed to create the GrBackendTexture.
+     * For the Vulkan backend the layout of the created VkImage will be:
+     *      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+     */
+    GrBackendTexture createBackendTexture(int width,
+                                          int height,
+                                          const GrBackendFormat&,
+                                          const SkColor4f& color,
+                                          skgpu::Mipmapped,
+                                          GrRenderable,
+                                          GrProtected = GrProtected::kNo,
+                                          GrGpuFinishedProc finishedProc = nullptr,
+                                          GrGpuFinishedContext finishedContext = nullptr,
+                                          std::string_view label = {});
 
-     /**
-      * If possible, create a backend texture initialized to a particular color. The client should
-      * ensure that the returned backend texture is valid. The client can pass in a finishedProc
-      * to be notified when the data has been uploaded by the gpu and the texture can be deleted. The
-      * client is required to call `submit` to send the upload work to the gpu. The
-      * finishedProc will always get called even if we failed to create the GrBackendTexture.
-      * If successful, the created backend texture will be compatible with the provided
-      * SkColorType.
-      * For the Vulkan backend the layout of the created VkImage will be:
-      *      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-      */
-     GrBackendTexture createBackendTexture(int width, int height,
-                                           SkColorType,
-                                           const SkColor4f& color,
-                                           GrMipmapped,
-                                           GrRenderable,
-                                           GrProtected = GrProtected::kNo,
-                                           GrGpuFinishedProc finishedProc = nullptr,
-                                           GrGpuFinishedContext finishedContext = nullptr,
-                                           std::string_view label = {});
+    /**
+     * If possible, create a backend texture initialized to a particular color. The client should
+     * ensure that the returned backend texture is valid. The client can pass in a finishedProc
+     * to be notified when the data has been uploaded by the gpu and the texture can be deleted. The
+     * client is required to call `submit` to send the upload work to the gpu. The
+     * finishedProc will always get called even if we failed to create the GrBackendTexture.
+     * If successful, the created backend texture will be compatible with the provided
+     * SkColorType.
+     * For the Vulkan backend the layout of the created VkImage will be:
+     *      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+     */
+    GrBackendTexture createBackendTexture(int width,
+                                          int height,
+                                          SkColorType,
+                                          const SkColor4f& color,
+                                          skgpu::Mipmapped,
+                                          GrRenderable,
+                                          GrProtected = GrProtected::kNo,
+                                          GrGpuFinishedProc finishedProc = nullptr,
+                                          GrGpuFinishedContext finishedContext = nullptr,
+                                          std::string_view label = {});
 
-     /**
-      * If possible, create a backend texture initialized with the provided pixmap data. The client
-      * should ensure that the returned backend texture is valid. The client can pass in a
-      * finishedProc to be notified when the data has been uploaded by the gpu and the texture can be
-      * deleted. The client is required to call `submit` to send the upload work to the gpu.
-      * The finishedProc will always get called even if we failed to create the GrBackendTexture.
-      * If successful, the created backend texture will be compatible with the provided
-      * pixmap(s). Compatible, in this case, means that the backend format will be the result
-      * of calling defaultBackendFormat on the base pixmap's colortype. The src data can be deleted
-      * when this call returns.
-      * If numLevels is 1 a non-mipmapped texture will result. If a mipmapped texture is desired
-      * the data for all the mipmap levels must be provided. In the mipmapped case all the
-      * colortypes of the provided pixmaps must be the same. Additionally, all the miplevels
-      * must be sized correctly (please see SkMipmap::ComputeLevelSize and ComputeLevelCount). The
-      * GrSurfaceOrigin controls whether the pixmap data is vertically flipped in the texture.
-      * Note: the pixmap's alphatypes and colorspaces are ignored.
-      * For the Vulkan backend the layout of the created VkImage will be:
-      *      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-      */
-     GrBackendTexture createBackendTexture(const SkPixmap srcData[],
-                                           int numLevels,
-                                           GrSurfaceOrigin,
-                                           GrRenderable,
-                                           GrProtected,
-                                           GrGpuFinishedProc finishedProc = nullptr,
-                                           GrGpuFinishedContext finishedContext = nullptr,
-                                           std::string_view label = {});
+    /**
+     * If possible, create a backend texture initialized with the provided pixmap data. The client
+     * should ensure that the returned backend texture is valid. The client can pass in a
+     * finishedProc to be notified when the data has been uploaded by the gpu and the texture can be
+     * deleted. The client is required to call `submit` to send the upload work to the gpu.
+     * The finishedProc will always get called even if we failed to create the GrBackendTexture.
+     * If successful, the created backend texture will be compatible with the provided
+     * pixmap(s). Compatible, in this case, means that the backend format will be the result
+     * of calling defaultBackendFormat on the base pixmap's colortype. The src data can be deleted
+     * when this call returns.
+     * If numLevels is 1 a non-mipmapped texture will result. If a mipmapped texture is desired
+     * the data for all the mipmap levels must be provided. In the mipmapped case all the
+     * colortypes of the provided pixmaps must be the same. Additionally, all the miplevels
+     * must be sized correctly (please see SkMipmap::ComputeLevelSize and ComputeLevelCount). The
+     * GrSurfaceOrigin controls whether the pixmap data is vertically flipped in the texture.
+     * Note: the pixmap's alphatypes and colorspaces are ignored.
+     * For the Vulkan backend the layout of the created VkImage will be:
+     *      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+     */
+    GrBackendTexture createBackendTexture(const SkPixmap srcData[],
+                                          int numLevels,
+                                          GrSurfaceOrigin,
+                                          GrRenderable,
+                                          GrProtected,
+                                          GrGpuFinishedProc finishedProc = nullptr,
+                                          GrGpuFinishedContext finishedContext = nullptr,
+                                          std::string_view label = {});
 
     /**
      * Convenience version createBackendTexture() that takes just a base level pixmap.
@@ -686,18 +790,20 @@ public:
      * For the Vulkan backend the layout of the created VkImage will be:
      *      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
      */
-    GrBackendTexture createCompressedBackendTexture(int width, int height,
+    GrBackendTexture createCompressedBackendTexture(int width,
+                                                    int height,
                                                     const GrBackendFormat&,
                                                     const SkColor4f& color,
-                                                    GrMipmapped,
+                                                    skgpu::Mipmapped,
                                                     GrProtected = GrProtected::kNo,
                                                     GrGpuFinishedProc finishedProc = nullptr,
                                                     GrGpuFinishedContext finishedContext = nullptr);
 
-    GrBackendTexture createCompressedBackendTexture(int width, int height,
+    GrBackendTexture createCompressedBackendTexture(int width,
+                                                    int height,
                                                     SkTextureCompressionType,
                                                     const SkColor4f& color,
-                                                    GrMipmapped,
+                                                    skgpu::Mipmapped,
                                                     GrProtected = GrProtected::kNo,
                                                     GrGpuFinishedProc finishedProc = nullptr,
                                                     GrGpuFinishedContext finishedContext = nullptr);
@@ -714,18 +820,22 @@ public:
      * For the Vulkan backend the layout of the created VkImage will be:
      *      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
      */
-    GrBackendTexture createCompressedBackendTexture(int width, int height,
+    GrBackendTexture createCompressedBackendTexture(int width,
+                                                    int height,
                                                     const GrBackendFormat&,
-                                                    const void* data, size_t dataSize,
-                                                    GrMipmapped,
+                                                    const void* data,
+                                                    size_t dataSize,
+                                                    skgpu::Mipmapped,
                                                     GrProtected = GrProtected::kNo,
                                                     GrGpuFinishedProc finishedProc = nullptr,
                                                     GrGpuFinishedContext finishedContext = nullptr);
 
-    GrBackendTexture createCompressedBackendTexture(int width, int height,
+    GrBackendTexture createCompressedBackendTexture(int width,
+                                                    int height,
                                                     SkTextureCompressionType,
-                                                    const void* data, size_t dataSize,
-                                                    GrMipmapped,
+                                                    const void* data,
+                                                    size_t dataSize,
+                                                    skgpu::Mipmapped,
                                                     GrProtected = GrProtected::kNo,
                                                     GrGpuFinishedProc finishedProc = nullptr,
                                                     GrGpuFinishedContext finishedContext = nullptr);
@@ -792,7 +902,7 @@ public:
                                      GrGpuFinishedProc finishedProc = nullptr,
                                      GrGpuFinishedContext finishedContext = nullptr);
 
-    void deleteBackendTexture(GrBackendTexture);
+    void deleteBackendTexture(const GrBackendTexture&);
 
     // This interface allows clients to pre-compile shaders and populate the runtime program cache.
     // The key and data blobs should be the ones passed to the PersistentCache, in SkSL format.
@@ -896,7 +1006,7 @@ private:
     // invoked after objects they depend upon have already been destroyed.
     std::unique_ptr<SkTaskGroup>              fTaskGroup;
     std::unique_ptr<sktext::gpu::StrikeCache> fStrikeCache;
-    sk_sp<GrGpu>                              fGpu;
+    std::unique_ptr<GrGpu>                    fGpu;
     std::unique_ptr<GrResourceCache>          fResourceCache;
     std::unique_ptr<GrResourceProvider>       fResourceProvider;
 
