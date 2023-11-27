@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
-import { openDatabaseAsync, type Database } from './Database';
-import type { OpenOptions } from './NativeDatabase';
+import type { SQLiteOpenOptions } from './NativeDatabase';
+import { openDatabaseAsync, type SQLiteDatabase } from './SQLiteDatabase';
 
 export interface SQLiteProviderProps {
   /**
@@ -12,7 +12,7 @@ export interface SQLiteProviderProps {
   /**
    * Open options.
    */
-  options?: OpenOptions;
+  options?: SQLiteOpenOptions;
 
   /**
    * The children to render.
@@ -23,7 +23,7 @@ export interface SQLiteProviderProps {
    * A custom initialization handler to run before rendering the children.
    * You can use this to run database migrations or other setup tasks.
    */
-  initHandler?: (db: Database) => Promise<void>;
+  initHandler?: (db: SQLiteDatabase) => Promise<void>;
 
   /**
    * A custom loading fallback to render before the database is ready.
@@ -41,7 +41,7 @@ export interface SQLiteProviderProps {
 /**
  * Create a context for the SQLite database
  */
-const SQLiteContext = createContext<Database | null>(null);
+const SQLiteContext = createContext<SQLiteDatabase | null>(null);
 
 /**
  * Context.Provider component that provides a SQLite database to all children.
@@ -55,7 +55,7 @@ export function SQLiteProvider({
   loadingFallback,
   errorHandler,
 }: SQLiteProviderProps) {
-  const databaseRef = useRef<Database | null>(null);
+  const databaseRef = useRef<SQLiteDatabase | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -73,7 +73,7 @@ export function SQLiteProvider({
       }
     }
 
-    async function teardown(db: Database | null) {
+    async function teardown(db: SQLiteDatabase | null) {
       try {
         await db?.closeAsync();
       } catch (e) {
@@ -127,7 +127,7 @@ export function SQLiteProvider({
  * }
  * ```
  */
-export function useSQLiteContext(): Database {
+export function useSQLiteContext(): SQLiteDatabase {
   const context = useContext(SQLiteContext);
   if (context == null) {
     throw new Error('useSQLiteContext must be used within a <SQLiteProvider>');

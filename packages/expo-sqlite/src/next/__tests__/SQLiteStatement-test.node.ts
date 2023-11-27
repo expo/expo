@@ -1,5 +1,5 @@
-import { openDatabaseAsync, Database } from '../Database';
-import { composeRow, composeRows, Statement, normalizeParams } from '../Statement';
+import { openDatabaseAsync, SQLiteDatabase } from '../SQLiteDatabase';
+import { composeRow, composeRows, SQLiteStatement, normalizeParams } from '../SQLiteStatement';
 
 jest.mock('../ExpoSQLiteNext');
 
@@ -8,8 +8,8 @@ interface TestEntity {
   intValue: number;
 }
 
-describe(Statement, () => {
-  let db: Database;
+describe(SQLiteStatement, () => {
+  let db: SQLiteDatabase;
 
   beforeEach(async () => {
     db = await openDatabaseAsync(':memory:');
@@ -25,7 +25,7 @@ describe(Statement, () => {
     await db.closeAsync();
   });
 
-  it('runExec should return RunResult', async () => {
+  it('runExec should return SQLiteRunResult', async () => {
     const statement = await db.prepareAsync('INSERT INTO test (value, intValue) VALUES (?, ?)');
     const result = await statement.runAsync('hello', 111);
     expect(result.lastInsertRowId).toBeDefined();

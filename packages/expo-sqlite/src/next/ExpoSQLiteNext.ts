@@ -1,11 +1,11 @@
-import { OpenOptions } from './NativeDatabase';
+import { SQLiteOpenOptions } from './NativeDatabase';
 
 export default {
   get name(): string {
     return 'ExpoSQLiteNext';
   },
 
-  NativeDatabase(dbName: string, options?: OpenOptions): void {
+  NativeDatabase(dbName: string, options?: SQLiteOpenOptions): void {
     throw new Error('Unimplemented');
   },
 

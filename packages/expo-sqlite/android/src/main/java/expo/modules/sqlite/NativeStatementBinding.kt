@@ -5,8 +5,8 @@ package expo.modules.sqlite
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 
-internal typealias ColumnNames = ArrayList<String>
-internal typealias ColumnValues = ArrayList<Any>
+internal typealias SQLiteColumnNames = ArrayList<String>
+internal typealias SQLiteColumnValues = ArrayList<Any>
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
@@ -28,8 +28,8 @@ internal class NativeStatementBinding {
   external fun sqlite3_step(): Int
 
   external fun bindStatementParam(index: Int, param: Any): Int
-  external fun getColumnNames(): ColumnNames
-  external fun getColumnValues(): ColumnValues
+  external fun getColumnNames(): SQLiteColumnNames
+  external fun getColumnValues(): SQLiteColumnValues
 
   // endregion
 

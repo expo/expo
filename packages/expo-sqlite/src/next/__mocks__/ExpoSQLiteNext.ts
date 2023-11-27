@@ -1,13 +1,13 @@
 import assert from 'assert';
 import sqlite3 from 'better-sqlite3';
 
-import { OpenOptions } from '../NativeDatabase';
+import { SQLiteOpenOptions } from '../NativeDatabase';
 import {
-  BindBlobParams,
-  BindParams,
-  BindPrimitiveParams,
-  ColumnValues,
-  RunResult,
+  SQLiteBindBlobParams,
+  SQLiteBindParams,
+  SQLiteBindPrimitiveParams,
+  SQLiteColumnNames,
+  SQLiteRunResult,
 } from '../NativeStatement';
 
 export default {
@@ -19,7 +19,9 @@ export default {
 
   NativeDatabase: jest
     .fn()
-    .mockImplementation((dbName: string, options?: OpenOptions) => new NativeDatabase(dbName)),
+    .mockImplementation(
+      (dbName: string, options?: SQLiteOpenOptions) => new NativeDatabase(dbName)
+    ),
 
   NativeStatement: jest.fn().mockImplementation(() => new NativeStatement()),
 };
@@ -75,7 +77,7 @@ class NativeDatabase {
 class NativeStatement {
   public sqlite3Stmt: sqlite3.Statement | null = null;
   private iterator: ReturnType<sqlite3.Statement['iterate']> | null = null;
-  private iteratorParams: BindParams = [];
+  private iteratorParams: SQLiteBindParams = [];
 
   //#region Asynchronous API
 
@@ -84,10 +86,10 @@ class NativeStatement {
     .mockImplementation(
       (
         database: NativeDatabase,
-        bindParams: BindPrimitiveParams,
-        bindBlobParams: BindBlobParams,
+        bindParams: SQLiteBindPrimitiveParams,
+        bindBlobParams: SQLiteBindBlobParams,
         shouldPassAsArray: boolean
-      ): Promise<RunResult> =>
+      ): Promise<SQLiteRunResult> =>
         Promise.resolve(
           this._run(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
         )
@@ -97,8 +99,8 @@ class NativeStatement {
     .mockImplementation(
       (
         database: NativeDatabase,
-        bindParams: BindPrimitiveParams,
-        bindBlobParams: BindBlobParams,
+        bindParams: SQLiteBindPrimitiveParams,
+        bindBlobParams: SQLiteBindBlobParams,
         shouldPassAsArray: boolean
       ): Promise<any> => {
         assert(this.sqlite3Stmt);
@@ -117,8 +119,8 @@ class NativeStatement {
     .mockImplementation(
       (
         database: NativeDatabase,
-        bindParams: BindPrimitiveParams,
-        bindBlobParams: BindBlobParams,
+        bindParams: SQLiteBindPrimitiveParams,
+        bindBlobParams: SQLiteBindBlobParams,
         shouldPassAsArray: boolean
       ) =>
         Promise.resolve(
@@ -145,18 +147,19 @@ class NativeStatement {
     .mockImplementation(
       (
         database: NativeDatabase,
-        bindParams: BindPrimitiveParams,
-        bindBlobParams: BindBlobParams,
+        bindParams: SQLiteBindPrimitiveParams,
+        bindBlobParams: SQLiteBindBlobParams,
         shouldPassAsArray: boolean
-      ): RunResult => this._run(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
+      ): SQLiteRunResult =>
+        this._run(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
     );
   public getSync = jest
     .fn()
     .mockImplementation(
       (
         database: NativeDatabase,
-        bindParams: BindPrimitiveParams,
-        bindBlobParams: BindBlobParams,
+        bindParams: SQLiteBindPrimitiveParams,
+        bindBlobParams: SQLiteBindBlobParams,
         shouldPassAsArray: boolean
       ): any => {
         assert(this.sqlite3Stmt);
@@ -175,8 +178,8 @@ class NativeStatement {
     .mockImplementation(
       (
         database: NativeDatabase,
-        bindParams: BindPrimitiveParams,
-        bindBlobParams: BindBlobParams,
+        bindParams: SQLiteBindPrimitiveParams,
+        bindBlobParams: SQLiteBindBlobParams,
         shouldPassAsArray: boolean
       ) => this._allValues(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
     );
@@ -193,16 +196,16 @@ class NativeStatement {
 
   //#endregion
 
-  private _run = (...params: any[]): RunResult => {
+  private _run = (...params: any[]): SQLiteRunResult => {
     assert(this.sqlite3Stmt);
     const result = this.sqlite3Stmt.run(...params);
     return {
-      lastInsertRowId: Number(result.lastInsertRowId),
+      lastInsertRowId: Number(result.lastInsertRowid),
       changes: result.changes,
     };
   };
 
-  private _allValues = (...params: any[]): ColumnValues[] => {
+  private _allValues = (...params: any[]): SQLiteColumnNames[] => {
     assert(this.sqlite3Stmt);
     const sqlite3Stmt = this.sqlite3Stmt as any;
     return sqlite3Stmt.all(...params).map((row: any) => Object.values(row));
@@ -224,12 +227,12 @@ class NativeStatement {
 //#endregion
 
 function normalizeSQLite3Args(
-  bindParams: BindPrimitiveParams,
-  bindBlobParams: BindBlobParams,
+  bindParams: SQLiteBindPrimitiveParams,
+  bindBlobParams: SQLiteBindBlobParams,
   shouldPassAsArray: boolean
-): BindParams {
+): SQLiteBindParams {
   if (shouldPassAsArray) {
-    const result: BindParams = [];
+    const result: SQLiteBindParams = [];
     for (const [key, value] of Object.entries(bindParams)) {
       result[Number(key)] = value;
     }
@@ -240,7 +243,7 @@ function normalizeSQLite3Args(
   }
 
   const replaceRegexp = /^[:@$]/;
-  const result: BindParams = {};
+  const result: SQLiteBindParams = {};
   for (const [key, value] of Object.entries(bindParams)) {
     const normalizedKey = key.replace(replaceRegexp, '');
     result[normalizedKey] = value;

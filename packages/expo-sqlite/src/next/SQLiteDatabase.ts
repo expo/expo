@@ -1,28 +1,33 @@
 import { EventEmitter, Subscription } from 'expo-modules-core';
 
 import ExpoSQLite from './ExpoSQLiteNext';
-import { NativeDatabase, OpenOptions } from './NativeDatabase';
-import { BindParams, RunResult, Statement, VariadicBindParams } from './Statement';
+import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import {
+  SQLiteBindParams,
+  SQLiteRunResult,
+  SQLiteStatement,
+  SQLiteVariadicBindParams,
+} from './SQLiteStatement';
 
-export { OpenOptions };
+export { SQLiteOpenOptions };
 
 const emitter = new EventEmitter(ExpoSQLite);
 
 /**
  * A SQLite database.
  */
-export class Database {
+export class SQLiteDatabase {
   constructor(
     public readonly dbName: string,
-    public readonly options: OpenOptions,
+    public readonly options: SQLiteOpenOptions,
     private readonly nativeDatabase: NativeDatabase
   ) {}
 
   /**
    * Asynchronous call to return whether the database is currently in a transaction.
    */
-  public isInwithTransactionAsync(): Promise<boolean> {
-    return this.nativeDatabase.isInwithTransactionAsync();
+  public isInTransactionAsync(): Promise<boolean> {
+    return this.nativeDatabase.isInTransactionAsync();
   }
 
   /**
@@ -47,10 +52,10 @@ export class Database {
    *
    * @param source A string containing the SQL query.
    */
-  public async prepareAsync(source: string): Promise<Statement> {
+  public async prepareAsync(source: string): Promise<SQLiteStatement> {
     const nativeStatement = new ExpoSQLite.NativeStatement();
     await this.nativeDatabase.prepareAsync(nativeStatement, source);
-    return new Statement(this.nativeDatabase, nativeStatement);
+    return new SQLiteStatement(this.nativeDatabase, nativeStatement);
   }
 
   /**
@@ -158,10 +163,10 @@ export class Database {
    *
    * @param source A string containing the SQL query.
    */
-  public prepareSync(source: string): Statement {
+  public prepareSync(source: string): SQLiteStatement {
     const nativeStatement = new ExpoSQLite.NativeStatement();
     this.nativeDatabase.prepareSync(nativeStatement, source);
-    return new Statement(this.nativeDatabase, nativeStatement);
+    return new SQLiteStatement(this.nativeDatabase, nativeStatement);
   }
 
   /**
@@ -188,15 +193,15 @@ export class Database {
    * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.runAsync()`](#runasyncparams).
    * Unlike [`Statement.runAsync()`](#runasyncparams), this method finalizes the statement after execution.
    * @param source A string containing the SQL query.
-   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public runAsync(source: string, params: BindParams): Promise<RunResult>;
+  public runAsync(source: string, params: SQLiteBindParams): Promise<SQLiteRunResult>;
 
   /**
    * @hidden
    */
-  public runAsync(source: string, ...params: VariadicBindParams): Promise<RunResult>;
-  public async runAsync(source: string, ...params: any[]): Promise<RunResult> {
+  public runAsync(source: string, ...params: SQLiteVariadicBindParams): Promise<SQLiteRunResult>;
+  public async runAsync(source: string, ...params: any[]): Promise<SQLiteRunResult> {
     const statement = await this.prepareAsync(source);
     let result;
     try {
@@ -211,13 +216,13 @@ export class Database {
    * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.getAsync()`](#getasyncparams).
    * Unlike [`Statement.getAsync()`](#getasyncparams), this method finalizes the statement after execution.
    * @param source A string containing the SQL query.
-   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public getAsync<T>(source: string, params: BindParams): Promise<T | null>;
+  public getAsync<T>(source: string, params: SQLiteBindParams): Promise<T | null>;
   /**
    * @hidden
    */
-  public getAsync<T>(source: string, ...params: VariadicBindParams): Promise<T | null>;
+  public getAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T | null>;
   public async getAsync<T>(source: string, ...params: any[]): Promise<T | null> {
     const statement = await this.prepareAsync(source);
     let result;
@@ -233,13 +238,16 @@ export class Database {
    * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.eachAsync()`](#eachasyncparams).
    * Unlike [`Statement.eachAsync()`](#eachasyncparams), this method finalizes the statement after execution.
    * @param source A string containing the SQL query.
-   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public eachAsync<T>(source: string, params: BindParams): AsyncIterableIterator<T>;
+  public eachAsync<T>(source: string, params: SQLiteBindParams): AsyncIterableIterator<T>;
   /**
    * @hidden
    */
-  public eachAsync<T>(source: string, ...params: VariadicBindParams): AsyncIterableIterator<T>;
+  public eachAsync<T>(
+    source: string,
+    ...params: SQLiteVariadicBindParams
+  ): AsyncIterableIterator<T>;
   public async *eachAsync<T>(source: string, ...params: any[]): AsyncIterableIterator<T> {
     const statement = await this.prepareAsync(source);
     try {
@@ -253,7 +261,7 @@ export class Database {
    * Shorthand for [`prepareAsync()`](#prepareasyncsource) and [`Statement.allAsync()`](#allasyncparams).
    * Unlike [`Statement.allAsync()`](#allasyncparams), this method finalizes the statement after execution.
    * @param source A string containing the SQL query.
-   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    * @example
    * ```ts
    * // For unnamed parameters, you pass values in an array.
@@ -266,11 +274,11 @@ export class Database {
    * db.allAsync('SELECT * FROM test WHERE intValue = $intValue AND name = $name', { $intValue: 1, $name: 'Hello' });
    * ```
    */
-  public allAsync<T>(source: string, params: BindParams): Promise<T[]>;
+  public allAsync<T>(source: string, params: SQLiteBindParams): Promise<T[]>;
   /**
    * @hidden
    */
-  public allAsync<T>(source: string, ...params: VariadicBindParams): Promise<T[]>;
+  public allAsync<T>(source: string, ...params: SQLiteVariadicBindParams): Promise<T[]>;
   public async allAsync<T>(source: string, ...params: any[]): Promise<T[]> {
     const statement = await this.prepareAsync(source);
     let result;
@@ -287,14 +295,14 @@ export class Database {
    * Unlike [`Statement.runSync()`](#runsyncparams), this method finalizes the statement after execution.
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param source A string containing the SQL query.
-   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public runSync(source: string, params: BindParams): RunResult;
+  public runSync(source: string, params: SQLiteBindParams): SQLiteRunResult;
   /**
    * @hidden
    */
-  public runSync(source: string, ...params: VariadicBindParams): RunResult;
-  public runSync(source: string, ...params: any[]): RunResult {
+  public runSync(source: string, ...params: SQLiteVariadicBindParams): SQLiteRunResult;
+  public runSync(source: string, ...params: any[]): SQLiteRunResult {
     const statement = this.prepareSync(source);
     let result;
     try {
@@ -310,13 +318,13 @@ export class Database {
    * Unlike [`Statement.getSync()`](#getsyncparams), this method finalizes the statement after execution.
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param source A string containing the SQL query.
-   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public getSync<T>(source: string, params: BindParams): T | null;
+  public getSync<T>(source: string, params: SQLiteBindParams): T | null;
   /**
    * @hidden
    */
-  public getSync<T>(source: string, ...params: VariadicBindParams): T | null;
+  public getSync<T>(source: string, ...params: SQLiteVariadicBindParams): T | null;
   public getSync<T>(source: string, ...params: any[]): T | null {
     const statement = this.prepareSync(source);
     let result;
@@ -333,13 +341,13 @@ export class Database {
    * Unlike [`Statement.eachSync()`](#eachsyncparams), this method finalizes the statement after execution.
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param source A string containing the SQL query.
-   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public eachSync<T>(source: string, params: BindParams): IterableIterator<T>;
+  public eachSync<T>(source: string, params: SQLiteBindParams): IterableIterator<T>;
   /**
    * @hidden
    */
-  public eachSync<T>(source: string, ...params: VariadicBindParams): IterableIterator<T>;
+  public eachSync<T>(source: string, ...params: SQLiteVariadicBindParams): IterableIterator<T>;
   public *eachSync<T>(source: string, ...params: any[]): IterableIterator<T> {
     const statement = this.prepareSync(source);
     try {
@@ -354,13 +362,13 @@ export class Database {
    * Unlike [`Statement.allSync()`](#allsyncparams), this method finalizes the statement after execution.
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    * @param source A string containing the SQL query.
-   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`BindValue`](#bindvalue) for more information about binding values.
+   * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public allSync<T>(source: string, params: BindParams): T[];
+  public allSync<T>(source: string, params: SQLiteBindParams): T[];
   /**
    * @hidden
    */
-  public allSync<T>(source: string, ...params: VariadicBindParams): T[];
+  public allSync<T>(source: string, ...params: SQLiteVariadicBindParams): T[];
   public allSync<T>(source: string, ...params: any[]): T[] {
     const statement = this.prepareSync(source);
     let result;
@@ -381,11 +389,14 @@ export class Database {
  * @param dbName The name of the database file to open.
  * @param options Open options.
  */
-export async function openDatabaseAsync(dbName: string, options?: OpenOptions): Promise<Database> {
+export async function openDatabaseAsync(
+  dbName: string,
+  options?: SQLiteOpenOptions
+): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
   const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, openOptions);
   await nativeDatabase.initAsync();
-  return new Database(dbName, openOptions, nativeDatabase);
+  return new SQLiteDatabase(dbName, openOptions, nativeDatabase);
 }
 
 /**
@@ -396,11 +407,11 @@ export async function openDatabaseAsync(dbName: string, options?: OpenOptions): 
  * @param dbName The name of the database file to open.
  * @param options Open options.
  */
-export function openDatabaseSync(dbName: string, options?: OpenOptions): Database {
+export function openDatabaseSync(dbName: string, options?: SQLiteOpenOptions): SQLiteDatabase {
   const openOptions = options ?? {};
   const nativeDatabase = new ExpoSQLite.NativeDatabase(dbName, openOptions);
   nativeDatabase.initSync();
-  return new Database(dbName, openOptions, nativeDatabase);
+  return new SQLiteDatabase(dbName, openOptions, nativeDatabase);
 }
 
 /**
@@ -442,7 +453,7 @@ export type DatabaseChangeEvent = {
 
 /**
  * Add a listener for database changes.
- * > Note: to enable this feature, you must set [`enableChangeListener` to `true`](#openoptions) when opening the database.
+ * > Note: to enable this feature, you must set [`enableChangeListener` to `true`](#sqliteopenoptions) when opening the database.
  *
  * @param listener A function that receives the `dbFilePath`, `dbName`, `tableName` and `rowId` of the modified data.
  * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
@@ -454,11 +465,11 @@ export function addDatabaseChangeListener(
 }
 
 /**
- * A new connection specific used for [`withTransactionExclusiveAsync`](#withTransactionExclusiveAsynctask).
+ * A new connection specific used for [`withTransactionExclusiveAsync`](#withtransactionexclusiveasynctask).
  * @hidden not going to pull all the database methods to the document.
  */
-class Transaction extends Database {
-  public static async createAsync(db: Database): Promise<Transaction> {
+class Transaction extends SQLiteDatabase {
+  public static async createAsync(db: SQLiteDatabase): Promise<Transaction> {
     const options = { ...db.options, useNewConnection: true };
     const nativeDatabase = new ExpoSQLite.NativeDatabase(db.dbName, options);
     await nativeDatabase.initAsync();

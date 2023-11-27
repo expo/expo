@@ -3,8 +3,8 @@
 import ExpoModulesCore
 import sqlite3
 
-private typealias ColumnNames = [String]
-private typealias ColumnValues = [Any]
+private typealias SQLiteColumnNames = [String]
+private typealias SQLiteColumnValues = [Any]
 private let SQLITE_TRANSIENT = unsafeBitCast(OpaquePointer(bitPattern: -1), to: sqlite3_destructor_type.self)
 private let MEMORY_DB_NAME = ":memory:"
 
@@ -123,26 +123,26 @@ public final class SQLiteModuleNext: Module {
         return try run(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
 
-      AsyncFunction("getAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> ColumnValues? in
+      AsyncFunction("getAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> SQLiteColumnValues? in
         return try get(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
-      Function("getSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> ColumnValues? in
+      Function("getSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> SQLiteColumnValues? in
         return try get(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
 
-      AsyncFunction("getAllAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [ColumnValues] in
+      AsyncFunction("getAllAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [SQLiteColumnValues] in
         return try getAll(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
-      Function("getAllSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [ColumnValues] in
+      Function("getAllSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [SQLiteColumnValues] in
         return try getAll(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
 
       // swiftlint:enable line_length
 
-      AsyncFunction("getColumnNamesAsync") { (statement: NativeStatement) -> ColumnNames in
+      AsyncFunction("getColumnNamesAsync") { (statement: NativeStatement) -> SQLiteColumnNames in
         return try getColumnNames(statement: statement)
       }
-      Function("getColumnNamesSync") { (statement: NativeStatement) -> ColumnNames in
+      Function("getColumnNamesSync") { (statement: NativeStatement) -> SQLiteColumnNames in
         return try getColumnNames(statement: statement)
       }
 
@@ -234,7 +234,7 @@ public final class SQLiteModuleNext: Module {
     ]
   }
 
-  private func get(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) throws -> ColumnValues? {
+  private func get(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) throws -> SQLiteColumnValues? {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
     for (key, param) in bindParams {
@@ -260,7 +260,7 @@ public final class SQLiteModuleNext: Module {
     return nil
   }
 
-  private func getAll(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) throws -> [ColumnValues] {
+  private func getAll(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) throws -> [SQLiteColumnValues] {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
     for (key, param) in bindParams {
@@ -276,7 +276,7 @@ public final class SQLiteModuleNext: Module {
       }
     }
 
-    var columnValuesList: [ColumnValues] = []
+    var columnValuesList: [SQLiteColumnValues] = []
     while true {
       let ret = sqlite3_step(statement.pointer)
       if ret == SQLITE_ROW {
@@ -395,20 +395,20 @@ public final class SQLiteModuleNext: Module {
     contextPair.toOpaque())
   }
 
-  private func getColumnNames(statement: NativeStatement) throws -> ColumnNames {
+  private func getColumnNames(statement: NativeStatement) throws -> SQLiteColumnNames {
     try maybeThrowForFinalizedStatement(statement)
     let columnCount = Int(sqlite3_column_count(statement.pointer))
-    var columnNames: ColumnNames = Array(repeating: "", count: columnCount)
+    var columnNames: SQLiteColumnNames = Array(repeating: "", count: columnCount)
     for i in 0..<columnCount {
       columnNames[i] = String(cString: sqlite3_column_name(statement.pointer, Int32(i)))
     }
     return columnNames
   }
 
-  private func getColumnValues(statement: NativeStatement) throws -> ColumnValues {
+  private func getColumnValues(statement: NativeStatement) throws -> SQLiteColumnValues {
     try maybeThrowForFinalizedStatement(statement)
     let columnCount = Int(sqlite3_column_count(statement.pointer))
-    var columnValues: ColumnValues = Array(repeating: 0, count: columnCount)
+    var columnValues: SQLiteColumnValues = Array(repeating: 0, count: columnCount)
     for i in 0..<columnCount {
       columnValues[i] = try getColumnValue(statement: statement, at: Int32(i))
     }

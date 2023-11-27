@@ -1,7 +1,7 @@
 // @ts-ignore-next-line: no @types/node
 import fs from 'fs/promises';
 
-import { openDatabaseAsync, openDatabaseSync, Database } from '../Database';
+import { openDatabaseAsync, openDatabaseSync, SQLiteDatabase } from '../SQLiteDatabase';
 
 jest.mock('../ExpoSQLiteNext');
 
@@ -11,7 +11,7 @@ interface TestEntity {
 }
 
 describe('Database', () => {
-  let db: Database | null = null;
+  let db: SQLiteDatabase | null = null;
 
   afterEach(async () => {
     await db?.closeAsync();
@@ -37,7 +37,7 @@ describe('Database', () => {
     await expect(db.execAsync('INVALID COMMAMD')).rejects.toThrowError();
   });
 
-  it('runAsync should return RunResult', async () => {
+  it('runAsync should return SQLiteRunResult', async () => {
     db = await openDatabaseAsync(':memory:');
     await db.execAsync(
       'CREATE TABLE test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER)'
@@ -204,7 +204,7 @@ INSERT INTO Users (name) VALUES ('aaa');
 });
 
 describe('Database - Synchronous calls', () => {
-  let db: Database | null = null;
+  let db: SQLiteDatabase | null = null;
 
   afterEach(async () => {
     db?.closeSync();

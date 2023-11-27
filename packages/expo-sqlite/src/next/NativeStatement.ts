@@ -1,7 +1,7 @@
 /**
  * Result of a `runAsync` call.
  */
-export interface RunResult {
+export interface SQLiteRunResult {
   /**
    * The last inserted row ID.
    */
@@ -40,15 +40,15 @@ export interface RunResult {
  * await statement.getAsync({ $value: 'test1', $intValue: 789 });
  * ```
  */
-export type BindValue = string | number | null | boolean | Uint8Array;
-export type BindParams = Record<string, BindValue> | BindValue[];
-export type VariadicBindParams = BindValue[];
+export type SQLiteBindValue = string | number | null | boolean | Uint8Array;
+export type SQLiteBindParams = Record<string, SQLiteBindValue> | SQLiteBindValue[];
+export type SQLiteVariadicBindParams = SQLiteBindValue[];
 
-export type BindPrimitiveParams = Record<string, Exclude<BindValue, Uint8Array>>;
-export type BindBlobParams = Record<string, Uint8Array>;
-export type ColumnNames = string[];
-export type ColumnValues = any[];
-type AnyDatabase = any;
+export type SQLiteBindPrimitiveParams = Record<string, Exclude<SQLiteBindValue, Uint8Array>>;
+export type SQLiteBindBlobParams = Record<string, Uint8Array>;
+export type SQLiteColumnNames = string[];
+export type SQLiteColumnValues = any[];
+type SQLiteAnyDatabase = any;
 
 /**
  * A class that represents an instance of the SQLite statement.
@@ -57,54 +57,54 @@ export declare class NativeStatement {
   //#region Asynchronous API
 
   public runAsync(
-    database: AnyDatabase,
-    bindParams: BindPrimitiveParams,
-    bindBlobParams: BindBlobParams,
+    database: SQLiteAnyDatabase,
+    bindParams: SQLiteBindPrimitiveParams,
+    bindBlobParams: SQLiteBindBlobParams,
     shouldPassAsArray: boolean
-  ): Promise<RunResult>;
+  ): Promise<SQLiteRunResult>;
   public getAsync(
-    database: AnyDatabase,
-    bindParams: BindPrimitiveParams,
-    bindBlobParams: BindBlobParams,
+    database: SQLiteAnyDatabase,
+    bindParams: SQLiteBindPrimitiveParams,
+    bindBlobParams: SQLiteBindBlobParams,
     shouldPassAsArray: boolean
-  ): Promise<ColumnValues | null | undefined>;
+  ): Promise<SQLiteColumnValues | null | undefined>;
   public getAllAsync(
-    database: AnyDatabase,
-    bindParams: BindPrimitiveParams,
-    bindBlobParams: BindBlobParams,
+    database: SQLiteAnyDatabase,
+    bindParams: SQLiteBindPrimitiveParams,
+    bindBlobParams: SQLiteBindBlobParams,
     shouldPassAsArray: boolean
-  ): Promise<ColumnValues[]>;
-  public getColumnNamesAsync(): Promise<ColumnNames>;
+  ): Promise<SQLiteColumnValues[]>;
+  public getColumnNamesAsync(): Promise<SQLiteColumnNames>;
 
-  public resetAsync(database: AnyDatabase): Promise<void>;
-  public finalizeAsync(database: AnyDatabase): Promise<void>;
+  public resetAsync(database: SQLiteAnyDatabase): Promise<void>;
+  public finalizeAsync(database: SQLiteAnyDatabase): Promise<void>;
 
   //#endregion
 
   //#region Synchronous API
 
   public runSync(
-    database: AnyDatabase,
-    bindParams: BindPrimitiveParams,
-    bindBlobParams: BindBlobParams,
+    database: SQLiteAnyDatabase,
+    bindParams: SQLiteBindPrimitiveParams,
+    bindBlobParams: SQLiteBindBlobParams,
     shouldPassAsArray: boolean
-  ): RunResult;
+  ): SQLiteRunResult;
   public getSync(
-    database: AnyDatabase,
-    bindParams: BindPrimitiveParams,
-    bindBlobParams: BindBlobParams,
+    database: SQLiteAnyDatabase,
+    bindParams: SQLiteBindPrimitiveParams,
+    bindBlobParams: SQLiteBindBlobParams,
     shouldPassAsArray: boolean
-  ): ColumnValues | null | undefined;
+  ): SQLiteColumnValues | null | undefined;
   public getAllSync(
-    database: AnyDatabase,
-    bindParams: BindPrimitiveParams,
-    bindBlobParams: BindBlobParams,
+    database: SQLiteAnyDatabase,
+    bindParams: SQLiteBindPrimitiveParams,
+    bindBlobParams: SQLiteBindBlobParams,
     shouldPassAsArray: boolean
-  ): ColumnValues[];
+  ): SQLiteColumnValues[];
   public getColumnNamesSync(): string[];
 
-  public resetSync(database: AnyDatabase): void;
-  public finalizeSync(database: AnyDatabase): void;
+  public resetSync(database: SQLiteAnyDatabase): void;
+  public finalizeSync(database: SQLiteAnyDatabase): void;
 
   //#endregion
 }

@@ -4,7 +4,7 @@ import { NativeStatement } from './NativeStatement';
  * A class that represents an instance of the SQLite database.
  */
 export declare class NativeDatabase {
-  constructor(dbName: string, options?: OpenOptions);
+  constructor(dbName: string, options?: SQLiteOpenOptions);
 
   //#region Asynchronous API
 
@@ -30,7 +30,7 @@ export declare class NativeDatabase {
 /**
  * Options for opening a database.
  */
-export interface OpenOptions {
+export interface SQLiteOpenOptions {
   /**
    * Whether to enable the CR-SQLite extension.
    * @default false

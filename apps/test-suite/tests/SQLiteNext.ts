@@ -315,7 +315,7 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
   });
 
   describe('Statement parameters bindings', () => {
-    let db: SQLite.Database;
+    let db: SQLite.SQLiteDatabase;
 
     beforeEach(async () => {
       db = await SQLite.openDatabaseAsync(':memory:');
@@ -401,7 +401,7 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
   });
 
   describe('withTransactionAsync', () => {
-    let db: SQLite.Database;
+    let db: SQLite.SQLiteDatabase;
 
     afterEach(async () => {
       await db.closeAsync();
@@ -568,7 +568,7 @@ INSERT INTO Users (name) VALUES ('aaa');
   });
 
   describe('Synchronous calls', () => {
-    let db: SQLite.Database | null = null;
+    let db: SQLite.SQLiteDatabase | null = null;
 
     beforeEach(() => {
       db = SQLite.openDatabaseSync(':memory:');
