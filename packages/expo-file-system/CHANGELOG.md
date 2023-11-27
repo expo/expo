@@ -13,8 +13,6 @@
 
 ### 💡 Others
 
-- [Android] Replace legacy `FileSystem` interfaces usage with core `FilePermissionsUtilities`. ([#25578](https://github.com/expo/expo/pull/25578) by [@alanhughes](https://github.com/alanjhughes))
-
 ## 15.4.5 — 2023-11-20
 
 ### 🐛 Bug fixes
