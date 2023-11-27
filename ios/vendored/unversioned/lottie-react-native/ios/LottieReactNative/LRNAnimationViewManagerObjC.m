@@ -14,6 +14,7 @@ RCT_EXPORT_VIEW_PROPERTY(autoPlay, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(speed, CGFloat);
 RCT_EXPORT_VIEW_PROPERTY(onAnimationFinish, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onAnimationFailure, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onAnimationLoaded, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(colorFilters, LRNColorFilters);
 RCT_EXPORT_VIEW_PROPERTY(textFiltersIOS, NSArray);
 RCT_EXPORT_VIEW_PROPERTY(renderMode, NSString);
