@@ -93,6 +93,30 @@ describe('Basic tests', () => {
     await device.terminateApp();
   });
 
+  it('reloads', async () => {
+    jest.setTimeout(300000 * TIMEOUT_BIAS);
+    Server.start(Update.serverPort, protocolVersion);
+    await device.installApp();
+    await device.launchApp({
+      newInstance: true,
+    });
+    await waitForAppToBecomeVisible();
+
+    const isReloadingBefore = await testElementValueAsync('isReloading');
+    jestExpect(isReloadingBefore).toBe('false');
+    const startTimeBefore = parseInt(await testElementValueAsync('startTime'), 10);
+    jestExpect(startTimeBefore).toBeGreaterThan(0);
+
+    await pressTestButtonAsync('reload');
+
+    const isReloadingAfter = await testElementValueAsync('isReloading');
+    jestExpect(isReloadingAfter).toBe('false');
+    const startTimeAfter = parseInt(await testElementValueAsync('startTime'), 10);
+    jestExpect(startTimeAfter).toBeGreaterThan(startTimeBefore);
+
+    await device.terminateApp();
+  });
+
   it('initial request includes correct update-id headers', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     Server.start(Update.serverPort);
