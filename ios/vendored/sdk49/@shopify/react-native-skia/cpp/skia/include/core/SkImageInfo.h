@@ -550,8 +550,6 @@ public:
 
         @param rowBytes  size of pixel row or larger
         @return          memory required by pixel buffer
-
-        example: https://fiddle.skia.org/c/@ImageInfo_computeByteSize
     */
     size_t computeByteSize(size_t rowBytes) const;
 

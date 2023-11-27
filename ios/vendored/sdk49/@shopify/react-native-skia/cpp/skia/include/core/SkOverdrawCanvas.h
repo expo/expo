@@ -8,8 +8,33 @@
 #ifndef SkOverdrawCanvas_DEFINED
 #define SkOverdrawCanvas_DEFINED
 
+#include "include/core/SkCanvas.h"
 #include "include/core/SkCanvasVirtualEnforcer.h"
+#include "include/core/SkColor.h"
+#include "include/core/SkPaint.h"
+#include "include/core/SkSamplingOptions.h"
+#include "include/core/SkScalar.h"
+#include "include/private/base/SkAPI.h"
 #include "include/utils/SkNWayCanvas.h"
+
+#include <cstddef>
+
+class SkData;
+class SkDrawable;
+class SkImage;
+class SkMatrix;
+class SkPath;
+class SkPicture;
+class SkRRect;
+class SkRegion;
+class SkTextBlob;
+class SkVertices;
+enum class SkBlendMode;
+namespace sktext { class GlyphRunList; }
+struct SkDrawShadowRec;
+struct SkPoint;
+struct SkRSXform;
+struct SkRect;
 
 /**
  *  Captures all drawing commands.  Rather than draw the actual content, this device
