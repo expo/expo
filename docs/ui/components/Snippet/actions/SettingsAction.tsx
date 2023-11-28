@@ -36,7 +36,7 @@ export const SettingsAction = ({ ...rest }: SnippetActionProps) => {
       }>
       <Dropdown.Item
         preventAutoClose
-        label="Force dark theme"
+        label="Use dark theme"
         onSelect={onThemeChange}
         rightSlot={
           <Checkbox
