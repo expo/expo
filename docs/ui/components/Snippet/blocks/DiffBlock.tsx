@@ -72,14 +72,15 @@ export const DiffBlock = ({
           Icon={Copy07Icon}
           operationType={type}
           showOperation={showOperation}
+          float={collapseDeletedFiles && type === 'delete'}
         />
-        <SnippetContent className="p-0" hideOverflow>
-          {!collapseDeletedFiles || type !== 'delete' ? (
+        {!collapseDeletedFiles || type !== 'delete' ? (
+          <SnippetContent className="p-0" hideOverflow>
             <Diff viewType="unified" diffType={type} hunks={hunks}>
               {(hunks: any[]) => hunks.map(hunk => <Hunk key={hunk.content} hunk={hunk} />)}
             </Diff>
-          ) : null}
-        </SnippetContent>
+          </SnippetContent>
+        ) : null}
       </Snippet>
     );
   };
