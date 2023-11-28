@@ -7,6 +7,13 @@ const mockFontMetadata = {
   scales: [1],
   httpServerLocation: '/assets',
 };
+const mockFontMonorepoMetadata = {
+  hash: 'cafecafecafecafecafecafecafecafe',
+  name: 'test',
+  type: 'ttf',
+  scales: [1],
+  httpServerLocation: '/assets/?unstable_path=.',
+};
 
 describe('selectAssetSource', () => {
   beforeEach(() => {
@@ -24,14 +31,11 @@ describe('selectAssetSource', () => {
     jest.resetModules();
   });
 
-  it(`returns a production CDN URI using the asset file hash`, () => {
+  it(`throws an error if the asset metadata does not specify an absolute URL in production`, () => {
     const AssetSources = require('../AssetSources');
-
-    const source = AssetSources.selectAssetSource(mockFontMetadata);
-    expect(source.uri).toBe(
-      'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe'
+    expect(() => AssetSources.selectAssetSource(mockFontMetadata)).toThrowError(
+      `Asset "test.ttf" must specify an absolute HTTP(S) URL in production or specify a development server URL in development.`
     );
-    expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
   });
 
   if (Platform.OS !== 'web') {
@@ -51,6 +55,7 @@ describe('selectAssetSource', () => {
       );
       expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
     });
+
     it(`returns a manifest2 URI based on the bundle's URL in development`, () => {
       _mockConstants({
         __unsafeNoWarnManifest2: {
@@ -111,6 +116,11 @@ describe('selectAssetSource', () => {
       name: 'test',
       type: 'png',
       scales: [1, 2, 100],
+      fileUris: [
+        'https://example.com/icon.png',
+        'https://example.com/icon@2x.png',
+        'https://example.com/icon@100x.png',
+      ],
       fileHashes: [
         'facefacefacefacefacefacefaceface',
         'c0dec0dec0dec0dec0dec0dec0dec0de',
@@ -119,16 +129,37 @@ describe('selectAssetSource', () => {
       httpServerLocation: '/assets',
     });
 
+    const uri = Platform.select({
+      web: 'https://example.com/icon.png',
+      default: 'https://example.com/icon@2x.png',
+    });
     const hash = Platform.select({
       web: 'facefacefacefacefacefacefaceface',
       default: 'c0dec0dec0dec0dec0dec0dec0dec0de',
     });
 
-    expect(source.uri).toBe('https://classic-assets.eascdn.net/~assets/' + hash);
+    expect(source.uri).toBe(uri);
     expect(source.hash).toBe(hash);
   });
 
   if (Platform.OS !== 'web') {
+    it(`returns a development URI using the asset file hash with non-standard path`, () => {
+      _mockConstants({
+        __unsafeNoWarnManifest: {
+          developer: {},
+          bundleUrl: 'https://exp.direct:19001/src/App.js',
+        },
+      });
+
+      const AssetSources = require('../AssetSources');
+
+      const source = AssetSources.selectAssetSource(mockFontMonorepoMetadata);
+      expect(source.uri).toBe(
+        `https://exp.direct:19001/assets/?unstable_path=.%2Ftest.ttf&platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
+      );
+      expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
+    });
+
     // Skip on web where the manifest isn't used for asset resolution
     it(`applies overrides if an asset's hash matches`, () => {
       const AssetSources = require('../AssetSources');
@@ -149,8 +180,24 @@ describe('selectAssetSource', () => {
   }
 });
 
+describe('pathJoin', () => {
+  it('joins paths', () => {
+    const { pathJoin } = require('../AssetSources') as typeof import('../AssetSources');
+    expect(pathJoin('/foo/', '/bar/', '/baz')).toBe('/foo/bar/baz');
+    expect(pathJoin('foo', 'bar')).toBe('foo/bar');
+    expect(pathJoin('/foo/', 'bar')).toBe('/foo/bar');
+    expect(pathJoin('/foo/')).toBe('/foo');
+    expect(pathJoin('/foo/', '..', 'bar')).toBe('/bar');
+    expect(pathJoin('/foo/', '.', 'bar')).toBe('/foo/bar');
+    expect(pathJoin('/foo/bar/', '..', '..', 'baz')).toBe('/baz');
+  });
+});
+
 if (Platform.OS !== 'web') {
   describe('resolveUri', () => {
+    beforeAll(() => {
+      jest.resetModules();
+    });
     afterEach(() => {
       jest.resetModules();
     });

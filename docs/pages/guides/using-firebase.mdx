@@ -226,13 +226,9 @@ For more information on creating a development build, see the section on [instal
 
 <Collapsible summary="Run project locally?">
 
-If you want to run the project locally:
+If you want to run the project locally, you need both Android Studio and Xcode installed and configured on your machine. See [Local app development](/guides/local-app-development/) guide for more information.
 
-- You need both Android Studio and Xcode installed and configured on your computer.
-- Then, you can run the project using `npx expo run:android` or `npx expo run:ios` command.
-
-If a particular React Native Firebase module requires custom native configuration steps, you must add it as a `plugin` to [app config file](/workflow/configuration/).
-Then, to run the project locally, you will have to run the `npx expo prebuild --clean` command to apply the native changes before the `npx expo run` commands.
+If a particular React Native Firebase module requires custom native configuration steps, you must add it as a `plugin` to [app config](/workflow/configuration/) file. Then, to run the project locally, run the `npx expo prebuild --clean` command to apply the native changes before the `npx expo run` commands.
 
 </Collapsible>
 </Step>

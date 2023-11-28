@@ -5,19 +5,21 @@ import path from 'path';
 
 import {
   LaunchBrowserTypes,
-  type LaunchBrowserImpl,
+  type LaunchBrowser,
   type LaunchBrowserInstance,
+  LaunchBrowserTypesEnum,
 } from './LaunchBrowser.types';
 
 /**
  * Browser implementation for macOS
  */
-export default class LaunchBrowserImplMacOS implements LaunchBrowserImpl, LaunchBrowserInstance {
+export default class LaunchBrowserImplMacOS implements LaunchBrowser, LaunchBrowserInstance {
   private _process: ChildProcess | undefined;
 
   MAP = {
-    [LaunchBrowserTypes.CHROME]: 'google chrome',
-    [LaunchBrowserTypes.EDGE]: 'microsoft edge',
+    [LaunchBrowserTypesEnum.CHROME]: 'google chrome',
+    [LaunchBrowserTypesEnum.EDGE]: 'microsoft edge',
+    [LaunchBrowserTypesEnum.BRAVE]: 'brave browser',
   };
 
   async isSupportedBrowser(browserType: LaunchBrowserTypes): Promise<boolean> {

@@ -3,6 +3,8 @@
 import AVFoundation
 import ExpoModulesCore
 
+let cameraEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarCodeScanned", "onFacesDetected", "onResponsiveOrientationChanged"]
+
 public final class CameraViewModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoCamera")
@@ -65,16 +67,8 @@ public final class CameraViewModule: Module {
       ]
     ])
 
-    // swiftlint:disable:next closure_body_length
     View(CameraView.self) {
-      Events(
-        "onCameraReady",
-        "onMountError",
-        "onPictureSaved",
-        "onBarCodeScanned",
-        "onFacesDetected",
-        "onResponsiveOrientationChanged"
-      )
+      Events(cameraEvents)
 
       Prop("type") { (view, type: CameraType) in
         if view.presetCamera.rawValue != type.rawValue {
@@ -295,12 +289,10 @@ private func generatePictureForSimulator(
   appContext: AppContext?,
   options: TakePictureOptions
 ) throws -> [String: Any?] {
-  guard let fileSystem = appContext?.fileSystem else {
-    throw Exceptions.FileSystemModuleNotFound()
-  }
-  let path = fileSystem.generatePath(
-    inDirectory: fileSystem.cachesDirectory.appending("/Camera"),
-    withExtension: ".jpg"
+  let path = FileSystemUtilities.generatePathInCache(
+    appContext,
+    in: "Camera",
+    extension: ".jpg"
   )
   let generatedPhoto = ExpoCameraUtils.generatePhoto(of: CGSize(width: 200, height: 200))
   guard let photoData = generatedPhoto.jpegData(compressionQuality: options.quality) else {

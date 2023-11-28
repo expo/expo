@@ -5,7 +5,6 @@
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXSensorsManagerBinding.h"
 #import "EXConstantsBinding.h"
-#import "EXScopedFileSystemModule.h"
 #import "EXUnversioned.h"
 #import "EXScopedFilePermissionModule.h"
 #import "EXScopedFontLoader.h"
@@ -13,7 +12,6 @@
 #import "EXScopedPermissions.h"
 #import "EXScopedSegment.h"
 #import "EXScopedLocalAuthentication.h"
-#import "EXScopedBranch.h"
 #import "EXScopedErrorRecoveryModule.h"
 #import "EXScopedFacebook.h"
 #import "EXScopedFirebaseCore.h"
@@ -28,6 +26,8 @@
 #import "EXScopedNotificationPresentationModule.h"
 #import "EXScopedNotificationCategoriesModule.h"
 #import "EXScopedServerRegistrationModule.h"
+
+#import <ExpoFileSystem/EXFileSystem.h>
 
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
 #import <EXTaskManager/EXTaskManager.h>
@@ -57,18 +57,15 @@
 #endif
 
 #if __has_include(<ExpoFileSystem/EXFileSystem.h>)
-  EXScopedFileSystemModule *fileSystemModule;
   if (params[@"fileSystemDirectories"]) {
+    // Override the FileSystem module with custom document and cache directories
     NSString *documentDirectory = params[@"fileSystemDirectories"][@"documentDirectory"];
     NSString *cachesDirectory = params[@"fileSystemDirectories"][@"cachesDirectory"];
-    fileSystemModule = [[EXScopedFileSystemModule alloc] initWithDocumentDirectory:documentDirectory
-                                                                   cachesDirectory:cachesDirectory
-                                                                   bundleDirectory:nil];
-  } else {
-    fileSystemModule = [EXScopedFileSystemModule new];
+    EXFileSystem *fileSystemModule = [[EXFileSystem alloc] initWithDocumentDirectory:documentDirectory
+                                                                     cachesDirectory:cachesDirectory];
+    [moduleRegistry registerExportedModule:fileSystemModule];
+    [moduleRegistry registerInternalModule:fileSystemModule];
   }
-  [moduleRegistry registerExportedModule:fileSystemModule];
-  [moduleRegistry registerInternalModule:fileSystemModule];
 #endif
 
 #if __has_include(<EXFont/EXFontLoader.h>)
@@ -106,11 +103,6 @@
 #if __has_include(<EXSegment/EXSegment.h>)
   EXScopedSegment *segmentModule = [[EXScopedSegment alloc] init];
   [moduleRegistry registerExportedModule:segmentModule];
-#endif
-
-#if __has_include(<EXBranch/RNBranch.h>)
-  EXScopedBranch *branchModule = [[EXScopedBranch alloc] initWithScopeKey:scopeKey];
-  [moduleRegistry registerInternalModule:branchModule];
 #endif
 
 #if __has_include(<EXLocalAuthentication/EXLocalAuthentication.h>)

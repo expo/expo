@@ -39,11 +39,6 @@ EX_REGISTER_MODULE();
     }
   }
 
-  NSString *bundleDirectory = fileSystem.bundleDirectory;
-  if (bundleDirectory != nil && [path hasPrefix:[bundleDirectory stringByAppendingString:@"/"]]) {
-    return EXFileSystemPermissionRead;
-  }
-
   return EXFileSystemPermissionNone;
 }
 

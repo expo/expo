@@ -10,13 +10,13 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.0'
+  s.platform       = :ios, '13.4'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
   s.source_files   = 'ExpoMaps/**/*.{h,m,swift}'
   s.preserve_paths = 'ExpoMaps/**/*.{h,m,swift}'
   s.requires_arc   = true
-  
+
   s.dependency 'ExpoModulesCore'
   s.dependency 'GoogleMaps', '7.3.0'
 #  s.dependency 'Google-Maps-iOS-Utils', '4.1.0'

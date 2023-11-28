@@ -15,7 +15,7 @@ import { joinWithCommasAnd } from '../utils/strings';
 
 /**
  * Installs versions of specified packages compatible with the current Expo SDK version, or
- * checks/ fixes dependendencies in project if they don't match compatible versions specified in bundledNativeModules or versions endpoints.
+ * checks/ fixes dependencies in project if they don't match compatible versions specified in bundledNativeModules or versions endpoints.
  *
  * @param packages list of packages to install, if installing specific packages and not checking/ fixing
  * @param options options, including check or fix
@@ -119,17 +119,42 @@ export async function installPackagesAsync(
   );
 
   if (versioning.excludedNativeModules.length) {
-    Log.log(
-      chalk`\u203A Using latest version instead of ${joinWithCommasAnd(
-        versioning.excludedNativeModules.map(
-          ({ bundledNativeVersion, name }) => `${bundledNativeVersion} for ${name}`
-        )
-      )} because ${
-        versioning.excludedNativeModules.length > 1 ? 'they are' : 'it is'
-      } listed in {bold expo.install.exclude} in package.json. ${learnMore(
-        'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
-      )}`
+    const alreadyExcluded = versioning.excludedNativeModules.filter(
+      (module) => module.isExcludedFromValidation
     );
+    const specifiedExactVersion = versioning.excludedNativeModules.filter(
+      (module) => !module.isExcludedFromValidation
+    );
+
+    if (alreadyExcluded.length) {
+      Log.log(
+        chalk`\u203A Using ${joinWithCommasAnd(
+          alreadyExcluded.map(
+            ({ bundledNativeVersion, name, specifiedVersion }) =>
+              `${specifiedVersion || 'latest'} instead of  ${bundledNativeVersion} for ${name}`
+          )
+        )} because ${
+          alreadyExcluded.length > 1 ? 'they are' : 'it is'
+        } listed in {bold expo.install.exclude} in package.json. ${learnMore(
+          'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+        )}`
+      );
+    }
+
+    if (specifiedExactVersion.length) {
+      Log.log(
+        chalk`\u203A Using ${joinWithCommasAnd(
+          specifiedExactVersion.map(
+            ({ bundledNativeVersion, name, specifiedVersion }) =>
+              `${specifiedVersion} instead of ${bundledNativeVersion} for ${name}`
+          )
+        )} because ${
+          specifiedExactVersion.length > 1 ? 'these versions' : 'this version'
+        } was explicitly provided. Packages excluded from dependency validation should be listed in {bold expo.install.exclude} in package.json. ${learnMore(
+          'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+        )}`
+      );
+    }
   }
 
   // if updating expo package, install this first, then re-run the command minus expo to install everything else

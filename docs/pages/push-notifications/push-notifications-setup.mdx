@@ -7,7 +7,6 @@ description: Learn how to setup push notifications, get credentials for developm
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { BoxLink } from '~/ui/components/BoxLink';
 
 To utilize Expo's push notification service, you must configure your app by installing a set of libraries, implementing functions to handle notifications, and setting up credentials for Android and iOS. Once you have completed the steps mentioned in this guide, you'll be able to test sending and receiving notifications on a device.
 
@@ -115,7 +114,7 @@ async function registerForPushNotificationsAsync() {
     alert('Must use physical device for Push Notifications');
   }
 
-  return token;
+  return token.data;
 }
 
 export default function App() {
@@ -308,11 +307,3 @@ After sending the notification from the tool, you should see the notification on
 />
 
 </Step>
-
-## Next step
-
-<BoxLink
-  title="Send notifications using Expo's Push API"
-  description="Learn how to set your back-end using Expo's Push API, implementation practices, common errors and security best practices."
-  href="/push-notifications/sending-notifications"
-/>

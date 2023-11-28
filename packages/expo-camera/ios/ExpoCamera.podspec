@@ -10,14 +10,17 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.0'
+  s.platform       = :ios, '13.4'
   s.source         = { :git => "https://github.com/expo/expo.git" }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
+  s.dependency 'ZXingObjC/PDF417'
+  s.dependency 'ZXingObjC/OneD'
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
+    'GCC_PREPROCESSOR_DEFINITIONS' => 'ZXINGOBJC_USE_SUBSPECS ZXINGOBJC_PDF417 ZXINGOBJC_ONED',
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }

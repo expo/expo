@@ -7,12 +7,13 @@ import ExpoModulesTestCore
 import EXManifests
 
 class NewUpdateSpec : ExpoSpec {
-  let config = UpdatesConfig.config(fromDictionary: [
-    UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test"
-  ])
-  let database = UpdatesDatabase()
+  override class func spec() {
+    let config = try! UpdatesConfig.config(fromDictionary: [
+      UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+      UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+    ])
+    let database = UpdatesDatabase()
 
-  override func spec() {
     describe("instantiation") {
       it("all fields") {
         let manifest = NewManifest(
@@ -30,8 +31,8 @@ class NewUpdateSpec : ExpoSpec {
         expect(NewUpdate.update(
           withNewManifest: manifest,
           extensions: [:],
-          config: self.config,
-          database: self.database
+          config: config,
+          database: database
         )).notTo(beNil())
       }
 
@@ -50,8 +51,8 @@ class NewUpdateSpec : ExpoSpec {
         expect(NewUpdate.update(
           withNewManifest: manifest,
           extensions: [:],
-          config: self.config,
-          database: self.database
+          config: config,
+          database: database
         )).to(raiseException())
       }
 
@@ -70,8 +71,8 @@ class NewUpdateSpec : ExpoSpec {
         expect(NewUpdate.update(
           withNewManifest: manifest,
           extensions: [:],
-          config: self.config,
-          database: self.database
+          config: config,
+          database: database
         )).to(raiseException())
       }
 
@@ -90,8 +91,8 @@ class NewUpdateSpec : ExpoSpec {
         expect(NewUpdate.update(
           withNewManifest: manifest,
           extensions: [:],
-          config: self.config,
-          database: self.database
+          config: config,
+          database: database
         )).to(raiseException())
       }
 
@@ -107,8 +108,8 @@ class NewUpdateSpec : ExpoSpec {
         expect(NewUpdate.update(
           withNewManifest: manifest,
           extensions: [:],
-          config: self.config,
-          database: self.database
+          config: config,
+          database: database
         )).to(raiseException())
       }
     }

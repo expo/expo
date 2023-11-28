@@ -2,7 +2,7 @@
 
 import ExpoModulesCore
 
-final class NativeDatabase: SharedRef<OpaquePointer?>, Equatable {
+final class NativeDatabase: SharedRef<OpaquePointer?>, Equatable, Hashable {
   let dbName: String
   let openOptions: OpenDatabaseOptions
 
@@ -16,5 +16,11 @@ final class NativeDatabase: SharedRef<OpaquePointer?>, Equatable {
 
   static func == (lhs: NativeDatabase, rhs: NativeDatabase) -> Bool {
     return lhs.pointer == rhs.pointer
+  }
+
+  // MARK: - Hashable
+
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(pointer)
   }
 }

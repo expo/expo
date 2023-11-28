@@ -9,7 +9,41 @@ jest.mock('../../getDevServer', () => ({
   default: jest.fn(),
 }));
 
-it(`returns an expected URL`, () => {
+const originalEnv = process.env;
+
+beforeEach(() => {
+  process.env = { ...originalEnv };
+  delete window.location;
+});
+
+afterAll(() => {
+  process.env = originalEnv;
+  delete window.location;
+});
+
+it(`returns an expected URL in production`, () => {
+  process.env.NODE_ENV = 'production';
+
+  // Mock the location object
+  window.location = {
+    origin: 'http://localhost:19000',
+  };
+
+  expect(buildUrlForBundle('/foobar')).toEqual('http://localhost:19000/foobar');
+});
+
+it(`asserts in production that the origin was not specified at build-time`, () => {
+  process.env.NODE_ENV = 'production';
+
+  // Don't mock the location object...
+
+  expect(() => buildUrlForBundle('/foobar')).toThrow(
+    /Unable to determine the production URL where additional JavaScript chunks are hosted because the global "location" variable is not defined\./
+  );
+});
+it(`returns an expected URL in development`, () => {
+  process.env.NODE_ENV = 'development';
+
   asMock(getDevServer).mockReturnValueOnce({
     bundleLoadedFromServer: true,
     fullBundleUrl:

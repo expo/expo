@@ -1,5 +1,5 @@
 const { createMetroConfiguration } = require('expo-yarn-workspaces');
-const { FileStore } = require('metro-cache');
+const { FileStore } = require('@expo/metro-config/file-store');
 
 // Find the project and workspace directories
 const projectRoot = __dirname;
@@ -16,8 +16,8 @@ config.watchFolders = [projectRoot, ...['packages', 'node_modules'].map((v) => p
 config.resolver.blockList = [
   ...config.resolver.blockList,
 
+  /\/expo-router\/node_modules\/@react-navigation/,
   /node_modules\/@react-navigation\/native-stack\/node_modules\/@react-navigation\//,
-  /packages\/expo-router\/node_modules\/@react-navigation/,
   /node_modules\/pretty-format\/node_modules\/react-is/,
 ];
 

@@ -7,12 +7,14 @@
 /**
  Factory creating an instance of the dynamic type wrapper conforming to `AnyDynamicType`.
  Depending on the given type, it may return one of `DynamicArrayType`, `DynamicOptionalType`, `DynamicConvertibleType`, etc.
+ Note that this goes through many type checks, thus it might be a bit more expensive than using generic type constraints,
+ see the `~` prefix operator below that handles types conforming to `AnyArgument` in a faster way.
  */
-internal func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
+private func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
   if let ArrayType = T.self as? AnyArray.Type {
     return DynamicArrayType(elementType: ArrayType.getElementDynamicType())
   }
-  if let OptionalType = T.self as? AnyOptional.Type {
+  if let OptionalType = T.self as? any AnyOptional.Type {
     return DynamicOptionalType(wrappedType: OptionalType.getWrappedDynamicType())
   }
   if let ConvertibleType = T.self as? Convertible.Type {
@@ -40,6 +42,10 @@ internal func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
  Handy prefix operator that makes the dynamic type from the static type.
  */
 prefix operator ~
-public prefix func ~ <T>(type: T.Type) -> AnyDynamicType {
+internal prefix func ~ <T>(type: T.Type) -> AnyDynamicType {
   return DynamicType(type)
+}
+
+internal prefix func ~ <T>(type: T.Type) -> AnyDynamicType where T: AnyArgument {
+  return T.getDynamicType()
 }

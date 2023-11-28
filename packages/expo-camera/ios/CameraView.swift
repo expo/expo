@@ -14,7 +14,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   private var faceDetector: EXFaceDetectorManagerInterface?
   private var lifecycleManager: EXAppLifecycleService?
   private var barCodeScanner: EXBarCodeScannerInterface?
-  private var fileSystem: EXFileSystemInterface?
   private var permissionsManager: EXPermissionsInterface?
 
   // MARK: - Properties
@@ -53,7 +52,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   var isScanningBarCodes = false {
     didSet {
       if let barCodeScanner {
-        barCodeScanner.maybeStartBarCodeScanning()
+        barCodeScanner.setIsEnabled(isScanningBarCodes)
       } else if isScanningBarCodes {
         log.error("BarCodeScanner module not found. Make sure "
         + "`expo-barcode-scanner` is installed and linked correctly.")
@@ -126,7 +125,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     faceDetector = createFaceDetectorManager()
     barCodeScanner = createBarCodeScanner()
     lifecycleManager = appContext?.legacyModule(implementing: EXAppLifecycleService.self)
-    fileSystem = appContext?.legacyModule(implementing: EXFileSystemInterface.self)
     permissionsManager = appContext?.legacyModule(implementing: EXPermissionsInterface.self)
     #if !targetEnvironment(simulator)
     previewLayer = AVCaptureVideoPreviewLayer.init(session: session)
@@ -368,8 +366,8 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   func updateFaceDetectorSettings(settings: [String: Any]) {
-    if faceDetector != nil {
-      faceDetector?.updateSettings(settings)
+    if let faceDetector {
+      faceDetector.updateSettings(settings)
     }
   }
 
@@ -528,9 +526,13 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
     takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
 
-    guard let path = fileSystem?.generatePath(
-      inDirectory: fileSystem?.cachesDirectory.appending("/Camera"),
-      withExtension: ".jpg") else {
+    let path = FileSystemUtilities.generatePathInCache(
+      appContext,
+      in: "Camera",
+      extension: ".jpg"
+    )
+
+    if path.isEmpty {
       return
     }
 
@@ -648,18 +650,12 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       let preset = options.quality?.toPreset() ?? .high
       updateSessionPreset(preset: preset)
 
-      guard let fileSystem = self.fileSystem else {
-        promise.reject(Exceptions.FileSystemModuleNotFound())
-        return
-      }
-
       if !self.isValidVideoOptions {
         return
       }
 
       sessionQueue.async {
-        let directory = fileSystem.cachesDirectory.appending("/Camera")
-        let path = fileSystem.generatePath(inDirectory: directory, withExtension: ".mov")
+        let path = FileSystemUtilities.generatePathInCache(self.appContext, in: "Camera", extension: ".mov")
         let fileUrl = URL(fileURLWithPath: path)
         self.videoRecordedPromise = promise
 
@@ -710,7 +706,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
             if isMuted {
               self.session.removeInput(input)
             }
-            self.session.commitConfiguration()
             return
           }
         }
@@ -898,10 +893,10 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         barCodeScanner.stopBarCodeScanning()
       }
 
+      self.session.stopRunning()
+      self.session.beginConfiguration()
       self.motionManager.stopAccelerometerUpdates()
       self.previewLayer?.removeFromSuperlayer()
-      self.session.commitConfiguration()
-      self.session.stopRunning()
 
       for input in self.session.inputs {
         self.session.removeInput(input)
@@ -910,6 +905,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       for output in self.session.outputs {
         self.session.removeOutput(output)
       }
+      self.session.commitConfiguration()
     }
   }
 

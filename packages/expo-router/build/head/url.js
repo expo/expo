@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStaticUrlFromExpoRouter = void 0;
 const expo_constants_1 = __importDefault(require("expo-constants"));
-const url_parse_1 = __importDefault(require("url-parse"));
 const protocolWarningString = `{ plugins: [["expo-router", { origin: "...<URL>..." }]] }`;
 /** `lodash.memoize` */
 function memoize(fn) {
@@ -21,16 +20,16 @@ function memoize(fn) {
     });
 }
 function sanitizeUrl(url) {
-    const parsed = new url_parse_1.default(url);
+    const parsed = new URL(url);
     // Allow empty protocol, http, and https
     const validProtocol = !parsed.protocol || parsed.protocol === 'http:' || parsed.protocol === 'https:';
     if (!validProtocol) {
         throwOrAlert(`Expo Head: Native origin has invalid protocol "${parsed.protocol}" for URL in Expo Config: ${protocolWarningString}.`);
     }
-    parsed.set('pathname', '');
-    parsed.set('query', {});
-    parsed.set('hash', undefined);
-    parsed.set('protocol', parsed.protocol ?? 'https:');
+    parsed.pathname = '';
+    parsed.search = '';
+    parsed.hash = '';
+    parsed.protocol ??= 'https:';
     return parsed.toString().replace(/\/$/, '');
 }
 const memoSanitizeUrl = memoize(sanitizeUrl);

@@ -57,6 +57,12 @@ describe(getRncliAutolinkingSourcesAsync, () => {
         filePath: '../../node_modules/react-native-reanimated',
       })
     );
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'dir',
+        filePath: '../../node_modules/react-native-navigation-bar-color',
+      })
+    );
     expect(sources).toMatchSnapshot();
   });
 
@@ -84,5 +90,38 @@ describe(getRncliAutolinkingSourcesAsync, () => {
         expect(source.contents).not.toMatch(/"\/root\//);
       }
     }
+  });
+
+  it('should gracefully ignore react-native-cli dependencies with a bad form', async () => {
+    const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
+    const fixture = fs.readFileSync(
+      path.join(__dirname, 'fixtures', 'RncliAutoLinkingBadDependency.json'),
+      'utf8'
+    );
+    mockSpawnAsync.mockResolvedValue({
+      stdout: fixture,
+      stderr: '',
+      status: 0,
+      signal: null,
+      output: [fixture, ''],
+    });
+    const sources = await getRncliAutolinkingSourcesAsync(
+      '/root/apps/demo',
+      await normalizeOptionsAsync('/app')
+    );
+
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'dir',
+        filePath: '../../node_modules/react-native-reanimated',
+      })
+    );
+
+    expect(sources).not.toContainEqual(
+      expect.objectContaining({
+        type: 'dir',
+        filePath: '../../node_modules/react-native-navigation-bar-color',
+      })
+    );
   });
 });

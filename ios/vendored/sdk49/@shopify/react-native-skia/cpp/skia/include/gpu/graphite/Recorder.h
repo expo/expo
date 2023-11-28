@@ -15,6 +15,7 @@
 #include "include/private/base/SingleOwner.h"
 #include "include/private/base/SkTArray.h"
 
+#include <chrono>
 #include <vector>
 
 class SkCanvas;
@@ -33,7 +34,7 @@ class TextBlobRedrawCoordinator;
 
 namespace skgpu::graphite {
 
-class AtlasManager;
+class AtlasProvider;
 class BackendTexture;
 class Caps;
 class Context;
@@ -63,6 +64,10 @@ struct SK_API RecorderOptions final {
     ~RecorderOptions();
 
     sk_sp<ImageProvider> fImageProvider;
+
+    const size_t kDefaultRecorderBudget = 256 * (1 << 20);
+    // What is the budget for GPU resources allocated and held by this Recorder.
+    size_t fGpuBudgetInBytes = kDefaultRecorderBudget;
 };
 
 class SK_API Recorder final {
@@ -120,7 +125,7 @@ public:
      * Otherwise this will delete/release the backend object that is wrapped in the BackendTexture.
      * The BackendTexture will be reset to an invalid state and should not be used again.
      */
-    void deleteBackendTexture(BackendTexture&);
+    void deleteBackendTexture(const BackendTexture&);
 
     // Adds a proc that will be moved to the Recording upon snap, subsequently attached to the
     // CommandBuffer when the Recording is added, and called when that CommandBuffer is submitted
@@ -134,13 +139,24 @@ public:
     // Recording snap, at which point it is deleted.
     SkCanvas* makeDeferredCanvas(const SkImageInfo&, const TextureInfo&);
 
+    /**
+     * Frees GPU resources created and held by the Recorder. Can be called to reduce GPU memory
+     * pressure. Any resources that are still in use (e.g. being used by work submitted to the GPU)
+     * will not be deleted by this call. If the caller wants to make sure all resources are freed,
+     * then they should first make sure to submit and wait on any outstanding work.
+     */
+    void freeGpuResources();
+
+    /**
+     * Purge GPU resources on the Recorder that haven't been used in the past 'msNotUsed'
+     * milliseconds or are otherwise marked for deletion, regardless of whether the context is under
+     * budget.
+     */
+    void performDeferredCleanup(std::chrono::milliseconds msNotUsed);
+
     // Provides access to functions that aren't part of the public API.
     RecorderPriv priv();
     const RecorderPriv priv() const;  // NOLINT(readability-const-return-type)
-
-#if GRAPHITE_TEST_UTILS
-    bool deviceIsRegistered(Device*);
-#endif
 
 private:
     friend class Context; // For ctor
@@ -184,8 +200,9 @@ private:
     std::unique_ptr<UploadBufferManager> fUploadBufferManager;
     std::vector<Device*> fTrackedDevices;
 
-    uint32_t fRecorderID;  // Needed for MessageBox handling for text
-    std::unique_ptr<AtlasManager> fAtlasManager;
+    uint32_t fUniqueID;  // Needed for MessageBox handling for text
+    uint32_t fNextRecordingID = 1;
+    std::unique_ptr<AtlasProvider> fAtlasProvider;
     std::unique_ptr<TokenTracker> fTokenTracker;
     std::unique_ptr<sktext::gpu::StrikeCache> fStrikeCache;
     std::unique_ptr<sktext::gpu::TextBlobRedrawCoordinator> fTextBlobCache;
@@ -202,7 +219,7 @@ private:
 
     skia_private::TArray<sk_sp<RefCntedCallback>> fFinishedProcs;
 
-#if GRAPHITE_TEST_UTILS
+#if defined(GRAPHITE_TEST_UTILS)
     // For testing use only -- the Context used to create this Recorder
     Context* fContext = nullptr;
 #endif

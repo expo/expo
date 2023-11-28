@@ -61,3 +61,6 @@ internal class SQLiteErrorException: GenericException<String> {
     "\(param)"
   }
 }
+
+internal class InvalidConvertibleException: GenericException<String> {
+}

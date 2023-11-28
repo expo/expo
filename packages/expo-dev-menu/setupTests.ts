@@ -10,12 +10,10 @@ jest.mock('react-native/Libraries/Components/Switch/Switch', () => {
   const MockSwitch = React.forwardRef((props, ref) => {
     return React.createElement(View, { ...props, onPress: props.onValueChange });
   });
-
-  // workaround to be compatible with modern `Switch` in RN 0.66 which has ESM export
-  // Use `return { default: MockSwitch };` when we drop support for SDK 44
-  MockSwitch.default = MockSwitch;
-
-  return MockSwitch;
+  return {
+    __esModule: true,
+    default: MockSwitch,
+  };
 });
 
 jest.mock('./app/native-modules/DevMenu');

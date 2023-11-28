@@ -3,7 +3,8 @@
 import ExpoModulesCore
 import sqlite3
 
-private typealias Row = [String: Any]
+private typealias ColumnNames = [String]
+private typealias ColumnValues = [Any]
 private let SQLITE_TRANSIENT = unsafeBitCast(OpaquePointer(bitPattern: -1), to: sqlite3_destructor_type.self)
 
 public final class SQLiteModuleNext: Module {
@@ -11,8 +12,9 @@ public final class SQLiteModuleNext: Module {
   // will release the pair when `closeDatabase` is called.
   private var contextPairs = [Unmanaged<AnyObject>]()
 
+  private static let lockQueue = DispatchQueue(label: "expo.modules.sqlite.lockQueue")
   private var cachedDatabases = [NativeDatabase]()
-  private var cachedStatements = [NativeStatement]()
+  private var cachedStatements = [NativeDatabase: [NativeStatement]]()
   private var hasListeners = false
 
   public func definition() -> ModuleDefinition {
@@ -29,14 +31,11 @@ public final class SQLiteModuleNext: Module {
     }
 
     OnDestroy {
-      cachedStatements.forEach {
-        sqlite3_finalize($0.pointer)
+      removeAllCachedDatabases().forEach {
+        do {
+          try closeDatabase($0)
+        } catch {}
       }
-      cachedStatements.removeAll()
-      cachedDatabases.forEach {
-        closeDatabase($0)
-      }
-      cachedDatabases.removeAll()
     }
 
     AsyncFunction("deleteDatabaseAsync") { (dbName: String) in
@@ -54,8 +53,8 @@ public final class SQLiteModuleNext: Module {
         }
 
         // Try to find opened database for fast refresh
-        for database in cachedDatabases where database.dbName == dbName && database.openOptions == options {
-          return database
+        if let cachedDb = findCachedDatabase(where: { $0.dbName == dbName && $0.openOptions == options && !options.useNewConnection }) {
+          return cachedDb
         }
 
         var db: OpaquePointer?
@@ -64,7 +63,7 @@ public final class SQLiteModuleNext: Module {
         }
 
         let database = NativeDatabase(db, dbName: dbName, openOptions: options)
-        cachedDatabases.append(database)
+        addCachedDatabase(database)
         return database
       }
 
@@ -83,16 +82,12 @@ public final class SQLiteModuleNext: Module {
       }
 
       AsyncFunction("closeAsync") { (database: NativeDatabase) in
-        closeDatabase(database)
-        if let index = cachedDatabases.firstIndex(of: database) {
-          cachedDatabases.remove(at: index)
-        }
+        removeCachedDatabase(of: database)
+        try closeDatabase(database)
       }
       Function("closeSync") { (database: NativeDatabase) in
-        closeDatabase(database)
-        if let index = cachedDatabases.firstIndex(of: database) {
-          cachedDatabases.remove(at: index)
-        }
+        removeCachedDatabase(of: database)
+        try closeDatabase(database)
       }
 
       AsyncFunction("execAsync") { (database: NativeDatabase, source: String) in
@@ -130,32 +125,39 @@ public final class SQLiteModuleNext: Module {
         return try objectRun(statement: statement, database: database, bindParams: bindParams)
       }
 
-      AsyncFunction("arrayGetAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> Row? in
+      AsyncFunction("arrayGetAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> ColumnValues? in
         return try arrayGet(statement: statement, database: database, bindParams: bindParams)
       }
-      Function("arrayGetSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> Row? in
+      Function("arrayGetSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> ColumnValues? in
         return try arrayGet(statement: statement, database: database, bindParams: bindParams)
       }
 
-      AsyncFunction("objectGetAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> Row? in
+      AsyncFunction("objectGetAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> ColumnValues? in
         return try objectGet(statement: statement, database: database, bindParams: bindParams)
       }
-      Function("objectGetSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> Row? in
+      Function("objectGetSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> ColumnValues? in
         return try objectGet(statement: statement, database: database, bindParams: bindParams)
       }
 
-      AsyncFunction("arrayGetAllAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> [Row] in
+      AsyncFunction("arrayGetAllAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> [ColumnValues] in
         return try arrayGetAll(statement: statement, database: database, bindParams: bindParams)
       }
-      Function("arrayGetAllSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> [Row] in
+      Function("arrayGetAllSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) -> [ColumnValues] in
         return try arrayGetAll(statement: statement, database: database, bindParams: bindParams)
       }
 
-      AsyncFunction("objectGetAllAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> [Row] in
+      AsyncFunction("objectGetAllAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> [ColumnValues] in
         return try objectGetAll(statement: statement, database: database, bindParams: bindParams)
       }
-      Function("objectGetAllSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> [Row] in
+      Function("objectGetAllSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) -> [ColumnValues] in
         return try objectGetAll(statement: statement, database: database, bindParams: bindParams)
+      }
+
+      AsyncFunction("getColumnNamesAsync") { (statement: NativeStatement) -> ColumnNames in
+        return getColumnNames(statement: statement)
+      }
+      Function("getColumnNamesSync") { (statement: NativeStatement) -> ColumnNames in
+        return getColumnNames(statement: statement)
       }
 
       AsyncFunction("resetAsync") { (statement: NativeStatement, database: NativeDatabase) in
@@ -208,7 +210,7 @@ public final class SQLiteModuleNext: Module {
     if sqlite3_prepare_v2(database.pointer, source, Int32(source.count), &statement.pointer, nil) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
-    cachedStatements.append(statement)
+    maybeAddCachedStatement(database: database, statement: statement)
   }
 
   private func arrayRun(statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) throws -> [String: Int] {
@@ -237,18 +239,18 @@ public final class SQLiteModuleNext: Module {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
     return [
-      "lastID": Int(sqlite3_last_insert_rowid(database.pointer)),
+      "lastInsertRowid": Int(sqlite3_last_insert_rowid(database.pointer)),
       "changes": Int(sqlite3_changes(database.pointer))
     ]
   }
 
-  private func arrayGet(statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) throws -> Row? {
+  private func arrayGet(statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) throws -> ColumnValues? {
     for (index, param) in bindParams.enumerated() {
       try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
     }
     let ret = sqlite3_step(statement.pointer)
     if ret == SQLITE_ROW {
-      return try getRow(statement: statement)
+      return try getColumnValues(statement: statement)
     }
     if ret != SQLITE_DONE {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
@@ -256,7 +258,7 @@ public final class SQLiteModuleNext: Module {
     return nil
   }
 
-  private func objectGet(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) throws -> Row? {
+  private func objectGet(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) throws -> ColumnValues? {
     for (name, param) in bindParams {
       let index = sqlite3_bind_parameter_index(statement.pointer, name.cString(using: .utf8))
       if index > 0 {
@@ -265,7 +267,7 @@ public final class SQLiteModuleNext: Module {
     }
     let ret = sqlite3_step(statement.pointer)
     if ret == SQLITE_ROW {
-      return try getRow(statement: statement)
+      return try getColumnValues(statement: statement)
     }
     if ret != SQLITE_DONE {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
@@ -273,43 +275,43 @@ public final class SQLiteModuleNext: Module {
     return nil
   }
 
-  private func arrayGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) throws -> [Row] {
+  private func arrayGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) throws -> [ColumnValues] {
     for (index, param) in bindParams.enumerated() {
       try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
     }
-    var rows: [Row] = []
+    var columnValuesList: [ColumnValues] = []
     while true {
       let ret = sqlite3_step(statement.pointer)
       if ret == SQLITE_ROW {
-        rows.append(try getRow(statement: statement))
+        columnValuesList.append(try getColumnValues(statement: statement))
         continue
       } else if ret == SQLITE_DONE {
         break
       }
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
-    return rows
+    return columnValuesList
   }
 
-  private func objectGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) throws -> [Row] {
+  private func objectGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) throws -> [ColumnValues] {
     for (name, param) in bindParams {
       let index = sqlite3_bind_parameter_index(statement.pointer, name.cString(using: .utf8))
       if index > 0 {
         try bindStatementParam(statement: statement, with: param, at: index)
       }
     }
-    var rows: [Row] = []
+    var columnValuesList: [ColumnValues] = []
     while true {
       let ret = sqlite3_step(statement.pointer)
       if ret == SQLITE_ROW {
-        rows.append(try getRow(statement: statement))
+        columnValuesList.append(try getColumnValues(statement: statement))
         continue
       } else if ret == SQLITE_DONE {
         break
       }
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
-    return rows
+    return columnValuesList
   }
 
   private func reset(statement: NativeStatement, database: NativeDatabase) throws {
@@ -319,11 +321,9 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func finalize(statement: NativeStatement, database: NativeDatabase) throws {
+    maybeRemoveCachedStatement(database: database, statement: statement)
     if sqlite3_finalize(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-    if let index = cachedStatements.firstIndex(of: statement) {
-      cachedStatements.remove(at: index)
     }
   }
 
@@ -333,11 +333,15 @@ public final class SQLiteModuleNext: Module {
     return "Error code \(code): \(message)"
   }
 
-  private func closeDatabase(_ db: NativeDatabase) {
+  private func closeDatabase(_ db: NativeDatabase) throws {
+    for removedStatement in maybeRemoveAllCachedStatements(database: db) {
+      sqlite3_finalize(removedStatement.pointer)
+    }
+
     if db.openOptions.enableCRSQLite {
       sqlite3_exec(db.pointer, "SELECT crsql_finalize()", nil, nil, nil)
     }
-    sqlite3_close(db.pointer)
+    let ret = sqlite3_close(db.pointer)
 
     if let index = contextPairs.firstIndex(where: {
       guard let pair = $0.takeUnretainedValue() as? (SQLiteModuleNext, NativeDatabase) else {
@@ -351,10 +355,14 @@ public final class SQLiteModuleNext: Module {
     }) {
       contextPairs.remove(at: index)
     }
+
+    if ret != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(db))
+    }
   }
 
   private func deleteDatabase(dbName: String) throws {
-    for database in cachedDatabases where database.dbName == dbName {
+    if findCachedDatabase(where: { $0.dbName == dbName }) != nil {
       throw DeleteDatabaseException(dbName)
     }
 
@@ -377,7 +385,7 @@ public final class SQLiteModuleNext: Module {
     let contextPair = Unmanaged.passRetained(((self, database) as AnyObject))
     contextPairs.append(contextPair)
     // swiftlint:disable:next multiline_arguments
-    sqlite3_update_hook(database.pointer, { obj, action, _, tableName, rowId in
+    sqlite3_update_hook(database.pointer, { obj, action, dbName, tableName, rowId in
       guard let obj,
         let tableName,
         let pair = Unmanaged<AnyObject>.fromOpaque(obj).takeUnretainedValue() as? (SQLiteModuleNext, NativeDatabase) else {
@@ -385,9 +393,11 @@ public final class SQLiteModuleNext: Module {
       }
       let selfInstance = pair.0
       let database = pair.1
-      if selfInstance.hasListeners {
+      let dbFilePath = sqlite3_db_filename(database.pointer, dbName)
+      if selfInstance.hasListeners, let dbName, let dbFilePath {
         selfInstance.sendEvent("onDatabaseChange", [
-          "dbName": database.dbName,
+          "dbName": String(cString: UnsafePointer(dbName)),
+          "dbFilePath": String(cString: UnsafePointer(dbFilePath)),
           "tableName": String(cString: UnsafePointer(tableName)),
           "rowId": rowId,
           "typeId": SQLAction.fromCode(value: action)
@@ -397,40 +407,49 @@ public final class SQLiteModuleNext: Module {
     contextPair.toOpaque())
   }
 
-  private func getRow(statement: NativeStatement) throws -> Row {
-    var row = Row()
-    let columnCount = sqlite3_column_count(statement.pointer)
-    for i in 0..<Int(columnCount) {
-      let columnName = String(cString: sqlite3_column_name(statement.pointer, Int32(i)))
-      row[columnName] = try getColumnValue(statement: statement, at: Int32(i))
+  private func getColumnNames(statement: NativeStatement) -> ColumnNames {
+    let columnCount = Int(sqlite3_column_count(statement.pointer))
+    var columnNames: ColumnNames = Array(repeating: "", count: columnCount)
+    for i in 0..<columnCount {
+      columnNames[i] = String(cString: sqlite3_column_name(statement.pointer, Int32(i)))
     }
-    return row
+    return columnNames
   }
 
+  private func getColumnValues(statement: NativeStatement) throws -> ColumnValues {
+    let columnCount = Int(sqlite3_column_count(statement.pointer))
+    var columnValues: ColumnValues = Array(repeating: 0, count: columnCount)
+    for i in 0..<columnCount {
+      columnValues[i] = try getColumnValue(statement: statement, at: Int32(i))
+    }
+    return columnValues
+  }
+
+  @inline(__always)
   private func getColumnValue(statement: NativeStatement, at index: Int32) throws -> Any {
     let instance = statement.pointer
     let type = sqlite3_column_type(instance, index)
 
     switch type {
     case SQLITE_INTEGER:
-      return sqlite3_column_int(instance, index)
+      return sqlite3_column_int64(instance, index)
     case SQLITE_FLOAT:
       return sqlite3_column_double(instance, index)
     case SQLITE_TEXT:
       guard let text = sqlite3_column_text(instance, index) else {
-        throw Exception(name: "InvalidConvertibleException", description: "Null text")
+        throw InvalidConvertibleException("Null text")
       }
       return String(cString: text)
     case SQLITE_BLOB:
       guard let blob = sqlite3_column_blob(instance, index) else {
-        throw Exception(name: "InvalidConvertibleException", description: "Null blob")
+        throw InvalidConvertibleException("Null blob")
       }
       let size = sqlite3_column_bytes(instance, index)
       return Data(bytes: blob, count: Int(size))
     case SQLITE_NULL:
       return NSNull()
     default:
-      throw Exception(name: "InvalidConvertibleException", description: "Unsupported column type: \(type)")
+      throw InvalidConvertibleException("Unsupported column type: \(type)")
     }
   }
 
@@ -439,22 +458,98 @@ public final class SQLiteModuleNext: Module {
     switch param {
     case Optional<Any>.none:
       sqlite3_bind_null(instance, index)
-    case let param as NSNull:
+    case _ as NSNull:
       sqlite3_bind_null(instance, index)
-    case let param as Int:
-      sqlite3_bind_int(instance, index, Int32(param))
+    case let param as Int64:
+      sqlite3_bind_int64(instance, index, Int64(param))
     case let param as Double:
       sqlite3_bind_double(instance, index, param)
     case let param as String:
       sqlite3_bind_text(instance, index, param, Int32(param.count), SQLITE_TRANSIENT)
     case let param as Data:
-      param.withUnsafeBytes {
+      _ = param.withUnsafeBytes {
         sqlite3_bind_blob(instance, index, $0.baseAddress, Int32(param.count), SQLITE_TRANSIENT)
       }
     case let param as Bool:
       sqlite3_bind_int(instance, index, param ? 1 : 0)
     default:
-      throw Exception(name: "InvalidConvertibleException", description: "Unsupported parameter type: \(type(of: param))")
+      throw InvalidConvertibleException("Unsupported parameter type: \(type(of: param))")
+    }
+  }
+
+  // MARK: - cachedDatabases managements
+
+  private func addCachedDatabase(_ database: NativeDatabase) {
+    Self.lockQueue.sync {
+      cachedDatabases.append(database)
+    }
+  }
+
+  @discardableResult
+  private func removeCachedDatabase(of database: NativeDatabase) -> NativeDatabase? {
+    return Self.lockQueue.sync {
+      if let index = cachedDatabases.firstIndex(of: database) {
+        let database = cachedDatabases[index]
+        cachedDatabases.remove(at: index)
+        return database
+      }
+      return nil
+    }
+  }
+
+  private func findCachedDatabase(where predicate: (NativeDatabase) -> Bool) -> NativeDatabase? {
+    return Self.lockQueue.sync {
+      if let database = cachedDatabases.first(where: predicate) {
+        return database
+      }
+      return nil
+    }
+  }
+
+  private func removeAllCachedDatabases() -> [NativeDatabase] {
+    return Self.lockQueue.sync {
+      let databases = cachedDatabases
+      cachedDatabases.removeAll()
+      return databases
+    }
+  }
+
+  // MARK: - cachedStatements managements
+
+  private func maybeAddCachedStatement(database: NativeDatabase, statement: NativeStatement) {
+    if !database.openOptions.finalizeUnusedStatementsBeforeClosing {
+      return
+    }
+    Self.lockQueue.sync {
+      if cachedStatements[database] != nil {
+        cachedStatements[database]?.append(statement)
+      } else {
+        cachedStatements[database] = [statement]
+      }
+    }
+  }
+
+  private func maybeRemoveCachedStatement(database: NativeDatabase, statement: NativeStatement) {
+    if !database.openOptions.finalizeUnusedStatementsBeforeClosing {
+      return
+    }
+    Self.lockQueue.sync {
+      if let index = cachedStatements[database]?.firstIndex(of: statement) {
+        cachedStatements[database]?.remove(at: index)
+      }
+    }
+  }
+
+  private func maybeRemoveAllCachedStatements(database: NativeDatabase) -> [NativeStatement] {
+    if !database.openOptions.finalizeUnusedStatementsBeforeClosing {
+      return []
+    }
+    return Self.lockQueue.sync {
+      if let statements = cachedStatements[database] {
+        cachedStatements.removeValue(forKey: database)
+        return statements
+      }
+      return []
     }
   }
 }

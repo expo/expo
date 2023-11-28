@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.11.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.10.0 — 2023-10-17
 
 ### 🎉 New features

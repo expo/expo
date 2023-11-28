@@ -30,6 +30,11 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
     dependsOn: [loadRequestedParcels],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
+    // Skip this task for canary releases
+    if (options.canary) {
+      return;
+    }
+
     // A set of parcels to prompt for.
     const parcelsToSelect = new Set<Parcel>(parcels);
 

@@ -60,7 +60,7 @@ export function useSession() {
   return value;
 }
 
-export function SessionProvider(props) {
+export function SessionProvider(props: React.PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState('session');
 
   return (
@@ -90,13 +90,13 @@ import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
 import { Platform } from 'react-native';
 
-type UseStateHook<T> = [[boolean, T | null], (value?: T | null) => void];
+type UseStateHook<T> = [[boolean, T | null], (value: T | null) => void];
 
 function useAsyncState<T>(
-  initialValue: [boolean, T | null] = [true, undefined],
+  initialValue: [boolean, T | null] = [true, null],
 ): UseStateHook<T> {
   return React.useReducer(
-    (state: [boolean, T | null], action: T | null = null) => [false, action],
+    (state: [boolean, T | null], action: T | null = null): [boolean, T | null] => [false, action],
     initialValue
   ) as UseStateHook<T>;
 }

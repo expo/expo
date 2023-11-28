@@ -11,7 +11,7 @@
 #include "include/core/SkMatrix.h"
 #include "modules/svg/include/SkSVGNode.h"
 
-class SkSVGTransformableNode : public SkSVGNode {
+class SK_API SkSVGTransformableNode : public SkSVGNode {
 public:
     void setTransform(const SkSVGTransformType& t) { fTransform = t; }
 

@@ -39,7 +39,7 @@ public final class UpdatesReaper: NSObject {
 
       var manifestFilters: [String: Any]?
       do {
-        manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey.require("Must have scopeKey in config"))
+        manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey)
       } catch {
         NSLog("Error selecting manifest filters while reaping updates: %@", [error.localizedDescription])
         return

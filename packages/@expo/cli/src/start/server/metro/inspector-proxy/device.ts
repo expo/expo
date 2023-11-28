@@ -1,4 +1,8 @@
-import type { DebuggerInfo, Device as MetroDevice } from 'metro-inspector-proxy';
+import type {
+  DebuggerInfo,
+  unstable_Device as MetroDevice,
+  DebuggerRequest,
+} from '@react-native/dev-middleware';
 import fetch from 'node-fetch';
 import type WS from 'ws';
 
@@ -7,8 +11,9 @@ import { PageReloadHandler } from './handlers/PageReload';
 import { VscodeDebuggerGetPossibleBreakpointsHandler } from './handlers/VscodeDebuggerGetPossibleBreakpoints';
 import { VscodeDebuggerScriptParsedHandler } from './handlers/VscodeDebuggerScriptParsed';
 import { VscodeDebuggerSetBreakpointByUrlHandler } from './handlers/VscodeDebuggerSetBreakpointByUrl';
+import { VscodeRuntimeCallFunctionOnHandler } from './handlers/VscodeRuntimeCallFunctionOn';
 import { VscodeRuntimeGetPropertiesHandler } from './handlers/VscodeRuntimeGetProperties';
-import { DeviceRequest, InspectorHandler, DebuggerRequest } from './handlers/types';
+import { DeviceRequest, InspectorHandler } from './handlers/types';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 
 /** Export the supported debugger types this inspector proxy can handle */
@@ -20,7 +25,7 @@ export type ExpoDebuggerInfo = DebuggerInfo & { debuggerType?: DebuggerType };
 export function createInspectorDeviceClass(
   metroBundler: MetroBundlerDevServer,
   MetroDeviceClass: typeof MetroDevice
-) {
+): typeof MetroDevice {
   return class ExpoInspectorDevice extends MetroDeviceClass implements InspectorHandler {
     /** Stores information about currently connected debugger (if any). */
     _debuggerConnection: ExpoDebuggerInfo | null = null;
@@ -35,6 +40,7 @@ export function createInspectorDeviceClass(
       new VscodeDebuggerScriptParsedHandler(this),
       new VscodeDebuggerSetBreakpointByUrlHandler(),
       new VscodeRuntimeGetPropertiesHandler(),
+      new VscodeRuntimeCallFunctionOnHandler(),
     ];
 
     onDeviceMessage(message: any, info: DebuggerInfo): boolean {
@@ -63,7 +69,9 @@ export function createInspectorDeviceClass(
       if (oldDebugger) {
         oldDebugger.socket.removeAllListeners();
         this._deviceSocket.close();
-        newDevice.handleDebuggerConnection(oldDebugger.socket, oldDebugger.pageId);
+        newDevice.handleDebuggerConnection(oldDebugger.socket, oldDebugger.pageId, {
+          userAgent: oldDebugger.userAgent,
+        });
       }
     }
 
@@ -73,7 +81,7 @@ export function createInspectorDeviceClass(
      * With that information, we can enable or disable debugger-specific handlers.
      */
     handleDebuggerConnectionWithType(socket: WS, pageId: string, debuggerType: DebuggerType): void {
-      this.handleDebuggerConnection(socket, pageId);
+      this.handleDebuggerConnection(socket, pageId, { userAgent: debuggerType });
 
       if (this._debuggerConnection) {
         this._debuggerConnection.debuggerType = debuggerType;

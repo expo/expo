@@ -1,7 +1,8 @@
 {
   "name": "@expo/metro-runtime",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Tools for making advanced Metro bundler features work",
+  "sideEffects": true,
   "types": "build",
   "main": "build",
   "browser": "src",
@@ -35,24 +36,5 @@
   },
   "peerDependencies": {
     "react-native": "*"
-  },
-  "dependencies": {
-    "qs": "^6.10.3"
-  },
-  "jest": {
-    "projects": [
-      {
-        "preset": "jest-expo/ios",
-        "clearMocks": true
-      },
-      {
-        "preset": "jest-expo/android",
-        "clearMocks": true
-      },
-      {
-        "preset": "jest-expo/web",
-        "clearMocks": true
-      }
-    ]
   }
 }

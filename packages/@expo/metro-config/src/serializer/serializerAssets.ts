@@ -7,5 +7,5 @@ export type SerialAsset = {
   source: string;
   type: 'css' | 'js' | 'map';
 
-  metadata: Record<string, string>;
+  metadata: Record<string, boolean | string | string[]>;
 };

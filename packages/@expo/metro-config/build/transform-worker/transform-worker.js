@@ -50,7 +50,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const countLines = require('metro/src/lib/countLines');
 async function transform(config, projectRoot, filename, data, options) {
-  var _jsModuleResults$outp2;
   const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {
@@ -85,10 +84,13 @@ async function transform(config, projectRoot, filename, data, options) {
   let code = data.toString('utf8');
 
   // Apply postcss transforms
-  code = await (0, _postcss().transformPostCssModule)(projectRoot, {
+  const postcssResults = await (0, _postcss().transformPostCssModule)(projectRoot, {
     src: code,
     filename
   });
+  if (postcssResults.hasPostcss) {
+    code = postcssResults.src;
+  }
 
   // TODO: When native has CSS support, this will need to move higher up.
   const syntax = (0, _sass().matchSass)(filename);
@@ -173,14 +175,16 @@ async function transform(config, projectRoot, filename, data, options) {
   const output = [{
     type: 'js/module',
     data: {
-      // @ts-expect-error
-      ...((_jsModuleResults$outp2 = jsModuleResults.output[0]) === null || _jsModuleResults$outp2 === void 0 ? void 0 : _jsModuleResults$outp2.data),
+      ...jsModuleResults.output[0].data,
       // Append additional css metadata for static extraction.
       css: {
         code: cssCode,
         lineCount: countLines(cssCode),
         map: [],
-        functionMap: null
+        functionMap: null,
+        // Disable caching for CSS files when postcss is enabled and has been run on the file.
+        // This ensures that things like tailwind can update on every change.
+        skipCache: postcssResults.hasPostcss
       }
     }
   }];

@@ -7,8 +7,11 @@ export function createURL(path: string, { queryParams = {} }: CreateURLOptions =
     if (typeof value === 'string') {
       url.searchParams.set(key, encodeURIComponent(value));
     } else if (value != null) {
-      // @ts-expect-error
-      url.searchParams.set(key, value);
+      url.searchParams.set(
+        key,
+        // @ts-expect-error: browser supports using array
+        value
+      );
     }
   });
   return url.toString().replace(/\/$/, '');

@@ -17,6 +17,10 @@ class SkData;
 class SkImage;
 class SkPicture;
 class SkTypeface;
+class SkReadBuffer;
+namespace sktext::gpu {
+    class Slug;
+}
 
 /**
  *  A serial-proc is asked to serialize the specified object (e.g. picture or image).
@@ -50,6 +54,13 @@ using SkDeserialPictureProc = sk_sp<SkPicture> (*)(const void* data, size_t leng
 using SkDeserialImageProc = sk_sp<SkImage> (*)(const void* data, size_t length, void* ctx);
 
 /**
+ * Slugs are currently only deserializable with a GPU backend. Clients will not be able to
+ * provide a custom mechanism here, but can enable Slug deserialization by calling
+ * sktext::gpu::AddDeserialProcs to add Skia's implementation.
+ */
+using SkSlugProc = sk_sp<sktext::gpu::Slug> (*)(SkReadBuffer&, void* ctx);
+
+/**
  *  Called with the encoded form of a typeface (previously written with a custom
  *  SkSerialTypefaceProc proc). Return a typeface object, or nullptr indicating failure.
  */
@@ -73,9 +84,16 @@ struct SK_API SkDeserialProcs {
     SkDeserialImageProc     fImageProc = nullptr;
     void*                   fImageCtx = nullptr;
 
+    SkSlugProc              fSlugProc = nullptr;
+    void*                   fSlugCtx = nullptr;
+
     SkDeserialTypefaceProc  fTypefaceProc = nullptr;
     void*                   fTypefaceCtx = nullptr;
+
+    // This looks like a flag, but it could be considered a proc as well (one that takes no
+    // parameters and returns a bool). Given that there are only two valid implementations of that
+    // proc, we just insert the bool directly.
+    bool                    fAllowSkSL = true;
 };
 
 #endif
-

@@ -9,8 +9,8 @@ set (PACKAGE_NAME "rnskia")
 set (SKIA_LIB "skia")
 set (SKIA_SVG_LIB "svg")
 set (SKIA_SKSHAPER_LIB "skshaper")
-#set (SKIA_SKPARAGRAPH_LIB "skparagraph")
-#set (SKIA_SKUNICODE_LIB "skunicode")
+set (SKIA_SKPARAGRAPH_LIB "skparagraph")
+set (SKIA_SKUNICODE_LIB "skunicode")
 
 # Clear some variables
 unset(LIBRN_DIR CACHE)
@@ -45,12 +45,12 @@ add_library(
 
         "${PROJECT_SOURCE_DIR}/cpp/jni/JniPlatformContext.cpp"
         "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/RNSkOpenGLCanvasProvider.cpp"
-        "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/SkiaOpenGLRenderer.cpp"
+        "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/SkiaOpenGLSurfaceFactory.cpp"
 
         "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiHostObject.cpp"
         "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiValue.cpp"
         "${PROJECT_SOURCE_DIR}/../cpp/jsi/RuntimeLifecycleMonitor.cpp"
-        "${PROJECT_SOURCE_DIR}/../cpp/jsi/RuntimeAwareCache.cpp"        
+        "${PROJECT_SOURCE_DIR}/../cpp/jsi/RuntimeAwareCache.cpp"
         "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiPromises.cpp"
 
         "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkManager.cpp"
@@ -75,27 +75,28 @@ target_include_directories(
         "${NODE_MODULES_DIR}/react-native/ReactCommon/react/nativemodule/core"
         "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
 
-        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/config/
-        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/core/
-        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/effects/
-        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/utils/
-        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/pathops/
-        ${PROJECT_SOURCE_DIR}/../cpp/skia/modules/
-        #cpp/skia/modules/skparagraph/include/
-        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/
-        ${PROJECT_SOURCE_DIR}/../cpp/skia
+        cpp/jni/include
+        cpp/rnskia-android
 
-        ${PROJECT_SOURCE_DIR}/../cpp/api
-        ${PROJECT_SOURCE_DIR}/../cpp/jsi
-        ${PROJECT_SOURCE_DIR}/cpp/jni/include
-        ${PROJECT_SOURCE_DIR}/cpp/rnskia-android
-        ${PROJECT_SOURCE_DIR}/../cpp/rnskia
-        ${PROJECT_SOURCE_DIR}/../cpp/rnskia/values
-        ${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom
-        ${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom/base
-        ${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom/nodes
-        ${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom/props
-        ${PROJECT_SOURCE_DIR}/../cpp/utils
+        ../cpp/skia/include/config/
+        ../cpp/skia/include/core/
+        ../cpp/skia/include/effects/
+        ../cpp/skia/include/utils/
+        ../cpp/skia/include/pathops/
+        ../cpp/skia/modules/
+        ../cpp/skia/modules/skparagraph/include/
+        ../cpp/skia/include/
+        ../cpp/skia
+
+        ../cpp/api
+        ../cpp/jsi
+        ../cpp/rnskia
+        ../cpp/rnskia/values
+        ../cpp/rnskia/dom
+        ../cpp/rnskia/dom/base
+        ../cpp/rnskia/dom/nodes
+        ../cpp/rnskia/dom/props
+        ../cpp/utils
 
         ${libfbjni_include_DIRS}
 )
@@ -112,11 +113,11 @@ set_property(TARGET svg PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libsvg.a")
 add_library(skshaper STATIC IMPORTED)
 set_property(TARGET skshaper PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskshaper.a")
 
-#add_library(skparagraph STATIC IMPORTED)
-#set_property(TARGET skparagraph PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskparagraph.a")
+add_library(skparagraph STATIC IMPORTED)
+set_property(TARGET skparagraph PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskparagraph.a")
 
-#add_library(skunicode STATIC IMPORTED)
-#set_property(TARGET skunicode PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskunicode.a")
+add_library(skunicode STATIC IMPORTED)
+set_property(TARGET skunicode PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskunicode.a")
 
 
 find_library(
@@ -201,8 +202,8 @@ target_link_libraries(
         ${TURBOMODULES_LIB}
         ${SKIA_SVG_LIB}
         ${SKIA_SKSHAPER_LIB}
-        #${SKIA_SKPARAGRAPH_LIB}
-        #${SKIA_SKUNICODE_LIB}
+        ${SKIA_SKPARAGRAPH_LIB}
+        ${SKIA_SKUNICODE_LIB}
         ${SKIA_LIB}
         -ljnigraphics
         -lGLESv2

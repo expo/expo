@@ -5,9 +5,6 @@ import { createDevToolsPluginClient } from '../DevToolsPluginClientFactory';
 // @ts-expect-error - We don't mock all properties from WebSocket
 globalThis.WebSocket = MockWebSocket;
 
-// Hide debug logs
-globalThis.console.debug = jest.fn();
-
 describe(`DevToolsPluginClient`, () => {
   let appClient: DevToolsPluginClient;
   let testCaseCounter = 0;
@@ -126,6 +123,8 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     });
 
     browserClient = await createDevToolsPluginClient({ devServer, sender: 'browser', pluginName });
+
+    await delayAsync(100);
     const browserClient2 = await createDevToolsPluginClient({
       devServer,
       sender: 'browser',

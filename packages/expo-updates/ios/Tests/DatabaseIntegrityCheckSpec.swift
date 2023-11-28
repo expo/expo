@@ -13,7 +13,7 @@ class UpdatesDatabaseIntegrityCheckMockingAssetExists : UpdatesDatabaseIntegrity
 }
 
 class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
     
@@ -49,7 +49,8 @@ class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
         
         let scopeKey = "testScopeKey"
         let runtimeVersion = "1.0"
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: runtimeVersion
         ])
@@ -107,7 +108,8 @@ class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
         
         let scopeKey = "testScopeKey"
         let runtimeVersion = "1.0"
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: runtimeVersion
         ])

@@ -12,7 +12,7 @@ class EXDevLauncherPendingDeepLinkRegistryTest: QuickSpec {
     }
   }
 
-  override func spec() {
+  override class func spec() {
     it("registry should inform all subscribers about new value") {
       let listener = Listener()
       let registry = EXDevLauncherPendingDeepLinkRegistry()
@@ -44,7 +44,7 @@ class EXDevLauncherPendingDeepLinkRegistryTest: QuickSpec {
 
       expect(registry.pendingDeepLink).to(beNil())
       expect(listener.lastDeepLink?.absoluteString).to(equal("http://localhost:1234"))
-      expect(listener.lastDeepLink).to(be(consumedURL))
+      expect(listener.lastDeepLink! as NSURL) === (consumedURL! as NSURL)
     }
   }
 }

@@ -3,7 +3,11 @@
     "version": ">= 2.7.1"
   },
   "build": {
+    "base": {
+      "node": "18.18.0"
+    },
     "development": {
+      "extends": "base",
       "distribution": "internal",
       "android": {
         "gradleCommand": ":app:assembleDebug"
@@ -13,12 +17,14 @@
       }
     },
     "updates_testing": {
+      "extends": "base",
       "env": {
         "EX_UPDATES_NATIVE_DEBUG": "1",
         "NO_FLIPPER": "1"
       },
       "android": {
-        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+        "image": "ubuntu-22.04-jdk-17-ndk-r21e",
+        "gradleCommand": ":app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug",
         "withoutCredentials": true,
         "resourceClass": "large"
       },
@@ -34,7 +40,9 @@
       "distribution": "internal",
       "buildArtifactPaths": ["logs/*.log"]
     },
-    "production": {}
+    "production": {
+      "extends": "base"
+    }
   },
   "submit": {
     "production": {}

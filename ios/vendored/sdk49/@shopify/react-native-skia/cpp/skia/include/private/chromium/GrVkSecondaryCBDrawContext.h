@@ -15,15 +15,15 @@
 #include <memory>
 
 class GrBackendSemaphore;
+class GrDeferredDisplayList;
 class GrRecordingContext;
+class GrSurfaceCharacterization;
 struct GrVkDrawableInfo;
 namespace skgpu::ganesh {
 class Device;
 }
 class SkCanvas;
-class SkDeferredDisplayList;
 struct SkImageInfo;
-class SkSurfaceCharacterization;
 class SkSurfaceProps;
 
 /**
@@ -107,15 +107,15 @@ public:
     const SkSurfaceProps& props() const { return fProps; }
 
     // TODO: Fill out these calls to support DDL
-    bool characterize(SkSurfaceCharacterization* characterization) const;
+    bool characterize(GrSurfaceCharacterization* characterization) const;
 
 #ifndef SK_DDL_IS_UNIQUE_POINTER
-    bool draw(sk_sp<const SkDeferredDisplayList> deferredDisplayList);
+    bool draw(sk_sp<const GrDeferredDisplayList> deferredDisplayList);
 #else
-    bool draw(const SkDeferredDisplayList* deferredDisplayList);
+    bool draw(const GrDeferredDisplayList* deferredDisplayList);
 #endif
 
-    bool isCompatible(const SkSurfaceCharacterization& characterization) const;
+    bool isCompatible(const GrSurfaceCharacterization& characterization) const;
 
 private:
     explicit GrVkSecondaryCBDrawContext(sk_sp<skgpu::ganesh::Device>, const SkSurfaceProps*);

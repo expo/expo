@@ -1,8 +1,6 @@
 // Copyright © 2023 650 Industries.
 // Copyright 2018-2023 the Deno authors. All rights reserved. MIT license.
 
-import URL from 'url-parse';
-
 class DOMException extends Error {
   constructor(message: string, name: string) {
     super(message);
@@ -21,9 +19,9 @@ class Location {
       // @ts-expect-error
       href
     );
-    // @ts-expect-error
+
     url.username = '';
-    // @ts-expect-error
+
     url.password = '';
     Object.defineProperties(this, {
       hash: {
@@ -97,7 +95,6 @@ class Location {
       },
       search: {
         get() {
-          // @ts-expect-error
           return url.search;
         },
         set() {

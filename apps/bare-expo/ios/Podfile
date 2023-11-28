@@ -3,7 +3,7 @@ install! 'cocoapods',
          :incremental_installation => true,
          :deterministic_uuids => false
 source 'https://cdn.cocoapods.org/'
-platform :ios, '13.0'
+platform :ios, '13.4'
 inhibit_all_warnings!
 
 # Import the auto-linking packages
@@ -37,9 +37,6 @@ abstract_target 'BareExpoMain' do
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
 
-  # Flags change depending on the env values.
-  flags = get_default_flags()
-
   config = use_native_modules!
 
   # Fix Google Sign-in and Flipper
@@ -51,7 +48,6 @@ abstract_target 'BareExpoMain' do
         config[:reactNativePath],
         :mac_catalyst_enabled => false
       )
-      __apply_Xcode_12_5_M1_post_install_workaround(installer)
     end
 
     # This is necessary for Xcode 14, because it signs resource bundles by default
@@ -78,7 +74,6 @@ abstract_target 'BareExpoMain' do
     use_react_native!(
       :path => config[:reactNativePath],
       :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
-      :fabric_enabled => flags[:fabric_enabled],
       # An absolute path to your application root.
       :app_path => "#{Pod::Config.instance.installation_root}/..",
       #
@@ -92,7 +87,6 @@ abstract_target 'BareExpoMain' do
     use_react_native!(
       :path => config[:reactNativePath],
       :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
-      :fabric_enabled => flags[:fabric_enabled],
       # An absolute path to your application root.
       :app_path => "#{Pod::Config.instance.installation_root}/..",
       :flipper_configuration => FlipperConfiguration.disabled,
@@ -103,13 +97,11 @@ abstract_target 'BareExpoMain' do
     use_react_native!(
       :path => config[:reactNativePath],
       :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
-      :fabric_enabled => flags[:fabric_enabled],
       # An absolute path to your application root.
       :app_path => "#{Pod::Config.instance.installation_root}/..",
       :flipper_configuration => FlipperConfiguration.disabled,
     )
 
     pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
-    pod 'Nimble', :podspec => './../../../ios/Nimble.podspec'
   end
 end

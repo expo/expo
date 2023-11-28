@@ -47,13 +47,11 @@ export default class AndroidClientBuilder implements ClientBuilder {
   async uploadBuildAsync(s3Client: S3Client, appVersion: string) {
     const file = fs.createReadStream(this.getAppPath());
 
-    await s3Client
-      .putObject({
-        Bucket: 'exp-android-apks',
-        Key: `Exponent-${appVersion}.apk`,
-        Body: file,
-        ACL: 'public-read',
-      })
-      .promise();
+    await s3Client.putObject({
+      Bucket: 'exp-android-apks',
+      Key: `Exponent-${appVersion}.apk`,
+      Body: file,
+      ACL: 'public-read',
+    });
   }
 }

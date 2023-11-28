@@ -80,12 +80,14 @@ class GooglePayRequestHelper {
       val countryCode = params.getString("merchantCountryCode").orEmpty()
       val currencyCode = params.getString("currencyCode") ?: "USD"
       val amount = params.getInt("amount")
+      val label = params.getString("label")
 
       return GooglePayJsonFactory.TransactionInfo(
         currencyCode = currencyCode,
         totalPriceStatus = GooglePayJsonFactory.TransactionInfo.TotalPriceStatus.Estimated,
         countryCode = countryCode,
         totalPrice = amount,
+        totalPriceLabel = label,
         checkoutOption = GooglePayJsonFactory.TransactionInfo.CheckoutOption.Default
       )
     }
@@ -134,6 +136,11 @@ class GooglePayRequestHelper {
 
           override fun onSuccess(result: PaymentMethod) {
             promiseResult.putMap("paymentMethod", mapFromPaymentMethod(result))
+            GooglePayResult.fromJson(paymentInformation).let {
+              if (it.shippingInformation != null) {
+                promiseResult.putMap("shippingContact", mapFromShippingContact(it))
+              }
+            }
             promise.resolve(promiseResult)
           }
         }
@@ -146,6 +153,9 @@ class GooglePayRequestHelper {
       val promiseResult = WritableNativeMap()
       googlePayResult.token?.let {
         promiseResult.putMap("token", mapFromToken(it))
+        if (googlePayResult.shippingInformation != null) {
+          promiseResult.putMap("shippingContact", mapFromShippingContact(googlePayResult))
+        }
         promise.resolve(promiseResult)
       } ?: run {
         promise.resolve(createError("Failed", "Unexpected response from Google Pay. No token was found."))

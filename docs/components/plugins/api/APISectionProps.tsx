@@ -14,8 +14,7 @@ import {
   getCommentOrSignatureComment,
   getTagData,
   getTagNamesList,
-  H3Code,
-  H4Code,
+  getH3CodeWithBaseNestingLevel,
   renderTypeOrSignatureType,
   resolveTypeName,
   STYLES_APIBOX,
@@ -34,6 +33,11 @@ export type APISectionPropsProps = {
   header?: string;
 };
 
+export type RenderPropOptions = {
+  exposeInSidebar?: boolean;
+  baseNestingLevel?: number;
+};
+
 const UNKNOWN_VALUE = '...';
 
 const extractDefaultPropValue = (
@@ -42,7 +46,7 @@ const extractDefaultPropValue = (
 ): string | undefined => {
   const annotationDefault = getTagData('default', comment);
   if (annotationDefault) {
-    return getCommentContent(annotationDefault.content);
+    return getCommentContent(annotationDefault.content, true);
   }
   return defaultProps?.type?.declaration?.children?.filter(
     (defaultProp: PropData) => defaultProp.name === name
@@ -100,7 +104,7 @@ const renderProps = (
     <div key={`props-definition-${def.name}`}>
       {propsDeclarations?.map(prop =>
         prop
-          ? renderProp(prop, extractDefaultPropValue(prop, defaultValues), exposeInSidebar)
+          ? renderProp(prop, extractDefaultPropValue(prop, defaultValues), { exposeInSidebar })
           : null
       )}
       {renderInheritedProps(def, exposeInSidebar)}
@@ -111,9 +115,10 @@ const renderProps = (
 export const renderProp = (
   { comment, name, type, flags, signatures }: PropData,
   defaultValue?: string,
-  exposeInSidebar?: boolean
+  { exposeInSidebar, ...options }: RenderPropOptions = {}
 ) => {
-  const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
+  const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
+  const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
   const extractedSignatures = signatures || type?.declaration?.signatures;
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
 

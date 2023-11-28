@@ -60,7 +60,7 @@ export async function versionExpoModulesProviderAsync(sdkNumber: number) {
     homepage: 'https://expo.dev',
     license: 'MIT',
     platforms: {
-      ios: '13.0',
+      ios: '13.4',
     },
     source: {
       git: 'https://github.com/expo/expo.git',

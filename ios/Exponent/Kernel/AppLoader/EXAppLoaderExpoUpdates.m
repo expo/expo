@@ -275,6 +275,8 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+- (void)appLoaderTaskDidFinishAllLoading:(EXUpdatesAppLoaderTask *)appLoaderTask {}
+
 #pragma mark - internal
 
 + (NSURL *)_httpUrlFromManifestUrl:(NSURL *)url
@@ -383,7 +385,13 @@ NS_ASSUME_NONNULL_BEGIN
   // (no update available, roll back) don't have any practical use outside of standalone apps
   updatesConfig[EXUpdatesConfig.EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey] = @YES;
 
-  _config = [EXUpdatesConfig configFromDictionary:updatesConfig];
+  NSError *configError;
+  _config = [EXUpdatesConfig configFromDictionary:updatesConfig error:&configError];
+  if (configError) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Error creating updates config"
+                                 userInfo:@{ @"underlyingError": configError.localizedDescription }];
+  }
 
   EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
 
@@ -409,26 +417,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         delegateQueue:_appLoaderQueue];
   loaderTask.delegate = self;
   [loaderTask start];
-}
-
-- (void)_launchWithNoDatabaseAndError:(nullable NSError *)error
-{
-  EXUpdatesAppLauncherNoDatabase *appLauncher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
-  [appLauncher launchUpdateWithConfig:_config];
-
-  _confirmedManifest = [self _processManifest:appLauncher.launchedUpdate.manifest];
-  if (_confirmedManifest == nil) {
-    return;
-  }
-  _optimisticManifest = _confirmedManifest;
-  _bundle = [NSData dataWithContentsOfURL:appLauncher.launchAssetUrl];
-  _appLauncher = appLauncher;
-  if (self.delegate) {
-    [self.delegate appLoader:self didLoadOptimisticManifest:_confirmedManifest];
-    [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
-  }
-
-  [[EXUpdatesErrorRecovery new] writeErrorOrExceptionToLog:error];
 }
 
 - (void)_runReaper

@@ -65,7 +65,7 @@ function isSpawnResult(errorOrResult: Error): errorOrResult is Error & SpawnResu
 }
 
 export async function installAsync(projectRoot: string, pkgs: string[] = []) {
-  return abortingSpawnAsync('yarn', pkgs, {
+  return abortingSpawnAsync('bun', ['install', ...pkgs], {
     cwd: projectRoot,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -182,7 +182,7 @@ const testingLocally = !process.env.CI;
 export async function setupTestProjectAsync(
   name: string,
   fixtureName: string,
-  sdkVersion: string = '47.0.0'
+  sdkVersion: string = '49.0.0'
 ): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
   const projectRoot = await createFromFixtureAsync(os.tmpdir(), {

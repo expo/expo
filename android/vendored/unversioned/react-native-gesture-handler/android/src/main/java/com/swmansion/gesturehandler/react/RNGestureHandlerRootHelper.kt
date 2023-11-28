@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler.react
 import android.os.SystemClock
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import com.facebook.react.bridge.ReactContext
@@ -58,7 +59,9 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   private inner class RootViewGestureHandler : GestureHandler<RootViewGestureHandler>() {
     override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
       val currentState = state
-      if (currentState == STATE_UNDETERMINED) {
+      // we shouldn't stop intercepting events when there is an active handler already, which could happen when
+      // adding a new pointer to the screen after a handler activates
+      if (currentState == STATE_UNDETERMINED && (!shouldIntercept || orchestrator?.isAnyHandlerActive() != true)) {
         begin()
         shouldIntercept = false
       }
@@ -76,6 +79,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       if (rootView is RootView) {
         rootView.onChildStartedNativeGesture(event)
       }
+      event.recycle()
     }
   }
 
@@ -115,6 +119,10 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     if (blockNativeResponder) {
       UiThreadUtil.runOnUiThread { tryCancelAllHandlers() }
     }
+  }
+
+  fun activateNativeHandlers(view: View) {
+    orchestrator?.activateNativeHandlersForView(view)
   }
 
   companion object {
