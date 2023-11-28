@@ -197,6 +197,7 @@ async function exportFromServerAsync(
     // TODO: Collect files without writing to disk.
     // TODO: Account for `webTargetDomain` split
     await persistMetroAssetsAsync(resources.assets, {
+      files,
       platform: 'web',
       outputDirectory: outputDir,
       baseUrl,
