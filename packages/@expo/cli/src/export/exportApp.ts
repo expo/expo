@@ -88,7 +88,6 @@ export async function exportAppAsync(
   // Can be empty during web-only SSG.
   if (bundleEntries.length) {
     // TODO: Use same asset system across platforms again.
-    // NOTE(kitten): Re. above, this is now using `files` except for iOS catalog output, which isn't used here
     const { assets, embeddedHashSet } = await exportAssetsAsync(projectRoot, {
       files,
       exp,
@@ -172,7 +171,7 @@ export async function exportAppAsync(
       // If web exists, then write the template HTML file.
       files.set('index.html', {
         contents: html,
-        webTargetDomain: 'client',
+        webTarget: 'client',
       });
     }
   }

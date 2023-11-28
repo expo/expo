@@ -100,7 +100,7 @@ export async function getFilesToExportFromServerAsync(
       try {
         files.set(outputPath, {
           contents: '',
-          webTargetDomain: 'server',
+          webTarget: 'server',
         });
 
         const data = await renderAsync(pathname);
@@ -108,7 +108,7 @@ export async function getFilesToExportFromServerAsync(
         files.set(outputPath, {
           contents: data,
           routeId: pathname,
-          webTargetDomain: includeGroupVariations ? 'client' : 'server',
+          webTarget: includeGroupVariations ? 'client' : 'server',
         });
       } catch (e: any) {
         await logMetroErrorAsync({ error: e, projectRoot });
@@ -195,7 +195,7 @@ async function exportFromServerAsync(
 
   if (resources.assets) {
     // TODO: Collect files without writing to disk.
-    // TODO: Account for `webTargetDomain` split
+    // NOTE(kitten): Re. above, this is now using `files` except for iOS catalog output, which isn't used here
     await persistMetroAssetsAsync(resources.assets, {
       files,
       platform: 'web',
@@ -351,7 +351,7 @@ async function exportApiRoutesAsync({
 
   files.set('_expo/routes.json', {
     contents: JSON.stringify(manifest, null, 2),
-    webTargetDomain: 'server',
+    webTarget: 'server',
   });
 
   return files;

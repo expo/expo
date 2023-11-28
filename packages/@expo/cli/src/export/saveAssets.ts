@@ -25,7 +25,7 @@ export type ExportAssetDescriptor = {
   /** Expo Router route path for formatting the HTML output. */
   routeId?: string;
   /** A key for grouping together web output files by server- or client-side. */
-  webTargetDomain?: 'server' | 'client';
+  webTarget?: 'server' | 'client';
 };
 
 export type ExportAssetMap = Map<string, ExportAssetDescriptor>;
@@ -49,7 +49,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
 
   let hasServerOutput = false;
   for (const asset of files.entries()) {
-    hasServerOutput = hasServerOutput || asset[1].webTargetDomain === 'server';
+    hasServerOutput = hasServerOutput || asset[1].webTarget === 'server';
     if (asset[1].assetId) assetEntries.push(asset);
     else if (asset[1].routeId != null) routeEntries.push(asset);
     else remainingEntries.push(asset);
@@ -159,9 +159,9 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   await Promise.all(
     [...files.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(async ([file, { contents, webTargetDomain }]) => {
-        // NOTE: Only use `webTargetDomain` if we have at least one server asset
-        const domain = (hasServerOutput && webTargetDomain) || '';
+      .map(async ([file, { contents, webTarget }]) => {
+        // NOTE: Only use `webTarget` if we have at least one server asset
+        const domain = (hasServerOutput && webTarget) || '';
         const outputPath = path.join(outputDir, domain, file);
         await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
         await fs.promises.writeFile(outputPath, contents);
@@ -199,7 +199,7 @@ export function getFilesFromSerialAssets(
     files.set(resource.filename, {
       contents: resource.source,
       originFilename: resource.originFilename,
-      webTargetDomain: platform === 'web' ? 'client' : undefined,
+      webTarget: platform === 'web' ? 'client' : undefined,
     });
   });
 
