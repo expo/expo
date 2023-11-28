@@ -85,6 +85,7 @@
 	<string>Allow Expo projects to use data for tracking the user or the device</string>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>fetch</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
