@@ -92,10 +92,16 @@ export async function getVersionedDependenciesAsync(
   // the CLI is versioned in the `expo` package.
   assert(exp.sdkVersion, 'SDK Version is missing');
 
+  const isCanaryRelease = await isExpoPreReleaseAsync(projectRoot);
+  if (isCanaryRelease) {
+    Log.warn('Dependency validation might be unreliable when using canary SDK versions');
+  }
+
   // Get from both endpoints and combine the known package versions.
   const combinedKnownPackages = await getCombinedKnownVersionsAsync({
     projectRoot,
     sdkVersion: exp.sdkVersion,
+    skipRemoteVersions: isCanaryRelease,
   });
   // debug(`Known dependencies: %O`, combinedKnownPackages);
 
@@ -251,4 +257,9 @@ function findDependencyType(
   }
 
   return 'dependencies';
+}
+
+/** Check if the currently installed `expo` version is a pre-released (canary) version */
+async function isExpoPreReleaseAsync(projectRoot: string) {
+  return !!semver.prerelease(await getPackageVersionAsync(projectRoot, 'expo'));
 }

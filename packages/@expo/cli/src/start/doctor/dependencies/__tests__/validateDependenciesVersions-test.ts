@@ -4,6 +4,7 @@ import resolveFrom from 'resolve-from';
 
 import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
+import { getCombinedKnownVersionsAsync } from '../getVersionedPackages';
 import {
   logIncorrectDependencies,
   validateDependenciesVersionsAsync,
@@ -18,12 +19,12 @@ jest.mock('../bundledNativeModules', () => ({
   }),
 }));
 jest.mock('../getVersionedPackages', () => ({
-  getCombinedKnownVersionsAsync: () => ({
+  getCombinedKnownVersionsAsync: jest.fn(() => ({
     'expo-splash-screen': '~1.2.3',
     'expo-updates': '~2.3.4',
     firebase: '9.1.0',
     expo: '49.0.7',
-  }),
+  })),
 }));
 
 describe(logIncorrectDependencies, () => {
@@ -58,6 +59,9 @@ describe(validateDependenciesVersionsAsync, () => {
   it('resolves to true when the installed packages match bundled native modules', async () => {
     vol.fromJSON(
       {
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '41.0.0',
+        }),
         'node_modules/expo-splash-screen/package.json': JSON.stringify({
           version: '1.2.3',
         }),
@@ -125,6 +129,9 @@ describe(validateDependenciesVersionsAsync, () => {
     asMock(Log.warn).mockReset();
     vol.fromJSON(
       {
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '41.0.0',
+        }),
         'node_modules/expo-splash-screen/package.json': JSON.stringify({
           version: '0.2.3',
         }),
@@ -156,6 +163,9 @@ describe(validateDependenciesVersionsAsync, () => {
     asMock(Log.warn).mockReset();
     vol.fromJSON(
       {
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '41.0.0',
+        }),
         'node_modules/expo-splash-screen/package.json': JSON.stringify({
           version: '0.2.3',
         }),
@@ -221,6 +231,39 @@ describe(validateDependenciesVersionsAsync, () => {
 
     await expect(validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)).resolves.toBe(
       true
+    );
+  });
+
+  it('only uses local bundled module versions when using canary versions', async () => {
+    vol.fromJSON(
+      {
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '50.0.0-canary-20231125-d600e44',
+        }),
+        'node_modules/react-native/package.json': JSON.stringify({
+          version: '0.73.0-rc.5',
+        }),
+      },
+      projectRoot
+    );
+    asMock(getCombinedKnownVersionsAsync).mockResolvedValue({
+      'react-native': '0.73.0-rc.5',
+    });
+
+    const exp = { sdkVersion: '50.0.0' };
+    const pkg = { dependencies: { 'react-native': '0.73.0-rc.5' } };
+
+    // This should pass validation without any problems
+    await expect(validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)).resolves.toBe(
+      true
+    );
+    // This should be called with `skipRemoteVersions: true` because of a `canary` Expo SDK version
+    expect(getCombinedKnownVersionsAsync).toBeCalledWith(
+      expect.objectContaining({
+        projectRoot,
+        sdkVersion: exp.sdkVersion,
+        skipRemoteVersions: true,
+      })
     );
   });
 
