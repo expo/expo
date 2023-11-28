@@ -1,11 +1,11 @@
 /**
  * Result of a `runAsync` call.
  */
-export interface RunResult {
+export interface SQLiteRunResult {
     /**
      * The last inserted row ID.
      */
-    lastInsertRowid: number;
+    lastInsertRowId: number;
     /**
      * The number of rows affected.
      */
@@ -38,30 +38,30 @@ export interface RunResult {
  * await statement.getAsync({ $value: 'test1', $intValue: 789 });
  * ```
  */
-export type BindValue = string | number | null | boolean | Uint8Array;
-export type BindParams = Record<string, BindValue> | BindValue[];
-export type VariadicBindParams = BindValue[];
-export type BindPrimitiveParams = Record<string, Exclude<BindValue, Uint8Array>>;
-export type BindBlobParams = Record<string, Uint8Array>;
-export type ColumnNames = string[];
-export type ColumnValues = any[];
-type AnyDatabase = any;
+export type SQLiteBindValue = string | number | null | boolean | Uint8Array;
+export type SQLiteBindParams = Record<string, SQLiteBindValue> | SQLiteBindValue[];
+export type SQLiteVariadicBindParams = SQLiteBindValue[];
+export type SQLiteBindPrimitiveParams = Record<string, Exclude<SQLiteBindValue, Uint8Array>>;
+export type SQLiteBindBlobParams = Record<string, Uint8Array>;
+export type SQLiteColumnNames = string[];
+export type SQLiteColumnValues = any[];
+type SQLiteAnyDatabase = any;
 /**
  * A class that represents an instance of the SQLite statement.
  */
 export declare class NativeStatement {
-    runAsync(database: AnyDatabase, bindParams: BindPrimitiveParams, bindBlobParams: BindBlobParams, shouldPassAsArray: boolean): Promise<RunResult>;
-    getAsync(database: AnyDatabase, bindParams: BindPrimitiveParams, bindBlobParams: BindBlobParams, shouldPassAsArray: boolean): Promise<ColumnValues | null | undefined>;
-    getAllAsync(database: AnyDatabase, bindParams: BindPrimitiveParams, bindBlobParams: BindBlobParams, shouldPassAsArray: boolean): Promise<ColumnValues[]>;
-    getColumnNamesAsync(): Promise<ColumnNames>;
-    resetAsync(database: AnyDatabase): Promise<void>;
-    finalizeAsync(database: AnyDatabase): Promise<void>;
-    runSync(database: AnyDatabase, bindParams: BindPrimitiveParams, bindBlobParams: BindBlobParams, shouldPassAsArray: boolean): RunResult;
-    getSync(database: AnyDatabase, bindParams: BindPrimitiveParams, bindBlobParams: BindBlobParams, shouldPassAsArray: boolean): ColumnValues | null | undefined;
-    getAllSync(database: AnyDatabase, bindParams: BindPrimitiveParams, bindBlobParams: BindBlobParams, shouldPassAsArray: boolean): ColumnValues[];
+    runAsync(database: SQLiteAnyDatabase, bindParams: SQLiteBindPrimitiveParams, bindBlobParams: SQLiteBindBlobParams, shouldPassAsArray: boolean): Promise<SQLiteRunResult>;
+    getAsync(database: SQLiteAnyDatabase, bindParams: SQLiteBindPrimitiveParams, bindBlobParams: SQLiteBindBlobParams, shouldPassAsArray: boolean): Promise<SQLiteColumnValues | null | undefined>;
+    getAllAsync(database: SQLiteAnyDatabase, bindParams: SQLiteBindPrimitiveParams, bindBlobParams: SQLiteBindBlobParams, shouldPassAsArray: boolean): Promise<SQLiteColumnValues[]>;
+    getColumnNamesAsync(): Promise<SQLiteColumnNames>;
+    resetAsync(database: SQLiteAnyDatabase): Promise<void>;
+    finalizeAsync(database: SQLiteAnyDatabase): Promise<void>;
+    runSync(database: SQLiteAnyDatabase, bindParams: SQLiteBindPrimitiveParams, bindBlobParams: SQLiteBindBlobParams, shouldPassAsArray: boolean): SQLiteRunResult;
+    getSync(database: SQLiteAnyDatabase, bindParams: SQLiteBindPrimitiveParams, bindBlobParams: SQLiteBindBlobParams, shouldPassAsArray: boolean): SQLiteColumnValues | null | undefined;
+    getAllSync(database: SQLiteAnyDatabase, bindParams: SQLiteBindPrimitiveParams, bindBlobParams: SQLiteBindBlobParams, shouldPassAsArray: boolean): SQLiteColumnValues[];
     getColumnNamesSync(): string[];
-    resetSync(database: AnyDatabase): void;
-    finalizeSync(database: AnyDatabase): void;
+    resetSync(database: SQLiteAnyDatabase): void;
+    finalizeSync(database: SQLiteAnyDatabase): void;
 }
 export {};
 //# sourceMappingURL=NativeStatement.d.ts.map
