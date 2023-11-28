@@ -1,5 +1,5 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { MessageTextSquare02Icon, ThumbsDownIcon, ThumbsUpIcon } from "@expo/styleguide-icons";
+import { MessageTextSquare02Icon, ThumbsDownIcon, ThumbsUpIcon } from '@expo/styleguide-icons';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useState } from 'react';
 
