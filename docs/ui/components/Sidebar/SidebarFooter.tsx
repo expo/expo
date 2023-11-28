@@ -36,13 +36,6 @@ export const SidebarFooter = () => {
       />
       <SidebarSingleEntry
         secondary
-        href="https://expo.dev/changelog"
-        title="Changelog"
-        Icon={ChangelogIcon}
-        isExternal
-      />
-      <SidebarSingleEntry
-        secondary
         href="https://expo.dev/mailing-list/signup"
         title="Newsletter"
         Icon={Mail01Icon}
