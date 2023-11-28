@@ -272,6 +272,24 @@ CREATE TABLE IF NOT EXISTS Posts (post_id INTEGER PRIMARY KEY NOT NULL, content 
       await db.runAsync('PRAGMA foreign_keys = OFF');
       await db.closeAsync();
     });
+
+    it('should throw when accessing a finalized statement', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+DROP TABLE IF EXISTS Users;
+CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+`);
+
+      const statement = await db.prepareAsync('INSERT INTO Nulling (x, y) VALUES (?, ?)');
+      await statement.finalizeAsync();
+      let error = null;
+      try {
+        await statement.runAsync(null, null);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).not.toBeNull();
+    });
   });
 
   describe('Statement parameters bindings', () => {
