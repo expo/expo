@@ -63,6 +63,7 @@
     "@emotion/jest": "^11.11.0",
     "@ocular-d/vale-bin": "^2.29.6",
     "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-dropdown-menu": "^1.0.0",
     "@tailwindcss/typography": "^0.5.10",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.1.0",
