@@ -8,7 +8,7 @@ import { ArchiveIcon } from './icons/Archive';
 import { getPageSection } from '~/common/routes';
 
 type SideBarFooterProps = {
-  isMobileMenuVisible: boolean;
+  isMobileMenuVisible?: boolean;
 };
 
 export const SidebarFooter = ({ isMobileMenuVisible }: SideBarFooterProps) => {
