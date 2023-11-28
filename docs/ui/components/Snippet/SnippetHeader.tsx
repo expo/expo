@@ -3,6 +3,7 @@ import { LinkBase, mergeClasses, theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
 import React, { ReactNode, ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
 
+import { HeadingType } from '~/common/headingManager';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
@@ -66,7 +67,10 @@ export const PermalinkedSnippetHeader = withHeadingManager(
           ? pathSegments[0] + '/../' + pathSegments[pathSegments.length - 1]
           : title;
     }
-    const heading = props.headingManager.addHeading(title, 3, { sidebarTitle });
+    const heading = props.headingManager.addHeading(title, 3, {
+      sidebarTitle,
+      sidebarType: HeadingType.CodeFilePath,
+    });
 
     return (
       <LinkBase id={heading.slug} href={'#' + heading.slug} ref={heading.ref}>
