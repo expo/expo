@@ -2,7 +2,7 @@ import { LinkBase, mergeClasses } from '@expo/styleguide';
 import { ArrowLeftIcon, ArrowRightIcon } from '@expo/styleguide-icons';
 import { useRouter } from 'next/compat/router';
 
-import { ForumsLink, EditPageLink, IssuesLink } from './Links';
+import { ForumsLink, EditPageLink, IssuesLink, ShareFeedbackLink } from './Links';
 import { NewsletterSignUp } from './NewsletterSignUp';
 import { PageVote } from './PageVote';
 
@@ -82,8 +82,9 @@ export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPa
         )}>
         {title && (
           <div>
-            <PageVote pathname={router?.pathname} />
+            <PageVote />
             <UL className="flex-1 !mt-0 !ml-0 !list-none">
+              <ShareFeedbackLink pathname={router?.pathname} />
               <ForumsLink isAPIPage={isAPIPage} title={title} />
               {isAPIPage && (
                 <IssuesLink
