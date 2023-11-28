@@ -33,7 +33,7 @@ function getReleasedSdkVersionRange() {
   }
   return {
     maxSdk,
-    minSdk: maxSdk - 6,
+    minSdk: maxSdk - 5,
   };
 }
 

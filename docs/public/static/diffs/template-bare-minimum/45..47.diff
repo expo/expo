@@ -724,7 +724,7 @@ index 2b13519939..8beb344303 100644
  # Bundle artifacts
  *.jsbundle
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 69e7eb9619..74f16064d7 100644
+index 69e7eb9619..a41fdc0d8d 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -732,7 +732,7 @@ index 69e7eb9619..74f16064d7 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "45.0.6",
-+  "version": "47.0.23",
++  "version": "47.0.26",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
