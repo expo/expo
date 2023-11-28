@@ -8,14 +8,10 @@ import TitledSwitch from '../../components/TitledSwitch';
 export default function VideoScreen() {
   const ref = useRef<VideoView>(null);
   const [isInPictureInPicture, setIsInPictureInPicture] = React.useState(false);
-  const [allowPictureInPicture, setAllowPictureInPicture] = React.useState(false);
+  const [allowPictureInPicture, setAllowPictureInPicture] = React.useState(true);
   const [startPictureInPictureAutomatically, setStartPictureInPictureAutomatically] =
     React.useState(false);
   const [showNativeControls, setShowNativeControls] = React.useState(true);
-
-  React.useEffect(() => {
-    ref.current?.startPictureInPicture();
-  }, []);
 
   const enterFullscreen = useCallback(() => {
     ref.current?.enterFullscreen();
@@ -145,8 +141,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   video: {
-    width: 400,
-    height: 300,
+    width: 300,
+    height: 225,
     borderBottomWidth: 1.0 / PixelRatio.get(),
     borderBottomColor: '#cccccc',
   },

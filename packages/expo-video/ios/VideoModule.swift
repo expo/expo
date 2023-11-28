@@ -63,11 +63,11 @@ public final class VideoModule: Module {
         view.exitFullscreen()
       }
 
-      AsyncFunction("startPictureInPicture") { (view: VideoView, promise: Promise) in
-        view.startPictureInPicture(promise: promise)
+      AsyncFunction("startPictureInPicture") { view in
+        try view.startPictureInPicture()
       }
 
-      AsyncFunction("stopPictureInPicture") { (view: VideoView) in
+      AsyncFunction("stopPictureInPicture") { view in
         view.stopPictureInPicture()
       }
     }

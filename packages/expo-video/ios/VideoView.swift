@@ -29,7 +29,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
           try audioSession.setCategory(.playback, mode: .default)
           try audioSession.setActive(true)
         } catch {
-          print("Failed ot set audio session category. This might break picture in picture functionality")
+          log.warn("Failed to set the audio session category. This might break Picture in Picture functionality")
         }
       }
       playerViewController.allowsPictureInPicturePlayback = allowPictureInPicture
@@ -84,10 +84,9 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     }
   }
 
-  func startPictureInPicture(promise: Promise) {
+  func startPictureInPicture() throws {
     if !supportsPictureInPicture {
-      promise.reject(PictureInPictureUnsupportedException())
-      return
+      throw PictureInPictureUnsupportedException()
     }
 
     let selectorName = "startPictureInPicture"
@@ -96,7 +95,6 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     if playerViewController.responds(to: selectorToStartPictureInPicture) {
       playerViewController.perform(selectorToStartPictureInPicture)
     }
-    promise.resolve(nil)
   }
 
   func stopPictureInPicture() {

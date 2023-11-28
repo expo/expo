@@ -80,25 +80,26 @@ export interface VideoViewProps extends ViewProps {
         dy?: number;
     } | undefined;
     /**
-     * Determines the callback to call after the video enters Picture in Picture mode.
-     * @platform ios
+     * A callback to call after the video player enters Picture in Picture (PiP) mode.
+     * @platform ios 14+
      */
     onPictureInPictureStart?: () => void;
     /**
-     * Determines the callback to call after the video exits Picture in Picture mode.
-     * @platform ios
+     * A callback to call after the video player exits Picture in Picture (PiP) mode.
+     * @platform ios 14+
      */
     onPictureInPictureStop?: () => void;
     /**
-     * Determines whether the player should allow Picture in Picture.
+     * Determines whether the player allows Picture in Picture (PiP) mode.
      * @default false
-     * @platform ios
+     * @platform ios 14+
      */
     allowsPictureInPicture?: boolean;
     /**
-     * Determines whether the player should start Picture in Picture automatically when the app is minimized.
+     * Determines whether the player should start Picture in Picture (PiP) automatically when the app is in the background.
+     * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
      * @default false
-     * @platform ios
+     * @platform ios 14.2+
      */
     startsPictureInPictureAutomatically?: boolean;
 }

@@ -21,11 +21,20 @@ export class VideoView extends PureComponent<VideoViewProps> {
     this.nativeRef.current?.exitFullscreen();
   }
 
-  async startPictureInPicture() {
+  /**
+   * Enters Picture in Picture (PiP) mode. Throws an exception if the device does not support PiP.
+   * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
+   * @platform ios 14+
+   */
+  startPictureInPicture() {
     return this.nativeRef.current?.startPictureInPicture();
   }
 
-  async stopPictureInPicture() {
+  /**
+   * Exits Picture in Picture (PiP) mode.
+   * @platform ios 14+
+   */
+  stopPictureInPicture() {
     return this.nativeRef.current?.stopPictureInPicture();
   }
 
