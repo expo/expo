@@ -43,16 +43,17 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   //   )
   // );
 
-  const fileEntries = [...files.entries()];
   const assetEntries: [string, ExportAssetDescriptor][] = [];
   const routeEntries: [string, ExportAssetDescriptor][] = [];
   const remainingEntries: [string, ExportAssetDescriptor][] = [];
 
-  fileEntries.forEach((asset) => {
+  let hasServerOutput = false;
+  for (const asset of files.entries()) {
+    hasServerOutput = hasServerOutput || asset[1].webTargetDomain === 'server';
     if (asset[1].assetId) assetEntries.push(asset);
     else if (asset[1].routeId != null) routeEntries.push(asset);
     else remainingEntries.push(asset);
-  });
+  }
 
   const groups = groupBy(assetEntries, ([, { assetId }]) => assetId!);
 
@@ -159,7 +160,9 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
     [...files.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
       .map(async ([file, { contents, webTargetDomain }]) => {
-        const outputPath = path.join(outputDir, webTargetDomain || '', file);
+        // NOTE: Only use `webTargetDomain` if we have at least one server asset
+        const domain = (hasServerOutput && webTargetDomain) || '';
+        const outputPath = path.join(outputDir, domain, file);
         await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
         await fs.promises.writeFile(outputPath, contents);
       })
