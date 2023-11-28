@@ -53,7 +53,7 @@ describe(useSQLiteContext, () => {
     expect(mockonInit.mock.calls[0][0]).toBe(result.current);
   });
 
-  it('should render custom loading fallback before database is ready', async () => {
+  it('should render custom suspense fallback before database is ready', async () => {
     const loadingText = 'Loading database...';
     function LoadingFallback() {
       return (
@@ -63,9 +63,11 @@ describe(useSQLiteContext, () => {
       );
     }
     const wrapper = ({ children }) => (
-      <SQLiteProvider databaseName=":memory:" loadingFallback={<LoadingFallback />}>
-        <View />
-      </SQLiteProvider>
+      <React.Suspense fallback={<LoadingFallback />}>
+        <SQLiteProvider databaseName=":memory:" useSuspense>
+          <View />
+        </SQLiteProvider>
+      </React.Suspense>
     );
     const { result } = renderHook(() => useSQLiteContext(), { wrapper });
     await act(async () => {
