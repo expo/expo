@@ -93,7 +93,7 @@ export const Header = ({
         <div css={mobileSidebarStyle}>
           <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
           {sidebar}
-          <SidebarFooter isMobileMenuVisible />
+          <SidebarFooter isMobileMenuVisible={isMobileMenuVisible} />
         </div>
       )}
     </>
