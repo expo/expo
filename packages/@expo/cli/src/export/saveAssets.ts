@@ -20,11 +20,12 @@ export type Asset = ManifestAsset | BundleAssetWithFileHashes;
 export type ExportAssetDescriptor = {
   contents: string | Buffer;
   originFilename?: string;
-  // An identifier for grouping together variations of the same asset.
+  /** An identifier for grouping together variations of the same asset. */
   assetId?: string;
-
-  // Expo Router route path for formatting the HTML output.
+  /** Expo Router route path for formatting the HTML output. */
   routeId?: string;
+  /** A key for grouping together web output files by server- or client-side. */
+  webTargetDomain?: 'server' | 'client';
 };
 
 export type ExportAssetMap = Map<string, ExportAssetDescriptor>;
@@ -157,8 +158,8 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   await Promise.all(
     [...files.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(async ([file, { contents }]) => {
-        const outputPath = path.join(outputDir, file);
+      .map(async ([file, { contents, webTargetDomain }]) => {
+        const outputPath = path.join(outputDir, webTargetDomain || '', file);
         await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
         await fs.promises.writeFile(outputPath, contents);
       })
@@ -184,15 +185,18 @@ export function getFilesFromSerialAssets(
   {
     includeSourceMaps,
     files = new Map(),
+    platform,
   }: {
     includeSourceMaps: boolean;
     files?: ExportAssetMap;
+    platform?: string;
   }
 ) {
   resources.forEach((resource) => {
     files.set(resource.filename, {
       contents: resource.source,
       originFilename: resource.originFilename,
+      webTargetDomain: platform === 'web' ? 'client' : undefined,
     });
   });
 

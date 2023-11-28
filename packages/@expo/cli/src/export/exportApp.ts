@@ -174,7 +174,10 @@ export async function exportAppAsync(
 
       // Generate SPA-styled HTML file.
       // If web exists, then write the template HTML file.
-      files.set('index.html', { contents: html });
+      files.set('index.html', {
+        contents: html,
+        webTargetDomain: 'client',
+      });
     }
   }
 
