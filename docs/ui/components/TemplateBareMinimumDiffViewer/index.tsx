@@ -90,6 +90,7 @@ export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
             Native code changes from SDK {fromVersion} to {toVersion}
           </RawH3>
           <DiffBlock
+            key={diffName /* force re-mount on raw diff change */}
             raw={diff}
             filenameModifier={str => str.replace('templates/expo-template-bare-minimum/', '')}
             showOperation
