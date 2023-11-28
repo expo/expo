@@ -17,7 +17,6 @@ import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/ro
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
-import { ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
 
@@ -61,11 +60,7 @@ export async function exportAppAsync(
   }
 
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
-
   const outputPath = path.resolve(projectRoot, outputDir);
-  const assetsPath = path.join(outputPath, 'assets');
-
-  await Promise.all([assetsPath].map(ensureDirectoryAsync));
 
   await copyPublicFolderAsync(publicPath, outputPath);
 
@@ -93,6 +88,7 @@ export async function exportAppAsync(
   // Can be empty during web-only SSG.
   if (bundleEntries.length) {
     // TODO: Use same asset system across platforms again.
+    // NOTE(kitten): Re. above, this is now using `files` except for iOS catalog output, which isn't used here
     const { assets, embeddedHashSet } = await exportAssetsAsync(projectRoot, {
       files,
       exp,
