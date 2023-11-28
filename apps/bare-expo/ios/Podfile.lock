@@ -1401,37 +1401,15 @@ PODS:
     - React-Core
   - RNFlashList (1.6.3):
     - React-Core
-  - RNGestureHandler (2.12.0):
-    - React-Core
-  - RNReanimated (3.6.0-nightly-20231031-c56d44fd9):
-    - DoubleConversion
-    - FBLazyVector
+  - RNGestureHandler (2.14.0):
     - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCTRequired
-    - RCTTypeSafety
-    - React-callinvoker
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
-    - React-Core/DevSupport
-    - React-Core/RCTWebSocket
-    - React-CoreModules
-    - React-cxxreact
-    - React-hermes
-    - React-jsi
-    - React-jsiexecutor
-    - React-jsinspector
-    - React-RCTActionSheet
-    - React-RCTAnimation
-    - React-RCTAppDelegate
-    - React-RCTBlob
-    - React-RCTImage
-    - React-RCTLinking
-    - React-RCTNetwork
-    - React-RCTSettings
-    - React-RCTText
+  - RNReanimated (3.6.0):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
     - ReactCommon/turbomodule/core
-    - Yoga
   - RNScreens (3.27.0):
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -1977,7 +1955,7 @@ SPEC CHECKSUMS:
   EXNotifications: 1cbda734d622205cd72a0523a90e01dda0470edc
   Expo: 97df3b68de6c485f894dbae821666bec8435e144
   expo-dev-client: 820f881c0dc8a0f1f4cd1e35a35469d1d0fbc798
-  expo-dev-launcher: ddd4c74d4192526603cf004baf47b445d5372410
+  expo-dev-launcher: 8f353ad1c0e24a449581da76141bff672c28c729
   expo-dev-menu: 9fc863259e3178e3c65ccdc2515bf3f6ba9e9512
   expo-dev-menu-interface: 05d08cc56649636de77253583b4bbb73adce7680
   ExpoAppleAuthentication: 4fc9972356977f009911f2f3a5f56319c2a5b11b
@@ -1993,7 +1971,7 @@ SPEC CHECKSUMS:
   ExpoDevice: 30d5e44aff42048ab016fa0c37a51fdb6b1f8608
   ExpoDocumentPicker: a1a38f72993a4f0622d0c918d520b4ff640ba1cb
   ExpoFileSystem: 1bc21c70ab0bf505cd6bef97c5b008618bfb72f2
-  ExpoGL: 6037e72282fce9746e973c129628cff7f2ee44a6
+  ExpoGL: e452774bffdc758a6fe2dbff589234fa4026a4c3
   ExpoHaptics: 76961bc7692870eb8ddac0527260a7ecaf28300d
   ExpoImage: cfaa9c379a3467c7863a187a1059c220b27a0741
   ExpoImageManipulator: b9d5ddfe7f00932677b52b6d5bd667e41caf0b2d
@@ -2096,8 +2074,8 @@ SPEC CHECKSUMS:
   RNCPicker: 529d564911e93598cc399b56cc0769ce3675f8c8
   RNDateTimePicker: 8fb39263b721223e095248acaf6f406d5b7f6713
   RNFlashList: 4b4b6b093afc0df60ae08f9cbf6ccd4c836c667a
-  RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
-  RNReanimated: 44d8524115fc3a5e809609a302944055934e3611
+  RNGestureHandler: 61bfdfc05db9b79dd61f894dcd29d3dcc6db3c02
+  RNReanimated: 92958cd13e63c2c34c71bc50ee2c8d5561bc4e3f
   RNScreens: 5f4df9babb21d30723580377b5f52d9f9baf0005
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9

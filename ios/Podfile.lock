@@ -2217,7 +2217,7 @@ PODS:
     - React-Core
   - RNGestureHandler (2.14.0):
     - React-Core
-  - RNReanimated (3.6.0-nightly-20231031-c56d44fd9):
+  - RNReanimated (3.6.0):
     - DoubleConversion
     - FBLazyVector
     - glog
@@ -3279,7 +3279,7 @@ SPEC CHECKSUMS:
   ExpoDevice: 30d5e44aff42048ab016fa0c37a51fdb6b1f8608
   ExpoDocumentPicker: a1a38f72993a4f0622d0c918d520b4ff640ba1cb
   ExpoFileSystem: 1bc21c70ab0bf505cd6bef97c5b008618bfb72f2
-  ExpoGL: 6037e72282fce9746e973c129628cff7f2ee44a6
+  ExpoGL: e452774bffdc758a6fe2dbff589234fa4026a4c3
   ExpoHaptics: 76961bc7692870eb8ddac0527260a7ecaf28300d
   ExpoHead: e4605573eea4e36b29ce35716d451e4218b21680
   ExpoImage: cfaa9c379a3467c7863a187a1059c220b27a0741
@@ -3403,7 +3403,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
   RNFlashList: 4b4b6b093afc0df60ae08f9cbf6ccd4c836c667a
   RNGestureHandler: 4279931048471f17faf46d912b2e96e10f1da99b
-  RNReanimated: 8a00922e4aa2c11c325aac904e690b0d12a2a0c6
+  RNReanimated: c7706129cc5d41b737193456f549dca3a9b0a0ca
   RNScreens: 2b19e2471db8a581c83f381f4ea5d43071c9a3bf
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
@@ -3425,6 +3425,6 @@ SPEC CHECKSUMS:
   Yoga: 4604f93d2c5a12c7586666b03bed2a27e0324f33
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: b47270c5bb886bd7b10c355c587521e10ec38e2c
+PODFILE CHECKSUM: d21b959522ea734e5c316c7d6e3f09319baf866b
 
 COCOAPODS: 1.14.2
