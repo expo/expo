@@ -77,7 +77,7 @@ export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
           <VersionSelector
             version={toVersion}
             setVersion={setToVersion}
-            availableVersions={bareDiffVersions.filter((version: string) => version >= fromVersion)}
+            availableVersions={bareDiffVersions.filter((version: string) => version > fromVersion)}
           />
         </div>
       </div>
