@@ -8,8 +8,8 @@ import { A, CALLOUT, FOOTNOTE } from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
 const URL = isDev
-  ? `https://api.expo.dev/v2/mailchimp-mailing-list/subscribe`
-  : `http://api.expo.test/v2/mailchimp-mailing-list/subscribe`;
+  ? `http://api.expo.test/v2/mailchimp-mailing-list/subscribe`
+  : `https://api.expo.dev/v2/mailchimp-mailing-list/subscribe`;
 
 export const NewsletterSignUp = () => {
   const [hasSubscribed, setHasSubscribed] = useLocalStorage({

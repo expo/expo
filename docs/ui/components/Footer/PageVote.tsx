@@ -1,5 +1,5 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { ThumbsDownIcon, ThumbsUpIcon } from '@expo/styleguide-icons';
+import { MessageTextSquare02Icon, ThumbsDownIcon, ThumbsUpIcon } from "@expo/styleguide-icons";
 import * as Dialog from '@radix-ui/react-dialog';
 import { useState } from 'react';
 
@@ -49,14 +49,23 @@ export const PageVote = ({ pathname }: Props) => {
                   size="xs"
                   aria-label="Vote down"
                   className="mx-1 min-w-[40px] text-center"
-                  leftSlot={<ThumbsDownIcon className="icon-sm" />}
+                  leftSlot={<MessageTextSquare02Icon className="icon-sm" />}
                   onClick={() => {
-                    reportPageVote({ status: false });
-                    setUserVoted(true);
                     setOpen(true);
                   }}
                 />
               </Dialog.Trigger>
+              <Button
+                theme="secondary"
+                size="xs"
+                aria-label="Vote down"
+                className="mx-1 min-w-[40px] text-center"
+                leftSlot={<ThumbsDownIcon className="icon-sm" />}
+                onClick={() => {
+                  reportPageVote({ status: false });
+                  setUserVoted(true);
+                }}
+              />
             </div>
           </div>
         )}
