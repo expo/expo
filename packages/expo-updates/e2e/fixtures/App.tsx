@@ -41,6 +41,8 @@ export default function App() {
   const [extraParamsString, setExtraParamsString] = React.useState('');
   const [nativeStateContextString, setNativeStateContextString] = React.useState('{}');
   const [isRollback, setIsRollback] = React.useState(false);
+  const [isReloading, setIsReloading] = React.useState(false);
+  const [startTime, setStartTime] = React.useState<number | null>(null);
   const [didCheckAndDownloadHappenInParallel, setDidCheckAndDownloadHappenInParallel] =
     React.useState(false);
 
@@ -54,6 +56,10 @@ export default function App() {
     isChecking,
     isDownloading,
   } = Updates.useUpdates();
+
+  React.useEffect(() => {
+    setStartTime(Date.now());
+  }, []);
 
   Updates.useUpdateEvents((event) => {
     setLastUpdateEventType(event.type);
@@ -120,6 +126,16 @@ export default function App() {
     await Updates.clearLogEntriesAsync();
   });
 
+  const handleReload = async () => {
+    setIsReloading(true);
+    try {
+      await Updates.reloadAsync();
+      setIsReloading(false);
+    } catch (e) {
+      console.warn(e);
+    }
+  };
+
   const handleCheckForUpdate = runBlockAsync(async () => {
     await Updates.checkForUpdateAsync();
   });
@@ -167,6 +183,8 @@ export default function App() {
       <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
       <TestValue testID="availableUpdateID" value={`${availableUpdate?.updateId}`} />
       <TestValue testID="extraParamsString" value={`${extraParamsString}`} />
+      <TestValue testID="isReloading" value={`${isReloading}`} />
+      <TestValue testID="startTime" value={`${startTime}`} />
 
       <TestValue testID="state.isUpdateAvailable" value={`${isUpdateAvailable}`} />
       <TestValue testID="state.isUpdatePending" value={`${isUpdatePending}`} />
@@ -230,6 +248,7 @@ export default function App() {
             testID="triggerParallelFetchAndDownload"
             onPress={handleCheckAndDownloadAtSameTime}
           />
+          <TestButton testID="reload" onPress={handleReload} />
         </View>
       </View>
 
