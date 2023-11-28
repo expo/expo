@@ -48,6 +48,12 @@ export const DiffBlock = ({
     }
   }, [source]);
 
+  useEffect(() => {
+    if (raw) {
+      setDiff(parseDiff(raw));
+    }
+  }, [raw]);
+
   if (!diff) {
     return null;
   }

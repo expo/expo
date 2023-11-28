@@ -6,6 +6,7 @@ import { PropsWithChildren, useEffect, useState } from 'react';
 import { VersionSelector } from './VersionSelector';
 
 import versions from '~/public/static/constants/versions.json';
+import diffInfo from '~/public/static/diffs/template-bare-minimum/diffInfo.json';
 import { DiffBlock } from '~/ui/components/Snippet';
 import { PermalinkedSnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
 import { RawH3, RawH4 } from '~/ui/components/Text';
@@ -21,8 +22,9 @@ type Props = PropsWithChildren<{
 export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
   const router = useRouter();
 
-  let bareDiffVersions =
-    require('~/public/static/diffs/template-bare-minimum/versions.json').slice();
+  console.log(router?.asPath);
+
+  let bareDiffVersions = diffInfo.versions.slice();
 
   // default to from: last SDK, to: current SDK
   const lastTwoProductionVersions = bareDiffVersions
@@ -53,7 +55,8 @@ export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
     a === 'unversioned' ? 'unversioned' : a > b ? a : b
   );
 
-  const diffFile = `/static/diffs/template-bare-minimum/${fromVersion}..${toVersion}.diff`;
+  const diffName = `${fromVersion}..${toVersion}`;
+  const diff = diffInfo.diffs[diffName as keyof typeof diffInfo.diffs];
 
   return (
     <div>
@@ -87,7 +90,7 @@ export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
             Native code changes from SDK {fromVersion} to {toVersion}
           </RawH3>
           <DiffBlock
-            source={diffFile}
+            raw={diff}
             filenameModifier={str => str.replace('templates/expo-template-bare-minimum/', '')}
             showOperation
             collapseDeletedFiles

@@ -15,6 +15,19 @@ type ActionOptions = {
   check?: boolean;
 };
 
+async function buildDiffsJson(diffPaths: string[], versions: string[]) {
+  const diffMap = {};
+  for (const diffPath of diffPaths) {
+    const diffName = path.parse(diffPath).name;
+    diffMap[diffName] = await fs.readFile(diffPath, 'utf8');
+  }
+  const diffObj = {
+    versions,
+    diffs: diffMap,
+  };
+  return JSON.stringify(diffObj);
+}
+
 function allVersions(min, max) {
   const versions: string[] = [];
   for (let i = min; i <= max; i++) {
@@ -60,6 +73,8 @@ async function executeDiffCommand(diffDirPath: string, sdkFrom: string, sdkTo: s
   );
 
   await fs.writeFile(diffPath, diff.stdout);
+
+  return diffPath;
 }
 
 async function action({ check = false }: ActionOptions) {
@@ -77,7 +92,7 @@ async function action({ check = false }: ActionOptions) {
   try {
     //const sdkVersions = await readSdkVersions(diffDirPath, sdk);
     // generate from all other SDK version to the specified SDK version
-    let diffJobs: PromiseLike<any>[] = [];
+    const diffJobs: PromiseLike<any>[] = [];
 
     const { minSdk, maxSdk } = getReleasedSdkVersionRange();
 
@@ -88,21 +103,31 @@ async function action({ check = false }: ActionOptions) {
     await fs.remove(diffDirPath);
     await fs.ensureDir(diffDirPath);
 
+    //const diffPairs: string[] = [];
+
     // start with the lowest SDK version and diff it with all other SDK versions equal to or lower than it
     sdkVersionsToDiff.forEach((toSdkVersion) => {
       const sdkVersionsLowerThenOrEqualTo =
         toSdkVersion === 'unversioned'
           ? sdkVersionsToDiff
           : sdkVersionsToDiff.filter((s) => s <= toSdkVersion);
-      diffJobs = diffJobs.concat(
-        sdkVersionsLowerThenOrEqualTo.map((fromSdkVersion) =>
+      sdkVersionsLowerThenOrEqualTo.forEach((fromSdkVersion) => {
+        //diffPairs.push(`${fromSdkVersion}..${toSdkVersion}`);
+        diffJobs.push(
           taskQueue.add(() => executeDiffCommand(diffDirPath, fromSdkVersion, toSdkVersion))
-        )
-      );
+        );
+      });
     });
-    await Promise.all(diffJobs);
+    const diffPaths = await Promise.all(diffJobs);
+    //console.log(paths.map((p) => path.parse(p).name));
     // write the list of SDK versions to a file to generate list of versions for which diffs can be viewed
     await fs.writeFile(path.join(diffDirPath, 'versions.json'), JSON.stringify(sdkVersionsToDiff));
+
+    // write a JSON file with all the diffs so we can load them synchronously
+    await fs.writeFileSync(
+      path.join('docs/public/static/diffs/template-bare-minimum', 'diffInfo.json'),
+      await buildDiffsJson(diffPaths, sdkVersionsToDiff)
+    );
 
     // see if diff regeneration changed the diff files from the last commit
     // Used to fail package checks when diffs are not regenerated
