@@ -1,7 +1,6 @@
 package expo.modules.splashscreen
 
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.splashscreen.exceptions.HideAsyncException
@@ -24,7 +23,7 @@ class SplashScreenModule : Module() {
           { hasEffect -> promise.resolve(hasEffect) },
           { m -> promise.reject(PreventAutoHideException(m)) }
         )
-      }?: run {
+      } ?: run {
         promise.resolve(false)
       }
     }
@@ -36,7 +35,7 @@ class SplashScreenModule : Module() {
           { hasEffect -> promise.resolve(hasEffect) },
           { m -> promise.reject(HideAsyncException(m)) }
         )
-      }?: run {
+      } ?: run {
         promise.resolve(false)
       }
     }
