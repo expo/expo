@@ -62,6 +62,8 @@ export const PermalinkedSnippetHeader = withHeadingManager(
     let sidebarTitle;
     if (typeof title === 'string') {
       const pathSegments = title.split('/');
+      // when paths are too long, generate headers like:
+      // android/../AndroidManifest.xml
       sidebarTitle =
         pathSegments.length > 2
           ? pathSegments[0] + '/../' + pathSegments[pathSegments.length - 1]
@@ -110,17 +112,42 @@ const FileStatus = ({ type }: FileStatusProps) => {
     rename: 'RENAMED',
   };
 
+  const labelSpecificTagStyle = [
+    type === 'add' && insertTagStyle,
+    type === 'modify' && modifyTagStyle,
+    type === 'delete' && deleteTagStyle,
+  ];
+
   return (
-    <div className={type === 'delete' ? 'diff-code-delete' : 'diff-code-insert'} css={tagStyle}>
+    <div css={[tagStyle, labelSpecificTagStyle]}>
       <span css={labelStyle}>{labels[type as keyof typeof labels]}</span>
     </div>
   );
 };
 
+const insertTagStyle = css({
+  color: theme.text.success,
+  backgroundColor: theme.palette.green2,
+  borderColor: theme.border.success,
+});
+
+const deleteTagStyle = css({
+  color: theme.text.danger,
+  backgroundColor: theme.palette.red2,
+  borderColor: theme.border.danger,
+});
+
+const modifyTagStyle = css({
+  color: theme.text.warning,
+  backgroundColor: theme.palette.yellow2,
+  borderColor: theme.border.warning,
+});
+
 const tagStyle = css({
   display: 'inline-flex',
-  fontSize: '90%',
-  padding: `${spacing[1]}px ${spacing[2]}px`,
+  fontSize: '80%',
+  fontWeight: 600,
+  padding: `${spacing[1]}px ${spacing[1]}px`,
   borderRadius: borderRadius.sm,
   border: `1px solid ${theme.border.default}`,
   alignItems: 'center',
