@@ -15,11 +15,10 @@ type ActionOptions = {
   check?: boolean;
 };
 
-async function buildDiffsJson(diffPaths: string[], versions: string[]) {
+async function buildDiffsJson(diffs: { name: string; contents: string }[], versions: string[]) {
   const diffMap = {};
-  for (const diffPath of diffPaths) {
-    const diffName = path.parse(diffPath).name;
-    diffMap[diffName] = await fs.readFile(diffPath, 'utf8');
+  for (const diff of diffs) {
+    diffMap[diff.name] = diff.contents;
   }
   const diffObj = {
     versions,
@@ -57,9 +56,7 @@ function sdkToBranch(sdkVersion: string) {
   return `sdk-${sdkVersion}`;
 }
 
-async function executeDiffCommand(diffDirPath: string, sdkFrom: string, sdkTo: string) {
-  const diffPath = path.join(diffDirPath, `${sdkFrom}..${sdkTo}.diff`);
-
+async function executeDiffCommand(sdkFrom: string, sdkTo: string) {
   const diffCommand = `origin/${sdkToBranch(sdkFrom)}..origin/${sdkToBranch(sdkTo)}`;
 
   await Git.fetchAsync();
@@ -72,9 +69,7 @@ async function executeDiffCommand(diffDirPath: string, sdkFrom: string, sdkTo: s
     }
   );
 
-  await fs.writeFile(diffPath, diff.stdout);
-
-  return diffPath;
+  return { name: `${sdkFrom}..${sdkTo}`, contents: diff.stdout };
 }
 
 async function action({ check = false }: ActionOptions) {
@@ -112,21 +107,15 @@ async function action({ check = false }: ActionOptions) {
           ? sdkVersionsToDiff
           : sdkVersionsToDiff.filter((s) => s <= toSdkVersion);
       sdkVersionsLowerThenOrEqualTo.forEach((fromSdkVersion) => {
-        //diffPairs.push(`${fromSdkVersion}..${toSdkVersion}`);
-        diffJobs.push(
-          taskQueue.add(() => executeDiffCommand(diffDirPath, fromSdkVersion, toSdkVersion))
-        );
+        diffJobs.push(taskQueue.add(() => executeDiffCommand(fromSdkVersion, toSdkVersion)));
       });
     });
-    const diffPaths = await Promise.all(diffJobs);
-    //console.log(paths.map((p) => path.parse(p).name));
-    // write the list of SDK versions to a file to generate list of versions for which diffs can be viewed
-    await fs.writeFile(path.join(diffDirPath, 'versions.json'), JSON.stringify(sdkVersionsToDiff));
+    const diffs = await Promise.all(diffJobs);
 
     // write a JSON file with all the diffs so we can load them synchronously
     await fs.writeFileSync(
       path.join('docs/public/static/diffs/template-bare-minimum', 'diffInfo.json'),
-      await buildDiffsJson(diffPaths, sdkVersionsToDiff)
+      await buildDiffsJson(diffs, sdkVersionsToDiff)
     );
 
     // see if diff regeneration changed the diff files from the last commit
