@@ -108,7 +108,7 @@ export async function getFilesToExportFromServerAsync(
         files.set(outputPath, {
           contents: data,
           routeId: pathname,
-          webTargetDomain: 'server',
+          webTargetDomain: includeGroupVariations ? 'client' : 'server',
         });
       } catch (e: any) {
         await logMetroErrorAsync({ error: e, projectRoot });
