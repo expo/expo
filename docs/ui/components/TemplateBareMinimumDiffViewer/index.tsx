@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { spacing } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
-import { PropsWithChildren, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { VersionSelector } from './VersionSelector';
 
@@ -14,15 +14,8 @@ import { RawH3, RawH4 } from '~/ui/components/Text';
 // versions used by SDK selector. This has "unversioned" removed on production versions. The diff selectors will match that.
 const { VERSIONS } = versions;
 
-type Props = PropsWithChildren<{
-  source?: string;
-  raw?: string;
-}>;
-
-export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
+export const TemplateBareMinimumDiffViewer = () => {
   const router = useRouter();
-
-  console.log(router?.asPath);
 
   let bareDiffVersions = diffInfo.versions.slice();
 
@@ -31,20 +24,8 @@ export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
     .filter((d: string) => d !== 'unversioned')
     .slice(-2);
 
-  // keep versions in state for instant updates to the dropdown
-  const [fromVersion, setFromVersion] = useState(
-    (router?.query.fromSdk as string) || lastTwoProductionVersions[0]
-  );
-  const [toVersion, setToVersion] = useState(
-    (router?.query.toSdk as string) || lastTwoProductionVersions[1]
-  );
-
-  // then sync the state to the search params (on initial load without params and when the dropdown changes)
-  useEffect(() => {
-    if (!router?.query.from) {
-      router?.push({ query: { fromSdk: fromVersion, toSdk: toVersion } });
-    }
-  }, [fromVersion, toVersion]);
+  const fromVersion = router?.query.fromSdk || lastTwoProductionVersions[0];
+  const toVersion = router?.query.toSdk || lastTwoProductionVersions[1];
 
   // remove unversioned if this environment doesn't show it in the SDK reference
   if (!VERSIONS.find((version: string) => version === 'unversioned')) {
@@ -70,16 +51,20 @@ export const TemplateBareMinimumDiffViewer = ({ source, raw }: Props) => {
         <div css={selectorOuterStyle}>
           <RawH4>From SDK version:</RawH4>
           <VersionSelector
-            version={fromVersion}
-            setVersion={setFromVersion}
+            version={fromVersion as string}
+            setVersion={newFromVersion =>
+              router?.push({ query: { fromSdk: newFromVersion, toSdk: toVersion } })
+            }
             availableVersions={bareDiffVersions.filter((version: string) => version !== maxVersion)}
           />
         </div>
         <div css={selectorOuterStyle}>
           <RawH4>To SDK version:</RawH4>
           <VersionSelector
-            version={toVersion}
-            setVersion={setToVersion}
+            version={toVersion as string}
+            setVersion={newToVersion =>
+              router?.push({ query: { fromSdk: fromVersion, toSdk: newToVersion } })
+            }
             availableVersions={bareDiffVersions.filter((version: string) => version > fromVersion)}
           />
         </div>
