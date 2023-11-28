@@ -40,10 +40,10 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
   // explicitly provided URIs
   const scale = AssetSourceResolver.pickScale(meta.scales, PixelRatio.get());
   const index = meta.scales.findIndex((s) => s === scale);
-  const hash = meta.fileHashes ? meta.fileHashes[index] || meta.fileHashes[0] : meta.hash;
+  const hash = meta.fileHashes ? meta.fileHashes[index] ?? meta.fileHashes[0] : meta.hash;
 
   // Allow asset processors to directly provide the URL to load
-  const uri = meta.fileUris ? meta.fileUris[index] || meta.fileUris[0] : meta.uri;
+  const uri = meta.fileUris ? meta.fileUris[index] ?? meta.fileUris[0] : meta.uri;
   if (uri) {
     return { uri: resolveUri(uri), hash };
   }
@@ -90,11 +90,11 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
     };
   }
 
-  // Production CDN URIs are based on each asset file hash
-  return {
-    uri: `https://classic-assets.eascdn.net/~assets/${encodeURIComponent(hash)}`,
-    hash,
-  };
+  throw new Error(
+    `Asset "${meta.name}${
+      meta.type ? `.${meta.type}` : ''
+    }" must specify an absolute HTTP(S) URL in production or specify a development server URL in development.`
+  );
 }
 
 /**

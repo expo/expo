@@ -48,9 +48,11 @@ jest.mock('../ImageAssets', () => {
 const mockImageMetadata = {
   name: 'test',
   type: 'png',
+  uri: 'https://example.com/icon.png',
   hash: 'cafecafecafecafecafecafecafecafe',
   scales: [1],
   httpServerLocation: '/assets',
+  fileUris: ['https://example.com/icon.png'],
   fileHashes: ['cafecafecafecafecafecafecafecafe'],
 };
 
@@ -153,7 +155,7 @@ it(`downloads uncached assets`, async () => {
   expect(asset.downloaded).toBe(true);
   expect(asset.localUri).toBe(
     Platform.select({
-      web: 'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe',
+      web: 'https://example.com/icon.png',
       default: 'file:///Caches/Expo.app/ExponentAsset-cafecafecafecafecafecafecafecafe.png',
     })
   );
@@ -175,10 +177,10 @@ it(`throws when the file's checksum does not match`, async () => {
         downloading: false,
         hash: 'cafecafecafecafecafecafecafecafe',
         height: 1,
-        localUri: 'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe',
+        localUri: 'https://example.com/icon.png',
         name: undefined,
         type: 'png',
-        uri: 'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe',
+        uri: 'https://example.com/icon.png',
       })
     );
   } else {
