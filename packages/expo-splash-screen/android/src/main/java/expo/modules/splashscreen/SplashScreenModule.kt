@@ -1,7 +1,6 @@
 package expo.modules.splashscreen
 
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.splashscreen.exceptions.HideAsyncException
@@ -18,25 +17,27 @@ class SplashScreenModule : Module() {
     Name("ExpoSplashScreen")
 
     AsyncFunction("preventAutoHideAsync") { promise: Promise ->
-      val currentActivity =
-        appContext.currentActivity ?: throw Exceptions.MissingActivity()
-
-      SplashScreen.preventAutoHide(
-        currentActivity,
-        { hasEffect -> promise.resolve(hasEffect) },
-        { m -> promise.reject(PreventAutoHideException(m)) }
-      )
+      appContext.currentActivity?.let {
+        SplashScreen.preventAutoHide(
+          it,
+          { hasEffect -> promise.resolve(hasEffect) },
+          { m -> promise.reject(PreventAutoHideException(m)) }
+        )
+      } ?: run {
+        promise.resolve(false)
+      }
     }
 
     AsyncFunction("hideAsync") { promise: Promise ->
-      val currentActivity =
-        appContext.currentActivity ?: throw Exceptions.MissingActivity()
-
-      SplashScreen.hide(
-        currentActivity,
-        { hasEffect -> promise.resolve(hasEffect) },
-        { m -> promise.reject(HideAsyncException(m)) }
-      )
+      appContext.currentActivity?.let {
+        SplashScreen.hide(
+          it,
+          { hasEffect -> promise.resolve(hasEffect) },
+          { m -> promise.reject(HideAsyncException(m)) }
+        )
+      } ?: run {
+        promise.resolve(false)
+      }
     }
   }
 }
