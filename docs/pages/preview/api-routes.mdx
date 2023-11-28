@@ -295,7 +295,7 @@ const { createRequestHandler } = require('@expo/server/adapter/netlify');
 
 const handler = createRequestHandler({
   /* @info Points to the root `dist/` (output) folder */
-  build: require('path').join(__dirname, '../../dist'),
+  build: require('path').join(__dirname, '../../dist/server'),
   /* @end */
   mode: process.env.NODE_ENV,
 });
@@ -313,7 +313,7 @@ Create a Netlify configuration file at the root of your project to redirect all 
 [build]
   command = "expo export -p web"
   functions = "netlify/functions"
-  publish = "dist"
+  publish = "dist/client"
 
 [[redirects]]
   from = "/*"
@@ -322,10 +322,10 @@ Create a Netlify configuration file at the root of your project to redirect all 
 
 [functions]
   # Include everything to ensure dynamic routes can be used.
-  included_files = ["dist/**/*.html", "dist/_expo/functions/**/*", "dist/_expo/routes.json"]
+  included_files = ["dist/server/**/*"]
 
 [[headers]]
-  for = "/dist/_expo/functions/*"
+  for = "/dist/server/_expo/functions/*"
   [headers.values]
     # Set to 60 seconds as an example.
     "Cache-Control" = "public, max-age=60, s-maxage=60"
@@ -377,7 +377,7 @@ const { createRequestHandler } = require('@expo/server/adapter/vercel');
 
 module.exports = createRequestHandler({
   /* @info Points to the root `dist/` (output) folder */
-  build: require('path').join(__dirname, '../../dist'),
+  build: require('path').join(__dirname, '../dist/server'),
   /* @end */
   mode: process.env.NODE_ENV,
 });
@@ -401,23 +401,18 @@ Create a Vercel configuration file (**vercel.json**) at the root of your project
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist/client"
       }
     },
     {
       "src": "api/index.js",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["dist/**"]
+        "includeFiles": ["dist/server/**"]
       }
     }
   ],
   "routes": [
-    {
-      "src": "/_expo/functions/.*",
-      "dest": "/404",
-      "status": 404
-    },
     {
       "handle": "filesystem"
     },
@@ -429,31 +424,21 @@ Create a Vercel configuration file (**vercel.json**) at the root of your project
 }
 ```
 
-The **legacy** version of the **vercel.json** needs a `@vercel/static-build` runtime to serve your assets from the **dist** output directory.
+The **legacy** version of the **vercel.json** needs a `@vercel/static-build` runtime to serve your assets from the **dist/client** output directory.
 
 </Tab>
 <Tab label="vercel.json v3">
 
-{/* prettier-ignore */}
-> **warning** When used as is, this **vercel.json** configuration makes server code in **/dist/_expo/functions/&#42;** publicly accessible.
-
 ```json vercel.json
 {
   "buildCommand": "expo export -p web",
-  "outputDirectory": "dist",
+  "outputDirectory": "dist/client",
   "functions": {
     "api/index.js": {
       "runtime": "@vercel/node@3.0.11",
-      "includeFiles": "dist/**"
+      "includeFiles": "dist/server/**"
     }
   },
-  "redirects": [
-    {
-      "source": "/_expo/functions/(.*)",
-      "destination": "/404",
-      "statusCode": 404
-    }
-  ],
   "rewrites": [
     {
       "source": "/(.*)",
@@ -463,7 +448,7 @@ The **legacy** version of the **vercel.json** needs a `@vercel/static-build` run
 }
 ```
 
-The newer version of the **vercel.json** does not use `routes` and `builds` configuration options anymore, and serves your public assets from the **dist** output directory automatically.
+The newer version of the **vercel.json** does not use `routes` and `builds` configuration options anymore, and serves your public assets from the **dist/client** output directory automatically.
 
 </Tab>
 </Tabs>
