@@ -1,3 +1,6 @@
+import chalk from 'chalk';
+
+import { Log } from '../../../../log';
 import { type MetroBundlerDevServer } from '../MetroBundlerDevServer';
 
 export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
@@ -11,6 +14,7 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
     serverBaseUrl: metroBundler
       .getUrlCreator()
       .constructUrl({ scheme: 'http', hostType: 'localhost' }),
+    logger: createLogger(chalk.bold('Debug:')),
     unstable_experiments: {
       enableNewDebugger: true,
     },
@@ -19,5 +23,15 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
   return {
     debugMiddleware: middleware,
     debugWebsocketEndpoints: websocketEndpoints,
+  };
+}
+
+function createLogger(
+  logPrefix: string
+): Parameters<typeof import('@react-native/dev-middleware').createDevMiddleware>[0]['logger'] {
+  return {
+    info: (...args) => Log.log(logPrefix, ...args),
+    warn: (...args) => Log.warn(logPrefix, ...args),
+    error: (...args) => Log.error(logPrefix, ...args),
   };
 }
