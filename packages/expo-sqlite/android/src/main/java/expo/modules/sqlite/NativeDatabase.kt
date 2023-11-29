@@ -5,6 +5,8 @@ package expo.modules.sqlite
 import expo.modules.kotlin.sharedobjects.SharedRef
 
 internal class NativeDatabase(val dbName: String, val openOptions: OpenDatabaseOptions) : SharedRef<NativeDatabaseBinding>(NativeDatabaseBinding()) {
+  var isClosed = false
+
   override fun equals(other: Any?): Boolean {
     return other is NativeDatabase && this.ref == other.ref
   }

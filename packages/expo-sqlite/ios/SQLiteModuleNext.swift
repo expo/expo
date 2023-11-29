@@ -68,16 +68,18 @@ public final class SQLiteModuleNext: Module {
       }
 
       AsyncFunction("initAsync") { (database: NativeDatabase) in
-        initDb(database: database)
+        try initDb(database: database)
       }
       Function("initSync") { (database: NativeDatabase) in
-        initDb(database: database)
+        try initDb(database: database)
       }
 
       AsyncFunction("isInTransactionAsync") { (database: NativeDatabase) -> Bool in
+        try maybeThrowForClosedDatabase(database)
         return sqlite3_get_autocommit(database.pointer) == 0
       }
       Function("isInTransactionSync") { (database: NativeDatabase) -> Bool in
+        try maybeThrowForClosedDatabase(database)
         return sqlite3_get_autocommit(database.pointer) == 0
       }
 
@@ -154,10 +156,10 @@ public final class SQLiteModuleNext: Module {
       }
 
       AsyncFunction("getColumnNamesAsync") { (statement: NativeStatement) -> ColumnNames in
-        return getColumnNames(statement: statement)
+        return try getColumnNames(statement: statement)
       }
       Function("getColumnNamesSync") { (statement: NativeStatement) -> ColumnNames in
-        return getColumnNames(statement: statement)
+        return try getColumnNames(statement: statement)
       }
 
       AsyncFunction("resetAsync") { (statement: NativeStatement, database: NativeDatabase) in
@@ -187,7 +189,8 @@ public final class SQLiteModuleNext: Module {
     return directory?.appendingPathComponent(name)
   }
 
-  private func initDb(database: NativeDatabase) {
+  private func initDb(database: NativeDatabase) throws {
+    try maybeThrowForClosedDatabase(database)
     if database.openOptions.enableCRSQLite {
       crsqlite_init_from_swift(database.pointer)
     }
@@ -197,6 +200,7 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func exec(database: NativeDatabase, source: String) throws {
+    try maybeThrowForClosedDatabase(database)
     var error: UnsafeMutablePointer<CChar>?
     let ret = sqlite3_exec(database.pointer, source, nil, nil, &error)
     if ret != SQLITE_OK, let error = error {
@@ -207,6 +211,8 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) throws {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
     if sqlite3_prepare_v2(database.pointer, source, Int32(source.count), &statement.pointer, nil) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
@@ -214,6 +220,8 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func arrayRun(statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) throws -> [String: Int] {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
     for (index, param) in bindParams.enumerated() {
       try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
     }
@@ -228,6 +236,8 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func objectRun(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) throws -> [String: Int] {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
     for (name, param) in bindParams {
       let index = sqlite3_bind_parameter_index(statement.pointer, name.cString(using: .utf8))
       if index > 0 {
@@ -245,6 +255,8 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func arrayGet(statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) throws -> ColumnValues? {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
     for (index, param) in bindParams.enumerated() {
       try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
     }
@@ -259,6 +271,8 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func objectGet(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) throws -> ColumnValues? {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
     for (name, param) in bindParams {
       let index = sqlite3_bind_parameter_index(statement.pointer, name.cString(using: .utf8))
       if index > 0 {
@@ -276,6 +290,8 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func arrayGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: [Any]) throws -> [ColumnValues] {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
     for (index, param) in bindParams.enumerated() {
       try bindStatementParam(statement: statement, with: param, at: Int32(index + 1))
     }
@@ -294,6 +310,8 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func objectGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any]) throws -> [ColumnValues] {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
     for (name, param) in bindParams {
       let index = sqlite3_bind_parameter_index(statement.pointer, name.cString(using: .utf8))
       if index > 0 {
@@ -315,16 +333,21 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func reset(statement: NativeStatement, database: NativeDatabase) throws {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
     if sqlite3_reset(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
   }
 
   private func finalize(statement: NativeStatement, database: NativeDatabase) throws {
+    try maybeThrowForClosedDatabase(database)
+    try maybeThrowForFinalizedStatement(statement)
     maybeRemoveCachedStatement(database: database, statement: statement)
     if sqlite3_finalize(statement.pointer) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
+    statement.isFinalized = true
   }
 
   private func convertSqlLiteErrorToString(_ db: NativeDatabase) -> String {
@@ -334,6 +357,7 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func closeDatabase(_ db: NativeDatabase) throws {
+    try maybeThrowForClosedDatabase(db)
     for removedStatement in maybeRemoveAllCachedStatements(database: db) {
       sqlite3_finalize(removedStatement.pointer)
     }
@@ -342,6 +366,7 @@ public final class SQLiteModuleNext: Module {
       sqlite3_exec(db.pointer, "SELECT crsql_finalize()", nil, nil, nil)
     }
     let ret = sqlite3_close(db.pointer)
+    db.isClosed = true
 
     if let index = contextPairs.firstIndex(where: {
       guard let pair = $0.takeUnretainedValue() as? (SQLiteModuleNext, NativeDatabase) else {
@@ -407,7 +432,8 @@ public final class SQLiteModuleNext: Module {
     contextPair.toOpaque())
   }
 
-  private func getColumnNames(statement: NativeStatement) -> ColumnNames {
+  private func getColumnNames(statement: NativeStatement) throws -> ColumnNames {
+    try maybeThrowForFinalizedStatement(statement)
     let columnCount = Int(sqlite3_column_count(statement.pointer))
     var columnNames: ColumnNames = Array(repeating: "", count: columnCount)
     for i in 0..<columnCount {
@@ -417,6 +443,7 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func getColumnValues(statement: NativeStatement) throws -> ColumnValues {
+    try maybeThrowForFinalizedStatement(statement)
     let columnCount = Int(sqlite3_column_count(statement.pointer))
     var columnValues: ColumnValues = Array(repeating: 0, count: columnCount)
     for i in 0..<columnCount {
@@ -474,6 +501,18 @@ public final class SQLiteModuleNext: Module {
       sqlite3_bind_int(instance, index, param ? 1 : 0)
     default:
       throw InvalidConvertibleException("Unsupported parameter type: \(type(of: param))")
+    }
+  }
+
+  private func maybeThrowForClosedDatabase(_ database: NativeDatabase) throws {
+    if database.isClosed {
+      throw AccessClosedResourceException()
+    }
+  }
+
+  private func maybeThrowForFinalizedStatement(_ statement: NativeStatement) throws {
+    if statement.isFinalized {
+      throw AccessClosedResourceException()
     }
   }
 
