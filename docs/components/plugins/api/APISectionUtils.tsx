@@ -432,15 +432,21 @@ function createInheritPermalink(baseNestingLevel: number) {
 export const BoxSectionHeader = ({
   text,
   exposeInSidebar,
+  className,
   baseNestingLevel = DEFAULT_BASE_NESTING_LEVEL,
 }: {
   text: string;
   exposeInSidebar?: boolean;
+  className?: string;
   baseNestingLevel?: number;
 }) => {
   const TextWrapper = exposeInSidebar ? createInheritPermalink(baseNestingLevel) : Fragment;
   return (
-    <CALLOUT theme="secondary" weight="medium" css={STYLES_NESTED_SECTION_HEADER}>
+    <CALLOUT
+      theme="secondary"
+      weight="medium"
+      css={STYLES_NESTED_SECTION_HEADER}
+      className={className}>
       <TextWrapper>{text}</TextWrapper>
     </CALLOUT>
   );

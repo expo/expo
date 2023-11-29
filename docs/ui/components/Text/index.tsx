@@ -28,7 +28,7 @@ export const createPermalinkedComponent = (
   }
 ) => {
   const { baseNestingLevel, sidebarType = HeadingType.Text } = options || {};
-  return ({ children, level, id, ...props }: PermalinkedComponentProps) => {
+  return ({ children, level, id, className, ...props }: PermalinkedComponentProps) => {
     const cleanChildren = React.Children.map(children, child => {
       if (React.isValidElement(child) && child?.props?.href) {
         isDev &&
