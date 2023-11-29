@@ -2,7 +2,7 @@ import Protocol from 'devtools-protocol';
 
 import {
   CdpMessage,
-  DebuggerInfo,
+  DebuggerMetadata,
   DebuggerRequest,
   DeviceResponse,
   InspectorHandler,
@@ -16,7 +16,7 @@ import { getDebuggerType, respond } from './utils';
 export class VscodeDebuggerGetPossibleBreakpointsHandler implements InspectorHandler {
   onDebuggerMessage(
     message: DebuggerRequest<DebuggerGetPossibleBreakpoints>,
-    { socket, userAgent }: DebuggerInfo
+    { socket, userAgent }: DebuggerMetadata
   ): boolean {
     if (
       getDebuggerType(userAgent) === 'vscode' &&

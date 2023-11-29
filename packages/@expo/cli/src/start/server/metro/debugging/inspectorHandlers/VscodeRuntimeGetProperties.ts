@@ -2,7 +2,7 @@ import Protocol from 'devtools-protocol';
 
 import {
   CdpMessage,
-  DebuggerInfo,
+  DebuggerMetadata,
   DebuggerRequest,
   DeviceResponse,
   InspectorHandler,
@@ -23,7 +23,7 @@ export class VscodeRuntimeGetPropertiesHandler implements InspectorHandler {
 
   onDebuggerMessage(
     message: DebuggerRequest<RuntimeGetProperties>,
-    { userAgent }: DebuggerInfo
+    { userAgent }: DebuggerMetadata
   ): boolean {
     if (getDebuggerType(userAgent) === 'vscode' && message.method === 'Runtime.getProperties') {
       this.interceptGetProperties.add(message.id);
@@ -33,7 +33,7 @@ export class VscodeRuntimeGetPropertiesHandler implements InspectorHandler {
     return false;
   }
 
-  onDeviceMessage(message: DeviceResponse<RuntimeGetProperties>, { userAgent }: DebuggerInfo) {
+  onDeviceMessage(message: DeviceResponse<RuntimeGetProperties>, { userAgent }: DebuggerMetadata) {
     if (
       getDebuggerType(userAgent) === 'vscode' &&
       'id' in message &&

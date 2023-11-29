@@ -1,6 +1,6 @@
 import Protocol from 'devtools-protocol';
 
-import { CdpMessage, DebuggerInfo, DebuggerRequest, InspectorHandler } from './types';
+import { CdpMessage, DebuggerMetadata, DebuggerRequest, InspectorHandler } from './types';
 import { getDebuggerType } from './utils';
 
 /**
@@ -12,7 +12,7 @@ import { getDebuggerType } from './utils';
 export class VscodeDebuggerSetBreakpointByUrlHandler implements InspectorHandler {
   onDebuggerMessage(
     message: DebuggerRequest<DebuggerSetBreakpointByUrl>,
-    { userAgent }: DebuggerInfo
+    { userAgent }: DebuggerMetadata
   ): boolean {
     if (
       getDebuggerType(userAgent) === 'vscode' &&

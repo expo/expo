@@ -1,8 +1,4 @@
-import type {
-  DebuggerInfo,
-  unstable_Device as MetroDevice,
-  DebuggerRequest,
-} from '@react-native/dev-middleware';
+import type { unstable_Device } from '@react-native/dev-middleware';
 import fetch from 'node-fetch';
 import type WS from 'ws';
 
@@ -13,23 +9,14 @@ import { VscodeDebuggerScriptParsedHandler } from './inspectorHandlers/VscodeDeb
 import { VscodeDebuggerSetBreakpointByUrlHandler } from './inspectorHandlers/VscodeDebuggerSetBreakpointByUrl';
 import { VscodeRuntimeCallFunctionOnHandler } from './inspectorHandlers/VscodeRuntimeCallFunctionOn';
 import { VscodeRuntimeGetPropertiesHandler } from './inspectorHandlers/VscodeRuntimeGetProperties';
-import { DeviceRequest, InspectorHandler } from './inspectorHandlers/types';
+import { DebuggerMetadata, DeviceRequest, InspectorHandler } from './inspectorHandlers/types';
 import { type MetroBundlerDevServer } from '../MetroBundlerDevServer';
-
-/** Export the supported debugger types this inspector proxy can handle */
-export type DebuggerType = 'vscode' | 'generic';
-
-/** The debugger information being tracked by this device class */
-export type ExpoDebuggerInfo = DebuggerInfo & { debuggerType?: DebuggerType };
 
 export function createInspectorDeviceClass(
   metroBundler: MetroBundlerDevServer,
-  MetroDeviceClass: typeof MetroDevice
-): typeof MetroDevice {
+  MetroDeviceClass: typeof unstable_Device
+): typeof unstable_Device {
   return class ExpoInspectorDevice extends MetroDeviceClass implements InspectorHandler {
-    /** Stores information about currently connected debugger (if any). */
-    _debuggerConnection: ExpoDebuggerInfo | null = null;
-
     /** All handlers that should be used to intercept or reply to CDP events */
     public handlers: InspectorHandler[] = [
       // Generic handlers
@@ -43,16 +30,16 @@ export function createInspectorDeviceClass(
       new VscodeRuntimeCallFunctionOnHandler(),
     ];
 
-    onDeviceMessage(message: any, info: DebuggerInfo): boolean {
+    onDeviceMessage(message: any, info: DebuggerMetadata): boolean {
       return this.handlers.some((handler) => handler.onDeviceMessage?.(message, info) ?? false);
     }
 
-    onDebuggerMessage(message: any, info: DebuggerInfo): boolean {
+    onDebuggerMessage(message: any, info: DebuggerMetadata): boolean {
       return this.handlers.some((handler) => handler.onDebuggerMessage?.(message, info) ?? false);
     }
 
     /** Hook into the message life cycle to answer more complex CDP messages */
-    async _processMessageFromDevice(message: DeviceRequest<any>, info: DebuggerInfo) {
+    async _processMessageFromDevice(message: DeviceRequest<any>, info: DebuggerMetadata) {
       if (!this.onDeviceMessage(message, info)) {
         await super._processMessageFromDevice(message, info);
       }
@@ -60,8 +47,8 @@ export function createInspectorDeviceClass(
 
     /** Hook into the message life cycle to answer more complex CDP messages */
     _interceptMessageFromDebugger(
-      request: DebuggerRequest,
-      info: DebuggerInfo,
+      request: Parameters<unstable_Device['_interceptMessageFromDebugger']>[0],
+      info: DebuggerMetadata,
       socket: WS
     ): boolean {
       // Note, `socket` is the exact same as `info.socket`

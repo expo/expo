@@ -2,7 +2,7 @@ import Protocol from 'devtools-protocol';
 
 import {
   CdpMessage,
-  DebuggerInfo,
+  DebuggerMetadata,
   DebuggerRequest,
   DeviceResponse,
   InspectorHandler,
@@ -19,7 +19,7 @@ import { getDebuggerType, respond } from './utils';
 export class VscodeRuntimeCallFunctionOnHandler implements InspectorHandler {
   onDebuggerMessage(
     message: DebuggerRequest<RuntimeCallFunctionOn>,
-    { socket, userAgent }: DebuggerInfo
+    { socket, userAgent }: DebuggerMetadata
   ): boolean {
     if (getDebuggerType(userAgent) === 'vscode' && message.method === 'Runtime.callFunctionOn') {
       return respond<DeviceResponse<RuntimeCallFunctionOn>>(socket, {

@@ -3,12 +3,13 @@ import type { Protocol } from 'devtools-protocol';
 import {
   CdpMessage,
   InspectorHandler,
-  DebuggerInfo,
+  DebuggerMetadata,
   DeviceRequest,
   DebuggerRequest,
   DebuggerResponse,
   DeviceResponse,
 } from './types';
+import { respond } from './utils';
 
 export class NetworkResponseHandler implements InspectorHandler {
   /** All known responses, mapped by request id */
@@ -24,18 +25,18 @@ export class NetworkResponseHandler implements InspectorHandler {
     return false;
   }
 
-  onDebuggerMessage(message: DebuggerRequest<NetworkGetResponseBody>, { socket }: DebuggerInfo) {
+  onDebuggerMessage(
+    message: DebuggerRequest<NetworkGetResponseBody>,
+    { socket }: DebuggerMetadata
+  ) {
     if (
       message.method === 'Network.getResponseBody' &&
       this.storage.has(message.params.requestId)
     ) {
-      const response: DeviceResponse<NetworkGetResponseBody> = {
+      return respond<DeviceResponse<NetworkGetResponseBody>>(socket, {
         id: message.id,
         result: this.storage.get(message.params.requestId)!,
-      };
-
-      socket.send(JSON.stringify(response));
-      return true;
+      });
     }
 
     return false;
