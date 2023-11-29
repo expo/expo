@@ -11,6 +11,7 @@ import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
@@ -178,28 +179,15 @@ export async function instantiateMetroAsync(
 
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
-  // Initialize all React Native debug features through `@react-native/dev-middleware`
-  const { createDevMiddleware: createDebugMiddleware } =
-    require('@react-native/dev-middleware') as typeof import('@react-native/dev-middleware');
-  // `getDevServerUrl` returns null because the metro server hasn't been created yet, use URL creator instead
-  const serverBaseUrl = metroBundler
-    .getUrlCreator()
-    .constructUrl({ scheme: 'http', hostType: 'localhost' });
-  const debugMiddleware = createDebugMiddleware({
-    projectRoot,
-    serverBaseUrl,
-    unstable_experiments: {
-      enableNewDebugger: true,
-    },
-  });
-  // Prepend the debug middleware with the highest priority, avoiding HTML responses for /json/list
-  prependMiddleware(middleware, debugMiddleware.middleware);
+  // Initialize all React Native debug features
+  const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
+  prependMiddleware(middleware, debugMiddleware);
 
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
     websocketEndpoints: {
       ...websocketEndpoints,
-      ...debugMiddleware.websocketEndpoints,
+      ...debugWebsocketEndpoints,
     },
     watch: !isExporting && isWatchEnabled(),
   });
