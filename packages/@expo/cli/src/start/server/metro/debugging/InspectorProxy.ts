@@ -30,6 +30,7 @@ export function createInspectorProxyClass(
         // well-behaved and the debugger is prepared to handle large messages.
         maxPayload: 0,
       });
+
       wss.on('connection', async (socket: WS, req) => {
         try {
           const fallbackDeviceId = String(this._deviceCounter++);
@@ -40,7 +41,7 @@ export function createInspectorProxyClass(
           const appName = asString(query.app) || 'Unknown';
 
           const oldDevice = this._devices.get(deviceId);
-          // Create a new device instance using our own extended class
+          // FIX: Create a new device instance using our own extended class
           const newDevice = new MetroDeviceClass(
             deviceId,
             deviceName,
@@ -59,14 +60,26 @@ export function createInspectorProxyClass(
           debug(`Got new connection: name=${deviceName}, app=${appName}, device=${deviceId}`);
 
           socket.on('close', () => {
-            this._devices.delete(deviceId);
-            debug(`Device ${deviceName} disconnected.`);
+            // FIX: Only clean up the device reference, if not replaced by new device
+            if (this._devices.get(deviceId) === newDevice) {
+              this._devices.delete(deviceId);
+              debug(`Device ${deviceName} disconnected.`);
+            } else {
+              debug(`Device ${deviceName} reconnected.`);
+            }
           });
         } catch (e) {
           console.error('error', e);
           socket.close(INTERNAL_ERROR_CODE, e?.toString() ?? 'Unknown error');
+          // FIX: add missing event reporter
+          this._eventReporter?.logEvent({
+            type: 'connect_debugger_app',
+            status: 'error',
+            error: e,
+          });
         }
       });
+
       return wss;
     }
 
@@ -83,13 +96,14 @@ export function createInspectorProxyClass(
         // well-behaved and the device is prepared to handle large messages.
         maxPayload: 0,
       });
+
       wss.on('connection', async (socket: WS, req) => {
         try {
           const query = url.parse(req.url || '', true).query || {};
           const deviceId = asString(query.device);
           const pageId = asString(query.page);
-          // Determine the user agent from query paramter or header
-          const userAgent = asString(query.userAgent) ?? req.headers['user-agent'] ?? null;
+          // FIX: Determine the user agent from query paramter or header
+          const userAgent = asString(query.userAgent) || req.headers['user-agent'] || null;
 
           if (deviceId == null || pageId == null) {
             throw new Error('Incorrect URL - must provide device and page IDs');
@@ -111,6 +125,7 @@ export function createInspectorProxyClass(
           });
         }
       });
+
       return wss;
     }
   };
