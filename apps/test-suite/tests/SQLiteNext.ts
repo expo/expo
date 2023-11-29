@@ -296,7 +296,7 @@ DROP TABLE IF EXISTS Users;
 CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
 `);
 
-      const statement = await db.prepareAsync('INSERT INTO Nulling (x, y) VALUES (?, ?)');
+      const statement = await db.prepareAsync('INSERT INTO Users (user_id, name) VALUES (?, ?)');
       await statement.finalizeAsync();
       let error = null;
       try {
@@ -304,7 +304,7 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       } catch (e) {
         error = e;
       }
-      expect(error).not.toBeNull();
+      expect(error.toString()).toMatch(/Access to closed resource/);
     });
   });
 
