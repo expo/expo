@@ -62,7 +62,10 @@ export async function exportAppAsync(
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
   const outputPath = path.resolve(projectRoot, outputDir);
 
-  await copyPublicFolderAsync(publicPath, outputPath);
+  // TODO: Remove when this is abstracted into the files map
+  if (!platforms.includes('web') || !useServerRendering) {
+    await copyPublicFolderAsync(publicPath, outputPath);
+  }
 
   // Run metro bundler and create the JS bundles/source maps.
   const bundles = await createBundlesAsync(projectRoot, projectConfig, {
@@ -133,6 +136,9 @@ export async function exportAppAsync(
 
   if (platforms.includes('web')) {
     if (useServerRendering) {
+      // TODO: Remove when this is abstracted into the files map
+      await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));
+
       await unstable_exportStaticAsync(projectRoot, {
         files,
         clear: !!clear,
