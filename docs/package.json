@@ -62,6 +62,7 @@
     "@apidevtools/json-schema-ref-parser": "^11.1.0",
     "@emotion/jest": "^11.11.0",
     "@ocular-d/vale-bin": "^2.29.6",
+    "@radix-ui/react-dialog": "^1.0.5",
     "@tailwindcss/typography": "^0.5.10",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.1.0",
