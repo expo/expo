@@ -2,10 +2,12 @@
 #ifndef Paragraph_DEFINED
 #define Paragraph_DEFINED
 
+#include "include/core/SkPath.h"
 #include "modules/skparagraph/include/FontCollection.h"
 #include "modules/skparagraph/include/Metrics.h"
 #include "modules/skparagraph/include/ParagraphStyle.h"
 #include "modules/skparagraph/include/TextStyle.h"
+#include <unordered_set>
 
 class SkCanvas;
 
@@ -69,6 +71,7 @@ public:
     // This function will return the number of unresolved glyphs or
     // -1 if not applicable (has not been shaped yet - valid case)
     virtual int32_t unresolvedGlyphs() = 0;
+    virtual std::unordered_set<SkUnichar> unresolvedCodepoints() = 0;
 
     // Experimental API that allows fast way to update some of "immutable" paragraph attributes
     // but not the text itself
@@ -95,8 +98,71 @@ public:
     using Visitor = std::function<void(int lineNumber, const VisitorInfo*)>;
     virtual void visit(const Visitor&) = 0;
 
+    struct ExtendedVisitorInfo {
+        const SkFont&   font;
+        SkPoint         origin;
+        SkSize          advance;
+        int             count;
+        const uint16_t* glyphs;     // count values
+        SkPoint*        positions;  // count values
+        const SkRect*   bounds;     // count values
+        const uint32_t* utf8Starts; // count+1 values
+        unsigned        flags;
+    };
+    using ExtendedVisitor = std::function<void(int lineNumber, const ExtendedVisitorInfo*)>;
+    virtual void extendedVisit(const ExtendedVisitor&) = 0;
+
+    /* Returns path for a given line
+     *
+     * @param lineNumber  a line number
+     * @param dest        a resulting path
+     * @return            a number glyphs that could not be converted to path
+     */
+    virtual int getPath(int lineNumber, SkPath* dest) = 0;
+
+    /* Returns path for a text blob
+     *
+     * @param textBlob    a text blob
+     * @return            a path
+     */
+    static SkPath GetPath(SkTextBlob* textBlob);
+
+    /* Checks if a given text blob contains
+     * glyph with emoji
+     *
+     * @param textBlob    a text blob
+     * @return            true if there is such a glyph
+     */
+    virtual bool containsEmoji(SkTextBlob* textBlob) = 0;
+
+    /* Checks if a given text blob contains colored font or bitmap
+     *
+     * @param textBlob    a text blob
+     * @return            true if there is such a glyph
+     */
+    virtual bool containsColorFontOrBitmap(SkTextBlob* textBlob) = 0;
+
     // Editing API
+
+    /* Finds the line number of the line that contains the given UTF-8 index.
+    *
+    * @param index         a UTF-8 TextIndex into the paragraph
+    * @return              the line number the glyph that corresponds to the
+    *                      given codeUnitIndex is in, or -1 if the codeUnitIndex
+    *                      is out of bounds, or when the glyph is truncated or
+    *                      ellipsized away.
+    */
     virtual int getLineNumberAt(TextIndex codeUnitIndex) const = 0;
+
+    /* Finds the line number of the line that contains the given UTF-16 index.
+    *
+    * @param index         a UTF-16 offset into the paragraph
+    * @return              the line number the glyph that corresponds to the
+    *                      given codeUnitIndex is in, or -1 if the codeUnitIndex
+    *                      is out of bounds, or when the glyph is truncated or
+    *                      ellipsized away.
+    */
+    virtual int getLineNumberAtUTF16Offset(size_t codeUnitIndex) = 0;
 
     /* Returns line metrics info for the line
      *
@@ -133,11 +199,46 @@ public:
      * @param dx              x coordinate
      * @param dy              y coordinate
      * @param glyphInfo       a glyph cluster info filled if not null
-     * @return
+     * @return                true if glyph cluster was found; false if not
+     *                        (which usually means the paragraph is empty)
      */
     virtual bool getClosestGlyphClusterAt(SkScalar dx,
                                           SkScalar dy,
                                           GlyphClusterInfo* glyphInfo) = 0;
+
+    // The glyph and grapheme cluster information assoicated with a unicode
+    // codepoint in the paragraph.
+    struct GlyphInfo {
+        SkRect fGraphemeLayoutBounds;
+        TextRange fGraphemeClusterTextRange;
+        TextDirection fDirection;
+        bool fIsEllipsis;
+    };
+
+    /** Retrives the information associated with the glyph located at the given
+     *  codeUnitIndex.
+     *
+     * @param codeUnitIndex   a UTF-16 offset into the paragraph
+     * @param glyphInfo       an optional GlyphInfo struct to hold the
+     *                        information associated with the glyph found at the
+     *                        given index
+     * @return                false only if the offset is out of bounds
+     */
+    virtual bool getGlyphInfoAtUTF16Offset(size_t codeUnitIndex, GlyphInfo* glyphInfo) = 0;
+
+    /** Finds the information associated with the closest glyph to the given
+     *  paragraph coordinates.
+     *
+     * @param dx              x coordinate
+     * @param dy              y coordinate
+     * @param glyphInfo       an optional GlyphInfo struct to hold the
+     *                        information associated with the glyph found. The
+     *                        text indices and text ranges are described using
+     *                        UTF-16 offsets
+     * @return                true if a graphme cluster was found; false if not
+     *                        (which usually means the paragraph is empty)
+     */
+    virtual bool getClosestUTF16GlyphInfoAt(SkScalar dx, SkScalar dy, GlyphInfo* glyphInfo) = 0;
 
     struct FontInfo {
         FontInfo(const SkFont font, const TextRange textRange)
@@ -154,6 +255,13 @@ public:
      * @return                font info or an empty font info if the text is not found
      */
     virtual SkFont getFontAt(TextIndex codeUnitIndex) const = 0;
+
+    /** Returns the font used to shape the text at the given UTF-16 offset.
+     *
+     * @param codeUnitIndex   a UTF-16 offset in the paragraph
+     * @return                font info or an empty font info if the text is not found
+     */
+    virtual SkFont getFontAtUTF16Offset(size_t codeUnitIndex) = 0;
 
     /** Returns the information about all the fonts used to shape the paragraph text
      *

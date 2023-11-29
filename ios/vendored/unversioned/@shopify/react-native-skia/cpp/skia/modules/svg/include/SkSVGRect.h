@@ -13,7 +13,7 @@
 
 class SkRRect;
 
-class SkSVGRect final : public SkSVGShape {
+class SK_API SkSVGRect final : public SkSVGShape {
 public:
     static sk_sp<SkSVGRect> Make() { return sk_sp<SkSVGRect>(new SkSVGRect()); }
 

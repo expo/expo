@@ -225,7 +225,7 @@ protected:
     sk_sp<SkData> loadFont(const char[], const char[]) const override;
     sk_sp<ExternalTrackAsset> loadAudioAsset(const char[], const char[], const char[]) override;
 
-private:
+protected:
     const sk_sp<ResourceProvider> fProxy;
 };
 

@@ -67,7 +67,7 @@ if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
   adb reverse tcp:4747 tcp:4747
 
   # Execute Android tests
-  detox test --configuration android.release 2>&1 | tee ./logs/detox-tests.log
+  detox test --configuration android.debug 2>&1 | tee ./logs/detox-tests.log
 else
   # Execute iOS tests
   detox test --configuration ios.debug 2>&1 | tee ./logs/detox-tests.log

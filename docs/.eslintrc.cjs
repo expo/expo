@@ -20,7 +20,8 @@ module.exports = {
         'diff-.+',
         'anchor-icon',
         'react-player',
-        'dark-theme'
+        'dark-theme',
+        'dialog-.+'
       ]
     }]
   },

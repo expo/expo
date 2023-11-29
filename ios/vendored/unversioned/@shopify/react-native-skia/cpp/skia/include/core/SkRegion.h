@@ -9,10 +9,16 @@
 #define SkRegion_DEFINED
 
 #include "include/core/SkRect.h"
+#include "include/private/base/SkAPI.h"
+#include "include/private/base/SkAssert.h"
+#include "include/private/base/SkDebug.h"
 #include "include/private/base/SkTypeTraits.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
+
 class SkPath;
-class SkRgnBuilder;
 
 /** \class SkRegion
     SkRegion describes the set of pixels used to clip SkCanvas. SkRegion is compact,

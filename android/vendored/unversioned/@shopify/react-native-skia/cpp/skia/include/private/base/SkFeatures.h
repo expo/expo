@@ -36,9 +36,6 @@
     #if !defined(SK_RESTRICT)
         #define SK_RESTRICT __restrict
     #endif
-    #if !defined(SK_WARN_UNUSED_RESULT)
-        #define SK_WARN_UNUSED_RESULT
-    #endif
 #endif
 
 #if !defined(SK_RESTRICT)
@@ -142,10 +139,6 @@
 // All 64-bit ARM chips have NEON.  Many 32-bit ARM chips do too.
 #if !defined(SK_ARM_HAS_NEON) && defined(__ARM_NEON)
     #define SK_ARM_HAS_NEON
-#endif
-
-#if defined(__ARM_FEATURE_CRC32)
-    #define SK_ARM_HAS_CRC32
 #endif
 
 #endif // SkFeatures_DEFINED

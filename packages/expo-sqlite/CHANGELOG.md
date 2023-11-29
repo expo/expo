@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `expo-sqlite/next` crashes when access to finalized statements. ([#25623](https://github.com/expo/expo/pull/25623) by [@kudo](https://github.com/kudo))
+- Fixed `expo-sqlite/next` UTF-8 text issue and `:memory:` database issue. ([#25637](https://github.com/expo/expo/pull/25637) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - [iOS] Replace legacy `FileSystem` interfaces usage with core `FileSystemUtilities`. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes))

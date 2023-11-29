@@ -169,7 +169,7 @@ public:
     auto tileW = arguments[4].asNumber();
     auto tileH = arguments[5].asNumber();
     SkISize size = SkISize::Make(tileW, tileH);
-    sk_sp<SkShader> gradient = SkPerlinNoiseShader::MakeTurbulence(
+    sk_sp<SkShader> gradient = SkShaders::MakeTurbulence(
         baseFreqX, baseFreqY, octaves, seed, &size);
     return jsi::Object::createFromHostObject(
         runtime,
@@ -184,7 +184,7 @@ public:
     auto tileW = arguments[4].asNumber();
     auto tileH = arguments[5].asNumber();
     SkISize size = SkISize::Make(tileW, tileH);
-    sk_sp<SkShader> gradient = SkPerlinNoiseShader::MakeFractalNoise(
+    sk_sp<SkShader> gradient = SkShaders::MakeFractalNoise(
         baseFreqX, baseFreqY, octaves, seed, &size);
     return jsi::Object::createFromHostObject(
         runtime,

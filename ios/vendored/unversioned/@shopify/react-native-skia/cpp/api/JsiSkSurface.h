@@ -9,12 +9,12 @@
 
 #include "JsiSkCanvas.h"
 #include "JsiSkImage.h"
-#include "JsiSkSurfaceFactory.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
 #include "SkSurface.h"
+#include "include/gpu/GrDirectContext.h"
 
 #pragma clang diagnostic pop
 
@@ -29,7 +29,7 @@ public:
       : JsiSkWrappingSkPtrHostObject<SkSurface>(std::move(context),
                                                 std::move(surface)) {}
 
-  EXPORT_JSI_API_TYPENAME(JsiSkSurface, "Surface")
+  EXPORT_JSI_API_TYPENAME(JsiSkSurface, Surface)
 
   JSI_HOST_FUNCTION(getCanvas) {
     return jsi::Object::createFromHostObject(
@@ -38,7 +38,9 @@ public:
   }
 
   JSI_HOST_FUNCTION(flush) {
-    getObject()->flush();
+    if (auto dContext = GrAsDirectContext(getObject()->recordingContext())) {
+      dContext->flushAndSubmit();
+    }
     return jsi::Value::undefined();
   }
 

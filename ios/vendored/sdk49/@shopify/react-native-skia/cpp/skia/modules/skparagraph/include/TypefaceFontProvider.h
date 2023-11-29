@@ -2,14 +2,16 @@
 #ifndef TypefaceFontProvider_DEFINED
 #define TypefaceFontProvider_DEFINED
 
+#include "include/core/SkFontMgr.h"
+#include "include/core/SkFontStyle.h"
+#include "include/core/SkStream.h"
+#include "include/core/SkString.h"
 #include "include/private/base/SkTArray.h"
 #include "src/core/SkTHash.h"
+
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include "include/core/SkFontMgr.h"
-#include "include/core/SkStream.h"
-#include "include/core/SkString.h"
 
 namespace skia {
 namespace textlayout {

@@ -11,6 +11,8 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import java.io.File
 import java.io.IOException
 
+private const val MEMORY_DB_NAME = ":memory:"
+
 @Suppress("unused")
 class SQLiteModuleNext : Module() {
   private val cachedDatabases: MutableList<NativeDatabase> = mutableListOf()
@@ -73,9 +75,11 @@ class SQLiteModuleNext : Module() {
       }
 
       AsyncFunction("isInTransactionAsync") { database: NativeDatabase ->
+        maybeThrowForClosedDatabase(database)
         return@AsyncFunction database.ref.sqlite3_get_autocommit() == 0
       }
       Function("isInTransactionSync") { database: NativeDatabase ->
+        maybeThrowForClosedDatabase(database)
         return@Function database.ref.sqlite3_get_autocommit() == 0
       }
 
@@ -151,9 +155,11 @@ class SQLiteModuleNext : Module() {
       }
 
       AsyncFunction("getColumnNamesAsync") { statement: NativeStatement ->
+        maybeThrowForFinalizedStatement(statement)
         return@AsyncFunction statement.ref.getColumnNames()
       }
       Function("getColumnNamesSync") { statement: NativeStatement ->
+        maybeThrowForFinalizedStatement(statement)
         return@Function statement.ref.getColumnNames()
       }
 
@@ -175,6 +181,9 @@ class SQLiteModuleNext : Module() {
 
   @Throws(OpenDatabaseException::class)
   private fun pathForDatabaseName(name: String): String {
+    if (name == MEMORY_DB_NAME) {
+      return name
+    }
     try {
       val directory = File("${context.filesDir}${File.separator}SQLite")
       ensureDirExists(directory)
@@ -184,7 +193,9 @@ class SQLiteModuleNext : Module() {
     }
   }
 
+  @Throws(AccessClosedResourceException::class)
   private fun initDb(database: NativeDatabase) {
+    maybeThrowForClosedDatabase(database)
     if (database.openOptions.enableCRSQLite) {
       loadCRSQLiteExtension(database)
     }
@@ -193,19 +204,24 @@ class SQLiteModuleNext : Module() {
     }
   }
 
-  @Throws(SQLiteErrorException::class)
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun exec(database: NativeDatabase, source: String) {
+    maybeThrowForClosedDatabase(database)
     database.ref.sqlite3_exec(source)
   }
 
-  @Throws(SQLiteErrorException::class)
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) {
+    maybeThrowForClosedDatabase(database)
+    maybeThrowForFinalizedStatement(statement)
     database.ref.sqlite3_prepare_v2(source, statement.ref)
     maybeAddCachedStatement(database, statement)
   }
 
-  @Throws(SQLiteErrorException::class)
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun arrayRun(statement: NativeStatement, database: NativeDatabase, bindParams: List<Any>): Map<String, Int> {
+    maybeThrowForClosedDatabase(database)
+    maybeThrowForFinalizedStatement(statement)
     for ((index, param) in bindParams.withIndex()) {
       statement.ref.bindStatementParam(index + 1, param)
     }
@@ -219,8 +235,10 @@ class SQLiteModuleNext : Module() {
     )
   }
 
-  @Throws(SQLiteErrorException::class)
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun objectRun(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>): Map<String, Int> {
+    maybeThrowForClosedDatabase(database)
+    maybeThrowForFinalizedStatement(statement)
     for ((name, param) in bindParams) {
       val index = statement.ref.sqlite3_bind_parameter_index(name)
       if (index > 0) {
@@ -237,8 +255,10 @@ class SQLiteModuleNext : Module() {
     )
   }
 
-  @Throws(InvalidConvertibleException::class, SQLiteErrorException::class)
+  @Throws(AccessClosedResourceException::class, InvalidConvertibleException::class, SQLiteErrorException::class)
   private fun arrayGet(statement: NativeStatement, database: NativeDatabase, bindParams: List<Any>): ColumnValues? {
+    maybeThrowForClosedDatabase(database)
+    maybeThrowForFinalizedStatement(statement)
     for ((index, param) in bindParams.withIndex()) {
       statement.ref.bindStatementParam(index + 1, param)
     }
@@ -252,8 +272,10 @@ class SQLiteModuleNext : Module() {
     return null
   }
 
-  @Throws(InvalidConvertibleException::class, SQLiteErrorException::class)
+  @Throws(AccessClosedResourceException::class, InvalidConvertibleException::class, SQLiteErrorException::class)
   private fun objectGet(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>): ColumnValues? {
+    maybeThrowForClosedDatabase(database)
+    maybeThrowForFinalizedStatement(statement)
     for ((name, param) in bindParams) {
       val index = statement.ref.sqlite3_bind_parameter_index(name)
       if (index > 0) {
@@ -270,8 +292,10 @@ class SQLiteModuleNext : Module() {
     return null
   }
 
-  @Throws(InvalidConvertibleException::class, SQLiteErrorException::class)
+  @Throws(AccessClosedResourceException::class, InvalidConvertibleException::class, SQLiteErrorException::class)
   private fun arrayGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: List<Any>): List<ColumnValues> {
+    maybeThrowForClosedDatabase(database)
+    maybeThrowForFinalizedStatement(statement)
     for ((index, param) in bindParams.withIndex()) {
       statement.ref.bindStatementParam(index + 1, param)
     }
@@ -289,8 +313,10 @@ class SQLiteModuleNext : Module() {
     return columnValuesList
   }
 
-  @Throws(InvalidConvertibleException::class, SQLiteErrorException::class)
+  @Throws(AccessClosedResourceException::class, InvalidConvertibleException::class, SQLiteErrorException::class)
   private fun objectGetAll(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>): List<ColumnValues> {
+    maybeThrowForClosedDatabase(database)
+    maybeThrowForFinalizedStatement(statement)
     for ((name, param) in bindParams) {
       val index = statement.ref.sqlite3_bind_parameter_index(name)
       if (index > 0) {
@@ -311,19 +337,24 @@ class SQLiteModuleNext : Module() {
     return columnValuesList
   }
 
-  @Throws(SQLiteErrorException::class)
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun reset(statement: NativeStatement, database: NativeDatabase) {
+    maybeThrowForClosedDatabase(database)
+    maybeThrowForFinalizedStatement(statement)
     if (statement.ref.sqlite3_reset() != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
   }
 
-  @Throws(SQLiteErrorException::class)
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun finalize(statement: NativeStatement, database: NativeDatabase) {
+    maybeThrowForClosedDatabase(database)
+    maybeThrowForFinalizedStatement(statement)
     maybeRemoveCachedStatement(database, statement)
     if (statement.ref.sqlite3_finalize() != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
+    statement.isFinalized = true
   }
 
   private fun loadCRSQLiteExtension(database: NativeDatabase) {
@@ -357,8 +388,9 @@ class SQLiteModuleNext : Module() {
     }
   }
 
-  @Throws(SQLiteErrorException::class)
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun closeDatabase(database: NativeDatabase) {
+    maybeThrowForClosedDatabase(database)
     maybeRemoveAllCachedStatements(database).forEach {
       it.ref.sqlite3_finalize()
     }
@@ -369,6 +401,7 @@ class SQLiteModuleNext : Module() {
     if (ret != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
+    database.isClosed = true
   }
 
   private fun deleteDatabase(dbName: String) {
@@ -376,12 +409,29 @@ class SQLiteModuleNext : Module() {
       throw DeleteDatabaseException(dbName)
     }
 
+    if (dbName == MEMORY_DB_NAME) {
+      return
+    }
     val dbFile = File(pathForDatabaseName(dbName))
     if (!dbFile.exists()) {
       throw DatabaseNotFoundException(dbName)
     }
     if (!dbFile.delete()) {
       throw DeleteDatabaseFileException(dbName)
+    }
+  }
+
+  @Throws(AccessClosedResourceException::class)
+  private fun maybeThrowForClosedDatabase(database: NativeDatabase) {
+    if (database.isClosed) {
+      throw AccessClosedResourceException()
+    }
+  }
+
+  @Throws(AccessClosedResourceException::class)
+  private fun maybeThrowForFinalizedStatement(statement: NativeStatement) {
+    if (statement.isFinalized) {
+      throw AccessClosedResourceException()
     }
   }
 

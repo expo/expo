@@ -32,22 +32,22 @@ export const prepareCanaries = new Task<TaskArgs>(
     dependsOn: [loadRequestedParcels],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
-    const canaryVersion = await generateCanaryVersion();
+    const canarySuffix = await getCurrentCanaryVersionSuffix();
     const nextSdkVersion = await getNextSdkVersion();
 
     for (const { pkg, state, pkgView } of parcels) {
-      const version = findNextAvailableCanaryVersion(canaryVersion, pkgView?.versions ?? []);
+      const baseVersion = SDK_CONSTRAINED_PACKAGES.includes(pkg.packageName)
+        ? nextSdkVersion
+        : '0.0.1';
 
-      if (SDK_CONSTRAINED_PACKAGES.includes(pkg.packageName)) {
-        state.releaseVersion = version.replace('0.0.0', nextSdkVersion);
-      } else {
-        state.releaseVersion = version;
-      }
+      state.releaseVersion = findNextAvailableCanaryVersion(
+        `${baseVersion}-${canarySuffix}`,
+        pkgView?.versions ?? []
+      );
     }
 
     // Override the tag option – canary releases should always use `canary` tag
     options.tag = 'canary';
-    options.dry = true;
   }
 );
 
@@ -76,13 +76,16 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
     logger.success(
       `\n✅ Successfully published ${cyan.bold(count + '')} package${count > 1 ? 's' : ''}.\n`
     );
+    logger.info(
+      'The script has left some changes in your working directory, make sure to clean them up.'
+    );
   }
 );
 
 /**
- * Generates a canary version for the current date and HEAD commit hash.
+ * Returns a canary version suffix for the current date and HEAD commit hash.
  */
-async function generateCanaryVersion() {
+async function getCurrentCanaryVersionSuffix() {
   const shortCommitHash = (await Git.getHeadCommitHashAsync()).slice(0, 7);
   const date = new Date();
   const year = date.toLocaleString('default', {
@@ -95,7 +98,7 @@ async function generateCanaryVersion() {
     day: '2-digit',
   });
 
-  return `0.0.0-canary-${year}${month}${day}-${shortCommitHash}`;
+  return `canary-${year}${month}${day}-${shortCommitHash}`;
 }
 
 /**
@@ -119,7 +122,7 @@ function findNextAvailableCanaryVersion(
   for (let i = 1; i <= publishedCanaryVersions.length; i++) {
     const canaryRevision = `${canaryVersion}-${i}`;
 
-    if (publishedCanaryVersions.includes(canaryRevision)) {
+    if (!publishedCanaryVersions.includes(canaryRevision)) {
       return canaryRevision;
     }
   }

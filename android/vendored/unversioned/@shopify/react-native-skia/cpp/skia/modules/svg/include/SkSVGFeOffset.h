@@ -11,7 +11,7 @@
 #include "modules/svg/include/SkSVGFe.h"
 #include "modules/svg/include/SkSVGTypes.h"
 
-class SkSVGFeOffset : public SkSVGFe {
+class SK_API SkSVGFeOffset : public SkSVGFe {
 public:
     static sk_sp<SkSVGFeOffset> Make() { return sk_sp<SkSVGFeOffset>(new SkSVGFeOffset()); }
 

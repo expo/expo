@@ -1,7 +1,5 @@
 #include "RNRuntimeDecorator.h"
-#ifndef NDEBUG
 #include "ReanimatedVersion.h"
-#endif // NDEBUG
 
 namespace reanimated {
 
@@ -32,7 +30,7 @@ void RNRuntimeDecorator::decorate(
   rnRuntime.global().setProperty(rnRuntime, "_IS_FABRIC", isFabric);
 
 #ifndef NDEBUG
-  checkJSVersion(rnRuntime);
+  checkJSVersion(rnRuntime, nativeReanimatedModule->getJSLogger());
 #endif // NDEBUG
 
   rnRuntime.global().setProperty(
