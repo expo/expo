@@ -11,7 +11,7 @@
 #include "modules/svg/include/SkSVGGradient.h"
 #include "modules/svg/include/SkSVGTypes.h"
 
-class SkSVGRadialGradient final : public SkSVGGradient {
+class SK_API SkSVGRadialGradient final : public SkSVGGradient {
 public:
     static sk_sp<SkSVGRadialGradient> Make() {
         return sk_sp<SkSVGRadialGradient>(new SkSVGRadialGradient());

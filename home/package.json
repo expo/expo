@@ -9,7 +9,7 @@
     "test": "jest",
     "lint": "eslint .",
     "report": "react-native-bundle-visualizer --entry-file __generated__/AppEntry.js",
-    "start": "expo start",
+    "start": "expo start --port 80",
     "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml"
   },
   "author": "Expo",
@@ -57,7 +57,7 @@
     "react": "18.2.0",
     "react-native": "0.73.0-rc.5",
     "react-native-fade-in-image": "^1.6.1",
-    "react-native-gesture-handler": "~2.12.0",
+    "react-native-gesture-handler": "~2.14.0",
     "react-native-infinite-scroll-view": "^0.4.5",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-maps": "1.8.0",

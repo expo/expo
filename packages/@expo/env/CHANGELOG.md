@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Avoid unnecessary `process.env` modifications for consistent Node and Bun results. ([#25393](https://github.com/expo/expo/pull/25393) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - Replace `@expo/babel-preset-cli` with `expo-module-scripts`. ([#25418](https://github.com/expo/expo/pull/25418) by [@byCedric](https://github.com/byCedric))

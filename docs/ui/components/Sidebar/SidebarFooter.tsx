@@ -7,7 +7,11 @@ import { ArchiveIcon } from './icons/Archive';
 
 import { getPageSection } from '~/common/routes';
 
-export const SidebarFooter = () => {
+type SideBarFooterProps = {
+  isMobileMenuVisible?: boolean;
+};
+
+export const SidebarFooter = ({ isMobileMenuVisible }: SideBarFooterProps) => {
   const router = useRouter();
   const isArchive = router?.pathname ? getPageSection(router.pathname) === 'archive' : false;
   return (
@@ -34,13 +38,15 @@ export const SidebarFooter = () => {
         isExternal
         shouldLeakReferrer
       />
-      <SidebarSingleEntry
-        secondary
-        href="https://expo.dev/changelog"
-        title="Changelog"
-        Icon={ChangelogIcon}
-        isExternal
-      />
+      {isMobileMenuVisible && (
+        <SidebarSingleEntry
+          secondary
+          href="https://expo.dev/changelog"
+          title="Changelog"
+          Icon={ChangelogIcon}
+          isExternal
+        />
+      )}
     </div>
   );
 };

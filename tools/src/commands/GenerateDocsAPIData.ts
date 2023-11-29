@@ -158,16 +158,18 @@ const executeCommand = async (
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    const { readme, symbolIdMap, ...trimmedOutput } = output;
+
     if (MINIFY_JSON) {
       const minifiedJson = recursiveOmitBy(
-        output,
+        trimmedOutput,
         ({ key, node }) =>
           ['id', 'groups', 'target', 'kindString', 'originalName'].includes(key) ||
           (key === 'flags' && !Object.keys(node).length)
       );
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {
-      await fs.writeFile(jsonOutputPath, JSON.stringify(output));
+      await fs.writeFile(jsonOutputPath, JSON.stringify(trimmedOutput));
     }
   } else {
     throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);

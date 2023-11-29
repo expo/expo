@@ -291,7 +291,7 @@ PODS:
   - ABI49_0_0hermes-engine/Pre-built (0.72.4)
   - ABI49_0_0lottie-react-native (5.1.6):
     - ABI49_0_0React-Core
-    - lottie-ios (~> 4.2.0)
+    - lottie-ios (~> 4.3.3)
   - ABI49_0_0RCTRequired (0.72.4)
   - ABI49_0_0RCTTypeSafety (0.72.4):
     - ABI49_0_0FBLazyVector (= 0.72.4)
@@ -1133,9 +1133,9 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
-  - lottie-ios (4.2.0)
-  - lottie-react-native (6.1.2):
-    - lottie-ios (~> 4.2.0)
+  - lottie-ios (4.3.3)
+  - lottie-react-native (6.4.1):
+    - lottie-ios (~> 4.3.3)
     - React-Core
   - MBProgressHUD (1.2.0)
   - nanopb (2.30909.0):
@@ -2026,7 +2026,7 @@ PODS:
     - React-debug
   - react-native-netinfo (11.1.0):
     - React-Core
-  - react-native-pager-view (6.2.0):
+  - react-native-pager-view (6.2.2):
     - React-Core
   - react-native-safe-area-context (4.6.3):
     - RCT-Folly
@@ -2036,13 +2036,13 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-segmented-control (2.4.1):
     - React-Core
-  - react-native-skia (0.1.196):
+  - react-native-skia (0.1.221):
     - React
     - React-callinvoker
     - React-Core
   - react-native-slider (4.4.2):
     - React-Core
-  - react-native-webview (13.6.2):
+  - react-native-webview (13.6.3):
     - React-Core
   - React-nativeconfig (0.73.0-rc.5)
   - React-NativeModulesApple (0.73.0-rc.5):
@@ -2215,7 +2215,7 @@ PODS:
     - React-Core
   - RNFlashList (1.6.3):
     - React-Core
-  - RNGestureHandler (2.12.0):
+  - RNGestureHandler (2.14.0):
     - React-Core
   - RNReanimated (3.6.0-nightly-20231031-c56d44fd9):
     - DoubleConversion
@@ -3196,7 +3196,7 @@ SPEC CHECKSUMS:
   ABI49_0_0FBLazyVector: da60aaea175d16a8330337280f76fec9da53d91a
   ABI49_0_0FBReactNativeSpec: b7437b60d3ebba4d9e39b4030e5d26c42939218e
   ABI49_0_0hermes-engine: e916653d0b2ac178975ec2572231bbbb2ca2119e
-  ABI49_0_0lottie-react-native: 0edfba12ae9edef9a697bccc5d5f36bf06cb7ffb
+  ABI49_0_0lottie-react-native: d6975893da5cd58e714647bd1826727263b2515a
   ABI49_0_0RCTRequired: 9223110a54e996a0a081efaf3bcc6a307e63b108
   ABI49_0_0RCTTypeSafety: 01b4a6f17ca487924c5e2ec95e75c51e48c115de
   ABI49_0_0React: 1770db255e07b4e5ab9aa6eb9c7ae47a01e8ceb2
@@ -3343,8 +3343,8 @@ SPEC CHECKSUMS:
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libvmaf: 27f523f1e63c694d14d534cd0fddd2fab0ae8711
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  lottie-ios: 809ecf2d460ed650a6aed7aa88b2ec45fab4779c
-  lottie-react-native: 3d6f1b0db1fd9e18b92af1fbfbf67037611bae67
+  lottie-ios: 25e7b2675dad5c3ddad369ac9baab03560c5bfdd
+  lottie-react-native: a2ae9c27c273b060b2affff2957bc0ff7fdca353
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
@@ -3374,12 +3374,12 @@ SPEC CHECKSUMS:
   React-logger: 8340c1bf8ec28c8535423ec017e07ff0fd5e00bf
   React-Mapbuffer: 9a7d0784ec6107bad9194cdd1ea48d319d35e934
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
-  react-native-pager-view: 0ccb8bf60e2ebd38b1f3669fa3650ecce81db2df
+  react-native-pager-view: 02a5c4962530f7efc10dd51ee9cdabeff5e6c631
   react-native-safe-area-context: 36cc67648134e89465663b8172336a19eeda493d
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
-  react-native-skia: 4753a9e236c5dfc73cfb98dccfff3496f12fd877
+  react-native-skia: 1a2fbce7fc198eb229b13f15bce48a06b5c92d69
   react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
-  react-native-webview: 8fc09f66a1a5b16bbe37c3878fda27d5982bb776
+  react-native-webview: 88293a0f23eca8465c0433c023ec632930e644d0
   React-nativeconfig: 595d998504bfa4d7bdd1782cf8b9940b68eb8e26
   React-NativeModulesApple: 6d27beabaa71ef6e614da0b4141dbedefb6af14a
   React-perflogger: 0339cf3c65fd8d0286c316519316501fddf17339
@@ -3402,7 +3402,7 @@ SPEC CHECKSUMS:
   ReactCommon: ca373908fd985f7acbcbee556612650c964cfe51
   RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
   RNFlashList: 4b4b6b093afc0df60ae08f9cbf6ccd4c836c667a
-  RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
+  RNGestureHandler: 4279931048471f17faf46d912b2e96e10f1da99b
   RNReanimated: 8a00922e4aa2c11c325aac904e690b0d12a2a0c6
   RNScreens: 2b19e2471db8a581c83f381f4ea5d43071c9a3bf
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315

@@ -648,7 +648,7 @@ async function generateExpoKitPodspecAsync(
     '"$(PODS_CONFIGURATION_BUILD_DIR)/${versionName}EXUpdates/Swift Compatibility Header"',
   ]
   s.pod_target_xcconfig    = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
     "USE_HEADERMAP"       => "YES",
     "DEFINES_MODULE"      => "YES",
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),

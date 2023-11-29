@@ -12,6 +12,7 @@
 
 - (instancetype)initWithData:(NSDictionary *)data;
 
++ (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position withAbsolutePosition:(CGPoint)absolutePosition;
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
                            withAbsolutePosition:(CGPoint)absolutePosition
                             withNumberOfTouches:(NSUInteger)numberOfTouches;

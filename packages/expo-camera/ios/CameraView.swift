@@ -14,7 +14,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   private var faceDetector: EXFaceDetectorManagerInterface?
   private var lifecycleManager: EXAppLifecycleService?
   private var barCodeScanner: EXBarCodeScannerInterface?
-  private var fileSystem: EXFileSystemInterface?
   private var permissionsManager: EXPermissionsInterface?
 
   // MARK: - Properties
@@ -126,7 +125,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     faceDetector = createFaceDetectorManager()
     barCodeScanner = createBarCodeScanner()
     lifecycleManager = appContext?.legacyModule(implementing: EXAppLifecycleService.self)
-    fileSystem = appContext?.legacyModule(implementing: EXFileSystemInterface.self)
     permissionsManager = appContext?.legacyModule(implementing: EXPermissionsInterface.self)
     #if !targetEnvironment(simulator)
     previewLayer = AVCaptureVideoPreviewLayer.init(session: session)
@@ -528,9 +526,13 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
     takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
 
-    guard let path = fileSystem?.generatePath(
-      inDirectory: fileSystem?.cachesDirectory.appending("/Camera"),
-      withExtension: ".jpg") else {
+    let path = FileSystemUtilities.generatePathInCache(
+      appContext,
+      in: "Camera",
+      extension: ".jpg"
+    )
+
+    if path.isEmpty {
       return
     }
 
@@ -648,18 +650,12 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       let preset = options.quality?.toPreset() ?? .high
       updateSessionPreset(preset: preset)
 
-      guard let fileSystem = self.fileSystem else {
-        promise.reject(Exceptions.FileSystemModuleNotFound())
-        return
-      }
-
       if !self.isValidVideoOptions {
         return
       }
 
       sessionQueue.async {
-        let directory = fileSystem.cachesDirectory.appending("/Camera")
-        let path = fileSystem.generatePath(inDirectory: directory, withExtension: ".mov")
+        let path = FileSystemUtilities.generatePathInCache(self.appContext, in: "Camera", extension: ".mov")
         let fileUrl = URL(fileURLWithPath: path)
         self.videoRecordedPromise = promise
 

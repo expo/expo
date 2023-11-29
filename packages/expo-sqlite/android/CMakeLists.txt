@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.4.1)
 project(expo-sqlite)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(PACKAGE_NAME "expo-sqlite")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 

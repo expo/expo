@@ -8,6 +8,7 @@
 #ifndef skgpu_graphite_VulkanGraphiteTypesPriv_DEFINED
 #define skgpu_graphite_VulkanGraphiteTypesPriv_DEFINED
 
+#include "include/core/SkString.h"
 #include "include/gpu/graphite/vk/VulkanGraphiteTypes.h"
 
 namespace skgpu::graphite {
@@ -35,6 +36,28 @@ struct VulkanTextureSpec {
                fImageUsageFlags == that.fImageUsageFlags &&
                fSharingMode == that.fSharingMode &&
                fAspectMask == that.fAspectMask;
+    }
+
+    bool isCompatible(const VulkanTextureSpec& that) const {
+        // The usages may match or the usage passed in may be a superset of the usage stored within.
+        return fFlags == that.fFlags &&
+               fFormat == that.fFormat &&
+               fImageTiling == that.fImageTiling &&
+               fSharingMode == that.fSharingMode &&
+               fAspectMask == that.fAspectMask &&
+               (fImageUsageFlags & that.fImageUsageFlags) == fImageUsageFlags;
+    }
+
+    SkString toString() const {
+        return SkStringPrintf(
+                "flags=0x%08X,format=%d,imageTiling=%d,imageUsageFlags=0x%08X,sharingMode=%d,"
+                "aspectMask=%d",
+                fFlags,
+                fFormat,
+                fImageTiling,
+                fImageUsageFlags,
+                fSharingMode,
+                fAspectMask);
     }
 
     VkImageCreateFlags       fFlags;

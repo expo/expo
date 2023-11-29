@@ -23,12 +23,14 @@ export const checkPackageAccess = new Task<TaskArgs>(
     return await runWithSpinner(
       'Checking write access to the packages',
       async (step): Promise<any> => {
-        const npmUser = await Npm.whoamiAsync();
+        const teamPackages = await Npm.getTeamPackagesAsync();
         const packagesWithoutAccess: string[] = [];
 
-        for (const { pkgView } of parcels) {
-          if (npmUser && pkgView && !isPackageMaintainer(pkgView, npmUser)) {
-            packagesWithoutAccess.push(pkgView.name);
+        for (const { pkg } of parcels) {
+          const packageName = pkg.packageName;
+
+          if (teamPackages[packageName] !== 'read-write') {
+            packagesWithoutAccess.push(packageName);
           }
         }
 
@@ -51,15 +53,3 @@ export const checkPackageAccess = new Task<TaskArgs>(
     );
   }
 );
-
-/**
- * Checks whether the user with given name is a maintainer of the package.
- *
- * Package view has a list of maintainers represented as a concatenation of the user name and his email,
- * e.g. `brentvatne <brentvatne@gmail.com>`.
- */
-function isPackageMaintainer(pkgView: NonNullable<Npm.PackageViewType>, user: string): boolean {
-  return pkgView.maintainers.some((maintainer) => {
-    return maintainer.startsWith(user + ' ');
-  });
-}
