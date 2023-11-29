@@ -1,6 +1,6 @@
 import type { DynamicConvention, RouteNode } from './Route';
 import type { RequireContext } from './types';
-export type FileNode = Pick<RouteNode, 'contextKey' | 'loadRoute'> & {
+export type FileNode = Pick<RouteNode, 'contextKey' | 'loadRoute' | 'filePath'> & {
     /** Like `(tab)/index` */
     normalizedName: string;
 };
@@ -27,7 +27,6 @@ export declare function generateDynamic(name: string): RouteNode['dynamic'];
 export declare function assertDuplicateRoutes(filenames: string[]): void;
 /** Given a Metro context module, return an array of nested routes. */
 export declare function getRoutes(contextModule: RequireContext, options?: Options): RouteNode | null;
-export declare function getRoutesAsync(contextModule: RequireContext, options?: Options): Promise<RouteNode | null>;
 /** Get routes without unmatched or sitemap. */
 export declare function getExactRoutes(contextModule: RequireContext, options?: Options): RouteNode | null;
 /**

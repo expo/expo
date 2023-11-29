@@ -1,3 +1,4 @@
+import { ExpoRouterRuntimeManifest } from '../../start/server/metro/MetroBundlerDevServer';
 import {
   getHtmlFiles,
   getPathVariations,
@@ -66,12 +67,45 @@ describe(getPathVariations, () => {
   });
 });
 
+function mockExpandRuntimeManifest(manifest: ExpoRouterRuntimeManifest) {
+  function mockExpandRuntimeManifestScreens(screens: ExpoRouterRuntimeManifest['screens']) {
+    return Object.fromEntries(
+      Object.entries(screens).map(([key, value]) => {
+        if (typeof value === 'string') {
+          return [
+            key,
+            {
+              path: value,
+              screens: {},
+              _route: {},
+            },
+          ];
+        } else if (Object.keys(value.screens).length) {
+          return [
+            key,
+            {
+              ...value,
+              screens: mockExpandRuntimeManifestScreens(value.screens),
+            },
+          ];
+        }
+        return [key, value];
+      })
+    );
+  }
+
+  return {
+    ...manifest,
+    screens: mockExpandRuntimeManifestScreens(manifest.screens),
+  };
+}
+
 describe(getHtmlFiles, () => {
   it(`should get html files`, () => {
     expect(
       getHtmlFiles({
         includeGroupVariations: true,
-        manifest: {
+        manifest: mockExpandRuntimeManifest({
           initialRouteName: undefined,
           screens: {
             alpha: {
@@ -88,8 +122,10 @@ describe(getHtmlFiles, () => {
             _sitemap: '_sitemap',
             '[...404]': '*404',
           },
-        },
-      }).sort((a, b) => a.length - b.length)
+        }),
+      })
+        .map((a) => a.filePath)
+        .sort((a, b) => a.length - b.length)
     ).toEqual([
       'index.html',
       'compose.html',
@@ -109,7 +145,7 @@ describe(getHtmlFiles, () => {
     expect(
       getHtmlFiles({
         includeGroupVariations: true,
-        manifest: {
+        manifest: mockExpandRuntimeManifest({
           initialRouteName: undefined,
           screens: {
             '(root)': {
@@ -128,8 +164,10 @@ describe(getHtmlFiles, () => {
               initialRouteName: '(index)',
             },
           },
-        },
-      }).sort((a, b) => a.length - b.length)
+        }),
+      })
+        .map((a) => a.filePath)
+        .sort((a, b) => a.length - b.length)
     ).toEqual([
       'index.html',
       '[...missing].html',
@@ -149,7 +187,7 @@ describe(getHtmlFiles, () => {
     expect(
       getHtmlFiles({
         includeGroupVariations: false,
-        manifest: {
+        manifest: mockExpandRuntimeManifest({
           initialRouteName: undefined,
           screens: {
             '(root)': {
@@ -168,8 +206,10 @@ describe(getHtmlFiles, () => {
               initialRouteName: '(index)',
             },
           },
-        },
-      }).sort((a, b) => a.length - b.length)
+        }),
+      })
+        .map((a) => a.filePath)
+        .sort((a, b) => a.length - b.length)
     ).toEqual([
       '(root)/(index)/index.html',
       '(root)/(index)/[...missing].html',
@@ -179,7 +219,7 @@ describe(getHtmlFiles, () => {
     expect(
       getHtmlFiles({
         includeGroupVariations: false,
-        manifest: {
+        manifest: mockExpandRuntimeManifest({
           initialRouteName: undefined,
           screens: {
             alpha: {
@@ -196,8 +236,10 @@ describe(getHtmlFiles, () => {
             _sitemap: '_sitemap',
             '[...404]': '*404',
           },
-        },
-      }).sort((a, b) => a.length - b.length)
+        }),
+      })
+        .map((a) => a.filePath)
+        .sort((a, b) => a.length - b.length)
     ).toEqual([
       '_sitemap.html',
       '[...404].html',

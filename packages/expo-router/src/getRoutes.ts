@@ -505,7 +505,7 @@ function appendSitemapRoute(routes: RouteNode) {
       const { Sitemap, getNavOptions } = require('./views/Sitemap');
       return { default: Sitemap, getNavOptions };
     },
-    filePath: 'expo-router/src/views/Sitemap.tsx',
+    filePath: 'expo-router/build/views/Sitemap.js',
     route: '_sitemap',
     contextKey: './_sitemap.tsx',
     generated: true,
@@ -524,7 +524,7 @@ function appendUnmatchedRoute(routes: RouteNode) {
       loadRoute() {
         return { default: require('./views/Unmatched').Unmatched };
       },
-      filePath: 'expo-router/src/views/Unmatched.tsx',
+      filePath: 'expo-router/build/views/Unmatched.js',
       route: '+not-found',
       contextKey: './+not-found.tsx',
       dynamic: [{ name: '+not-found', deep: true, notFound: true }],

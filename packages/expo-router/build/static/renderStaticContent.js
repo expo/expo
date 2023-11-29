@@ -42,7 +42,7 @@ const react_native_web_1 = require("react-native-web");
 const getRootComponent_1 = require("./getRootComponent");
 const _ctx_1 = require("../../_ctx");
 const ExpoRoot_1 = require("../ExpoRoot");
-const getLinkingConfig_1 = require("../getLinkingConfig");
+const getReactNavigationConfig_1 = require("../getReactNavigationConfig");
 const getRoutes_1 = require("../getRoutes");
 const getServerManifest_1 = require("../getServerManifest");
 const head_1 = require("../head");
@@ -57,7 +57,7 @@ async function getManifest(options = {}) {
     }
     // Evaluate all static params
     await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
-    return (0, getLinkingConfig_1.getNavigationConfig)(routeTree);
+    return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routeTree, false);
 }
 exports.getManifest = getManifest;
 /**

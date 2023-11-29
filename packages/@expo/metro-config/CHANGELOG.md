@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Eagerly load async chunks with async web routes.
 - Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes

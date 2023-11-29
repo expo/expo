@@ -15,7 +15,7 @@ import { AppRegistry } from 'react-native-web';
 import { getRootComponent } from './getRootComponent';
 import { ctx } from '../../_ctx';
 import { ExpoRoot } from '../ExpoRoot';
-import { getNavigationConfig } from '../getLinkingConfig';
+import { getReactNavigationConfig } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
 import { ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest';
 import { Head } from '../head';
@@ -36,7 +36,7 @@ async function getManifest(options: Parameters<typeof getRoutes>[1] = {}) {
   // Evaluate all static params
   await loadStaticParamsAsync(routeTree);
 
-  return getNavigationConfig(routeTree);
+  return getReactNavigationConfig(routeTree, false);
 }
 
 /**
