@@ -278,6 +278,16 @@ redirects[eas-update/debug-updates/]=eas-update/debug/
 redirects[eas-update/how-eas-update-works/]=eas-update/how-it-works/
 redirects[eas-update/migrate-to-eas-update/]=eas-update/migrate-from-classic-updates/
 
+# Redirects after Expo Router docs reorganization from Home to Guides
+redirects[routing/next-steps]=router/introduction/
+redirects[routing/introduction]=router/introduction/
+redirects[routing/installation]=router/installation/
+redirects[routing/create-pages]=router/create-pages/
+redirects[routing/navigating-pages]=router/navigating-pages/
+redirects[routing/layouts]=router/layouts/
+redirects[routing/appearance]=router/appearance/
+redirects[routing/error-handling]=router/error-handling/
+
 # Removed API reference docs
 redirects[versions/latest/sdk/facebook]=guides/authentication/
 redirects[versions/latest/sdk/taskmanager]=versions/latest/sdk/task-manager/
