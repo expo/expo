@@ -20,7 +20,6 @@ import { Screen } from './primitives';
 import { EmptyRoute } from './views/EmptyRoute';
 import { SuspenseFallback } from './views/SuspenseFallback';
 import { Try } from './views/Try';
-import { ErrorBoundary } from './exports';
 
 export type ScreenProps<
   TOptions extends Record<string, any> = Record<string, any>,
@@ -120,7 +119,6 @@ export function useSortedScreens(order: ScreenProps[]): React.ReactNode[] {
 }
 
 function fromImport({ ErrorBoundary, ...component }: LoadedRoute) {
-  console.log('useScreen:', component);
   if (ErrorBoundary) {
     return {
       default: React.forwardRef((props: any, ref: any) => {
@@ -165,38 +163,34 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
   let ScreenComponent: React.ForwardRefExoticComponent<React.RefAttributes<unknown>>;
 
-  console.log('Load.:', value, { EXPO_ROUTER_IMPORT_MODE });
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
     ScreenComponent = React.lazy(async () => {
       const res = value.loadRoute();
-      console.log('Load:', value);
       return fromLoadedRoute(res) as Promise<{
         default: React.ComponentType<any>;
       }>;
     });
   } else {
     const res = value.loadRoute();
-    const Component = fromImport(res).default;
+    const Component = fromImport(res).default as React.ComponentType<any>;
     ScreenComponent = React.forwardRef((props, ref) => {
       return <Component {...props} ref={ref} />;
     });
   }
 
   const getLoadable = (props: any, ref: any) => (
-    <Try catch={ErrorBoundary}>
-      <React.Suspense fallback={<SuspenseFallback route={value} />}>
-        <ScreenComponent
-          {...{
-            ...props,
-            ref,
-            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-            // the intention is to make it possible to deduce shared routes.
-            segment: value.route,
-          }}
-        />
-      </React.Suspense>
-    </Try>
+    <React.Suspense fallback={<SuspenseFallback route={value} />}>
+      <ScreenComponent
+        {...{
+          ...props,
+          ref,
+          // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+          // the intention is to make it possible to deduce shared routes.
+          segment: value.route,
+        }}
+      />
+    </React.Suspense>
   );
 
   const QualifiedRoute = React.forwardRef(

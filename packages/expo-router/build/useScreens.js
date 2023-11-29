@@ -11,7 +11,6 @@ const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
 const SuspenseFallback_1 = require("./views/SuspenseFallback");
 const Try_1 = require("./views/Try");
-const exports_1 = require("./exports");
 function getSortedChildren(children, order, initialRouteName) {
     if (!order?.length) {
         return children
@@ -64,7 +63,6 @@ function useSortedScreens(order) {
 }
 exports.useSortedScreens = useSortedScreens;
 function fromImport({ ErrorBoundary, ...component }) {
-    console.log('useScreen:', component);
     if (ErrorBoundary) {
         return {
             default: react_1.default.forwardRef((props, ref) => {
@@ -100,12 +98,10 @@ function getQualifiedRouteComponent(value) {
         return qualifiedStore.get(value);
     }
     let ScreenComponent;
-    console.log('Load.:', value, { EXPO_ROUTER_IMPORT_MODE: import_mode_1.default });
     // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
     if (import_mode_1.default === 'lazy') {
         ScreenComponent = react_1.default.lazy(async () => {
             const res = value.loadRoute();
-            console.log('Load:', value);
             return fromLoadedRoute(res);
         });
     }
@@ -116,17 +112,15 @@ function getQualifiedRouteComponent(value) {
             return <Component {...props} ref={ref}/>;
         });
     }
-    const getLoadable = (props, ref) => (<Try_1.Try catch={exports_1.ErrorBoundary}>
-      <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
-        <ScreenComponent {...{
+    const getLoadable = (props, ref) => (<react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
+      <ScreenComponent {...{
         ...props,
         ref,
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
         // the intention is to make it possible to deduce shared routes.
         segment: value.route,
     }}/>
-      </react_1.default.Suspense>
-    </Try_1.Try>);
+    </react_1.default.Suspense>);
     const QualifiedRoute = react_1.default.forwardRef(({ 
     // Remove these React Navigation props to
     // enforce usage of expo-router hooks (where the query params are correct).
