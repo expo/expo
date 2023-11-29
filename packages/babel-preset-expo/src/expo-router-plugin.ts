@@ -113,7 +113,6 @@ export function expoRouterBabelPlugin(api: ConfigAPI & { types: typeof types }) 
 
         const projectRoot = possibleProjectRoot || state.file.opts.root || '';
 
-        console.log('transform:', projectRoot, state.filename);
         // Used for log box and stuff
         if (
           t.isIdentifier(parent.node.property, {

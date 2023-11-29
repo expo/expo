@@ -98,7 +98,6 @@ function expoRouterBabelPlugin(api) {
                     return;
                 }
                 const projectRoot = possibleProjectRoot || state.file.opts.root || '';
-                console.log('transform:', projectRoot, state.filename);
                 // Used for log box and stuff
                 if (t.isIdentifier(parent.node.property, {
                     name: 'EXPO_PROJECT_ROOT',
