@@ -126,7 +126,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
         }
       }
     }
-    
+
     AsyncFunction("dismissScanner") {
       if #available(iOS 16.0, *) {
         await MainActor.run {
@@ -196,7 +196,7 @@ public final class CameraViewNextModule: Module, ScannerResultHandler {
       try? controller.startScanning()
     }
   }
-  
+
   @available(iOS 16.0, *)
   @MainActor
   private func dismissScanner() {
