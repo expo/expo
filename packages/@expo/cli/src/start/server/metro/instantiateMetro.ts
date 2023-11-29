@@ -181,12 +181,16 @@ export async function instantiateMetroAsync(
   // Initialize all React Native debug features through `@react-native/dev-middleware`
   const { createDevMiddleware: createDebugMiddleware } =
     require('@react-native/dev-middleware') as typeof import('@react-native/dev-middleware');
+  // `getDevServerUrl` returns null because the metro server hasn't been created yet, use URL creator instead
+  const serverBaseUrl = metroBundler
+    .getUrlCreator()
+    .constructUrl({ scheme: 'http', hostType: 'localhost' });
   const debugMiddleware = createDebugMiddleware({
     projectRoot,
-    // `getDevServerUrl` returns null because the metro server hasn't been created yet, use URL creator instead
-    serverBaseUrl: metroBundler
-      .getUrlCreator()
-      .constructUrl({ scheme: 'http', hostType: 'localhost' }),
+    serverBaseUrl,
+    unstable_experiments: {
+      enableNewDebugger: true,
+    },
   });
   // Prepend the debug middleware with the highest priority, avoiding HTML responses for /json/list
   prependMiddleware(middleware, debugMiddleware.middleware);
