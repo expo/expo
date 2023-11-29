@@ -10,6 +10,27 @@
   BOOL _initialInsetsSent;
 }
 
+- (instancetype)init
+{
+  if ((self = [super init])) {
+#if !TARGET_OS_TV
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(invalidateSafeAreaInsets)
+                                               name:UIKeyboardDidShowNotification
+                                             object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(invalidateSafeAreaInsets)
+                                               name:UIKeyboardDidHideNotification
+                                             object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(invalidateSafeAreaInsets)
+                                               name:UIKeyboardDidChangeFrameNotification
+                                             object:nil];
+#endif
+  }
+  return self;
+}
+
 - (void)safeAreaInsetsDidChange
 {
   [self invalidateSafeAreaInsets];

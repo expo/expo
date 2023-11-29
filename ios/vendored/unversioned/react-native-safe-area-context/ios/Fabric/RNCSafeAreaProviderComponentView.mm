@@ -24,6 +24,21 @@ using namespace facebook::react;
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const RNCSafeAreaProviderProps>();
     _props = defaultProps;
+
+#if !TARGET_OS_TV
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(invalidateSafeAreaInsets)
+                                               name:UIKeyboardDidShowNotification
+                                             object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(invalidateSafeAreaInsets)
+                                               name:UIKeyboardDidHideNotification
+                                             object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(invalidateSafeAreaInsets)
+                                               name:UIKeyboardDidChangeFrameNotification
+                                             object:nil];
+#endif
   }
 
   return self;

@@ -1,18 +1,12 @@
 #import "RNCSafeAreaContext.h"
 
-#if __has_include(<safeareacontext/safeareacontext.h>)
-#define RCT_USE_CODEGEN 1
-#else
-#define RCT_USE_CODEGEN 0
-#endif
-
 #import <React/RCTUtils.h>
 #import <UIKit/UIKit.h>
-#if RCT_USE_CODEGEN
+#ifdef RCT_NEW_ARCH_ENABLED
 #import <safeareacontext/safeareacontext.h>
 #endif
 
-#if RCT_USE_CODEGEN
+#ifdef RCT_NEW_ARCH_ENABLED
 using namespace facebook::react;
 
 @interface RNCSafeAreaContext () <NativeSafeAreaContextSpec>
@@ -66,7 +60,7 @@ RCT_EXPORT_MODULE()
   return constants;
 }
 
-#if RCT_USE_CODEGEN
+#ifdef RCT_NEW_ARCH_ENABLED
 
 - (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
