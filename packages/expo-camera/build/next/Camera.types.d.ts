@@ -376,7 +376,7 @@ export type BarcodeSettings = {
 };
 export type ModernScanningOptions = {
     /**
-     * The type of codes to scan for. .
+     * The type of codes to scan for.
      * @platform ios
      */
     barCodeTypes: BarCodeType[];
