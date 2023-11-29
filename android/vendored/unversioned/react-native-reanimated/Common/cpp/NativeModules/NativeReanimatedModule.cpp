@@ -21,6 +21,8 @@
 #include "ShadowTreeCloner.h"
 #endif
 
+#include "AsyncQueue.h"
+#include "CollectionUtils.h"
 #include "EventHandlerRegistry.h"
 #include "FeaturesConfig.h"
 #include "JSScheduler.h"
@@ -64,9 +66,8 @@ NativeReanimatedModule::NativeReanimatedModule(
         onRender(timestampMs);
       }),
       animatedSensorModule_(platformDepMethodsHolder),
-#ifndef NDEBUG
-      layoutAnimationsManager_(std::make_shared<JSLogger>(jsScheduler_)),
-#endif
+      jsLogger_(std::make_shared<JSLogger>(jsScheduler_)),
+      layoutAnimationsManager_(jsLogger_),
 #ifdef RCT_NEW_ARCH_ENABLED
       synchronouslyUpdateUIPropsFunction_(
           platformDepMethodsHolder.synchronouslyUpdateUIPropsFunction),
@@ -177,6 +178,14 @@ jsi::Value NativeReanimatedModule::createWorkletRuntime(
   return jsi::Object::createFromHostObject(rt, workletRuntime);
 }
 
+jsi::Value NativeReanimatedModule::scheduleOnRuntime(
+    jsi::Runtime &rt,
+    const jsi::Value &workletRuntimeValue,
+    const jsi::Value &shareableWorkletValue) {
+  reanimated::scheduleOnRuntime(rt, workletRuntimeValue, shareableWorkletValue);
+  return jsi::Value::undefined();
+}
+
 jsi::Value NativeReanimatedModule::makeSynchronizedDataHolder(
     jsi::Runtime &rt,
     const jsi::Value &initialShareable) {
@@ -195,9 +204,7 @@ void NativeReanimatedModule::updateDataSynchronously(
 jsi::Value NativeReanimatedModule::getDataSynchronously(
     jsi::Runtime &rt,
     const jsi::Value &synchronizedDataHolderRef) {
-  auto dataHolder = extractShareableOrThrow<ShareableSynchronizedDataHolder>(
-      rt, synchronizedDataHolderRef);
-  return dataHolder->get(rt);
+  return reanimated::getDataSynchronously(rt, synchronizedDataHolderRef);
 }
 
 jsi::Value NativeReanimatedModule::makeShareableClone(
@@ -282,11 +289,16 @@ jsi::Value NativeReanimatedModule::configureProps(
     const jsi::Value &uiProps,
     const jsi::Value &nativeProps) {
 #ifdef RCT_NEW_ARCH_ENABLED
-  (void)uiProps; // unused variable on Fabric
-  jsi::Array array = nativeProps.asObject(rt).asArray(rt);
-  for (size_t i = 0; i < array.size(rt); ++i) {
-    std::string name = array.getValueAtIndex(rt, i).asString(rt).utf8(rt);
+  auto uiPropsArray = uiProps.asObject(rt).asArray(rt);
+  for (size_t i = 0; i < uiPropsArray.size(rt); ++i) {
+    auto name = uiPropsArray.getValueAtIndex(rt, i).asString(rt).utf8(rt);
+    animatablePropNames_.insert(name);
+  }
+  auto nativePropsArray = nativeProps.asObject(rt).asArray(rt);
+  for (size_t i = 0; i < nativePropsArray.size(rt); ++i) {
+    auto name = nativePropsArray.getValueAtIndex(rt, i).asString(rt).utf8(rt);
     nativePropNames_.insert(name);
+    animatablePropNames_.insert(name);
   }
 #else
   configurePropsPlatformFunction_(rt, uiProps, nativeProps);
@@ -393,6 +405,29 @@ bool NativeReanimatedModule::isThereAnyLayoutProp(
   }
   return false;
 }
+
+jsi::Value NativeReanimatedModule::filterNonAnimatableProps(
+    jsi::Runtime &rt,
+    const jsi::Value &props) {
+  jsi::Object nonAnimatableProps(rt);
+  bool hasAnyNonAnimatableProp = false;
+  const jsi::Object &propsObject = props.asObject(rt);
+  const jsi::Array &propNames = propsObject.getPropertyNames(rt);
+  for (size_t i = 0; i < propNames.size(rt); ++i) {
+    const std::string &propName =
+        propNames.getValueAtIndex(rt, i).asString(rt).utf8(rt);
+    if (!collection::contains(animatablePropNames_, propName)) {
+      hasAnyNonAnimatableProp = true;
+      const auto &propNameStr = propName.c_str();
+      const jsi::Value &propValue = propsObject.getProperty(rt, propNameStr);
+      nonAnimatableProps.setProperty(rt, propNameStr, propValue);
+    }
+  }
+  if (!hasAnyNonAnimatableProp) {
+    return jsi::Value::undefined();
+  }
+  return nonAnimatableProps;
+}
 #endif // RCT_NEW_ARCH_ENABLED
 
 bool NativeReanimatedModule::handleEvent(
@@ -492,6 +527,22 @@ void NativeReanimatedModule::performOperations() {
     for (const auto &[shadowNode, props] : copiedOperationsQueue) {
       propsRegistry_->update(shadowNode, dynamicFromValue(rt, *props));
     }
+  }
+
+  for (const auto &[shadowNode, props] : copiedOperationsQueue) {
+    const jsi::Value &nonAnimatableProps = filterNonAnimatableProps(rt, *props);
+    if (nonAnimatableProps.isUndefined()) {
+      continue;
+    }
+    Tag viewTag = shadowNode->getTag();
+    jsi::Value maybeJSPropsUpdater =
+        rt.global().getProperty(rt, "updateJSProps");
+    assert(
+        maybeJSPropsUpdater.isObject() &&
+        "[Reanimated] `updateJSProps` not found");
+    jsi::Function jsPropsUpdater =
+        maybeJSPropsUpdater.asObject(rt).asFunction(rt);
+    jsPropsUpdater.call(rt, viewTag, nonAnimatableProps);
   }
 
   bool hasLayoutUpdates = false;

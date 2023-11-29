@@ -146,7 +146,7 @@
     "react-native-maps": "1.8.0",
     "react-native-pager-view": "6.2.2",
     "react-native-paper": "^4.0.1",
-    "react-native-reanimated": "3.6.0-nightly-20231031-c56d44fd9",
+    "react-native-reanimated": "~3.6.0",
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.27.0",
     "react-native-svg": "13.9.0",

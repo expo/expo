@@ -22,13 +22,13 @@ namespace reanimated {
 
 using namespace facebook;
 using namespace react;
-#if REACT_NATIVE_MINOR_VERSION >= 73
 #if HERMES_ENABLE_DEBUGGER
+#if REACT_NATIVE_MINOR_VERSION >= 73
 using namespace facebook::hermes::inspector_modern;
-#endif // HERMES_ENABLE_DEBUGGER
 #else
 using namespace facebook::hermes::inspector;
 #endif
+#endif // HERMES_ENABLE_DEBUGGER
 
 #if HERMES_ENABLE_DEBUGGER
 

@@ -153,6 +153,10 @@ void updateDataSynchronously(
     const jsi::Value &synchronizedDataHolderRef,
     const jsi::Value &newData);
 
+jsi::Value getDataSynchronously(
+    jsi::Runtime &rt,
+    const jsi::Value &synchronizedDataHolderRef);
+
 std::shared_ptr<Shareable> extractShareableOrThrow(
     jsi::Runtime &rt,
     const jsi::Value &maybeShareableValue,
