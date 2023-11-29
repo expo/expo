@@ -214,33 +214,31 @@ describe(getHtmlFiles, () => {
 describe(getFilesToExportFromServerAsync, () => {
   it(`should export from server async`, async () => {
     const renderAsync = jest.fn(async () => '');
-    expect([
-      // @ts-expect-error: downlevel iteration
-      ...(
-        await getFilesToExportFromServerAsync('/', {
-          includeGroupVariations: true,
-          manifest: {
-            initialRouteName: undefined,
-            screens: {
-              alpha: {
-                path: 'alpha',
-                screens: { index: '', second: 'second' },
-                initialRouteName: 'index',
-              },
-              '(app)': {
-                path: '(app)',
-                screens: { compose: 'compose', index: '', 'note/[note]': 'note/:note' },
-                initialRouteName: 'index',
-              },
-              '(auth)/sign-in': '(auth)/sign-in',
-              _sitemap: '_sitemap',
-              '[...404]': '*404',
-            },
+
+    const files = await getFilesToExportFromServerAsync('/', {
+      includeGroupVariations: true,
+      manifest: {
+        initialRouteName: undefined,
+        screens: {
+          alpha: {
+            path: 'alpha',
+            screens: { index: '', second: 'second' },
+            initialRouteName: 'index',
           },
-          renderAsync,
-        })
-      ).keys(),
-    ]).toEqual([
+          '(app)': {
+            path: '(app)',
+            screens: { compose: 'compose', index: '', 'note/[note]': 'note/:note' },
+            initialRouteName: 'index',
+          },
+          '(auth)/sign-in': '(auth)/sign-in',
+          _sitemap: '_sitemap',
+          '[...404]': '*404',
+        },
+      },
+      renderAsync,
+    });
+
+    expect([...files.keys()]).toEqual([
       'alpha/index.html',
       'alpha/second.html',
       '(app)/compose.html',
@@ -254,5 +252,7 @@ describe(getFilesToExportFromServerAsync, () => {
       '_sitemap.html',
       '[...404].html',
     ]);
+
+    expect([...files.values()].every((file) => file.webTarget === 'client')).toBeTruthy();
   });
 });
