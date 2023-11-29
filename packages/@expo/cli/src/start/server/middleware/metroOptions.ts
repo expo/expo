@@ -30,6 +30,8 @@ export type ExpoMetroOptions = {
   lazy?: boolean;
   engine?: 'hermes';
   preserveEnvVars?: boolean;
+  asyncRoutes?: boolean;
+
   baseUrl?: string;
   isExporting: boolean;
 };
@@ -63,6 +65,20 @@ export type ExpoMetroBundleOptions = MetroBundleOptions & {
 export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
   return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
 }
+export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, platform: string) {
+  let asyncRoutesSetting;
+
+  if (exp.extra?.router?.asyncRoutes) {
+    const asyncRoutes = exp.extra?.router?.asyncRoutes;
+    if (['boolean', 'string'].includes(typeof asyncRoutes)) {
+      asyncRoutesSetting = asyncRoutes;
+    } else if (typeof asyncRoutes === 'object') {
+      asyncRoutesSetting = asyncRoutes[platform] ?? asyncRoutes.default;
+    }
+  }
+
+  return [mode, true].includes(asyncRoutesSetting);
+}
 
 export function getMetroDirectBundleOptions(
   options: ExpoMetroOptions
@@ -79,6 +95,7 @@ export function getMetroDirectBundleOptions(
     lazy,
     engine,
     preserveEnvVars,
+    asyncRoutes,
     baseUrl,
     isExporting,
   } = withDefaults(options);
@@ -121,6 +138,7 @@ export function getMetroDirectBundleOptions(
       __proto__: null,
       engine,
       preserveEnvVars,
+      asyncRoutes,
       environment,
       baseUrl,
     },
@@ -153,6 +171,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     lazy,
     engine,
     preserveEnvVars,
+    asyncRoutes,
     baseUrl,
     isExporting,
   } = withDefaults(options);
@@ -178,6 +197,9 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     queryParams.append('transform.engine', engine);
   }
 
+  if (asyncRoutes) {
+    queryParams.append('transform.asyncRoutes', String(asyncRoutes));
+  }
   if (preserveEnvVars) {
     queryParams.append('transform.preserveEnvVars', String(preserveEnvVars));
   }

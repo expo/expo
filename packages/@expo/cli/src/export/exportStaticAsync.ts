@@ -38,6 +38,7 @@ type Options = {
   includeSourceMaps: boolean;
   entryPoint?: string;
   clear: boolean;
+  asyncRoutes: boolean;
 };
 
 /** @private */
@@ -121,7 +122,15 @@ export async function getFilesToExportFromServerAsync(
 async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, baseUrl, exportServer, minify, includeSourceMaps, files = new Map() }: Options
+  {
+    outputDir,
+    baseUrl,
+    asyncRoutes,
+    exportServer,
+    minify,
+    includeSourceMaps,
+    files = new Map(),
+  }: Options
 ): Promise<ExportAssetMap> {
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const appDir = getRouterDirectoryWithManifest(projectRoot, exp);
@@ -141,6 +150,7 @@ async function exportFromServerAsync(
       minify,
       includeSourceMaps,
       baseUrl,
+      asyncRoutes,
     }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',

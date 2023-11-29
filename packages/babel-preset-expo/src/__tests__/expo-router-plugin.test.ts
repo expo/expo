@@ -29,9 +29,7 @@ beforeEach(() => {
   process.env._EXPO_INTERNAL_TESTING = '1';
   delete process.env.EXPO_ROUTER_ABS_APP_ROOT;
   delete process.env.EXPO_ROUTER_APP_ROOT_2;
-  delete process.env.EXPO_ROUTER_IMPORT_MODE_IOS;
-  delete process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID;
-  delete process.env.EXPO_ROUTER_IMPORT_MODE_WEB;
+  delete process.env.EXPO_ROUTER_IMPORT_MODE;
   delete process.env.EXPO_PROJECT_ROOT;
 });
 
@@ -63,62 +61,55 @@ it(`inlines static mode`, () => {
 
   // All of this code should remain intact.
   const sourceCode = `
-// EXPO_ROUTER_IMPORT_MODE_IOS
-process.env.EXPO_ROUTER_IMPORT_MODE_IOS;
-// EXPO_ROUTER_IMPORT_MODE_ANDROID
-process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID;
-// EXPO_ROUTER_IMPORT_MODE_WEB
-process.env.EXPO_ROUTER_IMPORT_MODE_WEB;
+process.env.EXPO_ROUTER_IMPORT_MODE;
+export default process.env.EXPO_ROUTER_IMPORT_MODE;
+const mode = process.env.EXPO_ROUTER_IMPORT_MODE;
   `;
 
   expect(babel.transform(sourceCode, options)!.code).toEqual(`
-// EXPO_ROUTER_IMPORT_MODE_IOS
-"sync";
-// EXPO_ROUTER_IMPORT_MODE_ANDROID
-process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID;
-// EXPO_ROUTER_IMPORT_MODE_WEB
-process.env.EXPO_ROUTER_IMPORT_MODE_WEB;`);
+\"sync\";
+export default \"sync\";
+const mode = \"sync\";`);
 
-  // Does inline for web
-  expect(
-    babel.transform(sourceCode, {
-      ...options,
-      caller: getCaller({
-        name: 'metro',
-        engine: 'hermes',
-        projectRoot: '/foo/bar',
-        platform: 'web',
-      }),
-    })!.code
-  ).toEqual(`
-// EXPO_ROUTER_IMPORT_MODE_IOS
-process.env.EXPO_ROUTER_IMPORT_MODE_IOS;
-// EXPO_ROUTER_IMPORT_MODE_ANDROID
-process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID;
-// EXPO_ROUTER_IMPORT_MODE_WEB
-"sync";`);
+  expect(getConfig).toHaveBeenCalledTimes(0);
+});
 
-  expect(
-    babel.transform(sourceCode, {
-      ...options,
-      caller: getCaller({
-        name: 'metro',
-        engine: 'hermes',
-        projectRoot: '/foo/bar',
-        platform: 'android',
-      }),
-    })!.code
-  ).toEqual(`
-// EXPO_ROUTER_IMPORT_MODE_IOS
-process.env.EXPO_ROUTER_IMPORT_MODE_IOS;
-// EXPO_ROUTER_IMPORT_MODE_ANDROID
-"sync";
-// EXPO_ROUTER_IMPORT_MODE_WEB
-process.env.EXPO_ROUTER_IMPORT_MODE_WEB;`);
+it(`inlines static mode reassignment`, () => {
+  jest
+    .mocked(getConfig)
+    .mockClear()
+    .mockReturnValueOnce({
+      exp: {
+        extra: {
+          router: {
+            asyncRoutes: true,
+          },
+        },
+      },
+    });
+  process.env.NODE_ENV = 'production';
+  const options = {
+    babelrc: false,
+    presets: [],
+    plugins: [expoRouterBabelPlugin],
+    sourceMaps: true,
+    configFile: false,
+    filename: '/unknown',
+    compact: false,
+    comments: true,
+    retainLines: false,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      projectRoot: '/foo/bar',
+      platform: 'web',
+    }),
+  };
 
-  expect(getConfig).toHaveBeenCalledTimes(3);
-  // Ensure the caller project root is used.
-  expect(getConfig).toHaveBeenCalledWith('/foo/bar');
+  // All of this code should remain intact.
+  const sourceCode = `export default process.env.EXPO_ROUTER_IMPORT_MODE_WEB;`;
+
+  expect(babel.transform(sourceCode, options)!.code).toEqual(`export default "lazy";`);
 });
 
 it(`inlines constants`, () => {
@@ -173,6 +164,7 @@ it(`uses custom app entry`, () => {
       dynamicConfigPath: '',
       rootConfig: { expo: { slug: '...', name: '...' } },
       staticConfigPath: '',
+      hasUnusedStaticConfig: false,
       exp: {
         name: '...',
         slug: '...',

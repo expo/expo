@@ -86,3 +86,16 @@ export function getInlineEnvVarsEnabled(caller: any): boolean {
   // Servers have env vars left as-is to read from the environment.
   return !isNodeModule && !isWebpack && !isDev && !isServer && !preserveEnvVars;
 }
+
+export function getAsyncRoutes(caller: any): boolean {
+  const isServer = getIsServer(caller);
+  if (isServer) {
+    return false;
+  }
+  const isProd = getIsProd(caller);
+  const platform = getPlatform(caller);
+  if (platform !== 'web' && isProd) {
+    return false;
+  }
+  return caller?.asyncRoutes ?? false;
+}

@@ -20,6 +20,7 @@ import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import {
   ExpoMetroBundleOptions,
+  getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
   getMetroDirectBundleOptions,
 } from '../start/server/middleware/metroOptions';
@@ -149,6 +150,11 @@ async function bundleProductionMetroClientAsync(
         serializerIncludeBytecode: isHermes,
         baseUrl: getBaseUrlFromExpoConfig(expoConfig),
         isExporting: true,
+        asyncRoutes: getAsyncRoutesFromExpoConfig(
+          expoConfig,
+          bundle.dev ? 'development' : 'production',
+          bundle.platform
+        ),
       }),
       bundleType: 'bundle',
       inlineSourceMap: false,

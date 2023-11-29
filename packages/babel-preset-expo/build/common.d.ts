@@ -10,3 +10,4 @@ export declare function getIsNodeModule(caller: any): boolean;
 export declare function getBaseUrl(caller: any): string;
 export declare function getIsServer(caller: any): any;
 export declare function getInlineEnvVarsEnabled(caller: any): boolean;
+export declare function getAsyncRoutes(caller: any): boolean;

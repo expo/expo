@@ -51,6 +51,7 @@ function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filen
     preserveEnvVars: isCustomTruthy(options.customTransformOptions?.preserveEnvVars)
       ? true
       : undefined,
+    asyncRoutes: isCustomTruthy(options.customTransformOptions?.asyncRoutes) ? true : undefined,
     // Pass the engine to babel so we can automatically transpile for the correct
     // target environment.
     engine: options.customTransformOptions?.engine,

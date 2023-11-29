@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.expoRouterBabelPlugin = void 0;
+const core_1 = require("@babel/core");
 const config_1 = require("expo/config");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -16,37 +17,6 @@ function getConfigMemo(projectRoot) {
         config = (0, config_1.getConfig)(projectRoot);
     }
     return config;
-}
-function getExpoRouterImportMode(projectRoot, platform) {
-    const envVar = 'EXPO_ROUTER_IMPORT_MODE_' + platform.toUpperCase();
-    if (process.env[envVar]) {
-        return process.env[envVar];
-    }
-    const env = process.env.NODE_ENV || process.env.BABEL_ENV;
-    const { exp } = getConfigMemo(projectRoot);
-    let asyncRoutesSetting;
-    if (exp.extra?.router?.asyncRoutes) {
-        const asyncRoutes = exp.extra?.router?.asyncRoutes;
-        if (typeof asyncRoutes === 'string') {
-            asyncRoutesSetting = asyncRoutes;
-        }
-        else if (typeof asyncRoutes === 'object') {
-            asyncRoutesSetting = asyncRoutes[platform] ?? asyncRoutes.default;
-        }
-    }
-    let mode = [env, true].includes(asyncRoutesSetting) ? 'lazy' : 'sync';
-    // TODO: Production bundle splitting
-    if (env === 'production' && mode === 'lazy') {
-        throw new Error('Async routes are not supported in production yet. Set the `expo-router` Config Plugin prop `asyncRoutes` to `development`, `false`, or `undefined`.');
-    }
-    // NOTE: This is a temporary workaround for static rendering on web.
-    if (platform === 'web' && (exp.web || {}).output === 'static') {
-        mode = 'sync';
-    }
-    // Development
-    debug('Router import mode', mode);
-    process.env[envVar] = mode;
-    return mode;
 }
 function directoryExistsSync(file) {
     return fs_1.default.statSync(file, { throwIfNoEntry: false })?.isDirectory() ?? false;
@@ -97,19 +67,28 @@ function getExpoRouterAbsoluteAppRoot(projectRoot) {
  * EXPO_PUBLIC_USE_STATIC
  * EXPO_ROUTER_ABS_APP_ROOT
  * EXPO_ROUTER_APP_ROOT
- * EXPO_ROUTER_IMPORT_MODE_IOS
- * EXPO_ROUTER_IMPORT_MODE_ANDROID
- * EXPO_ROUTER_IMPORT_MODE_WEB
+ * EXPO_ROUTER_IMPORT_MODE
  */
 function expoRouterBabelPlugin(api) {
     const { types: t } = api;
     const platform = api.caller(common_1.getPlatform);
     const possibleProjectRoot = api.caller(common_1.getPossibleProjectRoot);
+    const asyncRoutes = api.caller(common_1.getAsyncRoutes);
+    function isFirstInAssign(path) {
+        return core_1.types.isAssignmentExpression(path.parent) && path.parent.left === path.node;
+    }
     return {
         name: 'expo-router',
         visitor: {
-            // Convert `process.env.EXPO_ROUTER_APP_ROOT` to a string literal
             MemberExpression(path, state) {
+                if (path.get('object').matchesPattern('process.env')) {
+                    const key = path.toComputedKey();
+                    if (t.isStringLiteral(key) && !isFirstInAssign(path)) {
+                        if (key.value.startsWith('EXPO_ROUTER_IMPORT_MODE')) {
+                            path.replaceWith(t.stringLiteral(asyncRoutes ? 'lazy' : 'sync'));
+                        }
+                    }
+                }
                 if (!t.isIdentifier(path.node.object, { name: 'process' }) ||
                     !t.isIdentifier(path.node.property, { name: 'env' })) {
                     return;
@@ -119,6 +98,7 @@ function expoRouterBabelPlugin(api) {
                     return;
                 }
                 const projectRoot = possibleProjectRoot || state.file.opts.root || '';
+                console.log('transform:', projectRoot, state.filename);
                 // Used for log box and stuff
                 if (t.isIdentifier(parent.node.property, {
                     name: 'EXPO_PROJECT_ROOT',
@@ -161,15 +141,6 @@ function expoRouterBabelPlugin(api) {
                     parent.replaceWith(
                     // This is defined in Expo CLI when using Metro. It points to the relative path for the project app directory.
                     t.stringLiteral(getExpoRouterAppRoot(projectRoot)));
-                }
-                else if (
-                // Expose the app route import mode.
-                platform &&
-                    t.isIdentifier(parent.node.property, {
-                        name: 'EXPO_ROUTER_IMPORT_MODE_' + platform.toUpperCase(),
-                    }) &&
-                    !parent.parentPath.isAssignmentExpression()) {
-                    parent.replaceWith(t.stringLiteral(getExpoRouterImportMode(projectRoot, platform)));
                 }
             },
         },

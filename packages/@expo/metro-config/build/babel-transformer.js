@@ -54,7 +54,7 @@ function getBabelCaller({
   filename,
   options
 }) {
-  var _options$customTransf, _options$customTransf2, _options$customTransf3, _options$customTransf4;
+  var _options$customTransf, _options$customTransf2, _options$customTransf3, _options$customTransf4, _options$customTransf5;
   const isNodeModule = filename.includes('node_modules');
   const isServer = ((_options$customTransf = options.customTransformOptions) === null || _options$customTransf === void 0 ? void 0 : _options$customTransf.environment) === 'node';
   return {
@@ -71,9 +71,10 @@ function getBabelCaller({
     // Other criteria may still cause the feature to be disabled, but all inputs used are
     // already considered in the cache key.
     preserveEnvVars: isCustomTruthy((_options$customTransf3 = options.customTransformOptions) === null || _options$customTransf3 === void 0 ? void 0 : _options$customTransf3.preserveEnvVars) ? true : undefined,
+    asyncRoutes: isCustomTruthy((_options$customTransf4 = options.customTransformOptions) === null || _options$customTransf4 === void 0 ? void 0 : _options$customTransf4.asyncRoutes) ? true : undefined,
     // Pass the engine to babel so we can automatically transpile for the correct
     // target environment.
-    engine: (_options$customTransf4 = options.customTransformOptions) === null || _options$customTransf4 === void 0 ? void 0 : _options$customTransf4.engine,
+    engine: (_options$customTransf5 = options.customTransformOptions) === null || _options$customTransf5 === void 0 ? void 0 : _options$customTransf5.engine,
     // Provide the project root for accurately reading the Expo config.
     projectRoot: options.projectRoot,
     isNodeModule,

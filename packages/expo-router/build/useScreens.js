@@ -11,6 +11,7 @@ const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
 const SuspenseFallback_1 = require("./views/SuspenseFallback");
 const Try_1 = require("./views/Try");
+const exports_1 = require("./exports");
 function getSortedChildren(children, order, initialRouteName) {
     if (!order?.length) {
         return children
@@ -63,6 +64,7 @@ function useSortedScreens(order) {
 }
 exports.useSortedScreens = useSortedScreens;
 function fromImport({ ErrorBoundary, ...component }) {
+    console.log('useScreen:', component);
     if (ErrorBoundary) {
         return {
             default: react_1.default.forwardRef((props, ref) => {
@@ -81,7 +83,7 @@ function fromImport({ ErrorBoundary, ...component }) {
             return { default: EmptyRoute_1.EmptyRoute };
         }
     }
-    return { default: component.default || EmptyRoute_1.EmptyRoute };
+    return { default: component.default };
 }
 function fromLoadedRoute(res) {
     if (!(res instanceof Promise)) {
@@ -97,37 +99,34 @@ function getQualifiedRouteComponent(value) {
     if (qualifiedStore.has(value)) {
         return qualifiedStore.get(value);
     }
-    let getLoadable;
+    let ScreenComponent;
+    console.log('Load.:', value, { EXPO_ROUTER_IMPORT_MODE: import_mode_1.default });
     // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
     if (import_mode_1.default === 'lazy') {
-        const AsyncComponent = react_1.default.lazy(async () => {
+        ScreenComponent = react_1.default.lazy(async () => {
             const res = value.loadRoute();
+            console.log('Load:', value);
             return fromLoadedRoute(res);
         });
-        getLoadable = (props, ref) => (<react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
-        <AsyncComponent {...{
-            ...props,
-            ref,
-            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-            // the intention is to make it possible to deduce shared routes.
-            segment: value.route,
-        }}/>
-      </react_1.default.Suspense>);
     }
     else {
         const res = value.loadRoute();
         const Component = fromImport(res).default;
-        const SyncComponent = react_1.default.forwardRef((props, ref) => {
+        ScreenComponent = react_1.default.forwardRef((props, ref) => {
             return <Component {...props} ref={ref}/>;
         });
-        getLoadable = (props, ref) => (<SyncComponent {...{
-            ...props,
-            ref,
-            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-            // the intention is to make it possible to deduce shared routes.
-            segment: value.route,
-        }}/>);
     }
+    const getLoadable = (props, ref) => (<Try_1.Try catch={exports_1.ErrorBoundary}>
+      <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
+        <ScreenComponent {...{
+        ...props,
+        ref,
+        // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+        // the intention is to make it possible to deduce shared routes.
+        segment: value.route,
+    }}/>
+      </react_1.default.Suspense>
+    </Try_1.Try>);
     const QualifiedRoute = react_1.default.forwardRef(({ 
     // Remove these React Navigation props to
     // enforce usage of expo-router hooks (where the query params are correct).

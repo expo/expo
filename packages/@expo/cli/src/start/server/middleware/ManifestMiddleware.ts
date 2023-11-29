@@ -15,6 +15,7 @@ import {
   shouldEnableAsyncImports,
   createBundleUrlPath,
   getBaseUrlFromExpoConfig,
+  getAsyncRoutesFromExpoConfig,
 } from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
@@ -165,6 +166,11 @@ export abstract class ManifestMiddleware<
       hostname,
       engine: isHermesEnabled ? 'hermes' : undefined,
       baseUrl: getBaseUrlFromExpoConfig(projectConfig.exp),
+      asyncRoutes: getAsyncRoutesFromExpoConfig(
+        projectConfig.exp,
+        this.options.mode ?? 'development',
+        platform
+      ),
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -218,12 +224,14 @@ export abstract class ManifestMiddleware<
     engine,
     baseUrl,
     isExporting,
+    asyncRoutes,
   }: {
     platform: string;
     hostname?: string | null;
     mainModuleName: string;
     engine?: 'hermes';
     baseUrl?: string;
+    asyncRoutes: boolean;
     isExporting?: boolean;
   }): string {
     const path = createBundleUrlPath({
@@ -235,6 +243,7 @@ export abstract class ManifestMiddleware<
       engine,
       baseUrl,
       isExporting: !!isExporting,
+      asyncRoutes,
     });
 
     return (
@@ -310,16 +319,18 @@ export abstract class ManifestMiddleware<
       platform,
     });
 
+    const mode = this.options.mode ?? 'development';
     return createBundleUrlPath({
       platform,
       mainModuleName,
       minify: this.options.minify,
       lazy: shouldEnableAsyncImports(this.projectRoot),
-      mode: this.options.mode ?? 'development',
+      mode,
       // Hermes doesn't support more modern JS features than most, if not all, modern browser.
       engine: 'hermes',
       baseUrl: getBaseUrlFromExpoConfig(this.initialProjectConfig.exp),
       isExporting: false,
+      asyncRoutes: getAsyncRoutesFromExpoConfig(this.initialProjectConfig.exp, mode, platform),
     });
   }
 

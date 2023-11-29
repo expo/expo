@@ -47,6 +47,6 @@ declare function getBuildTimeServerManifestAsync(options?: Parameters<typeof get
         };
     }[];
 }>;
-export declare function getStaticContent(location: URL): string;
+export declare function getStaticContent(location: URL): Promise<string>;
 export { getManifest, getBuildTimeServerManifestAsync };
 //# sourceMappingURL=renderStaticContent.d.ts.map
