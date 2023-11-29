@@ -2,6 +2,7 @@
 #include "JSISerializer.h"
 #include "ReanimatedJSIUtils.h"
 #include "Shareables.h"
+#include "WorkletRuntime.h"
 
 #ifdef ANDROID
 #include "Logger.h"
@@ -117,12 +118,29 @@ void WorkletRuntimeDecorator::decorate(
 
   jsi_utils::installJsiFunction(
       rt,
+      "_scheduleOnRuntime",
+      [](jsi::Runtime &rt,
+         const jsi::Value &workletRuntimeValue,
+         const jsi::Value &shareableWorkletValue) {
+        reanimated::scheduleOnRuntime(
+            rt, workletRuntimeValue, shareableWorkletValue);
+      });
+
+  jsi_utils::installJsiFunction(
+      rt,
       "_updateDataSynchronously",
       [](jsi::Runtime &rt,
          const jsi::Value &synchronizedDataHolderRef,
          const jsi::Value &newData) {
         return reanimated::updateDataSynchronously(
             rt, synchronizedDataHolderRef, newData);
+      });
+
+  jsi_utils::installJsiFunction(
+      rt,
+      "_getDataSynchronously",
+      [](jsi::Runtime &rt, const jsi::Value &synchronizedDataHolderRef) {
+        return reanimated::getDataSynchronously(rt, synchronizedDataHolderRef);
       });
 
   jsi::Object performance(rt);
