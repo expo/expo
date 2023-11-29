@@ -2,11 +2,16 @@ import {
   DebuggerSetBreakpointByUrl,
   VscodeDebuggerSetBreakpointByUrlHandler,
 } from '../VscodeDebuggerSetBreakpointByUrl';
-import { DebuggerInfo, DebuggerRequest } from '../types';
+import { DebuggerRequest } from '../types';
+import { getDebuggerType } from '../utils';
+
+jest.mock('../utils', () => ({
+  ...jest.requireActual('../utils'),
+  getDebuggerType: jest.fn(() => 'unknown'),
+}));
 
 it('does not respond on non-vscode debugger type', () => {
   const handler = new VscodeDebuggerSetBreakpointByUrlHandler();
-
   const message: DebuggerRequest<DebuggerSetBreakpointByUrl> = {
     id: 422,
     method: 'Debugger.setBreakpointByUrl',
@@ -19,13 +24,12 @@ it('does not respond on non-vscode debugger type', () => {
 
   // Should not stop propagation for non-vscode debugger type
   expect(handler.onDebuggerMessage(message, {})).toBe(false);
-  expect(handler.onDebuggerMessage(message, { debuggerType: 'generic' })).toBe(false);
 });
 
 it('mutates `Debugger.setBreakpointByUrl` debugger request to create an unbounded breakpoint', () => {
-  const handler = new VscodeDebuggerSetBreakpointByUrlHandler();
-  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
+  jest.mocked(getDebuggerType).mockReturnValue('vscode');
 
+  const handler = new VscodeDebuggerSetBreakpointByUrlHandler();
   const localHttpUrl: DebuggerRequest<DebuggerSetBreakpointByUrl> = {
     id: 420,
     method: 'Debugger.setBreakpointByUrl',
@@ -35,7 +39,6 @@ it('mutates `Debugger.setBreakpointByUrl` debugger request to create an unbounde
       columnNumber: 0,
     },
   };
-
   const lanHttpsUrl: DebuggerRequest<DebuggerSetBreakpointByUrl> = {
     id: 421,
     method: 'Debugger.setBreakpointByUrl',
@@ -45,7 +48,6 @@ it('mutates `Debugger.setBreakpointByUrl` debugger request to create an unbounde
       columnNumber: 0,
     },
   };
-
   const correctUrl: DebuggerRequest<DebuggerSetBreakpointByUrl> = {
     id: 422,
     method: 'Debugger.setBreakpointByUrl',
@@ -57,9 +59,9 @@ it('mutates `Debugger.setBreakpointByUrl` debugger request to create an unbounde
   };
 
   // These messages should still be propagated, it should return `false`
-  expect(handler.onDebuggerMessage(localHttpUrl, debuggerInfo)).toBe(false);
-  expect(handler.onDebuggerMessage(lanHttpsUrl, debuggerInfo)).toBe(false);
-  expect(handler.onDebuggerMessage(correctUrl, debuggerInfo)).toBe(false);
+  expect(handler.onDebuggerMessage(localHttpUrl, {})).toBe(false);
+  expect(handler.onDebuggerMessage(lanHttpsUrl, {})).toBe(false);
+  expect(handler.onDebuggerMessage(correctUrl, {})).toBe(false);
 
   // Expect the `localHttpUrl` and `lanHttpsUrl` to be mutated
   expect(localHttpUrl.params).not.toHaveProperty('urlRegex');

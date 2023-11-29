@@ -2,7 +2,13 @@ import {
   DebuggerScriptParsed,
   VscodeDebuggerScriptParsedHandler,
 } from '../VscodeDebuggerScriptParsed';
-import { DebuggerInfo, DebuggerRequest } from '../types';
+import { DebuggerRequest } from '../types';
+import { getDebuggerType } from '../utils';
+
+jest.mock('../utils', () => ({
+  ...jest.requireActual('../utils'),
+  getDebuggerType: jest.fn(() => 'unknown'),
+}));
 
 it('does not respond on non-vscode debugger type', () => {
   const device = makeTestDevice();
@@ -32,9 +38,10 @@ it('does not respond on non-vscode debugger type', () => {
 });
 
 it('does not replace "sourceMapUrl" with inline source map', () => {
+  jest.mocked(getDebuggerType).mockReturnValue('vscode');
+
   const device = makeTestDevice();
   const handler = new VscodeDebuggerScriptParsedHandler(device);
-  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
 
   // Copied from `Debugger.scriptParsed` message in the protocol monitor
   const message: DebuggerRequest<DebuggerScriptParsed> = {
@@ -55,7 +62,7 @@ it('does not replace "sourceMapUrl" with inline source map', () => {
   };
 
   // Message should stop propagating because its handled
-  expect(handler.onDeviceMessage(message, debuggerInfo)).toBe(true);
+  expect(handler.onDeviceMessage(message, {})).toBe(true);
   // Message `sourceMapUrl` should not be modified (replaced with base64 string)
   expect(message.params.sourceMapURL).toBe(
     'http://127.0.0.1:8081/node_modules/expo-router/entry.map//&platform=ios&dev=true&hot=false&lazy=true'
@@ -63,9 +70,11 @@ it('does not replace "sourceMapUrl" with inline source map', () => {
 });
 
 it('replaces "sourceMapUrl" containing android emulator address "10.0.2.2" with "localhost"', () => {
+  jest.mocked(getDebuggerType).mockReturnValue('vscode');
+
   const device = makeTestDevice();
   const handler = new VscodeDebuggerScriptParsedHandler(device);
-  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
+  const debuggerInfo = {};
 
   // Copied from `Debugger.scriptParsed` message in the protocol monitor
   const message: DebuggerRequest<DebuggerScriptParsed> = {
@@ -96,9 +105,11 @@ it('replaces "sourceMapUrl" containing android emulator address "10.0.2.2" with 
 });
 
 it('replaces "url" containing android emulator address "10.0.3.2" with "localhost"', () => {
+  jest.mocked(getDebuggerType).mockReturnValue('vscode');
+
   const device = makeTestDevice();
   const handler = new VscodeDebuggerScriptParsedHandler(device);
-  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
+  const debuggerInfo = {};
 
   // Copied from `Debugger.scriptParsed` message in the protocol monitor
   const message: DebuggerRequest<DebuggerScriptParsed> = {
@@ -129,9 +140,11 @@ it('replaces "url" containing android emulator address "10.0.3.2" with "localhos
 });
 
 it('replaces alphanumeric hash "url" with "file://" prefix', () => {
+  jest.mocked(getDebuggerType).mockReturnValue('vscode');
+
   const device = makeTestDevice();
   const handler = new VscodeDebuggerScriptParsedHandler(device);
-  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
+  const debuggerInfo = {};
 
   // Copied from `Debugger.scriptParsed` message in the protocol monitor
   const message: DebuggerRequest<DebuggerScriptParsed> = {
@@ -160,9 +173,10 @@ it('replaces alphanumeric hash "url" with "file://" prefix', () => {
 });
 
 it('stores the "scriptId" to map to source path', () => {
+  jest.mocked(getDebuggerType).mockReturnValue('vscode');
+
   const device = makeTestDevice();
   const handler = new VscodeDebuggerScriptParsedHandler(device);
-  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
 
   // Copied from `Debugger.scriptParsed` message in the protocol monitor
   const message: DebuggerRequest<DebuggerScriptParsed> = {
@@ -183,7 +197,7 @@ it('stores the "scriptId" to map to source path', () => {
   };
 
   // Message should stop propagating because its handled
-  expect(handler.onDeviceMessage(message, debuggerInfo)).toBe(true);
+  expect(handler.onDeviceMessage(message, {})).toBe(true);
   // When the script ID is defined, it should be stored in `device._scriptIdToSourcePathMapping`
   expect(device._scriptIdToSourcePathMapping.get('3')).toBe(
     'http://127.0.0.1:8081/node_modules/expo-router/entry.bundle//&platform=ios&dev=true&hot=false&lazy=true'

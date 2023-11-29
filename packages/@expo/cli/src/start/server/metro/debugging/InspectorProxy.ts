@@ -18,6 +18,10 @@ export function createInspectorProxyClass(
   MetroDeviceClass: typeof unstable_Device
 ): typeof unstable_InspectorProxy {
   return class ExpoInspectorProxy extends MetroInspectorProxyClass {
+    /**
+     * This method is overwritten to inject our own device class.
+     * @see https://github.com/facebook/react-native/blob/f1df4ceb8479a6fc9c30f7571f5aeec255b116d2/packages/dev-middleware/src/inspector-proxy/InspectorProxy.js#L179-L227
+     */
     _createDeviceConnectionWSServer() {
       const wss = new WS.Server({
         noServer: true,
@@ -36,6 +40,7 @@ export function createInspectorProxyClass(
           const appName = asString(query.app) || 'Unknown';
 
           const oldDevice = this._devices.get(deviceId);
+          // Create a new device instance using our own extended class
           const newDevice = new MetroDeviceClass(
             deviceId,
             deviceName,
@@ -60,6 +65,50 @@ export function createInspectorProxyClass(
         } catch (e) {
           console.error('error', e);
           socket.close(INTERNAL_ERROR_CODE, e?.toString() ?? 'Unknown error');
+        }
+      });
+      return wss;
+    }
+
+    /**
+     * This method is overwritten to allow user agents to be passed as query parameter.
+     * The built-in debugger in vscode does not add any user agent headers.
+     * @see https://github.com/facebook/react-native/blob/f1df4ceb8479a6fc9c30f7571f5aeec255b116d2/packages/dev-middleware/src/inspector-proxy/InspectorProxy.js#L234-L272
+     */
+    _createDebuggerConnectionWSServer() {
+      const wss = new WS.Server({
+        noServer: true,
+        perMessageDeflate: false,
+        // Don't crash on exceptionally large messages - assume the debugger is
+        // well-behaved and the device is prepared to handle large messages.
+        maxPayload: 0,
+      });
+      wss.on('connection', async (socket: WS, req) => {
+        try {
+          const query = url.parse(req.url || '', true).query || {};
+          const deviceId = asString(query.device);
+          const pageId = asString(query.page);
+          // Determine the user agent from query paramter or header
+          const userAgent = asString(query.userAgent) ?? req.headers['user-agent'] ?? null;
+
+          if (deviceId == null || pageId == null) {
+            throw new Error('Incorrect URL - must provide device and page IDs');
+          }
+
+          const device = this._devices.get(deviceId);
+          if (device == null) {
+            throw new Error('Unknown device with ID ' + deviceId);
+          }
+
+          device.handleDebuggerConnection(socket, pageId, { userAgent });
+        } catch (e) {
+          console.error(e);
+          socket.close(INTERNAL_ERROR_CODE, e?.toString() ?? 'Unknown error');
+          this._eventReporter?.logEvent({
+            type: 'connect_debugger_frontend',
+            status: 'error',
+            error: e,
+          });
         }
       });
       return wss;
