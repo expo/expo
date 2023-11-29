@@ -412,9 +412,28 @@ export type BarcodeSettings = {
 };
 
 export type ModernScanningOptions = {
+  /**
+   * The type of codes to scan for.
+   * @platform ios
+   */
   barCodeTypes: BarCodeType[];
+  /**
+   * Indicates whether people can use a two-finger pinch-to-zoom gesture.
+   * @platform ios
+   * @default true
+   */
   isPinchToZoomEnabled?: boolean;
+  /**
+   * Guidance text, such as “Slow Down,” appears over the live video.
+   * @platform ios
+   * @default true
+   */
   isGuidanceEnabled?: boolean;
+  /**
+   * Indicates whether the scanner displays highlights around recognized items.
+   * @platform ios
+   * @default false
+   */
   isHighlightingEnabled?: boolean;
 };
 

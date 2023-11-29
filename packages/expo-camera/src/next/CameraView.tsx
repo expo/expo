@@ -146,7 +146,16 @@ export default class CameraView extends React.Component<CameraProps> {
       options = { barCodeTypes: [] };
     }
     if (Platform.OS === 'ios' && CameraView.isModernBarcodeScannerAvailable) {
-      await CameraManager.launchModernScanner(options);
+      await CameraManager.launchScanner(options);
+    }
+  }
+
+  /**
+   * Dimiss `DataScannerViewController`
+   */
+  static async dismissScanner(): Promise<void> {
+    if (Platform.OS === 'ios' && CameraView.isModernBarcodeScannerAvailable) {
+      await CameraManager.dismissScanner();
     }
   }
 

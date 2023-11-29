@@ -375,9 +375,28 @@ export type BarcodeSettings = {
     interval?: number;
 };
 export type ModernScanningOptions = {
+    /**
+     * The type of codes to scan for. .
+     * @platform ios
+     */
     barCodeTypes: BarCodeType[];
+    /**
+     * Indicates whether people can use a two-finger pinch-to-zoom gesture.
+     * @platform ios
+     * @default true
+     */
     isPinchToZoomEnabled?: boolean;
+    /**
+     * Guidance text, such as “Slow Down,” appears over the live video.
+     * @platform ios
+     * @default true
+     */
     isGuidanceEnabled?: boolean;
+    /**
+     * Indicates whether the scanner displays highlights around recognized items.
+     * @platform ios
+     * @default false
+     */
     isHighlightingEnabled?: boolean;
 };
 export type BarCodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
