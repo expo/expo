@@ -240,15 +240,12 @@ export class SQLiteDatabase {
    * @param source A string containing the SQL query.
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public eachAsync<T>(source: string, params: SQLiteBindParams): AsyncIterableIterator<T>;
+  public eachAsync<T>(source: string, params: SQLiteBindParams): AsyncGenerator<T>;
   /**
    * @hidden
    */
-  public eachAsync<T>(
-    source: string,
-    ...params: SQLiteVariadicBindParams
-  ): AsyncIterableIterator<T>;
-  public async *eachAsync<T>(source: string, ...params: any[]): AsyncIterableIterator<T> {
+  public eachAsync<T>(source: string, ...params: SQLiteVariadicBindParams): AsyncGenerator<T>;
+  public async *eachAsync<T>(source: string, ...params: any[]): AsyncGenerator<T> {
     const statement = await this.prepareAsync(source);
     try {
       yield* await statement.eachAsync<T>(...params);
@@ -343,12 +340,12 @@ export class SQLiteDatabase {
    * @param source A string containing the SQL query.
    * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.
    */
-  public eachSync<T>(source: string, params: SQLiteBindParams): IterableIterator<T>;
+  public eachSync<T>(source: string, params: SQLiteBindParams): Generator<T>;
   /**
    * @hidden
    */
-  public eachSync<T>(source: string, ...params: SQLiteVariadicBindParams): IterableIterator<T>;
-  public *eachSync<T>(source: string, ...params: any[]): IterableIterator<T> {
+  public eachSync<T>(source: string, ...params: SQLiteVariadicBindParams): Generator<T>;
+  public *eachSync<T>(source: string, ...params: any[]): Generator<T> {
     const statement = this.prepareSync(source);
     try {
       yield* statement.eachSync<T>(...params);
