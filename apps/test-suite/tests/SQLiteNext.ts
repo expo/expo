@@ -82,6 +82,22 @@ CREATE TABLE IF NOT EXISTS SomeTable (id INTEGER PRIMARY KEY NOT NULL, name VARC
 
       await db.closeAsync();
     });
+
+    it('should support utf-8', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(
+        'CREATE TABLE translations (id INTEGER PRIMARY KEY NOT NULL, key TEXT, value TEXT);'
+      );
+      const statement = await db.prepareAsync(
+        'INSERT INTO translations (key, value) VALUES (?, ?)'
+      );
+      await statement.runAsync('hello', '哈囉');
+      await statement.finalizeAsync();
+
+      const result = await db.getAsync<any>('SELECT * FROM translations');
+      expect(result.key).toBe('hello');
+      expect(result.value).toBe('哈囉');
+    });
   });
 
   describe('File system tests', () => {

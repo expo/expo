@@ -499,7 +499,7 @@ public final class SQLiteModuleNext: Module {
     case let param as Double:
       sqlite3_bind_double(instance, index, param)
     case let param as String:
-      sqlite3_bind_text(instance, index, param, Int32(param.count), SQLITE_TRANSIENT)
+      sqlite3_bind_text(instance, index, param, -1, SQLITE_TRANSIENT)
     case let param as Data:
       _ = param.withUnsafeBytes {
         sqlite3_bind_blob(instance, index, $0.baseAddress, Int32(param.count), SQLITE_TRANSIENT)
