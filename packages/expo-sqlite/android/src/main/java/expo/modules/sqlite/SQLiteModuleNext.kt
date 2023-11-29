@@ -11,6 +11,8 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import java.io.File
 import java.io.IOException
 
+private const val MEMORY_DB_NAME = ":memory:"
+
 @Suppress("unused")
 class SQLiteModuleNext : Module() {
   private val cachedDatabases: MutableList<NativeDatabase> = mutableListOf()
@@ -179,6 +181,9 @@ class SQLiteModuleNext : Module() {
 
   @Throws(OpenDatabaseException::class)
   private fun pathForDatabaseName(name: String): String {
+    if (name == MEMORY_DB_NAME) {
+      return name
+    }
     try {
       val directory = File("${context.filesDir}${File.separator}SQLite")
       ensureDirExists(directory)
@@ -404,6 +409,9 @@ class SQLiteModuleNext : Module() {
       throw DeleteDatabaseException(dbName)
     }
 
+    if (dbName == MEMORY_DB_NAME) {
+      return
+    }
     val dbFile = File(pathForDatabaseName(dbName))
     if (!dbFile.exists()) {
       throw DatabaseNotFoundException(dbName)

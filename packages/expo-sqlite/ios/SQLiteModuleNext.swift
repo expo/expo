@@ -6,6 +6,7 @@ import sqlite3
 private typealias ColumnNames = [String]
 private typealias ColumnValues = [Any]
 private let SQLITE_TRANSIENT = unsafeBitCast(OpaquePointer(bitPattern: -1), to: sqlite3_destructor_type.self)
+private let MEMORY_DB_NAME = ":memory:"
 
 public final class SQLiteModuleNext: Module {
   // Store unmanaged (SQLiteModuleNext, Database) pairs for sqlite callbacks,
@@ -179,6 +180,9 @@ public final class SQLiteModuleNext: Module {
   }
 
   private func pathForDatabaseName(name: String) -> URL? {
+    if name == MEMORY_DB_NAME {
+      return URL(string: name)
+    }
     guard let fileSystem = appContext?.fileSystem else {
       return nil
     }
@@ -391,6 +395,9 @@ public final class SQLiteModuleNext: Module {
       throw DeleteDatabaseException(dbName)
     }
 
+    if dbName == MEMORY_DB_NAME {
+      return
+    }
     guard let path = pathForDatabaseName(name: dbName) else {
       throw Exceptions.FileSystemModuleNotFound()
     }
@@ -492,7 +499,7 @@ public final class SQLiteModuleNext: Module {
     case let param as Double:
       sqlite3_bind_double(instance, index, param)
     case let param as String:
-      sqlite3_bind_text(instance, index, param, Int32(param.count), SQLITE_TRANSIENT)
+      sqlite3_bind_text(instance, index, param, -1, SQLITE_TRANSIENT)
     case let param as Data:
       _ = param.withUnsafeBytes {
         sqlite3_bind_blob(instance, index, $0.baseAddress, Int32(param.count), SQLITE_TRANSIENT)
