@@ -2074,16 +2074,8 @@ SPEC CHECKSUMS:
   RNCPicker: 529d564911e93598cc399b56cc0769ce3675f8c8
   RNDateTimePicker: 8fb39263b721223e095248acaf6f406d5b7f6713
   RNFlashList: 4b4b6b093afc0df60ae08f9cbf6ccd4c836c667a
-<<<<<<< HEAD
   RNGestureHandler: 61bfdfc05db9b79dd61f894dcd29d3dcc6db3c02
   RNReanimated: 92958cd13e63c2c34c71bc50ee2c8d5561bc4e3f
-||||||| parent of bab06c339a ([camera][next] Document types)
-  RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
-  RNReanimated: 44d8524115fc3a5e809609a302944055934e3611
-=======
-  RNGestureHandler: 61bfdfc05db9b79dd61f894dcd29d3dcc6db3c02
-  RNReanimated: 44d8524115fc3a5e809609a302944055934e3611
->>>>>>> bab06c339a ([camera][next] Document types)
   RNScreens: 5f4df9babb21d30723580377b5f52d9f9baf0005
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
