@@ -69,6 +69,7 @@ export type BarCodeScannerResult = {
    * The raw information encoded in the bar code.
    * May be different from `data` depending on the barcode type.
    * @platform android
+   * @hidden
    */
   raw?: string;
   /**
