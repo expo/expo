@@ -27,9 +27,10 @@ export type MergeResults = {
  *
  * @param src contents of the original file
  * @param newSrc new contents to merge into the original file
- * @param identifier used to update and remove merges
+ * @param tag used to update and remove merges
  * @param anchor regex to where the merge should begin
  * @param offset line offset to start merging at (<1 for behind the anchor)
+ * @param deleteCount lines to remove at the start of merging (defaults to 0)
  * @param comment comment style `//` or `#`
  */
 export function mergeContents({
@@ -38,6 +39,7 @@ export function mergeContents({
   tag,
   anchor,
   offset,
+  deleteCount,
   comment,
 }: {
   src: string;
@@ -45,6 +47,7 @@ export function mergeContents({
   tag: string;
   anchor: string | RegExp;
   offset: number;
+  deleteCount?: number;
   comment: string;
 }): MergeResults {
   const header = createGeneratedHeaderComment(newSrc, tag, comment);
@@ -52,7 +55,7 @@ export function mergeContents({
     // Ensure the old generated contents are removed.
     const sanitizedTarget = removeGeneratedContents(src, tag);
     return {
-      contents: addLines(sanitizedTarget ?? src, anchor, offset, [
+      contents: addLines(sanitizedTarget ?? src, anchor, offset, deleteCount ?? 0, [
         header,
         ...newSrc.split('\n'),
         `${comment} @generated end ${tag}`,
@@ -74,20 +77,17 @@ export function removeContents({ src, tag }: { src: string; tag: string }): Merg
   };
 }
 
-function addLines(content: string, find: string | RegExp, offset: number, toAdd: string[]) {
+function addLines(content: string, find: string | RegExp, offset: number, deleteCount: number, toAdd: string[]) {
   const lines = content.split('\n');
 
-  let lineIndex = lines.findIndex((line) => line.match(find));
+  const lineIndex = lines.findIndex((line) => line.match(find));
   if (lineIndex < 0) {
     const error = new Error(`Failed to match "${find}" in contents:\n${content}`);
     // @ts-ignore
     error.code = 'ERR_NO_MATCH';
     throw error;
   }
-  for (const newLine of toAdd) {
-    lines.splice(lineIndex + offset, 0, newLine);
-    lineIndex++;
-  }
+  lines.splice(lineIndex + offset, deleteCount, ...toAdd);
 
   return lines.join('\n');
 }
