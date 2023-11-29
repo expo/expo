@@ -2,7 +2,7 @@ import {
   DebuggerSetBreakpointByUrl,
   VscodeDebuggerSetBreakpointByUrlHandler,
 } from '../VscodeDebuggerSetBreakpointByUrl';
-import { DebuggerRequest } from '../types';
+import { DebuggerInfo, DebuggerRequest } from '../types';
 
 it('does not respond on non-vscode debugger type', () => {
   const handler = new VscodeDebuggerSetBreakpointByUrlHandler();
@@ -24,7 +24,7 @@ it('does not respond on non-vscode debugger type', () => {
 
 it('mutates `Debugger.setBreakpointByUrl` debugger request to create an unbounded breakpoint', () => {
   const handler = new VscodeDebuggerSetBreakpointByUrlHandler();
-  const debuggerInfo = { debuggerType: 'vscode' };
+  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
 
   const localHttpUrl: DebuggerRequest<DebuggerSetBreakpointByUrl> = {
     id: 420,

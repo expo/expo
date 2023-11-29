@@ -2,7 +2,7 @@ import {
   DebuggerScriptParsed,
   VscodeDebuggerScriptParsedHandler,
 } from '../VscodeDebuggerScriptParsed';
-import { DebuggerRequest } from '../types';
+import { DebuggerInfo, DebuggerRequest } from '../types';
 
 it('does not respond on non-vscode debugger type', () => {
   const device = makeTestDevice();
@@ -28,13 +28,13 @@ it('does not respond on non-vscode debugger type', () => {
 
   // Should not stop propagation for non-vscode debugger type
   expect(handler.onDeviceMessage(message, {})).toBe(false);
-  expect(handler.onDeviceMessage(message, { debuggerType: 'generic' })).toBe(false);
+  expect(handler.onDeviceMessage(message, { userAgent: 'chrome/420.69.0' })).toBe(false);
 });
 
 it('does not replace "sourceMapUrl" with inline source map', () => {
   const device = makeTestDevice();
   const handler = new VscodeDebuggerScriptParsedHandler(device);
-  const debuggerInfo = { debuggerType: 'vscode' };
+  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
 
   // Copied from `Debugger.scriptParsed` message in the protocol monitor
   const message: DebuggerRequest<DebuggerScriptParsed> = {
@@ -65,7 +65,7 @@ it('does not replace "sourceMapUrl" with inline source map', () => {
 it('replaces "sourceMapUrl" containing android emulator address "10.0.2.2" with "localhost"', () => {
   const device = makeTestDevice();
   const handler = new VscodeDebuggerScriptParsedHandler(device);
-  const debuggerInfo = { debuggerType: 'vscode' };
+  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
 
   // Copied from `Debugger.scriptParsed` message in the protocol monitor
   const message: DebuggerRequest<DebuggerScriptParsed> = {
@@ -98,7 +98,7 @@ it('replaces "sourceMapUrl" containing android emulator address "10.0.2.2" with 
 it('replaces "url" containing android emulator address "10.0.3.2" with "localhost"', () => {
   const device = makeTestDevice();
   const handler = new VscodeDebuggerScriptParsedHandler(device);
-  const debuggerInfo = { debuggerType: 'vscode' };
+  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
 
   // Copied from `Debugger.scriptParsed` message in the protocol monitor
   const message: DebuggerRequest<DebuggerScriptParsed> = {
@@ -131,7 +131,7 @@ it('replaces "url" containing android emulator address "10.0.3.2" with "localhos
 it('replaces alphanumeric hash "url" with "file://" prefix', () => {
   const device = makeTestDevice();
   const handler = new VscodeDebuggerScriptParsedHandler(device);
-  const debuggerInfo = { debuggerType: 'vscode' };
+  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
 
   // Copied from `Debugger.scriptParsed` message in the protocol monitor
   const message: DebuggerRequest<DebuggerScriptParsed> = {
@@ -162,7 +162,7 @@ it('replaces alphanumeric hash "url" with "file://" prefix', () => {
 it('stores the "scriptId" to map to source path', () => {
   const device = makeTestDevice();
   const handler = new VscodeDebuggerScriptParsedHandler(device);
-  const debuggerInfo = { debuggerType: 'vscode' };
+  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
 
   // Copied from `Debugger.scriptParsed` message in the protocol monitor
   const message: DebuggerRequest<DebuggerScriptParsed> = {

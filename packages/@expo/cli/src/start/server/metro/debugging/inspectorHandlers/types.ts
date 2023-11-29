@@ -1,6 +1,6 @@
-import { type DebuggerInfo } from '@react-native/dev-middleware';
+import type { unstable_Device } from '@react-native/dev-middleware';
 
-export { type DebuggerInfo } from '@react-native/dev-middleware';
+export type DebuggerInfo = NonNullable<unstable_Device['_debuggerConnection']>;
 
 export interface InspectorHandler {
   /**

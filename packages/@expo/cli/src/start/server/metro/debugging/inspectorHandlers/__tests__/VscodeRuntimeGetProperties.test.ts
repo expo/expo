@@ -2,7 +2,7 @@ import {
   RuntimeGetProperties,
   VscodeRuntimeGetPropertiesHandler,
 } from '../VscodeRuntimeGetProperties';
-import { DebuggerRequest } from '../types';
+import { DebuggerInfo, DebuggerRequest } from '../types';
 
 it('does not respond on non-vscode debugger type', () => {
   const handler = new VscodeRuntimeGetPropertiesHandler();
@@ -40,7 +40,7 @@ it('does not respond on non-vscode debugger type', () => {
 
 it('mutates `Runtime.getProperties` device response with `description` properties', () => {
   const handler = new VscodeRuntimeGetPropertiesHandler();
-  const debuggerInfo = { debuggerType: 'vscode' };
+  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
 
   const message: DebuggerRequest<RuntimeGetProperties> = {
     id: 420,
@@ -78,7 +78,7 @@ it('mutates `Runtime.getProperties` device response with `description` propertie
 
 it('mutates `Runtime.getProperties` device responses and removes `objectId` from symbol types', () => {
   const handler = new VscodeRuntimeGetPropertiesHandler();
-  const debuggerInfo = { debuggerType: 'vscode' };
+  const debuggerInfo: DebuggerInfo = { userAgent: 'vscode/1.80.0' };
 
   const message: DebuggerRequest<RuntimeGetProperties> = {
     id: 420,

@@ -11,6 +11,7 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
   const { createDevMiddleware, unstable_Device, unstable_InspectorProxy } =
     require('@react-native/dev-middleware') as typeof import('@react-native/dev-middleware');
 
+  // Create the extended inspector proxy, using our own device class
   const ExpoInspectorProxy = createInspectorProxyClass(
     unstable_InspectorProxy,
     createInspectorDeviceClass(metroBundler, unstable_Device)

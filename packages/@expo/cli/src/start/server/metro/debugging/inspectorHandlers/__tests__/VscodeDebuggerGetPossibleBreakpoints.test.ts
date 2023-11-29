@@ -2,7 +2,7 @@ import {
   DebuggerGetPossibleBreakpoints,
   VscodeDebuggerGetPossibleBreakpointsHandler,
 } from '../VscodeDebuggerGetPossibleBreakpoints';
-import { DebuggerRequest } from '../types';
+import { DebuggerInfo, DebuggerRequest } from '../types';
 
 it('does not respond on non-vscode debugger type', () => {
   const handler = new VscodeDebuggerGetPossibleBreakpointsHandler();
@@ -22,8 +22,8 @@ it('does not respond on non-vscode debugger type', () => {
 
 it('responds to `Debugger.getPossibleBreakpoints` with empty `locations`', () => {
   const handler = new VscodeDebuggerGetPossibleBreakpointsHandler();
-  const debuggerInfo = {
-    debuggerType: 'vscode',
+  const debuggerInfo: DebuggerInfo = {
+    userAgent: 'vscode/1.80.0',
     socket: { send: jest.fn() },
   };
 

@@ -14,3 +14,17 @@ export function respond<T = DeviceResponse | DebuggerResponse>(socket: WS, messa
   socket.send(JSON.stringify(message));
   return true;
 }
+
+/** Known compatible debuggers that require specific workarounds */
+export type DebuggerType = 'vscode' | 'unknown';
+
+/**
+ * Determine if the current debugger is of predefined type "vscode"
+ */
+export function getDebuggerType(userAgent?: string | null): DebuggerType {
+  if (userAgent?.startsWith('vscode')) {
+    return 'vscode';
+  }
+
+  return 'unknown';
+}

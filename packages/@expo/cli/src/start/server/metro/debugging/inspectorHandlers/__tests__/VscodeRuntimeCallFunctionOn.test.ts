@@ -2,7 +2,7 @@ import {
   RuntimeCallFunctionOn,
   VscodeRuntimeCallFunctionOnHandler,
 } from '../VscodeRuntimeCallFunctionOn';
-import { DebuggerRequest } from '../types';
+import { DebuggerInfo, DebuggerRequest } from '../types';
 
 it('does not respond on non-vscode debugger type', () => {
   const handler = new VscodeRuntimeCallFunctionOnHandler();
@@ -19,8 +19,8 @@ it('does not respond on non-vscode debugger type', () => {
 
 it('swallows `Runtime.callFunctionOn` debugger message and responds with object ID pointer', () => {
   const handler = new VscodeRuntimeCallFunctionOnHandler();
-  const debuggerInfo = {
-    debuggerType: 'vscode',
+  const debuggerInfo: DebuggerInfo = {
+    userAgent: 'vscode/1.80.0',
     socket: { send: jest.fn() },
   };
 

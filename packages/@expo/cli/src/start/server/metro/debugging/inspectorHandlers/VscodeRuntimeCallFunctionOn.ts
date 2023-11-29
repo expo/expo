@@ -7,7 +7,7 @@ import {
   DeviceResponse,
   InspectorHandler,
 } from './types';
-import { respond } from './utils';
+import { getDebuggerType, respond } from './utils';
 
 /**
  * Vscode is trying to inject a script to fetch information about "Stringy" variables.
@@ -19,9 +19,9 @@ import { respond } from './utils';
 export class VscodeRuntimeCallFunctionOnHandler implements InspectorHandler {
   onDebuggerMessage(
     message: DebuggerRequest<RuntimeCallFunctionOn>,
-    { socket, debuggerType }: DebuggerInfo
+    { socket, userAgent }: DebuggerInfo
   ): boolean {
-    if (debuggerType === 'vscode' && message.method === 'Runtime.callFunctionOn') {
+    if (getDebuggerType(userAgent) === 'vscode' && message.method === 'Runtime.callFunctionOn') {
       return respond<DeviceResponse<RuntimeCallFunctionOn>>(socket, {
         id: message.id,
         result: {
