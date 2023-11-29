@@ -176,15 +176,13 @@ export default function DocumentationPage({
         )}
         {title && <Separator />}
         {children}
-        {title && (
-          <Footer
-            title={title}
-            sourceCodeUrl={sourceCodeUrl}
-            packageName={packageName}
-            previousPage={previousPage}
-            nextPage={nextPage}
-          />
-        )}
+        <Footer
+          title={title}
+          sourceCodeUrl={sourceCodeUrl}
+          packageName={packageName}
+          previousPage={previousPage}
+          nextPage={nextPage}
+        />
       </div>
     </DocumentationNestedScrollLayout>
   );

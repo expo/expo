@@ -62,7 +62,7 @@ export function preprocessSentryError(event: Event) {
 }
 
 // https://gist.github.com/paulirish/5558557
-function isLocalStorageAvailable(): boolean {
+export function isLocalStorageAvailable(): boolean {
   try {
     if (!window.localStorage || localStorage === null || typeof localStorage === 'undefined') {
       return false;
