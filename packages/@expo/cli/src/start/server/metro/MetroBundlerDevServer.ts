@@ -123,7 +123,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       if (contents) {
         files.set(artifactFilename, {
           contents,
-          webTarget: 'server',
+          targetDomain: 'server',
         });
       }
       // Remap the manifest files to represent the output files.

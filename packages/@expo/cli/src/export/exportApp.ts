@@ -171,7 +171,7 @@ export async function exportAppAsync(
       // If web exists, then write the template HTML file.
       files.set('index.html', {
         contents: html,
-        webTarget: 'client',
+        targetDomain: 'client',
       });
     }
   }

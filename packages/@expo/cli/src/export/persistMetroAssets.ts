@@ -84,7 +84,7 @@ export async function persistMetroAssetsAsync(
       const data = await fs.promises.readFile(src);
       files.set(dest, {
         contents: data,
-        webTarget: platform === 'web' ? 'client' : undefined,
+        targetDomain: platform === 'web' ? 'client' : undefined,
       });
     } else {
       batches[src] = path.join(outputDirectory, dest);

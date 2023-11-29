@@ -24,8 +24,8 @@ export type ExportAssetDescriptor = {
   assetId?: string;
   /** Expo Router route path for formatting the HTML output. */
   routeId?: string;
-  /** A key for grouping together web output files by server- or client-side. */
-  webTarget?: 'server' | 'client';
+  /** A key for grouping together output files by server- or client-side. */
+  targetDomain?: 'server' | 'client';
 };
 
 export type ExportAssetMap = Map<string, ExportAssetDescriptor>;
@@ -49,7 +49,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
 
   let hasServerOutput = false;
   for (const asset of files.entries()) {
-    hasServerOutput = hasServerOutput || asset[1].webTarget === 'server';
+    hasServerOutput = hasServerOutput || asset[1].targetDomain === 'server';
     if (asset[1].assetId) assetEntries.push(asset);
     else if (asset[1].routeId != null) routeEntries.push(asset);
     else remainingEntries.push(asset);
@@ -159,9 +159,9 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   await Promise.all(
     [...files.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(async ([file, { contents, webTarget }]) => {
-        // NOTE: Only use `webTarget` if we have at least one server asset
-        const domain = (hasServerOutput && webTarget) || '';
+      .map(async ([file, { contents, targetDomain }]) => {
+        // NOTE: Only use `targetDomain` if we have at least one server asset
+        const domain = (hasServerOutput && targetDomain) || '';
         const outputPath = path.join(outputDir, domain, file);
         await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
         await fs.promises.writeFile(outputPath, contents);
@@ -199,7 +199,7 @@ export function getFilesFromSerialAssets(
     files.set(resource.filename, {
       contents: resource.source,
       originFilename: resource.originFilename,
-      webTarget: platform === 'web' ? 'client' : undefined,
+      targetDomain: platform === 'web' ? 'client' : undefined,
     });
   });
 

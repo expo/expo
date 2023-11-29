@@ -6,7 +6,6 @@
  */
 import assert from 'assert';
 import chalk from 'chalk';
-import fs from 'fs';
 import path from 'path';
 import { inspect } from 'util';
 
@@ -100,7 +99,7 @@ export async function getFilesToExportFromServerAsync(
       try {
         files.set(outputPath, {
           contents: '',
-          webTarget: 'server',
+          targetDomain: 'server',
         });
 
         const data = await renderAsync(pathname);
@@ -108,7 +107,7 @@ export async function getFilesToExportFromServerAsync(
         files.set(outputPath, {
           contents: data,
           routeId: pathname,
-          webTarget: includeGroupVariations ? 'client' : 'server',
+          targetDomain: includeGroupVariations ? 'client' : 'server',
         });
       } catch (e: any) {
         await logMetroErrorAsync({ error: e, projectRoot });
@@ -351,7 +350,7 @@ async function exportApiRoutesAsync({
 
   files.set('_expo/routes.json', {
     contents: JSON.stringify(manifest, null, 2),
-    webTarget: 'server',
+    targetDomain: 'server',
   });
 
   return files;

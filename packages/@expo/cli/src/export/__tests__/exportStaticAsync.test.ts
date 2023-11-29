@@ -253,6 +253,6 @@ describe(getFilesToExportFromServerAsync, () => {
       '[...404].html',
     ]);
 
-    expect([...files.values()].every((file) => file.webTarget === 'client')).toBeTruthy();
+    expect([...files.values()].every((file) => file.targetDomain === 'client')).toBeTruthy();
   });
 });

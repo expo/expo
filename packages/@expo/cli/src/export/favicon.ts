@@ -36,7 +36,7 @@ export async function getVirtualFaviconAssetsAsync(
         debug('Storing asset for persisting: ' + assetPath);
         files?.set(asset.path, {
           contents: asset.source,
-          webTarget: 'client',
+          targetDomain: 'client',
         });
       } else {
         debug('Writing asset to disk: ' + assetPath);
