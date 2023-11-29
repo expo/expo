@@ -148,7 +148,7 @@ EX_EXPORT_METHOD_AS(presentPermissionsPickerAsync,
       // Get the top-most presented view controller
       UIViewController *topViewController = rootViewController;
       while (topViewController.presentedViewController) {
-          topViewController = topViewController.presentedViewController;
+        topViewController = topViewController.presentedViewController;
       }
       
       // Present the PHPickerViewController modally from the top-most view controller
