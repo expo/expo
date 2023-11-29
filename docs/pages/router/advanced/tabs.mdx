@@ -15,7 +15,18 @@ Sometimes you want a route to exist but not show up in the tab bar, you can pass
 import { Tabs } from 'expo-router/tabs';
 export default function AppLayout() {
   return (
-    <Tabs>
+    <Tabs/>
+  );
+}
+```
+
+```jsx app/index.js
+import { Link, Tabs } from 'expo-router';
+import { Text, View } from 'react-native';
+
+export default function Home() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Tabs.Screen
         // Name of the route to hide.
         name="index"
@@ -24,9 +35,12 @@ export default function AppLayout() {
           href: null,
         }}
       />
-    </Tabs>
+      <Text>Home Screen</Text>
+      <Link href={{ pathname: 'details', params: { name: 'Bacon' } }}>Go to Details</Link>
+    </View>
   );
 }
+
 ```
 
 ## Dynamic routes
@@ -37,7 +51,18 @@ You may want to use a dynamic route in your tab bar (for example, a profile tab)
 import { Tabs } from 'expo-router/tabs';
 export default function AppLayout() {
   return (
-    <Tabs>
+    <Tabs/>
+  );
+}
+```
+
+```jsx app/[user].jsx
+import { Tabs } from 'expo-router';
+import { Text } from 'react-native';
+
+export default function Page() {
+  return (
+    <>
       <Tabs.Screen
         // Name of the dynamic route.
         name="[user]"
@@ -53,7 +78,8 @@ export default function AppLayout() {
           },
         }}
       />
-    </Tabs>
+      <Text>Profile Screen</Text>
+    </>
   );
 }
 ```
