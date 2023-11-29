@@ -1,13 +1,20 @@
 import chalk from 'chalk';
 
+import { createInspectorDeviceClass } from './InspectorDevice';
+import { createInspectorProxyClass } from './InspectorProxy';
 import { Log } from '../../../../log';
 import { type MetroBundlerDevServer } from '../MetroBundlerDevServer';
 
 export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
   // Load the React Native debugging tools from project
   // TODO: check if this works with isolated modules
-  const { createDevMiddleware } =
+  const { createDevMiddleware, unstable_Device, unstable_InspectorProxy } =
     require('@react-native/dev-middleware') as typeof import('@react-native/dev-middleware');
+
+  const ExpoInspectorProxy = createInspectorProxyClass(
+    unstable_InspectorProxy,
+    createInspectorDeviceClass(metroBundler, unstable_Device)
+  );
 
   const { middleware, websocketEndpoints } = createDevMiddleware({
     projectRoot: metroBundler.projectRoot,
@@ -15,6 +22,7 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
       .getUrlCreator()
       .constructUrl({ scheme: 'http', hostType: 'localhost' }),
     logger: createLogger(chalk.bold('Debug:')),
+    unstable_InspectorProxy: ExpoInspectorProxy,
     unstable_experiments: {
       enableNewDebugger: true,
     },
