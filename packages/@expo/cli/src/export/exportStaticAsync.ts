@@ -16,7 +16,10 @@ import { persistMetroAssetsAsync } from './persistMetroAssets';
 import { ExportAssetMap, getFilesFromSerialAssets } from './saveAssets';
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
-import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
+import {
+  ExpoRouterRuntimeManifest,
+  MetroBundlerDevServer,
+} from '../start/server/metro/MetroBundlerDevServer';
 import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import {
@@ -92,7 +95,7 @@ export async function getFilesToExportFromServerAsync(
     // name : contents
     files = new Map(),
   }: {
-    manifest: any;
+    manifest: ExpoRouterRuntimeManifest;
     renderAsync: (pathname: string) => Promise<string>;
     includeGroupVariations?: boolean;
     files?: ExportAssetMap;
@@ -223,12 +226,12 @@ export function getHtmlFiles({
   manifest,
   includeGroupVariations,
 }: {
-  manifest: any;
+  manifest: ExpoRouterRuntimeManifest;
   includeGroupVariations?: boolean;
 }): string[] {
   const htmlFiles = new Set<string>();
 
-  function traverseScreens(screens: string | { screens: any; path: string }, baseUrl = '') {
+  function traverseScreens(screens: ExpoRouterRuntimeManifest['screens'], baseUrl = '') {
     for (const value of Object.values(screens)) {
       if (typeof value === 'string') {
         let filePath = baseUrl + value;

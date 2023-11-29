@@ -17,7 +17,7 @@ import { ctx } from '../../_ctx';
 import { ExpoRoot } from '../ExpoRoot';
 import { getNavigationConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
-import { getServerManifest } from '../getServerManifest';
+import { ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest';
 import { Head } from '../head';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 
@@ -46,7 +46,9 @@ async function getManifest(options: Parameters<typeof getRoutes>[1] = {}) {
  *
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
-async function getBuildTimeServerManifestAsync(options: Parameters<typeof getRoutes>[1] = {}) {
+async function getBuildTimeServerManifestAsync(
+  options: Parameters<typeof getRoutes>[1] = {}
+): Promise<ExpoRouterServerManifestV1> {
   const routeTree = getRoutes(ctx, {
     ...options,
   });

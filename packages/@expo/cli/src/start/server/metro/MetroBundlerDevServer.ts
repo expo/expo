@@ -50,6 +50,10 @@ import {
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 
+export type ExpoRouterRuntimeManifest = Awaited<
+  ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
+>;
+
 export class ForwardHtmlError extends CommandError {
   constructor(
     message: string,
@@ -161,7 +165,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     mode: 'development' | 'production';
     minify?: boolean;
     baseUrl: string;
-  }) {
+  }): Promise<{
+    serverManifest: ExpoRouterServerManifestV1;
+    manifest: ExpoRouterRuntimeManifest;
+    renderAsync: (path: string) => Promise<string>;
+  }> {
     const url = this.getDevServerUrl()!;
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
