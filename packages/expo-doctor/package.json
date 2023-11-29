@@ -17,9 +17,7 @@
   },
   "author": "Expo <support@expo.dev>",
   "license": "MIT",
-  "bin": {
-    "expo-doctor": "./bin/expo-doctor"
-  },
+  "bin": "./bin/expo-doctor",
   "files": [
     "build"
   ],
