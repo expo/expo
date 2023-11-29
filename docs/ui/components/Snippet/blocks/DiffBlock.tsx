@@ -6,6 +6,8 @@ import { Snippet } from '../Snippet';
 import { SnippetContent } from '../SnippetContent';
 import { SnippetHeader } from '../SnippetHeader';
 
+import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
+
 const randomCommitHash = () => Math.random().toString(36).slice(2, 9);
 
 // These types come from `react-diff-view` library
@@ -49,7 +51,9 @@ export const DiffBlock = ({ source, raw }: Props) => {
     newPath,
   }: RenderLine) => (
     <Snippet key={oldRevision + '-' + newRevision}>
-      <SnippetHeader title={newPath} Icon={Copy07Icon} />
+      <SnippetHeader title={newPath} Icon={Copy07Icon}>
+        <SettingsAction />
+      </SnippetHeader>
       <SnippetContent className="p-0" hideOverflow>
         <Diff viewType="unified" diffType={type} hunks={hunks}>
           {(hunks: any[]) => hunks.map(hunk => <Hunk key={hunk.content} hunk={hunk} />)}
