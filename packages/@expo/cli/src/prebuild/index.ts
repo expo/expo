@@ -15,6 +15,7 @@ export const expoPrebuild: Command = async (argv) => {
       '--yarn': Boolean,
       '--bun': Boolean,
       '--no-install': Boolean,
+      '--no-preserve-pods': Boolean,
       '--template': String,
       '--platform': String,
       '--skip-dependency-update': String,
@@ -42,6 +43,7 @@ export const expoPrebuild: Command = async (argv) => {
         chalk`-p, --platform <all|android|ios>         Platforms to sync: ios, android, all. {dim Default: all}`,
         `--skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)`,
         `-h, --help                               Usage info`,
+        `--no-preserve-pods                             Delete the iOS Pods folder before regenerate the native files.`,
       ].join('\n')
     );
   }
@@ -64,7 +66,7 @@ export const expoPrebuild: Command = async (argv) => {
     return prebuildAsync(getProjectRoot(args), {
       // Parsed options
       clean: args['--clean'],
-
+      keepPods: !args['--no-preserve-pods'],
       packageManager: resolvePackageManagerOptions(args),
       install: !args['--no-install'],
       platforms: resolvePlatformOption(args['--platform']),

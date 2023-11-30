@@ -61,11 +61,14 @@ export function copyTemplateFiles(
   {
     templateDirectory,
     platforms,
+    mergeExistingFiles,
   }: {
     /** File path to the template directory. */
     templateDirectory: string;
     /** List of platforms to copy against. */
     platforms: ModPlatform[];
+    /** Should merge existing local files with template files. */
+    mergeExistingFiles?: boolean;
   }
 ): CopyFilesResults {
   const copiedPaths: string[] = [];
@@ -73,7 +76,7 @@ export function copyTemplateFiles(
 
   platforms.forEach((copyFilePath) => {
     const projectPath = path.join(projectRoot, copyFilePath);
-    if (fs.existsSync(projectPath)) {
+    if (fs.existsSync(projectPath) && !mergeExistingFiles) {
       skippedPaths.push(copyFilePath);
     } else {
       copiedPaths.push(copyFilePath);

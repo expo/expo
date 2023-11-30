@@ -49,6 +49,8 @@ export async function prebuildAsync(
     platforms: ModPlatform[];
     /** Should delete the native folders before attempting to prebuild. */
     clean?: boolean;
+    /** Should keep the Pods folder even if using the `clean` option */
+    keepPods?: boolean;
     /** URL or file path to the prebuild template. */
     template?: string;
     /** Name of the node package manager to install with. */
@@ -71,8 +73,10 @@ export async function prebuildAsync(
     if (await maybeBailOnGitStatusAsync()) {
       return null;
     }
+
+    const ignorePaths = options.keepPods ? ['ios/Pods'] : [];
     // Clear the native folders before syncing
-    await clearNativeFolder(projectRoot, options.platforms);
+    await clearNativeFolder(projectRoot, options.platforms, ignorePaths);
   } else {
     // Check if the existing project folders are malformed.
     await promptToClearMalformedNativeProjectsAsync(projectRoot, options.platforms);
@@ -94,6 +98,7 @@ export async function prebuildAsync(
       template: options.template != null ? resolveTemplateOption(options.template) : undefined,
       platforms: options.platforms,
       skipDependencyUpdate: options.skipDependencyUpdate,
+      mergeExistingFiles: options.clean && options.keepPods,
     });
 
   // Install node modules

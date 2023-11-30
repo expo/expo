@@ -12,22 +12,75 @@ import { confirmAsync } from '../utils/prompts';
 type ArbitraryPlatform = ModPlatform | string;
 
 /** Delete the input native folders and print a loading step. */
-export async function clearNativeFolder(projectRoot: string, folders: string[]) {
+export async function clearNativeFolder(
+  projectRoot: string,
+  folders: string[],
+  ignorePaths?: string[]
+) {
   const step = logNewSection(`Clearing ${folders.join(', ')}`);
   try {
     await Promise.all(
-      folders.map((folderName) =>
-        fs.promises.rm(path.join(projectRoot, folderName), {
-          recursive: true,
-          force: true,
-        })
-      )
+      folders.map(async (folderName) => {
+        const filesToDelete = await findFilesToDelete(
+          path.join(projectRoot, folderName),
+          ignorePaths?.map((ignorePath) => path.join(projectRoot, ignorePath))
+        );
+        return Promise.all(
+          filesToDelete.map((fileToDelete) =>
+            fs.promises.rm(fileToDelete, {
+              recursive: true,
+              force: true,
+            })
+          )
+        );
+      })
     );
     step.succeed(`Cleared ${folders.join(', ')} code`);
   } catch (error: any) {
     step.fail(`Failed to delete ${folders.join(', ')} code: ${error.message}`);
     throw error;
   }
+}
+
+/** Find which files to delete given a folder and an array of paths to ignore */
+export async function findFilesToDelete(
+  rootFolder: string,
+  ignorePaths: string[] = []
+): Promise<string[]> {
+  if (!ignorePaths.some((ignorePath) => ignorePath.includes(rootFolder))) {
+    return [rootFolder];
+  }
+
+  const files = await fs.promises.readdir(rootFolder);
+  let filesToDelete: string[] = [];
+
+  for (const file of files) {
+    const fullFilePath = path.join(rootFolder, file);
+    // if exactly matches ignorePath then skip
+    if (ignorePaths.includes(fullFilePath)) {
+      continue;
+    }
+
+    const pathStats = await fs.promises.stat(fullFilePath);
+    // if not a directory then delete
+    if (!pathStats.isDirectory()) {
+      filesToDelete.push(fullFilePath);
+      continue;
+    }
+
+    const partiallyMatchingPaths = ignorePaths.filter((ignorePath) =>
+      ignorePath.includes(fullFilePath)
+    );
+    // if no partially matching paths then delete
+    if (partiallyMatchingPaths?.length === 0) {
+      filesToDelete.push(fullFilePath);
+      continue;
+    }
+
+    filesToDelete = filesToDelete.concat(await findFilesToDelete(fullFilePath, ignorePaths));
+  }
+
+  return filesToDelete;
 }
 
 /**

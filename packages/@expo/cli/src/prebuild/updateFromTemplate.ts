@@ -25,6 +25,7 @@ export async function updateFromTemplateAsync(
     templateDirectory,
     platforms,
     skipDependencyUpdate,
+    mergeExistingFiles,
   }: {
     /** Expo Config */
     exp: ExpoConfig;
@@ -38,6 +39,8 @@ export async function updateFromTemplateAsync(
     platforms: ModPlatform[];
     /** List of dependencies to skip updating. */
     skipDependencyUpdate?: string[];
+    /** Should merge existing local files with template files. */
+    mergeExistingFiles?: boolean;
   }
 ): Promise<
   {
@@ -58,6 +61,7 @@ export async function updateFromTemplateAsync(
     templateDirectory,
     exp,
     platforms,
+    mergeExistingFiles,
   });
 
   const depsResults = await profile(updatePackageJSONAsync)(projectRoot, {
@@ -85,12 +89,14 @@ async function cloneTemplateAndCopyToProjectAsync({
   template,
   exp,
   platforms: unknownPlatforms,
+  mergeExistingFiles,
 }: {
   projectRoot: string;
   templateDirectory: string;
   template?: string;
   exp: Pick<ExpoConfig, 'name' | 'sdkVersion'>;
   platforms: ModPlatform[];
+  mergeExistingFiles?: boolean;
 }): Promise<string[]> {
   const platformDirectories = unknownPlatforms
     .map((platform) => `./${platform}`)
@@ -111,6 +117,7 @@ async function cloneTemplateAndCopyToProjectAsync({
     const results = copyTemplateFiles(projectRoot, {
       templateDirectory,
       platforms,
+      mergeExistingFiles,
     });
 
     ora.succeed(createCopyFilesSuccessMessage(platforms, results));
