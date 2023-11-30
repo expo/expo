@@ -139,6 +139,7 @@ const executeCommand = async (
     excludeProtected: true,
     skipErrorChecking: true,
     excludeExternals: true,
+    jsDocCompatibility: false,
     pretty: !MINIFY_JSON,
   });
 

@@ -580,16 +580,11 @@ const getParamTags = (shortText?: string) => {
   return Array.from(shortText.matchAll(PARAM_TAGS_REGEX), match => match[0]);
 };
 
-export const getCommentContent = (content: CommentContentData[], ignoreCodeBlock = false) => {
-  const commentText = content
+export const getCommentContent = (content: CommentContentData[]) => {
+  return content
     .map(entry => entry.text)
     .join('')
     .trim();
-
-  if (ignoreCodeBlock) {
-    return commentText.replace(/```.+\n/, '').replace(/\n```/, '');
-  }
-  return commentText;
 };
 
 export const CommentTextBlock = ({
