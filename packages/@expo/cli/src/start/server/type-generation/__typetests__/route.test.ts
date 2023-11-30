@@ -52,10 +52,6 @@ describe('router.push()', () => {
       expectError(router.push('/mix/apple'));
       expectError(router.push('/mix/apple/cat'));
     });
-
-    it('can accept any external url', () => {
-      expectType<void>(router.push('http://expo.dev'));
-    });
   });
 
   describe('HrefObject', () => {
@@ -192,5 +188,19 @@ describe('useSegments', () => {
 
   it('only accepts valid possible segments', () => {
     expectError(useSegments<['invalid segment']>());
+  });
+});
+
+describe('external routes', () => {
+  it('can accept any external url', () => {
+    expectType<void>(router.push('http://expo.dev'));
+  });
+
+  it('can accept any schema url', () => {
+    expectType<void>(router.push('custom-schema://expo.dev'));
+  });
+
+  it('can accept mailto url', () => {
+    expectType<void>(router.push('mailto:test@test.com'));
   });
 });
