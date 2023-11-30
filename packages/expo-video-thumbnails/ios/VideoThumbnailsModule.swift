@@ -21,11 +21,17 @@ public class VideoThumbnailsModule: Module {
     let generator = AVAssetImageGenerator.init(asset: asset)
 
     generator.appliesPreferredTrackTransform = true
-    generator.requestedTimeToleranceBefore = CMTime.zero
     generator.requestedTimeToleranceAfter = CMTime.zero
 
-    let requestedTime = clampTimeForThumbnail(asset: asset, time: options.time)
-    let imgRef = try generator.copyCGImage(at: requestedTime, actualTime: nil)
+    let time = CMTimeMake(value: options.time, timescale: 1000)
+
+    // `requestedTimeToleranceBefore` can only be set if `time` is less
+    // than the video duration, otherwise it will fail to generate an image.
+    if(time < asset.duration) {
+      generator.requestedTimeToleranceBefore = CMTime.zero
+    }
+
+    let imgRef = try generator.copyCGImage(at: time, actualTime: nil)
     let thumbnail = UIImage.init(cgImage: imgRef)
     let savedImageUrl = try saveImage(image: thumbnail, quality: options.quality)
 
@@ -64,16 +70,3 @@ public class VideoThumbnailsModule: Module {
   }
 }
 
-/**
- Adjusts the requested time for thumbnail generation to ensure it does not exceed the video's duration.
- */
-private func clampTimeForThumbnail(asset: AVURLAsset, time: Int64) -> CMTime {
-  let duration = asset.duration
-  let requestedTime = CMTimeMake(value: time, timescale: 1000)
-
-  // Some videos fail even when we pass the real duration (2/10). Subtracting 1000ms makes it work reliably.
-  let subtractedDuration = CMTime(value: duration.value - 1000, timescale: duration.timescale, flags: duration.flags, epoch: duration.epoch)
-
-  // Check if the requested time exceeds the video's duration
-  return requestedTime > subtractedDuration ? subtractedDuration : requestedTime
-}
