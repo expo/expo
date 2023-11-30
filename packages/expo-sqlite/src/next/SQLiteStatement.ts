@@ -112,7 +112,7 @@ export class SQLiteStatement {
   }
 
   /**
-   * Reset the prepared statement cursor.
+   * Reset the prepared statement cursor. This will call the [`sqlite3_reset()`](https://www.sqlite.org/c3ref/reset.html) C function under the hood.
    */
   public async resetAsync(): Promise<void> {
     await this.nativeStatement.resetAsync(this.nativeDatabase);
@@ -214,7 +214,7 @@ export class SQLiteStatement {
   }
 
   /**
-   * Reset the prepared statement cursor.
+   * Reset the prepared statement cursor. This will call the [`sqlite3_reset()`](https://www.sqlite.org/c3ref/reset.html) C function under the hood.
    */
   public resetSync(): void {
     this.nativeStatement.resetSync(this.nativeDatabase);

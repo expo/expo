@@ -11,8 +11,6 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon } from '@expo/styleguide-icons';
 
 `expo-sqlite` gives your app access to a database that can be queried through a SQLite API. The database is persisted across restarts of your app.
 
@@ -27,7 +25,7 @@ import { GithubIcon } from '@expo/styleguide-icons';
 ### Basic CRUD operations
 
 ```js
-const db = await SQLite.openDatabaseAsync('dbName');
+const db = await SQLite.openDatabaseAsync('databaseName');
 
 // `execAsync` is useful for bulk queries when you want to execute alltogether.
 // Please note that `execAsync` does not escape parameters and may lead to SQL injection.
@@ -75,17 +73,17 @@ for await (const row of db.eachAsync('SELECT * FROM test')) {
 }
 ```
 
-### [`useSQLiteContext()`](#usesqlitecontext) hook
+### `useSQLiteContext()` hook
 
 ```tsx
-import { SQLiteProvider, useSQLiteContext, type Database } from 'expo-sqlite/next';
+import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from 'expo-sqlite/next';
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <SQLiteProvider dbName="test.db" initHandler={migrateDbIfNeeded}>
+      <SQLiteProvider databaseName="test.db" onInit={migrateDbIfNeeded}>
         <Header />
         <Content />
       </SQLiteProvider>
@@ -138,7 +136,7 @@ export function Content() {
   );
 }
 
-async function migrateDbIfNeeded(db: Database) {
+async function migrateDbIfNeeded(db: SQLiteDatabase) {
   const DATABASE_VERSION = 1;
   let { user_version: currentDbVersion } = await db.getAsync<{ user_version: number }>(
     'PRAGMA user_version'
@@ -166,23 +164,61 @@ const styles = StyleSheet.create({
 });
 ```
 
+### `useSQLiteContext()` hook with `React.Suspense`
+
+As with the [`useSQLiteContext()` hook](#usesqlitecontext-hook), you can also integrate the `SQLiteProvider` with [`React.Suspense`](https://react.dev/reference/react/Suspense) to show a fallback component until the database is ready.
+To enable the integration, you need to pass the `useSuspense` prop to the `SQLiteProvider` component.
+
+```tsx
+import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite/next';
+import { Suspense } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Suspense fallback={<Fallback />}>
+        <SQLiteProvider databaseName="test.db" onInit={migrateDbIfNeeded} useSuspense>
+          <Header />
+          <Content />
+        </SQLiteProvider>
+      </Suspense>
+    </View>
+  );
+}
+```
+
 ### Executing queries within an async transaction
 
 ```js
-const db = await SQLite.openDatabaseAsync('dbName');
+const db = await SQLite.openDatabaseAsync('databaseName');
 
-await db.transactionAsync(async () => {
+await db.withTransactionAsync(async () => {
   const result = await db.getAsync('SELECT COUNT(*) FROM USERS');
   console.log('Count:', result.rows[0]['COUNT(*)']);
 });
 ```
 
-> **Note:** Due to the nature of the async/await, we can't ensure that the transaction will be executed in the same order as the statements are written. A query out of a transaction may be executed inside the transaction. If you care about the order of execution, use the [`transactionExclusiveAsync`](#transactionexclusiveasynctask) function.
+> **Note:** Due to the nature of the async/await, we can't ensure that the transaction will be executed in the same order as the statements are written. A query out of a transaction may be executed inside the transaction. For example, the following test case may fail from out of order async/await statements. If you care about the order of execution, use the [`withTransactionExclusiveAsync`](#withtransactionexclusiveasynctask) function.
+> ```tsx
+> db.withTransactionAsync(async () => {
+>   await db.execAsync('UPDATE test SET name = "aaa"');
+>
+>   //
+>   // We cannot control the order of async/await order, so order of execution is not guaranteed.
+>   // The following UPDATE query out of transaction may be executed here and break the expectation.
+>   //
+>
+>   const result = await db.getAsync<{ name: string }>('SELECT name FROM Users');
+>   expect(result?.name).toBe('aaa');
+> });
+> db.execAsync('UPDATE test SET name = "bbb"');
+> ```
 
 ### Executing PRAGMA queries
 
 ```js
-const db = await SQLite.openDatabaseAsync('dbName');
+const db = await SQLite.openDatabaseAsync('databaseName');
 await db.execAsync('PRAGMA journal_mode = WAL');
 await db.execAsync('PRAGMA foreign_keys = ON');
 ```
@@ -253,8 +289,15 @@ expect(row.data).toEqual(blob);
 
 ## API
 
-```js
-import * as SQLite from 'expo-sqlite/next';
-```
+### Cheatsheet for the common API
+
+We offer a few common API for both the [`SQLiteDatabase`](#sqlitedatabase) and [`SQLiteStatement`](#sqlitestatement) classes. The following table summarizes the common API:
+
+| Method                                 | Description                                                                                                                                                       | Use Case                                                                                                                                                                                  |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`runAsync`](#runasyncsource-params)   | Executes a SQL query, returning information on the changes made.                                                                                                  | Ideal for SQL write operations such as `INSERT`, `UPDATE`, `DELETE`.                                                                                                                      |
+| [`getAsync`](#getasyncsource-params)   | Retrieves the first row from the query result.                                                                                                                    | Suitable for fetching a single row from the database, for example: `getAsync('SELECT * FROM Users WHERE id = ?', userId)`.                                                                |
+| [`allAsync`](#allasyncsource-params)   | Fetches all query results at once.                                                                                                                                | Best suited for scenarios with smaller result sets, such as queries with a LIMIT clause, like SELECT \* FROM Table LIMIT 100, where you intend to retrieve all results in a single batch. |
+| [`eachAsync`](#eachasyncsource-params) | Provides an iterator for result set traversal. This method fetches one row at a time from the database, potentially reducing memory usage compared to `allAsync`. | Recommended for handling large result sets incrementally, such as with infinite scrolling implementations.                                                                                |
 
 <APISection packageName="expo-sqlite-next" apiName="SQLite" exposeAllClassPropsInSidebar={true} />
