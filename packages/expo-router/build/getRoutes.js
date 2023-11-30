@@ -154,7 +154,7 @@ function fileNodeToRouteNode(tree, options) {
         children: getTreeNodesAsRouteNodes(children, options),
         dynamic,
         filePath: node.filePath,
-        entryPoints: options.ignoreEntryPoints ? undefined : [node.filePath],
+        entryPoints: options.ignoreEntryPoints || isApiRoutePath(node.contextKey) ? undefined : [node.filePath],
     };
     if (clones.size) {
         return [...clones].map((clone) => applyDefaultInitialRouteName({
@@ -167,7 +167,7 @@ function fileNodeToRouteNode(tree, options) {
         applyDefaultInitialRouteName({
             loadRoute: node.loadRoute,
             route: name,
-            entryPoints: options.ignoreEntryPoints ? undefined : [node.filePath],
+            entryPoints: options.ignoreEntryPoints || isApiRoutePath(node.contextKey) ? undefined : [node.filePath],
             filePath: node.filePath,
             contextKey: node.contextKey,
             children: getTreeNodesAsRouteNodes(children, options),
@@ -321,7 +321,10 @@ function isViewRoute(route) {
     return !!route && !isApiRoute(route);
 }
 function isApiRoute(route) {
-    return route.contextKey.match(/\+api\.[jt]sx?$/);
+    return isApiRoutePath(route.contextKey);
+}
+function isApiRoutePath(route) {
+    return !!route.match(/\+api\.[jt]sx?$/);
 }
 function crawlAndAppendEntryFiles(route, entryPoints = []) {
     if (!isViewRoute(route)) {

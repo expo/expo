@@ -213,7 +213,8 @@ function fileNodeToRouteNode(tree: TreeNode, options: Options): IntermediateRout
     children: getTreeNodesAsRouteNodes(children, options),
     dynamic,
     filePath: node.filePath,
-    entryPoints: options.ignoreEntryPoints ? undefined : [node.filePath],
+    entryPoints:
+      options.ignoreEntryPoints || isApiRoutePath(node.contextKey) ? undefined : [node.filePath],
   };
 
   if (clones.size) {
@@ -230,7 +231,8 @@ function fileNodeToRouteNode(tree: TreeNode, options: Options): IntermediateRout
     applyDefaultInitialRouteName({
       loadRoute: node.loadRoute,
       route: name,
-      entryPoints: options.ignoreEntryPoints ? undefined : [node.filePath],
+      entryPoints:
+        options.ignoreEntryPoints || isApiRoutePath(node.contextKey) ? undefined : [node.filePath],
       filePath: node.filePath,
       contextKey: node.contextKey,
       children: getTreeNodesAsRouteNodes(children, options),
@@ -421,7 +423,10 @@ function isViewRoute(route?: IntermediateRouteNode | null): route is Intermediat
   return !!route && !isApiRoute(route);
 }
 function isApiRoute(route: IntermediateRouteNode) {
-  return route.contextKey.match(/\+api\.[jt]sx?$/);
+  return isApiRoutePath(route.contextKey);
+}
+function isApiRoutePath(route: string): boolean {
+  return !!route.match(/\+api\.[jt]sx?$/);
 }
 
 function crawlAndAppendEntryFiles(
