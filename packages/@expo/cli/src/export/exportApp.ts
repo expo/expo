@@ -17,7 +17,6 @@ import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/ro
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
-import { ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
 
@@ -61,12 +60,10 @@ export async function exportAppAsync(
   }
 
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
-
   const outputPath = path.resolve(projectRoot, outputDir);
-  const assetsPath = path.join(outputPath, 'assets');
 
-  await Promise.all([assetsPath].map(ensureDirectoryAsync));
-
+  // NOTE(kitten): The public folder is currently always copied, regardless of targetDomain
+  // split. Hence, there's another separate `copyPublicFolderAsync` call below for `web`
   await copyPublicFolderAsync(publicPath, outputPath);
 
   // Run metro bundler and create the JS bundles/source maps.
@@ -138,6 +135,14 @@ export async function exportAppAsync(
 
   if (platforms.includes('web')) {
     if (useServerRendering) {
+      // @ts-expect-error: server not on type yet
+      const exportServer = exp.web?.output === 'server';
+
+      if (exportServer) {
+        // TODO: Remove when this is abstracted into the files map
+        await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));
+      }
+
       await unstable_exportStaticAsync(projectRoot, {
         files,
         clear: !!clear,
@@ -145,9 +150,8 @@ export async function exportAppAsync(
         minify,
         baseUrl,
         includeSourceMaps: sourceMaps,
-        // @ts-expect-error: server not on type yet
-        exportServer: exp.web?.output === 'server',
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+        exportServer,
       });
     } else {
       // TODO: Unify with exportStaticAsync
@@ -174,7 +178,10 @@ export async function exportAppAsync(
 
       // Generate SPA-styled HTML file.
       // If web exists, then write the template HTML file.
-      files.set('index.html', { contents: html });
+      files.set('index.html', {
+        contents: html,
+        targetDomain: 'client',
+      });
     }
   }
 
