@@ -135,8 +135,13 @@ export async function exportAppAsync(
 
   if (platforms.includes('web')) {
     if (useServerRendering) {
-      // TODO: Remove when this is abstracted into the files map
-      await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));
+      // @ts-expect-error: server not on type yet
+      const exportServer = exp.web?.output === 'server';
+
+      if (exportServer) {
+        // TODO: Remove when this is abstracted into the files map
+        await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));
+      }
 
       await unstable_exportStaticAsync(projectRoot, {
         files,
@@ -145,9 +150,8 @@ export async function exportAppAsync(
         minify,
         baseUrl,
         includeSourceMaps: sourceMaps,
-        // @ts-expect-error: server not on type yet
-        exportServer: exp.web?.output === 'server',
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+        exportServer,
       });
     } else {
       // TODO: Unify with exportStaticAsync
