@@ -174,7 +174,6 @@ export function copyInBatchesAsync(filesToCopy: Record<string, string>) {
         // queue.length === 0 is checked in previous branch, so this is string
         const src = queue.shift() as string;
         const dest = filesToCopy[src];
-        console.log('copy', src, dest);
         copy(src, dest, copyNext);
       } else {
         resolve();
