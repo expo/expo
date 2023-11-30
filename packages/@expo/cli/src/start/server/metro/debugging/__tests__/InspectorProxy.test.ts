@@ -6,219 +6,226 @@ import WS from 'ws';
 import { createInspectorProxyClass } from '../InspectorProxy';
 
 describe('_createDeviceConnectionWSServer', () => {
-  it('accepts new app connection', async () => {
-    const { closeProxy, proxy, deviceWebSocketUrl } = await createTestProxy();
-    const sockets = {
-      device: new WS(deviceWebSocketUrl),
-    };
+  it(
+    'accepts new app connection',
+    withProxy(async ({ proxy, sockets, appWebSocketUrl: deviceWebSocketUrl }) => {
+      // Create a new app connection, and wait for socket to be open
+      sockets.app = new WS(deviceWebSocketUrl);
+      await waitForSocketEvent(sockets.app, 'open');
 
-    try {
-      await new Promise((resolve) => sockets.device.on('open', resolve));
-
-      expect(sockets.device.readyState).toBe(sockets.device.OPEN);
+      // Socket must be open, and app must be registered in the proxy
+      expect(sockets.app.readyState).toBe(sockets.app.OPEN);
       expect(proxy._devices.size).toBe(1);
-    } finally {
-      closeSockets(sockets);
-      closeProxy();
-    }
-  });
+    })
+  );
 
-  it('accepts new app connection with client-side id', async () => {
-    const { closeProxy, proxy, deviceWebSocketUrl } = await createTestProxy();
-    const sockets = {
-      device: new WS(`${deviceWebSocketUrl}?device=someuniqueid`),
-    };
+  it(
+    'accepts new app connection with client-side id',
+    withProxy(async ({ proxy, sockets, appWebSocketUrl: deviceWebSocketUrl }) => {
+      // Create a new app connection, and wait for socket to be open
+      sockets.app = new WS(`${deviceWebSocketUrl}?device=someuniqueid`);
+      await waitForSocketEvent(sockets.app, 'open');
 
-    try {
-      await new Promise((resolve) => sockets.device.on('open', resolve));
-
-      expect(sockets.device.readyState).toBe(sockets.device.OPEN);
+      // Soket must be open, app must be registered, and have the correct id
+      expect(sockets.app.readyState).toBe(sockets.app.OPEN);
       expect(proxy._devices.size).toBe(1);
       expect(proxy._devices.get('someuniqueid')).toBeDefined();
-    } finally {
-      closeSockets(sockets);
-      closeProxy();
-    }
-  });
+    })
+  );
 
-  it('removes device when app disconnects', async () => {
-    const { closeProxy, proxy, deviceWebSocketUrl } = await createTestProxy();
-    const sockets = {
-      device: new WS(deviceWebSocketUrl),
-    };
+  it(
+    'removes device when app disconnects',
+    withProxy(async ({ proxy, sockets, appWebSocketUrl: deviceWebSocketUrl }) => {
+      // Create a new app connection, and wait for socket to be open
+      sockets.app = new WS(deviceWebSocketUrl);
+      await waitForSocketEvent(sockets.app, 'open');
 
-    try {
-      await new Promise((resolve) => sockets.device.on('open', resolve));
+      // App must be registered
       expect(proxy._devices.size).toBe(1);
 
-      sockets.device.close();
+      // Close app connection, and wait for socket to be closed
+      sockets.app.close();
+      await waitForSocketEvent(sockets.app, 'close');
 
-      await new Promise((resolve) => sockets.device.on('close', resolve));
-      // Wait until the `socket.on('close')` handler is called in the proxy
+      // Wait until the `socket.on('close')` event handler is called in the proxy
       await new Promise((resolve) => setTimeout(resolve));
 
+      // App must be removed from the proxy
       expect(proxy._devices.size).toBe(0);
-    } finally {
-      closeSockets(sockets);
-      closeProxy();
-    }
-  });
+    })
+  );
 });
 
 describe('_createDebuggerConnectionWSServer', () => {
-  it('accepts new debugger connection when apps are connected', async () => {
-    const { closeProxy, proxy, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestProxy();
-    const sockets: Record<string, null | WS> = {
-      device: null,
-      debugger: null,
-    };
+  it(
+    'accepts new debugger connection when apps are connected',
+    withProxy(
+      async ({ proxy, sockets, appWebSocketUrl: deviceWebSocketUrl, debuggerWebSocketUrl }) => {
+        // Create a new app connection, and wait for socket to be open
+        sockets.app = new WS(deviceWebSocketUrl);
+        await waitForSocketEvent(sockets.app, 'open');
 
-    try {
-      sockets.device = new WS(deviceWebSocketUrl);
-      await new Promise((resolve) => sockets.device?.on('open', resolve));
+        // App must be registered, and pull instance from proxy
+        const app = proxy._devices.values().next().value;
+        expect(app).toBeDefined();
 
-      const app = proxy._devices.values().next().value;
-      expect(app).toBeDefined();
+        // Spy on the `handleDebuggerConnection` method
+        const debugHandler = jest.spyOn(app, 'handleDebuggerConnection');
 
-      const deviceDebugHandler = jest.spyOn(app, 'handleDebuggerConnection');
+        // Create a new debugger connection, and wait for socket to be open
+        sockets.debugger = new WS(`${debuggerWebSocketUrl}?device=${app._id}&page=1`);
+        await waitForSocketEvent(sockets.debugger, 'open');
 
-      sockets.debugger = new WS(`${debuggerWebSocketUrl}?device=${app._id}&page=1`);
-      await new Promise((resolve) => sockets.debugger?.on('open', resolve));
+        // Debugger socket must be open and debugger must be registered to app
+        expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
+        expect(debugHandler).toBeCalled();
+      }
+    )
+  );
 
-      expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
-      expect(deviceDebugHandler).toBeCalled();
-    } finally {
-      closeSockets(sockets);
-      closeProxy();
-    }
-  });
+  it(
+    'accepts new debugger connection, with user agent from header, when apps are connected',
+    withProxy(
+      async ({ proxy, sockets, appWebSocketUrl: deviceWebSocketUrl, debuggerWebSocketUrl }) => {
+        // Create a new app connection, and wait for socket to be open
+        sockets.app = new WS(deviceWebSocketUrl);
+        await waitForSocketEvent(sockets.app, 'open');
 
-  it('accepts new debugger connection, with user agent from header, when apps are connected', async () => {
-    const { closeProxy, proxy, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestProxy();
-    const sockets: Record<string, null | WS> = {
-      device: null,
-      debugger: null,
-    };
+        // App must be registered, and pull instance from proxy
+        const app = proxy._devices.values().next().value;
+        expect(app).toBeDefined();
 
-    try {
-      sockets.device = new WS(deviceWebSocketUrl);
-      await new Promise((resolve) => sockets.device?.on('open', resolve));
+        // Spy on the `handleDebuggerConnection` method
+        const debugHandler = jest.spyOn(app, 'handleDebuggerConnection');
 
-      const app = proxy._devices.values().next().value;
-      expect(app).toBeDefined();
-
-      const deviceDebugHandler = jest.spyOn(app, 'handleDebuggerConnection');
-
-      sockets.debugger = new WS(`${debuggerWebSocketUrl}?device=${app._id}&page=1`, {
-        headers: {
-          'User-Agent': 'vscode-expo-tools/1.0.0 vscode/420.69.0',
-        },
-      });
-
-      await new Promise((resolve) => sockets.debugger?.on('open', resolve));
-
-      expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
-      expect(deviceDebugHandler).toBeCalledWith(
-        expect.anything(), // socket instance
-        '1', // pageId
-        expect.objectContaining({ userAgent: 'vscode-expo-tools/1.0.0 vscode/420.69.0' })
-      );
-    } finally {
-      closeSockets(sockets);
-      closeProxy();
-    }
-  });
-
-  it('accepts new debugger connection, with user agent from query paramter, when apps are connected', async () => {
-    const { closeProxy, proxy, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestProxy();
-    const sockets: Record<string, null | WS> = {
-      device: null,
-      debugger: null,
-    };
-
-    try {
-      sockets.device = new WS(deviceWebSocketUrl);
-      await new Promise((resolve) => sockets.device?.on('open', resolve));
-
-      const app = proxy._devices.values().next().value;
-      expect(app).toBeDefined();
-
-      const deviceDebugHandler = jest.spyOn(app, 'handleDebuggerConnection');
-      const userAgent = encodeURIComponent('vscode-expo-tools/1.0.0 vscode/420.69.0');
-
-      sockets.debugger = new WS(
-        `${debuggerWebSocketUrl}?device=${app._id}&page=1&userAgent=${userAgent}`,
-        {
+        // Create a new debugger connection with user agent, and wait for socket to be open
+        sockets.debugger = new WS(`${debuggerWebSocketUrl}?device=${app._id}&page=1`, {
           headers: {
-            'User-Agent': 'wrong/one',
+            'User-Agent': 'vscode-expo-tools/1.0.0 vscode/420.69.0',
           },
-        }
-      );
+        });
+        await waitForSocketEvent(sockets.debugger, 'open');
 
-      await new Promise((resolve) => sockets.debugger?.on('open', resolve));
+        // Debugger socket must be open and debugger must be registered to app, including user agent
+        expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
+        expect(debugHandler).toBeCalledWith(
+          expect.anything(), // socket instance
+          '1', // pageId
+          expect.objectContaining({ userAgent: 'vscode-expo-tools/1.0.0 vscode/420.69.0' })
+        );
+      }
+    )
+  );
 
-      expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
-      expect(deviceDebugHandler).toBeCalledWith(
-        expect.anything(), // socket instance
-        '1', // pageId
-        expect.objectContaining({ userAgent: 'vscode-expo-tools/1.0.0 vscode/420.69.0' })
-      );
-    } finally {
-      closeSockets(sockets);
-      closeProxy();
-    }
-  });
+  it(
+    'accepts new debugger connection, with user agent from query paramter, when apps are connected',
+    withProxy(
+      async ({ proxy, sockets, appWebSocketUrl: deviceWebSocketUrl, debuggerWebSocketUrl }) => {
+        // Create a new app connection, and wait for socket to be open
+        sockets.app = new WS(deviceWebSocketUrl);
+        await waitForSocketEvent(sockets.app, 'open');
 
-  it('keeps debugger connection alive when app reconnects', async () => {
-    const { closeProxy, proxy, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestProxy();
-    const sockets: Record<string, null | WS> = {
-      oldDevice: null,
-      newDevice: null,
-      debugger: null,
-    };
+        // App must be registered, and pull instance from proxy
+        const app = proxy._devices.values().next().value;
+        expect(app).toBeDefined();
 
-    try {
-      // Connect the "old" device first
-      sockets.oldDevice = new WS(`${deviceWebSocketUrl}?device=samedevice`);
-      await new Promise((resolve) => sockets.oldDevice?.on('open', resolve));
-      // Proxy must know about the device
-      const oldDevice = proxy._devices.get('samedevice');
-      expect(oldDevice).toBeDefined();
+        // Spy on the `handleDebuggerConnection` method
+        const debugHandler = jest.spyOn(app, 'handleDebuggerConnection');
+        const userAgent = encodeURIComponent('vscode-expo-tools/1.0.0 vscode/420.69.0');
 
-      // Connect the debugger
-      sockets.debugger = new WS(`${debuggerWebSocketUrl}?device=${oldDevice._id}&page=1`);
-      await new Promise((resolve) => sockets.debugger?.on('open', resolve));
-      // Debugger must be connected
-      expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
-      // Old device must know the debugger is connected
-      expect(oldDevice._deviceSocket).not.toBeNull();
+        // Create a new debugger connection, and wait for socket to be open
+        sockets.debugger = new WS(
+          `${debuggerWebSocketUrl}?device=${app._id}&page=1&userAgent=${userAgent}`,
+          {
+            headers: {
+              'User-Agent': 'wrong/one',
+            },
+          }
+        );
+        await waitForSocketEvent(sockets.debugger, 'open');
 
-      // Reconnect the device using the "new" device connection
-      sockets.newDevice = new WS(`${deviceWebSocketUrl}?device=${oldDevice._id}`);
+        // Debugger socket must be open and debugger must be registered to app, including user agent (from query paramter)
+        expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
+        expect(debugHandler).toBeCalledWith(
+          expect.anything(), // socket instance
+          '1', // pageId
+          expect.objectContaining({ userAgent: 'vscode-expo-tools/1.0.0 vscode/420.69.0' })
+        );
+      }
+    )
+  );
 
-      // Wait until both sockets have updated
-      await Promise.all([
-        new Promise((resolve) => sockets.oldDevice?.on('close', resolve)),
-        new Promise((resolve) => sockets.newDevice?.on('open', resolve)),
-      ]);
+  it(
+    'keeps debugger connection alive when app reconnects',
+    withProxy(
+      async ({ proxy, sockets, appWebSocketUrl: deviceWebSocketUrl, debuggerWebSocketUrl }) => {
+        // Create a "old" app connection, and wait for socket to be open
+        sockets.oldApp = new WS(`${deviceWebSocketUrl}?device=samedevice`);
+        await waitForSocketEvent(sockets.oldApp, 'open');
 
-      const newDevice = proxy._devices.get('samedevice');
-      expect(newDevice).not.toBe(oldDevice);
-      expect(proxy._devices.size).toBe(1);
+        // App must be registered, and pull instance from proxy
+        const oldApp = proxy._devices.get('samedevice');
+        expect(oldApp).toBeDefined();
 
-      // Check if the debugger and new device connections are still open
-      expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
-      expect(sockets.newDevice.readyState).toBe(sockets.newDevice.OPEN);
-      expect(sockets.oldDevice.readyState).toBe(sockets.oldDevice.CLOSED);
-    } finally {
-      closeSockets(sockets);
-      closeProxy();
-    }
-  });
+        // Create a new debugger connection, and wait for socket to be open
+        sockets.debugger = new WS(`${debuggerWebSocketUrl}?device=${oldApp._id}&page=1`);
+        await waitForSocketEvent(sockets.debugger, 'open');
+
+        // Debugger socket must be open, and registered to the "old" app
+        expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
+        expect(oldApp._deviceSocket).not.toBeNull();
+
+        // "Reconnect" the device using the new device connection, using the same id
+        sockets.newApp = new WS(`${deviceWebSocketUrl}?device=${oldApp._id}`);
+
+        // Wait until both sockets have updated
+        await Promise.all([
+          waitForSocketEvent(sockets.oldApp, 'close'),
+          waitForSocketEvent(sockets.newApp, 'open'),
+        ]);
+
+        // "New" app connection must be registered, without sharing the same device instance
+        const newApp = proxy._devices.get('samedevice');
+        expect(newApp).not.toBe(oldApp);
+        expect(proxy._devices.size).toBe(1);
+
+        // Debugger and "new" app connections must be open, "old" app connection must be closed
+        expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
+        expect(sockets.newApp.readyState).toBe(sockets.newApp.OPEN);
+        expect(sockets.oldApp.readyState).toBe(sockets.oldApp.CLOSED);
+      }
+    )
+  );
 });
 
+type ProxyTestContext = Awaited<ReturnType<typeof createTestProxy>> & {
+  /** All known sockets that needs to be teared down before the end of the test */
+  sockets: Record<string, null | WS>;
+};
+
+function withProxy(testCase: (context: ProxyTestContext) => Promise<unknown>) {
+  return async () => {
+    const proxy = await createTestProxy();
+    const sockets = {};
+
+    try {
+      await testCase({ ...proxy, sockets });
+    } finally {
+      proxy.server.close();
+      closeSockets(sockets);
+      closeSockets(proxy.websockets);
+    }
+  };
+}
+
+function waitForSocketEvent(socket: null | WS, event: string) {
+  return new Promise((resolve) => socket?.on(event, resolve));
+}
+
 function closeSockets(sockets: Record<string, null | WS>) {
-  Object.values(sockets).forEach((socket) => socket?.close());
+  for (const socketName in sockets) {
+    sockets[socketName]?.close();
+  }
 }
 
 async function createTestProxy() {
@@ -253,20 +260,13 @@ async function createTestProxy() {
     }
   });
 
-  // Clean up all open connections
-  function closeProxy() {
-    closeSockets(websockets);
-    server.close();
-  }
-
   return {
-    closeProxy,
+    appWebSocketUrl: `ws://${serverLocation}/inspector/device`,
+    debuggerWebSocketUrl: `ws://${serverLocation}/inspector/debug`,
+    ExpoProxy,
+    proxy,
     server,
     serverUrl: `http://${serverLocation}`,
-    deviceWebSocketUrl: `ws://${serverLocation}/inspector/device`,
-    debuggerWebSocketUrl: `ws://${serverLocation}/inspector/debug`,
-    proxy,
-    ExpoProxy,
     websockets,
   };
 }
