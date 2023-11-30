@@ -13,6 +13,7 @@ import type { AssetData } from 'metro';
 import path from 'path';
 
 import { getAssetLocalPath } from './metroAssetLocalPath';
+import { ExportAssetMap } from './saveAssets';
 import { Log } from '../log';
 
 function cleanAssetCatalog(catalogDir: string): void {
@@ -22,18 +23,20 @@ function cleanAssetCatalog(catalogDir: string): void {
   }
 }
 
-export function persistMetroAssetsAsync(
+export async function persistMetroAssetsAsync(
   assets: readonly AssetData[],
   {
     platform,
     outputDirectory,
     baseUrl,
     iosAssetCatalogDirectory,
+    files,
   }: {
     platform: string;
     outputDirectory: string;
     baseUrl?: string;
     iosAssetCatalogDirectory?: string;
+    files?: ExportAssetMap;
   }
 ) {
   if (outputDirectory == null) {
@@ -43,6 +46,7 @@ export function persistMetroAssetsAsync(
 
   let assetsToCopy: AssetData[] = [];
 
+  // TODO: Use `files` as below to defer writing files
   if (platform === 'ios' && iosAssetCatalogDirectory != null) {
     // Use iOS Asset Catalog for images. This will allow Apple app thinning to
     // remove unused scales from the optimized bundle.
@@ -73,24 +77,33 @@ export function persistMetroAssetsAsync(
     assetsToCopy = [...assets];
   }
 
-  const files = assetsToCopy.reduce<Record<string, string>>((acc, asset) => {
+  const batches: Record<string, string> = {};
+
+  async function write(src: string, dest: string) {
+    if (files) {
+      const data = await fs.promises.readFile(src);
+      files.set(dest, {
+        contents: data,
+        targetDomain: platform === 'web' ? 'client' : undefined,
+      });
+    } else {
+      batches[src] = path.join(outputDirectory, dest);
+    }
+  }
+
+  for (const asset of assetsToCopy) {
     const validScales = new Set(filterPlatformAssetScales(platform, asset.scales));
-
-    asset.scales.forEach((scale, idx) => {
-      if (!validScales.has(scale)) {
-        return;
+    for (let idx = 0; idx < asset.scales.length; idx++) {
+      const scale = asset.scales[idx];
+      if (validScales.has(scale)) {
+        await write(asset.files[idx], getAssetLocalPath(asset, { platform, scale, baseUrl }));
       }
-      const src = asset.files[idx];
-      const dest = path.join(
-        outputDirectory,
-        getAssetLocalPath(asset, { platform, scale, baseUrl })
-      );
-      acc[src] = dest;
-    });
-    return acc;
-  }, {});
+    }
+  }
 
-  return copyInBatchesAsync(files);
+  if (!files) {
+    await copyInBatchesAsync(batches);
+  }
 }
 
 function writeImageSet(imageSet: ImageSet): void {

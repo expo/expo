@@ -6,7 +6,6 @@
  */
 import assert from 'assert';
 import chalk from 'chalk';
-import fs from 'fs';
 import path from 'path';
 import { inspect } from 'util';
 
@@ -98,11 +97,17 @@ export async function getFilesToExportFromServerAsync(
     getHtmlFiles({ manifest, includeGroupVariations }).map(async (outputPath) => {
       const pathname = outputPath.replace(/(?:index)?\.html$/, '');
       try {
-        files.set(outputPath, { contents: '' });
+        files.set(outputPath, {
+          contents: '',
+          targetDomain: 'server',
+        });
+
         const data = await renderAsync(pathname);
+
         files.set(outputPath, {
           contents: data,
           routeId: pathname,
+          targetDomain: includeGroupVariations ? 'client' : 'server',
         });
       } catch (e: any) {
         await logMetroErrorAsync({ error: e, projectRoot });
@@ -182,13 +187,16 @@ async function exportFromServerAsync(
   });
 
   getFilesFromSerialAssets(resources.artifacts, {
+    platform: 'web',
     includeSourceMaps,
     files,
   });
 
   if (resources.assets) {
     // TODO: Collect files without writing to disk.
+    // NOTE(kitten): Re. above, this is now using `files` except for iOS catalog output, which isn't used here
     await persistMetroAssetsAsync(resources.assets, {
+      files,
       platform: 'web',
       outputDirectory: outputDir,
       baseUrl,
@@ -330,21 +338,20 @@ async function exportApiRoutesAsync({
   manifest: ExpoRouterServerManifestV1;
   baseUrl: string;
 }): Promise<ExportAssetMap> {
-  const functionsDir = '_expo/functions';
-  const funcDir = path.join(outputDir, functionsDir);
-  fs.mkdirSync(path.join(funcDir), { recursive: true });
-
   const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
     mode: 'production',
     routerRoot,
-    outputDir: functionsDir,
+    outputDir: '_expo/functions',
     prerenderManifest: props.manifest,
     baseUrl,
   });
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
 
-  files.set('_expo/routes.json', { contents: JSON.stringify(manifest, null, 2) });
+  files.set('_expo/routes.json', {
+    contents: JSON.stringify(manifest, null, 2),
+    targetDomain: 'server',
+  });
 
   return files;
 }

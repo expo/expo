@@ -139,6 +139,7 @@ export async function exportAssetsAsync(
     // Save assets like a typical bundler, preserving the file paths on web.
     // TODO: Update React Native Web to support loading files from asset hashes.
     await persistMetroAssetsAsync(web.assets, {
+      files,
       platform: 'web',
       outputDirectory: outputDir,
       baseUrl,
