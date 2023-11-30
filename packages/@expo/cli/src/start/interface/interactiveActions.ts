@@ -121,7 +121,7 @@ export class DevServerManagerActions {
     }
 
     try {
-      await openJsInspector(app);
+      await openJsInspector(metroServerOrigin, app);
     } catch (error: any) {
       Log.error('Failed to open JavaScript inspector. This is often an issue with Google Chrome.');
       Log.exception(error);
