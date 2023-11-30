@@ -32,6 +32,8 @@ export type ExpoMetroOptions = {
   preserveEnvVars?: boolean;
   baseUrl?: string;
   isExporting: boolean;
+  // TODO: Add ability to disable sourcemaps in development.
+  inlineSourceMap?: boolean;
 };
 
 function withDefaults({
@@ -39,9 +41,14 @@ function withDefaults({
   minify = mode === 'production',
   preserveEnvVars = env.EXPO_NO_CLIENT_ENV_VARS,
   lazy,
+  inlineSourceMap,
   ...props
 }: ExpoMetroOptions): ExpoMetroOptions {
   return {
+    // Use inline source maps when connected to a dev server to prevent
+    // additional requests from dev tools to load the source maps. Metro doesn't cache the full
+    // result so they're reloaded on every refresh.
+    inlineSourceMap: inlineSourceMap ?? (!env.EXPO_NO_INLINE_DEV_SOURCE_MAPS && !props.isExporting),
     mode,
     minify,
     preserveEnvVars,
@@ -81,6 +88,7 @@ export function getMetroDirectBundleOptions(
     preserveEnvVars,
     baseUrl,
     isExporting,
+    inlineSourceMap,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -114,7 +122,7 @@ export function getMetroDirectBundleOptions(
     entryFile: mainModuleName,
     dev,
     minify: !isHermes && (minify ?? !dev),
-    inlineSourceMap: false,
+    inlineSourceMap,
     lazy,
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
     customTransformOptions: {
@@ -155,6 +163,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     preserveEnvVars,
     baseUrl,
     isExporting,
+    inlineSourceMap,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -168,6 +177,10 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   // Lazy bundling must be disabled for bundle splitting to work.
   if (!isExporting && lazy) {
     queryParams.append('lazy', String(lazy));
+  }
+
+  if (inlineSourceMap) {
+    queryParams.append('inlineSourceMap', String(inlineSourceMap));
   }
 
   if (minify) {

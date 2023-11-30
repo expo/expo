@@ -166,6 +166,11 @@ class Env {
   get EXPO_NO_CLIENT_ENV_VARS(): boolean {
     return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
   }
+
+  /** Prevent using inline source maps in development. We recommend using either no source maps or inline source maps for the best performance and reliability in development. */
+  get EXPO_NO_INLINE_DEV_SOURCE_MAPS() {
+    return boolish('EXPO_NO_INLINE_DEV_SOURCE_MAPS', false);
+  }
 }
 
 export const env = new Env();
