@@ -30,9 +30,9 @@ Simply move your **app** directory to **src/app** and restart the development se
 
 ## Custom directory
 
-> Changing the default root directory is highly discouraged. We may not accept bug reports regarding projects with custom root directories.
+> Changing the default root directory is highly discouraged. We will not accept bug reports regarding projects with custom root directories.
 
-You can dangerously customize the root directory using the Expo Router Config Plugin. The following will change the root directory to `src/routes`, relative to the project root.
+You can dangerously customize the root directory using the Expo Router Config Plugin. The following will change the root directory to **src/routes**, relative to the project root.
 
 ```json app.json
 {
@@ -47,4 +47,4 @@ You can dangerously customize the root directory using the Expo Router Config Pl
 }
 ```
 
-Again, this may lead to unexpected behavior. Many tools assume the root directory to be either `./app` or `./src/app`, only tools in the exact version of Expo CLI will respect the Config Plugin.
+This may lead to unexpected behavior. Many tools assume the root directory to be either **./app** or **./src/app**. Only tools in the exact version of Expo CLI will respect the config plugin.
