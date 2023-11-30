@@ -31,10 +31,7 @@ export function openJsInspector(metroBaseUrl: string, app: MetroInspectorProxyAp
 async function openExperimentalJsInspector(metroBaseUrl: string, app: MetroInspectorProxyApp) {
   const device = encodeURIComponent(app.id);
   const appId = encodeURIComponent(app.description);
-  await fetch(`${metroBaseUrl}/open-debugger?device=${device}&appId=${appId}`, {
-    method: 'POST',
-    timeout: 5 * 1000,
-  });
+  await fetch(`${metroBaseUrl}/open-debugger?device=${device}&appId=${appId}`, { method: 'POST' });
 }
 
 /**
