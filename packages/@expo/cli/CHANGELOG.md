@@ -33,6 +33,7 @@
 - Remove unused Metro `extraNodeModules` augmentation for web resolution in favor of standard aliases. ([#25506](https://github.com/expo/expo/pull/25506) by [@EvanBacon](https://github.com/EvanBacon))
 - Consolidate logic for resolving Node.js built-in shims in browser environments. ([#25511](https://github.com/expo/expo/pull/25511) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure we disable lazy bundling when exporting. ([#25436](https://github.com/expo/expo/pull/25436) by [@EvanBacon](https://github.com/EvanBacon))
+- Split web server output into `server/` and `client/` subfolders when exporting. ([#25640](https://github.com/expo/expo/pull/25640) by [@kitten](https://github.com/kitten))
 
 ## 0.10.16 — 2023-11-24
 
