@@ -87,6 +87,7 @@ it('runs `npx expo prebuild --help`', async () => {
         --template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo
         -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
         --skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)
+        --no-preserve-pods                       Delete the iOS Pods folder before regenerate the native files
         -h, --help                               Usage info
     "
   `);
