@@ -147,15 +147,15 @@ export async function actionAsync(projectRoot: string) {
     new ProjectSetupCheck(),
   ];
 
-  const checkParams = { projectRoot, ...projectConfig };
-
   const filteredChecks = checks.filter(
     (check) =>
-      checkParams.exp.sdkVersion === 'UNVERSIONED' ||
+      projectConfig.exp.sdkVersion === 'UNVERSIONED' ||
       semver.satisfies(projectConfig.exp.sdkVersion!, check.sdkVersionRange)
   );
 
   const spinner = startSpinner(`Running ${filteredChecks.length} checks on your project...`);
+
+  const checkParams = { projectRoot, ...projectConfig };
 
   const jobs = await runChecksAsync(filteredChecks, checkParams, printCheckResultSummaryOnComplete);
 
