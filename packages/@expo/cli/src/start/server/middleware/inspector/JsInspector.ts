@@ -2,14 +2,16 @@ import fetch from 'node-fetch';
 
 import { launchInspectorBrowserAsync, type LaunchBrowserInstance } from './LaunchBrowser';
 export interface MetroInspectorProxyApp {
-  description: string;
-  devtoolsFrontendUrl: string;
-  faviconUrl: string;
   id: string;
+  description: string;
   title: string;
+  faviconUrl: string;
+  devtoolsFrontendUrl: string;
   type: 'node';
-  vm: 'Hermes' | "don't use";
   webSocketDebuggerUrl: string;
+  vm: 'Hermes' | "don't use";
+  /** Added since React Native 0.73.x */
+  deviceName?: string;
 }
 
 let openingBrowserInstance: LaunchBrowserInstance | null = null;
