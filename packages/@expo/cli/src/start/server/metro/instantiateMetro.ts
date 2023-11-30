@@ -21,7 +21,6 @@ import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metr
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
-import createJsInspectorMiddleware from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware, replaceMiddlewareWith } from '../middleware/mutations';
 import { remoteDevtoolsCorsMiddleware } from '../middleware/remoteDevtoolsCorsMiddleware';
 import { remoteDevtoolsSecurityHeadersMiddleware } from '../middleware/remoteDevtoolsSecurityHeadersMiddleware';
@@ -164,8 +163,6 @@ export async function instantiateMetroAsync(
   middleware.use(remoteDevtoolsCorsMiddleware);
 
   prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
-
-  middleware.use('/inspector', createJsInspectorMiddleware());
 
   // TODO: We can probably drop this now.
   const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
