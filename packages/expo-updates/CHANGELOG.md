@@ -13,6 +13,9 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix interaction between reload JS API and ErrorRecovery. ([#25651](https://github.com/expo/expo/pull/25651) by [@wschurman](https://github.com/wschurman))
+
+
 ### 💡 Others
 
 - Update E2E tests to use local copies of `@expo/metro-config`, `@expo/env`, `@expo/config`. ([#25430](https://github.com/expo/expo/pull/25430) by [@EvanBacon](https://github.com/EvanBacon))
