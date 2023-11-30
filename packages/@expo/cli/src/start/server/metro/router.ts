@@ -44,11 +44,7 @@ export function getRouterDirectoryModuleIdWithManifest(
   projectRoot: string,
   exp: ExpoConfig
 ): string {
-  return exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot);
-}
-
-export function getRouterDirectoryWithManifest(projectRoot: string, exp: ExpoConfig): string {
-  return path.join(projectRoot, getRouterDirectoryModuleIdWithManifest(projectRoot, exp));
+  return exp.extra?.router?.root ?? getRouterDirectory(projectRoot);
 }
 
 const logSrcDir = memoize(() =>

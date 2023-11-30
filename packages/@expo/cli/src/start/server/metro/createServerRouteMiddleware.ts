@@ -28,6 +28,7 @@ export function createRouteHandlerMiddleware(
   options: {
     mode?: string;
     appDir: string;
+    routerRoot: string;
     port?: number;
     baseUrl: string;
     getWebBundleUrl: () => string;
@@ -78,6 +79,7 @@ export function createRouteHandlerMiddleware(
               await getErrorOverlayHtmlAsync({
                 error,
                 projectRoot,
+                routerRoot: options.routerRoot,
               }),
               {
                 status: 500,

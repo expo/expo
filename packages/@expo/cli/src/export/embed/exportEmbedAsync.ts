@@ -16,10 +16,7 @@ import { Options } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
-import {
-  getBaseUrlFromExpoConfig,
-  getMetroDirectBundleOptions,
-} from '../../start/server/middleware/metroOptions';
+import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
 import { removeAsync } from '../../utils/dir';
 import { setNodeEnv } from '../../utils/nodeEnv';
@@ -108,13 +105,12 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
 
   const bundleRequest = {
     ...Server.DEFAULT_BUNDLE_OPTIONS,
-    ...getMetroDirectBundleOptions({
+    ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
       mainModuleName: options.entryFile,
       platform: options.platform,
       minify: options.minify,
       mode: options.dev ? 'development' : 'production',
       engine: isHermes ? 'hermes' : undefined,
-      baseUrl: getBaseUrlFromExpoConfig(exp),
       isExporting: true,
     }),
     sourceMapUrl,

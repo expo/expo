@@ -1,3 +1,5 @@
+import path from 'path';
+
 export function hasModule(name: string): boolean {
   try {
     return !!require.resolve(name);
@@ -74,6 +76,16 @@ export function getBaseUrl(caller: any): string {
 
 export function getIsServer(caller: any) {
   return caller?.isServer ?? false;
+}
+
+export function getExpoRouterAbsoluteAppRoot(caller: any): string {
+  const rootModuleId = caller?.routerRoot ?? './app';
+  if (path.isAbsolute(rootModuleId)) {
+    return rootModuleId;
+  }
+  const projectRoot = getPossibleProjectRoot(caller) || '/';
+
+  return path.join(projectRoot, rootModuleId);
 }
 
 export function getInlineEnvVarsEnabled(caller: any): boolean {

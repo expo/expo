@@ -13,6 +13,7 @@ import { Options } from './resolveOptions';
 import { ExportAssetMap, getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
 import { createAssetMap, createSourceMapDebugHtml } from './writeContents';
 import * as Log from '../log';
+import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
@@ -146,6 +147,7 @@ export async function exportAppAsync(
         includeSourceMaps: sourceMaps,
         // @ts-expect-error: server not on type yet
         exportServer: exp.web?.output === 'server',
+        routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
       });
     } else {
       // TODO: Unify with exportStaticAsync

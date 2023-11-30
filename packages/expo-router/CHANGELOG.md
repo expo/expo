@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Change `unstable_src` to `root` in the Expo Router Config Plugin. ([#25658](https://github.com/expo/expo/pull/25658) by [@EvanBacon](https://github.com/EvanBacon))
 - Support linking to `mailto:`, and other common links with the `<Link />` component and `router` API. ([#25486](https://github.com/expo/expo/pull/25486) by [@EvanBacon](https://github.com/EvanBacon))
 - Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 

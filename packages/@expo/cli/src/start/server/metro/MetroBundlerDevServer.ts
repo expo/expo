@@ -17,7 +17,7 @@ import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import { getRouterDirectoryWithManifest, isApiRouteConvention } from './router';
+import { getRouterDirectoryModuleIdWithManifest, isApiRouteConvention } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeApiRouteChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { ExportAssetMap } from '../../../export/saveAssets';
@@ -90,18 +90,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   async exportExpoRouterApiRoutesAsync({
     mode,
-    appDir,
     outputDir,
     prerenderManifest,
     baseUrl,
+    routerRoot,
   }: {
     mode: 'development' | 'production';
-    appDir: string;
     outputDir: string;
     // This does not contain the API routes info.
     prerenderManifest: ExpoRouterServerManifestV1;
     baseUrl: string;
+    routerRoot: string;
   }): Promise<{ files: ExportAssetMap; manifest: ExpoRouterServerManifestV1<string> }> {
+    const appDir = path.join(this.projectRoot, routerRoot);
     const manifest = await this.getExpoRouterRoutesManifestAsync({ appDir });
 
     const files: ExportAssetMap = new Map();
@@ -110,7 +111,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const filepath = path.join(appDir, route.file);
       const contents = await bundleApiRoute(this.projectRoot, filepath, {
         mode,
-        appDir,
+        routerRoot,
         port: this.getInstance()?.location.port,
         shouldThrow: true,
         baseUrl,
@@ -156,10 +157,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     mode,
     minify = mode !== 'development',
     baseUrl,
+    routerRoot,
   }: {
     mode: 'development' | 'production';
     minify?: boolean;
     baseUrl: string;
+    routerRoot: string;
   }) {
     const url = this.getDevServerUrl()!;
 
@@ -170,6 +173,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // Ensure the API Routes are included
         environment: 'node',
         baseUrl,
+        routerRoot,
       });
 
     return {
@@ -190,6 +194,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     baseUrl,
     mainModuleName,
     isExporting,
+    routerRoot,
   }: {
     isExporting: boolean;
     mode: string;
@@ -197,6 +202,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     includeSourceMaps?: boolean;
     baseUrl?: string;
     mainModuleName?: string;
+    routerRoot: string;
   }): Promise<{ artifacts: SerialAsset[]; assets?: AssetData[] }> {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
@@ -210,6 +216,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       lazy: shouldEnableAsyncImports(this.projectRoot),
       baseUrl,
       isExporting,
+      routerRoot,
     });
 
     const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
@@ -277,12 +284,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mode,
       minify = mode !== 'development',
       baseUrl,
+      routerRoot,
       isExporting,
     }: {
       isExporting: boolean;
       mode: 'development' | 'production';
       minify?: boolean;
       baseUrl: string;
+      routerRoot: string;
     }
   ) {
     const devBundleUrlPathname = createBundleUrlPath({
@@ -293,6 +302,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       lazy: shouldEnableAsyncImports(this.projectRoot),
       baseUrl,
       isExporting,
+      routerRoot,
     });
 
     const bundleStaticHtml = async (): Promise<string> => {
@@ -305,6 +315,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           // Ensure the API Routes are included
           environment: 'node',
           baseUrl,
+          routerRoot,
         }
       );
 
@@ -313,7 +324,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     const [{ artifacts: resources }, staticHtml] = await Promise.all([
-      this.getStaticResourcesAsync({ isExporting, mode, minify, baseUrl }),
+      this.getStaticResourcesAsync({ isExporting, mode, minify, baseUrl, routerRoot }),
       bundleStaticHtml(),
     ]);
     const content = serializeHtmlWithAssets({
@@ -440,12 +451,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       if (useServerRendering) {
         const baseUrl = getBaseUrlFromExpoConfig(exp);
-        const appDir = getRouterDirectoryWithManifest(this.projectRoot, exp);
+        const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
+        const appDir = path.join(this.projectRoot, routerRoot);
         middleware.use(
           createRouteHandlerMiddleware(this.projectRoot, {
             ...options,
             appDir,
             baseUrl,
+            routerRoot,
             getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
             getStaticPageAsync: (pathname) => {
               return this.getStaticPageAsync(pathname, {
@@ -453,6 +466,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
                 mode: options.mode ?? 'development',
                 minify: options.minify,
                 baseUrl,
+                routerRoot,
               });
             },
           })
@@ -473,7 +487,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
                 if (op === 'change' || op === 'add') {
                   rebundleApiRoute(this.projectRoot, filepath, {
                     ...options,
-                    appDir,
+                    routerRoot,
                     baseUrl,
                   });
                 }
