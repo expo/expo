@@ -49,9 +49,7 @@ async function getManifest(options: Parameters<typeof getRoutes>[1] = {}) {
 async function getBuildTimeServerManifestAsync(
   options: Parameters<typeof getRoutes>[1] = {}
 ): Promise<ExpoRouterServerManifestV1> {
-  const routeTree = getRoutes(ctx, {
-    ...options,
-  });
+  const routeTree = getRoutes(ctx, options);
 
   if (!routeTree) {
     throw new Error('No routes found');

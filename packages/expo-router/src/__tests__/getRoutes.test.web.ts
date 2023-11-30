@@ -45,8 +45,7 @@ const ROUTE_NOT_FOUND = {
   generated: true,
   internal: true,
   route: '+not-found',
-  entryPoints: ['expo-router/src/views/Navigator.tsx', 'expo-router/src/views/Unmatched.tsx'],
-  filePath: 'expo-router/src/views/Unmatched.tsx',
+  entryPoints: ['expo-router/build/views/Navigator.js', 'expo-router/build/views/Unmatched.js'],
 };
 
 const ROUTE_DIRECTORY = {
@@ -56,8 +55,7 @@ const ROUTE_DIRECTORY = {
   generated: true,
   internal: true,
   route: '_sitemap',
-  entryPoints: ['expo-router/src/views/Navigator.tsx', 'expo-router/src/views/Sitemap.tsx'],
-  filePath: 'expo-router/src/views/Sitemap.tsx',
+  entryPoints: ['expo-router/build/views/Navigator.js', 'expo-router/build/views/Sitemap.js'],
 };
 
 const asFileNode = (route: Partial<FileNode>): FileNode => ({
@@ -68,9 +66,9 @@ const asFileNode = (route: Partial<FileNode>): FileNode => ({
       },
     };
   },
+  filePath: 'INVALID_TEST_VALUE',
   normalizedName: 'INVALID_TEST_VALUE',
   contextKey: 'INVALID_TEST_VALUE',
-  filePath: 'INVALID_TEST_VALUE',
   ...route,
 });
 
@@ -185,18 +183,20 @@ describe(getUserDefinedTopLevelNotFoundRoute, () => {
   });
 
   it(`should return a basic not-found route`, () => {
-    const routes = getExactRoutes(ctx('./+not-found.js'));
+    const routes = getExactRoutes(ctx('./+not-found.js'))!;
     expect(getUserDefinedTopLevelNotFoundRoute(routes)).toEqual(routes.children[0]);
   });
   it(`does not return a nested not-found route `, () => {
     expect(
-      getUserDefinedTopLevelNotFoundRoute(getExactRoutes(ctx('./home/+not-found.js')))
+      getUserDefinedTopLevelNotFoundRoute(getExactRoutes(ctx('./home/+not-found.js'))!)
     ).toEqual(null);
   });
 
   it(`should return a not-found route when nested in groups without layouts`, () => {
     expect(
-      getUserDefinedTopLevelNotFoundRoute(getExactRoutes(ctx('./(group)/(another)/+not-found.tsx')))
+      getUserDefinedTopLevelNotFoundRoute(
+        getExactRoutes(ctx('./(group)/(another)/+not-found.tsx'))!
+      )
     ).toEqual(
       expect.objectContaining({
         route: '(group)/(another)/+not-found',
@@ -223,15 +223,32 @@ describe(getExactRoutes, () => {
           children: [],
 
           entryPoints: ['./_layout.tsx', './other/+html.js'],
-          filePath: './other/+html.js',
           contextKey: './other/+html.js',
           dynamic: null,
           route: 'other/+html',
         },
       ],
-      filePath: './_layout.tsx',
       contextKey: './_layout.tsx',
       dynamic: null,
+      route: '',
+    });
+  });
+
+  it(`should allow skipping entry point logic`, () => {
+    expect(
+      dropFunctions(getExactRoutes(ctx('./some/nested/value.tsx'), { ignoreEntryPoints: true })!)
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './some/nested/value.tsx',
+          dynamic: null,
+          route: 'some/nested/value',
+        },
+      ],
+      contextKey: './_layout.tsx',
+      dynamic: null,
+      generated: true,
       route: '',
     });
   });
@@ -244,8 +261,7 @@ describe(getRoutes, () => {
       children: [
         {
           children: [],
-          entryPoints: ['./_layout.tsx', 'expo-router/src/views/Unmatched.tsx'],
-          filePath: 'expo-router/src/views/Unmatched.tsx',
+          entryPoints: ['./_layout.tsx', 'expo-router/build/views/Unmatched.js'],
           contextKey: './+not-found.tsx',
           dynamic: [{ deep: true, name: '+not-found', notFound: true }],
           generated: true,
@@ -253,7 +269,6 @@ describe(getRoutes, () => {
           route: '+not-found',
         },
       ],
-      filePath: './_layout.tsx',
       contextKey: './_layout.tsx',
       dynamic: null,
       route: '',
@@ -268,15 +283,13 @@ describe(getRoutes, () => {
           contextKey: './some/nested/value.tsx',
           dynamic: null,
           route: 'some/nested/value',
-          entryPoints: ['expo-router/src/views/Navigator.tsx', './some/nested/value.tsx'],
-          filePath: './some/nested/value.tsx',
+          entryPoints: ['expo-router/build/views/Navigator.js', './some/nested/value.tsx'],
         },
         ROUTE_DIRECTORY,
         ROUTE_NOT_FOUND,
       ],
       contextKey: './_layout.tsx',
       dynamic: null,
-      filePath: 'expo-router/src/views/Navigator.tsx',
       generated: true,
       route: '',
     });
@@ -297,8 +310,7 @@ describe(getRoutes, () => {
               },
             ],
 
-            entryPoints: ['expo-router/src/views/Navigator.tsx', './[dynamic].tsx'],
-            filePath: './[dynamic].tsx',
+            entryPoints: ['expo-router/build/views/Navigator.js', './[dynamic].tsx'],
             route: '[dynamic]',
           },
           {
@@ -311,8 +323,7 @@ describe(getRoutes, () => {
               },
             ],
 
-            entryPoints: ['expo-router/src/views/Navigator.tsx', './[...deep].tsx'],
-            filePath: './[...deep].tsx',
+            entryPoints: ['expo-router/build/views/Navigator.js', './[...deep].tsx'],
             route: '[...deep]',
           },
           ROUTE_DIRECTORY,
@@ -353,11 +364,10 @@ describe(getRoutes, () => {
               dynamic: null,
               route: 'home',
               entryPoints: [
-                'expo-router/src/views/Navigator.tsx',
+                'expo-router/build/views/Navigator.js',
                 './(stack)/_layout.tsx',
                 './(stack)/home.tsx',
               ],
-              filePath: './(stack)/home.tsx',
             },
             {
               children: [],
@@ -365,11 +375,10 @@ describe(getRoutes, () => {
               dynamic: null,
               route: 'settings',
               entryPoints: [
-                'expo-router/src/views/Navigator.tsx',
+                'expo-router/build/views/Navigator.js',
                 './(stack)/_layout.tsx',
                 './(stack)/settings.tsx',
               ],
-              filePath: './(stack)/settings.tsx',
             },
             {
               children: [
@@ -378,17 +387,15 @@ describe(getRoutes, () => {
                   contextKey: './(stack)/user/(default)/posts.tsx',
                   dynamic: null,
                   entryPoints: [
-                    'expo-router/src/views/Navigator.tsx',
+                    'expo-router/build/views/Navigator.js',
                     './(stack)/_layout.tsx',
                     './(stack)/user/(default)/_layout.tsx',
                     './(stack)/user/(default)/posts.tsx',
                   ],
-                  filePath: './(stack)/user/(default)/posts.tsx',
                   route: 'posts',
                 },
               ],
               contextKey: './(stack)/user/(default)/_layout.tsx',
-              filePath: './(stack)/user/(default)/_layout.tsx',
               dynamic: null,
               route: 'user/(default)',
             },
@@ -397,11 +404,10 @@ describe(getRoutes, () => {
               contextKey: './(stack)/user/profile.tsx',
               dynamic: null,
               entryPoints: [
-                'expo-router/src/views/Navigator.tsx',
+                'expo-router/build/views/Navigator.js',
                 './(stack)/_layout.tsx',
                 './(stack)/user/profile.tsx',
               ],
-              filePath: './(stack)/user/profile.tsx',
               route: 'user/profile',
             },
             {
@@ -414,11 +420,10 @@ describe(getRoutes, () => {
                 },
               ],
               entryPoints: [
-                'expo-router/src/views/Navigator.tsx',
+                'expo-router/build/views/Navigator.js',
                 './(stack)/_layout.tsx',
                 './(stack)/user/[profile].tsx',
               ],
-              filePath: './(stack)/user/[profile].tsx',
               route: 'user/[profile]',
             },
             {
@@ -428,23 +433,21 @@ describe(getRoutes, () => {
                   contextKey: './(stack)/user/settings/info.tsx',
                   dynamic: null,
                   entryPoints: [
-                    'expo-router/src/views/Navigator.tsx',
+                    'expo-router/build/views/Navigator.js',
                     './(stack)/_layout.tsx',
                     './(stack)/user/settings/_layout.tsx',
                     './(stack)/user/settings/info.tsx',
                   ],
-                  filePath: './(stack)/user/settings/info.tsx',
                   route: 'info',
                 },
                 {
                   children: [],
                   entryPoints: [
-                    'expo-router/src/views/Navigator.tsx',
+                    'expo-router/build/views/Navigator.js',
                     './(stack)/_layout.tsx',
                     './(stack)/user/settings/_layout.tsx',
                     './(stack)/user/settings/[...other].tsx',
                   ],
-                  filePath: './(stack)/user/settings/[...other].tsx',
                   contextKey: './(stack)/user/settings/[...other].tsx',
                   dynamic: [{ deep: true, name: 'other' }],
                   route: '[...other]',
@@ -452,12 +455,10 @@ describe(getRoutes, () => {
               ],
               contextKey: './(stack)/user/settings/_layout.tsx',
               dynamic: null,
-              filePath: './(stack)/user/settings/_layout.tsx',
               route: 'user/settings',
             },
           ],
           contextKey: './(stack)/_layout.tsx',
-          filePath: './(stack)/_layout.tsx',
           dynamic: null,
           route: '(stack)',
         },
@@ -465,14 +466,12 @@ describe(getRoutes, () => {
           children: [],
           contextKey: './another.tsx',
           dynamic: null,
-          entryPoints: ['expo-router/src/views/Navigator.tsx', './another.tsx'],
-          filePath: './another.tsx',
+          entryPoints: ['expo-router/build/views/Navigator.js', './another.tsx'],
           route: 'another',
         },
         {
           children: [],
-          entryPoints: ['expo-router/src/views/Navigator.tsx', './some/nested/value.tsx'],
-          filePath: './some/nested/value.tsx',
+          entryPoints: ['expo-router/build/views/Navigator.js', './some/nested/value.tsx'],
           contextKey: './some/nested/value.tsx',
           dynamic: null,
           route: 'some/nested/value',
@@ -480,7 +479,6 @@ describe(getRoutes, () => {
         ROUTE_DIRECTORY,
         ROUTE_NOT_FOUND,
       ],
-      filePath: 'expo-router/src/views/Navigator.tsx',
       contextKey: './_layout.tsx',
       dynamic: null,
       generated: true,

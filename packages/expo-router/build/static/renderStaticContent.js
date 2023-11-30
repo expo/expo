@@ -68,9 +68,7 @@ exports.getManifest = getManifest;
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
 async function getBuildTimeServerManifestAsync(options = {}) {
-    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, {
-        ...options,
-    });
+    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, options);
     if (!routeTree) {
         throw new Error('No routes found');
     }
