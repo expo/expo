@@ -16,6 +16,7 @@
 - Fix traversing `generateStaticParams`. ([#25440](https://github.com/expo/expo/pull/25440) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix `state.routes.at is not a function` error on navigation.
 - Only mock `react-native-reanimated` if package is installed. ([#25588](https://github.com/expo/expo/pull/25588) by [@marklawlor](https://github.com/marklawlor))
+- Import `@expo/metro-runtime` from build dir. ([#25655](https://github.com/expo/expo/pull/25655) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
