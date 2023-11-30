@@ -47,10 +47,6 @@ export function getRouterDirectoryModuleIdWithManifest(
   return exp.extra?.router?.unstable_src ?? getRouterDirectory(projectRoot);
 }
 
-export function getRouterDirectoryWithManifest(projectRoot: string, exp: ExpoConfig): string {
-  return path.join(projectRoot, getRouterDirectoryModuleIdWithManifest(projectRoot, exp));
-}
-
 const logSrcDir = memoize(() =>
   Log.log(chalk.gray('Using src/app as the root directory for Expo Router.'))
 );

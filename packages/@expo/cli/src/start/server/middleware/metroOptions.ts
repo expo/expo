@@ -1,8 +1,10 @@
 import { ExpoConfig } from '@expo/config';
 import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import resolveFrom from 'resolve-from';
+import path from 'path';
 
 import { env } from '../../../utils/env';
+import { directoryExistsSync } from '../../../utils/dir';
 
 const debug = require('debug')('expo:metro:options') as typeof console.log;
 
@@ -32,6 +34,8 @@ export type ExpoMetroOptions = {
   preserveEnvVars?: boolean;
   baseUrl?: string;
   isExporting: boolean;
+  /** Module ID relative to the projectRoot for the Expo Router app directory. */
+  routerRoot: string;
 };
 
 function withDefaults({
@@ -64,6 +68,36 @@ export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
   return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
 }
 
+function getRouterDirectory(projectRoot: string) {
+  // more specific directories first
+  if (directoryExistsSync(path.join(projectRoot, 'src/app'))) {
+    // Log.log(chalk.gray('Using src/app as the root directory for Expo Router.'));
+    return './src/app';
+  }
+
+  // Log.debug('Using app as the root directory for Expo Router.');
+  return './app';
+}
+
+export function getRouterRootFromExpoConfig(projectRoot: string, exp: ExpoConfig) {
+  const src = exp.extra?.router?.unstable_src || getRouterDirectory(projectRoot);
+
+  debug('router entry module id', src);
+
+  return src;
+}
+
+export function getMetroDirectBundleOptionsForExpoConfig(
+  projectRoot: string,
+  exp: ExpoConfig,
+  options: Omit<ExpoMetroOptions, 'baseUrl' | 'routerRoot'>
+): Partial<ExpoMetroBundleOptions> {
+  return getMetroDirectBundleOptions({
+    ...options,
+    baseUrl: getBaseUrlFromExpoConfig(exp),
+    routerRoot: getRouterRootFromExpoConfig(projectRoot, exp),
+  });
+}
 export function getMetroDirectBundleOptions(
   options: ExpoMetroOptions
 ): Partial<ExpoMetroBundleOptions> {
@@ -140,6 +174,17 @@ export function getMetroDirectBundleOptions(
   return bundleOptions;
 }
 
+export function createBundleUrlPathFromExpoConfig(
+  projectRoot: string,
+  exp: ExpoConfig,
+  options: Omit<ExpoMetroOptions, 'baseUrl' | 'routerRoot'>
+): string {
+  return createBundleUrlPath({
+    ...options,
+    baseUrl: getBaseUrlFromExpoConfig(exp),
+    routerRoot: getRouterRootFromExpoConfig(projectRoot, exp),
+  });
+}
 export function createBundleUrlPath(options: ExpoMetroOptions): string {
   const {
     platform,

@@ -28,7 +28,6 @@ function getCaller(props: Record<string, string>): babel.TransformCaller {
 beforeEach(() => {
   process.env._EXPO_INTERNAL_TESTING = '1';
   delete process.env.EXPO_ROUTER_ABS_APP_ROOT;
-  delete process.env.EXPO_ROUTER_APP_ROOT_2;
   delete process.env.EXPO_ROUTER_IMPORT_MODE_IOS;
   delete process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID;
   delete process.env.EXPO_ROUTER_IMPORT_MODE_WEB;
