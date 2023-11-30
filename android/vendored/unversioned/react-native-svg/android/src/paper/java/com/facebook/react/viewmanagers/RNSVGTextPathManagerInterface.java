@@ -37,6 +37,7 @@ public interface RNSVGTextPathManagerInterface<T extends View> {
   void setStrokeLinecap(T view, int value);
   void setStrokeLinejoin(T view, int value);
   void setStrokeDasharray(T view, @Nullable ReadableArray value);
+  void setStrokeDasharray(T view, @Nullable String value);  
   void setStrokeDashoffset(T view, float value);
   void setStrokeMiterlimit(T view, float value);
   void setVectorEffect(T view, int value);
