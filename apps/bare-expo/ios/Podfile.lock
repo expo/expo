@@ -1211,7 +1211,6 @@ PODS:
     - React-Core
   - react-native-safe-area-context (4.7.4):
     - React-Core
-    - ReactCommon/turbomodule/core
   - react-native-segmented-control (2.4.1):
     - React-Core
   - react-native-slider (4.4.2):
