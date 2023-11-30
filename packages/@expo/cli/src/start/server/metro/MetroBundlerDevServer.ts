@@ -492,7 +492,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           })
         );
 
-        // @ts-expect-error: TODO
         if (exp.web?.output === 'server') {
           // Cache observation for API Routes...
           observeApiRouteChanges(

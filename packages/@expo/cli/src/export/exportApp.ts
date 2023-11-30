@@ -138,7 +138,6 @@ export async function exportAppAsync(
 
   if (platforms.includes('web')) {
     if (useServerRendering) {
-      // @ts-expect-error: server not on type yet
       const exportServer = exp.web?.output === 'server';
 
       if (exportServer) {
