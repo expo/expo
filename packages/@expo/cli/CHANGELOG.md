@@ -22,7 +22,8 @@
 - Prevent log-spew when running prebuild in debug mode. ([#25434](https://github.com/expo/expo/pull/25434) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix @react-native/dev-middleware types for react-native 0.73. ([#25513](https://github.com/expo/expo/pull/25513) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Only use `bundledNativeModules.json` for dependencies validation when using canary versions. ([#25600](https://github.com/expo/expo/pull/25600) by [@byCedric](https://github.com/byCedric))
-- Fix Expo Router typed routes error with external URLs
+- Remove the 404 route from typed routes ([#24496](https://github.com/expo/expo/pull/24496) by [@marklawlor](https://github.com/marklawlor))
+- Exclude `+not-found` and `*+api` routes from typed routes ([#24496](https://github.com/expo/expo/pull/24496) by [@marklawlor](https://github.com/marklawlor))
 - Fix Expo Router typed routes error with external URLs ([#25591](https://github.com/expo/expo/pull/25591) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
