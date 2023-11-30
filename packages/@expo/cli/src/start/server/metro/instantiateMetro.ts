@@ -8,6 +8,7 @@ import type Metro from 'metro';
 import { Terminal } from 'metro-core';
 import semver from 'semver';
 import { URL } from 'url';
+import http from 'http';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
@@ -148,6 +149,9 @@ export async function instantiateMetroAsync(
   const { createDevServerMiddleware, securityHeadersMiddleware } =
     require('@react-native-community/cli-server-api') as typeof import('@react-native-community/cli-server-api');
 
+  const { createDevMiddleware } =
+    require('@react-native/dev-middleware') as typeof import('@react-native/dev-middleware');
+
   const { middleware, messageSocketEndpoint, eventsSocketEndpoint, websocketEndpoints } =
     createDevServerMiddleware({
       port: metroConfig.server.port,
@@ -180,9 +184,17 @@ export async function instantiateMetroAsync(
 
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
+  const { middleware: devMiddleware, websocketEndpoints: devWebsocketEndpoints } =
+    createDevMiddleware({
+      projectRoot: metroConfig.projectRoot,
+      serverBaseUrl: `http://localhost:${metroConfig.server.port}`,
+    });
+
+  prependMiddleware(middleware, devMiddleware);
+
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
-    websocketEndpoints,
+    websocketEndpoints: { ...websocketEndpoints, ...devWebsocketEndpoints },
     watch: !isExporting && isWatchEnabled(),
   });
 
