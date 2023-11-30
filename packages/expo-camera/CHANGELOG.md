@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Replace legacy `FileSystem` interfaces usage with core `FileSystemUtilities`. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes))
+
 ## 13.9.0 — 2023-11-14
 
 ### 🛠 Breaking changes

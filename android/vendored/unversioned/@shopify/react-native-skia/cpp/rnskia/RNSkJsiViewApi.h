@@ -162,7 +162,7 @@ public:
     if (info->view != nullptr) {
       if (count > 1 && !arguments[1].isUndefined() && !arguments[1].isNull()) {
         auto rect = JsiSkRect::fromValue(runtime, arguments[1]);
-        image = info->view->makeImageSnapshot(rect);
+        image = info->view->makeImageSnapshot(rect.get());
       } else {
         image = info->view->makeImageSnapshot(nullptr);
       }

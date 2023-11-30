@@ -8,7 +8,6 @@ import {
   DiscordIcon,
   GithubIcon,
   Image03DuotoneIcon,
-  Mail01Icon,
   NotificationMessageDuotoneIcon,
   RedditIcon,
   XLogoIcon,
@@ -72,7 +71,7 @@ const Home = () => {
                 <RawH2>
                   <QuickStartIcon /> Quick Start
                 </RawH2>
-                <Terminal includeMargin={false} cmd={['$ npx create-expo-app my-app']} />
+                <Terminal cmd={['$ npx create-expo-app my-app']} />
               </div>
             </GridCell>
             <GridCell
@@ -290,14 +289,6 @@ export function JoinTheCommunity() {
             icon={<XLogoIcon className="icon-lg text-palette-white" />}
             iconBackground="#000000"
           />
-          <CommunityGridCell
-            title="Newsletter"
-            description="Get the latest updates from monthly Expo newsletter."
-            link="https://expo.dev/mailing-list/signup"
-            icon={<Mail01Icon className="icon-lg text-palette-white" />}
-          />
-        </Row>
-        <Row>
           <CommunityGridCell
             title="Reddit"
             description="Get the latest on r/expo."

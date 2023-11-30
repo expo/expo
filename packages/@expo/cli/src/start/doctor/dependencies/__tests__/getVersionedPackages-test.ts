@@ -45,6 +45,25 @@ describe(getCombinedKnownVersionsAsync, () => {
       'remote-only': 'xxx',
     });
   });
+
+  it(`skips fetching remote versions when requested`, async () => {
+    asMock(getVersionedNativeModulesAsync).mockResolvedValue({
+      shared: 'bundled',
+    });
+
+    // Should not call the API
+    expect(getVersionsAsync).not.toBeCalled();
+    // Should only return the bundled modules value
+    expect(
+      await getCombinedKnownVersionsAsync({
+        projectRoot: '/',
+        sdkVersion: '1.0.0',
+        skipRemoteVersions: true,
+      })
+    ).toEqual({
+      shared: 'bundled',
+    });
+  });
 });
 
 describe(getVersionedPackagesAsync, () => {

@@ -55,7 +55,7 @@ Pod::Spec.new do |s|
   end
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
   }
   unless defined?(install_modules_dependencies)

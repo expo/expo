@@ -738,7 +738,6 @@ module.exports = {
         },
         ExponentDeviceMotion: { Gravity: { type: 'number', mock: 9.8100004196167 } },
         ExponentFileSystem: {
-          bundledAssets: { type: 'object', mock: null },
           bundleDirectory: { type: 'object', mock: null },
           cacheDirectory: { type: 'string' },
           documentDirectory: { type: 'string' },

@@ -26,8 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import host.exp.expoview.R;
-
 @SuppressWarnings("ValidFragment")
 public class RNTimePickerDialogFragment extends DialogFragment {
   private TimePickerDialog instance;
@@ -75,7 +73,7 @@ public class RNTimePickerDialogFragment extends DialogFragment {
     if (display == RNTimePickerDisplay.SPINNER) {
         return new RNDismissableTimePickerDialog(
                 activityContext,
-				R.style.SpinnerTimePickerDialog,
+                host.exp.expoview.R.style.SpinnerTimePickerDialog,
                 onTimeSetListener,
                 hour,
                 minute,

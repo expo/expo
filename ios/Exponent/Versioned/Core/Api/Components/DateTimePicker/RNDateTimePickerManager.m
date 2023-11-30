@@ -25,6 +25,7 @@ RCT_ENUM_CONVERTER(UIDatePickerMode, (@{
   @"time": @(UIDatePickerModeTime),
   @"date": @(UIDatePickerModeDate),
   @"datetime": @(UIDatePickerModeDateAndTime),
+  @"countdown": @(UIDatePickerModeCountDownTimer),
 }), UIDatePickerModeTime, integerValue)
 
 
@@ -78,7 +79,7 @@ RCT_EXPORT_MODULE()
 
 - (RCTShadowView *)shadowView
 {
-  RNDateTimePickerShadowView* shadowView =  [RNDateTimePickerShadowView new];
+  RNDateTimePickerShadowView* shadowView = [RNDateTimePickerShadowView new];
   shadowView.picker = _picker;
   return shadowView;
 }
@@ -104,6 +105,7 @@ RCT_EXPORT_SHADOW_PROPERTY(date, NSDate)
 RCT_EXPORT_SHADOW_PROPERTY(mode, UIDatePickerMode)
 RCT_EXPORT_SHADOW_PROPERTY(locale, NSLocale)
 RCT_EXPORT_SHADOW_PROPERTY(displayIOS, RNCUIDatePickerStyle)
+RCT_EXPORT_SHADOW_PROPERTY(timeZoneName, NSString)
 
 RCT_EXPORT_VIEW_PROPERTY(date, NSDate)
 RCT_EXPORT_VIEW_PROPERTY(locale, NSLocale)
@@ -175,6 +177,21 @@ RCT_CUSTOM_VIEW_PROPERTY(displayIOS, RNCUIDatePickerStyle, RNDateTimePicker)
         } else {
             view.preferredDatePickerStyle = UIDatePickerStyleAutomatic;
         }
+    }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(timeZoneName, NSString, RNDateTimePicker)
+{
+    if (json) {
+        NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:json];
+        if (timeZone == nil) {
+            RCTLogWarn(@"'%@' does not exist in NSTimeZone.knownTimeZoneNames fallback to localTimeZone=%@", json, NSTimeZone.localTimeZone.name);
+            view.timeZone = NSTimeZone.localTimeZone;
+        } else {
+            view.timeZone = timeZone;
+        }
+    } else {
+        view.timeZone = NSTimeZone.localTimeZone;
     }
 }
 

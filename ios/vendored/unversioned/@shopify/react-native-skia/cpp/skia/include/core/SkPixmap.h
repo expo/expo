@@ -17,7 +17,6 @@
 #include "include/core/SkSize.h"
 #include "include/private/base/SkAPI.h"
 #include "include/private/base/SkAssert.h"
-#include "include/private/base/SkAttributes.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -115,7 +114,7 @@ public:
 
     /** Deprecated.
     */
-    bool SK_WARN_UNUSED_RESULT reset(const SkMask& mask);
+    [[nodiscard]] bool reset(const SkMask& mask);
 
     /** Sets subset width, height, pixel address to intersection of SkPixmap with area,
         if intersection is not empty; and return true. Otherwise, leave subset unchanged
@@ -127,7 +126,7 @@ public:
         @param area    bounds to intersect with SkPixmap
         @return        true if intersection of SkPixmap and area is not empty
     */
-    bool SK_WARN_UNUSED_RESULT extractSubset(SkPixmap* subset, const SkIRect& area) const;
+    [[nodiscard]] bool extractSubset(SkPixmap* subset, const SkIRect& area) const;
 
     /** Returns width, height, SkAlphaType, SkColorType, and SkColorSpace.
 

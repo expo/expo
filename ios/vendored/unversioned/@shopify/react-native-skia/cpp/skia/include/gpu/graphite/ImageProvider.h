@@ -33,6 +33,11 @@ class Recorder;
  * If the requirements are not met by the returned image (modulo the flexibility wrt mipmapping)
  * Graphite will drop the draw.
  *
+ * All returned images must be backed by textures that have a TopLeft origin. If Skia is used to
+ * create the texture (e.g. using makeTextureImage) then this is always guaranteed. If the client
+ * returns a texture they created themselves and wrapped in Skia, they must ensure that texture has
+ * a TopLeft origin.
+ *
  * Note: by default, Graphite will not perform any caching of images
  *
  * Threading concerns:
@@ -55,7 +60,7 @@ public:
     // which could then be cached.
     virtual sk_sp<SkImage> findOrCreate(Recorder* recorder,
                                         const SkImage* image,
-                                        SkImage::RequiredImageProperties) = 0;
+                                        SkImage::RequiredProperties) = 0;
 };
 
 } // namespace skgpu::graphite

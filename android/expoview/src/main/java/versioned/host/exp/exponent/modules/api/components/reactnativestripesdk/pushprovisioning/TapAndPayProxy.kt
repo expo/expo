@@ -91,9 +91,16 @@ object TapAndPayProxy {
         result.putString(
           "id",
           tokenInfoClass.getMethod("getIssuerTokenId").invoke(it) as String)
+        val fpan = tokenInfoClass.getMethod("getFpanLastFour").invoke(it) as String
         result.putString(
           "cardLastFour",
-          tokenInfoClass.getMethod("getFpanLastFour").invoke(it) as String)
+          fpan)
+        result.putString(
+          "fpanLastFour",
+          fpan)
+        result.putString(
+          "dpanLastFour",
+          tokenInfoClass.getMethod("getDpanLastFour").invoke(it) as String)
         result.putString(
           "issuer",
           tokenInfoClass.getMethod("getIssuerName").invoke(it) as String)

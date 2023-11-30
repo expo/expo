@@ -115,7 +115,7 @@ public:
     return jsi::String::createFromAscii(runtime, getObject()->source());
   }
 
-  EXPORT_JSI_API_TYPENAME(JsiSkRuntimeEffect, "RuntimeEffect")
+  EXPORT_JSI_API_TYPENAME(JsiSkRuntimeEffect, RuntimeEffect)
 
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkRuntimeEffect, makeShader),
                        JSI_EXPORT_FUNC(JsiSkRuntimeEffect,

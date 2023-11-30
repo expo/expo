@@ -78,7 +78,10 @@ class AddToWalletButtonView(private val context: ThemedReactContext, private val
 
       requestManager
         .load(sourceToLoad)
-        .addListener(object : RequestListener<Drawable> {
+        .addListener(
+
+
+          object : RequestListener<Drawable> {
           override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
             dispatchEvent(
               createError("Failed", "Failed to load the source from $sourceToLoad")

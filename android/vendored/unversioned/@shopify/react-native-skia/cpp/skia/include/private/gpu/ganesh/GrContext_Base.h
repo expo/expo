@@ -9,9 +9,10 @@
 #define GrContext_Base_DEFINED
 
 #include "include/core/SkRefCnt.h"
-#include "include/gpu/GrBackendSurface.h"
-#include "include/gpu/GrContextOptions.h"
 #include "include/gpu/GrTypes.h"
+#include "include/private/base/SkAPI.h"
+
+#include <cstdint>
 
 class GrBaseContextPriv;
 class GrCaps;
@@ -19,7 +20,10 @@ class GrContextThreadSafeProxy;
 class GrDirectContext;
 class GrImageContext;
 class GrRecordingContext;
+enum SkColorType : int;
 enum class SkTextureCompressionType;
+struct GrContextOptions;
+class GrBackendFormat;
 
 class GrContext_Base : public SkRefCnt {
 public:
@@ -38,7 +42,7 @@ public:
     /*
      * Retrieve the default GrBackendFormat for a given SkColorType and renderability.
      * It is guaranteed that this backend format will be the one used by the GrContext
-     * SkColorType and SkSurfaceCharacterization-based createBackendTexture methods.
+     * SkColorType and GrSurfaceCharacterization-based createBackendTexture methods.
      *
      * The caller should check that the returned format is valid.
      */

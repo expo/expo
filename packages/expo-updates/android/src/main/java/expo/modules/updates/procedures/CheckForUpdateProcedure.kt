@@ -53,50 +53,62 @@ class CheckForUpdateProcedure(
             val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
 
             if (updateDirective != null) {
-              if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
-                if (!updatesConfiguration.hasEmbeddedUpdate) {
+              when (updateDirective) {
+                is UpdateDirective.NoUpdateAvailableUpdateDirective -> {
                   callback(
                     IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
-                      LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
+                      LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER
                     )
                   )
                   procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
                   procedureContext.onComplete()
                   return
                 }
-
-                if (embeddedUpdate == null) {
-                  callback(
-                    IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
-                      LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
+                is UpdateDirective.RollBackToEmbeddedUpdateDirective -> {
+                  if (!updatesConfiguration.hasEmbeddedUpdate) {
+                    callback(
+                      IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
+                        LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
+                      )
                     )
-                  )
-                  procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                    procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                    procedureContext.onComplete()
+                    return
+                  }
+
+                  if (embeddedUpdate == null) {
+                    callback(
+                      IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
+                        LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
+                      )
+                    )
+                    procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                    procedureContext.onComplete()
+                    return
+                  }
+
+                  if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+                      updateDirective,
+                      embeddedUpdate,
+                      launchedUpdate,
+                      updateResponse.responseHeaderData?.manifestFilters
+                    )
+                  ) {
+                    callback(
+                      IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
+                        LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_REJECTED_BY_SELECTION_POLICY
+                      )
+                    )
+                    procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                    procedureContext.onComplete()
+                    return
+                  }
+
+                  callback(IUpdatesController.CheckForUpdateResult.RollBackToEmbedded(updateDirective.commitTime))
+                  procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithRollback(updateDirective.commitTime))
                   procedureContext.onComplete()
                   return
                 }
-
-                if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
-                    updateDirective,
-                    embeddedUpdate,
-                    launchedUpdate,
-                    updateResponse.responseHeaderData?.manifestFilters
-                  )
-                ) {
-                  callback(
-                    IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
-                      LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_REJECTED_BY_SELECTION_POLICY
-                    )
-                  )
-                  procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
-                  procedureContext.onComplete()
-                  return
-                }
-
-                callback(IUpdatesController.CheckForUpdateResult.RollBackToEmbedded(updateDirective.commitTime))
-                procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithRollback(updateDirective.commitTime))
-                procedureContext.onComplete()
-                return
               }
             }
 
@@ -106,7 +118,7 @@ class CheckForUpdateProcedure(
                   LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER
                 )
               )
-              UpdatesStateEvent.CheckCompleteUnavailable()
+              procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
               procedureContext.onComplete()
               return
             }

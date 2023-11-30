@@ -46,8 +46,8 @@ public:
 
        @param dstLength assigned the length dst is required to be. Must not be nullptr.
     */
-    static Error SK_WARN_UNUSED_RESULT Decode(const void* src, size_t  srcLength,
-                                                    void* dst, size_t* dstLength);
+    [[nodiscard]] static Error Decode(const void* src, size_t  srcLength,
+                                      void* dst, size_t* dstLength);
 };
 
 #endif // SkBase64_DEFINED

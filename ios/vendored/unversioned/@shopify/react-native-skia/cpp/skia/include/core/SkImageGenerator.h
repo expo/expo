@@ -22,11 +22,8 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <memory>
-#include <optional>
 
 class GrRecordingContext;
-enum SkAlphaType : int;
 
 class SK_API SkImageGenerator {
 public:
@@ -60,6 +57,13 @@ public:
      */
     bool isValid(GrRecordingContext* context) const {
         return this->onIsValid(context);
+    }
+
+    /**
+     *  Will this generator produce protected content
+     */
+    bool isProtected() const {
+        return this->onIsProtected();
     }
 
     /**
@@ -116,23 +120,6 @@ public:
 
     virtual bool isTextureGenerator() const { return false; }
 
-#if defined(SK_GRAPHITE)
-    sk_sp<SkImage> makeTextureImage(skgpu::graphite::Recorder*,
-                                    const SkImageInfo&,
-                                    skgpu::Mipmapped);
-#endif
-
-    /**
-     *  If the default image decoder system can interpret the specified (encoded) data, then
-     *  this returns a new ImageGenerator for it. Otherwise this returns NULL. Either way
-     *  the caller is still responsible for managing their ownership of the data.
-     *  By default, images will be converted to premultiplied pixels. The alpha type can be
-     *  overridden by specifying kPremul_SkAlphaType or kUnpremul_SkAlphaType. Specifying
-     *  kOpaque_SkAlphaType is not supported, and will return NULL.
-     */
-    static std::unique_ptr<SkImageGenerator> MakeFromEncoded(
-            sk_sp<SkData>, std::optional<SkAlphaType> = std::nullopt);
-
 protected:
     static constexpr int kNeedNewImageUniqueID = 0;
 
@@ -142,25 +129,15 @@ protected:
     struct Options {};
     virtual bool onGetPixels(const SkImageInfo&, void*, size_t, const Options&) { return false; }
     virtual bool onIsValid(GrRecordingContext*) const { return true; }
+    virtual bool onIsProtected() const { return false; }
     virtual bool onQueryYUVAInfo(const SkYUVAPixmapInfo::SupportedDataTypes&,
                                  SkYUVAPixmapInfo*) const { return false; }
     virtual bool onGetYUVAPlanes(const SkYUVAPixmaps&) { return false; }
 
-#if defined(SK_GRAPHITE)
-    virtual sk_sp<SkImage> onMakeTextureImage(skgpu::graphite::Recorder*,
-                                              const SkImageInfo&,
-                                              skgpu::Mipmapped);
-#endif
     const SkImageInfo fInfo;
 
 private:
     const uint32_t fUniqueID;
-
-    // This is our default impl, which may be different on different platforms.
-    // It is called from NewFromEncoded() after it has checked for any runtime factory.
-    // The SkData will never be NULL, as that will have been checked by NewFromEncoded.
-    static std::unique_ptr<SkImageGenerator> MakeFromEncodedImpl(sk_sp<SkData>,
-                                                                 std::optional<SkAlphaType>);
 
     SkImageGenerator(SkImageGenerator&&) = delete;
     SkImageGenerator(const SkImageGenerator&) = delete;

@@ -30,6 +30,13 @@ public struct UpdatesModuleConstants {
   let isMissingRuntimeVersion: Bool
 }
 
+public enum CheckForUpdateResult {
+  case noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason)
+  case updateAvailable(manifest: [String: Any])
+  case rollBackToEmbedded(commitTime: Date)
+  case error(error: Error)
+}
+
 public enum FetchUpdateResult {
   case success(manifest: [String: Any])
   case failure
@@ -81,7 +88,7 @@ public protocol InternalAppControllerInterface: AppControllerInterface {
     error errorBlockArg: @escaping (_ error: Exception) -> Void
   )
   func checkForUpdate(
-    success successBlockArg: @escaping (_ remoteCheckResult: RemoteCheckResult) -> Void,
+    success successBlockArg: @escaping (_ checkForUpdateResult: CheckForUpdateResult) -> Void,
     error errorBlockArg: @escaping (_ error: Exception) -> Void
   )
   func fetchUpdate(
