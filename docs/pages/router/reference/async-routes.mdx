@@ -31,7 +31,7 @@ For those familiar with advanced bundling techniques, the async routes feature i
 
 ## Setup
 
-Enable the feature by setting the `asyncRoutes` option in the Expo Router Config Plugin of your [app config](/versions/latest/config/app/):
+Enable the feature by setting the `asyncRoutes` option in the Expo Router config plugin of your [app config](/versions/latest/config/app/):
 
 <Tabs>
 
@@ -58,7 +58,7 @@ Enable the feature by setting the `asyncRoutes` option in the Expo Router Config
 
 <Tab label="SDK 50 and above">
 
-    > SDK 50 supports production bundle splitting, set `asyncRoutes` to `true` to enable it.
+    > SDK 50 supports production bundle splitting. Set `asyncRoutes` to `true` to enable it.
 
     ```json app.json
     {
@@ -119,7 +119,7 @@ To ensure a consistent first render, all layout routes leading up to the leaf ro
 
 All initial routes, defined with `unstable_settings = { initialRouteName: '...' }` will be included in the initial HTML file as they are required for the first render. For example, if the server request is for a modal, the screen rendered under the modal will also be included to ensure the modal is rendered correctly.
 
-## Caveates
+## Caveats
 
 Async Rotues represents an early preview of how we plan to support [React Server Components](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components) in the future. As such, there are some caveats to be aware of:
 
