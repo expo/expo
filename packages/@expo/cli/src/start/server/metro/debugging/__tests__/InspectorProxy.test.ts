@@ -7,131 +7,138 @@ import { createInspectorProxyClass } from '../InspectorProxy';
 
 describe('_createDeviceConnectionWSServer', () => {
   it('accepts new app connection', async () => {
-    const { proxy, server, deviceWebSocketUrl } = await createTestProxy();
-    const device = new WS(deviceWebSocketUrl);
+    const { closeProxy, proxy, deviceWebSocketUrl } = await createTestProxy();
+    const sockets = {
+      device: new WS(deviceWebSocketUrl),
+    };
 
     try {
-      await new Promise((resolve) => device.on('open', resolve));
+      await new Promise((resolve) => sockets.device.on('open', resolve));
 
-      expect(device.readyState).toBe(device.OPEN);
+      expect(sockets.device.readyState).toBe(sockets.device.OPEN);
       expect(proxy._devices.size).toBe(1);
     } finally {
-      server.close();
-      device.close();
+      closeSockets(sockets);
+      closeProxy();
     }
   });
 
   it('accepts new app connection with client-side id', async () => {
-    const { proxy, server, deviceWebSocketUrl } = await createTestProxy();
-    const device = new WS(`${deviceWebSocketUrl}?device=someuniqueid`);
+    const { closeProxy, proxy, deviceWebSocketUrl } = await createTestProxy();
+    const sockets = {
+      device: new WS(`${deviceWebSocketUrl}?device=someuniqueid`),
+    };
 
     try {
-      await new Promise((resolve) => device.on('open', resolve));
+      await new Promise((resolve) => sockets.device.on('open', resolve));
 
-      expect(device.readyState).toBe(device.OPEN);
+      expect(sockets.device.readyState).toBe(sockets.device.OPEN);
       expect(proxy._devices.size).toBe(1);
       expect(proxy._devices.get('someuniqueid')).toBeDefined();
     } finally {
-      server.close();
-      device.close();
+      closeSockets(sockets);
+      closeProxy();
     }
   });
 
   it('removes device when app disconnects', async () => {
-    const { proxy, server, deviceWebSocketUrl } = await createTestProxy();
-    const device = new WS(deviceWebSocketUrl);
+    const { closeProxy, proxy, deviceWebSocketUrl } = await createTestProxy();
+    const sockets = {
+      device: new WS(deviceWebSocketUrl),
+    };
 
     try {
-      await new Promise((resolve) => device.on('open', resolve));
+      await new Promise((resolve) => sockets.device.on('open', resolve));
       expect(proxy._devices.size).toBe(1);
 
-      device.close();
+      sockets.device.close();
 
-      await new Promise((resolve) => device.on('close', resolve));
+      await new Promise((resolve) => sockets.device.on('close', resolve));
       // Wait until the `socket.on('close')` handler is called in the proxy
       await new Promise((resolve) => setTimeout(resolve));
 
       expect(proxy._devices.size).toBe(0);
     } finally {
-      server.close();
-      device.close();
+      closeSockets(sockets);
+      closeProxy();
     }
   });
 });
 
 describe('_createDebuggerConnectionWSServer', () => {
   it('accepts new debugger connection when apps are connected', async () => {
-    const { proxy, server, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestProxy();
-
-    let deviceSocket: WS | null = null;
-    let debuggerSocket: WS | null = null;
+    const { closeProxy, proxy, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestProxy();
+    const sockets: Record<string, null | WS> = {
+      device: null,
+      debugger: null,
+    };
 
     try {
-      deviceSocket = new WS(deviceWebSocketUrl);
-      await new Promise((resolve) => deviceSocket?.on('open', resolve));
+      sockets.device = new WS(deviceWebSocketUrl);
+      await new Promise((resolve) => sockets.device?.on('open', resolve));
 
       const app = proxy._devices.values().next().value;
       expect(app).toBeDefined();
 
       const deviceDebugHandler = jest.spyOn(app, 'handleDebuggerConnection');
 
-      debuggerSocket = new WS(`${debuggerWebSocketUrl}?device=${app._id}&page=1`);
-      await new Promise((resolve) => debuggerSocket?.on('open', resolve));
+      sockets.debugger = new WS(`${debuggerWebSocketUrl}?device=${app._id}&page=1`);
+      await new Promise((resolve) => sockets.debugger?.on('open', resolve));
 
-      expect(debuggerSocket.readyState).toBe(debuggerSocket.OPEN);
+      expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
       expect(deviceDebugHandler).toBeCalled();
     } finally {
-      server.close();
-      deviceSocket?.close();
-      debuggerSocket?.close();
+      closeSockets(sockets);
+      closeProxy();
     }
   });
 
   it('accepts new debugger connection, with user agent from header, when apps are connected', async () => {
-    const { proxy, server, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestProxy();
-
-    let deviceSocket: WS | null = null;
-    let debuggerSocket: WS | null = null;
+    const { closeProxy, proxy, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestProxy();
+    const sockets: Record<string, null | WS> = {
+      device: null,
+      debugger: null,
+    };
 
     try {
-      deviceSocket = new WS(deviceWebSocketUrl);
-      await new Promise((resolve) => deviceSocket?.on('open', resolve));
+      sockets.device = new WS(deviceWebSocketUrl);
+      await new Promise((resolve) => sockets.device?.on('open', resolve));
 
       const app = proxy._devices.values().next().value;
       expect(app).toBeDefined();
 
       const deviceDebugHandler = jest.spyOn(app, 'handleDebuggerConnection');
 
-      debuggerSocket = new WS(`${debuggerWebSocketUrl}?device=${app._id}&page=1`, {
+      sockets.debugger = new WS(`${debuggerWebSocketUrl}?device=${app._id}&page=1`, {
         headers: {
           'User-Agent': 'vscode-expo-tools/1.0.0 vscode/420.69.0',
         },
       });
 
-      await new Promise((resolve) => debuggerSocket?.on('open', resolve));
+      await new Promise((resolve) => sockets.debugger?.on('open', resolve));
 
-      expect(debuggerSocket.readyState).toBe(debuggerSocket.OPEN);
+      expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
       expect(deviceDebugHandler).toBeCalledWith(
         expect.anything(), // socket instance
         '1', // pageId
         expect.objectContaining({ userAgent: 'vscode-expo-tools/1.0.0 vscode/420.69.0' })
       );
     } finally {
-      server.close();
-      deviceSocket?.close();
-      debuggerSocket?.close();
+      closeSockets(sockets);
+      closeProxy();
     }
   });
 
   it('accepts new debugger connection, with user agent from query paramter, when apps are connected', async () => {
-    const { proxy, server, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestProxy();
-
-    let deviceSocket: WS | null = null;
-    let debuggerSocket: WS | null = null;
+    const { closeProxy, proxy, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestProxy();
+    const sockets: Record<string, null | WS> = {
+      device: null,
+      debugger: null,
+    };
 
     try {
-      deviceSocket = new WS(deviceWebSocketUrl);
-      await new Promise((resolve) => deviceSocket?.on('open', resolve));
+      sockets.device = new WS(deviceWebSocketUrl);
+      await new Promise((resolve) => sockets.device?.on('open', resolve));
 
       const app = proxy._devices.values().next().value;
       expect(app).toBeDefined();
@@ -139,7 +146,7 @@ describe('_createDebuggerConnectionWSServer', () => {
       const deviceDebugHandler = jest.spyOn(app, 'handleDebuggerConnection');
       const userAgent = encodeURIComponent('vscode-expo-tools/1.0.0 vscode/420.69.0');
 
-      debuggerSocket = new WS(
+      sockets.debugger = new WS(
         `${debuggerWebSocketUrl}?device=${app._id}&page=1&userAgent=${userAgent}`,
         {
           headers: {
@@ -148,51 +155,51 @@ describe('_createDebuggerConnectionWSServer', () => {
         }
       );
 
-      await new Promise((resolve) => debuggerSocket?.on('open', resolve));
+      await new Promise((resolve) => sockets.debugger?.on('open', resolve));
 
-      expect(debuggerSocket.readyState).toBe(debuggerSocket.OPEN);
+      expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
       expect(deviceDebugHandler).toBeCalledWith(
         expect.anything(), // socket instance
         '1', // pageId
         expect.objectContaining({ userAgent: 'vscode-expo-tools/1.0.0 vscode/420.69.0' })
       );
     } finally {
-      server.close();
-      deviceSocket?.close();
-      debuggerSocket?.close();
+      closeSockets(sockets);
+      closeProxy();
     }
   });
 
   it('keeps debugger connection alive when app reconnects', async () => {
-    const { proxy, server, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestProxy();
-
-    let oldDeviceSocket: WS | null = null;
-    let newDeviceSocket: WS | null = null;
-    let debuggerSocket: WS | null = null;
+    const { closeProxy, proxy, deviceWebSocketUrl, debuggerWebSocketUrl } = await createTestProxy();
+    const sockets: Record<string, null | WS> = {
+      oldDevice: null,
+      newDevice: null,
+      debugger: null,
+    };
 
     try {
       // Connect the "old" device first
-      oldDeviceSocket = new WS(`${deviceWebSocketUrl}?device=samedevice`);
-      await new Promise((resolve) => oldDeviceSocket?.on('open', resolve));
+      sockets.oldDevice = new WS(`${deviceWebSocketUrl}?device=samedevice`);
+      await new Promise((resolve) => sockets.oldDevice?.on('open', resolve));
       // Proxy must know about the device
       const oldDevice = proxy._devices.get('samedevice');
       expect(oldDevice).toBeDefined();
 
       // Connect the debugger
-      debuggerSocket = new WS(`${debuggerWebSocketUrl}?device=${oldDevice._id}&page=1`);
-      await new Promise((resolve) => debuggerSocket?.on('open', resolve));
+      sockets.debugger = new WS(`${debuggerWebSocketUrl}?device=${oldDevice._id}&page=1`);
+      await new Promise((resolve) => sockets.debugger?.on('open', resolve));
       // Debugger must be connected
-      expect(debuggerSocket.readyState).toBe(debuggerSocket.OPEN);
+      expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
       // Old device must know the debugger is connected
       expect(oldDevice._deviceSocket).not.toBeNull();
 
       // Reconnect the device using the "new" device connection
-      newDeviceSocket = new WS(`${deviceWebSocketUrl}?device=${oldDevice._id}`);
+      sockets.newDevice = new WS(`${deviceWebSocketUrl}?device=${oldDevice._id}`);
 
       // Wait until both sockets have updated
       await Promise.all([
-        new Promise((resolve) => oldDeviceSocket?.on('close', resolve)),
-        new Promise((resolve) => newDeviceSocket?.on('open', resolve)),
+        new Promise((resolve) => sockets.oldDevice?.on('close', resolve)),
+        new Promise((resolve) => sockets.newDevice?.on('open', resolve)),
       ]);
 
       const newDevice = proxy._devices.get('samedevice');
@@ -200,17 +207,19 @@ describe('_createDebuggerConnectionWSServer', () => {
       expect(proxy._devices.size).toBe(1);
 
       // Check if the debugger and new device connections are still open
-      expect(debuggerSocket.readyState).toBe(debuggerSocket.OPEN);
-      expect(newDeviceSocket.readyState).toBe(newDeviceSocket.OPEN);
-      expect(oldDeviceSocket.readyState).toBe(oldDeviceSocket.CLOSED);
+      expect(sockets.debugger.readyState).toBe(sockets.debugger.OPEN);
+      expect(sockets.newDevice.readyState).toBe(sockets.newDevice.OPEN);
+      expect(sockets.oldDevice.readyState).toBe(sockets.oldDevice.CLOSED);
     } finally {
-      server.close();
-      oldDeviceSocket?.close();
-      newDeviceSocket?.close();
-      debuggerSocket?.close();
+      closeSockets(sockets);
+      closeProxy();
     }
   });
 });
+
+function closeSockets(sockets: Record<string, null | WS>) {
+  Object.values(sockets).forEach((socket) => socket?.close());
+}
 
 async function createTestProxy() {
   const server = http.createServer();
@@ -244,7 +253,14 @@ async function createTestProxy() {
     }
   });
 
+  // Clean up all open connections
+  function closeProxy() {
+    closeSockets(websockets);
+    server.close();
+  }
+
   return {
+    closeProxy,
     server,
     serverUrl: `http://${serverLocation}`,
     deviceWebSocketUrl: `ws://${serverLocation}/inspector/device`,
