@@ -40,7 +40,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &newProps = *std::static_pointer_cast<const RNSVGLinearGradientProps>(props);
+  const auto &newProps = static_cast<const RNSVGLinearGradientProps &>(*props);
 
   self.x1 = [RNSVGLength lengthWithString:RCTNSStringFromString(newProps.x1)];
   self.y1 = [RNSVGLength lengthWithString:RCTNSStringFromString(newProps.y1)];

@@ -33,7 +33,7 @@ class SVGLength {
     unit = UnitType.NUMBER;
   }
 
-  private SVGLength(String length) {
+  SVGLength(String length) {
     length = length.trim();
     int stringLength = length.length();
     int percentIndex = stringLength - 1;
@@ -143,8 +143,13 @@ class SVGLength {
         }
       case String:
         {
-          ArrayList<SVGLength> list = new ArrayList<>(1);
-          list.add(new SVGLength(dynamic.asString()));
+          String stringValue = dynamic.asString().trim();
+          stringValue = stringValue.replaceAll(",", " ");
+          String[] strings = stringValue.split(" ");
+          ArrayList<SVGLength> list = new ArrayList<>(strings.length);
+          for (String length : strings) {
+            list.add(new SVGLength(length));
+          }
           return list;
         }
       default:

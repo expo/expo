@@ -2043,6 +2043,11 @@ class RenderableViewManager<T extends RenderableView> extends VirtualViewManager
     node.setStrokeDasharray(strokeDasharray);
   }
 
+  @ReactProp(name = "strokeDasharray")
+  public void setStrokeDasharray(T node, @Nullable String strokeDasharray) {
+    node.setStrokeDasharray(strokeDasharray);
+  }
+
   @ReactProp(name = "strokeDashoffset")
   public void setStrokeDashoffset(T node, float strokeDashoffset) {
     node.setStrokeDashoffset(strokeDashoffset);

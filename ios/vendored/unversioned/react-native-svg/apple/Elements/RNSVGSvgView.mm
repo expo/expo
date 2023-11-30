@@ -64,7 +64,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &newProps = *std::static_pointer_cast<const RNSVGSvgViewProps>(props);
+  const auto &newProps = static_cast<const RNSVGSvgViewProps &>(*props);
 
   self.minX = newProps.minX;
   self.minY = newProps.minY;
@@ -293,7 +293,7 @@ using namespace facebook::react;
   _boundingBox = rect;
   CGContextRef context = UIGraphicsGetCurrentContext();
 
-  [self drawToContext:context withRect:rect];
+  [self drawToContext:context withRect:[self bounds]];
 }
 
 - (RNSVGPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
@@ -321,29 +321,29 @@ using namespace facebook::react;
   return nil;
 }
 
-- (NSString *)getDataURL
+- (NSString *)getDataURLWithBounds:(CGRect)bounds
 {
-  UIGraphicsBeginImageContextWithOptions(_boundingBox.size, NO, 0);
-  [self clearChildCache];
-  [self drawRect:_boundingBox];
-  [self clearChildCache];
-  [self invalidate];
-  NSData *imageData = UIImagePNGRepresentation(UIGraphicsGetImageFromCurrentImageContext());
-  NSString *base64 = [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-  UIGraphicsEndImageContext();
-  return base64;
-}
-
-- (NSString *)getDataURLwithBounds:(CGRect)bounds
-{
+#if !TARGET_OS_OSX // [macOS]
+  UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:bounds.size];
+  UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
+#else // [macOS
   UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 1);
-  [self clearChildCache];
-  [self drawRect:bounds];
-  [self clearChildCache];
-  [self invalidate];
+#endif // macOS]
+    [self clearChildCache];
+    [self drawRect:bounds];
+    [self clearChildCache];
+    [self invalidate];
+#if !TARGET_OS_OSX // [macOS]
+  }];
+#endif
+#if !TARGET_OS_OSX // [macOS]
+  NSData *imageData = UIImagePNGRepresentation(image);
+  NSString *base64 = [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+#else // [macOS
   NSData *imageData = UIImagePNGRepresentation(UIGraphicsGetImageFromCurrentImageContext());
   NSString *base64 = [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
   UIGraphicsEndImageContext();
+#endif // macOS]
   return base64;
 }
 

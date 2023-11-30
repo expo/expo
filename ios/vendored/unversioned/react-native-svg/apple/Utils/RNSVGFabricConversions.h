@@ -11,7 +11,7 @@
 #import <React/RCTFabricComponentsPlugins.h>
 
 template <typename T>
-RNSVGBrush *brushFromColorStruct(T fillObject)
+RNSVGBrush *brushFromColorStruct(const T &fillObject)
 {
   int type = fillObject.type;
 
@@ -43,7 +43,7 @@ RNSVGBrush *brushFromColorStruct(T fillObject)
 }
 
 template <typename T>
-void setCommonNodeProps(T nodeProps, RNSVGNode *node)
+void setCommonNodeProps(const T &nodeProps, RNSVGNode *node)
 {
   node.name = RCTNSStringFromStringNilIfEmpty(nodeProps.name);
   node.opacity = nodeProps.opacity;
@@ -87,7 +87,7 @@ void setCommonNodeProps(T nodeProps, RNSVGNode *node)
   node.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(nodeProps.accessibilityLabel);
 }
 
-static NSMutableArray<RNSVGLength *> *createLengthArrayFromStrings(std::vector<std::string> stringArray)
+static NSMutableArray<RNSVGLength *> *createLengthArrayFromStrings(const std::vector<std::string> &stringArray)
 {
   if (stringArray.empty()) {
     return nil;
@@ -101,7 +101,7 @@ static NSMutableArray<RNSVGLength *> *createLengthArrayFromStrings(std::vector<s
 }
 
 template <typename T>
-void setCommonRenderableProps(T renderableProps, RNSVGRenderable *renderableNode)
+void setCommonRenderableProps(const T &renderableProps, RNSVGRenderable *renderableNode)
 {
   setCommonNodeProps(renderableProps, renderableNode);
   renderableNode.fill = brushFromColorStruct(renderableProps.fill);
@@ -132,7 +132,7 @@ void setCommonRenderableProps(T renderableProps, RNSVGRenderable *renderableNode
   }
 }
 
-static void addValueToDict(NSMutableDictionary *dict, std::string value, NSString *key)
+static void addValueToDict(NSMutableDictionary *dict, const std::string &value, NSString *key)
 {
   NSString *valueOrNil = RCTNSStringFromStringNilIfEmpty(value);
   if (valueOrNil) {
@@ -141,7 +141,7 @@ static void addValueToDict(NSMutableDictionary *dict, std::string value, NSStrin
 }
 
 template <typename T>
-NSDictionary *parseFontStruct(T fontStruct)
+NSDictionary *parseFontStruct(const T &fontStruct)
 {
   NSMutableDictionary *fontDict = [NSMutableDictionary new];
 
@@ -164,7 +164,7 @@ NSDictionary *parseFontStruct(T fontStruct)
 }
 
 template <typename T>
-void setCommonGroupProps(T groupProps, RNSVGGroup *groupNode)
+void setCommonGroupProps(const T &groupProps, RNSVGGroup *groupNode)
 {
   setCommonRenderableProps(groupProps, groupNode);
 
@@ -183,7 +183,7 @@ void setCommonGroupProps(T groupProps, RNSVGGroup *groupNode)
 }
 
 template <typename T>
-void setCommonTextProps(T textProps, RNSVGText *textNode)
+void setCommonTextProps(const T &textProps, RNSVGText *textNode)
 {
   setCommonGroupProps(textProps, textNode);
   textNode.deltaX = createLengthArrayFromStrings(textProps.dx);
