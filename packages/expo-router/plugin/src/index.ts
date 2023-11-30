@@ -28,7 +28,7 @@ const withRouter: ConfigPlugin<
     headOrigin?: string;
     /** Changes the routes directory from `app` to another value. Defaults to `app`. Avoid using this property. */
     unstable_src?: string;
-    /** Should Async Routes be enabled, currently only `development` is supported. */
+    /** Should Async Routes be enabled. `production` is currently web-only and will be disabled on native. */
     asyncRoutes?: string | { android?: string; ios?: string; web?: string; default?: string };
   } | void
 > = (config, _props) => {

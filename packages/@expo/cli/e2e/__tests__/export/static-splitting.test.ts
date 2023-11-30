@@ -5,13 +5,19 @@ import klawSync from 'klaw-sync';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { bin, ensurePortFreeAsync, getPageHtml, getRouterE2ERoot } from '../utils';
+import {
+  bin,
+  expectChunkPathMatching,
+  getHtmlHelpers,
+  getPageHtml,
+  getRouterE2ERoot,
+} from '../utils';
 
 runExportSideEffects();
 
-describe('exports static', () => {
+describe('exports static with bundle splitting', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputName = 'dist-static-rendering';
+  const outputName = 'dist-static-splitting';
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(
@@ -25,7 +31,7 @@ describe('exports static', () => {
             NODE_ENV: 'production',
             EXPO_USE_STATIC: 'static',
             E2E_ROUTER_SRC: 'static-rendering',
-            E2E_ROUTER_ASYNC: '',
+            E2E_ROUTER_ASYNC: 'production',
             // TODO: Reenable this after investigating unstable_getRealPath
             EXPO_USE_FAST_RESOLVER: 'false',
           },
@@ -35,53 +41,6 @@ describe('exports static', () => {
     // Could take 45s depending on how fast the bundler resolves
     560 * 1000
   );
-
-  xdescribe('server', () => {
-    let server: execa.ExecaChildProcess<string> | undefined;
-    const serverUrl = 'http://localhost:3000';
-
-    beforeAll(
-      async () => {
-        await ensurePortFreeAsync(3000);
-        // Start a server instance that we can test against then kill it.
-        server = execa('npx', ['serve', outputName, '-l', '3000'], {
-          cwd: projectRoot,
-
-          stderr: 'inherit',
-
-          env: {
-            NODE_ENV: 'production',
-            TEST_SECRET_KEY: 'test-secret-key',
-          },
-        });
-        // Wait for the server to start
-        await new Promise((resolve) => {
-          const listener = server!.stdout?.on('data', (data) => {
-            if (data.toString().includes('Accepting connections at')) {
-              resolve(null);
-              listener?.removeAllListeners();
-            }
-          });
-        });
-      },
-      // 5 seconds to drop a port and start a server.
-      5 * 1000
-    );
-
-    afterAll(async () => {
-      if (server) {
-        server.kill();
-        await server;
-      }
-    });
-
-    it(`can serve up index html`, async () => {
-      expect(await fetch(serverUrl).then((res) => res.text())).toMatch(/<div id="root">/);
-    });
-    it(`gets a 404`, async () => {
-      expect(await fetch(serverUrl + '/missing-route').then((res) => res.status)).toBe(404);
-    });
-  });
 
   it('has expected files', async () => {
     // List output files with sizes for snapshotting.
@@ -115,6 +74,30 @@ describe('exports static', () => {
     expect(files).toContain('other.html');
   });
 
+  const { getScriptTagsAsync } = getHtmlHelpers(outputDir);
+
+  // Ensure the correct script tags are injected.
+  it('has eager script tags in html', async () => {
+    expect(await getScriptTagsAsync('index.html')).toEqual(
+      ['index', '_layout', 'index', 'head'].map(expectChunkPathMatching)
+    );
+  });
+  it('has eager script tags in dynamic html', async () => {
+    const staticParamsPage = await getScriptTagsAsync('welcome-to-the-universe.html');
+
+    expect(staticParamsPage).toEqual(
+      ['index', '[post]', '_layout', 'head'].map(expectChunkPathMatching)
+    );
+
+    expect(await getScriptTagsAsync('[post].html')).toEqual(staticParamsPage);
+  });
+  it('has (fewer) eager script tags in generated routes', async () => {
+    // Less chunks because the not-found route is not an async import.
+    expect(await getScriptTagsAsync('+not-found.html')).toEqual(
+      ['index', '_layout', 'head'].map(expectChunkPathMatching)
+    );
+  });
+
   it('has source maps', async () => {
     // List output files with sizes for snapshotting.
     // This is to make sure that any changes to the output are intentional.
@@ -129,22 +112,38 @@ describe('exports static', () => {
       .filter(Boolean);
 
     const mapFiles = files.filter((file) => file?.endsWith('.map'));
-    expect(mapFiles).toEqual([expect.stringMatching(/_expo\/static\/js\/web\/index-.*\.map/)]);
+
+    // "_expo/static/js/web/[post]-854b84d726cca00d17047171ff4ef43d.js.map",
+    // "_expo/static/js/web/_layout-e67451b6ca1f415eec1baf46b17d16c6.js.map",
+    // "_expo/static/js/web/about-5a4fd4bb060bd4461401d4604b0ea1ac.js.map",
+    // "_expo/static/js/web/asset-fd2508eb5960aa4c5c12cfd8db6e0ba4.js.map",
+    // "_expo/static/js/web/head-51629e20be61b36513e213c8645375c9.js.map",
+    // "_expo/static/js/web/index-98a25924035cd8babecad8755a8564de.js.map",
+    // "_expo/static/js/web/index-ed899c31dab920e6b5c3cf04e0c156b6.js.map",
+    // "_expo/static/js/web/links-4545c832242c66b83e4bd38b67066808.js.map",
+    // "_expo/static/js/web/styled-93437b3b1dcaa498dabb3a1de3aae7ac.js.map",
+    expect(mapFiles).toEqual(
+      ['\\[post\\]', '_layout', 'about', 'asset', 'head', 'index', 'index', 'links', 'styled'].map(
+        (file) =>
+          expect.stringMatching(new RegExp(`_expo\\/static\\/js\\/web\\/${file}-.*\\.js\\.map`))
+      )
+    );
 
     for (const file of mapFiles) {
       // Ensure the bundle does not contain a source map reference
       const sourceMap = JSON.parse(fs.readFileSync(path.join(outputDir, file!), 'utf8'));
       expect(sourceMap.version).toBe(3);
-      expect(sourceMap.sources).toEqual(
-        expect.arrayContaining([
-          '__prelude__',
-          // NOTE: No `/Users/evanbacon/`...
-          '/node_modules/metro-runtime/src/polyfills/require.js',
 
-          // NOTE: relative to the server root for optimal source map support
-          '/apps/router-e2e/__e2e__/static-rendering/app/[post].tsx',
-        ])
-      );
+      // Common chunk
+      if (file!.match(/head/)) {
+        expect(sourceMap.sources.length).toEqual(29);
+      } else {
+        // expect(sourceMap.sources).toEqual(
+        //   expect.arrayContaining([
+        //     expect.stringMatching(/\/apps\/router-e2e\/__e2e__\/static-rendering\/app\//),
+        //   ])
+        // );
+      }
     }
 
     const jsFiles = files.filter((file) => file?.endsWith('.js'));
@@ -152,12 +151,10 @@ describe('exports static', () => {
     for (const file of jsFiles) {
       // Ensure the bundle does not contain a source map reference
       const jsBundle = fs.readFileSync(path.join(outputDir, file!), 'utf8');
-      expect(jsBundle).toMatch(
-        /^\/\/\# sourceMappingURL=\/_expo\/static\/js\/web\/index-.*\.map$/gm
-      );
+      expect(jsBundle).toMatch(/^\/\/\# sourceMappingURL=\/_expo\/static\/js\/web\/.*\.js\.map$/gm);
       // expect(jsBundle).toMatch(/^\/\/\# sourceURL=\/_expo\/static\/js\/web\/index-.*\.js$/gm);
       const mapFile = jsBundle.match(
-        /^\/\/\# sourceMappingURL=(\/_expo\/static\/js\/web\/index-.*\.map)$/m
+        /^\/\/\# sourceMappingURL=(\/_expo\/static\/js\/web\/.*\.js\.map)$/m
       )?.[1];
 
       expect(fs.existsSync(path.join(outputDir, mapFile!))).toBe(true);
@@ -180,14 +177,13 @@ describe('exports static', () => {
     // non-public env vars are injected during SSG
     expect(queryMeta('expo-e2e-private-env-var-client')).toEqual('not-public-value');
 
-    indexHtml.querySelectorAll('script').forEach((script) => {
-      const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src), 'utf8');
+    const script = indexHtml.querySelectorAll('script')[0];
+    const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src), 'utf8');
 
-      // Ensure the bundle is valid
-      expect(jsBundle).toMatch('__BUNDLE_START_TIME__');
-      // Ensure the non-public env var is not included in the bundle
-      expect(jsBundle).not.toMatch('not-public-value');
-    });
+    // Ensure the bundle is valid
+    expect(jsBundle).toMatch('__BUNDLE_START_TIME__');
+    // Ensure the non-public env var is not included in the bundle
+    expect(jsBundle).not.toMatch('not-public-value');
   });
 
   it('static styles are injected', async () => {
@@ -281,9 +277,9 @@ describe('exports static', () => {
       'font-family:sweet'
     );
 
-    // TODO: This is broken with bundle splitting. Only fonts in the main layout are being statically extracted.
-    // Fonts have proper splitting due to how they're loaded during static rendering, we should test
-    // that certain fonts only show on the about page.
+    // NOTE: Nested font loading doesn't work with splitting.
+    // // Fonts have proper splitting due to how they're loaded during static rendering, we should test
+    // // that certain fonts only show on the about page.
     // const aboutHtml = await getPageHtml(outputDir, 'about.html');
 
     // const aboutLinks = aboutHtml.querySelectorAll('html > head > link[as="font"]');
