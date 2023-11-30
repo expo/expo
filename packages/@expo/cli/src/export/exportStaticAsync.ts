@@ -98,26 +98,30 @@ export async function getFilesToExportFromServerAsync(
   {
     manifest,
     renderAsync,
-    includeGroupVariations,
+    // Servers can handle group routes automatically and therefore
+    // don't require the build-time generation of every possible group
+    // variation.
+    exportServer,
     // name : contents
     files = new Map(),
   }: {
     manifest: ExpoRouterRuntimeManifest;
     renderAsync: (requestLocation: HtmlRequestLocation) => Promise<string>;
-    includeGroupVariations?: boolean;
+    exportServer?: boolean;
     files?: ExportAssetMap;
   }
 ): Promise<ExportAssetMap> {
   await Promise.all(
-    getHtmlFiles({ manifest, includeGroupVariations }).map(
+    getHtmlFiles({ manifest, includeGroupVariations: !exportServer }).map(
       async ({ route, filePath, pathname }) => {
         try {
-          files.set(filePath, { contents: '', targetDomain: 'client' });
+          const targetDomain = exportServer ? 'server' : 'client';
+          files.set(filePath, { contents: '', targetDomain });
           const data = await renderAsync({ route, filePath, pathname });
           files.set(filePath, {
             contents: data,
             routeId: pathname,
-            targetDomain: 'client',
+            targetDomain,
           });
         } catch (e: any) {
           await logMetroErrorAsync({ error: e, projectRoot });
@@ -212,10 +216,7 @@ async function exportFromServerAsync(
   await getFilesToExportFromServerAsync(projectRoot, {
     files,
     manifest,
-    // Servers can handle group routes automatically and therefore
-    // don't require the build-time generation of every possible group
-    // variation.
-    includeGroupVariations: !exportServer,
+    exportServer,
     async renderAsync({ pathname, route }) {
       const template = await renderAsync(pathname);
       let html = await serializeHtmlWithAssets({

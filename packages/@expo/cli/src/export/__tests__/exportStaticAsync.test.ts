@@ -258,7 +258,7 @@ describe(getFilesToExportFromServerAsync, () => {
     const renderAsync = jest.fn(async () => '');
 
     const files = await getFilesToExportFromServerAsync('/', {
-      includeGroupVariations: true,
+      exportServer: false,
       manifest: mockExpandRuntimeManifest({
         initialRouteName: undefined,
         screens: {
