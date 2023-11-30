@@ -261,7 +261,7 @@ describe(getFilesToExportFromServerAsync, () => {
       ...(
         await getFilesToExportFromServerAsync('/', {
           includeGroupVariations: true,
-          manifest: {
+          manifest: mockExpandRuntimeManifest({
             initialRouteName: undefined,
             screens: {
               alpha: {
@@ -278,7 +278,7 @@ describe(getFilesToExportFromServerAsync, () => {
               _sitemap: '_sitemap',
               '[...404]': '*404',
             },
-          },
+          }),
           renderAsync,
         })
       ).keys(),
