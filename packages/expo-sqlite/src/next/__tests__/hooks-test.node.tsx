@@ -1,5 +1,7 @@
+import { suppressErrorOutput } from '@testing-library/react-hooks';
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react-native';
 import React from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Text, View } from 'react-native';
 
 import { useSQLiteContext, SQLiteProvider } from '../hooks';
@@ -97,5 +99,56 @@ describe(useSQLiteContext, () => {
         expect(mockErroHandler).toHaveBeenCalled();
       });
     });
+  });
+
+  it('should throw to error boundaries if failed to open database with `useSuspense`', async () => {
+    const errorText = 'Failed to open database...';
+    function ErrorFallback() {
+      return (
+        <View>
+          <Text>{errorText}</Text>
+        </View>
+      );
+    }
+    const wrapper = ({ children }) => (
+      <ErrorBoundary fallback={<ErrorFallback />}>
+        <React.Suspense fallback={null}>
+          <SQLiteProvider databaseName="/nonexistent/nonexistent.db" useSuspense>
+            {children}
+          </SQLiteProvider>
+        </React.Suspense>
+      </ErrorBoundary>
+    );
+    const { result } = renderHook(() => useSQLiteContext(), { wrapper });
+    await act(async () => {
+      await waitFor(() => {
+        expect(result).not.toBeNull();
+      });
+    });
+    expect(screen.queryByText(errorText)).not.toBeNull();
+  });
+
+  it('should throw when using `onError` and `useSuspense` together', async () => {
+    const restoreConsole = suppressErrorOutput();
+    const mockErroHandler = jest.fn();
+    render(
+      <ErrorBoundary fallback={<View />} onError={mockErroHandler}>
+        <SQLiteProvider
+          databaseName="/nonexistent/nonexistent.db"
+          onError={mockErroHandler}
+          useSuspense>
+          <View />
+        </SQLiteProvider>
+      </ErrorBoundary>
+    );
+    await act(async () => {
+      await waitFor(() => {
+        expect(mockErroHandler).toHaveBeenCalled();
+        expect(mockErroHandler.mock.calls[0][0].toString()).toMatch(
+          /Cannot use `onError` with `useSuspense`, use error boundaries instead./
+        );
+      });
+    });
+    restoreConsole();
   });
 });

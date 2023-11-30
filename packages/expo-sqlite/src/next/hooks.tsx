@@ -66,7 +66,7 @@ export function SQLiteProvider({
   ...props
 }: SQLiteProviderProps) {
   if (onError != null && useSuspense) {
-    throw new Error('Cannot use `onError` with `useSuspense`, use error boundary instead.');
+    throw new Error('Cannot use `onError` with `useSuspense`, use error boundaries instead.');
   }
 
   if (useSuspense) {
