@@ -66,12 +66,12 @@ function getBabelCaller({
     isServer,
     // The base url to make requests from, used for hosting from non-standard locations.
     baseUrl: typeof ((_options$customTransf2 = options.customTransformOptions) === null || _options$customTransf2 === void 0 ? void 0 : _options$customTransf2.baseUrl) === 'string' ? decodeURI(options.customTransformOptions.baseUrl) : '',
+    routerRoot: typeof ((_options$customTransf3 = options.customTransformOptions) === null || _options$customTransf3 === void 0 ? void 0 : _options$customTransf3.routerRoot) === 'string' ? decodeURI(options.customTransformOptions.routerRoot) : '',
     isDev: options.dev,
     // This value indicates if the user has disabled the feature or not.
     // Other criteria may still cause the feature to be disabled, but all inputs used are
     // already considered in the cache key.
-    preserveEnvVars: isCustomTruthy((_options$customTransf3 = options.customTransformOptions) === null || _options$customTransf3 === void 0 ? void 0 : _options$customTransf3.preserveEnvVars) ? true : undefined,
-    asyncRoutes: isCustomTruthy((_options$customTransf4 = options.customTransformOptions) === null || _options$customTransf4 === void 0 ? void 0 : _options$customTransf4.asyncRoutes) ? true : undefined,
+    preserveEnvVars: isCustomTruthy((_options$customTransf4 = options.customTransformOptions) === null || _options$customTransf4 === void 0 ? void 0 : _options$customTransf4.preserveEnvVars) ? true : undefined,
     // Pass the engine to babel so we can automatically transpile for the correct
     // target environment.
     engine: (_options$customTransf5 = options.customTransformOptions) === null || _options$customTransf5 === void 0 ? void 0 : _options$customTransf5.engine,

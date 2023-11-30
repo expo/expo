@@ -20,9 +20,7 @@ import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import {
   ExpoMetroBundleOptions,
-  getAsyncRoutesFromExpoConfig,
-  getBaseUrlFromExpoConfig,
-  getMetroDirectBundleOptions,
+  getMetroDirectBundleOptionsForExpoConfig,
 } from '../start/server/middleware/metroOptions';
 
 export type MetroDevServerOptions = LoadOptions;
@@ -138,7 +136,7 @@ async function bundleProductionMetroClientAsync(
     const bundleOptions: MetroBundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       sourceMapUrl: bundle.sourceMapUrl,
-      ...getMetroDirectBundleOptions({
+      ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, expoConfig, {
         mainModuleName: bundle.entryPoint,
         platform: bundle.platform,
         mode: bundle.dev ? 'development' : 'production',
@@ -148,13 +146,7 @@ async function bundleProductionMetroClientAsync(
         // serializerOutput: bundle.platform === 'web' ? 'static' : undefined,
         serializerOutput: 'static',
         serializerIncludeBytecode: isHermes,
-        baseUrl: getBaseUrlFromExpoConfig(expoConfig),
         isExporting: true,
-        asyncRoutes: getAsyncRoutesFromExpoConfig(
-          expoConfig,
-          bundle.dev ? 'development' : 'production',
-          bundle.platform
-        ),
       }),
       bundleType: 'bundle',
       inlineSourceMap: false,

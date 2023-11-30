@@ -16,6 +16,7 @@ import {
   createBundleUrlPath,
   getBaseUrlFromExpoConfig,
   getAsyncRoutesFromExpoConfig,
+  createBundleUrlPathFromExpoConfig,
 } from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
@@ -27,6 +28,7 @@ import { CommandError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
+import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 
@@ -171,6 +173,7 @@ export abstract class ManifestMiddleware<
         this.options.mode ?? 'development',
         platform
       ),
+      routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -225,6 +228,7 @@ export abstract class ManifestMiddleware<
     baseUrl,
     isExporting,
     asyncRoutes,
+    routerRoot,
   }: {
     platform: string;
     hostname?: string | null;
@@ -233,6 +237,7 @@ export abstract class ManifestMiddleware<
     baseUrl?: string;
     asyncRoutes: boolean;
     isExporting?: boolean;
+    routerRoot: string;
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
@@ -244,6 +249,7 @@ export abstract class ManifestMiddleware<
       baseUrl,
       isExporting: !!isExporting,
       asyncRoutes,
+      routerRoot,
     });
 
     return (
@@ -319,18 +325,15 @@ export abstract class ManifestMiddleware<
       platform,
     });
 
-    const mode = this.options.mode ?? 'development';
-    return createBundleUrlPath({
+    return createBundleUrlPathFromExpoConfig(this.projectRoot, this.initialProjectConfig.exp, {
       platform,
       mainModuleName,
       minify: this.options.minify,
       lazy: shouldEnableAsyncImports(this.projectRoot),
-      mode,
+      mode: this.options.mode ?? 'development',
       // Hermes doesn't support more modern JS features than most, if not all, modern browser.
       engine: 'hermes',
-      baseUrl: getBaseUrlFromExpoConfig(this.initialProjectConfig.exp),
       isExporting: false,
-      asyncRoutes: getAsyncRoutesFromExpoConfig(this.initialProjectConfig.exp, mode, platform),
     });
   }
 

@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
@@ -24,10 +23,7 @@ import {
 } from '../start/server/metro/MetroBundlerDevServer';
 import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
-import {
-  getApiRoutesForDirectory,
-  getRouterDirectoryWithManifest,
-} from '../start/server/metro/router';
+import { getApiRoutesForDirectory } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 import { getFreePortAsync } from '../utils/port';
@@ -44,6 +40,7 @@ type Options = {
   entryPoint?: string;
   clear: boolean;
   asyncRoutes: boolean;
+  routerRoot: string;
 };
 
 type HtmlRequestLocation = {
@@ -53,6 +50,7 @@ type HtmlRequestLocation = {
   pathname: string;
   /** The runtime route node object, used to associate async modules with the static HTML. */
   route: RouteNode;
+  routerRoot: string;
 };
 
 /** @private */
@@ -103,6 +101,7 @@ export async function getFilesToExportFromServerAsync(
     manifest,
     renderAsync,
     includeGroupVariations,
+    routerRoot,
     // name : contents
     files = new Map(),
   }: {
@@ -110,6 +109,7 @@ export async function getFilesToExportFromServerAsync(
     renderAsync: (requestLocation: HtmlRequestLocation) => Promise<string>;
     includeGroupVariations?: boolean;
     files?: ExportAssetMap;
+    routerRoot: string;
   }
 ): Promise<ExportAssetMap> {
   await Promise.all(
@@ -117,7 +117,7 @@ export async function getFilesToExportFromServerAsync(
       async ({ route, filePath, pathname }) => {
         try {
           files.set(filePath, { contents: '' });
-          const data = await renderAsync({ route, filePath, pathname });
+          const data = await renderAsync({ route, filePath, pathname, routerRoot });
           files.set(filePath, {
             contents: data,
             routeId: pathname,
@@ -172,15 +172,15 @@ async function exportFromServerAsync(
   {
     outputDir,
     baseUrl,
-    asyncRoutes,
     exportServer,
     minify,
     includeSourceMaps,
+    routerRoot,
+    asyncRoutes,
     files = new Map(),
   }: Options
 ): Promise<ExportAssetMap> {
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  const appDir = getRouterDirectoryWithManifest(projectRoot, exp);
+  const appDir = path.join(projectRoot, routerRoot);
   const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, {
     outputDir,
     baseUrl,
@@ -198,11 +198,13 @@ async function exportFromServerAsync(
       includeSourceMaps,
       baseUrl,
       asyncRoutes,
+      routerRoot,
     }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
       minify,
       baseUrl,
+      routerRoot,
     }),
   ]);
 
@@ -253,7 +255,7 @@ async function exportFromServerAsync(
     const apiRoutes = await exportApiRoutesAsync({
       outputDir,
       server: devServer,
-      appDir,
+      routerRoot,
       manifest: serverManifest,
       baseUrl,
     });
@@ -416,13 +418,13 @@ export function getPathVariations(routePath: string): string[] {
 async function exportApiRoutesAsync({
   outputDir,
   server,
-  appDir,
+  routerRoot,
   baseUrl,
   ...props
 }: {
   outputDir: string;
   server: MetroBundlerDevServer;
-  appDir: string;
+  routerRoot: string;
   manifest: ExpoRouterServerManifestV1;
   baseUrl: string;
 }): Promise<ExportAssetMap> {
@@ -432,7 +434,7 @@ async function exportApiRoutesAsync({
 
   const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
     mode: 'production',
-    appDir,
+    routerRoot,
     outputDir: functionsDir,
     prerenderManifest: props.manifest,
     baseUrl,
