@@ -22,7 +22,6 @@ import {
   setupShimFiles,
 } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
-import { getAppRouterRelativeEntryPath } from './router';
 import {
   withMetroErrorReportingResolver,
   withMetroMutatedResolverContext,
