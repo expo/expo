@@ -71,6 +71,8 @@ type ResolverOptions = {
   enablePackageExports?: boolean;
 
   blockList: RegExp[];
+
+  getPackageForModule: import('metro-resolver').CustomResolutionContext['getPackageForModule'];
 } & Pick<
   UpstreamResolveOptions,
   | 'readPackageSync'
