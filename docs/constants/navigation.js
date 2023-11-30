@@ -73,20 +73,6 @@ const home = [
       { expanded: false }
     ),
     makeGroup(
-      'Routing',
-      [
-        makePage('routing/introduction.mdx'),
-        makePage('routing/installation.mdx'),
-        makePage('routing/create-pages.mdx'),
-        makePage('routing/navigating-pages.mdx'),
-        makePage('routing/layouts.mdx'),
-        makePage('routing/appearance.mdx'),
-        makePage('routing/error-handling.mdx'),
-        makePage('routing/next-steps.mdx'),
-      ],
-      { expanded: false }
-    ),
-    makeGroup(
       'Development builds',
       [
         makePage('develop/development-builds/introduction.mdx'),
@@ -175,6 +161,13 @@ const general = [
     ),
   ]),
   makeSection('Expo Router', [
+    makePage('router/introduction.mdx'),
+    makePage('router/installation.mdx'),
+    makePage('router/create-pages.mdx'),
+    makePage('router/navigating-pages.mdx'),
+    makePage('router/layouts.mdx'),
+    makePage('router/appearance.mdx'),
+    makePage('router/error-handling.mdx'),
     makeGroup('Advanced', [
       makePage('router/advanced/root-layout.mdx'),
       makePage('router/advanced/stack.mdx'),

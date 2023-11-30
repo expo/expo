@@ -225,6 +225,16 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/exploring-managed-workflow/': '/tutorial/introduction/',
   '/introduction/walkthrough/': '/tutorial/introduction/',
 
+  // Redirects after Expo Router docs reorganization from Home to Guides
+  '/routing/next-steps/': '/router/introduction/',
+  '/routing/introduction/': '/router/introduction/',
+  '/routing/installation/': '/router/installation/',
+  '/routing/create-pages/': '/router/create-pages/',
+  '/routing/navigating-pages/': '/router/navigating-pages/',
+  '/routing/layouts/': '/router/layouts/',
+  '/routing/appearance/': '/router/appearance/',
+  '/routing/error-handling/': '/router/error-handling/',
+
   // Move overview to index
   '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
 
