@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Use `build` directory for native usage.
+- Use `build` directory for native usage. ([#25655](https://github.com/expo/expo/pull/25655) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
