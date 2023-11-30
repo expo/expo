@@ -50,7 +50,6 @@ type HtmlRequestLocation = {
   pathname: string;
   /** The runtime route node object, used to associate async modules with the static HTML. */
   route: RouteNode;
-  routerRoot: string;
 };
 
 /** @private */
@@ -117,7 +116,7 @@ export async function getFilesToExportFromServerAsync(
       async ({ route, filePath, pathname }) => {
         try {
           files.set(filePath, { contents: '' });
-          const data = await renderAsync({ route, filePath, pathname, routerRoot });
+          const data = await renderAsync({ route, filePath, pathname });
           files.set(filePath, {
             contents: data,
             routeId: pathname,
@@ -215,6 +214,7 @@ async function exportFromServerAsync(
   await getFilesToExportFromServerAsync(projectRoot, {
     files,
     manifest,
+    routerRoot,
     // Servers can handle group routes automatically and therefore
     // don't require the build-time generation of every possible group
     // variation.

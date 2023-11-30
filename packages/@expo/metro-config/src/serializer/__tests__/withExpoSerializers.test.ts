@@ -66,7 +66,7 @@ describe('serializes', () => {
         ...options,
       })
     )) as any;
-    if (options.options.output === 'static') {
+    if (options.options?.output === 'static') {
       assert('artifacts' in output && Array.isArray(output.artifacts));
       return output.artifacts;
     } else {

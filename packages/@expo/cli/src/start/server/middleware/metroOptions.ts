@@ -86,12 +86,13 @@ export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, plat
 export function getMetroDirectBundleOptionsForExpoConfig(
   projectRoot: string,
   exp: ExpoConfig,
-  options: Omit<ExpoMetroOptions, 'baseUrl' | 'routerRoot'>
+  options: Omit<ExpoMetroOptions, 'baseUrl' | 'routerRoot' | 'asyncRoutes'>
 ): Partial<ExpoMetroBundleOptions> {
   return getMetroDirectBundleOptions({
     ...options,
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+    asyncRoutes: getAsyncRoutesFromExpoConfig(exp, options.mode, options.platform),
   });
 }
 
