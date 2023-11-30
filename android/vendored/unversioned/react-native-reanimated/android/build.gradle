@@ -85,7 +85,7 @@ def resolveReactNativeDirectory() {
     if (reactNativeFromProjectNodeModules.exists()) {
         return reactNativeFromProjectNodeModules
     }
-
+    
     def reactNativeFromNodeModulesWithReanimated = file("${projectDir}/../../react-native")
     if (reactNativeFromNodeModulesWithReanimated.exists()) {
         return reactNativeFromNodeModulesWithReanimated
@@ -137,7 +137,7 @@ file("$reactNativeRootDir/ReactAndroid/gradle.properties").withInputStream { rea
 
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.startsWith("0.0.0-") ? 1000 : REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
-def REANIMATED_VERSION = "3.6.0-nightly-20231031-c56d44fd9"
+def REANIMATED_VERSION = "3.6.0"
 def REANIMATED_MAJOR_VERSION = 3
 def IS_NEW_ARCHITECTURE_ENABLED = isNewArchitectureEnabled()
 
@@ -282,7 +282,7 @@ android {
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
         buildConfigField("int", "REACT_NATIVE_MINOR_VERSION", REACT_NATIVE_MINOR_VERSION.toString())
-
+        
         consumerProguardFiles 'proguard-rules.pro'
     }
     externalNativeBuild {
@@ -373,11 +373,20 @@ android {
                 }
             }
 
-            // ReanimatedUIManager & ReanimatedUIImplementation
+            // ReanimatedUIManager & ReanimatedUIImplementation 
             if (REACT_NATIVE_MINOR_VERSION <= 70) {
                 srcDirs += "src/reactNativeVersionPatch/ReanimatedUIManager/70"
             } else {
                 srcDirs += "src/reactNativeVersionPatch/ReanimatedUIManager/latest"
+            }
+
+            // ReactFeatureFlags 
+            if (IS_NEW_ARCHITECTURE_ENABLED) {
+                if (REACT_NATIVE_MINOR_VERSION <= 72) {
+                    srcDirs += "src/reactNativeVersionPatch/ReactFeatureFlagsWrapper/72"
+                } else {
+                    srcDirs += "src/reactNativeVersionPatch/ReactFeatureFlagsWrapper/latest"
+                }
             }
         }
     }

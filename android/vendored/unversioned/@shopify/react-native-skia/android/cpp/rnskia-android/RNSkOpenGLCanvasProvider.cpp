@@ -14,64 +14,60 @@ namespace RNSkia {
 
 RNSkOpenGLCanvasProvider::RNSkOpenGLCanvasProvider(
     std::function<void()> requestRedraw,
-    std::shared_ptr<RNSkia::RNSkPlatformContext> context)
-    : RNSkCanvasProvider(requestRedraw), _context(context) {}
+    std::shared_ptr<RNSkia::RNSkPlatformContext> platformContext)
+    : RNSkCanvasProvider(requestRedraw), _platformContext(platformContext) {}
 
 RNSkOpenGLCanvasProvider::~RNSkOpenGLCanvasProvider() {}
 
-float RNSkOpenGLCanvasProvider::getScaledWidth() { return _width; }
+float RNSkOpenGLCanvasProvider::getScaledWidth() {
+  return _surfaceHolder ? _surfaceHolder->getWidth() : 0;
+}
 
-float RNSkOpenGLCanvasProvider::getScaledHeight() { return _height; }
+float RNSkOpenGLCanvasProvider::getScaledHeight() {
+  return _surfaceHolder ? _surfaceHolder->getHeight() : 0;
+}
 
 bool RNSkOpenGLCanvasProvider::renderToCanvas(
     const std::function<void(SkCanvas *)> &cb) {
-  if (_renderer != nullptr) {
-    return _renderer->run(cb, _width, _height);
+
+  if (_surfaceHolder != nullptr && cb != nullptr) {
+    // Get the surface
+    auto surface = _surfaceHolder->getSurface();
+    if (surface) {
+
+      // Ensure we are ready to render
+      if (!_surfaceHolder->makeCurrent()) {
+        return false;
+      }
+
+      // Draw into canvas using callback
+      cb(surface->getCanvas());
+
+      // Swap buffers and show on screen
+      return _surfaceHolder->present();
+
+    } else {
+      // the render context did not provide a surface
+      return false;
+    }
   }
+
   return false;
 }
 
 void RNSkOpenGLCanvasProvider::surfaceAvailable(jobject surface, int width,
                                                 int height) {
-  _width = width;
-  _height = height;
+  // Create renderer!
+  _surfaceHolder =
+      SkiaOpenGLSurfaceFactory::makeWindowedSurface(surface, width, height);
 
-  if (_renderer == nullptr) {
-    // Create renderer!
-    _renderer = std::make_unique<SkiaOpenGLRenderer>(surface);
-
-    // Redraw
-    _requestRedraw();
-  }
+  // Post redraw request to ensure we paint in the next draw cycle.
+  _requestRedraw();
 }
 void RNSkOpenGLCanvasProvider::surfaceDestroyed() {
-  if (_renderer != nullptr) {
-    // teardown
-    _renderer->teardown();
-
-    // Teardown renderer on the render thread since OpenGL demands
-    // same thread access for OpenGL contexts.
-    std::condition_variable cv;
-    std::mutex m;
-    std::unique_lock<std::mutex> lock(m);
-
-    _context->runOnRenderThread([&cv, &m, weakSelf = weak_from_this()]() {
-      // Lock
-      std::unique_lock<std::mutex> lock(m);
-
-      auto self = weakSelf.lock();
-      if (self) {
-        if (self->_renderer != nullptr) {
-          self->_renderer->run(nullptr, 0, 0);
-        }
-        // Remove renderer
-        self->_renderer = nullptr;
-      }
-      cv.notify_one();
-    });
-
-    cv.wait(lock);
-  }
+  // destroy the renderer (a unique pointer so the dtor will be called
+  // immediately.)
+  _surfaceHolder = nullptr;
 }
 
 void RNSkOpenGLCanvasProvider::surfaceSizeChanged(int width, int height) {
@@ -80,8 +76,9 @@ void RNSkOpenGLCanvasProvider::surfaceSizeChanged(int width, int height) {
     // it comes to invalidating the surface.
     return;
   }
-  _width = width;
-  _height = height;
+
+  // Recreate RenderContext surface based on size change???
+  _surfaceHolder->resize(width, height);
 
   // Redraw after size change
   _requestRedraw();

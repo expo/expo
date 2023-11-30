@@ -26,7 +26,6 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   ) {
     // monkey-patch the device list to expose it within the metro inspector
     // See https://github.com/facebook/metro/pull/991
-    // @ts-expect-error - Device ID is changing from `number` to `string`
     this.metroProxy._devices = this.devices;
 
     // force httpEndpointMiddleware to be bound to this proxy instance
@@ -66,9 +65,7 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   public createWebSocketListeners(server: HttpServer | HttpsServer): Record<string, WSServer> {
     // Initialize the server address from the metro server.
     // This is required to properly reference sourcemaps for the debugger.
-    this.metroProxy._serverAddressWithPort = ExpoInspectorProxy.normalizeServerAddress(
-      server.address()
-    );
+    this.metroProxy._serverBaseUrl = ExpoInspectorProxy.normalizeServerAddress(server.address());
 
     return {
       [WS_DEVICE_URL]: this.createDeviceWebSocketServer(),
@@ -101,8 +98,6 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
 
         if (oldDevice) {
           debug('Device reconnected: device=%s, app=%s, id=%s', deviceName, appName, deviceId);
-          // See: https://github.com/facebook/metro/pull/991
-          // @ts-expect-error - Newly introduced method coming to @react-native/dev-middleware soon
           oldDevice.handleDuplicateDeviceConnection(newDevice);
         } else {
           debug('New device connected: device=%s, app=%s, id=%s', deviceName, appName, deviceId);
@@ -166,7 +161,7 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
           // @ts-expect-error The `handleDebuggerConnectionWithType` is part of our device implementation, not Metro's device
           device.handleDebuggerConnectionWithType(socket, pageId, debuggerType);
         } else {
-          device.handleDebuggerConnection(socket, pageId);
+          device.handleDebuggerConnection(socket, pageId, { userAgent: debuggerType });
         }
 
         socket.on('close', () => {

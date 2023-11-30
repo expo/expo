@@ -1,5 +1,6 @@
 #import <RNSkLog.h>
 #import <RNSkMetalCanvasProvider.h>
+#import <SkiaMetalSurfaceFactory.h>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
@@ -8,22 +9,11 @@
 #import "SkColorSpace.h"
 #import "SkSurface.h"
 
+#import <include/gpu/GrBackendSurface.h>
 #import <include/gpu/GrDirectContext.h>
+#import <include/gpu/ganesh/SkSurfaceGanesh.h>
 
 #pragma clang diagnostic pop
-
-/** Static members */
-std::shared_ptr<MetalRenderContext>
-RNSkMetalCanvasProvider::getMetalRenderContext() {
-  auto threadId = std::this_thread::get_id();
-  if (renderContexts.count(threadId) == 0) {
-    auto drawingContext = std::make_shared<MetalRenderContext>();
-    drawingContext->commandQueue = nullptr;
-    drawingContext->skContext = nullptr;
-    renderContexts.emplace(threadId, drawingContext);
-  }
-  return renderContexts.at(threadId);
-}
 
 RNSkMetalCanvasProvider::RNSkMetalCanvasProvider(
     std::function<void()> requestRedraw,
@@ -33,11 +23,8 @@ RNSkMetalCanvasProvider::RNSkMetalCanvasProvider(
 #pragma clang diagnostic ignored "-Wunguarded-availability-new"
   _layer = [CAMetalLayer layer];
 #pragma clang diagnostic pop
-
-  auto device = MTLCreateSystemDefaultDevice();
-
   _layer.framebufferOnly = NO;
-  _layer.device = device;
+  _layer.device = MTLCreateSystemDefaultDevice();
   _layer.opaque = false;
   _layer.contentsScale = _context->getPixelDensity();
   _layer.pixelFormat = MTLPixelFormatBGRA8Unorm;
@@ -85,64 +72,32 @@ bool RNSkMetalCanvasProvider::renderToCanvas(
       return false;
     }
   }
-
-  // Get render context for current thread
-  auto renderContext = getMetalRenderContext();
-
-  if (renderContext->skContext == nullptr) {
-    auto device = MTLCreateSystemDefaultDevice();
-    renderContext->commandQueue =
-        id<MTLCommandQueue>(CFRetain((GrMTLHandle)[device newCommandQueue]));
-    renderContext->skContext = GrDirectContext::MakeMetal(
-        (__bridge void *)device, (__bridge void *)renderContext->commandQueue);
-  }
-
   // Wrap in auto release pool since we want the system to clean up after
   // rendering and not wait until later - we've seen some example of memory
   // usage growing very fast in the simulator without this.
   @autoreleasepool {
-
-    /* It is super important that we use the pattern of calling nextDrawable
-     inside this autoreleasepool and not depend on Skia's
-     SkSurface::MakeFromCAMetalLayer to encapsulate since we're seeing a lot of
-     drawables leaking if they're not done this way.
-
-     This is now reverted from:
-     (https://github.com/Shopify/react-native-skia/commit/2e2290f8e6dfc6921f97b79f779d920fbc1acceb)
-     back to the original implementation.
-     */
     id<CAMetalDrawable> currentDrawable = [_layer nextDrawable];
     if (currentDrawable == nullptr) {
       return false;
     }
 
-    GrMtlTextureInfo fbInfo;
-    fbInfo.fTexture.retain((__bridge void *)currentDrawable.texture);
-
-    GrBackendRenderTarget backendRT(_layer.drawableSize.width,
-                                    _layer.drawableSize.height, 1, fbInfo);
-
-    auto skSurface = SkSurface::MakeFromBackendRenderTarget(
-        renderContext->skContext.get(), backendRT, kTopLeft_GrSurfaceOrigin,
-        kBGRA_8888_SkColorType, nullptr, nullptr);
-
-    if (skSurface == nullptr || skSurface->getCanvas() == nullptr) {
-      RNSkia::RNSkLogger::logToConsole(
-          "Skia surface could not be created from parameters.");
-      return false;
-    }
+    auto skSurface = SkiaMetalSurfaceFactory::makeWindowedSurface(
+        currentDrawable.texture, _layer.drawableSize.width,
+        _layer.drawableSize.height);
 
     SkCanvas *canvas = skSurface->getCanvas();
     cb(canvas);
 
-    skSurface->flushAndSubmit();
+    if (auto dContext = GrAsDirectContext(skSurface->recordingContext())) {
+      dContext->flushAndSubmit();
+    }
 
     id<MTLCommandBuffer> commandBuffer(
-        [renderContext->commandQueue commandBuffer]);
+        [ThreadContextHolder::ThreadSkiaMetalContext
+                .commandQueue commandBuffer]);
     [commandBuffer presentDrawable:currentDrawable];
     [commandBuffer commit];
   }
-
   return true;
 };
 

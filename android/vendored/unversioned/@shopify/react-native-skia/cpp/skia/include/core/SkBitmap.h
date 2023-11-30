@@ -33,7 +33,7 @@ class SkPixelRef;
 class SkShader;
 enum SkColorType : int;
 enum class SkTileMode;
-struct SkMask;
+struct SkMaskBuilder;
 
 /** \class SkBitmap
     SkBitmap describes a two-dimensional raster pixel array. SkBitmap is built on
@@ -440,7 +440,7 @@ public:
         @param flags  kZeroPixels_AllocFlag, or zero
         @return       true if pixels allocation is successful
     */
-    bool SK_WARN_UNUSED_RESULT tryAllocPixelsFlags(const SkImageInfo& info, uint32_t flags);
+    [[nodiscard]] bool tryAllocPixelsFlags(const SkImageInfo& info, uint32_t flags);
 
     /** Sets SkImageInfo to info following the rules in setInfo() and allocates pixel
         memory. Memory is zeroed.
@@ -478,7 +478,7 @@ public:
         @param rowBytes  size of pixel row or larger; may be zero
         @return          true if pixel storage is allocated
     */
-    bool SK_WARN_UNUSED_RESULT tryAllocPixels(const SkImageInfo& info, size_t rowBytes);
+    [[nodiscard]] bool tryAllocPixels(const SkImageInfo& info, size_t rowBytes);
 
     /** Sets SkImageInfo to info following the rules in setInfo() and allocates pixel
         memory. rowBytes must equal or exceed info.width() times info.bytesPerPixel(),
@@ -514,7 +514,7 @@ public:
         @param info  contains width, height, SkAlphaType, SkColorType, SkColorSpace
         @return      true if pixel storage is allocated
     */
-    bool SK_WARN_UNUSED_RESULT tryAllocPixels(const SkImageInfo& info) {
+    [[nodiscard]] bool tryAllocPixels(const SkImageInfo& info) {
         return this->tryAllocPixels(info, info.minRowBytes());
     }
 
@@ -553,7 +553,7 @@ public:
         @param isOpaque  true if pixels do not have transparency
         @return          true if pixel storage is allocated
     */
-    bool SK_WARN_UNUSED_RESULT tryAllocN32Pixels(int width, int height, bool isOpaque = false);
+    [[nodiscard]] bool tryAllocN32Pixels(int width, int height, bool isOpaque = false);
 
     /** Sets SkImageInfo to width, height, and the native color type; and allocates
         pixel memory. If isOpaque is true, sets SkImageInfo to kOpaque_SkAlphaType;
@@ -637,7 +637,7 @@ public:
 
     /** Deprecated.
     */
-    bool installMaskPixels(const SkMask& mask);
+    bool installMaskPixels(SkMaskBuilder& mask);
 
     /** Replaces SkPixelRef with pixels, preserving SkImageInfo and rowBytes().
         Sets SkPixelRef origin to (0, 0).
@@ -661,7 +661,7 @@ public:
 
         @return  true if the allocation succeeds
     */
-    bool SK_WARN_UNUSED_RESULT tryAllocPixels() {
+    [[nodiscard]] bool tryAllocPixels() {
         return this->tryAllocPixels((Allocator*)nullptr);
     }
 
@@ -685,7 +685,7 @@ public:
         @param allocator  instance of SkBitmap::Allocator instantiation
         @return           true if custom allocator reports success
     */
-    bool SK_WARN_UNUSED_RESULT tryAllocPixels(Allocator* allocator);
+    [[nodiscard]] bool tryAllocPixels(Allocator* allocator);
 
     /** Allocates pixel memory with allocator, and replaces existing SkPixelRef.
         The allocation size is determined by SkImageInfo width, height, and SkColorType.

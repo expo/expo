@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ImageProps.h"
 #include "JsiDomDrawingNode.h"
+#include "SkImageProps.h"
 
 #include <memory>
 

@@ -24,3 +24,6 @@ internal class SQLiteErrorException(message: String) :
 @DoNotStrip
 internal class InvalidConvertibleException(message: String) :
   CodedException(message)
+
+internal class AccessClosedResourceException :
+  CodedException("Access to closed resource")

@@ -43,15 +43,20 @@ export async function getCombinedKnownVersionsAsync({
   projectRoot,
   sdkVersion,
   skipCache,
+  skipRemoteVersions = false,
 }: {
   projectRoot: string;
   sdkVersion?: string;
   skipCache?: boolean;
+  /** Do not fetch version information from the API, e.g. when using a `canary` SDK version */
+  skipRemoteVersions?: boolean;
 }) {
   const bundledNativeModules = sdkVersion
-    ? await getVersionedNativeModulesAsync(projectRoot, sdkVersion)
+    ? await getVersionedNativeModulesAsync(projectRoot, sdkVersion, { skipRemoteVersions })
     : {};
-  const versionsForSdk = await getRemoteVersionsForSdkAsync({ sdkVersion, skipCache });
+  const versionsForSdk = !skipRemoteVersions
+    ? await getRemoteVersionsForSdkAsync({ sdkVersion, skipCache })
+    : {};
   return {
     ...bundledNativeModules,
     // Prefer the remote versions over the bundled versions, this enables us to push

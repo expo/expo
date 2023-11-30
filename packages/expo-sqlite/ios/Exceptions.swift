@@ -52,6 +52,12 @@ internal class InvalidArgumentsException: Exception {
   }
 }
 
+internal class AccessClosedResourceException: Exception {
+  override var reason: String {
+    "Access to closed resource"
+  }
+}
+
 internal class SQLiteErrorException: GenericException<String> {
   override var code: String {
     "ERR_INTERNAL_SQLITE_ERROR"

@@ -11,7 +11,7 @@
 #include "include/private/base/SkTArray.h"
 #include "modules/svg/include/SkSVGTransformableNode.h"
 
-class SkSVGContainer : public SkSVGTransformableNode {
+class SK_API SkSVGContainer : public SkSVGTransformableNode {
 public:
     void appendChild(sk_sp<SkSVGNode>) override;
 

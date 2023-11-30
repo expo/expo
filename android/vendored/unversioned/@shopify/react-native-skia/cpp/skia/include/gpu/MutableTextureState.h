@@ -8,10 +8,14 @@
 #ifndef skgpu_MutableTextureState_DEFINED
 #define skgpu_MutableTextureState_DEFINED
 
+#include "include/core/SkTypes.h"
 #include "include/gpu/GpuTypes.h"
 
 #ifdef SK_VULKAN
+#include "include/private/gpu/vk/SkiaVulkan.h"
 #include "include/private/gpu/vk/VulkanTypesPriv.h"
+
+#include <cstdint>
 #endif
 
 #include <new>
