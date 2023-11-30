@@ -891,3 +891,37 @@ describe('shared routes with tabs', () => {
     });
   });
 });
+
+it('will warn if a href provides duplicate parameters (single)', async () => {
+  const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  renderRouter({
+    index: () => <Redirect href="/test?id=test23" />,
+    '[id]': () => <Text />,
+  });
+
+  // If there is both a param and a path, use the param
+  expect(screen).toHavePathname('/test');
+
+  expect(spy).toHaveBeenNthCalledWith(
+    1,
+    "Route '/[id]' with param 'id' was specified both in the path and as a param, removing from path"
+  );
+});
+
+it('will warn if a href provides duplicate parameters (wildcard)', async () => {
+  const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  renderRouter({
+    index: () => <Redirect href="/test?id=test23" />,
+    '[...id]': () => <Text />,
+  });
+
+  // If there is both a param and a path, use the param
+  expect(screen).toHavePathname('/test');
+
+  expect(spy).toHaveBeenNthCalledWith(
+    1,
+    "Route '/[...id]' with param 'id' was specified both in the path and as a param, removing from path"
+  );
+});
