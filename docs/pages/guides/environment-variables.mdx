@@ -144,6 +144,27 @@ Previously with direnv, you would need to use a [dynamic app config](/versions/l
 
 Never store sensitive secrets in environment variables that are prefixed with `EXPO_PUBLIC_`. When an end-user runs your app, they have access to all of the code and embedded environment variables in your app. Read more about [storing sensitive info](https://reactnative.dev/docs/security#storing-sensitive-info).
 
+## Environment variables in app.config.js/app.config.ts
+
+To enable access to the environment variables in app.config.js/app.config.ts you need to use the `dotenv` module for example:
+
+```ts
+import { config as dotenvConfig } from "dotenv";
+import { ConfigContext, ExpoConfig } from "expo/config";
+
+export default ({ config }: ConfigContext): ExpoConfig => {
+  dotenvConfig();
+  const appId = process.env.EXPO_PUBLIC_APP_ID;
+  if (!appId) {
+    throw new Error("Missing required EXPO_PUBLIC_APP_ID in .env");
+  }
+  return {
+    ...config,
+    slug: appId
+  }
+}
+```
+
 ## Environment variables in SDK 48 and lower
 
 Due to its ability to automatically load and unload environment variables in your shell depending on your current directory, we highly recommend [direnv](https://direnv.net/) for the highest level of compatibility with all Expo and EAS CLI tooling for SDK versions that do not support Expo environment variables. Since variables loaded with direnv are available in Node processes but not your application code itself, you can load it into the `extra` field of your [dynamic Expo config](/versions/latest/config/app/#app-config) and then access it in your JavaScript code via [expo-constants](/versions/latest/sdk/constants).
