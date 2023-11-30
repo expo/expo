@@ -1,10 +1,10 @@
-name: Updates e2e (disabled) EAS
+name: Updates e2e (startup) EAS
 
 on:
   workflow_dispatch: {}
   pull_request:
     paths:
-      - .github/workflows/updates-e2e-disabled.yml
+      - .github/workflows/updates-e2e-startup.yml
       - packages/expo-asset/**
       - packages/expo-manifests/**
       - packages/expo-updates-interface/**
@@ -12,7 +12,7 @@ on:
   push:
     branches: [main, 'sdk-*']
     paths:
-      - .github/workflows/updates-e2e-disabled.yml
+      - .github/workflows/updates-e2e-startup.yml
       - packages/expo-asset/**
       - packages/expo-manifests/**
       - packages/expo-updates-interface/**
@@ -68,8 +68,8 @@ jobs:
         run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=oneline | head -c1000)" >> $GITHUB_ENV
       - name: 📦 Set test project location
         run: echo "TEST_PROJECT_ROOT=$GITHUB_WORKSPACE/updates-e2e" >> $GITHUB_ENV
-      - name: 📦 Setup test project for updates E2E disabled tests
-        run: yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-disabled-eas-project.ts
+      - name: 📦 Setup test project for updates E2E startup tests
+        run: yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-startup-eas-project.ts
       - name: 🚀 Build with EAS for ${{ matrix.platform }}
         uses: ./.github/actions/eas-build
         id: build_eas
