@@ -25,6 +25,18 @@ const params = new URLSearchParams();
 
 ## Conformance
 
-Unicode characters are not supported on native platforms.
+Expo's build-in URL support attempts to be fully [spec compliant](https://developer.mozilla.org/en-US/docs/Web/API/URL). 
 
-See the standard [URL API](https://developer.mozilla.org/en-US/docs/Web/API/URL) for more information.
+The only missing exception is that native platforms do not currently support [unicode characters](https://unicode.org/reports/tr46/) in the hostname. 
+
+Consider the following example:
+
+```js
+console.log(new URL('https://🥓.com/𝝠').toString())
+```
+
+This outputs the following:
+- Web, Node.js: `https://xn--pr9h.com/%F0%9D%9D%A0`
+- iOS, Android: `https://🥓.com/%F0%9D%9D%A0`
+
+
