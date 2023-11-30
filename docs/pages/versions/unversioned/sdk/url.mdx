@@ -1,18 +1,11 @@
 ---
 title: URL
-description: A library that allows programmatically controlling and responding to new updates made available to your app.
-sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-updates'
-packageName: 'expo-updates'
-iconUrl: '/static/images/packages/expo-updates.png'
+description: Standard URL API available on all Expo-supported platforms. 
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo'
+packageName: 'expo'
 ---
 
-import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
-import { ConfigReactNative, ConfigPluginExample } from '~/components/plugins/ConfigSection';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon } from '@expo/styleguide-icons';
 
 The standard URL API is available on all Expo-supported platforms.
 
@@ -20,7 +13,7 @@ The standard URL API is available on all Expo-supported platforms.
 
 ## Installation
 
-This API is part of the `expo` package.
+This API is part of the `expo` package. On native platforms, the build-in support for `URL` and `URLSearchParams` replaces the shim in `react-native`. Refer to the [browser and server runtime support](https://caniuse.com/url) for web and Node.js.
 
 ## Usage
 
@@ -33,3 +26,5 @@ const params = new URLSearchParams();
 ## Conformance
 
 Unicode characters are not supported on native platforms.
+
+See the standard [URL API](https://developer.mozilla.org/en-US/docs/Web/API/URL) for more information.
