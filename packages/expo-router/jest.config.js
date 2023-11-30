@@ -9,8 +9,8 @@ const { withWatchPlugins } = require('jest-expo/config/withWatchPlugins');
 function withDefaults({ watchPlugins, ...config }) {
   return {
     ...config,
-
     roots: ['src'],
+    clearMocks: true,
     setupFilesAfterEnv: ['./build/testing-library/mocks.js'],
   };
 }
