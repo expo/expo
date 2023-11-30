@@ -62,10 +62,9 @@ export async function exportAppAsync(
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
   const outputPath = path.resolve(projectRoot, outputDir);
 
-  // TODO: Remove when this is abstracted into the files map
-  if (!platforms.includes('web') || !useServerRendering) {
-    await copyPublicFolderAsync(publicPath, outputPath);
-  }
+  // NOTE(kitten): The public folder is currently always copied, regardless of targetDomain
+  // split. Hence, there's another separate `copyPublicFolderAsync` call below for `web`
+  await copyPublicFolderAsync(publicPath, outputPath);
 
   // Run metro bundler and create the JS bundles/source maps.
   const bundles = await createBundlesAsync(projectRoot, projectConfig, {
