@@ -1,6 +1,6 @@
 ---
 title: Install Expo Router
-description: Learn how to quickly get started by creating a new project with Expo Router or add the library to an existing project.
+description: Learn how to quickly get started by creating a new project with Expo Router or adding the library to an existing project.
 sidebar_title: Installation
 ---
 
@@ -149,12 +149,22 @@ module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
-    /* @info Add it in the plugins list as the last plugin.*/
+    /* @info Add it to the plugins list as the last plugin.*/
     plugins: ['expo-router/babel'],
     /* @end */
   };
 };
 ```
+
+</Step>
+
+<Step label="6">
+
+### Clear bundler cache
+
+After updating the Babel config file, run the following command to clear the bundler cache:
+
+<Terminal cmd={['$ npx expo start -c']} />
 
 </Step>
 
