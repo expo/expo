@@ -90,7 +90,11 @@ public class RNSVGForeignObjectManagerDelegate<T extends View, U extends BaseVie
         mViewManager.setStrokeLinejoin(view, value == null ? 0 : ((Double) value).intValue());
         break;
       case "strokeDasharray":
-        mViewManager.setStrokeDasharray(view, (ReadableArray) value);
+        if (value instanceof String) {
+          mViewManager.setStrokeDasharray(view, (String) value);
+        } else if (value instanceof ReadableArray) {
+          mViewManager.setStrokeDasharray(view, (ReadableArray) value);
+        }
         break;
       case "strokeDashoffset":
         mViewManager.setStrokeDashoffset(view, value == null ? 0f : ((Double) value).floatValue());
