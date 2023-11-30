@@ -5,7 +5,7 @@ declare const withRouter: ConfigPlugin<{
     /** A more specific origin URL used in the `expo-router/head` module for iOS handoff. Defaults to `origin`. */
     headOrigin?: string;
     /** Changes the routes directory from `app` to another value. Defaults to `app`. Avoid using this property. */
-    unstable_src?: string;
+    root?: string;
     /** Should Async Routes be enabled, currently only `development` is supported. */
     asyncRoutes?: string | {
         android?: string;

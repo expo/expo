@@ -43,6 +43,11 @@ function getBabelCaller({ filename, options }: Pick<BabelTransformerArgs, 'filen
         ? decodeURI(options.customTransformOptions.baseUrl)
         : '',
 
+    routerRoot:
+      typeof options.customTransformOptions?.routerRoot === 'string'
+        ? decodeURI(options.customTransformOptions.routerRoot)
+        : '',
+
     isDev: options.dev,
 
     // This value indicates if the user has disabled the feature or not.

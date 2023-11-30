@@ -9,7 +9,7 @@ import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
 import { removeFromGitIgnore, upsertGitIgnoreContents } from '../../../utils/mergeGitIgnorePaths';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { ServerLike } from '../BundlerDevServer';
-import { getRouterDirectoryWithManifest } from '../metro/router';
+import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 
 export interface TypeScriptTypeGenerationOptions {
   server?: ServerLike;
@@ -56,7 +56,10 @@ export async function startTypescriptTypeGenerationAsync({
         server,
         typesDirectory,
         projectRoot,
-        routerDirectory: getRouterDirectoryWithManifest(projectRoot, exp),
+        routerDirectory: path.join(
+          projectRoot,
+          getRouterDirectoryModuleIdWithManifest(projectRoot, exp)
+        ),
       }),
     ]);
   }
