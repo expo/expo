@@ -15,6 +15,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tabs = exports.Stack = void 0;
+/// <reference types="../types/expo-router" />
 var Stack_1 = require("./layouts/Stack");
 Object.defineProperty(exports, "Stack", { enumerable: true, get: function () { return Stack_1.Stack; } });
 var Tabs_1 = require("./layouts/Tabs");

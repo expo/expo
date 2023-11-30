@@ -1,14 +1,7 @@
-export type Href = string | HrefObject;
-
-export interface HrefObject {
-  /** Path representing the selected route `/[id]`. */
-  pathname?: string;
-  /** Query parameters for the path. */
-  params?: Record<string, any>;
-}
-
 /** Resolve an href object into a fully qualified, relative href. */
-export const resolveHref = (href: Href): string => {
+export const resolveHref = (
+  href: ExpoRouter.Href<string | { pathname: string; params: any }>
+): string => {
   if (typeof href === 'string') {
     return resolveHref({ pathname: href ?? '' });
   }
@@ -25,8 +18,8 @@ export const resolveHref = (href: Href): string => {
 
 function createQualifiedPathname(
   pathname: string,
-  params: Record<string, any>
-): Omit<Required<HrefObject>, 'query'> {
+  params: ExpoRouter.InputRouteParams<string>
+): Required<ExpoRouter.HrefObject<{ pathname: string }>> {
   for (const [key, value = ''] of Object.entries(params)) {
     const dynamicKey = `[${key}]`;
     const deepDynamicKey = `[...${key}]`;

@@ -153,7 +153,6 @@
     "devtools-protocol": "^0.0.1113120",
     "expo-module-scripts": "^3.0.0",
     "find-process": "^1.4.7",
-    "jest-runner-tsd": "^6.0.0",
     "klaw-sync": "^6.0.0",
     "memfs": "^3.2.0",
     "nock": "~13.2.2",

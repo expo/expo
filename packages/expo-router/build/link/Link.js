@@ -37,7 +37,7 @@ const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
 const hooks_1 = require("../hooks");
 const useFocusEffect_1 = require("../useFocusEffect");
 /** Redirects to the href as soon as the component is mounted. */
-function Redirect({ href }) {
+const Redirect = ({ href }) => {
     const router = (0, hooks_1.useRouter)();
     (0, useFocusEffect_1.useFocusEffect)(() => {
         try {
@@ -48,7 +48,7 @@ function Redirect({ href }) {
         }
     });
     return null;
-}
+};
 exports.Redirect = Redirect;
 /**
  * Component to render link to another route using a path.

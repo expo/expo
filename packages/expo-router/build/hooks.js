@@ -25,7 +25,7 @@ function useNavigationContainerRef() {
     return router_store_1.store.navigationRef;
 }
 exports.useNavigationContainerRef = useNavigationContainerRef;
-function useRouter() {
+const useRouter = () => {
     return react_1.default.useMemo(() => ({
         push: router_store_1.store.push,
         back: router_store_1.store.goBack,
@@ -35,7 +35,7 @@ function useRouter() {
         navigate: router_store_1.store.navigate,
         // TODO(EvanBacon): add `reload`
     }), []);
-}
+};
 exports.useRouter = useRouter;
 /**
  * @private
@@ -64,9 +64,9 @@ exports.useUnstableGlobalHref = useUnstableGlobalHref;
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-function useSegments() {
+const useSegments = () => {
     return (0, router_store_1.useStoreRouteInfo)().segments;
-}
+};
 exports.useSegments = useSegments;
 /** @returns global selected pathname without query parameters. */
 function usePathname() {
@@ -82,9 +82,9 @@ exports.usePathname = usePathname;
  *
  * @see `useLocalSearchParams`
  */
-function useGlobalSearchParams() {
+const useGlobalSearchParams = () => {
     return (0, router_store_1.useStoreRouteInfo)().params;
-}
+};
 exports.useGlobalSearchParams = useGlobalSearchParams;
 /**
  * Returns the URL search parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.

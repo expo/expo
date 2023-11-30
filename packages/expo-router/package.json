@@ -88,6 +88,7 @@
     "@testing-library/jest-native": "^5.4.2",
     "@testing-library/react": "^14.0.0",
     "@testing-library/react-native": "^12.0.1",
+    "jest-runner-tsd": "^6.0.0",
     "tsd": "^0.28.1"
   },
   "dependencies": {

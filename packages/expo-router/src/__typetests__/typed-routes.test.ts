@@ -4,7 +4,6 @@ import {
   useGlobalSearchParams,
   useSegments,
   useRouter,
-  useSearchParams,
   useLocalSearchParams,
 } from './fixtures/basic';
 
@@ -143,27 +142,17 @@ describe('router.push()', () => {
   });
 });
 
-describe('useSearchParams', () => {
-  expectType<Record<'color', string>>(useSearchParams<Record<'color', string>>());
-  expectType<Record<'color', string> & Record<string, string | string[]>>(
-    useSearchParams<'/colors/[color]'>()
-  );
-
-  expectError(useSearchParams<'/invalid'>());
-  expectError(useSearchParams<Record<'custom', Function>>());
-});
-
-describe('useLocalSearchParams', () => {
+it('useLocalSearchParams', () => {
   expectType<Record<'color', string>>(useLocalSearchParams<Record<'color', string>>());
   expectType<Record<'color', string> & Record<string, string | string[]>>(
     useLocalSearchParams<'/colors/[color]'>()
   );
 
-  expectError(useSearchParams<'/invalid'>());
-  expectError(useSearchParams<Record<'custom', Function>>());
+  expectError(useLocalSearchParams<'/invalid'>());
+  expectError(useLocalSearchParams<Record<'custom', Function>>());
 });
 
-describe('useGlobalSearchParams', () => {
+it('useGlobalSearchParams', () => {
   expectType<Record<'color', string>>(useGlobalSearchParams<Record<'color', string>>());
   expectType<Record<'color', string> & Record<string, string | string[]>>(
     useGlobalSearchParams<'/colors/[color]'>()
