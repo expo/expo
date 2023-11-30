@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Use `build` directory for native usage.
+
 ### 💡 Others
 
 ## 3.0.4 — 2023-11-14
