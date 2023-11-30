@@ -546,13 +546,11 @@ Expo's Metro config injects build settings that can be used in the client bundle
 
 > This feature is web-only in SDK 50.
 
-Starting in SDK 50, Expo CLI will automatically split web bundles into multiple chunks based on async imports in production. This feature requires `@expo/metro-runtime` to be installed and imported somewhere in the entry bundle (default in Expo Router).
+In SDK 50, Expo CLI automatically splits web bundles into multiple chunks based on async imports in production. This feature requires `@expo/metro-runtime` to be installed and imported somewhere in the entry bundle (available by default in Expo Router).
 
-Shared dependencies of async bundles will be merged into a single chunk to reduce the number of requests. For example, if you have two async bundles that both import `lodash`, then `lodash` will be merged into a single initial chunk.
+Shared dependencies of async bundles are merged into a single chunk to reduce the number of requests. For example, if you have two async bundles that import `lodash`, then the library is merged into a single initial chunk.
 
-As of SDK 50, the chunk splitting heuristic cannot be customized.
-
-Example:
+As of SDK 50, the chunk splitting heuristic cannot be customized. For example:
 
 ```js
 import '@expo/metro-runtime';
@@ -563,7 +561,7 @@ import('./math').then(math => {
 });
 ```
 
-When you run `npx expo export -p web`, the bundles will be split into multiple files, and the entry bundle will be added to the main HTML file.
+When you run `npx expo export -p web`, the bundles are split into multiple files, and the entry bundle is added to the main HTML file.
 
 ## Bare workflow setup
 
