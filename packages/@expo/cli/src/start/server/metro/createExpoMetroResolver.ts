@@ -4,9 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import fs from 'fs';
 import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
-import fs from 'fs';
 
 import jestResolver from './createJResolver';
 import { isNodeExternal } from './externals';
@@ -16,7 +16,7 @@ class FailedToResolvePathError extends Error {}
 
 class ShimModuleError extends Error {}
 
-var realpathFS =
+const realpathFS =
   process.platform !== 'win32' && fs.realpathSync && typeof fs.realpathSync.native === 'function'
     ? fs.realpathSync.native
     : fs.realpathSync;
@@ -122,13 +122,14 @@ export function createFastResolver({
 
       fp = jestResolver(moduleName, {
         blockList,
+
         enablePackageExports: context.unstable_enablePackageExports,
         basedir: path.dirname(context.originModulePath),
         paths: context.nodeModulesPaths as string[],
         extensions,
         conditions,
-
         realpathSync(file: string): string {
+          // @ts-expect-error: Missing on type.
           return context.unstable_getRealPath?.(file) ?? realpathSync(file);
         },
         packageFilter(pkg) {

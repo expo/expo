@@ -87,7 +87,11 @@ type UpstreamResolveOptionsWithConditions = UpstreamResolveOptions & ResolverOpt
 
 const defaultResolver = (
   path: string,
-  { enablePackageExports, blockList = [], ...options }: Omit<ResolverOptions, 'defaultResolver'>
+  {
+    enablePackageExports,
+    blockList = [],
+    ...options
+  }: Omit<ResolverOptions, 'defaultResolver' | 'getPackageForModule'>
 ): string => {
   // @ts-expect-error
   const resolveOptions: UpstreamResolveOptionsWithConditions = {
