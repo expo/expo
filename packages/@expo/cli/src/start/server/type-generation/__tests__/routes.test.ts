@@ -104,7 +104,7 @@ describe(`${TYPED_ROUTES_EXCLUSION_REGEX}`, () => {
     expect('/route/_layout.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
   });
 
-  it.only('will match +html files', () => {
+  it('will match +html files', () => {
     expect('+html.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
     expect('/+html.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
     expect('/route/+html.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
@@ -122,9 +122,9 @@ describe(`${TYPED_ROUTES_EXCLUSION_REGEX}`, () => {
     expect('/folder/route+anything.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
   });
 
-  it('will match +not_found', () => {
-    expect('+not_found.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
-    expect('/folder/+not_found.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+  it('will match +not+found', () => {
+    expect('+not+found.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
+    expect('/folder/+not+found.ts'.match(TYPED_ROUTES_EXCLUSION_REGEX)).toBeTruthy();
   });
 });
 
