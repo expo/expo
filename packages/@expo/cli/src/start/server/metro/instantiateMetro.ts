@@ -8,7 +8,6 @@ import type Metro from 'metro';
 import { Terminal } from 'metro-core';
 import semver from 'semver';
 import { URL } from 'url';
-import http from 'http';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
