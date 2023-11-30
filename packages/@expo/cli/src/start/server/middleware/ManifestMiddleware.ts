@@ -15,7 +15,6 @@ import {
   shouldEnableAsyncImports,
   createBundleUrlPath,
   getBaseUrlFromExpoConfig,
-  getRouterRootFromExpoConfig,
   createBundleUrlPathFromExpoConfig,
 } from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
@@ -28,6 +27,7 @@ import { CommandError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
+import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 
@@ -167,7 +167,7 @@ export abstract class ManifestMiddleware<
       hostname,
       engine: isHermesEnabled ? 'hermes' : undefined,
       baseUrl: getBaseUrlFromExpoConfig(projectConfig.exp),
-      routerRoot: getRouterRootFromExpoConfig(this.projectRoot, projectConfig.exp),
+      routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
     });
 
     // Resolve all assets and set them on the manifest as URLs

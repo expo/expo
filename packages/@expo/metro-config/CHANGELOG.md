@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Add custom Expo Router root directory support with full cache invalidation on server reset.
 - Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes

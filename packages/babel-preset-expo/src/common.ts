@@ -83,7 +83,7 @@ export function getExpoRouterAbsoluteAppRoot(caller: any): string {
   if (path.isAbsolute(rootModuleId)) {
     return rootModuleId;
   }
-  const projectRoot = getPossibleProjectRoot(caller);
+  const projectRoot = getPossibleProjectRoot(caller) || '/';
 
   return path.join(projectRoot, rootModuleId);
 }
