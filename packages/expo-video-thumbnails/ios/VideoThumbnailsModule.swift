@@ -24,8 +24,8 @@ public class VideoThumbnailsModule: Module {
     generator.requestedTimeToleranceBefore = CMTime.zero
     generator.requestedTimeToleranceAfter = CMTime.zero
 
-    let time = CMTimeMake(value: options.time, timescale: 1000)
-    let imgRef = try generator.copyCGImage(at: time, actualTime: nil)
+    let requestedTime = clampTimeForThumbnail(asset: asset, time: options.time)
+    let imgRef = try generator.copyCGImage(at: requestedTime, actualTime: nil)
     let thumbnail = UIImage.init(cgImage: imgRef)
     let savedImageUrl = try saveImage(image: thumbnail, quality: options.quality)
 
@@ -62,4 +62,15 @@ public class VideoThumbnailsModule: Module {
 
     return fileUrl
   }
+}
+
+/**
+Adjusts the requested time for thumbnail generation to ensure it does not exceed the video's duration.
+*/
+private func clampTimeForThumbnail(asset: AVURLAsset, time: Int64) -> CMTime {
+  let duration = asset.duration
+  let requestedTime = CMTimeMake(value: time, timescale: 1000)
+  
+  // Check if the requested time exceeds the video's duration
+  return requestedTime > duration ? duration : requestedTime
 }
