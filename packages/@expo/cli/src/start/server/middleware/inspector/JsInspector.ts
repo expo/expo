@@ -21,7 +21,7 @@ export interface MetroInspectorProxyApp {
 let openingBrowserInstance: LaunchBrowserInstance | null = null;
 
 export function openJsInspector(metroBaseUrl: string, app: MetroInspectorProxyApp) {
-  if (env.EXPO_EXPERIMENTAL_DEBUGGER) {
+  if (env.EXPO_USE_UNSTABLE_DEBUGGER) {
     return openExperimentalJsInspector(metroBaseUrl, app);
   } else {
     return openClassicJsInspector(app);
