@@ -65,21 +65,15 @@ public class VideoThumbnailsModule: Module {
 }
 
 /**
-Adjusts the requested time for thumbnail generation to ensure it does not exceed the video's duration.
-*/
-/**
  Adjusts the requested time for thumbnail generation to ensure it does not exceed the video's duration.
  */
 private func clampTimeForThumbnail(asset: AVURLAsset, time: Int64) -> CMTime {
-  let originalDuration = asset.duration
+  let duration = asset.duration
   let requestedTime = CMTimeMake(value: time, timescale: 1000)
-    
-  // Rounding down to the nearest second or QuickLook might fail to generate
-  let roundingFactor = Int64(originalDuration.timescale)
-  let roundedValue = Int64(floor(Double(originalDuration.value) / Double(roundingFactor))) * roundingFactor
-  
-  let roundedDuration = CMTime(value: roundedValue, timescale: originalDuration.timescale, flags: originalDuration.flags, epoch: originalDuration.epoch)
+
+  // Some videos fail even when we pass the real duration (2/10). Subtracting 1000ms makes it work reliably.
+  let subtractedDuration = CMTime(value: duration.value - 1000, timescale: duration.timescale, flags: duration.flags, epoch: duration.epoch)
 
   // Check if the requested time exceeds the video's duration
-  return requestedTime > originalDuration ? roundedDuration : requestedTime
+  return requestedTime > subtractedDuration ? subtractedDuration : requestedTime
 }
