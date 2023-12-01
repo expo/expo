@@ -1,7 +1,13 @@
 import Protocol from 'devtools-protocol';
 
-import { CdpMessage, DebuggerRequest, DeviceResponse, InspectorHandler } from './types';
-import { ExpoDebuggerInfo } from '../device';
+import {
+  CdpMessage,
+  DebuggerMetadata,
+  DebuggerRequest,
+  DeviceResponse,
+  InspectorHandler,
+} from './types';
+import { getDebuggerType } from './utils';
 
 /**
  * Vscode doesn't seem to work nicely with missing `description` fields on `RemoteObject` instances.
@@ -17,9 +23,9 @@ export class VscodeRuntimeGetPropertiesHandler implements InspectorHandler {
 
   onDebuggerMessage(
     message: DebuggerRequest<RuntimeGetProperties>,
-    { debuggerType }: ExpoDebuggerInfo
+    { userAgent }: DebuggerMetadata
   ): boolean {
-    if (debuggerType === 'vscode' && message.method === 'Runtime.getProperties') {
+    if (getDebuggerType(userAgent) === 'vscode' && message.method === 'Runtime.getProperties') {
       this.interceptGetProperties.add(message.id);
     }
 
@@ -27,12 +33,9 @@ export class VscodeRuntimeGetPropertiesHandler implements InspectorHandler {
     return false;
   }
 
-  onDeviceMessage(
-    message: DeviceResponse<RuntimeGetProperties>,
-    { debuggerType }: ExpoDebuggerInfo
-  ) {
+  onDeviceMessage(message: DeviceResponse<RuntimeGetProperties>, { userAgent }: DebuggerMetadata) {
     if (
-      debuggerType === 'vscode' &&
+      getDebuggerType(userAgent) === 'vscode' &&
       'id' in message &&
       this.interceptGetProperties.has(message.id)
     ) {

@@ -1,8 +1,13 @@
 import Protocol from 'devtools-protocol';
 
-import { CdpMessage, DebuggerRequest, DeviceResponse, InspectorHandler } from './types';
-import { respond } from './utils';
-import { ExpoDebuggerInfo } from '../device';
+import {
+  CdpMessage,
+  DebuggerMetadata,
+  DebuggerRequest,
+  DeviceResponse,
+  InspectorHandler,
+} from './types';
+import { getDebuggerType, respond } from './utils';
 
 /**
  * Vscode is trying to inject a script to fetch information about "Stringy" variables.
@@ -14,9 +19,9 @@ import { ExpoDebuggerInfo } from '../device';
 export class VscodeRuntimeCallFunctionOnHandler implements InspectorHandler {
   onDebuggerMessage(
     message: DebuggerRequest<RuntimeCallFunctionOn>,
-    { socket, debuggerType }: ExpoDebuggerInfo
+    { socket, userAgent }: DebuggerMetadata
   ): boolean {
-    if (debuggerType === 'vscode' && message.method === 'Runtime.callFunctionOn') {
+    if (getDebuggerType(userAgent) === 'vscode' && message.method === 'Runtime.callFunctionOn') {
       return respond<DeviceResponse<RuntimeCallFunctionOn>>(socket, {
         id: message.id,
         result: {

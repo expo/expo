@@ -3,7 +3,7 @@ import { PageReloadHandler } from '../PageReload';
 it('broadcasts reload message', () => {
   const bundler = { broadcastMessage: jest.fn() };
   const handler = new PageReloadHandler(bundler as any);
-  const debuggerSocket = { send: jest.fn() };
+  const socket = { send: jest.fn() };
 
   expect(
     handler.onDebuggerMessage(
@@ -12,10 +12,10 @@ it('broadcasts reload message', () => {
         method: 'Page.reload',
         params: { ignoreCache: false },
       },
-      { socket: debuggerSocket }
+      { socket }
     )
   ).toBe(true);
 
   expect(bundler.broadcastMessage).toBeCalledWith('reload');
-  expect(debuggerSocket.send).toBeCalledWith(JSON.stringify({ id: 420 }));
+  expect(socket.send).toBeCalledWith(JSON.stringify({ id: 420 }));
 });

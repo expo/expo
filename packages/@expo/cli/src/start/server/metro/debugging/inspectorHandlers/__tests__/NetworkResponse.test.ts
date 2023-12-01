@@ -2,7 +2,7 @@ import { NetworkResponseHandler } from '../NetworkResponse';
 
 it('responds to response body from device and debugger', () => {
   const handler = new NetworkResponseHandler();
-  const debuggerSocket = { send: jest.fn() };
+  const socket = { send: jest.fn() };
 
   // Expect the device message to be handled
   expect(
@@ -24,12 +24,12 @@ it('responds to response body from device and debugger', () => {
         method: 'Network.getResponseBody',
         params: { requestId: '1337' },
       },
-      { socket: debuggerSocket }
+      { socket }
     )
   ).toBe(true);
 
   // Expect the proper response was sent
-  expect(debuggerSocket.send).toBeCalledWith(
+  expect(socket.send).toBeCalledWith(
     JSON.stringify({
       id: 420,
       result: {
@@ -42,7 +42,7 @@ it('responds to response body from device and debugger', () => {
 
 it('does not respond to non-existing response', () => {
   const handler = new NetworkResponseHandler();
-  const debuggerSocket = { send: jest.fn() };
+  const socket = { send: jest.fn() };
 
   // Expect the debugger message to not be handled
   expect(
@@ -52,9 +52,9 @@ it('does not respond to non-existing response', () => {
         method: 'Network.getResponseBody',
         params: { requestId: '1337' },
       },
-      { socket: debuggerSocket }
+      { socket }
     )
   ).toBe(false);
 
-  expect(debuggerSocket.send).not.toBeCalled();
+  expect(socket.send).not.toBeCalled();
 });

@@ -3,10 +3,15 @@ import {
   VscodeRuntimeGetPropertiesHandler,
 } from '../VscodeRuntimeGetProperties';
 import { DebuggerRequest } from '../types';
+import { getDebuggerType } from '../utils';
+
+jest.mock('../utils', () => ({
+  ...jest.requireActual('../utils'),
+  getDebuggerType: jest.fn(() => 'unknown'),
+}));
 
 it('does not respond on non-vscode debugger type', () => {
   const handler = new VscodeRuntimeGetPropertiesHandler();
-
   const message: DebuggerRequest<RuntimeGetProperties> = {
     id: 420,
     method: 'Runtime.getProperties',
@@ -27,21 +32,15 @@ it('does not respond on non-vscode debugger type', () => {
 
   // Should not stop propagation for non-vscode debugger type
   expect(handler.onDebuggerMessage(message, {})).toBe(false);
-  expect(handler.onDebuggerMessage(message, { debuggerType: 'generic' })).toBe(false);
-
   // Should not mutate descriptor values
   expect(handler.onDeviceMessage({ id: 420, result: descriptors }, {})).toBe(false);
-  expect(
-    handler.onDeviceMessage({ id: 420, result: descriptors }, { debuggerType: 'generic' })
-  ).toBe(false);
-
   expect(descriptors.result[0].value).not.toHaveProperty('description');
 });
 
 it('mutates `Runtime.getProperties` device response with `description` properties', () => {
-  const handler = new VscodeRuntimeGetPropertiesHandler();
-  const debuggerInfo = { debuggerType: 'vscode' };
+  jest.mocked(getDebuggerType).mockReturnValue('vscode');
 
+  const handler = new VscodeRuntimeGetPropertiesHandler();
   const message: DebuggerRequest<RuntimeGetProperties> = {
     id: 420,
     method: 'Runtime.getProperties',
@@ -49,7 +48,7 @@ it('mutates `Runtime.getProperties` device response with `description` propertie
   };
 
   // This message should still be propagated
-  expect(handler.onDebuggerMessage(message, debuggerInfo)).toBe(false);
+  expect(handler.onDebuggerMessage(message, {})).toBe(false);
 
   // The handler mutates the properties, we need to keep a reference
   const descriptors: RuntimeGetProperties['result'] = {
@@ -70,16 +69,16 @@ it('mutates `Runtime.getProperties` device response with `description` propertie
   };
 
   // This message should still be propagated, it should return `false`
-  expect(handler.onDeviceMessage({ id: 420, result: descriptors }, debuggerInfo)).toBe(false);
+  expect(handler.onDeviceMessage({ id: 420, result: descriptors }, {})).toBe(false);
   // Expect the descriptor values to be mutated
   expect(descriptors.result[0].value).toHaveProperty('description', '');
   expect(descriptors.result[1].value).toHaveProperty('description', 'Dont overwrite');
 });
 
 it('mutates `Runtime.getProperties` device responses and removes `objectId` from symbol types', () => {
-  const handler = new VscodeRuntimeGetPropertiesHandler();
-  const debuggerInfo = { debuggerType: 'vscode' };
+  jest.mocked(getDebuggerType).mockReturnValue('vscode');
 
+  const handler = new VscodeRuntimeGetPropertiesHandler();
   const message: DebuggerRequest<RuntimeGetProperties> = {
     id: 420,
     method: 'Runtime.getProperties',
@@ -87,7 +86,7 @@ it('mutates `Runtime.getProperties` device responses and removes `objectId` from
   };
 
   // This message should still be propagated, it should return `false`
-  expect(handler.onDebuggerMessage(message, debuggerInfo)).toBe(false);
+  expect(handler.onDebuggerMessage(message, {})).toBe(false);
 
   // The handler mutates the properties, we need to keep a reference
   const descriptors: RuntimeGetProperties['result'] = {
@@ -102,7 +101,7 @@ it('mutates `Runtime.getProperties` device responses and removes `objectId` from
   };
 
   // This message should still be propagated, it should return `false`
-  expect(handler.onDeviceMessage({ id: 420, result: descriptors }, debuggerInfo)).toBe(false);
+  expect(handler.onDeviceMessage({ id: 420, result: descriptors }, {})).toBe(false);
   // Expect the descriptor value to be mutated
   expect(descriptors.result[0].value).not.toHaveProperty('objectId');
 });

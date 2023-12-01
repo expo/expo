@@ -11,6 +11,7 @@ import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
@@ -178,9 +179,16 @@ export async function instantiateMetroAsync(
 
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
+  // Initialize all React Native debug features
+  const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
+  prependMiddleware(middleware, debugMiddleware);
+
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
-    websocketEndpoints,
+    websocketEndpoints: {
+      ...websocketEndpoints,
+      ...debugWebsocketEndpoints,
+    },
     watch: !isExporting && isWatchEnabled(),
   });
 

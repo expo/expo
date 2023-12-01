@@ -1,7 +1,7 @@
 import Protocol from 'devtools-protocol';
 
-import { CdpMessage, DebuggerRequest, InspectorHandler } from './types';
-import { ExpoDebuggerInfo } from '../device';
+import { CdpMessage, DebuggerMetadata, DebuggerRequest, InspectorHandler } from './types';
+import { getDebuggerType } from './utils';
 
 /**
  * Hermes and vscode have trouble setting breakpoints by `urlRegex` through `Debugger.setBreakpointByUrl`.
@@ -12,10 +12,10 @@ import { ExpoDebuggerInfo } from '../device';
 export class VscodeDebuggerSetBreakpointByUrlHandler implements InspectorHandler {
   onDebuggerMessage(
     message: DebuggerRequest<DebuggerSetBreakpointByUrl>,
-    { debuggerType }: ExpoDebuggerInfo
+    { userAgent }: DebuggerMetadata
   ): boolean {
     if (
-      debuggerType === 'vscode' &&
+      getDebuggerType(userAgent) === 'vscode' &&
       message.method === 'Debugger.setBreakpointByUrl' &&
       message.params.urlRegex
     ) {
