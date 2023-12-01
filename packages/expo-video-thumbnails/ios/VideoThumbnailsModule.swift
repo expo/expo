@@ -69,4 +69,3 @@ public class VideoThumbnailsModule: Module {
     return fileUrl
   }
 }
-
