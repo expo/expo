@@ -8,7 +8,7 @@ func decodeEmailAddresses(_ input: [Email]?) -> [CNLabeledValue<NSString>]? {
   var output = [CNLabeledValue<NSString>]()
   for item in input {
     if let label = decodeEmailLabel(item.label),
-       let email = item.email {
+    let email = item.email {
       let labeledValue = CNLabeledValue(label: label, value: email as NSString)
       output.append(labeledValue)
     }

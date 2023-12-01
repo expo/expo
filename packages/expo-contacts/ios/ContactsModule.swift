@@ -310,11 +310,9 @@ public class ContactsModule: Module {
       let groups = try contactStore.groups(matching: nil)
       var response: [[String: Any]] = []
 
-      for group in groups {
-        if name == group.name {
-          if let encodedGroup = encodeGroup(group) {
-            response.append(encodedGroup)
-          }
+      for group in groups where group.name == name {
+        if let encodedGroup = encodeGroup(group) {
+          response.append(encodedGroup)
         }
       }
       return response
