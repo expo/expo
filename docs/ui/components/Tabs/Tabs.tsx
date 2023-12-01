@@ -59,7 +59,9 @@ const InnerTabs = ({
           </TabButton>
         ))}
       </TabList>
-      <TabPanels css={tabsPanelStyle}>{children}</TabPanels>
+      <TabPanels css={tabsPanelStyle} className="last:[&>*]:!mb-0">
+        {children}
+      </TabPanels>
     </ReachTabs>
   );
 };
@@ -72,7 +74,7 @@ const tabsWrapperStyle = css({
 });
 
 const tabsPanelStyle = css({
-  padding: `${spacing[4]}px ${spacing[5]}px ${spacing[1]}px`,
+  padding: `${spacing[4]}px ${spacing[5]}px`,
 
   'pre:first-child': {
     marginTop: spacing[1],
