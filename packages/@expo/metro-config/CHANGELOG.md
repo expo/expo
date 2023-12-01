@@ -17,7 +17,7 @@
 
 ### 💡 Others
 
-- Revert enabling inline requires by default.
+- Revert enabling inline requires by default. ([#25680](https://github.com/expo/expo/pull/25680) by [@EvanBacon](https://github.com/EvanBacon))
 - Replace `@expo/babel-preset-cli` with `expo-module-scripts`. ([#25421](https://github.com/expo/expo/pull/25421) by [@byCedric](https://github.com/byCedric))
 
 ## 0.15.0 — 2023-11-14
