@@ -125,11 +125,11 @@ public class ContactsModule: Module {
       let navController = UINavigationController(rootViewController: controller)
       presentingViewController = navController
       let animated = options.preventAnimation == true ? false : true
-      
-      controller.onViewDisappeared = { [weak self] in
+
+      controller.onViewDisappeared = {
         promise.resolve()
       }
-      
+
       parent?.present(navController, animated: animated)
     }.runOnQueue(.main)
 
@@ -280,19 +280,26 @@ public class ContactsModule: Module {
     }
 
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
-      appContext?.permissions?.getPermissionUsingRequesterClass(ContactsPermissionRequester.self, resolve: promise.resolver, reject: promise.legacyRejecter)
+      appContext?.permissions?.getPermissionUsingRequesterClass(
+        ContactsPermissionRequester.self,
+        resolve: promise.resolver,
+        reject: promise.legacyRejecter
+      )
     }
 
     AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
-      appContext?.permissions?.askForPermission(usingRequesterClass: ContactsPermissionRequester.self, resolve: promise.resolver, reject: promise.legacyRejecter)
+      appContext?.permissions?.askForPermission(
+        usingRequesterClass: ContactsPermissionRequester.self,
+        resolve: promise.resolver,
+        reject: promise.legacyRejecter
+      )
     }
   }
 
   func getContact(withId identifier: String) throws -> CNContact {
     do {
       let keysToFetch = [CNContactViewController.descriptorForRequiredKeys()]
-      let contact = try contactStore.unifiedContact(withIdentifier: identifier, keysToFetch: keysToFetch)
-      return contact
+      return try contactStore.unifiedContact(withIdentifier: identifier, keysToFetch: keysToFetch)
     } catch {
       throw FailedToUnifyContactException()
     }
@@ -326,8 +333,7 @@ public class ContactsModule: Module {
     }
 
     do {
-      let groups = try contactStore.groups(matching: predicate)
-      return groups
+      return try contactStore.groups(matching: predicate)
     } catch {
       throw GroupQueryException()
     }
@@ -469,7 +475,6 @@ public class ContactsModule: Module {
         contact.imageData = imageData
       }
     }
-
   }
 
   private func imageData(forPath uri: String?) throws -> Data? {
@@ -496,8 +501,7 @@ public class ContactsModule: Module {
       return nil
     }
     do {
-      let contact = try contactStore.unifiedContact(withIdentifier: identifier, keysToFetch: getDescriptors(for: keysToFetch)).mutableCopy() as? CNMutableContact
-      return contact
+      return try contactStore.unifiedContact(withIdentifier: identifier, keysToFetch: getDescriptors(for: keysToFetch)).mutableCopy() as? CNMutableContact
     } catch {
       throw FailedToGetContactException(identifier)
     }

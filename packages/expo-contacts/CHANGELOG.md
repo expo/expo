@@ -11,7 +11,7 @@
 ### 💡 Others
 
 - Reuse React Native `ShareOptions` type for `shareContactAsync` parameter typing. ([#26208](https://github.com/expo/expo/pull/26208) by [@Simek](https://github.com/Simek))
-- [iOS] Migrate to Expo Modules.
+- [iOS] Migrate to Expo Modules. ([#25696](https://github.com/expo/expo/pull/25696) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 12.8.2 - 2023-12-19
 
