@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`exports static supports usePathname in +html files 1`] = `
-"<!DOCTYPE html><html  lang="en"><head><title data-rh="true"></title><meta data-rh="true" name="expo-nested-layout" content="TEST_VALUE"/><meta data-rh="true" name="expo-e2e-public-env-var-client" content="foobar"/><meta data-rh="true" name="expo-e2e-private-env-var-client" content="not-public-value"/><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><meta name="custom-value" content="value"/><meta name="expo-e2e-pathname" content="/"/><meta name="expo-e2e-public-env-var" content="foobar"/><meta name="expo-e2e-private-env-var" content="not-public-value"/><style id="expo-reset">#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}</style><style id="react-native-stylesheet">[stylesheet-group="0"]{}
+"<!DOCTYPE html><html  lang="en"><head><title data-rh="true"></title><meta data-rh="true" name="expo-nested-layout" content="TEST_VALUE"/><meta data-rh="true" name="expo-e2e-public-env-var-client" content="foobar"/><meta data-rh="true" name="expo-e2e-private-env-var-client" content="not-public-value"/><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="custom-value" content="value"/><meta name="expo-e2e-pathname" content="/"/><meta name="expo-e2e-public-env-var" content="foobar"/><meta name="expo-e2e-private-env-var" content="not-public-value"/><style id="expo-reset">#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}</style><style id="react-native-stylesheet">[stylesheet-group="0"]{}
 body{margin:0;}
 button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0;}
 html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:rgba(0,0,0,0);}
@@ -49,12 +49,10 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-3o4zer{padding-left:12px;padding-right:12px;}
 .r-cxgwc0{padding-left:24px;padding-right:24px;}
 .r-f8sm7e{margin-left:auto;margin-right:auto;}
-.r-3o4zer{padding-left:12px;padding-right:12px;}
-.r-cxgwc0{padding-left:24px;padding-right:24px;}
 .r-jdiy1a{margin-left:11px;margin-right:11px;}
 .r-n5f61p{margin-bottom:3px;margin-top:3px;}
-.r-w7s2jr{padding-bottom:16px;padding-top:16px;}
 .r-n7gxbd{padding-left:4px;padding-right:4px;}
+.r-w7s2jr{padding-bottom:16px;padding-top:16px;}
 [stylesheet-group="2.2"]{}
 .r-10s2tm5{left:0%;}
 .r-16o8guy{right:100%;}
@@ -89,8 +87,8 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-17s6mgv{justify-content:flex-end;}
 .r-18u1ve8{color:rgba(255,255,255,0.40);}
 .r-18u37iz{flex-direction:row;}
-.r-19u6a5r{margin-left:12px;}
 .r-19qrga8{margin-top:3px;}
+.r-19u6a5r{margin-left:12px;}
 .r-19wmn03{width:20px;}
 .r-19z077z{touch-action:none;}
 .r-1a2p6p6{-webkit-text-decoration-style:solid;text-decoration-style:solid;}
