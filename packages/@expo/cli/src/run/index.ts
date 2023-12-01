@@ -42,7 +42,7 @@ export const expoRun: Command = async (argv) => {
     }
 
     if (!platform) {
-      const { selectAsync } = await import('../utils/prompts');
+      const { selectAsync } = await import('../utils/prompts.js');
       platform = await selectAsync('Select the platform to run', [
         { title: 'Android', value: 'android' },
         { title: 'iOS', value: 'ios' },
@@ -53,12 +53,12 @@ export const expoRun: Command = async (argv) => {
 
     switch (platform) {
       case 'android': {
-        const { expoRunAndroid } = await import('./android');
+        const { expoRunAndroid } = await import('./android/index.js');
         return expoRunAndroid(argsWithoutPlatform);
       }
 
       case 'ios': {
-        const { expoRunIos } = await import('./ios');
+        const { expoRunIos } = await import('./ios/index.js');
         return expoRunIos(argsWithoutPlatform);
       }
 
