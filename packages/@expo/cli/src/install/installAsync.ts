@@ -44,17 +44,19 @@ export async function installAsync(
     log: Log.log,
   });
 
-  const expoVersionRequested = packageHasVersion(findPackageByName(packages, 'expo'));
-  // Abort if a specific verion of `expo` is requested and `--check` is passed
-  if (expoVersionRequested && options.check) {
+  const expoVersion = findPackageByName(packages, 'expo');
+  const otherPackages = packages.filter((pkg) => pkg !== expoVersion);
+
+  // Abort early when installing `expo@<version>` and other packages with `--fix/--check`
+  if (packageHasVersion(expoVersion) && otherPackages.length && (options.check || options.fix)) {
     throw new CommandError(
       'BAD_ARGS',
-      'Cannot use --check with `expo@<version>`, --check only validates currently installed version'
+      `Cannot install other packages with ${expoVersion} and --fix or --check`
     );
   }
 
   // Only check/fix packages if `expo@<version>` is not requested
-  if (!expoVersionRequested && (options.check || options.fix)) {
+  if (!packageHasVersion(expoVersion) && (options.check || options.fix)) {
     return await checkPackagesAsync(projectRoot, {
       packages,
       options,
