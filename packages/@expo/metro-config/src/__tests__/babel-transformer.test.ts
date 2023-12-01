@@ -69,7 +69,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
       isHMREnabled: true,
       preserveEnvVars: undefined,
       projectRoot: expect.any(String),
-      routerRoot: '',
+      routerRoot: 'app',
     },
     cloneInputAst: false,
     code: false,
