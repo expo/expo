@@ -61,16 +61,16 @@ export const EditPageLink = ({ pathname }: { pathname: string }) => (
 
 export const ShareFeedbackLink = ({ pathname }: { pathname?: string }) => {
   return (
-    <Dialog.Root>
-      <Dialog.Trigger>
-        <LI>
+    <LI>
+      <Dialog.Root>
+        <Dialog.Trigger className="h-[22px] focus-visible:outline-offset-4">
           <A isStyled className={LINK_CLASSES}>
             <MessageTextSquare02Icon className={ICON_CLASSES} />
             <CALLOUT theme="secondary">Share your feedback</CALLOUT>
           </A>
-        </LI>
-      </Dialog.Trigger>
-      <FeedbackDialog pathname={pathname} />
-    </Dialog.Root>
+        </Dialog.Trigger>
+        <FeedbackDialog pathname={pathname} />
+      </Dialog.Root>
+    </LI>
   );
 };
