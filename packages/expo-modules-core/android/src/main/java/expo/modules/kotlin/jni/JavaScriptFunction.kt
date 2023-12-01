@@ -4,7 +4,9 @@ import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.LazyKType
 import expo.modules.kotlin.types.TypeConverterProviderImpl
+import expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
@@ -25,7 +27,11 @@ class JavaScriptFunction<ReturnType : Any?> @DoNotStrip private constructor(@DoN
       .toTypedArray()
 
     val converter = TypeConverterProviderImpl
-      .obtainTypeConverter(returnType ?: typeOf<Unit>())
+      .obtainTypeConverter(returnType ?: LazyKType(
+        classifier = Unit::class,
+        isMarkedNullable = false,
+        kTypeProvider = { typeOf<Unit>() }
+      ))
 
     val expectedReturnType = converter.getCppRequiredTypes()
     val result = invoke(convertedArgs, expectedReturnType)
