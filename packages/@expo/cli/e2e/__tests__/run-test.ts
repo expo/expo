@@ -55,7 +55,7 @@ it('runs `npx expo run --help`', async () => {
 it('runs `npx expo run android --help`', async () => {
   const results = await execute('run', 'android', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
-    "› Using expo run android --help
+    "› Using expo run:android --help
 
       Description
         Run the native Android app locally
@@ -63,7 +63,7 @@ it('runs `npx expo run android --help`', async () => {
       Usage
         $ npx expo run:android <dir>
 
-      Options
+      Options 
         --no-build-cache       Clear the native build cache
         --no-install           Skip installing dependencies
         --no-bundler           Skip starting the bundler
@@ -78,7 +78,7 @@ it('runs `npx expo run android --help`', async () => {
 it('runs `npx expo run ios --help`', async () => {
   const results = await execute('run', 'ios', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
-    "› Using expo run ios --help
+    "› Using expo run:ios --help
 
       Info
         Run the iOS app binary locally
