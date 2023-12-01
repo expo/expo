@@ -1,4 +1,4 @@
-package expo.modules.test.core
+package expo.modules.test.core.legacy
 
 import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.kotlin.AppContext
