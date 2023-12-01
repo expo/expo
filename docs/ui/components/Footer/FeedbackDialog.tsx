@@ -91,7 +91,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                   event.preventDefault();
                   sendFeedback();
                 }}>
-                <div className="px-6 py-5 ">
+                <div className="px-6 py-5">
                   <div className="flex justify-between">
                     <RawH2 className="!my-0">Share your feedback</RawH2>
                     <Dialog.Close asChild>
@@ -105,6 +105,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                     <div>
                       <LABEL>Feedback</LABEL>
                       <Textarea
+                        autoFocus
                         className="h-[180px] resize-none"
                         characterLimit={1000}
                         value={feedback}
