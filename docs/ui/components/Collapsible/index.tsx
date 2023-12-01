@@ -75,7 +75,9 @@ const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
             </span>
           </LinkBase>
         </summary>
-        <div css={contentStyle}>{children}</div>
+        <div css={contentStyle} className="last:[&>*]:!mb-1">
+          {children}
+        </div>
       </details>
     );
   }
@@ -147,7 +149,7 @@ const markerStyle = css({
 });
 
 const contentStyle = css({
-  padding: `${spacing[4]}px ${spacing[5]}px 0`,
+  padding: `${spacing[4]}px ${spacing[5]}px`,
 
   p: {
     marginLeft: 0,
