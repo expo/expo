@@ -7,6 +7,7 @@ import {
   getRemoteVersionsForSdkAsync,
   getVersionedPackagesAsync,
 } from '../getVersionedPackages';
+import { hasExpoCanaryAsync } from '../resolvePackages';
 
 jest.mock('../../../../log');
 
@@ -16,6 +17,10 @@ jest.mock('../../../../api/getVersions', () => ({
 
 jest.mock('../bundledNativeModules', () => ({
   getVersionedNativeModulesAsync: jest.fn(),
+}));
+
+jest.mock('../resolvePackages', () => ({
+  hasExpoCanaryAsync: jest.fn().mockResolvedValue(false),
 }));
 
 describe(getCombinedKnownVersionsAsync, () => {
@@ -45,7 +50,8 @@ describe(getCombinedKnownVersionsAsync, () => {
     });
   });
 
-  it(`skips fetching remote versions when requested`, async () => {
+  it(`skips remote versions for canary releases`, async () => {
+    jest.mocked(hasExpoCanaryAsync).mockResolvedValueOnce(true);
     jest.mocked(getVersionedNativeModulesAsync).mockResolvedValue({
       shared: 'bundled',
     });
@@ -57,7 +63,6 @@ describe(getCombinedKnownVersionsAsync, () => {
       await getCombinedKnownVersionsAsync({
         projectRoot: '/',
         sdkVersion: '1.0.0',
-        skipRemoteVersions: true,
       })
     ).toEqual({
       shared: 'bundled',

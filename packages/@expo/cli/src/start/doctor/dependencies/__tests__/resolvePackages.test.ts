@@ -1,7 +1,11 @@
 import { vol } from 'memfs';
 import resolveFrom from 'resolve-from';
 
-import { resolvePackageVersionAsync, resolveAllPackageVersionsAsync } from '../resolvePackages';
+import {
+  resolvePackageVersionAsync,
+  resolveAllPackageVersionsAsync,
+  hasExpoCanaryAsync,
+} from '../resolvePackages';
 
 afterEach(() => {
   vol.reset();
@@ -84,5 +88,77 @@ describe(resolveAllPackageVersionsAsync, () => {
     await expect(resolveAllPackageVersionsAsync(projectRoot, ['expo', 'react'])).rejects.toThrow(
       `"react" is added as a dependency in your project's package.json but it doesn't seem to be installed`
     );
+  });
+});
+
+describe(hasExpoCanaryAsync, () => {
+  it('returns false for stable version from installed package', async () => {
+    vol.fromJSON(
+      {
+        [`node_modules/expo/package.json`]: JSON.stringify({ version: '1.0.0' }),
+        // This is not a common use-case, but tests the priority of strategies
+        [`package.json`]: JSON.stringify({
+          version: '1.0.0',
+          dependencies: {
+            expo: 'canary',
+          },
+        }),
+      },
+      projectRoot
+    );
+
+    await expect(hasExpoCanaryAsync(projectRoot)).resolves.toBe(false);
+  });
+
+  it('returns true for canary version from installed package', async () => {
+    vol.fromJSON(
+      {
+        [`node_modules/expo/package.json`]: JSON.stringify({
+          version: '50.0.0-canary-20231130-c8a9bf9',
+        }),
+        // This is not a common use-case, but tests the priority of strategies
+        [`package.json`]: JSON.stringify({
+          version: '1.0.0',
+          dependencies: {
+            expo: '1.0.0',
+          },
+        }),
+      },
+      projectRoot
+    );
+
+    await expect(hasExpoCanaryAsync(projectRoot)).resolves.toBe(true);
+  });
+
+  it('returns false for stable version from package.json', async () => {
+    vol.fromJSON(
+      {
+        [`package.json`]: JSON.stringify({
+          version: '1.0.0',
+          dependencies: {
+            expo: '1.0.0',
+          },
+        }),
+      },
+      projectRoot
+    );
+
+    await expect(hasExpoCanaryAsync(projectRoot)).resolves.toBe(false);
+  });
+
+  it('returns true for canary version from package.json', async () => {
+    vol.fromJSON(
+      {
+        [`package.json`]: JSON.stringify({
+          version: '1.0.0',
+          dependencies: {
+            expo: 'canary',
+          },
+        }),
+      },
+      projectRoot
+    );
+
+    await expect(hasExpoCanaryAsync(projectRoot)).resolves.toBe(true);
   });
 });
