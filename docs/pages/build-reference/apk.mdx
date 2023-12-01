@@ -12,8 +12,8 @@ The default file format used when building Android apps with EAS Build is an [An
 
 To generate an **.apk**, modify the [**eas.json**](/build/eas-json) by adding one of the following properties in a build profile:
 
-- `distribution` to `internal`
 - `developmentClient` to `true` (**default**)
+- `distribution` to `internal`
 - `android.buildType` to `apk`
 - `android.gradleCommand` to `:app:assembleRelease`, `:app:assembleDebug` or any other gradle command that produces **.apk**
 
