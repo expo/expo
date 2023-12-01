@@ -3,7 +3,6 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import * as Log from '../../../../log';
-import { getCombinedKnownVersionsAsync } from '../getVersionedPackages';
 import {
   logIncorrectDependencies,
   validateDependenciesVersionsAsync,
