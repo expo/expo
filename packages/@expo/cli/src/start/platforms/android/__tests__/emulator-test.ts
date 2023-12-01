@@ -1,7 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import { spawn } from 'child_process';
 
-import { asMock } from '../../../../__tests__/asMock';
 import * as ADB from '../adb';
 import { listAvdsAsync, startDeviceAsync } from '../emulator';
 
@@ -16,7 +15,7 @@ jest.mock('../adb', () => ({
 
 describe(listAvdsAsync, () => {
   it(`returns list of avds`, async () => {
-    asMock(spawnAsync).mockResolvedValueOnce({
+    jest.mocked(spawnAsync).mockResolvedValueOnce({
       stdout: ['avd1', 'avd2'].join(jest.requireActual('os').EOL),
     } as any);
 
@@ -26,7 +25,7 @@ describe(listAvdsAsync, () => {
     ]);
   });
   it(`returns an empty list when emulator fails`, async () => {
-    asMock(spawnAsync).mockRejectedValueOnce({
+    jest.mocked(spawnAsync).mockRejectedValueOnce({
       stderr: 'err',
     } as any);
 
@@ -36,10 +35,10 @@ describe(listAvdsAsync, () => {
 
 describe(startDeviceAsync, () => {
   it(`times out waiting for an emulator to start`, async () => {
-    asMock(ADB.getAttachedDevicesAsync).mockResolvedValue([]);
+    jest.mocked(ADB.getAttachedDevicesAsync).mockResolvedValue([]);
 
     // @ts-expect-error
-    asMock(spawn).mockReturnValueOnce({
+    jest.mocked(spawn).mockReturnValueOnce({
       unref: jest.fn(),
       on: jest.fn(),
     });
@@ -49,7 +48,8 @@ describe(startDeviceAsync, () => {
     );
   });
   it(`starts an emulator`, async () => {
-    asMock(ADB.getAttachedDevicesAsync)
+    jest
+      .mocked(ADB.getAttachedDevicesAsync)
       .mockResolvedValueOnce([])
       .mockResolvedValue([
         // @ts-expect-error
@@ -57,10 +57,10 @@ describe(startDeviceAsync, () => {
           name: 'foo',
         },
       ]);
-    asMock(ADB.isBootAnimationCompleteAsync).mockResolvedValueOnce(true);
+    jest.mocked(ADB.isBootAnimationCompleteAsync).mockResolvedValueOnce(true);
 
     // @ts-expect-error
-    asMock(spawn).mockReturnValueOnce({
+    jest.mocked(spawn).mockReturnValueOnce({
       unref: jest.fn(),
       on: jest.fn(),
     });
