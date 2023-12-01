@@ -43,6 +43,7 @@ export async function resolveAllPackageVersionsAsync(projectRoot: string, packag
  * Determine if the project has a `expo@canary` version installed.
  * This means that an unsable version is used, without the API knowing the exact packages.
  * Since this may be called during, or before, packages are installed, we also need to test on `package.json`.
+ * Note, this returns `false` for beta releases.
  */
 export async function hasExpoCanaryAsync(projectRoot: string) {
   let expoVersion = '';
@@ -62,5 +63,10 @@ export async function hasExpoCanaryAsync(projectRoot: string) {
     expoVersion = packageJson.dependencies?.expo ?? '';
   }
 
-  return expoVersion === 'canary' || !!semver.prerelease(expoVersion);
+  if (expoVersion === 'canary') {
+    return true;
+  }
+
+  const prerelease = semver.prerelease(expoVersion) || [];
+  return !!prerelease.some((segment) => typeof segment === 'string' && segment.includes('canary'));
 }
