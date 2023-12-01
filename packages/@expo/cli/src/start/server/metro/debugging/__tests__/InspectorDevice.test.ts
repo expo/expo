@@ -1,11 +1,11 @@
-import { createInspectorDeviceClass } from '../device';
-import { NetworkResponseHandler } from '../handlers/NetworkResponse';
-import { PageReloadHandler } from '../handlers/PageReload';
-import { VscodeDebuggerGetPossibleBreakpointsHandler } from '../handlers/VscodeDebuggerGetPossibleBreakpoints';
-import { VscodeDebuggerScriptParsedHandler } from '../handlers/VscodeDebuggerScriptParsed';
-import { VscodeDebuggerSetBreakpointByUrlHandler } from '../handlers/VscodeDebuggerSetBreakpointByUrl';
-import { VscodeRuntimeGetPropertiesHandler } from '../handlers/VscodeRuntimeGetProperties';
-import { InspectorHandler } from '../handlers/types';
+import { createInspectorDeviceClass } from '../InspectorDevice';
+import { NetworkResponseHandler } from '../inspectorHandlers/NetworkResponse';
+import { PageReloadHandler } from '../inspectorHandlers/PageReload';
+import { VscodeDebuggerGetPossibleBreakpointsHandler } from '../inspectorHandlers/VscodeDebuggerGetPossibleBreakpoints';
+import { VscodeDebuggerScriptParsedHandler } from '../inspectorHandlers/VscodeDebuggerScriptParsed';
+import { VscodeDebuggerSetBreakpointByUrlHandler } from '../inspectorHandlers/VscodeDebuggerSetBreakpointByUrl';
+import { VscodeRuntimeGetPropertiesHandler } from '../inspectorHandlers/VscodeRuntimeGetProperties';
+import { InspectorHandler } from '../inspectorHandlers/types';
 
 describe('ExpoInspectorDevice', () => {
   it('initializes with default handlers', () => {

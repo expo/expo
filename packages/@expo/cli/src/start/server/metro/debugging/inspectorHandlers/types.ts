@@ -1,17 +1,19 @@
-import { ExpoDebuggerInfo } from '../device';
+import type { unstable_Device } from '@react-native/dev-middleware';
+
+export type DebuggerMetadata = NonNullable<unstable_Device['_debuggerConnection']>;
 
 export interface InspectorHandler {
   /**
    * Intercept a message coming from the device, modify or respond to it through `this._sendMessageToDevice`.
    * Return `true` if the message was handled, this will stop the message propagation.
    */
-  onDeviceMessage?(message: DeviceRequest | DeviceResponse, info: ExpoDebuggerInfo): boolean;
+  onDeviceMessage?(message: DeviceRequest | DeviceResponse, info: DebuggerMetadata): boolean;
 
   /**
    * Intercept a message coming from the debugger, modify or respond to it through `socket.send`.
    * Return `true` if the message was handled, this will stop the message propagation.
    */
-  onDebuggerMessage?(message: DebuggerRequest, info: ExpoDebuggerInfo): boolean;
+  onDebuggerMessage?(message: DebuggerRequest, info: DebuggerMetadata): boolean;
 }
 
 /**
