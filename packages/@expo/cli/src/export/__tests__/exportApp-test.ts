@@ -1,7 +1,6 @@
 import { getConfig } from '@expo/config';
 import { vol } from 'memfs';
 
-import { asMock } from '../../__tests__/asMock';
 import { exportAppAsync } from '../exportApp';
 import { unstable_exportStaticAsync } from '../exportStaticAsync';
 import { ExportAssetMap } from '../saveAssets';
@@ -122,7 +121,7 @@ describe(exportAppAsync, () => {
   });
 
   it(`exports an app for web in SPA mode`, async () => {
-    asMock(getConfig).mockReturnValue({
+    jest.mocked(getConfig).mockReturnValue({
       // @ts-expect-error
       exp: { web: { bundler: 'metro' } },
     });
@@ -166,7 +165,7 @@ describe(exportAppAsync, () => {
   });
 
   it(`exports an app for web in server mode`, async () => {
-    asMock(getConfig).mockReturnValue({
+    jest.mocked(getConfig).mockReturnValue({
       // @ts-expect-error
       exp: { web: { bundler: 'metro', output: 'server' } },
     });

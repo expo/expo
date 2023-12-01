@@ -2,7 +2,6 @@ import { vol } from 'memfs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import { getCombinedKnownVersionsAsync } from '../getVersionedPackages';
 import {
@@ -29,7 +28,7 @@ jest.mock('../getVersionedPackages', () => ({
 
 describe(logIncorrectDependencies, () => {
   it(`logs incorrect dependencies`, () => {
-    asMock(Log.warn).mockImplementation(console.log);
+    jest.mocked(Log.warn).mockImplementation(console.log);
 
     logIncorrectDependencies([
       {
@@ -126,7 +125,7 @@ describe(validateDependenciesVersionsAsync, () => {
   });
 
   it('resolves to false when the installed packages do not match bundled native modules', async () => {
-    asMock(Log.warn).mockReset();
+    jest.mocked(Log.warn).mockReset();
     vol.fromJSON(
       {
         'node_modules/expo/package.json': JSON.stringify({
@@ -160,7 +159,7 @@ describe(validateDependenciesVersionsAsync, () => {
   });
 
   it('skips packages do not match bundled native modules but are in package.json expo.install.exclude', async () => {
-    asMock(Log.warn).mockReset();
+    jest.mocked(Log.warn).mockReset();
     vol.fromJSON(
       {
         'node_modules/expo/package.json': JSON.stringify({
@@ -215,7 +214,7 @@ describe(validateDependenciesVersionsAsync, () => {
     // Manually trigger the Node import error for "exports".
     // This isn't triggered by memfs, or our mock, that's why we need to do it manually.
     // see: https://github.com/expo/expo-cli/pull/3878
-    asMock(resolveFrom).mockImplementationOnce(() => {
+    jest.mocked(resolveFrom).mockImplementationOnce(() => {
       const message = `Package subpath './package.json' is not defined by "exports" in ${packageJsonPath}`;
       const error: any = new Error(message);
       error.code = 'ERR_PACKAGE_PATH_NOT_EXPORTED';
@@ -246,7 +245,7 @@ describe(validateDependenciesVersionsAsync, () => {
       },
       projectRoot
     );
-    asMock(getCombinedKnownVersionsAsync).mockResolvedValue({
+    jest.mocked(getCombinedKnownVersionsAsync).mockResolvedValue({
       'react-native': '0.73.0-rc.5',
     });
 

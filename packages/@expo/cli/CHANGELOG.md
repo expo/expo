@@ -34,6 +34,7 @@
 - Consolidate logic for resolving Node.js built-in shims in browser environments. ([#25511](https://github.com/expo/expo/pull/25511) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure we disable lazy bundling when exporting. ([#25436](https://github.com/expo/expo/pull/25436) by [@EvanBacon](https://github.com/EvanBacon))
 - Split web server output into `server/` and `client/` subfolders when exporting. ([#25640](https://github.com/expo/expo/pull/25640) by [@kitten](https://github.com/kitten))
+- asMock -> jest.mocked. ([#25685](https://github.com/expo/expo/pull/25685) by [@wschurman](https://github.com/wschurman))
 
 ## 0.10.16 — 2023-11-24
 
