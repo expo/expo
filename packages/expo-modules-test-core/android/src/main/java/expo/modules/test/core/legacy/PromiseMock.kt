@@ -1,5 +1,5 @@
 // copied from expo-modules-core
-package expo.modules.test.core
+package expo.modules.test.core.legacy
 
 import expo.modules.kotlin.Promise
 
