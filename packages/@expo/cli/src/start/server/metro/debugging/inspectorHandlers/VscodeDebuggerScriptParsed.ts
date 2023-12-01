@@ -1,8 +1,8 @@
 import { unstable_Device as MetroDevice } from '@react-native/dev-middleware';
 import Protocol from 'devtools-protocol';
 
-import { CdpMessage, DeviceRequest, InspectorHandler } from './types';
-import { ExpoDebuggerInfo } from '../device';
+import { CdpMessage, DebuggerMetadata, DeviceRequest, InspectorHandler } from './types';
+import { getDebuggerType } from './utils';
 
 /** Android's stock emulator and other emulators such as genymotion use a standard localhost alias. */
 const EMULATOR_LOCALHOST_ADDRESSES: Readonly<string[]> = ['10.0.2.2', '10.0.3.2'];
@@ -18,8 +18,11 @@ const FILE_PREFIX = 'file://';
 export class VscodeDebuggerScriptParsedHandler implements InspectorHandler {
   constructor(private readonly device: MetroDevice) {}
 
-  onDeviceMessage(message: DeviceRequest<DebuggerScriptParsed>, debuggerInfo: ExpoDebuggerInfo) {
-    if (debuggerInfo.debuggerType !== 'vscode' || message.method !== 'Debugger.scriptParsed') {
+  onDeviceMessage(message: DeviceRequest<DebuggerScriptParsed>, debuggerInfo: DebuggerMetadata) {
+    if (
+      getDebuggerType(debuggerInfo.userAgent) !== 'vscode' ||
+      message.method !== 'Debugger.scriptParsed'
+    ) {
       return false;
     }
 
