@@ -1,4 +1,4 @@
-package expo.modules.test.core
+package expo.modules.test.core.legacy
 
 import android.os.Bundle
 import expo.modules.kotlin.exception.CodedException

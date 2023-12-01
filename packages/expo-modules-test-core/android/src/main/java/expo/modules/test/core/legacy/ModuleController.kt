@@ -1,4 +1,4 @@
-package expo.modules.test.core
+package expo.modules.test.core.legacy
 
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.events.EventName
