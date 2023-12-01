@@ -1,4 +1,4 @@
-package expo.modules.test.core
+package expo.modules.test.core.legacy
 
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap

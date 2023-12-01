@@ -1,4 +1,4 @@
-package expo.modules.test.core
+package expo.modules.test.core.legacy
 
 import android.content.Context
 import android.os.Bundle
@@ -12,7 +12,6 @@ import io.mockk.MockK
 import io.mockk.MockKGateway
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.spyk
 import java.lang.ref.WeakReference
 import java.lang.reflect.Proxy
 import kotlin.reflect.KClass
