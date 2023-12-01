@@ -22,7 +22,7 @@ abstract class AsyncFunction(
   desiredArgsTypes: Array<AnyType>
 ) : BaseAsyncFunctionComponent(name, desiredArgsTypes) {
 
-  override fun call(holder: ModuleHolder, args: ReadableArray, promise: Promise) {
+  override fun call(holder: ModuleHolder<*>, args: ReadableArray, promise: Promise) {
     val queue = when (queue) {
       Queues.MAIN -> holder.module.appContext.mainQueue
       Queues.DEFAULT -> null
