@@ -11,7 +11,7 @@ interface ModuleController {
   fun onActivityDestroys()
 }
 
-class ModuleControllerImpl(private val holder: ModuleHolder) : ModuleController {
+class ModuleControllerImpl(private val holder: ModuleHolder<*>) : ModuleController {
   override fun onCreate() {
     holder.post(EventName.MODULE_CREATE)
   }
