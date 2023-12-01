@@ -4,10 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
-import fs from 'fs';
 import path from 'path';
 import { inspect } from 'util';
 
@@ -19,10 +17,7 @@ import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
-import {
-  getApiRoutesForDirectory,
-  getRouterDirectoryWithManifest,
-} from '../start/server/metro/router';
+import { getApiRoutesForDirectory } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 import { getFreePortAsync } from '../utils/port';
@@ -38,6 +33,7 @@ type Options = {
   includeSourceMaps: boolean;
   entryPoint?: string;
   clear: boolean;
+  routerRoot: string;
 };
 
 /** @private */
@@ -101,11 +97,17 @@ export async function getFilesToExportFromServerAsync(
     getHtmlFiles({ manifest, includeGroupVariations }).map(async (outputPath) => {
       const pathname = outputPath.replace(/(?:index)?\.html$/, '');
       try {
-        files.set(outputPath, { contents: '' });
+        files.set(outputPath, {
+          contents: '',
+          targetDomain: 'server',
+        });
+
         const data = await renderAsync(pathname);
+
         files.set(outputPath, {
           contents: data,
           routeId: pathname,
+          targetDomain: includeGroupVariations ? 'client' : 'server',
         });
       } catch (e: any) {
         await logMetroErrorAsync({ error: e, projectRoot });
@@ -121,10 +123,17 @@ export async function getFilesToExportFromServerAsync(
 async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, baseUrl, exportServer, minify, includeSourceMaps, files = new Map() }: Options
+  {
+    outputDir,
+    baseUrl,
+    exportServer,
+    minify,
+    includeSourceMaps,
+    routerRoot,
+    files = new Map(),
+  }: Options
 ): Promise<ExportAssetMap> {
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  const appDir = getRouterDirectoryWithManifest(projectRoot, exp);
+  const appDir = path.join(projectRoot, routerRoot);
   const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, {
     outputDir,
     baseUrl,
@@ -141,11 +150,13 @@ async function exportFromServerAsync(
       minify,
       includeSourceMaps,
       baseUrl,
+      routerRoot,
     }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
       minify,
       baseUrl,
+      routerRoot,
     }),
   ]);
 
@@ -176,13 +187,16 @@ async function exportFromServerAsync(
   });
 
   getFilesFromSerialAssets(resources.artifacts, {
+    platform: 'web',
     includeSourceMaps,
     files,
   });
 
   if (resources.assets) {
     // TODO: Collect files without writing to disk.
+    // NOTE(kitten): Re. above, this is now using `files` except for iOS catalog output, which isn't used here
     await persistMetroAssetsAsync(resources.assets, {
+      files,
       platform: 'web',
       outputDirectory: outputDir,
       baseUrl,
@@ -193,7 +207,7 @@ async function exportFromServerAsync(
     const apiRoutes = await exportApiRoutesAsync({
       outputDir,
       server: devServer,
-      appDir,
+      routerRoot,
       manifest: serverManifest,
       baseUrl,
     });
@@ -314,31 +328,30 @@ export function getPathVariations(routePath: string): string[] {
 async function exportApiRoutesAsync({
   outputDir,
   server,
-  appDir,
+  routerRoot,
   baseUrl,
   ...props
 }: {
   outputDir: string;
   server: MetroBundlerDevServer;
-  appDir: string;
+  routerRoot: string;
   manifest: ExpoRouterServerManifestV1;
   baseUrl: string;
 }): Promise<ExportAssetMap> {
-  const functionsDir = '_expo/functions';
-  const funcDir = path.join(outputDir, functionsDir);
-  fs.mkdirSync(path.join(funcDir), { recursive: true });
-
   const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
     mode: 'production',
-    appDir,
-    outputDir: functionsDir,
+    routerRoot,
+    outputDir: '_expo/functions',
     prerenderManifest: props.manifest,
     baseUrl,
   });
 
   Log.log(chalk.bold`Exporting ${files.size} API Routes.`);
 
-  files.set('_expo/routes.json', { contents: JSON.stringify(manifest, null, 2) });
+  files.set('_expo/routes.json', {
+    contents: JSON.stringify(manifest, null, 2),
+    targetDomain: 'server',
+  });
 
   return files;
 }

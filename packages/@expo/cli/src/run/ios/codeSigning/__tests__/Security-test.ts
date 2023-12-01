@@ -8,9 +8,6 @@ import {
   getSecurityPemAsync,
 } from '../Security';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../../../../start/doctor/SecurityBinPrerequisite', () => ({
   SecurityBinPrerequisite: {
     instance: {
@@ -21,7 +18,7 @@ jest.mock('../../../../start/doctor/SecurityBinPrerequisite', () => ({
 
 describe(getSecurityPemAsync, () => {
   it(`asserts that the pem could not be found`, async () => {
-    asMock(spawnAsync).mockResolvedValueOnce({
+    jest.mocked(spawnAsync).mockResolvedValueOnce({
       stdout: '',
     } as any);
 
@@ -31,7 +28,7 @@ describe(getSecurityPemAsync, () => {
 
 describe(findIdentitiesAsync, () => {
   it(`return identities`, async () => {
-    asMock(spawnAsync).mockResolvedValueOnce({
+    jest.mocked(spawnAsync).mockResolvedValueOnce({
       stdout: [
         'Returns a string like:',
         '1) 12222234253761286351826735HGKDHAJGF45283 "Apple Development: Evan Bacon (AA00AABB0A)" (CSSMERR_TP_CERT_REVOKED)',

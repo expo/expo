@@ -3,20 +3,9 @@ import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types
 import resolveFrom from 'resolve-from';
 
 import { env } from '../../../utils/env';
+import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 
 const debug = require('debug')('expo:metro:options') as typeof console.log;
-
-export function shouldEnableAsyncImports(projectRoot: string): boolean {
-  if (env.EXPO_NO_METRO_LAZY) {
-    return false;
-  }
-
-  // `@expo/metro-runtime` includes support for the fetch + eval runtime code required
-  // to support async imports. If it's not installed, we can't support async imports.
-  // If it is installed, the user MUST import it somewhere in their project.
-  // Expo Router automatically pulls this in, so we can check for it.
-  return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
-}
 
 export type ExpoMetroOptions = {
   platform: string;
@@ -32,7 +21,31 @@ export type ExpoMetroOptions = {
   preserveEnvVars?: boolean;
   baseUrl?: string;
   isExporting: boolean;
+  /** Module ID relative to the projectRoot for the Expo Router app directory. */
+  routerRoot: string;
 };
+
+export type SerializerOptions = {
+  includeSourceMaps?: boolean;
+  includeBytecode?: boolean;
+  output?: 'static';
+};
+
+export type ExpoMetroBundleOptions = MetroBundleOptions & {
+  serializerOptions?: SerializerOptions;
+};
+
+export function shouldEnableAsyncImports(projectRoot: string): boolean {
+  if (env.EXPO_NO_METRO_LAZY) {
+    return false;
+  }
+
+  // `@expo/metro-runtime` includes support for the fetch + eval runtime code required
+  // to support async imports. If it's not installed, we can't support async imports.
+  // If it is installed, the user MUST import it somewhere in their project.
+  // Expo Router automatically pulls this in, so we can check for it.
+  return resolveFrom.silent(projectRoot, '@expo/metro-runtime') != null;
+}
 
 function withDefaults({
   mode = 'development',
@@ -50,18 +63,20 @@ function withDefaults({
   };
 }
 
-export type SerializerOptions = {
-  includeSourceMaps?: boolean;
-  includeBytecode?: boolean;
-  output?: 'static';
-};
-
-export type ExpoMetroBundleOptions = MetroBundleOptions & {
-  serializerOptions?: SerializerOptions;
-};
-
 export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
   return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
+}
+
+export function getMetroDirectBundleOptionsForExpoConfig(
+  projectRoot: string,
+  exp: ExpoConfig,
+  options: Omit<ExpoMetroOptions, 'baseUrl' | 'routerRoot'>
+): Partial<ExpoMetroBundleOptions> {
+  return getMetroDirectBundleOptions({
+    ...options,
+    baseUrl: getBaseUrlFromExpoConfig(exp),
+    routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+  });
 }
 
 export function getMetroDirectBundleOptions(
@@ -80,6 +95,7 @@ export function getMetroDirectBundleOptions(
     engine,
     preserveEnvVars,
     baseUrl,
+    routerRoot,
     isExporting,
   } = withDefaults(options);
 
@@ -123,6 +139,7 @@ export function getMetroDirectBundleOptions(
       preserveEnvVars,
       environment,
       baseUrl,
+      routerRoot,
     },
     customResolverOptions: {
       __proto__: null,
@@ -140,6 +157,18 @@ export function getMetroDirectBundleOptions(
   return bundleOptions;
 }
 
+export function createBundleUrlPathFromExpoConfig(
+  projectRoot: string,
+  exp: ExpoConfig,
+  options: Omit<ExpoMetroOptions, 'baseUrl' | 'routerRoot'>
+): string {
+  return createBundleUrlPath({
+    ...options,
+    baseUrl: getBaseUrlFromExpoConfig(exp),
+    routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+  });
+}
+
 export function createBundleUrlPath(options: ExpoMetroOptions): string {
   const {
     platform,
@@ -154,6 +183,7 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
     engine,
     preserveEnvVars,
     baseUrl,
+    routerRoot,
     isExporting,
   } = withDefaults(options);
 
@@ -183,6 +213,9 @@ export function createBundleUrlPath(options: ExpoMetroOptions): string {
   }
   if (baseUrl) {
     queryParams.append('transform.baseUrl', baseUrl);
+  }
+  if (routerRoot != null) {
+    queryParams.append('transform.routerRoot', routerRoot);
   }
 
   if (environment) {

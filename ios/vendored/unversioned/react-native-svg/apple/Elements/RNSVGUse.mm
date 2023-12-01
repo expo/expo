@@ -40,7 +40,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &newProps = *std::static_pointer_cast<const RNSVGUseProps>(props);
+  const auto &newProps = static_cast<const RNSVGUseProps &>(*props);
 
   self.x = [RNSVGLength lengthWithString:RCTNSStringFromString(newProps.x)];
   self.y = [RNSVGLength lengthWithString:RCTNSStringFromString(newProps.y)];

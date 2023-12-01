@@ -11,7 +11,7 @@ import { URL } from 'url';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { getRouterDirectoryModuleIdWithManifest } from './router';
+import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
@@ -101,7 +101,6 @@ export async function loadMetroConfigAsync(
   const platformBundlers = getPlatformBundlers(exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, {
-    routerDirectory: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     config,
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
@@ -180,9 +179,16 @@ export async function instantiateMetroAsync(
 
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
+  // Initialize all React Native debug features
+  const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
+  prependMiddleware(middleware, debugMiddleware);
+
   const { server, metro } = await runServer(metroBundler, metroConfig, {
     // @ts-expect-error: Inconsistent `websocketEndpoints` type between metro and @react-native-community/cli-server-api
-    websocketEndpoints,
+    websocketEndpoints: {
+      ...websocketEndpoints,
+      ...debugWebsocketEndpoints,
+    },
     watch: !isExporting && isWatchEnabled(),
   });
 
