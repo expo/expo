@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- Infer missing transform options for redirected requests from react native clients without `expo-dev-client`.
 - Add missing dependency. ([#25446](https://github.com/expo/expo/pull/25446) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
