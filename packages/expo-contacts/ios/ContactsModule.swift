@@ -70,7 +70,7 @@ public class ContactsModule: Module {
       }
     }.runOnQueue(.main)
 
-    AsyncFunction("presentFormAsync") { (identifier: String?, data: Contact, options: FormOptions) in
+    AsyncFunction("presentFormAsync") { (identifier: String?, data: Contact, options: FormOptions, promise: Promise) in
       var controller: ContactsViewController?
       var contact: CNMutableContact
 
@@ -90,7 +90,8 @@ public class ContactsModule: Module {
       }
 
       guard let controller else {
-        throw FailedToCreateViewControllerException()
+        promise.reject(FailedToCreateViewControllerException())
+        return
       }
 
       let cancelButtonTitle = options.cancelButtonTitle != nil ? options.cancelButtonTitle : "Cancel"
@@ -124,6 +125,11 @@ public class ContactsModule: Module {
       let navController = UINavigationController(rootViewController: controller)
       presentingViewController = navController
       let animated = options.preventAnimation == true ? false : true
+      
+      controller.onViewDisappeared = { [weak self] in
+        promise.resolve()
+      }
+      
       parent?.present(navController, animated: animated)
     }.runOnQueue(.main)
 
