@@ -43,7 +43,7 @@ class TestCodedException(
 class ModuleMockInvocationHandler<T : Any>(
   private val moduleTestInterface: KClass<T>,
   private val moduleController: ModuleController,
-  private val holder: ModuleHolder<*>
+  private val holder: ModuleHolder
 ) : InvocationHandler {
   override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
     if (!holder.definition.asyncFunctions.containsKey(method.name) &&
