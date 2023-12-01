@@ -30,11 +30,11 @@ func decodePhoneNumbers(_ input: [PhoneNumber]?) -> [CNLabeledValue<CNPhoneNumbe
   guard let input else {
     return nil
   }
-  
+
   var output = [CNLabeledValue<CNPhoneNumber>]()
   for item in input {
     let label = decodePhoneLabel(item.label)
-    
+
     if let phoneNumber = item.number {
       let number = CNPhoneNumber(stringValue: phoneNumber)
       let labeledNumber = CNLabeledValue(label: label, value: number)
@@ -48,7 +48,7 @@ func decodePhoneLabel(_ label: String?) -> String? {
   guard let label = label else {
     return nil
   }
-  
+
   var decodedLabel = decodeLabel(label: label)
   switch decodedLabel {
   case CNLabeledValue<NSString>.localizedString(forLabel: CNLabelPhoneNumberMain):
@@ -69,8 +69,6 @@ func decodePhoneLabel(_ label: String?) -> String? {
     return decodedLabel
   }
 }
-
-
 
 func decodeLabel(label: String?) -> String {
   guard let label, !label.isEmpty else {
@@ -143,7 +141,7 @@ func contactKeysToFetch(from fields: [String]?) -> [String] {
     "dates": CNContactDatesKey,
     "relationships": CNContactRelationsKey
   ]
-  
+
   var results = [String]()
 
   var updatedFields = fields ?? []
@@ -187,14 +185,14 @@ func contactKeysToFetch(from fields: [String]?) -> [String] {
 func getDescriptors(for fields: [String]?) -> [CNKeyDescriptor] {
   let keys = contactKeysToFetch(from: fields)
   var descriptors = keys as [CNKeyDescriptor]
-  
+
   if keys.contains(ContactsKey.name) {
     descriptors.append(CNContactFormatter.descriptorForRequiredKeys(for: .fullName))
   }
   if keys.contains(ContactsKey.editor) {
     descriptors.append(CNContactViewController.descriptorForRequiredKeys())
   }
-  
+
   return descriptors
 }
 

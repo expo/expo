@@ -77,4 +77,3 @@ internal class FailedToFindContactException: Exception {
     "Failed to find contact"
   }
 }
-

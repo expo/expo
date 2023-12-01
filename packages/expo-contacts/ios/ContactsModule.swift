@@ -88,15 +88,15 @@ public class ContactsModule: Module {
           controller = ContactsViewController.init(forUnknownContact: contact)
         }
       }
-      
+
       guard let controller else {
         throw FailedToCreateViewControllerException()
       }
-      
+
       let cancelButtonTitle = options.cancelButtonTitle != nil ? options.cancelButtonTitle : "Cancel"
       controller.contactStore = contactStore
       controller.delegate = delegate
-      
+
       if let displayedPropertyKeys = options.displayedPropertyKeys {
         let keys = contactKeysToFetch(from: displayedPropertyKeys)
         controller.displayedPropertyKeys = getDescriptors(for: keys)
@@ -119,7 +119,7 @@ public class ContactsModule: Module {
       if let groupId = options.groupId {
         controller.parentGroup = try group(with: groupId)
       }
-      
+
       let parent = appContext?.utilities?.currentViewController()
       let navController = UINavigationController(rootViewController: controller)
       presentingViewController = navController
@@ -281,7 +281,7 @@ public class ContactsModule: Module {
       appContext?.permissions?.askForPermission(usingRequesterClass: ContactsPermissionRequester.self, resolve: promise.resolver, reject: promise.legacyRejecter)
     }
   }
-  
+
   func getContact(withId identifier: String) throws -> CNContact {
     do {
       let keysToFetch = [CNContactViewController.descriptorForRequiredKeys()]
@@ -428,7 +428,7 @@ public class ContactsModule: Module {
     if let postalAddresses = decodeAddresses(data.addresses) {
       contact.postalAddresses = postalAddresses
     }
-    
+
     if let phoneNumbers = decodePhoneNumbers(data.phoneNumbers) {
       contact.phoneNumbers = phoneNumbers
     }
@@ -513,7 +513,7 @@ public class ContactsModule: Module {
     var descriptors = getDescriptors(for: keys)
     return queryContacts(with: predicate, keys: descriptors, options: options)
   }
-  
+
   private func queryContacts(with predicate: NSPredicate?, keys: [CNKeyDescriptor], options: ContactsQuery) -> [String: Any] {
     var pageOffset = options.pageOffset ?? 0
     var pageSize = options.pageSize ?? 0
