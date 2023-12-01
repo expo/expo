@@ -27,18 +27,13 @@ export async function resolvePackageVersionAsync(
   return packageJson.version;
 }
 
-export async function resolveAllPackageVersionsAsync(
-  projectRoot: string,
-  packages: string[]
-): Promise<Record<string, string>> {
-  const packageVersionsFromPackageJSON = await Promise.all(
-    packages.map((packageName) => resolvePackageVersionAsync(projectRoot, packageName))
+export async function resolveAllPackageVersionsAsync(projectRoot: string, packages: string[]) {
+  const resolvedPackages = await Promise.all(
+    packages.map(async (packageName) => [
+      packageName,
+      await resolvePackageVersionAsync(projectRoot, packageName),
+    ])
   );
-  return packages.reduce(
-    (acc, packageName, idx) => {
-      acc[packageName] = packageVersionsFromPackageJSON[idx];
-      return acc;
-    },
-    {} as Record<string, string>
-  );
+
+  return Object.fromEntries(resolvedPackages);
 }
