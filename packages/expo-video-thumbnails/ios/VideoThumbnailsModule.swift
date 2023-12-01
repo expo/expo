@@ -27,8 +27,8 @@ public class VideoThumbnailsModule: Module {
 
     // `requestedTimeToleranceBefore` can only be set if `time` is less
     // than the video duration, otherwise it will fail to generate an image.
-    if(time < asset.duration) {
-      generator.requestedTimeToleranceBefore = CMTime.zero
+    if time < asset.duration {
+      generator.requestedTimeToleranceBefore = .zero
     }
 
     let imgRef = try generator.copyCGImage(at: time, actualTime: nil)
