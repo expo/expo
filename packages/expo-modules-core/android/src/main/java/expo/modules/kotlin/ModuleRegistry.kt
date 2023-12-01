@@ -12,11 +12,11 @@ import java.lang.ref.WeakReference
 
 class ModuleRegistry(
   private val appContext: WeakReference<AppContext>
-) : Iterable<ModuleHolder> {
+) : Iterable<ModuleHolder<*>> {
   @PublishedApi
-  internal val registry = mutableMapOf<String, ModuleHolder>()
+  internal val registry = mutableMapOf<String, ModuleHolder<*>>()
 
-  fun register(module: Module) = trace("ModuleRegistry.register(${module.javaClass})") {
+  fun <T : Module> register(module: T) = trace("ModuleRegistry.register(${module.javaClass})") {
     module._appContext = requireNotNull(appContext.get()) { "Cannot create a module for invalid app context." }
 
     val holder = ModuleHolder(module)
@@ -56,12 +56,13 @@ class ModuleRegistry(
     return registry.values.find { it.module is T }?.module as? T
   }
 
-  fun getModuleHolder(name: String): ModuleHolder? = registry[name]
+  fun getModuleHolder(name: String): ModuleHolder<*>? = registry[name]
 
-  fun getModuleHolder(module: Module): ModuleHolder? =
-    registry.values.find { it.module === module }
+  @Suppress("UNCHECKED_CAST")
+  fun <T : Module> getModuleHolder(module: T): ModuleHolder<T>? =
+    registry.values.find { it.module === module } as? ModuleHolder<T>
 
-  fun <T : View> getModuleHolder(viewClass: Class<T>): ModuleHolder? {
+  fun <T : View> getModuleHolder(viewClass: Class<T>): ModuleHolder<*>? {
     return registry.firstNotNullOfOrNull { (_, holder) ->
       if (holder.definition.viewManagerDefinition?.viewType == viewClass) {
         holder
@@ -91,7 +92,7 @@ class ModuleRegistry(
     }
   }
 
-  override fun iterator(): Iterator<ModuleHolder> = registry.values.iterator()
+  override fun iterator(): Iterator<ModuleHolder<*>> = registry.values.iterator()
 
   fun cleanUp() {
     registry.clear()

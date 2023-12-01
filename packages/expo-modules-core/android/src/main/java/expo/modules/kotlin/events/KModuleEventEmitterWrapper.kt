@@ -17,7 +17,7 @@ import java.lang.ref.WeakReference
  * But because of that, we had to create a wrapper for EventEmitter.
  */
 class KModuleEventEmitterWrapper(
-  private val moduleHolder: ModuleHolder,
+  private val moduleHolder: ModuleHolder<*>,
   legacyEventEmitter: expo.modules.core.interfaces.services.EventEmitter,
   reactContextHolder: WeakReference<ReactApplicationContext>
 ) : KEventEmitterWrapper(legacyEventEmitter, reactContextHolder) {
