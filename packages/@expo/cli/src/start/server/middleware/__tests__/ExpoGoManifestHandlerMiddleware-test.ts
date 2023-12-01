@@ -8,7 +8,6 @@ import { GraphQLError } from 'graphql';
 import { vol } from 'memfs';
 import nullthrows from 'nullthrows';
 
-import { asMock } from '../../../../__tests__/asMock';
 import { AppQuery } from '../../../../api/graphql/queries/AppQuery';
 import { getUserAsync } from '../../../../api/user/user';
 import {
@@ -188,7 +187,7 @@ describe('getParsedHeaders', () => {
 describe('_getManifestResponseAsync', () => {
   beforeEach(() => {
     delete process.env.EXPO_OFFLINE;
-    asMock(getUserAsync).mockImplementation(async () => ({
+    jest.mocked(getUserAsync).mockImplementation(async () => ({
       __typename: 'User',
       id: 'userwat',
       username: 'wat',

@@ -10,15 +10,12 @@ jest.mock('@expo/config-plugins');
 jest.mock('@expo/config-plugins/build/ios/utils/getInfoPlistPath');
 
 // TODO: replace with `jest.mocked`, when updating Jest
-const asMock = (fn: any): jest.Mock => fn;
 
 describe(getSchemesForAndroidAsync, () => {
   it('resolves longest scheme without known expo schemes', async () => {
-    asMock(AndroidConfig.Scheme.getSchemesFromManifest).mockResolvedValue([
-      'com.expo.test',
-      'com.expo.longertest',
-      'com.expo.longesttest',
-    ]);
+    jest
+      .mocked(AndroidConfig.Scheme.getSchemesFromManifest)
+      .mockResolvedValue(['com.expo.test', 'com.expo.longertest', 'com.expo.longesttest']);
 
     await expect(getSchemesForAndroidAsync('/fake-project')).resolves.toEqual([
       'com.expo.longesttest',
@@ -28,10 +25,9 @@ describe(getSchemesForAndroidAsync, () => {
   });
 
   it('resolves known expo schemes before longest schemes', async () => {
-    asMock(AndroidConfig.Scheme.getSchemesFromManifest).mockResolvedValue([
-      'com.expo.longesttest',
-      'exp+com.expo.test',
-    ]);
+    jest
+      .mocked(AndroidConfig.Scheme.getSchemesFromManifest)
+      .mockResolvedValue(['com.expo.longesttest', 'exp+com.expo.test']);
 
     await expect(getSchemesForAndroidAsync('/fake-project')).resolves.toEqual([
       'exp+com.expo.test',
@@ -62,12 +58,10 @@ describe(getSchemesForIosAsync, () => {
   });
 
   it('resolves longest scheme without known expo schemes', async () => {
-    asMock(getInfoPlistPathFromPbxproj).mockReturnValue('fake-pbxproject');
-    asMock(IOSConfig.Scheme.getSchemesFromPlist).mockReturnValue([
-      'com.expo.test',
-      'com.expo.longertest',
-      'com.expo.longesttest',
-    ]);
+    jest.mocked(getInfoPlistPathFromPbxproj).mockReturnValue('fake-pbxproject');
+    jest
+      .mocked(IOSConfig.Scheme.getSchemesFromPlist)
+      .mockReturnValue(['com.expo.test', 'com.expo.longertest', 'com.expo.longesttest']);
 
     await expect(getSchemesForIosAsync('fake-project')).resolves.toEqual([
       'com.expo.longesttest',
@@ -77,11 +71,10 @@ describe(getSchemesForIosAsync, () => {
   });
 
   it('resolves known expo schemes before longest schemes', async () => {
-    asMock(getInfoPlistPathFromPbxproj).mockReturnValue('fake-pbxproject');
-    asMock(IOSConfig.Scheme.getSchemesFromPlist).mockReturnValue([
-      'com.expo.longesttest',
-      'exp+com.expo.test',
-    ]);
+    jest.mocked(getInfoPlistPathFromPbxproj).mockReturnValue('fake-pbxproject');
+    jest
+      .mocked(IOSConfig.Scheme.getSchemesFromPlist)
+      .mockReturnValue(['com.expo.longesttest', 'exp+com.expo.test']);
 
     await expect(getSchemesForIosAsync('fake-project')).resolves.toEqual(['exp+com.expo.test']);
   });

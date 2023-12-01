@@ -6,8 +6,6 @@ import { downloadAppAsync } from '../downloadAppAsync';
 import { downloadExpoGoAsync, getExpoGoVersionEntryAsync } from '../downloadExpoGoAsync';
 import { extractAsync } from '../tar';
 
-const asMock = (fn: any): jest.Mock => fn;
-
 jest.mock('../../log');
 
 jest.mock(`../downloadAppAsync`, () => ({
@@ -58,10 +56,10 @@ describe(getExpoGoVersionEntryAsync, () => {
 
 describe(downloadExpoGoAsync, () => {
   beforeEach(() => {
-    asMock(extractAsync).mockImplementationOnce(jest.fn());
-    asMock(downloadAppAsync).mockImplementationOnce(
-      jest.fn(jest.requireActual('../downloadAppAsync').downloadAppAsync)
-    );
+    jest.mocked(extractAsync).mockImplementationOnce(jest.fn());
+    jest
+      .mocked(downloadAppAsync)
+      .mockImplementationOnce(jest.fn(jest.requireActual('../downloadAppAsync').downloadAppAsync));
     vol.reset();
   });
   it('downloads the Expo Go app on iOS', async () => {

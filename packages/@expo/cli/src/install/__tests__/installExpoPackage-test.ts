@@ -1,7 +1,6 @@
 import * as PackageManager from '@expo/package-manager';
 import spawnAsync from '@expo/spawn-async';
 
-import { asMock } from '../../__tests__/asMock';
 import { Log } from '../../log';
 import { installExpoPackageAsync } from '../installExpoPackage';
 
@@ -57,7 +56,7 @@ describe(installExpoPackageAsync, () => {
 
   it(`Does not run follow-up command if first command fails`, async () => {
     const packageManager = PackageManager.createForProject('/path/to/project');
-    asMock(packageManager.addAsync).mockRejectedValueOnce(new Error('Something went wrong'));
+    jest.mocked(packageManager.addAsync).mockRejectedValueOnce(new Error('Something went wrong'));
 
     try {
       await installExpoPackageAsync('/path/to/project', {

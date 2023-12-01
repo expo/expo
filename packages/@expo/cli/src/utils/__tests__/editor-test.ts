@@ -1,7 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import editors from 'env-editor';
 
-import { asMock } from '../../__tests__/asMock';
 import { guessEditor, openInEditorAsync } from '../editor';
 
 jest.mock('../../log');
@@ -25,7 +24,7 @@ describe(guessEditor, () => {
   });
 
   it(`defaults to vscode if the default editor cannot be guessed`, () => {
-    asMock(editors.defaultEditor).mockImplementationOnce(() => {
+    jest.mocked(editors.defaultEditor).mockImplementationOnce(() => {
       throw new Error('Could not guess default editor');
     });
     guessEditor();
@@ -35,12 +34,12 @@ describe(guessEditor, () => {
 
 describe(openInEditorAsync, () => {
   it(`fails to open in a given editor that does not exist`, async () => {
-    asMock(editors.defaultEditor).mockReturnValueOnce({
+    jest.mocked(editors.defaultEditor).mockReturnValueOnce({
       name: 'my-editor',
       binary: 'my-editor-binary',
       id: 'my-editor-id',
     } as any);
-    asMock(spawnAsync).mockImplementationOnce(() => {
+    jest.mocked(spawnAsync).mockImplementationOnce(() => {
       throw new Error('failed');
     });
 

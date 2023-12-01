@@ -1,6 +1,5 @@
 import { fs, vol } from 'memfs';
 
-import { asMock } from '../../__tests__/asMock';
 import * as Log from '../../log';
 import { FileNotifier } from '../FileNotifier';
 
@@ -29,7 +28,8 @@ it('returns null when no files can be found', () => {
 });
 
 it('observes the first existing file', () => {
-  asMock(fs.watchFile)
+  jest
+    .mocked(fs.watchFile)
     // @ts-expect-error
     .mockImplementationOnce((_, callback) => {
       // @ts-expect-error: polymorphism
