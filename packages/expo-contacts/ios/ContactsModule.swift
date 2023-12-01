@@ -169,7 +169,6 @@ public class ContactsModule: Module {
 
     AsyncFunction("removeContactAsync") { (identifier: String) in
       let saveRequest = CNSaveRequest()
-
       let keysToFetch = [CNContactIdentifierKey]
       guard let contact = try getContact(with: identifier, keysToFetch: keysToFetch) else {
         return
@@ -232,7 +231,7 @@ public class ContactsModule: Module {
       try executeSaveRequest(saveRequest)
     }
 
-    AsyncFunction("getContainersAsync") { (options: ContainerQuery) in
+    AsyncFunction("getContainersAsync") { (options: ContainerQuery) -> [[String: Any]] in
       var predicate = NSPredicate()
       if let id = options.contactId {
         predicate = CNContainer.predicateForContainerOfContact(withIdentifier: id)
@@ -248,6 +247,7 @@ public class ContactsModule: Module {
         for container in containers {
           response.append(encodeContainer(container))
         }
+        return response
       } catch {
         throw FetchContainersException()
       }

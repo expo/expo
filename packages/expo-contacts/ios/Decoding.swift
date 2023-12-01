@@ -9,7 +9,7 @@ func decodeEmailAddresses(_ input: [Email]?) -> [CNLabeledValue<NSString>]? {
   for item in input {
     if let label = decodeEmailLabel(item.label),
     let email = item.email {
-      let labeledValue = CNLabeledValue(label: label, value: email as NSString)
+    let labeledValue = CNLabeledValue(label: label, value: email as NSString)
       output.append(labeledValue)
     }
   }
@@ -20,7 +20,7 @@ func decodeEmailAddresses(_ input: [Email]?) -> [CNLabeledValue<NSString>]? {
 private func decodeEmailLabel(_ label: String) -> String? {
   var decodedLabel = decodeLabel(label: label)
   if let localizedLabel = CNLabeledValue<NSString>.localizedString(forLabel: CNLabelEmailiCloud) as String?,
-     decodedLabel == localizedLabel {
+  decodedLabel == localizedLabel {
     decodedLabel = CNLabelEmailiCloud
   }
   return decodedLabel
@@ -35,9 +35,9 @@ func decodeSocialProfiles(_ input: [SocialProfile]?) -> [CNLabeledValue<CNSocial
   for item in input {
     let label = decodeLabel(label: item.label)
     if let urlString = item.url,
-       let username = item.username,
-       let userId = item.userId,
-       let service = item.service {
+    let username = item.username,
+    let userId = item.userId,
+    let service = item.service {
       let profile = CNSocialProfile(urlString: urlString.path, username: username, userIdentifier: userId, service: service)
       output.append(CNLabeledValue(label: label, value: profile))
     }
