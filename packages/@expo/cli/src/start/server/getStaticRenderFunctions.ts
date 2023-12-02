@@ -134,6 +134,7 @@ export async function createMetroEndpointAsync(
     minify,
     baseUrl,
     isExporting: true,
+    asyncRoutes: false,
     routerRoot,
   });
 

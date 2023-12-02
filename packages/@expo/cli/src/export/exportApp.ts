@@ -15,7 +15,10 @@ import { createAssetMap, createSourceMapDebugHtml } from './writeContents';
 import * as Log from '../log';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
-import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
+import {
+  getAsyncRoutesFromExpoConfig,
+  getBaseUrlFromExpoConfig,
+} from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
@@ -135,7 +138,6 @@ export async function exportAppAsync(
 
   if (platforms.includes('web')) {
     if (useServerRendering) {
-      // @ts-expect-error: server not on type yet
       const exportServer = exp.web?.output === 'server';
 
       if (exportServer) {
@@ -150,8 +152,9 @@ export async function exportAppAsync(
         minify,
         baseUrl,
         includeSourceMaps: sourceMaps,
+        exportServer: exp.web?.output === 'server',
+        asyncRoutes: getAsyncRoutesFromExpoConfig(exp, dev ? 'development' : 'production', 'web'),
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
-        exportServer,
       });
     } else {
       // TODO: Unify with exportStaticAsync

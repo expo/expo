@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getInlineEnvVarsEnabled = exports.getExpoRouterAbsoluteAppRoot = exports.getIsServer = exports.getBaseUrl = exports.getIsNodeModule = exports.getIsProd = exports.getIsFastRefreshEnabled = exports.getIsDev = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
+exports.getAsyncRoutes = exports.getInlineEnvVarsEnabled = exports.getExpoRouterAbsoluteAppRoot = exports.getIsServer = exports.getBaseUrl = exports.getIsNodeModule = exports.getIsProd = exports.getIsFastRefreshEnabled = exports.getIsDev = exports.getPossibleProjectRoot = exports.getPlatform = exports.getBundler = exports.hasModule = void 0;
 const path_1 = __importDefault(require("path"));
 function hasModule(name) {
     try {
@@ -108,3 +108,16 @@ function getInlineEnvVarsEnabled(caller) {
     return !isNodeModule && !isWebpack && !isDev && !isServer && !preserveEnvVars;
 }
 exports.getInlineEnvVarsEnabled = getInlineEnvVarsEnabled;
+function getAsyncRoutes(caller) {
+    const isServer = getIsServer(caller);
+    if (isServer) {
+        return false;
+    }
+    const isProd = getIsProd(caller);
+    const platform = getPlatform(caller);
+    if (platform !== 'web' && isProd) {
+        return false;
+    }
+    return caller?.asyncRoutes ?? false;
+}
+exports.getAsyncRoutes = getAsyncRoutes;
