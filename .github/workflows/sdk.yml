@@ -40,7 +40,7 @@ jobs:
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
