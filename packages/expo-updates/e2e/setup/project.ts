@@ -433,6 +433,9 @@ function transformAppJsonForE2E(
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
       },
       extra: {
+        updates: {
+          assetPatternsToBeBundled: ['includedAssets/*'],
+        },
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
         },
@@ -699,15 +702,11 @@ export async function setupE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'scripts'],
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
     { appJsFileName: 'App.tsx', repoRoot, isTV }
   );
 
-  // copy png assets and install extra package
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'test.png'),
-    path.join(projectRoot, 'test.png')
-  );
+  // install extra fonts package
   await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
     cwd: projectRoot,
     stdio: 'inherit',
@@ -752,7 +751,7 @@ export async function setupUpdatesDisabledE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'scripts'],
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
     {
       appJsFileName: 'App-updates-disabled.tsx',
       repoRoot,
@@ -760,11 +759,7 @@ export async function setupUpdatesDisabledE2EAppAsync(
     }
   );
 
-  // copy png assets and install extra package
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'test.png'),
-    path.join(projectRoot, 'test.png')
-  );
+  // install extra fonts package
   await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
     cwd: projectRoot,
     stdio: 'inherit',
