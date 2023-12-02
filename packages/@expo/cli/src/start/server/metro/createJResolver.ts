@@ -109,16 +109,16 @@ const defaultResolver = (
       }
       return fileExistsSync(file);
     },
-    preserveSymlinks: enablePackageExports ? false : options.preserveSymlinks,
+    preserveSymlinks: options.preserveSymlinks,
     defaultResolver,
   };
 
   // resolveSync dereferences symlinks to ensure we don't create a separate
   // module instance depending on how it was referenced.
-  const result = resolveSync(
-    enablePackageExports ? getPathInModule(path, resolveOptions) : path,
-    resolveOptions
-  );
+  const result = resolveSync(enablePackageExports ? getPathInModule(path, resolveOptions) : path, {
+    ...resolveOptions,
+    preserveSymlinks: !options.preserveSymlinks,
+  });
 
   return result;
 };

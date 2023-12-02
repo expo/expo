@@ -130,7 +130,11 @@ export function createFastResolver({
         conditions,
         realpathSync(file: string): string {
           // @ts-expect-error: Missing on type.
-          return context.unstable_getRealPath?.(file) ?? realpathSync(file);
+          const metroRealPath = context.unstable_getRealPath?.(file);
+          if (metroRealPath == null && preserveSymlinks) {
+            return realpathSync(file);
+          }
+          return metroRealPath ?? file;
         },
         packageFilter(pkg) {
           // set the pkg.main to the first available field in context.mainFields
