@@ -122,7 +122,7 @@ export function withExtendedResolver(
   const defaultResolver = metroResolver.resolve;
   const resolver = isFastResolverEnabled
     ? createFastResolver({
-        preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? false,
+        preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? true,
         blockList: Array.isArray(config.resolver?.blockList)
           ? config.resolver?.blockList
           : [config.resolver?.blockList],
