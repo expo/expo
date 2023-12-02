@@ -43,6 +43,7 @@
     "expo-device": "~5.9.0",
     "expo-font": "~11.9.0",
     "expo-linear-gradient": "~12.7.0",
+    "expo-linking": "^6.0.0",
     "expo-location": "~16.5.0",
     "expo-splash-screen": "~0.25.0",
     "expo-store-review": "~6.8.0",

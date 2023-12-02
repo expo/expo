@@ -12,10 +12,11 @@ type Props = {
 };
 
 export default function UserReviewSection({ snacks, apps }: Props) {
-  const { shouldShowReviewSection, requestStoreReview, dismissReviewSection } = useUserReviewCheck({
-    apps,
-    snacks,
-  });
+  const { shouldShowReviewSection, requestStoreReview, dismissReviewSection, provideFeedback } =
+    useUserReviewCheck({
+      apps,
+      snacks,
+    });
   const theme = useExpoTheme();
 
   if (!shouldShowReviewSection) {
@@ -39,7 +40,7 @@ export default function UserReviewSection({ snacks, apps }: Props) {
           <Button.FadeOnPressContainer
             flex="1"
             bg="secondary"
-            onPress={dismissReviewSection}
+            onPress={provideFeedback}
             padding="tiny">
             <Button.Text
               align="center"
