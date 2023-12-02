@@ -122,10 +122,9 @@ export function createFastResolver({
 
       fp = jestResolver(moduleName, {
         blockList,
-
         enablePackageExports: context.unstable_enablePackageExports,
         basedir: path.dirname(context.originModulePath),
-        paths: context.nodeModulesPaths as string[],
+        paths: context.nodeModulesPaths.length ? (context.nodeModulesPaths as string[]) : undefined,
         extensions,
         conditions,
         realpathSync(file: string): string {
@@ -206,7 +205,6 @@ export function createFastResolver({
           };
         }
 
-        // TODO: Add improved error handling.
         throw new FailedToResolvePathError(
           'The module could not be resolved because no file or module matched the pattern:\n' +
             `  ${formatFileCandidates(
@@ -216,7 +214,7 @@ export function createFastResolver({
                 candidateExts: extensions,
               },
               true
-            )}\n\n`
+            )}\n\nFrom:\n  ${context.originModulePath}\n`
         );
       }
       throw error;
