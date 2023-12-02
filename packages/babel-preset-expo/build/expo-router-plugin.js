@@ -5,49 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.expoRouterBabelPlugin = void 0;
 const core_1 = require("@babel/core");
-const config_1 = require("expo/config");
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:router');
-let config;
-function getConfigMemo(projectRoot) {
-    if (!config || process.env._EXPO_INTERNAL_TESTING) {
-        config = (0, config_1.getConfig)(projectRoot);
-    }
-    return config;
-}
-function getExpoRouterImportMode(projectRoot, platform) {
-    const envVar = 'EXPO_ROUTER_IMPORT_MODE_' + platform.toUpperCase();
-    if (process.env[envVar]) {
-        return process.env[envVar];
-    }
-    const env = process.env.NODE_ENV || process.env.BABEL_ENV;
-    const { exp } = getConfigMemo(projectRoot);
-    let asyncRoutesSetting;
-    if (exp.extra?.router?.asyncRoutes) {
-        const asyncRoutes = exp.extra?.router?.asyncRoutes;
-        if (typeof asyncRoutes === 'string') {
-            asyncRoutesSetting = asyncRoutes;
-        }
-        else if (typeof asyncRoutes === 'object') {
-            asyncRoutesSetting = asyncRoutes[platform] ?? asyncRoutes.default;
-        }
-    }
-    let mode = [env, true].includes(asyncRoutesSetting) ? 'lazy' : 'sync';
-    // TODO: Production bundle splitting
-    if (env === 'production' && mode === 'lazy') {
-        throw new Error('Async routes are not supported in production yet. Set the `expo-router` Config Plugin prop `asyncRoutes` to `development`, `false`, or `undefined`.');
-    }
-    // NOTE: This is a temporary workaround for static rendering on web.
-    if (platform === 'web' && (exp.web || {}).output === 'static') {
-        mode = 'sync';
-    }
-    // Development
-    debug('Router import mode', mode);
-    process.env[envVar] = mode;
-    return mode;
-}
 function getExpoRouterAppRoot(projectRoot, appFolder) {
     // TODO: We should have cache invalidation if the expo-router/entry file location changes.
     const routerEntry = (0, resolve_from_1.default)(projectRoot, 'expo-router/entry');
@@ -62,14 +23,13 @@ function getExpoRouterAppRoot(projectRoot, appFolder) {
  * EXPO_PUBLIC_USE_STATIC
  * EXPO_ROUTER_ABS_APP_ROOT
  * EXPO_ROUTER_APP_ROOT
- * EXPO_ROUTER_IMPORT_MODE_IOS
- * EXPO_ROUTER_IMPORT_MODE_ANDROID
- * EXPO_ROUTER_IMPORT_MODE_WEB
+ * EXPO_ROUTER_IMPORT_MODE
  */
 function expoRouterBabelPlugin(api) {
     const { types: t } = api;
     const platform = api.caller(common_1.getPlatform);
     const possibleProjectRoot = api.caller(common_1.getPossibleProjectRoot);
+    const asyncRoutes = api.caller(common_1.getAsyncRoutes);
     const routerAbsoluteRoot = api.caller(common_1.getExpoRouterAbsoluteAppRoot);
     function isFirstInAssign(path) {
         return core_1.types.isAssignmentExpression(path.parent) && path.parent.left === path.node;
@@ -77,7 +37,6 @@ function expoRouterBabelPlugin(api) {
     return {
         name: 'expo-router',
         visitor: {
-            // Convert `process.env.EXPO_ROUTER_APP_ROOT` to a string literal
             MemberExpression(path, state) {
                 const projectRoot = possibleProjectRoot || state.file.opts.root || '';
                 if (path.get('object').matchesPattern('process.env')) {
@@ -99,6 +58,9 @@ function expoRouterBabelPlugin(api) {
                                 path.replaceWith(t.booleanLiteral(false));
                             }
                         }
+                        else if (key.value.startsWith('EXPO_ROUTER_IMPORT_MODE')) {
+                            path.replaceWith(t.stringLiteral(asyncRoutes ? 'lazy' : 'sync'));
+                        }
                         if (
                         // Skip loading the app root in tests.
                         // This is handled by the testing-library utils
@@ -111,23 +73,6 @@ function expoRouterBabelPlugin(api) {
                             }
                         }
                     }
-                }
-                if (!t.isIdentifier(path.node.object, { name: 'process' }) ||
-                    !t.isIdentifier(path.node.property, { name: 'env' })) {
-                    return;
-                }
-                const parent = path.parentPath;
-                if (!t.isMemberExpression(parent.node)) {
-                    return;
-                }
-                if (
-                // Expose the app route import mode.
-                platform &&
-                    t.isIdentifier(parent.node.property, {
-                        name: 'EXPO_ROUTER_IMPORT_MODE_' + platform.toUpperCase(),
-                    }) &&
-                    !parent.parentPath.isAssignmentExpression()) {
-                    parent.replaceWith(t.stringLiteral(getExpoRouterImportMode(projectRoot, platform)));
                 }
             },
         },
