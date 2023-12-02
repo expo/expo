@@ -7,7 +7,7 @@ import { UpdatesLogEntry } from 'expo-updates';
 import React from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-require('./test.png');
+require('./includedAssets/test.png');
 // eslint-disable-next-line no-unused-expressions
 Inter_900Black;
 

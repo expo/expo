@@ -1047,8 +1047,14 @@ describe('Asset deletion recovery tests', () => {
     // Verify all the assets -- including the JS bundle from the update (which wasn't in the
     // embedded update) -- have been restored. Additionally verify from the server side that the
     // updated bundle was re-downloaded.
+    // With asset exclusion, on Android, the number of assets found may be greater than the number in the manifest,
+    // as the total will include embedded assets that were copied.
     numAssets = await checkNumAssetsAsync();
-    jestExpect(numAssets).toBe(manifest.assets.length + 1);
+    if (platform === 'ios') {
+      jestExpect(numAssets).toBe(manifest.assets.length + 1);
+    } else {
+      jestExpect(numAssets).toBeGreaterThanOrEqual(manifest.assets.length + 1);
+    }
     updateID = await testElementValueAsync('updateID');
     jestExpect(updateID).toEqual(manifest.id);
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1); // should have re-downloaded only the JS bundle; the rest should have been copied from the app binary
