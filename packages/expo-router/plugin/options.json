@@ -4,7 +4,7 @@
     "$ref": "#/definitions/Props",
     "definitions": {
         "AsyncRouteOption": {
-            "description": "Should Async Routes be enabled, currently only `development` is supported.",
+            "description": "Should Async Routes be enabled. `production` is currently web-only and will be disabled on native.",
             "oneOf": [
                 {
                     "type": "string",
@@ -41,7 +41,7 @@
                     "type": "string"
                 },
                 "asyncRoutes": {
-                    "description": "Should Async Routes be enabled, currently only `development` is supported.",
+                    "description": "Should Async Routes be enabled. `production` is currently web-only and will be disabled on native.",
                     "oneOf": [
                         {
                             "$ref": "#/definitions/AsyncRouteOption"

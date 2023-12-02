@@ -15,6 +15,7 @@ import {
   shouldEnableAsyncImports,
   createBundleUrlPath,
   getBaseUrlFromExpoConfig,
+  getAsyncRoutesFromExpoConfig,
   createBundleUrlPathFromExpoConfig,
 } from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
@@ -167,6 +168,11 @@ export abstract class ManifestMiddleware<
       hostname,
       engine: isHermesEnabled ? 'hermes' : undefined,
       baseUrl: getBaseUrlFromExpoConfig(projectConfig.exp),
+      asyncRoutes: getAsyncRoutesFromExpoConfig(
+        projectConfig.exp,
+        this.options.mode ?? 'development',
+        platform
+      ),
       routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
     });
 
@@ -221,6 +227,7 @@ export abstract class ManifestMiddleware<
     engine,
     baseUrl,
     isExporting,
+    asyncRoutes,
     routerRoot,
   }: {
     platform: string;
@@ -228,6 +235,7 @@ export abstract class ManifestMiddleware<
     mainModuleName: string;
     engine?: 'hermes';
     baseUrl?: string;
+    asyncRoutes: boolean;
     isExporting?: boolean;
     routerRoot: string;
   }): string {
@@ -240,6 +248,7 @@ export abstract class ManifestMiddleware<
       engine,
       baseUrl,
       isExporting: !!isExporting,
+      asyncRoutes,
       routerRoot,
     });
 

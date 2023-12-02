@@ -284,7 +284,10 @@ class Chunk {
       type: 'js',
       metadata: {
         isAsync: this.isAsync,
-        requires: [...this.requiredChunks.values()].map(chunk => chunk.getFilenameForConfig(serializerConfig))
+        requires: [...this.requiredChunks.values()].map(chunk => chunk.getFilenameForConfig(serializerConfig)),
+        // Provide a list of module paths that can be used for matching chunks to routes.
+        // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
+        modulePaths: [...this.deps].map(module => module.path)
       },
       source: jsCode
     };

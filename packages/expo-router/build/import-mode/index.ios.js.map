@@ -1,1 +1,0 @@
-{"version":3,"file":"index.ios.js","sourceRoot":"","sources":["../../src/import-mode/index.ios.ts"],"names":[],"mappings":";;AAAA,kBAAe,OAAO,CAAC,GAAG,CAAC,2BAA2B,CAAC","sourcesContent":["export default process.env.EXPO_ROUTER_IMPORT_MODE_IOS;\n"]}

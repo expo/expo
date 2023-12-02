@@ -6,6 +6,7 @@
  */
 import '@expo/metro-runtime';
 import { getRoutes } from '../getRoutes';
+import { ExpoRouterServerManifestV1 } from '../getServerManifest';
 /** Get the linking manifest from a Node.js process. */
 declare function getManifest(options?: Parameters<typeof getRoutes>[1]): Promise<{
     initialRouteName?: string | undefined;
@@ -18,35 +19,7 @@ declare function getManifest(options?: Parameters<typeof getRoutes>[1]): Promise
  *
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
-declare function getBuildTimeServerManifestAsync(options?: Parameters<typeof getRoutes>[1]): Promise<{
-    apiRoutes: {
-        generated: boolean | undefined;
-        file: string;
-        page: string;
-        namedRegex: string;
-        routeKeys: {
-            [named: string]: string;
-        };
-    }[];
-    htmlRoutes: {
-        generated: boolean | undefined;
-        file: string;
-        page: string;
-        namedRegex: string;
-        routeKeys: {
-            [named: string]: string;
-        };
-    }[];
-    notFoundRoutes: {
-        generated: boolean | undefined;
-        file: string;
-        page: string;
-        namedRegex: string;
-        routeKeys: {
-            [named: string]: string;
-        };
-    }[];
-}>;
-export declare function getStaticContent(location: URL): string;
+declare function getBuildTimeServerManifestAsync(options?: Parameters<typeof getRoutes>[1]): Promise<ExpoRouterServerManifestV1>;
+export declare function getStaticContent(location: URL): Promise<string>;
 export { getManifest, getBuildTimeServerManifestAsync };
 //# sourceMappingURL=renderStaticContent.d.ts.map

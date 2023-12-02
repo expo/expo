@@ -39,9 +39,7 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
     // Reset the initial URL
     (0, mocks_1.setInitialUrl)(initialUrl);
     // Force the render to be synchronous
-    process.env.EXPO_ROUTER_IMPORT_MODE_WEB = 'sync';
-    process.env.EXPO_ROUTER_IMPORT_MODE_IOS = 'sync';
-    process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID = 'sync';
+    process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
     if (typeof context === 'string') {
         ctx = (0, context_stubs_1.requireContext)(path_1.default.resolve(process.cwd(), context));
     }

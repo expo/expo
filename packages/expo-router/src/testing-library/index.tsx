@@ -61,9 +61,7 @@ export function renderRouter(
   setInitialUrl(initialUrl);
 
   // Force the render to be synchronous
-  process.env.EXPO_ROUTER_IMPORT_MODE_WEB = 'sync';
-  process.env.EXPO_ROUTER_IMPORT_MODE_IOS = 'sync';
-  process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID = 'sync';
+  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
 
   if (typeof context === 'string') {
     ctx = requireContext(path.resolve(process.cwd(), context));

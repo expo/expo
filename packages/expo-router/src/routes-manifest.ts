@@ -32,6 +32,7 @@ export function createRoutesManifest(paths: string[]): ExpoRoutesManifestV1 | nu
   const routeTree = getRoutes(createMockContextModule(paths), {
     preserveApiRoutes: true,
     ignoreRequireErrors: true,
+    ignoreEntryPoints: true,
   });
 
   if (!routeTree) {
