@@ -25,7 +25,7 @@ import { directoryExistsSync, fileExistsSync } from '../../../utils/dir';
  *
  * @returns Transformed `package.json` contents.
  */
-export type PackageFilter = (pkg: PackageJSON, file: string, dir: string) => PackageJSON;
+type PackageFilter = (pkg: PackageJSON, file: string, dir: string) => PackageJSON;
 
 /**
  * Allows transforming a path within a package.
@@ -36,9 +36,9 @@ export type PackageFilter = (pkg: PackageJSON, file: string, dir: string) => Pac
  *
  * @returns Relative path that will be joined from the `package.json` location.
  */
-export type PathFilter = (pkg: PackageJSON, path: string, relativePath: string) => string;
+type PathFilter = (pkg: PackageJSON, path: string, relativePath: string) => string;
 
-export type ResolverOptions = {
+type ResolverOptions = {
   /** Directory to begin resolving from. */
   basedir: string;
   /** List of export conditions. */
@@ -71,22 +71,28 @@ export type ResolverOptions = {
   enablePackageExports?: boolean;
 
   blockList: RegExp[];
+
+  getPackageForModule: import('metro-resolver').CustomResolutionContext['getPackageForModule'];
 } & Pick<
   UpstreamResolveOptions,
-  'readPackageSync' | 'moduleDirectory' | 'extensions' | 'preserveSymlinks' | 'includeCoreModules'
+  | 'readPackageSync'
+  | 'realpathSync'
+  | 'moduleDirectory'
+  | 'extensions'
+  | 'preserveSymlinks'
+  | 'includeCoreModules'
 >;
 
 type UpstreamResolveOptionsWithConditions = UpstreamResolveOptions & ResolverOptions;
 
-export type SyncResolver = (path: string, options: ResolverOptions) => string;
-export type AsyncResolver = (path: string, options: ResolverOptions) => Promise<string>;
-
-export type Resolver = SyncResolver | AsyncResolver;
-
-const defaultResolver: SyncResolver = (
-  path,
-  { enablePackageExports, blockList = [], ...options }
-) => {
+const defaultResolver = (
+  path: string,
+  {
+    enablePackageExports,
+    blockList = [],
+    ...options
+  }: Omit<ResolverOptions, 'defaultResolver' | 'getPackageForModule'>
+): string => {
   // @ts-expect-error
   const resolveOptions: UpstreamResolveOptionsWithConditions = {
     ...options,
@@ -103,16 +109,16 @@ const defaultResolver: SyncResolver = (
       }
       return fileExistsSync(file);
     },
-    preserveSymlinks: enablePackageExports ? false : options.preserveSymlinks,
+    preserveSymlinks: options.preserveSymlinks,
     defaultResolver,
   };
 
   // resolveSync dereferences symlinks to ensure we don't create a separate
   // module instance depending on how it was referenced.
-  const result = resolveSync(
-    enablePackageExports ? getPathInModule(path, resolveOptions) : path,
-    resolveOptions
-  );
+  const result = resolveSync(enablePackageExports ? getPathInModule(path, resolveOptions) : path, {
+    ...resolveOptions,
+    preserveSymlinks: !options.preserveSymlinks,
+  });
 
   return result;
 };

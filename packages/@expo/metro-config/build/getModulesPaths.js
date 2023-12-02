@@ -46,7 +46,7 @@ function getModulesPaths(projectRoot) {
   // this minimizes the chance of Metro resolver breaking on new Node.js versions.
   const workspaceRoot = getWorkspaceRoot(_path().default.resolve(projectRoot)); // Absolute path or null
   if (workspaceRoot) {
-    paths.push(_path().default.resolve(projectRoot));
+    paths.push(_path().default.resolve(projectRoot, 'node_modules'));
     paths.push(_path().default.resolve(workspaceRoot, 'node_modules'));
   }
   return paths;

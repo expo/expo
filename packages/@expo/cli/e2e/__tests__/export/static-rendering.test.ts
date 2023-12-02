@@ -26,8 +26,7 @@ describe('exports static', () => {
             EXPO_USE_STATIC: 'static',
             E2E_ROUTER_SRC: 'static-rendering',
             E2E_ROUTER_ASYNC: 'development',
-            // TODO: Reenable this after investigating unstable_getRealPath
-            EXPO_USE_FAST_RESOLVER: 'false',
+            EXPO_USE_FAST_RESOLVER: 'true',
           },
         }
       );
