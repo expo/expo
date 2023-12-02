@@ -1,6 +1,7 @@
 ---
 title: Use Sentry
 maxHeadingDepth: 4
+hideTOC: true
 description: A guide on installing and configuring Sentry for crash reporting.
 ---
 
@@ -16,6 +17,12 @@ import { CODE } from '~/ui/components/Text';
 
 It notifies you of exceptions or errors that your users run into while using your app, and organizes them for you on a web dashboard. Reported exceptions include stacktraces, device info, version, and other relevant context automatically; you can also provide additional context that is specific to your application, like the current route and user id.
 
+<PlatformsSection title="Platform compatibility" android emulator ios simulator web />
+
+<Tabs>
+
+<Tab label="SDK 49 and below">
+
 ## Why sentry-expo?
 
 - Sentry treats React Native as a first-class citizen and we have collaborated with Sentry to make sure Expo is, too.
@@ -26,8 +33,6 @@ It notifies you of exceptions or errors that your users run into while using you
 - It streamlines your error-reporting code across Android, iOS, and web
 
 > Native crash reporting is not available in Expo Go, it is only available in standalone builds or development builds.
-
-<PlatformsSection title="Platform compatibility" android emulator ios simulator web />
 
 ## Install and configure Sentry
 
@@ -194,7 +199,7 @@ In addition to the required config fields above, you can also provide these **op
 
 #### Add the Config Plugin
 
-Add `expo.plugins` to your project's **app.json** or **app.config.js** file:
+Add the following to your project's **app.json** or **app.config.js** file:
 
 {/* prettier-ignore */}
 ```json app.json
@@ -332,6 +337,143 @@ Sentry.init({
 ```
 
 </Collapsible>
+
+
+
+</Tab>
+
+<Tab label="SDK 50 beta">
+
+## Install and configure Sentry
+
+<Step label="1">
+
+### Sign up for a Sentry account and create a project
+
+Before proceeding with installing Sentry, you'll need to make sure you have created a Sentry account and project. Here's how to do that:
+
+<Step label="1.1">
+
+[Sign up for Sentry](https://sentry.io/signup/) (it has a free tier), and create a project in your
+Dashboard. Take note of your **organization slug**, **project name**, and **`DSN`** as you'll need
+them later:
+
+- **organization slug** is available in your **Organization settings** tab
+- **project name** is available in your project's **Settings** > **Projects** tab (find it in the list)
+- **`DSN`** is available in your project's **Settings** > **Projects** > **Project name** > **Client Keys
+  (DSN)** tab.
+
+</Step>
+
+<Step label="1.2">
+
+Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an
+**auth token**. The token requires the scopes: `org:read`, `project:releases`, and
+`project:write`. Save them.
+
+</Step>
+
+Once you have each of these: organization slug, project name, DSN, and auth token, you're all set!
+
+</Step>
+
+<Step label="2">
+
+### Installation
+
+In your project directory, run:
+
+<Terminal cmd={['$ npx expo install @sentry/react-native']} />
+
+</Step>
+
+<Step label="3">
+
+### App configuration
+
+Configuring `@sentry/react-native` can be done through the config plugin in your [app config](/workflow/configuration/).  Add the following to your project's **app.json** or **app.config.js** file:
+
+{/* prettier-ignore */}
+```json app.json
+{
+  "expo": {
+    "plugins": ["sentry-expo", {
+      "organization": "sentry org slug, or use the `SENTRY_ORG` environment variable",
+      "project": "sentry project name, or use the `SENTRY_PROJECT` environment variable"
+    }]
+    /* @hide ... your existing configuration */ /* @end */
+  }
+}
+```
+
+Next, in any environment where you would like to be able to create releases and upload sourcemaps to Sentry, you will need to set the `SENTRY_AUTH_TOKEN` environment variable to your [Sentry auth token](https://docs.sentry.io/product/cli/configuration/). [Learn how to create a token](https://sentry.io/settings/account/api/).
+
+If you are using EAS Build, you can set the `SENTRY_AUTH_TOKEN` environment variable by [creating a secret of the same name](/build-reference/variables/#using-secrets-in-environment-variables).
+
+> **warning** Never commit secrets to your repository. Keep the Sentry auth token in a safe place, outside your repository.
+
+<ConfigReactNative>
+
+If you do not use [Continuous Native Generation (CNG)](https://docs.expo.dev/workflow/continuous-native-generation/), then you should use the [@sentry/wizard](https://docs.sentry.io/platforms/react-native/#install).
+
+</ConfigReactNative>
+
+</Step>
+
+<Step label="4">
+
+### Initialize Sentry
+
+Add the following to your app's main file such as **App.js**:
+
+```js
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'YOUR DSN HERE',
+  debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+});
+```
+
+Now wrap the root component of your app with Sentry. This may be **App.js** or **index.js** depending on your project, or in [**app/_layout.js** with Expo Router](https://docs.expo.dev/router/layouts/#create-a-layout-route).
+
+```js
+import * as Sentry from "@sentry/react-native";
+
+// your App component here
+
+export default Sentry.wrap(App);
+```
+
+</Step>
+
+<Step label="5">
+
+### Verify the configuration
+
+Create a new release build of your app and verify that it uploads source maps correctly. You may want to add a button in your app to test that it is working and sourcemaps are wired up as expected, for example:
+
+```js
+import { Button } from 'react-native';
+
+// inside some component
+<Button title='Press me' onPress={() => throw new Error('Hello, Sentry!')} />
+```
+
+</Step>
+
+## Usage with EAS Build
+
+Using the above instructions, no additional work is needed to integrate Sentry into your project when using EAS Build.
+
+## Usage with EAS Update
+
+In the current state of SDK 50 beta, EAS Update is not yet supported. We're working on making it easier than ever to integrate updates with Sentry, and we plan to release along with SDK 50 proper.
+
+</Tab>
+
+</Tabs>
+
 
 ## Learn more about Sentry
 
