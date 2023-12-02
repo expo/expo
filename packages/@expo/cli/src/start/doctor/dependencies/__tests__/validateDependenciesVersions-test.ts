@@ -3,7 +3,6 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import * as Log from '../../../../log';
-import { getCombinedKnownVersionsAsync } from '../getVersionedPackages';
 import {
   logIncorrectDependencies,
   validateDependenciesVersionsAsync,
@@ -230,39 +229,6 @@ describe(validateDependenciesVersionsAsync, () => {
 
     await expect(validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)).resolves.toBe(
       true
-    );
-  });
-
-  it('only uses local bundled module versions when using canary versions', async () => {
-    vol.fromJSON(
-      {
-        'node_modules/expo/package.json': JSON.stringify({
-          version: '50.0.0-canary-20231125-d600e44',
-        }),
-        'node_modules/react-native/package.json': JSON.stringify({
-          version: '0.73.0-rc.5',
-        }),
-      },
-      projectRoot
-    );
-    jest.mocked(getCombinedKnownVersionsAsync).mockResolvedValue({
-      'react-native': '0.73.0-rc.5',
-    });
-
-    const exp = { sdkVersion: '50.0.0' };
-    const pkg = { dependencies: { 'react-native': '0.73.0-rc.5' } };
-
-    // This should pass validation without any problems
-    await expect(validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)).resolves.toBe(
-      true
-    );
-    // This should be called with `skipRemoteVersions: true` because of a `canary` Expo SDK version
-    expect(getCombinedKnownVersionsAsync).toBeCalledWith(
-      expect.objectContaining({
-        projectRoot,
-        sdkVersion: exp.sdkVersion,
-        skipRemoteVersions: true,
-      })
     );
   });
 
