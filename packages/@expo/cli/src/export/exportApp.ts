@@ -30,9 +30,17 @@ export async function exportAppAsync(
     dumpAssetmap,
     sourceMaps,
     minify,
+    maxWorkers,
   }: Pick<
     Options,
-    'dumpAssetmap' | 'sourceMaps' | 'dev' | 'clear' | 'outputDir' | 'platforms' | 'minify'
+    | 'dumpAssetmap'
+    | 'sourceMaps'
+    | 'dev'
+    | 'clear'
+    | 'outputDir'
+    | 'platforms'
+    | 'minify'
+    | 'maxWorkers'
   >
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
@@ -73,6 +81,7 @@ export async function exportAppAsync(
     sourcemaps: sourceMaps,
     platforms: useServerRendering ? platforms.filter((platform) => platform !== 'web') : platforms,
     dev,
+    maxWorkers,
   });
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
@@ -152,6 +161,7 @@ export async function exportAppAsync(
         includeSourceMaps: sourceMaps,
         routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
         exportServer,
+        maxWorkers,
       });
     } else {
       // TODO: Unify with exportStaticAsync

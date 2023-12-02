@@ -34,6 +34,7 @@ type Options = {
   entryPoint?: string;
   clear: boolean;
   routerRoot: string;
+  maxWorkers?: number;
 };
 
 /** @private */
@@ -53,6 +54,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
     port,
     location: {},
     resetDevServer: options.clear,
+    maxWorkers: options.maxWorkers,
   });
   await devServerManager.startAsync([
     {
@@ -62,6 +64,7 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
         location: {},
         isExporting: true,
         resetDevServer: options.clear,
+        maxWorkers: options.maxWorkers,
       },
     },
   ]);
