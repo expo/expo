@@ -77,7 +77,7 @@ public final class FileSystemModule: Module {
       guard url.isFileURL else {
         throw InvalidFileUrlException(url)
       }
-      try ensurePathPermission(appContext, path: url.path.appending(".."), flag: .write)
+      try ensurePathPermission(appContext, path: url.appendingPathComponent("..").path, flag: .write)
       try removeFile(path: url.path, idempotent: options.idempotent)
     }
 
