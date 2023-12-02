@@ -8,6 +8,7 @@ import { installExpoPackageAsync } from './installExpoPackage';
 import { Options } from './resolveOptions';
 import * as Log from '../log';
 import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
+import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { learnMore } from '../utils/link';
 import { setNodeEnv } from '../utils/nodeEnv';
@@ -43,7 +44,19 @@ export async function installAsync(
     log: Log.log,
   });
 
-  if (options.check || options.fix) {
+  const expoVersion = findPackageByName(packages, 'expo');
+  const otherPackages = packages.filter((pkg) => pkg !== expoVersion);
+
+  // Abort early when installing `expo@<version>` and other packages with `--fix/--check`
+  if (packageHasVersion(expoVersion) && otherPackages.length && (options.check || options.fix)) {
+    throw new CommandError(
+      'BAD_ARGS',
+      `Cannot install other packages with ${expoVersion} and --fix or --check`
+    );
+  }
+
+  // Only check/fix packages if `expo@<version>` is not requested
+  if (!packageHasVersion(expoVersion) && (options.check || options.fix)) {
     return await checkPackagesAsync(projectRoot, {
       packages,
       options,
@@ -61,6 +74,7 @@ export async function installAsync(
 
   // Resolve the versioned packages, then install them.
   return installPackagesAsync(projectRoot, {
+    ...options,
     packageManager,
     packages,
     packageManagerArguments,
@@ -76,7 +90,9 @@ export async function installPackagesAsync(
     packageManager,
     sdkVersion,
     packageManagerArguments,
-  }: {
+    fix,
+    check,
+  }: Options & {
     /**
      * List of packages to version, grouped by the type of dependency.
      * @example ['uuid', 'react-native-reanimated@latest']
@@ -157,22 +173,35 @@ export async function installPackagesAsync(
     }
   }
 
-  // if updating expo package, install this first, then re-run the command minus expo to install everything else
-  if (packages.find((pkg) => pkg === 'expo')) {
-    const packagesMinusExpo = packages.filter((pkg) => pkg !== 'expo');
+  // `expo` needs to be installed before installing other packages
+  const expoPackage = findPackageByName(packages, 'expo');
+  if (expoPackage) {
+    const postInstallCommand = packages.filter((pkg) => pkg !== expoPackage);
 
-    await installExpoPackageAsync(projectRoot, {
+    // Pipe options to the next command
+    if (fix) postInstallCommand.push('--fix');
+    if (check) postInstallCommand.push('--check');
+
+    // Abort after installing `expo`, follow up command is spawn in a new process
+    return await installExpoPackageAsync(projectRoot, {
       packageManager,
       packageManagerArguments,
       expoPackageToInstall: versioning.packages.find((pkg) => pkg.startsWith('expo@'))!,
-      followUpCommandArgs: packagesMinusExpo,
+      followUpCommandArgs: postInstallCommand,
     });
-
-    // follow-up commands will be spawned in a detached process, so return immediately
-    return;
   }
 
   await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
 
   await applyPluginsAsync(projectRoot, versioning.packages);
+}
+
+/** Find a package, by name, in the requested packages list (`expo` -> `expo`/`expo@<version>`) */
+function findPackageByName(packages: string[], name: string) {
+  return packages.find((pkg) => pkg === name || pkg.startsWith(`${name}@`));
+}
+
+/** Determine if a specific version is requested for a package */
+function packageHasVersion(name = '') {
+  return name.includes('@');
 }
