@@ -141,7 +141,7 @@ If you want to import other TypeScript files or customize the language features,
 There are two different types of configs: static (**app.config.json**, **app.json**), and dynamic (**app.config.js**, **app.config.ts**). Static configs can be automatically updated with CLI tools, whereas dynamic configs must be manually updated by the developer.
 
 1. The static config is read if **app.config.json** exists (falls back to **app.json**). If no static config exists, then default values are inferred from the **package.json** and your dependencies.
-2. The dynamic config is read if either **app.config.ts** or **app.config.js** exist. If both exist, then the TypeScript config is used.
+2. The dynamic config is read if either **app.config.ts** or **app.config.js** exist. If both exist, then the JavaScript config is used.
 3. If the dynamic config returns a function, then the static config is passed to the function with `({ config }) => ({})`. This function can then mutate the static config values. Think of this like middleware for the static config.
 4. The return value from the dynamic config is used as the final config. It cannot have any promises.
 5. All functions in the config are evaluated and serialized before any tool in the Expo ecosystem uses it. The config must be a JSON manifest when it is hosted.
