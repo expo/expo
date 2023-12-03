@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
 
-import { HEADLINE } from '~/ui/components/Text';
+import { HEADLINE, P } from '~/ui/components/Text';
 
 type Props = PropsWithChildren<{
   label: string;
@@ -13,7 +13,7 @@ export const Step = ({ children, label }: Props) => {
         {label}
       </HEADLINE>
       <div className="pt-1.5 w-full max-w-[calc(100%-44px)] prose-headings:!-mt-1 prose-ul:!mb-0 prose-ol:!mb-0">
-        {children}
+        {typeof children === 'string' ? <P>{children}</P> : children}
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ public:
       : JsiSkWrappingSkPtrHostObject<SkSVGDOM>(std::move(context),
                                                std::move(svgdom)) {}
 
-  EXPORT_JSI_API_TYPENAME(JsiSkSVG, "SVG")
+  EXPORT_JSI_API_TYPENAME(JsiSkSVG, SVG)
 
   JSI_HOST_FUNCTION(width) {
     return static_cast<double>(getObject()->containerSize().width());

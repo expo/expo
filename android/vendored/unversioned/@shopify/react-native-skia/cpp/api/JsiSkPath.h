@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -26,6 +27,7 @@
 #include "SkStrokeRec.h"
 #include "SkTextUtils.h"
 #include "SkTrimPathEffect.h"
+#include "src/core/SkPathPriv.h"
 
 #pragma clang diagnostic pop
 
@@ -34,6 +36,18 @@ namespace RNSkia {
 namespace jsi = facebook::jsi;
 
 class JsiSkPath : public JsiSkWrappingSharedPtrHostObject<SkPath> {
+private:
+  static const int MOVE = 0;
+  static const int LINE = 1;
+  static const int QUAD = 2;
+  static const int CONIC = 3;
+  static const int CUBIC = 4;
+  static const int CLOSE = 5;
+
+  float pinT(double value) {
+    // Clamp the double value between 0 and 1 and then cast it to float
+    return static_cast<float>(std::clamp(value, 0.0, 1.0));
+  }
 
 public:
   JSI_HOST_FUNCTION(addPath) {
@@ -94,7 +108,7 @@ public:
       direction = SkPathDirection::kCCW;
     }
     getObject()->addRect(*rect, direction);
-    return jsi::Value::undefined();
+    return thisValue.getObject(runtime);
   }
 
   JSI_HOST_FUNCTION(addRRect) {
@@ -232,14 +246,14 @@ public:
   JSI_HOST_FUNCTION(setFillType) {
     auto ft = (SkPathFillType)arguments[0].asNumber();
     getObject()->setFillType(ft);
-    return jsi::Value::undefined();
+    return thisValue.getObject(runtime);
   }
 
   // TODO-API: Property?
   JSI_HOST_FUNCTION(setIsVolatile) {
     auto v = arguments[0].getBool();
     getObject()->setIsVolatile(v);
-    return jsi::Value::undefined();
+    return thisValue.getObject(runtime);
   }
 
   JSI_HOST_FUNCTION(isVolatile) {
@@ -249,7 +263,7 @@ public:
   JSI_HOST_FUNCTION(transform) {
     auto m3 = *JsiSkMatrix::fromValue(runtime, arguments[0]);
     getObject()->transform(m3);
-    return jsi::Value::undefined();
+    return thisValue.getObject(runtime);
   }
 
   JSI_HOST_FUNCTION(stroke) {
@@ -293,24 +307,21 @@ public:
   }
 
   JSI_HOST_FUNCTION(trim) {
-    auto start = arguments[0].asNumber();
-    auto end = arguments[1].asNumber();
+    auto start = pinT(arguments[0].asNumber());
+    auto end = pinT(arguments[1].asNumber());
     auto isComplement = arguments[2].getBool();
     auto path = *getObject();
     auto mode = isComplement ? SkTrimPathEffect::Mode::kInverted
                              : SkTrimPathEffect::Mode::kNormal;
     auto pe = SkTrimPathEffect::Make(start, end, mode);
-    if (!pe) {
-      // SkDebugf("Invalid args to trim(): startT and stopT must be in
-      // [0,1]\n");
-      return jsi::Value::null();
-    }
     SkStrokeRec rec(SkStrokeRec::InitStyle::kHairline_InitStyle);
+    if (!pe) {
+      return thisValue.getObject(runtime);
+    }
     if (pe->filterPath(&path, path, &rec, nullptr)) {
       getObject()->swap(path);
       return thisValue.getObject(runtime);
     }
-    SkDebugf("Could not trim path\n");
     return jsi::Value::null();
   }
 
@@ -396,12 +407,12 @@ public:
 
   JSI_HOST_FUNCTION(reset) {
     getObject()->reset();
-    return jsi::Value::undefined();
+    return thisValue.getObject(runtime);
   }
 
   JSI_HOST_FUNCTION(rewind) {
     getObject()->rewind();
-    return jsi::Value::undefined();
+    return thisValue.getObject(runtime);
   }
 
   JSI_HOST_FUNCTION(quadTo) {
@@ -441,7 +452,7 @@ public:
 
   JSI_HOST_FUNCTION(close) {
     getObject()->close();
-    return jsi::Value::undefined();
+    return thisValue.getObject(runtime);
   }
 
   JSI_HOST_FUNCTION(simplify) {
@@ -483,6 +494,14 @@ public:
   JSI_HOST_FUNCTION(interpolate) {
     auto path2 = JsiSkPath::fromValue(runtime, arguments[0]);
     auto weight = arguments[1].asNumber();
+    if (count > 2) {
+      auto path3 = JsiSkPath::fromValue(runtime, arguments[2]);
+      auto succeed = getObject()->interpolate(*path2, weight, path3.get());
+      if (!succeed) {
+        return nullptr;
+      }
+      return arguments[2].asObject(runtime);
+    }
     SkPath result;
     auto succeed = getObject()->interpolate(*path2, weight, &result);
     if (!succeed) {
@@ -495,35 +514,71 @@ public:
   JSI_HOST_FUNCTION(toCmds) {
     auto path = *getObject();
     auto cmds = jsi::Array(runtime, path.countVerbs());
-    auto it = SkPath::Iter(path, false);
-    //                       { "Move", "Line", "Quad", "Conic", "Cubic",
-    //                       "Close", "Done" };
-    const int pointCount[] = {1, 1, 2, 2, 3, 0, 0};
-    const int cmdCount[] = {3, 3, 5, 6, 7, 1, 0};
-    SkPoint points[4];
-    SkPath::Verb verb;
-    auto k = 0;
-    while (SkPath::kDone_Verb != (verb = it.next(points))) {
-      auto verbVal = static_cast<int>(verb);
-      auto cmd = jsi::Array(runtime, cmdCount[verbVal]);
-      auto j = 0;
-      cmd.setValueAtIndex(runtime, j++, jsi::Value(verbVal));
-      for (int i = 0; i < pointCount[verbVal]; ++i) {
-        cmd.setValueAtIndex(runtime, j++,
-                            jsi::Value(static_cast<double>(points[1 + i].fX)));
-        cmd.setValueAtIndex(runtime, j++,
-                            jsi::Value(static_cast<double>(points[1 + i].fY)));
+    auto j = 0;
+    for (auto [verb, pts, w] : SkPathPriv::Iterate(path)) {
+      switch (verb) {
+      case SkPathVerb::kMove: {
+        auto cmd = jsi::Array(runtime, 3);
+        cmd.setValueAtIndex(runtime, 0, static_cast<double>(MOVE));
+        cmd.setValueAtIndex(runtime, 1, static_cast<double>(pts[0].x()));
+        cmd.setValueAtIndex(runtime, 2, static_cast<double>(pts[0].y()));
+        cmds.setValueAtIndex(runtime, j, cmd);
+        break;
       }
-      if (SkPath::kConic_Verb == verb) {
-        cmd.setValueAtIndex(runtime, j,
-                            jsi::Value(static_cast<double>(it.conicWeight())));
+      case SkPathVerb::kLine: {
+        auto cmd = jsi::Array(runtime, 3);
+        cmd.setValueAtIndex(runtime, 0, static_cast<double>(LINE));
+        cmd.setValueAtIndex(runtime, 1, static_cast<double>(pts[1].x()));
+        cmd.setValueAtIndex(runtime, 2, static_cast<double>(pts[1].y()));
+        cmds.setValueAtIndex(runtime, j, cmd);
+        break;
       }
-      cmds.setValueAtIndex(runtime, k++, cmd);
+      case SkPathVerb::kQuad: {
+        auto cmd = jsi::Array(runtime, 5);
+        cmd.setValueAtIndex(runtime, 0, static_cast<double>(QUAD));
+        cmd.setValueAtIndex(runtime, 1, static_cast<double>(pts[1].x()));
+        cmd.setValueAtIndex(runtime, 2, static_cast<double>(pts[1].y()));
+        cmd.setValueAtIndex(runtime, 3, static_cast<double>(pts[2].x()));
+        cmd.setValueAtIndex(runtime, 4, static_cast<double>(pts[2].y()));
+        cmds.setValueAtIndex(runtime, j, cmd);
+        break;
+      }
+      case SkPathVerb::kConic: {
+        auto cmd = jsi::Array(runtime, 6);
+        cmd.setValueAtIndex(runtime, 0, static_cast<double>(CONIC));
+        cmd.setValueAtIndex(runtime, 1, static_cast<double>(pts[1].x()));
+        cmd.setValueAtIndex(runtime, 2, static_cast<double>(pts[1].y()));
+        cmd.setValueAtIndex(runtime, 3, static_cast<double>(pts[2].x()));
+        cmd.setValueAtIndex(runtime, 4, static_cast<double>(pts[2].y()));
+        cmd.setValueAtIndex(runtime, 5, static_cast<double>(*w));
+        cmds.setValueAtIndex(runtime, j, cmd);
+        break;
+      }
+      case SkPathVerb::kCubic: {
+        auto cmd = jsi::Array(runtime, 7);
+        cmd.setValueAtIndex(runtime, 0, static_cast<double>(CUBIC));
+        cmd.setValueAtIndex(runtime, 1, static_cast<double>(pts[1].x()));
+        cmd.setValueAtIndex(runtime, 2, static_cast<double>(pts[1].y()));
+        cmd.setValueAtIndex(runtime, 3, static_cast<double>(pts[2].x()));
+        cmd.setValueAtIndex(runtime, 4, static_cast<double>(pts[2].y()));
+        cmd.setValueAtIndex(runtime, 5, static_cast<double>(pts[3].x()));
+        cmd.setValueAtIndex(runtime, 6, static_cast<double>(pts[3].y()));
+        cmds.setValueAtIndex(runtime, j, cmd);
+        break;
+      }
+      case SkPathVerb::kClose: {
+        auto cmd = jsi::Array(runtime, 1);
+        cmd.setValueAtIndex(runtime, 0, static_cast<double>(CLOSE));
+        cmds.setValueAtIndex(runtime, j, cmd);
+        break;
+      }
+      }
+      j++;
     }
     return cmds;
   }
 
-  EXPORT_JSI_API_TYPENAME(JsiSkPath, "Path")
+  EXPORT_JSI_API_TYPENAME(JsiSkPath, Path)
 
   JSI_EXPORT_FUNCTIONS(
       JSI_EXPORT_FUNC(JsiSkPath, addPath), JSI_EXPORT_FUNC(JsiSkPath, addArc),

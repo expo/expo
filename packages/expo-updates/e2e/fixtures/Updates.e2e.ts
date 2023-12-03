@@ -101,6 +101,30 @@ describe('Basic tests', () => {
     await device.terminateApp();
   });
 
+  it('reloads', async () => {
+    jest.setTimeout(300000 * TIMEOUT_BIAS);
+    Server.start(Update.serverPort, protocolVersion);
+    await device.installApp();
+    await device.launchApp({
+      newInstance: true,
+    });
+    await waitForAppToBecomeVisible();
+
+    const isReloadingBefore = await testElementValueAsync('isReloading');
+    jestExpect(isReloadingBefore).toBe('false');
+    const startTimeBefore = parseInt(await testElementValueAsync('startTime'), 10);
+    jestExpect(startTimeBefore).toBeGreaterThan(0);
+
+    await pressTestButtonAsync('reload');
+
+    const isReloadingAfter = await testElementValueAsync('isReloading');
+    jestExpect(isReloadingAfter).toBe('false');
+    const startTimeAfter = parseInt(await testElementValueAsync('startTime'), 10);
+    jestExpect(startTimeAfter).toBeGreaterThan(startTimeBefore);
+
+    await device.terminateApp();
+  });
+
   it('initial request includes correct update-id headers', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     Server.start(Update.serverPort);
@@ -1023,8 +1047,14 @@ describe('Asset deletion recovery tests', () => {
     // Verify all the assets -- including the JS bundle from the update (which wasn't in the
     // embedded update) -- have been restored. Additionally verify from the server side that the
     // updated bundle was re-downloaded.
+    // With asset exclusion, on Android, the number of assets found may be greater than the number in the manifest,
+    // as the total will include embedded assets that were copied.
     numAssets = await checkNumAssetsAsync();
-    jestExpect(numAssets).toBe(manifest.assets.length + 1);
+    if (platform === 'ios') {
+      jestExpect(numAssets).toBe(manifest.assets.length + 1);
+    } else {
+      jestExpect(numAssets).toBeGreaterThanOrEqual(manifest.assets.length + 1);
+    }
     updateID = await testElementValueAsync('updateID');
     jestExpect(updateID).toEqual(manifest.id);
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1); // should have re-downloaded only the JS bundle; the rest should have been copied from the app binary

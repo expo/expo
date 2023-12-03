@@ -75,9 +75,13 @@ function _getCssDeps() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+/**
+ * Copyright © 2023 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
   var _config$serializer, _config$transformer$a, _config$transformer, _getPlatformOption, _config$transformer$p, _config$transformer2;
   const [entryFile, preModules, graph, options] = props;
@@ -147,6 +151,12 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
   };
 }
 class Chunk {
+  deps = new Set();
+  preModules = new Set();
+
+  // Chunks that are required to be loaded synchronously before this chunk.
+  // These are included in the HTML as <script> tags.
+  requiredChunks = new Set();
   constructor(name, entries, graph, options, isAsync = false, isVendor = false) {
     this.name = name;
     this.entries = entries;
@@ -154,11 +164,6 @@ class Chunk {
     this.options = options;
     this.isAsync = isAsync;
     this.isVendor = isVendor;
-    _defineProperty(this, "deps", new Set());
-    _defineProperty(this, "preModules", new Set());
-    // Chunks that are required to be loaded synchronously before this chunk.
-    // These are included in the HTML as <script> tags.
-    _defineProperty(this, "requiredChunks", new Set());
     this.deps = new Set(entries);
   }
   getPlatform() {
@@ -279,7 +284,10 @@ class Chunk {
       type: 'js',
       metadata: {
         isAsync: this.isAsync,
-        requires: [...this.requiredChunks.values()].map(chunk => chunk.getFilenameForConfig(serializerConfig))
+        requires: [...this.requiredChunks.values()].map(chunk => chunk.getFilenameForConfig(serializerConfig)),
+        // Provide a list of module paths that can be used for matching chunks to routes.
+        // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
+        modulePaths: [...this.deps].map(module => module.path)
       },
       source: jsCode
     };

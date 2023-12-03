@@ -172,6 +172,7 @@ redirects[develop/development-builds/installation/]=develop/development-builds/c
 redirects[get-started/errors/]=debugging/errors-and-warnings/
 redirects[develop/development-builds/parallel-installation]=build-reference/variants/
 redirects[home/develop/user-interface/safe-areas]=develop/user-interface/safe-areas/
+redirects[home/develop/development-builds/introduction]=develop/development-builds/introduction/
 
 # Redirects after Guides organization
 redirects[guides/]=guides/overview/
@@ -277,6 +278,16 @@ redirects[eas-update/debug-updates/]=eas-update/debug/
 redirects[eas-update/how-eas-update-works/]=eas-update/how-it-works/
 redirects[eas-update/migrate-to-eas-update/]=eas-update/migrate-from-classic-updates/
 
+# Redirects after Expo Router docs reorganization from Home to Guides
+redirects[routing/next-steps]=router/introduction/
+redirects[routing/introduction]=router/introduction/
+redirects[routing/installation]=router/installation/
+redirects[routing/create-pages]=router/create-pages/
+redirects[routing/navigating-pages]=router/navigating-pages/
+redirects[routing/layouts]=router/layouts/
+redirects[routing/appearance]=router/appearance/
+redirects[routing/error-handling]=router/error-handling/
+
 # Removed API reference docs
 redirects[versions/latest/sdk/facebook]=guides/authentication/
 redirects[versions/latest/sdk/taskmanager]=versions/latest/sdk/task-manager/
@@ -297,6 +308,10 @@ redirects[versions/latest/introduction/faq/]=faq/
 
 # Redirects based on Sentry reports
 redirects[push-notifications/]=push-notifications/overview/
+redirects[eas/submit]=submit/introduction/
+redirects[development/tools/expo-dev-client/]=develop/development-builds/introduction/
+redirects[develop/user-interface/custom-fonts/]=develop/user-interface/fonts/
+redirects[workflow/snack/]=/more/glossary-of-terms/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

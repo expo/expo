@@ -95,7 +95,7 @@ There are two ways you can use it:
 #### Use Vale in VS Code (Recommended)
 
 - [Install Vale on your system](https://vale.sh/docs/vale-cli/installation/)
-- [Install Vale's VS Code extension](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server)
+- [Install Vale's VS Code extension](https://marketplace.visualstudio.com/items?itemName=ChrisChinchilla.vale-vscode)
 
 Open the doc file (`*.mdx`) that you are working on and you'll may see suggested lines (yellow squiggly) in VS Code editor.
 

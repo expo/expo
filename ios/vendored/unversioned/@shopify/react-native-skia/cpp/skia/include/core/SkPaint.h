@@ -598,7 +598,7 @@ public:
 
     /**     (to be made private)
         Returns true if SkPaint does not include elements requiring extensive computation
-        to compute SkBaseDevice bounds of drawn geometry. For instance, SkPaint with SkPathEffect
+        to compute device bounds of drawn geometry. For instance, SkPaint with SkPathEffect
         always returns false.
 
         @return  true if SkPaint allows for fast computation of bounds
