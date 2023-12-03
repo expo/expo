@@ -105,11 +105,19 @@ describe(getDynamicConfig, () => {
     );
     vol.fromJSON(
       {
-        // This file exists to test that an invalid app.config.ts
-        // gets used instead of defaulting to a valid app.config.js
         'app.config.js': `export default {};`,
+        // This file exists to test that an invalid app.config.ts
         // This is a syntax error:
         'app.config.ts': invalidConfig,
+      },
+      'syntax-error'
+    );
+    vol.fromJSON(
+      {
+        // This is a syntax error. And gets used instead of defaulting to a valid app.config.ts
+        'app.config.js': invalidConfig,
+        // This file exists to test that an invalid app.config.js
+        'app.config.ts': `export default {};`,
       },
       'syntax-error'
     );
@@ -142,17 +150,6 @@ describe(getDynamicConfig, () => {
 
   // This test ensures app.config.js gets evaluated before its ts file by giving invalid js file
   it(`throws a useful error for dynamic configs with a syntax error in js config`, () => {
-    vol.fromJSON(
-      {
-        // This is a syntax error.
-        // Gets used instead of defaulting to a valid app.config.ts
-        'app.config.js': invalidConfig,
-        // This file exists to test that an invalid app.config.js
-        'app.config.ts': `export default {};`,
-      },
-      'syntax-error'
-    );
-
     const paths = getConfigFilePaths('syntax-error');
 
     expect(() => getDynamicConfig(paths.dynamicConfigPath!, mockConfigContext)).toThrowError(
