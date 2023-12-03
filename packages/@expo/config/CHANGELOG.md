@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Change order of the file check on config files from `app.config.ts` => `app.config.js` to `app.config.js` => `app.config.ts`
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

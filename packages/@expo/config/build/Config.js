@@ -294,7 +294,7 @@ function getConfigFilePaths(projectRoot) {
   };
 }
 function getDynamicConfigFilePath(projectRoot) {
-  for (const fileName of ['app.config.ts', 'app.config.js']) {
+  for (const fileName of ['app.config.js', 'app.config.ts']) {
     const configPath = _path().default.join(projectRoot, fileName);
     if (_fs().default.existsSync(configPath)) {
       return configPath;

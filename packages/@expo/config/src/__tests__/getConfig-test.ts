@@ -140,14 +140,36 @@ describe(getDynamicConfig, () => {
     ).toBe('object');
   });
 
-  // This tests error are thrown properly and ensures that a more specific
-  // config is used instead of defaulting to a valid substitution.
-  it(`throws a useful error for dynamic configs with a syntax error`, () => {
+  // This test ensures app.config.js gets evaluated before its ts file by giving invalid js file
+  it(`throws a useful error for dynamic configs with a syntax error in js config`, () => {
+    vol.fromJSON(
+      {
+        // This is a syntax error.
+        // Gets used instead of defaulting to a valid app.config.ts
+        'app.config.js': invalidConfig,
+        // This file exists to test that an invalid app.config.js
+        'app.config.ts': `export default {};`,
+      },
+      'syntax-error'
+    );
+
     const paths = getConfigFilePaths('syntax-error');
+
     expect(() => getDynamicConfig(paths.dynamicConfigPath!, mockConfigContext)).toThrowError(
       /Error .* \(5:7\)/
     );
   });
+
+  // This tests error are thrown properly and ensures that a more specific
+  // config is used instead of defaulting to a valid substitution.
+  it(`throws a useful error for dynamic configs with a syntax error in ts config`, () => {
+    const paths = getConfigFilePaths('syntax-error');
+
+    expect(() => getDynamicConfig(paths.dynamicConfigPath!, mockConfigContext)).toThrowError(
+      /Error .* \(5:7\)/
+    );
+  });
+
   // This tests error are thrown properly and ensures that a more specific
   // config is used instead of defaulting to a valid substitution.
   it(`throws a useful error for dynamic configs with a missing import`, () => {

@@ -216,7 +216,7 @@ export function getConfigFilePaths(projectRoot: string): ConfigFilePaths {
 }
 
 function getDynamicConfigFilePath(projectRoot: string): string | null {
-  for (const fileName of ['app.config.ts', 'app.config.js']) {
+  for (const fileName of ['app.config.js', 'app.config.ts']) {
     const configPath = path.join(projectRoot, fileName);
     if (fs.existsSync(configPath)) {
       return configPath;
