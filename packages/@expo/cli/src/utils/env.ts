@@ -172,7 +172,7 @@ class Env {
 
   /** Enable the React Native JS Inspector, instead of the "classic" Chrome DevTools (SDK <=49) */
   get EXPO_USE_UNSTABLE_DEBUGGER(): boolean {
-    return boolish('EXPO_EXPERIMENTAL_DEBUGGER', false);
+    return boolish('EXPO_USE_UNSTABLE_DEBUGGER', false);
   }
 }
 
