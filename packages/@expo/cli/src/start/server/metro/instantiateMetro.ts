@@ -366,10 +366,12 @@ function toJson(
     };
   }
 
-  function simplifyGraph({ transformOptions, ...graph }) {
+  function simplifyGraph({ ...graph }) {
+    console.log('transformOptions', graph.transformOptions);
     return {
       ...graph,
-      dependencies: [...graph.dependencies.entries()].map(([key, value]) => {
+
+      dependencies: [...graph.dependencies.entries()].slice(0, 50).map(([key, value]) => {
         return modifyDep(value);
       }),
       entryPoints: [...graph.entryPoints.entries()],

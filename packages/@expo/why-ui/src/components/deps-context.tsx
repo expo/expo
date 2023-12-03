@@ -5,7 +5,24 @@ import { MetroJsonModule } from './data';
 export const graphContext = React.createContext<{
   absoluteEntryFilePath: string;
   modules: MetroJsonModule[];
-  options: { serverRoot?: string; projectRoot: string };
+  transformOptions: {
+    platform: string;
+  };
+  options: {
+    serverRoot?: string;
+    projectRoot: string;
+
+    /** "/Users/evanbacon/Documents/GitHub/expo/node_modules/metro-runtime/src/modules/asyncRequire.js" */
+    asyncRequireModulePath: string;
+    includeAsyncPaths: boolean;
+    dev: boolean;
+    modulesOnly?: boolean;
+    runBeforeMainModule: string[];
+    runModule?: boolean;
+    sourceMapUrl?: string;
+    sourceUrl?: string;
+    inlineSourceMap?: boolean;
+  };
 }>(null);
 
 export function GraphProvider({ children, value }) {

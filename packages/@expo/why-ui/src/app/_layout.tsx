@@ -40,6 +40,7 @@ function LoadedLayout() {
 
 function LoadedLayoutInner({ data }: { data: ExpoServerResponse }) {
   const latest = data.graphs[data.graphs.length - 1];
+
   const deps = React.useMemo(() => {
     return [...latest[1], ...latest[2].dependencies].map((dep, index) => ({
       ...dep,
@@ -49,7 +50,13 @@ function LoadedLayoutInner({ data }: { data: ExpoServerResponse }) {
   }, [latest]);
 
   return (
-    <GraphProvider value={{ modules: deps, options: latest[3], absoluteEntryFilePath: latest[0] }}>
+    <GraphProvider
+      value={{
+        modules: deps,
+        options: latest[3],
+        transformOptions: latest[2].transformOptions,
+        absoluteEntryFilePath: latest[0],
+      }}>
       <Slot />
     </GraphProvider>
   );

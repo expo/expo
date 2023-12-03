@@ -29,7 +29,16 @@ export type MetroJsonModule = {
   isNodeModule: boolean;
 };
 
-export type JsonGraph = [string, MetroJsonModule[], { dependencies: MetroJsonModule[] }, any];
+export type JsonGraph = [
+  string,
+  MetroJsonModule[],
+  {
+    transformOptions: any;
+    entryPoints: string[];
+    dependencies: MetroJsonModule[];
+  },
+  any,
+];
 
 export type ExpoServerResponse = {
   version: 1;

@@ -35,6 +35,45 @@ export default function Layout() {
     </FilteredModulesContext.Provider>
   );
 }
+
+const NAME_ATTRIBUTE_MAP = {
+  baseUrl: 'Base URL',
+  dev: 'Dev',
+  engine: 'Engine',
+  routerRoot: 'Router Root',
+  minify: 'Minify',
+  platform: 'Platform',
+};
+
+function BundleInfo() {
+  const { options, transformOptions } = useGraph();
+
+  console.log('transformOptions', transformOptions);
+
+  const coreAttributes = {
+    ...transformOptions.customTransformOptions,
+    platform: transformOptions.platform,
+    minify: transformOptions.minify,
+    dev: options.dev,
+  };
+
+  return (
+    <div>
+      <span className="text-slate-50">Bundle Info</span>
+      {/* Dev */}
+      {Object.entries(coreAttributes).map(([key, value]) => {
+        return (
+          <div key={key} className="flex flex-row items-center gap-1">
+            <span className="text-slate-200">{NAME_ATTRIBUTE_MAP[key] ?? key}:</span>
+            <span className="text-slate-50">{String(value)}</span>
+          </div>
+        );
+      })}
+      {/* <span>Platform: {options.dev ? 'development' : "production"}</span> */}
+    </div>
+  );
+}
+
 function Header() {
   const homeSelected = useSelected('index');
   const treeSelected = useSelected('tree');
@@ -52,6 +91,8 @@ function Header() {
         </svg>
         <h3 className="text-slate-50 font-bold">Expo Why?</h3>
       </Link>
+
+      {/* <BundleInfo /> */}
 
       <div className="flex gap-2 flex-row items-center justify-between">
         <Button

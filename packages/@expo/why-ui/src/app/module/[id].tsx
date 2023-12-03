@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 export function SelectScrollable({ parents }: { parents: string[] }) {
   return (
     <Select
+      disabled={parents.length === 0}
       onValueChange={(value) => {
         router.push({ pathname: '/module/[id]', params: { id: value } });
       }}>
