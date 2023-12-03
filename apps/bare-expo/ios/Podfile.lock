@@ -1409,7 +1409,7 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - RNSVG (13.9.0):
+  - RNSVG (14.0.0):
     - React-Core
   - SDWebImage (5.17.0):
     - SDWebImage/Core (= 5.17.0)
@@ -2072,7 +2072,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 61bfdfc05db9b79dd61f894dcd29d3dcc6db3c02
   RNReanimated: 92958cd13e63c2c34c71bc50ee2c8d5561bc4e3f
   RNScreens: 5f4df9babb21d30723580377b5f52d9f9baf0005
-  RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
+  RNSVG: 255767813dac22db1ec2062c8b7e7b856d4e5ae6
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
   SDWebImageAVIFCoder: 8348fef6d0ec69e129c66c9fe4d74fbfbf366112
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
