@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Methods `stopRecording`, `pausePreview` and `resumePreview` have been updated to return promises.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
