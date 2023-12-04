@@ -1,0 +1,42 @@
+{
+  "name": "@expo/osascript",
+  "version": "2.0.33",
+  "description": "Tools for running an osascripts in Node",
+  "main": "build/index.js",
+  "scripts": {
+    "watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc",
+    "prepare": "yarn run clean && yarn build",
+    "clean": "rimraf build ./tsconfig.tsbuildinfo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo-cli.git",
+    "directory": "packages/osascript"
+  },
+  "keywords": [
+    "osascript",
+    "mac",
+    "osx",
+    "spawn",
+    "exec"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo-cli/issues"
+  },
+  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/osascript#readme",
+  "engines": {
+    "node": ">=12"
+  },
+  "dependencies": {
+    "@expo/spawn-async": "^1.5.0",
+    "exec-async": "^2.2.0"
+  },
+  "files": [
+    "build"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
