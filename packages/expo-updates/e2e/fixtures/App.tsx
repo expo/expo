@@ -128,12 +128,15 @@ export default function App() {
 
   const handleReload = async () => {
     setIsReloading(true);
-    try {
-      await Updates.reloadAsync();
-      setIsReloading(false);
-    } catch (e) {
-      console.warn(e);
-    }
+    // this is done after a timeout so that the button press finishes for detox
+    setTimeout(async () => {
+      try {
+        await Updates.reloadAsync();
+        setIsReloading(false);
+      } catch (e) {
+        console.warn(e);
+      }
+    }, 1000);
   };
 
   const handleCheckForUpdate = runBlockAsync(async () => {
