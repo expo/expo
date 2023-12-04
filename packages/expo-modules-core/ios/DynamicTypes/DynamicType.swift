@@ -35,6 +35,9 @@ private func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
   if let TypedArrayType = T.self as? AnyTypedArray.Type {
     return DynamicTypedArrayType(innerType: TypedArrayType)
   }
+  if let DataType = T.self as? Data.Type {
+    return DynamicFoundationDataType()
+  }
   if let JavaScriptValueType = T.self as? any AnyJavaScriptValue.Type {
     return DynamicJavaScriptType(innerType: JavaScriptValueType)
   }

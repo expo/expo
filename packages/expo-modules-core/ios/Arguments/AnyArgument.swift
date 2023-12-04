@@ -33,6 +33,11 @@ extension Double: AnyArgument {}
 extension CGFloat: AnyArgument {}
 
 extension String: AnyArgument {}
+extension Data: AnyArgument {
+  public static func getDynamicType() -> AnyDynamicType {
+    return DynamicFoundationDataType()
+  }
+}
 
 extension Optional: AnyArgument where Wrapped: AnyArgument {
   public static func getDynamicType() -> AnyDynamicType {
