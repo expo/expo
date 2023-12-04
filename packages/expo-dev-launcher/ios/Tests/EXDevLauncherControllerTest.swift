@@ -4,7 +4,7 @@ import Nimble
 @testable import EXDevLauncher
 
 class EXDevLauncherControllerTest: QuickSpec {
-  override func spec() {
+  override class func spec() {
     it("should return correct version") {
       let version = EXDevLauncherController.version()
 

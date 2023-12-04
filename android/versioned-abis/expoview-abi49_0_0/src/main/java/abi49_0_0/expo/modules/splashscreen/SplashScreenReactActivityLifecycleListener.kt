@@ -9,7 +9,7 @@ import expo.modules.splashscreen.singletons.SplashScreen
 // this needs to stay for versioning to work
 /* ktlint-disable no-unused-imports */
 import expo.modules.splashscreen.SplashScreenImageResizeMode
-import abi49_0_0.host.exp.expoview.R
+import expo.modules.splashscreen.R
 /* ktlint-enable no-unused-imports */
 
 class SplashScreenReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {

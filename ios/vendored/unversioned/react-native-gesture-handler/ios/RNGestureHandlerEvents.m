@@ -12,6 +12,16 @@
   return self;
 }
 
++ (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position withAbsolutePosition:(CGPoint)absolutePosition
+{
+  return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
+    @"x" : @(position.x),
+    @"y" : @(position.y),
+    @"absoluteX" : @(absolutePosition.x),
+    @"absoluteY" : @(absolutePosition.y)
+  }];
+}
+
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
                            withAbsolutePosition:(CGPoint)absolutePosition
                             withNumberOfTouches:(NSUInteger)numberOfTouches

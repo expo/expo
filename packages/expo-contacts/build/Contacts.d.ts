@@ -77,7 +77,7 @@ export type PhoneNumber = {
     digits?: string;
     /**
      * Country code.
-     * @example `+1`
+     * @example `us`
      */
     countryCode?: string;
     /**

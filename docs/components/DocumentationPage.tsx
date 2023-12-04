@@ -5,6 +5,7 @@ import { useRouter } from 'next/compat/router';
 import { useEffect, useState, createRef } from 'react';
 
 import * as RoutesUtils from '~/common/routes';
+import { isRouteActive } from '~/common/routes';
 import * as WindowUtils from '~/common/window';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import DocumentationSidebarRight, {
@@ -125,7 +126,10 @@ export default function DocumentationPage({
     .map(route => (route?.type === 'page' ? route : appendSectionToRoute(route)))
     .flat();
 
-  const pageIndex = flattenStructure.findIndex(page => page?.name === title);
+  const pageIndex = flattenStructure.findIndex(page =>
+    isRouteActive(page, router?.asPath, router?.pathname)
+  );
+
   const previousPage = flattenStructure[pageIndex - 1];
   const nextPage = flattenStructure[pageIndex + 1];
 
@@ -172,15 +176,13 @@ export default function DocumentationPage({
         )}
         {title && <Separator />}
         {children}
-        {title && (
-          <Footer
-            title={title}
-            sourceCodeUrl={sourceCodeUrl}
-            packageName={packageName}
-            previousPage={previousPage}
-            nextPage={nextPage}
-          />
-        )}
+        <Footer
+          title={title}
+          sourceCodeUrl={sourceCodeUrl}
+          packageName={packageName}
+          previousPage={previousPage}
+          nextPage={nextPage}
+        />
       </div>
     </DocumentationNestedScrollLayout>
   );

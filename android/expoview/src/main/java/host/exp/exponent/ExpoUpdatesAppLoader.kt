@@ -198,6 +198,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           callback.onError(exception)
         }
 
+        override fun onFinishedAllLoading() {}
+
         override fun onCachedUpdateLoaded(update: UpdateEntity): Boolean {
           val manifest = Manifest.fromManifestJson(update.manifest)
           setShouldShowAppLoaderStatus(manifest)

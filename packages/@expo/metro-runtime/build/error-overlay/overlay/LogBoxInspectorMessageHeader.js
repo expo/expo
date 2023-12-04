@@ -57,7 +57,11 @@ exports.LogBoxInspectorMessageHeader = LogBoxInspectorMessageHeader;
 const styles = react_native_1.StyleSheet.create({
     body: {
         backgroundColor: LogBoxStyle.getBackgroundColor(1),
-        boxShadow: `0 2px 0 2px #00000080`,
+        ...react_native_1.Platform.select({
+            web: {
+                boxShadow: `0 2px 0 2px #00000080`,
+            },
+        }),
     },
     bodyText: {
         color: LogBoxStyle.getTextColor(1),

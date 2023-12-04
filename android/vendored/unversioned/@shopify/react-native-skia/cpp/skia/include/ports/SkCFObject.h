@@ -130,7 +130,7 @@ public:
      *  The caller must assume ownership of the object, and manage its reference count directly.
      *  No call to CFRelease() will be made.
      */
-    T SK_WARN_UNUSED_RESULT release() {
+    [[nodiscard]] T release() {
         T obj = fObject;
         fObject = nil;
         return obj;

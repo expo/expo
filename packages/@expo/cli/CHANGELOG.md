@@ -4,11 +4,49 @@
 
 ### 🛠 Breaking changes
 
+- `tsconfig.json` attribute `baseUrl` will no longer default to enabled when `paths` are defined. ([#25510](https://github.com/expo/expo/pull/25510) by [@EvanBacon](https://github.com/EvanBacon))
+- `tsconfig.json` attribute `baseUrl` will now be resolved _before_ node modules instead of after. ([#25510](https://github.com/expo/expo/pull/25510) by [@EvanBacon](https://github.com/EvanBacon))
+- `tsconfig.json` attribute `baseUrl` will no longer be resolved if a group from `paths` are matched first. ([#25510](https://github.com/expo/expo/pull/25510) by [@EvanBacon](https://github.com/EvanBacon))
+- Change default CSS reset in template HTML to align with `react-native-web@0.19.8`. ([#25429](https://github.com/expo/expo/pull/25429) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
+
+- Add bundle splitting to Expo Router for web platforms. ([#25627](https://github.com/expo/expo/pull/25627) by [@EvanBacon](https://github.com/EvanBacon))
+- Add custom Expo Router root directory support with full cache invalidation on server reset. ([#25658](https://github.com/expo/expo/pull/25658) by [@EvanBacon](https://github.com/EvanBacon))
+- Add filenames to metro logs when finished. ([#25575](https://github.com/expo/expo/pull/25575) by [@EvanBacon](https://github.com/EvanBacon))
+- Alias `react-native-vector-icons` to `@expo/vector-icons` in the Metro resolver. ([#25512](https://github.com/expo/expo/pull/25512) by [@EvanBacon](https://github.com/EvanBacon))
+- Ensure invalid production iOS builds fail more predictably. ([#25410](https://github.com/expo/expo/pull/25410) by [@EvanBacon](https://github.com/EvanBacon))
+- Add first-class Xcode IDE hints for Metro bundling errors during production iOS builds from Xcode. ([#25410](https://github.com/expo/expo/pull/25410) by [@EvanBacon](https://github.com/EvanBacon))
+- Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Re-implement debugging tools with new React Native JS Inspector. ([#25649](https://github.com/expo/expo/pull/25649) by [@byCedric](https://github.com/byCedric))
+- Add `expo run` command to select platform to run. ([#23514](https://github.com/expo/expo/pull/23514) by [@byCedric](https://github.com/byCedric))
+- Add `EXPO_USE_UNSTABLE_DEBUGGER` to open new React Native JS Inspector. ([#25671](https://github.com/expo/expo/pull/25671) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
+- Fix `--max-workers` flag in `npx expo export`. ([#25710](https://github.com/expo/expo/pull/25710) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix test resolver for SDK 50. ([#25473](https://github.com/expo/expo/pull/25473) by [@EvanBacon](https://github.com/EvanBacon))
+- Prevent log-spew when running prebuild in debug mode. ([#25434](https://github.com/expo/expo/pull/25434) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix @react-native/dev-middleware types for react-native 0.73. ([#25513](https://github.com/expo/expo/pull/25513) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Only use `bundledNativeModules.json` for dependencies validation when using canary versions. ([#25600](https://github.com/expo/expo/pull/25600) by [@byCedric](https://github.com/byCedric))
+- Remove the 404 route from typed routes ([#24496](https://github.com/expo/expo/pull/24496) by [@marklawlor](https://github.com/marklawlor))
+- Exclude `+not-found` and `*+api` routes from typed routes ([#24496](https://github.com/expo/expo/pull/24496) by [@marklawlor](https://github.com/marklawlor))
+- Fix Expo Router typed routes error with external URLs ([#25591](https://github.com/expo/expo/pull/25591) by [@marklawlor](https://github.com/marklawlor))
+- Fix permission issue when user doesn't have permission to view app. ([#25650](https://github.com/expo/expo/pull/25650) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
+
+- Remove unused Metro `extraNodeModules` augmentation for web resolution in favor of standard aliases. ([#25506](https://github.com/expo/expo/pull/25506) by [@EvanBacon](https://github.com/EvanBacon))
+- Consolidate logic for resolving Node.js built-in shims in browser environments. ([#25511](https://github.com/expo/expo/pull/25511) by [@EvanBacon](https://github.com/EvanBacon))
+- Ensure we disable lazy bundling when exporting. ([#25436](https://github.com/expo/expo/pull/25436) by [@EvanBacon](https://github.com/EvanBacon))
+- Split web server output into `server/` and `client/` subfolders when exporting. ([#25640](https://github.com/expo/expo/pull/25640) by [@kitten](https://github.com/kitten))
+- asMock -> jest.mocked. ([#25685](https://github.com/expo/expo/pull/25685) by [@wschurman](https://github.com/wschurman))
+
+## 0.10.16 — 2023-11-24
+
+### 🐛 Bug fixes
+
+- Prevent additional logs from showing in `expo config --json`. ([#24192](https://github.com/expo/expo/pull/24192) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.15.0 — 2023-11-14
 
@@ -19,6 +57,7 @@
 
 ### 🎉 New features
 
+- Use multi-bundle output serializer for all exports. ([#25369](https://github.com/expo/expo/pull/25369) by [@EvanBacon](https://github.com/EvanBacon))
 - Rename `basePath` to `baseUrl` and expose to bundles with `process.env.EXPO_BASE_URL`. ([#25305](https://github.com/expo/expo/pull/25305) by [@EvanBacon](https://github.com/EvanBacon))
 - Rename `--dump-sourcemap` to `--source-maps` with `-s` alias in `expo export`. ([#25303](https://github.com/expo/expo/pull/25303) by [@EvanBacon](https://github.com/EvanBacon))
 - Bundle static websites +2x faster. ([#25312](https://github.com/expo/expo/pull/25312) by [@EvanBacon](https://github.com/EvanBacon))

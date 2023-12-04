@@ -47,12 +47,13 @@
     "@babel/preset-env": "^7.20.0",
     "@babel/preset-react": "^7.22.15",
     "@babel/plugin-transform-parameters": "^7.22.15",
-    "babel-plugin-module-resolver": "^5.0.0",
+    "@react-native/babel-preset": "^0.73.18",
     "babel-plugin-react-native-web": "~0.18.10",
-    "metro-react-native-babel-preset": "0.76.8"
+    "react-refresh": "0.14.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "expo-module-scripts": "^3.3.0",
     "jest": "^29.2.1"
   }
 }

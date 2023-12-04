@@ -6,6 +6,6 @@ module.exports = function (api) {
       // Ignore tests and the `unknown` name used in tests
       return !filename.match(/samples/) && filename.match(/src\/(.*)\.tsx?/);
     },
-    presets: ['@expo/babel-preset-cli'],
+    presets: ['expo-module-scripts/babel.config.cli'],
   };
 };

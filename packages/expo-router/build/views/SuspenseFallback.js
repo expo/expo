@@ -7,9 +7,13 @@ exports.SuspenseFallback = void 0;
 const react_1 = __importDefault(require("react"));
 const Toast_1 = require("./Toast");
 function SuspenseFallback({ route }) {
-    return (<Toast_1.ToastWrapper>
-      <Toast_1.Toast filename={route?.contextKey}>Bundling...</Toast_1.Toast>
-    </Toast_1.ToastWrapper>);
+    if (__DEV__) {
+        return (<Toast_1.ToastWrapper>
+        <Toast_1.Toast filename={route?.contextKey}>Bundling...</Toast_1.Toast>
+      </Toast_1.ToastWrapper>);
+    }
+    // TODO: Support user's customizing the fallback.
+    return null;
 }
 exports.SuspenseFallback = SuspenseFallback;
 //# sourceMappingURL=SuspenseFallback.js.map

@@ -295,6 +295,9 @@ class AppContext(
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
+    if (::jsiInterop.isInitialized) {
+      jsiInterop.wasDeallocated()
+    }
     jniDeallocator.deallocate()
     logger.info("✅ AppContext was destroyed")
   }

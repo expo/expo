@@ -1,12 +1,11 @@
 import { ExpoConfig } from '@expo/config';
-import { ModPlatform } from '@expo/config-plugins';
 import fs from 'fs';
 import minimatch from 'minimatch';
 import path from 'path';
 
 import { BundleOutput } from './fork-bundleAsync';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
-import { Asset, saveAssetsAsync } from './saveAssets';
+import { Asset, ExportAssetMap } from './saveAssets';
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
@@ -126,11 +125,13 @@ export async function exportAssetsAsync(
     outputDir,
     bundles: { web, ...bundles },
     baseUrl,
+    files = new Map(),
   }: {
     exp: ExpoConfig;
     bundles: Partial<Record<string, BundleOutput>>;
     outputDir: string;
     baseUrl: string;
+    files?: ExportAssetMap;
   }
 ) {
   // NOTE: We use a different system for static web
@@ -138,6 +139,7 @@ export async function exportAssetsAsync(
     // Save assets like a typical bundler, preserving the file paths on web.
     // TODO: Update React Native Web to support loading files from asset hashes.
     await persistMetroAssetsAsync(web.assets, {
+      files,
       platform: 'web',
       outputDirectory: outputDir,
       baseUrl,
@@ -170,38 +172,32 @@ export async function exportAssetsAsync(
       });
       debug(`Filtered assets count = ${filteredAssets.length}`);
     }
-    Log.log('Saving assets');
-    await saveAssetsAsync({ assets: filteredAssets, outputDir });
+
+    const hashes = new Set<string>();
+
+    // Add assets to copy.
+    filteredAssets.forEach((asset) => {
+      const assetId =
+        'fileSystemLocation' in asset
+          ? path.relative(projectRoot, path.join(asset.fileSystemLocation, asset.name)) +
+            (asset.type ? '.' + asset.type : '')
+          : undefined;
+
+      asset.files.forEach((fp: string, index: number) => {
+        const hash = asset.fileHashes[index];
+        if (hashes.has(hash)) return;
+        hashes.add(hash);
+        files.set(path.join('assets', hash), {
+          originFilename: path.relative(projectRoot, fp),
+          contents: fs.readFileSync(fp),
+          assetId,
+        });
+      });
+    });
   }
 
   // Add google services file if it exists
   await resolveGoogleServicesFile(projectRoot, exp);
 
-  return { exp, assets, embeddedHashSet };
-}
-
-export async function exportCssAssetsAsync({
-  outputDir,
-  bundles,
-  baseUrl,
-}: {
-  bundles: Partial<Record<ModPlatform, BundleOutput>>;
-  outputDir: string;
-  baseUrl: string;
-}) {
-  const assets = uniqBy(
-    Object.values(bundles).flatMap((bundle) => bundle!.css),
-    (asset) => asset.filename
-  );
-
-  const cssDirectory = assets[0]?.filename;
-  if (!cssDirectory) return [];
-
-  await fs.promises.mkdir(path.join(outputDir, path.dirname(cssDirectory)), { recursive: true });
-
-  await Promise.all(
-    assets.map((v) => fs.promises.writeFile(path.join(outputDir, v.filename), v.source))
-  );
-
-  return assets.map((v) => baseUrl + '/' + v.filename);
+  return { exp, assets, embeddedHashSet, files };
 }

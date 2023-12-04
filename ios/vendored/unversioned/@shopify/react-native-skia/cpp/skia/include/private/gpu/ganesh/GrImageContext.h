@@ -8,9 +8,12 @@
 #ifndef GrImageContext_DEFINED
 #define GrImageContext_DEFINED
 
+#include "include/core/SkRefCnt.h"
 #include "include/private/base/SingleOwner.h"
+#include "include/private/base/SkAPI.h"
 #include "include/private/gpu/ganesh/GrContext_Base.h"
 
+class GrContextThreadSafeProxy;
 class GrImageContextPriv;
 
 // This is now just a view on a ThreadSafeProxy, that SkImages can attempt to
@@ -48,8 +51,6 @@ private:
     // GrSurfaceDrawContexts.  It is also passed to the GrResourceProvider and SkGpuDevice.
     // TODO: Move this down to GrRecordingContext.
     mutable skgpu::SingleOwner fSingleOwner;
-
-    using INHERITED = GrContext_Base;
 };
 
 #endif

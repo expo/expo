@@ -11,6 +11,7 @@ on:
       - packages/@expo/config/src/**
       - packages/@expo/config-plugins/src/**
       - packages/@expo/env/src/**
+      - packages/@expo/json-file/src/**
       - packages/@expo/package-manager/src/**
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/server/src/**
@@ -26,6 +27,7 @@ on:
       - packages/@expo/config/src/**
       - packages/@expo/config-plugins/src/**
       - packages/@expo/env/src/**
+      - packages/@expo/json-file/src/**
       - packages/@expo/package-manager/src/**
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/server/src/**
@@ -66,9 +68,6 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: 🔎 Type Check CLI
         run: yarn typecheck
-        working-directory: packages/@expo/cli
-      - name: 🛠 Build CLI
-        run: yarn prepare
         working-directory: packages/@expo/cli
       - name: E2E Test CLI
         run: yarn test:e2e

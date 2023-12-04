@@ -7,7 +7,7 @@ import ExpoModulesTestCore
 import EXManifests
 
 class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var config: UpdatesConfig!
     var database: UpdatesDatabase!
     var update1: Update!

@@ -48,8 +48,8 @@ else {
 }
 let StackTrace;
 if (process.env.NODE_ENV === 'development') {
-    const { LogContext } = require('@expo/metro-runtime/src/error-overlay/Data/LogContext');
-    const { LogBoxInspectorStackFrames, } = require('@expo/metro-runtime/src/error-overlay/overlay/LogBoxInspectorStackFrames');
+    const { LogContext } = require('@expo/metro-runtime/build/error-overlay/Data/LogContext');
+    const { LogBoxInspectorStackFrames, } = require('@expo/metro-runtime/build/error-overlay/overlay/LogBoxInspectorStackFrames');
     StackTrace = function ({ logData }) {
         if (!logData?.symbolicated?.stack?.stack) {
             return null;
@@ -133,7 +133,11 @@ const styles = react_native_1.StyleSheet.create({
         }),
     },
     buttonInner: {
-        transitionDuration: '100ms',
+        ...react_native_1.Platform.select({
+            web: {
+                transitionDuration: '100ms',
+            },
+        }),
         paddingVertical: 12,
         paddingHorizontal: 24,
         borderColor: 'white',

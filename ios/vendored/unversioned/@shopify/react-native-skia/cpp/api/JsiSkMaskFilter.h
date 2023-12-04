@@ -25,7 +25,7 @@ public:
       : JsiSkWrappingSkPtrHostObject<SkMaskFilter>(std::move(context),
                                                    std::move(maskFilter)) {}
 
-  EXPORT_JSI_API_TYPENAME(JsiSkMaskFilter, "MaskFilter")
+  EXPORT_JSI_API_TYPENAME(JsiSkMaskFilter, MaskFilter)
 };
 
 } // namespace RNSkia

@@ -57,8 +57,13 @@
 - (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer
 {
   // When this method is called it means that one of handlers has activated, in this case we want
-  // to send an info to JS so that it cancells all JS responders
-  [self.delegate gestureRecognizer:preventingGestureRecognizer didActivateInViewWithTouchHandler:self.view];
+  // to send an info to JS so that it cancells all JS responders, as long as the preventing
+  // recognizer is from Gesture Handler, otherwise we might break some interactions
+  RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:preventingGestureRecognizer];
+  if (handler != nil) {
+    [self.delegate gestureRecognizer:preventingGestureRecognizer didActivateInViewWithTouchHandler:self.view];
+  }
+
   return [super canBePreventedByGestureRecognizer:preventingGestureRecognizer];
 }
 

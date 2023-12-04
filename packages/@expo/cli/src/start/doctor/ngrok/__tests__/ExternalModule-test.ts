@@ -1,6 +1,5 @@
 import * as PackageManager from '@expo/package-manager';
 
-import { asMock } from '../../../../__tests__/asMock';
 import { delayAsync } from '../../../../utils/delay';
 import { confirmAsync } from '../../../../utils/prompts';
 import { ExternalModule, ExternalModuleVersionError } from '../ExternalModule';
@@ -36,7 +35,7 @@ function createExternalModuleResolver() {
 describe('get', () => {
   it(`returns null when the version is incorrect.`, () => {
     const { externalModule } = createExternalModuleResolver();
-    asMock(externalModule._require).mockReturnValue({
+    jest.mocked(externalModule._require).mockReturnValue({
       version: '1.0.0',
     });
 
@@ -48,10 +47,11 @@ describe('get', () => {
 describe('_resolveModule', () => {
   it(`asserts when the required package exports a nullish value.`, () => {
     const { externalModule } = createExternalModuleResolver();
-    asMock(externalModule._require)
+    jest
+      .mocked(externalModule._require)
       .mockReturnValueOnce({ version: '4.1.0' })
       .mockReturnValueOnce(null);
-    asMock(externalModule._resolveLocal).mockReturnValue('/');
+    jest.mocked(externalModule._resolveLocal).mockReturnValue('/');
 
     expect(() => externalModule._resolveModule(true)).toThrowError(/exports a nullish value/);
   });
@@ -60,7 +60,8 @@ describe('_resolveModule', () => {
 describe('getVersioned', () => {
   it('resolves the local instance of a package', () => {
     const { externalModule } = createExternalModuleResolver();
-    asMock(externalModule._require)
+    jest
+      .mocked(externalModule._require)
       .mockReturnValueOnce({
         version: '4.1.0',
       })
@@ -76,7 +77,8 @@ describe('getVersioned', () => {
 
   it('resolves the global instance of a package', () => {
     const { externalModule } = createExternalModuleResolver();
-    asMock(externalModule._require)
+    jest
+      .mocked(externalModule._require)
       .mockReturnValueOnce(null)
       .mockReturnValueOnce({
         version: '4.1.0',
@@ -112,7 +114,7 @@ describe('resolveAsync', () => {
   });
   it('upgrades non-compliant local package', async () => {
     const { externalModule } = createExternalModuleResolver();
-    asMock(externalModule._require).mockReturnValueOnce({
+    jest.mocked(externalModule._require).mockReturnValueOnce({
       version: '3.0.0',
     });
 
@@ -128,7 +130,8 @@ describe('resolveAsync', () => {
   it('upgrades non-compliant global package', async () => {
     const { externalModule } = createExternalModuleResolver();
 
-    asMock(externalModule._require)
+    jest
+      .mocked(externalModule._require)
       .mockReturnValueOnce(
         // Return the local package as null to imply that it doesn't exist.
         null
@@ -151,11 +154,12 @@ describe('installAsync', () => {
   it(`installs the missing package to project dev dependencies`, async () => {
     const { externalModule } = createExternalModuleResolver();
 
-    asMock(externalModule.getVersioned).mockReturnValueOnce(
+    jest.mocked(externalModule.getVersioned).mockReturnValueOnce(
       // Return the global package as null to imply that it doesn't exist.
       'foobar'
     );
-    asMock(confirmAsync)
+    jest
+      .mocked(confirmAsync)
       .mockResolvedValueOnce(true)
       .mockImplementation(() => {
         throw new Error("shouldn't happen");
@@ -163,7 +167,7 @@ describe('installAsync', () => {
 
     const addDevAsync = jest.fn();
 
-    asMock(PackageManager.createForProject).mockReturnValueOnce({
+    jest.mocked(PackageManager.createForProject).mockReturnValueOnce({
       addDevAsync,
     } as any);
 
@@ -184,14 +188,14 @@ describe('installAsync', () => {
   it(`installs the missing package globally with npm`, async () => {
     const { externalModule } = createExternalModuleResolver();
 
-    asMock(externalModule.getVersioned).mockReturnValueOnce(
+    jest.mocked(externalModule.getVersioned).mockReturnValueOnce(
       // Return the global package as null to imply that it doesn't exist.
       'foobar'
     );
 
     const addGlobalAsync = jest.fn();
 
-    asMock(PackageManager.NpmPackageManager as any).mockReturnValueOnce({
+    jest.mocked(PackageManager.NpmPackageManager as any).mockReturnValueOnce({
       addGlobalAsync,
     } as any);
 
@@ -209,15 +213,15 @@ describe('installAsync', () => {
   it(`throws an error when the package cannot be found after install`, async () => {
     const { externalModule } = createExternalModuleResolver();
 
-    asMock(externalModule.getVersioned).mockReturnValue(
+    jest.mocked(externalModule.getVersioned).mockReturnValue(
       // Return the local package as null to imply that it doesn't exist.
       null
     );
-    asMock(confirmAsync).mockImplementation(() => {
+    jest.mocked(confirmAsync).mockImplementation(() => {
       throw new Error("shouldn't happen");
     });
 
-    asMock(PackageManager.createForProject).mockReturnValueOnce({
+    jest.mocked(PackageManager.createForProject).mockReturnValueOnce({
       addDevAsync: jest.fn(),
     } as any);
 
@@ -232,15 +236,15 @@ describe('installAsync', () => {
   it(`asserts on missing`, async () => {
     const { externalModule } = createExternalModuleResolver();
 
-    asMock(externalModule.getVersioned).mockReturnValue(
+    jest.mocked(externalModule.getVersioned).mockReturnValue(
       // Return the local package as null to imply that it doesn't exist.
       null
     );
-    asMock(confirmAsync).mockImplementation(() => {
+    jest.mocked(confirmAsync).mockImplementation(() => {
       throw new Error("shouldn't happen");
     });
 
-    asMock(PackageManager.createForProject).mockReturnValueOnce({
+    jest.mocked(PackageManager.createForProject).mockReturnValueOnce({
       addDevAsync: jest.fn(),
     } as any);
 

@@ -1,10 +1,8 @@
-const path = require('path');
-
+/** @type {import('jest').Config} */
 module.exports = {
-  testEnvironment: 'node',
-  testRegex: '/__tests__/.*(test|spec)\\.[jt]sx?$',
-  watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
-  rootDir: path.resolve(__dirname),
+  ...require('expo-module-scripts/jest-preset-cli'),
+  preset: 'ts-jest',
   displayName: require('./package').name,
+  rootDir: __dirname,
   roots: ['__mocks__', 'src'],
 };
