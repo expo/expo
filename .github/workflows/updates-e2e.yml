@@ -56,11 +56,13 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ios, android]
+        variant: ${{ github.event_name == 'schedule' && fromJson('["updates_testing_debug", "updates_testing_release"]') || fromJson('["updates_testing_debug"]') }}
     runs-on: ubuntu-22.04
     timeout-minutes: 60
     env:
       UPDATES_PORT: 4747
     steps:
+
       - name: 👀 Checkout
         uses: actions/checkout@v3
       - name: ⬢ Setup Node
@@ -103,7 +105,7 @@ jobs:
         id: build_eas
         with:
           platform: ${{ env.EAS_PLATFORM }}
-          profile: 'updates_testing'
+          profile: ${{ matrix.variant }}
           projectRoot: './updates-e2e'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
           noWait: ${{ github.event.schedule }}
@@ -114,7 +116,7 @@ jobs:
         working-directory: './updates-e2e'
         env:
           EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          EAS_BUILD_PROFILE: updates_testing
+          EAS_BUILD_PROFILE: ${{ matrix.variant }}
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))

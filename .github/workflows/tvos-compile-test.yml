@@ -84,7 +84,7 @@ jobs:
         id: build_eas
         with:
           platform: ${{ env.EAS_PLATFORM }}
-          profile: 'updates_testing'
+          profile: 'updates_testing_debug'
           projectRoot: './updates-e2e'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
           noWait: ${{ github.event.schedule }}
@@ -95,4 +95,4 @@ jobs:
         working-directory: './updates-e2e'
         env:
           EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          EAS_BUILD_PROFILE: updates_testing
+          EAS_BUILD_PROFILE: updates_testing_debug
