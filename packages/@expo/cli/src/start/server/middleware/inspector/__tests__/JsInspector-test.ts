@@ -22,7 +22,7 @@ describe(openJsInspector, () => {
       typeof launchInspectorBrowserAsync
     >;
     const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
-    await openJsInspector(app);
+    await openJsInspector('http://localhost:8081', app);
     expect(mockLaunchBrowserAsync).toHaveBeenCalled();
   });
 });
