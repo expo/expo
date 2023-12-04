@@ -177,10 +177,17 @@ async function copyCommonFixturesToProject(
       ...easJson,
       build: {
         ...easJson.build,
-        updates_testing: {
-          ...easJson.build.updates_testing,
+        updates_testing_debug: {
+          ...easJson.build.updates_testing_debug,
           env: {
-            ...easJson.build.updates_testing.env,
+            ...easJson.build.updates_testing_debug.env,
+            TEST_TV_BUILD: '1',
+          },
+        },
+        updates_testing_release: {
+          ...easJson.build.updates_testing_release,
+          env: {
+            ...easJson.build.updates_testing_release.env,
             TEST_TV_BUILD: '1',
           },
         },
