@@ -1,0 +1,47 @@
+{
+  "name": "uri-scheme",
+  "version": "1.1.0",
+  "main": "build",
+  "preferGlobal": true,
+  "keywords": [
+    "expo",
+    "ios",
+    "uri-scheme",
+    "android"
+  ],
+  "description": "Interact with native URI schemes",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo-cli.git",
+    "directory": "packages/uri-scheme"
+  },
+  "author": "Expo <support@expo.dev>",
+  "license": "MIT",
+  "bin": {
+    "uri-scheme": "./cli.js"
+  },
+  "files": [
+    "build",
+    "cli.js"
+  ],
+  "scripts": {
+    "prepare": "yarn run clean && yarn run build:prod",
+    "lint": "eslint .",
+    "watch": "yarn run build -w",
+    "test": "jest",
+    "build": "ncc build ./src/index.ts -o build/",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "clean": "rimraf ./build/"
+  },
+  "devDependencies": {
+    "@expo/config-plugins": "4.1.5",
+    "@expo/plist": "0.0.20",
+    "@expo/spawn-async": "1.5.0",
+    "@types/prompts": "^2.0.6",
+    "chalk": "^4.0.0",
+    "commander": "2.20.0",
+    "glob": "7.1.6",
+    "prompts": "^2.3.2",
+    "update-check": "1.5.3"
+  }
+}
