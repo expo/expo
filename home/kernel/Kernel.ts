@@ -62,5 +62,5 @@ export function onEventFailure(eventId: string, message: string): void {
 }
 
 export async function getLastCrashDate(): Promise<number | null> {
-  return await NativeKernel.getLastCrashDate();
+  return Number(await NativeKernel.getLastCrashDate());
 }
