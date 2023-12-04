@@ -19,7 +19,10 @@ export type Options = {
 export class CommandError extends Error {
   origin = 'uri-scheme';
 
-  constructor(message: string, public command?: string) {
+  constructor(
+    message: string,
+    public command?: string
+  ) {
     super(message);
   }
 }

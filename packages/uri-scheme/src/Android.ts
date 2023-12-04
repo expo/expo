@@ -170,7 +170,7 @@ export function getConfigPath(projectRoot: string): string {
   const paths = [
     'android/app/src/main/AndroidManifest.xml',
     'app/src/main/AndroidManifest.xml',
-  ].map(relative => path.join(projectRoot, relative));
+  ].map((relative) => path.join(projectRoot, relative));
   for (const manifestPath of paths) {
     if (existsSync(manifestPath)) {
       return manifestPath;
