@@ -24,7 +24,7 @@ import { Step } from '~/ui/components/Step';
 
 ### Basic CRUD operations
 
-```js
+```js Basic CRUD operations
 const db = await SQLite.openDatabaseAsync('databaseName');
 
 // `execAsync` is useful for bulk queries when you want to execute alltogether.
@@ -75,7 +75,7 @@ for await (const row of db.eachAsync('SELECT * FROM test')) {
 
 ### `useSQLiteContext()` hook
 
-```tsx
+```tsx useSQLiteContext() hook
 import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from 'expo-sqlite/next';
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
 
 As with the [`useSQLiteContext()`](#usesqlitecontext-hook) hook, you can also integrate the `SQLiteProvider` with [`React.Suspense`](https://react.dev/reference/react/Suspense) to show a fallback component until the database is ready. To enable the integration, pass the `useSuspense` prop to the `SQLiteProvider` component.
 
-```tsx
+```tsx useSQLiteContext() hook with React.Suspense
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite/next';
 import { Suspense } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
@@ -189,7 +189,7 @@ export default function App() {
 
 ### Executing queries within an async transaction
 
-```js
+```js Executing queries within an async transaction
 const db = await SQLite.openDatabaseAsync('databaseName');
 
 await db.withTransactionAsync(async () => {
@@ -198,41 +198,39 @@ await db.withTransactionAsync(async () => {
 });
 ```
 
-> **Note:** Due to the nature of async/await, any query that runs while the transaction is active will be included in the transaction. This includes query statements that are outside of the scope function passed to `withTransactionAsync` and may be surprising behavior.
+Due to the nature of async/await, any query that runs while the transaction is active will be included in the transaction. This includes query statements that are outside of the scope function passed to `withTransactionAsync` and may be surprising behavior. For example, the following test case runs queries inside and outside of a scope function passed to `withTransactionAsync`. However, all of the queries will run within the actual SQL transaction because the second `UPDATE` query runs before the transaction finishes.
 
-For example, the following test case runs queries inside and outside of a scope function passed to `withTransactionAsync`. However, all of the queries will run within the actual SQL transaction because the second `UPDATE` query runs before the transaction finishes.
+```ts
+Promise.all([
+  // 1. A new transaction begins
+  db.withTransactionAsync(async () => {
+    // 2. The value "first" is inserted into the test table and we wait 2
+    //    seconds
+    await db.execAsync('INSERT INTO test (data) VALUES ("first")');
+    await sleep(2000);
 
-> ```tsx
-> Promise.all([
->   // 1. A new transaction begins
->   db.withTransactionAsync(async () => {
->     // 2. The value "first" is inserted into the test table and we wait 2
->     //    seconds
->     await db.execAsync('INSERT INTO test (data) VALUES ("first")');
->     await sleep(2000);
->
->     // 4. Two seconds in, we read the latest data from the table
->     const row = await db.getAsync<{ data: string }>('SELECT data FROM test');
->
->     // ❌ The data in the table will be "second" and this expectation will fail.
->     //    Additionally, this expectation will throw an error and roll back the
->     //    transaction, including the `UPDATE` query below since it ran within
->     //    the transaction.
->     expect(row.data).toBe('first');  
->   }),
->   // 3. One second in, the data in the test table is updated to be "second".
->   //    This `UPDATE` query runs in the transaction even though its code is
->   //    outside of it because the transaction happens to be active at the time
->   //    this query runs.
->   sleep(1000).then(async() => db.execAsync('UPDATE test SET data = "second"')),
-> ])
-> ```
+    // 4. Two seconds in, we read the latest data from the table
+    const row = await db.getAsync<{ data: string }>('SELECT data FROM test');
+
+    // ❌ The data in the table will be "second" and this expectation will fail.
+    //    Additionally, this expectation will throw an error and roll back the
+    //    transaction, including the `UPDATE` query below since it ran within
+    //    the transaction.
+    expect(row.data).toBe('first');
+  }),
+  // 3. One second in, the data in the test table is updated to be "second".
+  //    This `UPDATE` query runs in the transaction even though its code is
+  //    outside of it because the transaction happens to be active at the time
+  //    this query runs.
+  sleep(1000).then(async() => db.execAsync('UPDATE test SET data = "second"')),
+])
+```
 
 The [`withTransactionExclusiveAsync`](#withtransactionexclusiveasynctask) function addresses this. Only queries that run within the scope function passed to `withTransactionExclusiveAsync` will run within the actual SQL transaction.
 
 ### Executing PRAGMA queries
 
-```js
+```js Executing PRAGMA queries
 const db = await SQLite.openDatabaseAsync('databaseName');
 await db.execAsync('PRAGMA journal_mode = WAL');
 await db.execAsync('PRAGMA foreign_keys = ON');
