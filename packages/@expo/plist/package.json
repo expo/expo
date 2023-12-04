@@ -1,0 +1,39 @@
+{
+  "name": "@expo/plist",
+  "version": "0.0.20",
+  "description": "Mac OS X Plist parser/builder for Node.js and browsers",
+  "main": "build/index.js",
+  "scripts": {
+    "watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc",
+    "prepare": "yarn build",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo-cli.git",
+    "directory": "packages/plist"
+  },
+  "keywords": [
+    "plist"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo-cli/issues"
+  },
+  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/plist#readme",
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+    "@xmldom/xmldom": "~0.7.7",
+    "base64-js": "^1.2.3",
+    "xmlbuilder": "^14.0.0"
+  },
+  "devDependencies": {
+    "@types/base64-js": "^1.2.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
