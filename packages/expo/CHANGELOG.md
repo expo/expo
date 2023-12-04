@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `concurrentRoot` is missing from intialProps when running on New Architecture mode. ([#25415](https://github.com/expo/expo/pull/25415) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Update internal types. ([#25627](https://github.com/expo/expo/pull/25627) by [@EvanBacon](https://github.com/EvanBacon))
