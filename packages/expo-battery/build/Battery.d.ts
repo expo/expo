@@ -9,7 +9,7 @@ export declare function isAvailableAsync(): Promise<boolean>;
 /**
  * Gets the battery level of the device as a number between `0` and `1`, inclusive. If the device
  * does not support retrieving the battery level, this method returns `-1`. On web, this method
- * always returns `-1`.
+ * always returns `1`.
  * @return A `Promise` that fulfils with a number between `0` and `1` representing the battery level,
  * or `-1` if the device does not provide it.
  * @example
@@ -119,7 +119,7 @@ export declare function addLowPowerModeListener(listener: (event: PowerModeEvent
  * const batteryLevel = useBatteryLevel();
  * ```
  *
- * @return The battery level of the device
+ * @return The battery level of the device.
  */
 export declare function useBatteryLevel(): number;
 /**
@@ -130,7 +130,7 @@ export declare function useBatteryLevel(): number;
  * const batteryState = useBatteryState();
  * ```
  *
- * @return The battery state of the device
+ * @return The battery state of the device.
  */
 export declare function useBatteryState(): BatteryState;
 /**
@@ -141,7 +141,7 @@ export declare function useBatteryState(): BatteryState;
  * const lowPowerMode = useLowPowerMode();
  * ```
  *
- * @return boolean indicating if the device is in low power mode
+ * @return Returns a `boolean` indicating if the device is in low power mode.
  */
 export declare function useLowPowerMode(): boolean;
 /**
@@ -152,7 +152,7 @@ export declare function useLowPowerMode(): boolean;
  * const { lowPowerMode, batteryLevel, batteryState } = usePowerState();
  * ```
  *
- * @return power state information
+ * @return Returns power state information.
  */
 export declare function usePowerState(): PowerState;
 export { BatteryLevelEvent, BatteryState, BatteryStateEvent, PowerModeEvent, PowerState, Subscription, };

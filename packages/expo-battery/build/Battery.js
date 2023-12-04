@@ -16,7 +16,7 @@ export async function isAvailableAsync() {
 /**
  * Gets the battery level of the device as a number between `0` and `1`, inclusive. If the device
  * does not support retrieving the battery level, this method returns `-1`. On web, this method
- * always returns `-1`.
+ * always returns `1`.
  * @return A `Promise` that fulfils with a number between `0` and `1` representing the battery level,
  * or `-1` if the device does not provide it.
  * @example
@@ -170,7 +170,7 @@ export function addLowPowerModeListener(listener) {
  * const batteryLevel = useBatteryLevel();
  * ```
  *
- * @return The battery level of the device
+ * @return The battery level of the device.
  */
 export function useBatteryLevel() {
     const [batteryLevel, setBatteryLevel] = useState(-1);
@@ -190,7 +190,7 @@ export function useBatteryLevel() {
  * const batteryState = useBatteryState();
  * ```
  *
- * @return The battery state of the device
+ * @return The battery state of the device.
  */
 export function useBatteryState() {
     const [batteryState, setBatteryState] = useState(BatteryState.UNKNOWN);
@@ -210,7 +210,7 @@ export function useBatteryState() {
  * const lowPowerMode = useLowPowerMode();
  * ```
  *
- * @return boolean indicating if the device is in low power mode
+ * @return Returns a `boolean` indicating if the device is in low power mode.
  */
 export function useLowPowerMode() {
     const [lowPowerMode, setLowPowerMode] = useState(false);
@@ -230,7 +230,7 @@ export function useLowPowerMode() {
  * const { lowPowerMode, batteryLevel, batteryState } = usePowerState();
  * ```
  *
- * @return power state information
+ * @return Returns power state information.
  */
 export function usePowerState() {
     const [lowPowerMode, setLowPowerMode] = useState(false);
