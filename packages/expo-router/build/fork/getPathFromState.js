@@ -290,7 +290,12 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
 function decodeParams(params) {
     const parsed = {};
     for (const [key, value] of Object.entries(params)) {
-        parsed[key] = decodeURIComponent(value);
+        try {
+            parsed[key] = decodeURIComponent(value);
+        }
+        catch {
+            parsed[key] = value;
+        }
     }
     return parsed;
 }

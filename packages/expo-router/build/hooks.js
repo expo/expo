@@ -88,24 +88,26 @@ exports.useGlobalSearchParams = useGlobalSearchParams;
 function useLocalSearchParams() {
     const params = react_1.default.useContext(native_1.NavigationRouteContext)?.params ?? {};
     return Object.fromEntries(Object.entries(params).map(([key, value]) => {
-        try {
-            if (Array.isArray(value)) {
-                return [
-                    key,
-                    value.map((v) => {
-                        try {
-                            return decodeURIComponent(v);
-                        }
-                        catch {
-                            return v;
-                        }
-                    }),
-                ];
-            }
-            return [key, decodeURIComponent(value)];
+        if (Array.isArray(value)) {
+            return [
+                key,
+                value.map((v) => {
+                    try {
+                        return decodeURIComponent(v);
+                    }
+                    catch {
+                        return v;
+                    }
+                }),
+            ];
         }
-        catch {
-            return [key, value];
+        else {
+            try {
+                return [key, decodeURIComponent(value)];
+            }
+            catch {
+                return [key, value];
+            }
         }
     }));
 }
