@@ -376,6 +376,22 @@ INSERT INTO Users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
       expect(await statement.getAsync<UserEntity>({ '@name': 'Tim Duncan', '@k': -1 })).toBeNull();
       await statement.finalizeAsync();
     });
+
+    it('should support blob data with Uint8Array', async () => {
+      await db.execAsync(`
+  DROP TABLE IF EXISTS Blobs;
+  CREATE TABLE IF NOT EXISTS Blobs (id INTEGER PRIMARY KEY NOT NULL, data BLOB);`);
+
+      const blob = new Uint8Array([0x00, 0x01, 0x02, 0x03, 0x04, 0x05]);
+      await db.runAsync('INSERT INTO Blobs (data) VALUES (?)', blob);
+
+      const statement = await db.prepareAsync('SELECT * FROM Blobs');
+      const row = await statement.getAsync<{ data: Uint8Array }>();
+      await statement.finalizeAsync();
+      expect(row.data).toEqual(blob);
+      const row2 = db.getSync<{ data: Uint8Array }>('SELECT * FROM Blobs');
+      expect(row2.data).toEqual(blob);
+    });
   });
 
   describe('transactionAsync', () => {

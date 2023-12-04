@@ -1,6 +1,8 @@
 import { NativeDatabase } from './NativeDatabase';
 import {
+  BindBlobParams,
   BindParams,
+  BindPrimitiveParams,
   BindValue,
   NativeStatement,
   RunResult,
@@ -32,12 +34,7 @@ export class Statement {
    */
   public runAsync(...params: VariadicBindParams): Promise<RunResult>;
   public async runAsync(...params: unknown[]): Promise<RunResult> {
-    const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
-    if (shouldPassAsObject) {
-      return await this.nativeStatement.objectRunAsync(this.nativeDatabase, bindParams);
-    } else {
-      return await this.nativeStatement.arrayRunAsync(this.nativeDatabase, bindParams);
-    }
+    return await this.nativeStatement.runAsync(this.nativeDatabase, ...normalizeParams(...params));
   }
 
   /**
@@ -58,15 +55,13 @@ export class Statement {
    */
   public eachAsync<T>(...params: VariadicBindParams): AsyncIterableIterator<T>;
   public async *eachAsync<T>(...params: unknown[]): AsyncIterableIterator<T> {
-    const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
-    const func = shouldPassAsObject
-      ? this.nativeStatement.objectGetAsync.bind(this.nativeStatement)
-      : this.nativeStatement.arrayGetAsync.bind(this.nativeStatement);
+    const paramTuple = normalizeParams(...params);
+    const func = this.nativeStatement.getAsync.bind(this.nativeStatement);
 
     const columnNames = await this.getColumnNamesAsync();
     let result = null;
     do {
-      result = await func(this.nativeDatabase, bindParams);
+      result = await func(this.nativeDatabase, ...paramTuple);
       if (result != null) {
         yield composeRow<T>(columnNames, result);
       }
@@ -83,11 +78,11 @@ export class Statement {
    */
   public getAsync<T>(...params: VariadicBindParams): Promise<T | null>;
   public async getAsync<T>(...params: unknown[]): Promise<T | null> {
-    const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
     const columnNames = await this.getColumnNamesAsync();
-    const columnValues = shouldPassAsObject
-      ? await this.nativeStatement.objectGetAsync(this.nativeDatabase, bindParams)
-      : await this.nativeStatement.arrayGetAsync(this.nativeDatabase, bindParams);
+    const columnValues = await this.nativeStatement.getAsync(
+      this.nativeDatabase,
+      ...normalizeParams(...params)
+    );
     return columnValues != null ? composeRow<T>(columnNames, columnValues) : null;
   }
 
@@ -101,11 +96,11 @@ export class Statement {
    */
   public allAsync<T>(...params: VariadicBindParams): Promise<T[]>;
   public async allAsync<T>(...params: unknown[]): Promise<T[]> {
-    const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
     const columnNames = await this.getColumnNamesAsync();
-    const columnValuesList = shouldPassAsObject
-      ? await this.nativeStatement.objectGetAllAsync(this.nativeDatabase, bindParams)
-      : await this.nativeStatement.arrayGetAllAsync(this.nativeDatabase, bindParams);
+    const columnValuesList = await this.nativeStatement.getAllAsync(
+      this.nativeDatabase,
+      ...normalizeParams(...params)
+    );
     return composeRows<T>(columnNames, columnValuesList);
   }
 
@@ -146,12 +141,7 @@ export class Statement {
    */
   public runSync(...params: VariadicBindParams): RunResult;
   public runSync(...params: unknown[]): RunResult {
-    const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
-    if (shouldPassAsObject) {
-      return this.nativeStatement.objectRunSync(this.nativeDatabase, bindParams);
-    } else {
-      return this.nativeStatement.arrayRunSync(this.nativeDatabase, bindParams);
-    }
+    return this.nativeStatement.runSync(this.nativeDatabase, ...normalizeParams(...params));
   }
 
   /**
@@ -165,15 +155,13 @@ export class Statement {
    */
   public eachSync<T>(...params: VariadicBindParams): IterableIterator<T>;
   public *eachSync<T>(...params: unknown[]): IterableIterator<T> {
-    const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
-    const func = shouldPassAsObject
-      ? this.nativeStatement.objectGetSync.bind(this.nativeStatement)
-      : this.nativeStatement.arrayGetSync.bind(this.nativeStatement);
+    const paramTuple = normalizeParams(...params);
+    const func = this.nativeStatement.getSync.bind(this.nativeStatement);
 
     const columnNames = this.getColumnNamesSync();
     let result = null;
     do {
-      result = func(this.nativeDatabase, bindParams);
+      result = func(this.nativeDatabase, ...paramTuple);
       if (result != null) {
         yield composeRow<T>(columnNames, result);
       }
@@ -191,11 +179,11 @@ export class Statement {
    */
   public getSync<T>(...params: VariadicBindParams): T | null;
   public getSync<T>(...params: unknown[]): T | null {
-    const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
     const columnNames = this.getColumnNamesSync();
-    const columnValues = shouldPassAsObject
-      ? this.nativeStatement.objectGetSync(this.nativeDatabase, bindParams)
-      : this.nativeStatement.arrayGetSync(this.nativeDatabase, bindParams);
+    const columnValues = this.nativeStatement.getSync(
+      this.nativeDatabase,
+      ...normalizeParams(...params)
+    );
     return columnValues != null ? composeRow<T>(columnNames, columnValues) : null;
   }
 
@@ -210,11 +198,11 @@ export class Statement {
    */
   public allSync<T>(...params: VariadicBindParams): T[];
   public allSync<T>(...params: unknown[]): T[] {
-    const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
     const columnNames = this.getColumnNamesSync();
-    const columnValuesList = shouldPassAsObject
-      ? this.nativeStatement.objectGetAllSync(this.nativeDatabase, bindParams)
-      : this.nativeStatement.arrayGetAllSync(this.nativeDatabase, bindParams);
+    const columnValuesList = this.nativeStatement.getAllSync(
+      this.nativeDatabase,
+      ...normalizeParams(...params)
+    );
     return composeRows<T>(columnNames, columnValuesList);
   }
 
@@ -246,25 +234,42 @@ export class Statement {
 }
 
 /**
- * Normalize the bind params to an array or object.
+ * Normalize the bind params to data structure that can be passed to native module.
+ * The data structure is a tuple of [primitiveParams, blobParams, shouldPassAsArray].
  * @hidden
  */
-export function normalizeParams(...params: any[]): {
-  params: BindParams;
-  shouldPassAsObject: boolean;
-} {
+export function normalizeParams(...params: any[]): [BindPrimitiveParams, BindBlobParams, boolean] {
   let bindParams = params.length > 1 ? params : (params[0] as BindParams);
   if (bindParams == null) {
     bindParams = [];
   }
-  if (typeof bindParams !== 'object') {
+  if (
+    typeof bindParams !== 'object' ||
+    bindParams instanceof ArrayBuffer ||
+    ArrayBuffer.isView(bindParams)
+  ) {
     bindParams = [bindParams];
   }
-  const shouldPassAsObject = !Array.isArray(bindParams);
-  return {
-    params: bindParams,
-    shouldPassAsObject,
-  };
+  const shouldPassAsArray = Array.isArray(bindParams);
+  if (Array.isArray(bindParams)) {
+    bindParams = bindParams.reduce<Record<string, BindValue>>((acc, value, index) => {
+      acc[index] = value;
+      return acc;
+    }, {});
+  }
+
+  const primitiveParams: BindPrimitiveParams = {};
+  const blobParams: BindBlobParams = {};
+  for (const key in bindParams) {
+    const value = bindParams[key];
+    if (value instanceof Uint8Array) {
+      blobParams[key] = value;
+    } else {
+      primitiveParams[key] = value;
+    }
+  }
+
+  return [primitiveParams, blobParams, shouldPassAsArray];
 }
 
 /**
