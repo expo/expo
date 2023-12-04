@@ -32,7 +32,7 @@ export default function App() {
   const [batteryLevel, setBatteryLevel] = useState(null);
   const [subscription, setSubscription] = useState(null);
 
-  const _subscribe = async () => {
+  const subscribe = async () => {
     const batteryLevel = await Battery.getBatteryLevelAsync();
     setBatteryLevel(batteryLevel);
 
@@ -44,15 +44,15 @@ export default function App() {
     );
   };
 
-  const _unsubscribe = useCallback(() => {
+  const unsubscribe = useCallback(() => {
     subscription && subscription.remove();
     setSubscription(null);
   }, [subscription]);
 
   useEffect(() => {
-    _subscribe();
-    return () => _unsubscribe();
-  }, [_unsubscribe]);
+    subscribe();
+    return () => unsubscribe();
+  }, []);
 
   return (
     <View style={styles.container}>
