@@ -1,25 +1,26 @@
 {
   "name": "uri-scheme",
   "version": "1.1.0",
-  "main": "build",
-  "preferGlobal": true,
+  "description": "Interact with native URI schemes",
+  "main": "build/index.js",
   "keywords": [
     "expo",
     "ios",
     "uri-scheme",
     "android"
   ],
-  "description": "Interact with native URI schemes",
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo-cli.git",
+    "url": "https://github.com/expo/expo.git",
     "directory": "packages/uri-scheme"
   },
   "author": "Expo <support@expo.dev>",
   "license": "MIT",
-  "bin": {
-    "uri-scheme": "./cli.js"
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
   },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/uri-scheme#readme",
+  "bin": "cli.js",
   "files": [
     "build",
     "cli.js"
