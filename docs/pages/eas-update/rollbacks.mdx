@@ -1,0 +1,30 @@
+---
+title: Rollbacks
+description: Roll back a branch to a previous update or the embedded update.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+> **info** Available for SDK 50+ (`expo-updates` >= 0.23.0).
+
+There are two types of roll backs supported by EAS Update:
+- Roll back to a previously-published update.
+- Roll back to the update embedded in the build.
+
+To start a roll back, use `npx eas-cli@latest` or ensure you have `eas-cli` version `5.9.0` or above. Then, run the following command:
+
+<Terminal cmd={['npx eas-cli@latest update:rollback']} />
+
+In the terminal, an interactive guide will assist you in selecting the type of rollback and doing the rollback.
+
+## Rolling-back to a previously-published update
+
+This command re-publishes a previously-published update to functionally roll-back clients to that update.
+
+## Rolling back to the update embedded in the build
+
+This command instructs the client to run the update embedded in the build.
+
+## Publishing after the rollback
+
+Upon publishing again after a rollback, all clients will receive the new update.
