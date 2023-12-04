@@ -8,8 +8,54 @@
 #include <react/jni/ReadableNativeArray.h>
 #include <react/jni/WritableNativeArray.h>
 #include <react/jni/WritableNativeMap.h>
+#include <string_view>
 
 namespace react = facebook::react;
+
+namespace {
+
+// This value should be synced with the value in **FollyDynamicExtensionConverter.kt**
+constexpr char DYNAMIC_EXTENSION_PREFIX[] = "__expo_dynamic_extension__#";
+
+/**
+ * Create an JavaScript Uint8Array instance from Java ByteArray.
+ */
+jsi::Value createUint8Array(jsi::Runtime &rt, jni::alias_ref<jni::JArrayByte> byteArray) {
+  auto arrayBufferCtor = rt.global().getPropertyAsFunction(rt, "ArrayBuffer");
+  auto arrayBufferObject = arrayBufferCtor.callAsConstructor(rt, static_cast<int>(byteArray->size())).getObject(rt);
+  auto arrayBuffer = arrayBufferObject.getArrayBuffer(rt);
+  byteArray->getRegion(0, byteArray->size(), reinterpret_cast<signed char *>(arrayBuffer.data(rt)));
+
+  auto uint8ArrayCtor = rt.global().getPropertyAsFunction(rt, "Uint8Array");
+  auto uint8Array = uint8ArrayCtor.callAsConstructor(rt, arrayBufferObject).getObject(rt);
+  return uint8Array;
+}
+
+/**
+ * Convert a string with FollyDynamicExtensionConverter support.
+ */
+std::optional<jsi::Value> convertStringToFollyDynamicIfNeeded(jsi::Runtime &rt, const std::string& string) {
+  if (!string.starts_with(DYNAMIC_EXTENSION_PREFIX)) {
+    return std::nullopt;
+  }
+  std::string_view stringView(string);
+  size_t javaClassPos = strlen(DYNAMIC_EXTENSION_PREFIX);
+  size_t payloadPos = string.find('#', javaClassPos);
+  if (payloadPos == std::string_view::npos) {
+    return std::nullopt;
+  }
+  std::string_view javaClass = stringView.substr(javaClassPos, payloadPos - javaClassPos);
+
+  if (javaClass == jni::JArrayByte::javaClassStatic()->getCanonicalName()->toStdString()) {
+    auto converterClass = jni::findClassLocal("expo/modules/kotlin/types/folly/FollyDynamicExtensionConverter");
+    const auto getInstanceMethod = converterClass->getStaticMethod<jni::JObject(std::string)>("get");
+    jni::local_ref<jni::JObject> byteArray = getInstanceMethod(converterClass, string);
+    return createUint8Array(rt, jni::static_ref_cast<jni::JArrayByte>(byteArray));
+  }
+  return std::nullopt;
+}
+
+} // namespace
 
 namespace expo {
 
@@ -34,10 +80,9 @@ jsi::Value convert(
     return {(double) jni::static_ref_cast<jni::JLong>(value)->value()};
   }
   if (env->IsInstanceOf(unpackedValue, cache->getJClass("java/lang/String").clazz)) {
-    return jsi::String::createFromUtf8(
-      rt,
-      jni::static_ref_cast<jni::JString>(value)->toStdString()
-    );
+    std::string string = jni::static_ref_cast<jni::JString>(value)->toStdString();
+    auto enhancedValue = convertStringToFollyDynamicIfNeeded(rt, string);
+    return enhancedValue ? std::move(*enhancedValue) : jsi::String::createFromUtf8(rt, string);
   }
   if (env->IsInstanceOf(unpackedValue, cache->getJClass("java/lang/Boolean").clazz)) {
     return {(bool) jni::static_ref_cast<jni::JBoolean>(value)->value()};
@@ -52,7 +97,12 @@ jsi::Value convert(
     auto dynamic = jni::static_ref_cast<react::WritableNativeArray::javaobject>(value)
       ->cthis()
       ->consume();
-    return jsi::valueFromDynamic(rt, dynamic);
+    auto arg = jsi::valueFromDynamic(rt, dynamic);
+    auto enhancedArg = decorateValueForDynamicExtension(rt, arg);
+    if (enhancedArg) {
+      arg = std::move(*enhancedArg);
+    }
+    return arg;
   }
   if (env->IsInstanceOf(
     unpackedValue,
@@ -61,7 +111,12 @@ jsi::Value convert(
     auto dynamic = jni::static_ref_cast<react::WritableNativeMap::javaobject>(value)
       ->cthis()
       ->consume();
-    return jsi::valueFromDynamic(rt, dynamic);
+    auto arg = jsi::valueFromDynamic(rt, dynamic);
+    auto enhancedArg = decorateValueForDynamicExtension(rt, arg);
+    if (enhancedArg) {
+      arg = std::move(*enhancedArg);
+    }
+    return arg;
   }
   if (env->IsInstanceOf(unpackedValue, JavaScriptModuleObject::javaClassStatic().get())) {
     auto anonymousObject = jni::static_ref_cast<JavaScriptModuleObject::javaobject>(value)
@@ -106,4 +161,44 @@ jsi::Value convert(
 
   return jsi::Value::undefined();
 }
+
+std::optional<jsi::Value> decorateValueForDynamicExtension(jsi::Runtime &rt, const jsi::Value &value) {
+  if (value.isString()) {
+    std::string string = value.getString(rt).utf8(rt);
+    return convertStringToFollyDynamicIfNeeded(rt, string);
+  }
+
+  if (value.isObject()) {
+    auto jsObject = value.getObject(rt);
+    if (jsObject.isArray(rt)) {
+      bool changed = false;
+      auto jsArray = jsObject.getArray(rt);
+      size_t length = jsArray.length(rt);
+      for (size_t i = 0; i < length; ++i) {
+        auto converted = decorateValueForDynamicExtension(rt, jsArray.getValueAtIndex(rt, i));
+        if (converted) {
+          jsArray.setValueAtIndex(rt, i, std::move(*converted));
+          changed = true;
+        }
+      }
+      return changed ? std::make_optional<jsi::Value>(std::move(jsArray)) : std::nullopt;
+    } else {
+      bool changed = false;
+      auto propNames = jsObject.getPropertyNames(rt);
+      size_t length = propNames.length(rt);
+      for (size_t i = 0; i < length; ++i) {
+        auto propName = propNames.getValueAtIndex(rt, i).getString(rt);
+        auto converted = decorateValueForDynamicExtension(rt, jsObject.getProperty(rt, propName));
+        if (converted) {
+          jsObject.setProperty(rt, propName, std::move(*converted));
+          changed = true;
+        }
+      }
+      return changed ? std::make_optional<jsi::Value>(std::move(jsObject)) : std::nullopt;
+    }
+  }
+
+  return std::nullopt;
+}
+
 } // namespace expo
