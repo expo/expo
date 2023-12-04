@@ -564,6 +564,7 @@ PODS:
   - ABI49_0_0React-jsc/Fabric (0.72.4):
     - ABI49_0_0React-jsi (= 0.72.4)
   - ABI49_0_0React-jsi (0.72.4):
+    - ABI49_0_0hermes-engine
     - boost (= 1.83.0)
     - DoubleConversion
     - glog
@@ -3203,7 +3204,7 @@ SPEC CHECKSUMS:
   ABI49_0_0React-debug: d964e2660e1f189b51ddc117d38c69c3430d7000
   ABI49_0_0React-hermes: dd5d24d6ff6d2f354136670806cd6767455f6826
   ABI49_0_0React-jsc: 681c9e048a4cac7fe6bad3b44068092fb653c7d4
-  ABI49_0_0React-jsi: 99f8cecdf41a3bc6066be55cb0662a8c954de1c3
+  ABI49_0_0React-jsi: 00c6a38a4da4b923293884d357a5eb647be0f955
   ABI49_0_0React-jsiexecutor: f1ade9eb9dffdf94ab12da79ede4e975ecebc199
   ABI49_0_0React-jsinspector: e2458e307f4208e402869557b2a4517b97cefc0b
   ABI49_0_0React-logger: 2e90d10adecb4719c9511a0302b1998516fc3ff9
