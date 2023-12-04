@@ -10,7 +10,6 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
-import { PlatformTags } from '~/ui/components/Tag';
 
 A React component that blurs everything underneath the view. Common usage of this is for navigation bars, tab bars, and modals.
 
@@ -35,7 +34,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.background}>
-        {[...Array(20).keys()].map((i) => (
+        {[...Array(20).keys()].map(i => (
           <View
             key={`box-${i}`}
             style={[styles.box, i % 2 === 1 ? styles.boxOdd : styles.boxEven]}
