@@ -161,7 +161,7 @@ INSERT INTO Users (name) VALUES ('aaa');
     );
   });
 
-  it('withTransactionExclusiveAsync should execute a transaction atomically and abort other write query', async () => {
+  it('withExclusiveTransactionAsync should execute a transaction atomically and abort other write query', async () => {
     db = await openDatabaseAsync('test.db');
     await db.execAsync(`
 DROP TABLE IF EXISTS Users;
@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
 INSERT INTO Users (name) VALUES ('aaa');
   `);
 
-    const promise1 = db.withTransactionExclusiveAsync(async (txn) => {
+    const promise1 = db.withExclusiveTransactionAsync(async (txn) => {
       for (let i = 0; i < 10; ++i) {
         const result = await txn.getAsync<{ name: string }>('SELECT name FROM Users');
         if (result?.name !== 'aaa') {

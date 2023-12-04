@@ -77,7 +77,7 @@ export class SQLiteDatabase {
    * });
    * db.execAsync('UPDATE test SET name = "bbb"');
    * ```
-   * If you worry about the order of execution, use `withTransactionExclusiveAsync` instead.
+   * If you worry about the order of execution, use `withExclusiveTransactionAsync` instead.
    *
    * @param task An async function to execute within a transaction.
    */
@@ -104,12 +104,12 @@ export class SQLiteDatabase {
    *
    * @example
    * ```ts
-   * db.withTransactionExclusiveAsync(async (txn) => {
+   * db.withExclusiveTransactionAsync(async (txn) => {
    *   await txn.execAsync('UPDATE test SET name = "aaa"');
    * });
    * ```
    */
-  public async withTransactionExclusiveAsync(
+  public async withExclusiveTransactionAsync(
     task: (txn: Transaction) => Promise<void>
   ): Promise<void> {
     const transaction = await Transaction.createAsync(this);
@@ -465,7 +465,7 @@ export function addDatabaseChangeListener(
 }
 
 /**
- * A new connection specific used for [`withTransactionExclusiveAsync`](#withtransactionexclusiveasynctask).
+ * A new connection specific used for [`withExclusiveTransactionAsync`](#withExclusiveTransactionasynctask).
  * @hidden not going to pull all the database methods to the document.
  */
 class Transaction extends SQLiteDatabase {

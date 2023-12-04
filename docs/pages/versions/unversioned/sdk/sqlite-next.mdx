@@ -226,7 +226,7 @@ Promise.all([
 ])
 ```
 
-The [`withTransactionExclusiveAsync`](#withtransactionexclusiveasynctask) function addresses this. Only queries that run within the scope function passed to `withTransactionExclusiveAsync` will run within the actual SQL transaction.
+The [`withExclusiveTransactionAsync`](#withexclusivetransactionasynctask) function addresses this. Only queries that run within the scope function passed to `withExclusiveTransactionAsync` will run within the actual SQL transaction.
 
 ### Executing PRAGMA queries
 
