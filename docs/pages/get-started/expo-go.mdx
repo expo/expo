@@ -69,11 +69,13 @@ See [Upgrading Expo SDK guide](/workflow/upgrading-expo-sdk-walkthrough) for ins
 
 <Collapsible summary="How can I install an older version of Expo Go to run my project?">
 
-If you can't upgrade your project to a newer SDK version, you can still run it using an older version of Expo Go. However, this method will not work for physical iOS devices because it is impossible to install apps directly (sideload). If you need to run your project on a physical iOS device, consider creating a [development build](/develop/development-builds/introduction).
+If you cannot upgrade your project to a newer SDK version, you can still run it using an older version of Expo Go. However, this method will not work for physical iOS devices because it is impossible to install apps directly (sideload). If you need to run your project on a physical iOS device, consider creating a [development build](/develop/development-builds/introduction).
 
-If you are trying to use this method on a physical Android device, connect it to your computer and enable the **USB Debugging** option. To learn more, see [Android emulators](/workflow/android-studio-emulator) and [iOS simulators](/workflow/ios-simulator)
+If you are trying to use this method on a physical Android device, connect it to your computer and enable the **USB Debugging** option.
 
-<Step label="1">If installed, remove Expo Go from your device/simulator.</Step>
+To run it on an emulator or a simulator, see [Android emulators](/workflow/android-studio-emulator) and [iOS simulators](/workflow/ios-simulator).
+
+<Step label="1">If installed, remove Expo Go from your device or simulator.</Step>
 <Step label="2">
   Start the development server:
   <Terminal cmd={['npx expo start']} />
@@ -83,7 +85,7 @@ If you are trying to use this method on a physical Android device, connect it to
   install the compatible Expo Go on your device/simulator and open your project in the client.
 </Step>
 
-A compatible version of Expo Go will be automatically installed on your device/simulator, and your project will open.
+A compatible version of Expo Go will be automatically installed on your device or simulator, and your project will open.
 
 </Collapsible>
 

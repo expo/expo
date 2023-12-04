@@ -417,7 +417,7 @@ This is the easiest way to set up deep links in your app because it requires a m
 
 The main problem is that if the user does not have your app installed and follows a link to your app with its custom scheme, their operating system will indicate that the page couldn't be opened but not give much more information. This is not a great experience. There is no way to work around this in the browser.
 
-Additionally, many messaging apps do not autolink URLs with custom schemes -- for example, `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` might just show up as plain text in your browser rather than as a link ([exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]](#)).
+Additionally, many messaging apps do not autolink URLs with custom schemes. For example, `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` might just show up as plain text in your browser rather than as a link ([exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]](#)).
 
 An example of this is Gmail which strips the `href` property from the links of most apps, a trick to use is to link to a regular HTTPS URL instead of your app's custom scheme, this will open the user's web browser. Browsers do not usually strip the `href` property so you can host a file online that redirects the user to your app's custom schemes.
 
