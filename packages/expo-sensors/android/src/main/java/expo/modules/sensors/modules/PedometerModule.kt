@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package expo.modules.sensors.modules
 
+import android.Manifest
 import android.hardware.Sensor
 import android.os.Bundle
 import expo.modules.interfaces.sensors.services.PedometerServiceInterface
@@ -9,6 +10,9 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.UseSensorProxy
 import expo.modules.sensors.createSensorProxy
+import expo.modules.interfaces.permissions.Permissions
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.Promise
 
 private const val EventName = "Exponent.pedometerUpdate"
 
@@ -16,6 +20,9 @@ class NotSupportedException(message: String) : CodedException(message)
 
 class PedometerModule : Module() {
   private var stepsAtTheBeginning: Int? = null
+
+  private val permissionsManager: Permissions
+    get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
 
   private val sensorProxy by lazy {
     createSensorProxy<PedometerServiceInterface>(EventName) { sensorEvent ->
@@ -41,6 +48,22 @@ class PedometerModule : Module() {
     AsyncFunction("getStepCountAsync") { _: Int, _: Int ->
       throw NotSupportedException("Getting step count for date range is not supported on Android yet")
       Unit
+    }
+
+    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
+      Permissions.getPermissionsWithPermissionsManager(
+        permissionsManager,
+        promise,
+        Manifest.permission.ACTIVITY_RECOGNITION
+      )
+    }
+
+    AsyncFunction("getPermissionsAsync") { promise: Promise ->
+      Permissions.getPermissionsWithPermissionsManager(
+        permissionsManager,
+        promise,
+        Manifest.permission.ACTIVITY_RECOGNITION
+      )
     }
   }
 }
