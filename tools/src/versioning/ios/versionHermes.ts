@@ -190,8 +190,14 @@ async function updateDistHeaders(hermesRoot: string, versionName: string) {
 
   // copy versioned jsi headers
   const versionedJsiHeaderDestdir = path.join(destRoot, 'include', `${versionName}jsi`);
-  const jsiHeaders = Array.from(await searchFilesAsync(versionedJsiDir, [`**/${versionName}*/*.h`], { absolute: true }));
-  await Promise.all(jsiHeaders.map((file) => fs.copy(file, path.join(versionedJsiHeaderDestdir, path.basename(file)))));
+  const jsiHeaders = Array.from(
+    await searchFilesAsync(versionedJsiDir, [`**/${versionName}*/*.h`], { absolute: true })
+  );
+  await Promise.all(
+    jsiHeaders.map((file) =>
+      fs.copy(file, path.join(versionedJsiHeaderDestdir, path.basename(file)))
+    )
+  );
 
   // remove unused and unversioned headers
   const files = Array.from(
