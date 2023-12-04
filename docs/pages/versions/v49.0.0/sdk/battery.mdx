@@ -24,35 +24,11 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label='Basic Battery Usage' dependencies={['expo-battery']}>
 
 ```jsx
-import { useEffect, useState, useCallback } from 'react';
-import * as Battery from 'expo-battery';
+import { useBatteryLevel } from 'expo-battery';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
-  const [batteryLevel, setBatteryLevel] = useState(null);
-  const [subscription, setSubscription] = useState(null);
-
-  const _subscribe = async () => {
-    const batteryLevel = await Battery.getBatteryLevelAsync();
-    setBatteryLevel(batteryLevel);
-
-    setSubscription(
-      Battery.addBatteryLevelListener(({ batteryLevel }) => {
-        setBatteryLevel(batteryLevel);
-        console.log('batteryLevel changed!', batteryLevel);
-      })
-    );
-  };
-
-  const _unsubscribe = useCallback(() => {
-    subscription && subscription.remove();
-    setSubscription(null);
-  }, [subscription]);
-
-  useEffect(() => {
-    _subscribe();
-    return () => _unsubscribe();
-  }, [_unsubscribe]);
+  const batteryLevel = useBatteryLevel();
 
   return (
     <View style={styles.container}>
