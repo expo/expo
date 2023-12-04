@@ -14,6 +14,9 @@ private func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
   if let ArrayType = T.self as? AnyArray.Type {
     return DynamicArrayType(elementType: ArrayType.getElementDynamicType())
   }
+  if let DictionaryType = T.self as? AnyDictionary.Type {
+    return DynamicDictionaryType(valueType: DictionaryType.getValueDynamicType())
+  }
   if let OptionalType = T.self as? any AnyOptional.Type {
     return DynamicOptionalType(wrappedType: OptionalType.getWrappedDynamicType())
   }

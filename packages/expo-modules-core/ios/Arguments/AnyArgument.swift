@@ -33,11 +33,16 @@ extension Double: AnyArgument {}
 extension CGFloat: AnyArgument {}
 
 extension String: AnyArgument {}
-extension Dictionary: AnyArgument {}
 
 extension Optional: AnyArgument where Wrapped: AnyArgument {
   public static func getDynamicType() -> AnyDynamicType {
     return DynamicOptionalType(wrappedType: ~Wrapped.self)
+  }
+}
+
+extension Dictionary: AnyArgument {
+  public static func getDynamicType() -> AnyDynamicType {
+    return DynamicDictionaryType(valueType: ~Value.self)
   }
 }
 
