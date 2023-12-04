@@ -22,11 +22,8 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       instance = ref;
     };
 
-    const mountAndWaitFor = (child, propName = 'onCameraReady') =>
-      new Promise((resolve) => {
-        const response = originalMountAndWaitFor(child, propName, setPortalChild);
-        setTimeout(() => resolve(response), 1500);
-      });
+    const mountAndWaitFor = async (child, propName = 'onCameraReady') =>
+      await originalMountAndWaitFor(child, propName, setPortalChild);
 
     t.beforeAll(async () => {
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
@@ -280,7 +277,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
         const recordingPromise = instance.recordAsync();
         await waitFor(2500);
-        instance.stopRecording();
+        await instance.stopRecording();
         const response = await recordingPromise;
         t.expect(response).toBeDefined();
         t.expect(response.uri).toMatch(/^file:\/\//);
@@ -388,7 +385,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
             new Promise(async (resolve, reject) => {
               const recordingPromise = instance.recordAsync();
               await waitFor(duration);
-              instance.stopRecording();
+              await instance.stopRecording();
               try {
                 const recordedVideo = await recordingPromise;
                 t.expect(recordedVideo).toBeDefined();
