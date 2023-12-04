@@ -12,6 +12,7 @@
 
 - [Android] Prevent the app from crashing during reloading when an unfinished promise tries to execute.
 - [Android] Fix `JavaScriptFunction` not working when the return type wasn't provided. ([#25688](https://github.com/expo/expo/pull/25688) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix requesting only `WRITE_SETTINGS` rejecting promise even if the permission was granted.
 
 ### 💡 Others
 
