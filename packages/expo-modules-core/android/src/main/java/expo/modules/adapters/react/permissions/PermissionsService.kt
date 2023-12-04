@@ -136,6 +136,11 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
         addToAskedPermissionsCache(arrayOf(Manifest.permission.WRITE_SETTINGS))
         askForWriteSettingsPermissionFirst()
       } else {
+        // User only ask for `WRITE_SETTINGS`, we can already return response
+        if (permissionsToAsk.isEmpty()) {
+          newListener.onResult(mutableMapOf())
+          return
+        }
         askForManifestPermissions(permissionsToAsk, newListener)
       }
     } else {
