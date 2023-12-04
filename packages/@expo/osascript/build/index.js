@@ -1,7 +1,4 @@
-/**
- * Utilities for working with `osascript` which runs AppleScript on Macs
- */
-'use strict';
+"use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -23,7 +20,8 @@ function osascriptArgs(script) {
     return args;
 }
 async function osascriptExecAsync(script, opts) {
-    return await (0, exec_async_1.default)('osascript', osascriptArgs(script), Object.assign({ stdio: 'inherit' }, opts));
+    const result = await (0, exec_async_1.default)('osascript', osascriptArgs(script), Object.assign({ stdio: 'inherit' }, opts));
+    return result?.toString() || '';
 }
 exports.execAsync = osascriptExecAsync;
 async function osascriptSpawnAsync(script, opts) {

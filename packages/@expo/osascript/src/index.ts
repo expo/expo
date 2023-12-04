@@ -1,8 +1,3 @@
-/**
- * Utilities for working with `osascript` which runs AppleScript on Macs
- */
-'use strict';
-
 import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import execAsync, { ExecAsyncOptions } from 'exec-async';
 import path from 'path';
@@ -26,11 +21,13 @@ async function osascriptExecAsync(
   script: string | string[],
   opts?: ExecAsyncOptions
 ): Promise<string> {
-  return await execAsync(
+  const result = await execAsync(
     'osascript',
     osascriptArgs(script),
     Object.assign({ stdio: 'inherit' }, opts)
   );
+
+  return result?.toString() || '';
 }
 
 async function osascriptSpawnAsync(
