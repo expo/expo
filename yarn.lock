@@ -1459,14 +1459,6 @@
   dependencies:
     semver "^5.3.0"
 
-"@expo/osascript@^2.0.31":
-  version "2.0.33"
-  resolved "https://registry.yarnpkg.com/@expo/osascript/-/osascript-2.0.33.tgz#e9dcc8da54466c11939074aa71a006024ea884b1"
-  integrity sha512-FQinlwHrTlJbntp8a7NAlCKedVXe06Va/0DSLXRO8lZVtgbEMrYYSUZWQNcOlNtc58c2elNph6z9dMOYwSo3JQ==
-  dependencies:
-    "@expo/spawn-async" "^1.5.0"
-    exec-async "^2.2.0"
-
 "@expo/plist@^0.0.20":
   version "0.0.20"
   resolved "https://registry.yarnpkg.com/@expo/plist/-/plist-0.0.20.tgz#a6b3124438031c02b762bad5a47b70584d3c0072"
