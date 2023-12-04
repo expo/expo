@@ -11,17 +11,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo-cli.git",
-    "directory": "packages/plist"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/plist"
   },
   "keywords": [
     "plist"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/expo/expo-cli/issues"
+    "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/plist#readme",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/plist#readme",
   "files": [
     "build"
   ],
