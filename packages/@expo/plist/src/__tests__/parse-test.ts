@@ -259,8 +259,7 @@ int main(int argc, char *argv[])
           { Key: 'iPhone', Title: 'iPhone' },
           { Key: 'iPad', Title: 'iPad' },
           {
-            Key:
-              '\n        \n        #import &lt;Cocoa/Cocoa.h&gt;\n#import &lt;MacRuby/MacRuby.h&gt;\nint main(int argc, char *argv[])\n{\n  return macruby_main("rb_main.rb", argc, argv);\n}\n\n',
+            Key: '\n        \n        #import &lt;Cocoa/Cocoa.h&gt;\n#import &lt;MacRuby/MacRuby.h&gt;\nint main(int argc, char *argv[])\n{\n  return macruby_main("rb_main.rb", argc, argv);\n}\n\n',
           },
         ],
         TemplateSelection: {
