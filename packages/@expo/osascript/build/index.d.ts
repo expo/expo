@@ -1,4 +1,3 @@
-/// <reference types="ts-declarations" />
 import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import { ExecAsyncOptions } from 'exec-async';
 declare function osascriptExecAsync(script: string | string[], opts?: ExecAsyncOptions): Promise<string>;
