@@ -14,6 +14,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix interaction between reload JS API and ErrorRecovery. ([#25651](https://github.com/expo/expo/pull/25651) by [@wschurman](https://github.com/wschurman))
+- [Android] Fix wait notify bug in launch asset when enabled. ([#25676](https://github.com/expo/expo/pull/25676) by [@wschurman](https://github.com/wschurman))
 
 
 ### 💡 Others
