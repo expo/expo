@@ -10,8 +10,4 @@
 
 ### 💡 Others
 
-## 1.1.4 — 2023-11-30
-
-### 💡 Others
-
-- Move package from `expo/expo-cli` to `expo/expo`.
+- Move package from `expo/expo-cli` to `expo/expo`. ([#25743](https://github.com/expo/expo/pull/25743) by [@byCedric](https://github.com/byCedric))
