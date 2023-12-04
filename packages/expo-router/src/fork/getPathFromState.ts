@@ -407,7 +407,11 @@ function decodeParams(params: Record<string, string>) {
   const parsed: Record<string, any> = {};
 
   for (const [key, value] of Object.entries(params)) {
-    parsed[key] = decodeURIComponent(value);
+    try {
+      parsed[key] = decodeURIComponent(value);
+    } catch {
+      parsed[key] = value;
+    }
   }
 
   return parsed;

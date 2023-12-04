@@ -950,7 +950,7 @@ describe('consistent url encoding', () => {
     );
   });
 
-  it('can handle %26 (percent sign) deep linking', async () => {
+  it('can handle %25 (percent sign) deep linking', async () => {
     renderRouter(
       {
         '[param]': () => {
@@ -966,6 +966,28 @@ describe('consistent url encoding', () => {
 
     const component = screen.getByTestId('id');
     expect(screen).toHavePathname('/start%25end');
+    expect(screen).toHaveSearchParams({ param: 'start%end' });
+    expect(component).toHaveTextContent(
+      JSON.stringify({ local: { param: 'start%end' }, global: { param: 'start%end' } })
+    );
+  });
+
+  it('can handle non-url encoded percent sign deep linking', async () => {
+    renderRouter(
+      {
+        '[param]': () => {
+          const local = useLocalSearchParams();
+          const global = useGlobalSearchParams();
+          return <Text testID="id">{JSON.stringify({ local, global })}</Text>;
+        },
+      },
+      {
+        initialUrl: '/start%end',
+      }
+    );
+
+    const component = screen.getByTestId('id');
+    expect(screen).toHavePathname('/start%end');
     expect(screen).toHaveSearchParams({ param: 'start%end' });
     expect(component).toHaveTextContent(
       JSON.stringify({ local: { param: 'start%end' }, global: { param: 'start%end' } })
@@ -1087,6 +1109,28 @@ describe('consistent url encoding', () => {
     });
     expect(component).toHaveTextContent(
       JSON.stringify({ local: { 'par am': 'start end' }, global: { 'par am': 'start end' } })
+    );
+  });
+
+  it('can handle pushing non-url encoded routes', async () => {
+    renderRouter({
+      index: () => null,
+      test: () => {
+        const local = useLocalSearchParams();
+        const global = useGlobalSearchParams();
+        return <Text testID="id">{JSON.stringify({ local, global })}</Text>;
+      },
+    });
+
+    act(() => router.push('/test?param=start%end'));
+
+    const component = screen.getByTestId('id');
+    expect(screen).toHavePathname('/test');
+    expect(screen).toHaveSearchParams({
+      param: 'start%end',
+    });
+    expect(component).toHaveTextContent(
+      JSON.stringify({ local: { param: 'start%end' }, global: { param: 'start%end' } })
     );
   });
 });
