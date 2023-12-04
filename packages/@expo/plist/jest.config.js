@@ -1,7 +1,6 @@
-const path = require('path');
-
+/** @type {import('jest').Config} */
 module.exports = {
-  preset: '../../jest/unit-test-config',
-  rootDir: path.resolve(__dirname),
+  ...require('expo-module-scripts/jest-preset-cli'),
   displayName: require('./package').name,
+  rootDir: __dirname,
 };
