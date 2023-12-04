@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import plist from '../src';
+import plist from '..';
 
 function parseFixture(string: string) {
   const intro = `
@@ -176,7 +176,7 @@ U=</data>
 
   describe('integration', function () {
     it('should parse a plist file with XML comments', function () {
-      const xml = `      
+      const xml = `
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">

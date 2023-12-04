@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import plist from '../src';
+import plist from '..';
 
 describe('plist', function () {
   describe('build()', function () {
