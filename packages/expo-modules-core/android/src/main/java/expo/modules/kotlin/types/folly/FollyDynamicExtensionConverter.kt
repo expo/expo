@@ -24,7 +24,7 @@ class FollyDynamicExtensionConverter {
     fun put(any: Any): String {
       val id = nextId++
       instanceMap[id] = any
-      return "${createPrefix(any.javaClass)}#$id"
+      return "$DYNAMIC_EXTENSION_PREFIX$id"
     }
 
     @JvmStatic
@@ -34,14 +34,8 @@ class FollyDynamicExtensionConverter {
       if (!payload.startsWith(DYNAMIC_EXTENSION_PREFIX)) {
         throw InvalidDynamicExtensionFormatException()
       }
-      val javaClassPos = DYNAMIC_EXTENSION_PREFIX.length
-      val idPos = payload.indexOf('#', javaClassPos)
-      val id = payload.substring(idPos + 1).toInt()
+      val id = payload.substring(DYNAMIC_EXTENSION_PREFIX.length).toInt()
       return instanceMap.remove(id)
-    }
-
-    private fun <T> createPrefix(anyClass: Class<T>): String {
-      return "${DYNAMIC_EXTENSION_PREFIX}${anyClass.canonicalName}"
     }
   }
 }

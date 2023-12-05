@@ -8,7 +8,6 @@
 #include <react/jni/ReadableNativeArray.h>
 #include <react/jni/WritableNativeArray.h>
 #include <react/jni/WritableNativeMap.h>
-#include <string_view>
 
 namespace react = facebook::react;
 
@@ -38,19 +37,12 @@ std::optional<jsi::Value> convertStringToFollyDynamicIfNeeded(jsi::Runtime &rt, 
   if (!string.starts_with(DYNAMIC_EXTENSION_PREFIX)) {
     return std::nullopt;
   }
-  std::string_view stringView(string);
-  size_t javaClassPos = strlen(DYNAMIC_EXTENSION_PREFIX);
-  size_t payloadPos = string.find('#', javaClassPos);
-  if (payloadPos == std::string_view::npos) {
-    return std::nullopt;
-  }
-  std::string_view javaClass = stringView.substr(javaClassPos, payloadPos - javaClassPos);
+  auto converterClass = jni::findClassLocal("expo/modules/kotlin/types/folly/FollyDynamicExtensionConverter");
+  const auto getInstanceMethod = converterClass->getStaticMethod<jni::JObject(std::string)>("get");
+  jni::local_ref<jni::JObject> instance = getInstanceMethod(converterClass, string);
 
-  if (javaClass == jni::JArrayByte::javaClassStatic()->getCanonicalName()->toStdString()) {
-    auto converterClass = jni::findClassLocal("expo/modules/kotlin/types/folly/FollyDynamicExtensionConverter");
-    const auto getInstanceMethod = converterClass->getStaticMethod<jni::JObject(std::string)>("get");
-    jni::local_ref<jni::JObject> byteArray = getInstanceMethod(converterClass, string);
-    return createUint8Array(rt, jni::static_ref_cast<jni::JArrayByte>(byteArray));
+  if (instance->isInstanceOf(jni::JArrayByte::javaClassStatic())) {
+    return createUint8Array(rt, jni::static_ref_cast<jni::JArrayByte>(instance));
   }
   return std::nullopt;
 }
