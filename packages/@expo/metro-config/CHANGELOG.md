@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Add content hashing for assets that aren't hosted with EAS Updates.
+- Add content hashing for assets that aren't hosted with EAS Updates. ([#25774](https://github.com/expo/expo/pull/25774) by [@EvanBacon](https://github.com/EvanBacon))
 - Eagerly load async chunks with async web routes. ([#25627](https://github.com/expo/expo/pull/25627) by [@EvanBacon](https://github.com/EvanBacon))
 - Add custom Expo Router root directory support with full cache invalidation on server reset. ([#25658](https://github.com/expo/expo/pull/25658) by [@EvanBacon](https://github.com/EvanBacon))
 - Added support for React Native 0.73.0. ([#24971](https://github.com/expo/expo/pull/24971), [#25453](https://github.com/expo/expo/pull/25453) by [@gabrieldonadel](https://github.com/gabrieldonadel))
