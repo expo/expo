@@ -136,7 +136,7 @@ export default function App() {
       } catch (e) {
         console.warn(e);
       }
-    }, 1000);
+    }, 2000);
   };
 
   const handleCheckForUpdate = runBlockAsync(async () => {
