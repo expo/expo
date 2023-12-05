@@ -142,7 +142,10 @@ class Env {
     return process.env.HTTP_PROXY || process.env.http_proxy || '';
   }
 
-  /** Use the network inspector by overriding the metro inspector proxy with a custom version */
+  /**
+   * Use the network inspector by overriding the metro inspector proxy with a custom version.
+   * @deprecated This has been replaced by `@react-native/dev-middleware` and is now unused.
+   */
   get EXPO_NO_INSPECTOR_PROXY(): boolean {
     return boolish('EXPO_NO_INSPECTOR_PROXY', false);
   }
@@ -170,6 +173,11 @@ class Env {
   /** Prevent using inline source maps in development. We recommend using either no source maps or inline source maps for the best performance and reliability in development. */
   get EXPO_NO_DEV_INLINE_SOURCE_MAPS() {
     return boolish('EXPO_NO_DEV_INLINE_SOURCE_MAPS', false);
+  }
+
+  /** Enable the React Native JS Inspector, instead of the "classic" Chrome DevTools (SDK <=49) */
+  get EXPO_USE_UNSTABLE_DEBUGGER(): boolean {
+    return boolish('EXPO_USE_UNSTABLE_DEBUGGER', false);
   }
 }
 

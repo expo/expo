@@ -11,12 +11,16 @@
 ### 🐛 Bug fixes
 
 - [Android] Prevent the app from crashing during reloading when an unfinished promise tries to execute.
+- [Android] Fix `JavaScriptFunction` not working when the return type wasn't provided. ([#25688](https://github.com/expo/expo/pull/25688) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix requesting only `WRITE_SETTINGS` rejecting promise even if the permission was granted. ([#25732](https://github.com/expo/expo/pull/25732) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix functions that are scheduled on the main thread weren't being called as soon as possible. ([#25757](https://github.com/expo/expo/pull/25757) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
 - [iOS] Made dynamic types creation faster. ([#25390](https://github.com/expo/expo/pull/25390) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add `FileSystemUtilities` to replace legacy interfaces. ([#25495](https://github.com/expo/expo/pull/25495) by [@alanhughes](https://github.com/alanjhughes))
 - Bump C++ compiler setting to C++20. ([#25548](https://github.com/expo/expo/pull/25548) by [@kudo](https://github.com/kudo))
+- Marked `NativeModulesProxy` as deprecated in favor of `requireNativeModule` and `requireOptionalNativeModule`. ([#25666](https://github.com/expo/expo/pull/25666) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.10.0 — 2023-11-14
 

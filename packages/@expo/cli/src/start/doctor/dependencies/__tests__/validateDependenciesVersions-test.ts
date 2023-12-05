@@ -2,9 +2,7 @@ import { vol } from 'memfs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
-import { getCombinedKnownVersionsAsync } from '../getVersionedPackages';
 import {
   logIncorrectDependencies,
   validateDependenciesVersionsAsync,
@@ -29,7 +27,7 @@ jest.mock('../getVersionedPackages', () => ({
 
 describe(logIncorrectDependencies, () => {
   it(`logs incorrect dependencies`, () => {
-    asMock(Log.warn).mockImplementation(console.log);
+    jest.mocked(Log.warn).mockImplementation(console.log);
 
     logIncorrectDependencies([
       {
@@ -126,7 +124,7 @@ describe(validateDependenciesVersionsAsync, () => {
   });
 
   it('resolves to false when the installed packages do not match bundled native modules', async () => {
-    asMock(Log.warn).mockReset();
+    jest.mocked(Log.warn).mockReset();
     vol.fromJSON(
       {
         'node_modules/expo/package.json': JSON.stringify({
@@ -160,7 +158,7 @@ describe(validateDependenciesVersionsAsync, () => {
   });
 
   it('skips packages do not match bundled native modules but are in package.json expo.install.exclude', async () => {
-    asMock(Log.warn).mockReset();
+    jest.mocked(Log.warn).mockReset();
     vol.fromJSON(
       {
         'node_modules/expo/package.json': JSON.stringify({
@@ -215,7 +213,7 @@ describe(validateDependenciesVersionsAsync, () => {
     // Manually trigger the Node import error for "exports".
     // This isn't triggered by memfs, or our mock, that's why we need to do it manually.
     // see: https://github.com/expo/expo-cli/pull/3878
-    asMock(resolveFrom).mockImplementationOnce(() => {
+    jest.mocked(resolveFrom).mockImplementationOnce(() => {
       const message = `Package subpath './package.json' is not defined by "exports" in ${packageJsonPath}`;
       const error: any = new Error(message);
       error.code = 'ERR_PACKAGE_PATH_NOT_EXPORTED';
@@ -231,39 +229,6 @@ describe(validateDependenciesVersionsAsync, () => {
 
     await expect(validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)).resolves.toBe(
       true
-    );
-  });
-
-  it('only uses local bundled module versions when using canary versions', async () => {
-    vol.fromJSON(
-      {
-        'node_modules/expo/package.json': JSON.stringify({
-          version: '50.0.0-canary-20231125-d600e44',
-        }),
-        'node_modules/react-native/package.json': JSON.stringify({
-          version: '0.73.0-rc.5',
-        }),
-      },
-      projectRoot
-    );
-    asMock(getCombinedKnownVersionsAsync).mockResolvedValue({
-      'react-native': '0.73.0-rc.5',
-    });
-
-    const exp = { sdkVersion: '50.0.0' };
-    const pkg = { dependencies: { 'react-native': '0.73.0-rc.5' } };
-
-    // This should pass validation without any problems
-    await expect(validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)).resolves.toBe(
-      true
-    );
-    // This should be called with `skipRemoteVersions: true` because of a `canary` Expo SDK version
-    expect(getCombinedKnownVersionsAsync).toBeCalledWith(
-      expect.objectContaining({
-        projectRoot,
-        sdkVersion: exp.sdkVersion,
-        skipRemoteVersions: true,
-      })
     );
   });
 

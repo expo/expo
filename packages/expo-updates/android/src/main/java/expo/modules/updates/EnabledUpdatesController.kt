@@ -65,6 +65,12 @@ class EnabledUpdatesController(
 
   private var isStartupFinished = false
 
+  @Synchronized
+  private fun onStartupProcedureFinished() {
+    isStartupFinished = true
+    (this@EnabledUpdatesController as java.lang.Object).notify()
+  }
+
   private val startupProcedure = StartupProcedure(
     context,
     updatesConfiguration,
@@ -74,10 +80,8 @@ class EnabledUpdatesController(
     selectionPolicy,
     logger,
     object : StartupProcedure.StartupProcedureCallback {
-      @Synchronized
       override fun onFinished() {
-        isStartupFinished = true
-        (this as java.lang.Object).notify()
+        onStartupProcedureFinished()
       }
 
       override fun onLegacyJSEvent(event: StartupProcedure.StartupProcedureCallback.LegacyJSEvent) {

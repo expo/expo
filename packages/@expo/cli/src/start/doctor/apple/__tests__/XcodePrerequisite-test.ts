@@ -1,6 +1,5 @@
 import { execSync } from 'child_process';
 
-import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import { confirmAsync } from '../../../../utils/prompts';
 import { getXcodeVersionAsync, XcodePrerequisite } from '../XcodePrerequisite';
@@ -9,27 +8,27 @@ jest.mock(`../../../../log`);
 jest.mock('../../../../utils/prompts');
 
 function mockXcodeInstalled() {
-  return asMock(execSync).mockReturnValue(`Xcode 14.3
+  return jest.mocked(execSync).mockReturnValue(`Xcode 14.3
 Build version 14E222b`);
 }
 
 describe(getXcodeVersionAsync, () => {
   beforeEach(() => {
-    asMock(Log.error).mockReset();
+    jest.mocked(Log.error).mockReset();
   });
   it(`returns the xcode version`, () => {
     mockXcodeInstalled();
     expect(getXcodeVersionAsync()).toEqual('14.3.0');
   });
   it(`logs an error when the xcode cli format is invalid`, () => {
-    asMock(execSync).mockReturnValue(`foobar`);
+    jest.mocked(execSync).mockReturnValue(`foobar`);
     expect(getXcodeVersionAsync()).toEqual(null);
     expect(Log.error).toHaveBeenLastCalledWith(
       expect.stringMatching(/Unable to check Xcode version/)
     );
   });
   it(`returns null when the xcode command fails (not installed)`, () => {
-    asMock(execSync).mockImplementationOnce(() => {
+    jest.mocked(execSync).mockImplementationOnce(() => {
       throw new Error('foobar');
     });
     expect(getXcodeVersionAsync()).toEqual(null);
@@ -53,7 +52,8 @@ it(`validates that Xcode is installed and is valid`, async () => {
   mockXcodeInstalled();
 
   // Ensure the confirmation is never called.
-  asMock(confirmAsync)
+  jest
+    .mocked(confirmAsync)
     .mockReset()
     .mockImplementation(() => {
       throw new Error("shouldn't happen");
@@ -78,7 +78,8 @@ for (const platform of ['darwin', 'win32']) {
     ]) {
       it(`opens the app store when: ${condition}`, async () => {
         mockPlatform(platform);
-        asMock(execSync)
+        jest
+          .mocked(execSync)
           // Mock xcode is not installed.
           .mockImplementationOnce(() => {
             return `Xcode ${xcodeVersion}
@@ -87,7 +88,8 @@ Build version 13A1030d`;
           // Skip actually opening the app store.
           .mockImplementationOnce((cmd) => '');
 
-        asMock(confirmAsync)
+        jest
+          .mocked(confirmAsync)
           .mockReset()
           // Ensure the confirmation is selected.
           .mockImplementationOnce(async () => true)

@@ -278,6 +278,16 @@ redirects[eas-update/debug-updates/]=eas-update/debug/
 redirects[eas-update/how-eas-update-works/]=eas-update/how-it-works/
 redirects[eas-update/migrate-to-eas-update/]=eas-update/migrate-from-classic-updates/
 
+# Redirects after Expo Router docs reorganization from Home to Guides
+redirects[routing/next-steps]=router/introduction/
+redirects[routing/introduction]=router/introduction/
+redirects[routing/installation]=router/installation/
+redirects[routing/create-pages]=router/create-pages/
+redirects[routing/navigating-pages]=router/navigating-pages/
+redirects[routing/layouts]=router/layouts/
+redirects[routing/appearance]=router/appearance/
+redirects[routing/error-handling]=router/error-handling/
+
 # Removed API reference docs
 redirects[versions/latest/sdk/facebook]=guides/authentication/
 redirects[versions/latest/sdk/taskmanager]=versions/latest/sdk/task-manager/
@@ -302,6 +312,12 @@ redirects[eas/submit]=submit/introduction/
 redirects[development/tools/expo-dev-client/]=develop/development-builds/introduction/
 redirects[develop/user-interface/custom-fonts/]=develop/user-interface/fonts/
 redirects[workflow/snack/]=/more/glossary-of-terms/
+redirects[accounts/teams-and-accounts/]=accounts/account-types/
+redirects[push-notifications/fcm/]=push-notifications/sending-notifications-custom/
+redirects[troubleshooting/clear-cache-mac/]=troubleshooting/clear-cache-macos-linux/
+redirects[guides/using-preact/]=guides/overview/
+redirects[versions/latest/sdk/shared-element/]=versions/latest/
+redirects[workflow/hermes/]=guides/using-hermes/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

@@ -288,6 +288,8 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
       Any::class to AnyTypeConverter(isOptional),
 
+      Unit::class to UnitTypeConverter(isOptional),
+
       ReadableArguments::class to ReadableArgumentsTypeConverter(isOptional),
     )
 
