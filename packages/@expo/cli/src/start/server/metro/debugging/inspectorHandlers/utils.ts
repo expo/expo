@@ -1,6 +1,6 @@
 import type WS from 'ws';
 
-import { DebuggerResponse, DeviceResponse } from './types';
+import { DebuggerRequest, DebuggerResponse, DeviceRequest, DeviceResponse } from './types';
 
 /**
  * Helper function to respond to a message from the debugger or device.
@@ -11,6 +11,11 @@ import { DebuggerResponse, DeviceResponse } from './types';
  * ```
  */
 export function respond<T = DeviceResponse | DebuggerResponse>(socket: WS, message: T) {
+  socket.send(JSON.stringify(message));
+  return true;
+}
+
+export function send<T = DeviceRequest | DebuggerRequest>(socket: WS, message: T) {
   socket.send(JSON.stringify(message));
   return true;
 }

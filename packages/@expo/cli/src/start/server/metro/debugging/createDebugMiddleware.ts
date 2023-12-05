@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import resolveFrom from 'resolve-from';
 
 import { createInspectorDeviceClass } from './InspectorDevice';
 import { createInspectorProxyClass } from './InspectorProxy';
@@ -9,7 +10,7 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
   // Load the React Native debugging tools from project
   // TODO: check if this works with isolated modules
   const { createDevMiddleware, unstable_Device, unstable_InspectorProxy } =
-    require('@react-native/dev-middleware') as typeof import('@react-native/dev-middleware');
+    importDevMiddlewareFromProject(metroBundler);
 
   // Create the extended inspector proxy, using our own device class
   const ExpoInspectorProxy = createInspectorProxyClass(
@@ -41,4 +42,17 @@ function createLogger(
     warn: (...args) => Log.warn(logPrefix, ...args),
     error: (...args) => Log.error(logPrefix, ...args),
   };
+}
+
+function importDevMiddlewareFromProject(
+  metroBundler: MetroBundlerDevServer
+): typeof import('@react-native/dev-middleware') {
+  const resolvedPath = resolveFrom.silent(metroBundler.projectRoot, '@react-native/dev-middleware');
+  if (!resolvedPath) {
+    throw new Error(
+      `Couldn't find "@react-native/dev-middleware" package in project: ${metroBundler.projectRoot}`
+    );
+  }
+
+  return require(resolvedPath);
 }

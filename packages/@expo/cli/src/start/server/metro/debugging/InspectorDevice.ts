@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 import type WS from 'ws';
 
 import { NetworkResponseHandler } from './inspectorHandlers/NetworkResponse';
+import { PageFrameHandler } from './inspectorHandlers/PageFrame';
 import { PageReloadHandler } from './inspectorHandlers/PageReload';
 import { VscodeDebuggerGetPossibleBreakpointsHandler } from './inspectorHandlers/VscodeDebuggerGetPossibleBreakpoints';
 import { VscodeDebuggerScriptParsedHandler } from './inspectorHandlers/VscodeDebuggerScriptParsed';
@@ -28,6 +29,8 @@ export function createInspectorDeviceClass(
       new VscodeDebuggerSetBreakpointByUrlHandler(),
       new VscodeRuntimeGetPropertiesHandler(),
       new VscodeRuntimeCallFunctionOnHandler(),
+      // Biepboep - testing
+      new PageFrameHandler(),
     ];
 
     onDeviceMessage(message: any, info: DebuggerMetadata): boolean {
