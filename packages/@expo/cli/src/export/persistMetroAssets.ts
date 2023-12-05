@@ -12,7 +12,7 @@ import fs from 'fs';
 import type { AssetData } from 'metro';
 import path from 'path';
 
-import { getAssetLocalPath } from './metroAssetLocalPath';
+import { getAssetLocalPath, getOriginalName } from './metroAssetLocalPath';
 import { ExportAssetMap } from './saveAssets';
 import { Log } from '../log';
 
@@ -96,7 +96,16 @@ export async function persistMetroAssetsAsync(
     for (let idx = 0; idx < asset.scales.length; idx++) {
       const scale = asset.scales[idx];
       if (validScales.has(scale)) {
-        await write(asset.files[idx], getAssetLocalPath(asset, { platform, scale, baseUrl }));
+        const filePath = asset.files[idx];
+        await write(
+          filePath,
+          getAssetLocalPath(asset, {
+            platform,
+            scale,
+            baseUrl,
+            hash: md5Hash(await fs.promises.readFile(asset.files[idx])),
+          })
+        );
       }
     }
   }
@@ -104,6 +113,13 @@ export async function persistMetroAssetsAsync(
   if (!files) {
     await copyInBatchesAsync(batches);
   }
+}
+
+function md5Hash(data: string | Buffer): string {
+  const crypto = require('crypto');
+  const hash = crypto.createHash('md5');
+  hash.update(data);
+  return hash.digest('hex');
 }
 
 function writeImageSet(imageSet: ImageSet): void {
@@ -225,7 +241,7 @@ export function filterPlatformAssetScales(platform: string, scales: number[]): n
 
 function getResourceIdentifier(asset: Pick<AssetData, 'httpServerLocation' | 'name'>): string {
   const folderPath = getBaseUrl(asset);
-  return `${folderPath}/${asset.name}`
+  return `${folderPath}/${getOriginalName(asset)}`
     .toLowerCase()
     .replace(/\//g, '_') // Encode folder structure in file name
     .replace(/([^a-z0-9_])/g, '') // Remove illegal chars

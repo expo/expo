@@ -13,6 +13,12 @@ module.exports = function hashAssetFiles(asset) {
       asset.httpServerLocation = asset.httpServerLocation
         .match(/\?export_path=(.*)/)[1]
         .replace(/\.\.\//g, '_');
+
+      // Store original name for reading the asset on-disk later.
+      asset._name = asset.name;
+      // TODO: Combine all hashes together to make one super hash.
+      // `local-image_[contenthash]`. Using `_` instead of `.` because Android res files cannot contain `.`.
+      asset.name = `${asset.name}_${hashes[0]}`;
     }
 
     // URL encode asset paths defined as `?export_path` or `?unstable_path` query parameters.

@@ -13,38 +13,46 @@ import path from 'path';
 
 export function getAssetLocalPath(
   asset: Pick<AssetData, 'type' | 'httpServerLocation' | 'name'>,
-  { baseUrl, scale, platform }: { baseUrl?: string; scale: number; platform: string }
+  {
+    baseUrl,
+    scale,
+    platform,
+    hash,
+  }: { baseUrl?: string; scale: number; platform: string; hash: string }
 ): string {
   if (platform === 'android') {
-    return getAssetLocalPathAndroid(asset, { baseUrl, scale });
+    return getAssetLocalPathAndroid(asset, { baseUrl, scale, hash });
   }
-  return getAssetLocalPathDefault(asset, { baseUrl, scale });
+  return getAssetLocalPathDefault(asset, { baseUrl, scale, hash });
 }
 
 function getAssetLocalPathAndroid(
   asset: Pick<AssetData, 'type' | 'httpServerLocation' | 'name'>,
   {
     baseUrl,
+    hash,
     scale,
   }: {
     // TODO: baseUrl support
     baseUrl?: string;
+    hash: string;
     scale: number;
   }
 ): string {
   const androidFolder = getAndroidResourceFolderName(asset, scale);
   const fileName = getResourceIdentifier(asset);
-  return path.join(androidFolder, `${fileName}.${asset.type}`);
+  return path.join(androidFolder, `${fileName}_${hash}.${asset.type}`);
 }
 
 function getAssetLocalPathDefault(
   asset: Pick<AssetData, 'type' | 'httpServerLocation' | 'name'>,
-  { baseUrl, scale }: { baseUrl?: string; scale: number }
+  { baseUrl, scale, hash }: { baseUrl?: string; scale: number; hash: string }
 ): string {
   const suffix = scale === 1 ? '' : `@${scale}x`;
-  const fileName = `${asset.name + suffix}.${asset.type}`;
+  const fileName = `${getOriginalName(asset)}_${hash}${suffix}.${asset.type}`;
 
   const adjustedHttpServerLocation = stripAssetPrefix(asset.httpServerLocation, baseUrl);
+
   return path.join(
     // Assets can have relative paths outside of the project root.
     // Replace `../` with `_` to make sure they don't end up outside of
@@ -114,7 +122,7 @@ function getAndroidResourceFolderName(asset: Pick<AssetData, 'type'>, scale: num
 
 function getResourceIdentifier(asset: Pick<AssetData, 'httpServerLocation' | 'name'>): string {
   const folderPath = getBaseUrl(asset);
-  return `${folderPath}/${asset.name}`
+  return `${folderPath}/${getOriginalName(asset)}`
     .toLowerCase()
     .replace(/\//g, '_') // Encode folder structure in file name
     .replace(/([^a-z0-9_])/g, '') // Remove illegal chars
@@ -127,4 +135,11 @@ function getBaseUrl(asset: Pick<AssetData, 'httpServerLocation'>): string {
     baseUrl = baseUrl.substring(1);
   }
   return baseUrl;
+}
+
+export function getOriginalName(asset: { name: string; _name?: string }): string {
+  // We inject the `_name` property in the expo-asset/tools/hashAssetFiles.js plugin to preserve a reference to the
+  // original file name before it was hashed for the bundle. Web doesn't contain this property because it uses the more refined
+  // multi-bundle serializer.
+  return asset._name ?? asset.name;
 }

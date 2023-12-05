@@ -44,6 +44,7 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
 }
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
+  debug('Exporting project at', projectRoot, 'with options', options);
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
@@ -87,7 +88,7 @@ export async function exportEmbedBundleAsync(projectRoot: string, options: Optio
     projectRoot,
     {
       maxWorkers: options.maxWorkers,
-      resetCache: false, //options.resetCache,
+      resetCache: options.resetCache,
       config: options.config,
     },
     {
