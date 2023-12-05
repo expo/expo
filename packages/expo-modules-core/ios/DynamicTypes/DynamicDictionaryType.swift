@@ -40,7 +40,7 @@ internal struct DynamicDictionaryType: AnyDynamicType {
   }
 
   var description: String {
-    "[AnyHashable: \(valueType.description)]"
+    "[Hashable: \(valueType.description)]"
   }
 }
 

@@ -3,7 +3,7 @@
 /**
  A dynamic type representing Swift `Data` or Objective-C `NSData` type and backing by JavaScript `Uint8Array`.
  */
-internal struct DynamicFoundationDataType: AnyDynamicType {
+internal struct DynamicDataType: AnyDynamicType {
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
     return InnerType.self == Data.self
   }

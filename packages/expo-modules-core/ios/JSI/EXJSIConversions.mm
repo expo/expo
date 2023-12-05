@@ -56,12 +56,13 @@ std::vector<jsi::Value> convertNSArrayToStdVector(jsi::Runtime &runtime, NSArray
 }
 
 jsi::Value createUint8Array(jsi::Runtime &runtime, NSData *data) {
-  auto arrayBufferCtor = runtime.global().getPropertyAsFunction(runtime, "ArrayBuffer");
+  auto global = runtime.global();
+  auto arrayBufferCtor = global.getPropertyAsFunction(runtime, "ArrayBuffer");
   auto arrayBufferObject = arrayBufferCtor.callAsConstructor(runtime, static_cast<int>(data.length)).getObject(runtime);
   auto arrayBuffer = arrayBufferObject.getArrayBuffer(runtime);
   memcpy(arrayBuffer.data(runtime), data.bytes, data.length);
 
-  auto uint8ArrayCtor = runtime.global().getPropertyAsFunction(runtime, "Uint8Array");
+  auto uint8ArrayCtor = global.getPropertyAsFunction(runtime, "Uint8Array");
   auto uint8Array = uint8ArrayCtor.callAsConstructor(runtime, arrayBufferObject).getObject(runtime);
   return uint8Array;
 }
@@ -84,12 +85,12 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
       return convertNSNumberToJSIBoolean(runtime, (NSNumber *)value);
     }
     return convertNSNumberToJSINumber(runtime, (NSNumber *)value);
-  } else if ([value isKindOfClass:[NSData class]]) {
-    return createUint8Array(runtime, (NSData *)value);
   } else if ([value isKindOfClass:[NSDictionary class]]) {
     return convertNSDictionaryToJSIObject(runtime, (NSDictionary *)value);
   } else if ([value isKindOfClass:[NSArray class]]) {
     return convertNSArrayToJSIArray(runtime, (NSArray *)value);
+  } else if ([value isKindOfClass:[NSData class]]) {
+    return createUint8Array(runtime, (NSData *)value);
   } else if (value == (id)kCFNull) {
     return jsi::Value::null();
   }

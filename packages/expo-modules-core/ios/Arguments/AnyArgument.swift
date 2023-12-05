@@ -33,11 +33,6 @@ extension Double: AnyArgument {}
 extension CGFloat: AnyArgument {}
 
 extension String: AnyArgument {}
-extension Data: AnyArgument {
-  public static func getDynamicType() -> AnyDynamicType {
-    return DynamicFoundationDataType()
-  }
-}
 
 extension Optional: AnyArgument where Wrapped: AnyArgument {
   public static func getDynamicType() -> AnyDynamicType {
@@ -45,7 +40,7 @@ extension Optional: AnyArgument where Wrapped: AnyArgument {
   }
 }
 
-extension Dictionary: AnyArgument {
+extension Dictionary: AnyArgument where Key: Hashable {
   public static func getDynamicType() -> AnyDynamicType {
     return DynamicDictionaryType(valueType: ~Value.self)
   }
@@ -54,5 +49,11 @@ extension Dictionary: AnyArgument {
 extension Array: AnyArgument {
   public static func getDynamicType() -> AnyDynamicType {
     return DynamicArrayType(elementType: ~Element.self)
+  }
+}
+
+extension Data: AnyArgument {
+  public static func getDynamicType() -> AnyDynamicType {
+    return DynamicDataType()
   }
 }
