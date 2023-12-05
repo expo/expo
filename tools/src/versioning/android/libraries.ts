@@ -26,7 +26,7 @@ export const JniLibNames = [
   'hermes',
   'hermes_executor',
   'hermes_executor_common',
-  'hermes_inspector',
+  'hermes_inspector_modern',
   'reanimated',
   'folly_futures',
   'folly_runtime',
