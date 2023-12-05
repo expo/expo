@@ -49,10 +49,9 @@ Expo CLI loads **.env** files according to the [standard .env file resolution](h
 ### How to read from environment variables
 
 - <YesIcon small /> **Every environment variable must be referenced as a static property for it to be
-  inlined.** For example, the expression `process.env.EXPO_PUBLIC_KEY` and `const EXPO_PUBLIC_KEY = process.env.EXPO_PUBLIC_KEY`
-  are valid and will be inlined.
+  inlined.** For example, the expression `process.env.EXPO_PUBLIC_KEY` is valid and will be inlined.
 
-- <NoIcon small /> **Dynamic versions of the expression are not supported**. For example, `process.env['EXPO_PUBLIC_KEY']`
+- <NoIcon small /> **Alternative versions of the expression are not supported**. For example, `process.env['EXPO_PUBLIC_KEY']`
   or `const {EXPO_PUBLIC_X} = process.env` are invalid and will not be inlined.
 
 ### Using multiple .env files to define separate environments
