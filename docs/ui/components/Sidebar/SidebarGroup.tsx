@@ -11,7 +11,7 @@ import {
   PlanEnterpriseIcon,
   PaletteIcon,
   DataIcon,
-  Code01Icon,
+  CodeSquare01Icon,
   Phone01Icon,
 } from '@expo/styleguide-icons';
 
@@ -71,7 +71,7 @@ function getIconElement(iconName?: string) {
     case 'Deploy':
       return Rocket01Icon;
     case 'Development process':
-      return Code01Icon;
+      return CodeSquare01Icon;
     case 'EAS Build':
       return Cube01Icon;
     case 'EAS Submit':
