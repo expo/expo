@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Update `expo-font` mock for custom native fonts checks. ([#25770](https://github.com/expo/expo/pull/25770) by [@kudo](https://github.com/kudo))
+
 ## 50.0.0-alpha.4 — 2023-11-14
 
 ### 🎉 New features
