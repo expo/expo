@@ -1,5 +1,6 @@
 package expo.modules.kotlin.functions
 
+import android.view.View
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.BuildConfig
 import expo.modules.kotlin.AppContext
@@ -85,24 +86,32 @@ abstract class AsyncFunction(
         }
       }
 
-      if (queue == Queues.MAIN) {
-        if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      dispatchOnQueue(appContext, functionBody)
+    }
+  }
+
+  private fun dispatchOnQueue(appContext: AppContext, block: () -> Unit) {
+    when (queue) {
+      Queues.DEFAULT -> {
+        appContext.modulesQueue.launch {
+          block()
+        }
+      }
+
+      Queues.MAIN -> {
+        if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED && desiredArgsTypes.any { it.inheritFrom<View>() }) {
           // On certain occasions, invoking a function on a view could lead to an error
           // because of the asynchronous communication between the JavaScript and native components.
           // In such cases, the native view may not have been mounted yet,
           // but the JavaScript code has already received the future tag of the view.
           // To avoid this issue, we have decided to temporarily utilize
           // the UIManagerModule for dispatching functions on the main thread.
-          appContext.dispatchOnMainUsingUIManager(functionBody)
-          return@registerAsyncFunction
+          appContext.dispatchOnMainUsingUIManager(block)
+          return
         }
 
         appContext.mainQueue.launch {
-          functionBody()
-        }
-      } else {
-        appContext.modulesQueue.launch {
-          functionBody()
+          block()
         }
       }
     }
