@@ -25,7 +25,7 @@ public class ImageManipulatorModule: Module {
           do {
             let newImage = try manipulate(image: image, actions: actions)
             let saveResult = try self.saveImage(newImage, options: options)
-            
+
             promise.resolve([
               "uri": saveResult.url.absoluteString,
               "width": newImage.cgImage?.width ?? 0,
