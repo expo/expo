@@ -12,7 +12,7 @@ import { CALLOUT, HEADLINE } from '~/ui/components/Text';
 
 export function AppJSBanner() {
   const router = useRouter();
-  const appJSConfEndDate = new Date('2023-05-10');
+  const appJSConfEndDate = new Date('2024-05-24');
   const showAppJSConfShoutout = isBefore(new Date(), appJSConfEndDate);
   const isHomePage = router?.pathname === '/';
 
@@ -26,9 +26,9 @@ export function AppJSBanner() {
         <Background />
       </div>
       <div>
-        <HEADLINE css={headlineStyle}>App.js Conf 2023</HEADLINE>
+        <HEADLINE css={headlineStyle}>App.js Conf 2024</HEADLINE>
         <CALLOUT css={descriptionStyle}>
-          An Expo &amp; React Native conference in Europe is back, May 10-12 in Kraków, Poland!
+          An Expo &amp; React Native conference in Europe is back, May 22-24 in Kraków, Poland!
         </CALLOUT>
       </div>
       <Button
