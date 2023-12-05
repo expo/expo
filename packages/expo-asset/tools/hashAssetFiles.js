@@ -2,6 +2,13 @@
 
 const md5File = require('md5-file/promise');
 
+function md5Hash(data) {
+  const crypto = require('crypto');
+  const hash = crypto.createHash('md5');
+  hash.update(data);
+  return hash.digest('hex');
+}
+
 module.exports = function hashAssetFiles(asset) {
   return Promise.all(asset.files.map(md5File)).then((hashes) => {
     asset.fileHashes = hashes;
@@ -16,9 +23,9 @@ module.exports = function hashAssetFiles(asset) {
 
       // Store original name for reading the asset on-disk later.
       asset._name = asset.name;
-      // TODO: Combine all hashes together to make one super hash.
       // `local-image_[contenthash]`. Using `_` instead of `.` because Android res files cannot contain `.`.
-      asset.name = `${asset.name}_${hashes[0]}`;
+      // TODO: Prevent one multi-res image from updating the hash in all images.
+      asset.name = `${asset.name}_${md5Hash(hashes.join(''))}`;
     }
 
     // URL encode asset paths defined as `?export_path` or `?unstable_path` query parameters.

@@ -94,7 +94,7 @@ export async function persistMetroAssetsAsync(
   for (const asset of assetsToCopy) {
     const validScales = new Set(filterPlatformAssetScales(platform, asset.scales));
     // NOTE(EvanBacon): This is a hack to align with the expo-asset/tools/hashAssetFiles plugin, which only uses the first file hash.
-    const firstHash = md5Hash(await fs.promises.readFile(asset.files[0]));
+    const allAssetsHashed = await md5SuperHashAsync(asset.files);
     for (let idx = 0; idx < asset.scales.length; idx++) {
       const filePath = asset.files[idx];
       const scale = asset.scales[idx];
@@ -105,7 +105,7 @@ export async function persistMetroAssetsAsync(
             platform,
             scale,
             baseUrl,
-            hash: firstHash,
+            hash: allAssetsHashed,
           })
         );
       }
@@ -115,6 +115,13 @@ export async function persistMetroAssetsAsync(
   if (!files) {
     await copyInBatchesAsync(batches);
   }
+}
+
+// NOTE: This MUST match the hashing system in expo-asset/tools/hashAssetFiles
+async function md5SuperHashAsync(files: string[]): Promise<string> {
+  const contents = await Promise.all(files.map((file) => fs.promises.readFile(file)));
+  const hashes = contents.map(md5Hash);
+  return md5Hash(hashes.join(''));
 }
 
 function md5Hash(data: string | Buffer): string {
