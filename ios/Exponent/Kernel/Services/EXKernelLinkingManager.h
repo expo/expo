@@ -6,7 +6,7 @@
 #import "EXReactAppManager.h"
 #import "EXUtil.h"
 
-@interface EXKernelLinkingManager : NSObject <EXLinkingManagerScopedModuleDelegate>
+@interface EXKernelLinkingManager : NSObject <EXLinkingManagerScopedModuleDelegate, UIApplicationDelegate>
 
 /**
  *  Either opens the url on an existing bridge, or sends it to the kernel
@@ -44,6 +44,10 @@
 + (NSString *)releaseChannelWithUrlComponents:(NSURLComponents *)urlComponents;
 
 # pragma mark - app-wide linking handlers
+
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)URL
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options;
 
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)URL
