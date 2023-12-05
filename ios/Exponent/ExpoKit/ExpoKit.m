@@ -9,10 +9,16 @@
 #import "EXKernelLinkingManager.h"
 #import "EXReactAppExceptionHandler.h"
 
+#if __has_include(<EXNotifications/EXNotificationCenterDelegate.h>)
+#import <EXNotifications/EXNotificationCenterDelegate.h>
+#endif
+
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 #import <GoogleMaps/GoogleMaps.h>
 
+NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"kEXAppDidRegisterForRemoteNotificationsNotification";
+NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXAppDidRegisterUserNotificationSettingsNotification";
 
 @interface ExpoKit ()
 {
@@ -94,6 +100,40 @@
   }
 
   _launchOptions = launchOptions;
+}
+
+#pragma mark - deep linking hooks
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
+{
+  return [EXKernelLinkingManager application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+}
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
+{
+  if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    NSURL *webpageURL = userActivity.webpageURL;
+    NSString *path = [webpageURL path];
+
+    // Filter out URLs that don't match experience URLs since the AASA pattern's grammar is not as
+    // expressive as we'd like and matches profile URLs too
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^/@[a-z0-9_-]+/.+$"
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:nil];
+    NSUInteger matchCount = [regex numberOfMatchesInString:path options:0 range:NSMakeRange(0, path.length)];
+
+    if (matchCount > 0) {
+      [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+      return YES;
+    } else {
+      if (![path isEqualToString:@"/expo-go"]) {
+        [application openURL:webpageURL options:@{} completionHandler:nil];
+        return YES;
+      }
+    }
+  }
+  
+  return NO;
 }
 
 #pragma mark - internal
