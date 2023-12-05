@@ -6,6 +6,7 @@ description: Learn about using custom fonts, supported font formats for each pla
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal, SnackInline } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 
 Both Android and iOS and most desktop operating systems come with their own set of platform fonts. However, if you want to inject some more brand personality into your app, a well-picked font can go a long way.
 
@@ -43,9 +44,47 @@ For reference, the following table provides what formats work on which platforms
 
 ## Use a custom font
 
+There are two ways to use a custom font in your project:
+
+### 1. Embed the font in your native project
+
+> Note: this `expo-font` config plugin is only available for SDK 50 and higher. If you are using an older SDK, you can [load the font at runtime](#2-load-the-font-at-runtime) instead. 
+
+Install [`expo-font`](/versions/latest/sdk/font/#installation) package and add the config plugin to your `app.json` file. The plugin will embed the font in your native project.
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Inter-Black.otf"
+          ]
+        }
+      ]
+    ]
+  }
+}
+```
+
+[Create a new native build](/develop/development-builds/create-a-build/), and you can now use the font in your project with the `fontFamily` style prop. The font family name will be the name of the font file, without the extension. For example, if you have a font file named **Inter-Black.otf**, the font family name will be **Inter-Black**.
+
+If you'd like to try out a font without creating a new build, you could alternatively load it at runtime. This is what the second approach explains.
+
+<ConfigReactNative>
+
+- **Android:** Copy font files to **android/app/src/main/assets/fonts**.
+- **iOS**: See ["Adding a Custom Font to Your App" on the Apple Developer documentation](https://developer.apple.com/documentation/uikit/text_display_and_fonts/adding_a_custom_font_to_your_app).
+
+</ConfigReactNative>
+
+### 2. Load the font at runtime
+
 After getting the font file, in your project, you need to install [`expo-font`](/versions/latest/sdk/font/#installation) package.
 
-### Import the font
+#### Import the font
 
 After the installation step, import the `useFonts` hook from `expo-font` package in your project. The hook keeps track of the loading state of the font. When an app is initialized, the hook loads the map of fonts as shown in the example below:
 
@@ -68,7 +107,7 @@ Then, you can use the font on the `<Text>` by using `fontFamily` style prop.
 
 Alternatively, you can use [`Font.loadAsync`](#use-fontloadasync-instead-of-the-usefonts-hook) to load the fonts in your app.
 
-### Minimal example
+#### Minimal example
 
 Let's take a look at a minimal example that uses Inter font family. It uses [`useFonts` hook](/versions/latest/sdk/font/#usefonts) to import the font from **./assets/fonts** directory.
 
@@ -160,7 +199,9 @@ For example, to use Inter font you can install the [`@expo-google-fonts/inter`](
 
 <Terminal cmd={['$ npx expo install expo-font @expo-google-fonts/inter']} />
 
-Then, you can integrate it in your project by using the `useFonts` hook. You can directly use this hook from the Google Fonts package. Under the hood, the hook uses [`Font.loadAsync`](/versions/latest/sdk/font/#loadasyncfontfamilyorfontmap-source). You do not have to explicitly import the font file since that is done by the package itself.
+Then, you can integrate it in your project with the config plugin by passing in the path to the desired font file to the `fonts` option (eg: `node_modules/@expo-google-fonts/inter/Inter_100Thin.ttf`), or you can use the `useFonts` hook.
+
+The Google Fonts package provides the `useFonts` hook for convenience. Under the hood, the hook uses [`Font.loadAsync`](/versions/latest/sdk/font/#loadasyncfontfamilyorfontmap-source). You do not have to explicitly import the font file since that is done by the package itself.
 
 <SnackInline label="Using Google fonts" dependencies={['@expo-google-fonts/inter']}>
 
@@ -200,20 +241,19 @@ const styles = StyleSheet.create({
 
 ## Wait for fonts to load
 
-Since your fonts won't be ready right away, it is generally a good practice to not render anything until the font is ready. Instead, you can continue to display the Splash Screen of your app until all fonts have loaded (or an error has been returned). It is done by using [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) package. See the [minimal example](#minimal-example) section on how to use it.
+If you [embed your fonts in your native project](#1-embed-the-font-in-your-native-project), they will be available immediately without any additional code outside of the config plugin. However, if you load your fonts at runtime, they will not be available immediately — so, it is generally a good practice to not render anything until the font is ready. Instead, you can continue to display the Splash Screen of your app until all fonts have loaded (or an error has been returned). It is done by using [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) package. See the [minimal example](#minimal-example) section on how to use it.
 
 ### Load fonts on the web
 
-Sometimes, particularly on the web -- people choose to render their content in a platform default font while their custom font is loading. Alternatively, to render the rest of their content, that doesn't depend on the custom font while the font is loading. These approaches are called FOUT and FOIT and you can read a lot more about them on the web.
+Sometimes, particularly on the web people choose to render their content in a platform default font while their custom font is loading. Alternatively, to render the rest of their content, that doesn't depend on the custom font while the font is loading. These approaches are called FOUT and FOIT and you can read a lot more about them on the web.
 
-In general, these strategies are not recommended for native apps. If you include your fonts in your project, the
-fonts will always be delivered to the user by the time your code is running. The one exception to this is that you may prefer to do this on the web.
+In general, these strategies are not recommended for native apps. If you include your fonts in your project, the fonts will always be delivered to the user by the time your code is running. The one exception to this is that you may prefer to do this on the web.
 
 ## Additional information
 
 You probably don't need to know anything beyond this point to use custom fonts effectively in your app. If you are curious or your use case has not been addressed by the above information, please continue reading.
 
-### Load a remote font directly from the web
+### Loading a remote font directly from the web
 
 In general, it's best and safest to load fonts from your local assets. If you submit to app stores, they will be bundled with the download and available immediately. You don't have to worry about CORS or other potential issues.
 
@@ -257,7 +297,7 @@ const styles = StyleSheet.create({
 
 > **warning** **If loading remote fonts, make sure they are being served from an origin with CORS properly configured**. If you don't do this, your remote font might not load properly on the web platform.
 
-### Use `Font.loadAsync` instead of the `useFonts` hook
+### Using `Font.loadAsync` instead of the `useFonts` hook
 
 If you don't want to use the `useFonts` hook (for example, maybe you prefer class components), you can use `Font.loadAsync` directly. Under the hood, the hook uses `Font.loadAsync` from the [`expo-font`](/versions/latest/sdk/font/) library. You can use it directly if you prefer, or if you want to have more fine-grained control over when your fonts are loaded before rendering.
 
