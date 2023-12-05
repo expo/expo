@@ -135,12 +135,12 @@ it(
 
     // If this changes then everything else probably changed as well.
     expect(files).toEqual([
-      'assets/__e2e__/static-rendering/sweet.ttf',
-      'assets/__packages/expo-router/assets/error.png',
-      'assets/__packages/expo-router/assets/file.png',
-      'assets/__packages/expo-router/assets/forward.png',
-      'assets/__packages/expo-router/assets/pkg.png',
-      'assets/assets/icon.png',
+      'assets/__e2e__/static-rendering/sweet_737795ac052e4f9f051f955c383cfef5.ttf',
+      'assets/__packages/expo-router/assets/error_ea95f4bb9132f841b426134607ffb6b9.png',
+      'assets/__packages/expo-router/assets/file_93a9dd28e4dd3548679f5731a9c06a69.png',
+      'assets/__packages/expo-router/assets/forward_b20dd094c666e0ef3b1e6b7f568554ec.png',
+      'assets/__packages/expo-router/assets/pkg_1a2938de72edce9d3056b9c88a08cc66.png',
+      'assets/assets/icon_070c1358628d5f03837bf3b3ce6a4010.png',
       'output.js',
     ]);
   },
