@@ -32,7 +32,6 @@ export type ExpoMetroOptions = {
   preserveEnvVars?: boolean;
   baseUrl?: string;
   isExporting: boolean;
-  // TODO: Add ability to disable sourcemaps in development.
   inlineSourceMap?: boolean;
 };
 
@@ -48,7 +47,7 @@ function withDefaults({
     // Use inline source maps when connected to a dev server to prevent
     // additional requests from dev tools to load the source maps. Metro doesn't cache the full
     // result so they're reloaded on every refresh.
-    inlineSourceMap: inlineSourceMap ?? (!env.EXPO_NO_INLINE_DEV_SOURCE_MAPS && !props.isExporting),
+    inlineSourceMap: inlineSourceMap ?? (!env.EXPO_NO_DEV_INLINE_SOURCE_MAPS && !props.isExporting),
     mode,
     minify,
     preserveEnvVars,
