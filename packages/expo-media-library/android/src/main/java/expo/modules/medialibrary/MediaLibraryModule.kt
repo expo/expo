@@ -445,6 +445,8 @@ class MediaLibraryModule : Module() {
           awaitingAction = null
           throw e
         }
+        // the action will be called when permissions are granted
+        return
       }
     }
     action.runWithPermissions(true)
