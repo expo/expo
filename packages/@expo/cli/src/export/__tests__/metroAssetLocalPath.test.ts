@@ -30,7 +30,11 @@ describe(getAssetLocalPath, () => {
       };
 
       const expectDestPathForScaleToStartWith = (scale: number, location: string) => {
-        if (!getAssetLocalPath(asset, { scale, platform: 'android' }).startsWith(location)) {
+        if (
+          !getAssetLocalPath(asset, { scale, platform: 'android', hash: 'xxx' }).startsWith(
+            location
+          )
+        ) {
           throw new Error(`asset for scale ${scale} should start with path '${location}'`);
         }
       };
@@ -49,8 +53,8 @@ describe(getAssetLocalPath, () => {
         httpServerLocation: '/assets/App/Test',
       };
 
-      expect(getAssetLocalPath(asset, { scale: 1, platform: 'android' })).toBe(
-        path.normalize('drawable-mdpi/app_test_icon.png')
+      expect(getAssetLocalPath(asset, { scale: 1, platform: 'android', hash: 'xxx' })).toBe(
+        path.normalize('drawable-mdpi/app_test_icon_xxx.png')
       );
     });
 
@@ -62,31 +66,35 @@ describe(getAssetLocalPath, () => {
       };
 
       expect(
-        getAssetLocalPath(asset, { scale: 1, platform: 'android' }).startsWith('assets_')
+        getAssetLocalPath(asset, { scale: 1, platform: 'android', hash: 'xxx' }).startsWith(
+          'assets_'
+        )
       ).toBeFalsy();
     });
 
     it('should put non-drawable resources to `raw/`', () => {
       const asset = {
-        name: 'video',
+        _name: 'video',
+        name: 'video-invalid',
         type: 'mp4',
         httpServerLocation: '/assets/app/test',
       };
 
-      expect(getAssetLocalPath(asset, { scale: 1, platform: 'android' })).toBe(
-        path.normalize('raw/app_test_video.mp4')
+      expect(getAssetLocalPath(asset, { scale: 1, platform: 'android', hash: 'xxx' })).toBe(
+        path.normalize('raw/app_test_video_xxx.mp4')
       );
     });
 
     it('should handle assets with a relative path outside of root', () => {
       const asset = {
-        name: 'icon',
+        _name: 'icon',
+        name: 'icon_000',
         type: 'png',
         httpServerLocation: '/assets/../../test',
       };
 
-      expect(getAssetLocalPath(asset, { scale: 1, platform: 'android' })).toBe(
-        path.normalize('drawable-mdpi/__test_icon.png')
+      expect(getAssetLocalPath(asset, { scale: 1, platform: 'android', hash: 'xxx' })).toBe(
+        path.normalize('drawable-mdpi/__test_icon_xxx.png')
       );
     });
   });
@@ -99,35 +107,37 @@ describe(getAssetLocalPath, () => {
         httpServerLocation: '/assets/test',
       };
 
-      expect(getAssetLocalPath(asset, { scale: 1, platform: 'ios' })).toBe(
-        path.normalize('assets/test/icon.png')
+      expect(getAssetLocalPath(asset, { scale: 1, platform: 'ios', hash: 'xxx' })).toBe(
+        path.normalize('assets/test/icon_xxx.png')
       );
     });
 
     it('should consider scale', () => {
       const asset = {
-        name: 'icon',
+        _name: 'icon',
+        name: 'icon_xxx',
         type: 'png',
         httpServerLocation: '/assets/test',
       };
 
-      expect(getAssetLocalPath(asset, { scale: 2, platform: 'ios' })).toBe(
-        path.normalize('assets/test/icon@2x.png')
+      expect(getAssetLocalPath(asset, { scale: 2, platform: 'ios', hash: 'xxx' })).toBe(
+        path.normalize('assets/test/icon_xxx@2x.png')
       );
-      expect(getAssetLocalPath(asset, { scale: 3, platform: 'ios' })).toBe(
-        path.normalize('assets/test/icon@3x.png')
+      expect(getAssetLocalPath(asset, { scale: 3, platform: 'ios', hash: 'xxx' })).toBe(
+        path.normalize('assets/test/icon_xxx@3x.png')
       );
     });
 
     it('should handle assets with a relative path outside of root', () => {
       const asset = {
-        name: 'icon',
+        _name: 'icon',
+        name: 'icon_xxx',
         type: 'png',
         httpServerLocation: '/assets/../../test',
       };
 
-      expect(getAssetLocalPath(asset, { scale: 1, platform: 'ios' })).toBe(
-        path.normalize('assets/__test/icon.png')
+      expect(getAssetLocalPath(asset, { scale: 1, platform: 'ios', hash: 'xxx' })).toBe(
+        path.normalize('assets/__test/icon_xxx.png')
       );
     });
   });
