@@ -32,7 +32,6 @@
     "ajv": "^8.1.0",
     "ajv-formats": "^2.0.2",
     "json-schema-traverse": "^1.0.0",
-    "lodash": "^4.17.21",
     "probe-image-size": "^7.1.0"
   },
   "devDependencies": {

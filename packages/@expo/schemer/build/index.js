@@ -8,7 +8,6 @@ const ajv_1 = __importDefault(require("ajv"));
 const ajv_formats_1 = __importDefault(require("ajv-formats"));
 const fs_1 = __importDefault(require("fs"));
 const json_schema_traverse_1 = __importDefault(require("json-schema-traverse"));
-const get_1 = __importDefault(require("lodash/get"));
 const path_1 = __importDefault(require("path"));
 const probe_image_size_1 = __importDefault(require("probe-image-size"));
 const Error_1 = require("./Error");
@@ -141,7 +140,7 @@ class Schemer {
                 const fieldPath = (0, Util_1.schemaPointerToFieldPath)(jsonPointer);
                 assets.push({
                     fieldPath,
-                    data: (0, get_1.default)(data, lowerFirst(fieldPath)) || (0, get_1.default)(data, fieldPath),
+                    data: (0, Util_1.get)(data, lowerFirst(fieldPath)) || (0, Util_1.get)(data, fieldPath),
                     meta: subSchema.meta,
                 });
             }

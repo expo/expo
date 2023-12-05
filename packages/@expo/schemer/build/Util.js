@@ -1,13 +1,10 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fieldPathToSchema = exports.schemaPointerToFieldPath = exports.fieldPathToSchemaPath = void 0;
-const get_1 = __importDefault(require("lodash/get"));
-const zip_1 = __importDefault(require("lodash/zip"));
+exports.get = exports.pathToSegments = exports.fieldPathToSchema = exports.schemaPointerToFieldPath = exports.fieldPathToSchemaPath = void 0;
 const fieldPathToSchemaPath = (fieldPath) => {
-    return (0, zip_1.default)(fieldPath.split('.').fill('properties'), fieldPath.split('.')).flat().join('.');
+    return pathToSegments(fieldPath)
+        .map((segment) => `properties.${segment}`)
+        .join('.');
 };
 exports.fieldPathToSchemaPath = fieldPathToSchemaPath;
 // Assumption: used only for jsonPointer returned from traverse
@@ -20,7 +17,21 @@ const schemaPointerToFieldPath = (jsonPointer) => {
 };
 exports.schemaPointerToFieldPath = schemaPointerToFieldPath;
 const fieldPathToSchema = (schema, fieldPath) => {
-    return (0, get_1.default)(schema, (0, exports.fieldPathToSchemaPath)(fieldPath));
+    return get(schema, (0, exports.fieldPathToSchemaPath)(fieldPath));
 };
 exports.fieldPathToSchema = fieldPathToSchema;
+function pathToSegments(path) {
+    return Array.isArray(path) ? path : path.split('.');
+}
+exports.pathToSegments = pathToSegments;
+function get(object, path) {
+    const segments = pathToSegments(path);
+    const length = segments.length;
+    let index = 0;
+    while (object != null && index < length) {
+        object = object[segments[index++]];
+    }
+    return index && index === length ? object : undefined;
+}
+exports.get = get;
 //# sourceMappingURL=Util.js.map

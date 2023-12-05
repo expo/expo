@@ -2,12 +2,11 @@ import Ajv, { ErrorObject, Options } from 'ajv';
 import addFormats from 'ajv-formats';
 import fs from 'fs';
 import traverse from 'json-schema-traverse';
-import get from 'lodash/get';
 import path from 'path';
 import imageProbe from 'probe-image-size';
 
 import { SchemerError, ValidationError } from './Error';
-import { fieldPathToSchema, schemaPointerToFieldPath } from './Util';
+import { get, fieldPathToSchema, schemaPointerToFieldPath } from './Util';
 
 function lowerFirst(str: string): string {
   return str.charAt(0).toLowerCase() + str.slice(1);
