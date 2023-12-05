@@ -24,6 +24,7 @@
 - Modify E2E manual test for asset exclusion. ([#25406](https://github.com/expo/expo/pull/25406) by [@douglowder](https://github.com/douglowder))
 - Move tvOS compile test out of updates E2E test matrix. ([#25438](https://github.com/expo/expo/pull/25438) by [@douglowder](https://github.com/douglowder))
 - Assert valid state transitions in debug. ([#25474](https://github.com/expo/expo/pull/25474) by [@wschurman](https://github.com/wschurman))
+- Improve JS API error messages and documentation for Expo Go and Dev Client. ([#25751](https://github.com/expo/expo/pull/25751) by [@wschurman](https://github.com/wschurman))
 
 ## 0.23.0 — 2023-11-14
 
