@@ -1,6 +1,6 @@
 import Ajv, { ErrorObject, Options } from 'ajv';
 import { ValidationError } from './Error';
-declare type Meta = {
+type Meta = {
     asset?: boolean;
     dimensions?: {
         width: number;
@@ -10,10 +10,10 @@ declare type Meta = {
     contentTypePattern?: string;
     contentTypeHuman?: string;
 };
-declare type SchemerOptions = Options & {
+type SchemerOptions = Options & {
     rootDir?: string;
 };
-declare type AssetField = {
+type AssetField = {
     fieldPath: string;
     data: string;
     meta: Meta;

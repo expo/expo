@@ -126,7 +126,7 @@ export default class Schemer {
     // Convert AJV JSONSchema errors to our ValidationErrors
     let valErrors: ValidationError[] = [];
     if (this.ajv.errors) {
-      valErrors = this.ajv.errors.map(e => this._formatAjvErrorMessage(e));
+      valErrors = this.ajv.errors.map((error) => this._formatAjvErrorMessage(error));
     }
     return [...valErrors, ...this.manualValidationErrors];
   }
@@ -186,7 +186,7 @@ export default class Schemer {
         const isLocalFile = fs.existsSync(filePath);
         const probeResult = isLocalFile
           ? await imageProbe(require('fs').createReadStream(filePath))
-          : await imageProbe(data, { useElectronNet: false });
+          : await imageProbe(data);
 
         if (!probeResult) {
           return;

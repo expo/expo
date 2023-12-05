@@ -11,7 +11,6 @@ const json_schema_traverse_1 = __importDefault(require("json-schema-traverse"));
 const get_1 = __importDefault(require("lodash/get"));
 const path_1 = __importDefault(require("path"));
 const probe_image_size_1 = __importDefault(require("probe-image-size"));
-const read_chunk_1 = __importDefault(require("read-chunk"));
 const Error_1 = require("./Error");
 const Util_1 = require("./Util");
 function lowerFirst(str) {
@@ -22,6 +21,11 @@ Object.defineProperty(exports, "SchemerError", { enumerable: true, get: function
 Object.defineProperty(exports, "ValidationError", { enumerable: true, get: function () { return Error_2.ValidationError; } });
 Object.defineProperty(exports, "ErrorCodes", { enumerable: true, get: function () { return Error_2.ErrorCodes; } });
 class Schemer {
+    options;
+    ajv;
+    schema;
+    rootDir;
+    manualValidationErrors;
     // Schema is a JSON Schema object
     constructor(schema, options = {}) {
         this.options = {
@@ -62,7 +66,7 @@ class Schemer {
                 });
             case 'pattern': {
                 //@TODO Parse the message in a less hacky way. Perhaps for regex validation errors, embed the error message under the meta tag?
-                const regexHuman = meta === null || meta === void 0 ? void 0 : meta.regexHuman;
+                const regexHuman = meta?.regexHuman;
                 const regexErrorMessage = regexHuman
                     ? `'${instancePath}' should be a ${regexHuman[0].toLowerCase() + regexHuman.slice(1)}`
                     : `'${instancePath}' ${message}`;
@@ -75,7 +79,7 @@ class Schemer {
                 });
             }
             case 'not': {
-                const notHuman = meta === null || meta === void 0 ? void 0 : meta.notHuman;
+                const notHuman = meta?.notHuman;
                 const notHumanErrorMessage = notHuman
                     ? `'${instancePath}' should be ${notHuman[0].toLowerCase() + notHuman.slice(1)}`
                     : `'${instancePath}' ${message}`;
@@ -101,7 +105,7 @@ class Schemer {
         // Convert AJV JSONSchema errors to our ValidationErrors
         let valErrors = [];
         if (this.ajv.errors) {
-            valErrors = this.ajv.errors.map(e => this._formatAjvErrorMessage(e));
+            valErrors = this.ajv.errors.map((error) => this._formatAjvErrorMessage(error));
         }
         return [...valErrors, ...this.manualValidationErrors];
     }
@@ -150,19 +154,25 @@ class Schemer {
             // filePath could be an URL
             const filePath = path_1.default.resolve(this.rootDir, data);
             try {
-                // NOTE(nikki): The '4100' below should be enough for most file types, though we
-                //              could probably go shorter....
-                //              http://www.garykessler.net/library/file_sigs.html
-                //  The metadata content for .jpgs might be located a lot farther down the file, so this
-                //  may pose problems in the future.
                 //  This cases on whether filePath is a remote URL or located on the machine
-                const probeResult = fs_1.default.existsSync(filePath)
-                    ? probe_image_size_1.default.sync(await (0, read_chunk_1.default)(filePath, 0, 4100))
-                    : await (0, probe_image_size_1.default)(data, { useElectronNet: false });
+                const isLocalFile = fs_1.default.existsSync(filePath);
+                const probeResult = isLocalFile
+                    ? await (0, probe_image_size_1.default)(require('fs').createReadStream(filePath))
+                    : await (0, probe_image_size_1.default)(data);
                 if (!probeResult) {
                     return;
                 }
                 const { width, height, type, mime } = probeResult;
+                const fileExtension = filePath.split('.').pop();
+                if (isLocalFile && mime !== `image/${fileExtension}`) {
+                    this.manualValidationErrors.push(new Error_1.ValidationError({
+                        errorCode: 'FILE_EXTENSION_MISMATCH',
+                        fieldPath,
+                        message: `the file extension should match the content, but the file extension is .${fileExtension} while the file content at '${data}' is of type ${type}`,
+                        data,
+                        meta,
+                    }));
+                }
                 if (contentTypePattern && !mime.match(new RegExp(contentTypePattern))) {
                     this.manualValidationErrors.push(new Error_1.ValidationError({
                         errorCode: 'INVALID_CONTENT_TYPE',

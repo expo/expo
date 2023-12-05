@@ -7,7 +7,6 @@ export declare class ValidationError extends Error {
     readonly name = "ValidationError";
     errorCode: string;
     fieldPath: string;
-    message: string;
     data: any;
     meta: any;
     constructor({ errorCode, fieldPath, message, data, meta, }: {
@@ -18,7 +17,7 @@ export declare class ValidationError extends Error {
         meta: any;
     });
 }
-export declare type ErrorCode = keyof typeof ErrorCodes;
+export type ErrorCode = keyof typeof ErrorCodes;
 export declare const ErrorCodes: {
     SCHEMA_VALIDATION_ERROR: string;
     SCHEMA_ADDITIONAL_PROPERTY: string;
@@ -29,4 +28,5 @@ export declare const ErrorCodes: {
     INVALID_DIMENSIONS: string;
     INVALID_CONTENT_TYPE: string;
     NOT_SQUARE: string;
+    FILE_EXTENSION_MISMATCH: string;
 };

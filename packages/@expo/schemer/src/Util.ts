@@ -9,7 +9,7 @@ export const schemaPointerToFieldPath = (jsonPointer: string) => {
   return jsonPointer
     .split('/')
     .slice(2)
-    .filter(e => e !== 'properties')
+    .filter((error) => error !== 'properties')
     .join('.');
 };
 
