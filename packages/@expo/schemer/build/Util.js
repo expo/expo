@@ -15,7 +15,7 @@ const schemaPointerToFieldPath = (jsonPointer) => {
     return jsonPointer
         .split('/')
         .slice(2)
-        .filter(e => e !== 'properties')
+        .filter((error) => error !== 'properties')
         .join('.');
 };
 exports.schemaPointerToFieldPath = schemaPointerToFieldPath;

@@ -9,7 +9,7 @@
     "build"
   ],
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-module tsc",
     "prepare": "yarn run clean && yarn run build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
