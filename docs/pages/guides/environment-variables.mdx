@@ -53,7 +53,7 @@ Expo CLI loads **.env** files according to the [standard .env file resolution](h
   are valid and will be inlined.
 
 - <NoIcon small /> **Dynamic versions of the expression are not supported**. For example, `process.env['EXPO_PUBLIC_KEY']`
-  or `const {EXPO_PUBLIC_X} = process.env` will not be inlined.
+  or `const {EXPO_PUBLIC_X} = process.env` are invalid and will not be inlined.
 
 ### Using multiple .env files to define separate environments
 
