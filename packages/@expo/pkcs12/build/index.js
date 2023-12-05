@@ -36,8 +36,10 @@ exports.getX509Certificate = getX509Certificate;
 function getX509CertificateByFriendlyName(p12, friendlyName) {
     const certBagType = node_forge_1.default.pki.oids.certBag;
     // node-forge converts friendly names to lowercase, so we search by lowercase
-    const bags = p12.getBags({ friendlyName: friendlyName.toLowerCase(), bagType: certBagType })
-        .friendlyName;
+    const bags = p12.getBags({
+        friendlyName: friendlyName.toLowerCase(),
+        bagType: certBagType,
+    }).friendlyName;
     if (!bags || bags.length === 0) {
         return null;
     }
@@ -59,8 +61,10 @@ function getX509CertificateFromBag(bag) {
 function getX509Asn1ByFriendlyName(p12, friendlyName) {
     const certBagType = node_forge_1.default.pki.oids.certBag;
     // node-forge converts friendly names to lowercase, so we search by lowercase
-    const bags = p12.getBags({ friendlyName: friendlyName.toLowerCase(), bagType: certBagType })
-        .friendlyName;
+    const bags = p12.getBags({
+        friendlyName: friendlyName.toLowerCase(),
+        bagType: certBagType,
+    }).friendlyName;
     if (!bags || bags.length === 0) {
         return null;
     }
@@ -70,28 +74,28 @@ function getX509Asn1ByFriendlyName(p12, friendlyName) {
     }
     // if asn1 is present but certificate isnt, the certificate type was unknown
     // github.com/digitalbazaar/forge/blob/1887cfce43a8f5ca9cb5c256168cf12ce1715ecf/lib/pkcs12.js#L703
-    return asn1 !== null && asn1 !== void 0 ? asn1 : null;
+    return asn1 ?? null;
 }
 exports.getX509Asn1ByFriendlyName = getX509Asn1ByFriendlyName;
 function parsePKCS12(p12BufferOrBase64String, maybePassword) {
     const base64EncodedP12 = Buffer.isBuffer(p12BufferOrBase64String)
         ? p12BufferOrBase64String.toString('base64')
         : p12BufferOrBase64String;
-    const password = String(maybePassword !== null && maybePassword !== void 0 ? maybePassword : '');
+    const password = String(maybePassword ?? '');
     const p12Der = node_forge_1.default.util.decode64(base64EncodedP12);
     const p12Asn1 = node_forge_1.default.asn1.fromDer(p12Der);
     return node_forge_1.default.pkcs12.pkcs12FromAsn1(p12Asn1, password);
 }
 exports.parsePKCS12 = parsePKCS12;
 function getHash(data, { hashAlgorithm, hashEncoding, inputEncoding, }) {
-    const hash = crypto_1.default.createHash(hashAlgorithm !== null && hashAlgorithm !== void 0 ? hashAlgorithm : 'sha1');
+    const hash = crypto_1.default.createHash(hashAlgorithm ?? 'sha1');
     if (inputEncoding) {
         hash.update(data, inputEncoding);
     }
     else {
         hash.update(data); // use Node's default inputEncoding
     }
-    return hash.digest(hashEncoding !== null && hashEncoding !== void 0 ? hashEncoding : 'hex');
+    return hash.digest(hashEncoding ?? 'hex');
 }
 function getAsn1Hash(asn1, { hashAlgorithm, }) {
     const certDer = node_forge_1.default.asn1.toDer(asn1).getBytes(); // binary encoded string

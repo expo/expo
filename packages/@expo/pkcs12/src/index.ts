@@ -1,4 +1,4 @@
-import crypto, { HexBase64Latin1Encoding, Utf8AsciiLatin1Encoding } from 'crypto';
+import crypto, { BinaryToTextEncoding, Encoding } from 'crypto';
 import forge from 'node-forge';
 
 /**
@@ -34,8 +34,10 @@ export function getX509CertificateByFriendlyName(
 ): forge.pki.Certificate | null {
   const certBagType = forge.pki.oids.certBag;
   // node-forge converts friendly names to lowercase, so we search by lowercase
-  const bags = p12.getBags({ friendlyName: friendlyName.toLowerCase(), bagType: certBagType })
-    .friendlyName;
+  const bags = p12.getBags({
+    friendlyName: friendlyName.toLowerCase(),
+    bagType: certBagType,
+  }).friendlyName;
   if (!bags || bags.length === 0) {
     return null;
   }
@@ -61,8 +63,10 @@ export function getX509Asn1ByFriendlyName(
 ): forge.asn1.Asn1 | null {
   const certBagType = forge.pki.oids.certBag;
   // node-forge converts friendly names to lowercase, so we search by lowercase
-  const bags = p12.getBags({ friendlyName: friendlyName.toLowerCase(), bagType: certBagType })
-    .friendlyName;
+  const bags = p12.getBags({
+    friendlyName: friendlyName.toLowerCase(),
+    bagType: certBagType,
+  }).friendlyName;
   if (!bags || bags.length === 0) {
     return null;
   }
@@ -96,8 +100,8 @@ function getHash(
     inputEncoding,
   }: {
     hashAlgorithm?: string;
-    hashEncoding?: HexBase64Latin1Encoding;
-    inputEncoding?: Utf8AsciiLatin1Encoding;
+    hashEncoding?: BinaryToTextEncoding;
+    inputEncoding?: Encoding;
   }
 ): string {
   const hash = crypto.createHash(hashAlgorithm ?? 'sha1');

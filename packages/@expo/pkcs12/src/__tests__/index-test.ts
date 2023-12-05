@@ -100,13 +100,15 @@ describe('computing fingerprints of X.509 certificates', () => {
     } = keystoreP12;
     const p12 = parsePKCS12(base64EncodedP12, password);
     const certificate = getX509CertificateByFriendlyName(p12, alias);
-    const md5Fingerprint = getCertificateFingerprint(certificate, {
+    expect(certificate).toBeDefined();
+
+    const md5Fingerprint = getCertificateFingerprint(certificate!, {
       hashAlgorithm: 'md5',
     });
-    const sha1Fingerprint = getCertificateFingerprint(certificate, {
+    const sha1Fingerprint = getCertificateFingerprint(certificate!, {
       hashAlgorithm: 'sha1',
     });
-    const sha256Fingerprint = getCertificateFingerprint(certificate, {
+    const sha256Fingerprint = getCertificateFingerprint(certificate!, {
       hashAlgorithm: 'sha256',
     });
     expect(md5Fingerprint).toEqual(expectedMd5Fingerprint);
@@ -131,13 +133,15 @@ describe('computing fingerprints from the ASN.1 representation of an X.509 certi
       } = keystoreP12;
       const p12 = parsePKCS12(base64EncodedP12, password);
       const asn1 = getX509Asn1ByFriendlyName(p12, alias);
-      const md5Fingerprint = getAsn1Hash(asn1, {
+      expect(asn1).toBeDefined();
+
+      const md5Fingerprint = getAsn1Hash(asn1!, {
         hashAlgorithm: 'md5',
       });
-      const sha1Fingerprint = getAsn1Hash(asn1, {
+      const sha1Fingerprint = getAsn1Hash(asn1!, {
         hashAlgorithm: 'sha1',
       });
-      const sha256Fingerprint = getAsn1Hash(asn1, {
+      const sha256Fingerprint = getAsn1Hash(asn1!, {
         hashAlgorithm: 'sha256',
       });
       expect(md5Fingerprint).toEqual(expectedMd5Fingerprint);
