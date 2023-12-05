@@ -79,7 +79,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
     AsyncFunction("checkForUpdateAsync") { promise: Promise ->
       promise.reject(
         "ERR_NOT_SUPPORTED",
-        "checkForUpdateAsync() is not accessible in Expo Go. Please use a Development Client build to test.",
+        "checkForUpdateAsync() is not supported in Expo Go. A non-development build should be used to test this functionality.",
         null
       )
     }
@@ -87,7 +87,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
     AsyncFunction("fetchUpdateAsync") { promise: Promise ->
       promise.reject(
         "ERR_NOT_SUPPORTED",
-        "fetchUpdateAsync() is not accessible in Expo Go. Please use a Development Client build to test.",
+        "fetchUpdateAsync() is not supported in Expo Go. A non-development build should be used to test this functionality.",
         null
       )
     }
@@ -95,7 +95,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
     AsyncFunction("getExtraParamsAsync") { promise: Promise ->
       promise.reject(
         "ERR_NOT_SUPPORTED",
-        "getExtraParamsAsync() is not accessible in Expo Go. Please use a Development Client build to test.",
+        "getExtraParamsAsync() is not supported in Expo Go. A non-development build should be used to test this functionality.",
         null
       )
     }
@@ -103,7 +103,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
     AsyncFunction("setExtraParamAsync") { promise: Promise ->
       promise.reject(
         "ERR_NOT_SUPPORTED",
-        "setExtraParamAsync() is not accessible in Expo Go. Please use a Development Client build to test.",
+        "setExtraParamAsync() is not supported in Expo Go. A non-development build should be used to test this functionality.",
         null
       )
     }

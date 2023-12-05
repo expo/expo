@@ -50,6 +50,6 @@ internal final class NotAvailableInDevClientException: Exception {
   }
 
   override var reason: String {
-    "This method is not supported in dev client."
+    "This method is not supported in development client builds. A non-development build should be used to test this functionality."
   }
 }
