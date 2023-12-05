@@ -5,14 +5,6 @@
 
 <p align="center">A Schema validation library for Expo.</p>
 
-<p align="center">
-  <img src="https://flat.badgen.net/packagephobia/install/@expo/schemer">
-
-  <a href="https://www.npmjs.com/package/@expo/schemer">
-    <img src="https://flat.badgen.net/npm/dw/@expo/schemer" target="_blank" />
-  </a>
-</p>
-
 <!-- Body -->
 
 Details can be found here:
@@ -23,12 +15,13 @@ Details can be found here:
 ### Usage with XDL
 
 ```javascript
-import { ExpSchema } from '@expo/xdl';
 import { getConfig } from '@expo/config';
 import Schemer from '@expo/schemer';
+
 const { exp } = getConfig(projectRoot);
 const schema = await getSchemaAsync(exp.sdkVersion);
-const validator = new Schemer(schema);
+const validator = new Schemer(require('schema.json'));
+
 validator.validateName('Wilson Zhao');
 validator.validateAssets(exp);
 ```
