@@ -13,6 +13,7 @@
 
 ### 💡 Others
 
+- Update with new hashed assets feature.
 - Bump C++ compiler setting to C++20. ([#25548](https://github.com/expo/expo/pull/25548) by [@kudo](https://github.com/kudo))
 
 ## 3.4.0 — 2023-11-14
