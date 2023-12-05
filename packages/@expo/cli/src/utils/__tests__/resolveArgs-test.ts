@@ -17,6 +17,18 @@ describe(collapseAliases, () => {
     const actual = collapseAliases(arg, args);
     expect(actual).toEqual(['--basic', '--help']);
   });
+
+  it(`will collapse long-aliases into arguments`, () => {
+    const arg = {
+      '--basic': Boolean,
+      '--help': Boolean,
+      '-h': '--help',
+      '--plain': '--basic',
+    };
+    const args = ['--plain', '-h'];
+    const actual = collapseAliases(arg, args);
+    expect(actual).toEqual(['--basic', '--help']);
+  });
 });
 
 describe(_resolveStringOrBooleanArgs, () => {
@@ -97,6 +109,28 @@ describe(resolveStringOrBooleanArgsAsync, () => {
         '--scheme': true,
       },
       projectRoot: 'custom-root',
+    });
+  });
+  it(`parses aliases from main arguments properly`, async () => {
+    await expect(
+      resolveStringOrBooleanArgsAsync(
+        ['-d', 'my-device', '--mode', 'release'],
+        {
+          '--variant': String,
+          '--mode': '--variant',
+        },
+        {
+          '--scheme': Boolean,
+          '--device': Boolean,
+          '-d': '--device',
+        }
+      )
+    ).resolves.toEqual({
+      args: {
+        '--device': 'my-device',
+        '--variant': 'release',
+      },
+      projectRoot: '.',
     });
   });
 });
