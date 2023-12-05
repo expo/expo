@@ -2,7 +2,11 @@
   "name": "@expo/schemer",
   "version": "1.4.5",
   "description": "Centralized scheme validation library for Expo",
+  "license": "MIT",
   "main": "./build/index.js",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "test": "jest --testPathIgnorePatterns __tests__/network-test.ts",
     "test-integration": "jest",
@@ -10,19 +14,15 @@
     "build": "tsc",
     "prepare": "yarn build"
   },
-  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/schemer#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo-cli.git",
-    "directory": "packages/schemer"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/schemer"
   },
   "bugs": {
-    "url": "https://github.com/expo/expo-cli/issues"
+    "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/schemer#readme",
-  "files": [
-    "build"
-  ],
   "devDependencies": {
     "@types/lodash": "^4.14.176"
   },
@@ -35,8 +35,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "volta": {
-    "extends": "../../package.json"
   }
 }
