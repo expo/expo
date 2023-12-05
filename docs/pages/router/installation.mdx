@@ -22,7 +22,7 @@ We recommend creating a new Expo app using `create-expo-app`. This will create a
 
 <Step label="2">
 
-Once setup, you can start your project by running:
+Now, you can start your project by running:
 
 <Terminal cmd={['$ npx expo start']} />
 
@@ -126,7 +126,7 @@ If you are developing your app for web, install the following dependencies:
 
 <Terminal cmd={['$ npx expo install react-native-web react-dom']} />
 
-Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro) support:
+Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro) support by adding the following to your [app config](/workflow/configuration/):
 
 ```json app.json
 {
@@ -142,18 +142,11 @@ Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro)
 
 ### Modify babel.config.js
 
-Add `expo-router/babel` plugin in the `plugins` array to your project's **babel.config.js**:
+Add `expo-router/babel` plugin as the last item in the `plugins` array to your project's **babel.config.js**:
 
+{/* prettier-ignore */}
 ```js babel.config.js
-module.exports = function (api) {
-  api.cache(true);
-  return {
-    presets: ['babel-preset-expo'],
-    /* @info Add it to the plugins list as the last plugin.*/
-    plugins: ['expo-router/babel'],
-    /* @end */
-  };
-};
+plugins: ['expo-router/babel']
 ```
 
 </Step>
