@@ -2,7 +2,14 @@
   "name": "@expo/pkcs12",
   "version": "0.0.8",
   "description": "PKCS#12 Utilities for Node.js",
+  "keywords": [
+    "pkcs12"
+  ],
+  "license": "MIT",
   "main": "build/index.js",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "watch": "tsc --watch --preserveWatchOutput",
     "build": "tsc",
@@ -10,22 +17,15 @@
     "lint": "eslint .",
     "test": "jest"
   },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/%40expo/pkcs12#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo-cli.git",
-    "directory": "packages/pkcs12"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/pkcs12"
   },
-  "keywords": [
-    "pkcs12"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo-cli/issues"
-  },
-  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/pkcs12#readme",
-  "files": [
-    "build"
-  ],
   "dependencies": {
     "node-forge": "^1.2.1"
   },
