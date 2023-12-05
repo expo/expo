@@ -101,7 +101,7 @@ describe('Basic tests', () => {
     await device.terminateApp();
   });
 
-  xit('reloads', async () => {
+  it('reloads', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     Server.start(Update.serverPort, protocolVersion);
     await device.installApp();
