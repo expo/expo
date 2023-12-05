@@ -93,17 +93,19 @@ export async function persistMetroAssetsAsync(
 
   for (const asset of assetsToCopy) {
     const validScales = new Set(filterPlatformAssetScales(platform, asset.scales));
+    // NOTE(EvanBacon): This is a hack to align with the expo-asset/tools/hashAssetFiles plugin, which only uses the first file hash.
+    const firstHash = md5Hash(await fs.promises.readFile(asset.files[0]));
     for (let idx = 0; idx < asset.scales.length; idx++) {
+      const filePath = asset.files[idx];
       const scale = asset.scales[idx];
       if (validScales.has(scale)) {
-        const filePath = asset.files[idx];
         await write(
           filePath,
           getAssetLocalPath(asset, {
             platform,
             scale,
             baseUrl,
-            hash: md5Hash(await fs.promises.readFile(asset.files[idx])),
+            hash: firstHash,
           })
         );
       }
