@@ -50,10 +50,10 @@ describe('exports with tailwind and postcss', () => {
       expect.stringMatching(/_expo\/static\/css\/global-.*\.css/),
       expect.stringMatching(/_expo\/static\/js\/web\/index-.*\.js/),
       '_sitemap.html',
-      'assets/__packages/expo-router/assets/error.png',
-      'assets/__packages/expo-router/assets/file.png',
-      'assets/__packages/expo-router/assets/forward.png',
-      'assets/__packages/expo-router/assets/pkg.png',
+      'assets/__packages/expo-router/assets/error_ea95f4bb9132f841b426134607ffb6b9.png',
+      'assets/__packages/expo-router/assets/file_93a9dd28e4dd3548679f5731a9c06a69.png',
+      'assets/__packages/expo-router/assets/forward_b20dd094c666e0ef3b1e6b7f568554ec.png',
+      'assets/__packages/expo-router/assets/pkg_1a2938de72edce9d3056b9c88a08cc66.png',
       'index.html',
     ]);
   });
