@@ -3,18 +3,7 @@
 👋 Welcome to <br><code>@expo/pkcs12</code>
 </h1>
 
-<p align="center">PKCS#12 utility functions to extract certificates from conventional and keystore PKCS#12 files
-.</p>
-
-<p align="center">
-  <img src="https://flat.badgen.net/packagephobia/install/@expo/pkcs12">
-
-  <a href="https://www.npmjs.com/package/@expo/pkcs12">
-    <img src="https://flat.badgen.net/npm/dw/@expo/pkcs12" target="_blank" />
-  </a>
-</p>
-
-<!-- Body -->
+<p align="center">PKCS#12 utility functions to extract certificates from conventional and keystore PKCS#12 files.</p>
 
 # Examples
 
