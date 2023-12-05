@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Remote Remote icon dimensions wrong 1`] = `
+Array [
+  Object {
+    "data": "https://httpbin.org/image/png",
+    "errorCode": "INVALID_DIMENSIONS",
+    "fieldPath": "icon",
+    "message": "'icon' should have dimensions 101x100, but the file at 'https://httpbin.org/image/png' has dimensions 100x100",
+    "meta": Object {
+      "asset": true,
+      "contentTypePattern": "^image/png$",
+      "dimensions": Object {
+        "height": 100,
+        "width": 101,
+      },
+    },
+    "name": "ValidationError",
+  },
+]
+`;
