@@ -11,6 +11,8 @@ import {
   PlanEnterpriseIcon,
   PaletteIcon,
   DataIcon,
+  CodeSquare01Icon,
+  Phone01Icon,
 } from '@expo/styleguide-icons';
 
 import { SidebarNodeProps } from './Sidebar';
@@ -68,6 +70,8 @@ function getIconElement(iconName?: string) {
       return TerminalBrowserIcon;
     case 'Deploy':
       return Rocket01Icon;
+    case 'Development process':
+      return CodeSquare01Icon;
     case 'EAS Build':
       return Cube01Icon;
     case 'EAS Submit':
@@ -84,6 +88,8 @@ function getIconElement(iconName?: string) {
       return RouterLogo;
     case 'Push notifications':
       return Bell03Icon;
+    case 'Distribution':
+      return Phone01Icon;
     case 'UI programming':
       return PaletteIcon;
     case 'EAS':
