@@ -5,6 +5,7 @@ description: Learn how to use environment variables in an Expo project.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 Environment variables are key-value pairs configured outside your source code that allow your app to behave differently depending on the environment. For example, you can enable or disable certain features when building a test version of your app, or switch to a different API endpoint when building for production.
 
@@ -14,7 +15,7 @@ The Expo CLI will automatically load environment variables with an `EXPO_PUBLIC_
 
 ## Reading environment variables from .env files
 
-Create an **.env** file in the root of your project directory and add environment-specific variables on new lines in the form of `EXPO_PUBLIC_[NAME]=VALUE`:
+Create a **.env** file in the root of your project directory and add environment-specific variables on new lines in the form of `EXPO_PUBLIC_[NAME]=VALUE`:
 
 ```bash .env
 EXPO_PUBLIC_API_URL=https://staging.example.com
@@ -45,7 +46,12 @@ When you run `npx expo start`, `process.env.EXPO_PUBLIC_API_URL` will be replace
 
 Expo CLI loads **.env** files according to the [standard .env file resolution](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use) and then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARNAME]` with the corresponding value set in the **.env** files. Code inside **node_modules** is not affected for security purposes.
 
-Every variable must be referenced as a static property in order for it to be inlined. For example, the expression `process.env.EXPO_PUBLIC_KEY` will be rewritten, but `process.env['EXPO_PUBLIC_KEY']` will not.
+### How to read from environment variables
+
+- <YesIcon small /> **Every environment variable must be statically referenced as a property of `process.env` using JavaScript's dot notation for it to be inlined.** For example, the expression `process.env.EXPO_PUBLIC_KEY` is valid and will be inlined.
+
+- <NoIcon small /> **Alternative versions of the expression are not supported**. For example, `process.env['EXPO_PUBLIC_KEY']`
+  or `const {EXPO_PUBLIC_X} = process.env` is invalid and will not be inlined.
 
 ### Using multiple .env files to define separate environments
 
