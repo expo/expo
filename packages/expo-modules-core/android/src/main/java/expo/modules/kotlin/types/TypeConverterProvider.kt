@@ -259,6 +259,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
           jsArray.getBoolean(index)
         }
       },
+      ByteArray::class to ByteArrayTypeConverter(isOptional),
 
       JavaScriptValue::class to createTrivialTypeConverter(
         isOptional, ExpectedType(CppType.JS_VALUE)

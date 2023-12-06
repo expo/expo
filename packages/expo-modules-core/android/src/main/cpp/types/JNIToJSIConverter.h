@@ -6,6 +6,7 @@
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
+#include <optional>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -18,5 +19,10 @@ jsi::Value convert(
   jsi::Runtime &rt,
   jni::local_ref<jobject> value
 );
+
+/**
+ * Decorate jsi::Value with FollyDynamicExtensionConverter support.
+ */
+std::optional<jsi::Value> decorateValueForDynamicExtension(jsi::Runtime &rt, const jsi::Value &value);
 
 } // namespace expo
