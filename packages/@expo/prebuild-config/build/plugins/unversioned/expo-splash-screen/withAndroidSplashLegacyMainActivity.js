@@ -75,7 +75,7 @@ function setSplashScreenLegacyMainActivity(config, mainActivity, language) {
   } = splashConfig;
   const isJava = language === 'java';
   const LE = isJava ? ';' : '';
-  mainActivity = (0, _codeMod().addImports)(mainActivity, ['expo.modules.splashscreen.SplashScreen', 'expo.modules.splashscreen.SplashScreenImageResizeMode', 'android.os.Bundle'], isJava);
+  mainActivity = (0, _codeMod().addImports)(mainActivity, ['expo.modules.splashscreen.singletons.SplashScreen', 'expo.modules.splashscreen.SplashScreenImageResizeMode', 'com.facebook.react.ReactRootView', 'android.os.Bundle'], isJava);
   if (!mainActivity.match(/(?<=^.*super\.onCreate.*$)/m)) {
     const onCreateBlock = isJava ? ['    @Override', '    protected void onCreate(Bundle savedInstanceState) {', '      super.onCreate(savedInstanceState);', '    }'] : ['    override fun onCreate(savedInstanceState: Bundle?) {', '      super.onCreate(savedInstanceState)', '    }'];
     mainActivity = (0, _generateCode().mergeContents)({
