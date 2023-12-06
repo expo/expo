@@ -7,7 +7,7 @@ import { VersionSelector } from './VersionSelector';
 import versions from '~/public/static/constants/versions.json';
 import diffInfo from '~/public/static/diffs/template-bare-minimum/diffInfo.json';
 import { DiffBlock } from '~/ui/components/Snippet';
-import { PermalinkedSnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
+import { PermalinkedSnippetHeader } from '~/ui/components/Snippet/PermalinkedSnippetHeader';
 import { RawH3, RawH4 } from '~/ui/components/Text';
 
 // versions used by SDK selector. This has "unversioned" removed on production versions. The diff selectors will match that.
