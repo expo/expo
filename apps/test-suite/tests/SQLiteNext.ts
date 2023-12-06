@@ -14,7 +14,7 @@ interface UserEntity {
   j: number;
 }
 
-export function test({ describe, expect, it, beforeEach, afterEach, ...t }) {
+export function test({ describe, expect, it, beforeAll, beforeEach, afterEach, ...t }) {
   describe('Basic tests', () => {
     it('should be able to drop + create a table, insert, query', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
@@ -101,6 +101,12 @@ CREATE TABLE IF NOT EXISTS SomeTable (id INTEGER PRIMARY KEY NOT NULL, name VARC
   });
 
   describe('File system tests', () => {
+    beforeAll(async () => {
+      if (!(await FS.getInfoAsync(FS.documentDirectory + 'SQLite')).exists) {
+        await FS.makeDirectoryAsync(FS.documentDirectory + 'SQLite');
+      }
+    });
+
     it('should work with a downloaded .db file', async () => {
       await FS.downloadAsync(
         Asset.fromModule(require('../assets/asset-db.db')).uri,
