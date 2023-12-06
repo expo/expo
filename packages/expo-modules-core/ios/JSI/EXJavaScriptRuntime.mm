@@ -20,6 +20,27 @@
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/Swift.h>
 
+namespace {
+
+/**
+ * Dummy CallInvoker that invokes everything immediately.
+ * Used in the test environment to check the async flow.
+ */
+class SyncCallInvoker : public react::CallInvoker {
+public:
+  void invokeAsync(std::function<void()> &&func) override {
+    func();
+  }
+
+  void invokeSync(std::function<void()> &&func) override {
+    func();
+  }
+
+  ~SyncCallInvoker() override = default;
+};
+
+} // namespace
+
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
   std::shared_ptr<react::CallInvoker> _jsCallInvoker;
@@ -27,18 +48,29 @@
 
 /**
  Initializes a runtime that is independent from React Native and its runtime initialization.
- This flow is mostly intended for tests. The JS call invoker is unavailable thus calling async functions is not supported.
- TODO: Implement the call invoker when it becomes necessary.
+ This flow is mostly intended for tests.
  */
 - (nonnull instancetype)init
 {
   if (self = [super init]) {
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
     _runtime = facebook::hermes::makeHermesRuntime();
+
+    // This version of the Hermes uses a Promise implementation that is provided by the RN.
+    // The `setImmediate` function isn't defined, but is required by the Promise implementation.
+    // That's why we inject it here.
+    auto setImmediatePropName = jsi::PropNameID::forUtf8(*_runtime, "setImmediate");
+    _runtime->global().setProperty(
+      *_runtime, setImmediatePropName, jsi::Function::createFromHostFunction(*_runtime, setImmediatePropName, 1,
+        [](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
+          args[0].asObject(rt).asFunction(rt).call(rt);
+          return jsi::Value::undefined();
+        })
+    );
 #else
     _runtime = jsc::makeJSCRuntime();
 #endif
-    _jsCallInvoker = nil;
+    _jsCallInvoker = std::make_shared<SyncCallInvoker>();
   }
   return self;
 }
