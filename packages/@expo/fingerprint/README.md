@@ -158,12 +158,15 @@ function diffFingerprints(fingerprint1: Fingerprint, fingerprint2: Fingerprint):
 
 ### Include or exclude extra files in the **.fingerprintignore** file
 
-The default paths [`DEFAULT_IGNORE_PATHS`](https://github.com/expo/expo/blob/main/packages/%40expo/fingerprint/src/Options.ts#L9) are designed for speed of hashing and for fingerprint result stability. If the default setup does not fit your workflow, you can either include or exclude files in a **.fingerprintignore** file inside your project root. The syntax of **.fingerprintignore** is similar to [**.gitignore**](https://git-scm.com/docs/gitignore#_pattern_format).
+Our default ignore paths, found here [`DEFAULT_IGNORE_PATHS`](https://github.com/expo/expo/blob/main/packages/%40expo/fingerprint/src/Options.ts#L9), make hashing fast and keep hashing results stable. If the default setup does not fit your workflow, you can add a **.fingerprintignore** file in your project root. It works like [**.gitignore**](https://git-scm.com/docs/gitignore#_pattern_format) but with some slight differences: We use `minimatch` for pattern matching with the [limitations](https://github.com/expo/expo/blob/9b9133c96f209b0616d1796aadae28913f8d012f/packages/%40expo/fingerprint/src/Fingerprint.types.ts#L46-L55).
 
-In the following example of **.fingerprintignore**, it will ignore the whole **/app/ios** folder but still keep the **/app/ios/Podfile** and **/app/ios/Podfile.lock** 
+Here's how to use **.fingerprintignore**: To skip a whole folder but keep some files, you can do this:
 
 ```
+# Ignore the entire /app/ios folder
 /app/ios/**/*
+
+# But still keep /app/ios/Podfile and /app/ios/Podfile.lock
 !/app/ios/Podfile
 !/app/ios/Podfile.lock
 ```
