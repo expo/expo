@@ -2,7 +2,14 @@
 
 A library to generate a fingerprint from a React Native project
 
-## Usage
+## Table of Contents
+
+  * [API Usage](#api-usage)
+  * [CLI Usage](#cli-usage)
+  * [Customizations](#customizations)
+  * [Limitations](#limitations)
+
+## API Usage
 
 ```ts
 import * as Fingerprint from '@expo/fingerprint';
@@ -10,9 +17,13 @@ import * as Fingerprint from '@expo/fingerprint';
 await Fingerprint.createFingerprintAsync('/projectRoot');
 ```
 
-### `async function createFingerprintAsync(projectRoot: string, options?: Options): Promise<Fingerprint>`
+### createFingerprintAsync
 
 Create a fingerprint from project
+
+```ts
+function createFingerprintAsync(projectRoot: string, options?: Options): Promise<Fingerprint>;
+```
 
 Example:
 
@@ -47,9 +58,13 @@ console.log(fingerprint);
 }
 ```
 
-### `async function createProjectHashAsync(projectRoot: string, options?: Options): Promise<string>`
+### createProjectHashAsync
 
 Create a native hash value from project
+
+```ts
+function createProjectHashAsync(projectRoot: string, options?: Options): Promise<string>;
+```
 
 Example:
 
@@ -62,9 +77,13 @@ console.log(hash);
 bf8a3b08935f056270b1688333b02f1ef5fa25bf
 ```
 
-### `diffFingerprintChangesAsync(fingerprint: Fingerprint, projectRoot: string, options?: Options): Promise<FingerprintSource[]>`
+### diffFingerprintChangesAsync
 
-Differentiate given `fingerprint` with the current project fingerprint state
+Diff the given `fingerprint` with the current project fingerprint state
+
+```ts
+function diffFingerprintChangesAsync(fingerprint: Fingerprint, projectRoot: string, options?: Options): Promise<FingerprintSource[]>;
+```
 
 Example:
 
@@ -113,6 +132,14 @@ console.log(result);
 ]
 ```
 
+### diffFingerprints
+
+Find the diff between two fingerprints
+
+```ts
+function diffFingerprints(fingerprint1: Fingerprint, fingerprint2: Fingerprint): FingerprintSource[];
+```
+
 ## CLI Usage
 
 ### Generate a fingerprint for a given project
@@ -127,9 +154,26 @@ console.log(result);
 
 `npx @expo/fingerprint /path/to/projectRoot fingerprint.json`
 
+## Customizations
+
+### Include or exclude extra files in the **.fingerprintignore** file
+
+Our default ignore paths, found here [`DEFAULT_IGNORE_PATHS`](https://github.com/expo/expo/blob/main/packages/%40expo/fingerprint/src/Options.ts#L9), make hashing fast and keep hashing results stable. If the default setup does not fit your workflow, you can add a **.fingerprintignore** file in your project root. It works like [**.gitignore**](https://git-scm.com/docs/gitignore#_pattern_format) but with some slight differences: We use `minimatch` for pattern matching with the [limitations](https://github.com/expo/expo/blob/9b9133c96f209b0616d1796aadae28913f8d012f/packages/%40expo/fingerprint/src/Fingerprint.types.ts#L46-L55).
+
+Here's how to use **.fingerprintignore**: To skip a whole folder but keep some files, you can do this:
+
+```
+# Ignore the entire /app/ios folder
+/app/ios/**/*
+
+# But still keep /app/ios/Podfile and /app/ios/Podfile.lock
+!/app/ios/Podfile
+!/app/ios/Podfile.lock
+```
+
 ## Limitations
 
-## Limited support for [config-plugins raw functions](https://docs.expo.dev/config-plugins/plugins-and-mods/#raw-functions)
+### Limited support for [config-plugins raw functions](https://docs.expo.dev/config-plugins/plugins-and-mods/#raw-functions)
 
 When using config-plugins with raw functions, it's essential to be aware of certain limitations, particularly in the context of fingerprinting. Expo makes its best effort to generate fingerprints for changes made through config-plugins; however, raw functions pose specific challenges. Raw functions are not serializable as fingerprints, which means they cannot be directly used for generating unique hashes.
 
