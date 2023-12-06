@@ -114,6 +114,8 @@ public final class SQLiteModuleNext: Module {
         return NativeStatement()
       }
 
+      // swiftlint:disable line_length
+
       AsyncFunction("runAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [String: Any] in
         return try run(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
@@ -134,6 +136,8 @@ public final class SQLiteModuleNext: Module {
       Function("getAllSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [ColumnValues] in
         return try getAll(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
+
+      // swiftlint:enable line_length
 
       AsyncFunction("getColumnNamesAsync") { (statement: NativeStatement) -> ColumnNames in
         return try getColumnNames(statement: statement)
@@ -201,6 +205,8 @@ public final class SQLiteModuleNext: Module {
     }
     maybeAddCachedStatement(database: database, statement: statement)
   }
+
+  // swiftlint:disable line_length
 
   private func run(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) throws -> [String: Int] {
     try maybeThrowForClosedDatabase(database)
@@ -283,6 +289,8 @@ public final class SQLiteModuleNext: Module {
     }
     return columnValuesList
   }
+
+  // swiftlint:enable line_length
 
   private func reset(statement: NativeStatement, database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
