@@ -217,9 +217,11 @@ export async function logMetroErrorAsync({
 export async function getErrorOverlayHtmlAsync({
   error,
   projectRoot,
+  routerRoot,
 }: {
   error: Error;
   projectRoot: string;
+  routerRoot: string;
 }) {
   const log = logFromError({ projectRoot, error });
 
@@ -250,6 +252,7 @@ export async function getErrorOverlayHtmlAsync({
       platform: 'web',
       minify: false,
       baseUrl: '',
+      routerRoot,
     }
   );
 

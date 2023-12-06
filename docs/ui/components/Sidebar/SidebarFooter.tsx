@@ -38,6 +38,13 @@ export const SidebarFooter = ({ isMobileMenuVisible }: SideBarFooterProps) => {
         isExternal
         shouldLeakReferrer
       />
+      <SidebarSingleEntry
+        secondary
+        href="https://expo.dev/mailing-list/signup"
+        title="Newsletter"
+        Icon={Mail01Icon}
+        isExternal
+      />
       {isMobileMenuVisible && (
         <SidebarSingleEntry
           secondary
@@ -47,13 +54,6 @@ export const SidebarFooter = ({ isMobileMenuVisible }: SideBarFooterProps) => {
           isExternal
         />
       )}
-      <SidebarSingleEntry
-        secondary
-        href="https://expo.dev/mailing-list/signup"
-        title="Newsletter"
-        Icon={Mail01Icon}
-        isExternal
-      />
     </div>
   );
 };

@@ -18,6 +18,12 @@ export const SLUG = /\[.+?\]/g;
 export const ARRAY_GROUP_REGEX = /\(\s*\w[\w\s]*?,.*?\)/g;
 // /(group1,group2,group3)/test - captures ["group1", "group2", "group3"]
 export const CAPTURE_GROUP_REGEX = /[\\(,]\s*(\w[\w\s]*?)\s*(?=[,\\)])/g;
+/**
+ * Match:
+ *  - _layout files, +html, +not-found, string+api, etc
+ *  - Routes can still use `+`, but it cannot be in the last segment.
+ */
+export const TYPED_ROUTES_EXCLUSION_REGEX = /(_layout|[^/]*?\+[^/]*?)\.[tj]sx?$/;
 
 export interface SetupTypedRoutesOptions {
   server?: ServerLike;
@@ -162,8 +168,7 @@ export function getTypedRoutesUtils(appRoot: string, filePathSeperator = path.se
   };
 
   const isRouteFile = (filePath: string) => {
-    // Layout and filenames starting with `+` are not routes
-    if (filePath.match(/_layout\.[tj]sx?$/) || filePath.match(/\/\+/)) {
+    if (filePath.match(TYPED_ROUTES_EXCLUSION_REGEX)) {
       return false;
     }
 
@@ -312,7 +317,8 @@ declare module "expo-router" {
 
   type RelativePathString = \`./\${string}\` | \`../\${string}\` | '..';
   type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;
-  type ExternalPathString = \`http\${string}\`;
+  type ExternalPathString = \`\${string}:\${string}\`;
+
   type ExpoRouterRoutes = DynamicRouteTemplate | StaticRoutes | RelativePathString;
   type AllRoutes = ExpoRouterRoutes | ExternalPathString;
 

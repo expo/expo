@@ -117,6 +117,22 @@ describe('Basic tests', () => {
 
     await pressTestButtonAsync('reload');
 
+    // wait 3 seconds for reload to complete
+    // it's delayed 2 seconds after the button press in the client so the button press finish registers in detox
+    await setTimeout(3000);
+
+    // on android, the react context must be reacquired by detox.
+    // there's no detox public API to tell it that react native
+    // has been reloaded by the client application and that it should
+    // reacquire the react context. Instead, we use the detox reload
+    // API to do a second reload which reacquires the context. This
+    // detox reload method does the same thing that expo-updates reload does
+    // under the hood, so this is ok and is the best we can do. It should
+    // do the job of catching issues in react native either way.
+    if (device.getPlatform() === 'android') {
+      await device.reloadReactNative();
+    }
+
     const isReloadingAfter = await testElementValueAsync('isReloading');
     jestExpect(isReloadingAfter).toBe('false');
     const startTimeAfter = parseInt(await testElementValueAsync('startTime'), 10);
@@ -1047,8 +1063,14 @@ describe('Asset deletion recovery tests', () => {
     // Verify all the assets -- including the JS bundle from the update (which wasn't in the
     // embedded update) -- have been restored. Additionally verify from the server side that the
     // updated bundle was re-downloaded.
+    // With asset exclusion, on Android, the number of assets found may be greater than the number in the manifest,
+    // as the total will include embedded assets that were copied.
     numAssets = await checkNumAssetsAsync();
-    jestExpect(numAssets).toBe(manifest.assets.length + 1);
+    if (platform === 'ios') {
+      jestExpect(numAssets).toBe(manifest.assets.length + 1);
+    } else {
+      jestExpect(numAssets).toBeGreaterThanOrEqual(manifest.assets.length + 1);
+    }
     updateID = await testElementValueAsync('updateID');
     jestExpect(updateID).toEqual(manifest.id);
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1); // should have re-downloaded only the JS bundle; the rest should have been copied from the app binary

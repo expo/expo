@@ -259,6 +259,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
           jsArray.getBoolean(index)
         }
       },
+      ByteArray::class to ByteArrayTypeConverter(isOptional),
 
       JavaScriptValue::class to createTrivialTypeConverter(
         isOptional, ExpectedType(CppType.JS_VALUE)
@@ -287,6 +288,8 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       File::class to FileTypeConverter(isOptional),
 
       Any::class to AnyTypeConverter(isOptional),
+
+      Unit::class to UnitTypeConverter(isOptional),
 
       ReadableArguments::class to ReadableArgumentsTypeConverter(isOptional),
     )

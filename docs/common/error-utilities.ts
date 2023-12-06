@@ -225,6 +225,16 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/exploring-managed-workflow/': '/tutorial/introduction/',
   '/introduction/walkthrough/': '/tutorial/introduction/',
 
+  // Redirects after Expo Router docs reorganization from Home to Guides
+  '/routing/next-steps/': '/router/introduction/',
+  '/routing/introduction/': '/router/introduction/',
+  '/routing/installation/': '/router/installation/',
+  '/routing/create-pages/': '/router/create-pages/',
+  '/routing/navigating-pages/': '/router/navigating-pages/',
+  '/routing/layouts/': '/router/layouts/',
+  '/routing/appearance/': '/router/appearance/',
+  '/routing/error-handling/': '/router/error-handling/',
+
   // Move overview to index
   '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
 
@@ -251,6 +261,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/development/tools/expo-dev-client/':
     '/develop/development-builds/introduction/#what-is-expo-dev-client',
   '/develop/user-interface/custom-fonts/': '/develop/user-interface/fonts/#use-a-custom-font',
+  '/accounts/teams-and-accounts/': '/accounts/account-types/',
+  '/push-notifications/fcm/': '/push-notifications/sending-notifications-custom/',
+  '/troubleshooting/clear-cache-mac/': '/troubleshooting/clear-cache-macos-linux/',
 
   // Renaming a submit section
   '/submit/submit-ios': '/submit/ios/',
@@ -372,6 +385,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v45.0.0/sdk/google-sign-in': '/guides/google-authentication/',
   '/versions/v44.0.0/sdk/google/': '/guides/google-authentication/',
   '/versions/latest/sdk/error-recovery/': '/versions/latest/',
+  '/guides/using-preact/': '/guides/overview/',
+  '/versions/latest/sdk/shared-element/': '/versions/latest/',
+  '/workflow/hermes/': '/guides/using-hermes/',
 
   // Push notifications
   '/config/app/': '/workflow/configuration/',

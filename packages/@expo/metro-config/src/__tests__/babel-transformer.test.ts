@@ -16,12 +16,15 @@ jest.mock('../babel-core', () => {
     transformSync: jest.fn((...props) => babel.transformSync(...props)),
   };
 });
+const originalWarn = console.warn;
 
 afterEach(() => {
   vol.reset();
+  console.warn = originalWarn;
 });
 
 it(`passes the environment as isServer to the babel preset`, () => {
+  console.warn = jest.fn();
   vol.fromJSON({}, '/');
 
   const fixture = `import { Platform } from 'react-native';
@@ -51,6 +54,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
     plugins: [],
   });
 
+  expect(console.warn).toBeCalledTimes(1);
   expect(generate(results.ast).code).toMatchSnapshot();
 
   expect(babel.transformSync).toBeCalledWith(fixture, {
@@ -69,6 +73,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
       isHMREnabled: true,
       preserveEnvVars: undefined,
       projectRoot: expect.any(String),
+      routerRoot: 'app',
     },
     cloneInputAst: false,
     code: false,

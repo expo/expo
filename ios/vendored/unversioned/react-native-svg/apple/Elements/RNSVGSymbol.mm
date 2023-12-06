@@ -39,7 +39,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &newProps = *std::static_pointer_cast<const RNSVGSymbolProps>(props);
+  const auto &newProps = static_cast<const RNSVGSymbolProps &>(*props);
 
   self.minX = newProps.minX;
   self.minY = newProps.minY;

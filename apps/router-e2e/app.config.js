@@ -35,9 +35,13 @@ module.exports = {
     [
       'expo-router',
       {
-        asyncRoutes: process.env.E2E_ROUTER_ASYNC,
-        // THIS WILL BREAK YOUR APP -- DO NOT USE!
-        unstable_src: path.join('__e2e__', process.env.E2E_ROUTER_SRC ?? 'static-rendering', 'app'),
+        asyncRoutes:
+          process.env.E2E_ROUTER_ASYNC === 'true'
+            ? true
+            : process.env.E2E_ROUTER_ASYNC === 'false'
+            ? false
+            : process.env.E2E_ROUTER_ASYNC || false,
+        root: path.join('__e2e__', process.env.E2E_ROUTER_SRC ?? 'static-rendering', 'app'),
         origin: 'https://smart-symbiote.netlify.app/',
       },
     ],

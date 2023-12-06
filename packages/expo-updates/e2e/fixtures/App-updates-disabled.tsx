@@ -4,7 +4,7 @@ import * as Updates from 'expo-updates';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-require('./test.png');
+require('./includedAssets/test.png');
 // eslint-disable-next-line no-unused-expressions
 Inter_900Black;
 
