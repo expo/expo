@@ -79,6 +79,40 @@ describe('Database', () => {
     expect(results[2].intValue).toBe(123);
   });
 
+  it('eachAsync should finalize from early iterator return', async () => {
+    db = await openDatabaseAsync(':memory:');
+    const mockPrepareAsync = jest.spyOn(db, 'prepareAsync');
+    await db.execAsync(`
+  CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER);
+  INSERT INTO test (value, intValue) VALUES ('test1', 123);
+  INSERT INTO test (value, intValue) VALUES ('test2', 456);
+  INSERT INTO test (value, intValue) VALUES ('test3', 789);
+  `);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for await (const row of db.eachAsync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC')) {
+      break;
+    }
+    const mockStatement = await mockPrepareAsync.mock.results[0].value;
+    expect(mockStatement.nativeStatement.finalizeAsync).toHaveBeenCalled();
+  });
+
+  it('eachSync should finalize from early iterator return', async () => {
+    db = await openDatabaseAsync(':memory:');
+    const mockPrepareSync = jest.spyOn(db, 'prepareSync');
+    await db.execAsync(`
+  CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER);
+  INSERT INTO test (value, intValue) VALUES ('test1', 123);
+  INSERT INTO test (value, intValue) VALUES ('test2', 456);
+  INSERT INTO test (value, intValue) VALUES ('test3', 789);
+  `);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for (const row of db.eachSync<TestEntity>('SELECT * FROM test ORDER BY intValue DESC')) {
+      break;
+    }
+    const mockStatement = await mockPrepareSync.mock.results[0].value;
+    expect(mockStatement.nativeStatement.finalizeSync).toHaveBeenCalled();
+  });
+
   it('allAsync should return all items', async () => {
     db = await openDatabaseAsync(':memory:');
     await db.execAsync(`
