@@ -80,6 +80,7 @@ import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
 import expo.modules.taskManager.TaskManagerModule
 import expo.modules.taskManager.TaskManagerPackage
+import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.updates.UpdatesPackage
 import expo.modules.videothumbnails.VideoThumbnailsModule
 import expo.modules.webbrowser.WebBrowserModule
@@ -185,6 +186,7 @@ object ExperiencePackagePicker : ModulesProvider {
     SQLiteModuleNext::class.java,
     SystemUIModule::class.java,
     TaskManagerModule::class.java,
+    TrackingTransparencyModule::class.java,
     VideoThumbnailsModule::class.java,
     VideoViewModule::class.java,
     WebBrowserModule::class.java,
