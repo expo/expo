@@ -1,7 +1,6 @@
 import { css } from '@emotion/react';
 import { spacing } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
-import { useEffect, useState } from 'react';
 
 import { VersionSelector } from './VersionSelector';
 
