@@ -201,8 +201,9 @@ The core development loop described in the diagram above is a cycle of four main
   config file.
 
 - <Highlight isBlue>**Write native code or modify native project configuration**</Highlight>: This
-  includes writing native code directly or modifying native code configuration. You either need access to
-  the native code project directories to make these changes, or you can write native code with a [local Expo Module](/modules/get-started/#adding-a-new-module-to-an-existing-application).
+  includes writing native code directly or modifying native code configuration. You either need
+  access to the native code project directories to make these changes, or you can write native code
+  with a [local Expo Module](/modules/get-started/#adding-a-new-module-to-an-existing-application).
 
 - <Highlight isBlue>**Install a library that requires native code modifications**</Highlight>: This
   includes that a library requires making changes to the native code project configuration. Either
@@ -239,6 +240,6 @@ Analytics allows you to track how users interact with your app. See [analytics o
 
 ## Update the app
 
-The `expo-updates` library allows you to programmatically make new instant updates available to your production app. Sending instant updates is helpful for fixing bugs or updating your app's JavaScript.
+The `expo-updates` library allows you to programmatically make instant updates available to your production app. Sending instant includes fixing bugs or updating your app's JavaScript.
 
 You can use [EAS Update](/eas-update/introduction/) which provides first-class support for instant updates in a React Native app. It serves updates from the edge of a global CDN and uses modern networking protocols such as HTTP/3 for clients that support them. It is also [tailored for developers](/eas-update/develop-faster/) who use EAS Build. You can also use it for builds you have created [locally](/eas-update/build-locally/).
