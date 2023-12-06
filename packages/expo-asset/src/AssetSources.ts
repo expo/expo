@@ -20,40 +20,18 @@ export type AssetSource = {
   hash: string;
 };
 
-// Fast lookup check if asset map has any overrides in the manifest.
-// This value will always be either null or an absolute URL, e.g. `https://expo.dev/`
-const assetMapOverride = getManifest().assetMapOverride;
-
 /**
  * Selects the best file for the given asset (ex: choosing the best scale for images) and returns
  * a { uri, hash } pair for the specific asset file.
  *
  * If the asset isn't an image with multiple scales, the first file is selected.
  */
-export function selectAssetSource(meta: AssetMetadata): AssetSource {
-  // Override with the asset map in manifest if available
-  if (assetMapOverride && assetMapOverride.hasOwnProperty(meta.hash)) {
-    meta = { ...meta, ...assetMapOverride[meta.hash] };
-  }
-
+export function selectAssetSourceForExpoUpdates(meta: AssetMetadata): AssetSource {
   // This logic is based on that of AssetSourceResolver, with additional support for file hashes and
   // explicitly provided URIs
   const scale = AssetSourceResolver.pickScale(meta.scales, PixelRatio.get());
   const index = meta.scales.findIndex((s) => s === scale);
   const hash = meta.fileHashes ? meta.fileHashes[index] ?? meta.fileHashes[0] : meta.hash;
-
-  // Allow asset processors to directly provide the URL to load
-  const uri = meta.fileUris ? meta.fileUris[index] ?? meta.fileUris[0] : meta.uri;
-  if (uri) {
-    return { uri: resolveUri(uri), hash };
-  }
-
-  // Check if the assetUrl was overridden in the manifest
-  const assetUrlOverride = getManifest().assetUrlOverride;
-  if (assetUrlOverride) {
-    const uri = pathJoin(assetUrlOverride, hash);
-    return { uri: resolveUri(uri), hash };
-  }
 
   const fileScale = scale === 1 ? '' : `@${scale}x`;
   const fileExtension = meta.type ? `.${encodeURIComponent(meta.type)}` : '';
@@ -62,13 +40,6 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
     platform: Platform.OS,
     hash: meta.hash,
   });
-
-  // For assets with a specified absolute URL, we use the existing origin instead of prepending the
-  // development server or production CDN URL origin
-  if (/^https?:\/\//.test(meta.httpServerLocation)) {
-    const uri = meta.httpServerLocation + suffix + '?' + params;
-    return { uri, hash };
-  }
 
   // For assets during development using manifest2, we use the development server's URL origin
   const manifest2 = getManifest2();
@@ -90,11 +61,10 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
     };
   }
 
-  throw new Error(
-    `Asset "${meta.name}${
-      meta.type ? `.${meta.type}` : ''
-    }" must specify an absolute HTTP(S) URL in production or specify a development server URL in development.`
-  );
+  return {
+    uri: '',
+    hash,
+  };
 }
 
 /**

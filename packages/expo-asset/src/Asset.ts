@@ -13,7 +13,7 @@ export type AssetDescriptor = {
   name: string;
   type: string;
   hash?: string | null;
-  uri: string;
+  uri?: string;
   width?: number | null;
   height?: number | null;
 };
@@ -30,7 +30,11 @@ export { AssetMetadata };
  * The `Asset` class represents an asset in your app. It gives metadata about the asset (such as its
  * name and type) and provides facilities to load the asset data.
  */
-export class Asset {
+export class Asset {}
+export class ExpoUpdatesAsset extends AssetBase {
+  resolve();
+}
+export class NonExpoUpdatesAsset extends AssetBase {
   /**
    * @private
    */
@@ -54,6 +58,7 @@ export class Asset {
    */
   hash: string | null = null;
   /**
+   * TODO(wschurman)
    * A URI that points to the asset's data on the remote server. When running the published version
    * of your app, this refers to the location on Expo's asset server where Expo has stored your
    * asset. When running the app from Expo CLI during development, this URI points to Expo CLI's
@@ -61,7 +66,7 @@ export class Asset {
    * are not using Classic Updates (legacy), this field should be ignored as we ensure your assets
    * are on device before before running your application logic.
    */
-  uri: string;
+  uri: string | null = null;
   /**
    * If the asset has been downloaded (by calling [`downloadAsync()`](#downloadasync)), the
    * `file://` URI pointing to the local file on the device that contains the asset data.
@@ -90,7 +95,7 @@ export class Asset {
     this.name = name;
     this.type = type;
     this.hash = hash;
-    this.uri = uri;
+    this.uri = uri ?? null;
 
     if (typeof width === 'number') {
       this.width = width;
@@ -178,11 +183,11 @@ export class Asset {
       return asset;
     }
 
-    return Asset.fromMetadata(meta);
+    return Asset.fromExpoUpdatesMetadata(meta);
   }
 
   // @docsMissing
-  static fromMetadata(meta: AssetMetadata): Asset {
+  static fromExpoUpdatesMetadata(meta: AssetMetadata): Asset {
     // The hash of the whole asset, not to be confused with the hash of a specific file returned
     // from `selectAssetSource`
     const metaHash = meta.hash;

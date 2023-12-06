@@ -8,7 +8,7 @@ if (IS_ENV_WITH_UPDATES_ENABLED) {
     try {
       // Bundler is using the hashAssetFiles plugin if and only if the fileHashes property exists
       if (resolver.asset.fileHashes) {
-        const asset = Asset.fromMetadata(resolver.asset);
+        const asset = Asset.fromExpoUpdatesMetadata(resolver.asset);
         return resolver.fromSource(asset.downloaded ? asset.localUri! : asset.uri);
       } else {
         return resolver.defaultAsset();
