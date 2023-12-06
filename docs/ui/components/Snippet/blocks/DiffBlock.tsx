@@ -2,9 +2,10 @@ import { Copy07Icon } from '@expo/styleguide-icons';
 import { useEffect, useState, PropsWithChildren } from 'react';
 import { parseDiff, Diff, Hunk } from 'react-diff-view';
 
+import { PermalinkedSnippetHeader } from '../PermalinkedSnippetHeader';
 import { Snippet } from '../Snippet';
 import { SnippetContent } from '../SnippetContent';
-import { SnippetHeader, PermalinkedSnippetHeader } from '../SnippetHeader';
+import { SnippetHeader } from '../SnippetHeader';
 
 import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
 
