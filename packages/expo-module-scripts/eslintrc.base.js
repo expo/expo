@@ -7,6 +7,10 @@ module.exports = {
       env: { node: true },
       globals: { __DEV__: true },
     },
+    {
+      files: ['./*.config.js', './.*rc.js'],
+      extends: ['universe/node'],
+    },
   ],
   rules: {
     'no-restricted-imports': [
