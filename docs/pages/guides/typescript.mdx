@@ -276,7 +276,7 @@ module.exports = config;
 **app.config.ts** is supported by default. However, it doesn't support external TypeScript modules, or **tsconfig.json** customization. You can use the following approach to get a more comprehensive TypeScript setup:
 
 ```ts app.config.ts
-import 'ts-node/register' // Add if you want to import TypeScript files
+import 'ts-node/register' // Add this to import TypeScript files
 import { ExpoConfig } from 'expo/config';
 
 // In SDK 46 and lower, use the following import instead:
