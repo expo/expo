@@ -69,7 +69,7 @@ class RouterStore {
         this.navigationRefSubscription?.();
         this.rootStateSubscribers.clear();
         this.storeSubscribers.clear();
-        this.routeNode = (0, getRoutes_1.getRoutes)(context);
+        this.routeNode = (0, getRoutes_1.getRoutes)(context, { ignoreEntryPoints: true });
         this.rootComponent = this.routeNode ? (0, useScreens_1.getQualifiedRouteComponent)(this.routeNode) : react_1.Fragment;
         // Only error in production, in development we will show the onboarding screen
         if (!this.routeNode && process.env.NODE_ENV === 'production') {

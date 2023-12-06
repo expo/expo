@@ -134,15 +134,15 @@ export default class Camera extends React.Component<CameraProps> {
     /**
      * Stops recording if any is in progress.
      */
-    stopRecording(): void;
+    stopRecording(): Promise<void>;
     /**
      * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
      */
-    pausePreview(): void;
+    pausePreview(): Promise<void>;
     /**
      * Resumes the camera preview.
      */
-    resumePreview(): void;
+    resumePreview(): Promise<void>;
     _onCameraReady: () => void;
     _onMountError: ({ nativeEvent }: {
         nativeEvent: {

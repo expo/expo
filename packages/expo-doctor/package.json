@@ -1,6 +1,6 @@
 {
   "name": "expo-doctor",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "main": "build/index.js",
   "description": "Check your Expo project for known issues",
   "keywords": [
@@ -17,7 +17,7 @@
   },
   "author": "Expo <support@expo.dev>",
   "license": "MIT",
-  "bin": "./bin/expo-doctor",
+  "bin": "./build/index.js",
   "files": [
     "build"
   ],

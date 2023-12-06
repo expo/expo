@@ -7,6 +7,7 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.typedarray.RawTypedArrayHolder
+import expo.modules.kotlin.types.folly.FollyDynamicExtensionConverter
 import java.io.File
 import java.net.URI
 import java.net.URL
@@ -31,6 +32,7 @@ object JSTypeConverter {
       is FloatArray -> value.toJSValue(containerProvider)
       is DoubleArray -> value.toJSValue(containerProvider)
       is BooleanArray -> value.toJSValue(containerProvider)
+      is ByteArray -> FollyDynamicExtensionConverter.put(value)
       is Map<*, *> -> value.toJSValue(containerProvider)
       is Enum<*> -> value.toJSValue()
       is Record -> value.toJSValue(containerProvider)

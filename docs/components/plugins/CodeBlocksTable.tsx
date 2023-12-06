@@ -40,7 +40,7 @@ export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: P
   return (
     <div css={[codeBlocksWrapperStyle, connected && codeBlockConnectedWrapperStyle]} {...rest}>
       {codeBlocks.map((codeBlock, index) => (
-        <Snippet key={index} css={snippetWrapperStyle}>
+        <Snippet key={index} className="last:mb-4 max-xl:!mb-0">
           <SnippetHeader title={tabNames[index]} Icon={FileCode01Icon}>
             <CopyAction text={cleanCopyValue(codeBlock.props.children.props.children)} />
           </SnippetHeader>
@@ -87,16 +87,6 @@ const codeBlockConnectedWrapperStyle = css({
         borderTopLeftRadius: 0,
         borderBottomLeftRadius: 0,
       },
-    },
-  },
-});
-
-const snippetWrapperStyle = css({
-  [`@media screen and (max-width: ${breakpoints.large}px)`]: {
-    marginBottom: 0,
-
-    '&:last-of-type': {
-      marginBottom: spacing[4],
     },
   },
 });

@@ -71,6 +71,10 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
           }
 
           jsi::Value arg = jsi::valueFromDynamic(strongWrapper2->runtime(), responses);
+          auto enhancedArg = decorateValueForDynamicExtension(strongWrapper2->runtime(), arg);
+          if (enhancedArg) {
+            arg = std::move(*enhancedArg);
+          }
           if (!isRejectCallback) {
             strongWrapper2->callback().call(
               strongWrapper2->runtime(),
