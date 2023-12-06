@@ -48,11 +48,13 @@ Expo CLI loads **.env** files according to the [standard .env file resolution](h
 
 ### How to read from environment variables
 
+Once an environment variable is loaded into your app, it remains constant during an app's runtime. This means that the variable is a static property. It does not change unless a different value is set for the variable and the app is reloaded.
+
 - <YesIcon small /> **Every environment variable must be referenced as a static property for it to be
   inlined.** For example, the expression `process.env.EXPO_PUBLIC_KEY` is valid and will be inlined.
 
 - <NoIcon small /> **Alternative versions of the expression are not supported**. For example, `process.env['EXPO_PUBLIC_KEY']`
-  or `const {EXPO_PUBLIC_X} = process.env` are invalid and will not be inlined.
+  or `const {EXPO_PUBLIC_X} = process.env` is invalid and will not be inlined.
 
 ### Using multiple .env files to define separate environments
 
