@@ -1,6 +1,6 @@
 ---
 title: Develop an app with Expo
-description: An overview of the development process of building an Expo app to help build mental model of the core development loop.
+description: An overview of the development process of building an Expo app to help build a mental model of the core development loop.
 ---
 
 import { DocsLogo } from '@expo/styleguide';
@@ -129,7 +129,7 @@ Using CNG can make upgrading to new versions of React Native much easier. It can
 
 CNG has proven to be helpful to many teams. However, it may not be the best fit for your project and this is a perfectly reasonable way to use Expo tools in many cases.
 
-You can run `npx expo prebuild` in the project and then make changes directly to the **android** and **ios** directories, instead of using Expo app config. If you decide to do this, then keep in mind that you won't be able to re-generate your projects using prebuild any longer — running prebuild after making native changes directly will overwrite all of those modifications.
+You can run `npx expo prebuild` in the project and then make changes directly to the **android** and **ios** directories, instead of using Expo app config. If you decide to do this, then keep in mind that you won't be able to re-generate your projects using prebuild any longer &mdash; running prebuild after making native changes directly will overwrite all of those modifications.
 
 Note that you can use [config plugins](/config-plugins/introduction/) to modify the native project configuration without having to modify the native projects directly, and if you decide to move back to CNG at some point.
 
@@ -138,6 +138,8 @@ Note that you can use [config plugins](/config-plugins/introduction/) to modify 
 <Collapsible summary="How do I know when I need to run prebuild again?">
 
 If you add a new native dependency to your project or change the project configuration in Expo app config (**app.json/app.config.js**), you can run `npx expo prebuild --clean` to re-generate the native project directories.
+
+To determine if a new dependency changes native project directories, you can check that library's installation instructions. For example, for Android, it is common to apply changes from a library's instructions to **android/app/src/main/AndroidManifest.xml**. Similarly, for iOS, run `pod install` to update the **ios/Podfile** or update the **Info.plist** directly to change the project configuration.
 
 </Collapsible>
 
@@ -240,6 +242,6 @@ Analytics allows you to track how users interact with your app. See [analytics o
 
 ## Update the app
 
-The `expo-updates` library allows you to programmatically make instant updates available to your production app. Sending instant includes fixing bugs or updating your app's JavaScript.
+The `expo-updates` library allows you to programmatically make instant updates to your app's JavaScript available to your production app.
 
 You can use [EAS Update](/eas-update/introduction/) which provides first-class support for instant updates in a React Native app. It serves updates from the edge of a global CDN and uses modern networking protocols such as HTTP/3 for clients that support them. It is also [tailored for developers](/eas-update/develop-faster/) who use EAS Build. You can also use it for builds you have created [locally](/eas-update/build-locally/).
