@@ -18,46 +18,45 @@ module.exports = {
     './node_modules/@expo/styleguide-search-ui/dist/**/*.{js,ts,jsx,tsx}',
   ],
   plugins: [],
-  ...getExpoTheme(
-    {
-      backgroundImage: (theme) => ({
-        'default-fade': `linear-gradient(to bottom, ${theme(
-          'backgroundColor.default'
-        )}, transparent)`,
-      }),
-      keyframes: {
-        fadeIn: {
-          '0%': {
-            opacity: 0,
-          },
-          '100%': {
-            opacity: 1,
-          },
+  ...getExpoTheme({
+    backgroundImage: theme => ({
+      'default-fade': `linear-gradient(to bottom, ${theme(
+        'backgroundColor.default'
+      )}, transparent)`,
+      appjs: "url('/static/images/appjs.svg'), linear-gradient(#0033cc, #0033cc)",
+    }),
+    keyframes: {
+      fadeIn: {
+        '0%': {
+          opacity: 0,
         },
-        fadeOut: {
-          '0%': {
-            opacity: 1,
-          },
-          '100%': {
-            opacity: 0,
-          },
-        },
-        slideUpAndFadeIn: {
-          '0%': {
-            opacity: 0,
-            transform: 'translateY(16px)',
-          },
-          '100%': {
-            opacity: 1,
-            transform: 'translateY(0)',
-          },
+        '100%': {
+          opacity: 1,
         },
       },
-      animation: {
-        fadeIn: 'fadeIn 0.25s ease-out',
-        fadeOut: 'fadeOut 0.15s ease-in',
-        slideUpAndFadeIn: 'slideUpAndFadeIn 0.25s ease-out',
+      fadeOut: {
+        '0%': {
+          opacity: 1,
+        },
+        '100%': {
+          opacity: 0,
+        },
+      },
+      slideUpAndFadeIn: {
+        '0%': {
+          opacity: 0,
+          transform: 'translateY(16px)',
+        },
+        '100%': {
+          opacity: 1,
+          transform: 'translateY(0)',
+        },
       },
     },
-  ),
+    animation: {
+      fadeIn: 'fadeIn 0.25s ease-out',
+      fadeOut: 'fadeOut 0.15s ease-in',
+      slideUpAndFadeIn: 'slideUpAndFadeIn 0.25s ease-out',
+    },
+  }),
 };
