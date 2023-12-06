@@ -9,7 +9,7 @@
     "noUnusedParameters": true,
     "noImplicitAny": true,
     "paths": {
-      "*": ["./*"]
+      "@/*": ["./*"]
     }
   },
   "exclude": ["**/__mocks__/*"]

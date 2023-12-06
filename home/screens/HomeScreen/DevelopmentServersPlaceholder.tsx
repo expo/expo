@@ -1,6 +1,5 @@
 import { spacing } from '@expo/styleguide-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import FeatureFlags from 'FeatureFlags';
 import { Text, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -8,6 +7,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { DevelopmentServersOpenQR } from './DevelopmentServersOpenQR';
 import { DevelopmentServersOpenURL } from './DevelopmentServersOpenURL';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
+
+import FeatureFlags from '@/FeatureFlags';
 
 type Props = {
   isAuthenticated: boolean;
