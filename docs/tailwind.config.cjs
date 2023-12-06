@@ -23,6 +23,7 @@ module.exports = {
       'default-fade': `linear-gradient(to bottom, ${theme(
         'backgroundColor.default'
       )}, transparent)`,
+      appjs: "url('/static/images/appjs.svg'), linear-gradient(#0033cc, #0033cc)",
     }),
     keyframes: {
       fadeIn: {

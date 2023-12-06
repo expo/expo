@@ -1,12 +1,8 @@
-import { css } from '@emotion/react';
-import { Button, theme } from '@expo/styleguide';
-import { spacing } from '@expo/styleguide-base';
+import { Button } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import isBefore from 'date-fns/isBefore';
 import { useRouter } from 'next/compat/router';
 import React from 'react';
-
-import { Background } from './Background';
 
 import { CALLOUT, HEADLINE } from '~/ui/components/Text';
 
@@ -21,13 +17,10 @@ export function AppJSBanner() {
   }
 
   return (
-    <div className="relative flex justify-between items-center bg-[#0019C1] py-4 px-6 rounded-md overflow-hidden gap-3 shadow-xs my-6 flex-wrap">
-      <div className="absolute -top-1 -left-1">
-        <Background />
-      </div>
+    <div className="relative flex justify-between items-center bg-appjs py-4 px-6 rounded-md overflow-hidden gap-3 shadow-xs my-6 flex-wrap bg-cover bg-left bg-no-repeat">
       <div>
-        <HEADLINE css={headlineStyle}>App.js Conf 2024</HEADLINE>
-        <CALLOUT css={descriptionStyle}>
+        <HEADLINE className="!text-palette-white mb-1">App.js Conf 2024</HEADLINE>
+        <CALLOUT className="!text-[#CCD3FF]">
           An Expo &amp; React Native conference in Europe is back, May 22-24 in Kraków, Poland!
         </CALLOUT>
       </div>
@@ -35,21 +28,10 @@ export function AppJSBanner() {
         size="xs"
         href="https://appjs.co"
         openInNewTab
-        className="bg-palette-white text-[#0019C1] border-none hocus:bg-palette-white hocus:opacity-80"
-        rightSlot={<ArrowUpRightIcon className="icon-sm text-[#0019C1]" />}>
+        className="gap-1.5 border-palette-white bg-palette-white text-[#03c] hocus:border-[lavender] hocus:bg-[lavender]"
+        rightSlot={<ArrowUpRightIcon className="icon-sm text-[#03C] opacity-75" />}>
         Learn more
       </Button>
     </div>
   );
 }
-
-const headlineStyle = css({
-  position: 'relative',
-  color: theme.palette.white,
-  marginBottom: spacing[1],
-});
-
-const descriptionStyle = css({
-  position: 'relative',
-  color: '#CCD3FF',
-});
