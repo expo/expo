@@ -9,42 +9,28 @@ export class Statement {
         this.nativeStatement = nativeStatement;
     }
     async runAsync(...params) {
-        const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
-        if (shouldPassAsObject) {
-            return await this.nativeStatement.objectRunAsync(this.nativeDatabase, bindParams);
-        }
-        else {
-            return await this.nativeStatement.arrayRunAsync(this.nativeDatabase, bindParams);
-        }
+        return await this.nativeStatement.runAsync(this.nativeDatabase, ...normalizeParams(...params));
     }
     async *eachAsync(...params) {
-        const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
-        const func = shouldPassAsObject
-            ? this.nativeStatement.objectGetAsync.bind(this.nativeStatement)
-            : this.nativeStatement.arrayGetAsync.bind(this.nativeStatement);
+        const paramTuple = normalizeParams(...params);
+        const func = this.nativeStatement.getAsync.bind(this.nativeStatement);
         const columnNames = await this.getColumnNamesAsync();
         let result = null;
         do {
-            result = await func(this.nativeDatabase, bindParams);
+            result = await func(this.nativeDatabase, ...paramTuple);
             if (result != null) {
                 yield composeRow(columnNames, result);
             }
         } while (result != null);
     }
     async getAsync(...params) {
-        const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
         const columnNames = await this.getColumnNamesAsync();
-        const columnValues = shouldPassAsObject
-            ? await this.nativeStatement.objectGetAsync(this.nativeDatabase, bindParams)
-            : await this.nativeStatement.arrayGetAsync(this.nativeDatabase, bindParams);
+        const columnValues = await this.nativeStatement.getAsync(this.nativeDatabase, ...normalizeParams(...params));
         return columnValues != null ? composeRow(columnNames, columnValues) : null;
     }
     async allAsync(...params) {
-        const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
         const columnNames = await this.getColumnNamesAsync();
-        const columnValuesList = shouldPassAsObject
-            ? await this.nativeStatement.objectGetAllAsync(this.nativeDatabase, bindParams)
-            : await this.nativeStatement.arrayGetAllAsync(this.nativeDatabase, bindParams);
+        const columnValuesList = await this.nativeStatement.getAllAsync(this.nativeDatabase, ...normalizeParams(...params));
         return composeRows(columnNames, columnValuesList);
     }
     /**
@@ -67,42 +53,28 @@ export class Statement {
         await this.nativeStatement.finalizeAsync(this.nativeDatabase);
     }
     runSync(...params) {
-        const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
-        if (shouldPassAsObject) {
-            return this.nativeStatement.objectRunSync(this.nativeDatabase, bindParams);
-        }
-        else {
-            return this.nativeStatement.arrayRunSync(this.nativeDatabase, bindParams);
-        }
+        return this.nativeStatement.runSync(this.nativeDatabase, ...normalizeParams(...params));
     }
     *eachSync(...params) {
-        const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
-        const func = shouldPassAsObject
-            ? this.nativeStatement.objectGetSync.bind(this.nativeStatement)
-            : this.nativeStatement.arrayGetSync.bind(this.nativeStatement);
+        const paramTuple = normalizeParams(...params);
+        const func = this.nativeStatement.getSync.bind(this.nativeStatement);
         const columnNames = this.getColumnNamesSync();
         let result = null;
         do {
-            result = func(this.nativeDatabase, bindParams);
+            result = func(this.nativeDatabase, ...paramTuple);
             if (result != null) {
                 yield composeRow(columnNames, result);
             }
         } while (result != null);
     }
     getSync(...params) {
-        const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
         const columnNames = this.getColumnNamesSync();
-        const columnValues = shouldPassAsObject
-            ? this.nativeStatement.objectGetSync(this.nativeDatabase, bindParams)
-            : this.nativeStatement.arrayGetSync(this.nativeDatabase, bindParams);
+        const columnValues = this.nativeStatement.getSync(this.nativeDatabase, ...normalizeParams(...params));
         return columnValues != null ? composeRow(columnNames, columnValues) : null;
     }
     allSync(...params) {
-        const { params: bindParams, shouldPassAsObject } = normalizeParams(...params);
         const columnNames = this.getColumnNamesSync();
-        const columnValuesList = shouldPassAsObject
-            ? this.nativeStatement.objectGetAllSync(this.nativeDatabase, bindParams)
-            : this.nativeStatement.arrayGetAllSync(this.nativeDatabase, bindParams);
+        const columnValuesList = this.nativeStatement.getAllSync(this.nativeDatabase, ...normalizeParams(...params));
         return composeRows(columnNames, columnValuesList);
     }
     /**
@@ -128,7 +100,8 @@ export class Statement {
     }
 }
 /**
- * Normalize the bind params to an array or object.
+ * Normalize the bind params to data structure that can be passed to native module.
+ * The data structure is a tuple of [primitiveParams, blobParams, shouldPassAsArray].
  * @hidden
  */
 export function normalizeParams(...params) {
@@ -136,14 +109,30 @@ export function normalizeParams(...params) {
     if (bindParams == null) {
         bindParams = [];
     }
-    if (typeof bindParams !== 'object') {
+    if (typeof bindParams !== 'object' ||
+        bindParams instanceof ArrayBuffer ||
+        ArrayBuffer.isView(bindParams)) {
         bindParams = [bindParams];
     }
-    const shouldPassAsObject = !Array.isArray(bindParams);
-    return {
-        params: bindParams,
-        shouldPassAsObject,
-    };
+    const shouldPassAsArray = Array.isArray(bindParams);
+    if (Array.isArray(bindParams)) {
+        bindParams = bindParams.reduce((acc, value, index) => {
+            acc[index] = value;
+            return acc;
+        }, {});
+    }
+    const primitiveParams = {};
+    const blobParams = {};
+    for (const key in bindParams) {
+        const value = bindParams[key];
+        if (value instanceof Uint8Array) {
+            blobParams[key] = value;
+        }
+        else {
+            primitiveParams[key] = value;
+        }
+    }
+    return [primitiveParams, blobParams, shouldPassAsArray];
 }
 /**
  * Compose `columnNames` and `columnValues` to an row object.

@@ -40,10 +40,12 @@ export interface RunResult {
  * await statement.getAsync({ $value: 'test1', $intValue: 789 });
  * ```
  */
-export type BindValue = string | number | null | boolean;
+export type BindValue = string | number | null | boolean | Uint8Array;
 export type BindParams = Record<string, BindValue> | BindValue[];
 export type VariadicBindParams = BindValue[];
 
+export type BindPrimitiveParams = Record<string, Exclude<BindValue, Uint8Array>>;
+export type BindBlobParams = Record<string, Uint8Array>;
 export type ColumnNames = string[];
 export type ColumnValues = any[];
 type AnyDatabase = any;
@@ -54,21 +56,24 @@ type AnyDatabase = any;
 export declare class NativeStatement {
   //#region Asynchronous API
 
-  public arrayRunAsync(database: AnyDatabase, params: BindParams): Promise<RunResult>;
-  public objectRunAsync(database: AnyDatabase, params: BindParams): Promise<RunResult>;
-
-  public arrayGetAsync(
+  public runAsync(
     database: AnyDatabase,
-    params: BindParams
-  ): Promise<ColumnValues | null | undefined>;
-  public objectGetAsync(
+    bindParams: BindPrimitiveParams,
+    bindBlobParams: BindBlobParams,
+    shouldPassAsArray: boolean
+  ): Promise<RunResult>;
+  public getAsync(
     database: AnyDatabase,
-    params: BindParams
+    bindParams: BindPrimitiveParams,
+    bindBlobParams: BindBlobParams,
+    shouldPassAsArray: boolean
   ): Promise<ColumnValues | null | undefined>;
-
-  public arrayGetAllAsync(database: AnyDatabase, params: BindParams): Promise<ColumnValues[]>;
-  public objectGetAllAsync(database: AnyDatabase, params: BindParams): Promise<ColumnValues[]>;
-
+  public getAllAsync(
+    database: AnyDatabase,
+    bindParams: BindPrimitiveParams,
+    bindBlobParams: BindBlobParams,
+    shouldPassAsArray: boolean
+  ): Promise<ColumnValues[]>;
   public getColumnNamesAsync(): Promise<ColumnNames>;
 
   public resetAsync(database: AnyDatabase): Promise<void>;
@@ -78,15 +83,24 @@ export declare class NativeStatement {
 
   //#region Synchronous API
 
-  public arrayRunSync(database: AnyDatabase, params: BindParams): RunResult;
-  public objectRunSync(database: AnyDatabase, params: BindParams): RunResult;
-
-  public arrayGetSync(database: AnyDatabase, params: BindParams): ColumnValues | null | undefined;
-  public objectGetSync(database: AnyDatabase, params: BindParams): ColumnValues | null | undefined;
-
-  public arrayGetAllSync(database: AnyDatabase, params: BindParams): ColumnValues[];
-  public objectGetAllSync(database: AnyDatabase, params: BindParams): ColumnValues[];
-
+  public runSync(
+    database: AnyDatabase,
+    bindParams: BindPrimitiveParams,
+    bindBlobParams: BindBlobParams,
+    shouldPassAsArray: boolean
+  ): RunResult;
+  public getSync(
+    database: AnyDatabase,
+    bindParams: BindPrimitiveParams,
+    bindBlobParams: BindBlobParams,
+    shouldPassAsArray: boolean
+  ): ColumnValues | null | undefined;
+  public getAllSync(
+    database: AnyDatabase,
+    bindParams: BindPrimitiveParams,
+    bindBlobParams: BindBlobParams,
+    shouldPassAsArray: boolean
+  ): ColumnValues[];
   public getColumnNamesSync(): string[];
 
   public resetSync(database: AnyDatabase): void;

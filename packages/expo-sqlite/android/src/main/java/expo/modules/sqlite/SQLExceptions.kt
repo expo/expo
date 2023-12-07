@@ -27,3 +27,6 @@ internal class InvalidConvertibleException(message: String) :
 
 internal class AccessClosedResourceException :
   CodedException("Access to closed resource")
+
+internal class InvalidBindParameterException :
+  CodedException("Invalid bind parameter")

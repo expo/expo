@@ -1,5 +1,5 @@
 import { NativeDatabase } from './NativeDatabase';
-import { BindParams, BindValue, NativeStatement, RunResult, VariadicBindParams, type ColumnNames, type ColumnValues } from './NativeStatement';
+import { BindBlobParams, BindParams, BindPrimitiveParams, BindValue, NativeStatement, RunResult, VariadicBindParams, type ColumnNames, type ColumnValues } from './NativeStatement';
 export { BindParams, BindValue, RunResult, VariadicBindParams };
 /**
  * A prepared statement returned by [`Database.prepareAsync()`](#prepareasyncsource) or [`Database.prepareSync()`](#preparesyncsource) that can be binded with parameters and executed.
@@ -122,13 +122,11 @@ export declare class Statement {
     finalizeSync(): void;
 }
 /**
- * Normalize the bind params to an array or object.
+ * Normalize the bind params to data structure that can be passed to native module.
+ * The data structure is a tuple of [primitiveParams, blobParams, shouldPassAsArray].
  * @hidden
  */
-export declare function normalizeParams(...params: any[]): {
-    params: BindParams;
-    shouldPassAsObject: boolean;
-};
+export declare function normalizeParams(...params: any[]): [BindPrimitiveParams, BindBlobParams, boolean];
 /**
  * Compose `columnNames` and `columnValues` to an row object.
  * @hidden
