@@ -56,8 +56,9 @@ function sdkToBranch(sdkVersion: string) {
   return `sdk-${sdkVersion}`;
 }
 
-async function executeDiffCommand(sdkFrom: string, sdkTo: string) {
+async function executeDiffCommand(diffDirPath, sdkFrom: string, sdkTo: string) {
   const diffCommand = `origin/${sdkToBranch(sdkFrom)}..origin/${sdkToBranch(sdkTo)}`;
+  const diffPath = path.join(diffDirPath, `${sdkFrom}..${sdkTo}.diff`);
 
   await Git.fetchAsync();
 
@@ -68,6 +69,8 @@ async function executeDiffCommand(sdkFrom: string, sdkTo: string) {
       cwd: EXPO_DIR,
     }
   );
+
+  await fs.writeFile(diffPath, diff.stdout);
 
   return { name: `${sdkFrom}..${sdkTo}`, contents: diff.stdout };
 }
@@ -107,16 +110,12 @@ async function action({ check = false }: ActionOptions) {
           ? sdkVersionsToDiff
           : sdkVersionsToDiff.filter((s) => s <= toSdkVersion);
       sdkVersionsLowerThenOrEqualTo.forEach((fromSdkVersion) => {
-        diffJobs.push(taskQueue.add(() => executeDiffCommand(fromSdkVersion, toSdkVersion)));
+        diffJobs.push(
+          taskQueue.add(() => executeDiffCommand(diffDirPath, fromSdkVersion, toSdkVersion))
+        );
       });
     });
     const diffs = await Promise.all(diffJobs);
-
-    // write a JSON file with all the diffs so we can load them synchronously
-    await fs.writeFile(
-      path.join(diffDirPath, 'diffInfo.json'),
-      await buildDiffsJson(diffs, sdkVersionsToDiff)
-    );
 
     // see if diff regeneration changed the diff files from the last commit
     // Used to fail package checks when diffs are not regenerated
@@ -141,6 +140,12 @@ async function action({ check = false }: ActionOptions) {
       logger.success('🏁 No changes to expo-template-bare-minimum.');
       return;
     }
+
+    // write a JSON file with all the diffs so we can load them synchronously
+    await fs.writeFile(
+      path.join(diffDirPath, 'diffInfo.json'),
+      await buildDiffsJson(diffs, sdkVersionsToDiff)
+    );
 
     logger.log(
       chalk.green(
