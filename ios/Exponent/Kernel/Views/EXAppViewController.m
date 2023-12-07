@@ -10,6 +10,7 @@
 #import "EXManagedAppSplashScreenConfigurationBuilder.h"
 #import "EXManagedAppSplashScreenViewController.h"
 #import "EXHomeAppSplashScreenViewProvider.h"
+#import "EXHomeModule.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXErrorView.h"
@@ -46,8 +47,6 @@ const CGFloat kEXAutoReloadDebounceSeconds = 0.1;
 // (e.g. certain packager errors, such as an invalid bundle url)
 // and we want to make sure not to cover the error with a loading view or other chrome.
 const CGFloat kEXDevelopmentErrorCoolDownSeconds = 0.1;
-
-NSString *kEXLastFatalErrorDateDefaultsKey = @"EXKernelLastFatalErrorDateDefaultsKey";
 
 // copy of RNScreens protocol
 @protocol EXKernelRNSScreenWindowTraits
