@@ -17,7 +17,11 @@ export const withNotificationsIOS: ConfigPlugin<NotificationsPluginProps> = (
   { mode = 'development', sounds = [] }
 ) => {
   config = withEntitlementsPlist(config, (config) => {
-    config.modResults['aps-environment'] = mode;
+    if (config.ios?.disableNotifications) {
+      config.modResults['aps-environment'] = undefined;
+    } else {
+      config.modResults['aps-environment'] = mode;
+    }
     return config;
   });
   config = withNotificationSounds(config, { sounds });

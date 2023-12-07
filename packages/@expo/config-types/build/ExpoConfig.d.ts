@@ -473,6 +473,10 @@ export interface IOS {
     runtimeVersion?: string | {
         policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental';
     };
+    /**
+     * Disable ios notifications entitlement
+     */
+    disableNotifications?: boolean;
 }
 /**
  * Configuration that is specific to the Android platform.
