@@ -70,8 +70,10 @@ async function executeDiffCommand(diffDirPathRaw, sdkFrom: string, sdkTo: string
     }
   );
 
+  // write raw diff for later comparison to see if templates changed.
   await fs.writeFile(diffPath, diff.stdout);
 
+  // used for the consolidated JSON
   return { name: `${sdkFrom}..${sdkTo}`, contents: diff.stdout };
 }
 
@@ -102,8 +104,12 @@ async function action({ check = false }: ActionOptions) {
     sdkVersionsToDiff.push('unversioned');
 
     // clear all versions before regenerating
-    await fs.remove(diffDirPathBase);
+
+    // files/folders never change in base directory, all diffs are written to diffInfo.json
     await fs.ensureDir(diffDirPathBase);
+
+    // files inside of raw can change as SDK versions are updated and old ones fall off.
+    await fs.remove(diffDirPathRaw);
     await fs.ensureDir(diffDirPathRaw);
 
     //const diffPairs: string[] = [];
@@ -124,6 +130,7 @@ async function action({ check = false }: ActionOptions) {
 
     // see if diff regeneration changed the diff files from the last commit
     // Used to fail package checks when diffs are not regenerated
+    // This only compares the raw files to avoid failing due to a minute change in the JSON
     if (check) {
       const child = await spawnAsync(
         'git',
@@ -167,7 +174,7 @@ export default (program: Command) => {
     .command('generate-bare-diffs')
     .alias('gbd')
     .description(
-      `Generate diffs of expo-template-bare-minimum for bare upgrade instructions for the last 6 versions.`
+      `Generate diffs of expo-template-bare-minimum for bare upgrade instructions for the last 6 versions. Generates a diffInfo.json file for reading by the docs website, as well as raw diffs used for detecting changes to expo-template-bare-minimum.`
     )
     .option(
       '-c, --check',
