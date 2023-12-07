@@ -37,6 +37,7 @@
     "@expo/config": "~8.4.0",
     "@expo/env": "~0.1.0",
     "@expo/json-file": "~8.2.37",
+    "@react-native/metro-config": "~0.73.2",
     "babel-preset-fbjs": "^3.4.0",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
