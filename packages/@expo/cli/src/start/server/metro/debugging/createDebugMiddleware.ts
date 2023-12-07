@@ -28,8 +28,18 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
     },
   });
 
+  const middlewareWithLocalDevTools: typeof middleware = (req, res, next) => {
+    if (req.url?.startsWith('/debugger-frontend/rn_inspector')) {
+      const url = req.url.replace('/debugger-frontend/rn_inspector.html', 'rn_inspector');
+      res.writeHead(302, { Location: `http://localhost:8000/${url}` });
+      return res.end();
+    }
+
+    return middleware(req, res, next);
+  };
+
   return {
-    debugMiddleware: middleware,
+    debugMiddleware: middlewareWithLocalDevTools,
     debugWebsocketEndpoints: websocketEndpoints,
   };
 }

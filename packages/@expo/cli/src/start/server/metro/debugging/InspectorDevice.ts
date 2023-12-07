@@ -2,6 +2,7 @@ import type { unstable_Device } from '@react-native/dev-middleware';
 import fetch from 'node-fetch';
 import type WS from 'ws';
 
+import { NetworkLoadResourceHandler } from './inspectorHandlers/NetworkLoadResource';
 import { NetworkResponseHandler } from './inspectorHandlers/NetworkResponse';
 import { PageFrameHandler } from './inspectorHandlers/PageFrame';
 import { PageReloadHandler } from './inspectorHandlers/PageReload';
@@ -31,6 +32,7 @@ export function createInspectorDeviceClass(
       new VscodeRuntimeCallFunctionOnHandler(),
       // Biepboep - testing
       new PageFrameHandler(),
+      new NetworkLoadResourceHandler(),
     ];
 
     onDeviceMessage(message: any, info: DebuggerMetadata): boolean {

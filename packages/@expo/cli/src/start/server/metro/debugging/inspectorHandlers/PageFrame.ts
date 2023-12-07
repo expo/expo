@@ -36,16 +36,6 @@ export class PageFrameHandler implements InspectorHandler {
     message: DeviceRequest<DebuggerScriptParsed> | DeviceRequest<RuntimeExecutionContextCreated>,
     { socket }: DebuggerMetadata
   ) {
-    // Send `Page.enable` once
-    if (!this.sentPageEnable) {
-      this.sentPageEnable = true;
-      console.log('Page.enable sent');
-      send<DeviceRequest<{}>>(socket, {
-        method: 'Page.enable',
-        params: {},
-      });
-    }
-
     // Once a `Debugger.scriptParsed` event is received, we should emit the `Page.frame*Loading` events.
     if (message.method === 'Debugger.scriptParsed') {
       console.log('Page.frameStartedLoading sent');
@@ -60,6 +50,28 @@ export class PageFrameHandler implements InspectorHandler {
           method: 'Page.frameStoppedLoading',
           params: { frameId: this.frameId },
         });
+
+        // Send `Page.enable` once
+        if (!this.sentPageEnable) {
+          this.sentPageEnable = true;
+          console.log('Page.enable sent');
+          send<DeviceRequest<TargetInfoChanged>>(socket, {
+            method: 'Target.targetInfoChanged',
+            params: {
+              targetInfo: {
+                targetId: this.frameId,
+                type: 'page',
+                title: 'React Native',
+                url: 'http://localhost:8081',
+                attached: true,
+                canAccessOpener: false,
+                browserContextId: 'generatedbrowsercontextid',
+                openerId: 'unknownopenerid',
+                openerFrameId: 'unknownopenerid',
+              },
+            },
+          });
+        }
       }, 500);
 
       // Link this event to the frame
