@@ -114,7 +114,7 @@ async function action({ check = false }: ActionOptions) {
 
     // write a JSON file with all the diffs so we can load them synchronously
     await fs.writeFileSync(
-      path.join('docs/public/static/diffs/template-bare-minimum', 'diffInfo.json'),
+      path.join(diffDirPath, 'diffInfo.json'),
       await buildDiffsJson(diffs, sdkVersionsToDiff)
     );
 
