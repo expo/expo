@@ -234,6 +234,23 @@ async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.Database
 
 </Step>
 
+### Passing binary data
+
+Use `Uint8Array` to pass binary data to the database:
+
+```ts Passing binary data
+await db.execAsync(`
+DROP TABLE IF EXISTS Blobs;
+CREATE TABLE IF NOT EXISTS Blobs (id INTEGER PRIMARY KEY NOT NULL, data BLOB);
+`);
+
+const blob = new Uint8Array([0x00, 0x01, 0x02, 0x03, 0x04, 0x05]);
+await db.runAsync('INSERT INTO Blobs (data) VALUES (?)', blob);
+
+const row = await db.getAsync<{ data: Uint8Array }>('SELECT * FROM Blobs');
+expect(row.data).toEqual(blob);
+```
+
 ## API
 
 ```js
