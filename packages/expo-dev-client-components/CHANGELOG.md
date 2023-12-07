@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add flex prop to Button component. ([#25699](https://github.com/expo/expo/pull/25699) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
