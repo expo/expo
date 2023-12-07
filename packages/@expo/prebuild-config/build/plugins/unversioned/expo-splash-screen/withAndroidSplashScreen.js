@@ -11,27 +11,6 @@ function _configPlugins() {
   };
   return data;
 }
-function _jsonFile() {
-  const data = _interopRequireDefault(require("@expo/json-file"));
-  _jsonFile = function () {
-    return data;
-  };
-  return data;
-}
-function _resolveFrom() {
-  const data = _interopRequireDefault(require("resolve-from"));
-  _resolveFrom = function () {
-    return data;
-  };
-  return data;
-}
-function _semver() {
-  const data = _interopRequireDefault(require("semver"));
-  _semver = function () {
-    return data;
-  };
-  return data;
-}
 function _getAndroidSplashConfig() {
   const data = require("./getAndroidSplashConfig");
   _getAndroidSplashConfig = function () {
@@ -53,13 +32,6 @@ function _withAndroidSplashImages() {
   };
   return data;
 }
-function _withAndroidSplashLegacyMainActivity() {
-  const data = require("./withAndroidSplashLegacyMainActivity");
-  _withAndroidSplashLegacyMainActivity = function () {
-    return data;
-  };
-  return data;
-}
 function _withAndroidSplashStrings() {
   const data = require("./withAndroidSplashStrings");
   _withAndroidSplashStrings = function () {
@@ -74,7 +46,6 @@ function _withAndroidSplashStyles() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const withAndroidSplashScreen = config => {
   var _config$androidStatus;
   const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
@@ -91,22 +62,7 @@ const withAndroidSplashScreen = config => {
     if (!config.androidStatusBar) config.androidStatusBar = {};
     config.androidStatusBar.backgroundColor = backgroundColor;
   }
-  return (0, _configPlugins().withPlugins)(config, [_withAndroidSplashImages().withAndroidSplashImages, [_withAndroidSplashDrawables().withAndroidSplashDrawables, splashConfig], ...(shouldUpdateLegacyMainActivity(config) ? [_withAndroidSplashLegacyMainActivity().withAndroidSplashLegacyMainActivity] : []), _withAndroidSplashStyles().withAndroidSplashStyles, _withAndroidSplashStrings().withAndroidSplashStrings]);
+  return (0, _configPlugins().withPlugins)(config, [_withAndroidSplashImages().withAndroidSplashImages, [_withAndroidSplashDrawables().withAndroidSplashDrawables, splashConfig], _withAndroidSplashStyles().withAndroidSplashStyles, _withAndroidSplashStrings().withAndroidSplashStrings]);
 };
 exports.withAndroidSplashScreen = withAndroidSplashScreen;
-function shouldUpdateLegacyMainActivity(config) {
-  try {
-    var _config$_internal;
-    const projectRoot = (_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.projectRoot;
-    const packagePath = (0, _resolveFrom().default)(projectRoot, 'expo-splash-screen/package.json');
-    if (packagePath) {
-      var _JsonFile$read$versio, _JsonFile$read$versio2;
-      const version = (_JsonFile$read$versio = (_JsonFile$read$versio2 = _jsonFile().default.read(packagePath).version) === null || _JsonFile$read$versio2 === void 0 ? void 0 : _JsonFile$read$versio2.toString()) !== null && _JsonFile$read$versio !== void 0 ? _JsonFile$read$versio : '';
-      return _semver().default.lt(version, '0.12.0');
-    }
-    // If expo-splash-screen didn't be installed or included in template, we check the sdkVersion instead.
-    return !!(config.sdkVersion && _semver().default.lt(config.sdkVersion, '43.0.0'));
-  } catch {}
-  return false;
-}
 //# sourceMappingURL=withAndroidSplashScreen.js.map

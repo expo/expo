@@ -27,6 +27,7 @@ var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
       // TODO: add a link to a docs page with more information on how to do this
       );
     }
+
     return config;
   }
 });
