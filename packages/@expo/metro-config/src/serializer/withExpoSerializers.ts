@@ -27,27 +27,35 @@ export type SerializerParameters = [
   ExpoSerializerOptions,
 ];
 
+type SerializerOptions = {
+  customSerializer?: Serializer;
+};
+
 // A serializer that processes the input and returns a modified version.
 // Unlike a serializer, these can be chained together.
 export type SerializerPlugin = (...props: SerializerParameters) => SerializerParameters;
 
-export function withExpoSerializers(config: InputConfigT): InputConfigT {
+export function withExpoSerializers(
+  config: InputConfigT,
+  options: SerializerOptions = {}
+): InputConfigT {
   const processors: SerializerPlugin[] = [];
   processors.push(serverPreludeSerializerPlugin);
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(environmentVariableSerializerPlugin);
   }
 
-  return withSerializerPlugins(config, processors);
+  return withSerializerPlugins(config, processors, options);
 }
 
 // There can only be one custom serializer as the input doesn't match the output.
 // Here we simply run
 export function withSerializerPlugins(
   config: InputConfigT,
-  processors: SerializerPlugin[]
+  processors: SerializerPlugin[],
+  options: SerializerOptions = {}
 ): InputConfigT {
-  const originalSerializer = config.serializer?.customSerializer;
+  const originalSerializer = options.customSerializer ?? config.serializer?.customSerializer;
 
   return {
     ...config,

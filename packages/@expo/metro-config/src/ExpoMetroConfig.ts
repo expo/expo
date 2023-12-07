@@ -18,7 +18,7 @@ import { getModulesPaths, getServerRoot } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
 import { JSModule } from './serializer/getCssDeps';
-import { withExpoSerializers } from './serializer/withExpoSerializers';
+import { Serializer, withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
 import { importMetroConfig } from './traveling/metro-config';
 const debug = require('debug')('expo:metro:config') as typeof console.log;
@@ -41,6 +41,7 @@ export interface DefaultConfigOptions {
    * is subject to change, and native support for CSS Modules may be added in the future during a non-major SDK release.
    */
   isCSSEnabled?: boolean;
+  customSerializer?: Serializer;
 }
 
 function getAssetPlugins(projectRoot: string): string[] {
@@ -91,7 +92,7 @@ function patchMetroGraphToSupportUncachedModules() {
 
 export function getDefaultConfig(
   projectRoot: string,
-  { mode, isCSSEnabled = true }: DefaultConfigOptions = {}
+  { mode, isCSSEnabled = true, customSerializer }: DefaultConfigOptions = {}
 ): InputConfigT {
   const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = importMetroConfig(projectRoot);
 
@@ -255,7 +256,7 @@ export function getDefaultConfig(
     },
   });
 
-  return withExpoSerializers(metroConfig);
+  return withExpoSerializers(metroConfig, { customSerializer });
 }
 
 export async function loadAsync(
