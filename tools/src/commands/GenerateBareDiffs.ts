@@ -113,7 +113,7 @@ async function action({ check = false }: ActionOptions) {
     const diffs = await Promise.all(diffJobs);
 
     // write a JSON file with all the diffs so we can load them synchronously
-    await fs.writeFileSync(
+    await fs.writeFile(
       path.join(diffDirPath, 'diffInfo.json'),
       await buildDiffsJson(diffs, sdkVersionsToDiff)
     );
