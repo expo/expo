@@ -3,6 +3,8 @@ import { theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
 import React from 'react';
 
+import { FOOTNOTE } from '~/ui/components/Text';
+
 type FileStatusProps = {
   type: string;
 };
@@ -23,7 +25,9 @@ export const FileStatus = ({ type }: FileStatusProps) => {
 
   return (
     <div css={[tagStyle, labelSpecificTagStyle]}>
-      <span css={labelStyle}>{labels[type as keyof typeof labels]}</span>
+      <FOOTNOTE css={labelStyle} weight="semiBold" className="!text-[inherit]">
+        {labels[type as keyof typeof labels]}
+      </FOOTNOTE>
     </div>
   );
 };
@@ -64,10 +68,6 @@ const tagStyle = css({
 
   'nav &': {
     whiteSpace: 'pre',
-  },
-
-  'h3 &': {
-    fontSize: '80%',
   },
 });
 
