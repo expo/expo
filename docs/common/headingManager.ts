@@ -10,6 +10,7 @@ import { ElementType, PageMetadata, RemarkHeading } from '../types/common';
 export enum HeadingType {
   Text = 'text',
   InlineCode = 'inlineCode',
+  CodeFilePath = 'codeFilePath',
 }
 
 /**

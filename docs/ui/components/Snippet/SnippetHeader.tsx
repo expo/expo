@@ -1,13 +1,17 @@
 import { mergeClasses } from '@expo/styleguide';
-import { ReactNode, ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
+import React, { ReactNode, ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
+
+import { FileStatus } from './FileStatus';
 
 import { LABEL } from '~/ui/components/Text';
 
-type SnippetHeaderProps = PropsWithChildren<{
+export type SnippetHeaderProps = PropsWithChildren<{
   title: string | ReactNode;
   Icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
   alwaysDark?: boolean;
   float?: boolean;
+  operationType?: 'delete' | 'add' | 'modify' | undefined;
+  showOperation?: boolean;
 }>;
 
 export const SnippetHeader = ({
@@ -16,6 +20,8 @@ export const SnippetHeader = ({
   Icon,
   float,
   alwaysDark = false,
+  operationType,
+  showOperation = false,
 }: SnippetHeaderProps) => (
   <div
     className={mergeClasses(
@@ -32,6 +38,7 @@ export const SnippetHeader = ({
       )}>
       {Icon && <Icon className="icon-sm" />}
       {title}
+      {showOperation && operationType ? <FileStatus type={operationType} /> : null}
     </LABEL>
     {!!children && <div className="flex justify-end items-center">{children}</div>}
   </div>
