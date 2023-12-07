@@ -139,7 +139,7 @@ Note that you can use [config plugins](/config-plugins/introduction/) to modify 
 
 If you add a new native dependency to your project or change the project configuration in Expo app config (**app.json/app.config.js**), you can run `npx expo prebuild --clean` to re-generate the native project directories.
 
-To determine if a new dependency changes native project directories, you can check that library's installation instructions. For example, for Android, it is common to apply changes from a library's instructions to **android/app/src/main/AndroidManifest.xml**. Similarly, for iOS, run `pod install` to update the **ios/Podfile** or update the **Info.plist** directly to change the project configuration.
+See [Determining third-party library compatibility](/workflow/using-libraries/#determining-third-party-library-compatibility) for more information on how to determine if a new dependency requires native code changes.
 
 </Collapsible>
 
