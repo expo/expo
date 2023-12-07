@@ -1,5 +1,4 @@
 import { CheckIcon, spacing } from '@expo/styleguide-native';
-import { APIV2Client } from 'api/APIV2Client';
 import {
   Text,
   View,
@@ -13,21 +12,26 @@ import * as React from 'react';
 import { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 
+import { APIV2Client } from '../../api/APIV2Client';
+import { useInitialData } from '../../utils/InitialDataContext';
+
 export function FeedbackFormScreen() {
   const theme = useExpoTheme();
+  const { currentUserData } = useInitialData();
+
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string>();
 
   const [feedback, setFeedback] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(currentUserData?.meUserActor?.bestContactEmail || '');
 
   async function onSubmit() {
     setError(undefined);
     setSubmitting(true);
     try {
       const api = new APIV2Client();
-      await api.sendOptionallyAuthenticatedApiV2Request('/feedback/expo-go-send', {
+      await api.sendUnauthenticatedApiV2Request('/feedback/expo-go-send', {
         body: {
           feedback,
           email,
@@ -68,6 +72,7 @@ export function FeedbackFormScreen() {
               onChangeText={setEmail}
               editable={!submitting}
               placeholder="your@email.com"
+              value={email}
             />
           </View>
           <Spacer.Vertical size="small" />

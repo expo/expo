@@ -70,7 +70,7 @@ export const useUserReviewCheck = ({ apps, snacks }: UseUserReviewCheckParams) =
 
   function updateUserReviewInfo(info: Partial<UserReviewInfo>) {
     const newInfo: UserReviewInfo = { ...userReviewInfoDefaultValues, ...userReviewInfo, ...info };
-    AsyncStorage.setItem('userReviewInfo', JSON.stringify(userReviewInfo));
+    AsyncStorage.setItem('userReviewInfo', JSON.stringify(newInfo));
     setUserReviewInfo(newInfo);
   }
 
