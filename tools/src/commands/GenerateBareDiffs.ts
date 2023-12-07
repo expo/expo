@@ -131,8 +131,6 @@ async function action({ check = false }: ActionOptions) {
 
       const lines = child.stdout ? child.stdout.trim().split(/\r\n?|\n/g) : [];
 
-      console.log(lines);
-
       if (lines.length > 0) {
         logger.log(
           `expo-template-bare-minimum has changed. Run 'et generate-bare-diffs' to regenerate them.`
