@@ -54,4 +54,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: template-bare-minimum-bare-diff-failure
-          path: docs/public/static/diffs/template-bare-minimum/diffInfo.json
+          path: docs/public/static/diffs/template-bare-minimum/raw
