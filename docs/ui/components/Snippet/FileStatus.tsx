@@ -52,7 +52,7 @@ const modifyTagStyle = css({
 
 const tagStyle = css({
   display: 'inline-flex',
-  height: 22,
+  height: 21,
   fontWeight: 600,
   padding: `${spacing[1]}px ${spacing[1]}px`,
   borderRadius: borderRadius.sm,
