@@ -33,6 +33,7 @@
 - Exclude `+not-found` and `*+api` routes from typed routes ([#24496](https://github.com/expo/expo/pull/24496) by [@marklawlor](https://github.com/marklawlor))
 - Fix Expo Router typed routes error with external URLs ([#25591](https://github.com/expo/expo/pull/25591) by [@marklawlor](https://github.com/marklawlor))
 - Fix permission issue when user doesn't have permission to view app. ([#25650](https://github.com/expo/expo/pull/25650) by [@wschurman](https://github.com/wschurman))
+- Load `@react-native/dev-middleware` from the user's project. ([#25799](https://github.com/expo/expo/pull/25799) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
