@@ -401,6 +401,7 @@ const general = [
         makePage('bare/using-expo-client.mdx'),
         makePage('bare/install-dev-builds-in-bare.mdx'),
         makePage('bare/error-recovery.mdx'),
+        makePage('bare/upgrade.mdx'),
       ]),
     ],
     { expanded: true }
