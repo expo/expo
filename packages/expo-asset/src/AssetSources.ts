@@ -90,11 +90,11 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
     };
   }
 
-  throw new Error(
-    `Asset "${meta.name}${
-      meta.type ? `.${meta.type}` : ''
-    }" must specify an absolute HTTP(S) URL in production or specify a development server URL in development.`
-  );
+  // In correctly configured apps, we arrive here if the asset is locally available on disk due to
+  // being managed by expo-updates, and `getLocalAssetUri(hash)` must return a local URI for this
+  // hash. Since the asset is local, we don't have a remote URL and specify an invalid URL (an empty
+  // string) as a placeholder.
+  return { uri: '', hash };
 }
 
 /**

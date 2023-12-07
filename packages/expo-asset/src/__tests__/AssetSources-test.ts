@@ -31,11 +31,12 @@ describe('selectAssetSource', () => {
     jest.resetModules();
   });
 
-  it(`throws an error if the asset metadata does not specify an absolute URL in production`, () => {
+  it(`returns an asset source object with an invalid dummy remote URL if the asset metadata does not specify an absolute URL in production`, () => {
     const AssetSources = require('../AssetSources');
-    expect(() => AssetSources.selectAssetSource(mockFontMetadata)).toThrowError(
-      `Asset "test.ttf" must specify an absolute HTTP(S) URL in production or specify a development server URL in development.`
-    );
+    expect(AssetSources.selectAssetSource(mockFontMetadata)).toEqual({
+      hash: 'cafecafecafecafecafecafecafecafe',
+      uri: '',
+    });
   });
 
   if (Platform.OS !== 'web') {
