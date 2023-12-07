@@ -56,9 +56,9 @@ function sdkToBranch(sdkVersion: string) {
   return `sdk-${sdkVersion}`;
 }
 
-async function executeDiffCommand(diffDirPath, sdkFrom: string, sdkTo: string) {
+async function executeDiffCommand(diffDirPathRaw, sdkFrom: string, sdkTo: string) {
   const diffCommand = `origin/${sdkToBranch(sdkFrom)}..origin/${sdkToBranch(sdkTo)}`;
-  const diffPath = path.join(diffDirPath, `${sdkFrom}..${sdkTo}.diff`);
+  const diffPath = path.join(diffDirPathRaw, `${sdkFrom}..${sdkTo}.diff`);
 
   await Git.fetchAsync();
 
@@ -78,7 +78,8 @@ async function executeDiffCommand(diffDirPath, sdkFrom: string, sdkTo: string) {
 async function action({ check = false }: ActionOptions) {
   const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);
 
-  const diffDirPath = path.join(
+  // base directory for diffs and the consolidated JSON
+  const diffDirPathBase = path.join(
     EXPO_DIR,
     'docs',
     'public',
@@ -87,8 +88,11 @@ async function action({ check = false }: ActionOptions) {
     'template-bare-minimum'
   );
 
+  // subdirectory for raw diffs, to make it easier to check if there's been a change in CI
+  // -c flag will only compare the raw diffs, not the consolidated JSON
+  const diffDirPathRaw = path.join(diffDirPathBase, 'raw');
+
   try {
-    //const sdkVersions = await readSdkVersions(diffDirPath, sdk);
     // generate from all other SDK version to the specified SDK version
     const diffJobs: PromiseLike<any>[] = [];
 
@@ -98,8 +102,9 @@ async function action({ check = false }: ActionOptions) {
     sdkVersionsToDiff.push('unversioned');
 
     // clear all versions before regenerating
-    await fs.remove(diffDirPath);
-    await fs.ensureDir(diffDirPath);
+    await fs.remove(diffDirPathBase);
+    await fs.ensureDir(diffDirPathBase);
+    await fs.ensureDir(diffDirPathRaw);
 
     //const diffPairs: string[] = [];
 
@@ -111,7 +116,7 @@ async function action({ check = false }: ActionOptions) {
           : sdkVersionsToDiff.filter((s) => s <= toSdkVersion);
       sdkVersionsLowerThenOrEqualTo.forEach((fromSdkVersion) => {
         diffJobs.push(
-          taskQueue.add(() => executeDiffCommand(diffDirPath, fromSdkVersion, toSdkVersion))
+          taskQueue.add(() => executeDiffCommand(diffDirPathRaw, fromSdkVersion, toSdkVersion))
         );
       });
     });
@@ -122,7 +127,7 @@ async function action({ check = false }: ActionOptions) {
     if (check) {
       const child = await spawnAsync(
         'git',
-        ['status', '--porcelain', 'docs/public/static/diffs/template-bare-minimum**'],
+        ['status', '--porcelain', 'docs/public/static/diffs/template-bare-minimum/raw**'],
         {
           stdio: 'pipe',
         }
@@ -143,7 +148,7 @@ async function action({ check = false }: ActionOptions) {
 
     // write a JSON file with all the diffs so we can load them synchronously
     await fs.writeFile(
-      path.join(diffDirPath, 'diffInfo.json'),
+      path.join(diffDirPathBase, 'diffInfo.json'),
       await buildDiffsJson(diffs, sdkVersionsToDiff)
     );
 
