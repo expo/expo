@@ -63,9 +63,9 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   override fun getPermissionsWithPromise(promise: Promise, vararg permissions: String) {
     getPermissions(
       PermissionsResponseListener { permissionsMap: MutableMap<String, PermissionsResponse> ->
-        val areAllGranted = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.GRANTED }
-        val areAllDenied = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.DENIED }
-        val canAskAgain = permissionsMap.all { (_, response) -> response.canAskAgain }
+        val areAllGranted = permissionsMap.isEmpty() || permissionsMap.all { (_, response) -> response.status == PermissionsStatus.GRANTED }
+        val areAllDenied = permissionsMap.isEmpty() || permissionsMap.all { (_, response) -> response.status == PermissionsStatus.DENIED }
+        val canAskAgain = permissionsMap.isEmpty() || permissionsMap.all { (_, response) -> response.canAskAgain }
 
         promise.resolve(
           Bundle().apply {
@@ -113,6 +113,11 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
 
   @Throws(IllegalStateException::class)
   override fun askForPermissions(responseListener: PermissionsResponseListener, vararg permissions: String) {
+    if (permissions.isEmpty()) {
+      responseListener.onResult(mutableMapOf())
+      return
+    }
+
     if (permissions.contains(Manifest.permission.WRITE_SETTINGS)) {
       val permissionsToAsk = permissions.toMutableList().apply { remove(Manifest.permission.WRITE_SETTINGS) }.toTypedArray()
       val newListener = PermissionsResponseListener {
