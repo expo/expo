@@ -151,7 +151,7 @@ public final class SecureStoreModule: Module {
 
   private func query(with key: String, options: SecureStoreOptions, requireAuthentication: Bool? = nil) -> [String: Any] {
     var service = options.keychainService ?? "app"
-    if let requireAuthentication = requireAuthentication {
+    if let requireAuthentication {
       service.append(":\(requireAuthentication ? "auth" : "no-auth")")
     }
 
