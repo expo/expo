@@ -49,9 +49,9 @@ jobs:
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Check for Changes in Bare Diffs
-      - name: 'Upload Artifact'
-          uses: actions/upload-artifact@v3
-          with:
-            name: bare-diff
-            path: docs/public/static/diffs/template-bare-minimum/diffInfo.json
-            retention-days: 5
+      - name: 💾 Store artifacts of diff failures
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: template-bare-minimum-bare-diff-failure
+          path: docs/public/static/diffs/template-bare-minimum/diffInfo.json
